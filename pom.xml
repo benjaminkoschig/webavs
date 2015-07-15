@@ -1,0 +1,531 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>webavs-parent</artifactId>
+	<version>1.14.99.INDUS-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<description>Parent POM for WebAVS project.</description>
+	<url>http://javadoc.ju.globaz.ch/${project.artifactId}/${project.version}</url>
+
+	<parent>
+		<groupId>ch.globaz</groupId>
+		<artifactId>java-superpom</artifactId>
+		<version>0.0.2-SNAPSHOT</version>
+	</parent>
+
+	<properties>
+		<!-- SCM ATTRIBUTES -->
+
+		<scm.currentBranch>branch_industrialisation</scm.currentBranch>
+		<scm.host>sglobsvn2.ju.globaz.ch</scm.host>
+		<scm.path>dev/webavs-repos</scm.path>
+		<scm.tags>${scm.protocol}://${scm.base}/tags</scm.tags>
+		<scm.url>${scm.protocol}://${scm.base}/branches/${scm.currentBranch}/${project.artifactId}</scm.url>
+		<scm.weburl>http://${scm.base}/branches/${scm.currentBranch}/${project.artifactId}</scm.weburl>
+
+		<!-- CONTINUOUS INTEGRATION -->
+		<ci.url>http://ci-devtools.ju.globaz.ch:8080/jenkins</ci.url>
+
+		<!-- WIKI ATTRIBUTES -->
+		<wiki.parent>WebAVS RN</wiki.parent>
+
+
+		<itucana.version>0.0.1</itucana.version>
+		<jade.version>5.2.0-SNAPSHOT</jade.version>
+		<pyxis.version>1.23.0-SNAPSHOT</pyxis.version>
+	</properties>
+
+	<scm>
+		<url>${scm.weburl}</url>
+		<connection>scm:${scm.type}:${scm.url}</connection>
+		<developerConnection>scm:${scm.type}:${scm.url}</developerConnection>
+	</scm>
+
+	<distributionManagement>
+		<site>
+			<id>documentation-server</id>
+			<name>Javadoc Server</name>
+			<url>${documentation.root}/${project.artifactId}/${project.version}</url>
+		</site>
+	</distributionManagement>
+
+
+	<developers>
+		<developer>
+			<id>hna</id>
+			<name>Hervé NAVARRE</name>
+			<email>hna@globaz.ch</email>
+			<roles>
+				<role>developer</role>
+				<role>sm</role>
+			</roles>
+			<url>https://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CHNA</url>
+			<properties>
+				<phone>271</phone>
+				<picUrl>https://mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/dglobaz_hna_LThumb.jpg</picUrl>
+			</properties>
+		</developer>
+		<developer>
+			<id>mmo</id>
+			<name>Michaël MONTANDON</name>
+			<email>mmo@globaz.ch</email>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<url>https://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CMMO</url>
+			<properties>
+				<phone>284</phone>
+				<picUrl>http:s//mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/dglobaz_mmo_LThumb.jpg</picUrl>
+			</properties>
+		</developer>
+		<developer>
+			<id>cel</id>
+			<name>Charles-Elie LEROY</name>
+			<email>cel@globaz.ch</email>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<url>https://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CCEL</url>
+			<properties>
+				<phone>227</phone>
+				<picUrl>https://mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/dglobaz_cel_LThumb.jpg</picUrl>
+			</properties>
+		</developer>
+		<developer>
+			<id>lga</id>
+			<name>Lucien GATHERAT</name>
+			<email>lga@globaz.ch</email>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<url>https://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CLGA</url>
+			<properties>
+				<phone>285</phone>
+				<picUrl>https://mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/dglobaz_lga_LThumb.jpg</picUrl>
+			</properties>
+		</developer>
+		<developer>
+			<id>jts</id>
+			<name>Julien TSCHÄPPÄT</name>
+			<email>jts@globaz.ch</email>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<url>https://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CJTS</url>
+			<properties>
+				<phone>268</phone>
+				<picUrl>https://mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/dglobaz_jts_LThumb.jpg</picUrl>
+			</properties>
+		</developer>
+
+		<developer>
+			<id>sce</id>
+			<name>Sébastien CHÈVRE</name>
+			<email>sce@globaz.ch</email>
+			<roles>
+				<role>developer</role>
+				<role>sm</role>
+			</roles>
+			<url>https://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CSCE</url>
+			<properties>
+				<phone>259</phone>
+				<picUrl>https://mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/dglobaz_sce_LThumb.jpg</picUrl>
+			</properties>
+		</developer>
+
+		<developer>
+			<id>dma</id>
+			<name>Dorian MAGNIN</name>
+			<email>dma@globaz.ch</email>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<url>https://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CDMA</url>
+			<properties>
+				<phone>278</phone>
+				<picUrl>https://mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/dglobaz_dma_LThumb.jpg</picUrl>
+			</properties>
+		</developer>
+		<developer>
+			<id>bjo</id>
+			<name>Benoit JOSS</name>
+			<email>bjo@globaz.ch</email>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<url>https://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CBJO</url>
+			<properties>
+				<phone>275</phone>
+				<picUrl>https://mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/dglobaz_bjo_LThumb.jpg</picUrl>
+			</properties>
+		</developer>
+
+		<developer>
+			<id>spi</id>
+			<name>Sébastien PILLER</name>
+			<email>spi@globaz.ch</email>
+			<roles>
+				<role>maven</role>
+			</roles>
+			<url>https://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CSPI</url>
+			<properties>
+				<phone>215</phone>
+				<picUrl>https://mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/dglobaz_spi_LThumb.jpg</picUrl>
+			</properties>
+		</developer>
+
+		<!-- TODO compléter -->
+	</developers>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>jsp-api</artifactId>
+				<version>2.0</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>servlet-api</artifactId>
+				<version>2.5</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>javax.servlet.jsp.jstl</groupId>
+				<artifactId>jstl-api</artifactId>
+				<version>1.2</version>
+				<scope>provided</scope>				
+			</dependency>
+			
+			<dependency>
+				<groupId>taglibs</groupId>
+				<artifactId>standard</artifactId>
+				<version>1.1.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.dbunit</groupId>
+				<artifactId>dbunit</artifactId>
+				<version>2.5.1</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest-all</artifactId>
+				<version>1.3</version>
+				<scope>test</scope>
+			</dependency>
+
+			<!-- Mailer implementation -->
+			<dependency>
+				<groupId>com.sun.mail</groupId>
+				<artifactId>javax.mail</artifactId>
+				<version>1.5.2</version>
+				<optional>true</optional>
+			</dependency>
+
+			<!-- Globaz -->
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>alpha-externalservices</artifactId>
+				<version>0.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>jade</artifactId>
+				<version>${jade.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>pyxis-services</artifactId>
+				<version>${pyxis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>pyxis-services-impl</artifactId>
+				<version>${pyxis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>ebback-api</artifactId>
+				<version>0.0.2-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>envoi</artifactId>
+				<version>0.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>gcom</artifactId>
+				<version>1.0.13</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>globaz-external-xsd</artifactId>
+				<version>1.1.5.1</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>journalisation</artifactId>
+				<version>0.0.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>sunanda</artifactId>
+				<version>1.3.0</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>reprise-ctx</artifactId>
+				<version>0.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>rafam-e-delegue</artifactId>
+				<version>0.0.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>bambou</artifactId>
+				<version>0.0.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>op</artifactId>
+				<version>5.0.2.sp1</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>globaz-services</artifactId>
+				<version>1.0.3-RC</version>
+				<exclusions>
+					<!-- log4j is replaced with log4j-over-slf4j -->
+					<exclusion>
+						<artifactId>log4j</artifactId>
+						<groupId>log4j</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>jaxws-rt</artifactId>
+						<groupId>com.sun.xml.ws</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+
+			<dependency>
+				<groupId>jep</groupId>
+				<artifactId>jep</artifactId>
+				<version>2.23</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.resource</groupId>
+				<artifactId>connector-api</artifactId>
+				<version>1.5</version>
+			</dependency>
+
+			<dependency>
+				<groupId>oro</groupId>
+				<artifactId>oro</artifactId>
+				<version>2.0.8</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.xml</groupId>
+				<artifactId>jaxrpc-api</artifactId>
+				<version>1.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis</groupId>
+				<artifactId>axis-jaxrpc</artifactId>
+				<version>1.4</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>2.1</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-lang</groupId>
+				<artifactId>commons-lang</artifactId>
+				<version>2.5</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis</groupId>
+				<artifactId>axis-ant</artifactId>
+				<version>1.4</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-collections</groupId>
+				<artifactId>commons-collections</artifactId>
+				<version>3.2.1</version>
+			</dependency>
+			<dependency>
+				<groupId>concurrent</groupId>
+				<artifactId>concurrent</artifactId>
+				<version>1.3.3</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>18.0</version>
+			</dependency>
+
+
+			<!-- OFIT -->
+			<dependency>
+				<groupId>ch.admin.ofit</groupId>
+				<artifactId>Anakin</artifactId>
+				<version>0.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.admin.ofit.anakin</groupId>
+				<artifactId>Arena</artifactId>
+				<version>1.1.0</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.admin.ofit</groupId>
+				<artifactId>Augmentation</artifactId>
+				<version>0.0.2013</version>
+			</dependency>
+
+			<!-- JDBC Driver and transactions -->
+			<dependency>
+				<groupId>com.ibm.db2</groupId>
+				<artifactId>db2java</artifactId>
+				<version>1.0.581</version>
+			</dependency>
+			<dependency>
+				<groupId>com.ibm</groupId>
+				<artifactId>jt400</artifactId>
+				<version>5.3.0.2</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.transaction</groupId>
+				<artifactId>jta</artifactId>
+				<version>1.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.townleyenterprises</groupId>
+				<artifactId>common</artifactId>
+				<version>0.0.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.safehaus.jug</groupId>
+				<artifactId>jug</artifactId>
+				<version>2.0.0</version>
+				<classifier>lgpl</classifier>
+			</dependency>
+
+			<dependency>
+				<groupId>org.sadun</groupId>
+				<artifactId>util</artifactId>
+				<version>0.0.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi</artifactId>
+				<version>3.0-FINAL</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>commons-logging</artifactId>
+						<groupId>commons-logging</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>log4j</artifactId>
+						<groupId>log4j</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>3.1.11</version>
+			</dependency>
+			<dependency>
+				<groupId>colt</groupId>
+				<artifactId>colt</artifactId>
+				<version>1.0.3</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.xml</groupId>
+				<artifactId>jsr173</artifactId>
+				<version>1.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>castor</groupId>
+				<artifactId>castor</artifactId>
+				<version>1.0</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging-api</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>ch.globaz</groupId>
+				<artifactId>itucana</artifactId>
+				<version>${itucana.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>xerces</groupId>
+				<artifactId>xercesImpl</artifactId>
+				<version>2.6.2</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<profiles>
+		<!-- ce profile permet de déclarer des modules sous-jacents durant les 
+			phases de dév (tout builder via "mvn clean install" sur le parent). Mais 
+			de par la structure des projets ("flat", le pom parent n'est pas dans un 
+			répertoire parent des modules), on ne peut pas l'activer durant la procédure 
+			de release, car le goal release:perform ne sait pas récupérer des sources 
+			venant de multiples repositories (produits des erreurs type "can not find 
+			project xxx at ./target/checkout/pyxis-interface"). -->
+		<profile>
+			<id>useModules</id>
+			<activation>
+				<property>
+					<name>useModules</name>
+				</property>
+			</activation>
+			<modules>
+				<module>../webavs</module>
+				<module>../webavs-api</module>
+			</modules>
+		</profile>
+	</profiles>
+
+	<build>
+		<plugins>
+			<!-- since we are referencing classes from the package com.sun.xml.internal.* 
+				in our code, we must be absolutely certain to use a Sun/Oracle JVM... -->
+			<!-- DISABLED : does not pass in jenkins! <plugin> <groupId>org.apache.maven.plugins</groupId> 
+				<artifactId>maven-enforcer-plugin</artifactId> <executions> <execution> <id>enforce-sun-jdk</id> 
+				<goals> <goal>enforce</goal> </goals> <configuration> <rules> <requireProperty> 
+				<property>java.vendor</property> <message>Java Vendor must be Sun/Oracle.</message> 
+				<regex>Sun Microsystems Inc\.</regex> <regexMessage>Java Vendor must be Sun/Oracle.</regexMessage> 
+				</requireProperty> <requireProperty> <property>java.runtime.name</property> 
+				<message>Java Vendor must be Sun/Oracle.</message> <regex>Java\(TM\) SE Runtime 
+				Environment</regex> <regexMessage>Java Vendor must be Sun/Oracle.</regexMessage> 
+				</requireProperty> </rules> <fail>true</fail> </configuration> </execution> 
+				</executions> </plugin> -->
+		</plugins>
+	</build>
+</project>
