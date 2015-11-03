@@ -1,0 +1,19 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>ch.globaz</groupId>
+        <artifactId>java-superpom</artifactId>
+        <version>1.0.2</version>
+    </parent>
+    
+    <artifactId>webavs-parent</artifactId>
+    <version>1.15.01-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>../webavs-api</module>
+        <module>../webavs</module>
+        <module>../webavs-ear</module>
+    </modules>
+</project>
