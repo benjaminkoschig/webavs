@@ -24,6 +24,9 @@
         <scm.url>${scm.protocol}://${scm.base}/trunk/webavs-parent</scm.url>
         <scm.weburl>http://${scm.base}/trunk/webavs-parent</scm.weburl>
         <release.tagFormat>webavs/webavs-parent/@{project.version}</release.tagFormat>
+
+        <sonar.version>2.7</sonar.version>
+
     </properties>
 
     <modules>
