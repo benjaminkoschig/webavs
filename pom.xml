@@ -6,10 +6,25 @@
         <artifactId>java-superpom</artifactId>
         <version>1.0.2</version>
     </parent>
-    
+
     <artifactId>webavs-parent</artifactId>
     <version>1.15.01-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <scm>
+        <url>${scm.weburl}</url>
+        <connection>scm:${scm.type}:${scm.url}</connection>
+        <developerConnection>scm:${scm.type}:${scm.url}</developerConnection>
+    </scm>
+
+    <properties>
+        <!-- SCM ATTRIBUTES -->
+        <scm.path>webavs-repos</scm.path>
+        <scm.tags>${scm.protocol}://${scm.base}/tags</scm.tags>
+        <scm.url>${scm.protocol}://${scm.base}/trunk/webavs-parent</scm.url>
+        <scm.weburl>http://${scm.base}/trunk/webavs-parent</scm.weburl>
+        <release.tagFormat>webavs/webavs-parent/@{project.version}</release.tagFormat>
+    </properties>
 
     <modules>
         <module>../webavs-api</module>
