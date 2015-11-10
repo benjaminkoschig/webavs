@@ -18,6 +18,7 @@
     </scm>
 
     <properties>
+        <wiki.parent>WebAVS RN</wiki.parent>
         <!-- SCM ATTRIBUTES -->
         <scm.path>webavs-repos</scm.path>
         <scm.tags>${scm.protocol}://${scm.base}/tags</scm.tags>
