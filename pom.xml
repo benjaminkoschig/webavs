@@ -29,7 +29,6 @@
         
         <!-- since we are building with JDK 1.6, we need to override some plugin's version -->
         <buildhelper.version>1.9.1</buildhelper.version>
-        
     </properties>
 
     <modules>
