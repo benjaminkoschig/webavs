@@ -25,6 +25,11 @@
         <scm.url>${scm.protocol}://${scm.base}/trunk/webavs-parent</scm.url>
         <scm.weburl>http://${scm.base}/trunk/webavs-parent</scm.weburl>
         <release.tagFormat>webavs/webavs-parent/@{project.version}</release.tagFormat>
+        
+        
+        <!-- since we are building with JDK 1.6, we need to override some plugin's version -->
+        <buildhelper.version>1.9.1</buildhelper.version>
+        
     </properties>
 
     <modules>
