@@ -1,6 +1,7 @@
 package ch.globaz.vulpecula.comptabilite.importationcg;
 
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -10,6 +11,7 @@ import org.junit.Test;
  */
 public class MyProdisMyAccCsvTest {
 
+    @Ignore
     @Test
     public void testMandatBMS() {
         // Param
@@ -21,6 +23,7 @@ public class MyProdisMyAccCsvTest {
         assertTrue(result.equals(MyProdisMyAccCsv.getMandat(param)));
     }
 
+    @Ignore
     @Test
     public void testMandatAVEN() {
         // Param
@@ -32,6 +35,7 @@ public class MyProdisMyAccCsvTest {
         assertTrue(result.equals(MyProdisMyAccCsv.getMandat(param)));
     }
 
+    @Ignore
     @Test
     public void testMandatMetalRomandie() {
         // Param
@@ -43,6 +47,7 @@ public class MyProdisMyAccCsvTest {
         assertTrue(result.equals(MyProdisMyAccCsv.getMandat(param)));
     }
 
+    @Ignore
     @Test
     public void testMandatCIFCAssociation() {
         // Param

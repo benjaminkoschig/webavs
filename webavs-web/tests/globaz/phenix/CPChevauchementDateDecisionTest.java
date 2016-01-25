@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class CPChevauchementDateDecisionTest {
@@ -27,6 +27,7 @@ public class CPChevauchementDateDecisionTest {
     public static void tearDownAfterClass() throws Exception {
     }
 
+    @Ignore
     @Test
     public void DataDecisionChevauchementDateDebutDansPeriodeDateFinHorsPeriodeComplementaire() throws Exception {
         dataDecisionComparaison = new CPDataDecision(new BigDecimal("1000"), "15.12.2013", CPDecision.CS_NON_ACTIF,
@@ -34,6 +35,7 @@ public class CPChevauchementDateDecisionTest {
         Assert.assertTrue(dataDecisionBase.checkChevauchementDateDecision(session, dataDecisionComparaison));
     }
 
+    @Ignore
     @Test
     public void DataDecisionChevauchementDateDebutDansPeriodeDateFinHorsPeriodeNonComplementaire() throws Exception {
         dataDecisionComparaison = new CPDataDecision(new BigDecimal("1000"), "15.12.2013", CPDecision.CS_NON_ACTIF,
@@ -41,6 +43,7 @@ public class CPChevauchementDateDecisionTest {
         Assert.assertTrue(dataDecisionBase.checkChevauchementDateDecision(session, dataDecisionComparaison));
     }
 
+    @Ignore
     @Test
     public void DataDecisionChevauchementDateDebutEtDateFinIdentiqueADatePeriodeComplementaire() throws Exception {
         dataDecisionComparaison = new CPDataDecision(new BigDecimal("1000"), "15.12.2013", CPDecision.CS_NON_ACTIF,
@@ -48,6 +51,7 @@ public class CPChevauchementDateDecisionTest {
         Assert.assertTrue(dataDecisionBase.checkChevauchementDateDecision(session, dataDecisionComparaison));
     }
 
+    @Ignore
     @Test
     public void DataDecisionChevauchementDateDebutEtDateFinIdentiqueADatePeriodeNonComplementaire() throws Exception {
         dataDecisionComparaison = new CPDataDecision(new BigDecimal("1000"), "15.12.2013", CPDecision.CS_NON_ACTIF,
@@ -55,6 +59,7 @@ public class CPChevauchementDateDecisionTest {
         Assert.assertTrue(dataDecisionBase.checkChevauchementDateDecision(session, dataDecisionComparaison));
     }
 
+    @Ignore
     @Test
     public void DataDecisionChevauchementDateDebutHorsPeriodeDateFinDansPeriodeComplementaire() throws Exception {
         dataDecisionComparaison = new CPDataDecision(new BigDecimal("1000"), "15.12.2013", CPDecision.CS_NON_ACTIF,
@@ -62,6 +67,7 @@ public class CPChevauchementDateDecisionTest {
         Assert.assertTrue(dataDecisionBase.checkChevauchementDateDecision(session, dataDecisionComparaison));
     }
 
+    @Ignore
     @Test
     public void DataDecisionChevauchementDateDebutHorsPeriodeDateFinDansPeriodeNonComplementaire() throws Exception {
         dataDecisionComparaison = new CPDataDecision(new BigDecimal("1000"), "15.12.2013", CPDecision.CS_NON_ACTIF,
@@ -69,6 +75,7 @@ public class CPChevauchementDateDecisionTest {
         Assert.assertTrue(dataDecisionBase.checkChevauchementDateDecision(session, dataDecisionComparaison));
     }
 
+    @Ignore
     @Test
     public void DataDecisionChevauchementDateDebutHorsPeriodeDateFinVideNonComplementaire() throws Exception {
         dataDecisionComparaison = new CPDataDecision(new BigDecimal("1000"), "15.12.2013", CPDecision.CS_NON_ACTIF,
@@ -83,6 +90,7 @@ public class CPChevauchementDateDecisionTest {
 
     }
 
+    @Ignore
     @Test
     public void DataDecisionChevauchementDateDebutVideDateFinHorsPeriodeNonComplementaire() throws Exception {
         dataDecisionComparaison = new CPDataDecision(new BigDecimal("1000"), "15.12.2013", CPDecision.CS_NON_ACTIF,
@@ -97,7 +105,7 @@ public class CPChevauchementDateDecisionTest {
 
     }
 
-    @Before
+    // @Before
     public void setUp() throws Exception {
         session = SessionForTestBuilder.getSession(REApplication.DEFAULT_APPLICATION_CORVUS, "ccjuglo", "glob4az");
         if (session == null) {
