@@ -32,9 +32,9 @@
     </properties>
 
     <modules>
-        <module>../webavs-api</module>
-        <module>../webavs</module>
-        <module>../webavs-ear</module>
+        <module>webavs-api</module>
+        <module>webavs</module>
+        <module>webavs-ear</module>
     </modules>
 
 

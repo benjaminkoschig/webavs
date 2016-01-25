@@ -6,7 +6,6 @@
         <groupId>ch.globaz</groupId>
         <artifactId>webavs-parent</artifactId>
         <version>1.15.02-SNAPSHOT</version>
-        <relativePath>../webavs-parent/pom.xml</relativePath>
     </parent>
 
     <packaging>war</packaging>
