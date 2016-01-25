@@ -56,7 +56,7 @@ public class IJListeFormulairesNonRecusHelper extends PRAbstractHelper {
 
         String dateDebut = getDateFormatted(cal, bSession);
 
-        String mName = JACalendar.getMonthName(cal.get(Calendar.MONTH) + 1, bSession.getIdLangue());
+        String mName = JACalendar.getMonthName(cal.get(Calendar.MONTH) + 1, bSession.getIdLangueISO());
         String aName = String.valueOf(cal.get(Calendar.YEAR));
 
         IJListeAttestationsNonRecus process = new IJListeAttestationsNonRecus(bSession, mName, aName);

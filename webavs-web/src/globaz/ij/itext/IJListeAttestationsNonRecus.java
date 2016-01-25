@@ -203,17 +203,17 @@ public class IJListeAttestationsNonRecus extends FWIAbstractManagerDocumentList 
      */
     @Override
     protected void bindPageHeader() throws Exception {
-        if (ajouterCommunePolitique) {
-            this._addHeaderLine(getFontCompanyName(), _getCompanyName(), getFontDate(),
-                    getSession().getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_UTILISATEUR.getKey()) + " "
-                            + getSession().getUserId(), getFontDate(), getDateDocument());
 
-        } else {
-            this._addHeaderLine(getFontCompanyName(), _getCompanyName(), null, null, getFontDate(), getDateDocument());
-
-        }
+        this._addHeaderLine(getFontCompanyName(), _getCompanyName(), null, null, getFontDate(), getDateDocument());
 
         this._addHeaderLine(null, null, getFontDocumentTitle(), _getDocumentTitle(), null, null);
+
+        if (ajouterCommunePolitique) {
+            this._addHeaderLine(getFontDate(),
+                    getSession().getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_UTILISATEUR.getKey()) + " "
+                            + getSession().getUserId(), null, null, null, null);
+
+        }
     }
 
     /**
@@ -359,8 +359,8 @@ public class IJListeAttestationsNonRecus extends FWIAbstractManagerDocumentList 
 
             Collections.sort(vectorManagerContainer);
 
-            this._addColumnLeft(getSession().getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_TITRE_COLONNE.getKey()),
-                    10);
+            this._addColumnCenter(getSession()
+                    .getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_TITRE_COLONNE.getKey()), 5);
             this._addColumnCenter("", 5);
 
         }
