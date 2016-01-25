@@ -154,7 +154,8 @@
         <ci.url>http://ci-devtools.ju.globaz.ch:8080/jenkins</ci.url>
 
         <itucana.version>0.0.1</itucana.version>
-        <jade.version>5.1.46</jade.version>
+        <!-- <jade.version>5.1.46</jade.version> -->
+        <jade.version>5.2.0.BMS-SNAPSHOT</jade.version>
 
         <oldpyxis.version>1-22-25</oldpyxis.version>
         <pyxis.version>1.23.0-SNAPSHOT</pyxis.version>
@@ -500,6 +501,14 @@
             </dependency>
 
 
+            <dependency>
+                <groupId>pl.pragmatists</groupId>
+                <artifactId>JUnitParams</artifactId>
+                <version>1.0.3</version>
+                <scope>test</scope>
+            </dependency>
+
+
             <!-- Mailer implementation -->
             <dependency>
                 <groupId>com.sun.mail</groupId>
@@ -789,6 +798,13 @@
 
 
     <dependencies>
+   
+        <dependency>
+            <groupId>pl.pragmatists</groupId>
+            <artifactId>JUnitParams</artifactId>
+        </dependency> 
+    
+    
         <!-- Testing -->
         <dependency>
             <groupId>org.dbunit</groupId>
