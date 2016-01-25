@@ -300,6 +300,7 @@ public class IJListerEcheancesIJProcess extends LYAbstractDocumentGenerator {
             parametres.put("PARAM_TITRE_REQUERANT", getSession().getLabel("TITRE_REQUERANT_LISTE_ECHEANCES"));
             parametres.put("PARAM_TITRE_ECHEANCE", getSession().getLabel("TYPE_ECHEANCE_LISTE_ECHEANCES"));
             parametres.put("PARAM_TITRE_ENFANT", getSession().getLabel("TITRE_ENFANT_LISTE_ECHEANCES"));
+            parametres.put("PARAM_PAGE", getSession().getLabel("PAGE_LISTE_ECHEANCES"));
 
             if (isAjouterCommunePolitique()) {
                 parametres.put("PARAM_TITRE_COMMUNE",

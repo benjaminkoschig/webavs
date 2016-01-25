@@ -58,7 +58,8 @@ public class IJListeDateEcheancesPrononces extends LYAbstractListGenerator {
         manager.setOrderBy(IJPrononceJointDemande.FIELDNAME_NOM + "," + IJPrononceJointDemande.FIELDNAME_PRENOM);
         _setCompanyName(FWIImportProperties.getInstance().getProperty(getDocumentInfo(),
                 ACaisseReportHelper.JASP_PROP_NOM_CAISSE + getSession().getIdLangueISO().toUpperCase()));
-        _setDocumentTitle(getSession().getLabel("LISTE_ECHEANCE_TITRE") + " au " + getMoisTraitement());
+        _setDocumentTitle(getSession().getLabel("LISTE_ECHEANCE_TITRE") + " "
+                + getSession().getLabel("LISTE_ECHEANCE_AU") + " " + getMoisTraitement());
 
         super._beforeExecuteReport();
     }

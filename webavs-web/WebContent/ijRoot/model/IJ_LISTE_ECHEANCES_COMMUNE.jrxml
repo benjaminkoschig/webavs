@@ -29,6 +29,7 @@
 	<parameter name="PARAM_DATE" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="PARAM_TITRE_COMMUNE" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="PARAM_USER" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="PARAM_PAGE" isForPrompting="true" class="java.lang.String"/>
 	<field name="FIELD_REQUERANT_DETAIL" class="java.lang.String"/>
 	<field name="FIELD_TYPE_ECHEANCE" class="java.lang.String"/>
 	<field name="FIELD_ENFANT_DETAIL" class="java.lang.String"/>
@@ -450,9 +451,9 @@
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="684"
+						x="720"
 						y="45"
-						width="54"
+						width="18"
 						height="15"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -466,7 +467,7 @@
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA["Page " + String.valueOf($V{PAGE_NUMBER}) + "/"]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[String.valueOf($V{PAGE_NUMBER}) + "/"]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Report" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -487,6 +488,26 @@
 						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA["" + String.valueOf($V{PAGE_NUMBER})]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="652"
+						y="45"
+						width="67"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-48"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_PAGE}]]></textFieldExpression>
 				</textField>
 			</band>
 		</columnFooter>
