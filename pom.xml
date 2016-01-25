@@ -33,7 +33,7 @@
 
     <modules>
         <module>webavs-api</module>
-        <module>webavs</module>
+        <module>webavs-web</module>
         <module>webavs-ear</module>
     </modules>
 
