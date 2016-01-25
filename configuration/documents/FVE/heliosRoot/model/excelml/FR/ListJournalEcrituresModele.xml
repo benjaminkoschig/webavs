@@ -1,0 +1,314 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>Jean SIGNORI</Author>
+  <LastAuthor>Fabrice Willemin</LastAuthor>
+  <LastPrinted>2011-04-08T08:49:57Z</LastPrinted>
+  <Created>2010-10-25T15:10:20Z</Created>
+  <LastSaved>2010-10-25T15:12:14Z</LastSaved>
+  <Company>GLOBAZ</Company>
+  <Version>14.00</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <AllowPNG/>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>13035</WindowHeight>
+  <WindowWidth>18795</WindowWidth>
+  <WindowTopX>120</WindowTopX>
+  <WindowTopY>60</WindowTopY>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Arial"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="m43828992">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Sans Sherif" ss:Size="8" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s62">
+   <Font ss:FontName="Sans Sherif" ss:Size="8"/>
+  </Style>
+  <Style ss:ID="s63">
+   <Font ss:FontName="Sans Sherif" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s64">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Sans Sherif" ss:Size="8"/>
+  </Style>
+  <Style ss:ID="s65">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Sans Sherif" ss:Size="8" ss:Italic="1"/>
+  </Style>
+  <Style ss:ID="s66">
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Sans Sherif" ss:Size="8"/>
+  </Style>
+  <Style ss:ID="s67">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Sans Sherif" ss:Size="8"/>
+  </Style>
+  <Style ss:ID="s68">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Sans Sherif" ss:Size="8"/>
+   <NumberFormat ss:Format="0"/>
+  </Style>
+  <Style ss:ID="s69">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Sans Sherif" ss:Size="8"/>
+   <NumberFormat ss:Format="00"/>
+  </Style>
+  <Style ss:ID="s70">
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Sans Sherif" ss:Size="8"/>
+   <NumberFormat ss:Format="0.00000"/>
+  </Style>
+  <Style ss:ID="s71">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Sans Sherif" ss:Size="8"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s79">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Sans Sherif" ss:Size="8" ss:Bold="1"/>
+   <NumberFormat ss:Format="#,##0.00;[Red]#,##0.00"/>
+  </Style>
+ </Styles>
+ <Names>
+  <NamedRange ss:Name="COL_1_VALUE" ss:RefersTo="=Feuil1!R10C1"/>
+  <NamedRange ss:Name="COL_10_TOTAL" ss:RefersTo="=Feuil1!R11C11"/>
+  <NamedRange ss:Name="COL_10_VALUE" ss:RefersTo="=Feuil1!R10C11"/>
+  <NamedRange ss:Name="COL_2_VALUE" ss:RefersTo="=Feuil1!R10C2"/>
+  <NamedRange ss:Name="COL_3_ACC_VALUE" ss:RefersTo="=Feuil1!R10C3"/>
+  <NamedRange ss:Name="COL_3_LIB_VALUE" ss:RefersTo="=Feuil1!R10C4"/>
+  <NamedRange ss:Name="COL_4_VALUE" ss:RefersTo="=Feuil1!R10C5"/>
+  <NamedRange ss:Name="COL_5_VALUE" ss:RefersTo="=Feuil1!R10C6"/>
+  <NamedRange ss:Name="COL_6_VALUE" ss:RefersTo="=Feuil1!R10C7"/>
+  <NamedRange ss:Name="COL_7_VALUE" ss:RefersTo="=Feuil1!R10C8"/>
+  <NamedRange ss:Name="COL_8_VALUE" ss:RefersTo="=Feuil1!R10C9"/>
+  <NamedRange ss:Name="COL_9_TOTAL" ss:RefersTo="=Feuil1!R11C10"/>
+  <NamedRange ss:Name="COL_9_VALUE" ss:RefersTo="=Feuil1!R10C10"/>
+  <NamedRange ss:Name="P_DATE_CREA" ss:RefersTo="=Feuil1!R3C3"/>
+  <NamedRange ss:Name="P_DATE_TIME" ss:RefersTo="=Feuil1!R2C11"/>
+  <NamedRange ss:Name="P_DATE_VALEUR" ss:RefersTo="=Feuil1!R4C3"/>
+  <NamedRange ss:Name="P_ETAT" ss:RefersTo="=Feuil1!R5C3"/>
+  <NamedRange ss:Name="P_EXERCICE" ss:RefersTo="=Feuil1!R1C11"/>
+  <NamedRange ss:Name="P_LIBELLE" ss:RefersTo="=Feuil1!R2C3"/>
+  <NamedRange ss:Name="P_NUMERO" ss:RefersTo="=Feuil1!R1C3"/>
+  <NamedRange ss:Name="P_PERIODE" ss:RefersTo="=Feuil1!R6C3"/>
+  <NamedRange ss:Name="P_PROPRIETAIRE" ss:RefersTo="=Feuil1!R7C3"/>
+ </Names>
+ <Worksheet ss:Name="Feuil1">
+  <Table ss:ExpandedColumnCount="11" ss:ExpandedRowCount="11" x:FullColumns="1"
+   x:FullRows="1" ss:StyleID="s62" ss:DefaultColumnWidth="60"
+   ss:DefaultRowHeight="11.25">
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="49.5"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="54"/>
+   <Column ss:StyleID="s62" ss:Width="72.75"/>
+   <Column ss:StyleID="s62" ss:Width="247.5"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="216.75"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="35.25"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="12.75"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="71.25"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="33.75"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="74.25" ss:Span="1"/>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">No de journal</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">null</Data><NamedCell
+      ss:Name="P_NUMERO"/></Cell>
+    <Cell ss:Index="6" ss:StyleID="s63"/>
+    <Cell ss:Index="11" ss:StyleID="s64"><Data ss:Type="String">Exercice</Data><NamedCell
+      ss:Name="P_EXERCICE"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">Libellé</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">null</Data><NamedCell
+      ss:Name="P_LIBELLE"/></Cell>
+    <Cell ss:Index="11" ss:StyleID="s65"><Data ss:Type="String">Date</Data><NamedCell
+      ss:Name="P_DATE_TIME"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">Date de création</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">null</Data><NamedCell
+      ss:Name="P_DATE_CREA"/></Cell>
+    <Cell ss:Index="11" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">Date de valeur</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">null</Data><NamedCell
+      ss:Name="P_DATE_VALEUR"/></Cell>
+    <Cell ss:Index="11" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">Etat</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">null</Data><NamedCell
+      ss:Name="P_ETAT"/></Cell>
+    <Cell ss:Index="11" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">Période</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">null</Data><NamedCell
+      ss:Name="P_PERIODE"/></Cell>
+    <Cell ss:Index="11" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">Propriétaire</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">null</Data><NamedCell
+      ss:Name="P_PROPRIETAIRE"/></Cell>
+    <Cell ss:Index="11" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:Index="9" ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Date</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Numéro</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Numéro de compte</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Libellé du compte</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Libellé de l'écriture</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Pièce</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">P</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Monnaie</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Cours</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Débit CHF</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Crédit CHF</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s66"><Data ss:Type="String">null</Data><NamedCell
+      ss:Name="COL_1_VALUE"/></Cell>
+    <Cell ss:StyleID="s67"><NamedCell ss:Name="COL_2_VALUE"/></Cell>
+    <Cell ss:StyleID="s66"><NamedCell ss:Name="COL_3_ACC_VALUE"/></Cell>
+    <Cell ss:StyleID="s66"><NamedCell ss:Name="COL_3_LIB_VALUE"/></Cell>
+    <Cell ss:StyleID="s66"><NamedCell ss:Name="COL_4_VALUE"/></Cell>
+    <Cell ss:StyleID="s68"><NamedCell ss:Name="COL_5_VALUE"/></Cell>
+    <Cell ss:StyleID="s69"><NamedCell ss:Name="COL_6_VALUE"/></Cell>
+    <Cell ss:StyleID="s66"><NamedCell ss:Name="COL_7_VALUE"/></Cell>
+    <Cell ss:StyleID="s70"><NamedCell ss:Name="COL_8_VALUE"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="COL_9_VALUE"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="COL_10_VALUE"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:MergeAcross="8" ss:StyleID="m43828992"><Data ss:Type="String">Total</Data></Cell>
+    <Cell ss:StyleID="s79"><NamedCell ss:Name="COL_9_TOTAL"/></Cell>
+    <Cell ss:StyleID="s79"><NamedCell ss:Name="COL_10_TOTAL"/></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Layout x:Orientation="Landscape"/>
+    <Header x:Margin="0.51181102362204722" x:Data="&amp;CJournal des écritures"/>
+    <Footer x:Margin="0.51181102362204722" x:Data="&amp;C&amp;D - &amp;T - &amp;P / &amp;N"/>
+    <PageMargins x:Bottom="0.59055118110236227" x:Left="0.39370078740157483"
+     x:Right="0.39370078740157483" x:Top="0.98425196850393704"/>
+   </PageSetup>
+   <Unsynced/>
+   <FitToPage/>
+   <Print>
+    <FitHeight>0</FitHeight>
+    <ValidPrinterInfo/>
+    <PaperSizeIndex>9</PaperSizeIndex>
+    <Scale>79</Scale>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <Selected/>
+   <LeftColumnVisible>1</LeftColumnVisible>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>9</ActiveRow>
+     <ActiveCol>1</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Feuil2">
+  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="1" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60">
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.4921259845"/>
+    <Footer x:Margin="0.4921259845"/>
+    <PageMargins x:Bottom="0.984251969" x:Left="0.78740157499999996"
+     x:Right="0.78740157499999996" x:Top="0.984251969"/>
+   </PageSetup>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Feuil3">
+  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="1" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60">
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.4921259845"/>
+    <Footer x:Margin="0.4921259845"/>
+    <PageMargins x:Bottom="0.984251969" x:Left="0.78740157499999996"
+     x:Right="0.78740157499999996" x:Top="0.984251969"/>
+   </PageSetup>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>

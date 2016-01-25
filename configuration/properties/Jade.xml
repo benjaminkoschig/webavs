@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--Jade: proprietes generales du systeme-->
+<Jade>
+	<!--homeDir: repertoire de base de l'application, necessaire pour trouver les fichiers de l'application-->
+	<homeDir></homeDir>
+	<!--persistenceDir: repertoire pour la persistance interne, si vide: homeDir + /persistence-->
+	<persistenceDir></persistenceDir>
+	<!--logDir: repertoire pour les fichiers LOG de l'application, si vide: homeDir + /logs-->
+	<logDir></logDir>
+	<!--rootUrl: URL pour acceder a la WebApp, inutile si l'application Web n'est pas deployee-->
+	<rootUrl>localhost:8080/webavs</rootUrl>
+
+	<!--defaultJdbcUrl: url JDBC par defaut-->
+	<!-- DRIVER DB2 -->	
+	<!-- <defaultJdbcUrl>jdbc:jade:GLOBAZ_DATASOURCE_DB2</defaultJdbcUrl> -->
+	<!-- DRIVER AS400 -->
+	<!-- <defaultJdbcUrl>jdbc:jade:GLOBAZ_DATASOURCE_400</defaultJdbcUrl>-->
+
+	<!--defaultJdbcTablePrefix: prefixe des tables JDBC par defaut-->
+	<defaultJdbcTablePrefix></defaultJdbcTablePrefix>
+	<!--  defaultJdbcProcessTransactionIsolation: niveau d'isolation des transactions pour les traitements-->
+	<!--               (NONE, READ_UNCOMMITTED, READ_COMMITTED, REPEATABLE_READ, SERIALIZABLE)-->
+	<!--               (par defaut: READ_COMMITTED)-->
+	<defaultJdbcProcessTransactionIsolation>READ_COMMITTED</defaultJdbcProcessTransactionIsolation>
+	<!--jdbcIncrementationTransaction: type de transaction pour incrementer les compteurs (SHARED,OWN)-->
+	<!--                               (par defaut: SHARED)-->
+	<jdbcIncrementationTransaction>OWN</jdbcIncrementationTransaction>
+	<!--jdbcIncrementationProcedureName: nom de la procedure stockee pour incrementer les compteurs-->
+	<jdbcIncrementationProcedureName></jdbcIncrementationProcedureName>
+	<!--rmiPort: port RMI ou le systeme va s'enregistrer, mettre a 0 si l'application Web n'est pas deployee-->
+	<rmiPort>0</rmiPort>
+	<!--systemId: id du systeme (declare dans le registre RMI)-->
+	<systemId>GLOBAZ</systemId>
+	<!--systemName: nom du systeme-->
+	<systemName>GLOBAZ e-Business System</systemName>
+	<!--userCreationAllowed: creation d'utilisateurs anonymes autorisee ? (TRUE,FALSE)-->
+	<!--                     (par defaut: FALSE)-->
+	<userCreationAllowed>FALSE</userCreationAllowed>
+	<!--securityGuestGroup: groupe dans lequel mettre les utilisateurs anonymes ("guests")-->
+	<securityGuestGroup>gGuests</securityGuestGroup>
+	<!--languagePath: determine si le chemin des JSP contient la langue (/FR, /DE) ou non (TRUE, FALSE)-->
+	<!--              (par defaut: FALSE)-->
+	<languagePath>true</languagePath>
+	<!--externalHelpProvider: fournisseur du systeme d'aide externe (seul fournisseur accepte: myTeacherLx)-->
+	<externalHelpProvider>myTeacherLx</externalHelpProvider>
+	<!--externalHelpUrl: URL du systeme d'aide externe (remplacer le 20.09.2013 pour aller sur inforom)-->
+	<externalHelpUrl>https://extranet.inforom.ch</externalHelpUrl>
+	<!--<externalHelpUrl>http://localhost:8080/webavs/fx?userAction=framework.dump.cookies</externalHelpUrl>-->
+	<!--externalHelpGlobazApplicationId: ID application de l'application GLOBAZ dans le systeme d'aide externe-->
+	<externalHelpGlobazApplicationId>ABC</externalHelpGlobazApplicationId>
+	<!--externalHelpGlobazClientId: ID du client dans le systeme d'aide externe-->
+	<externalHelpGlobazClientId>Globaz</externalHelpGlobazClientId>
+	<!--externalHelpGlobazUserID: ID d'utilisateur force dans le systeme d'aide externe, si necessaire-->
+	<externalHelpGlobazUserId>AVS1</externalHelpGlobazUserId>
+	<!--shareDir: répertoire de partage pour l'upload de fichier par le client-->
+	<sharedDir></sharedDir>
+	<!-- Emplacement de la documentation webavs (AQ) -->
+	<documentationUrl>http://docavsaq.ju.globaz.ch/</documentationUrl>
+	<application.properties.in.db>true</application.properties.in.db>
+</Jade>

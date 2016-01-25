@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+	<bean id="summaryContainer" class="globaz.pyxis.summary.TISummaryContainer">
+	
+		<!-- 
+			DATE : 26.08.2013
+			AUTHOR : CBu
+		
+			Information sur les pavés de la vue globale.
+			
+			PROPERTIE "moduleSize" pour les pavés :
+				- SMALL 	: occupe 1 colonne
+				- MEDIUM 	: occupe 2 colonnes
+				- BIG		: occupe 3 colonnes
+				
+				
+			Il est possible de déplacer les pavés en changeant la place d'une balise <bean>.
+						
+			Les pavés ont des hauteurs fixes. Sauf les pavés du bas qui sont variables selon la hauteur du pavé "Affiliations".
+			Un pavé qui déborde de son cadre aura un ascenseur.
+			
+			Un pavé vide peut-être placé en utilisant le code suivant (supprimer la property 'style' si une bordure est voulue) :
+					 
+		    	 <bean  class="globaz.pyxis.summary.TISummaryEmpty">
+                   <property name="element" value=""/>
+                   <property name="style" value="border:none"/>            
+                </bean>               
+		 -->
+	
+		<property name="modules">
+		    <list>
+		    	<!-- PYXIS -->
+		        <bean  class="globaz.pyxis.summary.TISummaryTiers">
+		        	<property name="maxHorizontalItems" value="5"/>	
+		        	<property name="showAllAdresses" value="true"/>
+		        </bean>
+		        
+		       	<!-- AF -->
+		        <bean  class="globaz.al.summary.ALSummary">
+                    <property name="moduleSize" value="SMALL"/>      
+                </bean>
+                
+				<!-- APG -->
+                <bean  class="globaz.apg.summary.APSummaryAPG">
+					<property name="element" value="apg.summary"/>
+				    <property name="moduleSize" value="SMALL"/>
+                </bean>
+                
+                <!-- Mat -->
+                <bean  class="globaz.apg.summary.APSummaryMat">
+					<property name="element" value="apg.summary"/>
+					<property name="moduleSize" value="SMALL"/>
+				</bean>
+				                     
+		    	<!-- IJ -->
+				<bean  class="globaz.ij.summary.IJSummary">
+					<property name="element" value="ij.summary"/>
+				    <property name="moduleSize" value="SMALL"/>
+                </bean>  
+                
+				<!-- Rentes -->
+                <bean  class="globaz.corvus.summary.RESummary">
+					<property name="element" value="corvus.summary"/>
+				    <property name="moduleSize" value="SMALL"/>
+                </bean>                
+                	
+ 				<!-- PC -->
+		    	<bean class="ch.globaz.pegasus.businessimpl.services.summary.PCSummaryPca">
+		    		<property name="element" value="pegasus.summary"/>
+		    		<property name="moduleSize" value="SMALL"/>
+		    	</bean>
+		    	 
+		    	 <!-- RFM -->
+		    	<bean class="globaz.cygnus.summary.RFSummary">
+		    		<property name="element" value="cygnus.summary"/>
+		    		<property name="moduleSize" value="SMALL"/>
+		    	</bean>
+                 
+                <!-- AMAL -->
+		        <bean  class="ch.globaz.amal.businessimpl.services.summary.AMSummary">
+                    <property name="moduleSize" value="SMALL"/>
+                </bean>    
+                               
+                <!-- PC-FAMILLES ET RENTE PONT -->
+				<bean  class="globaz.perseus.summary.PFSummary">
+					<property name="element" value="perseus.summary"/>
+				    <property name="moduleSize" value="SMALL"/>
+                </bean> 
+                 
+                <!-- Compta aux -->     
+		    	<bean  class="globaz.osiris.services.CAEventailRegimeSoldeCA">
+		    	    <property name="moduleSize" value="SMALL"/>
+                </bean>  
+                   
+                
+                <!-- Compta aux 
+		    	<bean  class="globaz.osiris.services.CAEventailRegimeFac">
+		    		<property name="moduleSize" value="SMALL"/>
+		    	</bean>
+		    	 -->
+		    	 
+		    	<!-- Declaration de salaires -->
+		    	<bean  class="globaz.draco.services.DSEventailRegimePar">
+		    	    <property name="moduleSize" value="SMALL"/>
+                </bean>  
+                
+               	<!-- Controle d'employeur  -->
+		    	<bean  class="globaz.hercule.summary.CESummary">
+		    	    <property name="moduleSize" value="SMALL"/>
+                </bean>  
+                
+  		        <!-- AFFILIES -->
+		        <bean  class="globaz.naos.services.AFSummary">
+                    <property name="moduleSize" value="MEDIUM"/>
+                    <property name="style" value="height:auto !important;"/>
+                </bean>
+                
+                <!-- Suivi des caisses -->
+		    	<bean  class="globaz.naos.services.AFSuiviCaissesSummary">
+		    	    <property name="moduleSize" value="SMALL"/>
+                </bean>
+                
+               <!-- SPECIFIQUES CCVD --> 
+                <!-- ALFAGEST
+               <bean  class="globaz.alfagest.services.ALEventailRegime">
+               		<property name="moduleSize" value="SMALL"/>
+               		<property name="style" value="height:120px" />
+               </bean>
+               -->
+                
+                <!-- Informations FGI, C22 et C116
+                <bean  class="globaz.ccvd.services.CCVDEventailRegimePrest">
+                	<property name="moduleSize" value="SMALL"/>
+                	<property name="style" value="height:120px" />
+                </bean>
+                -->
+               
+               <!-- Exécution de processus windows
+				<bean  class="globaz.pyxis.summary.TIWinExec">
+					<property name="icon" value="images/external.png"/>
+					<property name="moduleSize" value="SMALL"/>
+					<property name="style" value="height:120px" />
+					<property name="executables">
+						<list>
+							<bean class="globaz.pyxis.summary.TICommandLine">			
+								<property name="title" value="Gestion documents tiers"/>
+								<property name="cmd">
+									<value>\\dagobah\commun\Applications\Echéancier\GestTiers.exe</value>
+								</property>
+								<property name="args" value="${idTiers}"/>
+							</bean>
+							<bean class="globaz.pyxis.summary.TICommandLine">
+								<property name="title" value="MenuCCVD"/>
+								<property name="cmd">
+								<value>J:\client\Prd\GNMNU0.EXE</value>
+								</property>
+								<property name="args" value="${idTiers} ${con}"/>
+							</bean>
+						</list>
+					</property>
+	            </bean>
+               -->
+                <!-- Fin SPECIFIQUES CCVD -->
+                
+		    	 <!-- Recherche tiers -->
+		    	<bean  class="globaz.pyxis.summary.TISummaryBreak">
+                   <property name="element" value="Recherche"/>
+                   <property name="style" value="padding-top:0;background-color:#b3c4db;"/>                   
+                </bean>  
+                 <bean  class="globaz.pyxis.summary.TISummaryListTiers" >
+                   <property name="welcomeMessage" value="LABEL_WELCOME"/>
+                </bean>  
+                
+                                 
+		    </list>
+		  </property>
+	</bean>
+	
+	<!--
+      Messages
+    -->
+   	<bean id="messages" class="java.util.HashMap">
+   	   <constructor-arg>
+   	   	<map>
+   	   	  <entry key="LABEL_WELCOME">
+   	   	  	 <map>
+   	   	  	 	<entry key="fr"><value>
+   	   	  	 	<![CDATA[
+                   	<h2>Bienvenue dans la vue globale</h2><br>
+                   	Cet écran est désormais celui qui apparaît lorsque vous entrez dans l'application.<br>
+  					Vous pouvez utiliser le champ texte ci-dessous pour rechercher un dossier, en saisissant par exemple 
+  					<ul>
+  					<li>Un nom
+  					<li>Un numéro d'affilié
+  					<li>Un NNSS ou un N° AVS
+  					<li>Un alias, en utilisant le caractère $, par exemple : $ecole
+  					</ul>
+					Vous pouvez bien sûr toujours vous rendre dans les autres modules par l'intermédiaire du menu "Applications..." disponible en haut à droite de l'écran.
+					<br>
+					Pour revenir rapidement sur cet écran, vous pouvez à tout moment presser simultanément sur les touches <b>ALT et Q</b>, ou presser
+					sur le bouton suivant :  <br> <img src='images/evr_find.png'/> qui est disponible en haut à droite de l'écran.
+					<br>
+					<br>
+					<hr>
+					<br>
+					<br>
+                   ]]></value>
+   	   	  	 	</entry>
+   	   	  	 	<entry key="de"><value>
+   	   	  	 	<![CDATA[
+                   	<h2>Willkommen im Überblick </h2><br>
+                   	Dieser Bildschirm ist derjenige der von jetzt an erscheint, wenn Sie in die Anwendung eintreten.<br>
+  					Sie können das untenstehende Textfeld benutzen, um ein Dossier zu suchen, zum Beispiel beim eingeben 
+  					<ul>
+  					<li>Eines Namens
+  					<li>Einer Abr.-Nr. 
+  					<li>Einer NSVN oder einer Vers.-Nr. 
+  					<li>Ein Alias, beim verwenden des Zeichens $, zum Beispiel : $schule
+  					</ul>
+					Sie können selbstverständlich weiterhin immer noch in die anderen Modulen gehen mittels des Menüs "Anwendungen...", das oben rechts vom Bildschirm verfügbar ist.
+					<br>
+					Um auf diesen Bildschirm schnell zurückzukehren, können Sie jederzeit gleichzeitig auf die Tasten <b>ALT und Q</b> drücken, oder Sie drücken auf den folgenden Knopf :
+					<br> <img src='images/evr_find.png'/> der oben rechts vom Bildschirm verfügbar ist.
+					<br>
+					<br>
+					<hr>
+					<br>
+					<br>
+                   ]]></value>
+   	   	  	 	</entry>
+   	   	  	 	<entry key="it" value=""/>
+   	   	  	 </map>
+   	   	  </entry>
+   	   	</map>
+   	   </constructor-arg>    	
+    </bean>
+</beans>

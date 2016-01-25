@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<globaz.jade.daemon.JadeDaemonLocator>
+	<!--daemons: liste des demons-->
+	<daemons>
+<!-- 	<daemon name="ProcessSommation" class="globaz.jade.daemon.daemons.JadeDaemonRunDaily"> -->
+<!-- 			<verbose>false</verbose> -->
+<!-- 			<classname>ch.globaz.vulpecula.daemon.suividecompte.ProcessSommation</classname> -->
+<!-- 			<username>A_CONFIGURER</username> -->
+<!-- 			<password>A_CONFIGURER</password> -->
+<!-- 			<time>02:03:40</time> -->
+<!-- 			<monday>true</monday> -->
+<!-- 			<tuesday>true</tuesday> -->
+<!-- 			<wednesday>true</wednesday> -->
+<!-- 			<thursday>true</thursday> -->
+<!-- 			<friday>true</friday> -->
+<!-- 			<saturday>false</saturday> -->
+<!-- 			<sunday>false</sunday> -->
+<!-- 		</daemon>  -->
+
+<!-- 		<daemon name="ProcessTaxationOffice" class="globaz.jade.daemon.daemons.JadeDaemonRunDaily"> -->
+<!-- 			<verbose>false</verbose> -->
+<!-- 			<classname>ch.globaz.vulpecula.daemon.suividecompte.ProcessTaxationOffice</classname> -->
+<!-- 			<username>A_CONFIGURER</username> -->
+<!-- 			<password>A_CONFIGURER</password> -->
+<!-- 			<time>02:16:30</time> -->
+<!-- 			<monday>true</monday> -->
+<!-- 			<tuesday>true</tuesday> -->
+<!-- 			<wednesday>true</wednesday> -->
+<!-- 			<thursday>true</thursday> -->
+<!-- 			<friday>true</friday> -->
+<!-- 			<saturday>false</saturday> -->
+<!-- 			<sunday>false</sunday> -->
+<!-- 		</daemon> -->
+		   
+	</daemons>
+</globaz.jade.daemon.JadeDaemonLocator>

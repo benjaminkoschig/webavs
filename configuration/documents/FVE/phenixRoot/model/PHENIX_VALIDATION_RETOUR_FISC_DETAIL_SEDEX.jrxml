@@ -1,0 +1,956 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="PHENIX_VALIDATION_RETOUR_FISC"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="28"
+		 rightMargin="15"
+		 topMargin="10"
+		 bottomMargin="5"
+		 whenNoDataType="AllSectionsNoDetail"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="2" />
+	<reportFont name="ARIAL_NORMAL" isDefault="true" fontName="ARIAL.TTF" size="11" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="ARIAL.TTF" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="ARIAL_BOLD" isDefault="false" fontName="arialbd.ttf" size="11" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="ARIALBD.TTF" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<parameter name="P_SUBREPORT_HEADER" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["P_SUBREPORT_HEADER"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_SUBREPORT_SIGNATURE" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["P_SUBREPORT_SIGNATURE"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="MODEL_PATH" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["MODEL_PATH"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="L_TIERS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_TIERS_NOMPRENOM" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_TIERS_ADRESSE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_TIERS_IFD" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_TIERS_IFD" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_TIERS_NUMCAISSE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_TIERS_NUMCAISSE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_TIERS_AFFILIE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_TIERS_AFFILIE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_TIERS_NSS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_TIERS_NSS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_TITRE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_TIERS_DESCRIPTION" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_NUM_DEMANDE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_NUM_DEMANDE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_TIERS_NUMRECU" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_TIERS_NUMRECU" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_REVENU1" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_REVENU1" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_REVENU2" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_REVENU2" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_CAPITAL" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_CAPITAL" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_FORTUNE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_FORTUNE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_TIERS_NSSRECU" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_TIERS_NSSRECU" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_DEB_PERIODE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_FIN_PERIODE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_DEB_PERIODE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_FIN_PERIODE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_DAT_NAI" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_DAT_NAI" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_ASS_CON" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_ASS_CON" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_PEN_ALIM" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_PEN_ALIM" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_DRO_HAB" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_DRO_HAB" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_TYP_TAX" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_TYP_TAX" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_DEB_ASS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_DEB_ASS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_FIN_ASS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_FIN_ASS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_CAP_INVESTI" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_CAP_INVESTI" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_DAT_DETCAPINVESTI" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_REV_ACT_IND" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_REV_ACT_IND" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_GI_PROF" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_GI_PROF" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_EXCES_LIQUID" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_EXCES_LIQUID" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_SAL_VERSE_CJT" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_SAL_VERSE_CJT" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_NAT_COM" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_NAT_COM" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_SAL_COTISANT" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_SAL_COTISANT" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_FOR_IMPO" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_FOR_IMPO" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_DAT_DET_FOR" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_DAT_DET_FOR" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_MON_RENTE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_MON_RENTE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_MON_ACT_LUC" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_MON_ACT_LUC" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_COD_NATRENTE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_COD_NATRENTE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_REV_NET" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_REV_NET" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_REV_ACT_LUC" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_REV_ACT_LUC" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_INFO_GENERAL" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_DAT_DETCAPINVESTI" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_GEN_AFFTRANSMIS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_GEN_AFFTRANSMIS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_DAT_RECEPT" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_DAT_RECEPT" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_COMMENTAIRES" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_COMMENTAIRES" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_INFO_SUPP" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_NUM_CONTRIVD" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NUM_CONTRIVD" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NUM_CAISSE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_DATE_ENVOI" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_DONNEES_TIERS_NSS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_DONNEES_TIERS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_DONNEES_INTERNES" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_DONNEES_TIERS_DATE_NAISSANCE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_ANNEE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_DEP_PSAAVS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_DATE_ENVOI" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_DEP_PSAAVS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_DATE_RECEPTION" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_CAISSE_AVS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="L_REV_SUI_PSAAVS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_DATE_RECEPTION" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_REV_SUI_PSAAVS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_DONNEES_TIERS_ADRESSE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_DONNEES_TIERS_NOMPRENOM" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_DATE_IMP" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_GENRE_TAXATION" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_ASSESSMENTTYPE" isForPrompting="false" class="java.lang.String"/>
+	<field name="LIBELLE_LOG" class="java.lang.String"/>
+	<variable name="IMAGE_LOGO" class="java.lang.String" resetType="Report" calculation="Nothing">
+		<variableExpression><![CDATA[$P{MODEL_PATH}+"cfc_logo.gif"]]></variableExpression>
+	</variable>
+		<group  name="GRP_1" isStartNewColumn="false" isStartNewPage="false" isResetPageNumber="false" isReprintHeaderOnEachPage="false" minHeightToStartNewPage="0" >
+			<groupExpression><![CDATA["ff"]]></groupExpression>
+			<groupHeader>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="820"  isSplitAllowed="false" >
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="227"
+						y="234"
+						width="150"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-26"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TIERS_NOMPRENOM}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="18"
+						y="155"
+						width="200"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-27"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isUnderline="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_TIERS}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="227"
+						y="249"
+						width="150"
+						height="68"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-28"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TIERS_ADRESSE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="227"
+						y="174"
+						width="150"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-39"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TIERS_NSS}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="18"
+						y="234"
+						width="200"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-46"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_TIERS_DESCRIPTION}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="18"
+						y="174"
+						width="200"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-54"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_TIERS_NSS}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="141"
+						y="20"
+						width="264"
+						height="18"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-136"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="12" isUnderline="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="227"
+						y="189"
+						width="150"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-138"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TIERS_NSSRECU}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="18"
+						y="189"
+						width="200"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-140"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_TIERS_NSSRECU}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="18"
+						y="432"
+						width="200"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-150"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isUnderline="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_INFO_GENERAL}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="227"
+						y="510"
+						width="150"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-154"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_ASS_CON}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="227"
+						y="204"
+						width="150"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-155"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_DAT_NAI}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="18"
+						y="510"
+						width="200"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-156"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_ASS_CON}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="18"
+						y="204"
+						width="200"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-157"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_DAT_NAI}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="227"
+						y="480"
+						width="150"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-166"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_DEB_ASS}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="227"
+						y="495"
+						width="150"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-167"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_FIN_ASS}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="18"
+						y="480"
+						width="200"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-168"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_DEB_ASS}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="18"
+						y="495"
+						width="200"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-169"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_FIN_ASS}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="227"
+						y="540"
+						width="150"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-170"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_CAP_INVESTI}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="18"
+						y="540"
+						width="200"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-172"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_CAP_INVESTI}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="227"
+						y="465"
+						width="150"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-191"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_COD_NATRENTE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="18"
+						y="465"
+						width="200"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-193"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_COD_NATRENTE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="18"
+						y="219"
+						width="200"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-209"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_NUM_CONTRIVD}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="227"
+						y="219"
+						width="150"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-210"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NUM_CONTRIVD}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="18"
+						y="339"
+						width="408"
+						height="67"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-211"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_COMMENTAIRES}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="18"
+						y="324"
+						width="200"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-212"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_COMMENTAIRES}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="18"
+						y="525"
+						width="200"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-215"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_DAT_DETCAPINVESTI}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="227"
+						y="525"
+						width="150"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-216"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_DAT_DETCAPINVESTI}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="22"
+						y="90"
+						width="78"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-217"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NUM_CAISSE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="22"
+						y="111"
+						width="78"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-218"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_GEN_AFFTRANSMIS}]]></textFieldExpression>
+				</textField>
+				<rectangle radius="0" >
+					<reportElement
+						mode="Transparent"
+						x="18"
+						y="109"
+						width="86"
+						height="18"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="rectangle-1"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<rectangle radius="0" >
+					<reportElement
+						mode="Transparent"
+						x="18"
+						y="88"
+						width="86"
+						height="18"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="rectangle-2"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="23"
+						y="137"
+						width="78"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-225"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_ANNEE}]]></textFieldExpression>
+				</textField>
+				<rectangle radius="0" >
+					<reportElement
+						mode="Transparent"
+						x="18"
+						y="135"
+						width="86"
+						height="18"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="rectangle-3"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<rectangle radius="5" >
+					<reportElement
+						mode="Opaque"
+						x="431"
+						y="340"
+						width="118"
+						height="64"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="rectangle-4"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="2Point" fill="Solid" />
+				</rectangle>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="438"
+						y="348"
+						width="104"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-226"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false" isUnderline="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_CAISSE_AVS}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="406"
+						y="21"
+						width="137"
+						height="17"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-227"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_DATE_IMP}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="227"
+						y="137"
+						width="298"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-228"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_GENRE_TAXATION}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="227"
+						y="111"
+						width="298"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-229"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_ASSESSMENTTYPE}]]></textFieldExpression>
+				</textField>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</summary>
+</jasperReport>

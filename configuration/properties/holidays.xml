@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<HOLIDAYS>
+	<YEAR VALUE="2008">
+		<MONTH VALUE="1">
+			<DAY VALUE="1" NAME="Nouvel-An" FR="Nouvel-An" EN="New Year's Day"/>
+			<DAY VALUE="2" NAME="Lendemain du Nouvel-An"/>
+		</MONTH>
+		<MONTH VALUE="3">
+			<DAY VALUE="21" NAME="Vendredi-Saint"/>
+			<DAY VALUE="24" NAME="Lundi de Paques"/>
+		</MONTH>
+		<MONTH VALUE="5">
+			<DAY VALUE="1" NAME="Ascension"/>
+			<DAY VALUE="12" NAME="Lundi de Pentecôte"/>
+		</MONTH>
+		<MONTH VALUE="8">
+			<DAY VALUE="1" NAME="Fête national"/>
+		</MONTH>
+		<MONTH VALUE="9">
+			<DAY VALUE="22" NAME="Jeûne fédéral"/>
+		</MONTH>
+		<MONTH VALUE="12">
+			<DAY VALUE="25" NAME="Noël"/>
+		</MONTH>
+	</YEAR>
+	<YEAR VALUE="2009">
+		<MONTH VALUE="1">
+			<DAY VALUE="1" NAME="Nouvel-An" FR="Nouvel-An" EN="New Year's Day"/>
+			<DAY VALUE="2" NAME="Lendemain du Nouvel-An"/>
+		</MONTH>
+		<MONTH VALUE="4">
+			<DAY VALUE="10" NAME="Vendredi-Saint"/>
+			<DAY VALUE="13" NAME="Lundi de Paques"/>
+		</MONTH>
+		<MONTH VALUE="5">
+			<DAY VALUE="21" NAME="Ascension"/>
+		</MONTH>
+		<MONTH VALUE="6">
+			<DAY VALUE="1" NAME="Lundi de Pentecôte"/>
+		</MONTH>
+		<MONTH VALUE="8">
+			<DAY VALUE="1" NAME="Fête national"/>
+		</MONTH>
+		<MONTH VALUE="9">
+			<DAY VALUE="22" NAME="Jeûne fédéral"/>
+		</MONTH>
+		<MONTH VALUE="12">
+			<DAY VALUE="25" NAME="Noël"/>
+		</MONTH>
+	</YEAR>
+</HOLIDAYS>

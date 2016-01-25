@@ -1,0 +1,144 @@
+﻿<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>ELB</Author>
+  <LastAuthor>Jean SIGNORI</LastAuthor>
+  <LastPrinted>2011-03-30T09:24:08Z</LastPrinted>
+  <Created>2010-03-08T13:13:13Z</Created>
+  <LastSaved>2010-10-20T07:15:41Z</LastSaved>
+  <Version>14.00</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <AllowPNG/>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>14490</WindowHeight>
+  <WindowWidth>18795</WindowWidth>
+  <WindowTopX>480</WindowTopX>
+  <WindowTopY>30</WindowTopY>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Arial"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s62">
+   <Font ss:FontName="SansSerif"/>
+   <Interior/>
+  </Style>
+  <Style ss:ID="s63">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Sans Sherif" ss:Size="8"/>
+  </Style>
+  <Style ss:ID="s64">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Sans Sherif" ss:Size="8" ss:Italic="1"/>
+  </Style>
+  <Style ss:ID="s65">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Sans Sherif" ss:Size="8" ss:Italic="1"/>
+  </Style>
+  <Style ss:ID="s66">
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="SansSerif"/>
+   <Interior/>
+  </Style>
+ </Styles>
+ <Names>
+  <NamedRange ss:Name="COL_1_VALUE" ss:RefersTo="=Feuil1!R5C1"/>
+  <NamedRange ss:Name="COL_2_VALUE" ss:RefersTo="=Feuil1!R5C2"/>
+  <NamedRange ss:Name="COL_3_VALUE" ss:RefersTo="=Feuil1!R5C3"/>
+  <NamedRange ss:Name="COL_4_VALUE" ss:RefersTo="=Feuil1!R5C4"/>
+  <NamedRange ss:Name="COL_5_VALUE" ss:RefersTo="=Feuil1!R5C5"/>
+  <NamedRange ss:Name="COL_6_VALUE" ss:RefersTo="=Feuil1!R5C6"/>
+  <NamedRange ss:Name="P_DATE_TIME" ss:RefersTo="=Feuil1!R2C1"/>
+  <NamedRange ss:Name="P_EXERCICE_VAL" ss:RefersTo="=Feuil1!R1C1"/>
+ </Names>
+ <Worksheet ss:Name="Feuil1">
+  <Table ss:ExpandedColumnCount="6" ss:ExpandedRowCount="5" x:FullColumns="1"
+   x:FullRows="1" ss:StyleID="s62" ss:DefaultColumnWidth="60">
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="114"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="342.75"/>
+   <Column ss:StyleID="s62" ss:Width="98.25"/>
+   <Column ss:StyleID="s62" ss:Width="101.25"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="93"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="42.75"/>
+   <Row>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Exercice</Data><NamedCell
+      ss:Name="P_EXERCICE_VAL"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Date</Data><NamedCell
+      ss:Name="P_DATE_TIME"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="6" ss:StyleID="s65"/>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Classification</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Compte</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Domaine du compte</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Genre du compte</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Nature</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Monnaie</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">null</Data><NamedCell
+      ss:Name="COL_1_VALUE"/></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">null</Data><NamedCell
+      ss:Name="COL_2_VALUE"/></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">null</Data><NamedCell
+      ss:Name="COL_3_VALUE"/></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">null</Data><NamedCell
+      ss:Name="COL_4_VALUE"/></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">null</Data><NamedCell
+      ss:Name="COL_5_VALUE"/></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">null</Data><NamedCell
+      ss:Name="COL_6_VALUE"/></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Layout x:Orientation="Landscape"/>
+    <Header x:Margin="0.51181102362204722" x:Data="&amp;CPlan comptable"/>
+    <Footer x:Margin="0.51181102362204722" x:Data="&amp;C&amp;D - &amp;T - &amp;P / &amp;N"/>
+    <PageMargins x:Bottom="0.98425196850393704" x:Left="0.19685039370078741"
+     x:Right="0.19685039370078741" x:Top="0.98425196850393704"/>
+   </PageSetup>
+   <FitToPage/>
+   <Print>
+    <FitHeight>0</FitHeight>
+    <ValidPrinterInfo/>
+    <PaperSizeIndex>9</PaperSizeIndex>
+    <Scale>85</Scale>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>4</ActiveRow>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>

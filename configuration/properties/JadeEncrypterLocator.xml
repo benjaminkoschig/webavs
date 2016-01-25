@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- globaz.jade.crypto.JadeEncrypterLocator: liste des adaptateurs pour l'encryptage de donnees-->
+<globaz.jade.crypto.JadeEncrypterLocator>
+	<!--adapters: liste des adaptateurs-->
+	<adapters>
+		<!--adapter: declaration d'un adaptateur-->
+		<!--  name [REQUIRED]: nom de l'adaptateur-->
+		<!--  class [REQUIRED]: classe a utiliser pour l'adaptateur-->
+		<!--                    algorithme sans cle: doit implementer JadeEncrypter-->
+		<!--                    algorithme avec cle: doit implementer JadeKeyEncrypter-->
+		<adapter name="SHA1_Encrypter" class="globaz.jade.crypto.JadeMessageDigestEncrypter">
+			<!--param: liste des parametres-->
+			<!--  algorithm [REQUIRED]: nom de l'algorithme-->
+			<param name="algorithm">SHA1</param>
+		</adapter>
+		<adapter name="MD5_Encrypter" class="globaz.jade.crypto.JadeMessageDigestEncrypter">
+			<!--param: liste des parametres-->
+			<!--  algorithm [REQUIRED]: nom de l'algorithme-->
+			<param name="algorithm">MD5</param>
+		</adapter>
+		<adapter name="DES_Encrypter" class="globaz.jade.crypto.JadeJCEEncrypter">
+			<!--param: liste des parametres-->
+			<!--  algorithm [REQUIRED]: nom de l'algorithme-->
+			<!--  key: cle (utilisation d'une cle par defaut si pas renseignee ici)-->
+			<param name="algorithm">DES</param> <!-- HmacSHA1-->
+		</adapter>
+		<adapter name="GLOBAZ_Encrypter" class="globaz.jade.crypto.JadeAdapterEncrypter">
+			<!--param: liste des parametres-->
+			<!--  algorithm [REQUIRED]: nom de l'algorithme-->
+			<!--  key: cle (utilisation d'une cle par defaut si pas renseignee ici)-->
+			<!--  adapteeClassName [REQUIRED]: nom de la classe d'encryptage-->
+			<!--  keyField [REQUIRED]: nom du champ fournissant la cle-->
+			<!--  algorithmField [REQUIRED]: nom du champ fournissant l'algorithme-->
+			<!--  encryptMethod [REQUIRED]: nom de la methode effectuant l'encryptage-->
+			<param name="algorithm">19</param>
+			<!-- FWCryptography.ACESAR | FWCryptography.AVIGENERE | FWCryptography.TRANSPOSITION = 19 -->
+			<param name="adapteeClassName">globaz.framework.cryptography.FWCryptography</param>
+			<param name="keyField">key</param>
+			<param name="algorithmField">cipher</param>
+			<param name="encryptMethod">encrypt</param>
+		</adapter>
+	</adapters>
+</globaz.jade.crypto.JadeEncrypterLocator>

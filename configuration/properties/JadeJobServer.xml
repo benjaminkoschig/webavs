@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--globaz.jade.job.server.JadeJobServer: serveur de jobs-->
+<globaz.jade.job.server.JadeJobServer>
+	<!--instanceStore: declaration du systeme de persistance: -->
+	<!--               - ram: pas de persistance-->
+	<!--               - db: persistance en base de donnees via JDBC-->
+	<!--               - db4o: persistance dans fichier local avec db4o-->
+	<instanceStore>globaz.jade.job.plugin.persistence.ram.JadeJobInstanceStoreImpl</instanceStore>
+	<!--<instanceStore>globaz.jade.job.plugin.persistence.db.JadeJobInstanceStoreImpl</instanceStore>-->
+	<!--<instanceStore>globaz.jade.job.plugin.persistence.db4o.JadeJobInstanceStoreImpl</instanceStore>-->
+	<!--queues: liste des files d'attente-->
+	<queues>
+		<!--queue: declaration d'une file d'attente-->
+		<!--  name [REQUIRED]: nom de la file d'attente-->
+		<queue name="BATCH">
+			<!--maxConcurrentJobs: nombre maximum de travaux concurrents dans la file d'attente (1 par defaut)-->
+			<!--createThreads: 'true' pour creer les threads necessaire au demarrage,-->
+			<!--               'false' pour les creer qu'en cas de besoin ('false' par defaut)-->
+			<!--hold: 'true' pour que la file d'attente soit initialement arretee,-->
+			<!--      'false' pour qu'elle soit demarree ('false' par defaut)-->
+			<maxConcurrentJobs>1</maxConcurrentJobs>
+			<createThreads>false</createThreads>
+			<hold>false</hold>
+		</queue>
+		<queue name="INTER">
+			<!--maxConcurrentJobs: nombre maximum de travaux concurrents dans la file d'attente (1 par defaut)-->
+			<!--createThreads: 'true' pour creer les threads necessaire au demarrage,-->
+			<!--               'false' pour les creer qu'en cas de besoin ('false' par defaut)-->
+			<!--hold: 'true' pour que la file d'attente soit initialement arretee,-->
+			<!--      'false' pour qu'elle soit demarree ('false' par defaut)-->
+			<maxConcurrentJobs>2</maxConcurrentJobs>
+			<createThreads>false</createThreads>
+			<hold>false</hold>
+		</queue>
+	</queues>
+</globaz.jade.job.server.JadeJobServer>

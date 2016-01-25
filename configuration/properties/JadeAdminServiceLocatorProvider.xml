@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--globaz.jade.admin.JadeAdminServiceLocatorProvider: gestionnaire de securite (user et droits) -->
+<globaz.jade.admin.JadeAdminServiceLocatorProvider>
+	<!--locator [REQUIRED]: classe implementant le localisateur de service-->
+	<!--  class[REQUIRED]: nom de la classe d’implementation-->
+	<locator class="globaz.fx.common.business.container.FXServiceLocator"/>
+	<!--configurator [REQUIRED]: classe implementant la configuration a utiliser-->
+	<!--  class[REQUIRED]: nom de la classe d’implementation-->
+	<!--  import: nom du fichier a partir duquel importer les proprietes-->
+	<!--  verbose: indique si le service doit fonctionner en mode verbose (true, false), false par defaut-->
+	<configurator class="globaz.fx.common.config.FXFullFWSecureConfig">
+		<!--  params: liste des parametres de configuration-->
+		<params>
+			<!--parametres:-->
+			<!--  technical.user          [REQUIRED] : utilisateur "technique" Globaz (encrypte)-->
+			<!--  technical.password      [REQUIRED] : mot de passe de l'utilisateur technique Globaz (encrypte)-->
+			<!--  application             [REQUIRED] : application pour les acces JDBC (en principe: FRAMEWORK)-->
+			<!--  initial.context.factory [REQUIRED for LDAP] : factory JNDI-->
+			<!--  provider.url            [REQUIRED for LDAP] : url JNDI-->
+			<!--  security.principal      [REQUIRED for LDAP] : utilisateur LDAP-->
+			<!--  security.credentials    [REQUIRED for LDAP] : mot de passe de l'utilisateur LDAP-->
+			<!--  security.authentication [REQUIRED for LDAP] : mode d'autentification LDAP (en principe: simple)-->
+			<param name="technical.user"><![CDATA[hKgeaEfOc16IBHYnnkxGvA==]]></param>
+			<param name="technical.password"><![CDATA[/PEyKODVOEE=]]></param>
+			<param name="application">FRAMEWORK</param>
+		</params>
+	</configurator>
+</globaz.jade.admin.JadeAdminServiceLocatorProvider>

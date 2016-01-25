@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--globaz.jade.jdbc.JadeJdbcDriverManager: gestionnaire de drivers JDBC (remplace java.sql.DriverManager)-->
+<globaz.jade.jdbc.JadeJdbcDriverManager>
+	<!--drivers: liste des drivers geres par le gestionnaire de drivers JDBC-->
+	<drivers>
+		<!--driver: declaration d'un driver JDBC-->
+		<!--  name [REQUIRED]: nom du driver -->
+		<!--  class [REQUIRED]: classe implementant le driver (doit implementer java.sql.Driver) -->
+		<driver name="Globaz JDBC Driver" class="globaz.jade.jdbc.JadeJdbcDriver"/>
+	</drivers>
+</globaz.jade.jdbc.JadeJdbcDriverManager>

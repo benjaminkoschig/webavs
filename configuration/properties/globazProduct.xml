@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<GLOBAZ_PRODUCT>
+	<!-- product: déclaration d'un produit fourni par Globaz -->
+	<!-- -> name: nom du produit -->
+	<product name="WebAVS">
+		<!-- common: définitions des propriétés globales du produit -->
+		<common>
+			<!-- property: déclaration d'une propriété -->
+			<!-- -> name: nom de la propriété -->
+			<!-- -> value: valeur de la propriété -->
+		</common>		
+		<!-- applications: liste des applications inclues dans le produit -->
+		<applications>
+			<!-- application: déclaration d'une application inclue dans le produit -->
+			<!-- -> classname: nom de la classe de base de l'application (doit étendre JadeApplication) -->
+			<application classname="globaz.fx.common.business.container.FXProduct">
+				<!-- properties: définition des propriétés de l'application -->
+				<properties>
+					<!-- property: déclaration d'une propriété -->
+					<!-- -> name: nom de la propriété -->
+					<!-- -> value: valeur de la propriété -->
+				</properties>
+				<!-- validation: paramétrage des règles de validation des données -->
+				<validation>
+					<!-- object: objet dont la validation est paramétrée -->
+					<!-- -> classname: nom de la classe représentant l'entité -->
+						<!-- field: déclaration des propriétés de validation d'un champ de l'entité -->
+						<!-- -> name: nom du champ -->
+						<!-- -> defaultValue: valeur par défaut [OPTIONNEL] -->
+						<!-- -> minLength: longueur minimale acceptée [OPTIONNEL] -->
+						<!-- -> maxLength: longueur maximale acceptée [OPTIONNEL] -->
+						<!-- -> minValue: valeur minimale acceptée [OPTIONNEL] -->
+						<!-- -> maxValue: valeur maximale acceptée [OPTIONNEL] -->
+						<!-- -> isNumeric: "true" si le champ est numérique [OPTIONNEL] -->
+						<!-- -> isInteger: "true" si le champ est entier [OPTIONNEL] -->
+				</validation>
+				<!-- initClasses: liste des classes à initialiser (doivent implémenter JadeInitializable) -->
+				<initclasses>
+					<!-- class: déclaration d'une classe à initialiser -->
+					<!-- -> name: nom de la classe à initialiser -->
+					<class name="globaz.pyxis.externalservices.TIInactiverTiersExternalService">
+						<property name="elementName"><value>validation.pyxis.tiers.inactif</value></property>
+					</class>
+					<class name="globaz.pyxis.externalservices.TIAdresseRueExternalService">
+						<property name="elementName"><value>validation.pyxis.adresse.rue</value></property>
+					</class>
+				</initclasses>
+			</application>
+		</applications>
+	</product>
+</GLOBAZ_PRODUCT>

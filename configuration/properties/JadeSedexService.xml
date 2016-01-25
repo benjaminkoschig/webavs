@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--globaz.jade.sedex.JadeSedexService: service d'interfaçage avec SEDEX-->
+<globaz.jade.sedex.JadeSedexService>
+	<testDeliveryFlag>true</testDeliveryFlag>
+	<!--dir.input: répertoire où arrivent les messages SEDEX destinés à cette application-->
+	<!--dir.output: répertoire où sont déposés les messages SEDEX générés par cette application-->
+	<dir.input checkDelay="1m"></dir.input>
+	<dir.output></dir.output>
+	<dir.output.backup></dir.output.backup>
+	<!--dir.repository: emplacement du repository SEDEX, contenant notamment l'annuaire 'particiant-list'-->
+	<dir.repository></dir.repository>
+	<!--send.id: identifiant SEDEX de cette application-->
+	<sender.id>T6-600000-1</sender.id>
+	<!-- <sender.id>T6-051010-1</sender.id> -->
+	<!--messageparser: nom de classe du parser des messages XML-->
+	<messageparser>ch.globaz.eavs.parser.XmlParser</messageparser>
+	<!-- mappings -->
+	<messageMappings>
+		<mapping>
+			<criteria name="//message/header/messageType">2605</criteria>
+			<criteria name="//message/header/subMessageType">0</criteria>
+<!-- 			<handler> -->
+<!-- 				<class>ch.globaz.al.businessimpl.rafam.sedex.ImportAnnoncesRafam</class> -->
+<!-- 				<param key="userSedex">x3M7mLWdh50=</param> -->
+<!-- 				<param key="passSedex">d5UwBcw1VTk=</param> -->
+<!-- 			</handler> -->
+		</mapping>
+	</messageMappings>
+</globaz.jade.sedex.JadeSedexService>

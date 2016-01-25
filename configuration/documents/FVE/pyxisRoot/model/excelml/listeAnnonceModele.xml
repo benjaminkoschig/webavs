@@ -1,0 +1,309 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>Sullivan CORNEILLE</Author>
+  <LastAuthor>Sébastien LAMMERS</LastAuthor>
+  <LastPrinted>2011-05-17T08:36:26Z</LastPrinted>
+  <Created>2011-09-19T11:33:29Z</Created>
+  <LastSaved>2011-11-28T16:08:38Z</LastSaved>
+  <Company>Globaz</Company>
+  <Version>14.00</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <AllowPNG/>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>12660</WindowHeight>
+  <WindowWidth>18780</WindowWidth>
+  <WindowTopX>570</WindowTopX>
+  <WindowTopY>210</WindowTopY>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Arial"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s66">
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s105">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Italic="1"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s134">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Italic="1"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s135">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Italic="1"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s136">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Italic="1"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s137">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom" ss:WrapText="1"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s138">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s139">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Font ss:FontName="Arial" x:Family="Swiss"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s140">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom" ss:WrapText="1"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s141">
+   <Alignment ss:Horizontal="CenterAcrossSelection" ss:Vertical="Bottom"
+    ss:WrapText="1"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="12" ss:Bold="1"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s142">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Borders/>
+   <Font ss:FontName="Arial"/>
+   <Interior/>
+   <NumberFormat ss:Format="@"/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s143">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Borders/>
+   <Font ss:FontName="Arial"/>
+   <Interior/>
+   <NumberFormat ss:Format="@"/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s144">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s145">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
+   <Interior/>
+   <NumberFormat ss:Format="@"/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s146">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
+   <Interior/>
+   <NumberFormat ss:Format="@"/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s147">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Arial" x:Family="Swiss"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s148">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Arial" x:Family="Swiss"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s149">
+   <Alignment ss:Vertical="Bottom"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Italic="1"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+ </Styles>
+ <Names>
+  <NamedRange ss:Name="ANCIEN" ss:RefersTo="=Feuil1!R7C5"/>
+  <NamedRange ss:Name="CRITERE" ss:RefersTo="=Feuil1!R2C3"/>
+  <NamedRange ss:Name="DATE_ANNONCE" ss:RefersTo="=Feuil1!R7C1"/>
+  <NamedRange ss:Name="DATE_DOC" ss:RefersTo="=Feuil1!R1C6"/>
+  <NamedRange ss:Name="LIBELLE_ANCIEN" ss:RefersTo="=Feuil1!R6C5"/>
+  <NamedRange ss:Name="LIBELLE_CRITERE" ss:RefersTo="=Feuil1!R2C1"/>
+  <NamedRange ss:Name="LIBELLE_DATE_ANNONCE" ss:RefersTo="=Feuil1!R6C1"/>
+  <NamedRange ss:Name="LIBELLE_NOM" ss:RefersTo="=Feuil1!R6C3"/>
+  <NamedRange ss:Name="LIBELLE_NOUVEAU" ss:RefersTo="=Feuil1!R6C6"/>
+  <NamedRange ss:Name="LIBELLE_TYPE" ss:RefersTo="=Feuil1!R6C4"/>
+  <NamedRange ss:Name="LIBELLE_VISA" ss:RefersTo="=Feuil1!R6C2"/>
+  <NamedRange ss:Name="NOM" ss:RefersTo="=Feuil1!R7C3"/>
+  <NamedRange ss:Name="NOUVEAU" ss:RefersTo="=Feuil1!R7C6"/>
+  <NamedRange ss:Name="NUMERO_INFOROM" ss:RefersTo="=Feuil1!R1C1"/>
+  <NamedRange ss:Name="TITRE_DOC" ss:RefersTo="=Feuil1!R4C1"/>
+  <NamedRange ss:Name="TYPE" ss:RefersTo="=Feuil1!R7C4"/>
+  <NamedRange ss:Name="VISA" ss:RefersTo="=Feuil1!R7C2"/>
+ </Names>
+ <Worksheet ss:Name="Feuil1">
+  <Table ss:ExpandedColumnCount="6" ss:ExpandedRowCount="7" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60">
+   <Column ss:StyleID="s138" ss:AutoFitWidth="0"/>
+   <Column ss:StyleID="s137" ss:AutoFitWidth="0" ss:Width="44.25"/>
+   <Column ss:StyleID="s138" ss:AutoFitWidth="0" ss:Width="144"/>
+   <Column ss:StyleID="s137" ss:AutoFitWidth="0" ss:Width="75.75"/>
+   <Column ss:StyleID="s138" ss:AutoFitWidth="0" ss:Width="117.75"/>
+   <Column ss:StyleID="s138" ss:AutoFitWidth="0" ss:Width="119.25"/>
+   <Row>
+    <Cell ss:StyleID="s134"><Data ss:Type="String">info</Data><NamedCell
+      ss:Name="NUMERO_INFOROM"/></Cell>
+    <Cell ss:StyleID="s135"/>
+    <Cell ss:StyleID="s136"/>
+    <Cell ss:Index="6" ss:StyleID="s139"><Data ss:Type="String">DATE_DOC</Data><NamedCell
+      ss:Name="DATE_DOC"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="s149"><Data ss:Type="String">LIBELLE_CRITERE</Data><NamedCell
+      ss:Name="LIBELLE_CRITERE"/></Cell>
+    <Cell ss:StyleID="s135"/>
+    <Cell ss:StyleID="s105"><Data ss:Type="String">CRITERE</Data><NamedCell
+      ss:Name="CRITERE"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="3" ss:StyleID="s140"/>
+   </Row>
+   <Row ss:Height="15.75">
+    <Cell ss:StyleID="s141"><Data ss:Type="String">TITRE_DOC</Data><NamedCell
+      ss:Name="TITRE_DOC"/></Cell>
+    <Cell ss:StyleID="s141"/>
+    <Cell ss:StyleID="s141"/>
+    <Cell ss:StyleID="s141"/>
+    <Cell ss:StyleID="s141"/>
+    <Cell ss:StyleID="s141"/>
+   </Row>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s142"/>
+    <Cell ss:StyleID="s143"/>
+    <Cell ss:StyleID="s142"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:StyleID="s66">
+    <Cell ss:StyleID="s144"><Data ss:Type="String">LIBELLE_DATE_ANNONCE</Data><NamedCell
+      ss:Name="LIBELLE_DATE_ANNONCE"/></Cell>
+    <Cell ss:StyleID="s145"><Data ss:Type="String">LIBELLE_VISA</Data><NamedCell
+      ss:Name="LIBELLE_VISA"/></Cell>
+    <Cell ss:StyleID="s146"><Data ss:Type="String">LIBELLE_NOM</Data><NamedCell
+      ss:Name="LIBELLE_NOM"/></Cell>
+    <Cell ss:StyleID="s145"><Data ss:Type="String">LIBELLE_TYPE</Data><NamedCell
+      ss:Name="LIBELLE_TYPE"/></Cell>
+    <Cell ss:StyleID="s146"><Data ss:Type="String">LIBELLE_ANCIEN</Data><NamedCell
+      ss:Name="LIBELLE_ANCIEN"/></Cell>
+    <Cell ss:StyleID="s146"><Data ss:Type="String">LIBELLE_NOUVEAU</Data><NamedCell
+      ss:Name="LIBELLE_NOUVEAU"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="76.5">
+    <Cell ss:StyleID="s147"><Data ss:Type="String">DATE_ANNONCE</Data><NamedCell
+      ss:Name="DATE_ANNONCE"/></Cell>
+    <Cell ss:StyleID="s148"><Data ss:Type="String">VISA</Data><NamedCell
+      ss:Name="VISA"/></Cell>
+    <Cell ss:StyleID="s147"><Data ss:Type="String">NOM</Data><NamedCell
+      ss:Name="NOM"/></Cell>
+    <Cell ss:StyleID="s148"><Data ss:Type="String">TYPE</Data><NamedCell
+      ss:Name="TYPE"/></Cell>
+    <Cell ss:StyleID="s147"><Data ss:Type="String">ANCIEN</Data><NamedCell
+      ss:Name="ANCIEN"/></Cell>
+    <Cell ss:StyleID="s147"><Data ss:Type="String">NOUVEAU</Data><NamedCell
+      ss:Name="NOUVEAU"/></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Layout x:Orientation="Landscape"/>
+    <Header x:Margin="0.4921259845"/>
+    <Footer x:Margin="0.4921259845"/>
+    <PageMargins x:Bottom="0.984251969" x:Left="0.78740157499999996"
+     x:Right="0.78740157499999996" x:Top="0.984251969"/>
+   </PageSetup>
+   <Print>
+    <ValidPrinterInfo/>
+    <PaperSizeIndex>9</PaperSizeIndex>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>13</ActiveRow>
+     <ActiveCol>2</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Feuil2">
+  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="1" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60">
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.4921259845"/>
+    <Footer x:Margin="0.4921259845"/>
+    <PageMargins x:Bottom="0.984251969" x:Left="0.78740157499999996"
+     x:Right="0.78740157499999996" x:Top="0.984251969"/>
+   </PageSetup>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Feuil3">
+  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="1" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60">
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.4921259845"/>
+    <Footer x:Margin="0.4921259845"/>
+    <PageMargins x:Bottom="0.984251969" x:Left="0.78740157499999996"
+     x:Right="0.78740157499999996" x:Top="0.984251969"/>
+   </PageSetup>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>

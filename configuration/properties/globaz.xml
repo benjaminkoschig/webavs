@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<GLOBAZ>
+	<!--Jade: proprietes generales du systeme-->
+	<!--  version [REQUIRED]: version minimale supportee (format impose: x-x-xx) -->
+	<!--  import: nom du fichier a partir duquel importer les proprietes-->
+	<!--  verbose: indique si le service doit fonctionner en mode verbose (true, false), false par defaut-->
+	<Jade version="2-0-00" import="Jade.xml"/>
+	<!--globaz.jade.jdbc.JadeJdbcDriverManager: gestionnaire de drivers JDBC (remplace java.sql.DriverManager)-->
+	<!--  import: nom du fichier a partir duquel importer les proprietes-->
+	<!--  verbose: indique si le service doit fonctionner en mode verbose (true, false), false par defaut-->
+	<globaz.jade.jdbc.JadeJdbcDriverManager import="JadeJdbcDriverManager.xml"/>
+	<!--globaz.jade.jdbc.JadeJdbcDriver: driver JDBC generique de Globaz-->
+	<!--  import: nom du fichier a partir duquel importer les proprietes-->
+	<!--  verbose: indique si le service doit fonctionner en mode verbose (true, false), false par defaut-->
+	<globaz.jade.jdbc.JadeJdbcDriver import="JadeJdbcDriver.xml"/>
+	<!--globaz.jade.admin.JadeAdminServiceLocatorProvider: gestionnaire de securite (user et droits) -->
+	<!--  import: nom du fichier a partir duquel importer les proprietes-->
+	<!--  verbose: indique si le service doit fonctionner en mode verbose (true, false), false par defaut-->
+	<globaz.jade.admin.JadeAdminServiceLocatorProvider import ="JadeAdminServiceLocatorProvider.xml"/>
+	<!--globaz.jade.smtp.JadeSmtpClient: gestionnaire des connexions clientes a des hotes SMTP-->
+	<!--  import: nom du fichier a partir duquel importer les proprietes-->
+	<!--  verbose: indique si le service doit fonctionner en mode verbose (true, false), false par defaut-->
+	<globaz.jade.smtp.JadeSmtpClient import="JadeSmtpClient.xml"/>
+	<!--globaz.jade.job.server.JadeJobServer: serveur de jobs-->
+	<!--  import: nom du fichier a partir duquel importer les proprietes-->
+	<!--  verbose: indique si le service doit fonctionner en mode verbose (true, false), false par defaut-->
+	<globaz.jade.job.server.JadeJobServer import="JadeJobServer.xml" verbose="true"/>
+	<!--globaz.jade.publish.server.JadePublishServer: serveur de publication-->
+	<!--  import: nom du fichier a partir duquel importer les proprietes-->
+	<!--  verbose: indique si le service doit fonctionner en mode verbose (true, false), false par defaut-->
+	<globaz.jade.publish.server.JadePublishServer import="JadePublishServer.xml"/>
+	<!--globaz.jade.publish.provider.JadePublishResourceLocator: liste des ressources disponibles pour la publication-->
+	<!--  import: nom du fichier a partir duquel importer les proprietes-->
+	<!--  verbose: indique si le service doit fonctionner en mode verbose (true, false), false par defaut-->
+	<globaz.jade.publish.provider.JadePublishResourceLocator import="JadePublishResourceLocator.xml"/>
+	<!--globaz.jade.publish.provider.JadePublishAttributionLocator: liste des attributions de ressources-->
+	<!--  import: nom du fichier a partir duquel importer les proprietes-->
+	<!--  verbose: indique si le service doit fonctionner en mode verbose (true, false), false par defaut-->
+	<globaz.jade.publish.provider.JadePublishAttributionLocator import="JadePublishAttributionLocator.xml"/>
+	<!--globaz.jade.service.provider.JadeClientServiceLocator: liste des adaptateurs clients-->
+	<!--  import: nom du fichier a partir duquel importer les proprietes-->
+	<!--  verbose: indique si le service doit fonctionner en mode verbose (true, false), false par defaut-->
+	<globaz.jade.service.provider.JadeClientServiceLocator import="JadeClientServiceLocator.xml"/>
+	<!--globaz.jade.service.provider.JadeServerDaemonLocator: liste des adaptateurs actifs du serveur-->
+	<!--  import: nom du fichier a partir duquel importer les proprietes-->
+	<!--  verbose: indique si le service doit fonctionner en mode verbose (true, false), false par defaut-->
+	<globaz.jade.service.provider.JadeServerDaemonLocator import="JadeServerDaemonLocator.xml"/>
+	<!-- globaz.jade.crypto.JadeEncrypterLocator: liste des adaptateurs pour l'encryptage de donnees-->
+	<!--  import: nom du fichier a partir duquel importer les proprietes-->
+	<!--  verbose: indique si le service doit fonctionner en mode verbose (true, false), false par defaut-->
+	<globaz.jade.crypto.JadeEncrypterLocator import="JadeEncrypterLocator.xml"/>
+	<!--globaz.jade.fs.service.JadeFsServer: liste des protocoles supportes pour la manipulation de fichiers-->
+	<!--  import: nom du fichier a partir duquel importer les proprietes-->
+	<!--  verbose: indique si le service doit fonctionner en mode verbose (true, false), false par defaut-->
+	<globaz.jade.fs.service.JadeFsServer import="JadeFsServer.xml"/>
+	<!--<globaz.jade.sedex.JadeSedexService import="JadeSedexService.xml"/>-->
+	<!--<globaz.jade.daemon.JadeDaemonLocator import="JadeDaemonLocator.xml"/> -->
+	<globaz.jade.persistence.mapping.JadeModelMappingProvider import="JadeModelMappingProvider.xml" verbose="true"/>
+	<!-- <globaz.jade.service.provider.JadeApplicationServiceLocator import="JadeApplicationServiceLocator.xml"/>-->
+	<!--globaz.jade.i18n.JadeI18n: liste des fichiers de messages métiers internationalisés-->
+	<globaz.jade.i18n.JadeI18n import="JadeI18n.xml"/>
+	<globaz.jade.print.server.JadePrintServer verbose="true">
+		<pdf.merge.maxsize>20</pdf.merge.maxsize>
+  	</globaz.jade.print.server.JadePrintServer>
+	
+	<globaz.jade.jdbc.JadeJdbcProfiler verbose="true">
+            <!--started: 'true' ou 'false' ('false' par defaut)-->
+            <!--statementsOnly: 'true' ou 'false' ('true' par defaut)-->
+            <started>true</started>
+            <statementsOnly>true</statementsOnly>
+          </globaz.jade.jdbc.JadeJdbcProfiler>
+          <globaz.jade.stat.JadeStatistics>
+            <!--started: 'true' ou 'false' ('false' par defaut)-->
+            <!--filename: nom du fichier de sauvegarde (par defaut, dans logDir)-->
+            <!--autoSaveDelay: nombre de minutes avant sauvegarde automatique (par defaut, 0=pas de sauvegarde)-->
+            <started>true</started>
+            <filename>JadeStatistics.dat</filename>
+            <autoSaveDelayMinutes>1</autoSaveDelayMinutes>
+          </globaz.jade.stat.JadeStatistics>
+</GLOBAZ>

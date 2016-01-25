@@ -1,0 +1,282 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>Michaël MONTANDON</Author>
+  <LastAuthor>Magalie Butillon</LastAuthor>
+  <LastPrinted>2011-07-11T13:11:29Z</LastPrinted>
+  <Created>2010-07-23T06:10:31Z</Created>
+  <LastSaved>2011-07-12T11:40:14Z</LastSaved>
+  <Company>Globaz</Company>
+  <Version>14.00</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <AllowPNG/>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>12660</WindowHeight>
+  <WindowWidth>18780</WindowWidth>
+  <WindowTopX>240</WindowTopX>
+  <WindowTopY>120</WindowTopY>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Arial" x:Family="Swiss"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s62">
+   <NumberFormat ss:Format="0"/>
+  </Style>
+  <Style ss:ID="s63">
+   <NumberFormat/>
+  </Style>
+  <Style ss:ID="s64">
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s65">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <NumberFormat/>
+  </Style>
+  <Style ss:ID="s66">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s67">
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s68">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+  </Style>
+  <Style ss:ID="s70">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
+   <Interior ss:Color="#C0C0C0" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s71">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
+   <Interior ss:Color="#C0C0C0" ss:Pattern="Solid"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s72">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
+   <Interior ss:Color="#C0C0C0" ss:Pattern="Solid"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s73">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1" ss:Italic="1"/>
+   <Interior ss:Color="#C0C0C0" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s74">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+  </Style>
+  <Style ss:ID="s75">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s76">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s77">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <NumberFormat ss:Format="#,##0.0000"/>
+  </Style>
+  <Style ss:ID="s78">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Italic="1"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+ </Styles>
+ <Names>
+  <NamedRange ss:Name="casePostale" ss:RefersTo="=Feuil1!R7C5"/>
+  <NamedRange ss:Name="dateAffiliation" ss:RefersTo="=Feuil1!R7C11"/>
+  <NamedRange ss:Name="dateDebutCaisse" ss:RefersTo="=Feuil1!R7C14"/>
+  <NamedRange ss:Name="dateFinCaisse" ss:RefersTo="=Feuil1!R7C15"/>
+  <NamedRange ss:Name="dateRadiation" ss:RefersTo="=Feuil1!R7C12"/>
+  <NamedRange ss:Name="description" ss:RefersTo="=Feuil1!R7C3"/>
+  <NamedRange ss:Name="etat" ss:RefersTo="=Feuil1!R7C17"/>
+  <NamedRange ss:Name="headerAnnee" ss:RefersTo="=Feuil1!R4C2"/>
+  <NamedRange ss:Name="headerBlank1" ss:RefersTo="=Feuil1!R2C1"/>
+  <NamedRange ss:Name="headerBlank2" ss:RefersTo="=Feuil1!#REF!"/>
+  <NamedRange ss:Name="headerBlank3" ss:RefersTo="=Feuil1!R5C1"/>
+  <NamedRange ss:Name="headerNomListe" ss:RefersTo="=Feuil1!R3C2"/>
+  <NamedRange ss:Name="headerNumInforom" ss:RefersTo="=Feuil1!R1C1"/>
+  <NamedRange ss:Name="idTaxe" ss:RefersTo="=Feuil1!R7C1"/>
+  <NamedRange ss:Name="Localite" ss:RefersTo="=Feuil1!R7C7"/>
+  <NamedRange ss:Name="masse" ss:RefersTo="=Feuil1!R7C8"/>
+  <NamedRange ss:Name="montant" ss:RefersTo="=Feuil1!R7C10"/>
+  <NamedRange ss:Name="motifFin" ss:RefersTo="=Feuil1!R7C13"/>
+  <NamedRange ss:Name="npa" ss:RefersTo="=Feuil1!R7C6"/>
+  <NamedRange ss:Name="numAffilie" ss:RefersTo="=Feuil1!R7C2"/>
+  <NamedRange ss:Name="numCaisseAVS" ss:RefersTo="=Feuil1!R7C16"/>
+  <NamedRange ss:Name="rue" ss:RefersTo="=Feuil1!R7C4"/>
+  <NamedRange ss:Name="taux" ss:RefersTo="=Feuil1!R7C9"/>
+ </Names>
+ <Worksheet ss:Name="Feuil1">
+  <Table ss:ExpandedColumnCount="18" ss:ExpandedRowCount="7" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60">
+   <Column ss:AutoFitWidth="0" ss:Width="75.75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="95.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="213" ss:Span="1"/>
+   <Column ss:Index="5" ss:AutoFitWidth="0" ss:Width="70.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="40.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="129"/>
+   <Column ss:AutoFitWidth="0" ss:Width="87"/>
+   <Column ss:AutoFitWidth="0" ss:Width="58.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="87"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="72"/>
+   <Column ss:AutoFitWidth="0" ss:Width="72"/>
+   <Column ss:StyleID="s63" ss:AutoFitWidth="0" ss:Width="173.25"/>
+   <Column ss:StyleID="s63" ss:AutoFitWidth="0" ss:Width="72"/>
+   <Column ss:StyleID="s64" ss:AutoFitWidth="0" ss:Width="72"/>
+   <Column ss:StyleID="s65" ss:Width="49.5"/>
+   <Column ss:StyleID="s66" ss:AutoFitWidth="0" ss:Width="95.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="90"/>
+   <Row>
+    <Cell><Data ss:Type="String">0274CAF</Data><NamedCell
+      ss:Name="headerNumInforom"/></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">headerBlank1</Data><NamedCell
+      ss:Name="headerBlank1"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">Name der Liste</Data></Cell>
+    <Cell><Data ss:Type="String">headerNomListe</Data><NamedCell
+      ss:Name="headerNomListe"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">Jahr</Data></Cell>
+    <Cell><Data ss:Type="String">headerAnnee</Data><NamedCell ss:Name="headerAnnee"/></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">headerBlank3</Data><NamedCell
+      ss:Name="headerBlank3"/></Cell>
+   </Row>
+   <Row ss:StyleID="s68">
+    <Cell ss:StyleID="s70"><Data ss:Type="String">ID CO2 Steuer</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Mitglied-Nr.</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Beschreibung</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Strasse</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Postfach</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">PLZ</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Ort</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Lohnsumme</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Beitragssatz</Data></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="String">Rückverteilung</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Begindatum</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Enddatum</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Grund</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Begindatum</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Enddatum</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Kasse-Nr.</Data></Cell>
+    <Cell ss:StyleID="s73"><Data ss:Type="String">Status</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">idTaxe</Data><NamedCell
+      ss:Name="idTaxe"/></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">numAffilie</Data><NamedCell
+      ss:Name="numAffilie"/></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">description</Data><NamedCell
+      ss:Name="description"/></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">rue</Data><NamedCell
+      ss:Name="rue"/></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">casePostale</Data><NamedCell
+      ss:Name="casePostale"/></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">npa</Data><NamedCell
+      ss:Name="npa"/></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">Localite</Data><NamedCell
+      ss:Name="Localite"/></Cell>
+    <Cell ss:StyleID="s76"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="masse"/></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="Number">0</Data><NamedCell ss:Name="taux"/></Cell>
+    <Cell ss:StyleID="s76" ss:Formula="=ROUND((RC[-2]*RC[-1])/500,2)*5"><Data
+      ss:Type="Number">0</Data><NamedCell ss:Name="montant"/></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">Date début</Data><NamedCell
+      ss:Name="dateAffiliation"/></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">Date de fin </Data><NamedCell
+      ss:Name="dateRadiation"/></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">motif</Data><NamedCell
+      ss:Name="motifFin"/></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">Date début</Data><NamedCell
+      ss:Name="dateDebutCaisse"/></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">Date de fin</Data><NamedCell
+      ss:Name="dateFinCaisse"/></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="Number">40179</Data><NamedCell
+      ss:Name="numCaisseAVS"/></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="String">etat</Data><NamedCell
+      ss:Name="etat"/></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Layout x:Orientation="Landscape"/>
+    <Header x:Margin="0.51181102362204722"/>
+    <Footer x:Margin="0.51181102362204722"/>
+    <PageMargins x:Bottom="0.98425196850393704" x:Left="0.78740157480314965"
+     x:Right="0.78740157480314965" x:Top="0.98425196850393704"/>
+   </PageSetup>
+   <Print>
+    <ValidPrinterInfo/>
+    <PaperSizeIndex>9</PaperSizeIndex>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <PageBreakZoom>60</PageBreakZoom>
+   <Selected/>
+   <LeftColumnVisible>8</LeftColumnVisible>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>7</ActiveRow>
+     <ActiveCol>9</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Feuil2">
+  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="1" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60">
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.4921259845"/>
+    <Footer x:Margin="0.4921259845"/>
+    <PageMargins x:Bottom="0.984251969" x:Left="0.78740157499999996"
+     x:Right="0.78740157499999996" x:Top="0.984251969"/>
+   </PageSetup>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Feuil3">
+  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="1" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60">
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.4921259845"/>
+    <Footer x:Margin="0.4921259845"/>
+    <PageMargins x:Bottom="0.984251969" x:Left="0.78740157499999996"
+     x:Right="0.78740157499999996" x:Top="0.984251969"/>
+   </PageSetup>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>

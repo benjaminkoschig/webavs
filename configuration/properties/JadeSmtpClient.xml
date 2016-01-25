@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--globaz.jade.smtp.JadeSmtpClient: gestionnaire des connexions clientes a des hotes SMTP-->
+<globaz.jade.smtp.JadeSmtpClient>
+	<!--adminEmailAddress: adresse email de l'administrateur (vide par defaut)-->
+	<!--senderEmailAddress: adresse email de l'expediteur des mails (vide par defaut)-->
+	<!--backupEmailAddress: adresse email du compte de backup (vide par defaut)-->
+	<adminEmailAddress></adminEmailAddress>
+	<senderEmailAddress></senderEmailAddress>
+	<backupEmailAddress></backupEmailAddress>
+	<!--domains: liste des domaines de messagerie autorises-->
+	<domains>
+		<!--domain: declaration d'un domaine autorise pour les adresses destinataires-->
+		<!--  name [REQUIRED]: suffixe des adresses email autorisees, * autorise toutes les adresses-->
+		<!--  adapter: nom de l'adaptateur a utiliser pour envoyer les mails-->
+		<domain name="*" adapter="defaultSMTP"/>
+	</domains>
+</globaz.jade.smtp.JadeSmtpClient>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--globaz.jade.fs.service.JadeFsServer: liste des protocoles supportes pour la manipulation de fichiers-->
+<globaz.jade.fs.service.JadeFsServer>
+	<!--protocols: liste des protocoles-->
+	<protocols>
+		<!--protocol: declaration d'un protocole-->
+		<!--  name [REQUIRED]: nom du protocole-->
+		<!--  class [REQUIRED]: classe implementant le protocole (doit implementer JadeFsService)-->
+		<protocol name="JadeFsServiceJDBC" class="globaz.jade.fs.service.jdbc.JadeFsService">
+			<url>jdbc:jade:GLOBAZ_DATASOURCE_400</url>
+		</protocol>
+		<protocol name="JadeFsServiceSftp" class="globaz.jade.fs.service.jsch.JadeFsService">
+			<!--private.key.1>C:\\Documents and Settings\\DDA\\Bureau\\keys\\id_dsa_513</private.key.1-->
+			<private.key.1></private.key.1>
+		</protocol>
+	</protocols>
+</globaz.jade.fs.service.JadeFsServer>

@@ -1,0 +1,768 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--globaz.jade.service.provider.JadeClientServiceLocator: liste des adaptateurs clients-->
+<globaz.jade.service.provider.JadeClientServiceLocator>
+	<!--adapters: liste des adaptateurs-->
+	<adapters>
+		<!--adapter: declaration d'un adaptateur-->
+		<!--  name [REQUIRED]: nom de l'adaptateur-->
+		<!--  class [REQUIRED]: classe a utiliser pour l'adaptateur (doit implementer JadeTarget) -->
+		<adapter name="defaultSMTP" class="globaz.jade.service.provider.smtp.JadeExportClient">
+			<!--host [REQUIRED]: nom ou adresse du serveur SMTP-->
+			<!--port: port du serveur SMTP (25 par defaut)-->
+			<host></host>
+			<port>25</port>
+		</adapter>
+		<adapter name="JadeJobServerFacade" class="globaz.jade.service.provider.local.JadeExportClient">
+		</adapter>
+		<adapter name="JadeSchedulerServerFacade" class="globaz.jade.service.provider.local.JadeExportClient">
+		</adapter>
+		<adapter name="JadePublishServerFacade" class="globaz.jade.service.provider.local.JadeExportClient">
+		</adapter>
+		<adapter name="JadeFsFacade" class="globaz.jade.service.provider.local.JadeExportClient">
+		</adapter>
+		<adapter name="JadeGedFacade" class="globaz.jade.service.provider.JadeServiceProxy">
+			<adapter>airs</adapter>
+		</adapter>
+		<adapter name="airs" class="globaz.jade.ged.adapter.airs.JadeGedAdapter" verbose="true">
+			<!--simulate: mode simulation (aucun appel au serveur GED), par defaut: false-->
+			<!--select.service.jsp: page JSP pour selectionner un service, par defaut: common/ged/selectService.jsp-->
+			<!--import.url [REQUIRED]: URL ou deposer les fichiers pour importation dans le GED-->
+			<!--gedos.path [REQUIRED]: chemin du repertoire ou deposer les fichiers a indexer-->
+			<simulate>false</simulate>
+			<select.service.jsp>common/ged/selectService.jsp</select.service.jsp>
+			<!--<import.url>ftp://ciciwebavsftp:cici4WebAvs@SCICICAMGD1.dcicicamnt.loc</import.url>-->
+			<import.url>D:/ged</import.url>
+			<gedos.path></gedos.path>
+			<!--services [REQUIRED]: liste des services GED-->
+			<services>
+				<!--service: declaration d'un service-->
+				<!--  name [REQUIRED]: nom du service-->
+				<!--  text : description du service-->
+				<service name="RENTES" text="DOSSIER_ASSURE">
+					<!--index: indication d'un champ composant l'index (declarer les champs dans le bon ordre !!!)-->
+					<!--  name [REQUIRED]: nom de l'index-->
+					<index name="NNSS">pyxis.tiers.numero.avs.non.formatte</index>
+					<index name="DEM">0001</index>
+					<!--consult: declaration des indexes pour la consultation, si differents des indexes par defaut-->
+					<consult>
+						<!--index: indication d'un champ composant l'index (declarer les champs dans le bon ordre !!!)-->
+						<!--  name [REQUIRED]: nom de l'index-->
+						<index name="NNSS">pyxis.tiers.numero.avs.non.formatte</index>
+					</consult>
+				</service>
+				<service name="IJAI" text="IJAI">
+					<!--index: indication d'un champ composant l'index (declarer les champs dans le bon ordre !!!)-->
+					<!--  name [REQUIRED]: nom de l'index-->
+					<index name="NNSS">pyxis.tiers.numero.avs.non.formatte</index>
+					<index name="DEM">0001</index>
+					<!--consult: declaration des indexes pour la consultation, si differents des indexes par defaut-->
+					<consult>
+						<!--index: indication d'un champ composant l'index (declarer les champs dans le bon ordre !!!)-->
+						<!--  name [REQUIRED]: nom de l'index-->
+						<index name="NNSS">pyxis.tiers.numero.avs.non.formatte</index>
+					</consult>
+				</service>
+				<service name="APG" text="APG">
+					<!--index: indication d'un champ composant l'index (declarer les champs dans le bon ordre !!!)-->
+					<!--  name [REQUIRED]: nom de l'index-->
+					<index name="NNSS">pyxis.tiers.numero.avs.non.formatte</index>
+					<index name="DEM">0001</index>
+					<!--consult: declaration des indexes pour la consultation, si differents des indexes par defaut-->
+					<consult>
+						<!--index: indication d'un champ composant l'index (declarer les champs dans le bon ordre !!!)-->
+						<!--  name [REQUIRED]: nom de l'index-->
+						<index name="NNSS">pyxis.tiers.numero.avs.non.formatte</index>
+					</consult>
+				</service>				
+				<service name="COT" text="Cotisations">
+					<!--index: indication d'un champ composant l'index (declarer les champs dans le bon ordre !!!)-->
+					<index name="T_DOS">babel.type.id</index>
+					<index name="N_AFF">numero.role.non.formatte</index>
+					<index name="NUMER">osiris.section.idExterne</index>
+				</service>
+				<service name="AFF" text="Allocations Familiales">
+					<!--index: indication d'un champ composant l'index (declarer les champs dans le bon ordre !!!)-->
+					<index name="AVS">pyxis.tiers.numero.avs.non.formatte</index>
+					<index name="N_AFF">numero.role.non.formatte</index>
+					<index name="T_DOS">babel.type.id</index>
+				</service>
+				<service name="RFM" text="Remboursements frais maladies">
+					<!--index: indication d'un champ composant l'index (declarer les champs dans le bon ordre !!!)-->
+					<index name="AVS">pyxis.tiers.numero.avs.non.formatte</index>
+					<index name="N_AFF">numero.role.non.formatte</index>
+					<index name="T_DOS">babel.type.id</index>
+				</service>	
+			</services>
+			<documents>
+				<!-- Nouveaux docs -->
+				<document application="605001" ged="51">
+				<!-- CS_PROVISOIRE -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="605003" ged="51">
+				<!-- CS_CORRECTION -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="605007" ged="51">
+				<!-- CS_ACOMPTE -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="605002" ged="52">
+				<!-- CS_DEFINITIVE -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="605004" ged="52">
+				<!-- CS_RECTIFICATION -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="605005" ged="52">
+				<!-- CS_IMPUTATION -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="605008" ged="52">
+				<!-- CS_REMISE -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="605009" ged="52">
+				<!-- CS_REDUCTION -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<!-- Fin nouveaux docs -->
+				<document application="globaz.phenix.documentsItext.CPIDecision_Doc" ged="52">
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="globaz.phenix.documentsItext.CPDecision_Ind_Doc" ged="52">
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="globaz.phenix.documentsItext.CPImputation_Doc" ged="52">
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="0099CFA" ged="53">
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="242002" ged="58">
+					<!-- Sommation -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="242003" ged="55">
+					<!-- Requisition de poursuites -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="242004" ged="56">
+					<!-- Continuer la poursuite -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="242005" ged="57">
+					<!-- Requisition de vente -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="0198CDS" ged="52">
+					<!-- Requisition de vente -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="0094CFA" ged="52">
+					<!-- Requisition de vente -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="0095CFA" ged="52">
+					<!-- Requisition de vente -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="0096CFA" ged="52">
+					<!-- Requisition de vente -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="0128CFA" ged="52">
+					<!-- Requisition de vente -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="globaz.musca.itext.FADetailInteretMoratoire_Doc" ged="52">
+					<!-- Requisition de vente -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="0100CFA" ged="52">
+					<!-- Requisition de vente -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				<document application="globaz.osiris.print.itext.CAImpressionBulletinsSoldes_Doc" ged="52">
+					<!-- Requisition de vente -->
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="COT"/>
+					</services>
+				</document>
+				
+<!-- Soit 5100PRE soit on détails les 4 types de décision -->
+				<document application="5100PRE" ged="5100">
+					<!--  services [REQUIRED]: liste des services contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du dossier contenant le document-->
+						<service name="RENTES"/>
+					</services>
+				</document>
+			
+			
+
+<!-- Soit 5100PRE soit on détails les 4 types de décision -->
+
+
+				<document application="5101PRE" ged="327">
+					<!-- Transfert caisse compétence -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RENTES"/>
+					</services>
+				</document>
+				<document application="5102PRE" ged="328">
+					<!-- Transfert dossier -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RENTES"/>
+					</services>
+				</document>
+				<document application="5103PRE" ged="332">
+					<!-- Demande calcul provisoire -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RENTES"/>
+					</services>
+				</document>
+				<document application="5104PRE" ged="333">
+					<!-- Demande compensation rentes -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RENTES"/>
+					</services>
+				</document>
+				<document application="5105PRE" ged="334">
+					<!-- Echéance 18 ans enfants -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RENTES"/>
+					</services>
+				</document>
+				<document application="5106PRE" ged="335">
+					<!-- Echéance 25 ans enfants -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RENTES"/>
+					</services>
+				</document>
+				<document application="5107PRE" ged="336">
+					<!-- Echéance étude -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RENTES"/>
+					</services>
+				</document>
+				<document application="5108PRE" ged="337">
+					<!-- Echéance homme vieillesse -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RENTES"/>
+					</services>
+				</document>
+				<document application="5109PRE" ged="338">
+					<!-- Echéance femme vieillesse -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RENTES"/>
+					</services>
+				</document>
+				<document application="5110PRE" ged="339">
+					<!-- Echéance ajournement -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RENTES"/>
+					</services>
+				</document>
+				<document application="6500PPC" ged="999">
+					<!-- Echéance ajournement -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RENTES"/>
+					</services>
+				</document>
+				<document application="5111PRE" ged="340">
+					<!-- Echéance rente veuf -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RENTES"/>
+					</services>
+				</document>
+				<document application="5112PRE" ged="341">
+					<!-- Echéance certificat vie -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RENTES"/>
+					</services>
+				</document>
+				<document application="5113PRE" ged="342">
+					<!-- Attestation fiscale Batch -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RENTES"/>
+					</services>
+				</document>
+				<document application="5114PRE" ged="343">
+					<!-- Attestation fiscale Lettre -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RENTES"/>
+					</services>
+				</document>
+
+				<document application="5001PAP" ged="311">
+					<!-- Attestation fiscale APG -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="APG"/>
+					</services>
+				</document>
+				<document application="5003PAP" ged="312">
+					<!-- Décision maternité -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="APG"/>
+					</services>
+				</document>
+				<document application="5004PAP" ged="313">
+					<!-- Décision APG normal -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="APG"/>
+					</services>
+				</document>
+				<document application="5005PAP" ged="314">
+					<!-- Décision APG ACM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="APG"/>
+					</services>
+				</document>
+				<document application="5039PAP" ged="315">
+					<!-- Décision APG Ventilation -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="APG"/>
+					</services>
+				</document>
+				<document application="5006PAP" ged="316">
+					<!-- Décision Maternité Normal -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="APG"/>
+					</services>
+				</document>
+				<document application="5007PAP" ged="317">
+					<!-- Décision Maternité ACM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="APG"/>
+					</services>
+				</document>
+				<document application="5040PAP" ged="318">
+					<!-- Décision Maternité LAMAT -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="APG"/>
+					</services>
+				</document>
+				<document application="5041PAP" ged="319">
+					<!-- Décision Maternité Ventilation -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="APG"/>
+					</services>
+				</document>
+				<document application="5038PAP" ged="320">
+					<!-- Décision refus APG -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="APG"/>
+					</services>
+				</document>
+
+				<document application="5011PIJ" ged="321">
+					<!-- Attestation fiscale IJ -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="IJAI"/>
+					</services>
+				</document>
+				<document application="5012PIJ" ged="322">
+					<!-- Décompte IJ -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="IJAI"/>
+					</services>
+				</document>
+				<document application="5013PIJ" ged="323">
+					<!-- Formulaire base indemnisation IJ -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="IJAI"/>
+					</services>
+				</document>
+				<document application="5019PIJ" ged="324">
+					<!-- Décision IJAI -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="IJAI"/>
+					</services>
+				</document>	
+				
+				
+				<document application="7000PRF" ged="350">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7001PRF" ged="351">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7002PRF" ged="352">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7042PRF" ged="353">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7043PRF" ged="354">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7006PRF" ged="355">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7005PRF" ged="356">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7007PRF" ged="357">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7008PRF" ged="358">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7009PRF" ged="359">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7010PRF" ged="360">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7011PRF" ged="361">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7012PRF" ged="362">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7013PRF" ged="363">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7014PRF" ged="364">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7015PRF" ged="365">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7016PRF" ged="366">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7017PRF" ged="367">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				<document application="7018PRF" ged="368">
+					<!-- Décision RFM -->
+					<!--  folders [REQUIRED]: liste des folders contenant le document-->
+					<services>
+						<!--service: declaration d'un service contenant le document-->
+						<!--  name [REQUIRED]: nom du service contenant le document-->
+						<service name="RFM"/>
+					</services>
+				</document>
+				
+							
+			</documents>
+		</adapter>
+	</adapters>
+</globaz.jade.service.provider.JadeClientServiceLocator>
