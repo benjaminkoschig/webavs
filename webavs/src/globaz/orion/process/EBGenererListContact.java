@@ -60,7 +60,7 @@ public class EBGenererListContact extends EBAbstractJadeJob {
 
                     SimpleOutputListBuilder<ContactEbusinessAffilie> builder = new SimpleOutputListBuilder<ContactEbusinessAffilie>();
 
-                    File file = builder.local(locale).classValue(ContactEbusinessAffilie.class).asExcel()
+                    File file = builder.local(locale).classValue(ContactEbusinessAffilie.class).asXls()
                             .outputName(nomDoc).build();
                     return file.getAbsolutePath();
                 }

@@ -156,8 +156,8 @@ public class EBGenererListSalaire extends EBAbstractJadeJob {
 
             SimpleOutputListBuilder<ContactSalaire> builder = new SimpleOutputListBuilder<ContactSalaire>();
 
-            File file = builder.local(locale).classValue(ContactSalaire.class).asExcel().addList(list)
-                    .outputName(nomDoc).build();
+            File file = builder.local(locale).classValue(ContactSalaire.class).asXls().addList(list).outputName(nomDoc)
+                    .build();
 
             sendCompletionMail(email, file.getAbsolutePath(), body);
 

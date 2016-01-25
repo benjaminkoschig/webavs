@@ -163,7 +163,7 @@ public class PucsServiceImpl implements PucsService {
         Locale locale = buildLocale(session);
 
         SimpleOutputListBuilder<SalaryForList> builder = new SimpleOutputListBuilder<SalaryForList>();
-        builder.classValue(SalaryForList.class).local(locale).asExcel();
+        builder.classValue(SalaryForList.class).local(locale).asXls();
 
         File file = out(id, DeclarationSalaireProvenance.valueOf(provenance),
                 EtatSwissDecPucsFile.valueOf(etatSwissDecPucsFile), builder, session);
