@@ -4,10 +4,12 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class DeclarationSalaireTest {
 
+    @Ignore
     @Test
     public void testResolveDistinctContantEmployees() throws Exception {
         DeclarationSalaire declarationSalaire = new DeclarationSalaire();

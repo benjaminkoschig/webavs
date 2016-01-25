@@ -5,6 +5,7 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import ch.globaz.pegasus.JadeThreadContextUtil;
 import ch.globaz.pegasus.business.models.externalmodule.jsonparameters.ComptabilisationParameter;
@@ -21,6 +22,7 @@ public class ExternalModuleTest {
         JadeThreadContextUtil.shutdownContext();
     }
 
+    @Ignore
     @Test
     public void testSimpleInsertion() throws JadePersistenceException {
 

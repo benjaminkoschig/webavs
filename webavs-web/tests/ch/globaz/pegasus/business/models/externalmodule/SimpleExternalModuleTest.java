@@ -82,6 +82,7 @@ public class SimpleExternalModuleTest {
 
     }
 
+    @Ignore
     @Test
     public void testSimpleInsertion() throws JadePersistenceException {
 

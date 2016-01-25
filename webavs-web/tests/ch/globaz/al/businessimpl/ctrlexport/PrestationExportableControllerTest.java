@@ -8,6 +8,7 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
@@ -58,6 +59,7 @@ public class PrestationExportableControllerTest {
     /*
      * Saisie d'une date qui n'est pas sous le régime LAFAM (avant la mise en application de la loi en 01.01.2009)
      */
+    @Ignore
     @Test
     public void testControlDateNonSousRegimeLAFAM() {
         dossierModel = new DossierComplexModel();
@@ -77,6 +79,7 @@ public class PrestationExportableControllerTest {
     /*
      * Salariés : CH Pays de résidence des enfants : CH Employé non actif
      */
+    @Ignore
     @Test
     public void testControlDateSousRegimeLAFamEmployeNonActifCH() throws JadeApplicationServiceNotAvailableException,
             JadePersistenceException, JadeApplicationException {
@@ -107,6 +110,7 @@ public class PrestationExportableControllerTest {
     /*
      * Salariés : CH Pays de résidence des enfants : IT Employé non actif
      */
+    @Ignore
     @Test
     public void testControlDateSousRegimeLAFamEmployeNonActifEntranger()
             throws JadeApplicationServiceNotAvailableException, JadePersistenceException, JadeApplicationException {

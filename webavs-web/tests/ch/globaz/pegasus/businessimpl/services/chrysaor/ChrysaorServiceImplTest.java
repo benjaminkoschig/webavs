@@ -5,6 +5,7 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import ch.globaz.pegasus.JadeThreadContextUtil;
 import ch.globaz.pegasus.business.models.externalmodule.ExternalJobActionSource;
@@ -25,6 +26,7 @@ public class ChrysaorServiceImplTest {
         JadeThreadContextUtil.shutdownContext();
     }
 
+    @Ignore
     @Test
     public void testJobSubmission() throws JadeApplicationServiceNotAvailableException, JadePersistenceException {
 

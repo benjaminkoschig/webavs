@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import ch.globaz.vulpecula.business.services.postetravail.PosteTravailService;
 import ch.globaz.vulpecula.domain.models.common.Date;
@@ -32,6 +33,7 @@ public class EmployeurServiceImplTest {
         employeurService = spy(new EmployeurServiceImpl(employeurRepository, posteTravailService));
     }
 
+    @Ignore
     @Test
     public void givenEmployeurWithoutPosteActifWhenHasPosteTravailActifThenReturnFalse() {
         when(posteTravailService.findPostesActifsByIdAffilie(anyString(), any(Date.class))).thenReturn(
@@ -42,6 +44,7 @@ public class EmployeurServiceImplTest {
         assertFalse(excepted);
     }
 
+    @Ignore
     @Test
     public void givenEmployeurWithPosteActifWhenHasPosteTravailActifThenReturnTrue() {
         PosteTravail posteActif = new PosteTravail();
@@ -54,6 +57,7 @@ public class EmployeurServiceImplTest {
         assertTrue(excepted);
     }
 
+    @Ignore
     @Test
     public void findEmployeursSansPostesAvecEdition_GivenNoEmployeur_ShouldBeEmpty() {
         List<Employeur> employeurs = employeurService.findEmployeursSansPostesAvecEdition(new Date("01.01.2015"),
@@ -62,6 +66,7 @@ public class EmployeurServiceImplTest {
         assertEquals(0, employeurs.size());
     }
 
+    @Ignore
     @Test
     public void findEmployeursSansPostesAvecEdition_ShouldBeTest() {
         Employeur employeur = new Employeur();
@@ -74,6 +79,7 @@ public class EmployeurServiceImplTest {
         assertEquals(1, employeurs.size());
     }
 
+    @Ignore
     @Test
     public void findEmployeursSansPostesAvecEdition_ShouldBeTest2() {
         Employeur employeur = new Employeur();
@@ -85,6 +91,7 @@ public class EmployeurServiceImplTest {
         assertEquals(1, employeurs.size());
     }
 
+    @Ignore
     @Test
     public void hasParticulariteSansPersonnel_GivenRandomEmployeurAnd01_01_2014_ShouldBeFalse() {
         List<Particularite> particularites = new ArrayList<Particularite>();
@@ -92,6 +99,7 @@ public class EmployeurServiceImplTest {
         assertFalse(employeurService.hasParticulariteSansPersonnel(employeur, new Date("01.01.2014")));
     }
 
+    @Ignore
     @Test
     public void hasParticulariteSansPersonnel_GivenRandomEmployeurAnd01_01_2014WithParticulariteSansDateFin_ShouldBeTrue() {
         List<Particularite> particularites = new ArrayList<Particularite>();
@@ -100,6 +108,7 @@ public class EmployeurServiceImplTest {
         assertTrue(employeurService.hasParticulariteSansPersonnel(employeur, new Date("01.01.2014")));
     }
 
+    @Ignore
     @Test
     public void hasParticulariteSansPersonnel_GivenRandomEmployeurAnd01_01_2014WithParticulariteAvecDateFin_ShouldBeFalse() {
         List<Particularite> particularites = new ArrayList<Particularite>();
@@ -108,6 +117,7 @@ public class EmployeurServiceImplTest {
         assertFalse(employeurService.hasParticulariteSansPersonnel(employeur, new Date("01.01.2014")));
     }
 
+    @Ignore
     @Test
     public void getEmployeursSansParticularite_WithParticularite_ShouldBeFalse() {
         List<Employeur> employeurs = new ArrayList<Employeur>();
