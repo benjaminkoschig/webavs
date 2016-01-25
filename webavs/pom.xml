@@ -143,6 +143,13 @@
     </developers>
 
     <properties>
+    
+    
+    <httpclient.version>4.4.1</httpclient.version>
+        <fluent-hc.version>4.4.1</fluent-hc.version>
+        <httpasyncclient.version>4.1</httpasyncclient.version>
+    
+    
         <!-- SCM ATTRIBUTES -->
         <scm.path>webavs-repos</scm.path>
         <scm.tags>${scm.protocol}://${scm.base}/tags</scm.tags>
@@ -462,6 +469,27 @@
 
     <dependencyManagement>
         <dependencies>
+        
+        
+        
+                    <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>fluent-hc</artifactId>
+                <version>${fluent-hc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpasyncclient</artifactId>
+                <version>${httpasyncclient.version}</version>
+            </dependency>
+        
+        
+        
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>jsp-api</artifactId>
@@ -798,6 +826,20 @@
 
 
     <dependencies>
+    
+    
+                <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>fluent-hc</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpasyncclient</artifactId>
+            </dependency>
    
         <dependency>
             <groupId>pl.pragmatists</groupId>
