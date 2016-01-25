@@ -11,21 +11,6 @@
     <packaging>ear</packaging>
     <description>WebAVS ${project.version} application packaged as an EAR archive</description>
 
-    <properties>
-        <!-- SCM ATTRIBUTES -->
-        <scm.path>webavs-repos</scm.path>
-        <scm.tags>${scm.protocol}://${scm.base}/tags</scm.tags>
-        <scm.url>${scm.protocol}://${scm.base}/trunk/webavs-ear</scm.url>
-        <scm.weburl>http://${scm.base}/trunk/webavs-ear</scm.weburl>
-        <release.tagFormat>webavs/webavs-ear/@{project.version}</release.tagFormat>
-    </properties>
-
-    <scm>
-        <url>${scm.weburl}</url>
-        <connection>scm:${scm.type}:${scm.url}</connection>
-        <developerConnection>scm:${scm.type}:${scm.url}</developerConnection>
-    </scm>
-
     <build>
         <plugins>
             <plugin>

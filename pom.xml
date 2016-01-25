@@ -10,12 +10,21 @@
     <artifactId>webavs-parent</artifactId>
     <version>1.15.02-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <url>http://javadoc.ju.globaz.ch/webavs/${project.version}</url>
 
     <scm>
         <url>${scm.weburl}</url>
         <connection>scm:${scm.type}:${scm.url}</connection>
         <developerConnection>scm:${scm.type}:${scm.url}</developerConnection>
     </scm>
+
+    <distributionManagement>
+        <site>
+            <id>documentation-server</id>
+            <name>Javadoc Server</name>
+            <url>${documentation.root}/webavs/${project.version}</url>
+        </site>
+    </distributionManagement>
 
     <properties>
         <wiki.parent>WebAVS RN</wiki.parent>
@@ -24,10 +33,11 @@
         <scm.tags>${scm.protocol}://${scm.base}/tags</scm.tags>
         <scm.url>${scm.protocol}://${scm.base}/trunk/webavs-parent</scm.url>
         <scm.weburl>http://${scm.base}/trunk/webavs-parent</scm.weburl>
-        <release.tagFormat>webavs/webavs-parent/@{project.version}</release.tagFormat>
-        
-        
-        <!-- since we are building with JDK 1.6, we need to override some plugin's version -->
+        <release.tagFormat>webavs/@{project.version}</release.tagFormat>
+
+
+        <!-- since we are building with JDK 1.6, we need to override some 
+            plugin's version -->
         <buildhelper.version>1.9.1</buildhelper.version>
     </properties>
 

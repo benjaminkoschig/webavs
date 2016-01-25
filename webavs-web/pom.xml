@@ -13,7 +13,6 @@
 
     <name>WebAVS</name>
     <description>WebAVS main web application</description>
-    <url>http://javadoc.ju.globaz.ch/${project.artifactId}/${project.version}</url>
 
     <developers>
         <developer>
@@ -184,21 +183,7 @@
         <!-- empty enums make sonar fail... -->
         <sonar.exclusions>**ch/globaz/common/listoutput/generator/annotation/style/VerticalAlign*,**globaz/apg/enums/APStep2Rules*,**globaz/apg/itext/decompte/utils/APDonneeRegroupementDecompte*,**globaz/corvus/itext/REListeComparaisonLivraison2Centrale*,**ch/globaz/al/businessimpl/services/entetesDocument/EnteteDocumentUserInfoServiceImpl*,**globaz/apg/helpers/prestation/APPrestationHelper*,**globaz/apg/vb/droits/APSituationProfessionnelleViewBean*,**heliosRoot/**/*.xml*</sonar.exclusions>
     </properties>
-
-    <scm>
-        <url>${scm.weburl}</url>
-        <connection>scm:${scm.type}:${scm.url}</connection>
-        <developerConnection>scm:${scm.type}:${scm.url}</developerConnection>
-    </scm>
-
-    <distributionManagement>
-        <site>
-            <id>documentation-server</id>
-            <name>Javadoc Server</name>
-            <url>${documentation.root}/${project.artifactId}/${project.version}</url>
-        </site>
-    </distributionManagement>
-
+    
     <build>
         <sourceDirectory>src</sourceDirectory>
         <resources>
