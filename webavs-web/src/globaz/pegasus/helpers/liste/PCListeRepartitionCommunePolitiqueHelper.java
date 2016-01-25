@@ -4,8 +4,10 @@ import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BProcessLauncher;
+import globaz.globall.db.BSession;
 import globaz.pegasus.helpers.PegasusHelper;
 import globaz.pegasus.process.liste.PCListeRecapTotauxPcRfmParCommunePolitiqueProcess;
+import globaz.pegasus.process.liste.PCListeRepartitionCommunePolitiqueProcess;
 import globaz.pegasus.vb.liste.PCListeRepartitionCommunePolitiqueViewBean;
 
 public class PCListeRepartitionCommunePolitiqueHelper extends PegasusHelper {
@@ -35,6 +37,17 @@ public class PCListeRepartitionCommunePolitiqueHelper extends PegasusHelper {
         }
 
         if ("listePc".equals(vb.getTypeListe()) || "listePcRente".equals(vb.getTypeListe())) {
+
+            try {
+                PCListeRepartitionCommunePolitiqueProcess process = new PCListeRepartitionCommunePolitiqueProcess();
+                process.setTypeListe(vb.getTypeListe());
+                process.setEmail(vb.getEmail());
+                process.setSession((BSession) session);
+                BProcessLauncher.startJob(process);
+
+            } catch (Exception e) {
+                putTransactionInError(viewBean, e);
+            }
 
         }
 
