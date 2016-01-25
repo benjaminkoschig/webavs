@@ -1,0 +1,93 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ch.globaz</groupId>
+        <artifactId>webavs-parent</artifactId>
+        <version>1.15.02-SNAPSHOT</version>
+        <relativePath>../webavs-parent/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>webavs-api</artifactId>
+    <name>The WebAVS API</name>
+    <url>http://javadoc.ju.globaz.ch/${project.artifactId}/${project.version}</url>
+
+    <properties>
+        <scm.path>webavs-repos</scm.path>
+        <scm.tags>${scm.protocol}://${scm.base}/tags</scm.tags>
+        <scm.url>${scm.protocol}://${scm.base}/trunk/webavs-api</scm.url>
+        <scm.weburl>http://${scm.base}/trunk/webavs-api</scm.weburl>
+        <release.tagFormat>webavs-api/@{project.version}</release.tagFormat>
+
+        <!-- CONTINUOUS INTEGRATION -->
+        <ci.url>http://ci-devtools.ju.globaz.ch:8080/jenkins</ci.url>
+
+        <!-- WIKI ATTRIBUTES -->
+        <wiki.parent>WebAVS RN</wiki.parent>
+        <site.version>3.2</site.version>
+    </properties>
+
+    <scm>
+        <url>${scm.weburl}</url>
+        <connection>scm:${scm.type}:${scm.url}</connection>
+        <developerConnection>scm:${scm.type}:${scm.url}</developerConnection>
+    </scm>
+
+    <distributionManagement>
+        <site>
+            <id>documentation-server</id>
+            <name>Javadoc Server</name>
+            <url>${documentation.root}/${project.artifactId}/${project.version}</url>
+        </site>
+    </distributionManagement>
+
+    <developers>
+        <!-- TODO template <developer> <id>spi</id> <name>Sébastien PILLER</name> 
+            <email>spi@globaz.ch</email> <roles> <role>developer</role> </roles> <url>https://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CSPI</url> 
+            <properties> <phone>215</phone> <picUrl>https://mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/spi_LThumb.jpg</picUrl> 
+            </properties> </developer> -->
+    </developers>
+
+
+    <build>
+        <sourceDirectory>src</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>src</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>properties</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+        </resources>
+    </build>
+
+    <reporting>
+        <plugins>
+            <!-- Temporary fix for https://issues.apache.org/jira/browse/MRELEASE-926 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <id>default</id>
+                        <reports>
+                            <report>javadoc</report>
+                            <report>test-javadoc</report>
+                        </reports>
+                    </reportSet>
+                    <reportSet>
+                        <id>aggregate</id>
+                        <reports />
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
+</project>
