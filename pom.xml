@@ -47,7 +47,6 @@
         <fluent-hc.version>4.4.1</fluent-hc.version>
         <httpasyncclient.version>4.1</httpasyncclient.version>
 
-        <ch.globaz.webavs.bms-domain.version>0.0.2-SNAPSHOT</ch.globaz.webavs.bms-domain.version>
         <!-- todo choisir version de mercato -->
         <ch.globaz.mercato.notification.version>0.0.4</ch.globaz.mercato.notification.version>
 
@@ -198,13 +197,6 @@
 
     <dependencyManagement>
         <dependencies>
-
-
-            <dependency>
-                <groupId>ch.globaz.webavs</groupId>
-                <artifactId>bms-domain</artifactId>
-                <version>${ch.globaz.webavs.bms-domain.version}</version>
-            </dependency>
             <dependency>
                 <groupId>ch.globaz</groupId>
                 <artifactId>mercato.notification</artifactId>

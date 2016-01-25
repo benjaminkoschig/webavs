@@ -297,10 +297,7 @@
 
     <dependencies>
 
-        <dependency>
-            <groupId>ch.globaz.webavs</groupId>
-            <artifactId>bms-domain</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>ch.globaz</groupId>
             <artifactId>mercato.notification</artifactId>
