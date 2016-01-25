@@ -39,11 +39,11 @@
         <!-- since we are building with JDK 1.6, we need to override some 
             plugin's version -->
         <buildhelper.version>1.9.1</buildhelper.version>
-        
-        
-        
-        
-         <httpclient.version>4.4.1</httpclient.version>
+
+
+
+
+        <httpclient.version>4.4.1</httpclient.version>
         <fluent-hc.version>4.4.1</fluent-hc.version>
         <httpasyncclient.version>4.1</httpasyncclient.version>
 
@@ -52,13 +52,12 @@
 
         <itucana.version>0.0.1</itucana.version>
         <jade.version>5.1.48</jade.version>
-
         <oldpyxis.version>1-22-25</oldpyxis.version>
         <pyxis.version>1.23.0-SNAPSHOT</pyxis.version>
 
         <!-- CONTINUOUS INTEGRATION -->
         <ci.url>http://ci-devtools.ju.globaz.ch:8080/jenkins</ci.url>
-        
+
     </properties>
 
     <modules>
@@ -559,8 +558,8 @@
         <plugins>
             <!-- Temporary fix for https://issues.apache.org/jira/browse/MRELEASE-926 -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${javadoc.version}</version>
                 <reportSets>
                     <reportSet>
                         <id>default</id>
