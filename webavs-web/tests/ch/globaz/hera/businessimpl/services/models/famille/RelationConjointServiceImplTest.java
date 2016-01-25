@@ -66,6 +66,7 @@ public class RelationConjointServiceImplTest {
     }
 
     // @Ignore("A executer avec jade")
+    @Ignore
     @Before
     public void launchFramework() throws Exception {
         BSession session = SessionForTestBuilder.getSession(REApplication.DEFAULT_APPLICATION_CORVUS, "ccjuglo",
