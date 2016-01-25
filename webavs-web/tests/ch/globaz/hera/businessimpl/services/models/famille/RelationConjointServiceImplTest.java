@@ -9,7 +9,6 @@ import globaz.jade.context.JadeThreadActivator;
 import globaz.utils.SessionForTestBuilder;
 import java.util.Date;
 import junit.framework.Assert;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import ch.globaz.hera.business.exceptions.models.RelationConjointException;
@@ -66,8 +65,8 @@ public class RelationConjointServiceImplTest {
     }
 
     // @Ignore("A executer avec jade")
-    @Ignore
-    @Before
+    // @Ignore
+    // @Before
     public void launchFramework() throws Exception {
         BSession session = SessionForTestBuilder.getSession(REApplication.DEFAULT_APPLICATION_CORVUS, "ccjuglo",
                 "glob4az");

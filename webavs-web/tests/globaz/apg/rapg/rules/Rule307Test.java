@@ -3,10 +3,12 @@ package globaz.apg.rapg.rules;
 import globaz.apg.pojo.APChampsAnnonce;
 import java.math.BigDecimal;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class Rule307Test {
 
+    @Ignore
     @Test
     public void testCheck() throws Exception {
         Rule307 rule = new Rule307("307");
