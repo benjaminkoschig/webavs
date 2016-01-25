@@ -5,6 +5,7 @@
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/resources"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/properties"/>
         <property name="java-output-path" value="/webavs-web/target/classes"/>
         <property name="component.exclusion.patterns" value="**/properties/**"/>
         <property name="context-root" value="/webavs"/>
