@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.auriga.business.models.ComplexEnfantDecisionCapWidget">
+		<root-model name="personneEtendue"
+			model-ref="ch.globaz.pyxis.business.model.PersonneEtendueSimpleModel" />
+		<linked-model name="personne"
+			model-ref="ch.globaz.pyxis.business.model.PersonneSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="personneEtendue.idTiers" />
+			</join-group>
+		</linked-model>
+		<linked-model name="tiers"
+			model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="personneEtendue.idTiers" />
+			</join-group>
+		</linked-model>
+		<linked-model name="compositionTiers"
+			model-ref="ch.globaz.pyxis.business.model.CompositionTiersSimpleModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idTiersEnfant" field-ref="personneEtendue.idTiers" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdTiersParent" field-ref="compositionTiers.idTiersParent" operation="EQUALS" />
+				<search-field name="forTypeCompositionTiers" field-ref="compositionTiers.typeLien" operation="EQUALS" />
+				<search-field name="forDesignation1Like" field-ref="tiers.designationUpper1" operation="LIKE" />
+				<search-field name="forDesignation2Like" field-ref="tiers.designationUpper2" operation="LIKE" />
+				<search-field name="forNumeroAvsActuel" field-ref="personneEtendue.numAvsActuel" operation="LIKE" />
+		   </search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

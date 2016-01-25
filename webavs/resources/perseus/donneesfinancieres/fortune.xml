@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.donneesfinancieres.Fortune" extend="ch.globaz.perseus.business.models.donneesfinancieres.DonneeFinanciere">
+		<linked-model name="simpleDonneeFinanciereSpecialisation" model-ref="ch.globaz.perseus.business.models.donneesfinancieres.SimpleDonneeFinanciereSpecialisation" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciere" operation="EQUALS" field-ref="simpleDonneeFinanciere.idDonneeFinanciere"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDonneeFinanciere.idDemande"/>
+				<search-field name="forIdMembreFamille" operation="EQUALS" field-ref="simpleDonneeFinanciere.idMembreFamille"/>
+				<search-field name="forCsCaisse" operation="EQUALS" field-ref="demande.simpleDemande.csCaisse"/>
+				<search-field name="inType" operation="IN" field-ref="simpleDonneeFinanciere.type"/>
+				<search-field name="betweenDateCessionDebut" operation="GREATER_OR_EQUALS" field-ref="simpleDonneeFinanciereSpecialisation.dateCession"/>
+				<search-field name="betweenDateCessionFin" operation="LESS" field-ref="simpleDonneeFinanciereSpecialisation.dateCession"/>
+				<search-field name="betweenDateFinDebut" operation="GREATER_OR_EQUALS" field-ref="simpleDonneeFinanciereSpecialisation.dateFin"/>
+				<search-field name="betweenDateFinFin" operation="LESS_OR_EQUALS" field-ref="simpleDonneeFinanciereSpecialisation.dateFin"/>
+			</search-group>
+		</search-definition>
+	
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.decision.DecisionMotif">
+		<root-model name="simpleDecisionMotif" model-ref="ch.globaz.perseus.business.models.decision.SimpleDecisionMotif"/>
+				
+		<linked-model name="simpleDecision" model-ref="ch.globaz.perseus.business.models.decision.SimpleDecision" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDecision" operation="EQUALS" field-ref="simpleDecision.idDecision"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdMotif" operation="EQUALS" field-ref="simpleMotif.idMotif"/>
+				<search-field name="forIdDecision" operation="EQUALS" field-ref="simpleDecision.idDecision"/>
+			</search-group>
+		</search-definition>
+
+	</complexe-model>
+</model-mapping>

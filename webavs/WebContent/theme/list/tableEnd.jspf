@@ -1,0 +1,40 @@
+	</TBODY>
+</TABLE>
+<%=(autoShowErrorPopup || !vBeanHasErrors) ? "" : "[ <a id=\"showErrorLink\" href=\"javascript:showErrors();\">visualiser les erreurs</a> ]"%>
+<table width="100%" cellspacing="0">
+<tr><td bgcolor="#444444"></td></tr>
+<tr><td bgcolor="#888888"></td></tr>
+<tr><td bgcolor="#aaaaaa"></td></tr>
+<tr><td bgcolor="#cccccc"></td></tr>
+<tr><td bgcolor="#dddddd"></td></tr>
+<tr><td bgcolor="#eeeeee"></td></tr>
+</table>
+<%if (wantPagination) {%>
+	<%if (viewBean.canDoPrev()) {%>
+	<input  style=" font-size :7pt;" type="button" value="&lt;&lt;" accesskey="," onclick="this.disabled=true;location.href='<%=findPreviousLink%>'"  >
+	<% } else {%>
+	<input  style=" font-size :7pt;" type="button" value="&lt;&lt;" disabled >
+	<%}%>
+	<%if (viewBean.canDoNext()) {%>
+	<input style=" font-size :7pt;" type="button" value="&gt;&gt;" accesskey="." onclick="this.disabled=true;location.href='<%=findNextLink%>'"  >
+	<%} else {%>
+	<input style=" font-size :7pt;" type="button" value="&gt;&gt;" disabled >
+	<%}%>
+<%}%>
+<%if (wantPaginationPosition) {%>
+	<%=viewBean.getOffset()+" - "+(viewBean.getOffset()+viewBean.size()-1)+" / "+viewBean.getCount()%>
+<%}%>
+<form>
+	<input type="hidden" id="selectedId" name="selectedId" value="" />
+</form>
+				<% if (vBeanHasErrors) {%>
+					<script>
+						errorObj.text = "<%=globaz.framework.util.FWTextFormatter.slash(globaz.framework.util.FWTextFormatter.newLineToBr(viewBean.getMessage()), '\"')%>";
+						<%
+							viewBean.setMessage("");
+							viewBean.setMsgType(globaz.framework.bean.FWViewBeanInterface.OK);
+						%>
+					</script>
+				<% } %>
+</BODY>
+</HTML>

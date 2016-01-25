@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.controleurEnvoi.SimpleControleurJob">
+		<description>Donneees du controleur des envois/jobs</description>
+		<table name="MACTLJOB" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idJob" column="IDJOB" comment="Clef primaire Controleur Envoi"/>
+			<field name="descriptionJob" column="DESCR" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="DESCRIPTION_JOB"/>
+			<field name="typeJob" column="CSECTL" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="TYPE_ENVOI_JOB"/>
+			<field name="subTypeJob" column="CSSUB" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="SUBTYPE_ENVOI_JOB"/>
+			<field name="dateJob" column="DAAVTA" type="DATE" mandatory="false" comment="DATE_DU_JOB"/>
+			<field name="statusEnvoi" column="CSESTS" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="STATUS_ENVOI_JOB"/>
+			<field name="userJob" column="USER" type="STRING" dataType="VARCHAR(64)" mandatory="false" comment="USER_JOB"/>
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdJob" field-ref="idJob" operation="EQUALS"/>
+				<search-field name="forTypeJob" field-ref="typeJob" operation="EQUALS"/>
+				<search-field name="forSubTypeJob" field-ref="subTypeJob" operation="EQUALS"/>
+				<search-field name="forDateJob" field-ref="dateJob" operation="EQUALS"/>
+				<search-field name="forDateMin" field-ref="dateJob" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forDateMax" field-ref="dateJob" operation="LESS_OR_EQUALS"/>
+				<search-field name="forStatusEnvoi" field-ref="statusEnvoi" operation="EQUALS"/>
+				<search-field name="forNotStatusEnvoi" field-ref="statusEnvoi" operation="NOT_EQUALS"/>
+				<search-field name="forUserJob" field-ref="userJob" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="dateJob" order="DESC"/>
+			<order-field field-ref="subTypeJob"/>
+			<order-field field-ref="idJob" order="DESC"/>
+		</order-by>
+		
+		<!-- INDEX CREATION : CREATE INDEX MAENVCT1 on MAENVCTL (IDENVCTL); -->
+		
+	</simple-model>
+</model-mapping>

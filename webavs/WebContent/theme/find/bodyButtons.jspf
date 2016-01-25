@@ -1,0 +1,23 @@
+						<TR>
+							<TD height="20">
+								<INPUT type="hidden" name="userAction" value="">
+								<INPUT type="hidden" name="_sl" value="">
+								<INPUT type="hidden" name="_method" value="">
+								<INPUT type="hidden" name="_valid" value="">
+								<INPUT type="hidden" name="colonneSelection" value="<%=request.getParameter("colonneSelection")%>">
+							</TD>
+						</TR>
+					</TBODY>
+				</TABLE>
+			</TD>
+		</TR>
+		<TR>
+			<TD bgcolor="#FFFFFF" colspan="2" align="right">
+				<%if (bShowExportButton) {%>
+					<INPUT type="button" name="btnExport" value="<%=btnExportLabel%>" onClick="onExport();">
+				<%}%>
+				<%if (bButtonFind) {%>
+					<INPUT type="submit" name="btnFind" value="<%=btnFindLabel%>">
+				<%} if (bButtonNew) {%>
+					<INPUT type="button" name="btnNew" value="<%=btnNewLabel%>" onClick="onClickNew();btnNew.onclick='';document.location.href='<%=actionNew%>'">
+				<%}%>

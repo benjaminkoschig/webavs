@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--Jade: proprietes generales du systeme-->
+<Jade>
+	<!--homeDir: repertoire de base de l'application, necessaire pour trouver les fichiers de l'application-->
+	<homeDir>D:\workspaces\avs\trunk\webavs\WebContent</homeDir>
+	<!--persistenceDir: repertoire pour la persistance interne, si vide: homeDir + /persistence-->
+	<persistenceDir></persistenceDir>
+	<!--logDir: repertoire pour les fichiers LOG de l'application, si vide: homeDir + /logs-->
+	<logDir></logDir>
+	<!--rootUrl: URL pour acceder a la WebApp, inutile si l'application Web n'est pas deployee-->
+	<rootUrl>localhost:8080/webavs</rootUrl>
+
+	<!--defaultJdbcUrl: url JDBC par defaut-->
+	<!-- DRIVER DB2 -->
+	<!--<defaultJdbcUrl>jdbc:jade:GLOBAZ_DATASOURCE_400</defaultJdbcUrl> -->
+	<!-- <defaultJdbcUrl>jdbc:jade:GLOBAZ_DATASOURCE_DB2</defaultJdbcUrl> -->
+	<!-- DRIVER AS400
+	<defaultJdbcUrl>jdbc:jade:GLOBAZ_DATASOURCE_400</defaultJdbcUrl>-->
+
+
+<!-- BASES DE DEVELOPPEMENT -->
+
+	<!-- 	<defaultJdbcUrl>jdbc:jade:AMAL_DEV</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
+	
+	<!-- 	<defaultJdbcUrl>jdbc:jade:CCVD_DEV</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CCVDDEV</defaultJdbcSchema> -->
+	
+<!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_DEV</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
+	
+<!-- 		<defaultJdbcUrl>jdbc:jade:CICICAM_DEV</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>CICIWEB</defaultJdbcSchema> -->
+	
+	<!-- 	<defaultJdbcUrl>jdbc:jade:FERCIAM_DEV</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>WEBAVSCIAM</defaultJdbcSchema> -->
+	
+	<!-- 	<defaultJdbcUrl>jdbc:jade:H51X_DEV</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
+	
+ 	<defaultJdbcUrl>jdbc:jade:DEV2PROD</defaultJdbcUrl>  
+ 	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> 	 
+<!-- BASES DE QUALITE -->
+
+<!-- 	<defaultJdbcUrl>jdbc:jade:FVE_QUALITE</defaultJdbcUrl> -->
+<!-- 	<defaultJdbcSchema>FVEQUA</defaultJdbcSchema> -->
+	
+<!-- 	<defaultJdbcUrl>jdbc:jade:CCB_QUALITE</defaultJdbcUrl> -->
+<!-- 	<defaultJdbcSchema>CCBQUA</defaultJdbcSchema> -->
+
+<!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_QA</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>CCVDQUA</defaultJdbcSchema> -->
+	
+<!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>RT_AGLA</defaultJdbcSchema> -->
+	
+<!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>PC_CCVD</defaultJdbcSchema> -->
+	
+<!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>	 -->
+
+<!-- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
+
+<!-- 	 	<defaultJdbcUrl>jdbc:jade:CCJU_PC_RFM_QUALITE_1_6</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
+	
+<!-- 		<defaultJdbcUrl>jdbc:jade:CICICAM_QUALITE</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>CICIWEB</defaultJdbcSchema> -->
+		
+<!-- 		 	<defaultJdbcUrl>jdbc:jade:CCVS_QUALITE</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>DB2COTT</defaultJdbcSchema> -->
+		
+	<!-- 	<defaultJdbcUrl>jdbc:jade:CVCI_QUALTIE</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CVCIWEB</defaultJdbcSchema> -->
+	
+<!-- 		<defaultJdbcUrl>jdbc:jade:FERCIAM_QUA</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>WEBAVSCIAM</defaultJdbcSchema> -->
+	
+<!-- 		<defaultJdbcUrl>jdbc:jade:FPV_QUALITE</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>WEBAVSS</defaultJdbcSchema> -->
+		
+<!-- 		<defaultJdbcUrl>jdbc:jade:FVE_INT</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>WEBAVS</defaultJdbcSchema> -->
+		
+	
+
+	
+	<!-- 	<defaultJdbcUrl>jdbc:jade:MEROBA_QUALITE</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>MEROWEB</defaultJdbcSchema> -->
+
+
+<!-- BASES DE REPRISES -->
+
+	<!-- 	<defaultJdbcUrl>jdbc:jade:REPRISE_PC</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
+	
+<!-- 			<defaultJdbcUrl>jdbc:jade:REP5PRO2</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>CVCIWEB</defaultJdbcSchema> -->
+
+
+<!-- BASES INTEGRATION -->
+
+<!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_INT_TEST_GLOBAZ</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>CCVDINT</defaultJdbcSchema> -->
+	
+<!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_INTEGRATION_TEST</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
+	
+	<!-- 	<defaultJdbcUrl>jdbc:jade:CCJU_INTEGRATION_2</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->	
+	
+	<!-- 	<defaultJdbcUrl>jdbc:jade:CCJU_INTEGRATION_3</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
+	
+	<!-- 	<defaultJdbcUrl>jdbc:jade:CICICAM_INTEGRATION</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CICIWEB</defaultJdbcSchema> -->
+	
+	<!-- 	<defaultJdbcUrl>jdbc:jade:CVCI_INTEGRATION</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CVCIWEB</defaultJdbcSchema> -->
+	
+	<!-- 	<defaultJdbcUrl>jdbc:jade:H51_4_INTEGRATION</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>H514WEB</defaultJdbcSchema> -->
+	
+	<!-- 	<defaultJdbcUrl>jdbc:jade:MEROBA_INTEGRATION_RENTES</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>MEROWEB</defaultJdbcSchema> -->
+	
+	<!-- 	<defaultJdbcUrl>jdbc:jade:MEROBA_INTEGRATION_2</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>MEROWEB</defaultJdbcSchema> -->
+<!-- 	<defaultJdbcUrl>jdbc:jade:REPRISE_CCVD_400</defaultJdbcUrl> -->
+<!-- 	<defaultJdbcSchema>RT_CCVD</defaultJdbcSchema> -->
+
+	<!--defaultJdbcTablePrefix: prefixe des tables JDBC par defaut-->
+	<defaultJdbcTablePrefix></defaultJdbcTablePrefix>
+	<!--  defaultJdbcProcessTransactionIsolation: niveau d'isolation des transactions pour les traitements-->
+	<!--               (NONE, READ_UNCOMMITTED, READ_COMMITTED, REPEATABLE_READ, SERIALIZABLE)-->
+	<!--               (par defaut: READ_COMMITTED)-->
+	<defaultJdbcProcessTransactionIsolation>READ_COMMITTED</defaultJdbcProcessTransactionIsolation>
+	<!--jdbcIncrementationTransaction: type de transaction pour incrementer les compteurs (SHARED,OWN)-->
+	<!--                               (par defaut: SHARED)-->
+	<jdbcIncrementationTransaction>OWN</jdbcIncrementationTransaction>
+	<!--jdbcIncrementationProcedureName: nom de la procedure stockee pour incrementer les compteurs-->
+	<jdbcIncrementationProcedureName></jdbcIncrementationProcedureName>
+	<!--rmiPort: port RMI ou le systeme va s'enregistrer, mettre a 0 si l'application Web n'est pas deployee-->
+	<rmiPort>0</rmiPort>
+	<!--systemId: id du systeme (declare dans le registre RMI)-->
+	<systemId>GLOBAZ</systemId>
+	<!--systemName: nom du systeme-->
+	<systemName>GLOBAZ e-Business System</systemName>
+	<!--userCreationAllowed: creation d'utilisateurs anonymes autorisee ? (TRUE,FALSE)-->
+	<!--                     (par defaut: FALSE)-->
+	<userCreationAllowed>FALSE</userCreationAllowed>
+	<!--securityGuestGroup: groupe dans lequel mettre les utilisateurs anonymes ("guests")-->
+	<securityGuestGroup>gGuests</securityGuestGroup>
+	<!--languagePath: determine si le chemin des JSP contient la langue (/FR, /DE) ou non (TRUE, FALSE)-->
+	<!--              (par defaut: FALSE)-->
+	<languagePath>true</languagePath>
+	<!--externalHelpProvider: fournisseur du systeme d'aide externe (seul fournisseur accepte: myTeacherLx)-->
+	<externalHelpProvider>myTeacherLx</externalHelpProvider>
+	<!--externalHelpUrl: URL du systeme d'aide externe (remplacer le 20.09.2013 pour aller sur inforom)-->
+	<externalHelpUrl>https://extranet.inforom.ch</externalHelpUrl>
+	<!--<externalHelpUrl>http://localhost:8080/webavs/fx?userAction=framework.dump.cookies</externalHelpUrl>-->
+	<!--externalHelpGlobazApplicationId: ID application de l'application GLOBAZ dans le systeme d'aide externe-->
+	<externalHelpGlobazApplicationId>ABC</externalHelpGlobazApplicationId>
+	<!--externalHelpGlobazClientId: ID du client dans le systeme d'aide externe-->
+	<externalHelpGlobazClientId>Globaz</externalHelpGlobazClientId>
+	<!--externalHelpGlobazUserID: ID d'utilisateur force dans le systeme d'aide externe, si necessaire-->
+	<externalHelpGlobazUserId>AVS1</externalHelpGlobazUserId>
+	<!--shareDir: répertoire de partage pour l'upload de fichier par le client-->
+	<sharedDir>d:\Temp</sharedDir>
+	<!-- Emplacement de la documentation webavs (AQ) -->
+	<documentationUrl>http://docavsaq.ju.globaz.ch/</documentationUrl>
+	<application.properties.in.db>true</application.properties.in.db>
+</Jade>

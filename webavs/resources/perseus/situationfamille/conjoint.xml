@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.situationfamille.Conjoint">
+		<root-model name="simpleConjoint" model-ref="ch.globaz.perseus.business.models.situationfamille.SimpleConjoint"/>
+		<linked-model name="membreFamille" model-ref="ch.globaz.perseus.business.models.situationfamille.MembreFamille" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleMembreFamille.idMembreFamille" operation="EQUALS" field-ref="simpleConjoint.idMembreFamille"/>
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdConjoint" operation="EQUALS" field-ref="simpleConjoint.idConjoint"/>
+				<search-field name="forIdMembreFamille" operation="EQUALS" field-ref="membreFamille.simpleMembreFamille.idMembreFamille"/>
+				<search-field name="forIdTiers" operation="EQUALS" field-ref="membreFamille.personneEtendue.tiers.idTiers"/>
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

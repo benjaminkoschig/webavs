@@ -1,0 +1,21 @@
+	<%if (viewBean.isModifiable()) {%>
+		<ct:menuActivateNode active="yes" nodeId="pcCalculerDroit" menuId="pegasus-optionsdroits"/>
+	<%} else {%>
+		<ct:menuActivateNode active="no" nodeId="pcCalculerDroit" menuId="pegasus-optionsdroits"/>
+	<%}%> 
+<ct:menuChange displayId="menu" menuId="pegasus-menuprincipal" showTab="options"/>
+<ct:menuChange displayId="options" menuId="pegasus-optionsdroits">
+	<ct:menuSetAllParams key="selectedId" value="<%=viewBean.getDroit().getId()%>"/>
+	<ct:menuSetAllParams key="idDemandePc" value="<%=viewBean.getDroit().getSimpleDroit().getIdDemandePC()%>"/>
+	<ct:menuSetAllParams key="idDroit" value="<%=viewBean.getDroit().getId()%>"/>
+	<ct:menuSetAllParams key="noVersion" value="<%=viewBean.getNoVersion()%>"/>
+	<ct:menuSetAllParams key="idDossier" value="<%=viewBean.getIdDossier()%>"/>	
+	<ct:menuSetAllParams key="idVersionDroit" value="<%=viewBean.getDroit().getSimpleVersionDroit().getIdVersionDroit()%>"/>
+</ct:menuChange>
+
+
+<%@ include file="/pegasusRoot/ajax/javascriptsAndCSS.jspf" %>
+<link rel="stylesheet" type="text/css" href="<%=servletContext+(mainServletPath+"Root")%>/css/droit/droit.css"/>
+<script type="text/javascript" src="<%=servletContext+(mainServletPath+"Root")%>/scripts/droit/DonneeFinanciere_MembrePart.js"/></script>
+
+<ct:serializeObject variableName="droit" objectName="viewBean.droit" destination="javascript"/>

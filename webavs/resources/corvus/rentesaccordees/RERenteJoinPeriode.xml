@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.corvus.business.models.rentesaccordees.RERenteJoinPeriode">
+		<select-fields distinct="true">
+			<select-field name="idTiers" field-ref="tiers.idTiers" />
+			<select-field name="nom" field-ref="tiers.designation1" />
+			<select-field name="prenom" field-ref="tiers.designation2" />
+			<select-field name="idPays" field-ref="tiers.idPays" />
+			<select-field name="dateNaissance" field-ref="personne.dateNaissance" />
+			<select-field name="dateDeces" field-ref="personne.dateDeces" />
+			<select-field name="csSexe" field-ref="personne.sexe" />
+			<select-field name="idPrestationAccordee" field-ref="prestationAccordee.idPrestationAccordee" />
+			<select-field name="codePrestation" field-ref="prestationAccordee.codePrestation" />
+			<select-field name="montant" field-ref="prestationAccordee.montantPrestation" />
+			<select-field name="idPeriode" field-ref="periode.idPeriode" />
+			<select-field name="csTypePeriode" field-ref="periode.type" />
+			<select-field name="dateDebutPeriode" field-ref="periode.dateDebut" />
+			<select-field name="dateFinPeriode" field-ref="periode.dateFin" />
+			<select-field name="codeCasSpeciaux1" field-ref="renteAccordee.codeCasSpeciaux1" />
+			<select-field name="codeCasSpeciaux2" field-ref="renteAccordee.codeCasSpeciaux2" />
+			<select-field name="codeCasSpeciaux3" field-ref="renteAccordee.codeCasSpeciaux3" />
+			<select-field name="codeCasSpeciaux4" field-ref="renteAccordee.codeCasSpeciaux4" />
+			<select-field name="codeCasSpeciaux5" field-ref="renteAccordee.codeCasSpeciaux5" />
+			<select-field name="isPrestationBloquee" field-ref="prestationAccordee._isPrestationBloquee" />
+			<select-field name="idEnteteBlocage" field-ref="prestationAccordee.idEnteteBlocage" />
+			<select-field name="dateEcheance" field-ref="prestationAccordee.dateEcheance" />
+		</select-fields>
+		<root-model name="prestationAccordee" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" select-fields="false" />
+		<linked-model join-type="INNER" name="membreFamille" model-ref="ch.globaz.hera.business.models.famille.SimpleMembreFamille"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="prestationAccordee.idTiersBeneficiaire" />
+			</join-group>
+		</linked-model>
+		<linked-model join-type="LEFT_OUTER" name="periode" model-ref="ch.globaz.hera.business.models.famille.SimplePeriode"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idMembreFamille" operation="EQUALS" field-ref="membreFamille.idMembreFamille" />
+				<join-field name="type" operation="EQUALS" value="36002008" />
+			</join-group>
+		</linked-model>
+		<linked-model join-type="INNER" name="tiers" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="prestationAccordee.idTiersBeneficiaire" />
+			</join-group>
+		</linked-model>
+		<linked-model join-type="INNER" name="personne" model-ref="ch.globaz.pyxis.business.model.PersonneSimpleModel"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="tiers.idTiers" />
+			</join-group>
+		</linked-model>
+		<linked-model join-type="INNER" name="renteAccordee" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimpleRenteAccordee" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idRenteAccordee" operation="EQUALS" field-ref="prestationAccordee.idPrestationAccordee" />
+			</join-group>
+		</linked-model>
+		<search-definition name="listerRentePourEnfantFinissantDansMois">
+			<search-group operator="AND">
+				<search-field name="forCodePrestationIn" operation="IN" field-ref="prestationAccordee.codePrestation" />
+				<search-field name="forDateNaissanceAnterieureOuEgaleA" operation="GREATER" field-ref="personne.dateNaissance" />
+				<search-field name="forDateNaissanceUlterieureOuEgaleA" operation="LESS_OR_EQUALS" field-ref="personne.dateNaissance" />
+				<search-group operator="OR">
+					<search-field name="forPrestationEnCoursDansMois" operation="GREATER" field-ref="prestationAccordee.dateFinDroit" />
+					<search-field name="listerRentePourEnfantFinissantDansMois" operation="NULL" field-ref="prestationAccordee.dateFinDroit" />
+				</search-group>
+				<search-group operator="OR">
+					<search-field name="forCsTypePeriodeIn" operation="IN" field-ref="periode.type" />
+					<search-field name="forCsTypePeriodeIsNull" operation="NULL" field-ref="periode.type" />
+				</search-group>
+				<search-field name="forCsEtatRenteAccordeeIn" operation="IN" field-ref="prestationAccordee.csEtat" />
+			</search-group>
+		</search-definition>
+		<order-by>
+			<order-field field-ref="nom" />
+			<order-field field-ref="prenom" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

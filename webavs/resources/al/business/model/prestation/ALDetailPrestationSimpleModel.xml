@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.prestation.DetailPrestationModel">
+		<description>représente une en-tête de prestation </description>
+		<table name="ALDETPRE" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDetailPrestation" column="NID" comment="ID de Detail Prestation "/>
+			<field name="idEntete" column="MID" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID (FK) de la table EntetePrestation"/>
+			<field name="idTiersBeneficiaire" column="HTITIE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="ID (FK) du tiers bénéficiaire"/>
+			<field name="idDroit" column="FID" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID (FK) de la table Droit"/>
+			<field name="typePrestation" column="CSTYPE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="type de prestation (ENF, FORM, ...), code système"/>
+			<field name="categorieTarif" column="CSCATA" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Catégorie de tarif (code système)"/>
+			<field name="tarifForce" column="NTFORC" type="BOOLEAN" mandatory="true" comment="Indique si le tarif de la prestation est un tarif forcé" />
+			<field name="periodeValidite" column="NVALID" type="MONTH_YEAR" mandatory="true" comment="Mois et année de validité de la prestation"/>
+			<field name="montant" column="NMONT" type="NUMERIC" dataType="NUMERIC(8,2)" mandatory="true" comment="Montant de la prestation versée à l'allocataire"/>
+			<field name="montantCanton" column="NMOCAN" type="NUMERIC" dataType="NUMERIC(8,2)" mandatory="false" comment="Montant cantonal" />
+			<field name="categorieTarifCanton" column="CSTCAN" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Catégorie de tarif pour le montant cantonal (code système)"/>
+			<field name="montantCaisse" column="NMOCAI" type="NUMERIC" dataType="NUMERIC(8,2)" mandatory="false" comment="Montant de la caisse" />
+			<field name="categorieTarifCaisse" column="CSTCAI" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Catégorie de tarif pour le montant de la caisse (code système)"/>
+			<field name="numeroCompte" column="NUMCPT" type="STRING" dataType="VARCHAR(20)" mandatory="false" comment="Numéro de compte"/>
+			<field name="ageEnfant" column="NAGENF" type="NUMERIC" dataType="NUMERIC(2,0)" mandatory="false" comment="Age de l'enfant pour la période de la prestation"/>
+			<field name="rang" column="NRANG" type="NUMERIC" dataType="NUMERIC(2,0)" mandatory="true" comment="Rang de l'enfant au moment de la génération" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdEntetePrestation" field-ref="idEntete" operation="EQUALS"/>
+				<search-field name="forIdDetailPrestation" field-ref="idDetailPrestation" operation="EQUALS"/>
+				<search-field name="forIdDroit" field-ref="idDroit" operation="EQUALS"/>
+				<search-field name="forCategorieTarif" field-ref="categorieTarif" operation="EQUALS"/>
+				<search-field name="forPeriodeDebut" field-ref="periodeValidite" operation="GREATER_OR_EQUALS" />
+				<search-field name="forPeriodeFin" field-ref="periodeValidite" operation="LESS_OR_EQUALS" />
+			</search-group>
+		</search-definition>
+		<search-definition name="correctImport">
+			<search-group operator="AND">
+				<search-field name="inTypePrestation" field-ref="typePrestation" operation="IN"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="prestationBetween">
+			<search-group operator="AND">
+				<search-field name="forPeriodeDebut" field-ref="periodeValidite" operation="GREATER_OR_EQUALS" />
+				<search-field name="forPeriodeFin" field-ref="periodeValidite" operation="LESS_OR_EQUALS" />
+				<search-field name="forIdDroit" field-ref="idDroit" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<order-by name="correctImport">
+			<order-field field-ref="idDroit" order="ASC" />
+			<order-field field-ref="periodeValidite" order="DESC" />
+			<order-field field-ref="idDetailPrestation" order="DESC" />
+		</order-by>
+	</simple-model>
+</model-mapping>

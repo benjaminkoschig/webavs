@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus>
+
+	<!-- ************** -->
+	<!-- Menu Principal -->
+	<!-- ************** -->
+	<menu id="LE-MenuPrincipal">
+		<label defaultValue="Menu">
+			<language iso="de">Hauptmenü</language>
+		</label>
+		<nodes>
+			<node>
+				<label defaultValue="Envois">
+				<language iso="de">Versande</language>
+				</label>
+				<action command="/leo" responseTarget="fr_main">
+					<parameter name="userAction" value="leo.envoi.envoi.chercher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Etapes suivantes">
+				<language iso="de">Folgende Etappen</language>
+				</label>
+				<action command="/leo" responseTarget="fr_main">
+					<parameter name="userAction" value="leo.process.etapesSuivantes.afficherEtape" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Formules en attente">
+				<language iso="de">Erwartende Formeln</language>
+				</label>
+				<action command="/leo" responseTarget="fr_main">
+					<parameter name="userAction" value="leo.process.listeFormulesEnAttente.afficher" />
+				</action>
+			</node>			
+			<node open="yes">
+				<label defaultValue="Paramétrage">
+					<language iso="de">Formules</language>
+				</label>
+				<nodes>
+					<node>
+						<label defaultValue="Formules">
+						<language iso="de">Formules</language>
+						</label>
+						<action command="/leo" responseTarget="fr_main">
+							<parameter name="userAction" value="leo.parametrage.formule.chercher" />
+						</action>
+					</node>
+				</nodes>
+			</node>			
+		</nodes>
+	</menu>
+	
+	<!-- ***************************************** -->
+	<!-- Menu Option Detail étape              -->
+	<!-- ***************************************** -->
+	<menu id="LE-etapeDetail">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Reçu">
+				<language iso="de">Empfangen</language>
+				</label>
+				<action command="/leo" responseTarget="fr_main">
+					<parameter name="userAction" value="leo.envoi.envoi.afficherRecu" />
+					<parameter name="selectedId"/>
+					<parameter name="_method" value="add"/>
+					<parameter name="action" value="reçu"/>
+					<parameter name="forLibelle" />
+					<parameter name="forTypeDocument" />
+					<parameter name="forDate" />
+					<parameter name="forDateRappel" />
+					<parameter name="forDateReception" />
+					<parameter name="forUserName" />
+					<parameter name="typeProv1" />
+					<parameter name="valProv1" />
+					<parameter name="valInterProv1" />
+					<parameter name="typeInterProv1" />
+					<parameter name="typeProv2" />
+					<parameter name="valProv2" />
+					<parameter name="valInterProv2" />
+					<parameter name="typeInterProv2" />
+					<parameter name="typeProv3" />
+					<parameter name="valProv3" />
+					<parameter name="valInterProv3" />
+					<parameter name="typeInterProv3" />
+					<parameter name="typeProv4" />
+					<parameter name="valProv4" />
+					<parameter name="valInterProv4" />
+					<parameter name="typeInterProv4" />
+					<parameter name="goBack" />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>	
+			<node>
+				<label defaultValue="Etape suivante">
+				<language iso="de">Folgende Etappe</language>
+				</label>
+				<action command="/leo" responseTarget="fr_main">
+					<parameter name="userAction" value="leo.envoi.envoi.etapeSuivante" />
+					<parameter name="journalId"/>
+					<parameter name="forLibelle" />
+					<parameter name="forTypeDocument" />
+					<parameter name="forDate" />
+					<parameter name="forDateRappel" />
+					<parameter name="forDateReception" />
+					<parameter name="forUserName" />
+					<parameter name="typeProv1" />
+					<parameter name="valProv1" />
+					<parameter name="valInterProv1" />
+					<parameter name="typeInterProv1" />
+					<parameter name="typeProv2" />
+					<parameter name="valProv2" />
+					<parameter name="valInterProv2" />
+					<parameter name="typeInterProv2" />
+					<parameter name="typeProv3" />
+					<parameter name="valProv3" />
+					<parameter name="valInterProv3" />
+					<parameter name="typeInterProv3" />
+					<parameter name="typeProv4" />
+					<parameter name="valProv4" />
+					<parameter name="valInterProv4" />
+					<parameter name="typeInterProv4" />
+					<parameter name="goBack" />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>		
+		</nodes>
+	</menu>
+	
+	<!-- ************************** -->
+	<!-- Menu Option only detail    -->
+	<!-- ************************** -->
+	<menu id="LE-OnlyDetail">
+		<label defaultValue="Options">
+				<language iso="de">Optionen</language>
+		</label>
+	</menu>
+	
+	<!-- ***************************************** -->
+	<!-- Menu Option Detail étape              -->
+	<!-- ***************************************** -->
+	<menu id="LE-formuleDetail">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Détails">
+					<language iso="de">Détails</language>
+				</label>
+				<action command="/leo" responseTarget="fr_main">
+					<parameter name="userAction" value="leo.parametrage.formule.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>	
+			<node>
+				<label defaultValue="Rappel">
+					<language iso="de">Rappel</language>
+				</label>
+				<action command="/leo" responseTarget="fr_main">
+					<parameter name="userAction" value="leo.parametrage.rappel.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>	
+		</nodes>
+	</menu>
+	
+</menus>

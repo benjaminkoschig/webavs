@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.annonce.AnnonceLapramsDonneeFinanciere">
+	
+		<root-model name="simpleAnnonceLapramsDonneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+		
+		<linked-model name="annonceLaprams" model-ref="ch.globaz.pegasus.business.models.annonce.AnnonceLaprams" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleAnnonceLaprams.idAnnonceLAPRAMS" operation="EQUALS" field-ref="simpleAnnonceLapramsDonneeFinanciereHeader.idAnnonceLaprams"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDonneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleAnnonceLapramsDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forInIdAnnonceLaprams" operation="IN" field-ref="annonceLaprams.simpleAnnonceLaprams.idAnnonceLAPRAMS" />
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

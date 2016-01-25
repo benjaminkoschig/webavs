@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="perseus/pcfaccordee/simplePcfaccordee.xml"/>
+	<model-mapping import="perseus/pcfaccordee/pcfaccordee.xml"/>
+	<model-mapping import="perseus/pcfaccordee/simpleDetailsCalcul.xml"/>
+	<model-mapping import="perseus/pcfaccordee/pcfaccordeeForDetailsCalcul.xml"/>
+
+</model-mapping>

@@ -1,0 +1,19 @@
+package globaz.cfc.format;
+
+/**
+ * @author user
+ * 
+ *         To change this generated comment edit the template variable "typecomment": Window>Preferences>Java>Templates.
+ *         To enable and disable the creation of type comments go to Window>Preferences>Java>Code Generation.
+ */
+public class CSNumAffilie extends CFNumAvs {
+
+    /**
+     * @see globaz.globall.format.IFormatData#check(Object)
+     */
+    @Override
+    public String check(Object value) throws Exception {
+        return null;
+    }
+
+}

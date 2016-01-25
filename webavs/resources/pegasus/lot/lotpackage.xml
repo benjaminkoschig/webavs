@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<!-- modeles simple -->
+	<model-mapping import="pegasus/lot/simpleprestation.xml" />
+	<model-mapping import="pegasus/lot/simpleordreversement.xml" />
+	<!-- modeles complexes -->
+	<model-mapping import="pegasus/lot/prestation.xml" />
+	<model-mapping import="pegasus/lot/ordreversement.xml" />
+	<model-mapping import="pegasus/lot/comptabiliserLot.xml" />
+	<model-mapping import="pegasus/lot/ordreversementforlist.xml" />
+	<model-mapping import="pegasus/lot/ordreversementtiers.xml" />
+</model-mapping>

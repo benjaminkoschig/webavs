@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.revenusdepenses.SimpleTypeFraisObtentionRevenu">
+		<description>TYPE_FRAIS_OBTENTION_REVENU</description>
+		<table name="PCTFORE" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idFraisObtentionRevenu" column="CTIFOR" comment="ID_FRAIS_OBTENTION_REVENU"/>			
+			<field name="csFraisObtentionRevenu" mandatory="true" column="CTTFOR" type="NUMERIC" comment="CS_FRAIS_OBTENTION_REVENU"/>
+			<field name="idRevenuActiviteLucrativeDependante"  mandatory="true" column="CTIRAL" type="NUMERIC" comment="ID_REVENU_ACTIVITE_LUCRATIVE_DEPENDANTE"/>			
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdRevenuActiviteLucrativeDependante" operation="EQUALS" field-ref="idRevenuActiviteLucrativeDependante"/>
+				<search-field name="inIdRevenuActiviteLucrativeDependante" operation="IN" field-ref="idRevenuActiviteLucrativeDependante"/>
+			</search-group>
+		</search-definition>
+		
+	</simple-model>
+</model-mapping>

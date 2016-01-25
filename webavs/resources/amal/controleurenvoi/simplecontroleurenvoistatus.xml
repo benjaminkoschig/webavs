@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.controleurEnvoi.SimpleControleurEnvoiStatus">
+		<description>Données des status des envois/jobs</description>
+		<table name="MACTLSTS" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idStatus" column="IDSTS" comment="Clef primaire status Envoi"/>
+			<field name="idJob" column="IDJOB" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_JOB_EN_RELATION"/>
+			<field name="statusEnvoi" column="CSESTS" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="STATUS_ENVOI_JOB"/>
+			<field name="typeEnvoi" column="CSENV" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="TYPE_ENVOI_JOB"/>
+			<field name="idAnnonce" column="IDANCA" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_ANNONCE_CAISSE_EN_RELATION"/>
+			<field name="idEnvoi" column="IDENVD" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_ENVOI_EN_RELATION"/>
+			<field name="noGroupe" column="NOGROU" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="NUMERO_DE_GROUPE_ENVOI"/>
+			<field name="jobError" column="JOBERR" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="DESCRIPTION ERREUR JOB"/>
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forNoGroupe" field-ref="noGroupe" operation="EQUALS"/>
+				<search-field name="forIdStatus" field-ref="idStatus" operation="EQUALS"/>
+				<search-field name="forIdJob" field-ref="idJob" operation="EQUALS"/>
+				<search-field name="forTypeEnvoi" field-ref="typeEnvoi" operation="EQUALS"/>
+				<search-field name="forIdAnnonce" field-ref="idAnnonce" operation="EQUALS"/>
+				<search-field name="forIdEnvoi" field-ref="idEnvoi" operation="EQUALS"/>
+				<search-field name="forStatusEnvoi" field-ref="statusEnvoi" operation="EQUALS"/>
+				<search-field name="forNotStatusEnvoi" field-ref="statusEnvoi" operation="NOT_EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="idJob" order="DESC"/>
+		</order-by>
+		
+		<!-- INDEX CREATION : CREATE INDEX MACTLST1 on MACTLSTS (IDSTATUS); -->
+		
+	</simple-model>
+</model-mapping>

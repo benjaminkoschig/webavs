@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.rafam.ErreurAnnonceRafamModel">
+		<description>Modèle représentant une erreur liée à une annonce RAFam</description>
+		<table name="ALERANNO" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idErreurAnnonce" column="ERIDAN" comment="ID de l'erreur"/>
+			<field name="idAnnonce" column="ARIDAN" type="NUMERIC" dataType="NUMERIC(16,0)" mandatory="true" comment="ID de l'annonce à laquelle est liée l'erreur"/>
+			<field name="code" column="EREERR" type="NUMERIC" dataType="NUMERIC(3,0)" mandatory="false" comment="Code d'erreur généré par la centrale"/>
+		</fields>
+		
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdErreurAnnonce" field-ref="idErreurAnnonce" operation="EQUALS"/>
+				<search-field name="forIdAnnonce" field-ref="idAnnonce" operation="EQUALS"/>
+				<search-field name="forCode" field-ref="code" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="hasError">
+			<search-group operator="AND">
+				<search-field name="forIdAnnonce" field-ref="idAnnonce" operation="EQUALS"/>
+				<search-field name="forCode" field-ref="code" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="hasErrorOfOtherType">
+			<search-group operator="AND">
+				<search-field name="forIdAnnonce" field-ref="idAnnonce" operation="EQUALS"/>
+				<search-field name="forCode" field-ref="code" operation="NOT_EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

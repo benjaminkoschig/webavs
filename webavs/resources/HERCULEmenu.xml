@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<?xml-stylesheet type="text/xsl" href="menuHtml.xslt"?>
+<menus>
+	<!-- Menu principal -->
+	<menu id="CE-MenuPrincipal">
+		<label refId="MENU_PRINCIPAL" />
+		<nodes>
+			<node>
+				<label refId="MENU_CONTROLE_GESTION" />
+				<action command="/hercule" responseTarget="fr_main">
+					<parameter name="userAction" value="hercule.controleEmployeur.listeControleEmployeur.chercher" />
+				</action>
+			</node>
+			<node>
+			    <label refId="MENU_REVISEUR_SAISIE" />
+				<action command="/hercule" responseTarget="fr_main">
+				<parameter name="userAction" value="hercule.controleEmployeur.saisieMasseReviseur.afficher" />
+				</action>
+			</node>
+			<node>
+			    <label refId="MENU_COUVERTURES" />
+				<action command="/hercule" responseTarget="fr_main">
+				<parameter name="userAction" value="hercule.couverture.couvertureEcran.chercher" />
+				</action>
+			</node>
+			<node open="yes">
+				<label refId="MENU_EVALUATION" />
+				<nodes>
+					<node>
+						<label refId="MENU_CONTROLE_ATTRIBUTION_PTS_HISTORIQUE" />
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.controleEmployeur.gestionAttributionPts.chercher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label refId="MENU_REVISEUR" />
+				<nodes>
+					<node>
+						<label refId="MENU_REVISEUR" />
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.reviseur.chercher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_REVISEUR_A_BLANC" />
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.reviseur.reviseurABlanc.afficher" />
+						</action>
+					</node>	
+				</nodes>
+
+			</node>
+			<node open="no">
+				<label refId="MENU_GROUPE_AFFILIE" />
+				<nodes>
+					<node>
+						<label refId="MENU_GROUPE_AFFILIE" />
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.groupement.groupe.chercher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label refId="MENU_LISTES_MAIN" />
+				<nodes>
+					<node>
+						<label refId="MENU_CONTROLES_A_EFFECTUER" />
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.controleEmployeur.controlesAEffectuer.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_CONTROLES_ATTRIBUES" />
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.controleEmployeur.controlesAttribues.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_CONTROLES_PREVUS" />
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.controleEmployeur.controlesPrevus.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_CONTROLES_EFFECTUES" />
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.controleEmployeur.controlesEffectues.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_EMPLOYEUR_NON_REMISE_DS"/>
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.controleEmployeur.dsNonRemise.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_CONTROLES_5_POURCENT" />
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.controleEmployeur.controles5PourCent.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_EMPLOYEUR_MASSE_SALARIALE"/>
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.controleEmployeur.employeurMasseSalariale.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_EMPLOYEUR_CHANGEMENT_MASSE_SALARIALE"/>
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.controleEmployeur.employeurChangementMasseSalariale.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_EMPLOYEUR_SANS_PERSONNEL"/>
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.controleEmployeur.employeurSansPersonnel.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_EMPLOYEUR_RADIE"/>
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.controleEmployeur.employeurRadie.afficher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+
+			<node open="no">
+				<label refId="MENU_TRAITEMENTS" />
+				<nodes>
+					<node>
+						<label refId="MENU_RATTRAPAGE_ANNUEL" />
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.traitement.rattrapageAnnuel.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_REINJECTION" />
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.traitement.reinjection.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_RATTRAPAGE_NO_CONTROLE" />
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.traitement.rattrapageNum.afficher" />
+						</action>
+					</node>
+						<node>
+						<label refId="MENU_ATTRIBUTION_RISQUE" />
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.traitement.attributionRisque.afficher" />
+						</action>
+					</node>
+					
+				</nodes>
+			</node>
+			
+			<node open="no">
+				<label refId="MENU_DECLARATION_STRUCTUREES" />
+				<nodes>
+					<node>
+						<label refId="MENU_DS_DEBUT_SUIVI" />
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.declarationStructuree.generationSuivi.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_DS_SAISIE_MASSE_RECEPTION" />
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.declarationStructuree.saisieMasseReception.afficher" />
+							<parameter name="_method" value="upd" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node>
+				<label refId="MENU_STAT_OFAS" />
+				<action command="/hercule" responseTarget="fr_main">
+					<parameter name="userAction" value="hercule.statOfas.statOfas.afficher" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option des contrÃ´les d'employeurs -->
+	<menu id="CE-OptionsControlEmployeur">
+		<label refId="MENU_OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_DETAILS" />
+				<action command="/hercule" responseTarget="fr_main">
+					<parameter name="userAction" value="hercule.controleEmployeur.controleEmployeur.afficher" />
+					<parameter name="idTiersVueGlobale"/>
+					<parameter name="selectedId" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_IMPRIMER_RAPPORT" />
+				<action command="/hercule" responseTarget="fr_main">
+					<parameter name="userAction" value="hercule.controleEmployeur.controleEmployeur.imprimerControle" />
+					<parameter name="selectedId" />
+					<parameter name="idTiers" />
+					<parameter name="dateDebutControle" />
+					<parameter name="dateFinControle" />
+					<parameter name="dateEffective" />
+					<parameter name="visaReviseur" />
+					<parameter name="numAffilie" />
+					<parameter name="idAffiliation" />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_IMPRIMER_LIBRE" />
+				<action command="/hercule" responseTarget="fr_main">
+					<parameter name="userAction" value="hercule.controleEmployeur.lettreLibre.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idTiers" />
+					<parameter name="dateDebutControle" />
+					<parameter name="dateFinControle" />
+					<parameter name="dateEffective" />
+					<parameter name="visaReviseur" />
+					<parameter name="numAffilie" />
+					<parameter name="idAffiliation" />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_IMPRIMER_LIBRE_PAR_CATALOGUE" />
+				<action command="/hercule" responseTarget="fr_main">
+					<parameter name="userAction" value="hercule.controleEmployeur.lettreLibreCatalogue.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idTiers" />
+					<parameter name="dateDebutControle" />
+					<parameter name="dateFinControle" />
+					<parameter name="dateEffective" />
+					<parameter name="visaReviseur" />
+					<parameter name="numAffilie" />
+					<parameter name="idAffiliation" />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_LETTRE_PROCHAIN_CONTROLE" />
+				<action command="/hercule" responseTarget="fr_main">
+					<parameter name="userAction" value="hercule.controleEmployeur.controleEmployeur.lettreProchainControle" />
+					<parameter name="selectedId" />
+					<parameter name="idTiers" />
+					<parameter name="dateDebutControle" />
+					<parameter name="dateFinControle" />
+					<parameter name="dateEffective" />
+					<parameter name="visaReviseur" />
+					<parameter name="numAffilie" />
+					<parameter name="idAffiliation" />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_COMPTE_RENDU" />
+				<action command="/hercule" responseTarget="fr_main">
+					<parameter name="userAction" value="hercule.controleEmployeur.compteRendu.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idTiers" />
+					<parameter name="dateDebutControle" />
+					<parameter name="dateFinControle" />
+					<parameter name="dateEffective" />
+					<parameter name="visaReviseur" />
+					<parameter name="numAffilie" />
+					<parameter name="idAffiliation" />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>	
+			<node>
+				<label refId="OPTIONS_DELEGUER_TIERS" />
+				<action command="/hercule" responseTarget="fr_main">
+					<parameter name="userAction" value="hercule.controleEmployeur.deleguerTiers.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idTiers" />
+					<parameter name="dateDebutControle" />
+					<parameter name="dateFinControle" />
+					<parameter name="dateEffective" />
+					<parameter name="visaReviseur" />
+					<parameter name="numAffilie" />
+					<parameter name="idAffiliation" />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>			
+		</nodes>
+	</menu>
+
+	<!-- Menu Option des contrÃ´les d'employeurs attribution des points-->
+	<menu id="CE-OptionsControlEmployeurAttributionPts">
+		<label refId="MENU_OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_HISTORIQUE" />
+				<action command="/hercule" responseTarget="fr_main">
+					<parameter name="userAction" value="hercule.controleEmployeur.gestionAttributionPts.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="numAffilie" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Menu Option d'un groupe -->
+	<menu id="CE-OptionsGroupe">
+		<label refId="MENU_OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_MODIFICATION" />
+				<action command="/hercule" responseTarget="fr_main">
+					<parameter name="userAction" value="hercule.groupement.groupe.afficher" />
+					<parameter name="selectedId" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_LISTER" />
+				<action command="/hercule" responseTarget="fr_main">
+					<parameter name="userAction" value="hercule.groupement.membre.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="idGroupe" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option vide -->
+	<menu id="CE-OptionsDefaut">
+		<label refId="MENU_OPTIONS" />
+	</menu>
+
+</menus>

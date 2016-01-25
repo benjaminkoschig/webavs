@@ -1,0 +1,6 @@
+/* Set le texte en italic pour les pca non valide */
+.italForNonValid{
+	font-style:italic;
+	   opacity : 0.5;
+    filter : alpha(opacity=50); 
+}

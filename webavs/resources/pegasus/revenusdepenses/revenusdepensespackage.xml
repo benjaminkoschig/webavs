@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="pegasus/revenusdepenses/simpleallocationsfamiliales.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/simpleautresrevenus.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/simplecontratentretienviager.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/simplecotisationspsal.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/simplepensionalimentaire.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/simplerevenuactivitelucrativedependante.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/simplerevenuactivitelucrativeindependante.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/simplerevenuhypothetique.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/simpletypefraisobtentionrevenu.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/simplelibellecontratentretienviager.xml"/>
+	
+	<model-mapping import="pegasus/revenusdepenses/revenuactivitelucrativedependante.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/autresrevenus.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/contratentretienviager.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/cotisationspsal.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/pensionalimentaire.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/revenuactivitelucrativeindependante.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/revenuactivitelucrativeindependanteetendu.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/revenuhypothetique.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/allocationsfamiliales.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/allocationsfamilialesetendu.xml"/>
+	
+	<model-mapping import="pegasus/revenusdepenses/revenusdepenses.xml"/>	
+</model-mapping>

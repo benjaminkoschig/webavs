@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.osiris.business.model.OrganeExecutionSimpleModel">
+		<table name="CACPTAP" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="idOrganeExecution" column="IDORGANEEXECUTION" comment="Id du compte annexe" />
+			<field name="idRubrique" column="IDRUBRIQUE" type="NUMERIC" mandatory="true" comment="Id du tiers"/>
+			<field name="nom" column="NOM" type="STRING"  comment="Id du rôle"/>
+			<field name="idAdressePaiement" column="IDADRESSEPAIEMENT" type="NUMERIC"  comment=""/>
+			<field name="genre" column="GENRE" type="NUMERIC"  comment=""/>
+			<field name="idEntifiantDTA" column="IDENTIFIANTDTA" type="NUMERIC"  comment=""/>
+			<field name="idAdrdebtax" column="IDADRDEBTAX" type="NUMERIC"  comment=""/>
+			<field name="idTypeTaitementBV" column="IDTYPETRAITEMENTBV" type="NUMERIC"  comment=""/>
+			<field name="idTypeTaitementLS" column="IDTYPETRAITEMENTLS" type="NUMERIC"  comment=""/>
+			<field name="nomClasseParseBVR" column="NOMCLASSEPARSERBVR" type="STRING"  comment=""/>
+			<field name="noAdherentBVR" column="NOADHERENTBVR" type="STRING"  comment=""/>
+			<field name="nomClasseParserLSV" column="NOMCLASSEPARSERLSV" type="STRING"  comment=""/>
+			<field name="noAdherent" column="NOADHERENT" type="STRING"  comment=""/>
+			<field name="numInterneLSV" column="NUMINTERNELSV" type="STRING" dataType="6" comment=""/>
+			<field name="modeTransfert" column="MODETRANSFERT" type="NUMERIC"  comment=""/>
+		</fields>
+		</simple-model>
+</model-mapping>

@@ -1,0 +1,293 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="GENERATOR" content="IBM WebSphere Page Designer V4.0 for Windows">
+
+<LINK rel="stylesheet" type="text/css" href="theme/master.css">
+
+
+
+
+<script language="JavaScript1.2">
+<!--
+
+function setId(source, id) {
+  return source.replace(/-id-/g, id);
+}
+
+
+var theId = null;
+/***********
+ * AppMenu *
+ ***********/
+
+function displayMenu() {
+
+
+// Load XML
+
+
+var text = '<menu name="Principal" id="Principal" frame="null"><item name="Tiers" link="null" frame="null"><item name="Personne" link="/webavs/pyxis?userAction=pyxis.tiers.tiers.chercher" frame="fr_main"></item><item name="Banque" link="/webavs/pyxis?userAction=pyxis.tiers.banque.chercher" frame="fr_main"></item><item name="Administration" link="/webavs/pyxis?userAction=pyxis.tiers.administration.chercher" frame="fr_main"></item></item><item name="Adresses de courrier" link="null" frame="null"><item name="Localité" link="/webavs/pyxis?userAction=pyxis.adressecourrier.localite.chercher" frame="fr_main"></item><item name="Pays" link="/webavs/pyxis?userAction=pyxis.adressecourrier.pays.chercher" frame="fr_main"></item></item><item name="Divers" link="null" frame="null"><item name="Contact" link="/webavs/pyxis?userAction=pyxis.tiers.contact.chercher" frame="fr_main"></item><item name="Maintenance" link="/webavs/pyxis?userAction=pyxis.maintenance.maintenance.importer" frame="fr_main"></item><item name="adv rech" link="/webavs/pyxis?userAction=pyxis.alternate.tiersRecherche.chercher" frame="fr_main"></item></item></menu>';
+text = setId(text, theId);
+var xml = new ActiveXObject("Microsoft.XMLDOM");
+xml.async = false;
+xml.loadXML(text);
+XMLSort =xml.documentElement.selectNodes("//menu");
+XMLSort[0].attributes(1).text ="id_menu_general";
+//xml.load("menu.xml")
+
+// Load the XSL
+var xsl = new ActiveXObject("Microsoft.XMLDOM");
+xsl.async = false
+xsl.load("/xslt/menuHoriz.xslt");
+
+// Transform
+document.write(xml.transformNode(xsl));
+
+}
+
+/***********
+ * Options *
+ ***********/
+function displayOptions() {
+// Load XML
+
+
+var text = '<menu name="Options" id="Options" frame="null"></menu>';
+text = setId(text, theId);
+
+var xml = new ActiveXObject("Microsoft.XMLDOM");
+xml.async = false;
+xml.loadXML(text);
+//xml.load("menu.xml")
+
+// Load the XSL
+var xsl = new ActiveXObject("Microsoft.XMLDOM");
+xsl.async = false
+xsl.load("/webavs/xslt/menuHoriz.xslt");
+
+// Transform
+document.write(xml.transformNode(xsl));
+}
+
+
+function changeOver (elem) {
+              // elem.style.textDecoration = "underline";
+     elem.style.color = "white";
+
+}
+function changeOut (elem) {
+               //elem.style.textDecoration = "none";
+     elem.style.color = "silver";
+
+
+}
+
+
+//-->
+</script>
+<TITLE></TITLE>
+
+<script>
+  var FWPanelContainerTabs = new Array();
+  function FWPanelChangeTab (tabName) {
+
+     var tab = document.getElementById("FWPanelIDTab"+tabName);
+     var mainElemId = FWPanelContainerTabs[tabName];
+     var elem = document.getElementById("FWPanelIDPanel"+tabName);
+
+    if ((tab==null)||(mainElemId==null)||(elem==null)){
+       alert ("Error : FWPanelTag can't change to tab element : "+tabName);
+       return;
+     };
+     FWPanelDisplayPanel (mainElemId,elem.id,tab.id);
+  }
+  function FWPanelDisplayPanel (mainelemId,elemId,tabId) {
+
+    mainelem = document.getElementById(mainelemId);
+    if (mainelem == null) { alert('element for '+mainelemId+'not found');return;}
+    allDiv = mainelem.childNodes;
+    for (var i=0;i<allDiv.length;i++) {
+      if ((allDiv[i]!=null)
+          && (  (allDiv[i].className == 'FWPanelTagPanelStyle')||(allDiv[i].className == 'FWPanelTagFirstPanelStyle'))
+              ){
+
+          if (elemId != allDiv[i].id) {
+
+            allDiv[i].style.display ='none';
+          }else {
+
+            allDiv[i].style.display='block';
+
+          }
+      }
+    }
+
+    if (tabId != null) {
+      allSpan = mainelem.getElementsByTagName("span")[0].childNodes;
+
+
+      for (var i=0;i<allSpan.length;i++) {
+        if ((allSpan[i]!=null)
+            && ((allSpan[i].className == 'FWPanelTagHeaderStyle')||
+                (allSpan[i].className == 'FWPanelTagFirstHeaderStyle'))) {
+
+            if (tabId != allSpan[i].id) {
+              allSpan[i].style.borderBottomColor ='black'
+              allSpan[i].style.background ='silver'
+              allSpan[i].style.paddingTop ='0';
+             allSpan[i].bg ='silver';
+             allSpan[i].bgh ='#C3E4FB';
+            }else {
+              allSpan[i].style.borderBottomColor ='#e0e0e0';
+              allSpan[i].style.background ='#e0e0e0';
+              allSpan[i].style.paddingTop ='2';
+             allSpan[i].bg='#e0e0e0';
+             allSpan[i].bgh ='#e0e0e0';
+            }
+        }
+      }
+    }
+  }
+  function FWPanelFindHeaders(elemId) {
+
+
+   elem = document.getElementById(elemId);
+   if (elem == null) {
+      alert(elem+ "not found");
+      return;
+   }
+   var str ="";
+
+   for(var i=0;i<elem.childNodes.length;i++) {
+
+      if (elem.childNodes[i].tagName=="DIV") {
+
+        if ((elem.childNodes[i].className!=null)&&
+            ((elem.childNodes[i].className=="FWPanelTagPanelStyle")||
+             (elem.childNodes[i].className=="FWPanelTagFirstPanelStyle"))){
+
+              var value = elem.childNodes[i].getAttribute('value');
+              var text = elem.childNodes[i].getAttribute('text');
+
+              var headerClass = "FWPanelTagHeaderStyle";
+              var highlight= "onMouseOver='this.style.background=this.bgh' onMouseOut='this.style.background=this.bg'";
+
+              if ((elem.childNodes[i].getAttribute('defaultTab')!=null) &&(elem.childNodes[i].getAttribute('defaultTab').toUpperCase()=="YES")){
+                headerClass = "FWPanelTagFirstHeaderStyle";
+              }
+            str += "<span id='FWPanelIDTab"+value+"' class='"+headerClass+"' "+highlight+" onClick=\"document.getElementById('"+elemId+"CurrentTab').value='"+value+"';FWPanelDisplayPanel('"+elemId+"','FWPanelIDPanel"+value+"','FWPanelIDTab"+value+"')\"> <a style='text-decoration:none; color:black;' href='javascript:;'><b>"+text+"</b></a></span>"
+       FWPanelContainerTabs[value] = elemId;
+        }
+      }
+   }
+
+   return str;
+
+  }
+ function FWPanelInitHeader() {
+    elems = document.getElementsByTagName('span');
+
+    for (var i = 0;i<elems.length;i++) {
+        if ((elems[i].className!=null)&&(elems[i].className=="FWPanelTagFirstHeaderStyle")){
+            elems[i].bg="#e0e0e0";
+            elems[i].bgh="#e0e0e0";
+
+        }
+        if ((elems[i].className!=null)&&(elems[i].className=="FWPanelTagHeaderStyle")){
+              elems[i].bg="silver";
+              elems[i].bgh="#C3E4FB";
+
+        }
+
+    }
+
+  }
+</script>
+
+<style>
+
+  .FWPanelTagFirstPanelStyle {
+       display :  block;
+       z-index : 0 ;
+       padding :  2px 2px 2px 2px;
+       background : #e0e0e0;
+    height : 100%;
+  }
+
+ .FWPanelTagPanelStyle {
+    display :  none;
+    z-index : 0 ;
+    padding :  2px 2px 2px 2px;
+    background : #e0e0e0;
+    position : relative;
+    height : 100%;
+
+
+  }
+
+  .FWPanelTagFirstHeaderStyle {
+    position : relative;
+    z-index : 1 ;
+    border-right : solid 2px black;
+    border-top : solid 1px black;
+    border-left : solid 1px black;
+    border-bottom : solid 1px #e0e0e0;
+    padding-top : 2px;
+    padding-left : 10px;
+    padding-right : 10px;
+    margin-right :0px;
+    margin-left :0px;
+    cursor : hand;
+    text-decoration: none;
+    background : #e0e0e0;
+  }
+
+    .FWPanelTagHeaderStyle {
+      position : relative;
+      z-index : 1 ;
+      border-right : solid 2px black;
+      border-top : solid 1px black;
+      border-left : solid 1px black;
+      border-bottom : solid 1px black;
+      padding-top : 0px;
+      padding-left : 10px;
+      padding-right : 10px;
+      margin-right :0px;
+      margin-left :0px;
+
+
+      cursor : hand;
+      text-decoration: none;
+      background : silver;
+  }
+</style>
+
+</HEAD>
+<BODY  bgcolor="white" style="margin-right:0px;margin-top:3px;">
+<div id ='FWPanelTagMainDiv8' style='width:150;height:103'>
+<input type='hidden' id='FWPanelTagMainDiv8CurrentTab' name='FWPanelTagMainDiv8CurrentTab' value='' >
+<span id ='FWPanelTagHeaderDiv8'></span>
+
+  <div class='FWPanelTagFirstPanelStyle' style='border :solid 1px black;border-right : solid 2px black;border-bottom : solid 2px black;' id ='FWPanelIDPanelMenu' value='Menu' text='Menu' defaultTab='yes'  >
+    <div accesskey="m" style="" id="menu"><script>displayMenu();</script></div>
+
+</div>
+
+  <div class='FWPanelTagPanelStyle' style='border :solid 1px black;border-right : solid 2px black;border-bottom : solid 2px black;' id ='FWPanelIDPanelOptions' value='Options' text='Options'  >
+    <div style="" id="options"><script>displayOptions();</script></div>
+
+</div>
+
+
+<script> document.getElementById('FWPanelTagHeaderDiv8').innerHTML= FWPanelFindHeaders('FWPanelTagMainDiv8')</script>
+</div>
+<script>FWPanelInitHeader();</script>
+
+
+
+
+</BODY>
+</html>
+

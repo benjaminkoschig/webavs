@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.vulpecula.business.models.codesystem.CodeSystemComplexModel">
+
+		<root-model name="simpleCodeSystem"
+			model-ref="ch.globaz.vulpecula.business.models.utils.CodeSystemSimpleModel" />
+
+		<linked-model name="simpleCodeSystemLibelle"
+			model-ref="ch.globaz.vulpecula.business.models.utils.CodeSystemLibelleSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idCodeSystem" operation="EQUALS"
+					field-ref="simpleCodeSystem.idCodeSystem" />
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forGroupe" field-ref="simpleCodeSystem.groupe"
+					operation="EQUALS" />
+				<search-field name="forLangue" field-ref="simpleCodeSystemLibelle.langue"
+					operation="EQUALS" />
+			</search-group>
+		</search-definition>
+
+		<order-by name="idDesc">
+			<order-field field-ref="simpleCodeSystem.idCodeSystem"
+				order="DESC" />
+		</order-by>
+
+		<order-by name="idAsc">
+			<order-field field-ref="simpleCodeSystem.idCodeSystem" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

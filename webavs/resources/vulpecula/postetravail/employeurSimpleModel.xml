@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.employeur.EmployeurSimpleModel">
+		<table name="PT_EMPLOYEURS" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idEmployeur" column="ID_AFAFFIP"
+				comment="Id de l'employeur, soit de l'affilié (MAIAFF)" />
+			<field name="bvr" column="BVR" type="BOOLEAN"
+				comment="si l'employeur a oui ou non un BVR" />
+			<field name="typeFacturation" column="CS_TYPE_FACTURATION" type="NUMERIC"
+				comment="type de facturation" />
+			<field name="editerSansTravailleur" column="EDITER_SANS_TRAV" type="BOOLEAN"
+				comment="définit si le décompte peut être édité si pas de travailleur" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdEmployeur" field-ref="idEmployeur"
+					operation="EQUALS" />
+				<search-field name="forIdAffiliation" field-ref="idEmployeur"
+					operation="EQUALS" />
+			</search-group>
+		</search-definition>
+
+		<order-by name="idDesc">
+			<order-field field-ref="idEmployeur" order="DESC" />
+		</order-by>
+		<order-by name="idAsc">
+			<order-field field-ref="idEmployeur" />
+		</order-by>
+	</simple-model>
+</model-mapping>

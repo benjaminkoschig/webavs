@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.decision.DecisionSuppression">
+		<!-- model root decsion apres calcul -->
+		<root-model name="simpleDecisionSuppression" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionSuppression"/>
+		<!-- header lié a la décision apres calcul -->
+		<linked-model name="decisionHeader" model-ref="ch.globaz.pegasus.business.models.decision.DecisionHeader" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleDecisionHeader.idDecisionHeader" operation="EQUALS" field-ref="simpleDecisionSuppression.idDecisionHeader"/>
+			</join-group>
+		</linked-model>
+		<!-- Version droit -->
+		<linked-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.VersionDroit" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="simpleVersionDroit.idVersionDroit" operation="EQUALS" field-ref="simpleDecisionSuppression.idVersionDroit"/>
+			</join-group>
+		</linked-model> 
+		
+	
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="versionDroit.simpleVersionDroit.idVersionDroit"/>
+				<search-field name="forIdDecisionHeader" operation="EQUALS" field-ref="simpleDecisionSuppression.idDecisionHeader"/>
+				<search-field name="forIdDecisionSuppression" operation="EQUALS" field-ref="simpleDecisionSuppression.idDecisionSuppression"/>
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

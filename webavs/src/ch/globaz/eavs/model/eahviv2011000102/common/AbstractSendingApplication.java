@@ -1,0 +1,20 @@
+package ch.globaz.eavs.model.eahviv2011000102.common;
+
+import ch.globaz.eavs.exception.EAVSInvalidXmlFormatException;
+import ch.globaz.eavs.model.EAVSNonFinalNode;
+import ch.globaz.eavs.model.eCH0058.common.AbstractManufacturer;
+import ch.globaz.eavs.model.eCH0058.common.AbstractProduct;
+import ch.globaz.eavs.model.eCH0058.common.AbstractProductVersion;
+
+public abstract class AbstractSendingApplication extends CommonModel implements EAVSNonFinalNode {
+    public abstract AbstractManufacturer getManufacturer();
+
+    public abstract AbstractProduct getProduct();
+
+    public abstract AbstractProductVersion getProductVersion();
+
+    @Override
+    public void validate() throws EAVSInvalidXmlFormatException {
+
+    }
+}

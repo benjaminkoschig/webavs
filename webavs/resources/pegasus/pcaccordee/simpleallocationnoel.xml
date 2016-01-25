@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.pcaccordee.SimpleAllocationNoel">
+		<description>Allocations de noel</description>
+		<table name="PCALNOEL" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="idAllocationNoel" column="DNIANO" comment="ID_ALLOCATION_NOEL"/>
+			<field name="idAdressePaiementPostaleCreer" column="DNIADP" type="NUMERIC" mandatory="false" comment="ID_ADRESSE_PAIEMENT_POSTAL" />
+			<field name="idDemande" column="DNIDEM" type="NUMERIC" mandatory="true" comment="ID_DEMANDE" />
+			<field name="idPCAccordee" column="DNIPCA" type="NUMERIC" mandatory="true" comment="ID_PC_ACCORDEE" />
+			<field name="idPrestationAccordee" column="DNIPRA" type="NUMERIC" mandatory="true" comment="ID_PRESTATION_ACCORDEE"/>
+			<field name="idPrestationAccordeeConjoint" column="DNIPRC" type="NUMERIC" mandatory="true" comment="ID_PRESTATION_ACCORDEE_CONJOINT"/>	
+			<field name="anneeAllocation" column="DNIANN" type="NUMERIC" mandatory="true" comment="ANNE_ALLOCATION" />
+			<field name="hasPaiementPostal" column="DNBPAP" type="BOOLEAN" mandatory="true" comment="UTILISE_PAIEMENT_POSTAL" />
+			<field name="montantAllocation" column="DNMALL" type="NUMERIC" mandatory="true" comment="MONTANT_ALLOCATION" />
+			<field name="nbrePersonnes" column="DNNPER" type="NUMERIC" mandatory="true" comment="NBRE_PERSONNES" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forAnnnee" operation="EQUALS" field-ref="anneeAllocation" />
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="idDemande" />
+				<search-field name="forIdPcAccordee" operation="EQUALS" field-ref="idPCAccordee" />
+				<search-field name="inIdsPcAccordee" operation="IN" field-ref="idPCAccordee" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

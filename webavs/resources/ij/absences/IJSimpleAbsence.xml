@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.ij.business.models.IJSimpleAbsence">
+		<description>
+			Modèle simple pour les absences liées aux indemnités journalières
+		</description>
+		<table name="IJABSENC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key 	name="idAbsence" 			column="IDABSE" type="NUMERIC" 	mandatory="true" dataType="NUMERIC(15,0)" 	comment="Id de l'absence" />
+			<field 			name="idBaseIndemnisation" 	column="IDBASE" type="NUMERIC" 	mandatory="true" dataType="NUMERIC(15,0)" 	comment="Id de la base d'indemnisation" />
+			<field 			name="idDossierControle" 	column="IDDOSS" type="NUMERIC" 	mandatory="true" dataType="NUMERIC(15,0)" 	comment="Id du dossier de contrôle des absences" />
+			<field 			name="codeAbsence" 			column="CODEAB" type="NUMERIC" 	mandatory="true" dataType="NUMERIC(8)" 		comment="Code de l'absence" />
+			<field 			name="dateDeDebut" 			column="DATEDE" type="DATE" 	mandatory="true" dataType="NUMERIC(8)" 		comment="Date de début de l'absence" />
+			<field 			name="dateDeFin" 			column="DATEFI" type="DATE" 	mandatory="true" dataType="NUMERIC(8)" 		comment="Date de fin de l'absence" />
+			<field 			name="joursNonPayeSaisis" 	column="NONPAY" type="NUMERIC" 	mandatory="true" dataType="NUMERIC(8)" 		comment="Nombre de jours payés saisis" />
+			<field 			name="joursSaisis" 			column="SAISIS" type="NUMERIC" 	mandatory="true" dataType="NUMERIC(8)" 		comment="Nombre de jours saisit" />
+		</fields>
+		<search-definition>
+			<search-group  operator="AND">
+				<search-field name="forIdAbsence" 					field-ref="idAbsence" 			operation="EQUALS" />
+				<search-field name="forIdBaseIndemnisation" 		field-ref="idBaseIndemnisation" operation="EQUALS" />
+				<search-field name="forIdDossierControleAbsence" 	field-ref="idDossierControle" 	operation="EQUALS" />
+				<search-field name="forCodeAbsence" 				field-ref="codeAbsence" 		operation="EQUALS" />
+				<search-field name="forDateDeDebut" 				field-ref="dateDeDebut" 		operation="EQUALS" />
+				<search-field name="forDateDeFin" 					field-ref="dateDeFin" 			operation="EQUALS" />
+				<search-field name="forJoursNonPayeSaisis" 			field-ref="joursNonPayeSaisis"	operation="EQUALS" />
+				<search-field name="forJoursSaisis" 				field-ref="joursSaisis" 		operation="EQUALS" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

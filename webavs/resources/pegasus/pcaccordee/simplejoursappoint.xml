@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.pcaccordee.SimpleJoursAppoint">
+		<description>Jours d appoint</description>
+		<table name="PCJOUAPP" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="idJoursAppoint" column="DFIJOA" comment="ID_JOURS_APPOINT"/>
+		    <field name="idPCAccordee" column="DFIPCA" type="NUMERIC" mandatory="true" comment="ID_PC_ACCORDEE"/>
+			<field name="montantJournalier" column="DFMMOJ" type="NUMERIC"  dataType="NUMERIC(15,2)"  mandatory="true" comment="MONTANT_JOURNALIER" />
+			<field name="montantTotal" column="DFMTOT" type="NUMERIC"  dataType="NUMERIC(15,2)"  mandatory="true" comment="MONTANT_TOTAL" />
+			
+			<field name="nbrJoursAppoint" column="DFMNBJ" type="NUMERIC" mandatory="true" comment="NOMBRE_JOURS_APPOINT" />
+			<field name="dateEntreHome" column="DFDENT" type="DATE" mandatory="true" comment="DATE_ENTRE_HOME" />
+		</fields>
+		
+		<search-definition >
+			<search-group operator="AND">
+				<search-field name="forIdPCAccordee" operation="EQUALS" field-ref="idPCAccordee"/>
+				<search-field name="inIdsPca" operation="IN" field-ref="idPCAccordee"/>	
+			</search-group>
+		</search-definition>	
+		
+	</simple-model>
+</model-mapping>

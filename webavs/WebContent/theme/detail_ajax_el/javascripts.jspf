@@ -1,0 +1,61 @@
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<meta http-equiv="Cache-Control" content="no-cache" />
+<meta name="User-Lang" content="${languePage}"/> 
+<meta name="Context_URL" content="${pageContext.request.contextPath}"/> 
+<meta name="formAction" content="${pageContext.request.contextPath}${requestScope.mainServletPath}"/>   
+<meta name="TypePage" content="AJAX"/> 
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}${requestScope.mainServletPath}Root/moduleStyle.css"/>
+<link type="text/css" href="${pageContext.request.contextPath}/theme/jquery/jquery-ui.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/theme/ajax/templateZoneAjax.css"/>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/jquery.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/jquery-ui.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/menu.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/ValidationGroups.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/ajax/ajaxUtils.js"/></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/ajax/AbstractScalableAJAXTableZone.js"/></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/ajax/AbstractSimpleAJAXDetailZone.js"/></script>
+
+<%@ include file="/jade/notation/notationLibJs_el.jspf" %> 
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/jsnotation/core/specificationMoteur/specific_ajax.js"/></script>
+
+<style type="text/css">
+body {
+	background-color: ${appColor};
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+}
+
+table {
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+}
+
+input {
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 1em;
+	font-weight: bold;
+	vertical-align: middle;
+}
+
+input[type=text] {
+	height: 16px;
+}
+
+select {
+	font-weight: bold;
+	font-size: 1em;
+	display:inline-block;
+	vertical-align:middle;
+	height:24px; 
+}
+
+.thDetail, th {
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	padding-bottom: 4px;
+}
+
+</style>

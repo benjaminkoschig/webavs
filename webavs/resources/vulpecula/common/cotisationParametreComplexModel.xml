@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+			className="ch.globaz.vulpecula.external.models.CotisationParametreComplexModel">
+
+		<root-model name="cotisationSimpleModel"
+			model-ref="ch.globaz.naos.business.model.CotisationSimpleModel" />
+
+		<linked-model name="assuranceSimpleModel"
+			model-ref="ch.globaz.naos.business.model.AssuranceSimpleModel"
+			join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="assuranceId" field-ref="cotisationSimpleModel.assuranceId" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="parametreAssuranceSimpleModel"
+			model-ref="ch.globaz.naos.business.model.ParametreAssuranceSimpleModel"
+			join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="assuranceId" field-ref="assuranceSimpleModel.assuranceId" />
+			</join-group>
+		</linked-model>
+	
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdCotisation" field-ref="cotisationSimpleModel.cotisationId"
+					operation="EQUALS" />
+			</search-group>
+		</search-definition>
+
+	</complexe-model>
+</model-mapping>

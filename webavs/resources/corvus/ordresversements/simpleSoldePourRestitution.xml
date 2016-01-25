@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.corvus.business.models.ordresversements.SimpleSoldePourRestitution">
+		<description>
+			Un solde pour restitution dans le cadre d'une prise de décision dans les rentes
+		</description>
+		<table name="RESLDRST" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="idSoldePourRestitution" column="ZYISLR" comment="Identifiant du solde pour restitution" />
+
+			<field name="csTypeRestitution" column="ZYTRST" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="" />
+			<field name="idFactureARestituer" column="ZYIFAR" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="" />
+			<field name="idOrdreVersement" column="ZYIOVE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="" />
+			<field name="idPrestation" column="ZYIPRE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="" />
+			<field name="idRetenue" column="ZYIRET" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="" />
+			<field name="montant" column="ZYMMON" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="" />
+			<field name="montantMensuelARetenir" column="ZYMMEN" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field operation="EQUALS" name="forIdSoldePourRestitution" field-ref="idSoldePourRestitution" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

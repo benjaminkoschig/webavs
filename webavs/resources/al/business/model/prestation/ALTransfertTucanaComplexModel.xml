@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'une liste de tranfert Tucana -->
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.prestation.TransfertTucanaComplexModel">
+		<select-fields distinct="true">
+			<select-field name="idTucana" field-ref="transfertTucanaModel.idTucana"/>
+			<select-field name="rubriqueSupplementLegal" field-ref="transfertTucanaModel.rubriqueSupplementLegal"/>
+			<select-field name="rubriqueSupplementConventionnel" field-ref="transfertTucanaModel.rubriqueSupplementConventionnel"/>
+			<select-field name="rubriqueAllocation" field-ref="transfertTucanaModel.rubriqueAllocation"/>
+			<select-field name="numBouclement" field-ref="transfertTucanaModel.numBouclement"/>
+			
+			<select-field name="montant" field-ref="detailPrestationModel.montant"/>
+			<select-field name="montantCanton" field-ref="detailPrestationModel.montantCanton"/>
+			<select-field name="montantCaisse" field-ref="detailPrestationModel.montantCaisse"/>
+			<select-field name="typePrestation" field-ref="detailPrestationModel.typePrestation"/>
+			
+			<select-field name="cantonAffilie" field-ref="entetePrestationModel.cantonAffilie"/>
+			
+			<select-field name="idAllocataire" field-ref="dossierModel.idAllocataire"/>
+		</select-fields>
+		
+		<root-model name="transfertTucanaModel" model-ref="ch.globaz.al.business.models.prestation.TransfertTucanaModel" select-fields="false" />
+		
+		<linked-model name="detailPrestationModel" model-ref="ch.globaz.al.business.models.prestation.DetailPrestationModel" join-type="INNER" select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="idDetailPrestation" field-ref="transfertTucanaModel.idDetailPrestation"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="entetePrestationModel" model-ref="ch.globaz.al.business.models.prestation.EntetePrestationModel" join-type="INNER" select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="idEntete" field-ref="detailPrestationModel.idEntete"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="dossierModel" model-ref="ch.globaz.al.business.models.dossier.DossierFkModel" join-type="INNER" select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="idDossier" field-ref="entetePrestationModel.idDossier"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition name="aTransferer">
+			<search-group operator="AND">
+				<search-field name="forEtat" field-ref="entetePrestationModel.etatPrestation" operation="EQUALS"/>
+				<search-field name="forDateVersCompDebut" field-ref="entetePrestationModel.dateVersComp" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forDateVersCompFin" field-ref="entetePrestationModel.dateVersComp" operation="LESS_OR_EQUALS"/>
+				<search-field name="forNumBouclement" field-ref="transfertTucanaModel.numBouclement" operation="NULL" />
+			</search-group>
+		</search-definition>	
+		
+		<order-by name="default">
+			<order-field field-ref="rubriqueAllocation" order="ASC"/>
+			<order-field field-ref="rubriqueSupplementLegal" order="ASC"/>
+			<order-field field-ref="rubriqueSupplementConventionnel" order="ASC"/>
+			<order-field field-ref="cantonAffilie" order="ASC"/>
+		</order-by> 
+	</complexe-model>
+</model-mapping>

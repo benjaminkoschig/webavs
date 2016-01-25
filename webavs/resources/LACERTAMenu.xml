@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+	<!-- 	Menu principal Lacerta  	-->
+	<menu id="LAMenuPrincipal">
+		<label refId="MENU_PRINCIPAL"/>
+		<nodes>
+			<node>
+				<label refId="MENU_FICHIER"/>
+				<action command="/lacerta" responseTarget="fr_main">
+					<parameter name="userAction" value="lacerta.fichier.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Envoi">
+					<language iso="de">Envoi</language>
+				</label>
+				<action command="/lacerta" responseTarget="fr_main">
+					<parameter name="userAction" value="lacerta.annonce.afficherEnvoiAnnonces" />
+					<parameter name="idAffiliation" value="-id-"/>
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Réception">
+					<language iso="de">Réception</language>
+				</label>
+				<action command="/lacerta" responseTarget="fr_main">
+					<parameter name="userAction" value="lacerta.annonce.afficherReceptionAnnonces" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Menu Option vide -->
+	<menu id="LAMenuVide">
+		<label refId="MENU_OPTIONS"/>
+	</menu>
+	
+	<menu id="LA-DetailFichier">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Mutations">
+					<language iso="de">Mutations</language>
+				</label>
+				<action command="/lacerta" responseTarget="fr_main">
+					<parameter name="userAction" value="lacerta.fichier.afficherMutation" />
+					<parameter name="idAffiliation" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Historique des adresses">
+					<language iso="de">Historique des adresses</language>
+				</label>
+				<action command="/lacerta" responseTarget="fr_main">
+					<parameter name="userAction" value="lacerta.fichier.afficherHistorique" />
+					<parameter name="idAffiliation" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Suivi des caisses">
+					<language iso="de">Suivi des caisses</language>
+				</label>
+				<action command="/lacerta" responseTarget="fr_main">
+					<parameter name="userAction" value="lacerta.fichier.afficherSuiviMenu" />
+					<parameter name="idAffiliation" value="-id-"/>
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Envoi">
+					<language iso="de">Envoi</language>
+				</label>
+				<action command="/lacerta" responseTarget="fr_main">
+					<parameter name="userAction" value="lacerta.annonce.afficherEnvoiAnnonces" />
+					<parameter name="idAffiliation" value="-id-"/>
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+</menus>

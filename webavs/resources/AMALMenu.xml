@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+
+	<!-- ************** -->
+	<!-- Menu Principal -->
+	<!--  
+	
+			Détail du menu :
+			
+				> Contribuables
+					- Rechercher
+					- Historique	
+				> Assureurs
+					- Gestion
+					- SEDEX RP
+				> Envois-Annonces
+					- Modifiables
+					- Rappel
+					- Traités
+					- Traités (queue)
+					- Traités (Word)
+					- Traités (process)
+				> Reprises
+					- En cours d'année
+					- Fin d'année
+				> Listes-simulation
+					- Listes
+					- Simulation
+					- Statistiques
+				> Paramètres
+					- Environnement
+					- Formules	
+	-->
+	<!-- ************** -->
+	<menu id="amal-menuprincipal">
+		<label refId="MENU_PRINCIPAL"/>
+		<nodes>
+			<node>
+				<label refId="MENU_CONTRIBUABLES"/>
+				<nodes>
+					<node>
+						<label refId="MENU_PERSONNES_RECHERCHER"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.contribuable.contribuable.chercher"/>							
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PERSONNES_HISTORIQUE_RECHERCHER"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.contribuable.contribuableHistorique.chercher"/>							
+						</action>
+					</node>
+				</nodes>				
+			</node>
+			<node>
+				<label refId="MENU_ASSUREURS"/>
+				<nodes>
+					<node>
+						<label refId="MENU_ASSUREURS_GESTION"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.caissemaladie.caissemaladie.chercher"/>							
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_ASSUREURS_SEDEX_RP"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.sedexrp.sedexrp.chercher"/>							
+						</action>
+					</node>
+<!-- 					
+					<node>
+						<label refId="MENU_ASSUREURS_REPRISE"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.caissemaladie.caissemaladie.chercher"/>							
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_ASSUREURS_ATTRIBUTION"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.caissemaladie.caissemaladie.chercher"/>							
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_ASSUREURS_LISTES"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.caissemaladie.caissemaladie.chercher"/>							
+						</action>
+					</node>
+ -->					
+				</nodes>				
+			</node>
+			<node>
+				<label refId="MENU_DOCUMENTS"/>
+				<nodes>
+					<node>
+						<label refId="MENU_DOCUMENTS_WORD" />
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.documents.documents.chercher" />
+							<parameter name="searchModel.forTypeJob" value="42002301"/>
+						</action>
+					</node>						
+					<node>
+						<label refId="MENU_DOCUMENTS_TOPAZ" />
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.documents.documents.chercher" />
+							<parameter name="searchModel.forTypeJob" value="42002300"/>
+						</action>
+					</node>						
+					<node>
+						<label refId="MENU_RAPPEL"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.controleurRappel.controleurRappel.afficher"/>							
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_DOCUMENTS_REPRISES" />
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.documents.documents.chercher" />
+							<parameter name="searchModel.forTypeJob" value="42002302"/>
+						</action>
+					</node>						
+				</nodes>				
+			</node>
+			<!-- 
+			<node>
+				<label refId="MENU_ANNONCES_ET_ENVOIS"/>
+				<nodes>
+					<node>
+						<label refId="MENU_ELEMENTS_MODIFIABLES"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.controleurEnvoi.controleurEnvoi.afficher"/>							
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_RAPPEL"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.controleurRappel.controleurRappel.afficher"/>							
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_ELEMENTS_TRAITES"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.controleurEnvoi.controleurEnvoi.afficher"/>							
+							<parameter name="statusEnvoi" value="42002403"/>							
+						</action>
+					</node>
+			 -->
+					<!-- 
+					<node>
+						<label refId="MENU_ELEMENTS_TRAITES_QUEUE"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.controleurEnvoi.controleurEnvoi.afficher"/>							
+							<parameter name="statusEnvoi" value="42002403"/>							
+							<parameter name="jobType" value="42002300"/>							
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_ELEMENTS_TRAITES_WORD"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.controleurEnvoi.controleurEnvoi.afficher"/>							
+							<parameter name="statusEnvoi" value="42002403"/>							
+							<parameter name="jobType" value="42002301"/>							
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_ELEMENTS_TRAITES_PROCESS"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.controleurEnvoi.controleurEnvoi.afficher"/>							
+							<parameter name="statusEnvoi" value="42002403"/>							
+							<parameter name="jobType" value="42002302"/>							
+						</action>
+					</node>
+					 -->
+			<!-- 
+				</nodes>				
+			</node>
+			 -->
+			<node>
+				<label refId="MENU_REPRISES"/>
+				<nodes>
+					<node>
+						<label refId="MENU_REPRISES_DECISIONS_TAXATIONS"/>
+						<action command="/fx" responseTarget="fr_main">
+						    <parameter name="userAction" value="fx.process.jadeProcessList.afficher" />					
+							<parameter name="keyProcess" value="Amal.RepriseDecisionsTaxations" /> 				 				
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_REPRISES_RECALCULS"/>
+						<action command="/fx" responseTarget="fr_main">
+						    <parameter name="userAction" value="fx.process.jadeProcessList.afficher" />					
+							<parameter name="keyProcess" value="Amal.RepriseRecalculs" /> 				 				
+						</action>
+					</node>					
+					<node>
+						<label refId="MENU_REPRISES_SOURCIERS"/>
+						<action command="/fx" responseTarget="fr_main">
+						    <parameter name="userAction" value="fx.process.jadeProcessList.afficher" />					
+							<parameter name="keyProcess" value="Amal.RepriseSourciers" /> 				 				
+						</action>
+					</node>
+					<!-- 
+					<node>
+						<label refId="MENU_REPRISES_ADRESSES"/>
+						<action command="/fx" responseTarget="fr_main">
+						    <parameter name="userAction" value="fx.process.jadeProcessList.afficher" />					
+							<parameter name="keyProcess" value="Amal.RepriseAdresses" /> 				 				
+						</action>
+					</node>
+					 -->
+					<node>
+						<label refId="MENU_REPRISES_FIN_ANNEE"/>
+						<action command="/fx" responseTarget="fr_main">
+						    <parameter name="userAction" value="fx.process.jadeProcessList.afficher" />					
+							<parameter name="keyProcess" value="Amal.RepriseFinAnnee" /> 				 				
+						</action>
+					</node>
+					<!-- 
+					<node>
+						<label refId="MENU_REPRISES_AS_400"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.reprise.reprise.afficher"/>							
+						</action>
+					</node>
+					 -->
+				</nodes>				
+			</node>
+			<node>
+				<label refId="MENU_STATISTIQUES"/>
+				<nodes>
+					<!-- 
+					<node>
+						<label refId="MENU_STATISTIQUES_LISTES"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.statistiques.statistiques.chercher"/>							
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_STATISTIQUES_STATISTIQUES"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.statistiques.statistiques.chercher"/>							
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_STATISTIQUES_SIMULATIONS"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.statistiques.statistiques.chercher"/>							
+						</action>
+					</node>
+					 -->
+					<node>
+						<label refId="MENU_STATISTIQUES_PUBLIPOSTAGE"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.statistiques.publipostage.afficher"/>							
+						</action>
+					</node>
+				</nodes>				
+			</node>
+			<node>
+				<label refId="MENU_PARAMETRES"/>
+				<nodes>
+					<node>
+						<label refId="MENU_PARAMETRES_GERER"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.subsideannee.subsideannee.afficher"/>							
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PARAMETRAGE"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.formule.formule.chercher"/>
+						</action>
+					</node>		
+				</nodes>				
+			</node>
+			<!-- 
+			<node>
+				<label refId="MENU_FORMULES"/>
+				<nodes>
+					<node>
+						<label refId="MENU_PARAMETRAGE"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.formule.formule.chercher"/>
+						</action>
+					</node>		
+					<node>
+						<label refId="MENU_GROUPECHAMPS"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.formule.csgroupchamps.chercher"/>
+						</action>
+					</node>	
+					<node>
+						<label refId="MENU_PARAMETRAGE"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.formule.formule.executer"/>
+						</action>
+					</node>
+				</nodes>				
+			</node>
+			 -->					
+		</nodes>
+	</menu>
+	
+	<!-- ************************** -->
+	<!-- Menu Option empty		    -->
+	<!-- ************************** -->
+	<menu id="amal-optionsempty">
+		<label refId="MENU_OPTION_TITRE" />
+	</menu>
+	
+		<!-- Menu Option Contribuable -->
+	<menu id="amal-optionscontribuable">
+		<label refId="MENU_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_CONTRIBUABLE_FUSION"/>
+				<action command="/amal" responseTarget="fr_main">
+					<parameter name="userAction" value="amal.contribuable.contribuableFusion.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Menu Option Dossier -->
+	<menu id="amal-optionsdossiers">
+		<label refId="MENU_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_CONTRIBUABLE_MEMBRE_DETAIL"/>
+				<action command="/amal" responseTarget="fr_main">
+					<parameter name="userAction" value="amal.famille.famille.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Menu Option Dossier historique -->
+	<menu id="amal-optionsdossiersHistorique">
+		<label refId="MENU_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_CONTRIBUABLE_HISTO_TRANSFERT"/>
+				<action command="/amal" responseTarget="fr_main">
+					<parameter name="userAction" value="amal.contribuable.contribuable.transferer"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+			<!-- Menu Option Formule -->
+	<menu id="amal-optionsformules">
+		<label refId="MENU_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_OPTION_FORMULES_RAPPEL"/>
+				<action command="/amal" responseTarget="fr_main">
+					<parameter name="userAction" value="amal.formule.formulerappel.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			
+			<node>
+				<label refId="MENU_OPTION_FORMULES_CHAMPS"/>
+				<action command="/amal" responseTarget="fr_main">
+					<parameter name="userAction" value="amal.formule.champformule.chercher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+				
+			<node>
+				<label refId="MENU_OPTION_FORMULES_IMPORTER"/>
+				<action command="/amal" responseTarget="fr_main">
+					<parameter name="userAction" value="amal.formule.importformule.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node> 
+			
+			<!-- <node>
+				<label refId="MENU_OPTION_FORMULES_GENERER"/>
+				<action command="/amal" responseTarget="fr_main">
+					<parameter name="userAction" value="amal.formule.genererformule.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>-->
+			
+			<node>
+				<label refId="MENU_OPTION_FORMULES_HISTORIQUE"/>
+				<action command="/amal" responseTarget="fr_main">
+					<parameter name="userAction" value="amal.formule.journFormule.chercher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<!--
+			<node>
+				<label refId="MENU_OPTION_FORMULES_GENERER"/>
+				<action command="/amal" responseTarget="fr_main">
+					<parameter name="userAction" value="amal.formule.genererformule.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			
+			
+			<node>
+				<label refId="MENU_OPTION_FORMULES_DETAIL" />
+				<action command="/amal" responseTarget="fr_main">
+					<parameter name="userAction" value="amal.formule.formulerappel.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			
+			<node id="optAdminFormuleRappel">
+				<label defaultValue="Rappel" refId="RAPPEL" />
+				<action command="/ai" responseTarget="fr_main">
+					<parameter name="userAction" value="ai.envoi.formulecopiesrappel.afficher" />
+					<parameter name="selectedId" />
+				</action>
+			</node>-->
+		</nodes>
+	</menu>
+	
+	<menu id="amal-optionscaissemaladie">
+		<label refId="MENU_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_CONTRIBUABLE_MEMBRE_DETAIL"/>
+				<action command="/amal" responseTarget="fr_main">
+					<parameter name="userAction" value="amal.famille.famille.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+		<!-- Menu Option Dossier -->
+	<menu id="amal-optionsannoncesrp">
+		<label refId="MENU_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_SEDEXRP_MEMBRE_DETAIL"/>
+				<action command="/amal" responseTarget="fr_main">
+					<parameter name="userAction" value="amal.famille.famille.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+</menus>

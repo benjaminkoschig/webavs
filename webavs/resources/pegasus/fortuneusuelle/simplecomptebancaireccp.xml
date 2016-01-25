@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.fortuneusuelle.SimpleCompteBancaireCCP">
+		<description>SIMPLE COMPTE BANCAIRE CCP</description>
+		<table name="PCCBCCP" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idCompteBancaireCCP" column="CDICBC" comment="ID_COMPTE_BANCAIRE_CCP"/>		
+			<field name="idDonneeFinanciereHeader" mandatory="true" column="CDIDFH" type="NUMERIC" comment="DONNEE_FINANCIERE_HEADER"/>
+			<!--<field name="csTypeCompte" mandatory="true" column="CDTTCO" type="NUMERIC" comment="CS_TYPE_COMPTE"/>-->
+			<field name="csTypePropriete" mandatory="true" column="CDTPPT" type="NUMERIC" comment="CS_TYPE_PROPRIETE"/>
+			<field name="partProprieteNumerateur" column="CDNPPN" type="NUMERIC" comment="PART_PROPRIETE_NUMERATEUR"/>
+			<field name="partProprieteDenominateur" column="CDNPPD" type="NUMERIC" comment="PART_PROPRIETE_DENOMINATEUR"/>
+			<field name="iban" mandatory="true" column="CDLIBA" type="STRING" comment="IBAN"/>
+			<field name="montant" mandatory="true" column="CDNMON" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT"/>
+			<field name="isSansInteret" column="CDBSIN" type="BOOLEAN" comment="IS_SANS_INTERET"/>
+			<field name="montantInteret" column="CDNMIN" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_INTERET"/>
+			<field name="montantFraisBancaire" column="CDNMFB" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_FRAIS_BANCAIRE"/>			
+		</fields>		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,598 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="menuHtml.xslt"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+<!-- 
+	Menu principal APG
+
+	Regroupant :	- Droits
+					- Prestations
+					- Lots
+					- Annonces
+					Listes
+						- Récapitulation annonces
+						- Attestations fiscales
+						- Générer stat OFAS
+						- Prestations versées
+					Traitements
+						- Contrôler prestations
+						- Générer compensations
+						- Envoyer annonces
+						- Inscriptions CI
+					Paramètres
+						- Catalogues de textes
+						- Taux d'imposition
+-->
+	<menu id="ap-menuprincipalapg">
+		<label refId="MENU_PRINCIPAL" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_DROITS" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.droits.droitLAPGJointDemande.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_PRESTATIONS" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.prestation.prestationJointLotTiersDroit.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_LOTS" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.lots.lot.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_ANNONCES" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.annonces.annonceAPG.chercher" />
+				</action>
+			</node>
+			<!-- Menu Listes -->
+			<node>
+				<label refId="MENU_LISTES" />
+				<nodes>
+					<node>
+						<label refId="MENU_OPTION_RECAP_ANNONCES" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.recapitulationAnnonce.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_ATTESTATIONS_FISCALES" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.genererAttestations.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_GENERER_STATS_OFAS" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.genererStatsOFAS.afficher" />
+						</action>
+					</node>
+					
+					<node>
+						<label refId="MENU_OPTION_LISTE_PRESTATION_VERSEE" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.listePrestationVersee.afficher" />
+						</action>
+					</node>
+					
+				</nodes>
+			</node>
+			<!-- Menu Traitements -->
+			<node>
+				<label refId="MENU_TRAITEMENTS_TITRE" />
+				<nodes>
+					<node>
+						<label refId="MENU_OPTION_CONTROLER_PRESTATIONS" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.controlerPrestations.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_GENERER_COMPENSATIONS" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.genererCompensations.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_ENVOYER_ANNONCES" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.envoyerAnnonces.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_INSCRIPTIONS_CI" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.envoyerCI.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<!-- Menu Paramètres -->
+			<node>
+				<label refId="MENU_PARAMETRES" />
+				<nodes>
+					<node>
+						<label refId="MENU_OPTION_CATALOGUES_TEXTES" />
+						<action command="/babel" responseTarget="fr_main">
+							<parameter name="userAction" value="babel.cat.document.chercher" />
+							<parameter name="csGroupeDomaines" value="APDOMAINES" />
+							<parameter name="csGroupeTypesDocuments" value="APTYPES" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_TAUX_IMPOSITIONS" />
+						<action command="/cepheus" responseTarget="fr_main">
+							<parameter name="userAction" value="cepheus.tauxImposition.tauxImposition.chercher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>
+	</menu>
+	<!-- Menu des options pour un droit APG -->
+	<menu id="ap-optionmenudroitapg">
+		<label refId="MENU_OPTION_TITLE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_VOIR_PRESTATIONS" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.prestation.prestationJointLotTiersDroit.chercher" />
+					<parameter name="forIdDroit" />
+					<parameter name="forEtat" value="tous" />
+					<parameter name="forTypeDroit" value="tous" />
+					<parameter name="genreService" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_RECAPITULATIF_DROIT" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.droits.droitLAPGJointDemande.actionRecapitulatif" />
+					<parameter name="selectedId" />
+					<parameter name="genreService" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_COPIER_DROIT" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.droits.droitLAPGJointDemande.copierDroit" />
+					<parameter name="selectedId" />
+					<parameter name="genreService" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_CORRIGER_DROIT" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.droits.droitLAPGJointDemande.corrigerDroit" />
+					<parameter name="selectedId" />
+					<parameter name="genreService" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_RESTITUER_DROIT" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.droits.droitLAPGJointDemande.restituerDroit" />
+					<parameter name="selectedId" />
+					<parameter name="genreService" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="calculertoutesprestations">
+				<label refId="MENU_OPTION_CALCULER_PRESTATIONS" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.prestation.prestation.actionCalculerToutesLesPrestations" />
+					<parameter name="selectedId" />
+					<parameter name="genreService" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="initinfocompl">
+				<label refId="MENU_OPTION_INFO_COMPL" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.droits.infoCompl.actionAfficherInfoCompl" />
+					<parameter name="selectedId" />
+					<parameter name="noAVS" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_BREAK_RULES" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.annonces.breakRule.chercher" />
+					<parameter name="forIdDroit" />
+					<parameter name="detailsAssure" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- Menu des options pour la page des lots -->
+	<menu id="ap-optionlot">
+		<label refId="MENU_OPTION_TITLE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_PRESTATION_POUR_LOT" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.prestation.prestationJointLotTiersDroit.chercher" />
+					<parameter name="forIdLot" />
+					<parameter name="forEtat" value="tous" />
+					<parameter name="forTypeDroit" value="tous" />
+					<parameter name="etatLot" />
+				</action>
+			</node>
+			<node id="generercompensations">
+				<label refId="MENU_OPTION_GENERER_COMPENSATIONS" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.process.genererCompensations.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="etatLot" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_COMPENSATION_POUR_LOT" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.lots.factureJointCompensation.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="etatLot" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_GENERER_DECOMPTES" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.process.genererDecomptes.afficher" />
+					<parameter name="idLot" />
+					<parameter name="etatLot" />
+				</action>
+			</node>
+			<node id="imprimerlistecontrole">
+				<label defaultValue="Imprimer liste de contrôle">
+					<language iso="de">Prüfliste drucken</language>
+				</label>
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.process.listeControle.afficher" />
+					<parameter name="idLot" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- Menu des options pour la page des lots II (qd on doit passer autre chose que l'id)-->
+	<menu id="ap-optionlotmg">
+		<label refId="MENU_OPTION_TITLE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_PRESTATION_POUR_LOT" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.prestation.prestationJointLotTiersDroit.chercher" />
+					<parameter name="forIdLot" />
+					<parameter name="forEtat" value="tous" />
+					<parameter name="forTypeDroit" value="tous" />
+					<parameter name="etatLot" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_GENERER_COMPENSATIONS" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.process.genererCompensations.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="etatLot" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_COMPENSATION_POUR_LOT" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.lots.factureJointCompensation.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="etatLot" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_GENERER_DECOMPTES" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.process.genererDecomptes.afficher" />
+					<parameter name="idLot" />
+					<parameter name="etatLot" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- options pour la page des prestations qui peuvent être mises en lot -->
+	<menu id="ap-optionprestationlotok">
+		<label refId="MENU_OPTION_TITLE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_REPARTITIONS_PAIEMENTS" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.prestation.prestationJointLotTiersDroit.actionRepartitionPaiements" />
+					<parameter name="idPrestationCourante" />
+					<parameter name="genreService" />
+					<parameter name="idDroit" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="opAnnonce1">
+				<label refId="MENU_OPTION_ANNONCE" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.annonces.annonceAPG.afficher" />
+					<parameter name="idAnnonce" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- options pour la page des prestations qui peuvent PAS être mises en lot -->
+	<menu id="ap-optionprestationlotpasok">
+		<label refId="MENU_OPTION_TITLE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_REPARTITIONS_PAIEMENTS" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.prestation.prestationJointLotTiersDroit.actionRepartitionPaiements" />
+					<parameter name="idPrestationCourante" />
+					<parameter name="genreService" />
+					<parameter name="idDroit" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="opAnnonce2">
+				<label refId="MENU_OPTION_ANNONCE" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.annonces.annonceAPG.afficher" />
+					<parameter name="idAnnonce" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- options pour la page des répartitions de paiements -->
+	<menu id="ap-optionrepartition">
+		<label refId="MENU_OPTION_TITLE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_COTISATIONS_ASSURANCES" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.prestation.cotisationJointRepartition.chercher" />
+					<parameter name="selectedId" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- options pour la pages des compensations -->
+	<menu id="ap-optioncompensation">
+		<label refId="MENU_OPTION_TITLE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_NOUVELLE_COMPENSATION" />
+				<action command="/apg" responseTarget="fr_detail">
+					<parameter name="userAction" value="apg.lots.factureACompenser.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="_method" value="add" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- options pour les annonces -->
+	<menu id="ap-optionannonce">
+		<label refId="MENU_OPTION_TITLE" />
+		<nodes>
+			<node id="APG_CORRIGER_NSS" >
+				<label refId="MENU_OPTION_CORRIGER_NSS" />
+				<action command="/apg" responseTarget="fr_detail">
+					<parameter name="userAction" value="apg.annonces.annonceSedex.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="typeAnnonce" />
+					<parameter name="onlyNss" value="true" />
+					<parameter name="_method" value="upd" />
+				</action>
+			</node>
+			<node id="APG_CORRIGER_ANNONCE">
+				<label refId="MENU_OPTION_CORRIGER_ANNONCE" />
+				<action command="/apg" responseTarget="fr_detail">
+					<parameter name="userAction" value="apg.annonces.annonceSedex.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="typeAnnonce" />
+					<parameter name="_method" value="upd" />
+				</action>
+			</node>
+			<node id="OPTION_VOIR_PRESTATION">
+				<label refId="MENU_OPTION_VOIR_PRESTATION" />
+				<action command="/apg" responseTarget="fr_detail">
+					<parameter name="userAction" value="apg.prestation.prestationJointLotTiersDroit.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="typeAnnonce" />
+					<parameter name="forIdDroit" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- Menu des options pour un droit Maternité -->
+	<menu id="ap-optionmenudroitamat">
+		<label refId="MENU_OPTION_TITLE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_VOIR_PRESTATIONS" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.prestation.prestationJointLotTiersDroit.chercher" />
+					<parameter name="forIdDroit" />
+					<parameter name="forEtat" value="tous" />
+					<parameter name="forTypeDroit" value="tous" />
+					<parameter name="genreService" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_RECAPITULATIF_DROIT" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.droits.droitLAPGJointDemande.actionRecapitulatif" />
+					<parameter name="selectedId" />
+					<parameter name="genreService" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_COPIER_DROIT" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.droits.droitLAPGJointDemande.copierDroit" />
+					<parameter name="selectedId" />
+					<parameter name="genreService" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_CORRIGER_DROIT" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.droits.droitLAPGJointDemande.corrigerDroit" />
+					<parameter name="selectedId" />
+					<parameter name="genreService" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_RESTITUER_DROIT" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.droits.droitLAPGJointDemande.restituerDroit" />
+					<parameter name="selectedId" />
+					<parameter name="genreService" />
+				</action>
+			</node>
+			<node id="calculertoutesprestations">
+				<label refId="MENU_OPTION_CALCULER_PRESTATIONS" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.prestation.prestation.actionCalculerToutesLesPrestations" />
+					<parameter name="selectedId" />
+					<parameter name="genreService" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_GENERER_COMM_DEC" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.process.genererDecisionAMAT.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="genreService" />
+				</action>
+			</node>
+			<node id="initinfocompl">
+				<label refId="MENU_OPTION_INFO_COMPL" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.droits.infoCompl.actionAfficherInfoCompl" />
+					<parameter name="selectedId" />
+					<parameter name="noAVS" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_BREAK_RULES" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.annonces.breakRule.chercher" />
+					<parameter name="forIdDroit" />
+					<parameter name="detailsAssure" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- Menu Option only detail    -->
+	<menu id="ap-optionsempty">
+		<label refId="OPTIONS" />
+	</menu>
+<!-- 
+	Menu principal Maternité
+
+	Regroupant :	- Droits
+					- Prestations
+					- Lots
+					- Annonces
+					Listes
+						- Récapitulation annonces
+						- Prestations versées
+					Traitements
+						- Générer compensations
+						- Envoyer annonces
+					Paramètres
+						- Catalogues de textes
+						- Taux d'imposition
+-->
+	<menu id="ap-menuprincipalamat">
+		<label refId="MENU_PRINCIPAL" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_DROITS" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.droits.droitLAPGJointDemande.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_PRESTATIONS" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.prestation.prestationJointLotTiersDroit.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_LOTS" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.lots.lot.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_ANNONCES" />
+				<action command="/apg" responseTarget="fr_main">
+					<parameter name="userAction" value="apg.annonces.annonceAPG.chercher" />
+				</action>
+			</node>
+			<!-- Menu Listes -->
+			<node>
+				<label refId="MENU_LISTES" />
+				<nodes>
+					<node>
+						<label refId="MENU_OPTION_RECAP_ANNONCES" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.recapitulationAnnonce.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_LISTE_PRESTATION_VERSEE" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.listePrestationVersee.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<!-- Menu Traitements -->
+			<node>
+				<label refId="MENU_TRAITEMENTS_TITRE" />
+				<nodes>
+					<node>
+						<label refId="MENU_OPTION_GENERER_COMPENSATIONS" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.genererCompensations.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_ENVOYER_ANNONCES" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.envoyerAnnonces.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<!-- Menu Paramètres -->
+			<node>
+				<label refId="MENU_PARAMETRES" />
+				<nodes>
+					<node>
+						<label refId="MENU_OPTION_CATALOGUES_TEXTES" />
+						<action command="/babel" responseTarget="fr_main">
+							<parameter name="userAction" value="babel.cat.document.chercher" />
+							<parameter name="csGroupeDomaines" value="MATDOMAINE" />
+							<parameter name="csGroupeTypesDocuments" value="MATTYPES" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_TAUX_IMPOSITIONS" />
+						<action command="/cepheus" responseTarget="fr_main">
+							<parameter name="userAction" value="cepheus.tauxImposition.tauxImposition.chercher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>
+	</menu>
+</menus>

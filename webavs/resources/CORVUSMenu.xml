@@ -1,0 +1,1419 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="menuHtml.xslt"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+<!--
+	Menu principal Corvus
+
+	Regroupant :	- Demandes
+					- Rentes accordées
+					- Décisions
+					- Validation des décisions
+					- Lots
+					- Annonces
+					- Avances
+					Listes
+						- Demandes en attente
+						- Décisions validées
+						- Etat des rentes
+						- Liste des annonces
+						- Impôts à la source
+						- Liste CI add.
+						- Echéances
+						- Listes AB
+						- Comparaison avec la centrale
+						- Attestation fiscale
+						- Restitution
+					Paiement mensuel
+						- Autoriser les validations
+						- Interdire les validations
+						- Listes de vérification
+						- Exécuter paiement mensuel
+						- Charger récap
+						- Visu récap
+					Adaptation
+						- Circulaire
+						- Paiement fictif
+						- Importer annonces 51/53
+						- Liste d'erreurs
+						- Mise à jour des prestations
+						- Liste des prestations augmentées
+						- Rentes adaptées
+						- Récapitulation
+						- Liste récapitulative de l'adaptation
+						- Liste des annonces subséquentes
+						- Envoi des annonces subséquentes
+						- Import et comparaison 2ème livraison
+					Paramètres
+						- Taux
+						- Catalogues de textes
+						- Paramétrage API
+						- Anakin
+-->
+	<menu id="corvus-menuprincipal">
+		<label refId="MENU_PRINCIPAL" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_DEMANDES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.demandes.demandeRenteJointPrestationAccordee.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_RENTES_ACCORDEES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.renteAccordeeJointDemandeRente.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_DECISIONS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.decisions.decisions.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_VAL_DECISIONS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.decisions.validerGroupeDecisions.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_LOTS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.lots.lot.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_ANNONCES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.annonces.annonce.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_AVANCES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.process.executerAvances.afficher" />
+				</action>
+			</node>
+			<!-- Menu Listes -->
+			<node>
+				<label refId="MENU_LISTES" />
+				<nodes>
+					<node>
+						<label refId="MENU_LISTE_DEMANDE_ATTENTE" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.process.genererListeDemandesAttente.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LISTE_DECISIONS_VALIDEES" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.process.genererListeDecisionsValidees.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_ETAT_DES_RENTES" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.process.genererListeEtatRentes.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LISTE_ANNONCES" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.process.genererListeAnnonces.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LISTE_IMPOT_SOURCE" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.process.genererListeImpotSource.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LISTE_CI_ADDITIONNELS" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.process.genererListeCiAdditionnels.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_ECHEANCES_18_25" />
+						<action command="/lyra" responseTarget="fr_main">
+							<parameter name="userAction" value="lyra.echeances.echeance.chercher" />
+							<parameter name="forDomaineApplicatif" value ="52500003" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LISTES_AB" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.process.genererListesAB.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_CONCORDANCE_CENTRALE" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="concordanceCentrale_corvus.process.concordanceCentrale.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_COMPARAISON_CENTRALE" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.process.comparaisonCentrale.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_ATTESTATION_FISCALE" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.process.genererAttestationFiscale.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_RESTITUTIONS_SOLDES" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.process.genererListeRestitutionsSoldes.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_RESTITUTIONS_MOUVEMENTS" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.process.genererListeRestitutionsMouvements.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<!-- Menu Paiements mensuel -->
+			<node open="no">
+				<label refId="MENU_PAIEMENT_MENSUEL" />
+				<nodes>
+					<node id="RE-activerValidationDecision">
+						<label refId="MENU_ACTIVER_VALIDATION_DECISION" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.decisions.decisions.activerValidationDecision" />
+						</action>
+					</node>
+					<node id="RE-desactiverValidationDecision">
+						<label refId="MENU_DESACTIVER_VALIDATION_DECISION" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.decisions.decisions.desactiverValidationDecision" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_VERIFICATION" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.paiementMensuel.genererListesVerification.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_EXECUTER_PAIEMENT_MENSUEL" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.paiementMensuel.executerPaiementMensuel.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_CHARGER_RECAP" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.recap.chargerRecapMensuelle.afficherChargement" />
+							<parameter name="_method" value="add" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_VISU_RECAP" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.recap.visuRecapMensuelle.afficherChargement" />
+							<parameter name="_method" value="add" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<!-- Menu Adaptation des rentes -->
+			<node open="no">
+				<label refId="MENU_ADAPTATION" />
+				<nodes>
+					<node>
+						<label refId="MENU_OPTION_CIRCULAIRE" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.adaptation.circulaire.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_IMPORT_51_53" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.adaptation.import51_53.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_PAIEMENT_FIC" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.adaptation.pmtFictif.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_LISTE_ERREURS_ADAP" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.adaptation.listeErreurs.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_MAJ_PREST" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.adaptation.miseAJourPrest.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_REN_ADAP" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.adaptation.rentesAdaptees.chercher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_LST_PRES_AUGM" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.adaptation.listePrstAugmentees.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_LST_RECAP_ADA" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.adaptation.listeRecapAdaptation.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_MAJ_RECAP_ADA" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.adaptation.majRecapAdaptation.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_LST_ANN_SUB" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.adaptation.listeAnnoncesSubsequentes.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_ENV_ANN_SUB" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.adaptation.envoiAnnoncesSubsequentes.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_IMP_2_ANN_LST" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.adaptation.deuxiemeLivraisonCentrale.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<!-- Menu Paramètres -->
+			<node open="no">
+				<label refId="MENU_PARAMETRES" />
+				<nodes>
+					<node>
+						<label refId="MENU_OPTION_TAUX" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.taux.taux.chercher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_CATALOGUES_TEXTES" />
+						<action command="/babel" responseTarget="fr_main">
+							<parameter name="userAction" value="babel.cat.document.chercher" />
+							<parameter name="csGroupeDomaines" value="REDOMAINES" />
+							<parameter name="csGroupeTypesDocuments" value="RETYPES" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_PARAMETRAGE_API" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.parametrages.api.chercher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_PARAMETRAGE_ANAKIN" />
+						<action command="/corvus" responseTarget="fr_main">
+							<parameter name="userAction" value="corvus.process.anakin.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Demandes de rentes -->
+	<menu id="corvus-optionsdemanderentes">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_RENTES_ACCORDEES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.renteAccordeeJointDemandeRente.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="creanciers">
+				<label refId="MENU_OPTION_CREANCIERS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.creances.creancier.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="isPreparerDecision" />
+				</action>
+			</node>
+			<node id="calcul">
+				<label refId="MENU_OPTION_CALCUL" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.acor.calculACORDemandeRente.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="csTypeDemande" />
+				</action>
+			</node>
+			<node id="preparerDecision">
+				<label refId="MENU_OPTION_PREPARER_DECISION" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.decisions.preparerDecisions.afficherPreparation" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_DECISIONS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.decisions.decisions.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="isDepuisDemande" value="true" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_SITUATION_FAMILIALE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.demandes.situationFamiliale.modifier" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="rentesLiees">
+				<label refId="MENU_OPTION_RENTES_LIEES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.renteLieeJointRenteAccordee.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="demandesRassemblements">
+				<label refId="MENU_OPTION_DEMANDES_RASSEMBLEMENTS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.ci.demandesRassemblement.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="prepIntMoratoires">
+				<label refId="MENU_OPTION_PREPARER_INTERETS_MORATOIRES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.interetsmoratoires.preparationInteretsMoratoires.afficher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="interetMoratoires">
+				<label refId="MENU_OPTION_INTERETS_MORATOIRES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.interetsmoratoires.interetMoratoire.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_BASES_CALCULS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.basescalcul.basesCalcul.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idRenteCalculee" />
+				</action>
+			</node>
+			<node id="saisieManuelle">
+				<label refId="MENU_OPTION_SAISIE_MANUELLE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.basescalcul.saisieManuelleRABCPD.afficher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idBasesCalcul" />
+					<parameter name="_method" value="add" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_HISTORIQUE_RENTES_EN_COURS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.historiques.historiqueRentesJoinTiers.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_AVANCES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.avances.avance.chercher" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="terminer">
+				<label refId="MENU_OPTION_TERMINER" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.process.terminerDemandeRentePrevBil.afficher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="numNSS" />
+				</action>
+			</node>
+			<node id="attestationFiscale">
+				<label refId="MENU_ATTESTATION_FISCALE" />
+				<action command="/corvus" responseTarget="fr_main">
+						<parameter name="userAction" value="corvus.process.genererAttestationFiscale.afficher" />
+						<parameter name="numNSS" />
+						<parameter name="isDepuisDemande" value="true" />
+				</action>
+			</node>
+			<node id="copiesDefaut">
+				<label refId="MENU_OPTION_COPIES_DEFAUT" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.documents.copies.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="copierDemande">
+				<label refId="MENU_OPTION_COPIER_DEMANDE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.demandes.demandeRenteJointPrestationAccordee.actionCopierDemande" />
+					<parameter name="noDemandeRente" />
+					<parameter name="selectedId" />
+				</action>
+			</node>
+			<node id="creerDemandeTransitoire">
+				<label refId="MENU_OPTION_CREER_DEMANDE_TRANSITOIRE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.demandes.demandeRenteJointPrestationAccordee.actionCopierDemandePourPrestTrans" />
+					<parameter name="noDemandeRente" />
+					<parameter name="selectedId" />
+				</action>
+			</node>			
+			<node id="communicationMutationOAI">
+				<label refId="MENU_OPTION_COMMUNICATION_MUTATION_OAI_DEMANDE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.mutation.communicationMutationOai.afficher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="selectedId" />
+				</action>
+			</node>			
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Rentes accordées -->
+	<menu id="corvus-optionsrentesaccordees">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_DETAIL_RENTE_ACCORDEE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.renteAccordeeJointDemandeRente.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_RENTES_LIEES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.renteLieeJointRenteAccordee.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_RENTE_DE_LA_DEMANDE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.renteAccordeeJointDemandeRente.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="menuOptionToLoad" value="menu" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_BASES_CALCULS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.basescalcul.basesCalcul.afficher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="idRenteCalculee" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_PRESTATIONS_DUES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.prestationsDuesJointDemandeRente.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node id="optfamille">
+				<label refId="MENU_OPTION_SITUATION_FAMILIALE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.demandes.situationFamiliale.actionAfficherFamille" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="selectedId" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_RETENUES_SUR_PMT" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.retenues.retenuesPaiement.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="montantRenteAccordee" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node id="optdiminution">
+				<label refId="MENU_OPTION_DIMINUTION" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.process.diminutionRenteAccordee.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node id="preparerDecisionRA">
+				<label refId="MENU_OPTION_PREPARER_DECISION" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.decisions.preparerDecisions.afficherPreparation" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_SAISIE_DATE_ECHEANCE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.saisirDateEcheance.afficher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node id="creanciers">
+				<label refId="MENU_OPTION_CREANCIERS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.creances.creancier.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="menuOptionToLoad" value="menu" />
+				</action>
+			</node>
+			<node id="rentesVerseesATort">
+				<label refId="MENU_OPTION_RENTE_VERSEE_A_TORT" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.renteVerseeATort.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_CREATION_ANNONCE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.annonces.annonce.afficher" />
+					<parameter name="_method" value="add" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_ANNONCES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.annonces.annonce.chercher" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node id="repriseDroit" active="no">
+				<label refId="MENU_OPTION_REPRISE_DROIT" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.repriseDuDroit.afficher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node id="annoncePonctuelle">
+				<label refId="MENU_OPTION_ANNONCE_PONCTUELLE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.annonces.annoncePonctuelle.afficher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idBaseCalcul" />
+				</action>
+			</node>
+			<node id="copiesDefaut">
+				<label refId="MENU_OPTION_COPIES_DEFAUT" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.documents.copies.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Diminution Rentes -->
+	<menu id="corvus-optionsdiminutionrentes">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_RENTE_ACCORDEE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.renteAccordeeJointDemandeRente.afficher" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idRenteCalculee" />
+					<parameter name="montantRenteAccordee" />
+					<parameter name="selectedId" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_RENTES_LIEES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.renteLieeJointRenteAccordee.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_BASES_CALCULS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.basescalcul.basesCalcul.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="idRenteCalculee" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_PRESTATIONS_DUES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.prestationsDuesJointDemandeRente.chercher" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_RETENUES_SUR_PMT" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.retenues.retenuesPaiement.chercher" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="montantRenteAccordee" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_CREATION_ANNONCE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.annonces.annonce.afficher" />
+					<parameter name="_method" value="add" />
+					<parameter name="idRenteAccordee" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_ANNONCES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.annonces.annonce.chercher" />
+					<parameter name="idRenteAccordee" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Rentes liées -->
+	<menu id="corvus-optionsrentesliees">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_CHANGER_LIANT" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.renteLieeJointRenteAccordee.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_RENTE_DE_LA_DEMANDE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.renteAccordeeJointDemandeRente.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="menuOptionToLoad" value="menu" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_BASES_CALCULS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.basescalcul.basesCalcul.afficher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="idRenteCalculee" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_PRESTATIONS_DUES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.prestationsDuesJointDemandeRente.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_SITUATION_FAMILIALE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.demandes.situationFamiliale.actionAfficherFamille" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="selectedId" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_RETENUES_SUR_PMT" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.retenues.retenuesPaiement.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="montantRenteAccordee" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node id="optdiminution">
+				<label refId="MENU_OPTION_DIMINUTION" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.process.diminutionRenteAccordee.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node id="preparerDecisionRA">
+				<label refId="MENU_OPTION_PREPARER_DECISION" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.decisions.preparerDecisions.afficherPreparation" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_SAISIE_DATE_ECHEANCE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.saisirDateEcheance.afficher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node id="creanciers">
+				<label refId="MENU_OPTION_CREANCIERS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.creances.creancier.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_CREATION_ANNONCE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.annonces.annonce.afficher" />
+					<parameter name="_method" value="add" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_ANNONCES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.annonces.annonce.chercher" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node id="annoncePonctuelle">
+				<label refId="MENU_OPTION_ANNONCE_PONCTUELLE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.annonces.annoncePonctuelle.afficher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idBaseCalcul" />
+				</action>
+			</node>
+			<node id="repriseDroit" active="no">
+				<label refId="MENU_OPTION_REPRISE_DROIT" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.repriseDuDroit.afficher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idRenteAccordee" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idBaseCalcul" />
+					<parameter name="csTypeBasesCalcul" />
+					<parameter name="csEtatRenteAccordee" />
+					<parameter name="dateFinDroit" />
+					<parameter name="isPreparationDecisionValide" />
+					<parameter name="idTiersBeneficiaire" />
+					<parameter name="menuOptionToLoad" value="rentesaccordees" />
+				</action>
+			</node>
+			<node id="copiesDefaut">
+				<label refId="MENU_OPTION_COPIES_DEFAUT" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.documents.copies.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Saisie manuelle -->
+	<menu id="corvus-optionssaisiemanuelle">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_DEMANDES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.demandes.demandeRenteJointPrestationAccordee.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_RENTES_ACCORDEES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.renteAccordeeJointDemandeRente.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="noBaseCalcul" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_BASES_CALCULS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.basescalcul.basesCalcul.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="noBaseCalcul" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Prestations dues -->
+	<menu id="corvus-optionsprestationsdues">
+		<label refId="MENU_OPTION_TITRE" />
+	</menu>
+
+	<!-- Menu Option Bases calculs -->
+	<menu id="corvus-optionsbasescalculs">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_RENTES_ACCORDEES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.renteAccordeeJointDemandeRente.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idBasesCalcul" />
+				</action>
+			</node>
+			<node id="saisieManBasesCalcul">
+				<label refId="MENU_OPTION_SAISIE_MANUELLE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.basescalcul.saisieManuelleRABCPD.afficher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idBasesCalcul" />
+					<parameter name="_method" value="add" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Rassemblement CI -->
+	<menu id="corvus-optionsrassemblementci">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_INSCRIPTIONS_CI" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.ci.inscriptionCI.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="idTiers" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_AJOUTER_INSCRIPTIONS_CI" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.ci.saisieManuelleInscriptionCI.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idTiers" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_MODIFICATION_NSS_EXCONJOINT" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.ci.modificationNSSExConjoint.afficher" />
+					<parameter name="forIdRCI" />
+					<parameter name="idTiers" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Inscription CI -->
+	<menu id="corvus-optionsinscriptionci">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Lot -->
+	<menu id="corvus-optionslot">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+			<node id="prestation">
+				<label refId="MENU_OPTION_PRESTATIONS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.prestations.prestationsJointTiers.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="csTypeLot" />
+					<parameter name="csEtatLot" />
+					<parameter name="provenance" />
+					<parameter name="descriptionLot" />
+				</action>
+			</node>
+			<node id="imprimerOrdresVersement">
+				<label refId="MENU_OPTION_IMPRIMER_ORDRES_VERSEMENT" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.process.genererListeOrdresVersements.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="csTypeLot" />
+					<parameter name="csEtatLot" />
+					<parameter name="provenance" />
+					<parameter name="descriptionLot" />
+				</action>
+			</node>
+			<node id="comptabiliser">
+				<label refId="MENU_OPTION_COMPTABILISER" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.process.validerLot.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="csEtatLot" />
+					<parameter name="csTypeLot" />
+					<parameter name="provenance" />
+					<parameter name="descriptionLot" />
+				</action>
+			</node>
+
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Prestations joint demande rente -->
+	<menu id="corvus-optionprestations">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_ORDRE_DE_VERSEMENT" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.ordresversements.ordresVersements.afficher" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="selectedId" />
+					<parameter name="montantPrestation" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Ordre de Versement -->
+	<menu id="corvus-optionordresversements">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_CREANCIERS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.creances.creancier.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="noDemandeRente" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idLot"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Prestations -->
+	<menu id="corvus-optionsprestations">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Annonces -->
+	<menu id="corvus-optionsannonces">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Decisions -->
+	<menu id="corvus-optionsdecisions">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_DETAIL_DECISION" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.decisions.decisions.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idDecision" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="menuOptionToLoad" value="decision" />
+					<parameter name="idLot" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_ORDRE_DE_VERSEMENT" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.ordresversements.ordresVersements.afficher" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idTierBeneficiaire" />
+					<parameter name="selectedId" />
+					<parameter name="idDecision" />
+					<parameter name="idPrestation" />
+					<parameter name="montantPrestation" />
+					<parameter name="menuOptionToLoad" value="decision" />
+					<parameter name="idLot" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_CREANCIERS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.creances.creancier.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="selectedId" />
+					<parameter name="idDecision" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idTierBeneficiaire" />
+					<parameter name="menuOptionToLoad" value="decision" />
+					<parameter name="idLot" />
+				</action>
+			</node>
+			<node id="rentesVerseesATort">
+				<label refId="MENU_OPTION_RENTE_VERSEE_A_TORT" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.rentesaccordees.renteVerseeATort.afficher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="selectedId" />
+					<parameter name="idDecision" />
+					<parameter name="idPrestation" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idTierBeneficiaire" />
+					<parameter name="montantPrestation" />
+					<parameter name="menuOptionToLoad" value="decision" />
+					<parameter name="idLot" />
+				</action>
+			</node>
+			<node id="imprimerDecision">
+				<label refId="MENU_OPTION_IMPRIMER_DECISION" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.process.imprimerDecision.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idDecision" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idTierBeneficiaire" />
+					<parameter name="menuOptionToLoad" value="decision" />
+					<parameter name="idLot" />
+				</action>
+			</node>
+			<node id="validerdecision">
+				<label refId="MENU_OPTION_VALIDER_DECISION" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.process.validerDecisions.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idDecision" />
+					<parameter name="menuOptionToLoad" value="decision" />
+					<parameter name="idLot" />
+				</action>
+			</node>
+			<node id="afficherLot">
+				<label refId="MENU_OPTION_LOT" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.lots.lot.afficherLotDepuisDecision" />
+					<parameter name="selectedId" />
+					<parameter name="idLot" />
+					<parameter name="menuOptionToLoad" value="decision" />
+				</action>
+			</node>
+			<node id="decisionsListe">
+				<label refId="MENU_OPTION_DECISIONS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.decisions.decisions.chercher" />
+					<parameter name="noDemandeRente" />
+					<parameter name="isDepuisDemande" value="false" />
+					<parameter name="idLot" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Menu Option Rentes adaptées -->
+	<menu id="corvus-optionsrentesadaptees">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_ADA_MANUELLE" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.adaptation.adaptationManuelle.afficher" />
+					<parameter name="_method" value="add" />
+					<parameter name="selectedId" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_ANNONCES" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.annonces.annonce.chercher" />
+					<parameter name="idRenteAccordee" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Avances -->
+	<menu id="corvus-optionsavances">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+		</nodes>
+	</menu>
+
+
+	<!-- Menu Option only detail    -->
+	<menu id="corvus-optionsempty">
+		<label refId="OPTIONS" />
+	</menu>
+
+</menus>

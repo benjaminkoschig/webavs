@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.vd.ch/fiscalite/impotsource/liste-impot-source/4" targetNamespace="http://www.vd.ch/fiscalite/impotsource/liste-impot-source/4" elementFormDefault="unqualified" version="4.0.2">
+	<annotation>
+		<documentation>
+			XSD des documents (liste récapitulative ou corrective) envoyés par les employeurs à l'ACI.
+		</documentation>
+	</annotation>
+	<element name="listeImpotSource">
+		<complexType>
+			<sequence>
+				<element name="typeListe" type="tns:TypeListType"/>
+				<element name="numDebiteur" type="nonNegativeInteger"/>
+				<element name="montantBrut" type="tns:DecimalFractionTwoDigits"/>
+				<element name="montantCommission" type="tns:DecimalFractionTwoDigits"/>
+				<element name="decompteContribuable" type="tns:DecompteContribuableType" minOccurs="0" maxOccurs="unbounded"/>
+			</sequence>
+			<attribute name="debutPeriodeDeclaration" type="date" use="required"/>
+			<attribute name="finPeriodeDeclaration" type="date" use="required"/>
+		</complexType>
+	</element>
+	<simpleType name="TypeListType">
+		<restriction base="string">
+			<enumeration value="LR"/>
+			<enumeration value="LC"/>
+		</restriction>
+	</simpleType>
+	<complexType name="DecompteContribuableType">
+		<sequence>
+			<element name="identite" type="tns:IdentiteType"/>
+			<element name="salaire" type="tns:SalaireType" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute name="noSequenceDecompte" type="positiveInteger" use="required"/>
+	</complexType>
+	<complexType name="IdentiteType">
+		<sequence>
+			<element name="numContribuable" type="tns:NumContribuableType" minOccurs="0"/>
+			<element name="nom" type="tns:NonEmptyTokenString"/>
+			<element name="prenom" type="tns:NonEmptyTokenString"/>
+			<element name="dateNaissance" type="date"/>
+			<element name="codeSexe" type="tns:CodeSexeType"/>
+			<element name="numAvs" type="tns:AvsType" minOccurs="0"/>
+			<choice>
+				<element name="permisTravail" type="tns:PermisTravailType"/>
+				<element name="suisse" type="tns:SuisseType"/>
+			</choice>
+			<element name="commune" type="tns:CommuneType"/>
+			<element name="identifiantSalarieChezEmployeur" type="tns:NonEmptyString" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="BaremeType">
+		<sequence>
+			<element name="nombreAllocations" type="nonNegativeInteger"/>
+			<element name="typeActivite" type="tns:TypeActiviteType"/>
+			<element name="tauxActivite">
+				<simpleType>
+					<restriction base="integer">
+						<maxInclusive value="100"/>
+						<minInclusive value="0"/>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="codeBareme" type="tns:CodeBaremeType"/>
+		</sequence>
+	</complexType>
+	<complexType name="SalaireType">
+		<sequence>
+			<element name="revenuNonProportionel" type="tns:PositiveDecimalFractionTwoDigits"/>
+			<element name="salaireVerseOuPrestationImposable" type="tns:PositiveDecimalFractionTwoDigits"/>
+			<element name="retenueDImpot" type="tns:DecimalFractionTwoDigits"/>
+			<element name="bareme" type="tns:BaremeType"/>
+			<element name="evenement" type="tns:EvenementType" minOccurs="0"/>
+		</sequence>
+		<attribute name="debutVersement" type="date" use="required"/>
+		<attribute name="finVersement" type="date" use="required"/>
+		<attribute name="noSequenceSalaire" type="positiveInteger" use="required"/>
+	</complexType>
+	<simpleType name="NumContribuableType">
+		<restriction base="integer">
+			<pattern value="[0-9]{1,9}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="DecimalFractionTwoDigits">
+		<restriction base="decimal">
+			<fractionDigits value="2"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="PositiveDecimalFractionTwoDigits">
+		<restriction base="decimal">
+			<fractionDigits value="2"/>
+			<minInclusive value="0"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AvsType">
+		<restriction base="decimal">
+			<pattern value="[0-9]{8}|[0-9]{11}|756[0-9]{10}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="CodeSexeType">
+		<restriction base="string">
+			<enumeration value="1"/>
+			<enumeration value="2"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="SuisseType">
+		<restriction base="string">
+			<enumeration value="true"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="PermisTravailType">
+		<restriction base="string">
+			<enumeration value="suisse"/>
+			<enumeration value="02"/>
+			<enumeration value="03"/>
+			<enumeration value="04"/>
+			<enumeration value="05"/>
+			<enumeration value="06"/>
+			<enumeration value="07"/>
+			<enumeration value="08"/>
+			<enumeration value="09"/>
+			<enumeration value="10"/>
+			<enumeration value="11"/>
+			<enumeration value="12"/>
+			<enumeration value="13"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TypeActiviteType">
+		<restriction base="string">
+			<enumeration value="principale"/>
+			<enumeration value="accessoire"/>
+			<enumeration value="complémentaire"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="CodeBaremeType">
+		<restriction base="string">
+			<enumeration value="A"/>
+			<enumeration value="B"/>
+			<enumeration value="B0"/>
+			<enumeration value="B1"/>
+			<enumeration value="B2"/>
+			<enumeration value="B3"/>
+			<enumeration value="B4"/>
+			<enumeration value="B5"/>
+			<enumeration value="B6"/>
+			<enumeration value="B7"/>
+			<enumeration value="B8"/>
+			<enumeration value="B9"/>
+			<enumeration value="C"/>
+			<enumeration value="C0"/>
+			<enumeration value="C1"/>
+			<enumeration value="C2"/>
+			<enumeration value="C3"/>
+			<enumeration value="C4"/>
+			<enumeration value="C5"/>
+			<enumeration value="C6"/>
+			<enumeration value="C7"/>
+			<enumeration value="C8"/>
+			<enumeration value="C9"/>
+			<enumeration value="D"/>
+			<enumeration value="DF"/>
+			<enumeration value="A0"/>
+			<enumeration value="A1"/>
+			<enumeration value="A2"/>
+			<enumeration value="A3"/>
+			<enumeration value="A4"/>
+			<enumeration value="A5"/>
+			<enumeration value="A6"/>
+			<enumeration value="A7"/>
+			<enumeration value="A8"/>
+			<enumeration value="A9"/>
+			<enumeration value="H1"/>
+			<enumeration value="H2"/>
+			<enumeration value="H3"/>
+			<enumeration value="H4"/>
+			<enumeration value="H5"/>
+			<enumeration value="H6"/>
+			<enumeration value="H7"/>
+			<enumeration value="H8"/>
+			<enumeration value="H9"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="CommuneType">
+		<restriction base="int">
+			<minInclusive value="1"/>
+			<maxInclusive value="9999"/>
+		</restriction>
+	</simpleType>
+	<complexType name="EvenementType">
+		<simpleContent>
+			<extension base="tns:EvenementRestrictionType">
+				<attribute name="date" type="date" use="required"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<simpleType name="EvenementRestrictionType">
+		<restriction base="string">
+			<enumeration value="A-Entrée"/>
+			<enumeration value="B-Sortie"/>
+			<enumeration value="C-Mariage"/>
+			<enumeration value="D-DébutDroitAllocation"/>
+			<enumeration value="E-FinDroitAllocation"/>
+			<enumeration value="F-NouveauTauxActivité"/>
+			<enumeration value="G-Séparation"/>
+			<enumeration value="H-Divorce"/>
+			<enumeration value="I-Décès"/>
+			<enumeration value="K-Veuvage"/>
+			<enumeration value="L-ChangementFor"/>
+			<enumeration value="M-ChangementBareme"/>
+			<enumeration value="E01-EmbaucheDansEntreprise"/>
+			<enumeration value="E02-ChangementDeCanton"/>
+			<enumeration value="E99-EntréeAutre"/>
+			<enumeration value="S01-DépartDeEntreprise"/>
+			<enumeration value="S02-Naturalisation"/>
+			<enumeration value="S03-PermisEtablissementC"/>
+			<enumeration value="S04-EmploiTemporaire"/>
+			<enumeration value="S05-ChangementDeCanton"/>
+			<enumeration value="S99-SortieAutre"/>
+			<enumeration value="M01-EtatCivil"/>
+			<enumeration value="M02-TravailDuPartenaire"/>
+			<enumeration value="M03-TravailDuPartenaireEnItalie"/>
+			<enumeration value="M04-AdresseDeDomicile"/>
+			<enumeration value="M05-DéductionPourEnfant"/>
+			<enumeration value="M06-TauxOccupation"/>
+			<enumeration value="M07-ActivitéAnnexe"/>
+			<enumeration value="M98-ImpôtEcclésiastique"/>
+			<enumeration value="M99-MutationAutre"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="NonEmptyString">
+		<restriction base="string">
+			<minLength value="1"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="NonEmptyTokenString">
+		<restriction base="token">
+			<minLength value="1"/>
+		</restriction>
+	</simpleType>
+</schema>

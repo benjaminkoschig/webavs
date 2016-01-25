@@ -1,0 +1,69 @@
+<%-- L'utilisation de ce bloc nécessite qu'une variable employeur soit présente
+dans le pageContext ! --%>
+<div class="bloc bloc400">
+	<div class="header">
+		<c:choose>
+			<c:when test="${partialUserAction=='vulpecula.postetravailvueglobale.employeurvueglobale.'}">
+				<ct:FWLabel key="JSP_EMPLOYEUR" /> (${employeur.affilieNumero})
+			</c:when>
+			<c:otherwise>
+				<a href="vulpecula?userAction=vulpecula.postetravailvueglobale.employeurvueglobale.afficher&selectedId=${employeur.id}">
+					<ct:FWLabel key="JSP_EMPLOYEUR" /> (${employeur.affilieNumero})
+				</a>
+			</c:otherwise>
+		</c:choose>
+		-
+		<span style="text-align: right;">
+			<a href="naos?userAction=naos.affiliation.affiliation.afficher&selectedId=${employeur.id}&idTiers=${employeur.idTiers}">
+				<ct:FWLabel key="JSP_AFFILIATION"/>
+			</a>
+		</span>
+		-
+		<a href="pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=${employeur.idTiers}">
+			<ct:FWLabel key="JSP_TIERS"/>
+		</a>
+		-
+		<a href="naos?userAction=naos.lienAffiliation.lienAffiliation.chercher&affiliationId=${employeur.id}">
+			<ct:FWLabel key="JSP_ASSOCIES"/>
+		</a>
+	</div>
+	<table>
+		<tr>
+			<td class="label"><ct:FWLabel key="JSP_EMPLOYEUR_RAISON_SOCIALE"/></td>
+			<td class="value">
+				${employeur.raisonSociale}
+				<span title="<ct:FWCodeLibelle csCode="${employeur.personnaliteJuridique}" />">
+						<ct:FWCode csCode="${employeur.personnaliteJuridique}"/>
+				</span>
+			</td>					
+		</tr>
+		<c:forEach var="ligneAdresse" items="${employeur.adressePrincipale.adresseAsStringLines}" varStatus="status">
+			<c:choose>
+				<c:when test="${status.index==0}">
+					<tr>
+						<td class="label"><ct:FWLabel key="JSP_ADRESSE"/></td>
+						<td class="value">${ligneAdresse}</td>
+					</tr>
+				</c:when>
+				<c:otherwise>
+					<tr>
+						<td class="label"></td>
+						<td class="value">${ligneAdresse}</td>
+					</tr>
+				</c:otherwise>
+			</c:choose>
+		</c:forEach>
+		<tr>
+			<td class="label"><ct:FWLabel key="JSP_PERIODE_ACTIVITE"/></td>
+			<td class="value">${employeur.dateDebut} - ${employeur.dateFin}</td>					
+		</tr>
+		<tr>
+			<td class="label"><ct:FWLabel key="JSP_PERIODICITE"/></td>
+			<td class="value"><ct:FWCodeLibelle csCode="${employeur.periodicite}" /></td>						
+		</tr>
+		<tr>
+			<td class="label"><ct:FWLabel key="JSP_CONVENTION"/></td>
+			<td class="value">${employeur.convention.code} - ${employeur.convention.designation}</td>					
+		</tr>
+	</table>
+</div>

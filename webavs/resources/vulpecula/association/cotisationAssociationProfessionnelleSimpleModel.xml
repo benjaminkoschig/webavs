@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.association.CotisationAssociationProfessionnelleSimpleModel">
+		<table name="PT_COTISATIONS_AP" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="Id de la table association cotisation" />
+			<field name="libelle" column="LIBELLE" type="STRING" comment="libelle" />
+			<field name="libelleUpper" column="LIBELLE_UPPER" type="STRING" comment="libelle upper" />
+			<field name="montantBase" column="MONTANT_BASE" type="NUMERIC" />
+			<field name="montantMinimum" column="MONTANT_MINIMUM" type="NUMERIC" />
+			<field name="montantMaximum" column="MONTANT_MAXIMUM" type="NUMERIC" />
+			<field name="idAssociationProfessionnelle" column="ID_TIADMIP" type="NUMERIC" />
+			<field name="genre" column="CS_GENRE" type="NUMERIC" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id"
+					operation="EQUALS" />
+				<search-field name="forLibelleLike" field-ref="libelle"
+					operation="LIKE" />
+				<search-field name="forLibelleUpperLike" field-ref="libelleUpper"
+					operation="LIKE" />
+			</search-group>
+		</search-definition>
+		
+		<order-by name="">
+			<order-field field-ref="id" />
+		</order-by>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+		<order-by name="idAsc">
+			<order-field field-ref="id" />
+		</order-by>
+	</simple-model>
+</model-mapping>

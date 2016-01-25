@@ -1,0 +1,63 @@
+<%@ page import="globaz.aquila.db.access.poursuite.*"%>
+<%@ page import="globaz.osiris.translation.*"%>
+<%@ page import="globaz.jade.client.util.*"%>
+<%
+	COContentieux contentieuxViewBean = (COContentieux) session.getAttribute("contentieuxViewBean");
+
+	String etapeLibelle = "";
+	String dateDeclenchement = "";
+	String dateExecution = "";
+	String numPoursuite = "";
+	String motif = "";
+	String compteAnnexeInformation = "";
+
+	try {
+		etapeLibelle = contentieuxViewBean.getEtape().getLibEtapeLibelle();
+		dateDeclenchement = contentieuxViewBean.getDateDeclenchement();
+		dateExecution = contentieuxViewBean.getDateExecution();	
+		numPoursuite = contentieuxViewBean.getNumPoursuite();
+		motif = contentieuxViewBean.loadHistorique().getMotif();
+		compteAnnexeInformation = contentieuxViewBean.getCompteAnnexeInformation();
+	} catch (Exception e) {
+	}
+%>
+<jsp:include flush="true" page="headerContentieuxMin.jsp"/>
+<TR>
+	<TD>Betreibungs-Nr.</TD>
+	<TD colspan="3"><INPUT type="text" value="<%=numPoursuite%>" class="dateDisabled" readonly></TD>
+	<% if (!JadeStringUtil.isDecimalEmpty(compteAnnexeInformation)) { %> 
+           	<TD nowrap>Information</TD>
+           	<TD nowrap colspan="2">
+            	<INPUT style="color:#FF0000" type="text" name="" value="<%=CACodeSystem.getLibelle(session, compteAnnexeInformation)%>" class="inputDisabled" tabindex="-1" readonly>
+           	</TD>
+           	<TD nowrap></TD>
+           	<TD nowrap></TD>
+	<% } else { %>
+           	<TD nowrap></TD>
+           	<TD nowrap></TD>
+           	<TD nowrap></TD>
+           	<TD nowrap></TD>
+	<% } %>
+</TR>		
+<TR>
+	<TD colspan="8"><HR></TD>
+</TR>														
+<% if (!COContentieux.ID_CONTENTIEUX_BIDON.equals(contentieuxViewBean.getIdContentieux())) { %>
+<TR>
+	<TD class="label">Letzte Etappe</TD>
+	<TD class="control" colspan="3"><INPUT type="text" value="<%=etapeLibelle%>" class="disabled" style="width: 100%" readonly></TD>
+	<TD class="label">Auslösungsdatum</TD>
+	<TD class="control"><INPUT type="text" value="<%=dateDeclenchement%>" class="dateDisabled" readonly></TD>
+	<TD class="label">Ausführungsdatum</TD>
+	<TD class="control"><INPUT type="text" value="<%=dateExecution%>" class="dateDisabled" readonly></TD>
+</TR>
+<% } %>
+<% if (motif != null && motif.length() > 0) { %>
+<TR>
+	<TD class="label">Grund letzte Etappe</TD>
+	<TD class="control" colspan="7">
+		<textarea name="" cols="30" rows="2" disabled><%=motif%></textarea>
+	</TD>
+</TR>										
+<% } %>				
+

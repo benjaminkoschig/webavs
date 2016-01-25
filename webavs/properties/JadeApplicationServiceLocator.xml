@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Configuration de l'accès aux services applicatifs -->
+<globaz.jade.service.provider.JadeApplicationServiceLocator>
+	<!-- Défini les factories qui peuvent être utilisées par le locator pour instancier des services applicatifs  -->
+	<factories>
+		<!-- Défini la factory qui permet d'accéder au service par des Web Services déployés qq part sur le réseau en utilisant l'API de transport AXIS -->
+		<factory name="axisFactory" className="globaz.jade.service.provider.application.JadeApplicationAxisWebServiceFactory"/>
+	</factories>
+	<!-- Définition de propriétés propres aux Web Services -->
+	<ws-def>
+		<!-- Défini la liste des serveurs qui publient des Web Services auxquels le déploiement applicatif va faire appel -->
+		<ws-servers>
+			<!-- Définition d'un serveur -->
+			<!-- <ws-server name="serverEBusiness" address="VGLOBDEV039.ju.globaz.ch" httpPort="9081"/>-->
+			<!-- ccvd int <ws-server name="serverEBusiness" address="shebebint1.intranet-heb.ch" httpPort="9085"/> -->
+			
+			<ws-server name="serverEBusiness" address="sglobebq1.ju.globaz.ch" httpPort="9080"/>
+		</ws-servers>
+		<!-- Défini les handlers AXIS disponibles que l'on peut appeller avant et après l'appel à un WebService -->
+		<ws-rpc-handlers>
+			<!-- défini le nom du handler ainsi que sa classe d'implémentation -->
+			<ws-rpc-handler name="default" className="ch.globaz.orion.axis.handler.EBusinessClientHandler"/>
+		</ws-rpc-handlers>
+	</ws-def>
+	<service interface="ch.globaz.ebavs.business.services.pucs.EBPucsManagmentService">
+		<!-- Défini l'instance accessible à l'aide du token "remoteService" qui va accéder via à un webservice via l'api AXIS -->
+		<instance switchToken="default" factory="axisFactory">
+			<web-service server="serverEBusiness" wsdlEndPoint="/ebbackavs/services/EBPucsManagmentServiceImpl?wsdl"  localPart="EBPucsManagmentServiceImplService" namespaceURI="http://pucs.services.businessimpl.ebavs.globaz.ch">
+				<port localPart="EBPucsManagmentServiceImpl" namespaceURI="http://pucs.services.businessimpl.ebavs.globaz.ch"/>
+				<rpc-handler name="default"/>
+			</web-service>	
+		</instance>
+	</service>
+	<service interface="ch.globaz.ebavs.business.services.acl.EBAnnonceCollaborateurService">
+		<!-- Défini l'instance accessible à l'aide du token "remoteService" qui va accéder via à un webservice via l'api AXIS -->
+		<instance switchToken="default" factory="axisFactory">
+			<web-service server="serverEBusiness" wsdlEndPoint="/ebbackavs/services/EBAnnonceCollaborateurServiceImpl?wsdl"  localPart="EBAnnonceCollaborateurServiceImplService" namespaceURI="http://acl.services.businessimpl.ebavs.globaz.ch">
+				<port localPart="EBAnnonceCollaborateurServiceImpl" namespaceURI="http://acl.services.businessimpl.ebavs.globaz.ch"/>
+				<rpc-handler name="default"/>
+			</web-service>	
+		</instance>
+	</service>
+	<service interface="ch.globaz.ebavs.business.services.dan.EBDanService">
+		<!-- Défini l'instance accessible à l'aide du token "remoteService" qui va accéder via à un webservice via l'api AXIS -->
+		<instance switchToken="default" factory="axisFactory">
+			<web-service server="serverEBusiness" wsdlEndPoint="/ebbackavs/services/EBDanServiceImpl?wsdl"  localPart="EBDanServiceImplService" namespaceURI="http://dan.services.businessimpl.ebavs.globaz.ch">
+				<port localPart="EBDanServiceImpl" namespaceURI="http://dan.services.businessimpl.ebavs.globaz.ch"/>
+				<rpc-handler name="default"/>
+			</web-service>	
+		</instance>
+	</service>
+	<service interface="ch.globaz.ebavs.business.services.inscription.EBInscriptionService">
+		<!-- Défini l'instance accessible à l'aide du token "remoteService" qui va accéder via à un webservice via l'api AXIS -->
+		<instance switchToken="default" factory="axisFactory">
+			<web-service server="serverEBusiness" wsdlEndPoint="/ebbackavs/services/EBInscriptionServiceImpl?wsdl"  localPart="EBInscriptionServiceImplService" namespaceURI="http://inscription.services.businessimpl.ebavs.globaz.ch">
+				<port localPart="EBInscriptionServiceImpl" namespaceURI="http://inscription.services.businessimpl.ebavs.globaz.ch"/>
+				<rpc-handler name="default"/>
+			</web-service>	
+		</instance>
+	</service>
+</globaz.jade.service.provider.JadeApplicationServiceLocator>

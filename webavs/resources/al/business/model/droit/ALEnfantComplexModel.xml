@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'un enfant. Il regroupe le contenu de la table enfant et les informations du tiers qui y est lié -->
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.droit.EnfantComplexModel">
+		<root-model name="enfantModel" model-ref="ch.globaz.al.business.models.droit.EnfantModel"/>
+		<linked-model name="paysModel" model-ref="ch.globaz.pyxis.business.model.PaysSimpleModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPays" field-ref="enfantModel.idPaysResidence"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="personneEtendueComplexModel" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" field-ref="enfantModel.idTiersEnfant"/>
+			</join-group>
+		</linked-model>
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdTiers" field-ref="enfantModel.idTiersEnfant" operation="EQUALS"/>
+				<search-field name="forNom" field-ref="personneEtendueComplexModel.tiers.designation1" operation="EQUALS"/>
+				<search-field name="forPrenom" field-ref="personneEtendueComplexModel.tiers.designation2" operation="EQUALS"/>
+				<search-field name="forDateNaissance" field-ref="personneEtendueComplexModel.personne.dateNaissance" operation="EQUALS"/>
+				<search-field name="forNss" field-ref="personneEtendueComplexModel.personneEtendue.numAvsActuel" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		<search-definition name="import">
+			<search-group operator="AND">
+				<search-field name="forIdTiers" field-ref="enfantModel.idTiersEnfant" operation="EQUALS"/>
+				<search-field name="forNom" field-ref="personneEtendueComplexModel.tiers.designationUpper1" operation="LIKE"/>
+				<search-field name="forPrenom" field-ref="personneEtendueComplexModel.tiers.designationUpper2" operation="LIKE"/>
+				<search-field name="forDateNaissance" field-ref="personneEtendueComplexModel.personne.dateNaissance" operation="EQUALS"/>
+				<search-field name="forNss" field-ref="personneEtendueComplexModel.personneEtendue.numAvsActuel" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

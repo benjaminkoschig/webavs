@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="PHENIX_ACOMPTE_42_VERSO_DE"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="28"
+		 rightMargin="15"
+		 topMargin="5"
+		 bottomMargin="5"
+		 whenNoDataType="AllSectionsNoDetail"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="2" />
+	<reportFont name="ARIAL" isDefault="false" fontName="arial.ttf" size="11" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="ARIAL.TTF" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+		<background>
+			<band height="691"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="7"
+						y="80"
+						width="530"
+						height="32"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica" size="12"/>
+					</textElement>
+				<text><![CDATA[Die Akontozahlungen der Beiträge (quartalsweise oder andere) müssen 10 Tagen nach Ablauf der Beitragsperiode auf dem Konto der Ausgleichkasse einbezahlt sein.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="7"
+						y="14"
+						width="530"
+						height="22"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[ERKLÄRUNGEN Akontozahlungen]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="7"
+						y="64"
+						width="530"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-1"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[VERPFLICHTUNG DES VERSICHERTEN]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="7"
+						y="125"
+						width="530"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-6"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[VERZUGSZINS (Art. 41 bis AHVV)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="7"
+						y="141"
+						width="530"
+						height="47"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-8"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica" size="12"/>
+					</textElement>
+				<text><![CDATA[Verzugszinsen der laufenden Zahlungsperiode sind geschuldet, wenn die Beitragsschuld nicht innert 30 Tagen bezahlt wird. Die Verzugszinsen laufen ad dem 01. Tag nach Ablauf der Beitragsperiode.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="7"
+						y="198"
+						width="530"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-16"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[HERABSETZUNG UND ERLASS DER BEITRÄGE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="7"
+						y="214"
+						width="530"
+						height="114"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-17"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica" size="12"/>
+					</textElement>
+				<text><![CDATA[Personen, die sich in einer Notlage befinden und denen die Bezahlung der Beiträge nicht zugemutet werden kann, können mit einem begründeten Gesuch eine Herabsetzung der Beiträge verlangen. Die Unzumutbarkeit kann jedoch nur dann anerkannt werden, wenn die vorhandenen Mittel den Notbedarf des Versicherten und seiner Familie nicht decken oder bei Bezahlung des vollen Beitrages nicht mehr decken würden. Bedeutet selbst die Bezahlung des Mindestbeitrages eine grosse Härte für den Beitragspflichtigen, so kann er mit einem begründeten Gesuch den Erlass dieses Beitrages, d.h. dessen Übernahme durch den Kanton und die Wohnsitzgemeinden verlangen.]]></text>
+				</staticText>
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

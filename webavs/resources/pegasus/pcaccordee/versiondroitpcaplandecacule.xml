@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.pcaccordee.VersionDroitPCAPlanDeCacule">
+		<root-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee"/>
+		
+		<linked-model name="simpleVersionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+				
+		<linked-model name="simplePrestationsAccordees" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPrestationAccordee"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simplePrestationsAccordeesConjoint" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPrestationAccordeeConjoint"/>
+				<join-field field-ref="simplePCAccordee.idPrestationAccordeeConjoint" operation="NOT_NULL"/>
+			</join-group>
+		</linked-model>
+		
+
+		<linked-model name="simplePlanDeCalcul" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPCAccordee"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="personneEtendue" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simplePrestationsAccordees.idTiersBeneficiaire"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="personneEtendueConjoint" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simplePrestationsAccordeesConjoint.idTiersBeneficiaire"/>
+				<join-field field-ref="simplePCAccordee.idPrestationAccordeeConjoint" operation="NOT_NULL"/>
+			</join-group>
+		</linked-model>
+		
+		<!-- Recherche les pca valables pour la date donnee en parametre-->
+	    <search-definition name="withDateValableAndNotPlanClacule">
+			<search-group operator="AND">
+				<search-field name="forIsPlanRetenu" operation="EQUALS" field-ref="simplePlanDeCalcul.isPlanRetenu"/>
+				<search-field name="forCsEtatPlanDeCalcule" operation="NOT_EQUALS" field-ref="simplePlanDeCalcul.etatPC"/>
+				<search-field name="forCsEtatVersionDroit" operation="EQUALS" field-ref="simpleVersionDroit.csEtatDroit"/>
+				<search-field name="forCsEtatPca" operation="EQUALS" field-ref="simplePCAccordee.csEtatPC"/>
+				
+				<search-group operator="AND">
+					<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="simplePCAccordee.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="simplePCAccordee.dateFin"/>
+						<search-field name="forDateValable" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+
+		<order-by>
+			<order-field field-ref="personneEtendue.tiers.designationUpper1"/>
+			<order-field field-ref="personneEtendue.tiers.designationUpper2"/>
+		</order-by>
+
+	</complexe-model>
+</model-mapping>

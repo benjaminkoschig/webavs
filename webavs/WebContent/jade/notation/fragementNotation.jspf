@@ -1,0 +1,1127 @@
+<div class="formTableLess">
+		<fieldset>
+			<legend>string</legend>
+			<div id="string">
+				<label>mandatory:true</label>
+				<input type="text" data-g-string="mandatory:true" />
+				<br />
+				<label>addSymboleMandatory:true</label>
+				<input type="text" data-g-string="addSymboleMandatory:true" />
+				<br />
+				<label>sizeMax:6</label>
+				<input type="text" data-g-string="sizeMax:6" />
+				<br />
+				<label>autoFit</label>
+				<input type="text" data-g-string="sizeMax:6,autoFit:true" />
+				<br />
+				<label>firstCaseUpper</label>
+				<input type="text" data-g-string="firstCaseUpper:true" />
+				<br />
+				<label>isPasteOverload</label>
+				<input type="text" data-g-string="sizeMax:4,isPasteOverload:true" />
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>integer</legend>
+			<div id="integer">
+				<label>normal</label>
+				<input id="firstInteger" type="text"  data-g-integer=" " />
+				<br />
+				<label>mandatory:true</label>
+				<input type="text" data-g-integer="mandatory:true" />
+				<br />
+				<label>sizeMax:6</label>
+				<input type="text" data-g-integer="sizeMax:6" />
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>rate</legend>
+			<div id="rate">
+				<label>normal</label>
+				<input type="text" data-g-rate=" " />
+				<br />
+				<label>nbMaxDecimal:3</label>
+				<input type="text" data-g-rate="nbMaxDecimal:3" />
+				<br />
+				<label>mandatory:true</label>
+				<input type="text" data-g-rate="mandatory:true" />
+				<br />
+				<label>addSymboleMandatory:true</label>
+				<input type="text" data-g-rate="addSymboleMandatory:true" />
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>amount</legend>
+			<div id="amount">
+				<label>normal</label>
+				<input type="text" data-g-amount=" " />
+				<br />
+				<label>blankAsZero:false</label>
+				<input type="text" data-g-amount="blankAsZero:false" />
+				<br />
+				<label>mandatory:true</label>
+				<input type="text" data-g-amount="mandatory:true" />
+				<br />
+				<label>addSymboleMandatory:true</label>
+				<input type="text" data-g-amount="addSymboleMandatory:true" />
+				<label>periodicity:M</label>
+				<input type="text" data-g-amount="mandatory:true,periodicity:M" />
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>select</legend>
+			<div id="select">
+				<label>mandatory:true</label>
+				<select name="ttot" data-g-select="mandatory:true">
+					<option value=''></option>
+					<option value='valeur'>valeur</option>
+					<option value='titi'>titi</option> 
+					<option value='master'>master</option>
+				</select> 
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>calendar</legend>
+			<div id="calendar">
+				<label>normal</label>
+				<input type="text" data-g-calendar=" " />
+				<br />
+				<label>yearRange</label>
+				<input type="text" data-g-calendar="yearRange:¦2005:2015¦" />
+				<br />
+				<label>type:month</label>
+				<input id="calMonthTest" type="text" data-g-calendar="type:month" />
+				<br />
+				<label>mandatory:true</label>
+				<input type="text" data-g-calendar="mandatory:true" />
+				<br />
+				<label>current Date</label>
+				<input type="text" data-g-calendar="currentDate:true" />
+				<br />
+				<label>current month</label>
+				<input type="text" data-g-calendar="currentDate:true,type:month" />
+			</div>
+			<input class="testInError" type="hidden" data-g-calendare="" />
+		</fieldset>
+		<fieldset>
+		<legend>autocomplete</legend>
+			<div id="autocomplete">
+				<label>Normal</label>
+				<input	type="text" 
+						data-g-autocomplete="	service:ch.globaz.pegasus.business.services.models.home.HomeService,
+												method:search,
+												criterias:¦{
+													likeNumeroIdentification: 'No identification',
+													likeDesignation: 'etablisement',
+													likeNpa: 'NPA',
+													likeLocalite: 'Localité'
+												}¦,
+												modelReturnVariables:¦simpleHome.id,simpleHome.numeroIdentification,simpleHome.nomBatiment,tiersHome.tiers.designation2,tiersHome.tiers.designation1¦,
+												lineFormatter:#{simpleHome.numeroIdentification} #{simpleHome.nomBatiment} #{cs(tiersHome.tiers.titreTiers)}#{tiersHome.tiers.designation2} #{tiersHome.tiers.designation1} - (#{tiersHome.localite.numPostal} #{tiersHome.localite.localite}),
+												functionReturn:¦
+													function(element){
+														$(this).parents('.areaMembre').find('.idHome').val($(element).attr('simpleHome.id'));
+														$(this).parents('.areaMembre').find('.idHome').trigger('change');
+														this.value=	$(element).attr('simpleHome.numeroIdentification')
+																	+ ' ' + $(element).attr('simpleHome.nomBatiment')
+																	+ ' ' + $(element).attr('tiersHome.tiers.designation2')
+																	+ ' ' + $(element).attr('tiersHome.tiers.designation1')
+																	+ ' ' + $(element).attr('simpleHome.numeroIdentification');}¦" />
+				<br />
+				<label>mandatory:true</label>
+				<input	type="text" 
+						class="jadeAutocompleteAjax" 
+						data-g-autocomplete="	mandatory:true,
+												service:ch.globaz.pegasus.business.services.models.home.HomeService,
+												method:search,
+												criterias:¦{
+													likeNumeroIdentification: 'No identification',
+													likeDesignation: 'etablisement',
+													likeNpa: 'NPA',
+													likeLocalite: 'Localité'
+												}¦,
+												modelReturnVariables:¦simpleHome.id,simpleHome.numeroIdentification,simpleHome.nomBatiment,tiersHome.tiers.designation2,tiersHome.tiers.designation1¦,
+												lineFormatter:#{simpleHome.numeroIdentification} #{simpleHome.nomBatiment} #{cs(tiersHome.tiers.titreTiers)}#{tiersHome.tiers.designation2} #{tiersHome.tiers.designation1} - (#{tiersHome.localite.numPostal} #{tiersHome.localite.localite}),
+												functionReturn:¦
+													function(element){
+														$(this).parents('.areaMembre').find('.idHome').val($(element).attr('simpleHome.id'));
+														$(this).parents('.areaMembre').find('.idHome').trigger('change');
+														this.value=	$(element).attr('simpleHome.numeroIdentification')
+																	+ ' ' + $(element).attr('simpleHome.nomBatiment')
+																	+ ' ' + $(element).attr('tiersHome.tiers.designation2')
+																	+ ' ' + $(element).attr('tiersHome.tiers.designation1')
+																	+ ' ' + $(element).attr('simpleHome.numeroIdentification');}¦" />
+				<br />
+				<label>Avec Manager</label>
+				<input	type="text"
+						data-g-autocomplete="	manager:globaz.pyxis.db.adressepaiement.TIAdressePaiementDataListViewBean,
+												criterias:¦{
+													forDesignation1BeneficiaireLike: 'Nom',
+													forDesignation2BeneficiaireLike: 'Prénom',
+													forNumAvsBeneficiaireLike: 'NSS',
+													forNpaBeneficiaireLike: 'NPA',
+													forLocaliteBeneficiaireLike: 'Localité'
+												}¦,
+												modelReturnVariables:¦nomTiers1,nomTiers2¦,
+												lineFormatter:#{nss} #{nomTiers1} #{nomTiers2},
+												functionReturn:¦
+													function(element) {
+														var $this = $(this),
+															$element = $(element);
+														$this.val($element.attr('nomTiers1') + ' ' + $element.attr('nomTiers2'));
+													}
+												¦,
+												dynamicCriterias:¦
+												function () {
+													return 'inclureHistorique=' + true;
+												}
+												¦"/>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>tooltipmarker</legend> 
+			<div id="tooltip">
+				<label>normal</label>
+				<table>
+					<tr>
+						<td data-g-tooltip="libelle:tooltip ok!" style="background-color:white;">
+							test tooltip
+						</td>
+					</tr>
+				</table>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>periodformatter</legend>
+			<div id="periodformatter">
+				<label>normal</label>
+				<table>
+					<tr>
+						<th data-g-periodformatter=" ">Période</th>
+					</tr>
+					<tr>
+						<td>12.01.2001 - </td>
+					</tr>
+				</table>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>amountformatter</legend>
+			<div id="amountformatter" >
+				<label>normal</label>
+				<table>
+					<tr>
+						<th>Nom</th><th data-g-amountformatter=" ">Montant</th><th>rue</th>
+					</tr>
+					<tr>
+						<td>Harry</td><td>15065045454 </td><td>Poudlard</td>
+					</tr>
+					<tr>
+						<td>Kent</td><td>15065045454 </td><td>Small</td>
+					</tr>
+					<tr>
+						<td>Lois</td><td>150451</td><td>Small</td>
+					</tr>
+					<tr>
+						<td>Lois</td><td></td><td>Small</td>
+					</tr>
+				</table>
+			<label>blankAsZero:false</label>
+				<table>
+					<tr>
+						<th>Nom</th><th data-g-amountformatter="blankAsZero:false">Montant</th><th>rue</th>
+					</tr>
+					<tr>
+						<td>Kent</td><td data-g-tooltip="libelle:tooltip ok!">15065045454 </td><td>Small</td>
+					</tr>
+					<tr>
+						<td>Lois</td><td></td><td>Small</td>
+					</tr>
+				</table>
+			</div>
+		</fieldset>  
+		<fieldset>
+			<legend>commutator</legend> 
+			<div id="commutator" > 
+				<div id="testDisplay1" class="hide" >Test affichage1</div>	
+				<div id="testDisplay2" class="hide" >Test affichage2</div>	
+				<div id="testContext">
+					<div id="testDisplay3" class="hide" >Test affiche avec context</div>
+				</div>	
+				<div id="testDisplayMaster" class='master'>Test master</div> 
+				<label>true</label>
+				<select name="ttot" id="commutatorSelect"
+						data-g-commutator="	condition:($(this).val()=='true'),
+											actionTrue:¦show('#testDisplay1,#testDisplay2'),notMandatory('#comutatorTrue'),clear('#comutatorTrue')¦,
+											actionFalse:¦clear('#comutatorTrue'),mandatory('#comutatorTrue'),hide('#testDisplay1')¦" >
+					<option value='false'>false</option>
+					<option value='true'>true</option>
+					<option value='master'>master</option>
+				</select>
+				<br />
+				<label>Avec context</label>
+				<select name="context" id="selectContext"
+						data-g-commutator="	context:$('#testContext'),
+											condition:$(this).val()=='affiche',
+											actionTrue:¦show(context.find('.hide'))¦,
+											actionFalse:¦hide(context.find('.hide'))¦" >
+					<option value='affiche'>affiche</option>   
+					<option value='cache'>cache</option>
+				</select>
+				<br />
+				<label>Test </label> <input  type="text" class ="" id="comutatorTrue" />
+				<br />
+				<label class='master'>Avec un maitre </label>
+				<input	name="master" id="master" class='master'
+						data-g-commutator="	context:$(this).parents('div').find('#commutatorSelect'),
+											master:(context),
+											condition:(context.val()=='master'),
+											actionTrue:¦show('.master')¦,
+											actionFalse:¦hide('.master')¦" />
+				<br />
+				<label class="testInError">avec erreur</label>
+				<input class="testInError" type="text" data-g-commutator="	condition:(54545454==545||'toto'=='toto'),
+																			actionTrue:show(),mandatory(),
+																			actionFalse:¦clearee(),show()¦" />
+				<br />
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>MultiWidget avec 3 widgets</legend>
+			<div id="multiwidgets">
+				<script>
+					var LANGUAGES = 'Administration,Tiers,Banque';
+				</script>
+				<table width="100%">
+					<tbody>
+						<tr>
+							<td width="25%">
+								<label>
+									Normal
+								</label>
+							</td>
+							<td width="75%">
+								<div data-g-multiwidgets="languages:LANGUAGES" class="multiWidgets">
+									<input type="hidden" class="compagnie" />
+									<input	id="widget1-multiwidget" 
+											class="widgetAdmin"
+											data-g-autocomplete="service:ch.globaz.pyxis.business.service.AdministrationService,
+																method:¦find¦,
+																criterias:¦{
+																	forCodeAdministrationLike: 'Code administration'
+																}¦,
+																lineFormatter:¦#{tiers.designation1} #{tiers.designation2}, #{tiers.idTiers}¦,
+																modelReturnVariables:¦tiers.id,tiers.designation1,tiers.designation2¦,
+																functionReturn:¦
+																	function(element){
+																		$(this).parents('.areaMembre').find('.compagnie').val($(element).attr('tiers.id'));
+																		$(this).parents('.areaMembre').find('.compagnie').trigger('change');
+																		this.value=$(element).attr('tiers.designation2')+' '+$(element).attr('tiers.designation1');
+																	}
+																¦" 
+											type="text" />
+									<input	id="widget2-multiwidget" 
+											class="jadeAutocompleteAjax widgetTiers" 
+											data-g-autocomplete="service:¦ch.globaz.pyxis.business.service.PersonneEtendueService¦,
+																method:¦find¦,
+																criterias:¦{
+																	forDesignation1Like: 'Nom',
+																	forDesignation2Like: 'Prénom',
+																	forNumeroAvsActuel: 'AVS',
+																	forDateNaissance: 'naissance'
+																}¦,
+																lineFormatter:¦#{tiers.designation1} #{tiers.designation2} #{personneEtendue.numAvsActuel} #{personne.dateNaissance}¦,
+																modelReturnVariables:¦tiers.id,tiers.designation1,tiers.designation2,personneEtendue.numAvsActuel,personne.dateNaissance¦,
+																functionReturn:¦
+																	function(element){
+																		$(this).parents('.areaMembre').find('.compagnie').val($(element).attr('tiers.id'));
+																		$(this).parents('.areaMembre').find('.compagnie').trigger('change');
+																		this.value=$(element).attr('tiers.designation1')+' '+$(element).attr('tiers.designation2')+' '+$(element).attr('personneEtendue.numAvsActuel')+' '+$(element).attr('personne.dateNaissance');
+																	}
+																¦" 
+											type="text" />
+									<input	id="widget3-multiwidget" 
+											class="jadeAutocompleteAjax widgetBanque" 
+											data-g-autocomplete="service:¦ch.globaz.pyxis.business.service.BanqueService¦,
+																method:¦find¦,
+																criterias:¦{
+																	forDesignation1Like: 'Nom',
+																	forNpaLike: 'NPA',
+																	forLocaliteLike: 'Localité',
+																	forClearing: 'Clearing'
+																}¦,
+																lineFormatter:¦#{tiersBanque.designation1} #{localiteBanque.numPostal} #{localiteBanque.localite} #{banque.clearing}¦,
+																modelReturnVariables:¦tiersBanque.idTiers,tiersBanque.designation1¦,
+																functionReturn:¦
+																	function(element){
+																		$(this).parents('.areaMembre').find('.compagnie').val($(element).attr('tiersBanque.idTiers'));
+																		$(this).parents('.areaMembre').find('.compagnie').trigger('change');
+																		this.value=$(element).attr('tiersBanque.designation1');
+																	}
+																¦" 
+											type="text" />
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label>
+									Mandatory
+								</label>
+							</td>
+							<td>
+								<div  data-g-multiwidgets="languages:LANGUAGES,mandatory:true" class="multiWidgets">
+									<input type="hidden" class="compagnie" />
+									<input	id="widget4-multiwidget" 
+											class="widgetAdmin"
+											data-g-autocomplete="service:ch.globaz.pyxis.business.service.AdministrationService,
+																method:¦find¦,
+																criterias:¦{
+																	forCodeAdministrationLike: 'Code administration'
+																}¦,
+																lineFormatter:¦#{tiers.designation1} #{tiers.designation2}, #{tiers.idTiers}¦,
+																modelReturnVariables:¦tiers.id,tiers.designation1,tiers.designation2¦,
+																functionReturn:¦
+																	function(element){
+																		$(this).parents('.areaMembre').find('.compagnie').val($(element).attr('tiers.id'));
+																		$(this).parents('.areaMembre').find('.compagnie').trigger('change');
+																		this.value=$(element).attr('tiers.designation2')+' '+$(element).attr('tiers.designation1');
+																	}
+																¦" 
+											type="text" />
+									<input	id="widget5-multiwidget" 
+											class="jadeAutocompleteAjax widgetTiers" 
+											data-g-autocomplete="service:¦ch.globaz.pyxis.business.service.PersonneEtendueService¦,
+																method:¦find¦,
+																criterias:¦{
+																	forDesignation1Like: 'Nom',
+																	forDesignation2Like: 'Prénom',
+																	forNumeroAvsActuel: 'AVS',
+																	forDateNaissance: 'naissance'
+																}¦,
+																lineFormatter:¦#{tiers.designation1} #{tiers.designation2} #{personneEtendue.numAvsActuel} #{personne.dateNaissance}¦,
+																modelReturnVariables:¦tiers.id,tiers.designation1,tiers.designation2,personneEtendue.numAvsActuel,personne.dateNaissance¦,
+																functionReturn:¦
+																	function(element){
+																		$(this).parents('.areaMembre').find('.compagnie').val($(element).attr('tiers.id'));
+																		$(this).parents('.areaMembre').find('.compagnie').trigger('change');
+																		this.value=$(element).attr('tiers.designation1')+' '+$(element).attr('tiers.designation2')+' '+$(element).attr('personneEtendue.numAvsActuel')+' '+$(element).attr('personne.dateNaissance');
+																	}
+																¦" 
+											type="text" />
+									<input	id="widget6-multiwidget" 
+											class="jadeAutocompleteAjax widgetBanque" 
+											data-g-autocomplete="service:¦ch.globaz.pyxis.business.service.BanqueService¦,
+																method:¦find¦,
+																criterias:¦{
+																	forDesignation1Like: 'Nom',
+																	forNpaLike: 'NPA',
+																	forLocaliteLike: 'Localité',
+																	forClearing: 'Clearing'
+																}¦,
+																lineFormatter:¦#{tiersBanque.designation1} #{localiteBanque.numPostal} #{localiteBanque.localite} #{banque.clearing}¦,
+																modelReturnVariables:¦tiersBanque.idTiers,tiersBanque.designation1¦,
+																functionReturn:¦
+																	function(element){
+																		$(this).parents('.areaMembre').find('.compagnie').val($(element).attr('tiersBanque.idTiers'));
+																		$(this).parents('.areaMembre').find('.compagnie').trigger('change');
+																		this.value=$(element).attr('tiersBanque.designation1');
+																	}
+																¦" 
+											type="text" />
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label>
+									Etendu
+								</label>
+							</td>
+							<td>
+								<div  data-g-multiwidgets="languages:LANGUAGES,widgetEtendu:true" class="multiWidgets">
+									<input type="hidden" class="compagnie" />
+									<input	id="widget7-multiwidget" 
+											class="widgetAdmin"
+											data-g-autocomplete="service:ch.globaz.pyxis.business.service.AdministrationService,
+																method:¦find¦,
+																criterias:¦{
+																	forCodeAdministrationLike: 'Code administration'
+																}¦,
+																lineFormatter:¦#{tiers.designation1} #{tiers.designation2}, #{tiers.idTiers}¦,
+																modelReturnVariables:¦tiers.id,tiers.designation1,tiers.designation2¦,
+																functionReturn:¦
+																	function(element){
+																		$(this).parents('.areaMembre').find('.compagnie').val($(element).attr('tiers.id'));
+																		$(this).parents('.areaMembre').find('.compagnie').trigger('change');
+																		this.value=$(element).attr('tiers.designation2')+' '+$(element).attr('tiers.designation1');
+																	}
+																¦" 
+											type="text" />
+									<input	id="widget8-multiwidget" 
+											class="jadeAutocompleteAjax widgetTiers" 
+											data-g-autocomplete="service:¦ch.globaz.pyxis.business.service.PersonneEtendueService¦,
+																method:¦find¦,
+																criterias:¦{
+																	forDesignation1Like: 'Nom',
+																	forDesignation2Like: 'Prénom',
+																	forNumeroAvsActuel: 'AVS',
+																	forDateNaissance: 'naissance'
+																}¦,
+																lineFormatter:¦#{tiers.designation1} #{tiers.designation2} #{personneEtendue.numAvsActuel} #{personne.dateNaissance}¦,
+																modelReturnVariables:¦tiers.id,tiers.designation1,tiers.designation2,personneEtendue.numAvsActuel,personne.dateNaissance¦,
+																functionReturn:¦
+																	function(element){
+																		$(this).parents('.areaMembre').find('.compagnie').val($(element).attr('tiers.id'));
+																		$(this).parents('.areaMembre').find('.compagnie').trigger('change');
+																		this.value=$(element).attr('tiers.designation1')+' '+$(element).attr('tiers.designation2')+' '+$(element).attr('personneEtendue.numAvsActuel')+' '+$(element).attr('personne.dateNaissance');
+																	}
+																¦" 
+											type="text" />
+									<input	id="widget9-multiwidget" 
+											class="jadeAutocompleteAjax widgetBanque" 
+											data-g-autocomplete="service:¦ch.globaz.pyxis.business.service.BanqueService¦,
+																method:¦find¦,
+																criterias:¦{
+																	forDesignation1Like: 'Nom',
+																	forNpaLike: 'NPA',
+																	forLocaliteLike: 'Localité',
+																	forClearing: 'Clearing'
+																}¦,
+																lineFormatter:¦#{tiersBanque.designation1} #{localiteBanque.numPostal} #{localiteBanque.localite} #{banque.clearing}¦,
+																modelReturnVariables:¦tiersBanque.idTiers,tiersBanque.designation1¦,
+																functionReturn:¦
+																	function(element){
+																		$(this).parents('.areaMembre').find('.compagnie').val($(element).attr('tiersBanque.idTiers'));
+																		$(this).parents('.areaMembre').find('.compagnie').trigger('change');
+																		this.value=$(element).attr('tiersBanque.designation1');
+																	}
+																¦" 
+											type="text" />
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label>
+									Etendu mandatory
+								</label>
+							</td>
+							<td>
+								<div  data-g-multiwidgets="languages:LANGUAGES,widgetEtendu:true,mandatory:true,libelleClassName:widgetEtenduText" class="multiWidgets">
+									<input type="hidden" class="compagnie" />
+									<input	id="widget10-multiwidget" 
+											class="widgetAdmin"
+											data-g-autocomplete="service:ch.globaz.pyxis.business.service.AdministrationService,
+																method:¦find¦,
+																criterias:¦{
+																	forCodeAdministrationLike: 'Code administration'
+																}¦,
+																lineFormatter:¦#{tiers.designation1} #{tiers.designation2}, #{tiers.idTiers}¦,
+																modelReturnVariables:¦tiers.id,tiers.designation1,tiers.designation2¦,
+																functionReturn:¦
+																	function(element){
+																		$(this).parents('.areaMembre').find('.compagnie').val($(element).attr('tiers.id'));
+																		$(this).parents('.areaMembre').find('.compagnie').trigger('change');
+																		this.value=$(element).attr('tiers.designation2')+' '+$(element).attr('tiers.designation1');
+																	}
+																¦" 
+											type="text" />
+									<input	id="widget11-multiwidget" 
+											class="jadeAutocompleteAjax widgetTiers" 
+											data-g-autocomplete="service:¦ch.globaz.pyxis.business.service.PersonneEtendueService¦,
+																method:¦find¦,
+																criterias:¦{
+																	forDesignation1Like: 'Nom',
+																	forDesignation2Like: 'Prénom',
+																	forNumeroAvsActuel: 'AVS',
+																	forDateNaissance: 'naissance'
+																}¦,
+																lineFormatter:¦#{tiers.designation1} #{tiers.designation2} #{personneEtendue.numAvsActuel} #{personne.dateNaissance}¦,
+																modelReturnVariables:¦tiers.id,tiers.designation1,tiers.designation2,personneEtendue.numAvsActuel,personne.dateNaissance¦,
+																functionReturn:¦
+																	function(element){
+																		$(this).parents('.areaMembre').find('.compagnie').val($(element).attr('tiers.id'));
+																		$(this).parents('.areaMembre').find('.compagnie').trigger('change');
+																		this.value=$(element).attr('tiers.designation1')+' '+$(element).attr('tiers.designation2')+' '+$(element).attr('personneEtendue.numAvsActuel')+' '+$(element).attr('personne.dateNaissance');
+																	}
+																¦" 
+											type="text" />
+									<input	id="widget13-multiwidget" 
+											class="jadeAutocompleteAjax widgetBanque" 
+											data-g-autocomplete="service:¦ch.globaz.pyxis.business.service.BanqueService¦,
+																method:¦find¦,
+																criterias:¦{
+																	forDesignation1Like: 'Nom',
+																	forNpaLike: 'NPA',
+																	forLocaliteLike: 'Localité',
+																	forClearing: 'Clearing'
+																}¦,
+																lineFormatter:¦#{tiersBanque.designation1} #{localiteBanque.numPostal} #{localiteBanque.localite} #{banque.clearing}¦,
+																modelReturnVariables:¦tiersBanque.idTiers,tiersBanque.designation1¦,
+																functionReturn:¦
+																	function(element){
+																		$(this).parents('.areaMembre').find('.compagnie').val($(element).attr('tiersBanque.idTiers'));
+																		$(this).parents('.areaMembre').find('.compagnie').trigger('change');
+																		this.value=$(element).attr('tiersBanque.designation1');
+																	}
+																¦" 
+											type="text" />
+									<script type="text/javascript">
+										$('html').bind(eventConstant.NOTATION_MANAGER_DONE, function(){
+											$('.widgetEtenduText').text('Valeur bidon');
+										});
+									</script>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>cellformatter</legend> 
+			<div id="cellformatter" >
+				<label>normal</label>
+				<table>
+					<tr>
+						<th>Nom</th>
+						<th data-g-cellformatter="css:formatCellIcon">Img</th>
+						<th>rue</th>
+					</tr>
+					<tr>
+						<td>Harry</td><td>img</td><td>Poudlard</td>
+					</tr>
+					<tr>
+						<td>Kent</td><td>img</td><td>Small</td>
+					</tr>
+					<tr>
+						<td>Lois</td><td>IMG</td><td>Small</td>
+					</tr>
+				</table>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>adresse</legend>
+			<div id="adressePaiement">
+				<div data-g-adresse="service:findAdressePaiement" >
+					<input	type="hidden" 
+							id="idTiersAdressePaiement" 
+							class="avoirPaiement.idTiers" 
+							name="creancier.simpleCreancier.idTiersAdressePaiement" 
+							value=" " />
+					<input	type="hidden" 
+							id="idDomaineApplicatif" 
+							class="avoirPaiement.idApplication" 
+							name="creancier.simpleCreancier.idDomaineApplicatif" 
+							value=" " />
+					<input	type="hidden" 
+							id="idAffilieAdressePaiment" 
+							class="avoirPaiement.idExterne" 
+							name="creancier.simpleCreancier.idAffilieAdressePaiment" 
+							value=" " />
+				</div>
+			</div>
+			<div id="adresse">
+				<div data-g-adresse="service:findAdresse, 
+									 defaultvalue:¦	Madame
+													Lise DUPLAN
+													Forchex 
+													1867 Ollon VD¦" >
+					<input	type="hidden" 
+							id="idTiersAdressePaiement" 
+							class="avoirPaiement.idTiers" 
+							name="creancier.simpleCreancier.idTiersAdressePaiement" 
+							value=" " />
+					<input	type="hidden" 
+							id="idDomaineApplicatif" 
+							class="avoirPaiement.idApplication" 
+							name="creancier.simpleCreancier.idDomaineApplicatif" 
+							value=" " />
+					<input	type="hidden" 
+							id="idAffilieAdressePaiment" 
+							class="avoirPaiement.idExterne" 
+							name="creancier.simpleCreancier.idAffilieAdressePaiment" 
+							value=" " />
+				</div>
+			</div>
+			<div id="adressePaiementManager">
+				<div data-g-adresse="service:findAdressePaiementManager">
+					<input	type="hidden" 
+							id="idTiersAdressePaiement" 
+							class="idTiers" 
+							name="idTiers" 
+							value="" />
+				</div>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>cellsum</legend> 
+			<div id="cellsum" >
+				<table id="repartition" width="100%">
+					<tr>
+						<td data-p-cellsum="horizontal:none">LUC</td>
+						<td data-p-cellsum="horizontal:plus" data-g-amountformatter=" ">600</td>
+						<td data-p-cellsum="horizontal:minus">
+							<input name='21_647' data-g-amount=" " value='350'/>
+						</td>
+						<td data-p-cellsum="horizontal:minus">
+							<input name='23_647' data-g-amount=" " value='800'/>
+						</td>
+						<td data-g-cellsum="horizontal:true,redifnegative:true" data-g-amountformatter=" ">0</td>
+					</tr>
+					<tr>
+						<td data-p-cellsum="horizontal:none">PAUL</td>
+						<td data-p-cellsum="horizontal:plus" data-g-amountformatter=" " >999</td>
+						<td data-p-cellsum="horizontal:minus">
+							<input name='21_648' data-g-amount=" "  value='1500'/>
+						</td>
+						<td  data-p-cellsum="horizontal:minus">
+							<input name='23_648' data-g-amount=" "  value='950'/>
+						</td>		
+						<td data-g-cellsum="horizontal:true"  data-g-amountformatter=" " >0</td>
+					</tr>
+					<tr>
+						<td data-p-cellsum="horizontal:none">JEAN</td>
+						<td data-g-amountformatter=" " data-p-cellsum="horizontal:plus">700</td>
+						<td data-p-cellsum="horizontal:minus,vertical:none">
+							<input name='21_649' data-g-amount=" "  value='250'/>
+						</td>
+						<td data-p-cellsum="horizontal:minus">
+							<input name='23_649' data-g-amount=" "  value='100'/>
+						</td>
+						<td data-g-cellsum="horizontal:true" data-g-amountformatter=" " >0</td>
+					</tr>
+					<tr>
+						<td> </td> 
+						<td data-g-cellsum=" " data-g-amountformatter=" ">0</td>
+						<td data-g-cellsum=" " data-g-amountformatter=" ">0</td>
+						<td data-g-cellsum=" " data-g-amountformatter=" ">0</td>
+						<td data-g-cellsum=" " data-g-amountformatter=" ">0</td>
+					</tr>
+				</table>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>deallaterperiode</legend> 
+			<div id="deallaterperiod">
+				<label>normal</label>
+				<table>
+					<tr header="true">
+						<th data-g-deallaterperiod=" ">Période</th>
+					</tr>
+					<tr>
+						<td>12.01.2010 - </td>
+					</tr>
+					<tr header="true">
+						<td>12.01.3000 - </td>
+					</tr> 
+				</table>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>detailnavigator</legend>
+			<div id="detailnavigator">
+				<script>
+					var currentId = 3;
+					var actionNavigator = "demo.jsp?";
+					var lotPagination = [1,2,3];
+				</script>
+				<div 	data-g-detailnavigator="	currentId:currentId, 
+													userAction:actionNavigator, 
+													lotPagination:lotPagination" 
+						style="background-color:silver;margin-left:100px;" />
+				</div>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>externallink</legend>
+			<div id="externallink">
+				<a data-g-externallink=" " href ="../notation/test.jsp">globaz</a>Sans selecteur
+				<br />
+				<a data-g-externallink="reLoad:false" href ="../notation/test.jsp">globaz</a>Sans recharger la page
+				<br /> 
+				<a data-g-externallink="selectorForClose:#affiche,forceReload:true" href ="../notation/test.jsp">globaz</a>Avec selecteur
+				<br />
+				<a data-g-externallink="autoResize:false" href ="../notation/test.jsp">globaz</a>Sans resizer
+				<br />
+				(On set l'attribut forceReload à true car le bouton sélectionner avec le sélecteur n'entraine pas rechargement de page)
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>download</legend> 
+			<div id="download"> 
+				<a data-g-download="docType:doc,
+									parametres:47,
+									serviceClassName:ch.globaz.pegasus.business.services.doc.excel.ListeDeControleService,
+									serviceMethodName:createListeOrdreDeVersement,
+									docName:listeOrdreDeVersement"></a> 
+				<a data-g-download="docType:xls,
+									parametres:¦47,true,test¦,
+									serviceClassName:ch.globaz.pegasus.business.services.doc.excel.ListeDeControleService,
+									serviceMethodName:createListeOrdreDeVersement,
+									docName:listeOrdreDeVersement"></a>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>actionImage</legend> 
+			<div id="actionImage"> 
+				Cet objet est en développement! Une spécification claire et précises des besoisn sera nécessaire!<br/>
+				Il est prévu, dans cet objet, de gérer une image avec un action liée. Cela afin de gérer, entre autres, <br/>
+				le comportement des formulaires (grisé ou pas), et également les actions liées à cette image (click, hover, etc..), à suivre, donc!	   
+				</div>
+		</fieldset>
+		<fieldset>
+			<legend>clone</legend>
+			<div id="clone">
+				<table>
+					<script>
+						$(function (){
+							$('.testCloneAutoComplete').globazWidget(
+								'ch.globaz.pyxis.business.service.AdresseService',
+								'findAdressePaiement',
+								'',
+								'forDesignation1BeneficiaireLike,forDesignation2BeneficiaireLike',
+								'',
+								'#{tiers.designation1} #{tiers.designation2}',
+								'tiers.id,tiers.designation1,tiers.designation2,personneEtendue.numAvsActuel,personne.dateNaissance',
+								['Nom','Prénom'],
+								'20',
+								function(element){
+									this.value=	$(element).attr('tiers.designation1')
+												+ ' ' + $(element).attr('tiers.designation2')
+												+ ' ' + $(element).attr('personneEtendue.numAvsActuel')
+												+ ' ' + $(element).attr('personne.dateNaissance');
+								}
+							);
+						});
+					</script>			
+					<tr data-g-clone=" "><td>Jean</td><td>Paul</td><td>Les planches</td><td>Rouge</td></tr>
+					<tr data-g-clone=" ">
+						<td><input class="jadeAutocompleteAjax testCloneAutoComplete" id="testCloneAutoComplete" type="text" value="Jean"/>
+						</td>
+						<td><input type="text" value=""/></td>
+						<td><input type="text" value=""/></td>
+						<td><input type="text" value="Rouge"/></td>
+					</tr>
+				</table>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>selectAutoComplete</legend> 
+			<div id="selectAutoComplete" > 
+				<select name="forTestSelectAutoComplete" data-g-selectautocomplete=" " >
+					<option value="idVolvo">Volvo</option>
+					<option value="idSaab">Saab</option>
+					<option value="idMercedes">Mercedes</option>
+					<option value="idAudi">Audi</option>
+				</select>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>email</legend>
+			<div id="inputEmail">
+				<table width="100%">
+					<tr>
+						<td>
+							<label for="email1">
+								normal
+							</label>
+						</td>
+						<td>
+							<input id="email1" data-g-email=" " />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="email2">
+								mandatory:true
+							</label>
+						</td>
+						<td>
+							<input id="email2" data-g-email="mandatory:true" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="email3">
+								addSymboleMandatory:true
+							</label>
+						</td>
+						<td>
+							<input id="email3" data-g-email="addSymboleMandatory:true" />
+						</td>
+					</tr>
+				</table>
+			</div>
+		</fieldset>
+		<fieldset>
+	 	    <legend>masterCheckBox</legend> 
+	 	    <div id="masterCheckBox" > 
+	 	    	<table>
+	 	    		<thead>
+	 	    			<tr>
+	 	    				<th><input type="checkbox" data-g-mastercheckbox=" "/></th>
+	 	    				<th>colone</th>
+	 	    			</tr>
+	 	    		</thead>
+	 	    		<tbody>
+	 	    			<tr>
+	 	    				<td><input type="checkbox" /></td>
+	 	    				<td>val colone</td>
+	 	    			</tr>
+	 	    			<tr>
+	 	    				<td><input type="checkbox" /></td>
+	 	    				<td>val colone</td>
+	 	    			</tr>
+	 	    			<tr>
+	 	    				<td><input type="checkbox" /></td>
+	 	    				<td>val colone</td>
+	 	    			</tr>
+	 	    			<tr>
+	 	    				<td><input type="checkbox" /></td>
+	 	    				<td>val colone</td>
+	 	    			</tr>
+	 	    		</tbody>
+	 	    	</table>
+			</div>
+	 	</fieldset>
+	 	<fieldset>
+	 	    <script type="text/javascript">
+	 	   		var multiSelectData = [
+					{"value":"64043001","libelle":"Ligne1"},
+					{"value":"64043003","libelle":"Ligne2"},
+					{"value":"64043004","libelle":"Ligne3"},
+					{"value":"64043005","libelle":"Ligne4","childrens":[
+						{"value":"64044001","libelle":"Domicilié en Suisse depuis - de 10 ans, + 5 ans, pays mais rente supérieure au minimum de l\u0027échelle 44"},{"value":"64044002","libelle":"Domicilié en Suisse depuis - de 5 ans, pays conventionné mais rente inférieure au minimum de l\u0027 échelle 44"},{"value":"64044003","libelle":"Domicilié en Suisse depuis - de 10 ans, pays non-conventionné"},{"value":"64044004","libelle":"Pas de rente, pays non-conventionné"}
+				    	],"childrensLibelle":"Sousliste2"},
+					{"value":"64043006","libelle":"Ligne5"},
+					{"value":"64043007","libelle":"Ligne6"},
+					{"value":"64043009","libelle":"Ligne7"},
+					{"value":"64043012","libelle":"Ligne8","childrens":[
+						{"value":"64044001","libelle":"Domicilié en Suisse depuis - de 10 ans, + 5 ans, pays conventionné mais rente supérieure au minimum de l\u0027échelle 44"},{"value":"64044002","libelle":"Domicilié en Suisse depuis - de 5 ans, pays conventionné mais rente inférieure au minimum de l\u0027 échelle 44"},{"value":"64044003","libelle":"Domicilié en Suisse depuis - de 10 ans, pays non-conventionné"},{"value":"64044004","libelle":"Pas de rente, pays non-conventionné"}
+					],"childrensLibelle":"Sousliste"
+					}
+					];
+	 	    	var initValue = {'masterValue':'64043005','childValue':'64044001'};	 	    
+	 	    </script>
+	 	    <legend>multiSelect</legend> 
+	 	    <div id="multiSelect"> 
+	 	    			<label id="motifsLabel">Motif
+						</label>
+						<select id="motifListe" name="decisionSuppression.simpleDecisionSuppression.csMotif" data-g-multiselect=" dataList:multiSelectData,initValues :initValue,subLevelId:sousMotifListe,subLevelLibelle:sous-motifs"></select>
+						<label id="sousMotifsLabel"></label>
+						<select id="sousMotifListe" name="decisionSuppression.simpleDecisionSuppression.csSousMotif"></select>
+			</div>
+	 	</fieldset>
+	 	<fieldset>
+	 		<legend>multistring</legend>
+	 		<div id="multistring">
+	 			<script type="text/javascript">
+	 			var multiStringAutoCompleteData=[
+	 				{value:"1500",libelle:"Caisse A"},
+	 				{value:"1507",libelle:"Caisse B",readonly:true}
+	 			];
+	 			</script>
+	 			<div data-g-multistring="tagName:unMultiSelect,defaultValues:¦[{value:'Un élément'},{value:'Non modifiable',readonly:true},{value:'Autre élément nouveau'},{value:'!& est le premier caractère'},{value:'le & est au milieu'}]¦">
+	 			</div>
+	 			<div data-g-multistring="tagName:multiStringAutoCompletionMultiple,mode:autocompletion,languages:¦Administration,Tiers¦,defaultValues:multiStringAutoCompleteData">
+					<input type="hidden" class="compagnie" />
+					<input	id="widget1-multistring" 
+							class="widgetAdmin"
+							data-g-autocomplete="service:ch.globaz.pyxis.business.service.AdministrationService,
+												method:¦find¦,
+												criterias:¦{
+													forCodeAdministrationLike: 'Code administration'
+												}¦,
+												lineFormatter:¦#{tiers.designation1} #{tiers.designation2}, #{tiers.idTiers}¦,
+												modelReturnVariables:¦tiers.id,tiers.designation1,tiers.designation2¦,
+												functionReturn:¦
+													function(element){
+														return {
+															id:$(element).attr('tiers.id'),
+															text:$(element).attr('tiers.designation2')+' '+$(element).attr('tiers.designation1')
+														};
+													}
+												¦" 
+							type="text" />
+			 		<input	id="widget2-multistring" 
+							class="jadeAutocompleteAjax widgetTiers" 
+							data-g-autocomplete="service:¦ch.globaz.pyxis.business.service.PersonneEtendueService¦,
+												method:¦find¦,
+												criterias:¦{
+													forDesignation1Like: 'Nom',
+													forDesignation2Like: 'Prénom',
+													forNumeroAvsActuel: 'AVS',
+													forDateNaissance: 'naissance'
+												}¦,
+												lineFormatter:¦#{tiers.designation1} #{tiers.designation2} #{personneEtendue.numAvsActuel} #{personne.dateNaissance}¦,
+												modelReturnVariables:¦tiers.id,tiers.designation1,tiers.designation2,personneEtendue.numAvsActuel,personne.dateNaissance¦,
+												functionReturn:¦
+													function(element){
+														return {
+															id:$(element).attr('tiers.id'),
+															text:$(element).attr('tiers.designation2')+' '+$(element).attr('tiers.designation1')
+														};
+													}
+												¦" 
+							type="text" />			
+	 		 	</div>
+	 		</div>
+	 	</fieldset>
+	 	<fieldset>
+	 		<legend>bubble</legend>
+	 		<div id="bubble">
+	 			<table width="100%">
+	 				<thead/>
+	 				<tbody>
+	 					<tr>
+	 						<td>
+	 							normal(type:hover)
+	 						</td>
+	 						<td>
+					 			<span data-g-bubble="text:¦Je disparais dès que tu enlèves ta souris¦">
+						 			<strong>
+						 				Fly over me
+						 			</strong>
+					 			</span>
+	 						</td>
+	 					</tr>
+						<tr>
+	 						<td>
+	 							Sans image
+	 						</td>
+	 						<td>
+					 			<span data-g-bubble="wantMarker:false,text:¦Je disparais dès que tu enlèves ta souris¦">
+						 			<strong>
+						 				Fly over me without image
+						 			</strong>
+					 			</span>
+	 						</td>
+	 					</tr>
+	 					<tr>
+	 						<td>
+	 							type:click
+	 						</td>
+	 						<td>
+					 			<span data-g-bubble="type:click,text:¦Pour me fermer, presse la croix ou clique à côté¦">
+					 				<strong>
+					 					Click
+					 				</strong>
+					 			</span>
+	 						</td>
+	 					</tr>
+	 					<tr>
+	 						<td>
+	 							title:Test
+	 						</td>
+	 						<td>
+					 			<span data-g-bubble="title:Test,text:¦J'ai un titre¦">
+					 				<strong>
+					 					With title
+					 				</strong>
+					 			</span>
+	 						</td>
+	 					</tr>
+	 					<tr>
+	 						<td>
+	 							position:right
+	 						</td>
+	 						<td>
+					 			<span data-g-bubble="position:right,title:¦à droite¦text:¦Pour un meilleur rendu, mettez un titre¦">
+					 				<strong>
+					 					Right
+					 				</strong>
+					 			</span>
+	 						</td>
+	 					</tr>
+	 					<tr>
+	 						<td>
+	 							With id
+	 						</td>
+	 						<td>
+					 			<span data-g-bubble="position:right,title:Complex Bubble,type:click,id:¦complexBubble¦">
+					 				<strong>
+					 					With id
+					 				</strong>
+					 			</span>
+					 			<div id="complexBubble">
+					 				<p>
+					 					Ceci est une bulle complexe
+					 				</p>
+					 				<label for="complexBubbleText">
+					 					text
+					 				</label>
+					 				<input type="text" id="complexBubbleText" value="value"/>
+					 				<br/>
+					 				<button id="complexBubbleButton">Ok</button>
+					 				<script type="text/javascript">
+				 						$('#complexBubbleButton').click(function(){
+				 							alert($('#complexBubbleText').val());
+				 						});
+					 				</script>
+					 			</div>
+	 						</td>
+	 					</tr>
+	 				</tbody>
+	 			</table>
+	 		</div>
+	 	</fieldset>
+	 	<fieldset>
+	 	    <legend>upload</legend> 
+	 	    <div id="upload" > 
+	 	    	<input type="file" style="height:25px" id="upload_demo"  data-g-upload=" " />
+			</div>
+	 	</fieldset>
+	 	
+	 	<fieldset>
+	 	    <legend>boxmessage</legend> 
+	 	    <div id="boxmessage" > 
+	 	    	<div data-g-boxmessage="type:WARN"> mon message text html</div>
+	 	    	<br>
+	 	    	<div data-g-boxmessage="type:ERROR"> mon message text html en erreur</div>
+			</div>
+	 	</fieldset>
+	 	
+	 	<fieldset>
+	 	    <legend>echeance</legend> 
+	 	    <div id="echeance" > 
+	 	    	<input data-g-echeance="idTiers:153103, idExterne:15281, csDomaine:62300001"> </input>
+			</div>
+	 	</fieldset>
+	 	
+	 	<fieldset>
+	 	    <legend>iban</legend> 
+	 	    <div id="iban" > 
+	 	    	<input type="text" data-g-iban=" " /> 
+			</div>
+	 	</fieldset>
+	 	
+	 	<fieldset>
+	 	    <legend>note</legend> 
+	 	    <div id="note" > 
+	 	        <div>Base seul<span data-g-note="idExterne:123123, tableSource:PC, executeCount:true" /></div><br />
+ 	    		
+				<div>Note 1<span data-g-note="idExterne:1, tableSource:PC, inList:true" ></span></div>
+				<div>Note 2<span data-g-note="idExterne:2, tableSource:PC, inList:true" ></span></div>
+				<div>Note 3<span data-g-note="idExterne:3, tableSource:PC, inList:true" ></span></div>
+				<div>Note 4<span data-g-note="idExterne:4, tableSource:PC, inList:true" ></span></div>
+ 	    		
+			</div>
+	
+	 	</fieldset>
+	 	
+	 	<fieldset>
+	 	    <legend>selectautocomplete</legend> 
+	 	    <div id="selectautocomplete" > 
+ 	    		<select id="testSelect" name="pasDeChance" data-g-selectautocomplete=" ">
+ 	    			<option>Test</option>
+ 	    			<option>Bleau</option>
+ 	    			<option>Blanc</option>
+ 	    			<option>Noir</option>
+ 	    			<option>Willi waller 2006</option>
+ 	    			<option>Yoda</option>
+ 	    		</select>
+			</div>	
+	 	</fieldset>
+	</div>

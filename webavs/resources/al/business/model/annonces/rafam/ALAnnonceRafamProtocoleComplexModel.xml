@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.rafam.AnnonceRafamProtocoleComplexModel">
+		<select-fields distinct="true">
+			<select-field name="nssEnfant" field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.personneEtendue.numAvsActuel"/>
+			<select-field name="nomEnfant" field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.tiers.designation1"/>
+			<select-field name="prenomEnfant" field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.tiers.designation2"/>
+			<select-field name="naissanceEnfant" field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.personne.dateNaissance"/>
+			<select-field name="idDossier" field-ref="droitComplexModel.droitModel.idDossier"/>
+			<select-field name="recordNumber" field-ref="annonceRafamModel.recordNumber"/>
+			<select-field name="idAnnonce" field-ref="annonceRafamModel.idAnnonce"/>
+			<select-field name="nomAllocataire" field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation1"/>
+			<select-field name="prenomAllocataire" field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation2"/>
+		</select-fields>
+		
+		<root-model name="annonceRafamModel" model-ref="ch.globaz.al.business.models.rafam.AnnonceRafamModel" select-fields="false"/>
+		
+		<linked-model name="erreurAnnonceRafamModel" model-ref="ch.globaz.al.business.models.rafam.ErreurAnnonceRafamModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idAnnonce" field-ref="annonceRafamModel.idAnnonce"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="allocataireComplexModel" model-ref="ch.globaz.al.business.models.allocataire.AllocataireComplexModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="allocataireModel.idAllocataire" field-ref="annonceRafamModel.idAllocataire"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="droitComplexModel" model-ref="ch.globaz.al.business.models.droit.DroitComplexModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="droitModel.idDroit" field-ref="annonceRafamModel.idDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition name="protocoleErreurs">
+			<search-group operator="AND">
+				<search-literal><![CDATA[ (#{erreurAnnonceRafamModel.code} IS NOT NULL) ]]></search-literal>
+				<search-field name="forEtat" field-ref="annonceRafamModel.etat" operation="EQUALS"/>
+				<search-field name="inCodeRetour" field-ref="annonceRafamModel.codeRetour" operation="IN" />
+				<search-field name="inTypeAnnonce" field-ref="annonceRafamModel.typeAnnonce" operation="IN" />	
+				<search-field name="forTypeAnnonce" field-ref="annonceRafamModel.typeAnnonce" operation="EQUALS" />	
+				<search-literal><![CDATA[ (#{annonceRafamModel.delegated} = 2) ]]></search-literal>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="upi">
+			<search-group operator="AND">
+				<search-field name="forEtat" field-ref="annonceRafamModel.etat" operation="EQUALS"/>
+				<search-field name="forTypeAnnonce" field-ref="annonceRafamModel.typeAnnonce" operation="EQUALS"/>
+				<search-literal><![CDATA[ (#{annonceRafamModel.delegated} = 2) ]]></search-literal>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="default">
+			<order-field field-ref="nssEnfant"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

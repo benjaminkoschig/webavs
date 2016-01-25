@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.revenusdepenses.SimpleAutresRevenus">
+		<description>AUTRES_REVENUS</description>
+		<table name="PCAUREV" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAutresRevenus" column="BVIARE" comment="ID_AUTRES_REVENUS"/>			
+			<field name="idDonneeFinanciereHeader" mandatory="true" column="BVIDFH" type="NUMERIC" comment="DONNEE_FINANCIERE_HEADER"/>
+			<field name="libelle" mandatory="true" column="BVLLIB" type="STRING" comment="LIBELLE"/>			
+			<field name="montant" mandatory="true" column="BVNMON" dataType="NUMERIC(15,2)" type="NUMERIC" comment="MONTANT"/>
+			<field name="dateEcheance" column="BVDECH" type="DATE" comment="DATE_ECHEANCE"/>						
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

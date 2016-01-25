@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.syndicat.ParametreSyndicatSimpleModel">
+		<table name="PT_PARAMETRES_SYNDICATS" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="Id du paramètre de syndicat" />
+			<field name="idSyndicat" column="ID_TIADMIP" type="NUMERIC"
+				comment="id du tiers administration qui représente le syndicat (type syndicat)" />
+			<field name="idCaisseMetier" column="ID_CAISSE_METIER" type="NUMERIC"
+				comment="id du tiers administration représentant la convention" />
+			<field name="pourcentage" column="POURCENTAGE" type="NUMERIC"
+				comment="pourcentage retenu sur le salaire" />
+			<field name="montantParTravailleur" column="MONTANT_PAR_TRAVAILLEUR" type="NUMERIC"
+				comment="montant par travailleur" />
+			<field name="dateDebut" column="DATE_DEBUT" type="DATE"
+				comment="date de début du paramètre" />
+			<field name="dateFin" column="DATE_FIN" type="DATE"
+				comment="date de fin du paramètre" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="id" />
+		</order-by>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.fortuneparticuliere.SimpleMarchandisesStock">
+		<description>Marchandises Stock</description>
+		<table name="PCMARSTO" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idMarchandisesStock" column="BOIMST" comment="ID_MARCHANDISES_STOCK"/>
+			<field name="idDonneeFinanciereHeader" column="BOIDFH" type="NUMERIC" mandatory="true" comment="ID_DONNEE_FINANCIERE_HEADER"/>
+			<field name="csTypePropriete" column="BOTTPO" type="NUMERIC" mandatory="true" comment="CS_TYPE_PROPRIETE"/>
+			<field name="partProprieteNumerateur" column="BONPPN" type="NUMERIC" mandatory="true" comment="PART_PROPRIETE_NUMERATEUR"/>
+			<field name="partProprieteDenominateur" column="BONPPD" type="NUMERIC" mandatory="true" comment="PART_PROPRIETE_DENOMINATEUR"/>
+			<field name="montantStock" column="BOMSTO" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT_STOCK"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

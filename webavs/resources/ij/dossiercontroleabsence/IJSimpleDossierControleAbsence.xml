@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.ij.business.models.IJSimpleDossierControleAbsences">
+		<description>
+			Dossier de contrôle des absences
+		</description>
+		<table name="IJDOCOAB" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key 	name="idDossierControleAbsences" 	column="IDDOSS" 	type="NUMERIC" 		mandatory="true" comment="Id du dossier de contrôle des absences" />
+			<field 			name="isHistorise" 					column="ISHIST" 	type="BOOLEAN"		mandatory="true" comment="Est-ce que le dossier est historisé" />			
+			<field 			name="idTiers" 						column="IDTIER" 	type="NUMERIC"		mandatory="true" comment="Id du tiers associé au dossier de contrôle des absences" />
+			<field 			name="dateDebutFPI" 				column="DDEFPI" 	type="DATE"			mandatory="true" comment="Date de début du FPI" />
+			<field 			name="dateDebutIJAI" 				column="DDIJAJ" 	type="DATE"			mandatory="true" comment="Date de début des IJ AI" />
+		</fields>
+		<search-definition>
+			<search-group  operator="AND">
+				<search-field  name="forIdDossierControleAbsences" 	field-ref="idDossierControleAbsences" 	operation="EQUALS" />
+				<search-field  name="forIsHistorise" 				field-ref="isHistorise" 				operation="EQUALS" />				
+				<search-field  name="forIdTiers" 					field-ref="idTiers" 					operation="EQUALS" />
+				<search-field  name="forDateDebutFPI" 				field-ref="dateDebutFPI" 				operation="EQUALS" />
+				<search-field  name="forDateDebutIJAI" 				field-ref="dateDebutIJAI" 				operation="EQUALS" />
+			</search-group>
+			</search-definition>
+	</simple-model>
+</model-mapping>

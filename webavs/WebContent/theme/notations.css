@@ -1,0 +1,751 @@
+.notationInError {
+  border:4px dotted red;
+}
+
+.isValueOk{
+	border:2px solid #74C343;
+}
+
+.errorText{
+	color:#D01F3C !important;
+}
+
+.errorColorDisable{
+	border-color:#b66d82 !important;
+}
+
+.isValueKoDisable{
+	border:2px solid #b66d82; 
+}
+
+.jadeAutoCompleteAjaxColor {
+	border-color:#226194 !important;
+}
+
+.jadeAutocompleteAjaxColorDisable{
+	border-color:#BFD5EA !important;
+}
+
+.errorBgColor{
+	background-color:#FA5858 !important;
+}
+
+.errorColor{
+	border-color:#D01F3C !important;
+}
+
+.isValueKo{
+	border:2px solid #D01F3C;
+}
+
+.simboleMandatory{
+  margin:0;
+  padding:0;
+  color:#D01F3C;
+  vertical-align: top;
+}
+
+.numberNotation{
+  text-align: right;
+}
+
+#testInput{
+	
+}
+.icon{
+	vertical-align:inherit;
+}
+
+.numerError{
+ position:absolute;	
+}
+
+.odd{
+  background-color:#f5f6ff;	
+}
+
+.errorElementText{
+font-style:italic;
+}
+
+.errorElement{
+	font-style:normal;
+	margin-top:4px;
+	margin-right:5px;
+}
+
+.hasFocus{
+	/*ecf3f9*/
+	background-color:#dffde6;
+}
+
+/******************************* POUR CALENDRIER, globazCalendar.js *************************/
+.uidpickerheadermc{
+	height: 15px;
+	font-family : 'Verdana,Arial,sans-serif';
+	font-size : 15px;
+	font-weight : normal;
+	cursor : default;
+	padding: 0;
+}
+
+.btnIncYearI{
+	position : absolute;
+	top : 8px;
+	left : 135px;
+}
+.btnIncYearS{
+	position : absolute;
+	top : 8px;
+	left : 140px;
+}
+.lblYearI{
+	position: absolute;
+	top :8px;
+	left : 74px;
+	font-size : 11px;
+	font-weight : bold;
+}
+.lblYearS{
+	position: absolute;
+	top :8px;
+	left : 80px;
+	font-size : 11px;
+	font-weight : bold;
+}
+.btnDecYear{
+	position : absolute;
+	top : 8px;
+	left : 36px;
+}
+/*************************************** FIN STYLE CALENDRIER *******************************/ 
+
+
+/******************************* globazCellFormatter *************************/
+.formatCellIcon{
+	width: 26px !important;
+}
+/*************************************** globazAmountFormatter *******************************/  
+.montant {
+    text-align: right !important;
+}
+
+.periodicite{
+  color: #84A1D0 /*#567BB5*/;
+  font-weight: bold;
+  background-color: #fcf8e3;
+  border-color: #c09853;
+  display: inline-block;
+  width: auto;
+  height: 16px;
+  min-width: 16px;
+  padding: 1px 3px 3px 3px;
+  line-height: 18px;
+  text-align: center;
+  text-shadow: 0 1px 0 #ffffff;
+  vertical-align: middle;
+  background-color: #eeeeee;
+  border: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  margin-left: -2px;
+  -webkit-border-radius: 0px 3px 3px 0px;
+     -moz-border-radius: 0px 3px 3px 0px;
+          border-radius: 0px 3px 3px 0px;
+}
+
+.periodicite:hover {
+  color: #84A1D0;
+  text-decoration: none;
+  cursor: default;
+}
+
+/*********************** *********************************/
+.formatPeriod{
+	width: 215px !important;
+	text-align: left !important;
+	/* white-space: nowrap !important;*/
+}
+
+.adresseZone{
+	display:inline;
+}
+
+.adresseZone .bouttonSearchAdresse{
+	width:20px;
+	display:inline;
+	margin:0;
+	font-size:8px; 
+	padding:0;
+}
+.adresseZone .adresseAffichee .adresse {
+	display:inline-block;
+	margin:0;
+	padding:0px 0px 5px 5px;
+}
+.adresseZone .adresseAffichee input{
+	display:inline;
+}
+
+.adresseZone .adresseAffichee{
+	display:inline;
+	vertical-align:top;
+	padding-left:1px;
+	margin-left:5px;
+	font-weight:bold;
+	border-left:3px solid #226194;
+	padding:0px 0px 5px 5px;
+	width:350px;
+}
+
+.adresseZone br {
+	margin:0;
+	padding:0;
+}
+
+
+
+/***************************************  *******************************/  
+
+.globazMultiWidgets{
+	display: inline;
+	margin: 0;
+	padding: 0;
+}
+
+.globazMultiWidgets .radiosZone{
+	display:inline-block;
+	float: left;	
+}
+
+.globazMultiWidgets .radiosZone input, .globazMultiWidgets .radiosZone label {
+	width:auto;
+	margin: 0;
+	padding: 0;
+}
+
+.globazMultiWidgets .radiosZone input{
+	margin-left: 2px;
+}
+
+.globazMultiWidgets .radiosZoneGauche {
+	border-style: solid;
+	border-width: 1px 0px 1px 1px;
+	background-color: white;
+	margin: 0;
+	padding: 0;
+	padding-right: 5px;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+}
+
+/***********************************************************************/
+
+/*************************** CSS detailNavigator **********************/
+div.navigator{
+	
+	width:100px;
+	/*padding-top:3px;*/
+	/*background-color:#D4D0C8;*/
+	
+}
+div.navigator .labelZone{
+	margin-top:3px;
+	height:24px;
+	font-size:14px;
+	font-weight:bold;
+	display: inline;
+	float:none;
+}
+
+/***********************************************************************/
+
+.butonDownload img{
+	border: none;
+	display: inline;
+	vertical-align: middle;
+	margin-left:5px;
+}
+
+.butonDownload a{
+	vertical-align: middle;
+	border: none;
+
+}
+/*******************************InfosNotation********************************/
+
+
+.tooltip  {
+	border: 0;
+    z-index: 500;
+    text-decoration:none;
+    font-style: normal;
+    display: block;
+    position: absolute;
+    padding: 5px;
+    color: #000;
+    border: 1px solid #bbb;
+    background: #ffc;
+    width:170px;
+    position: absolute;
+    background: transparent url(image-infobulle.gif);
+    margin:0;
+    padding: 0;
+}
+
+
+/*******************************Bubble********************************/
+
+.bubbleDialog { 
+	position: absolute;
+	top: 30px;
+	right: 30px;
+	z-index: 11000;
+	text-align: left;
+	max-width: 350px;
+	font-size: 1.0em;
+	line-height: 1.1em;
+	background: #2F2F2F;
+	color: #DFDFDF;
+	border: 1px solid #9f9f9f;
+	border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+}
+
+.bubbleDialogHead {
+	padding: 5px 10px;
+	font-size: 1em;
+	font-weight: bold;
+	border-bottom: 1px solid #9f9f9f;
+}
+
+.bubbleDialogBody {
+	padding:10px;
+}
+
+.bubbleClose {
+	display: inline-block;
+	line-height: 11px;
+	text-decoration: none;
+	color: #EFEFEF !important;
+	float: right;
+	cursor: pointer;
+}
+
+.bubbleClose:hover {
+	color: #fff !important;
+}
+
+.kCover {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: auto;
+	height: auto;
+	z-index: 10000;
+	background: #000;
+	-moz-opacity: 0.25;
+	filter: alpha(opacity=25);
+	opacity: 0.25;
+	-khtml-opacity: 0.25
+}
+
+/*#kArrow {width:30px; height:30px; z-index:11001}*/
+/*#kExposeCover {z-index:10000;-moz-opacity:0;filter:alpha(opacity=0);opacity:0;-khtml-opacity:0;background:blue}*/
+/**/
+/*.kDialogBody h3,*/
+/*.kDialogBody h4 {color: #efefef; margin: 3px 0;}*/
+/*.kDialogBody ul {margin: 3px 0 3px 5px;}*/
+/*.kDialogBody ul li{list-style: disc inside;}*/
+/**/
+
+.arrow, 
+.arrow-inner {
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-bottom-width: 0;
+	background: none;
+}
+
+/* arrow outer border */
+.arrow {
+	border: 1px solid #9f9f9f;
+}
+
+.arrow-down {
+	border-left: 16px solid transparent;
+	border-right: 16px solid transparent;
+	border-top-width: 16px;
+	border-bottom: none;
+	bottom: -16px;
+}
+
+.arrow-inner-down {
+	border-left: 14px solid transparent; /* arrow size - 2 => 1px border size */
+	border-right: 14px solid transparent;
+	border-top: 14px solid #2F2F2F; /*bg color*/
+	bottom: auto;
+	top: -16px; /*arrow size*/
+	left: -14px; /* align within parent*/
+}
+
+.arrow-up {
+	border-left: 16px solid transparent;
+	border-right: 16px solid transparent;
+	border-bottom-width: 16px;
+	border-top: none;
+	top: -16px;
+}
+
+.arrow-inner-up {
+	border-left: 14px solid transparent; /*arrow size - 2 => 1px border size */
+	border-right: 14px solid transparent;
+	border-bottom: 14px solid #2F2F2F; /*bg color*/
+	top: auto;
+	bottom: -16px; /*arrow size*/
+	left: -14px; /* align within parent*/
+}
+
+.arrow-rgt {
+	border-left-width: 16px; /*border*/
+	border-right: none;
+	border-bottom: 16px solid transparent;
+	border-top: 16px solid transparent;
+	right: -16px;
+}
+
+.arrow-inner-rgt {
+	border-left: 14px solid #2F2F2F; /*bg color #2F2F2F*/
+	border-right: none;
+	border-bottom: 14px solid transparent; 
+	border-top: 14px solid transparent; 
+	right: 2px; /*border*/
+	top: -14px; /* align within parent*/
+}
+
+.arrow-lft {
+	border-right-width: 16px; /*border*/
+	border-left: none;
+	border-bottom: 16px solid transparent;
+	border-top: 16px solid transparent;
+	left: -16px;
+}
+
+.arrow-inner-lft {
+	border-left: none;
+	border-right: 14px solid #2F2F2F; /*bg color*/
+	border-bottom: 14px solid transparent; 
+	border-top: 14px solid transparent; 
+	left: 2px; /*border*/
+	top: -14px;
+}
+
+.globazBubbleQuestionIcon {
+	vertical-align: middle;
+	display: inline-block !important;
+}
+
+.odd.highlight_selected {
+	background-color: #B1FE7C !important;
+}
+
+.highlight_selected {
+	background-color: #81FE2A !important;
+}
+
+.globazIconButton {
+	width:2em;
+	height:2em;	
+}
+
+
+/*******************************Upload********************************/
+.uploadSaveFile, .uploadChooseFile {
+/*   outline: 0 !important;  
+   margin:0 4px 0 0 !important; 
+   padding: .4em 1em !important;  
+   text-decoration:none !important; 
+   cursor:pointer !important;  
+   position: relative !important;  
+   text-align: center !important; 
+   overflow: hidden;  
+   display: inline;
+*/
+	height: 20px;
+	font-weight: normal;
+}
+
+.uploadDiv {
+	position: relative;
+}
+
+.uploadDiv input.uploadSaveFile, .uploadDiv input.uploadBrowseFile{ 
+	float:none;
+	width: auto; 
+	clear: both;
+	display: inline;	
+	height:25px;
+}
+
+.imageChecked {
+	position: absolute;	
+}
+
+.imageError {
+	position: absolute;
+	top:4px;
+}
+
+.imageChecking, .imageUploading {
+	margin-top : 8px;
+}
+
+/*********************** Multistring ****************************************/
+.globazMultistring, .globazMultistring div{
+	margin:0px;
+	padding:0px;
+}
+
+.globazMultistring {
+	width:335px;
+	height:163px;
+}
+
+.globazMultistring .globazMultistringListDiv {
+	position:relative;
+	width:auto;
+	height:120px;
+	margin:5px 35px 5px 5px;
+}
+
+.globazMultistring .globazMultistringSelectDiv {
+	width:100%;
+	height:120px;
+}
+
+.globazMultistring .globazMultistringButtonsDiv {
+	width:25px;
+}
+
+.globazMultistring .globazMultistringButton {
+	width:25px;
+	height:25px;
+}
+
+.globazMultistring .globazMultistringTextDiv {
+	height:22px;
+}
+
+.globazMultistring .globazMultistringSimpleText {
+	width:100%;
+	height:22px;
+	border:1px solid #356AA0;
+}
+
+/*********************************************boxmessage***************************************/
+.globazBoxMessage {
+	
+}
+
+.globazBoxMessage .contentMessage {
+	padding: 0.8em;
+}
+
+.globazBoxMessage span.globazBoxMessageIcon  {
+	float: left; 
+	margin-right: .3em;
+}
+
+/*****************************iban*********************************/
+.ibanSpan {
+	display: inline-block;
+	width: 550px;
+}
+
+.ibanSpan input{
+	width:245px !important;
+}
+
+.ibanSpan .spanErreur {
+	display: inline-block;
+	width:245px;
+}
+
+/*********************************************************echance***************************/
+ #imageInfo{
+ 	vertical-align: middle;
+ 	margin-left: 5px;
+ }
+ 
+  .echeanceListe th {
+	  text-align: left;
+  }
+ 
+ .echeanceListe td.date{
+ 	width: 87px
+ }
+ 
+  .echeanceListe td {
+ 	color: white;
+ }
+ .echeanceListe a {
+ 	color: white;
+ }
+ 
+  .echeanceListe th,  .echeanceListe td {
+  	background-color:inherit;
+  	border: 0;
+  	margin: 0;
+  	padding: 1px 10px 1px 0px;
+  }
+  
+  .echeanceListe .hide{
+  	display: none;
+  	visibility: hidden;
+  }
+  
+  
+  .echeanceListe .echue td {
+  	color:#E66565 ;
+  }
+  
+  .echeanceListe .btn{
+  
+  	font-weight: bold;
+  	font-size: 15px;
+  	color: #C46666;
+  	padding: 0 5px 0 0;
+	cursor: pointer;
+	background: transparent;
+	border: 0;
+	float: left;
+   -webkit-appearance: none;
+  }
+  
+  
+  .ui-icon-green{ 
+  	background-image: url("../theme/jquery/images/ui-icons_green_256x240.png");
+  }
+  
+   .ui-icon-red{ 
+  	background-image: url("../theme/jquery/images/ui-icons_cd0a0a_256x240.png");
+  }
+  
+  
+  
+  .echeanceListe .supprimer .btn:hover {
+  color: #FBA3A3;
+  text-decoration: none;
+  font-size:15;
+  font-weight:900;
+  /* Buttons in IE7 don't get borders, so darken on hover */
+
+  background-position: 0 -15px;
+  -webkit-transition: background-position 0.1s linear;
+     -moz-transition: background-position 0.1s linear;
+      -ms-transition: background-position 0.1s linear;
+       -o-transition: background-position 0.1s linear;
+          transition: background-position 0.1s linear;
+}
+  
+  
+ .echeanceListe .supprimer  .btn:active {
+  background-color: #e6e6e6;
+  background-color: #d9d9d9 \9;
+  background-image: none;
+  outline: 0;
+  -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+  
+  /***************************Note***************************/
+  
+.notationNote table {
+	border-COLLAPSE: collapse;
+	border:1px solid #226194;
+}
+.notationNote td {
+	border: #b3c4db 1px solid; 
+	text-align: center;
+	height: 30px;
+}
+.notationNotee THEAD TD{
+	TEXT-ALIGN: center; 
+	background-color: #226194; 
+	COLOR: white;
+}
+.notationNote TR {
+	background-color:white;
+}
+
+.notationNote tbody TR.odd {
+	background-color:#e8eef4 ;
+}
+
+.notationNote tbody TR.nonodd {
+	background-color:white;
+}
+
+.notationNote td.action {
+	padding:0;
+	margin:0;
+	width:80px;
+}
+.notationNote .update,  .notationNote .delete {
+	margin:0;
+	padding:0;
+}
+
+
+.notationNoteImgNote{
+    position: relative;
+    height: 22px;
+    margin: 0;
+    pading: 0;
+}
+.notationNote .hover{
+   background-color : #638FBC !important;
+   color : #FFFFE8 ; /*#8E97A4*/
+}
+.notationNote .cursorHand {
+	cursor: hand;
+	cursor: pointer;
+}
+	
+.notationNote tbody TR.odd {
+	background-color:#e8eef4 ;
+}
+
+.notationNote .nbNoteIcone {
+	position: relative; 
+	left: -15px; 
+	top: -5px;
+	color: #7473A4;
+	font-weight: bold;
+	cursor: hand;
+	cursor: pointer;
+}
+.notationNote label  {
+	color: gray;
+	font-weight: bold;
+}
+
+ .notationNote .hide{
+ 	display: none;
+ }
+ 
+#notationDetailNote {
+	/*background-image:  url(../scripts/jsnotation/imgs/note.jpg)*/
+}
+ 
+
+/***************************jQuery plugins***************************/
+.ajaxOverlay{
+	z-index: 1000;
+	position:absolute;
+	background:  url("ajax/overlay.png") repeat scroll 50% 50% #666666;
+}

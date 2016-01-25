@@ -1,0 +1,105 @@
+body {
+	font-size: 12px;
+	color: #244A69;
+	width: 90%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+iFrame {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	overflow: none;
+	overflow-x: hidden;
+	height:inherit;
+}
+
+#navBar {
+	margin-top: 10px;
+	margin-bottom: 2%;
+    padding: 0;
+}
+
+.withBorder {
+	border: 1px solid gray;
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 0 1px 3px rgba(49, 85, 244, 0.2);
+}
+
+#innerNavBar {
+	margin-left: 2px;
+}
+
+#home {
+	margin-top: 2px;
+	padding-top: 0.6em;
+	padding-bottom: 0.6em;
+}
+
+.baniere {
+	text-align: center;
+}
+
+.avecOmbre {
+	box-shadow: 0 1px 3px rgba(49, 85, 244, 0.2);
+}
+
+.corps {
+	border: thin;
+	border-width: 1px;
+	border-style: solid;
+	border-color: gray;
+	border-radius: 5px;
+}
+
+.paragraphe1 {
+	margin-top: 10px;
+	margin-left: 15px;
+	margin-bottom: 10px;
+}
+
+.content {
+    background-color: #F4F4F4;
+    background-image: none;
+}
+
+.sansBordure {
+	border: none;
+	box-shadow: none; 
+}
+
+.divBoutons {
+	margin-top: 2%;
+}
+
+.innerDivBoutons {
+	margin-top: 4px;
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-bottom: 4px;
+}
+
+.divBoutons a {
+	color: #226194;
+}
+
+.bouton {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 5px;
+}
+
+.slidable {
+	 overflow: hidden;
+}
+
+.navPage {
+	margin:0;
+	padding:0;
+text-align: right;
+}
+body div.slidable {
+padding: 1px 1px 6px 0
+}

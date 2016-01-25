@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+<!-- ======================================================================================================================================== -->
+<!-- Menu Principal -->
+<!-- ======================================================================================================================================== -->
+	<menu id="menuWebTucana">
+		<label defaultValue="Principal" refId="TIT_PRINCIPAL" />
+		<nodes>
+			<node id="bouclement" open="no">
+				<label defaultValue="Bouclement" refId="TIT_BOUCLEMENT" />
+				<action command="/tucana" responseTarget="fr_main">
+					<parameter name="userAction" value="tucana.bouclement.bouclement.chercher" />
+				</action>
+			</node>
+			<separator />
+			<node open="yes">
+				<label defaultValue="Administration" refId="MNU_ADMINISTRATION" />
+				<nodes>
+					<node id="agence" open="yes">
+						<label defaultValue="Agence" refId="MNU_AGENCE" />
+						<nodes>
+							<node id="importation" open="no">
+								<label defaultValue="Importation" refId="MNU_IMPORTATION" />
+								<action command="/tucana" responseTarget="fr_main">
+									<parameter name="userAction" value="tucana.administration.importationBouclement.afficher" />
+									<parameter name="_method" value="ADD" />
+									<parameter name="_valid" value="error" />
+								</action>
+							</node>
+							<node id="suppression" open="no">
+								<label defaultValue="Suppression" refId="MNU_SUPPRESSION" />
+								<action command="/tucana" responseTarget="fr_main">
+									<parameter name="userAction" value="tucana.administration.passageSuppression.afficher" />
+									<parameter name="_method" value="ADD" />
+									<parameter name="_valid" value="error" />
+								</action>
+							</node>
+							<node id="validation" open="no">
+								<label defaultValue="Validation" refId="MNU_VALIDATION" />
+								<action command="/tucana" responseTarget="fr_main">
+									<parameter name="userAction" value="tucana.administration.validationBouclement.afficher" />
+									<parameter name="_method" value="ADD" />
+									<parameter name="_valid" value="error" />
+								</action>
+							</node>
+							<node id="siege_exportation" open="no">
+								<label defaultValue="Exportation" refId="MNU_EXPORTATION" />
+								<action command="/tucana" responseTarget="fr_main">
+									<parameter name="userAction" value="tucana.transfert.export.afficher" />
+									<parameter name="_method" value="ADD" />
+									<parameter name="_valid" value="error" />
+								</action>
+							</node>
+						</nodes>
+					</node>
+					<node id="siege" open="no">
+					<label defaultValue="Siege" refId="MNU_SIEGE" />
+						<nodes>
+							<node id="siege_importation" open="no">
+								<label defaultValue="Importation" refId="MNU_IMPORTATION" />
+								<action command="/tucana" responseTarget="fr_main">
+									<parameter name="userAction" value="tucana.transfert.importation.afficher" />
+									<parameter name="_method" value="ADD" />
+									<parameter name="_valid" value="error" />
+								</action>
+							</node>
+						</nodes>
+					</node>
+					
+				</nodes>
+			</node>
+			<separator />
+			<node open="yes">
+				<label defaultValue="Impression" refId="MNU_IMPRESSION" />
+				<nodes>
+					<node id="agence_imp" open="no">
+						<label defaultValue="Agence" refId="MNU_AGENCE" />
+						<nodes>
+							<node id="journalRecapF11" open="no">
+								<label defaultValue="JournalRecap" refId="MNU_JOURNAL_RECAP_F1V1" />
+								<action command="/tucana" responseTarget="fr_main">
+									<parameter name="userAction" value="tucana.journal.journalRecapF1V1.afficher" />
+									<parameter name="_method" value="ADD" />
+									<parameter name="_valid" value="error" />
+								</action>
+							</node>
+							<node id="journalRecapF12" open="no">
+								<label defaultValue="JournalRecap" refId="MNU_JOURNAL_RECAP_F1V2" />
+								<action command="/tucana" responseTarget="fr_main">
+									<parameter name="userAction" value="tucana.journal.journalRecapF1V2.afficher" />
+									<parameter name="_method" value="ADD" />
+									<parameter name="_valid" value="error" />
+								</action>
+							</node>
+							<node id="lstAffiliation" open="no">
+								<label defaultValue="lstAffilProblem" refId="MNU_AFFILIATION_PROBLEM" />
+								<action command="/tucana" responseTarget="fr_main">
+									<parameter name="userAction" value="tucana.list.affiliationProblemList.afficher" />
+									<parameter name="_method" value="ADD" />
+									<parameter name="_valid" value="error" />
+								</action>
+							</node>
+						</nodes>
+					</node>
+					<node id="siege_mnu" open="no">
+					<label defaultValue="Siege" refId="MNU_SIEGE" />
+						<nodes>
+							<node id="journalRecapF2" open="no">
+								<label defaultValue="JournalRecap" refId="MNU_JOURNAL_RECAP_F2" />
+								<action command="/tucana" responseTarget="fr_main">
+									<parameter name="userAction" value="tucana.journal.journalRecapF2.afficher" />
+									<parameter name="_method" value="ADD" />
+									<parameter name="_valid" value="error" />
+								</action>
+							</node>
+							<node id="journalRecapF3" open="no">
+								<label defaultValue="JournalRecap" refId="MNU_JOURNAL_RECAP_F3" />
+								<action command="/tucana" responseTarget="fr_main">
+									<parameter name="userAction" value="tucana.journal.journalRecapF3.afficher" />
+									<parameter name="_method" value="ADD" />
+									<parameter name="_valid" value="error" />
+								</action>
+							</node>
+							<node id="journalRecapF4" open="no">
+								<label defaultValue="JournalRecap" refId="MNU_JOURNAL_RECAP_F4" />
+								<action command="/tucana" responseTarget="fr_main">
+									<parameter name="userAction" value="tucana.journal.journalRecapF4.afficher" />
+									<parameter name="_method" value="ADD" />
+									<parameter name="_valid" value="error" />
+								</action>
+							</node>
+						</nodes>
+					
+					</node>					
+				</nodes>
+			</node>
+			<separator/>
+			<node open="no">
+				<label defaultValue="Parametrage" refId="MNU_PARAMETRAGE" />
+				<nodes>
+					<node id="agence_param" open="no">
+						<label defaultValue="Liste" refId="MNU_LISTE" />
+						<nodes>
+							<node id="groupeCategorie" open="no">
+								<label defaultValue="groupeCategorie" refId="MNU_GROUPE_CATEGORIE" />
+								<action command="/tucana" responseTarget="fr_main">
+									<parameter name="userAction" value="tucana.parametrage.groupeCategorie.chercher" />
+								</action>
+							</node>
+						</nodes>
+					</node>					
+				</nodes>
+			</node>
+		</nodes>
+	</menu>
+
+<!-- ======================================================================================================================================== -->
+<!-- Menu Options Sans Option -->
+<!-- ======================================================================================================================================== -->
+	<menu id="optionWebTucana">
+		<label defaultValue="Options" refId="TIT_OPTIONS" />
+	</menu>
+
+<!-- **************************************************************************************************************************************** -->
+<!-- Menu Options Bouclement -->
+<!-- **************************************************************************************************************************************** -->
+
+<!-- ======================================================================================================================================== -->
+<!-- Menu Options Valise bouclement -->
+<!-- ======================================================================================================================================== -->
+	<menu id="OVTUBouclement">
+		<label defaultValue="Options" refId="TIT_OPTIONS"/>
+		<nodes>
+			<node id="OVTUBouclementLigne">
+				<label defaultValue="Ligne" refId="MNU_LIGNE" />
+				<action command="/tucana" responseTarget="fr_main">
+					<parameter name="userAction" value="tucana.bouclement.detail.chercher" />
+					<parameter name="idBouclement" />
+				</action>
+			</node>			
+			<node id="OVTUBouclementImportation">
+				<label defaultValue="Importation" refId="MNU_IMPORTATION" />
+				<action command="/tucana" responseTarget="fr_main">
+					<parameter name="userAction" value="tucana.administration.importationBouclement.afficher" />
+					<parameter name="year" />
+					<parameter name="month" />	
+					<parameter name="_method" />
+					<parameter name="_valid" />				
+				</action>
+			</node>			
+			<node id="OVTUBouclementjournalRecapF11" open="no">
+				<label defaultValue="JournalRecap" refId="MNU_JOURNAL_RECAP_F1V1" />
+				<action command="/tucana" responseTarget="fr_main">
+					<parameter name="userAction" value="tucana.journal.journalRecapF1V1.afficher" />
+					<parameter name="year" />
+					<parameter name="month" />					
+					<parameter name="csAgence" />
+					<parameter name="_method" />
+					<parameter name="_valid" />		
+				</action>
+			</node>
+			<node id="OVTUBouclementournalRecapF12" open="no">
+				<label defaultValue="JournalRecap" refId="MNU_JOURNAL_RECAP_F1V2" />
+				<action command="/tucana" responseTarget="fr_main">
+					<parameter name="userAction" value="tucana.journal.journalRecapF1V2.afficher" />
+					<parameter name="year" />
+					<parameter name="month" />					
+					<parameter name="csAgence" />
+					<parameter name="_method" />
+					<parameter name="_valid" />		
+				</action>
+			</node>
+			<node id="OVTUValidation" open="no">
+				<label defaultValue="Validation" refId="MNU_VALIDATION" />
+				<action command="/tucana" responseTarget="fr_main">
+					<parameter name="userAction" value="tucana.administration.validationBouclement.afficher" />
+					<parameter name="idBouclement" />
+					<parameter name="year" />
+					<parameter name="month" />		
+					<parameter name="_method" value="ADD" />
+					<parameter name="_valid" value="error" />						
+				</action>
+			</node>
+			<node id="OVTUExportation" open="no">
+				<label defaultValue="Exportation" refId="MNU_EXPORTATION" />
+				<action command="/tucana" responseTarget="fr_main">
+					<parameter name="userAction" value="tucana.transfert.export.afficher" />
+					<parameter name="idBouclement" />
+					<parameter name="year" />
+					<parameter name="month" />								
+				</action>
+			</node>
+			<node id="OVTUBouclementACM">
+				<label defaultValue="InsertionACM" refId="MNU_ACM" />
+				<action command="/tucana" responseTarget="fr_main">
+					<parameter name="userAction" value="tucana.bouclement.detailInsertionACM.afficher" />
+					<parameter name="idBouclement" />
+				</action>
+			</node>			
+		</nodes>	
+	</menu>
+<!-- ======================================================================================================================================== -->
+<!-- Menu Options Liste bouclement -->
+<!-- ======================================================================================================================================== -->
+	<menu id="OLTUBouclement">
+		<label defaultValue="Options" refId="TIT_OPTIONS"/>
+	</menu>
+<!-- ======================================================================================================================================== -->
+<!-- Menu Options DétailInsertionACM Bouclement -->
+<!-- ======================================================================================================================================== -->
+	<menu id="ODTUDetailInsertionACM">
+		<label defaultValue="Options" refId="TIT_OPTIONS" />
+		<nodes>
+			<node open="yes">
+			<label defaultValue="Bouclement" refId="TIT_BOUCLEMENT" />
+				<nodes>
+					<node id="ODTUDetailDetailInsertionACM">
+						<label defaultValue="Lignes" refId="MNU_BOUCLEMENT" />
+						<action command="/tucana" responseTarget="fr_main">
+							<parameter name="userAction" value="tucana.bouclement.bouclement.chercher" />
+							<parameter name="idBouclement" />
+						</action>
+					</node>
+					<node id="OVTUBouclementLigne_bcl">
+						<label defaultValue="Ligne" refId="MNU_LIGNE" />
+						<action command="/tucana" responseTarget="fr_main">
+							<parameter name="userAction" value="tucana.bouclement.detail.chercher" />
+							<parameter name="idBouclement" />
+						</action>
+					</node>								
+				</nodes>
+			</node>
+		</nodes>
+	</menu>
+<!-- ======================================================================================================================================== -->
+<!-- Menu Options Détail Bouclement -->
+<!-- ======================================================================================================================================== -->
+	<menu id="ODTUBouclement">
+		<label defaultValue="Options" refId="TIT_OPTIONS" />
+		<nodes>
+			<node open="yes">
+			<label defaultValue="Bouclement" refId="TIT_BOUCLEMENT" />
+				<nodes>
+					<node id="ODTUBouclement">
+						<label defaultValue="Lignes" refId="MNU_LIGNE" />
+						<action command="/tucana" responseTarget="fr_main">
+							<parameter name="userAction" value="tucana.bouclement.detail.chercher" />
+							<parameter name="idBouclement" />
+						</action>
+					</node>
+					<node id="ODTUBouclementACM">
+						<label defaultValue="InsertionACM" refId="MNU_ACM" />
+						<action command="/tucana" responseTarget="fr_main">
+							<parameter name="userAction" value="tucana.bouclement.detailInsertionACM.afficher" />
+							<parameter name="idBouclement" />
+						</action>
+					</node>					
+				</nodes>
+			</node>
+		</nodes>
+	</menu>
+<!-- **************************************************************************************************************************************** -->
+<!-- Menu Options Détail -->
+<!-- **************************************************************************************************************************************** -->
+<!-- ======================================================================================================================================== -->
+<!-- Menu Options Valise détail -->
+<!-- ======================================================================================================================================== -->
+	<menu id="OVTUDetail">
+		<label defaultValue="Options" refId="TIT_OPTIONS"/>
+		<nodes>
+			<node id="OVTUDetailLigne">
+				<label defaultValue="Bouclement" refId="MNU_BOUCLEMENT" />
+				<action command="/tucana" responseTarget="fr_main">
+					<parameter name="userAction" value="tucana.bouclement.bouclement.afficher" />
+					<parameter name="idBouclement" />
+				</action>
+			</node>
+		</nodes>	
+	</menu>
+<!-- ======================================================================================================================================== -->
+<!-- Menu Options Liste détail -->
+<!-- ======================================================================================================================================== -->
+	<menu id="OLTUDetail">
+		<label defaultValue="Options" refId="TIT_OPTIONS"/>
+		<nodes>
+			<node id="OLTUDetailDetail">
+				<label defaultValue="Bouclement" refId="MNU_BOUCLEMENT" />
+				<action command="/tucana" responseTarget="fr_main">
+					<parameter name="userAction" value="tucana.bouclement.bouclement.afficher" />
+					<parameter name="idBouclement" />
+				</action>
+			</node>
+		</nodes>	
+	</menu>
+<!-- ======================================================================================================================================== -->
+<!-- Menu Options Détail détail -->
+<!-- ======================================================================================================================================== -->
+	<menu id="ODTUDetail">
+		<label defaultValue="Options" refId="TIT_OPTIONS" />
+		<nodes>
+			<node id="ODTUDetailLigne">
+				<label defaultValue="Ligne" refId="MNU_LIGNE" />
+				<action command="/tucana" responseTarget="fr_main">
+					<parameter name="userAction" value="tucana.bouclement.detail.chercher" />
+					<parameter name="idDetail" />
+					<parameter name="idBouclement" />
+				</action>
+			</node>
+			<separator />
+			<node id="ODTUDetailBouclement">
+				<label defaultValue="Bouclement" refId="MNU_BOUCLEMENT" />
+				<action command="/tucana" responseTarget="fr_main">
+					<parameter name="userAction" value="tucana.bouclement.bouclement.afficher" />
+					<parameter name="idBouclement" />
+				</action>
+			</node>
+		</nodes>	
+	</menu>
+	
+	
+	
+	
+	
+<!-- **************************************************************************************************************************************** -->
+<!-- Menu Options Groupe rubrique - catégorie -->
+<!-- **************************************************************************************************************************************** -->
+
+<!-- ======================================================================================================================================== -->
+<!-- Menu Options Valise Groupe rubrique - catégorie -->
+<!-- ======================================================================================================================================== -->
+	<menu id="OVTUGroupeCategorie">
+		<label defaultValue="Options" refId="TIT_OPTIONS"/>
+		<nodes>
+			<node id="OVTUGroupeCategorieLigne">
+				<label defaultValue="Rubrique" refId="MNU_CATEGORIE_RUBRIQUE" />
+				<action command="/tucana" responseTarget="fr_main">
+					<parameter name="userAction" value="tucana.parametrage.categorieRubrique.chercher" />
+					<parameter name="idGroupeCategorie" />
+				</action>
+			</node>			
+		</nodes>	
+	</menu>
+<!-- ======================================================================================================================================== -->
+<!-- Menu Options Liste Groupe rubrique catégorie -->
+<!-- ======================================================================================================================================== -->
+	<menu id="OLTUGroupeCategorie">
+		<label defaultValue="Options" refId="TIT_OPTIONS"/>
+	</menu>
+<!-- ======================================================================================================================================== -->
+<!-- Menu Options Détail Groupe rubrique - catégorie -->
+<!-- ======================================================================================================================================== -->
+	<menu id="ODTUGroupeCategorie">
+		<label defaultValue="Options" refId="TIT_OPTIONS" />
+		<nodes>
+			<node open="yes">
+			<label defaultValue="GroupeCategorie" refId="TIT_GROUPE_CATEGORIE" />
+				<nodes>
+					<node id="ODTUGroupeCategorie">
+						<label defaultValue="Rubrique" refId="MNU_CATEGORIE_RUBRIQUE" />
+						<action command="/tucana" responseTarget="fr_main">
+							<parameter name="userAction" value="tucana.parametrage.categorieRubrique.chercher" />
+							<parameter name="idGroupeCategorie" />
+						</action>
+					</node>					
+				</nodes>
+			</node>
+		</nodes>
+	</menu>
+<!-- **************************************************************************************************************************************** -->
+<!-- Menu Options Catégorie - rubrique -->
+<!-- **************************************************************************************************************************************** -->
+<!-- ======================================================================================================================================== -->
+<!-- Menu Options Valise Catégorie - rubrique -->
+<!-- ======================================================================================================================================== -->
+	<menu id="OVTUCategorieRubrique">
+		<label defaultValue="Options" refId="TIT_OPTIONS"/>
+		<nodes>
+			<node id="OVTUCategorieRubriqueListe">
+				<label defaultValue="GroupeCategorie" refId="MNU_GROUPE_CATEGORIE" />
+				<action command="/tucana" responseTarget="fr_main">
+					<parameter name="userAction" value="tucana.parametrage.groupeCategorie.afficher" />
+					<parameter name="idGroupeCategorie" />
+				</action>
+			</node>
+		</nodes>	
+	</menu>
+<!-- ======================================================================================================================================== -->
+<!-- Menu Options Liste Catégorie - rubrique -->
+<!-- ======================================================================================================================================== -->
+	<menu id="OLTUCategorieRubrique">
+		<label defaultValue="Options" refId="TIT_OPTIONS"/>
+		<nodes>
+			<node id="OLTUCategorieRubriqueDetail">
+				<label defaultValue="GroupeCategorie" refId="MNU_GROUPE_CATEGORIE" />
+				<action command="/tucana" responseTarget="fr_main">
+					<parameter name="userAction" value="tucana.parametrage.groupeCategorie.afficher" />
+					<parameter name="idGroupeCategorie" />
+				</action>
+			</node>
+		</nodes>	
+	</menu>
+<!-- ======================================================================================================================================== -->
+<!-- Menu Options Détail Catégorie - rubrique -->
+<!-- ======================================================================================================================================== -->
+	<menu id="ODTUCategorieRubrique">
+		<label defaultValue="Options" refId="TIT_OPTIONS" />
+		<nodes>
+			<node id="ODTUCategorieRubriqueLigne">
+				<label defaultValue="Rubrique" refId="MNU_CATEGORIE_RUBRIQUE" />
+				<action command="/tucana" responseTarget="fr_main">
+					<parameter name="userAction" value="tucana.parametrage.categorieRubrique.chercher" />
+					<parameter name="idCategorieRubrique" />
+					<parameter name="idGroupeCategorie" />
+				</action>
+			</node>
+			<separator />
+			<node id="ODTUCategorieRubriqueGroupeCategorie">
+				<label defaultValue="GroupeCategorie" refId="MNU_GROUPE_CATEGORIE" />
+				<action command="/tucana" responseTarget="fr_main">
+					<parameter name="userAction" value="tucana.parametrage.groupeCategorie.afficher" />
+					<parameter name="idGroupeCategorie" />
+				</action>
+			</node>
+		</nodes>	
+	</menu>
+</menus>

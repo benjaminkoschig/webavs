@@ -1,0 +1,55 @@
+.top-buffer {
+	padding-top: 20px;
+	vertical-align: top;
+}
+
+.floatLeft {
+	float: left;
+	vertical-align: middle;
+	line-height: 21px;
+}
+
+.floatRight {
+	float: right;
+	vertical-align: middle;
+	line-height: 21px;
+}
+
+.alignRight {
+	text-align: right;
+}
+
+.alignLeft {
+	text-align: left;
+}
+
+.alignCenter {
+	text-align: center;
+}
+
+.alignWithInput {
+	padding-right: 13px;
+}
+
+.boutonAjouter {
+	vertical-align: bottom;
+	padding: 3px;
+	cursor: hand;
+}
+
+.trLigneDetail {
+	vertical-align: top;
+}
+
+.trLigneDetail td {
+	height: 25px;
+}
+
+.lastModification {
+	margin-left: 5px;
+	font-size: 9px;
+}
+
+.forceTRHeight {
+	height: 22px;
+}

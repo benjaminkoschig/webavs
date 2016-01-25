@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.home.HomeWithAdmin">
+		<root-model name="simpleHome" model-ref="ch.globaz.pegasus.business.models.home.SimpleHome"/>
+		<linked-model name="tiersHome" model-ref="ch.globaz.pyxis.business.model.AdministrationAdresseComplexModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="tiers.idTiers" operation="EQUALS" field-ref="simpleHome.idTiersHome"/>
+			</join-group>
+		</linked-model>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="likeDesignation" operation="LIKE" field-ref="tiersHome.tiers.designationUpper1"/>
+				<search-field name="forNomBatiment" operation="EQUALS" field-ref="simpleHome.nomBatiment"/>
+				<search-field name="forNumeroIdentification" operation="EQUALS" field-ref="simpleHome.numeroIdentification"/>
+				<search-field name="likeNumeroIdentification" operation="LIKE" field-ref="simpleHome.numeroIdentification"/>
+				<search-field name="forCanton" operation="EQUALS" field-ref="tiersHome.localite.idCanton"/>
+				<search-field name="likeNpa" operation="LIKE" field-ref="tiersHome.localite.numPostal" />
+				<search-field name="likeLocalite" operation="LIKE" field-ref="tiersHome.localite.localite"/>
+				<search-field name="forIdTiersHome" operation="EQUALS" field-ref="simpleHome.idTiersHome"/>
+				<search-field name="forIdHome" operation="EQUALS" field-ref="simpleHome.idHome"/>
+				<search-field name="notForIdHome" operation="NOT_EQUALS" field-ref="simpleHome.idHome"/>
+				<search-field name="forTypeAdresse" operation="EQUALS" field-ref="tiersHome.avoirAdresse.typeAdresse"/>
+			</search-group>
+		</search-definition>
+		<order-by>
+			<order-field field-ref="tiersHome.tiers.designationUpper1"/>
+			<order-field field-ref="simpleHome.nomBatiment"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

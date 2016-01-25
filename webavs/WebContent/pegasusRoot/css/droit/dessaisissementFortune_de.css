@@ -1,0 +1,68 @@
+@CHARSET "ISO-8859-1";
+
+.calculContrePrestation{
+ display: none;
+ font-size: 12;
+}
+
+
+.icon-none { 
+	width: 16px; 
+	height: 16px;
+	display: block; 
+	text-indent: -99999px; 
+	overflow: hidden; 
+	}
+
+.calculContrePrestation .titre{
+	margin-top:15px;
+	margin-bottom:8px;
+	width:auto ;
+	font-size: 13;
+	font-weight: bold;
+}
+
+.calculContrePrestation .label{
+	display : inline-block;
+	width : 270px;
+	margin:2px;
+	margin-left:7px;
+} 
+.resultatCalculFinal{
+	border-top: 4px double black;
+	font-weight: 800;
+}
+
+.facteurUtilise{
+	font-weight: 600;
+}
+
+.resultat, .resultatCalcul{
+	padding-top:5px;
+	font-weight: 600;
+}
+
+.resultat{
+	border-top: 2px solid black;
+}
+
+#spanDate{
+	padding-bottom: 5px;
+}
+
+.valeur, .resultat, .resultatCalculFinal, .dateDebut{
+ 	text-align: right;
+ 	width: 100px;
+}
+
+.afficheCalcul{
+ margin-left :8px;
+}
+.totalArrondi{
+font-weight: bolder;
+}
+
+#facteur{
+  margin:0;
+  padding:0;
+}

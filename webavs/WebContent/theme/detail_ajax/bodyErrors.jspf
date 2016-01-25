@@ -1,0 +1,29 @@
+			</TD>
+		</TR>
+		<TR>
+			<TD bgcolor="#FFFFFF"></TD>
+			<TD bgcolor="#FFFFFF" colspan="2" align="left"><FONT  color="#FF0000">
+				<% if (vBeanHasErrors) {%>
+					<script>
+					
+						if(typeof errorObj === "undefined"){
+							var errorObj = {};
+						}
+						
+						errorObj.text = "<%=globaz.framework.util.FWTextFormatter.slash(globaz.framework.util.FWTextFormatter.newLineToBr(viewBean.getMessage()), '\"')%>";
+						<%
+							viewBean.setMessage("");
+							viewBean.setMsgType(globaz.framework.bean.FWViewBeanInterface.OK);
+						%>
+						$(function(){
+							if ($.trim(errorObj.text)!==""){
+								globazNotation.utils.consoleError(errorObj.text);
+							}
+						});
+
+					</script>
+				<% } %>
+			</FONT></TD>
+		</TR>
+	</TBODY>
+</table>

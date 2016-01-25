@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+
+	<!-- ************** -->
+	<!-- Menu Principal -->
+	<!--  
+	
+			Détail du menu :
+			
+				> Dossiers
+				> Demandes
+				> Avances
+				> Qds
+				> Parametres Soins
+				> Statistiques
+				> Listes
+	-->
+	<!-- ************** -->
+	<menu id="cygnus-menuprincipal">
+		<label refId="MENU_PRINCIPAL"/>
+		<nodes>
+			<node>
+				<label refId="MENU_QDS"/>
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.qds.qdJointDossierJointTiersJointDemande.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_DEMANDES"/>
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.demandes.demandeJointDossierJointTiers.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_DECISION"/>
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.decisions.decisionJointTiers.chercher"/>
+				</action>
+			</node>	
+			<node>
+				<label refId="MENU_LOTS"/>
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.paiement.lot.chercher"/>
+				</action>
+			</node>	
+			<node>
+				<label refId="MENU_PRESTATIONS_ACCORDEES"/>
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.prestationsaccordees.prestationsAccordees.chercher"/>
+				</action>
+			</node>										
+			<node>
+				<label refId="MENU_DOSSIERS"/>
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.dossiers.dossierJointTiers.chercher"/>
+				</action>
+			</node>		
+			<node>
+				<label refId="MENU_CONVENTION"/>
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.conventions.convention.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_ATTESTATION"/>
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.attestations.attestationJointDossierJointTiers.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_AVANCES" />
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.process.executerAvances.afficher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_TRAITEMENT"/>
+				<nodes>
+					<node>
+						<label refId="MENU_PREPARER_DECISIONS"/>
+						<action command="/cygnus" responseTarget="fr_main">
+							<parameter name="userAction" value="cygnus.process.preparerDecisions.afficher"/>													
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_VALIDER_DECISIONS"/>
+						<action command="/cygnus" responseTarget="fr_main">
+							<parameter name="userAction" value="cygnus.process.validerDecisions.afficher"/>													
+						</action>
+					</node>	
+					<node>
+						<label refId="MENU_IMPORTATION_FINANCEMENT_SOIN"/>
+						<action command="/cygnus" responseTarget="fr_main">
+							<parameter name="userAction" value="cygnus.process.importerFinancementSoin.afficher"/>													
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_IMPORTATION_AVASAD"/>
+						<action command="/fx" responseTarget="fr_main">
+							<parameter name="userAction" value="fx.process.jadeProcessList.afficher" />
+							<parameter name="keyProcess" value="Cygnus.import.avasad" /> 													
+						</action>
+					</node>
+				    <node>
+						<label refId="MENU_ADAPTATIONS_JOURNALIERE"/>
+						<action command="/cygnus" responseTarget="fr_main">
+							<parameter name="userAction" value="cygnus.process.adaptationsJournaliere.afficher"/>													
+						</action> 
+					</node>
+					<node>
+						<label refId="MENU_ADAPTATIONS_ANNUELLE"/>
+						<action command="/fx" responseTarget="fr_main">
+							<parameter name="userAction" value="fx.process.jadeProcessList.afficher" />
+							<parameter name="keyProcess" value="Cygnus.adaptationAnnuelle" /> 
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node>
+				<label refId="MENU_PARAMETRES"/>
+				<nodes>
+					<node>
+						<label refId="MENU_TYPE_DE_SOIN"/>
+						<action command="/cygnus" responseTarget="fr_main">
+							<parameter name="userAction" value="cygnus.typeDeSoins.typeDeSoin.afficher"/>													
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PARAMETRAGE_GRANDE_QD"/>
+						<action command="/cygnus" responseTarget="fr_main">
+							<parameter name="userAction" value="cygnus.pots.parametrageGrandeQD.chercher"/>													
+						</action>
+					</node>												
+					<node>
+						<label refId="MENU_MOTIF_DE_REFUS"/>
+						<action command="/cygnus" responseTarget="fr_main">
+							<parameter name="userAction" value="cygnus.motifsDeRefus.rechercheMotifsDeRefus.chercher"/>													
+						</action>
+					</node>					
+					<node>
+						<label refId="MENU_OPTION_CATALOGUES_TEXTES"/>
+						<action command="/babel" responseTarget="fr_main">
+							<parameter name="userAction" value="babel.cat.document.chercher"/>
+							<parameter name="csGroupeDomaines" value="RFMDOM"/>
+							<parameter name="csGroupeTypesDocuments" value="RFDOCUMS"/>
+						</action>
+					</node>										
+				</nodes>				
+			</node>	
+			<node>
+				<label refId="MENU_STATISTIQUES"/>
+				<nodes>
+					<node>
+						<label refId="MENU_STATISTIQUES_MONTANTS"/>
+						<action command="/cygnus" responseTarget="fr_main">
+							<parameter name="userAction" value="cygnus.process.statistiquesParMontantsSash.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_STATISTIQUE_NOMBRE_CAS"/>
+						<action command="/cygnus" responseTarget="fr_main">
+							<parameter name="userAction" value="cygnus.process.statistiquesParNbCas.afficher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node>
+				<label refId="MENU_LISTES"/>
+				<nodes>
+					<node>
+						<label refId="MENU_LISTES_LISTE_RECAP_PAIEMENT"/>
+						<action command="/cygnus" responseTarget="fr_main">
+							<parameter name="userAction" value="cygnus.process.listeRecapitulativePaiements.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LISTES_LISTE_CONTRIBUTION_ASSISTANCE_AI" />
+						<action command="/cygnus" responseTarget="fr_main">
+							<parameter name="userAction" value="cygnus.process.listeContributionsAssistanceAI.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>
+	</menu>
+		
+	<!-- Menu Option Avances -->
+	<menu id="cygnus-optionsavances">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+		</nodes>
+	</menu>
+	
+	<!-- Menu Option Dossier -->
+	<menu id="cygnus-optionsdossiers">
+		<label refId="MENU_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_OPTION_DOSSIERS_DEMANDES_DU_DOSSIER"/>
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.demandes.demandeJointDossierJointTiers.chercher"/>
+					<parameter name="idDossier"/>
+					<parameter name="nss"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_DOSSIERS_GENERATION_DOCUMENTS"/>
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.documents.documents.afficher"/>
+					<parameter name="idDossier"/>
+					<parameter name="csEtatDossier"/>
+					<parameter name="nss"/>
+					<parameter name="idTiers"/>
+					<parameter name="detailRequerant"/>
+				</action>
+			</node>	
+			<node>
+				<label refId="MENU_OPTION_DOSSIER_SITUATION_FAMILIALE"/>
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.dossiers.situationFamiliale.modifier"/>
+					<parameter name="idTiers"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_DOSSIER_ATTESTATION"/>
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.attestations.attestation.afficher"/>
+					<parameter name="idTiers"/>
+					<parameter name="idDossier"/>
+					<parameter name="nss"/>
+					<parameter name="nom"/>				
+					<parameter name="prenom"/>				
+					<parameter name="dateNaissance"/>								
+					<parameter name="dateDeces"/>
+					<parameter name="csTypeAttestation"/>
+					<parameter name="csSexe"/>
+					<parameter name="csNationalite"/>							
+				</action>
+			</node>			
+			<node>
+				<label refId="MENU_OPTION_DOSSIER_AVANCES" />
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.avances.avance.chercher" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_DOSSIER_CONTRIBUTIONS_ASSISTANCE_AI" />
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.contributions.contributionsAssistanceAI.chercher" />
+					<parameter name="idTierRequerant" />
+					<parameter name="idDossier"/>
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+		<!-- <node>
+				<label refId="MENU_OPTION_DOSSIERS_JOURNALISATION"/>
+				<action command="/libra" responseTarget="fr_main">
+					<parameter name="userAction" value="libra.dossiers.afficher"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>	-->
+		</nodes>
+	</menu>
+	
+	<!-- Menu Option Demande --> 
+	<menu id="cygnus-optionsdemandes">
+		<label refId="MENU_OPTION_TITRE"/>
+		<nodes>
+			<node id="demandes_imputerSurQd">
+					<label refId="MENU_OPTION_DEMANDES_IMPUTER_SUR_QD"/>
+					<action command="/cygnus" responseTarget="fr_main">
+						<parameter name="userAction" value="cygnus.demandes.imputerSurQd.afficher"/>
+						<parameter name="idDemande"/>
+					</action>
+			</node>
+			<node id="demandes_correction">
+					<label refId="MENU_OPTION_DEMANDES_CORRECTION"/>
+					<action command="/cygnus" responseTarget="fr_main">
+						<parameter name="userAction" value="cygnus.demandes.demandeJointDossierJointTiers.actionCreerCorrection"/>
+						<parameter name="idDemande"/>
+						<parameter name="codeTypeDeSoin"/>
+					</action>
+			</node>
+			<node id="demandes_decision">
+					<label refId="MENU_OPTION_DEMANDES_DECISION"/>
+					<action command="/cygnus" responseTarget="fr_main">
+						<parameter name="userAction" value="cygnus.decisions.decisionJointTiers.chercher"/>
+						<parameter name="idDecision"/>
+					</action>
+			</node>	
+		</nodes>
+	</menu>
+	
+	<!-- Menu Option Qd --> 
+	<menu id="cygnus-optionsqds">
+		<label refId="MENU_OPTION_TITRE"/>
+	</menu>
+	
+	<!-- Menu Option convention --> 
+	<menu id="cygnus-optionsconventions">
+		<label refId="MENU_OPTION_TITRE"/>
+	</menu>
+	<!-- Menu Option ordres de versement --> 
+	<menu id="cygnus-optionordresversements">
+		<label refId="MENU_OPTION_TITRE"/>
+	</menu>	
+	<!-- Menu Option decision --> 
+	<menu id="cygnus-optionsdecisions">
+		<label refId="MENU_OPTION_TITRE"/>
+	  	<nodes>
+			<node id="GENERER_PDF_SELECT">
+				<label refId="MENU_OPTION_GENERER_PDF_DECISION"/>
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.process.validerDecisions.afficher"/>
+					<parameter name="selectedId"/>
+					<parameter name="idDecision"/>
+					<parameter name="numeroDecision"/>
+					<parameter name="idTierRequerant"/>
+					<parameter name="menuOptionToLoad" value="decision"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_DECISION_DEMANDES"/>
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.demandes.demandeJointDossierJointTiers.chercher"/>
+					<parameter name="numeroDecision"/>
+					<parameter name="idDecision"/>
+					<parameter name="menuOptionToLoad" value="decision"/>
+				</action>
+			</node>				
+		</nodes>		
+	</menu>		
+	
+	<!-- Menu Option lots --> 
+	<menu id="cygnus-optionslots">
+		<label refId="MENU_OPTION_TITRE"/>
+	  	<nodes>
+			<node id="prestation">
+				<label refId="MENU_OPTION_PRESTATIONS"/>	  		
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.paiement.prestation.chercher"/>
+					<parameter name="selectedId"/>
+					<parameter name="idLot"/>
+					<parameter name="csTypeLot"/>
+					<parameter name="csEtatLot"/>
+					<parameter name="dateCreationLot"/>
+					<parameter name="dateEnvoiLot"/>
+					<parameter name="description"/>
+				</action>
+			</node>	
+			<node id="prestationAccordee">
+				<label refId="MENU_OPTION_PRESTATIONS_ACCORDEES"/>	  		
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.prestationsaccordees.prestationsAccordees.chercher"/>
+					<parameter name="selectedId"/>
+					<parameter name="idLot"/>
+					<parameter name="csTypeLot"/>
+					<parameter name="csEtatLot"/>
+					<parameter name="dateCreationLot"/>
+					<parameter name="dateEnvoiLot"/>
+					<parameter name="description"/>
+				</action>
+			</node>	
+			<node id="comptabiliser">
+				<label refId="MENU_OPTION_COMPTABILISER"/>	  		
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.process.comptabiliser.afficher"/>
+					<parameter name="selectedId"/>
+					<parameter name="idLot"/>
+					<parameter name="csTypeLot"/>
+					<parameter name="csEtatLot"/>
+					<parameter name="dateCreationLot"/>
+					<parameter name="dateEnvoiLot"/>
+					<parameter name="description"/>
+				</action>
+			</node>						
+		</nodes>		
+	</menu>	
+	<!-- Menu Option prestation --> 
+	<menu id="cygnus-optionsprestation">
+		<label refId="MENU_OPTION_TITRE"/>
+	  	<nodes>
+			<node id="ordresVersement">
+				<label refId="MENU_OPTION_ORDRE_VERSEMENT"/>	  		
+				<action command="/cygnus" responseTarget="fr_main">
+					<parameter name="userAction" value="cygnus.ordresversements.ordresVersements.chercher"/>
+					<parameter name="selectedId"/>
+					<parameter name="idPrestation"/>
+					<parameter name="idTierRequerant"/>
+					<parameter name="montantPrestation"/>
+					<parameter name="idDecision"/>
+				</action>
+			</node>		
+		</nodes>		
+	</menu>
+	<!-- Menu Option prestation --> 
+	<menu id="cygnus-optionsprestationacc">
+		<label refId="MENU_OPTION_TITRE"/>
+	</menu>
+	<!-- Menu Option Attestation --> 
+	<menu id="cygnus-optionsattestations">
+		<label refId="MENU_OPTION_TITRE"/>	
+	</menu>
+	
+	<!-- ************************** -->
+	<!-- Menu Option empty		    -->
+	<!-- ************************** -->
+	<menu id="cygnus-optionsempty">
+		<label refId="MENU_OPTION_TITRE" />
+	</menu>
+</menus>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.caissemaladie.CaisseMaladieGroupeRCListe">
+		<select-fields distinct="true">
+			<select-field name="nomGroupe" field-ref="groupe.tiers.designation1" />
+			<select-field name="numGroupe" field-ref="groupe.admin.codeAdministration" />
+			<select-field name="idTiersGroupe" field-ref="groupe.tiers.idTiers" />
+			<select-field name="typeLien" field-ref="compositionTiers.typeLien" />
+		</select-fields>
+	
+		<root-model name="compositionTiers" model-ref="ch.globaz.pyxis.business.model.CompositionTiersSimpleModel" select-fields="false"/>
+
+		<linked-model name="groupe" model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS" field-ref="compositionTiers.idTiersParent"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forNumGroupe" field-ref="numGroupe" operation="EQUALS" />
+				<search-field name="forTypeLien" field-ref="typeLien" operation="EQUALS" value="19150084" />
+				<select-field name="forIdTiersGroupe" field-ref="idTiersGroupe" />
+			</search-group>
+		</search-definition>	
+
+	</complexe-model>
+</model-mapping>

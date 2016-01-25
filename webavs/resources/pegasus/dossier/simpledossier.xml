@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.dossier.SimpleDossier">
+		<description>Dossier PC</description>
+		<table name="PCDOSSI" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDossier" column="BAIDOS" comment=""/>
+			<field name="idDemandePrestation" column="BAIDEM" type="NUMERIC" mandatory="true" comment=""/>
+			<field name="idGestionnaire" column="BAIGES" type="STRING" mandatory="false" comment=""/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDemandePrestation" field-ref="idDemandePrestation" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

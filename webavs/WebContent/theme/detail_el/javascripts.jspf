@@ -1,0 +1,138 @@
+<%@page import="globaz.jade.common.Jade"%>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<meta http-equiv="Cache-Control" content="no-cache" />
+<meta name="User-Lang" content="${languePage}"/> 
+<meta name="Context_URL" content="${pageContext.request.contextPath}"/> 
+<meta name="TypePage" content="JADE_FW_DE"/> 
+<meta name="formAction" content="${pageContext.request.contextPath}${requestScope.mainServletPath}"/>   
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}${requestScope.mainServletPath}Root/moduleStyle.css"/>
+<link type="text/css" href="${pageContext.request.contextPath}/theme/jquery/jquery-ui.css" rel="stylesheet" />
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/dates.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/jquery.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/jquery-ui.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/formUtil.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/params.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/utils.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/actionsForButtons.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/shortKeys.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/ValidationGroups.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/calendar/AnchorPosition.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/calendar/CalendarPopup.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/calendar/date.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/calendar/PopupWindow.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/autocomplete.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/selectionPopup.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/menu.js"></script>
+<%@ include file="/jade/notation/notationLibJs_el.jspf" %> 
+
+<style type="text/css">
+body {
+	background-color: ${appColor};
+}
+</style>
+
+<c:set var="vBeanHasErrors" value="${viewBean.msgType == 'ERROR'}" />
+
+<%-- gestion des beans sans spy --%>
+<c:catch var="ex">
+	<c:if test="${not empty viewBean && not empty viewBean.spy}">
+		<c:set var="lastModification" value="${viewBean.spy.date},${viewBean.spy.time}-${viewBean.spy.user}" scope="page" />
+	</c:if>
+	
+	<c:if test="${not empty viewBean}">
+		<c:set var="creationSpy" value="${creationSpy}" scope="page" />
+	</c:if>
+</c:catch>
+
+
+<script type="text/javascript"> 
+var errorObj = new Object();
+errorObj.text = "";
+
+function showErrors() {
+	if (errorObj.text != "") {
+		showErrorDialog(errorObj.text);	
+	}
+}
+
+function showErrorDialog(errorStr) {
+	var errorHTML = "";
+	if(errorStr instanceof Array) {
+		for(var i=0;i<errorStr.length;i++) {
+			errorHTML += errorStr[i];
+			errorHTML += '<br />';
+		}
+	} else {
+		errorHTML = errorStr;
+	}
+	var errorObj = {text : errorHTML};
+	showModalDialog('${pageContext.request.contextPath}/errorModalDlg.jsp',errorObj,'dialogHeight:20;dialogWidth:25;status:no;resizable:no');
+}
+
+function disableBtn(aBtn) {
+	aBtn.onclick = '';
+	//aBtn.style.display = 'none';
+	aBtn.disabled = true;
+}
+
+function onClickNew() {
+	disableBtn(document.getElementById('btnNew'));
+	var oBtnFind = document.getElementById('btnFind');
+	if (oBtnFind != null) {
+		disableBtn(oBtnFind);
+	}
+	hideAllButtons();
+	document.location.href="<c:out value='${actionNew}' />";
+}
+
+function doInitThings() {
+	this.focus();
+	init();
+	actionInit();
+	var methodElement = document.forms[0].elements('_method');
+	action(methodElement.value);
+	if(methodElement.value == ADD) {
+		add();
+		try {
+			top.fr_appicons.hidePostit();
+		} catch (e) {}
+	} else {
+		try {
+			top.fr_appicons.checkPostit();
+		} catch (e) {}
+	}
+	try {
+		postInit();
+	} catch (noSuchMethodException) {}
+	
+	<c:if test="${autoShowErrorPopup}">
+		showErrors();
+	</c:if>
+	
+	$('html').triggerHandler(eventConstant.JADE_FW_ACTION_DONE);
+}
+
+function iconActionPostit() {
+	var myKey = "${key}";
+	if (myKey != "none") {
+		var url = "<c:out value='${formAction}'/>?userAction=framework.postit.display&pop=yes&key=<c:out value='${key}' />&mainServletPath=<c:out value='${requestScope.mainServletPath}'/>";
+		window.open(url,"_blank",'height=300px,width=350px');
+	}
+}
+
+function isPostitEnabled() {
+	
+	<c:choose>
+		<c:when test="${key == 'none'}">
+			return false;
+		</c:when>
+		<c:otherwise>
+			return true;
+		</c:otherwise>
+	</c:choose>
+	
+}
+</script>

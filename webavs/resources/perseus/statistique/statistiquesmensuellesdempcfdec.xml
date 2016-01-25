@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.statistique.StatistiquesMensuellesDemPcfDec">
+		
+		<select-fields>
+			<!-- PcfAccordee -->
+			<select-field name="csEtatPCFAccordee" field-ref="pcfAccordee.csEtat" /> 
+			<select-field name="montant" field-ref="pcfAccordee.montant" />
+			<!-- Décision -->
+			<select-field name="csEtatDecision" field-ref="decision.csEtat" />
+			<select-field name="dateValidation" field-ref="decision.dateValidation" />
+			<select-field name="csTypeDecision" field-ref="decision.csTypeDecision" />
+			
+			<select-field name="numeroDecision" field-ref="decision.numeroDecision" />
+			<!-- -->
+		</select-fields>
+		
+		<root-model name="demande" model-ref="ch.globaz.perseus.business.models.demande.SimpleDemande" />
+	
+		<linked-model name="pcfAccordee" model-ref="ch.globaz.perseus.business.models.pcfaccordee.SimplePCFAccordee" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDemande" operation="EQUALS" field-ref="demande.idDemande"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="decision" model-ref="ch.globaz.perseus.business.models.decision.SimpleDecision" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDemande" operation="EQUALS" field-ref="demande.idDemande"/>
+			</join-group>
+		</linked-model>
+				
+		<!-- ATTENTION, CE SEARCH-DEFINITION N'EST POUR LE MOMENT PAS UTILISE !! CORRIGER ASAP name="withDateFinDebutPeriodeStatistiques"-->
+		<search-definition>
+			<search-group operator="OR">
+				<search-group operator="AND">
+				<!-- On peut garder la recherche sur la date de validation parce qu'on utilise un left outer join, après on filtre en java --> 	
+					<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="dateValidation" />
+					<search-field name="forDateFin" operation="LESS_OR_EQUALS" field-ref="dateValidation"/>				
+				</search-group>
+				<search-group operator="AND">
+					<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="demande.dateDemandeSaisie"/>
+					<search-field name="forDateFin" operation="LESS_OR_EQUALS" field-ref="demande.dateDemandeSaisie" />
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="demande.idDossier" />
+			<order-field field-ref="demande.dateDebut" order="DESC" />
+			<order-field field-ref="demande.dateDemandeSaisie" order="DESC" />
+			<order-field field-ref="demande.timeDemandeSaisie" order="DESC" />
+			<order-field field-ref="dateValidation" order="DESC" />
+			<order-field field-ref="numeroDecision" order="DESC" />
+		</order-by>	
+		
+	</complexe-model>
+</model-mapping>	
+

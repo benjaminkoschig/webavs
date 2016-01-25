@@ -1,0 +1,190 @@
+
+body{
+	 font-size:12px;
+}
+
+#documentationNotation .codeJs{
+	margin:10px;
+	padding:5px;
+	background-color:#ecfcfd;
+	border:1px dotted #C1DCF7;
+}
+
+#documentationNotation .explication{
+	display:block;
+	margin-bottom: 10px;
+	background-color: #C1DCCC; 
+}
+
+#documentationNotation .description{
+	display:none;
+	margin-left:8px;
+}
+
+#documentationNotation  .descriptionObj{
+	width:750px;
+}
+
+#documentationNotation  #conventionNommage{
+}
+
+#documentationNotation  .liWithStyle li{
+	  list-style:circle;
+	  margin: 0 0 0 20px;
+}
+#creationJsNotation{
+	 font-size:10px;
+}
+
+#documentationNotation{
+ color : #356AA0 ;
+}
+
+#documentationNotation ul{
+	margin: 0;
+	padding:0;
+
+}
+
+#documentationNotation li{
+  padding-bottom: 10px;
+  list-style: none;
+}
+
+
+#documentationNotation .option{
+  margin-bottom:18px;
+  margin-left:5px;
+  background-color:#edf3fa;
+}
+
+#documentationNotation .options{
+	/* margin: 20px 0 0 0; */
+	width: 48%;
+	padding-right:10px;
+	border-right: 1px dotted #356AA0;
+	float:left;
+}
+
+#documentationNotation .option p{
+	margin :3px;
+	padding :0;
+}
+
+
+#documentationNotation .titreNotation{
+ display:inline-block;
+ width: 160px;
+}
+
+#documentationNotation h1{
+ cursor : pointer; 
+ font-size: 1.2em;
+ margin :0;
+ padding:0 0 0 7px;
+ background-color: #C1DCF7;
+}
+
+#documentationNotation .utilsTitre{
+	 background-color: #fcbbc8;
+}
+#documentationNotation .infosCouleur{
+	height:20px;
+	width: 20px;
+	display: inline-block;
+}
+
+#documentationNotation #infosCouleur{
+	margin:10px;
+}
+
+#documentationNotation h2{
+ font-size: 1.1em;
+}
+
+#documentationNotation h3{
+  margin :0;
+  padding :0;
+  font-size: 1em;
+
+}
+#documentationNotation h4{
+  font-size: 0.8em;
+  font-style:italic;
+  margin :0;
+  padding :0;
+}
+
+#documentationNotation .objetNotation{
+ margin-left :10px;
+}
+
+
+#documentationNotation .descCour{
+	font-size:0.8em;
+	font-weight:lighter;
+}
+
+
+#documentationNotation .exemple{
+	width:45%;
+	display:inline-block;
+	margin-left:10px;
+}
+
+#documentationNotation .clear{
+	clear:both;
+}
+
+#documentationNotation #menuTag{
+	margin: 5px 0 5px 0;
+	clear:both;
+}
+
+#documentationNotation #search{
+	margin-top:10px;
+	float:right;
+}
+
+#documentationNotation .exempleCode{
+	font-size: 0.9em;
+}
+
+#documentationNotation .nameCustomEvent{
+	display:inline-block;
+	margin-left:10px;
+	font-style:italic;
+	width:260px;
+}
+
+#documentationNotation .descCustomEvent{
+
+}
+
+#documentationNotation .bindCustomEvent{
+	display:block;
+	margin-left:275px;
+}
+
+#documentationNotation .docExemple{
+	margin:10px;
+	text-align:center;
+	width:550px;
+	padding:5px;
+	font-style:italic;
+	background-color:#ecfcfd;
+	border:1px dotted #C1DCF7;
+}
+ 
+ 
+#documentationNotation .author{
+	font-weight:normal;
+	font-size:0.9em;
+	margin: 0 5px;
+	float:right;
+}
+
+#documentationNotation .comment {
+	margin: 0px 10px 0 10px;
+    padding: 3px 5px 0 5px;
+}

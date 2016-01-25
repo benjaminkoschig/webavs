@@ -1,0 +1,62 @@
+<tarifs xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="tarifsTests.xsd">
+	<periode date="01.07.2009">
+		<legislation cs="CANTONAL">
+			<categorie cs="ZH">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="3.1.1.1" type="ENF" capableExercer="true" montant="200" age="12" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="3.1.1.2" type="ENF" capableExercer="false" montant="200" age="12" residence="CH"/>
+				<!-- ENF, CH, capable exercer -->
+				<test testId="3.1.1.3" type="ENF" capableExercer="true" montant="250" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="3.1.1.4" type="ENF" capableExercer="false" montant="250" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="3.1.1.5" type="ENF" capableExercer="true" montant="0" age="20" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="3.1.1.6" type="ENF" capableExercer="false" montant="250" age="18" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="3.1.1.7" type="FORM" capableExercer="true" montant="250" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="3.1.1.8" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="3.1.1.9" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="3.1.1.10" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="3.1.1.11" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="3.1.1.12" type="ACCE" montant="0" residence="CH"/>
+				
+				
+				<!-- ENF, ETR, capable exercer -->
+				<test testId="3.1.1.13" type="ENF" capableExercer="true" montant="200" age="12" residence="ETR"/>
+				<!-- ENF, ETR, incapable d'exercer -->
+				<test testId="3.1.1.14" type="ENF" capableExercer="false" montant="200" age="12" residence="ETR"/>
+				<!-- ENF, ETR, capable exercer -->
+				<test testId="3.1.1.15" type="ENF" capableExercer="true" montant="250" age="16" residence="ETR"/>
+				<!-- ENF, ETR, incapable d'exercer -->
+				<test testId="3.1.1.16" type="ENF" capableExercer="false" montant="250" age="16" residence="ETR"/>
+				<!-- ENF, ETR, plus de 16 ans, capable exercer -->
+				<test testId="3.1.1.17" type="ENF" capableExercer="true" montant="0" age="20" residence="ETR"/>
+				<!-- ENF, ETR, plus de 16 ans, incapable d'exercer -->
+				<test testId="3.1.1.18" type="ENF" capableExercer="false" montant="250" age="18" residence="ETR"/>
+				
+				<!-- FORM, ETR, capable exercer -->
+				<test testId="3.1.1.19" type="FORM" capableExercer="true" montant="250" age="17" residence="ETR"/>
+				<!-- FORM, ETR, incapable d'exercer -->
+				<test testId="3.1.1.20" type="FORM" capableExercer="false" montant="0" age="17" residence="ETR"/>
+				<!-- FORM, ETR, capable exercer, plus de 25 ans -->
+				<test testId="3.1.1.21" type="FORM" capableExercer="true" montant="0" age="26" residence="ETR"/>
+				<!-- FORM, ETR, incapable d'exercer, plus de 25 ans -->
+				<test testId="3.1.1.22" type="FORM" capableExercer="false" montant="0" age="26" residence="ETR"/>
+				
+				<!-- NAIS, ETR-->
+				<test testId="3.1.1.23" type="NAIS" montant="0" residence="ETR"/>
+				<!-- ACCE, ETR-->
+				<test testId="3.1.1.24" type="ACCE" montant="0" residence="ETR"/>
+			</categorie>
+		</legislation>
+	</periode>
+</tarifs>

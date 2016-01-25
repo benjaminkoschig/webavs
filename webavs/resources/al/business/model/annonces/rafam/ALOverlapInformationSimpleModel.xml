@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.rafam.OverlapInformationModel">
+		<description>Modèle représentant une erreur liée à une annonce RAFam</description>
+		<table name="ALOIANNO" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idOverlapInformation" column="EOIDAN" comment="ID de l'erreur"/>
+			<field name="idErreurAnnonce" column="ERIDAN" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID de l'erreur à laquelle est liée la période"/>
+			
+			<field name="overlapPeriodeStart" column="EOOPST" type="DATE" mandatory="false" comment="Date indiquant le début de chevauchement d'une période"/>
+			<field name="overlapPeriodeEnd" column="EOOPEN" type="DATE" mandatory="false" comment="Date indiquant la fin de chevauchement d'une période"/>
+			
+			<field name="officeIdentifier" column="EOOFID" type="STRING" dataType="VARCHAR(8)" mandatory="false" comment="Identifiant de l'office en conflit"/>
+			<field name="branch" column="EOBRAN" type="NUMERIC" dataType="NUMERIC(3,0)" mandatory="false" comment="Numéro de la branche de l'office en conflit"/>
+			
+			<field name="minimalStartFlag" column="EOMSFL" type="NUMERIC" dataType="NUMERIC(1,0)" mandatory="false" comment=""/>
+			
+			<field name="insignificance" column="EOINSI" type="BOOLEAN" mandatory="false" comment="Indique un conflit de moindre importance"/>
+		</fields>
+		
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdErreurAnnonce" field-ref="idErreurAnnonce" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

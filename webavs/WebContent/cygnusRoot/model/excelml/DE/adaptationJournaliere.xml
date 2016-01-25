@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>JJE</Author>
+  <LastAuthor>JJE</LastAuthor>
+  <LastPrinted>2010-07-28T13:24:12Z</LastPrinted>
+  <Created>2010-07-23T06:10:31Z</Created>
+  <Company>Globaz</Company>
+  <Version>11.9999</Version>
+ </DocumentProperties>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>12660</WindowHeight>
+  <WindowWidth>18780</WindowWidth>
+  <WindowTopX>240</WindowTopX>
+  <WindowTopY>120</WindowTopY>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s21">
+   <NumberFormat ss:Format="0"/>
+  </Style>
+  <Style ss:ID="s22">
+   <Font x:Family="Swiss" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s23">
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font x:Family="Swiss" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s24">
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font x:Family="Swiss" ss:Bold="1"/>
+   <NumberFormat ss:Format="0"/>
+  </Style>
+  <Style ss:ID="s25">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+   <Borders/>
+  </Style>
+ </Styles>
+ <Names>
+  <NamedRange ss:Name="description" ss:RefersTo="=Feuil1!R7C6"/>
+  <NamedRange ss:Name="headerBlank1" ss:RefersTo="=Feuil1!R1C1"/>
+  <NamedRange ss:Name="headerBlank2" ss:RefersTo="=Feuil1!R4C1"/>
+  <NamedRange ss:Name="headerBlank3" ss:RefersTo="=Feuil1!R5C1"/>
+  <NamedRange ss:Name="headerDateDeTraitement" ss:RefersTo="=Feuil1!R3C2"/>
+  <NamedRange ss:Name="headerDateExecution" ss:RefersTo="=Feuil1!R2C2"/>
+  <NamedRange ss:Name="idAdaptation" ss:RefersTo="=Feuil1!R7C3"/>
+  <NamedRange ss:Name="idDecisionPc" ss:RefersTo="=Feuil1!R7C1"/>
+  <NamedRange ss:Name="nss" ss:RefersTo="=Feuil1!R7C4"/>
+  <NamedRange ss:Name="numeroDecisionPc" ss:RefersTo="=Feuil1!R7C2"/>
+  <NamedRange ss:Name="typeDeMessage" ss:RefersTo="=Feuil1!R7C5"/>
+ </Names>
+ <Worksheet ss:Name="Feuil1">
+  <Table ss:ExpandedColumnCount="6" ss:ExpandedRowCount="7" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60">
+   <Column ss:AutoFitWidth="0" ss:Width="116.25" ss:Span="1"/>
+   <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="118.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="88.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="138"/>
+   <Column ss:StyleID="s21" ss:AutoFitWidth="0" ss:Width="459.75"/>
+   <Row>
+    <Cell><Data ss:Type="String">headerBlank1</Data><NamedCell
+      ss:Name="headerBlank1"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="s22"><Data ss:Type="String">Date d'exécution:</Data></Cell>
+    <Cell><Data ss:Type="String">headerDateExecution</Data><NamedCell
+      ss:Name="headerDateExecution"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="s22"><Data ss:Type="String">Dates de traitement :</Data></Cell>
+    <Cell><Data ss:Type="String">headerDateDeTraitement</Data><NamedCell
+      ss:Name="headerDateDeTraitement"/></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">headerBlank2</Data><NamedCell
+      ss:Name="headerBlank2"/></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">headerBlank3</Data><NamedCell
+      ss:Name="headerBlank3"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="s23"><Data ss:Type="String">Id décision PC</Data></Cell>
+    <Cell ss:StyleID="s23"><Data ss:Type="String">N° décision PC</Data></Cell>
+    <Cell ss:StyleID="s23"><Data ss:Type="String">Id adaptation</Data></Cell>
+    <Cell ss:StyleID="s23"><Data ss:Type="String">Nss</Data></Cell>
+    <Cell ss:StyleID="s23"><Data ss:Type="String">Type de message</Data></Cell>
+    <Cell ss:StyleID="s24"><Data ss:Type="String">Description</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">idDecisionPc</Data><NamedCell
+      ss:Name="idDecisionPc"/></Cell>
+    <Cell><Data ss:Type="String">numeroDecisionPc</Data><NamedCell
+      ss:Name="numeroDecisionPc"/></Cell>
+    <Cell><Data ss:Type="String">idAdaptation</Data><NamedCell
+      ss:Name="idAdaptation"/></Cell>
+    <Cell><Data ss:Type="String">nss</Data><NamedCell ss:Name="nss"/></Cell>
+    <Cell ss:StyleID="s25"><Data ss:Type="String">typeDeMessage</Data><NamedCell
+      ss:Name="typeDeMessage"/></Cell>
+    <Cell><Data ss:Type="String">description</Data><NamedCell ss:Name="description"/></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Layout x:Orientation="Landscape"/>
+    <Header x:Margin="0.4921259845"/>
+    <Footer x:Margin="0.4921259845"/>
+    <PageMargins x:Bottom="0.984251969" x:Left="0.78740157499999996"
+     x:Right="0.78740157499999996" x:Top="0.984251969"/>
+   </PageSetup>
+   <Print>
+    <ValidPrinterInfo/>
+    <PaperSizeIndex>9</PaperSizeIndex>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <Selected/>
+   <LeftColumnVisible>1</LeftColumnVisible>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>6</ActiveRow>
+     <ActiveCol>5</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>

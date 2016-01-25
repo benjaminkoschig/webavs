@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.detailfamille.SimpleDetailFamille">
+		<description>Detail Famille Contribuable</description>
+		<table name="MADETFAM" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDetailFamille" column="IDDEFA" comment=""/>
+			<field name="idContribuable" column="IDCONT" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_DETAIL_FAMILLE"/>
+			<field name="idFamille" column="IDFAMI" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_FAMILLE"/>
+			<field name="anneeHistorique" column="ANHIST" type="NUMERIC" dataType="NUMERIC(4,0)" mandatory="false" comment="ANNEE_HISTORIQUE"/>
+			<field name="noCaisseMaladie" column="NOCAMA" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="NO_CAISSE_MALADIE"/>
+			<field name="montantContribution" column="MTCONT" type="NUMERIC" dataType="NUMERIC(10,2)" mandatory="false" comment="MONTANT_CONTRIBUTION"/>
+			<field name="debutDroit" column="DROIDE" type="MONTH_YEAR" mandatory="false" comment="DEBUT_DROIT"/>
+			<field name="finDroit" column="DROIFI" type="MONTH_YEAR" mandatory="false" comment="FIN_DROIT"/>
+			<field name="dateEnvoi" column="DAENVO" type="DATE" mandatory="false" comment="DATE_ENVOI"/>
+			<field name="noAssure" column="NOASSU" type="STRING" dataType="VARCHAR(20)" mandatory="false" comment="NUMERO_ASSURE"/>
+			<field name="typeDemande" column="CSTYDE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="TYPE_DEMANDE"/>
+			<field name="refus" column="REFUSE" type="BOOLEAN" mandatory="false" comment="REFUS"/>
+			<field name="annonceCaisseMaladie" column="ANONCM" type="BOOLEAN" mandatory="false" comment="ANNONCE_CAISSE_MALADIE"/>
+			<field name="codeTraitement" column="CSCDTR" type="STRING" dataType="VARCHAR(1)" mandatory="false" comment="CODE_TRAITEMENT"/>
+			<field name="noModeles" column="CSMODE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="NUMERO_MODELES"/>
+			<field name="codeTraitementDossier" column="CSTRDO" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="CODE_TRAITEMENT_DOSSIER"/>
+			<field name="montantPrimeAssurance" column="MTPRIM" type="NUMERIC" dataType="NUMERIC(10,2)" mandatory="false" comment="MONTANT_PRIME"/>
+			<field name="user" column="IDUSER" type="STRING" dataType="VARCHAR(10)" mandatory="false" comment="USER"/>
+			<field name="dateModification" column="DAMODI" type="DATE" mandatory="false" comment="DATE_MODIFICATION"/>
+			<field name="codeForcer" column="FORCER" type="BOOLEAN" mandatory="false" comment="CODE_FORCER"/>
+			<field name="montantContribAnnuelle" column="MTCTAN" type="NUMERIC" dataType="NUMERIC(10,2)" mandatory="false" comment="MONTANT_CONTRIBUTION_ANNUELLE"/>
+			<field name="oldMontantContribAnnuelle" column="OLDMTC" type="NUMERIC" dataType="NUMERIC(10,2)" mandatory="false" comment="ANCIEN_MONTANT_CONTRIBUTION_ANNUELLE"/>
+			<field name="dateAnnonceCaisseMaladie" column="DAANCM" type="DATE" mandatory="false" comment="DATE_ANNONCE_CAISSE_MALADIE"/>
+			<field name="noLot" column="NUMLOT" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="NUMERO_LOT"/>
+			<field name="anneeRecalcul" column="ANRECA" type="NUMERIC" dataType="NUMERIC(4,0)" mandatory="false" comment="ANNEE_RECALCUL"/>
+			<field name="dateRecepDemande" column="DARECE" type="DATE" mandatory="false" comment="DATE_RECEPTION_DEMANDE"/>
+			<field name="typeAvisRIP" column="CSTRIP" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="TYPE_AVIS_RIP"/>
+			<field name="dateAvisRIP" column="DAARIP" type="DATE" mandatory="false" comment="DATE_AVIS_RIP"/>
+			<field name="montantExact" column="MTEXAC" type="NUMERIC" dataType="NUMERIC(10,2)" mandatory="false" comment="MONTANT_EXACT"/>
+			<field name="supplExtra" column="SUEXTR" type="NUMERIC" dataType="NUMERIC(10,2)" mandatory="false" comment="SUPPLEMENT_EXTRAORDINAIRE"/>
+			<field name="codeActif" column="CACTIF" type="BOOLEAN" mandatory="false" comment="CODE_ACTIF"/>
+			<field name="tauxEnfantCharge" column="TXENCH" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Taux enfant charge"/>
+			<field name="dateRecepDemandeRecalcul" column="DARECA" type="DATE" mandatory="false" comment="Date reception demande recalcul"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS"/>
+				<search-field name="forIdDetailFamille" field-ref="idDetailFamille" operation="EQUALS"/>
+				<search-field name="forIdFamille" field-ref="idFamille" operation="EQUALS"/>
+				<search-field name="forAnneeHistorique" field-ref="anneeHistorique" operation="EQUALS"/>
+				<search-field name="forGOEAnneeHistorique" field-ref="anneeHistorique" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forCodeTraitement" field-ref="codeTraitement" operation="EQUALS"/>
+				<search-field name="forCodeTraitementDossier" field-ref="codeTraitementDossier" operation="EQUALS"/>
+				<search-field name="forDebutDroit" field-ref="debutDroit" operation="EQUALS"/>
+				<search-field name="forGOEDebutDroit" field-ref="debutDroit" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forFinDroit" field-ref="finDroit" operation="EQUALS"/>
+				<search-field name="forGOEFinDroit" field-ref="finDroit" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forLOEFinDroit" field-ref="finDroit" operation="LESS_OR_EQUALS"/>
+				<search-field name="forAnnonceCaisseMaladie" field-ref="annonceCaisseMaladie" operation="EQUALS"/>
+				<search-field name="forDateAnnonceCaisseMaladie" field-ref="dateAnnonceCaisseMaladie" operation="EQUALS"/>
+				<search-field name="forRefus" field-ref="refus" operation="EQUALS"/>
+				<search-field name="forNoCaisseMaladies" field-ref="noCaisseMaladie" operation="EQUALS"/>
+				<search-field name="inNoCaisseMaladies" field-ref="noCaisseMaladie" operation="IN"/>
+				<search-field name="inNoModeles" field-ref="noModeles" operation="IN"/>
+				<search-field name="inTypeDemande" field-ref="typeDemande" operation="IN"/>
+				<search-field name="forTypeDemande" field-ref="typeDemande" operation="EQUALS"/>
+				<search-field name="inCodeTraitementDossier" field-ref="codeTraitementDossier" operation="IN"/>
+				<search-field name="forCodeActif" field-ref="codeActif" operation="EQUALS"/>
+				<search-field name="inIdFamille" field-ref="idFamille" operation="IN"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="default">
+			<order-field field-ref="debutDroit" order="DESC"/>
+		</order-by>
+		
+		<order-by name="orderByDroitDebut">
+			<order-field field-ref="debutDroit" order="DESC"/>
+		</order-by>
+		
+		<order-by name="orderByIdContIdDefaDesc">
+			<order-field field-ref="idContribuable" />
+			<order-field field-ref="idDetailFamille" order="DESC"/>
+		</order-by>
+		<!-- INDEX CREATION : CREATE INDEX MADETFA1 on MADETFAM (IDFAMI); -->
+				
+	</simple-model>
+</model-mapping>

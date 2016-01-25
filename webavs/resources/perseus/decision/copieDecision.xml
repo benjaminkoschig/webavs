@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.decision.CopieDecision">
+		<root-model name="simpleCopieDecision" model-ref="ch.globaz.perseus.business.models.decision.SimpleCopieDecision"/>
+		
+		<linked-model name="simpleTiers" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="simpleCopieDecision.idTiers" />
+			</join-group>
+		</linked-model>
+		
+		<select-fields>
+			<select-field name="designation1" field-ref="simpleTiers.designation1" />
+			<select-field name="designation2" field-ref="simpleTiers.designation2" />
+		</select-fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdCopieDecision" operation="EQUALS" field-ref="simpleCopieDecision.idCopieDecision" />
+				<search-field name="forIdDecision" operation="EQUALS" field-ref="simpleCopieDecision.idDecision" />
+				<search-field name="forIdTiers" operation="EQUALS" field-ref="simpleCopieDecision.idTiers" />
+				<search-field name="forRemarqueCopieDecision" operation="EQUALS" field-ref="simpleCopieDecision.remarqueCopieDecision" />
+			</search-group>
+		</search-definition>
+		
+
+	</complexe-model>
+</model-mapping>

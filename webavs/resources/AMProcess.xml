@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<!-- C'est le nom du process , la clé -->
+	<bean id="Amal.RepriseDecisionsTaxations"
+		class="ch.globaz.jade.process.business.conf.JadeProcessDefinitionBean">
+		<!-- Classe de la création de la population -->
+		<property name="classNamePopulation" value="ch.globaz.amal.process.repriseDecisionsTaxations.AMProcessRepriseDecisionsTaxationsPopulation" />	
+		<property name="description">
+			<map>
+				<entry key="FR">
+					<value>
+						<![CDATA[
+							<div id="divCommentaire" style="margin:-12px 0px 0px 0px;width:100%;background-image:url('/webavs/images/summary_bg.png');
+										background-repeat:repeat-x; float:left;border:1px solid #226194;">
+								<table id="tableCommentaire" width="100%" style="font-size:0.9em">
+									<tr>
+										<td></td>
+										<td>
+											<h4>Reprise des décisions de taxations</h4>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											Le service des contributions fournit les informations fiscales nécessaires au calcul des droits aux
+											subsides Amal pour les contribuables physiques cantonaux. 2 fichiers sont transmis : un fichier qui 
+											contient les informations de taxations et un fichier qui contient les informations des personnes à charge
+											relatives aux contribuables.
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											<h4>Périodicité</h4>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											8 fois par année, le service des contributions transmets les informations des décisions définitives.<br/>
+											1 fois par année, le service des contributions transmets les informations des personnes non-taxées pour l'année en cours.
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											<h4>Pré-requis</h4>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>											
+											Fichiers xml du service des contributions à traiter</br>
+											</br></br><strong>/!\ Importer le fichier des contribuables en 1er !! /!\</strong> 
+										</td>
+										<td></td>
+									</tr>
+									<tr><td colspan="3">&nbsp;</td></tr>
+								</table>
+							</div>
+						   ]]>
+					</value>
+				</entry>
+			</map>
+		</property>
+		<!-- Url pour afficher une entité dans l'application -->
+		<property name="urlEntite" value="amal?userAction=amal.contribuable.contribuable.afficher" />
+		<!-- Pour enregistrer des paramétres du process  -->	
+		<property name="urlProperties" value="amal?amal.process.repriseDecisionsTaxations.afficher" />	
+		<!--  On décrit les différentes étapes du process -->
+		<property name="steps">
+			<map>
+				<entry key="stepValidation">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.amal.process.repriseDecisionsTaxations.step1.AMProcessRepriseValidation" />
+						<!-- Définit si on peut relancer une étape -->
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="1" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Validation des fichiers importés" />
+								<entry key="DE" value="[de]Validation des fichiers importés" />
+								<entry key="IT" value="[it]Validation des fichiers importés" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="stepMutation">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.amal.process.repriseDecisionsTaxations.step2.AMProcessRepriseDecisionsTaxationsMutationContribuable" />
+						<!-- Définit si on peut relancer une étape -->
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="2" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Mutation contribuable, famille et màj adresses" />
+								<entry key="DE" value="[de]Mutation contribuable, famille et màj adresses" />
+								<entry key="IT" value="[it]Mutation contribuable, famille et màj adresses" />
+							</map>
+						</property>
+					</bean>
+				</entry>					
+				<entry key="stepTaxations">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.amal.process.repriseDecisionsTaxations.step3.AMProcessRepriseDecisionsTaxationsMutationTaxation" />
+						<!-- Définit si on peut relancer une étape -->
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="3" />
+						<property name="isOptional" value="true" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Enregistrement taxation (données fiscales)" />
+								<entry key="DE" value="[de]Enregistrement taxation (données fiscales)" />
+								<entry key="IT" value="[it]Enregistrement taxation (données fiscales)" />
+							</map>
+						</property>
+					</bean>
+				</entry>			
+				<entry key="stepCalcul">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.amal.process.repriseDecisionsTaxations.step4.AMProcessRepriseDecisionsTaxationsCalculDroits" />
+						<!-- Définit si on peut relancer une étape -->
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="4" />
+						<property name="isOptional" value="true" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Calcul du droit aux subsides (préparation documents)" />
+								<entry key="DE" value="[de]Calcul du droit aux subsides et (préparation documents)" />
+								<entry key="IT" value="[it]Calcul du droit aux subsides et (préparation documents)" />
+							</map>
+						</property>
+					</bean>
+				</entry>			
+			</map>
+		</property>
+	</bean>
+
+
+	<!-- C'est le nom du process , la clé -->
+	<bean id="Amal.RepriseSourciers"
+		class="ch.globaz.jade.process.business.conf.JadeProcessDefinitionBean">
+		<!-- Classe de la création de la population -->
+		<property name="classNamePopulation" value="ch.globaz.amal.process.repriseSourciers.AMProcessRepriseSourciersPopulation" />	
+		<property name="description">
+			<map>
+				<entry key="FR">
+					<value>
+						<![CDATA[
+							<div id="divCommentaire" style="margin:-12px 0px 0px 0px;width:100%;background-image:url('/webavs/images/summary_bg.png');
+										background-repeat:repeat-x; float:left;border:1px solid #226194;">
+								<table id="tableCommentaire" width="100%" style="font-size:0.9em">
+									<tr>
+										<td></td>
+										<td>
+											<h4>Reprise des imposés à la source</h4>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											Le bureau des personnes morales (BPM) fournit les informations fiscales nécessaires au calcul des droits aux subsides
+											Amal pour les personnes imposées à la source.
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											<h4>Périodicité</h4>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											Au mois d'avril, fichier principal des personnes imposées à la source.<br/>
+											À intervalle régulier, transmission du fichier pour un total de 3 à 4 reprises par année
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											<h4>Pré-requis</h4>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											Fichier texte du bureau des personnes morales (BPM)<br/>
+											Paramètres introduits pour l'année de subside
+										</td>
+										<td></td>
+									</tr>
+									<tr><td colspan="3">&nbsp;</td></tr>
+								</table>
+							</div>
+						   ]]>
+					</value>
+				</entry>
+			</map>
+		</property>
+		<!-- Url pour afficher une entité dans l'application -->
+		<property name="urlEntite" value="amal?userAction=amal.contribuable.contribuable.afficher" />
+		<!-- Pour enregistrer des paramétres du process  -->	
+		<property name="urlProperties" value="amal?amal.process.repriseSourciers.afficher" />	
+		<!--  On décrit les différentes étapes du process -->
+		<property name="steps">
+			<map>
+				<entry key="stepMutationSourcier">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.amal.process.repriseSourciers.step1.AMProcessRepriseSourciersMutationContribuable" />
+						<!-- Définit si on peut relancer une étape -->
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="1" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Mutation contribuable et conjoint" />
+								<entry key="DE" value="[de]Mutation contribuable et conjoint" />
+								<entry key="IT" value="[it]Mutation contribuable et conjoint" />
+							</map>
+						</property>
+					</bean>
+				</entry>			
+				<entry key="stepTaxationSourcier">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.amal.process.repriseSourciers.step2.AMProcessRepriseSourciersMutationTaxation" />
+						<!-- Définit si on peut relancer une étape -->
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="2" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Enregistrement taxation (données fiscales)" />
+								<entry key="DE" value="[de]Enregistrement taxation (données fiscales)" />
+								<entry key="IT" value="[it]Enregistrement taxation (données fiscales)" />
+							</map>
+						</property>
+					</bean>
+				</entry>			
+				<entry key="stepCalculSourcier">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.amal.process.repriseSourciers.step3.AMProcessRepriseSourciersCalculDroits" />
+						<!-- Définit si on peut relancer une étape -->
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="3" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Calcul du droit aux subsides (préparation documents)" />
+								<entry key="DE" value="[de]Calcul du droit aux subsides (préparation documents)" />
+								<entry key="IT" value="[it]Calcul du droit aux subsides (préparation documents)" />
+							</map>
+						</property>
+					</bean>
+				</entry>			
+			</map>
+		</property>
+	</bean>
+	
+	<!-- C'est le nom du process , la clé -->
+	<bean id="Amal.RepriseFinAnnee"
+		class="ch.globaz.jade.process.business.conf.JadeProcessDefinitionBean">
+		<!-- Classe de la création de la population -->
+		<property name="classNamePopulation" value="ch.globaz.amal.process.repriseFinAnnee.AMProcessRepriseFinAnneePopulation" />	
+		<property name="description">
+			<map>
+				<entry key="FR">
+					<value>
+						<![CDATA[
+							<div id="divCommentaire" style="margin:-12px 0px 0px 0px;width:100%;background-image:url('/webavs/images/summary_bg.png');
+										background-repeat:repeat-x; float:left;border:1px solid #226194;">
+								<table id="tableCommentaire" width="100%" style="font-size:0.9em">
+									<tr>
+										<td></td>
+										<td>
+											<h4>Reprise de fin d'année</h4>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											En fin d'année, il est nécessaire de préparer les dossiers actuels pour l'année de subside suivante. Sont concernés par cette reprise :<br/>
+											<br/>1) Dossiers des bénéficiaires de prestations complémentaires (PC)<br/>
+											2) Dossiers des personnes assistées (A)<br/>
+											3) Dossiers des personnes imposées à la source (S)<br/>
+											4) Dossiers standards (taxations définitives disponibles et non traitées)<br/>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											<h4>Périodicité</h4>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											Une fois par année, en novembre
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											<h4>Pré-requis</h4>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											Paramètres introduits pour l'année de subside
+										</td>
+										<td></td>
+									</tr>
+									<tr><td colspan="3">&nbsp;</td></tr>
+								</table>
+							</div>
+						   ]]>
+					</value>
+				</entry>
+			</map>
+		</property>
+		<!-- Url pour afficher une entité dans l'application -->
+		<property name="urlEntite" value="amal?userAction=amal.contribuable.contribuable.afficher" />
+		<!-- Pour enregistrer des paramétres du process  -->	
+		<property name="urlProperties" value="amal?amal.process.repriseFinAnnee.afficher" />	
+		<!--  On décrit les différentes étapes du process -->
+		<property name="steps">
+			<map>
+				<entry key="stepMutationFinAnnee">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.amal.process.repriseFinAnnee.step1.AMProcessRepriseFinAnneeMutationContribuable" />
+						<!-- Définit si on peut relancer une étape -->
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="1" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Mutation contribuable et famille" />
+								<entry key="DE" value="[de]Mutation contribuable et famille" />
+								<entry key="IT" value="[it]Mutation contribuable et famille" />
+							</map>
+						</property>
+					</bean>
+				</entry>			
+				<entry key="stepCalculFinAnnee">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.amal.process.repriseFinAnnee.step2.AMProcessRepriseFinAnneeCalculDroits" />
+						<!-- Définit si on peut relancer une étape -->
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="2" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Calcul du droit aux subsides" />
+								<entry key="DE" value="[de]Calcul du droit aux subsides" />
+								<entry key="IT" value="[it]Calcul du droit aux subsides" />
+							</map>
+						</property>
+					</bean>
+				</entry>			
+			</map>
+		</property>
+	</bean>
+	
+	<!-- C'est le nom du process , la clé -->
+	<bean id="Amal.RepriseRecalculs"
+		class="ch.globaz.jade.process.business.conf.JadeProcessDefinitionBean">
+		<!-- Classe de la création de la population -->
+		<property name="classNamePopulation" value="ch.globaz.amal.process.repriseRecalculs.AMProcessRepriseRecalculsPopulation" />	
+		<property name="description">
+			<map>
+				<entry key="FR">
+					<value>
+						<![CDATA[
+							<div id="divCommentaire" style="margin:-12px 0px 0px 0px;width:100%;background-image:url('/webavs/images/summary_bg.png');
+										background-repeat:repeat-x; float:left;border:1px solid #226194;">
+								<table id="tableCommentaire" width="100%" style="font-size:0.9em">
+									<tr>
+										<td></td>
+										<td>
+											<h4>Reprise des ACREP10, 11, 12 et 13</h4>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											Le processus effectue un nouveau calcul sur la taxation N-1 ou N-2 et attribue le document approprié :
+											
+											<ul>
+												<li>DECMST5  : Décision favorable</li>
+												<li>DECMST10,11,12,13 : Décision défavorable à la suite d'un ACREP10,11,12,13</li>
+											</ul>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											<h4>Périodicité</h4>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											Sur demande
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											<h4>Pré-requis</h4>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											<ol>
+												<li>Lancer d'abord le processus "Décisions de taxations"</li>
+												<li>Les subsides avec ACREP10+ doivent avoir une date de recalcule renseignée</li>
+											</ol>
+										</td>
+										<td></td>
+									</tr>
+									<tr><td colspan="3">&nbsp;</td></tr>
+								</table>
+							</div>
+						   ]]>
+					</value>
+				</entry>
+			</map>
+		</property>
+		<!-- Url pour afficher une entité dans l'application -->
+		<property name="urlEntite" value="amal?userAction=amal.contribuable.contribuable.afficher" />
+		<!-- Pour enregistrer des paramétres du process  -->	
+		<property name="urlProperties" value="" />	
+		<!--  On décrit les différentes étapes du process -->
+		<property name="steps">
+			<map>
+				<entry key="stepRepriseRecalcul">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.amal.process.repriseRecalculs.step1.AMProcessRepriseRecalculs" />
+						<!-- Définit si on peut relancer une étape -->
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="1" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Reprise des ACREP10+ et génération DECMST5 et 10+" />
+								<entry key="DE" value="[de]Reprise des ACREP10+ et génération DECMST5 et 10+" />
+								<entry key="IT" value="[it]Reprise des ACREP10+ et génération DECMST5 et 10+" />
+							</map>
+						</property>
+					</bean>
+				</entry>			
+			</map>
+		</property>
+	</bean>
+	
+
+	<!-- C'est le nom du process , la clé -->
+	<bean id="Amal.RepriseAdresses"
+		class="ch.globaz.jade.process.business.conf.JadeProcessDefinitionBean">
+		<!-- Classe de la création de la population -->
+		<property name="classNamePopulation" value="ch.globaz.amal.process.repriseAdresses.AMProcessRepriseAdressesPopulation" />	
+		<property name="description">
+			<map>
+				<entry key="FR">
+					<value>
+						<![CDATA[
+							<div id="divCommentaire" style="margin:-12px 0px 0px 0px;width:100%;background-image:url('/webavs/images/summary_bg.png');
+										background-repeat:repeat-x; float:left;border:1px solid #226194;">
+								<table id="tableCommentaire" width="100%" style="font-size:0.9em">
+									<tr>
+										<td></td>
+										<td>
+											<h4>Reprise des adreses (GERES)</h4>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											Sur demande, le fichier des adresses GERES peut être transmis et traité pour mettre à jour les adresses
+											des dossiers Amal
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											<h4>Périodicité</h4>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											Sur demande
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											<h4>Pré-requis</h4>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											Fichier xml des adresses GERES
+										</td>
+										<td></td>
+									</tr>
+									<tr><td colspan="3">&nbsp;</td></tr>
+								</table>
+							</div>
+						   ]]>
+					</value>
+				</entry>
+			</map>
+		</property>
+		<!-- Url pour afficher une entité dans l'application -->
+		<property name="urlEntite" value="amal?userAction=amal.contribuable.contribuable.afficher" />
+		<!-- Pour enregistrer des paramétres du process  -->	
+		<property name="urlProperties" value="amal?amal.process.repriseAdresses.afficher" />	
+		<!--  On décrit les différentes étapes du process -->
+		<property name="steps">
+			<map>
+				<entry key="stepMutationRepriseAdresse">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.amal.process.repriseAdresses.step1.AMProcessRepriseAdressesMutationContribuable" />
+						<!-- Définit si on peut relancer une étape -->
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="1" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Mutation contribuable et màj adresses" />
+								<entry key="DE" value="[de]Mutation contribuable et màj adresses" />
+								<entry key="IT" value="[it]Mutation contribuable et màj adresses" />
+							</map>
+						</property>
+					</bean>
+				</entry>			
+			</map>
+		</property>
+	</bean>
+
+	
+</beans>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.lot.OrdreVersementForList">
+	
+		<root-model name="simpleOrdreVersement" model-ref="ch.globaz.pegasus.business.models.lot.SimpleOrdreVersement" select-fields="true" />
+		
+		<select-fields>
+		    <select-field name="idCompteAnnexeConjoint" field-ref="simplePrestation.idCompteAnnexeConjoint" />
+			<select-field name="idCompteAnnexeRequerant" field-ref="simplePrestation.idCompteAnnexeRequerant" />
+		    <select-field name="idTiersRequerant" field-ref="simplePrestation.idTiersBeneficiaire" />
+			<select-field name="numAvs" field-ref="personneEtendu.numAvsActuel" />
+			<select-field name="designationRequerant1" field-ref="tiers.designation1" />
+			<select-field name="designationRequerant2" field-ref="tiers.designation2" />
+			<select-field name="montantPresation" field-ref="simplePrestation.montantTotal" />
+		</select-fields> 
+
+		<linked-model name="simplePrestation" model-ref="ch.globaz.pegasus.business.models.lot.SimplePrestation" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPrestation" operation="EQUALS" field-ref="simpleOrdreVersement.idPrestation"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="tiers" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="INNER" select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="simplePrestation.idTiersBeneficiaire"/>
+			</join-group>
+		</linked-model>	
+		
+		<linked-model name="personneEtendu" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueSimpleModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="tiers.idTiers"/>
+			</join-group>
+		</linked-model>	
+				
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPrestation" operation="EQUALS" field-ref="simpleOrdreVersement.idPrestation"/>
+				<search-field name="forIdLot" operation="EQUALS" field-ref="simplePrestation.idLot"/>
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simplePrestation.idVersionDroit"/>
+				<search-field name="forInIdVersionDroit" operation="IN" field-ref="simplePrestation.idVersionDroit"/>
+				<search-field name="forCsInTypeOv" operation="IN" field-ref="simpleOrdreVersement.csType"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="designationRequerant1" />
+		    <order-field field-ref="designationRequerant2" />
+			<order-field field-ref="simpleOrdreVersement.idPrestation" />
+			<order-field field-ref="simpleOrdreVersement.csType" />
+			<order-field order="DESC" field-ref="simpleOrdreVersement.idOrdreVersement" />
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

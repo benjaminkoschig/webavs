@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.famille.FamilleContribuableView">
+		
+		<!-- SELECT FIELDS : uniquement les champs qui nous intéressent en vue principale -->
+		<select-fields>
+			<select-field name="nomPrenom" field-ref="simpleFamille.nomPrenom" />
+			<select-field name="pereMereEnfant" field-ref="simpleFamille.pereMereEnfant" />
+			<select-field name="numContribuableActuel" field-ref="personneEtendue.personneEtendue.numContribuableActuel" />
+			<select-field name="numAvsActuel" field-ref="personneEtendue.personneEtendue.numAvsActuel" />
+			<select-field name="dateNaissance" field-ref="personneEtendue.personne.dateNaissance" />
+			<select-field name="dateNaissanceFamille" field-ref="simpleFamille.dateNaissance" />
+			<select-field name="sexe" field-ref="personneEtendue.simplePersonne.sexe" />
+			<select-field name="finDefinitive" field-ref="simpleFamille.finDefinitive" />
+			<select-field name="codeTraitementDossier" field-ref="simpleDetailFamille.codeTraitementDossier" />
+			<select-field name="familleId" field-ref="simpleFamille.idFamille" />
+			<select-field name="detailFamilleId" field-ref="simpleDetailFamille.idDetailFamille" />
+			<select-field name="anneeHistorique" field-ref="simpleDetailFamille.anneeHistorique" />
+			<select-field name="montantContribution" field-ref="simpleDetailFamille.montantContribution" />
+			<select-field name="dateEnvoi" field-ref="simpleDetailFamille.dateEnvoi" />
+			<select-field name="debutDroit" field-ref="simpleDetailFamille.debutDroit" />
+			<select-field name="finDroit" field-ref="simpleDetailFamille.finDroit" />
+			<select-field name="dateRecepDemande" field-ref="simpleDetailFamille.dateRecepDemande" />
+			<select-field name="noModeles" field-ref="simpleDetailFamille.noModeles" />
+			<select-field name="codeTraitement" field-ref="simpleDetailFamille.codeTraitement" />
+			<select-field name="supplExtra" field-ref="simpleDetailFamille.supplExtra" />
+			<select-field name="typeDemande" field-ref="simpleDetailFamille.typeDemande" />
+			<select-field name="refus" field-ref="simpleDetailFamille.refus" />
+			<select-field name="codeActif" field-ref="simpleDetailFamille.codeActif" />
+			<select-field name="isContribuable" field-ref="simpleFamille.isContribuable" />
+			<select-field name="isContribuableActif" field-ref="simpleContribuable.isContribuableActif" />
+		</select-fields>
+
+		<!-- ROOT MODEL -->
+		<root-model name="simpleFamille" model-ref="ch.globaz.amal.business.models.famille.SimpleFamille" select-fields="false"/>
+
+		<!-- LINKED MODEL : detail des subsides accordés par membre de famille -->
+		<linked-model name="simpleDetailFamille" model-ref="ch.globaz.amal.business.models.detailfamille.SimpleDetailFamille" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idFamille" operation="EQUALS" field-ref="simpleFamille.idFamille"/>
+			</join-group>
+		</linked-model>
+
+		<!-- LINKED MODEL : accès aux informations Tiers -->
+		<linked-model name="personneEtendue" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simpleFamille.idTier"/>
+			</join-group>
+		</linked-model>
+
+		
+		<!-- SEARCH : par id contribuable -->
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdContribuable" field-ref="simpleFamille.idContribuable" operation="EQUALS" />		
+				<search-field name="forAnneeHistorique" field-ref="anneeHistorique" operation="EQUALS" />
+				<search-field name="forCodeActif" field-ref="codeActif" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+
+		<!-- ORDER : année historique -->
+		<order-by name="default">
+			<order-field field-ref="anneeHistorique" order="DESC"/>
+			<order-field field-ref="isContribuable" order="ASC"/>
+			<order-field field-ref="pereMereEnfant" order="ASC"/>
+			<order-field field-ref="dateNaissanceFamille" order="ASC"/>
+			<order-field field-ref="nomPrenom" order="ASC"/>
+			<order-field field-ref="debutDroit" order="DESC"/>
+		</order-by>
+		
+		<order-by name="revenuHistorique">
+			<order-field field-ref="anneeHistorique" order="DESC"/>
+			<order-field field-ref="isContribuable" order="ASC"/>
+			<order-field field-ref="pereMereEnfant" order="ASC"/>
+			<order-field field-ref="dateNaissanceFamille" order="ASC"/>
+			<order-field field-ref="nomPrenom" order="ASC"/>
+			<order-field field-ref="debutDroit" order="DESC"/>
+		</order-by>
+
+		
+	</complexe-model>
+</model-mapping>

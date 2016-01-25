@@ -1,0 +1,272 @@
+package globaz.osiris.db.interet.tardif;
+
+import globaz.framework.util.FWCurrency;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BTransaction;
+import globaz.globall.util.JADate;
+import globaz.osiris.db.comptes.CACompteAnnexe;
+import globaz.osiris.db.comptes.CASection;
+import globaz.osiris.db.interet.util.CAInteretUtil;
+import globaz.osiris.db.interet.util.ecriturenonsoumise.CAEcritureNonSoumise;
+import globaz.osiris.db.interet.util.ecriturenonsoumise.CAEcritureNonSoumiseManager;
+import globaz.osiris.db.interet.util.planparsection.CAPlanParSection;
+import globaz.osiris.db.interet.util.planparsection.CAPlanParSectionManager;
+import globaz.osiris.db.interets.CADetailInteretMoratoire;
+import globaz.osiris.db.interets.CAInteretMoratoire;
+import globaz.osiris.translation.CACodeSystem;
+
+public abstract class CAInteretTardif {
+
+    private String idJournal;
+    private String idSection;
+
+    private CASection section;
+
+    /**
+     * Caculer les intérêts moratoires tardifs pour une section.
+     * 
+     * @param session
+     * @param transaction
+     * @throws Exception
+     */
+    public void calculer(BSession session, BTransaction transaction) throws Exception {
+        CAPlanParSectionManager manager = CAInteretUtil.getSectionPlans(session, transaction, null, getIdSection(),
+                true);
+
+        for (int i = 0; i < manager.size(); i++) {
+            CAPlanParSection plan = (CAPlanParSection) manager.get(i);
+
+            CAInteretMoratoire interet = CAInteretUtil.getInteretMoratoire(transaction, plan.getIdPlan(),
+                    getIdSection(), getIdJournal());
+            // CAInteretMoratoire interet = this.getInteretMoratoire(session, transaction, plan.getIdPlan());
+
+            if (interet.isNew()) {
+                FWCurrency montantSoumis = CAInteretUtil.getMontantSoumisParPlans(transaction, getIdSection(),
+                        plan.getIdPlan(), null);
+
+                if ((montantSoumis != null) && montantSoumis.isPositive()) {
+                    creerInteret(session, transaction, plan, interet, montantSoumis);
+                }
+            }
+        }
+    }
+
+    /**
+     * Pour chaque écriture (montant cumulé par date) créer une ligne de détail pour l'intérêt.<br/>
+     * Lors de l'ajout de la première ligne l'intérêt sera également ajouté.<br/>
+     * Cumul les lignes pour déterminer si l'intérêt est soumis ou exempté.
+     * 
+     * @param session
+     * @param transaction
+     * @param plan
+     * @param interet
+     * @param montantSoumis
+     * @throws Exception
+     */
+    private void creerInteret(BSession session, BTransaction transaction, CAPlanParSection plan,
+            CAInteretMoratoire interet, FWCurrency montantSoumis) throws Exception {
+        // Liste les écritures du plan et non pas du compte courant
+        CAEcritureNonSoumiseManager manager = CAInteretUtil.getEcrituresNonSoumises(session, transaction,
+                plan.getIdPlan(), getIdSection(), null, null);
+
+        FWCurrency montantCumule = new FWCurrency();
+        boolean aControlerManuellement = false;
+        JADate dateCaculDebutInteret = getDateCalculDebutInteret(session, transaction);
+        for (int i = 0; i < manager.size(); i++) {
+            CAEcritureNonSoumise ecriture = (CAEcritureNonSoumise) manager.get(i);
+
+            if (ecriture.getMontantToCurrency().isNegative()) {
+                if (montantSoumis.isPositive() && isTardif(session, transaction, ecriture.getDate())) {
+                    double taux = CAInteretUtil.getTaux(transaction, dateCaculDebutInteret.toStr("."));
+                    FWCurrency montantInteret = CAInteretUtil.getMontantInteret(session, montantSoumis,
+                            ecriture.getJADate(), dateCaculDebutInteret, taux);
+
+                    if ((montantInteret != null) && !montantInteret.isZero()) {
+                        CADetailInteretMoratoire ligne = new CADetailInteretMoratoire();
+                        ligne.setSession(session);
+
+                        ligne.setMontantInteret(montantInteret.toString());
+
+                        ligne.setMontantSoumis(montantSoumis.toString());
+
+                        ligne.setDateDebut(dateCaculDebutInteret.toStr("."));
+
+                        ligne.setTaux(String.valueOf(taux));
+
+                        ligne.setDateFin(ecriture.getJADate().toStr("."));
+
+                        if (interet.isNew()) {
+                            interet.add(transaction);
+                        }
+                        ligne.setAnneeCotisation("0");
+                        ligne.setIdInteretMoratoire(interet.getIdInteretMoratoire());
+                        ligne.add(transaction);
+                    }
+
+                    montantCumule.add(montantInteret);
+                    dateCaculDebutInteret = session.getApplication().getCalendar().addDays(ecriture.getJADate(), 1);
+                }
+
+                montantSoumis.add(ecriture.getMontantToCurrency());
+            } else {
+                if (ecriture.getMontantToCurrency().isPositive()) {
+                    aControlerManuellement = true;
+                }
+            }
+        }
+
+        updateMotifCalculInteretMoratoire(session, transaction, interet, montantCumule, aControlerManuellement);
+    }
+
+    /**
+     * Return la date à partir de laquelle le calcul de l'intérêt, pour l'écriture soumise, doit être fait.
+     * 
+     * @param session
+     * @param transaction
+     * @return
+     * @throws Exception
+     */
+    public abstract JADate getDateCalculDebutInteret(BSession session, BTransaction transaction) throws Exception;
+
+    public String getIdJournal() {
+        return idJournal;
+    }
+
+    public String getIdSection() {
+        return idSection;
+    }
+
+    // /**
+    // * Return l'intérêt moratoire tardif lié à la section. Si ce dernier n'est pas trouvé alors créé un nouveau sans
+    // * l'ajouter en base de données.
+    // *
+    // * @param session
+    // * @param transaction
+    // * @param idPlan
+    // * @return
+    // * @throws Exception
+    // */
+    // public CAInteretMoratoire getInteretMoratoire(BSession session, BTransaction transaction, String idPlan)
+    // throws Exception {
+    // CAInteretMoratoireManager manager = new CAInteretMoratoireManager();
+    // manager.setSession(session);
+    // manager.setForIdSection(this.getIdSection());
+    // manager.setForIdPlan(idPlan);
+    //
+    // ArrayList<String> idGenreInteretIn = new ArrayList<String>();
+    // idGenreInteretIn.add(CAGenreInteret.CS_TYPE_TARDIF);
+    // manager.setForIdGenreInteretIn(idGenreInteretIn);
+    //
+    // manager.setForMotifCalculNot(CAInteretMoratoire.CS_A_CONTROLER);
+    //
+    // manager.find(transaction, BManager.SIZE_NOLIMIT);
+    //
+    // if (manager.hasErrors()) {
+    // throw new Exception(manager.getErrors().toString());
+    // }
+    //
+    // if (manager.isEmpty()) {
+    // CAInteretMoratoire interet = new CAInteretMoratoire();
+    // interet.setSession(session);
+    //
+    // interet.setIdSection(this.getIdSection());
+    //
+    // interet.setDateCalcul(JACalendar.today().toStr("."));
+    // interet.setMotifcalcul(CAInteretMoratoire.CS_EXEMPTE);
+    // interet.setIdGenreInteret(CAGenreInteret.CS_TYPE_TARDIF);
+    // interet.setIdJournalCalcul(this.getIdJournal());
+    // interet.setIdPlan(idPlan);
+    // interet.setIdRubrique(CAInteretUtil.getIdContrePartie(session, transaction, idPlan,
+    // CAGenreInteret.CS_TYPE_TARDIF));
+    //
+    // // Pas de add => pas chargé base avant insert réel (vraiment tardif)
+    //
+    // return interet;
+    // } else {
+    // return (CAInteretMoratoire) manager.getFirstEntity();
+    // }
+    // }
+
+    /**
+     * Return la section en cours.
+     * 
+     * @param session
+     * @param transaction
+     * @return
+     * @throws Exception
+     */
+    public CASection getSection(BSession session, BTransaction transaction) throws Exception {
+        if (section == null) {
+            section = new CASection();
+            section.setSession(session);
+
+            section.setIdSection(getIdSection());
+
+            section.retrieve(transaction);
+
+            if (section.hasErrors() || section.isNew()) {
+                throw new Exception(session.getLabel("5126"));
+            }
+        }
+
+        return section;
+    }
+
+    /**
+     * L'écriture est-elle réellement tardive ?
+     * 
+     * @param session
+     * @param transaction
+     * @param dateToTest
+     * @return
+     * @throws Exception
+     */
+    public abstract boolean isTardif(BSession session, BTransaction transaction, String dateToTest) throws Exception;
+
+    public void setIdJournal(String idJournal) {
+        this.idJournal = idJournal;
+    }
+
+    public void setIdSection(String idSection) {
+        this.idSection = idSection;
+    }
+
+    /**
+     * Mise à jour du motif de calcul de l'intérêt moratoire tardif créé.
+     * 
+     * @param session
+     * @param transaction
+     * @param interet
+     * @param montantCumule
+     * @param aControlerManuellement
+     * @throws Exception
+     */
+    private void updateMotifCalculInteretMoratoire(BSession session, BTransaction transaction,
+            CAInteretMoratoire interet, FWCurrency montantCumule, boolean aControlerManuellement) throws Exception {
+        if (!interet.isNew()) {
+            if (getSection(session, transaction).isSectionAuxPoursuites(false)) {
+                interet.setRemarque(session.getLabel("IM_ENPOURSUITE"));
+                interet.update(transaction);
+            } else if (getSection(session, transaction).hasMotifContentieux(CACodeSystem.CS_IRRECOUVRABLE)
+                    || ((CACompteAnnexe) getSection(session, transaction).getCompteAnnexe())
+                            .isMotifExistant(CACodeSystem.CS_IRRECOUVRABLE)) {
+                interet.setRemarque(session.getLabel("IM_IRRECOUVRABLES"));
+                interet.update(transaction);
+            } else {
+                if (aControlerManuellement) {
+                    interet.setMotifcalcul(CAInteretMoratoire.CS_A_CONTROLER);
+                    interet.update(transaction);
+                } else {
+                    FWCurrency limiteExempte = new FWCurrency(CAInteretUtil.getLimiteExempteInteretMoratoire(session,
+                            transaction));
+
+                    if (montantCumule.compareTo(limiteExempte) == 1) {
+                        interet.setMotifcalcul(CAInteretMoratoire.CS_SOUMIS);
+                        interet.update(transaction);
+                    }
+                }
+            }
+        }
+    }
+
+}

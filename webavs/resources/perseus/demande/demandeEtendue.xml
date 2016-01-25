@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.demande.DemandeEtendue" extend="ch.globaz.perseus.business.models.demande.Demande">
+		<linked-model name="simplePcfAccordee" model-ref="ch.globaz.perseus.business.models.pcfaccordee.SimplePCFAccordee" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/>		
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="simpleDemande.idDossier"/>
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simpleDemande.csEtatDemande"/>
+				<search-field name="forIsDemandeIp" operation="EQUALS" field-ref="simpleDemande.permisB"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="dateTimeDecision">
+			<order-field field-ref="simpleDemande.dateDecisionValidation" />
+			<order-field field-ref="simpleDemande.timeDecisionValidation" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

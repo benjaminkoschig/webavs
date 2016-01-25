@@ -1,0 +1,25 @@
+@import url("../theme/master.css");
+
+.borderBlack {
+    border: solid 1px black;
+}
+
+.libelleSpecialLongDisabled{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 15cm;
+    font-weight : bold;
+}
+
+.libelleErrorLongDisabled{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 7cm;
+    font-weight : bold;
+    color : #FF0000;
+}
+
+.libelleDisabledNoBorder {
+	border:solid 0px;
+	background-color:Transparent;
+}

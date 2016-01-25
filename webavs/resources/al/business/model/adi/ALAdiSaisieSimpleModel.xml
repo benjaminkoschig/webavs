@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.adi.AdiSaisieModel" >
+		<description>contient les données saisies par l'utilisateur selon l'attestation reçue</description>
+		<table name="ALSAIADI" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key comment="ID" column="XSID" type="NUMERIC" name="idSaisieAdi" mandatory="true"/>
+			<field comment="Id (FK) du décompte" column="VID" type="NUMERIC" dataType="NUMERIC (15,0)" name="idDecompteAdi" mandatory="true"/>
+			<field comment="Id (FK) de l'enfant pour lequel la saisie est faite" column="CID" type="NUMERIC" dataType="NUMERIC (15,0)" name="idEnfant"  mandatory="true"/>
+			<field name="periodeDe" column="XSPERD" type="MONTH_YEAR" mandatory="true" comment="Début de la période pour laquelle la saisie est faite"/>
+			<field name="periodeA" column="XSPERA" type="MONTH_YEAR" mandatory="true" comment="Fin de la période pour laquelle la saisie est faite"/>
+			<field name="montantSaisi" column="XSMONT" type="NUMERIC" dataType="NUMERIC(8,2)" mandatory="true" comment="Montant saisi en monnaie étrangère"/>
+		</fields>	
+		
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdDecompteAdi" field-ref="idDecompteAdi" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		<search-definition name="saisieExistante">
+			<search-group operator="AND">
+		     	<search-field name="forPeriodeMax" field-ref="periodeA" operation="LESS_OR_EQUALS"/>
+			    <search-field name="forPeriodeMin" field-ref="periodeDe" operation="GREATER_OR_EQUALS"/>
+			    <search-field name="forIdEnfant" field-ref="idEnfant" operation="EQUALS"/>
+			    <search-field name="forIdDecompteAdi" field-ref="idDecompteAdi" operation="EQUALS"/>
+			</search-group>	
+		</search-definition>
+		<order-by name="default">
+			<order-field field-ref="idSaisieAdi" order="DESC"/>
+		</order-by>
+	</simple-model>
+</model-mapping>

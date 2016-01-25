@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus>
+
+	<!-- ************** -->
+	<!-- Menu Principal -->
+	<!-- ************** -->
+	<menu id="HE-MenuPrincipal">
+		<label defaultValue="Menu">
+			<language iso="de">Hauptmenü</language>
+		</label>
+		<nodes>
+			<node>
+				<label defaultValue="Liste des lots">
+					<language iso="de">Job Verwaltung</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.gestion.lot.chercher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Saisie des ARC">
+					<language iso="de">MZR erfassen</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.gestion.inputAnnonce.chercher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Annonces en envoi">
+					<language iso="de">Gesendete MZR</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.parametrage.attenteEnvoi.chercher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Annonces reçues">
+					<language iso="de">Empfangene MZR</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.parametrage.attenteReception.chercher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Annonces orphelines">
+					<language iso="de">Unzugeordnete MZR</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.gestion.annoncesOrphelines.chercher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="CI additionnels">
+					<language iso="de">Nachtrags-IK</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.gestion.impressionci.chercher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Rappels CI">
+					<language iso="de">Mahnung von ausstehende IK's</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.gestion.rappel.chercher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Rassemblement CI">
+					<language iso="de">IK-Sammlung</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.gestion.rassemblement.chercher" />
+				</action>
+			</node>
+			<node open="yes">
+				<label defaultValue="Paramètres">
+					<language iso="de">Parameter</language>
+				</label>
+					<nodes>
+					<node>
+						<label defaultValue="Configuration des Services">
+							<language iso="de">Konfiguration der Dienste</language>
+						</label>
+						<action command="/hermes" responseTarget="fr_main">
+							<parameter name="userAction" value="hermes.gestion.configurationService.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Catalogue de textes">
+							<language iso="de">Textkatalog</language>
+						</label>	
+						<action command="/babel" responseTarget="fr_main">
+								<parameter name="userAction" value="babel.cat.document.chercher"/>
+								<parameter name="csGroupeDomaines" value="HECTDOMAIN"/>
+								<parameter name="csGroupeTypesDocuments" value="HECTDOCS"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- ****************************** -->
+	<!-- Menu Option détail d'un lot -->
+	<!-- ****************************** -->
+	<menu id="HE-lotDetail">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Detail"/>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.gestion.lot.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>	
+			<node>
+				<label defaultValue="Annonces du lot">
+					<language iso="de">MZR des Jobs</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.gestion.lot.chooseType" />
+					<parameter name="selectedId"/>
+					<parameter name="nbAnnonces"/>
+					<parameter name="isArchivage"/>
+					<parameter name="dateLot"/>
+				</action>
+			</node>	
+		</nodes>
+	</menu>
+	
+	<!-- ********************************************* -->
+	<!-- Menu Option détail Configuration des services -->
+	<!-- ********************************************* -->
+	<menu id="HE-ConfigurationService">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Detail"/>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.gestion.configurationService.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>	
+		</nodes>
+	</menu>
+	
+	<!-- ***************************************** -->
+	<!-- Menu Option détail d'une attente en envoi -->
+	<!-- ***************************************** -->
+	<menu id="HE-attenteEnvoiDetail">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Detail"/>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.parametrage.attenteEnvoi.afficher" />
+					<parameter name="selectedId"/>
+					<parameter name="referenceUnique"/>
+					<parameter name="idAnnonce"/>
+					<parameter name="isARC39"/>
+					<parameter name="isArchivage"/>
+				</action>
+			</node>	
+			<node>
+				<label defaultValue="Annonces reçues">
+					<language iso="de">Empfangene MZR</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.parametrage.attenteReception.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="referenceUnique"/>
+					<parameter name="idAnnonce"/>
+					<parameter name="isARC39"/>
+					<parameter name="isArchivage"/>
+				</action>
+			</node>	
+			<node>
+				<label defaultValue="Annonces attendues">
+					<language iso="de">Erwatende MZR</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.parametrage.attenteRetourOptimized.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="referenceUnique"/>
+					<parameter name="idAnnonce"/>
+					<parameter name="isARC39"/>
+					<parameter name="isArchivage"/>
+				</action>
+			</node>	
+		</nodes>
+	</menu>
+	
+	<!-- ***************************************** -->
+	<!-- Menu Option annuler annonce -->
+	<!-- ***************************************** -->
+	<menu id="HE-attenteEnvoiSpetzDetail">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Annuler annonce">
+					<language iso="de">MZR annullieren</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.parametrage.annulerAnnonce.executer" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>	
+		</nodes>
+	</menu>
+	
+	<!-- ********************************************* -->
+	<!-- Menu Option détail d'une attente en réception -->
+	<!-- ********************************************* -->
+	<menu id="HE-attenteReceptionDetail">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Detail"/>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.parametrage.attenteReception.afficher" />
+					<parameter name="selectedId"/>
+					<parameter name="referenceUnique"/>
+					<parameter name="idAnnonce"/>
+					<parameter name="isArchivage"/>
+				</action>
+			</node>	
+			<!--<node>
+				<label defaultValue="ARC">
+					<language iso="de">MZR</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.parametrage.attenteEnvoi.chercher" />
+					<parameter name="referenceUnique"/>
+					<parameter name="isArchivage"/>
+				</action>
+			</node>	
+			<node>
+				<label defaultValue="Annonces attendues">
+					<language iso="de">Erwatende MZR</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.parametrage.attenteRetourOptimized.chercher" />
+					<parameter name="referenceUnique"/>
+					<parameter name="isArchivage"/>
+				</action>
+			</node>	-->
+		</nodes>
+	</menu>
+	
+	<!-- ********************************************* -->
+	<!-- Menu Option détail d'une attente en réception -->
+	<!-- ********************************************* -->
+	<menu id="HE-rappelDetail">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Detail"/>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.gestion.rassemblement.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>	
+			<node>
+				<label defaultValue="Envoyer un rappel">
+					<language iso="de">Mahnung senden</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.gestion.rappel.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>	
+			<node>
+				<label defaultValue="Saisie manuelle">
+					<language iso="de">Manuelle Erfassung</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.gestion.rassemblement.saisirCI" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>	
+		</nodes>
+	</menu>		
+
+	
+	<!-- ********************************************* -->
+	<!-- Menu Option détail d'une attente en réception -->
+	<!-- ********************************************* -->
+	<menu id="HE-RassemblementOptions">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Envoyer un rappel">
+					<language iso="de">Mahnung senden</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.gestion.rappel.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>	
+			<node>
+				<label defaultValue="Saisie manuelle">
+					<language iso="de">Manuelle Erfassung</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.gestion.rassemblement.saisirCI" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>	
+		</nodes>
+	</menu>
+	
+	
+	<!-- ***************************************** -->
+	<!-- Menu Option impression RCI                -->
+	<!-- ***************************************** -->
+	<menu id="HE-rassemblementDetail">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Detail"/>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.parametrage.attenteRetourCI.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="refUnique"/>
+					<parameter name="isArchivage"/>
+					<parameter name="caisse"/>
+				</action>
+			</node>	
+			<node>
+				<label defaultValue="Imprimer RCI">
+					<language iso="de">ZIK ausdrucken</language>
+				</label>
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.gestion.impressionci.afficher" />
+					<parameter name="selectedId"/>
+					<parameter name="refUnique"/>
+					<parameter name="isArchivage"/>
+					<parameter name="caisse"/>
+				</action>
+			</node>	
+		</nodes>
+	</menu>
+	
+	<!-- ************************** -->
+	<!-- Menu Option only detail    -->
+	<!-- ************************** -->
+	<menu id="HE-OnlyDetail">
+		<label defaultValue="Options">
+				<language iso="de">Optionen</language>
+		</label>
+	</menu>
+	
+</menus>

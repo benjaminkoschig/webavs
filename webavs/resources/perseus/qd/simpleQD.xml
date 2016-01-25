@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.qd.SimpleQD">
+		<description>Table des QD</description>
+		<table name="PFQD" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idQD" column="IPIDQD" comment="Id de la qd" />
+			<field name="idQDAnnuelle" column="IPIDQA" type="NUMERIC" mandatory="true" comment="Référence sur la qd annuelle"/>
+			<field name="idMembreFamille" column="IPIDMF" type="NUMERIC" mandatory="true" comment="Référence sur le membre famille"/>
+			<field name="idQDParente" column="IPIDQS" type="NUMERIC" mandatory="false" comment="Référence sur la qd parente"/>
+			<field name="montantUtilise" column="IPMNTU" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="Montant utilisé"/>
+			<field name="montantLimite" column="IPLIMI" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="Montant limite pour la QD"/>
+			<field name="csType" column="IPTYPE" type="NUMERIC" mandatory="true" comment="Code système pour le type de QD"/>
+			<field name="ouvertureManuelle" column="IPQDMA" type="BOOLEAN" mandatory="false" comment="Ouverture manuelle de la QD ?"/>
+		</fields>
+		
+	</simple-model>
+</model-mapping>

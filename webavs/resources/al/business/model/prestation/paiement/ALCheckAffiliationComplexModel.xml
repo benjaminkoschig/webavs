@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.prestation.paiement.CheckAffiliationComplexModel">
+		<select-fields distinct="true">
+			<select-field name="activiteAllocataire" field-ref="dossierModel.activiteAllocataire"/>
+			<select-field name="numeroAffilie" field-ref="dossierModel.numeroAffilie"/>
+			<select-field name="periodeDe" field-ref="recapEntrepriseModel.periodeDe"/>
+			<select-field name="periodeA" field-ref="recapEntrepriseModel.periodeA"/>
+			<select-field name="etatDossier" field-ref="dossierModel.etatDossier"/>
+			<select-field name="idDossier" field-ref="dossierModel.idDossier"/>
+			<select-field name="finValidite" field-ref="dossierModel.finValidite"/>
+			<select-field name="presPeriodeA" field-ref="entetePrestationModel.periodeA"/>
+			<select-field name="idRecap" field-ref="recapEntrepriseModel.idRecap"/>
+		</select-fields>
+		
+		<root-model name="dossierModel" model-ref="ch.globaz.al.business.models.dossier.DossierModel" select-fields="false"/>
+		
+		<linked-model name="entetePrestationModel" model-ref="ch.globaz.al.business.models.prestation.EntetePrestationModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDossier" field-ref="dossierModel.idDossier"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="recapEntrepriseModel" model-ref="ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idRecap" field-ref="entetePrestationModel.idRecap"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="inIdRecap" field-ref="entetePrestationModel.idRecap" operation="IN"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="numeroAffilie" order="ASC" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

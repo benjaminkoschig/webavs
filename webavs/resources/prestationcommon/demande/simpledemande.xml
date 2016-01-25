@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.prestation.business.models.demande.SimpleDemandePrestation">
+		<description>Demande de prestation</description>
+		<table name="PRDEMAP" hasSpy="true" hasCreationSpy="false" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idDemande" column="WAIDEM" comment=""/>
+			<field name="etat" type="NUMERIC" column="WATETA" comment="" />		
+			<field name="idMetaDossier" type="NUMERIC" column="WAIMDO" comment=""/>		
+			<field name="idTiers" type="NUMERIC" column="WAITIE" comment=""/>		
+			<field name="typeDemande" type="NUMERIC" column="WATTDE" comment=""/>		
+		</fields>
+	</simple-model>
+</model-mapping>

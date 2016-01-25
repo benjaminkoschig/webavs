@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.taxationoffice.LigneTaxationComplexModel">
+
+		<root-model name="ligneTaxationSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.taxationoffice.LigneTaxationSimpleModel" />
+
+		<linked-model name="taxationOfficeComplexModel"
+			model-ref="ch.globaz.vulpecula.business.models.taxationoffice.TaxationOfficeComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="taxationOfficeSimpleModel.id"
+					operation="EQUALS" field-ref="ligneTaxationSimpleModel.idTaxationOffice" />
+			</join-group>
+		</linked-model>
+		<linked-model name="cotisationComplexModel"
+			model-ref="ch.globaz.vulpecula.external.models.CotisationComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="cotisationSimpleModel.cotisationId"
+					operation="EQUALS" field-ref="ligneTaxationSimpleModel.idCotisation" />
+			</join-group>
+		</linked-model>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="ligneTaxationSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdTaxationOffice"
+					field-ref="ligneTaxationSimpleModel.idTaxationOffice" operation="EQUALS" />
+				<search-field name="forIdCotisation"
+					field-ref="ligneTaxationSimpleModel.idCotisation" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

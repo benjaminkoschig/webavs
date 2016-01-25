@@ -1,0 +1,84 @@
+@import url("../theme/master.css");
+
+.libelleLongDisabled{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 8cm;
+    font-weight : bold;
+}
+
+#tabs ul
+{
+    font: normal 14px arial, sans, sans-serif;
+    -list-style-type: none;
+    border-bottom: 2px solid gray;
+    margin: 0;
+    padding-left:0;
+    padding-right:0;
+    padding-bottom: 26px;
+}
+
+#tabs ul li 
+{
+    display: inline;
+    float: left;
+    height: 24px;
+    min-width:80px;
+    text-align:center;
+    padding:0;
+    margin: 1px 0px 0px 0px;
+    border: 1px solid gray;
+}
+
+#tabs ul li.selected 
+{
+    border-bottom: 1px solid #FFFFFF;
+    background-color: #E8EEF4;
+}
+
+
+#tabs ul li a 
+{
+    float: left;
+    color: #666666;
+    text-decoration: none;
+    padding: 4px;
+    text-align:center;
+    background-color:#DDDDDD;
+    min-width:80px;
+    border-bottom: 1px solid gray;
+}
+
+#tabs ul li a.selected
+{
+    color: #000;
+    font-weight:bold;
+    background-color: #E8EEF4;
+    border-bottom: 1px solid #FFFFFF;
+}
+
+#tabs ul li a:hover
+{
+    color: #000;
+    font-weight:bold;
+    background-color: #FFFFFF;
+}
+.mtdBold {
+    font-family : Verdana,Arial;
+    border-right: solid 1px silver;
+    padding : 3 10;
+    font-weight: bold;
+}
+.mtdNumber {
+    font-family : Verdana,Arial;
+    border-right: solid 1px silver;
+    padding : 5 3;
+	text-align: center;
+}
+
+.somme{
+    font-size : x-small;
+    font-family : Verdana, Arial;
+    color : white;
+    background-color : #226194;
+}

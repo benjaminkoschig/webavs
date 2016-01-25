@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<model-mapping>
+	<complexe-model className="ch.globaz.al.business.models.prestation.DeclarationVersementDetailleComplexModel">
+	<description>Modèle complexe d'un détail de prestation composé d'éléments du détail, son en-tête, du droit et de l'enfant</description>
+		<select-fields distinct="true">
+			<select-field name="dateNaissanceEnfant" field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.personne.dateNaissance"/>
+			<select-field name="dateVersement" field-ref="entetePrestationModel.dateVersComp"/>
+			<select-field name="statutPrestation" field-ref="entetePrestationModel.statut"/>
+			<select-field name="periode" field-ref="detailPrestationModel.periodeValidite"/>
+			<select-field name="montantDetailPrestation" field-ref="detailPrestationModel.montant"/>
+			<select-field name="nomEnfant" field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.tiers.designation1"/>
+			<select-field name="nssEnfant" field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.personneEtendue.numAvsActuel"/>
+			<select-field name="prenomEnfant" field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.tiers.designation2"/>
+			<select-field name="typePrestation" field-ref="detailPrestationModel.typePrestation"/>
+			<select-field name="tiersBeneficiaire" field-ref="detailPrestationModel.idTiersBeneficiaire"/>
+			<select-field name="idDossier" field-ref="droitComplexModel.droitModel.idDossier"/>
+			<select-field name="attestationAlloc" field-ref="droitComplexModel.droitModel.attestationAlloc"/>
+		</select-fields>
+
+		<root-model name="detailPrestationModel" model-ref="ch.globaz.al.business.models.prestation.DetailPrestationModel" select-fields="false"/>
+		<linked-model name="entetePrestationModel" model-ref="ch.globaz.al.business.models.prestation.EntetePrestationModel" join-type="INNER" select-fields="false">
+		<join-group operator="AND">
+				<join-field name="idEntete" field-ref="detailPrestationModel.idEntete"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="droitComplexModel" model-ref="ch.globaz.al.business.models.droit.DroitComplexModel" join-type="LEFT_OUTER" select-fields="false">
+		<join-group operator="AND">
+			<join-field name="droitModel.idDroit" field-ref="detailPrestationModel.idDroit"/>
+		</join-group>
+		</linked-model>
+		<search-definition>
+			<search-group operator="AND">				
+				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>		
+				<search-field name="forEtat" field-ref="entetePrestationModel.etatPrestation" operation="EQUALS"/>
+				<search-field name="inBonification" field-ref="entetePrestationModel.bonification" operation="IN"/>
+				<search-field name="forDateDebut" field-ref="entetePrestationModel.dateVersComp" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forDateFin" field-ref="entetePrestationModel.dateVersComp" operation="LESS_OR_EQUALS"/>
+				<search-field name="forTiers" field-ref="detailPrestationModel.idTiersBeneficiaire" operation="EQUALS"/>
+				<search-field name="notForTiers" field-ref="detailPrestationModel.idTiersBeneficiaire" operation="NOT_EQUALS"/>
+ 			</search-group>
+		</search-definition>
+		
+		<search-definition name="prestaDateVersement">
+		<search-group operator="AND">				
+				<search-field name="forIdRecap" field-ref="entetePrestationModel.idRecap" operation="EQUALS"/>		
+				<search-field name="forDateDebut" field-ref="entetePrestationModel.dateVersComp" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forDateFin" field-ref="entetePrestationModel.dateVersComp" operation="LESS_OR_EQUALS"/>
+ 			</search-group>
+		</search-definition>
+		
+		<search-definition name="prestaRetroActives">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>			
+				<search-field name="forDateDebut" field-ref="detailPrestationModel.periodeValidite" operation="LESS_OR_EQUALS"/>
+				<search-field name="forEtat" field-ref="entetePrestationModel.etatPrestation" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="default">
+				<order-field field-ref="dateNaissanceEnfant" order="ASC"/>
+				<order-field field-ref="nssEnfant" order="ASC"/>
+				<order-field field-ref="dateVersement" order="ASC"/>
+				<order-field field-ref="periode" order="ASC"/>
+		</order-by> 
+		<order-by name="periode">	
+				<order-field field-ref="periode" order="ASC"/>
+		</order-by>
+		
+		<order-by name="tiersBeneficiaire">
+				<order-field field-ref="attestationAlloc" order="ASC"/>
+				<order-field field-ref="tiersBeneficiaire" order="ASC"/>
+				<order-field field-ref="dateNaissanceEnfant" order="ASC"/>
+				<order-field field-ref="nssEnfant" order="ASC"/>
+				<order-field field-ref="dateVersement" order="ASC"/>
+				<order-field field-ref="periode" order="ASC"/>
+		
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

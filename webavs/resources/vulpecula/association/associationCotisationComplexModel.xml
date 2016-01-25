@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.association.AssociationCotisationComplexModel">
+
+		<root-model name="associationCotisationSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.association.AssociationCotisationSimpleModel" />
+
+		<linked-model name="cotisationAssociationProfessionnelleComplexModel"
+			model-ref="ch.globaz.vulpecula.business.models.association.CotisationAssociationProfessionnelleComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="cotisationAssociationProfessionnelleSimpleModel.id" operation="EQUALS"
+					field-ref="associationCotisationSimpleModel.idCotisationAssociationProfessionnelle" />
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="associationCotisationSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdEmployeur" field-ref="associationCotisationSimpleModel.idEmployeur"
+					operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		<order-by name="idDesc">
+			<order-field field-ref="associationCotisationSimpleModel.id"
+				order="DESC" />
+		</order-by>
+		<order-by name="idAsc">
+			<order-field field-ref="associationCotisationSimpleModel.id" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

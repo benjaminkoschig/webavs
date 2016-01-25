@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<!-- modeles simple -->
+	<model-mapping import="pegasus/transfert/simpletransfertdossiersuppression.xml"/>
+	<!-- modeles complexes -->
+	<model-mapping import="pegasus/transfert/transfertdossiersuppression.xml"/>
+</model-mapping>

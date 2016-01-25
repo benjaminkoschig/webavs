@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--  DMA, 03.2012 -->
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.process.adaptation.SimpleDemandeCentrale">
+		<description>Table qui contient des info des rente qui proviennent de la centrale</description>
+		<table name="PCDEMCEN" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDemandeCentral" column="CHIIDD" comment="ID_DEMANDE_CENTRALE" />
+			<field name="idDemandePC" column="CGIDPC" type="NUMERIC" mandatory="false"  comment="ID_DEMANDE_PC"/>
+			<field name="idProcess"   column="CGIDPR" type="NUMERIC" mandatory="false" comment="ID_PROCESS"/>
+			<field name="nss"  column="CGNSS" type="STRING" mandatory="false" comment="NSS"/> 
+			<field name="referenceInterne" column="CGREFI" type="NUMERIC" mandatory="false" comment="REFERENCE_INTERNE"/>
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdGroupe" operation="IN" field-ref="idGroupe" />
+				<search-field name="forIdProcess" operation="IN" field-ref="idProcess" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+	
+	<order-by name="processGroupe">
+		<order-field field-ref="idProcess" />
+		<order-field field-ref="idGroupe" />
+	</order-by>
+</model-mapping> 

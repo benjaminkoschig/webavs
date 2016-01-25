@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="pegasus/process/adaptation/simpledemandealacentral.xml"/>
+	<model-mapping import="pegasus/process/adaptation/simplerenteadaptation.xml"/>
+
+	<model-mapping import="pegasus/process/adaptation/renteadaptationdemande.xml"/>
+	<model-mapping import="pegasus/process/adaptation/rentemembrefamillecalcule.xml"/>
+	<model-mapping import="pegasus/process/adaptation/rentemembrefamillecalculefield.xml"/>
+	
+	<model-mapping import="pegasus/process/adaptation/demandepcaprestation.xml"/>
+	<model-mapping import="pegasus/process/adaptation/donneeFinanciere.xml"/>
+	
+	<model-mapping import="pegasus/process/adaptation/renteavs.xml"/>
+	<model-mapping import="pegasus/process/adaptation/adaptationpsal.xml"/>
+	<model-mapping import="pegasus/process/adaptation/decisionplancal.xml"/>
+
+	<model-mapping import="pegasus/process/adaptation/typechambrehome.xml"/>
+
+</model-mapping> 

@@ -1,0 +1,297 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>Michaël MONTANDON</Author>
+  <LastAuthor>Michaël MONTANDON</LastAuthor>
+  <LastPrinted>2013-07-05T12:54:28Z</LastPrinted>
+  <Created>2013-05-17T12:41:32Z</Created>
+  <LastSaved>2013-06-12T11:36:04Z</LastSaved>
+  <Company>Globaz</Company>
+  <Version>14.00</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <AllowPNG/>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>12330</WindowHeight>
+  <WindowWidth>18915</WindowWidth>
+  <WindowTopX>120</WindowTopX>
+  <WindowTopY>120</WindowTopY>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s62">
+   <NumberFormat/>
+  </Style>
+  <Style ss:ID="s63">
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s64">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="14" ss:Color="#000000"
+    ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s66">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s67">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000"/>
+   <NumberFormat/>
+  </Style>
+  <Style ss:ID="s68">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s69">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s72">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s73">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s74">
+   <Borders>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000" ss:Bold="1"/>
+   <NumberFormat/>
+  </Style>
+  <Style ss:ID="s75">
+   <Borders>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s76">
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000"/>
+   <NumberFormat/>
+  </Style>
+  <Style ss:ID="s77">
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s78">
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s79">
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000" ss:Bold="1"/>
+   <Interior/>
+   <NumberFormat/>
+  </Style>
+  <Style ss:ID="s80">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000" ss:Bold="1"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s81">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+   <NumberFormat/>
+  </Style>
+  <Style ss:ID="s82">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s88">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Top" ss:WrapText="1"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000" ss:Bold="1"/>
+   <NumberFormat/>
+  </Style>
+ </Styles>
+ <Names>
+  <NamedRange ss:Name="CELL_BLANK" ss:RefersTo="=Feuil1!R7C1"/>
+  <NamedRange ss:Name="CELL_BLANK_2" ss:RefersTo="=Feuil1!R4C1"/>
+  <NamedRange ss:Name="CELL_NUMERO_AFFILIE" ss:RefersTo="=Feuil1!R3C1"/>
+  <NamedRange ss:Name="CELL_TITRE" ss:RefersTo="=Feuil1!R1C1"/>
+  <NamedRange ss:Name="CELL_TOTAL_LABEL" ss:RefersTo="=Feuil1!R8C1"/>
+  <NamedRange ss:Name="CELL_TOTAL_MONTANT" ss:RefersTo="=Feuil1!R8C7"/>
+  <NamedRange ss:Name="COL_CREDIT" ss:RefersTo="=Feuil1!R6C6"/>
+  <NamedRange ss:Name="COL_DATE_COMPTABLE" ss:RefersTo="=Feuil1!R6C1"/>
+  <NamedRange ss:Name="COL_DATE_VALEUR" ss:RefersTo="=Feuil1!R6C2"/>
+  <NamedRange ss:Name="COL_DEBIT" ss:RefersTo="=Feuil1!R6C5"/>
+  <NamedRange ss:Name="COL_DECOMPTE" ss:RefersTo="=Feuil1!R6C3"/>
+  <NamedRange ss:Name="COL_DESCRIPTION" ss:RefersTo="=Feuil1!R6C4"/>
+  <NamedRange ss:Name="COL_PROVENANCE_PAIEMENT" ss:RefersTo="=Feuil1!R6C8"/>
+  <NamedRange ss:Name="COL_SOLDE" ss:RefersTo="=Feuil1!R6C7"/>
+ </Names>
+ <Worksheet ss:Name="Feuil1">
+  <Table ss:ExpandedColumnCount="8" ss:ExpandedRowCount="10" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60" ss:DefaultRowHeight="15">
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="72"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0"/>
+   <Column ss:Index="4" ss:AutoFitWidth="0" ss:Width="306"/>
+   <Column ss:StyleID="s63" ss:AutoFitWidth="0" ss:Width="84"/>
+   <Column ss:StyleID="s63" ss:AutoFitWidth="0" ss:Width="79.5"/>
+   <Column ss:StyleID="s63" ss:AutoFitWidth="0" ss:Width="85.5"/>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:MergeAcross="7" ss:StyleID="s64"><Data ss:Type="String">Extrait de compte du 1er janvier 2013 au 17 mai 2013</Data><NamedCell
+      ss:Name="CELL_TITRE"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s66"><Data ss:Type="String">0298GCA</Data></Cell>
+    <Cell ss:StyleID="s64"/>
+    <Cell ss:StyleID="s64"/>
+    <Cell ss:StyleID="s64"/>
+    <Cell ss:StyleID="s64"/>
+    <Cell ss:StyleID="s64"/>
+    <Cell ss:StyleID="s64"/>
+    <Cell ss:StyleID="s64"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="60" ss:StyleID="s68">
+    <Cell ss:MergeAcross="3" ss:StyleID="s88"><Data ss:Type="String">Numéro d'affilié : 085.238-00</Data><NamedCell
+      ss:Name="CELL_NUMERO_AFFILIE"/></Cell>
+    <Cell ss:StyleID="s73"/>
+    <Cell ss:StyleID="s73"/>
+    <Cell ss:StyleID="s73"/>
+    <Cell ss:StyleID="s72"/>
+   </Row>
+   <Row ss:Index="5" ss:AutoFitHeight="0" ss:StyleID="s68">
+    <Cell ss:StyleID="s74"><Data ss:Type="String">Date comptable</Data></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String"> Date valeur</Data></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String"> Décompte</Data></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String"> Description</Data></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String"> Débit</Data></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">Crédit</Data></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">Solde</Data></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">Prov. Pmt</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:StyleID="s68">
+    <Cell ss:StyleID="s76"><Data ss:Type="String"> </Data><NamedCell
+      ss:Name="COL_DATE_COMPTABLE"/></Cell>
+    <Cell ss:StyleID="s76"><Data ss:Type="String"> </Data><NamedCell
+      ss:Name="COL_DATE_VALEUR"/></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String"> </Data><NamedCell
+      ss:Name="COL_DECOMPTE"/></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String"> </Data><NamedCell
+      ss:Name="COL_DESCRIPTION"/></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="COL_DEBIT"/></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="COL_CREDIT"/></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="COL_SOLDE"/></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="String"> </Data><NamedCell
+      ss:Name="COL_PROVENANCE_PAIEMENT"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">  </Data><NamedCell ss:Name="CELL_BLANK"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:StyleID="s68">
+    <Cell ss:StyleID="s79"><Data ss:Type="String">Montant en notre faveur au 17 mai 2013</Data><NamedCell
+      ss:Name="CELL_TOTAL_LABEL"/></Cell>
+    <Cell ss:StyleID="s67"/>
+    <Cell ss:Index="5" ss:StyleID="s69"/>
+    <Cell ss:StyleID="s69"/>
+    <Cell ss:StyleID="s80"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="CELL_TOTAL_MONTANT"/></Cell>
+   </Row>
+   <Row ss:Index="10" ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s81"/>
+    <Cell ss:Index="7" ss:StyleID="s82"/>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.31496062992125984"/>
+    <Footer x:Margin="0.31496062992125984" x:Data="&amp;C&amp;D - &amp;T - &amp;P / &amp;N"/>
+    <PageMargins x:Bottom="0.74803149606299213" x:Left="0.70866141732283472"
+     x:Right="0.70866141732283472" x:Top="0.74803149606299213"/>
+   </PageSetup>
+   <Unsynced/>
+   <FitToPage/>
+   <Print>
+    <FitHeight>0</FitHeight>
+    <ValidPrinterInfo/>
+    <PaperSizeIndex>9</PaperSizeIndex>
+    <Scale>60</Scale>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>15</ActiveRow>
+     <ActiveCol>1</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Feuil2">
+  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="1" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60" ss:DefaultRowHeight="15">
+   <Row ss:AutoFitHeight="0"/>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Unsynced/>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Feuil3">
+  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="1" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60" ss:DefaultRowHeight="15">
+   <Row ss:AutoFitHeight="0"/>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Unsynced/>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="pegasus/parametre/simpleconversionrente.xml"/>
+	<model-mapping import="pegasus/parametre/simpleForfaitPrimesAssuranceMaladie.xml"/>
+	<model-mapping import="pegasus/parametre/simpleLienZoneLocalite.xml"/>
+	<model-mapping import="pegasus/parametre/simpleZoneForfaits.xml"/>
+	<model-mapping import="pegasus/parametre/conversionrente.xml"/>
+	<model-mapping import="pegasus/parametre/forfaitsPrimesAssuranceMaladie.xml"/>
+	<model-mapping import="pegasus/parametre/forfaitprimeassurancemaladielocalite.xml"/>
+	<model-mapping import="pegasus/parametre/zoneLocalite.xml"/>
+</model-mapping>

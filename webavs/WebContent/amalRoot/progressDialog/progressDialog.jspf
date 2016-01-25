@@ -1,0 +1,98 @@
+<script type="text/javascript">
+function showProgress(idElement){
+    var id = idElement;
+    
+	//Cancel the link behavior
+    // e.preventDefault();
+ 
+    //Get the screen height and width
+    var maskHeight = $(document).height();
+    var maskWidth = $(window).width();
+ 
+    //Set height and width to mask to fill up the whole screen
+    $('#inProgressMask').css({'width':maskWidth,'height':maskHeight});
+     
+    //transition effect     
+    $('#inProgressMask').fadeIn(0);    
+    $('#inProgressMask').fadeTo("fast",0.7);  
+ 
+    //Get the window height and width
+    var winH = $(window).height();
+    var winW = $(window).width();
+           
+    //Set the popup window to center
+    $(id).css('top',  winH/2-$(id).height()/2);
+    $(id).css('left', winW/2-$(id).width()/2);
+ 
+    //transition effect
+    $(id).fadeIn(0);
+	
+    // set the focus    
+	$(id).focus();
+}
+function hideProgress(idElement){
+    var id = idElement;
+    $('#inProgressMask').fadeOut(0);    
+    $(id).fadeOut(0);
+}
+
+</script>
+
+
+<div id="inProgressBoxes">
+    
+    <!-- #customize your modal window here -->
+ 
+    <div id="inProgressDialog" class="window">
+    	<table class="tdSubsides" width="100%">
+    		<tr>
+    			<td colspan="3">&nbsp;</td>
+    		</tr>
+    		<tr>
+    			<td colspan="3" align="center"><b>Traitement en cours ...</b></td>
+    		</tr>
+    		<tr>
+    			<td colspan="3">&nbsp;</td>
+    		</tr>
+    		<tr>
+    			<td colspan="3" align="center">
+					<img src="<%=request.getContextPath()%>/images/amal/loading.gif" 
+						title="In progress" 
+						border="0"
+						>
+    			</td>
+    		</tr>
+		</table>
+    </div>
+      
+    <!-- Do not remove div#mask, because you'll need it to fill the whole screen --> 
+    <div id="inProgressMask"></div>
+</div>
+
+
+<style>
+ 
+/* Z-index of #mask must lower than #boxes .window */
+#inProgressMask {
+  position:absolute;
+  z-index:9000;
+  background-color:#000;
+  display:none;
+}
+   
+#inProgressBoxes .window {
+  position:absolute;
+  width:640px;
+  height:480px;
+  display:none;
+  z-index:9999;
+}
+ 
+ 
+/* Customize your modal window here, you can add background image too */
+#inProgressBoxes #inProgressDialog {
+  width:240px; 
+  height:100px;
+  background-color:#D7E4FF;
+}
+</style>

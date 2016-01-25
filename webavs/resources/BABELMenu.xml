@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+
+	<!-- ****************************** -->
+	<!-- Menu Option plan comptable  -->
+	<!-- ****************************** -->
+	<menu id="CT-Options">
+		<label defaultValue="Options">
+			<language iso="de">Optionen</language>
+		</label>
+		<nodes>
+			<node>
+				<label defaultValue="Définition des textes">
+					<language iso="de">Textdefinitionen</language>
+				</label>
+				<action command="/babel" responseTarget="fr_main">
+					<parameter name="userAction" value="babel.cat.texte.chercher" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+<!--		<node>
+				<label defaultValue="Copies par défaut">
+					<language iso="de">Standardkopien</language>
+				</label>
+				<action command="/babel" responseTarget="fr_main">
+					<parameter name="userAction" value="babel.copies.documentJointDefaultCopies.chercher"/>
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node id="annexes">
+				<label defaultValue="Annexes par défaut">
+					<language iso="de">Standardbeilagen</language>
+				</label>
+				<action command="/babel" responseTarget="fr_main">
+					<parameter name="userAction" value="babel.annexes.documentJointDefaultAnnexes.chercher"/>
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>-->
+			<node>
+				<label defaultValue="Copier le document">
+					<language iso="de">Dokument kopieren</language>
+				</label>
+				<action command="/babel" responseTarget="fr_main">
+					<parameter name="userAction" value="babel.cat.document.actionCopierDocument" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ************************** -->
+	<!-- Menu Option only detail    -->
+	<!-- ************************** -->
+	<menu id="CT-OnlyDetail">
+		<label refId="OPTIONS" />
+	</menu>
+
+</menus>

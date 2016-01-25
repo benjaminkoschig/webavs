@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'un dossier -->
+<model-mapping>
+<complexe-model className="ch.globaz.al.business.models.dossier.DossierActifComplexModel">
+	<select-fields distinct="true">
+		<select-field name="idDossier" field-ref="dossierModel.idDossier"/>
+	</select-fields>
+	<root-model name="dossierModel" model-ref="ch.globaz.al.business.models.dossier.DossierModel" select-fields="false"/>
+	<linked-model name="allocataireComplexModel" model-ref="ch.globaz.al.business.models.allocataire.AllocataireComplexModel" join-type="INNER" select-fields="false">
+		<join-group operator="AND">
+			<join-field name="allocataireModel.idAllocataire" field-ref="dossierModel.idAllocataire"/>
+		</join-group>
+	</linked-model>
+ 
+	<linked-model name="affiliationModel" model-ref="ch.globaz.naos.business.model.AffiliationSimpleModel" join-type="INNER" select-fields="false">
+		<join-group operator="AND">
+			<join-field name="affilieNumero" field-ref="dossierModel.numeroAffilie"/>
+		</join-group>
+	</linked-model>
+	
+	<search-definition name="default">
+		<search-group operator="AND">
+			<search-field name="forNssAllocataire" field-ref="allocataireComplexModel.personneEtendueComplexModel.personneEtendue.numAvsActuel" operation="EQUALS"/>		
+			<search-field name="forNumAffilie" field-ref="dossierModel.numeroAffilie" operation="EQUALS"/>
+			<search-field name="forEtatDossier" field-ref="dossierModel.etatDossier" operation="EQUALS"/>			
+		</search-group>
+	</search-definition>
+	<order-by name="default"  >
+		<order-field field-ref="idDossier" order="ASC"/>
+	</order-by> 
+</complexe-model>
+</model-mapping>

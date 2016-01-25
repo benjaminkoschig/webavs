@@ -1,0 +1,765 @@
+<tarifs xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="tarifsTests.xsd">
+	<periode date="01.01.2008">
+		<legislation cs="CANTONAL">
+			<categorie cs="AG">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.1.1" type="ENF" capableExercer="true" montant="170" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.1.2" type="ENF" capableExercer="false" montant="170" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.1.3" type="ENF" capableExercer="true" montant="0" age="20" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.1.4" type="ENF" capableExercer="false" montant="170" age="20" residence="CH"/>
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.1.5" type="FORM" capableExercer="true" montant="170" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.1.6" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.1.7" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.1.8" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				<!-- NAIS, CH-->
+				<test testId="1.1.1.9" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.1.10" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="AR">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.2.1" type="ENF" capableExercer="true" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.2.2" type="ENF" capableExercer="false" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.2.3" type="ENF" capableExercer="true" montant="0" age="18" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.2.4" type="ENF" capableExercer="false" montant="200" age="18" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.2.5" type="FORM" capableExercer="true" montant="200" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.2.6" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.2.7" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.2.8" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.2.9" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.2.10" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="BL">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.3.1" type="ENF" capableExercer="true" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.3.2" type="ENF" capableExercer="false" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.3.3" type="ENF" capableExercer="true" montant="0" age="25" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.3.4" type="ENF" capableExercer="false" montant="200" age="25" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.3.5" type="FORM" capableExercer="true" montant="220" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.3.6" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.3.7" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.3.8" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.3.9" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.3.10" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="BS">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.4.1" type="ENF" capableExercer="true" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.4.2" type="ENF" capableExercer="false" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.4.3" type="ENF" capableExercer="true" montant="0" age="25" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.4.4" type="ENF" capableExercer="false" montant="200" age="25" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.4.5" type="FORM" capableExercer="true" montant="220" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.4.6" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.4.7" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.4.8" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.4.9" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.4.10" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="BE">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.5.1" type="ENF" capableExercer="true" montant="160" age="12" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.5.2" type="ENF" capableExercer="false" montant="160" age="12" residence="CH"/>
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.5.3" type="ENF" capableExercer="true" montant="190" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.5.4" type="ENF" capableExercer="false" montant="190" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.5.5" type="ENF" capableExercer="true" montant="0" age="20" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.5.6" type="ENF" capableExercer="false" montant="190" age="20" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.5.7" type="FORM" capableExercer="true" montant="190" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.5.8" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.5.9" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.5.10" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.5.11" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.5.12" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="FR">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.6.1" type="ENF" capableExercer="true" montant="230" age="15" rng="1" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.6.2" type="ENF" capableExercer="false" montant="230" age="15" rng="1" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.6.3" type="ENF" capableExercer="true" montant="0" age="20" rng="1" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.6.4" type="ENF" capableExercer="false" montant="230" age="20" rng="1" residence="CH"/>
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.6.5" type="ENF" capableExercer="true" montant="250" age="15" rng="3" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.6.6" type="ENF" capableExercer="false" montant="250" age="15" rng="3" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.6.7" type="ENF" capableExercer="true" montant="0" age="20" rng="3" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.6.8" type="ENF" capableExercer="false" montant="250" age="20" rng="3" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.6.9" type="FORM" capableExercer="true" montant="290" age="17" rng="1" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.6.10" type="FORM" capableExercer="false" montant="0" age="17" rng="1" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.6.11" type="FORM" capableExercer="true" montant="0" age="26" rng="1" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.6.12" type="FORM" capableExercer="false" montant="0" age="26" rng="1" residence="CH"/>
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.6.13" type="FORM" capableExercer="true" montant="310" age="17" rng="3" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.6.14" type="FORM" capableExercer="false" montant="0" age="17" rng="3" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.6.15" type="FORM" capableExercer="true" montant="0" age="26" rng="3" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.6.16" type="FORM" capableExercer="false" montant="0" age="26" rng="3" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.6.16" type="NAIS" montant="1500" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.6.17" type="ACCE" montant="1500" residence="CH"/>
+			</categorie>
+			<categorie cs="GL">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.7.1" type="ENF" capableExercer="true" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.7.2" type="ENF" capableExercer="false" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.7.3" type="ENF" capableExercer="true" montant="0" age="18" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.7.4" type="ENF" capableExercer="false" montant="200" age="18" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.7.5" type="FORM" capableExercer="true" montant="200" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.7.6" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.7.7" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.7.8" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.7.9" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.7.10" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="GR">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.8.1" type="ENF" capableExercer="true" montant="195" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.8.2" type="ENF" capableExercer="false" montant="195" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.8.3" type="ENF" capableExercer="true" montant="0" age="20" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.8.4" type="ENF" capableExercer="false" montant="195" age="20" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.8.5" type="FORM" capableExercer="true" montant="220" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.8.6" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.8.7" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.8.8" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.8.9" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.8.10" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="JU">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.9.1" type="ENF" capableExercer="true" montant="160" age="16" nbr="1" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.9.2" type="ENF" capableExercer="false" montant="160" age="16" nbr="1" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.9.3" type="ENF" capableExercer="true" montant="0" age="25" nbr="1" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.9.4" type="ENF" capableExercer="false" montant="160" age="25" nbr="1" residence="CH"/>
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.9.5" type="ENF" capableExercer="true" montant="186" age="16" nbr="3" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.9.6" type="ENF" capableExercer="false" montant="186" age="16" nbr="3" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.9.7" type="ENF" capableExercer="true" montant="0" age="20" nbr="3" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.9.8" type="ENF" capableExercer="false" montant="186" age="25" nbr="3" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.9.9" type="FORM" capableExercer="true" montant="214" age="20" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.9.10" type="FORM" capableExercer="false" montant="0" age="20" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.9.11" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.9.12" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.9.13" type="NAIS" montant="816" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.9.14" type="ACCE" montant="816" residence="CH"/>
+			</categorie>
+			<categorie cs="LU">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.10.1" type="ENF" capableExercer="true" montant="200" age="12" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.10.2" type="ENF" capableExercer="false" montant="200" age="12" residence="CH"/>
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.10.3" type="ENF" capableExercer="true" montant="210" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.10.4" type="ENF" capableExercer="false" montant="210" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.10.5" type="ENF" capableExercer="true" montant="0" age="18" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.10.6" type="ENF" capableExercer="false" montant="210" age="18" residence="CH"/>
+	
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.10.7" type="FORM" capableExercer="true" montant="250" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.10.8" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.10.9" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.10.10" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.10.11" type="NAIS" montant="800" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.10.12" type="ACCE" montant="800" residence="CH"/>
+			</categorie>
+			<categorie cs="NE">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.11.1" type="ENF" capableExercer="true" montant="180" age="16" rng="1" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.11.2" type="ENF" capableExercer="false" montant="180" age="16" rng="1" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.11.3" type="ENF" capableExercer="true" montant="0" age="20" rng="1" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.11.4" type="ENF" capableExercer="false" montant="180" age="20" rng="1" residence="CH"/>
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.11.5" type="ENF" capableExercer="true" montant="200" age="16" rng="2" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.11.6" type="ENF" capableExercer="false" montant="200" age="16" rng="2" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.11.7" type="ENF" capableExercer="true" montant="0" age="20" rng="2" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.11.8" type="ENF" capableExercer="false" montant="200" age="20" rng="2" residence="CH"/>
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.11.9" type="ENF" capableExercer="true" montant="200" age="16" rng="3" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.11.10" type="ENF" capableExercer="false" montant="200" age="16" rng="3" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.11.11" type="ENF" capableExercer="true" montant="0" age="20" rng="3" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.11.12" type="ENF" capableExercer="false" montant="200" age="20" rng="3" residence="CH"/>
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.11.13" type="ENF" capableExercer="true" montant="250" age="16" rng="4" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.11.14" type="ENF" capableExercer="false" montant="250" age="16" rng="4" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.11.15" type="ENF" capableExercer="true" montant="0" age="20" rng="4" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.11.16" type="ENF" capableExercer="false" montant="250" age="20" rng="4" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.11.17" type="FORM" capableExercer="true" montant="260" age="17" rng="1" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.11.18" type="FORM" capableExercer="false" montant="0" age="17" rng="1" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.11.19" type="FORM" capableExercer="true" montant="0" age="26" rng="1" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.11.20" type="FORM" capableExercer="false" montant="0" age="26" rng="1" residence="CH"/>
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.11.21" type="FORM" capableExercer="true" montant="280" age="17" rng="2" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.11.22" type="FORM" capableExercer="false" montant="0" age="17" rng="2" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.11.23" type="FORM" capableExercer="true" montant="0" age="26" rng="2" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.11.24" type="FORM" capableExercer="false" montant="0" age="26" rng="2" residence="CH"/>
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.11.25" type="FORM" capableExercer="true" montant="280" age="17" rng="3" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.11.26" type="FORM" capableExercer="false" montant="0" age="17" rng="3" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.11.27" type="FORM" capableExercer="true" montant="0" age="26" rng="3" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.11.28" type="FORM" capableExercer="false" montant="0" age="26" rng="3" residence="CH"/>
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.11.29" type="FORM" capableExercer="true" montant="330" age="17" rng="4" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.11.30" type="FORM" capableExercer="false" montant="0" age="17" rng="4" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.11.31" type="FORM" capableExercer="true" montant="0" age="26" rng="4" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.11.32" type="FORM" capableExercer="false" montant="0" age="26" rng="4" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.11.33" type="NAIS" montant="1200" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.11.34" type="ACCE" montant="1200" residence="CH"/>
+			</categorie>
+			<categorie cs="OW">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.12.1" type="ENF" capableExercer="true" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.12.2" type="ENF" capableExercer="false" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.12.3" type="ENF" capableExercer="true" montant="0" age="25" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.12.4" type="ENF" capableExercer="false" montant="200" age="25" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.12.5" type="FORM" capableExercer="true" montant="250" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.12.6" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.12.7" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.12.8" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.12.9" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.12.10" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="SG">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.13.1" type="ENF" capableExercer="true" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.13.2" type="ENF" capableExercer="false" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.13.3" type="ENF" capableExercer="true" montant="0" age="18" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.13.4" type="ENF" capableExercer="false" montant="200" age="18" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.13.5" type="FORM" capableExercer="true" montant="250" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.13.6" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.13.7" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.13.8" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.13.9" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.13.10" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="SH">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.14.1" type="ENF" capableExercer="true" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.14.2" type="ENF" capableExercer="false" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.14.3" type="ENF" capableExercer="true" montant="0" age="18" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.14.4" type="ENF" capableExercer="false" montant="200" age="18" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.14.5" type="FORM" capableExercer="true" montant="250" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.14.6" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.14.7" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.14.8" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.14.9" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.14.10" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="SZ">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.15.1" type="ENF" capableExercer="true" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.15.2" type="ENF" capableExercer="false" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.15.3" type="ENF" capableExercer="true" montant="0" age="18" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.15.4" type="ENF" capableExercer="false" montant="200" age="18" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.15.5" type="FORM" capableExercer="true" montant="200" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.15.6" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.15.7" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.15.8" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.15.9" type="NAIS" montant="800" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.15.10" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="SO">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.16.1" type="ENF" capableExercer="true" montant="200" age="18" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.16.2" type="ENF" capableExercer="false" montant="200" age="18" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.16.3" type="ENF" capableExercer="true" montant="0" age="19" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.16.4" type="ENF" capableExercer="false" montant="200" age="18" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.16.5" type="FORM" capableExercer="true" montant="200" age="19" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.16.6" type="FORM" capableExercer="false" montant="0" age="19" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.16.7" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.16.8" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.16.9" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.16.10" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="TI">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.17.1" type="ENF" capableExercer="true" montant="200" age="15" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.17.2" type="ENF" capableExercer="false" montant="200" age="15" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.17.3" type="ENF" capableExercer="true" montant="0" age="20" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.17.4" type="ENF" capableExercer="false" montant="200" age="20" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.17.5" type="FORM" capableExercer="true" montant="250" age="16" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.17.6" type="FORM" capableExercer="false" montant="0" age="16" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.17.7" type="FORM" capableExercer="true" montant="0" age="21" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.17.8" type="FORM" capableExercer="false" montant="0" age="21" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.17.9" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.17.10" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="TG">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.18.1" type="ENF" capableExercer="true" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.18.2" type="ENF" capableExercer="false" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.18.3" type="ENF" capableExercer="true" montant="0" age="18" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.18.4" type="ENF" capableExercer="false" montant="200" age="18" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.18.5" type="FORM" capableExercer="true" montant="250" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.18.6" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.18.7" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.18.8" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.18.9" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.18.10" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="UR">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.19.1" type="ENF" capableExercer="true" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.19.2" type="ENF" capableExercer="false" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.19.3" type="ENF" capableExercer="true" montant="0" age="18" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.19.4" type="ENF" capableExercer="false" montant="200" age="18" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.19.5" type="FORM" capableExercer="true" montant="250" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.19.6" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.19.7" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.19.8" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.19.9" type="NAIS" montant="1000" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.19.10" type="ACCE" montant="1000" residence="CH"/>
+			</categorie>
+			<categorie cs="VD">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.20.1" type="ENF" capableExercer="true" montant="200" age="16" rng="1" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.20.2" type="ENF" capableExercer="false" montant="200" age="16" rng="1" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.20.3" type="ENF" capableExercer="true" montant="0" age="20" rng="1" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.20.4" type="ENF" capableExercer="false" montant="250" age="20" rng="1" residence="CH"/>
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.20.7" type="ENF" capableExercer="true" montant="200" age="16" rng="3" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.20.8" type="ENF" capableExercer="false" montant="200" age="16" rng="3" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.20.9" type="ENF" capableExercer="true" montant="0" age="20" rng="3" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.20.10" type="ENF" capableExercer="false" montant="250" age="20" rng="3" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.20.11" type="FORM" capableExercer="true" montant="250" age="17" rng="1" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.20.12" type="FORM" capableExercer="false" montant="0" age="17" rng="1" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.20.13" type="FORM" capableExercer="true" montant="0" age="26" rng="1" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.20.14" type="FORM" capableExercer="false" montant="0" age="26" rng="1" residence="CH"/>
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.20.15" type="FORM" capableExercer="true" montant="250" age="17" rng="3" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.20.16" type="FORM" capableExercer="false" montant="0" age="17" rng="3" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.20.17" type="FORM" capableExercer="true" montant="0" age="26" rng="3" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.20.18" type="FORM" capableExercer="false" montant="0" age="26" rng="3" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.20.19" type="NAIS" montant="1500" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.20.20" type="ACCE" montant="1500" residence="CH"/>
+			</categorie>
+			<categorie cs="ZG">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.21.1" type="ENF" capableExercer="true" montant="250" age="18" rng="1" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.21.2" type="ENF" capableExercer="false" montant="250" age="18" rng="1" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.21.3" type="ENF" capableExercer="true" montant="0" age="20" rng="1" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.21.4" type="ENF" capableExercer="false" montant="250" age="20" rng="1" residence="CH"/>
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.21.7" type="ENF" capableExercer="true" montant="300" age="18" rng="3" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.21.8" type="ENF" capableExercer="false" montant="300" age="18" rng="3" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.21.9" type="ENF" capableExercer="true" montant="0" age="20" rng="3" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.21.10" type="ENF" capableExercer="false" montant="300" age="20" rng="3" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.21.11" type="FORM" capableExercer="true" montant="250" age="19" rng="1" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.21.12" type="FORM" capableExercer="false" montant="0" age="19" rng="1" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.21.13" type="FORM" capableExercer="true" montant="0" age="26" rng="1" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.21.14" type="FORM" capableExercer="false" montant="0" age="26" rng="1" residence="CH"/>
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.21.15" type="FORM" capableExercer="true" montant="300" age="19" rng="3" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.21.16" type="FORM" capableExercer="false" montant="0" age="19" rng="3" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.21.17" type="FORM" capableExercer="true" montant="0" age="26" rng="3" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.21.18" type="FORM" capableExercer="false" montant="0" age="26" rng="3" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.21.19" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.21.20" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="ZH">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.22.1" type="ENF" capableExercer="true" montant="170" age="12" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.22.2" type="ENF" capableExercer="false" montant="170" age="12" residence="CH"/>
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.22.3" type="ENF" capableExercer="true" montant="195" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.22.4" type="ENF" capableExercer="false" montant="195" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.22.5" type="ENF" capableExercer="true" montant="0" age="20" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.22.6" type="ENF" capableExercer="false" montant="195" age="20" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.22.7" type="FORM" capableExercer="true" montant="195" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.22.8" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.22.9" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.22.10" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.22.11" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.22.12" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="AI">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.23.1" type="ENF" capableExercer="true" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.23.2" type="ENF" capableExercer="false" montant="200" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.23.3" type="ENF" capableExercer="true" montant="0" age="18" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.23.4" type="ENF" capableExercer="false" montant="200" age="18" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.23.5" type="FORM" capableExercer="true" montant="250" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.23.6" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.23.7" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.23.8" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.23.9" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.23.10" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="GE">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.24.1" type="ENF" capableExercer="true" montant="200" age="15" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.24.2" type="ENF" capableExercer="false" montant="200" age="15" residence="CH"/>
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.24.3" type="ENF" capableExercer="true" montant="220" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.24.4" type="ENF" capableExercer="false" montant="220" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.24.5" type="ENF" capableExercer="true" montant="0" age="19" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.24.6" type="ENF" capableExercer="false" montant="0" age="19" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.24.7" type="FORM" capableExercer="true" montant="0" age="16" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.24.8" type="FORM" capableExercer="false" montant="0" age="16" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.24.9" type="FORM" capableExercer="true" montant="0" age="19" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.24.10" type="FORM" capableExercer="false" montant="0" age="19" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.24.11" type="NAIS" montant="1000" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.24.12" type="ACCE" montant="1000" residence="CH"/>
+			</categorie>
+			<categorie cs="NW">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.25.1" type="ENF" capableExercer="true" montant="220" age="16" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.25.2" type="ENF" capableExercer="false" montant="220" age="16" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.25.3" type="ENF" capableExercer="true" montant="0" age="18" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.25.4" type="ENF" capableExercer="false" montant="220" age="18" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.25.5" type="FORM" capableExercer="true" montant="250" age="17" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.25.6" type="FORM" capableExercer="false" montant="0" age="17" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.25.7" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.25.8" type="FORM" capableExercer="false" montant="0" age="26" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.25.9" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.25.10" type="ACCE" montant="0" residence="CH"/>
+			</categorie>
+			<categorie cs="VS">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.26.1" type="ENF" capableExercer="true" montant="273" age="16" rng="1" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.26.2" type="ENF" capableExercer="false" montant="273" age="16" rng="1" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.26.3" type="ENF" capableExercer="true" montant="0" age="20" rng="1" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.26.4" type="ENF" capableExercer="false" montant="273" age="20" rng="1" residence="CH"/>
+				<!-- ENF, CH, capable exercer -->
+				<test testId="1.1.26.7" type="ENF" capableExercer="true" montant="361" age="16" rng="3" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="1.1.26.8" type="ENF" capableExercer="false" montant="361" age="16" rng="3" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="1.1.26.9" type="ENF" capableExercer="true" montant="0" age="20" rng="3" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="1.1.26.10" type="ENF" capableExercer="false" montant="361" age="20" rng="3" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.26.11" type="FORM" capableExercer="true" montant="378" age="17" rng="1" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.26.12" type="FORM" capableExercer="false" montant="0" age="17" rng="1" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.26.13" type="FORM" capableExercer="true" montant="0" age="26" rng="1" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.26.14" type="FORM" capableExercer="false" montant="0" age="26" rng="1" residence="CH"/>
+				<!-- FORM, CH, capable exercer -->
+				<test testId="1.1.26.15" type="FORM" capableExercer="true" montant="466" age="17" rng="3" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="1.1.26.16" type="FORM" capableExercer="false" montant="0" age="17" rng="3" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="1.1.26.17" type="FORM" capableExercer="true" montant="0" age="26" rng="3" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="1.1.26.18" type="FORM" capableExercer="false" montant="0" age="26" rng="3" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="1.1.26.19" type="NAIS" montant="1575" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="1.1.26.20" type="ACCE" montant="1575" residence="CH"/>
+			</categorie>
+		</legislation>
+	</periode>
+
+</tarifs>

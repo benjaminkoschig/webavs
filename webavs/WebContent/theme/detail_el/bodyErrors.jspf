@@ -1,0 +1,9 @@
+<c:if test="${vBeanHasErrors}">
+	<div style="background-color:#FFFFFF; float:left;">
+		<font color="#FF0000">
+				<script>
+					errorObj.text = "${errorMsgFormatte}";
+				</script>
+		</font>
+	</div>
+</c:if>

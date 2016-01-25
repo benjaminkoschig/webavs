@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.congepaye.CongePayeComplexModel">
+		
+		<root-model name="congePayeSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.congepaye.CongePayeSimpleModel" />
+
+		<linked-model name="posteTravailComplexModel"
+			model-ref="ch.globaz.vulpecula.business.models.postetravail.PosteTravailComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="posteTravailSimpleModel.id"
+					operation="EQUALS" field-ref="congePayeSimpleModel.idPosteTravail" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="passageModel"
+			model-ref="ch.globaz.musca.business.models.PassageModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPassage"
+					operation="EQUALS" field-ref="congePayeSimpleModel.idPassageFacturation" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="journalSimpleModel"
+			model-ref="ch.globaz.osiris.business.model.JournalSimpleModel"
+			join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idJournal"
+					operation="EQUALS" field-ref="passageModel.idJournal" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="congePayeSimpleModel.id" operation="EQUALS" />
+				<search-field name="forIdTravailleur"
+					field-ref="posteTravailComplexModel.travailleurComplexModel.travailleurSimpleModel.id" operation="EQUALS" />
+				<search-field name="forIdPassage"
+					field-ref="congePayeSimpleModel.idPassageFacturation" operation="EQUALS" />
+				<search-field name="forIdEmployeur"
+					field-ref="posteTravailComplexModel.employeurComplexModel.affiliationTiersComplexModel.affiliation.affiliationId" operation="EQUALS" />
+				<search-field name="forIdConvention" field-ref="posteTravailComplexModel.employeurComplexModel.administrationComplexModel.tiers.idTiers" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withPeriode">
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="congePayeSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdTravailleur"
+					field-ref="posteTravailComplexModel.travailleurComplexModel.travailleurSimpleModel.id" operation="EQUALS" />
+				<search-field name="forIdPassage"
+					field-ref="congePayeSimpleModel.idPassageFacturation" operation="EQUALS" />
+				<search-field name="forIdEmployeur"
+					field-ref="posteTravailComplexModel.employeurComplexModel.affiliationTiersComplexModel.affiliation.affiliationId" operation="EQUALS" />
+				<search-field name="forIdConvention" field-ref="posteTravailComplexModel.employeurComplexModel.administrationComplexModel.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forDateDebut" field-ref="passageModel.dateFacturation" operation="GREATER_OR_EQUALS" />
+				<search-field name="forDateFin" field-ref="passageModel.dateFacturation" operation="LESS_OR_EQUALS" />
+			</search-group>
+		</search-definition>
+
+		<order-by name="idPassageFacturationDesc">
+			<order-field field-ref="congePayeSimpleModel.idPassageFacturation" order="DESC" />
+		</order-by>	
+		
+		<order-by name="conventionDesc">
+			<order-field field-ref="posteTravailComplexModel.employeurComplexModel.administrationComplexModel.admin.codeAdministration" order="DESC" />
+		</order-by>
+		<order-by name="conventionAsc">
+			<order-field field-ref="posteTravailComplexModel.employeurComplexModel.administrationComplexModel.admin.codeAdministration" order="ASC" />
+		</order-by>		
+		<order-by name="noAffilieDesc">
+			<order-field field-ref="posteTravailComplexModel.employeurComplexModel.affiliationTiersComplexModel.affiliation.affilieNumero" order="DESC" />
+		</order-by>
+		<order-by name="noAffilieAsc">
+			<order-field field-ref="posteTravailComplexModel.employeurComplexModel.affiliationTiersComplexModel.affiliation.affilieNumero" order="ASC" />
+		</order-by>
+		
+		<order-by name="raisonSocialeDesc">
+			<order-field field-ref="posteTravailComplexModel.employeurComplexModel.affiliationTiersComplexModel.affiliation.raisonSocialeUpper" order="DESC" />
+		</order-by>
+		<order-by name="raisonSocialeAsc">
+			<order-field field-ref="posteTravailComplexModel.employeurComplexModel.affiliationTiersComplexModel.affiliation.raisonSocialeUpper" order="ASC" />
+		</order-by>
+		
+		<order-by name="qualificationDesc">
+			<order-field field-ref="posteTravailComplexModel.posteTravailSimpleModel.qualification" order="DESC" />
+		</order-by>
+		<order-by name="qualificationAsc">
+			<order-field field-ref="posteTravailComplexModel.posteTravailSimpleModel.qualification" order="ASC" />
+		</order-by>	
+		
+		<order-by name="genreSalaireDesc">
+			<order-field field-ref="posteTravailComplexModel.posteTravailSimpleModel.genreSalaire" order="DESC" />
+		</order-by>
+		<order-by name="genreSalaireAsc">
+			<order-field field-ref="posteTravailComplexModel.posteTravailSimpleModel.genreSalaire" order="ASC" />
+		</order-by>	
+		
+		<order-by name="totalSalaireDesc">
+			<order-field field-ref="congePayeSimpleModel.totalSalaire" order="DESC" />
+		</order-by>
+		<order-by name="totalSalaireAsc">
+			<order-field field-ref="congePayeSimpleModel.totalSalaire" order="ASC" />
+		</order-by>
+		
+		<order-by name="montantNetDesc">
+			<order-field field-ref="congePayeSimpleModel.montantNet" order="DESC" />
+		</order-by>
+		<order-by name="montantNetAsc">
+			<order-field field-ref="congePayeSimpleModel.montantNet" order="ASC" />
+		</order-by>				
+		
+		<order-by name="periodeDesc">
+			<order-field field-ref="congePayeSimpleModel.anneeDebut" order="DESC" />
+		</order-by>
+		<order-by name="periodeAsc">
+			<order-field field-ref="congePayeSimpleModel.anneeDebut" order="ASC" />
+		</order-by>	
+		
+		<order-by name="beneficiaireDesc">
+			<order-field field-ref="congePayeSimpleModel.beneficiaire" order="DESC" />
+		</order-by>
+		<order-by name="beneficiaireAsc">
+			<order-field field-ref="congePayeSimpleModel.beneficiaire" order="ASC" />
+		</order-by>					
+		
+		<order-by name="etatDesc">
+			<order-field field-ref="congePayeSimpleModel.etat" order="DESC" />
+		</order-by>
+		<order-by name="etatAsc">
+			<order-field field-ref="congePayeSimpleModel.etat" order="ASC" />
+		</order-by>		
+		
+		<order-by name="idPassageDesc">
+			<order-field field-ref="passageModel.idPassage" order="DESC" />
+		</order-by>
+		<order-by name="idPassageAsc">
+			<order-field field-ref="passageModel.idPassage" order="ASC" />
+		</order-by>	
+		
+		<order-by name="dateFacturationDesc">
+			<order-field field-ref="passageModel.dateFacturation" order="DESC" />
+		</order-by>
+		<order-by name="dateFacturationAsc">
+			<order-field field-ref="passageModel.dateFacturation" order="ASC" />
+		</order-by>		
+	</complexe-model>
+</model-mapping>

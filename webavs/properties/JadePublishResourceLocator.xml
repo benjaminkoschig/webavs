@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--globaz.jade.publish.provider.JadePublishResourceLocator: liste des ressources disponibles pour la publication-->
+<globaz.jade.publish.provider.JadePublishResourceLocator>
+	<!--resources: liste des ressources-->
+	<resources>
+		<!--resource: declaration d'une ressource -->
+		<!--  name [REQUIRED]: nom de la ressource -->
+		<!--  class [REQUIRED]: classe a utiliser pour la ressource (doit implementer JadePublishResource) -->
+		<!--  archiving: true si la resource est destinee a l'archivage, false sinon; defaut=false-->
+		<resource name="Zip" class="globaz.jade.publish.provider.zip.JadePublishResourceImpl">
+			<!--next.resource: indique le nom de la resource vers laquelle publier le fichier apres compression-->
+			<next.resource>MailWithWatermarkDev</next.resource>
+		</resource>
+		<resource name="Mail" class="globaz.jade.publish.provider.mail.JadePublishResourceImpl">
+			<!--export.xml: indique si DocumentInfo doit egalement etre publie au format XML-->
+			<export.xml>true</export.xml>
+		</resource>
+		<resource name="MailWithoutUID" class="globaz.jade.publish.provider.mail.JadePublishResourceImpl">
+			<!--export.xml: indique si DocumentInfo doit egalement etre publie au format XML-->
+			<export.xml>false</export.xml>
+			<remove.uid>true</remove.uid>
+		</resource>
+		
+		<resource name="MailWithXML" archiving="true" class="globaz.jade.publish.provider.mail.JadePublishResourceImpl">
+			<!--export.xml: indique si DocumentInfo doit egalement etre publie au format XML-->
+			<export.xml>true</export.xml>
+		</resource>
+		
+		<resource name="gedos" archiving="true" class="globaz.jade.publish.provider.ged.JadePublishResourceImpl">
+			<!--adapter: adaptateur a utiliser; si pas declare ou vide, on utilise l'adaptateur JadeGedFacade-->
+			<!--  name [REQUIRED]: nom de l'adaptateur-->
+			<adapter name="gedos"/>
+		</resource>
+		<resource name="airs" archiving="true" class="globaz.jade.publish.provider.ged.JadePublishResourceImpl">
+			<!--adapter: adaptateur a utiliser; si pas declare ou vide, on utilise l'adaptateur JadeGedFacade-->
+			<!--  name [REQUIRED]: nom de l'adaptateur-->
+			<adapter name="airs"/>
+		</resource>
+		
+		<resource name="Sort" class="globaz.jade.publish.provider.sort.JadePublishResourceImpl">
+			<!--next.resource [REQUIRED]: nom de la ressource a laquelle transmettre le document apres le tri-->
+			<next.resource>MailWithWatermarkDev</next.resource>
+			<!-- properties [REQUIRED]: liste des proprietes a ajouter -->
+			<properties>
+				<!--property: declaration d'une propriete sur laquelle trier-->
+				<!--  name [REQUIRED]: nom de la propriete sur laquelle trier-->
+				<!--  order: ordre de tri, ASC ou DESC, ASC par defaut-->
+				<property name="pegasus.annonces.occ.sort">
+					<order>asc</order> <!-- ou desc -->
+				</property>
+			</properties>
+		</resource>
+		
+		 <!--  Point d'entrée DAC, application du watermark -->
+		<resource name="SwitchWatermarkDecisionNonValideeRFM" class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+		   <default.resource>MailWithWatermarkDev</default.resource>
+		    <properties>
+			    <property name="isDecisionValidee" value="true">
+			    	<resource>AddWatermarkDecisionNonValideeRFM</resource>
+			    </property>
+		    </properties>
+		 </resource>
+		 
+		 <resource name="AddWatermarkDecisionNonValideeRFM" class="globaz.jade.publish.provider.pdfimage.JadePublishResourceImpl">
+			<!--next.resource [REQUIRED]: nom de la ressource a laquelle transmettre le document apres ajout des textes-->
+			<next.resource>MailWithWatermarkDev</next.resource>
+			<!-- images [REQUIRED]: liste des proprietes a ajouter -->
+			<properties>
+				<!--add: declaration d'une image a ajouter dans le fichier-->
+				<!--  filename [REQUIRED]: nom du fichier contenant l'image a ajouter dans le fichier-->
+				<!--  cm.from.left: distance depuis le bord gauche de la page (en centimetres)-->
+				<!--  cm.from.right: distance depuis le bord droit de la page (en centimetres)-->
+				<!--                 (utilisee seulement si cm.from.left=0)-->
+				<!--  cm.from.bottom: distance depuis le bas de la page (en centimetres)-->
+				<!--  cm.from.top: distance depuis le haut de la page (en centimetres)-->
+				<!--                 (utilisee seulement si cm.from.bottom=0)-->
+				<!--  cm.height: hauteur de l'image (en centimetres)-->
+				<!--  cm.width: largeur de l'image (en centimetres)-->
+				<!--  full.page: elargir l'image a toute la page, false par defaut-->
+				<add>
+					<filename>images/watermark_decision_non_validee.png</filename>
+					<full.page>true</full.page>
+					<cm.height>10</cm.height>
+					<cm.width>10</cm.width>
+				</add>
+			</properties>
+		</resource>
+		
+	
+		 
+		 <!-- Switch principal décisions après calcul 
+		 	si décision validée, on envoie vers le switch mail/ftp
+		 	si la décision n'est pas validée, on ajoute le watermark avant
+		 -->
+		 <resource name="SwitchDAC" class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+		   <default.resource>WatermarkDecisionNonValidee</default.resource>
+		    <properties>
+			    <property name="isDecisionValidee" value="true">
+			    	<resource>SwitchMailFTP</resource>	
+			    </property>
+		    </properties>
+		 </resource>
+		 
+		 <!--  ajout watermark si decision non validée
+			redirection ensuite vers le switch mail/ftp
+		 -->
+		<resource name="WatermarkDecisionNonValidee" class="globaz.jade.publish.provider.pdfimage.JadePublishResourceImpl">
+			<next.resource>SwitchMailFTP</next.resource>
+			<properties>
+				<add>
+					<filename>images/watermark_decision_non_validee.png</filename>
+					<full.page>true</full.page>
+				</add>
+			</properties>
+		</resource>
+		 
+		 <!--  choix de la destination de publication, mail par defaut 
+		 	si un des deux paramètres ftp présent envoi vers la ressource desiree
+		 -->
+		 <resource name="SwitchMailFTP" class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+		 	<default.resource>MailWithWatermarkDev</default.resource>
+		 	<properties>
+			   <property name="isDacValidFtpAuto" value="true">
+			    	<resource>FtpValid</resource>	
+			    </property>
+			     <property name="isDacPreValidFtpAuto" value="true">
+			    	<resource>FtpPreValid</resource>	
+			    </property>
+		    </properties>
+		 </resource>
+		 
+		<!--  publication sur système de fichier pour décision prevalidé -->
+		<resource name="FtpPreValid" class="globaz.jade.publish.provider.file.JadePublishResourceImpl">
+			<destination.url>D:/ftpPreValid</destination.url>
+		</resource>
+		
+		<!--  publication sur système de fichier pour décision validé -->
+		<resource name="FtpValid" class="globaz.jade.publish.provider.file.JadePublishResourceImpl">
+			<destination.url>D:/ftpValid</destination.url>
+		</resource>
+		 
+		
+
+		<resource name="MailWithWatermarkDev" class="globaz.jade.publish.provider.pdfimage.JadePublishResourceImpl">
+			<next.resource>Mail</next.resource>
+			<properties>
+				<add>
+					<filename>images/watermark_under_dev.png</filename>
+					<full.page>true</full.page>
+					<cm.height>10</cm.height>
+					<cm.width>10</cm.width>
+				</add>
+			</properties>
+		</resource>
+
+		<!--simulation -->
+		<resource name="SwitchWatermarkSimulation" class="globaz.jade.publish.provider.switcher.JadePublishResourceImpl">
+			<default.resource>MailWithWatermarkDev</default.resource>
+			<properties>
+				<property name="simulation" value="true">
+					<resource>WatermarkSimulation</resource>
+				</property>
+			</properties>
+		</resource>				 
+		<resource name="WatermarkSimulation" class="globaz.jade.publish.provider.pdfimage.JadePublishResourceImpl">
+		<!--next.resource [REQUIRED]: nom de la ressource a laquelle transmettre le document apres ajout des textes-->
+			<next.resource>MailWithWatermarkDev</next.resource>
+			<!-- images-->
+			<properties>
+				<add>
+					<filename>images/watermark_simulation.png</filename>
+					<full.page>true</full.page>
+				</add>
+			</properties>
+		</resource>
+		
+		<resource name="BarCodePublishing" class="globaz.jade.publish.provider.barcode.JadePublishResourceImpl">
+				<code.type>CODE128</code.type>
+				<page>all</page>
+				<cm.from.left>1.5</cm.from.left>
+				<cm.from.bottom>18.7</cm.from.bottom>
+				<next.resource>codeInforom</next.resource>
+		</resource>
+		
+		<resource name="BarCodeArchive" class="globaz.jade.publish.provider.barcode.JadePublishResourceImpl" archiving="true">
+				<code.type>CODE128</code.type>
+				<page>all</page>
+				<cm.from.left>1.5</cm.from.left>
+				<cm.from.bottom>18.7</cm.from.bottom>
+				<next.resource>ArchivePDF</next.resource>
+		</resource>
+		
+		<resource name="codeInforom" class="globaz.jade.publish.provider.pdfproperty.JadePublishResourceImpl">
+			<!--next.resource [REQUIRED]: nom de la ressource a laquelle transmettre le document apres ajout du code OMR-->
+			<next.resource>SwitchWatermarkSimulation</next.resource>
+			<!-- properties [REQUIRED]: liste des proprietes a ajouter -->
+			<properties>
+				<!--property: declaration d'une propriete a ajouter dans le fichier-->
+				<!--  name [REQUIRED]: nom de la propriete a ajouter dans le fichier-->
+				<!--  cm.from.left: distance depuis le bord gauche de la page (en centimetres)-->
+				<!--  cm.from.right: distance depuis le bord droit de la page (en centimetres)-->
+				<!--                 (utilisee seulement si cm.from.left=0)-->
+				<!--  cm.from.bottom [REQUIRED]: distance depuis le bas de la page (en centimetres)-->
+				<!--  cm.from.top: distance depuis le haut de la page (en centimetres)-->
+				<!--                 (utilisee seulement si cm.from.bottom=0)-->
+				<!--  font.name: nom de la police a utiliser, Helvetica par defaut-->
+				<!--  font.size: taille de la police, 6 par defaut-->
+				<!--  font.color: couleur du texte, composants rouge, vert et bleu (0-255), separés par des virgules-->
+				<property name="documentTypeNumber">
+					<cm.from.left>2.0</cm.from.left>
+					<cm.from.right>0.0</cm.from.right>
+					<cm.from.bottom>1.0</cm.from.bottom>
+					<cm.from.top>0.0</cm.from.top>
+					<font.name>Helvetica</font.name>
+					<font.size>6</font.size>
+					<font.color>0,0,255</font.color>
+				</property>
+				<property name="numero.affilie.formatte">
+					<cm.from.left>3.0</cm.from.left>
+					<cm.from.right>0.0</cm.from.right>
+					<cm.from.bottom>1.0</cm.from.bottom>
+					<cm.from.top>0.0</cm.from.top>
+					<font.name>Helvetica</font.name>
+					<font.size>6</font.size>
+					<font.color>0,0,255</font.color>
+				</property>
+			</properties>
+		</resource>
+		
+		<resource name="ArchivePDF" class="globaz.jade.publish.provider.file.JadePublishResourceImpl" archiving="true">
+			<destination.url>D:\pdf</destination.url>
+		</resource>
+		
+	</resources>
+</globaz.jade.publish.provider.JadePublishResourceLocator>

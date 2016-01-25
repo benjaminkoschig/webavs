@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.decision.DecisionValidationPca">
+
+		<root-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" select-fields="true"/>
+		
+		<linked-model name="simpleValidationDecision" model-ref="ch.globaz.pegasus.business.models.decision.SimpleValidationDecision" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPCAccordee"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDecisionHeader" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="simpleValidationDecision.idDecisionHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDecisionApresCalcul" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionApresCalcul" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="simpleValidationDecision.idDecisionHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forDateDecisionMin" operation="GREATER_OR_EQUALS" field-ref="simpleDecisionHeader.dateDecision"/>
+				<search-group operator="OR">
+					<search-field name="forDateDecisionMax" operation="LESS_OR_EQUALS"  field-ref="simpleDecisionHeader.dateDecision"/>
+					<search-field name="forDateDecisionMax" operation="NULL"  field-ref="simpleDecisionHeader.dateDecision"/>
+				</search-group>
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simpleDecisionHeader.csEtatDecision" value="64028003" /> <!--Etat validé-->
+				<search-field name="forCsType" operation="NOT_EQUALS" field-ref="simpleDecisionHeader.csTypeDecision" value="64042004" /> <!--Type refus-->
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

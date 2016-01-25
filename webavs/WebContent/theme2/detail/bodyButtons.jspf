@@ -1,0 +1,21 @@
+</div>
+				<INPUT type="hidden" name="selectedId" value="<%=selectedIdValue%>">
+				<INPUT type="hidden" name="userAction" value="<%=userActionValue%>">
+				<INPUT type="hidden" name="_method" value='<%=request.getParameter("_method")%>'>
+				<INPUT type="hidden" name="_valid" value='<%=request.getParameter("_valid")%>'>
+				<INPUT type="hidden" name="_sl" value="">
+				<INPUT type="hidden" name="selectorName" value="">
+				
+<%if (hasDefaultForm){ %></form><%}%>
+		<div height="13">
+			<%=(autoShowErrorPopup || !vBeanHasErrors) ? "&nbsp;" : "[ <a id=\"showErrorLink\" href=\"javascript:showErrors();\">visualiser les erreurs</a> ]"%>
+		</div>
+		<div class="lastModification">
+			<%=creationSpy == null ? "" : creationSpy%>Update: <%=lastModification%> 
+		</div>	
+			<div class="buttonsZone">
+				<%if (bButtonNew) {%><input class="btnCtrl" type="button" id="btnNew" value="<%=btnNewLabel%>" onclick="onClickNew();btnNew.onclick='';hideAllButtons();document.location.href='<%=actionNew%>'"><%}%>
+				<%if (bButtonUpdate) {%><input class="btnCtrl" id="btnUpd" type="button" value="<%=btnUpdLabel%>" onclick="action(UPDATE);upd();"><%}%>
+				<%if (bButtonDelete) {%><input class="btnCtrl" id="btnDel" type="button" value="<%=btnDelLabel%>" onclick="del();"><%}%>
+				<%if (bButtonValidate) {%><input class="btnCtrl inactive" id="btnVal" type="button" value="<%=btnValLabel%>" onclick="if(validate()) action(COMMIT);"><%}%>
+				<%if (bButtonCancel) {%><input class="btnCtrl inactive" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="cancel(); action(ROLLBACK);"><%}%>

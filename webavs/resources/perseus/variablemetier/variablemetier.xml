@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.variablemetier.VariableMetier">
+		<root-model name="simpleVariableMetier" model-ref="ch.globaz.perseus.business.models.variablemetier.SimpleVariableMetier"/>
+	   
+	   	<search-definition>
+			<search-group operator="AND">
+				<search-field name="forCsTypeVariableMetier"  operation="EQUALS" field-ref="simpleVariableMetier.csTypeVariableMetier"/>
+			</search-group>
+		</search-definition>
+			
+		<!-- Recherche les variableMetier valable pour la date données en paramètres -->
+	    <search-definition name="withDateValable">
+			<search-group operator="AND">
+				<search-field name="forCsTypeVariableMetier" operation="EQUALS" field-ref="simpleVariableMetier.csTypeVariableMetier"/>
+				<search-group operator="AND">
+					<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="simpleVariableMetier.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="simpleVariableMetier.dateFin"/>
+						<search-field name="forDateValable" operation="NULL" field-ref="simpleVariableMetier.dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+	 	<order-by>
+			<order-field field-ref="simpleVariableMetier.dateDebut" order="DESC"/>
+			<order-field field-ref="simpleVariableMetier.csTypeVariableMetier" />
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,640 @@
+@CHARSET "ISO-8859-1";
+/* ************* bloc 1 , infos generales ***************** */
+
+*{
+	margin:0;padding:0;	
+}
+.noAdresse{
+	padding:10px;
+	font-weight: bold;
+	color:#D01818;
+	font-size: 1.1em;
+}
+.lienTiers{
+	cursor:pointer;
+	text-align: left;
+}
+#zoneInfo{
+	width:90%;
+	
+	/*border-bottom:2px solid #226194;*/
+	/*padding-bottom:20px;	*/
+}
+#zoneLienDecConjoint{
+	height:30px;
+	text-align:left;
+	width:100%;
+	float:left;
+	
+}
+
+#aGed{
+	margin-left:10px;
+}
+#dialog-devalid-confim{
+	display:none;
+}
+#dialog-confirm-creation-lot{
+	display:none;
+}
+#text_amal_title{
+	margin-top: 0.5em;
+}
+#zoneLienDecConjoint a { 
+	
+	text-decoration:none;
+	font-color:black;
+	fonct-style:italic;	
+}
+a img{
+	border:none;
+}
+#zoneInfoRefus{
+	width:90%;
+	/*border:1px solid red;*/
+	height:330px;/*forcer pour eviter de scroller avec sous motifs*/
+}
+.toPCALLink{
+	cursor:pointer;
+}
+#zoneInfosSup{
+	width:90%;
+	/*border:1px solid blue;*/
+	padding-bottom:20px;	
+}
+
+#valChampLibreMotif{
+	width: 436px;
+}
+
+#texteLibreMotif{
+	margin:0;
+	text-align:left;
+}
+
+#zoneInfosRefusSupp, #champLibreMotif
+{
+	margin-top:5px;
+	width:100%;
+	text-align:left;
+}
+#motifsLabel, #lblChampLibreMotif{
+	width:140px;
+	font-weight:bold;
+	margin-right:0px;
+	}
+
+.labelMotif{
+	width:120px;
+	font-weight:bold;
+}	
+
+.textMotif{
+	width:800px;
+}
+
+#sousMotifsLabel{
+	width:120px;
+	font-weight:bold;
+}
+/* labels génériques */
+.label{
+	width:120px;
+	height:22px;
+	padding-top:2px;
+	display:inline-block;
+	text-align:left;
+	float:left;
+	font-weight:bold;
+}
+.labelRefus{
+	width:120px;
+	height:22px;
+	padding-top:2px;
+	display:inline-block;
+	text-align:left;
+	float:left;
+	font-weight:bold;
+}
+.motif{
+	float:left;
+	
+}
+.selectM, .selectSm{
+	
+}
+#selectSousMotif{
+	float:left;
+	/*width:435px;*/
+}
+#selectSousMotifSpan{
+	width:1000px;/* pour largeur maxi a la ligne*/
+}
+
+#selectMotifSpan{
+	width:1000px;/* pour largeur maxi a la ligne*/
+	
+}
+/* ****ligne requerant**** */
+#ligneRequerant{
+	/*border:1px solid red;*/
+	height:22px;
+	padding-bottom:5px;
+	text-align:left;
+	font-style:italic;
+	font-weight:normal;
+	
+}
+/* ****ligne beneficiare**** */
+#ligneBeneficiaire{
+	/*border:1px solid red;*/
+	height:22px;
+	padding-bottom:5px;
+	text-align:left;
+	font-style:italic;
+	font-weight:normal;
+}
+
+#gedLink{
+	margin: 0 30px	
+}
+
+/*************************/
+
+/* Bloc adresse de paiement et courrier */
+#blocAdrC{
+	width:450px;
+	display:inline;
+	vertical-align:top;
+	float:left;
+	border-right: 3px solid #356AA0;
+}
+/*Bloc adresse pour refus et suppression 100% */
+#blocAdrCRS{
+	width:100%;
+	display:inline;
+	vertical-align:top;
+}
+#blocAdrP{
+	width:400px;
+	display:inline;
+	vertical-align:top;
+	float:left;
+	margin-left:30px;
+}
+
+
+/* label descrption adresse */
+#labelAdresse{
+	float:left;
+	/*margin-top:25px;*/
+	height:90px;
+	/*border:1px solid red;*/
+}
+/* bloc libelle adresse complete, et bouton */
+
+/* description complete adresse */
+#descAdresse{
+	float:left;
+	text-align:left;
+}
+
+
+/* bouton choix adresse */
+#buttonAdresse{
+	float:right;
+	width:26px;
+
+	
+}
+/*************************/
+#adresseZone{
+	border-bottom:2px solid #226194;
+	margin-bottom:10px;
+	padding-bottom:10px;
+	width:100%;
+}
+
+#lignePersonneRef{
+	border-bottom:2px solid #226194;
+	margin-bottom:10px;
+	padding-bottom:10px;
+	width:100%;
+}
+
+#zoneTransfertDossier{
+	border-top:2px solid #226194;
+	margin-top:10px;
+	padding-top:10px;
+	width:100%;
+}
+/* ****ligne demande**** */
+#ligneDemande{
+	
+	height:22px;
+	padding-top:10px;
+}
+/* Valeur no demande et etat */
+#nodroit, #valEtat, #noversion{
+	width:160px;
+	/*border:1px solid yellow;*/
+	text-align:left;
+	float:left;
+}
+#nodemande{
+	float:left;
+	margin-right:150px;
+}
+#dateSupp{
+	float:left;	
+}
+#dateRefus{
+	float:left;	
+}
+#ligneDateSupp{
+	height:28px;
+	width:100%;
+}
+/* label etat */
+#lblnoversion{
+*margin-left:200px;
+}
+#chkRestitution{
+	float:left;
+}
+/*************************/
+
+/* ****ligne decision **** */
+#ligneDecision{
+	/*border:1px solid red;*/
+	height:35px;
+}
+#ligneDecisionCompl{
+	height:22px;
+}
+#lblRestitution{
+	margin-left:235px;
+}
+#lblEtatRef{
+	margin-left:195px;
+}
+#csGenreDecision{
+	float:left;
+}
+/* valeur decision no */
+#valGenreSup{
+	width:160px;
+	/*border:1px solid yellow;*/
+	text-align:left;
+	float:left;
+	font-weight:normal !important;
+	heigth:30px;
+	padding-top:5px;
+}
+#valGenreRef{
+	width:160px;
+	/*border:1px solid yellow;*/
+	text-align:left;
+	float:left;
+	font-weight:normal !important;
+	heigth:30px;
+	padding-top:5px;
+}
+#valDecision{
+	width:160px;
+	/*border:1px solid yellow;*/
+	text-align:left;
+	float:left;
+	font-weight:normal !important;
+	
+}
+/*************************/
+
+/* ****ligne personne ref**** */
+#lignePersonneRef{
+	/*border:1px solid red;*/
+	height:22px;
+}
+#ligneDateRefus{
+	height:22px;
+}
+#lignePersonneRef select{
+	float:left;
+	margin-top:5px;
+	width:240px;
+}
+#lignePersonneRef span{
+	font-weight:bold;
+}
+#lblNoDecision{
+	margin-left:200px;
+}
+#lblNoDecisionRef{
+margin-left:208px;
+}
+#lblEmail{
+	margin-left:120px;
+}
+#lblGenreDec{
+	margin-left:200px;
+}
+#lblGenreDecRef{
+	margin-left:245px;
+}
+/*****************************/
+/* ******************************************************* */
+
+/* ************* bloc 2 , périodes et pc *****************  */
+#pcInfo{
+	padding-top:10px;
+	position:relative;
+	width:90%;
+	/*border: 1px solid red;*/
+	padding-bottom:30px;
+	border-bottom: 2px solid #226194;
+} 
+.label2{
+	width:100%;
+	height:22px;
+	padding-top:2px;
+	display:inline-block;
+	text-align:left;
+	float:left;
+	font-weight:bold;
+}
+#pcInfo table{
+	width:100%; 
+	/*border:1px solid black;*/
+	float:left;	
+}
+#lblperiode{
+	font-weight:bold;
+	/*font-size:14px;*/
+	padding-bottom:5px;
+}
+
+#lblremarque {
+	font-weight:bold;
+}
+
+#pcATable{
+	background-color:silver;
+	margin-bottom:10px;
+	background-color: #B3C4DB; 
+	width: 100%; 
+	height:8px;
+}
+#pcATable th{
+	font-size:9px;
+}
+#tdBenef{
+	text-align:left !important;
+	padding-left:5px;
+}
+#pcATable td{
+	border:1px solid black;
+	text-align:center;
+	background-color:white;
+}
+#boxRemarques{
+	text-align:left;
+	float:left;
+	padding-bottom:5px;
+	width:100%;
+}
+
+/* *********************************************************** *
+
+/* ************* bloc 3 , remarques annexes ***************** */
+#annexesInfo{
+	padding-top:10px;
+	position:relative;
+	width:90%;
+	/*border: 1px solid blue;*/
+	padding-bottom:30px;
+	border-bottom:2px solid #226194;
+}
+
+#zoneRemarques{
+	/*border:1px solid red;*/
+	height:200px;
+	width:520px;
+	float:left;
+}
+#annexes{
+	/*border:1px solid red;*/
+	height:200px;
+	width:440px;
+	float:left;
+}
+.label3{
+	width:100%;
+	height:22px;
+	padding-top:2px;
+	display:inline-block;
+	text-align:left;
+	float:left;
+}
+#lblRemarques{
+	width:100%;
+	height:22px;
+	padding-top:10px;
+	display:inline-block;
+	text-align:left;
+	float:left;
+	font-weight:bold;
+}
+#lblAnnexes{
+	width:100%;
+	height:22px;
+	display:inline-block;
+	text-align:left;
+	float:left;
+	font-weight:bold;
+}
+#listeAnnexes{
+	width:340px;
+	float:left;
+	display:inline-block;
+}
+#txtRemarques{
+	float:left;
+}
+#zoneTArea2{
+	width:100%;
+	/*border:2px solid blue;*/
+}
+#btnAjouter{
+	float:left;
+	display:block;
+	
+}
+#btnAjouterSpan{
+	float:left;
+	width:100%;
+	display:block;
+}
+#chmAjouter{
+	float:left;
+	display:block;
+	width:340px;
+}
+#btnSupprimer{
+	float:left;
+	display:block;
+}
+#annexesInfo table{
+	width:100%; 
+	float:left; 
+	
+}
+#lblannexes{
+	font-weight:bold;
+}
+#billagChk{
+	float:left;
+
+}
+#lblBillag{
+	float:left;
+	font-weight:bold;
+}
+#lblbillagzone{
+	float:left;
+}
+/* *********************************************************** *
+
+/* ************* bloc 4 , zone billag *********************** */
+#zoneBillag{
+	position:relative;
+	width:90%;
+	border-bottom: 2px solid #226194;
+	padding-bottom:20px;
+	padding-top:10px;
+} 
+
+#phraseCaseNonCoche{
+	
+	text-align:left;
+	width:100%;
+
+}
+#phraseCaseCoche{
+	
+	text-align:left;
+	width:100%;
+	
+}
+
+/* *********************************************************** *
+
+/* ************* bloc 5 , zone copies *********************** */
+#zoneCopies{
+	position:relative;
+	width:90%;
+	margin-top:10px;
+}
+
+#zoneCopies table{
+	
+	background-color: #B3C4DB; 
+	width: 100%; 
+	height:8px;
+}
+/* *********************************************************** */
+.detailAdresseTiersC{
+	width:7cm;
+	font-family:Verdana,Arial;
+	font-size:x-small;
+	font-weight:bold;
+	border-left: 3px solid #356AA0; 
+	margin-left:10px;
+	padding-left:5px;
+
+}
+.detailAdresseTiersP{
+	width:7cm;
+	font-family:Verdana,Arial;
+	font-size:x-small;
+	font-weight:bold;
+	
+}
+
+/* tableau des copies */
+#tableCopies th{
+	font-size:9px;
+}
+#tableCopies td{
+	border:1px solid black;
+	text-align:center;
+	background-color:white;
+}
+
+#radioZone{
+	width:100px;
+	/*border:1px solid blue;*/
+	float:left;
+	text-align:left;
+}
+#btnCopies{
+	margin-left:5px;
+	margin-right:5px;
+	width:26px;
+}
+#widgetZone{
+	/*border:1px solid red;*/
+	float:left;
+	margin-top:5px;
+	margin-right:10px;
+}
+#widgetCopiesZone{
+	margin-top:5px;
+	/*margin-left:55px;*/
+	width:90%;
+	border: 1px solid #356AA0;
+	/*float:left;*/
+}
+#widgetAdmin, #widgetTiers{
+	/*margin-left:10px;*/
+	/*margin-right:10px;*/
+	/*margin-top:5px;*/
+	width:400px;
+}
+
+#addBtn{
+	margin-right:5px;
+	margin-top:3px;
+}
+
+.titre{
+	font-weight:bold;
+	width:100%;
+	margin-bottom:5px;
+}
+
+label {
+	margin-right: 10px;
+}
+
+.value{
+	padding-right: 75px;
+}
+
+#zoneJA{
+	width:100%;
+	text-align:left;
+	padding-top:10px;
+}
+#buttonAnnexesZone{
+	float:left;
+	width:15px;
+
+}
+#btn_up{
+	margin-bottom:48px;
+}
+
+.infoWarnRetro{
+	font-size: 1em !important;
+	text-align: left;
+}

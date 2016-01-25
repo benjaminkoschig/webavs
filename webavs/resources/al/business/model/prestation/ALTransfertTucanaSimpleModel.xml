@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.prestation.TransfertTucanaModel">
+		<description>représente la table TransfertTucana </description>
+		<table name="ALTUCANA" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idTucana" column="TID" comment="ID de la table TransfertTucana "/>
+			<field name="idDetailPrestation" column="NID" type="NUMERIC"  mandatory="true" comment="ID (FK) de la table table DetailPrestation"/>
+			<field name="rubriqueSupplementLegal" column="CSRULE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Rubrique du supplément légal"/>
+			<field name="rubriqueSupplementConventionnel" column="CSRUCO" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Rubrique du supplément conventionnel"/>
+			<field name="rubriqueAllocation" column="CSRUAL" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Rubrique du type d'allocation"/>
+			<field name="numBouclement" column="TANMOB" type="NUMERIC" dataType="NUMERIC(6,0)" mandatory="false" comment="Numéro de bouclement"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDetailPrestation" field-ref="idDetailPrestation" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		<search-definition name="deleteBouclement">
+			<search-group operator="AND">
+				<search-field name="forNumBouclement" field-ref="numBouclement" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

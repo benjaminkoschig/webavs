@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.rentepont.FactureRentePont">
+		<root-model name="simpleFactureRentePont" model-ref="ch.globaz.perseus.business.models.rentepont.SimpleFactureRentePont"/>
+		
+		<linked-model name="qdRentePont" model-ref="ch.globaz.perseus.business.models.rentepont.QDRentePont" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleQDRentePont.idQDRentePont" operation="EQUALS" field-ref="simpleFactureRentePont.idQDRentePont" />
+			</join-group>
+		</linked-model>
+	   		
+   		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forAnnee" operation="EQUALS" field-ref="qdRentePont.simpleQDRentePont.annee" /> 
+   				<search-field name="forIdDossier" operation="EQUALS" field-ref="qdRentePont.simpleQDRentePont.idDossier" /> 
+   				<search-field name="likeNom" operation="LIKE" field-ref="qdRentePont.dossier.demandePrestation.personneEtendue.tiers.designationUpper1"/>  
+				<search-field name="likePrenom" operation="LIKE" field-ref="qdRentePont.dossier.demandePrestation.personneEtendue.tiers.designationUpper2"/>  
+				<search-field name="likeNss" operation="LIKE" field-ref="qdRentePont.dossier.demandePrestation.personneEtendue.personneEtendue.numAvsActuel"/>  
+				<search-field name="forIdQdRentePont" operation="EQUALS" field-ref="simpleFactureRentePont.idQDRentePont"/>  
+				<search-field name="forCsEtatFacture" operation="EQUALS" field-ref="simpleFactureRentePont.csEtat"/>  
+				<search-field name="forCsTypeSoin" operation="EQUALS" field-ref="simpleFactureRentePont.csTypeSoinRentePont"/>  
+				<search-field name="forCsSousTypeSoin" operation="EQUALS" field-ref="simpleFactureRentePont.csSousTypeSoinRentePont"/>  
+				<search-field name="forIdGestionnaire" operation="EQUALS" field-ref="simpleFactureRentePont.idGestionnaire"/>
+				<search-field name="forMontant" operation="EQUALS" field-ref="simpleFactureRentePont.montant"/>
+				<search-field name="forDateFacture" operation="EQUALS" field-ref="simpleFactureRentePont.dateFacture"/>
+			</search-group>
+		</search-definition>
+	   		
+   		<order-by>
+			<order-field field-ref="qdRentePont.dossier.demandePrestation.personneEtendue.tiers.designationUpper1"/>
+			<order-field field-ref="qdRentePont.dossier.demandePrestation.personneEtendue.tiers.designationUpper2"/>
+		</order-by>
+	   		
+	</complexe-model>
+</model-mapping>

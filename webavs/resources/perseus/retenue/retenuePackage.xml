@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="perseus/retenue/simpleRetenue.xml"/>
+	<model-mapping import="perseus/retenue/retenue.xml"/>
+	<model-mapping import="perseus/retenue/retenueDemandePCFAccordeeDecision.xml"/>
+</model-mapping>

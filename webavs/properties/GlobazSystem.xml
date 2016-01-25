@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobazSystem>
+	<system id="GLOBAZ" remoteId="GLOBAZ">
+		<access>
+			<local/>
+		</access>
+		<remoteApplications>
+			<application id="FRAMEWORK"/>
+			<application id="OSIRIS"/>
+			<application id="PYXIS"/>
+			<application id="NAOS"/>
+			<application id="HERMES"/>
+			<application id="HELIOS"/>
+			<application id="PAVO"/>
+			<application id="MUSCA"/>
+			<application id="DRACO"/>
+			<application id="PHENIX"/>
+			<application id="LEO"/>
+			<application id="AQUILA"/>
+			<application id="BABEL"/>
+			<application id="APG"/>
+			<application id="IJ"/>
+			<application id="CORVUS"/>
+			<application id="HERA"/>
+			<application id="CEPHEUS"/>
+			<application id="LYRA"/>
+			<application id="FX"/>
+			<application id="HERCULE"/>
+			<application id="VULPECULA"/>
+			<application id="LIBRA"/>
+			<application id="AL"/>
+	</remoteApplications>
+	</system>
+	<system id="GLOBAZ_REMOTE" remoteId="GLOBAZ">
+		<access>
+			<local/>
+		</access>
+		<remoteApplications>
+			<application id="FRAMEWORK_REMOTE" remoteId="FRAMEWORK"/>
+			<application id="OSIRIS_REMOTE" remoteId="OSIRIS"/>
+			<application id="PYXIS_REMOTE" remoteId="PYXIS"/>
+			<application id="NAOS_REMOTE" remoteId="NAOS"/>
+			<application id="HERMES_REMOTE" remoteId="HERMES"/>
+			<application id="HELIOS_REMOTE" remoteId="HELIOS"/>
+			<application id="PAVO_REMOTE" remoteId="PAVO"/>
+			<application id="MUSCA_REMOTE" remoteId="MUSCA"/>
+			<application id="DRACO_REMOTE" remoteId="DRACO"/>
+			<application id="PHENIX_REMOTE" remoteId="PHENIX"/>
+			<application id="LEO_REMOTE" remoteId="LEO"/>
+			<application id="AQUILA_REMOTE" remoteId="AQUILA"/>
+			<application id="BABEL_REMOTE" remoteId="BABEL"/>
+			<application id="APG_REMOTE" remoteId="APG"/>
+			<application id="IJ_REMOTE" remoteId="IJ"/>
+			<application id="CORVUS_REMOTE" remoteId="CORVUS"/>
+			<application id="HERA_REMOTE" remoteId="HERA"/>
+			<application id="CEPHEUS_REMOTE" remoteId="CEPHEUS"/>
+			<application id="LYRA_REMOTE" remoteId="LYRA"/>
+			<application id="FX_REMOTE" remoteId="FX"/>
+			<application id="HERCULE_REMOTE" remoteId="HERCULE"/>
+			<application id="VULPECULA_REMOTE" remoteId="VULPECULA"/>	
+			<application id="LIBRA_REMOTE" remoteId="LIBRA"/>
+			<application id="AL_REMOTE" remoteId="AL"/>
+		</remoteApplications>
+	</system>
+</GlobazSystem>

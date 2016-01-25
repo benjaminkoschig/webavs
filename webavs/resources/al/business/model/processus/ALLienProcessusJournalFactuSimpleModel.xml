@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.processus.LienProcessusJournalFactuModel">
+		<description>Lien entre processus AF et journal Factu</description>
+		<table name="ALLIFAPR" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idLien" column="ZID"  type="NUMERIC" comment="ID du lien"/>
+			<field name="idProcessusPeriodique" column="QPID" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="identifiant du processus lié"/>		
+			<field name="idJournal" column="CSTMPL" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="identifiant du journal lié"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdConfig" field-ref="idConfig" operation="EQUALS"/>
+				<search-field name="forBusinessProcessus" field-ref="businessProcessus" operation="EQUALS"/>
+				<search-field name="forTemplate" field-ref="template" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

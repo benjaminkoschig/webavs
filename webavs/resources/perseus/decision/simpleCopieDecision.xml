@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.decision.SimpleCopieDecision">
+		<description>Table des copies de decisions</description>
+		<table name="PFCOPDEC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idCopieDecision" column="IYIDCD" comment="Clé primaire de la table"/>
+			<field name="idDecision" column="IYIDDE" type="NUMERIC" mandatory="true" comment="Identifiant de la table Decision"/>
+			<field name="idTiers" type="NUMERIC" column="IYIDTI" mandatory="true" comment="Identifiant de la table Tiers" />
+			<field name="remarqueCopieDecision" type="STRING" column="IYREMA" mandatory="false" comment="Remarque sur la copie" />			
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdCopieDecision" operation="EQUALS" field-ref="idCopieDecision" /> 
+				<search-field name="forIdDecision"  operation="EQUALS" field-ref="idDecision" />
+				<search-field name="forIdTiers"  operation="EQUALS" field-ref="idTiers" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

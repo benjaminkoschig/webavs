@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.situationfamille.SituationFamiliale">
+		<root-model name="simpleSituationFamiliale" model-ref="ch.globaz.perseus.business.models.situationfamille.SimpleSituationFamiliale"/>
+		<linked-model name="conjoint" model-ref="ch.globaz.perseus.business.models.situationfamille.Conjoint" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="simpleConjoint.idConjoint" operation="EQUALS" field-ref="simpleSituationFamiliale.idConjoint"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="requerant" model-ref="ch.globaz.perseus.business.models.situationfamille.Requerant" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleRequerant.idRequerant" operation="EQUALS" field-ref="simpleSituationFamiliale.idRequerant"/>
+			</join-group>
+		</linked-model>
+				
+	</complexe-model>
+</model-mapping>

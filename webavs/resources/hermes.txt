@@ -1,0 +1,2 @@
+Répertoire java source du projet HERMES
+- Reprise de VAJ : ADO - 0.006.009

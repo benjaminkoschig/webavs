@@ -1,0 +1,240 @@
+#processRunning{
+	
+	width:100%;
+	background-color:#FEFCFF;
+	text-align:center;
+	padding-bottom:10px;
+}
+#processRunning label{
+	font-weight:bold;
+	text-align:center;
+}
+.gl-header {
+    background-color: #FBF9FF;
+    border-bottom: 2px dotted #E6E6E6;
+    color: #445F85;
+    font-size: 12px;
+    font-weight: bold;
+   	margin: 12px 0 8px;
+    padding: 3px;
+}
+
+.titre {
+	margin: 0px 0px 10px 0px; 
+ 	background-color: #FEFCFF;
+    border: 1px solid #9E9EC9;
+
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+  	border-radius: 5px;
+  	box-shadow 
+  	-webkit-box-shadow: rgba(49, 85, 244, 0.2) 0px 1px 3px;
+    -moz-box-shadow:rgba(49, 85, 244, 0.2) 0px 1px 3px;
+    box-shadow:rgba(49, 85, 244, 0.2) 0px 1px 3px;
+}
+
+h1 {
+	margin:0px;
+	padding:0px;
+	
+	font-size: 1.2em;
+}
+
+table {
+    font-family: Verdana,Arial,sans-serif;
+    font-size: 12px;
+}
+
+.gl-content {
+    background-color: #FFFFFF;
+    color: #222222;
+    margin: 0;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+#info_globale{
+	padding-top:20px;
+}
+
+.areaAssure{
+	height:4em;
+	position: relative;
+	padding: 5px 3px;
+	width: inherit !important;
+	border: 1px solid #9E9EC9;
+}
+
+
+
+.labelRequerant,#infoDroit span{
+	font-weight: bold;
+}
+
+#infoDroit span.data {
+	font-weight: normal;
+}
+
+#requerant, .labelRequerant{
+   vertical-align: top;
+   text-align: left;
+}
+
+.requerantDecalage {
+  display: inline-block;
+  margin-left: 5px
+}
+#infoDroit{
+	display: inline;
+	position: absolute;
+    right: 0;
+    top: 4px;
+}
+
+#infoDroit span{
+    display: inline-block;
+ 	width:9em;
+}
+
+#lbl_datefin, #lbl_forcerdate{
+	padding-top:4px;
+}
+#contenu_typecalcul{
+	padding-top:10px;
+	padding-left:20px;
+	padding-bottom:10px;
+}
+
+#lbl_forcerdatefin{
+	height:20px;
+	padding-top:3px;
+	
+}
+#lbl_standard{
+	height:20px;
+	padding-top:3px;
+}
+#lbl_retro{
+	height:20px;
+	padding-top:3px;
+}
+#forcerdatefin{
+	margin-right:10px;
+	float:left;
+}
+
+#typeDeCalcule_NORMAL,#typeDeCalcule_SANS_RETRO,#dateFinCalcul{
+	float:left;
+	margin-right:10px;
+	height:12px;
+}
+.typeMembreFamille{
+	color:#000000;
+	font-size:14px;
+}
+.membreFamilleInfosGenerales{
+	font-weight:normal;
+	color:#000000;
+	font-size:14px;
+}
+.row-type-df{
+	padding-left:5px;
+	font-weight:bold;
+	width:auto;
+	background-color: #FBF9FF;
+    border-bottom: 2px dotted #E6E6E6;
+    min-height:14px;
+}
+
+.row-type-df:hover{
+	background-color:#B3C4DB;
+}
+
+.row-line-df{
+	padding-left:10px;
+	padding-bottom:0px;
+	padding-top:3px;
+	/*line-height:12px;*/
+	min-height:14px;
+}
+.cell-prop{
+	font-weight:bold;
+	text-align:right;
+}
+
+
+
+.mbr-famille{
+	background-color:#B3C4DB;
+	border: 1px solid #226194;
+	margin-left:5px;
+	margin-right:5px;
+}
+
+.nodf{
+	padding-top:10px;
+	padding-bottom:10px;
+	text-align:center;
+	font-weight:bold;
+	font-size:14px;
+}
+
+.msgPeriodBox{
+	padding-top:20px;
+	padding-left:20px;
+	padding-right: 20px;
+	text-align:center;
+	display:none;
+}
+.msgRetroBox{
+	padding-top:20px;
+	padding-left:20px;
+	padding-right:20px;
+	text-align:center;
+	display:none;
+}
+
+
+#lbl_process_running{
+	font-size:12px;
+	font-weight:bold;
+}
+
+#calculer_btn{
+	margin-top:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	font-size:12px;
+	font-weight:bold;
+}
+
+#zone_bouton_calcul{
+	text-align:center;
+}
+
+.confirmContent{
+	font-size:14px;
+	text-align:center;
+	
+}
+
+.confirmAttention{
+	font-size:14px;
+	text-align:center;
+	font-weight:bold;
+}
+#dialog-modifiydf-confim{
+	display:none;
+}
+
+.msgStandardCalBloque{
+	padding-top:30px;
+	padding-right:20px;
+	text-align:center;
+}
+.msgDemandeCloseBox{
+	padding-top:20px;
+	text-align:center;
+	padding-right:20px;
+
+}

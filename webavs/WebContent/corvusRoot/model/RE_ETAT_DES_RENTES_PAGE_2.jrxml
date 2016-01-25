@@ -1,0 +1,2593 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="RE_ETAT_DES_RENTES"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="594"
+		 pageHeight="842"
+		 columnWidth="538"
+		 columnSpacing="0"
+		 leftMargin="28"
+		 rightMargin="28"
+		 topMargin="28"
+		 bottomMargin="0"
+		 whenNoDataType="BlankPage"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="2" />
+	<parameter name="P_NOM_CAISSE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REFERENCE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_DOCUMENT" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_DATE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_PAGE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_DATE_VALUE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_PRESTATION" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_ORDINAIRE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_EXTRAORDINAIRE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_RENTES_AVS" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_1" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_2" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_3" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_4" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_5" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_6" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_7" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_8" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_1" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_2" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_3" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_4" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_5" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_6" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_7" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_8" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_1" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_2" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_3" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_4" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_5" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_6" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_7" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_8" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_1" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_2" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_3" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_4" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_5" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_6" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_7" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_8" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_1" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_2" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_3" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_4" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_5" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_6" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_7" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_8" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_RENTES_ENTIERES_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TOTAL_RENTE_AVS" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_TOTAL_RENTES_AVS" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_TOTAL_RENTES_AVS" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_TOTAL_RENTES_AVS" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_TOTAL_RENTES_AVS" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_9" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_10" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_11" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_12" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_9" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_10" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_11" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_12" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_9" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_10" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_11" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_12" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_9" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_10" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_11" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_12" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_9" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_10" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_11" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_12" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TOTAL_RENTES_ENTIERES_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_TOTAL_RENTES_ENTIERES_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_TOTAL_RENTES_ENTIERES_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_TOTAL_RENTES_ENTIERES_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_TOTAL_RENTES_ENTIERES_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_RENTES_DEMI_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_13" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_14" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_15" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_16" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_13" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_14" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_15" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_16" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_13" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_14" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_15" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_16" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_13" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_14" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_15" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_16" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_13" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_14" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_15" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_16" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TOTAL_RENTES_DEMI_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_TOTAL_RENTES_DEMI_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_TOTAL_RENTES_DEMI_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_TOTAL_RENTES_DEMI_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_TOTAL_RENTES_DEMI_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_RENTES_QUART_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_17" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_18" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_19" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_20" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_17" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_18" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_19" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_20" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_17" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_18" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_19" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_20" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_17" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_18" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_19" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_20" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_17" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_18" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_19" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_20" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TOTAL_RENTES_QUART_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_TOTAL_RENTES_QUART_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_TOTAL_RENTES_QUART_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_TOTAL_RENTES_QUART_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_TOTAL_RENTES_QUART_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_RENTES_TROIS_QUARTS_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_21" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_22" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_23" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_24" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_21" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_22" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_23" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_24" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_21" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_22" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_23" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_24" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_21" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_22" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_23" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_24" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_21" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_22" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_23" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_24" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TOTAL_RENTES_TROIS_QUARTS_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_TOTAL_RENTES_TROIS_QUARTS_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_TOTAL_RENTES_TROIS_QUARTS_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_TOTAL_RENTES_TROIS_QUARTS_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_TOTAL_RENTES_TROIS_QUARTS_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_RENTES_RECAP_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_25" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_26" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_27" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_28" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_25" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_26" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_27" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_28" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_25" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_26" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_27" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_28" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_25" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_26" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_27" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_28" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_25" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_26" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_27" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_28" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TOTAL_RENTES_RECAP_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_TOTAL_RENTES_RECAP_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_TOTAL_RENTES_RECAP_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_TOTAL_RENTES_RECAP_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_TOTAL_RENTES_RECAP_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_API" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_29" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_30" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_31" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_32" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_33" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_34" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_35" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_36" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_29" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_30" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_31" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_32" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_33" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_34" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_35" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_36" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_29" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_30" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_31" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_32" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_33" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_34" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_35" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_36" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_29" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_30" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_31" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_32" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_33" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_34" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_35" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_36" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_29" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_30" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_31" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_32" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_33" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_34" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_35" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_36" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TOTAL_API" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_TOTAL_API" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_TOTAL_API" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_TOTAL_API" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_TOTAL_API" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_AI" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_AVS" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TYPE_PC_INVALIDITE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TYPE_PC_VIEILLESSE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TYPE_PC_SURVIVANT" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TYPE_PC_ALLOC_NOEL_RENTES" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TYPE_PC_ALLOC_NOEL_MANDAT_POSTAL" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_MONTANT_TOTAL_PC" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NB_TOTAL_PC" isForPrompting="false" class="java.lang.Integer"/>
+	<parameter name="P_TOTAL_PC" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NB_PC_INVALIDITE" isForPrompting="false" class="java.lang.Integer"/>
+	<parameter name="P_MONTANT_PC_INVALIDITE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NB_PC_VIEILLESSE" isForPrompting="false" class="java.lang.Integer"/>
+	<parameter name="P_MONTANT_PC_VIEILLESSE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NB_PC_SURVIVANT" isForPrompting="false" class="java.lang.Integer"/>
+	<parameter name="P_MONTANT_PC_SURVIVANT" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NB_PC_ALLOC_NOEL_RENTES" isForPrompting="false" class="java.lang.Integer"/>
+	<parameter name="P_MONTANT_PC_ALLOC_NOEL_RENTES" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NB_PC_ALLOC_NOEL_MANDAT_POSTAL" isForPrompting="false" class="java.lang.Integer"/>
+	<parameter name="P_MONTANT_PC_ALLOC_NOEL_MANDAT_POSTAL" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_PC" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_RFM" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TOTAL_RFM" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NB_TOTAL_RFM" isForPrompting="false" class="java.lang.Integer"/>
+	<parameter name="P_MONTANT_TOTAL_RFM" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TYPE_RFM_INVALIDITE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NB_RFM_INVALIDITE" isForPrompting="false" class="java.lang.Integer"/>
+	<parameter name="P_MONTANT_RFM_INVALIDITE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TYPE_RFM_VIEILLESSE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NB_RFM_VIEILLESSE" isForPrompting="false" class="java.lang.Integer"/>
+	<parameter name="P_MONTANT_RFM_VIEILLESSE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TYPE_RFM_SURVIVANT" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NB_RFM_SURVIVANT" isForPrompting="false" class="java.lang.Integer"/>
+	<parameter name="P_MONTANT_RFM_SURVIVANT" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_TITRE_29B" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_NB_29B" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_RO_MONTANT_29B" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_NB_29B" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_REO_MONTANT_29B" isForPrompting="false" class="java.lang.String"/>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="35"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="1"
+						width="124"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-1"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NOM_CAISSE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="413"
+						y="1"
+						width="50"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-3"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_DATE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="413"
+						y="17"
+						width="50"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-4"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_PAGE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="463"
+						y="1"
+						width="72"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-5"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_DATE_VALUE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="463"
+						y="17"
+						width="72"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-6"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["2/2"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="147"
+						y="6"
+						width="250"
+						height="18"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-7"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE_DOCUMENT}]]></textFieldExpression>
+				</textField>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="33"
+						width="535"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-1"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="759"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="2"
+						width="240"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-8"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE_PRESTATION}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="22"
+						width="240"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-187"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE_API}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="39"
+						width="240"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-188"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE_29}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="39"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-189"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_MONTANT_29}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="39"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-190"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_NB_29}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="445"
+						y="39"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-191"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_MONTANT_29}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="404"
+						y="39"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-192"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_NB_29}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="67"
+						width="240"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-193"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE_30}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="67"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-194"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_MONTANT_30}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="67"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-195"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_NB_30}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="445"
+						y="67"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-196"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_MONTANT_30}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="404"
+						y="67"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-197"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_NB_30}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="80"
+						width="240"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-198"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE_31}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="80"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-199"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_MONTANT_31}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="80"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-200"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_NB_31}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="445"
+						y="80"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-201"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_MONTANT_31}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="404"
+						y="80"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-202"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_NB_31}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="93"
+						width="240"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-203"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE_32}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="93"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-204"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_MONTANT_32}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="93"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-205"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_NB_32}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="445"
+						y="93"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-206"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_MONTANT_32}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="404"
+						y="93"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-207"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_NB_32}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="106"
+						width="240"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-208"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE_33}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="106"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-209"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_MONTANT_33}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="106"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-210"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_NB_33}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="445"
+						y="106"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-211"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_MONTANT_33}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="404"
+						y="106"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-212"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_NB_33}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="119"
+						width="240"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-213"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE_34}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="119"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-214"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_MONTANT_34}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="119"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-215"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_NB_34}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="445"
+						y="119"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-216"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_MONTANT_34}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="404"
+						y="119"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-217"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_NB_34}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="132"
+						width="240"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-218"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE_35}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="132"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-219"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_MONTANT_35}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="132"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-220"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_NB_35}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="445"
+						y="132"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-221"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_MONTANT_35}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="404"
+						y="132"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-222"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_NB_35}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="145"
+						width="240"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-223"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE_36}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="145"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-224"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_MONTANT_36}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="145"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-225"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_NB_36}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="445"
+						y="145"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-226"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_MONTANT_36}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="404"
+						y="145"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-227"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_NB_36}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="34"
+						y="161"
+						width="207"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-228"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TOTAL_API}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="161"
+						width="90"
+						height="10"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-229"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_MONTANT_TOTAL_API}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="161"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-230"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_NB_TOTAL_API}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="445"
+						y="161"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-231"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_MONTANT_TOTAL_API}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="404"
+						y="161"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-232"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_NB_TOTAL_API}]]></textFieldExpression>
+				</textField>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="264"
+						y="159"
+						width="132"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-40"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="264"
+						y="175"
+						width="132"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-41"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="264"
+						y="177"
+						width="132"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-42"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="403"
+						y="159"
+						width="132"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-43"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="403"
+						y="175"
+						width="132"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-44"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="403"
+						y="177"
+						width="132"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-45"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="22"
+						width="132"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-233"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE_AI}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="404"
+						y="22"
+						width="132"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-234"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE_AVS}]]></textFieldExpression>
+				</textField>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="264"
+						y="38"
+						width="132"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-46"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="403"
+						y="38"
+						width="132"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-47"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="263"
+						y="241"
+						width="132"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-48"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="225"
+						width="132"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-235"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[]]></textFieldExpression>
+				</textField>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="263"
+						y="326"
+						width="132"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-50"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="263"
+						y="324"
+						width="132"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-51"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="263"
+						y="308"
+						width="132"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-52"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="310"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-237"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{P_NB_TOTAL_PC}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="310"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-238"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_TOTAL_PC}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="34"
+						y="310"
+						width="207"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-241"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TOTAL_PC}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="242"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-277"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{P_NB_PC_INVALIDITE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="242"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-278"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_PC_INVALIDITE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="242"
+						width="240"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-281"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TYPE_PC_INVALIDITE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="225"
+						width="240"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-282"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE_PC}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="255"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-283"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{P_NB_PC_VIEILLESSE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="255"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-284"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_PC_VIEILLESSE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="255"
+						width="240"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-285"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TYPE_PC_VIEILLESSE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="268"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-286"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{P_NB_PC_SURVIVANT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="268"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-287"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_PC_SURVIVANT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="268"
+						width="240"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-288"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TYPE_PC_SURVIVANT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="281"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-289"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)) && $P{P_NB_PC_ALLOC_NOEL_RENTES} != null && !$P{P_NB_PC_ALLOC_NOEL_RENTES}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{P_NB_PC_ALLOC_NOEL_RENTES}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="281"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-290"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)) && $P{P_NB_PC_ALLOC_NOEL_RENTES} != null && !$P{P_NB_PC_ALLOC_NOEL_RENTES}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_PC_ALLOC_NOEL_RENTES}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="281"
+						width="240"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-291"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)) && $P{P_NB_PC_ALLOC_NOEL_RENTES} != null && !$P{P_NB_PC_ALLOC_NOEL_RENTES}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TYPE_PC_ALLOC_NOEL_RENTES}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="294"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-292"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)) && $P{P_NB_PC_ALLOC_NOEL_MANDAT_POSTAL} != null && !$P{P_NB_PC_ALLOC_NOEL_MANDAT_POSTAL}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{P_NB_PC_ALLOC_NOEL_MANDAT_POSTAL}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="294"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-293"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)) && $P{P_NB_PC_ALLOC_NOEL_MANDAT_POSTAL} != null && !$P{P_NB_PC_ALLOC_NOEL_MANDAT_POSTAL}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_PC_ALLOC_NOEL_MANDAT_POSTAL}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="294"
+						width="240"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-294"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_PC} != null && !$P{P_NB_TOTAL_PC}.equals(new java.lang.Integer(0)) && $P{P_NB_PC_ALLOC_NOEL_MANDAT_POSTAL} != null && !$P{P_NB_PC_ALLOC_NOEL_MANDAT_POSTAL}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TYPE_PC_ALLOC_NOEL_MANDAT_POSTAL}]]></textFieldExpression>
+				</textField>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="263"
+						y="346"
+						width="132"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-53"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="330"
+						width="132"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-295"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[]]></textFieldExpression>
+				</textField>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="263"
+						y="405"
+						width="132"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-54"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="263"
+						y="403"
+						width="132"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-55"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="263"
+						y="387"
+						width="132"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-56"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="389"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-296"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{P_NB_TOTAL_RFM}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="389"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-297"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_TOTAL_RFM}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="34"
+						y="389"
+						width="207"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-298"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TOTAL_RFM}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="347"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-299"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{P_NB_RFM_INVALIDITE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="347"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-300"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_RFM_INVALIDITE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="347"
+						width="240"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-301"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TYPE_RFM_INVALIDITE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="330"
+						width="240"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-302"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE_RFM}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="360"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-303"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{P_NB_RFM_VIEILLESSE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="360"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-304"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_RFM_VIEILLESSE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="360"
+						width="240"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-305"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TYPE_RFM_VIEILLESSE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="373"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-306"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{P_NB_RFM_SURVIVANT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="373"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-307"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_RFM_SURVIVANT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="373"
+						width="240"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-308"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[Boolean.valueOf($P{P_NB_TOTAL_RFM} != null && !$P{P_NB_TOTAL_RFM}.equals(new java.lang.Integer(0)))]]></printWhenExpression>
+						</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TYPE_RFM_SURVIVANT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="53"
+						width="260"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-309"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE_29B}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="305"
+						y="53"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-310"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_MONTANT_29B}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="264"
+						y="53"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-311"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_RO_NB_29B}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="445"
+						y="53"
+						width="90"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-312"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_MONTANT_29B}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="404"
+						y="53"
+						width="40"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-313"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REO_NB_29B}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

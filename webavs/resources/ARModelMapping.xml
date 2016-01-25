@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="aries/simpleDecisionCGAS.xml"/>
+	<model-mapping import="aries/simpleDetailDecisionCGAS.xml"/>
+	<model-mapping import="aries/simpleSortieCGAS.xml"/>	
+	<model-mapping import="aries/ComplexDecisionCGASAffiliationCotisation.xml"/>
+	<model-mapping import="aries/complexSortieCGASDecisionCGASAffiliation.xml"/>
+</model-mapping>

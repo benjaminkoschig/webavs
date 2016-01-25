@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+ 	<model-mapping import="osiris/JournalModelMapping.xml"/>
+ 	<model-mapping import="osiris/OperationModelMapping.xml"/>
+ 	<model-mapping import="osiris/SectionModelMapping.xml"/>
+ 	<model-mapping import="osiris/CompteAnnexeModelMapping.xml"/>	
+<!--  	<model-mapping import="osiris/OrdreModelMapping.xml"/>	
+ 	<model-mapping import="osiris/OrdreVersementComplexModelMapping.xml"/>	
+ 	 -->
+</model-mapping>

@@ -1,0 +1,1867 @@
+<SCRIPT LANGUAGE="JavaScript">
+<!-- Auteur : JPA -->
+<!-- Date : 04.07.07 -->
+
+
+
+//Fonction qui va crée l'annonce
+function annoncer()
+{
+//faire les vérifications sur le numéro de caisse
+if((document.getElementsByName("numCaisse1")[0].value.length <=0)||(document.getElementsByName("numCaisse1")[0].value.length <=0))
+    alert('Veuillez renseigner le num de caisse !');
+//Constantes
+var debutEnregistrement = '8D';
+//On crée l'annonce
+//******************************************
+//*               entéte                   *
+//******************************************
+    var entete;
+    entete = '0101';
+    //On ajoute le numéro de caisse
+    var numCaisse1 = document.getElementsByName("numCaisse1")[0].value;
+    if(numCaisse1.length==0)
+        numCaisse1='000';
+    if(numCaisse1.length==1)
+        numCaisse1='00'+numCaisse1;
+    if(numCaisse1.length==2)
+        numCaisse1='0'+numCaisse1;
+    var numCaisse2 = document.getElementsByName("numCaisse2")[0].value;
+    if(numCaisse2.length==0)
+        numCaisse2='000';
+    if(numCaisse2.length==1)
+        numCaisse2='00'+numCaisse2;
+    if(numCaisse2.length==2)
+        numCaisse2='0'+numCaisse2;
+    var date = new Date();
+    var jour = date.getDate();
+    if(jour < 10)
+        jour = '0'+jour;
+    var mois = date.getMonth()+1;
+    if(mois < 10)
+        mois = '0'+mois;
+    var annee = ''+date.getYear();
+    annee = annee.substring(2,4);
+    entete += numCaisse1 + '       '+numCaisse1+numCaisse2+'    T0'+jour+mois+annee;
+    var moisUser = document.getElementsByName("mois")[0].value;
+    if(moisUser.substring(0,1)=='0')
+        moisUser = moisUser.substring(1,2);
+    if(moisUser.length<=0)
+        moisUser = '0';
+    if(parseInt(moisUser)<10)
+        moisUser = '0'+moisUser;
+    var anneeUser = document.getElementsByName("annee")[0].value;
+    if(anneeUser.substring(0,1)=='0')
+        anneeUser = anneeUser.substring(1,2);
+    if(anneeUser.length<=0)
+        anneeUser = '0';
+    if(anneeUser<10)
+        anneeUser='0'+anneeUser;
+    anneeUser = '20'+anneeUser;
+//******************************************
+//*  1.                                    *
+//******************************************
+    var enregistrement1 = debutEnregistrement;
+    //numéro d'enregistrement 001 -> 002 -> 003 -> ...
+    enregistrement1 += '001';
+    //numéro de caisse
+    enregistrement1 += numCaisse1+numCaisse2;
+    //période comptable
+    enregistrement1 += moisUser;
+    //exercice comptable
+    enregistrement1 += anneeUser;
+//****************************************************************************************************************************
+//*********************************************              1.1 AVS RO                ***************************************
+//****************************************************************************************************************************
+    //Numéro de rubrique
+    enregistrement1 += '500001';
+    //réserve é blanc
+    enregistrement1 += ' ';
+    //Code Valeur du champ 500001
+    enregistrement1 += '0';
+    //Montant
+    var montant_r1_avs_ro = getMontantFormate(dequoteVal(document.getElementsByName("r1_avs_ro")[0].value));
+    enregistrement1 += montant_r1_avs_ro;
+//******************************************
+//*              1.2                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement1 += '500002';
+    //réserve é blanc
+    enregistrement1 += ' ';
+    //Code Valeur du champ 500002
+    enregistrement1 += '0';
+    //Montant
+    var montant_r2_avs_ro = getMontantFormate(dequoteVal(document.getElementsByName("r2_avs_ro")[0].value));
+    enregistrement1 += montant_r2_avs_ro;
+//******************************************
+//*              1.3                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement1 += '500003';
+    //réserve é blanc
+    enregistrement1 += ' ';
+    //Code Valeur du champ 500003
+    enregistrement1 += '0';
+    //Montant
+    var montant_r3_avs_ro = getMontantFormate(dequoteVal(document.getElementsByName("r3_avs_ro")[0].value));
+    enregistrement1 += montant_r3_avs_ro;
+//******************************************
+//*              1.4                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement1 += '500004';
+    //réserve é blanc
+    enregistrement1 += ' ';
+    //Code Valeur du champ 500004
+    enregistrement1 += '1';
+    //Montant
+    var montant_r5_avs_ro = getMontantFormate(dequoteVal(document.getElementsByName("r5_avs_ro")[0].value));
+    enregistrement1 += montant_r5_avs_ro;
+//******************************************
+//*              1.5                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement1 += '500005';
+    //réserve é blanc
+    enregistrement1 += ' ';
+    //Code Valeur du champ 500005
+    enregistrement1 += '0';
+    //Montant
+    var montant_r7_avs_ro = getMontantFormate(dequoteVal(document.getElementsByName("r7_avs_ro")[0].value));
+    enregistrement1 += montant_r7_avs_ro;
+//************************************************ FIN DE LIGNE *************************************************//
+    //Réserve é blanc
+    enregistrement1 += '   ';
+//************************************************ DEBUT DE LIGNE *************************************************//
+//******************************************
+//*  2.                                    *
+//******************************************
+    var enregistrement2 = debutEnregistrement;
+    //numéro d'enregistrement 001 -> 002 -> 003 -> ...
+    enregistrement2 += '002';
+    //numéro de caisse
+    enregistrement2 += numCaisse1+numCaisse2;
+    //période comptable
+    enregistrement2 += moisUser;
+    //exercice comptable
+    enregistrement2 += anneeUser;
+//******************************************
+//*              2.1                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement2 += '500006';
+    //réserve é blanc
+    enregistrement2 += ' ';
+    //Code Valeur du champ 500006
+    enregistrement2 += '0';
+    //Montant
+    var montant_r8_avs_ro = getMontantFormate(dequoteVal(document.getElementsByName("r8_avs_ro")[0].value));
+    enregistrement2 += montant_r8_avs_ro;
+//******************************************
+//*              2.2                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement2 += '500007';
+    //réserve é blanc
+    enregistrement2 += ' ';
+    //Code Valeur du champ 500007
+    enregistrement2 += '1';
+    //Montant
+    var montant_r10_avs_ro = getMontantFormate(dequoteVal(document.getElementsByName("r10_avs_ro")[0].value));
+    enregistrement2 += montant_r10_avs_ro;
+//******************************************
+//*              2.3                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement2 += '500099';
+    //réserve é blanc
+    enregistrement2 += ' ';
+    //Code Valeur du champ 500099
+    enregistrement2 += '0';
+    //Montant
+    var montant_r11_avs_ro = getMontantFormate(dequoteVal(document.getElementsByName("r11_avs_ro")[0].value));
+    enregistrement2 += montant_r11_avs_ro;
+//******************************************
+//*              2.4                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement2 += '501001';
+    //réserve é blanc
+    enregistrement2 += ' ';
+    //Code Valeur du champ 501001
+    enregistrement2 += '0';
+    //Montant
+    var montant_r1_avs_reo = getMontantFormate(dequoteVal(document.getElementsByName("r1_avs_reo")[0].value));
+    enregistrement2 += montant_r1_avs_reo;
+//******************************************
+//*              2.5                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement2 += '501002';
+    //réserve é blanc
+    enregistrement2 += ' ';
+    //Code Valeur du champ 501002
+    enregistrement2 += '0';
+    //Montant
+    var montant_r2_avs_reo = getMontantFormate(dequoteVal(document.getElementsByName("r2_avs_reo")[0].value));
+    enregistrement2 += montant_r2_avs_reo;
+//************************************************ FIN DE LIGNE *************************************************//
+    //Réserve é blanc
+    enregistrement2 += '   ';
+//************************************************ DEBUT DE LIGNE *************************************************//
+//******************************************
+//*  3.                                    *
+//******************************************
+    var enregistrement3 = debutEnregistrement;
+    //numéro d'enregistrement 001 -> 002 -> 003 -> ...
+    enregistrement3 += '003';
+    //numéro de caisse
+    enregistrement3 += numCaisse1+numCaisse2;
+    //période comptable
+    enregistrement3 += moisUser;
+    //exercice comptable
+    enregistrement3 += anneeUser;
+//******************************************
+//*              3.1                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement3 += '501003';
+    //réserve é blanc
+    enregistrement3 += ' ';
+    //Code Valeur du champ 501003
+    enregistrement3 += '0';
+    //Montant
+    var montant_r3_avs_reo = getMontantFormate(dequoteVal(document.getElementsByName("r3_avs_reo")[0].value));
+    enregistrement3 += montant_r3_avs_reo;
+//******************************************
+//*              3.2                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement3 += '501004';
+    //réserve é blanc
+    enregistrement3 += ' ';
+    //Code Valeur du champ 501004
+    enregistrement3 += '1';
+    //Montant
+    var montant_r5_avs_reo = getMontantFormate(dequoteVal(document.getElementsByName("r5_avs_reo")[0].value));
+    enregistrement3 += montant_r5_avs_reo;
+//******************************************
+//*              3.3                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement3 += '501005';
+    //réserve é blanc
+    enregistrement3 += ' ';
+    //Code Valeur du champ 501005
+    enregistrement3 += '0';
+    //Montant
+    var montant_r7_avs_reo = getMontantFormate(dequoteVal(document.getElementsByName("r7_avs_reo")[0].value));
+    enregistrement3 += montant_r7_avs_reo;
+//******************************************
+//*              3.4                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement3 += '501006';
+    //réserve é blanc
+    enregistrement3 += ' ';
+    //Code Valeur du champ 501006
+    enregistrement3 += '0';
+    //Montant
+    var montant_r8_avs_reo = getMontantFormate(dequoteVal(document.getElementsByName("r8_avs_reo")[0].value));
+    enregistrement3 += montant_r8_avs_reo;
+//******************************************
+//*              3.5                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement3 += '501007';
+    //réserve é blanc
+    enregistrement3 += ' ';
+    //Code Valeur du champ 501007
+    enregistrement3 += '1';
+    //Montant
+    var montant_r10_avs_reo = getMontantFormate(dequoteVal(document.getElementsByName("r10_avs_reo")[0].value));
+    enregistrement3 += montant_r10_avs_reo;
+//************************************************ FIN DE LIGNE *************************************************//
+    //Réserve é blanc
+    enregistrement3 += '   ';
+//************************************************ DEBUT DE LIGNE *************************************************//
+//******************************************
+//*  4.                                    *
+//******************************************
+    var enregistrement4 = debutEnregistrement;
+    //numéro d'enregistrement 001 -> 002 -> 003 -> ...
+    enregistrement4 += '004';
+    //numéro de caisse
+    enregistrement4 += numCaisse1+numCaisse2;
+    //période comptable
+    enregistrement4 += moisUser;
+    //exercice comptable
+    enregistrement4 += anneeUser;
+//******************************************
+//*              4.1                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement4 += '501099';
+    //réserve é blanc
+    enregistrement4 += ' ';
+    //Code Valeur du champ 501099
+    enregistrement4 += '0';
+    //Montant
+    var montant_r11_avs_reo = getMontantFormate(dequoteVal(document.getElementsByName("r11_avs_reo")[0].value));
+    enregistrement4 += montant_r11_avs_reo;
+//******************************************
+//*              4.2                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement4 += '503001';
+    //réserve é blanc
+    enregistrement4 += ' ';
+    //Code Valeur du champ 503001
+    enregistrement4 += '0';
+    //Montant
+    var montant_r1_avs_api = getMontantFormate(dequoteVal(document.getElementsByName("r1_avs_api")[0].value));
+    enregistrement4 += montant_r1_avs_api;
+//******************************************
+//*              4.3                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement4 += '503002';
+    //réserve é blanc
+    enregistrement4 += ' ';
+    //Code Valeur du champ 503002
+    enregistrement4 += '0';
+    //Montant
+    var montant_r2_avs_api = getMontantFormate(dequoteVal(document.getElementsByName("r2_avs_api")[0].value));
+    enregistrement4 += montant_r2_avs_api;
+//******************************************
+//*              4.4                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement4 += '503003';
+    //réserve é blanc
+    enregistrement4 += ' ';
+    //Code Valeur du champ 503003
+    enregistrement4 += '0';
+    //Montant
+    var montant_r3_avs_api = getMontantFormate(dequoteVal(document.getElementsByName("r3_avs_api")[0].value));
+    enregistrement4 += montant_r3_avs_api;
+//******************************************
+//*              4.5                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement4 += '503004';
+    //réserve é blanc
+    enregistrement4 += ' ';
+    //Code Valeur du champ 503004
+    enregistrement4 += '1';
+    //Montant
+    var montant_r5_avs_api = getMontantFormate(dequoteVal(document.getElementsByName("r5_avs_api")[0].value));
+    enregistrement4 += montant_r5_avs_api;
+//************************************************ FIN DE LIGNE *************************************************//
+    //Réserve é blanc
+    enregistrement4 += '   ';
+//************************************************ DEBUT DE LIGNE *************************************************//
+//******************************************
+//*  5.                                    *
+//******************************************
+    var enregistrement5 = debutEnregistrement;
+    //numéro d'enregistrement 001 -> 002 -> 003 -> ...
+    enregistrement5 += '005';
+    //numéro de caisse
+    enregistrement5 += numCaisse1+numCaisse2;
+    //période comptable
+    enregistrement5 += moisUser;
+    //exercice comptable
+    enregistrement5 += anneeUser;
+//******************************************
+//*              5.1                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement5 += '503005';
+    //réserve é blanc
+    enregistrement5 += ' ';
+    //Code Valeur du champ 503005
+    enregistrement5 += '0';
+    //Montant
+    var montant_r7_avs_api = getMontantFormate(dequoteVal(document.getElementsByName("r7_avs_api")[0].value));
+    enregistrement5 += montant_r7_avs_api;
+//******************************************
+//*              5.2                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement5 += '503007';
+    //réserve é blanc
+    enregistrement5 += ' ';
+    //Code Valeur du champ 503007
+    enregistrement5 += '1';
+    //Montant
+    var montant_r10_avs_api = getMontantFormate(dequoteVal(document.getElementsByName("r10_avs_api")[0].value));
+    enregistrement5 += montant_r10_avs_api;
+//******************************************
+//*              5.3                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement5 += '503099';
+    //réserve é blanc
+    enregistrement5 += ' ';
+    //Code Valeur du champ 503099
+    enregistrement5 += '0';
+    //Montant
+    var montant_r11_avs_api = getMontantFormate(dequoteVal(document.getElementsByName("r11_avs_api")[0].value));
+    enregistrement5 += montant_r11_avs_api;
+//******************************************
+//*              5.4                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement5 += '510001';
+    //réserve é blanc
+    enregistrement5 += ' ';
+    //Code Valeur du champ 510001
+    enregistrement5 += '0';
+    //Montant
+    var montant_r1_ai_ro = getMontantFormate(dequoteVal(document.getElementsByName("r1_ai_ro")[0].value));
+    enregistrement5 += montant_r1_ai_ro;
+//******************************************
+//*              5.5                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement5 += '510002';
+    //réserve é blanc
+    enregistrement5 += ' ';
+    //Code Valeur du champ 510002
+    enregistrement5 += '0';
+    //Montant
+    var montant_r2_ai_ro = getMontantFormate(dequoteVal(document.getElementsByName("r2_ai_ro")[0].value));
+    enregistrement5 += montant_r2_ai_ro; 
+//************************************************ FIN DE LIGNE *************************************************//
+    //Réserve é blanc
+    enregistrement5 += '   ';
+//************************************************ DEBUT DE LIGNE *************************************************//
+//******************************************
+//*  6.                                    *
+//******************************************
+    var enregistrement6 = debutEnregistrement;
+    //numéro d'enregistrement 001 -> 002 -> 003 -> ...
+    enregistrement6 += '006';
+    //numéro de caisse
+    enregistrement6 += numCaisse1+numCaisse2;
+    //période comptable
+    enregistrement6 += moisUser;
+    //exercice comptable
+    enregistrement6 += anneeUser;
+
+//******************************************
+//*              6.1                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement6 += '510003';
+    //réserve é blanc
+    enregistrement6 += ' ';
+    //Code Valeur du champ 510003
+    enregistrement6 += '0';
+    //Montant
+    var montant_r3_ai_ro = getMontantFormate(dequoteVal(document.getElementsByName("r3_ai_ro")[0].value));
+    enregistrement6 += montant_r3_ai_ro;       
+//******************************************
+//*              6.2                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement6 += '510004';
+    //réserve é blanc
+    enregistrement6 += ' ';
+    //Code Valeur du champ 510004
+    enregistrement6 += '1';
+    //Montant
+    var montant_r5_ai_ro = getMontantFormate(dequoteVal(document.getElementsByName("r5_ai_ro")[0].value));
+    enregistrement6 += montant_r5_ai_ro;   
+//******************************************
+//*              6.3                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement6 += '510005';
+    //réserve é blanc
+    enregistrement6 += ' ';
+    //Code Valeur du champ 510005
+    enregistrement6 += '0';
+    //Montant
+    var montant_r7_ai_ro = getMontantFormate(dequoteVal(document.getElementsByName("r7_ai_ro")[0].value));
+    enregistrement6 += montant_r7_ai_ro;   
+//******************************************
+//*              6.4                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement6 += '510007';
+    //réserve é blanc
+    enregistrement6 += ' ';
+    //Code Valeur du champ 510007
+    enregistrement6 += '1';
+    //Montant
+    var montant_r10_ai_ro = getMontantFormate(dequoteVal(document.getElementsByName("r10_ai_ro")[0].value));
+    enregistrement6 += montant_r10_ai_ro; 
+//******************************************
+//*              6.5                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement6 += '510099';
+    //réserve é blanc
+    enregistrement6 += ' ';
+    //Code Valeur du champ 510099
+    enregistrement6 += '0';
+    //Montant
+    var montant_r11_ai_ro = getMontantFormate(dequoteVal(document.getElementsByName("r11_ai_ro")[0].value));
+    enregistrement6 += montant_r11_ai_ro;     
+//************************************************ FIN DE LIGNE *************************************************//
+    //Réserve é blanc
+    enregistrement6 += '   ';
+//************************************************ DEBUT DE LIGNE *************************************************//
+//******************************************
+//*  7.                                    *
+//******************************************
+    var enregistrement7 = debutEnregistrement;
+    //numéro d'enregistrement 001 -> 002 -> 003 -> ...
+    enregistrement7 += '007';
+    //numéro de caisse
+    enregistrement7 += numCaisse1+numCaisse2;
+    //période comptable
+    enregistrement7 += moisUser;
+    //exercice comptable
+    enregistrement7 += anneeUser;
+
+
+//******************************************
+//*              7.1                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement7 += '511001';
+    //réserve é blanc
+    enregistrement7 += ' ';
+    //Code Valeur du champ 511001
+    enregistrement7 += '0';
+    //Montant
+    var montant_r1_ai_reo = getMontantFormate(dequoteVal(document.getElementsByName("r1_ai_reo")[0].value));
+    enregistrement7 += montant_r1_ai_reo;
+//******************************************
+//*              7.2                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement7 += '511002';
+    //réserve é blanc
+    enregistrement7 += ' ';
+    //Code Valeur du champ 511002
+    enregistrement7 += '0';
+    //Montant
+    var montant_r2_ai_reo = getMontantFormate(dequoteVal(document.getElementsByName("r2_ai_reo")[0].value));
+    enregistrement7 += montant_r2_ai_reo;
+//******************************************
+//*              7.3                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement7 += '511003';
+    //réserve é blanc
+    enregistrement7 += ' ';
+    //Code Valeur du champ 511003
+    enregistrement7 += '0';
+    //Montant
+    var montant_r3_ai_reo = getMontantFormate(dequoteVal(document.getElementsByName("r3_ai_reo")[0].value));
+    enregistrement7 += montant_r3_ai_reo;
+//******************************************
+//*              7.4                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement7 += '511004';
+    //réserve é blanc
+    enregistrement7 += ' ';
+    //Code Valeur du champ 511004
+    enregistrement7 += '1';
+    //Montant
+    var montant_r5_ai_reo = getMontantFormate(dequoteVal(document.getElementsByName("r5_ai_reo")[0].value));
+    enregistrement7 += montant_r5_ai_reo;
+//******************************************
+//*              7.5                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement7 += '511005';
+    //réserve é blanc
+    enregistrement7 += ' ';
+    //Code Valeur du champ 511005
+    enregistrement7 += '0';
+    //Montant
+    var montant_r7_ai_reo = getMontantFormate(dequoteVal(document.getElementsByName("r7_ai_reo")[0].value));
+    enregistrement7 += montant_r7_ai_reo;
+//************************************************ FIN DE LIGNE *************************************************//
+    //Réserve é blanc
+    enregistrement7 += '   ';
+//************************************************ DEBUT DE LIGNE *************************************************//
+//******************************************
+//*  8.                                    *
+//******************************************
+    var enregistrement8 = debutEnregistrement;
+    //numéro d'enregistrement 001 -> 002 -> 003 -> ...
+    enregistrement8 += '008';
+    //numéro de caisse
+    enregistrement8 += numCaisse1+numCaisse2;
+    //période comptable
+    enregistrement8 += moisUser;
+    //exercice comptable
+    enregistrement8 += anneeUser;
+
+//******************************************
+//*              8.1                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement8 += '511007';
+    //réserve é blanc
+    enregistrement8 += ' ';
+    //Code Valeur du champ 511007
+    enregistrement8 += '1';
+    //Montant
+    var montant_r10_ai_reo = getMontantFormate(dequoteVal(document.getElementsByName("r10_ai_reo")[0].value));
+    enregistrement8 += montant_r10_ai_reo;
+//******************************************
+//*              8.2                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement8 += '511099';
+    //réserve é blanc
+    enregistrement8 += ' ';
+    //Code Valeur du champ 511099
+    enregistrement8 += '0';
+    //Montant
+    var montant_r11_ai_reo = getMontantFormate(dequoteVal(document.getElementsByName("r11_ai_reo")[0].value));
+    enregistrement8 += montant_r11_ai_reo;  
+//******************************************
+//*              8.3                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement8 += '513001';
+    //réserve é blanc
+    enregistrement8 += ' ';
+    //Code Valeur du champ 513001
+    enregistrement8 += '0';
+    //Montant
+    var montant_r1_ai_api = getMontantFormate(dequoteVal(document.getElementsByName("r1_ai_api")[0].value));
+    enregistrement8 += montant_r1_ai_api;   
+//******************************************
+//*              8.4                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement8 += '513002';
+    //réserve é blanc
+    enregistrement8 += ' ';
+    //Code Valeur du champ 513002
+    enregistrement8 += '0';
+    //Montant
+    var montant_r2_ai_api = getMontantFormate(dequoteVal(document.getElementsByName("r2_ai_api")[0].value));
+    enregistrement8 += montant_r2_ai_api;     
+//******************************************
+//*              8.5                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement8 += '513003';
+    //réserve é blanc
+    enregistrement8 += ' ';
+    //Code Valeur du champ 513003
+    enregistrement8 += '0';
+    //Montant
+    var montant_r3_ai_api = getMontantFormate(dequoteVal(document.getElementsByName("r3_ai_api")[0].value));
+    enregistrement8 += montant_r3_ai_api;
+//************************************************ FIN DE LIGNE *************************************************//
+    //Réserve é blanc
+    enregistrement8 += '   ';
+//************************************************ DEBUT DE LIGNE *************************************************//
+//******************************************
+//*  9.                                    *
+//******************************************
+    var enregistrement9 = debutEnregistrement;
+    //numéro d'enregistrement 001 -> 002 -> 003 -> ...
+    enregistrement9 += '009';
+    //numéro de caisse
+    enregistrement9 += numCaisse1+numCaisse2;
+    //période comptable
+    enregistrement9 += moisUser;
+    //exercice comptable
+    enregistrement9 += anneeUser;
+  
+
+ 
+//******************************************
+//*              9.1                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement9 += '513004';
+    //réserve é blanc
+    enregistrement9 += ' ';
+    //Code Valeur du champ 513004
+    enregistrement9 += '1';
+    //Montant
+    var montant_r5_ai_api = getMontantFormate(dequoteVal(document.getElementsByName("r5_ai_api")[0].value));
+    enregistrement9 += montant_r5_ai_api;  
+//******************************************
+//*              9.2                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement9 += '513005';
+    //réserve é blanc
+    enregistrement9 += ' ';
+    //Code Valeur du champ 513005
+    enregistrement9 += '0';
+    //Montant
+    var montant_r7_ai_api = getMontantFormate(dequoteVal(document.getElementsByName("r7_ai_api")[0].value));
+    enregistrement9 += montant_r7_ai_api;   
+//******************************************
+//*               9.3                       *
+//******************************************
+    //Numéro de rubrique
+    enregistrement9 += '513007';
+    //réserve é blanc
+    enregistrement9 += ' ';
+    //Code Valeur du champ 513007
+    enregistrement9 += '1';
+    //Montant
+    var montant_r10_ai_api = getMontantFormate(dequoteVal(document.getElementsByName("r10_ai_api")[0].value));
+    enregistrement9 += montant_r10_ai_api; 
+//******************************************
+//*               9.4                      *
+//******************************************
+    //Numéro de rubrique
+    enregistrement9 += '513099';
+    //réserve é blanc
+    enregistrement9 += ' ';
+    //Code Valeur du champ 513099
+    enregistrement9 += '0';
+    //Montant
+    var montant_r11_ai_api = getMontantFormate(dequoteVal(document.getElementsByName("r11_ai_api")[0].value));
+    enregistrement9 += montant_r11_ai_api; 
+//On simule un dernier enregistrement
+    enregistrement9+= '                   ';
+//************************************************ FIN DE LIGNE *************************************************//
+    //Réserve é blanc
+    enregistrement9 += '   ';
+//******************************************
+//*               footer                   *
+//******************************************
+var footer = '9901';
+footer += numCaisse1+'       ';
+footer += numCaisse1+numCaisse2;
+footer += '    T0'+jour+mois+annee;
+footer += '000009';
+
+// On assigne l'annonce la zone texte
+document.getElementsByName("annonce")[0].value = entete+'\n'+enregistrement1+'\n'+enregistrement2+'\n'+enregistrement3+'\n'+enregistrement4+'\n'+enregistrement5+'\n'+enregistrement6+'\n'+enregistrement7+'\n'+enregistrement8+'\n'+enregistrement9+'\n'+footer;
+}
+
+//Fonction qui retourne une chaine formaté sur 10 unités et 2 pour les centimes
+function getMontantFormate(str)
+{
+    var cts = '00';
+    if(str.indexOf('.')!=-1)
+    {
+        var decimal=str.substring(str.indexOf('.')+1,str.indexOf('.')+3)
+        if(decimal.length==2)
+            cts = decimal;
+        if(decimal.length==1)
+            cts = decimal+'0';
+        var dizaines = str.substring(0,str.indexOf('.'));
+    }
+    else
+    {
+        var decimal='00';
+        var dizaines = str;
+    }
+    if(dizaines.length == 0)
+        dizaines = '0000000000';
+    if(dizaines.length == 1)
+        dizaines = '000000000'+dizaines;
+    if(dizaines.length == 2)
+        dizaines = '00000000'+dizaines;
+    if(dizaines.length == 3)
+        dizaines = '0000000'+dizaines;
+    if(dizaines.length == 4)
+        dizaines = '000000'+dizaines;
+    if(dizaines.length == 5)
+        dizaines = '00000'+dizaines;
+    if(dizaines.length == 6)
+        dizaines = '0000'+dizaines;
+    if(dizaines.length == 7)
+        dizaines = '000'+dizaines;
+    if(dizaines.length == 8)
+        dizaines = '00'+dizaines;
+    if(dizaines.length == 9)
+        dizaines = '0'+dizaines;
+    if(dizaines.length > 10)
+        alert('Attention la valeur d\'un champ est trop grande'+str);
+    return dizaines+cts;
+}
+
+//Fonction qui enléve les quotes é un objet
+function dequote(obj)
+{
+    while(obj.value.indexOf('\'')!=-1)
+    {
+        obj.value = obj.value.replace('\'','');
+    }
+}
+//Fonction qui enléve les quotes é une valeur
+function dequoteVal(variable)
+{
+    while(variable.indexOf('\'')!=-1)
+    {
+        variable = variable.replace('\'','');
+    }
+    return variable;
+}
+//Fonction qui a mettre des quotes é un objet
+function quote(obj)
+{
+    if(obj.value.length > 0)
+    {
+        var str = obj.value;
+        //On capture les décimales et les dizaines
+        if(str.indexOf('.')!=-1)
+        {
+          var decimal=str.substring(str.indexOf('.')+1,str.indexOf('.')+3)
+          var dizaines = str.substring(0,str.indexOf('.'));
+        }
+        else
+        {
+          var decimal='';
+          var dizaines = str;
+        }
+        
+        //On va mettre des quotes dans les dizaines
+        //On calcule le nombre de quotes
+        var longueur = dizaines.length;
+        var r = longueur%3;
+        var q = parseInt(longueur/3);
+        var reste = 0;
+        if(r==0)
+        {
+          reste = 1;
+          r=3;
+        }
+        var nbreQuotes = q-reste;
+        if(nbreQuotes > 0)
+        {
+          for(var i=1;i<=nbreQuotes;i++)
+          {
+          dizaines =  dizaines.substring(0,r)+'\''+dizaines.substring(r,dizaines.length);
+          r = r+4;
+          }
+        }
+        if(str.indexOf('.') == -1)
+        {
+          obj.value = dizaines;
+        }
+        else
+        {
+            if(decimal.length > 0)
+                obj.value = dizaines+'.'+decimal;
+            else
+                obj.value = dizaines+'.';
+        }
+    }
+}
+//Fonction lorsqu'une touche est pressée dans un input
+function touchePressee(obj)
+{
+    //On Contréle que ce n'est pas la touche moins
+    if  ((event.keyCode != 109 ))
+    {
+        //On contréle que ce n'est pas la fléche gauche ou droite qui est pressée
+        if  ((event.keyCode != 39 ) && (event.keyCode != 37))
+        {
+        dequote(obj);
+            //On contréle que l'input contient bien un nombre
+            if(parseFloat(obj.value)!=obj.value)
+            {
+                obj.value = '';
+            }else{
+                //On va essayer de rendre l'input correct
+                controleValidite(obj);
+                quote(obj);
+            }
+        }
+    }
+    else
+    {
+        alert('touche non permise !');
+        obj.value = '0';
+    }
+}
+
+//Fonction qui supprime les espaces et transforme les virgules en points
+function controleValidite(obj)
+{
+        //On supprime les espaces
+        obj.value = trim(obj.value);
+        //on remplace les éventuels points saisie par une virgule
+        obj.value=obj.value.replace(',', '.');
+        //On test qu'il s'agit bien d'un chiffre
+        arrondir(obj);
+}
+
+//Fonction qui supprime le dernier caractére insérer
+function supprimerDernierCara(obj)
+{
+    str = obj.value;
+    if(str.length > 0)
+    {
+        obj.value = str.substring(0, str.length-1);
+        touchePressee(obj);
+    }
+}
+
+//Fonction qui supprime les espaces é gauche et é droite du nombre
+function trim(s) 
+{
+    return s.replace(/^\s+/, '').replace(/\s+$/, '');
+}
+
+//Fonction qui va arrondir le nombre é 2 chiffres aprés la virgule
+function arrondir(obj)
+{ 
+    if(parseFloat(obj.value)==obj.value)
+    {
+    if(obj.value.indexOf('.')!=-1)
+    {
+        if((obj.value.length - 2) > obj.value.indexOf('.'))
+        {
+            //Fonction prenant un nombre dans une zone de texte 
+            // efface le contenu de la zone de saisie si convertion impossible
+            // arrondit a 2 chiffres si il s'agit deja d'un decimal
+            var d=obj;
+            if (d.value!='')
+            {
+                if (isNaN(d.value)==true)//si on tombe sur une virgule la valeur n'est pas considérée comme un nombre
+                {
+                    Num=d.value.indexOf(',');
+                    //on remplace la virgule par un point
+                    Resultat=d.value.substring(0,Num)+'.'+d.value.substring(Num+1,d.value.length);d.value=Resultat;d.value=Math.round(d.value*100)/100;
+                    if (isNaN(d.value)==true)
+                    {
+                        d.value='';
+                        alert('VOUS DEVEZ SAISIR UN NOMBRE DECIMAL OU ENTIER');
+                        return false;
+                    }
+                }
+                Temp=Math.round(d.value*100)/100;// on arrodi a 2 chiffres si decimal a plsu de 2 chiffres
+                d.value=Temp;
+                //on replace le nombre de zero necessaire derrier le chiffre
+                if ((d.value.length-Math.abs(d.value.indexOf('.')))==2)
+                {
+                    d.value =Temp+'0';
+                }
+                else if (d.value.indexOf('.')==-1)// cas ou entier
+                {
+                    d.value=d.value+'.00';
+                }
+                else if ((d.value.length-d.value.indexOf('.'))==1) //cas ou point mais pas de chiffres derriere
+                {
+                    d.value=Temp+'.00';
+                }
+                return true;
+            }
+        }
+    }
+    }
+} 
+
+//********************************************************************************************************************************************
+//       Fonction de calcul des totaux                                                                                                       *
+//********************************************************************************************************************************************
+function calculerAVSROTot4()
+{
+ var var1 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r1_avs_ro")[0].value))==dequoteVal(document.getElementsByName("r1_avs_ro")[0].value))
+    var1 = dequoteVal(document.getElementsByName("r1_avs_ro")[0].value);
+ var var2 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r2_avs_ro")[0].value))==dequoteVal(document.getElementsByName("r2_avs_ro")[0].value))
+    var2 = dequoteVal(document.getElementsByName("r2_avs_ro")[0].value);
+ var var3 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r3_avs_ro")[0].value))==dequoteVal(document.getElementsByName("r3_avs_ro")[0].value))
+    var3 = dequoteVal(document.getElementsByName("r3_avs_ro")[0].value);
+ document.getElementsByName("r4_avs_ro")[0].value = parseFloat(var1) + parseFloat(var2) + parseFloat(var3);
+ arrondir(document.getElementsByName("r4_avs_ro")[0]);
+ quote(document.getElementsByName("r4_avs_ro")[0]);
+ calculerAVSROTot6();
+}
+
+function calculerAVSREOTot4()
+{
+ var var1 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r1_avs_reo")[0].value))==dequoteVal(document.getElementsByName("r1_avs_reo")[0].value))
+    var1 = dequoteVal(document.getElementsByName("r1_avs_reo")[0].value);
+ var var2 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r2_avs_reo")[0].value))==dequoteVal(document.getElementsByName("r2_avs_reo")[0].value))
+    var2 = dequoteVal(document.getElementsByName("r2_avs_reo")[0].value);
+ var var3 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r3_avs_reo")[0].value))==dequoteVal(document.getElementsByName("r3_avs_reo")[0].value))
+    var3 = dequoteVal(document.getElementsByName("r3_avs_reo")[0].value);
+ document.getElementsByName("r4_avs_reo")[0].value = parseFloat(var1) + parseFloat(var2) + parseFloat(var3);
+ arrondir(document.getElementsByName("r4_avs_reo")[0]);
+ quote(document.getElementsByName("r4_avs_reo")[0])
+ calculerAVSREOTot6();
+}
+
+function calculerAVSAPITot4()
+{
+ var var1 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r1_avs_api")[0].value))==dequoteVal(document.getElementsByName("r1_avs_api")[0].value))
+    var1 = dequoteVal(document.getElementsByName("r1_avs_api")[0].value);
+ var var2 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r2_avs_api")[0].value))==dequoteVal(document.getElementsByName("r2_avs_api")[0].value))
+    var2 = dequoteVal(document.getElementsByName("r2_avs_api")[0].value);
+ var var3 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r3_avs_api")[0].value))==dequoteVal(document.getElementsByName("r3_avs_api")[0].value))
+    var3 = dequoteVal(document.getElementsByName("r3_avs_api")[0].value);
+ document.getElementsByName("r4_avs_api")[0].value = parseFloat(var1) + parseFloat(var2) + parseFloat(var3);
+ arrondir(document.getElementsByName("r4_avs_api")[0]);
+ quote(document.getElementsByName("r4_avs_api")[0]);
+ calculerAVSAPITot6();
+}
+
+function calculerAIROTot4()
+{
+ var var1 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r1_ai_ro")[0].value))==dequoteVal(document.getElementsByName("r1_ai_ro")[0].value))
+    var1 = dequoteVal(document.getElementsByName("r1_ai_ro")[0].value);
+ var var2 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r2_ai_ro")[0].value))==dequoteVal(document.getElementsByName("r2_ai_ro")[0].value))
+    var2 = dequoteVal(document.getElementsByName("r2_ai_ro")[0].value);
+ var var3 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r3_ai_ro")[0].value))==dequoteVal(document.getElementsByName("r3_ai_ro")[0].value))
+    var3 = dequoteVal(document.getElementsByName("r3_ai_ro")[0].value);
+ document.getElementsByName("r4_ai_ro")[0].value = parseFloat(var1) + parseFloat(var2) + parseFloat(var3);
+ arrondir(document.getElementsByName("r4_ai_ro")[0]);
+ quote(document.getElementsByName("r4_ai_ro")[0]);
+ calculerAIROTot6();
+}
+
+function calculerAIREOTot4()
+{
+ var var1 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r1_ai_reo")[0].value))==dequoteVal(document.getElementsByName("r1_ai_reo")[0].value))
+    var1 = dequoteVal(document.getElementsByName("r1_ai_reo")[0].value);
+ var var2 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r2_ai_reo")[0].value))==dequoteVal(document.getElementsByName("r2_ai_reo")[0].value))
+    var2 = dequoteVal(document.getElementsByName("r2_ai_reo")[0].value);
+ var var3 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r3_ai_reo")[0].value))==dequoteVal(document.getElementsByName("r3_ai_reo")[0].value))
+    var3 = dequoteVal(document.getElementsByName("r3_ai_reo")[0].value);
+ document.getElementsByName("r4_ai_reo")[0].value = parseFloat(var1) + parseFloat(var2) + parseFloat(var3);
+ arrondir(document.getElementsByName("r4_ai_reo")[0]);
+ quote(document.getElementsByName("r4_ai_reo")[0]);
+ calculerAIREOTot6();
+}
+
+function calculerAIAPITot4()
+{
+ var var1 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r1_ai_api")[0].value))==dequoteVal(document.getElementsByName("r1_ai_api")[0].value))
+    var1 = dequoteVal(document.getElementsByName("r1_ai_api")[0].value);
+ var var2 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r2_ai_api")[0].value))==dequoteVal(document.getElementsByName("r2_ai_api")[0].value))
+    var2 = dequoteVal(document.getElementsByName("r2_ai_api")[0].value);
+ var var3 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r3_ai_api")[0].value))==dequoteVal(document.getElementsByName("r3_ai_api")[0].value))
+    var3 = dequoteVal(document.getElementsByName("r3_ai_api")[0].value);
+ document.getElementsByName("r4_ai_api")[0].value = parseFloat(var1) + parseFloat(var2) + parseFloat(var3);
+ arrondir(document.getElementsByName("r4_ai_api")[0]);
+ quote(document.getElementsByName("r4_ai_api")[0]);
+ calculerAIAPITot6();
+}
+
+function calculerAVSROTot6()
+{
+ var var4 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r4_avs_ro")[0].value))==dequoteVal(document.getElementsByName("r4_avs_ro")[0].value))
+    var4 = dequoteVal(document.getElementsByName("r4_avs_ro")[0].value);
+ var var5 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r5_avs_ro")[0].value))==dequoteVal(document.getElementsByName("r5_avs_ro")[0].value))
+    var5 = dequoteVal(document.getElementsByName("r5_avs_ro")[0].value);
+ document.getElementsByName("r6_avs_ro")[0].value = parseFloat(var4) - parseFloat(var5);
+ arrondir(document.getElementsByName("r6_avs_ro")[0]);
+ quote(document.getElementsByName("r6_avs_ro")[0]);
+ calculerAVSROTot9();
+}
+
+function calculerAVSREOTot6()
+{
+ var var4 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r4_avs_reo")[0].value))==dequoteVal(document.getElementsByName("r4_avs_reo")[0].value))
+    var4 = dequoteVal(document.getElementsByName("r4_avs_reo")[0].value);
+ var var5 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r5_avs_reo")[0].value))==dequoteVal(document.getElementsByName("r5_avs_reo")[0].value))
+    var5 = dequoteVal(document.getElementsByName("r5_avs_reo")[0].value);
+ document.getElementsByName("r6_avs_reo")[0].value = parseFloat(var4) - parseFloat(var5);
+ arrondir(document.getElementsByName("r6_avs_reo")[0]);
+ quote(document.getElementsByName("r6_avs_reo")[0]);
+ calculerAVSREOTot9();
+}
+
+function calculerAVSAPITot6()
+{
+ var var4 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r4_avs_api")[0].value))==dequoteVal(document.getElementsByName("r4_avs_api")[0].value))
+    var4 = dequoteVal(document.getElementsByName("r4_avs_api")[0].value);
+ var var5 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r5_avs_api")[0].value))==dequoteVal(document.getElementsByName("r5_avs_api")[0].value))
+    var5 = dequoteVal(document.getElementsByName("r5_avs_api")[0].value);
+ document.getElementsByName("r6_avs_api")[0].value = parseFloat(var4) - parseFloat(var5);
+ arrondir(document.getElementsByName("r6_avs_api")[0]);
+ quote(document.getElementsByName("r6_avs_api")[0]);
+ calculerAVSAPITot9();
+}
+
+function calculerAIROTot6()
+{
+ var var4 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r4_ai_ro")[0].value))==dequoteVal(document.getElementsByName("r4_ai_ro")[0].value))
+    var4 = dequoteVal(document.getElementsByName("r4_ai_ro")[0].value);
+ var var5 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r5_ai_ro")[0].value))==dequoteVal(document.getElementsByName("r5_ai_ro")[0].value))
+    var5 = dequoteVal(document.getElementsByName("r5_ai_ro")[0].value);
+ document.getElementsByName("r6_ai_ro")[0].value = parseFloat(var4) - parseFloat(var5);
+ arrondir(document.getElementsByName("r6_ai_ro")[0]);
+ quote(document.getElementsByName("r6_ai_ro")[0]);
+ calculerAIROTot9();
+}
+
+function calculerAIREOTot6()
+{
+ var var4 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r4_ai_reo")[0].value))==dequoteVal(document.getElementsByName("r4_ai_reo")[0].value))
+    var4 = dequoteVal(document.getElementsByName("r4_ai_reo")[0].value);
+ var var5 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r5_ai_reo")[0].value))==dequoteVal(document.getElementsByName("r5_ai_reo")[0].value))
+    var5 = dequoteVal(document.getElementsByName("r5_ai_reo")[0].value);
+ document.getElementsByName("r6_ai_reo")[0].value = parseFloat(var4) - parseFloat(var5);
+ arrondir(document.getElementsByName("r6_ai_reo")[0]);
+ quote(document.getElementsByName("r6_ai_reo")[0]);
+ calculerAIREOTot9();
+}
+
+function calculerAIAPITot6()
+{
+ var var4 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r4_ai_api")[0].value))==dequoteVal(document.getElementsByName("r4_ai_api")[0].value))
+    var4 = dequoteVal(document.getElementsByName("r4_ai_api")[0].value);
+ var var5 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r5_ai_api")[0].value))==dequoteVal(document.getElementsByName("r5_ai_api")[0].value))
+    var5 = dequoteVal(document.getElementsByName("r5_ai_api")[0].value);
+ document.getElementsByName("r6_ai_api")[0].value = parseFloat(var4) - parseFloat(var5);
+ arrondir(document.getElementsByName("r6_ai_api")[0]);
+ quote(document.getElementsByName("r6_ai_api")[0]);
+ calculerAIAPITot9();
+}
+
+function calculerAVSROTot9()
+{
+ var var6 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r6_avs_ro")[0].value))==dequoteVal(document.getElementsByName("r6_avs_ro")[0].value))
+    var6 = dequoteVal(document.getElementsByName("r6_avs_ro")[0].value);
+ var var7 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r7_avs_ro")[0].value))==dequoteVal(document.getElementsByName("r7_avs_ro")[0].value))
+    var7 = dequoteVal(document.getElementsByName("r7_avs_ro")[0].value);
+ var var8 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r8_avs_ro")[0].value))==dequoteVal(document.getElementsByName("r8_avs_ro")[0].value))
+    var8 = dequoteVal(document.getElementsByName("r8_avs_ro")[0].value);
+ document.getElementsByName("r9_avs_ro")[0].value = parseFloat(var6) + parseFloat(var7) + parseFloat(var8);
+ arrondir(document.getElementsByName("r9_avs_ro")[0]);
+ quote(document.getElementsByName("r9_avs_ro")[0]);
+ calculerAVSROTot11();
+}
+
+function calculerAVSREOTot9()
+{
+ var var6 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r6_avs_reo")[0].value))==dequoteVal(document.getElementsByName("r6_avs_reo")[0].value))
+    var6 = dequoteVal(document.getElementsByName("r6_avs_reo")[0].value);
+ var var7 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r7_avs_reo")[0].value))==dequoteVal(document.getElementsByName("r7_avs_reo")[0].value))
+    var7 = dequoteVal(document.getElementsByName("r7_avs_reo")[0].value);
+ var var8 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r8_avs_reo")[0].value))==dequoteVal(document.getElementsByName("r8_avs_reo")[0].value))
+    var8 = dequoteVal(document.getElementsByName("r8_avs_reo")[0].value);
+ document.getElementsByName("r9_avs_reo")[0].value = parseFloat(var6) + parseFloat(var7) + parseFloat(var8);
+ arrondir(document.getElementsByName("r9_avs_reo")[0]);
+ quote(document.getElementsByName("r9_avs_reo")[0]);
+ calculerAVSREOTot11();
+}
+
+function calculerAVSAPITot9()
+{
+ var var6 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r6_avs_api")[0].value))==dequoteVal(document.getElementsByName("r6_avs_api")[0].value))
+    var6 = dequoteVal(document.getElementsByName("r6_avs_api")[0].value);
+ var var7 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r7_avs_api")[0].value))==dequoteVal(document.getElementsByName("r7_avs_api")[0].value))
+    var7 = dequoteVal(document.getElementsByName("r7_avs_api")[0].value);
+ var var8 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r8_avs_api")[0].value))==dequoteVal(document.getElementsByName("r8_avs_api")[0].value))
+    var8 = dequoteVal(document.getElementsByName("r8_avs_api")[0].value);
+ document.getElementsByName("r9_avs_api")[0].value = parseFloat(var6) + parseFloat(var7) + parseFloat(var8);
+ arrondir(document.getElementsByName("r9_avs_api")[0]);
+ quote(document.getElementsByName("r9_avs_api")[0]);
+ calculerAVSAPITot11();
+}
+
+function calculerAIROTot9()
+{
+ var var6 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r6_ai_ro")[0].value))==dequoteVal(document.getElementsByName("r6_ai_ro")[0].value))
+    var6 = dequoteVal(document.getElementsByName("r6_ai_ro")[0].value);
+ var var7 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r7_ai_ro")[0].value))==dequoteVal(document.getElementsByName("r7_ai_ro")[0].value))
+    var7 = dequoteVal(document.getElementsByName("r7_ai_ro")[0].value);
+ var var8 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r8_ai_ro")[0].value))==dequoteVal(document.getElementsByName("r8_ai_ro")[0].value))
+    var8 = dequoteVal(document.getElementsByName("r8_ai_ro")[0].value);
+ document.getElementsByName("r9_ai_ro")[0].value = parseFloat(var6) + parseFloat(var7) + parseFloat(var8);
+ arrondir(document.getElementsByName("r9_ai_ro")[0]);
+ quote(document.getElementsByName("r9_ai_ro")[0]);
+ calculerAIROTot11();
+}
+
+function calculerAIREOTot9()
+{
+ var var6 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r6_ai_reo")[0].value))==dequoteVal(document.getElementsByName("r6_ai_reo")[0].value))
+    var6 = dequoteVal(document.getElementsByName("r6_ai_reo")[0].value);
+ var var7 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r7_ai_reo")[0].value))==dequoteVal(document.getElementsByName("r7_ai_reo")[0].value))
+    var7 = dequoteVal(document.getElementsByName("r7_ai_reo")[0].value);
+ var var8 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r8_ai_reo")[0].value))==dequoteVal(document.getElementsByName("r8_ai_reo")[0].value))
+    var8 = dequoteVal(document.getElementsByName("r8_ai_reo")[0].value);
+ document.getElementsByName("r9_ai_reo")[0].value = parseFloat(var6) + parseFloat(var7) + parseFloat(var8);
+ arrondir(document.getElementsByName("r9_ai_reo")[0]);
+ quote(document.getElementsByName("r9_ai_reo")[0]);
+ calculerAIREOTot11();
+}
+
+function calculerAIAPITot9()
+{
+ var var6 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r6_ai_api")[0].value))==dequoteVal(document.getElementsByName("r6_ai_api")[0].value))
+    var6 = dequoteVal(document.getElementsByName("r6_ai_api")[0].value);
+ var var7 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r7_ai_api")[0].value))==dequoteVal(document.getElementsByName("r7_ai_api")[0].value))
+    var7 = dequoteVal(document.getElementsByName("r7_ai_api")[0].value);
+ var var8 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r8_ai_api")[0].value))==dequoteVal(document.getElementsByName("r8_ai_api")[0].value))
+    var8 = dequoteVal(document.getElementsByName("r8_ai_api")[0].value);
+ document.getElementsByName("r9_ai_api")[0].value = parseFloat(var6) + parseFloat(var7) + parseFloat(var8);
+ arrondir(document.getElementsByName("r9_ai_api")[0]);
+ quote(document.getElementsByName("r9_ai_api")[0]);
+ calculerAIAPITot11();
+}
+
+function calculerAVSROTot11()
+{
+ var var9 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r9_avs_ro")[0].value))==dequoteVal(document.getElementsByName("r9_avs_ro")[0].value))
+    var9 = dequoteVal(document.getElementsByName("r9_avs_ro")[0].value);
+ var var10 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r10_avs_ro")[0].value))==dequoteVal(document.getElementsByName("r10_avs_ro")[0].value))
+    var10 = dequoteVal(document.getElementsByName("r10_avs_ro")[0].value);
+ document.getElementsByName("r11_avs_ro")[0].value = parseFloat(var9) - parseFloat(var10);
+ arrondir(document.getElementsByName("r11_avs_ro")[0]);
+ quote(document.getElementsByName("r11_avs_ro")[0]);
+}
+
+function calculerAVSREOTot11()
+{
+ var var9 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r9_avs_reo")[0].value))==dequoteVal(document.getElementsByName("r9_avs_reo")[0].value))
+    var9 = dequoteVal(document.getElementsByName("r9_avs_reo")[0].value);
+ var var10 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r10_avs_reo")[0].value))==dequoteVal(document.getElementsByName("r10_avs_reo")[0].value))
+    var10 = dequoteVal(document.getElementsByName("r10_avs_reo")[0].value);
+ document.getElementsByName("r11_avs_reo")[0].value = parseFloat(var9) - parseFloat(var10);
+ arrondir(document.getElementsByName("r11_avs_reo")[0]);
+ quote(document.getElementsByName("r11_avs_reo")[0]);
+}
+
+function calculerAVSAPITot11()
+{
+ var var9 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r9_avs_api")[0].value))==dequoteVal(document.getElementsByName("r9_avs_api")[0].value))
+    var9 = dequoteVal(document.getElementsByName("r9_avs_api")[0].value);
+ var var10 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r10_avs_api")[0].value))==dequoteVal(document.getElementsByName("r10_avs_api")[0].value))
+    var10 = dequoteVal(document.getElementsByName("r10_avs_api")[0].value);
+ document.getElementsByName("r11_avs_api")[0].value = parseFloat(var9) - parseFloat(var10);
+ arrondir(document.getElementsByName("r11_avs_api")[0]);
+ quote(document.getElementsByName("r11_avs_api")[0]);
+}
+
+function calculerAIROTot11()
+{
+ var var9 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r9_ai_ro")[0].value))==dequoteVal(document.getElementsByName("r9_ai_ro")[0].value))
+    var9 = dequoteVal(document.getElementsByName("r9_ai_ro")[0].value);
+ var var10 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r10_ai_ro")[0].value))==dequoteVal(document.getElementsByName("r10_ai_ro")[0].value))
+    var10 = dequoteVal(document.getElementsByName("r10_ai_ro")[0].value);
+ document.getElementsByName("r11_ai_ro")[0].value = parseFloat(var9) - parseFloat(var10);
+ arrondir(document.getElementsByName("r11_ai_ro")[0]);
+ quote(document.getElementsByName("r11_ai_ro")[0]);
+}
+
+function calculerAIREOTot11()
+{
+ var var9 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r9_ai_reo")[0].value))==dequoteVal(document.getElementsByName("r9_ai_reo")[0].value))
+    var9 = dequoteVal(document.getElementsByName("r9_ai_reo")[0].value);
+ var var10 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r10_ai_reo")[0].value))==dequoteVal(document.getElementsByName("r10_ai_reo")[0].value))
+    var10 = dequoteVal(document.getElementsByName("r10_ai_reo")[0].value);
+ document.getElementsByName("r11_ai_reo")[0].value = parseFloat(var9) - parseFloat(var10);
+ arrondir(document.getElementsByName("r11_ai_reo")[0]);
+ quote(document.getElementsByName("r11_ai_reo")[0]);
+}
+
+function calculerAIAPITot11()
+{
+ var var9 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r9_ai_api")[0].value))==dequoteVal(document.getElementsByName("r9_ai_api")[0].value))
+    var9 = dequoteVal(document.getElementsByName("r9_ai_api")[0].value);
+ var var10 = '0.0';
+ if(parseFloat(dequoteVal(document.getElementsByName("r10_ai_api")[0].value))==dequoteVal(document.getElementsByName("r10_ai_api")[0].value))
+    var10 = dequoteVal(document.getElementsByName("r10_ai_api")[0].value);
+ document.getElementsByName("r11_ai_api")[0].value = parseFloat(var9) - parseFloat(var10);
+ arrondir(document.getElementsByName("r11_ai_api")[0]);
+ quote(document.getElementsByName("r11_ai_api")[0]);
+}
+
+function init(date)
+{
+ document.getElementsByName("mois")[0].value = (date.getMonth()+1);
+ var annee = ''+date.getYear();
+ document.getElementsByName("annee")[0].value = annee.substring(2,4);
+}
+
+function checkMonth()
+{
+    if(parseInt(document.getElementsByName("mois")[0].value)!=document.getElementsByName("mois")[0].value)
+    {   
+    document.getElementsByName("mois")[0].value ='';
+    alert("La valeur du mois n'est pas correcte !");
+    }
+    else
+    {
+        if((parseInt(document.getElementsByName("mois")[0].value)<1)||(parseInt(document.getElementsByName("mois")[0].value)>12))
+        {
+            document.getElementsByName("mois")[0].value ='';
+            alert("La valeur du mois n'est pas correcte !");
+            return false;
+        }else
+            return true;
+    }
+}
+
+function checkYear()
+{
+    //if(parseInt(document.getElementsByName("annee")[0].value)!=document.getElementsByName("annee")[0].value)
+   // {   
+    //document.getElementsByName("annee")[0].value ='';
+    //alert("La valeur de l'annee n'est pas correcte !");
+    //return false;
+    //}
+    return true;
+}
+
+function clearMonth()
+{
+     document.getElementsByName("mois")[0].value ='';
+}
+
+function clearYear()
+{
+     document.getElementsByName("annee")[0].value ='';
+}
+
+function checkNumCaisse1()
+{
+    if(document.getElementsByName("numCaisse1")[0].value.length > 0)
+    {
+        if(parseInt(document.getElementsByName("numCaisse1")[0].value)!=document.getElementsByName("numCaisse1")[0].value)
+        {
+            alert('Erreur dans la saisie du Num de caisse !');
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+function checkNumCaisse2()
+{
+    if(document.getElementsByName("numCaisse2")[0].value.length > 0)
+    {
+        if(parseInt(document.getElementsByName("numCaisse2")[0].value)!=document.getElementsByName("numCaisse2")[0].value)
+        {
+            alert('Erreur dans la saisie du num de caisse !');
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+function checkLength(obj)
+{
+	//On regarde le nombre de dÃ©cimal
+	var str = dequoteVal(obj.value);
+    //On capture les décimales et les dizaines
+    if(str.indexOf('.')!=-1)
+    {
+       var dizaines = str.substring(0,str.indexOf('.'));
+    }
+    else
+    {
+       var dizaines = str;
+    }
+    if(dizaines.length > 9)
+    {
+    	alert('La valeur du champ est trop grande !');
+    	obj.value = '';
+    }
+}
+
+</script>
+
+<html>
+   <head>
+       <title>R&eacutecapitulation des rentes</title>
+       <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	  <style type="text/css">
+			.rente_titre{
+				background-color: #226194;
+				color: white;
+				font-size: 1.5em;
+				font-family: Arial, "Arial Black", Times, "Times New Roman", serif;
+				border: 2px solid black;
+			}
+			.rente_tableau{
+				background-color: #b3c4db;
+				color: black;
+				font-size: 1.5em;
+				border: 2px solid lightblue;
+				font-family: Arial, "Arial Black", Times, "Times New Roman", serif;
+			}
+			.rente_total{
+				border: 2px solid #226194;
+			}
+			.rente_totalFinal{
+				border: 2px solid #111111;
+			}
+	  </style>
+   </head>
+
+<body>
+
+<TABLE CLASS="rente_titre">
+	<TR>
+		<TD width="2000" height="6">
+    		<center><h2>R&eacutecapitulation des rentes</h2></center>
+    	</TD>
+    </TR>
+</TABLE>
+
+<TABLE>
+<TR >
+    <TD>&nbsp;</TD>
+</TR>
+
+    <TR >
+        <TD size ="300" >Date :</TD>
+        <TD>
+            <INPUT TYPE="texte" VALUE="" NAME="mois" style="text-align:center" MAXLENGTH="2" onBlur="checkMonth()" onClick="clearMonth()" size= "2">
+            .&nbsp;20
+            <INPUT TYPE="texte" VALUE="" NAME="annee" style="text-align:center" MAXLENGTH="2" onBlur="checkYear()" onClick="clearYear()" size="2">
+        </TD>
+    </TR>
+    <TR >
+        <TD>Num&eacutero de caisse : </TD>
+        <TD>
+        <INPUT TYPE="texte" VALUE="" NAME="numCaisse1" style="text-align:center" MAXLENGTH="3" onBlur="checkNumCaisse1()" size= "3">
+        .
+        <INPUT TYPE="texte" VALUE="" NAME="numCaisse2" style="text-align:center" MAXLENGTH="3" onBlur="checkNumCaisse2()" size= "3">
+        </TD>
+    </TR>
+</TABLE>
+<TR>
+    <TABLE border="4" CLASS="rente_tableau">
+        <!-- Entéte des colonnes -->
+        <TR>
+            <Th></th>
+            <Th width=150px>AVS RO</th>
+            <Th width=150px>AVS REO</th>
+            <Th width=150px>AVS API</th>
+            <Th width=150px>AI RO</th>
+            <Th width=150px>AI REO</th>
+            <Th width=150px>AI API</th>
+        </tr>
+        <!-- Ligne 1 -->
+        <TR>
+            <TH width=150px align="left">1.Rentes en cours &agrave la fin du mois pr&eacutec&eacutedent</th>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r1_avs_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSROTot4()" onKeyDown="checkLength(this)">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r1_avs_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSREOTot4()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r1_avs_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSAPITot4()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r1_ai_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIROTot4()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r1_ai_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIREOTot4()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r1_ai_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIAPITot4()">
+            </td>
+        </tr>
+        <!-- Ligne 2 -->
+        <TR>
+            <TH width=150px align="left">2.Augmentation (1er paiement pendant le mois de rapport)</th>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r2_avs_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSROTot4()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r2_avs_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSREOTot4()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r2_avs_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSAPITot4()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r2_ai_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIROTot4()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r2_ai_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIREOTot4()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r2_ai_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIAPITot4()">
+            </td>
+        </tr>
+        <!-- Ligne 3 -->
+        <TR>
+            <TH width=150px align="left">3.&nbsp;</th>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r3_avs_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSROTot4()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r3_avs_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSREOTot4()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r3_avs_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSAPITot4()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r3_ai_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIROTot4()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r3_ai_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIREOTot4()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r3_ai_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIAPITot4()">
+            </td>
+        </tr>
+        <!-- Ligne 4 -->
+        <TR>
+            <TH width=150px align="left">4.Sous-total</th>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r4_avs_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled CLASS="rente_total">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r4_avs_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled CLASS="rente_total">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r4_avs_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled CLASS="rente_total">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r4_ai_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled CLASS="rente_total">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r4_ai_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled CLASS="rente_total">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r4_ai_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled CLASS="rente_total">
+            </td>
+        </tr>
+        <!-- Ligne 5 -->
+        <TR>
+            <TH width=150px align="left">5.Diminution (dernier paiement pendant le mois pr&eacutec&eacutedent)</th>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r5_avs_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSROTot6()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r5_avs_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSREOTot6()"> 
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r5_avs_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSAPITot6()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r5_ai_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIROTot6()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r5_ai_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIREOTot6()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r5_ai_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIAPITot6()">
+            </td>
+        </tr>
+        <!-- Ligne 6 -->
+        <TR>
+            <TH width=150px align="left">6.Rentes en cours &agrave la fin du mois de rapport</th>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r6_avs_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled CLASS="rente_total">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r6_avs_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled CLASS="rente_total">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r6_avs_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled CLASS="rente_total">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r6_ai_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled CLASS="rente_total">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r6_ai_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled CLASS="rente_total">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r6_ai_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled CLASS="rente_total">
+            </td>
+        </tr>
+        <!-- Ligne 7 -->
+        <TR>
+            <TH width=150px align="left">7.Paiements r&eacutetro-actifs</th>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r7_avs_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSROTot9()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r7_avs_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSREOTot9()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r7_avs_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSAPITot9()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r7_ai_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIROTot9()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r7_ai_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIREOTot9()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r7_ai_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIAPITot9()">
+            </td>
+        </tr>
+        <!-- Ligne 8 -->
+        <TR>
+            <TH width=150px align="left">8.Allocations uniques de veuves</th>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r8_avs_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSROTot9()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r8_avs_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSREOTot9()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r8_avs_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSAPITot9()" readonly disabled>
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r8_ai_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIROTot9()" readonly disabled>
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r8_ai_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIREOTot9()" readonly disabled>
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r8_ai_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIAPITot9()" readonly disabled>
+            </td>
+        </tr>
+        <!-- Ligne 9 -->
+        <TR>
+            <TH width=150px align="left">9.Sous-total</th>
+            <TD align="right" valign="top" CLASS="rente_total">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r9_avs_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled>
+            </td>
+            <TD align="right" valign="top" CLASS="rente_total">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r9_avs_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled>
+            </td>
+            <TD align="right" valign="top" CLASS="rente_total">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r9_avs_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled>
+            </td>
+            <TD align="right" valign="top" CLASS="rente_total">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r9_ai_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled>
+            </td>
+            <TD align="right" valign="top" CLASS="rente_total">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r9_ai_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled>
+            </td>
+            <TD align="right" valign="top" CLASS="rente_total">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r9_ai_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly disabled>
+            </td>
+        </tr>
+        <!-- Ligne 10 -->
+        <TR>
+            <TH width=150px align="left">10.Extournes du compte 200.2115</th>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r10_avs_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSROTot11()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r10_avs_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSREOTot11()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r10_avs_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAVSAPITot11()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r10_ai_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIROTot11()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r10_ai_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIREOTot11()">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="" NAME="r10_ai_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" onBlur="calculerAIAPITot11()">
+            </td>
+        </tr>
+        <!-- Ligne 11 -->
+        <TR>
+            <TH width=150px align="left">11.Total des prestations au d&eacutebit des comptes</th>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r11_avs_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly CLASS="rente_totalFinal">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r11_avs_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly CLASS="rente_totalFinal">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r11_avs_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly CLASS="rente_totalFinal">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r11_ai_ro" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly CLASS="rente_totalFinal">
+                </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r11_ai_reo" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly CLASS="rente_totalFinal">
+            </td>
+            <TD align="right" valign="top">
+                <INPUT TYPE="numerique" VALUE="0" NAME="r11_ai_api" style="text-align:right" 
+                onKeyUp="touchePressee(this)" readonly CLASS="rente_totalFinal">
+            </td>
+        </tr>
+        <!-- Numéro de comptes -->
+        <TR>
+            <TH width=150px align="left">d&eacutebit des comptes</th>
+            <TD align="center" valign="top">
+                212.3000
+            </td>
+            <TD align="center" valign="top">
+                212.3010
+            </td>
+            <TD align="center" valign="top">
+                212.3030
+            </td>
+            <TD align="center" valign="top">
+                213.3000
+            </td>
+            <TD align="center" valign="top">
+                212.3010
+            </td>
+            <TD align="center" valign="top">
+                212.3030
+            </td>
+        </tr>
+    </table> 
+</TR>
+<TR>
+<SCRIPT>init(new Date());</SCRIPT>
+        <TD>&nbsp;</TD>
+    </TR>
+
+<Table>
+    <TR>
+        <TD>&nbsp;</TD>
+    </TR>
+    <TR>
+        <TD><input type="button" value="Annoncer" onClick="annoncer()"></TD>
+</TR>
+<TR>
+    <TD>&nbsp;</TD>
+</TR>
+<TR>
+    <TD>Annonce : </TD>
+</TR>
+<TR>
+    <TD>
+        <TEXTAREA name="annonce" rows=12 cols=120 readonly></TEXTAREA>
+    </TD>
+</TR>
+</Table>
+
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.revenusdepenses.SimplePensionAlimentaire">
+		<description>PENSION_ALIMENTAIRE</description>
+		<table name="PCPEALI" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idPensionAlimentaire" column="BWIPAL" comment="ID_PENSION_ALIMENTAIRE"/>			
+			<field name="idDonneeFinanciereHeader" mandatory="true" column="BWIDFH" type="NUMERIC" comment="DONNEE_FINANCIERE_HEADER"/>
+			<field name="csTypePension" column="BWTPEN" type="NUMERIC" comment="CS_TYPE_PENSION"/>			
+			<field name="montantPensionAlimentaire" column="BWNMPA" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_PENSION_ALIMENTAIRE"/>
+			<field name="csMotif" column="BWTMOT" type="NUMERIC" comment="CS_MOTIF"/>
+			<field name="dateEcheance" column="BWDECH" type="DATE" comment="DATE_ECHEANCE"/>			
+			<field name="csLienAvecRequerantPC" column="BWTLRP" type="NUMERIC" comment="CS_LIEN_AVEC_REQUERANT_PC"/>
+			<field name="autreLienAvecRequerantPC" column="BWLALR" type="STRING" comment="AUTRE_LIEN_AVEC_REQUERANT_PC"/>			
+			<field name="idTiers" column="BWITIE" type="NUMERIC" comment="ID_TIERS"/>
+			<field name="isDeductionRenteEnfant" column="BWBDRE" type="BOOLEAN" comment="IS_DEDUCTION_RENTE_ENFANT"/>									
+			<field name="montantRenteEnfant" column="BWMREN" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_RENTE_ENFANT"/>									
+			
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>		
+	</simple-model>
+</model-mapping>
+

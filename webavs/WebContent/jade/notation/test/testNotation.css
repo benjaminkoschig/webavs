@@ -1,0 +1,72 @@
+/* table less*/
+.formTableLess{
+	
+}
+
+#event div{
+	display:inline-block;
+	border-bottom : 1px solid #e1ebf4;
+	border-right  : 1px solid #e1ebf4;
+	border-left   : 1px solid #e1ebf4;
+	background-color: #6397cb;
+	margin: 0 5px 2px 5px;
+	padding: 0 5px 2px 5px;
+}
+
+#event h3{
+	color:#e1ebf4;
+}
+
+#mainContainerAjax{
+	clear:both:
+}
+
+.formTableLess fieldset {
+	border : 1px solid #356AA0;
+	margin-bottom: 10px;
+	padding:5px 0; 
+	width : 350px;
+	float:left;
+}
+
+.formTableLess legend{
+	text-align:center;
+	color: #356AA0;
+	padding: 0px 5px;
+	font-size: 1em;
+	color: #356AA0;
+}
+
+.formTableLess .input, .formTableLess input{
+	width: 100px;
+}
+
+.formTableLess input,.formTableLess .input{
+	margin : 0 0px 3px 0;
+	padding: 0 0px 0 0px;
+}
+
+.formTableLess label, .formTableLess input, .formTableLess .input {
+	display: block;
+	float: left;
+}
+
+.formTableLess label{
+	width: 100px;
+	margin-left :5px;
+}
+	
+	
+.formTableLess br {
+	height:100px;
+	clear: both;
+}
+
+.formTableLess tr{
+	background-color:white;
+	width:120px;
+}
+
+.hide{
+	display:none;
+}

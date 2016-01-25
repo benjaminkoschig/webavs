@@ -1,0 +1,359 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+	<soap:Header>
+		<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+			<xenc:EncryptedKey xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" Id="EK-012A94D39EE21DDDDF141223214393510267">
+				<xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p"/>
+				<ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+					<wsse:SecurityTokenReference>
+						<ds:X509Data>
+							<ds:X509IssuerSerial>
+								<ds:X509IssuerName>1.2.840.113549.1.9.1=#160e61627473744061627473742e6368,CN=abtstca COMMON NAME,OU=abtstca ORGANIZATIONAL UNIT,O=abtstca ORGANIZATION,L=abtstca LOCALITY,ST=abtstca STATE,C=ch</ds:X509IssuerName>
+								<ds:X509SerialNumber>296</ds:X509SerialNumber>
+							</ds:X509IssuerSerial>
+						</ds:X509Data>
+					</wsse:SecurityTokenReference>
+				</ds:KeyInfo>
+				<xenc:CipherData>
+					<xenc:CipherValue>l9NHz7Pl8zc+QnBCcQLCFTkvO9rkq71c7jRfes24eSSPROlpAx542KpFqhkVHJntrwvXlwAXclHQeJECqj8WcUvTwHreiG0Yg5/FceVmzccYMrwwPQza0EglrgW3eE5NbixhhQ/eiiRF0R7ErG20un9kykHTl7bz7E9ezROLCAU=</xenc:CipherValue>
+				</xenc:CipherData>
+				<xenc:ReferenceList>
+					<xenc:DataReference URI="#ED-11305"/>
+					<xenc:DataReference URI="#ED-11306"/>
+					<xenc:DataReference URI="#ED-11307"/>
+				</xenc:ReferenceList>
+			</xenc:EncryptedKey>
+			<wsse:BinarySecurityToken EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary" ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" wsu:Id="X509-012A94D39EE21DDDDF141223214393210264">MIIDHjCCAgagAwIBAgIBBDANBgkqhkiG9w0BAQUFADAgMQswCQYDVQQGEwJDSDERMA8GA1UEAxMIU3dpc3NkZWMwHhcNMDYwNTAxMTYyMzQ4WhcNMzEwNDI1MTYyMzQ4WjBGMQswCQYDVQQGEwJDSDERMA8GA1UEChMIU3dpc3NkZWMxGDAWBgNVBAMTD1JlZkFwcCBSZWNlaXZlcjEKMAgGA1UEBRMBNDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAxvsAN3AlxDGEV+DV44m4c02PpAfFtu3mO2a4XV6aZuFPiWRnjfxZOYUyDH9hyGPX3tzGdDmNOC2u1vpeoDHyH8bOniW3mju0jU/nKdFK5pMesYVotcuAq1/+MGHEj31Uorgaukia3yKlDurZyT9AQva/yHn36ftrypq94WquAU8CAwEAAaOBwDCBvTAJBgNVHRMEAjAAMAsGA1UdDwQEAwIE8DATBgNVHSUEDDAKBggrBgEFBQcDAjAdBgNVHQ4EFgQUpHoiKNGY2YsLBKxwIV+jURt858MwSAYDVR0jBEEwP4AUlv6LwOYhDQgiqCcEXiaZvwYYrWmhJKQiMCAxCzAJBgNVBAYTAkNIMREwDwYDVQQDEwhTd2lzc2RlY4IBADAaBgNVHREEEzARgQ9wa2lAc3dpc3NkZWMuY2gwCQYDVR0SBAIwADANBgkqhkiG9w0BAQUFAAOCAQEAIS1KrrPDxzROqMkK6JfpUMLPE//X2uFobcpNT2CHLZ5MHgmFKeDsm4EeO9zFgm6Rg6W7lFUIHZ3M1l0TwF0bwycaVRrmlvwmRbRZjzx/NkbloLecICkqVSmzo+O0OnyKWMxnlnl/1nKvyqc6OtQuL7Py3eOlj+oX4uB7+rK1pPeQuO1L0ywyncdEkKucoBZxlOPaDFLlle3T6TrICxlQDw4FSwc5FiQGY5q8Betjs3wF6pSz3tS3GxMnbjXwziDL3sTSJgTAo368IZm2PEdnZXKIcopkmVhqeLoGXBUrtQoXRYC104sZvDLdHFWKb2rX4RpOM1/6t9VkvYSs10RhwA==</wsse:BinarySecurityToken>
+			<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" Id="SIG-11304">
+				<ds:SignedInfo>
+					<ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">
+						<ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList="soap"/>
+					</ds:CanonicalizationMethod>
+					<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+					<ds:Reference URI="#TS-11302">
+						<ds:Transforms>
+							<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">
+								<ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList="wsse soap"/>
+							</ds:Transform>
+						</ds:Transforms>
+						<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+						<ds:DigestValue>BimJaI1m1oM3PZrctI3UrA1tSAU=</ds:DigestValue>
+					</ds:Reference>
+					<ds:Reference URI="#id-11303">
+						<ds:Transforms>
+							<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">
+								<ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList=""/>
+							</ds:Transform>
+						</ds:Transforms>
+						<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+						<ds:DigestValue>ddb+IM3gfEsxjoAZ6WY2ky9hlnU=</ds:DigestValue>
+					</ds:Reference>
+				</ds:SignedInfo>
+				<ds:SignatureValue>ITKJhS+xumkov8UYpPgL6Ku3Osy7eywvKi0YYu2KNefJJJqbg0dVuz7l1f2zqq1ya7jJ6GAui9DhJ4bHKFQOPrs6S5Hzazt1owqywxYhX36zResxRQcXwrQjTI4kiOfTIyYa1xgIzRk2IqVb7uqk8bpFPUbcHCwe4tOBO71UEq8=</ds:SignatureValue>
+				<ds:KeyInfo Id="KI-012A94D39EE21DDDDF141223214393210265">
+					<wsse:SecurityTokenReference wsu:Id="STR-012A94D39EE21DDDDF141223214393210266">
+						<wsse:Reference URI="#X509-012A94D39EE21DDDDF141223214393210264" ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3"/>
+					</wsse:SecurityTokenReference>
+				</ds:KeyInfo>
+			</ds:Signature>
+			<wsu:Timestamp wsu:Id="TS-11302">
+				<wsu:Created>2014-10-02T06:42:23.932Z</wsu:Created>
+				<wsu:Expires>2014-10-02T06:57:23.932Z</wsu:Expires>
+			</wsu:Timestamp>
+		</wsse:Security>
+	</soap:Header>
+	<soap:Body xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="id-11303">
+		<ns4:DeclareSalaryConsumer xmlns:ns4="http://www.swissdec.ch/schema/sd/20130514/SalaryDeclarationConsumerServiceTypes" xmlns="http://www.swissdec.ch/schema/sd/20130514/SalaryDeclarationConsumerContainer" xmlns:ns2="http://www.swissdec.ch/schema/sd/20130514/SalaryDeclaration" xmlns:ns3="http://www.swissdec.ch/schema/sd/20130514/SalaryDeclarationContainer">
+			<DistributorRequestContext>
+				<UserAgent>
+					<Producer>swissdec</Producer>
+					<Name>swissdec distributor</Name>
+					<Version>3.3.7-SNAPSHOT (19488) 30.07.2014 11:37:15</Version>
+				</UserAgent>
+				<TransmissionDate>2014-10-02T08:42:23.803+02:00</TransmissionDate>
+				<DeclarationID>148cf9849e633</DeclarationID>
+				<DistributorRequestID>D148cf9863bb2cf</DistributorRequestID>
+				<TestCase/>
+				<ProducerSecurityTokens>
+					<Timestamp>2014-10-02T08:42:16.512+02:00</Timestamp>
+					<X509Certificate>
+						<Usage>Signature</Usage>
+						<DistinguishedNameOwner>SERIALNUMBER=3, CN=Test, O=Swissdec, C=CH</DistinguishedNameOwner>
+						<DistinguishedNameIssuer>CN=Swissdec, C=CH</DistinguishedNameIssuer>
+						<SecuredElement>{http://schemas.xmlsoap.org/soap/envelope/}Body</SecuredElement>
+						<SecuredElement>{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd}Timestamp</SecuredElement>
+					</X509Certificate>
+					<X509Certificate>
+						<Usage>Encryption</Usage>
+						<DistinguishedNameOwner>SERIALNUMBER=4, CN=RefApp Receiver, O=Swissdec, C=CH</DistinguishedNameOwner>
+						<DistinguishedNameIssuer>CN=Swissdec, C=CH</DistinguishedNameIssuer>
+						<SecuredElement>{http://schemas.xmlsoap.org/soap/envelope/}Body</SecuredElement>
+					</X509Certificate>
+				</ProducerSecurityTokens>
+				<ProducerResponseNotifications>
+					<Warning>
+						<Notification>
+							<QualityLevel>Plausibility</QualityLevel>
+							<DescriptionCode>2013</DescriptionCode>
+							<Description>Die Berechnungsperiode der Deklaration (AccountingPeriod) ist nicht gültig</Description>
+						</Notification>
+					</Warning>
+				</ProducerResponseNotifications>
+				<Institutions>
+					<ns2:FAK-CAF institutionID="#005.000">
+						<ns2:FAK-CAF-BranchNumber>005.000</ns2:FAK-CAF-BranchNumber>
+						<ns2:FAK-CAF-CustomerNumber>124.1195</ns2:FAK-CAF-CustomerNumber>
+					</ns2:FAK-CAF>
+				</Institutions>
+			</DistributorRequestContext>
+			<DeclareSalary>
+				<ns3:RequestContext>
+					<ns3:UserAgent>
+						<ns3:Producer>itServe AG</ns3:Producer>
+						<ns3:Name>DRAFT</ns3:Name>
+						<ns3:Version>0.1</ns3:Version>
+						<ns3:Certificate>None</ns3:Certificate>
+						<ns3:ELM-SalaryStandardVersion>4.0</ns3:ELM-SalaryStandardVersion>
+					</ns3:UserAgent>
+					<ns3:CompanyName>
+						<ns2:HR-RC-Name>String</ns2:HR-RC-Name>
+					</ns3:CompanyName>
+					<ns3:TransmissionDate>2012-12-31T09:30:47.0Z</ns3:TransmissionDate>
+					<ns3:RequestID>229D2F8491894CA2A46D</ns3:RequestID>
+					<ns3:LanguageCode>de</ns3:LanguageCode>
+					<ns3:TestCase/>
+					<ns3:MonitoringID>globaz</ns3:MonitoringID>
+				</ns3:RequestContext>
+				<ns3:Job>
+					<ns3:Addressees>
+						<ns3:FAK-CAF institutionIDRef="#005.000">
+							<ns3:ProcessByDistributor>true</ns3:ProcessByDistributor>
+						</ns3:FAK-CAF>
+					</ns3:Addressees>
+				</ns3:Job>
+				<ns3:SalaryDeclaration schemaVersion="0.0">
+					<ns2:Company>
+						<ns2:CompanyDescription>
+							<ns2:Name>
+								<ns2:HR-RC-Name>ICHAG - AF SEULE</ns2:HR-RC-Name>
+							</ns2:Name>
+							<ns2:Address>
+								<ns2:Street>Länggassstrasse 26</ns2:Street>
+								<ns2:Postbox>690</ns2:Postbox>
+								<ns2:ZIP-Code>3000</ns2:ZIP-Code>
+								<ns2:City>Bern 9</ns2:City>
+							</ns2:Address>
+							<ns2:UID-EHRA>CH-645.1.234.567-3</ns2:UID-EHRA>
+							<ns2:UID-BFS>CHE-123.456.789</ns2:UID-BFS>
+							<ns2:Workplace workplaceID="#AgenturBern">
+								<ns2:BUR-REE-Number>12345678</ns2:BUR-REE-Number>
+								<ns2:InHouseID>Bern</ns2:InHouseID>
+								<ns2:AddressExtended>
+									<ns2:Street>Überstrasse 12</ns2:Street>
+									<ns2:Postbox>3973</ns2:Postbox>
+									<ns2:ZIP-Code>3000</ns2:ZIP-Code>
+									<ns2:City>Bern</ns2:City>
+									<ns2:Country>CH</ns2:Country>
+									<ns2:Canton>BE</ns2:Canton>
+									<ns2:MunicipalityID>351</ns2:MunicipalityID>
+								</ns2:AddressExtended>
+								<ns2:CompanyWorkingTime>
+									<ns2:WeeklyHours>40.00</ns2:WeeklyHours>
+								</ns2:CompanyWorkingTime>
+							</ns2:Workplace>
+							<ns2:Workplace workplaceID="#AgenturThun">
+								<ns2:BUR-REE-Number>22345678</ns2:BUR-REE-Number>
+								<ns2:InHouseID>Thun</ns2:InHouseID>
+								<ns2:AddressExtended>
+									<ns2:Street>Seestrasse 5</ns2:Street>
+									<ns2:Postbox>121</ns2:Postbox>
+									<ns2:ZIP-Code>3600</ns2:ZIP-Code>
+									<ns2:City>Thun</ns2:City>
+									<ns2:Canton>BE</ns2:Canton>
+									<ns2:MunicipalityID>942</ns2:MunicipalityID>
+								</ns2:AddressExtended>
+								<ns2:CompanyWorkingTime>
+									<ns2:WeeklyHoursAndLessons>
+										<ns2:WeeklyHours>42.00</ns2:WeeklyHours>
+										<ns2:WeeklyLessons>27</ns2:WeeklyLessons>
+									</ns2:WeeklyHoursAndLessons>
+								</ns2:CompanyWorkingTime>
+							</ns2:Workplace>
+						</ns2:CompanyDescription>
+						<ns2:Staff>
+							<ns2:Person>
+								<ns2:Particulars>
+									<ns2:Social-InsuranceIdentification>
+										<ns2:SV-AS-Number>756.1848.4786.64</ns2:SV-AS-Number>
+									</ns2:Social-InsuranceIdentification>
+									<ns2:EmployeeNumber>0100</ns2:EmployeeNumber>
+									<ns2:Lastname>Balmer</ns2:Lastname>
+									<ns2:Firstname>Fredi</ns2:Firstname>
+									<ns2:Sex>M</ns2:Sex>
+									<ns2:DateOfBirth>1945-03-16</ns2:DateOfBirth>
+									<ns2:Nationality>CH</ns2:Nationality>
+									<ns2:CivilStatus>
+										<ns2:Status>married</ns2:Status>
+										<ns2:ValidAsOf>1970-03-20</ns2:ValidAsOf>
+									</ns2:CivilStatus>
+									<ns2:Address>
+										<ns2:Street>Länggassstrasse 26</ns2:Street>
+										<ns2:Postbox>690</ns2:Postbox>
+										<ns2:Locality>Länggassquartier</ns2:Locality>
+										<ns2:ZIP-Code>3000</ns2:ZIP-Code>
+										<ns2:City>Bern 9</ns2:City>
+										<ns2:Country>CH</ns2:Country>
+									</ns2:Address>
+									<ns2:ResidenceCanton>BE</ns2:ResidenceCanton>
+									<ns2:MunicipalityID>351</ns2:MunicipalityID>
+									<ns2:LanguageCode>de</ns2:LanguageCode>
+								</ns2:Particulars>
+								<ns2:Work>
+									<ns2:ActivityRate>99</ns2:ActivityRate>
+									<ns2:EntryDate>2011-02-01</ns2:EntryDate>
+								</ns2:Work>
+								<ns2:FAK-CAF-Salaries>
+									<ns2:FAK-CAF-Salary institutionIDRef="#005.000">
+										<ns2:FAK-CAF-Period>
+											<ns2:from>2014-01-01</ns2:from>
+											<ns2:until>2014-06-30</ns2:until>
+										</ns2:FAK-CAF-Period>
+										<ns2:FAK-CAF-ContributorySalary>65000.00</ns2:FAK-CAF-ContributorySalary>
+										<ns2:FAK-CAF-FamilyIncomeSupplement>
+											<ns2:FAK-CAF-FamilyIncomeSupplementDetail>
+												<ns2:FamilyIncomeSupplementRepetitive>450.00</ns2:FamilyIncomeSupplementRepetitive>
+												<ns2:FamilyIncomePerChildren>
+													<ns2:FamilyIncomePerChild>
+														<ns2:FamilyIncomePerChildPeriod>
+															<ns2:from>2014-01-01</ns2:from>
+															<ns2:until>2014-06-30</ns2:until>
+														</ns2:FamilyIncomePerChildPeriod>
+														<ns2:Lastname>Balmer</ns2:Lastname>
+														<ns2:Firstname>Eva</ns2:Firstname>
+														<ns2:Sex>F</ns2:Sex>
+														<ns2:DateOfBirth>2000-02-02</ns2:DateOfBirth>
+														<ns2:SV-AS-Number>111.2222.3333.55</ns2:SV-AS-Number>
+														<ns2:FamilyStatus>father</ns2:FamilyStatus>
+														<ns2:FamilyIncome>960.00</ns2:FamilyIncome>
+														<ns2:FamilyIncomeSupplementSingular>500.00</ns2:FamilyIncomeSupplementSingular>
+													</ns2:FamilyIncomePerChild>
+												</ns2:FamilyIncomePerChildren>
+											</ns2:FAK-CAF-FamilyIncomeSupplementDetail>
+										</ns2:FAK-CAF-FamilyIncomeSupplement>
+										<ns2:FAK-CAF-WorkplaceCanton>BE</ns2:FAK-CAF-WorkplaceCanton>
+									</ns2:FAK-CAF-Salary>
+								</ns2:FAK-CAF-Salaries>
+							</ns2:Person>
+						<ns2:Person>
+								<ns2:Particulars>
+									<ns2:Social-InsuranceIdentification>
+										<ns2:SV-AS-Number>756.1848.4786.64</ns2:SV-AS-Number>
+									</ns2:Social-InsuranceIdentification>
+									<ns2:EmployeeNumber>0100</ns2:EmployeeNumber>
+									<ns2:Lastname>Balmer</ns2:Lastname>
+									<ns2:Firstname>Fredi</ns2:Firstname>
+									<ns2:Sex>M</ns2:Sex>
+									<ns2:DateOfBirth>1945-03-16</ns2:DateOfBirth>
+									<ns2:Nationality>CH</ns2:Nationality>
+									<ns2:CivilStatus>
+										<ns2:Status>married</ns2:Status>
+										<ns2:ValidAsOf>1970-03-20</ns2:ValidAsOf>
+									</ns2:CivilStatus>
+									<ns2:Address>
+										<ns2:Street>Länggassstrasse 26</ns2:Street>
+										<ns2:Postbox>690</ns2:Postbox>
+										<ns2:Locality>Länggassquartier</ns2:Locality>
+										<ns2:ZIP-Code>3000</ns2:ZIP-Code>
+										<ns2:City>Bern 9</ns2:City>
+										<ns2:Country>CH</ns2:Country>
+									</ns2:Address>
+									<ns2:ResidenceCanton>BE</ns2:ResidenceCanton>
+									<ns2:MunicipalityID>351</ns2:MunicipalityID>
+									<ns2:LanguageCode>de</ns2:LanguageCode>
+								</ns2:Particulars>
+								<ns2:Work>
+									<ns2:ActivityRate>99</ns2:ActivityRate>
+									<ns2:EntryDate>2011-02-01</ns2:EntryDate>
+								</ns2:Work>
+								<ns2:FAK-CAF-Salaries>
+									<ns2:FAK-CAF-Salary institutionIDRef="#005.000">
+										<ns2:FAK-CAF-Period>
+											<ns2:from>2014-01-01</ns2:from>
+											<ns2:until>2014-06-30</ns2:until>
+										</ns2:FAK-CAF-Period>
+										<ns2:FAK-CAF-ContributorySalary>65000.00</ns2:FAK-CAF-ContributorySalary>
+										<ns2:FAK-CAF-FamilyIncomeSupplement>
+											<ns2:FAK-CAF-FamilyIncomeSupplementDetail>
+												<ns2:FamilyIncomeSupplementRepetitive>450.00</ns2:FamilyIncomeSupplementRepetitive>
+												<ns2:FamilyIncomePerChildren>
+													<ns2:FamilyIncomePerChild>
+														<ns2:FamilyIncomePerChildPeriod>
+															<ns2:from>2014-01-01</ns2:from>
+															<ns2:until>2014-06-30</ns2:until>
+														</ns2:FamilyIncomePerChildPeriod>
+														<ns2:Lastname>Balmer</ns2:Lastname>
+														<ns2:Firstname>Eva</ns2:Firstname>
+														<ns2:Sex>F</ns2:Sex>
+														<ns2:DateOfBirth>2000-02-02</ns2:DateOfBirth>
+														<ns2:SV-AS-Number>111.2222.3333.55</ns2:SV-AS-Number>
+														<ns2:FamilyStatus>father</ns2:FamilyStatus>
+														<ns2:FamilyIncome>960.00</ns2:FamilyIncome>
+														<ns2:FamilyIncomeSupplementSingular>500.00</ns2:FamilyIncomeSupplementSingular>
+													</ns2:FamilyIncomePerChild>
+												</ns2:FamilyIncomePerChildren>
+											</ns2:FAK-CAF-FamilyIncomeSupplementDetail>
+										</ns2:FAK-CAF-FamilyIncomeSupplement>
+										<ns2:FAK-CAF-WorkplaceCanton>BE</ns2:FAK-CAF-WorkplaceCanton>
+									</ns2:FAK-CAF-Salary>
+								</ns2:FAK-CAF-Salaries>
+							</ns2:Person>
+</ns2:Staff>
+						<ns2:Institutions>
+							<ns2:FAK-CAF institutionID="#005.000">
+								<ns2:FAK-CAF-BranchNumber>005.000</ns2:FAK-CAF-BranchNumber>
+								<ns2:FAK-CAF-CustomerNumber>124.1195</ns2:FAK-CAF-CustomerNumber>
+							</ns2:FAK-CAF>
+						</ns2:Institutions>
+						<ns2:SalaryTotals>
+							<ns2:FAK-CAF-Totals institutionIDRef="#005.000">
+								<ns2:Total-FAK-CAF-PerCanton>
+									<ns2:Total-FAK-CAF-ContributorySalary>65000.00</ns2:Total-FAK-CAF-ContributorySalary>
+									<ns2:Total-FAK-CAF-FamilyIncomeSupplement>3820.00</ns2:Total-FAK-CAF-FamilyIncomeSupplement>
+									<ns2:Canton>BE</ns2:Canton>
+								</ns2:Total-FAK-CAF-PerCanton>
+							</ns2:FAK-CAF-Totals>
+						</ns2:SalaryTotals>
+						<ns2:SalaryCounters>
+							<ns2:NumberOf-FAK-CAF-Salary-Tags>2</ns2:NumberOf-FAK-CAF-Salary-Tags>
+						</ns2:SalaryCounters>
+					</ns2:Company>
+					<ns2:GeneralSalaryDeclarationDescription>
+						<ns2:CreationDate>2012-09-04T14:14:00</ns2:CreationDate>
+						<ns2:AccountingPeriod>2014</ns2:AccountingPeriod>
+						<ns2:ContactPerson>
+							<ns2:Name>Marcel René Müller</ns2:Name>
+							<ns2:EmailAddress>ichag@xxxxx.ch</ns2:EmailAddress>
+							<ns2:PhoneNumber>031 345 23 87</ns2:PhoneNumber>
+						</ns2:ContactPerson>
+						<ns2:Comment>
+							<ns2:Notification>
+								<ns2:QualityLevel>Comment</ns2:QualityLevel>
+								<ns2:DescriptionCode>9999</ns2:DescriptionCode>
+								<ns2:Description>Bitte senden Sie eine Suva-Apotheke an hôtel-garçon in genève</ns2:Description>
+							</ns2:Notification>
+						</ns2:Comment>
+					</ns2:GeneralSalaryDeclarationDescription>
+				</ns3:SalaryDeclaration>
+			</DeclareSalary>
+		</ns4:DeclareSalaryConsumer>
+	</soap:Body>
+<filesMerged>
+<file>
+<id>testOneAfSeul</id>
+<provenance>SWISS_DEC</provenance>
+</file>
+<file>
+<id>testOneTwoAfSeul</id>
+<provenance>SWISS_DEC</provenance>
+</file>
+</filesMerged>
+</soap:Envelope>

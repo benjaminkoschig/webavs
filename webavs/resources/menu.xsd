@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by C (RT) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="separator"/>
+	<xs:element name="action">
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="parameter">
+					<xs:complexType>
+						<xs:attribute name="name" use="required">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1"/>
+									<xs:whiteSpace value="preserve"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="value" use="optional">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1"/>
+									<xs:whiteSpace value="preserve"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+			<xs:attribute name="id" type="xs:string" use="optional"/>
+			<xs:attribute name="command" type="xs:string" use="required"/>
+			<xs:attribute name="type" use="optional" default="standard">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="menuLink"/>
+						<xs:enumeration value="standard"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="responseTarget" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="label">
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="language" default="">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="iso" use="required">
+									<xs:simpleType>
+										<xs:restriction base="xs:string">
+											<xs:length value="2"/>
+											<xs:whiteSpace value="collapse"/>
+											<xs:pattern value=""/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+			<xs:attribute name="defaultValue" use="optional">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:whiteSpace value="preserve"/>
+						<xs:pattern value=""/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="refId" use="optional">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:whiteSpace value="preserve"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="node">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="label" maxOccurs="unbounded"/>
+				<xs:element name="decoration" minOccurs="0">
+					<xs:complexType>
+						<xs:attribute name="type" use="required">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="image"/>
+									<xs:enumeration value="char"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="source" use="required"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element ref="action" minOccurs="0"/>
+				<xs:element ref="nodes" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:ID" use="optional"/>
+			<xs:attribute name="open" use="optional" default="yes">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="never"/>
+						<xs:enumeration value="always"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="active" use="optional" default="yes">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+						<xs:enumeration value="never"/>
+						<xs:enumeration value="always"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="important" use="optional" default="no">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="yes"/>
+						<xs:enumeration value="no"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="menus">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="menu" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence id="nodeDetails">
+							<xs:element ref="label" maxOccurs="unbounded"/>
+							<xs:element ref="nodes" minOccurs="0"/>
+						</xs:sequence>
+						<xs:attribute name="id" use="required">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:pattern value="[a-zA-Z0-9-_]+"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="nodes">
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="node"/>
+				<xs:element ref="separator"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

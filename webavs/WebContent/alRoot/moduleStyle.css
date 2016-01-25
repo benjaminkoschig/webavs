@@ -1,0 +1,1289 @@
+@import url("../theme/master.css");
+/* Styles généraux */
+
+
+select {
+    font-size : x-small;
+    font-family : Verdana,Arial;
+    font-weight : bold;
+}
+
+.smallSelect select{
+	width:50px;
+}
+
+.mediumSelect select{
+	width:80px;
+}
+
+.longSelect select{
+	width:200px;
+}
+
+select.smallSelect {
+	width:50px;
+}
+
+select.mediumSelect{
+	width:80px;
+}
+
+select.longSelect{
+	width:200px;
+}
+
+#AL0015optionsZone select option.main{
+	color:green;
+}
+
+
+
+input.readOnly, select.readOnly {
+	/*background-color: #D7E4FF;*/
+	background-color:#eeeeee;
+	color: #808080;
+	padding: 1px;
+	border: 1px solid #4B4B4B;
+}
+
+input.nss{
+	width:140px;
+}
+
+input.percent{
+	width:35px;
+}
+
+input.small, select.small{
+	width:60px;
+}
+
+input.medium, select.medium{
+	width:100px;
+}
+
+input.normal, select.normal{
+	width:160px;
+}
+
+input.long, select.long{
+	width:200px;
+}
+
+input.extra, select.extra{
+	width:400px;
+}
+
+input.max, select.max{
+	width:100%;
+}
+
+
+input.montant{
+	width:80px;
+}
+
+input.removable{
+}
+
+input.addable{
+}
+
+input.btnSelect {
+	width:22px;
+}
+
+.suggestList{
+	position:relative;
+}
+
+div#popup-container #contentContainer{
+	padding-top:15px;
+	width:400px;
+    margin: 0 auto;
+}
+
+div#popup-container #contentContainer #sidebar{
+    float: left;
+    width:50px;
+    margin-right: -50px;
+    position: relative;
+    background-image:url(../images/dialog-warning-32x32.png);
+    background-repeat:no-repeat;
+    height:32px;
+}
+
+div#popup-container #contentContainer #main{
+    float:left;
+    width:350px;
+    border-left: 50px solid #fff;
+}
+
+
+
+/* tableaux généraux */
+
+table caption{
+  text-align:left;
+  font-weight:bold;
+}
+table.tab2Col {
+  width:100%;
+}
+table.tab2Col td{
+  width:30%;
+}
+table.tab2Col td.label{
+  width:10%;
+}
+table.tab3Col {
+  width:100%;
+}
+table.tab3Col td{
+  width:10%;
+
+}
+
+table .label{
+
+}
+table td.center{
+	text-align:center;
+}
+
+table .labelBold{
+  	font-weight:bold;
+}
+
+table td.relLinks{
+  	text-align:right;
+}
+
+table tr.zoneHeader{
+	
+}
+
+.subtitle{
+ 	font-weight:bold;
+ 	margin:0px 0px 10px 0px;
+}
+
+.subtitle div{
+	display:inline;
+	margin:0;
+	padding:0;
+}
+
+.subtitle div a{
+	margin:0;
+	padding:0;
+	
+}
+
+fieldset#selectionBeneficiaire {
+	border:0;
+}
+
+/*surcharge css  widget*/
+
+.jadeAutocompleteAjax{
+}
+
+/*#statutSynchroTiers*/
+
+/* style spécifiques à écran AL0004 */
+
+#postItZone{
+  padding:0px 0px 0px 5px;
+  /*width:20px;*/
+  float:left;
+  display:block;
+}
+
+/*
+#postItZone img{
+  cursor:pointer;
+}*/
+
+
+table.zone{
+	border:1px solid black;
+  	background-color:#D7E4FF;
+}
+
+table.max{
+	width:100%;
+}
+
+table#allocZone{
+  	width:40%;
+  	float:left;
+  	height:160px;
+
+}
+
+table#allocZone td{
+	
+}
+
+
+
+table#allocZone a.addLink {
+  margin-left:20px;
+}
+
+table#allocZone img{
+  margin-left:20px;
+}
+
+table#affilieZone{
+  	width:50%;
+  	float:right;
+  	margin-right:11px;
+  	height:160px;
+}
+
+table#affilieZone td{
+}
+
+table#validiteZone{
+  	width:99%;
+  	margin:10px 0px 15px 0px;
+  	
+}
+
+table#validiteZone td{
+}
+
+/* tableaux droits/prestations */
+/* ---- */
+/* onglets */
+
+#help{
+	float:left;
+	display:block;
+	width:100%;
+}
+
+#tabs{
+  width:200px;
+  float:left;
+}
+
+#tabs ul 
+{
+   font: bold 11px verdana, arial, sans-serif;
+   list-style-type: none;
+   /*padding-bottom: 24px;
+   border-bottom: 1px solid #6c6;*/
+   margin: 0px;
+
+}					
+
+#tabs ul li 
+{
+   float: left;
+   height: 21px;
+   padding:5px;
+   /*margin: 2px 2px 0 2px;*/
+   margin-right:2px;
+   border: 1px solid #6c6;
+   display:block;
+   cursor:pointer;
+}	
+
+#tabs ul li.active 
+{
+    border:1px solid white;
+    border-bottom: 1px solid #226194;
+    background-color: #226194;
+    color:#ffffff;
+}	
+
+#tabs ul li.selected 
+{
+    border:1px solid white;
+    border-bottom: 1px solid #226194;
+    background-color: #226194;
+    color:#ffffff;
+   /*color:;*/
+}	
+
+#tabs ul li.inactive 
+{
+    background-color: #D7E4FF;
+    border-top:1px solid #226194;
+    border-left:1px solid #226194;
+    border-right:1px solid #226194;
+    border-bottom:1px solid #D7E4FF;
+
+    color: #000000;
+}	
+
+
+table.al_list {
+	border-collapse: collapse;
+	/*font-size: 10px;*/
+	margin: 0px 5px 20px 0px;
+	padding: 0;
+	width:100%;
+}
+
+table.al_list th {
+	/*text-align: left;*/
+    border: solid 1px;
+    border-color :  #226194 white #226194 #226194;
+    font-size : 11px;
+    font-weight:bold;
+    /*padding : 0px 0px 0px 24px;*/
+}
+
+table.al_list td {
+
+  	border-right:1px solid #666;		
+  	text-align:center;
+}
+
+/*
+	pour ne pas que cellules des tables de class zone imbriqués dans une table.al_list
+	hérite des propriétés
+*/
+table.al_list table.zone td {
+	border:0px;
+}
+
+table.al_list td.number {
+	text-align:right;
+}
+
+table.al_list td.text {
+	text-align:left;
+}
+
+table.al_list td.inactive {
+	color:red;
+}
+
+table.al_list td.inactive {
+	color:red;
+}
+
+table.al_list td .montantForce {
+	color: #f00;
+	font-weight:bold;
+}
+
+table.al_list tr.odd{
+	background-color: #ddd;	
+}
+table.al_list tr.nonodd{
+	background-color:#eee;
+}
+
+table.al_list.tablesorter tr.odd{
+	background-color: #ddd;
+}
+table.al_list.tablesorter tr.nonodd{
+	background-color:#eee;
+}
+
+table.al_list tr.hide{
+	display:none;
+}
+
+a.showDetail, a.showAllDetails{
+	background-image: url(../images/icon-expand.gif);
+	background-repeat: :no-repeat;
+	width:16px;
+	height:16px;
+	padding:0;
+}
+
+a.hideDetail, a.hideAllDetails{
+	background-image: url(../images/icon-collapse.gif);
+	background-repeat: :no-repeat;
+	width:16px;
+	height:16px;
+	padding:0;
+
+}
+
+
+table.al_list tr.hideDroitInfos span {
+	display:none;
+}
+
+table.al_list tr.show{
+	display:block;
+}
+
+table.al_list tr.tmpPrest{
+	font-style: italic;
+	color:blue;
+}
+table.al_list tr.coPrest{
+	font-weight: bold;
+}
+
+table.al_list tr.highlighted{
+    background-color : #638fbc;
+    color : #ffffe8;
+	cursor : hand;
+}
+
+.ajaxHighlighted {
+    background-color : #638fbc !important;
+    color : #ffffe8;
+}
+
+table.al_list tfoot td, table.al_list tr.tfoot td{
+  	border-top:1px solid black;
+  	border-bottom:1px solid black;
+}
+table.al_list tfoot td{
+	background-color:#eee;
+}
+table.al_list tfoot td.total, table.al_list tfoot td.number,
+table.al_list tr.tfoot td.total, table.al_list tr.tfoot td.number  {
+	text-align: right;
+	border-top:1px solid black;
+	font-weight:bold;
+}
+table.al_list tfoot td.number,table.al_list tr.tfoot td.number {
+	border-top:2px solid black;
+}
+
+table.al_list tfoot td.numberTFoot {
+	text-align: right;
+	font-weight:normal;
+	border-top:1px solid black;
+}
+
+table.al_list td img, table.al_list td span{
+  	float:right;
+}
+
+table.al_list #paginationPrevious{
+	display:inline;
+}
+
+table.al_list #paginationNumero{
+	display:inline;
+	margin-left:10px;
+	margin-right:10px;
+}
+
+table#prestations td img{
+  	float:none;
+}
+
+table#prestations td span{
+  	width:100%;
+}
+
+
+
+table#prestations #paginationNext{
+	display:inline;
+}
+
+
+/* liens spécifiques */
+
+a.helpLink {
+  background-image:url(../images/al/Info.png);
+  background-repeat:no-repeat;
+  width:20px;
+  height:20px;
+  /*margin-right:5px;*/
+
+}
+
+a.dossiersLink {	
+  background-image:url(../images/folder-full.png);
+  background-repeat:no-repeat;
+  width:16px;
+  height:16px;
+}
+
+a.nodossiersLink{
+  background-image:url(../images/folder-empty.png);
+  background-repeat:no-repeat;
+  width:16px;
+  height:16px;
+}
+
+a.deleteLink {
+  background-image:url(../images/list-remove.png);
+  background-repeat:no-repeat;
+  width:16px;
+  height:16px;
+  display: inline-block;
+  /*margin-right:5px;*/
+
+}
+
+a.removeLink {
+  background-image:url(../images/edit-delete.png);
+  background-repeat:no-repeat;
+  width:16px;
+  height:16px;
+  margin-right:5px;
+  display:none;
+
+}
+
+a.detailLink {
+  background-image:url(../images/magnifier.png);
+  background-repeat:no-repeat;
+  width:16px;
+  height:16px;
+  margin-right:5px;
+}
+
+a.formationLink {
+  background-image:url(../images/toformation.png);
+  background-repeat:no-repeat;
+  width:25px;
+  height:14px;
+  margin-right:5px;
+
+}
+
+a.copieLink {
+  background-image:url(../images/calendar.gif);
+  background-repeat:no-repeat;
+  width:16px;
+  height:15px;
+  margin-right:5px;
+
+}
+
+
+a.addLink {
+  background-image:url(../images/list-add.png);
+  background-repeat:no-repeat;
+  width:16px;
+  height:16px;
+  margin-right:5px;
+  display: inline-block;
+}
+
+a.syncLink{	
+  background-image:url(../images/sync.png);
+  background-repeat:no-repeat;
+  width:16px;
+  height:16px;
+  
+}
+	
+a.moreLink{
+ color:black;
+ text-decoration: underline;
+}
+
+a.textCatalogLink {
+  background-image:url(../images/book.png);
+  background-repeat:no-repeat;
+  width:16px;
+  height:16px;
+  margin-right:5px;
+}
+
+
+a.goToDossierLink{
+  background-image:url(../images/folder_user.png);
+  background-repeat:no-repeat;
+  width:16px;
+  height:16px;
+  display: inline-block;
+}
+
+a.editLink{
+  background-image:url(../images/edit.gif);
+  background-repeat:no-repeat;
+  width:16px;
+  height:16px;
+}
+
+a.calculLink{
+  background-image:url(../images/calculator.png);
+  background-repeat:no-repeat;
+  width:16px;
+  height:16px;
+}
+
+a.warningLink{
+  background-image:url(../images/dialog-warning.png);
+  background-repeat:no-repeat;
+  width:16px;
+  height:16px;
+  position : relative; 
+}
+
+
+
+a.info_bulle{
+  font-style :italic;
+  color:red;
+  text-decoration: none;
+}
+
+/* Rend invisible tout notre bloc span */
+a.info_bulle span
+{								   
+    position       :  absolute;
+    top            :  -2000em;
+    left           :  -2000em;
+    width          :  1px;
+    height         :  1px;
+    overflow       :  hidden; 
+    background     :  #DDEEFF;   /* Définition du fond, sinon on a le même que notre lien */
+    border         :  1px solid #6699FF; /* Définition des bordures */
+    padding		   :  5px;
+  
+}
+/* Rend visible tout notre bloc span et lui attribue une taille */
+a.info_bulle:hover span, a.info_bulle:focus span, a.info_bulle:active span 
+{
+    top        :  auto;
+    left       :  auto;
+    width      :  220px;
+    height     :  auto;
+    overflow   :  visible;
+    font-style :  italic;
+  	color:red;
+    text-decoration: none;
+}
+/* IE6 FIX*/
+a.info_bulle:hover 
+{
+  border : 0;  /* ligne qui corrige le bug d'IE6 et inférieur */
+}    
+
+
+
+/* style pour la console debug js */
+#debugConsole{
+	width:400px;
+	height:20px;
+	position:absolute;
+	bottom:5px;
+	left:5px;
+	border:1px solid #838B8B;
+	background-color:#FCF6CF;
+	display:block;
+}
+
+/* pour page recherche formulaire sur toute la largeur */
+#subtable{
+	width:100%;
+}
+
+/* AL0001 Recherche personnes */
+#AL0001 table{
+	width:100%;
+}
+
+/* AL0002 Recherche dossier */
+#AL0002 table{
+	width:100%;
+}
+
+
+/* AL0003 Droit */
+#AL0003typeZone, #AL0003tiersZone, #AL0003enfantZone, #AL0003droitZone, #AL0003naissanceZone, #AL0003complZone{
+	margin-top:0px;
+	margin-left:0px;
+	margin-bottom:10px;
+	margin-right:0px;
+	width:100%;
+	
+}
+
+#AL0003typeZone td{
+	width:50%;
+	text-align:left;
+}
+
+#AL0003typeZone td.label{
+	width:50%;
+	text-align:right;
+	font-weight:bold;
+}
+
+#AL0003tiersZone td, #AL0003enfantZone td, #AL0003naissanceZone td, #AL0003complZone td{
+	width:30%;
+}
+
+#AL0003tiersZone td.label, #AL0003enfantZone td.label, #AL0003naissanceZone td.label, 
+#AL0003complZone td.label{
+	width:20%;
+}
+
+#AL0003droitZone td{
+	width:25%;
+}
+
+#AL0003droitZone td.dateCol{
+	width:18%;
+}
+
+#AL0003droitZone td.label {
+	width:13%;
+}
+
+#AL0003droitZone td.labelSmall {
+	width:6%;
+}
+
+/*AL0004 Dossier vue globale*/
+#calculZone{
+	float:right;
+}
+
+#dialog-dossiersLies table{
+	width:950px;
+	margin:0px auto;
+	
+}
+/*cacher par défaut, afficher par effet jquery*/
+#dialog-dossiersLies table tr#new{
+	display:none;
+	border:1px solid red;
+	
+}
+
+#dialog-dossiersLies table td{
+	text-align:center;
+}
+
+
+
+#dialog-copieDroits table{
+	width:950px;
+	margin:0px auto;
+}
+
+#dialog-copieDroits table#droitRef{
+	width:300px;
+	margin:0px auto;	
+}
+
+#dialog-copieDroits table#droitRef th{
+	background-color:white;
+	color:black;
+	border:0px;
+	text-align:left;
+}
+
+#dialog-copieDroits #ajaxContent{
+	padding-top:30px;
+}
+
+#dialog-copieDroits table td{
+	text-align:center;
+}
+
+#dialog-copieDroits table td.idDroitValue{
+	text-align:center;
+}
+
+#dialog-copieDroits table#copieDroitsTable {
+	border-collapse:collapse;
+}
+
+#dialog-copieDroits table#copieDroitsTable th {
+	border-left:1px solid #fff;
+}
+
+#dialog-copieDroits table#copieDroitsTable tr.unmatchedPeriod {
+	background-color:#FAAAAA;
+}
+
+
+#dialog-copieDroits table#copieDroitsTable td{
+	border-bottom:1px solid #ccc;
+}
+/* AL0005 Dossier complément */
+
+#AL0005zone1, #AL0005zone2, #AL0005zone3 {
+	margin-top:0px;
+	margin-left:0px;
+	margin-bottom:10px;
+	margin-right:0px;
+	padding:30px 0px 0px 0px;
+	width:100%;
+}
+#AL0005zone1 td{
+	width:50%;
+	text-align:left;
+}
+#AL0005zone2 td, #AL0005zone3 td{
+	width:40%;
+}
+
+#AL0005zone1 td.label{
+	width:50%;
+	text-align:right;
+	font-weight:bold;
+}
+#AL0005zone2 td.label, #AL0005zone3 td.label{
+	width:10%;
+}
+
+/* AL0006 Allocataire */
+
+#AL0006allocataireZone,#AL0006tiersZone{
+	margin-top:0px;
+	margin-left:0px;
+	margin-bottom:10px;
+	margin-right:0px;
+	width:100%;
+}
+
+#AL0006allocataireZone td,#AL0006tiersZone td{
+	width:25%;
+}
+
+#AL0006allocataireZone td.label,#AL0006tiersZone td.label{
+	width:25%;
+}
+
+/*AL0007 Détail entête prestation (entetePrestation_de.jsp)*/
+
+#AL0007Entete{
+	width:100%;
+	margin-bottom:10px;
+}
+
+tr.detailPrestMore td {
+	border:0px;
+}
+
+/* AL0009 Revenus */
+#AL0009revenusZone{
+	margin-top:0px;
+	margin-left:0px;
+	margin-bottom:10px;
+	margin-right:0px;
+	width:100%;
+}
+
+#AL0009revenusZone td{
+	width:30%;
+}
+#AL0009revenusZone td.label{
+	width:20%;
+}
+
+/* AL0010 enfant */
+#AL0010tiersZone,#AL0010naissanceZone,#AL0010enfantZone{
+	margin-top:0px;
+	margin-left:0px;
+	margin-bottom:10px;
+	margin-right:0px;
+	width:100%;
+}
+
+
+#AL0010tiersZone td, #AL0010enfantZone td, #AL0010naissanceZone td{
+	width:30%;
+}
+
+#AL0010tiersZone td.label, #AL0010enfantZone td.label, #AL0010naissanceZone td.label{
+	width:20%;
+}
+/* AL00012 génération affilié (generationAffilie_de.jsp)*/
+table#AL0012periodeZone{
+	width:100%;
+}
+/* AL0015 génération dossier (generationDossier_de.jsp)*/
+table#AL0015periodeZone{
+	width:100%;
+}
+table#AL0015optionsZone{
+	margin-top:10px;
+	width:100%;
+}
+/*Style écran(16) décisions*/
+#newCopie{
+	display:none
+}
+
+/* AL0017 détail recap (recap_de.jsp)*/
+table#AL0017recapZone{
+  	width:48%;
+  	float:left;
+  	height:60px;
+  	margin-right:5px;
+
+}
+
+table#AL0017affilieZone{
+  	width:45%;
+  	float:right;
+  	height:74px;
+  	margin-left:5px;
+}
+
+table#AL0017processusZone{
+  	width:100%;
+  	float:left;
+ 	margin-top:10px;
+}
+
+
+table#AL0017prestations{
+	margin-top:10px;
+}
+
+table#AL0018dateZone, table#AL0019dateZone, table#AL0021affilieZone{
+	width: 100%;
+	height: 80px;
+}
+table#AL0018traitementZone, table#AL0019traitementZone, , table#AL0021attributsZone{
+	margin-top:10px;
+	width: 100%;
+	height: 80px;
+
+}
+
+
+/* AL0020 radiation*/
+
+table #AL0020{
+	width:100%;
+}
+
+table #AL0020 td{
+	text-align: left;
+	width:50%;
+}
+
+table #AL0020 td.label{	
+	text-align: right;
+	width:50%;
+}
+
+/* AL0023 décomptes ADI d'un dossier */
+table #AL0023dossierZone, table #AL0023allocataireZone{
+	width:100%;
+}
+
+table #AL0023dossierZone td, table #AL0023allocataireZone td{
+	width:20%;
+}
+
+
+/* AL0024 decompte ADI */
+
+table #AL0024mainZone{
+	margin-top:0px;
+	margin-left:0px;
+	margin-bottom:10px;
+	margin-right:0px;
+	width:100%;
+}
+
+/* AL0025 saisie ADI */
+#AL0025infoZone{
+	width:100%;
+	margin-bottom: 20px;
+}
+
+
+.adiYear{
+  border:1px solid black;
+  background-color:#eeeeee;
+}
+
+.adiMonthDisabled{
+  background-color:#eeeeee;
+}
+.adiYear, .adiMonthUnfilled, .adiMonthFilled, .adiMonthDisabled{
+  float:left;
+  font-size: 15px;
+  font-weight: bold;
+  padding:5px;
+  
+}
+.adiMonthUnfilled, .adiMonthFilled, .adiMonthDisabled{
+  border-width: 1px 1px 1px 0px;
+  border-color: black;
+  border-style: solid; 
+}
+
+.adiMonthFilled{
+  background-color: #92F6B0;
+}
+
+.adiMonthUnfilled{
+  background-color: #F69292;
+}
+
+/*AL0028 liste des décisions éditées */
+table#AL0028zone{
+	width:30%;
+}
+
+/* AL0050 gestion processus */
+table#AL0050traitementListe{
+	width:95%;
+	border-collapse:collapse;
+	border: 1px solid #888;
+	/*line-height: 1;
+ 	margin: 1em auto;*/
+}
+
+/* Header
+ * ------------------------------------------------------------------------- */
+
+table#AL0050traitementListe thead tr th {
+  border: 1px solid #888;
+  font-weight: normal;
+  padding-left:5px;
+  padding-right:5px;
+  /*padding: .3em 1.67em .1em 1.67em;*/
+  text-align: center;
+}
+
+table#AL0050traitementListe thead tr th.periodCol{
+	padding-left:15px;
+	padding-right:15px;
+
+}
+
+
+
+/* Body
+ * ------------------------------------------------------------------------- */
+table#AL0050traitementListe tbody tr td {
+	border:1px solid black;	
+  	cursor: default;
+  	text-align:center;
+  	/*padding: 1.0em 1.5em;*/
+}
+
+table#AL0050traitementListe tbody tr.close td{
+	font-weight: bold;
+	font-style: italic;
+}
+
+
+table#AL0050traitementListe tbody tr.error td{
+	color:red;
+	font-weight: bold;
+}
+
+table#AL0050traitementListe span {
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: .2em 0 .2em 1.5em;
+}
+
+
+table#AL0050traitementListe tbody tr td.empty{
+	background-color:white;
+
+	/*b3c4db 226194*/
+}
+table#AL0050traitementListe tbody tr td.passage{
+	background-color:#cccccc;
+
+	/*b3c4db 226194*/
+}
+
+table#AL0050traitementListe tbody tr.show{
+	display:block;
+}
+
+table#AL0050traitementListe tbody tr.hide{
+	display:block;
+}
+
+table#AL0050traitementListe tbody  tr.hide td{
+	border:1px solid yellow;
+}
+
+table#AL0050traitementListe tbody  tr.show td{
+	border:1px solid red;
+}
+
+div#AL0050Pagination{
+	text-align:center;
+	margin-bottom:5px;
+	font-weight:bold;
+}
+
+
+table#AL0051Processus {
+	margin-bottom:15px;
+	width:70%;
+}
+
+table#AL0051Passage{
+	width:70%;
+}
+
+/* AL0022 Déclaration dde versement */
+#AL0022typeSource, #AL0022typeNonSource, #AL0022typeFrontalier, #AL0022typeNonActifs, #AL0022typePonctuelle, #AL0003complZone{
+	margin-top:0px;
+	margin-left:0px;
+	margin-bottom:0px;
+	margin-right:0px;
+	width:60%;
+	
+}
+
+
+.popup_warn{
+	background: #fff;
+	position:absolute;
+	padding:5px;
+	left:50%;
+	top:50%;
+	z-index: 99999;
+ 	background:#DDEEFF;   
+    border: 5px solid #6699FF; 
+    font-style : italic;
+  	color:red;
+    text-decoration: none;
+    text-align:center;
+    font-size:1.4em;
+	
+}
+
+#popupAL0015{
+	width:400px;
+	height:60px;
+	margin-top:-30px;
+	margin-left:-200px;
+}
+
+#popupAL0016{
+	width:200px;
+	height:60px;
+	margin-top:-30px;
+	margin-left:-100px;
+}
+
+
+
+div.rafamBlocType{
+	background-color:#B3C4DB;
+	border:1px solid black;
+	float:left;
+	padding:15px;
+	margin-top:20px;
+	
+}
+
+div.rafamBlocType table.al_listrafam{
+	/*font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;*/
+
+	background: #fff;
+	margin: 5px;
+	width: 300px;
+	border-collapse: collapse;
+	text-align: left;
+}
+
+div.rafamBlocType table.al_listrafam th {
+	
+	font-weight: bold;
+	color:white;
+	padding:5px;
+	border-bottom: 2px solid #6678b1;
+}
+
+div.rafamBlocType table.al_listrafam td {
+
+	border-bottom: 1px solid #ccc;
+	color: #669;
+	padding: 5px;
+}
+
+div.rafamBlocType table.al_listrafam tbody tr:hover td {
+	color: #009;
+}
+
+
+
+
+div.rafamBlocType div.hide{
+	display:none;
+}
+
+div.rafamBlocType div.subtitle{
+	width:100%;
+	float:left;
+}
+
+div.rafamProposition{
+	float:left;
+	width:40%;
+	border:1px solid blue;
+	background-color:#B3C4DB;
+}
+
+
+div.rafamExistant{
+	float:right;
+	width:40%;
+	border:1px solid red;
+}
+
+
+
+
+div.rafamBlocType #selectable_0 .ui-selecting { background: #FECA40; }
+div.rafamBlocType #selectable_0 .ui-selected { background: #F39814; color: white; }
+div.rafamBlocType #selectable_0 { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+//div.rafamBlocType #selectable_0 li { margin: 3px; padding:5px; font-size: 1.4em; height: 18px; }
+
+div.rafamBlocType #selectable_1 .ui-selecting { background: #FECA40; }
+div.rafamBlocType #selectable_1 .ui-selected { background: #F39814; color: white; }
+div.rafamBlocType #selectable_1 { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+div.rafamBlocType #selectable_1 li { margin: 3px; padding:5px; font-size: 1.4em; height: 18px; }
+
+div.rafamBlocType #selectable_2 .ui-selecting { background: #FECA40; }
+div.rafamBlocType #selectable_2 .ui-selected { background: #F39814; color: white; }
+div.rafamBlocType #selectable_2 { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+div.rafamBlocType #selectable_2 li { margin: 3px; padding:5px; font-size: 1.4em; height: 18px; }
+
+
+/*************
+Table sorter Default Theme
+*************/
+.tablesorter-default .header,
+.tablesorter-default .tablesorter-header {
+	background-image: url(../images/al/black-unsorted.gif);
+	background-position: center right;
+	background-repeat: no-repeat;
+	cursor: pointer;
+	white-space: normal;
+}
+.tablesorter-default thead .headerSortUp,
+.tablesorter-default thead .tablesorter-headerSortUp,
+.tablesorter-default thead .tablesorter-headerAsc {
+	background-image: url(../images/al/black-asc.gif);
+}
+.tablesorter-default thead .headerSortDown,
+.tablesorter-default thead .tablesorter-headerSortDown,
+.tablesorter-default thead .tablesorter-headerDesc {
+	background-image: url(../images/al/black-desc.gif);
+}
+.tablesorter-default thead .sorter-false {
+	background-image: none;
+	cursor: default;
+	padding: 4px;
+}
+
+
+
+
+
+
+
+

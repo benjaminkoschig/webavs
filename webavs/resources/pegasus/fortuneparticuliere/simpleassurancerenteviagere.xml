@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.fortuneparticuliere.SimpleAssuranceRenteViagere">
+		<description>Assurance rente viagère</description>
+		<table name="PCASREVI" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idAssuranceRenteViagere" column="BUIARV" comment="ID_ASSURANCE_RENTE_VIAGERE"/>
+			<field name="idDonneeFinanciereHeader" column="BUIDFH" type="NUMERIC" mandatory="true" comment="ID_DONNEE_FINANCIERE_HEADER"/>
+			<field name="montantValeurRachat" column="BUMVRA" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT_VALEUR_RACHAT"/>
+			<field name="numeroPolice" column="BUNPOL" type="STRING" mandatory="true" comment="NUMERO_POLICE"/>
+			<field name="idCompagnie" column="BUICMP" type="NUMERIC" mandatory="true" comment="ID_COMPAGNIE"/>
+			<field name="montantRenteViagere" column="BUMREV" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT_RENTE_VIAGERE"/>
+			<field name="excedentRenteViagere" column="BUMERV" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="EXCEDENT_RENTE_VIAGERE"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

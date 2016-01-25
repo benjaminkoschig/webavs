@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.traitementdemasse.SimpleParametreUtilisee">
+		<description>Permet de sauvegarder les paramétre utilisé pour le traitement</description>
+		<table name="PCCENVI" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="idParametreUtilisee" column="AKIPAU" comment="ID_PARAMETRE_UTILISEE" />
+			<field name="idParametre" mandatory="true" column="AKIPAR" type="NUMERIC" comment="ID_PARAMETRE" />
+			<field name="idExcutionTraitement" mandatory="true" column="AKIEXT" type="NUMERIC" comment="ID_EXECUTION_TRAITEMENT" />
+			<field name="valeur" column="AKVALE" type="NUMERIC" comment="VALEUR" />
+		</fields>
+	</simple-model>
+</model-mapping> 

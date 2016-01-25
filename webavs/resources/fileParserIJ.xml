@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Sample of use 																						-->
+<!--		IPRFileParser fileParser = null;															-->
+<!--		try { 																						-->
+<!--			fileParser = PRFileParserFactory.newInstance("fileParser.xml", "MADRID");			-->
+<!--			fileParser.setSource("D:\\byPassSourceFileDefinedInThisXmlFile");		//not compulsory-->
+<!--			while (fileParser.hasNext()) {															-->
+<!--				fileParser.goToNextRecord();														-->
+<!--				System.out.print("record : ");														-->
+<!--				System.out.print(" date = " + fileParser.getField("DATE"));							-->
+<!--				System.out.print(" noAvs = " + fileParser.getField("NO_AVS"));						-->
+<!--				System.out.println(" montant = " + fileParser.getField("MONTANT"));					-->
+<!--			}																						-->
+<!--		} catch (Exception e) {																		-->
+<!--			e.printStackTrace();																	-->
+<!--			fileParser.close();																		-->
+<!--		}	 																						-->
+
+<!--<file-parser>
+	<file id="MADRID" codeIsoMonnaie="EUR" type="TEXT" source="d:\\test\\test.txt">
+		<class name="globaz.prestation.file.parser.CATextFileParser"/>
+		<text-field id="RECORD_TYPE" beginPos="0" endPos="4"/>
+		<text-field id="DATE" beginPos="30" endPos="36"/>
+		<text-field id="NO_AVS" beginPos="77" endPos="88"/>
+		<text-field id="MONTANT" beginPos="36" endPos="48"/>
+	</file>
+	<file id="POSTE_FRANCAISE" codeIsoMonnaie="EUR" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.CATextFileParser"/>
+		<text-field id="RECORD_TYPE" beginPos="0" endPos="4"/>		
+		<text-field id="DATE" beginPos="24" endPos="30"/>
+		<text-field id="NO_AVS" beginPos="138" endPos="149"/>
+		<text-field id="MONTANT" beginPos="102" endPos="118"/>
+		<text-field id="CODE_DEBIT_CREDIT" beginPos="228" endPos="230"/>
+	</file>
+</file-parser> -->
+
+<file-parser>
+
+	<file id="BASE_CALCUL" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="0" endPos="2"/>
+		<text-field id="NUMERO_AVS" beginPos="2" endPos="13"/>
+		<text-field id="GENRE_INDEMNITE" beginPos="13" endPos="14"/>
+		<text-field id="OFFICE_AI" beginPos="14" endPos="17"/>
+		<text-field id="MOTIF" beginPos="17" endPos="18"/>
+		<text-field id="GENRE_READAPTATION" beginPos="18" endPos="19"/>
+		<text-field id="DATE_PRONONCE" beginPos="19" endPos="27"/>
+		<text-field id="DEBUT_DROIT" beginPos="27" endPos="35"/>
+		<text-field id="FIN_DROIT" beginPos="35" endPos="43"/>
+		<text-field id="TYPE_BASE" beginPos="43" endPos="44"/>
+		<text-field id="REVENU_DETERMINANT" beginPos="44" endPos="51"/>
+		<text-field id="DATE_REVENU" beginPos="51" endPos="59"/>
+		<text-field id="MONTANT_BASE" beginPos="59" endPos="65"/>
+		<text-field id="MONTANT_ENFANTS" beginPos="65" endPos="70"/>
+		<text-field id="NB_ENFANTS" beginPos="70" endPos="72"/>
+		<text-field id="MONTANT_ASSISTANCE" beginPos="72" endPos="77"/>
+		<text-field id="MONTANT_EXPLOITATION" beginPos="77" endPos="82"/>
+		<text-field id="SUPPLEMENT_SEULE" beginPos="82" endPos="87"/>
+		<text-field id="REVENU_READAPTATION" beginPos="87" endPos="93"/>
+		<text-field id="FORMATION" beginPos="93" endPos="94"/>
+		<text-field id="STATUT" beginPos="94" endPos="95"/>
+		<text-field id="INCAPACITE" beginPos="95" endPos="98"/>
+		<text-field id="DEMI_IJ_AC_BRUTE" beginPos="98" endPos="104"/>
+	</file>
+	
+	<file id="PRESTATION" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="0" endPos="2"/>
+		<text-field id="NUMERO_AVS" beginPos="2" endPos="13"/>
+		<text-field id="SUPPLEMENT_READAPTATION" beginPos="13" endPos="14"/>
+		<text-field id="MONTANT_READAPTATION" beginPos="14" endPos="19"/>
+		<text-field id="GARANTIE_AA_NON_REDUITE" beginPos="19" endPos="25"/>
+		<text-field id="INDEMNITE_AVANT_REDUCTION" beginPos="25" endPos="31"/>
+		<text-field id="DEDUCTION_RENTE_AI" beginPos="31" endPos="37"/>
+		<text-field id="FRACTION_REDUCTION_SI_REVENU_READAPTATION" beginPos="37" endPos="42"/>
+		<text-field id="MONTANT_REDUCTION_SI_REVENU_READAPTATION" beginPos="42" endPos="48"/>
+		<text-field id="MONTANT_INDEMNITE" beginPos="48" endPos="54"/>
+		<text-field id="GARANTIE_AA_REDUITE" beginPos="54" endPos="60"/>
+		<text-field id="MONTANT_COMPLET" beginPos="60" endPos="66"/>
+		<text-field id="MONTANT_PLAFONNE" beginPos="66" endPos="72"/>
+		<text-field id="MONTANT_PLAFONNE_MINIMUM" beginPos="72" endPos="78"/>
+	</file>
+	
+	<file id="DECOMPTE" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="0" endPos="2"/>
+		<text-field id="NUMERO_AVS" beginPos="2" endPos="13"/>
+		<text-field id="DEBUT_PERIODE" beginPos="13" endPos="21"/>
+		<text-field id="FIN_PERIODE" beginPos="21" endPos="29"/>
+		<text-field id="TYPE_MONTANT" beginPos="29" endPos="31"/>
+		<text-field id="MONTANT" beginPos="31" endPos="40"/>
+		<text-field id="NUMERO_AFFILIE" beginPos="40" endPos="60"/>
+		<text-field id="DECOMPTE_RECITIFICATIF" beginPos="60" endPos="61"/>
+		<text-field id="TAUX" beginPos="61" endPos="66"/>
+	</file>
+</file-parser>

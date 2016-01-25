@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.naos.business.model.AffiliationSimpleModel">
+		<table name="AFAFFIP" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="affiliationId" column="MAIAFF" />
+			<field name="idTiers" column="HTITIE" type="NUMERIC"  />
+			<field name="affilieNumero" column="MALNAF" type="STRING"  />
+			<field name="dateDebut" column="MADDEB" type="DATE"  />
+			<field name="dateFin" column="MADFIN" type="DATE"  />
+			<field name="motifFin" column="MATMOT" type="NUMERIC"  />
+			<field name="typeAffiliation" column="MATTAF" type="NUMERIC"  />
+			<field name="raisonSocialeCourt" column="MADESC" type="STRING"  />
+			<field name="raisonSocialeUpper" column="MADESM" type="STRING" />
+			<field name="raisonSociale" column="MADESL" type="STRING"  />
+			<field name="periodicite" column="MATPER" type="NUMERIC"  />
+			
+			<field name="personnaliteJuridique" column="MATJUR" type="NUMERIC"  />
+			<field name="brancheEconomique" column="MATBRA" type="NUMERIC" dataType="NUMERIC(8,0)" />
+			<field name="releveParitaire" column="MABREP" type="BOOLEAN"  />
+			<field name="relevePersonnel" column="MABREI" type="BOOLEAN"  />
+			<field name="idConvention" column="MACONV" type="NUMERIC" />
+			
+			<field name="accesSecurite" column="MATSEC" type="NUMERIC" />
+			<!-- 
+			<field name="brancheEconomique" column="MATBRA" type="NUMERIC"  />
+			<field name="personnaliteJuridique" column="MATJUR" type="NUMERIC"  />
+			<field name="exonerationGenerale" column="MABEXO" type="NUMERIC"  />
+			<field name="dateEditionFiche" column="MADFIC" type="DATE"  />
+			<field name="dateEditionFicheM1" column="MADFI1" type="DATE"  />
+			<field name="dateEditionFicheM2" column="MADFI2" type="DATE"  />
+			<field name="declarationSalaire" column="MATDEC" type="NUMERIC"  />
+			<field name="membreComite" column="MATMCO" type="NUMERIC"  />
+			<field name="irrecouvrable" column="MABIRR" type="NUMERIC"  />
+			<field name="occasionnel" column="MABOCC" type="NUMERIC"  />
+			<field name="personnelMaison" column="MABMAI" type="NUMERIC"  />
+			<field name="liquidation" column="MABLIQ" type="NUMERIC"  />
+			<field name="traitement" column="MABTRA" type="NUMERIC"  />
+			<field name="releveParitaire" column="MABREP" type="NUMERIC"  />
+			<field name="relevePersonnel" column="MABREI" type="NUMERIC"  />
+			<field name="massePeriodicite" column="MAMMAP" type="NUMERIC"  />
+			<field name="masseAnnuelle" column="MAMMAA" type="NUMERIC"  />
+			<field name="numeroIDE" column="MALFED" type="STRING"  />
+			<field name="taxeCo2Taux" column="MAMTCO" type="STRING"  />
+			<field name="taxeCo2Fraction" column="MAMFCO" type="STRING"  />
+			<field name="ancienAffilieNumero" column="MALNAA" type="STRING"  />
+			<field name="caissePartance" column="MAICPA" type="NUMERIC"  />
+			<field name="motifCreation" column="MATMCR" type="NUMERIC"  />
+			<field name="bonusMalus" column="MABBMA" type="NUMERIC"  />
+			<field name="dateCreation" column="MADCRE" type="DATE"  />
+			<field name="dateTent" column="MADTEN" type="DATE"  />
+			<field name="datePrecDebut" column="MADXDE" type="DATE"  />
+			<field name="datePrecFin" column="MADXFI" type="DATE"  />
+			<field name="typeAssocie" column="MATTAS" type="STRING"  />
+			<field name="codeNoga" column="MATCDN" type="NUMERIC"  />
+			<field name="envoiAutomatiqueAnnonceSalaires" column="MABEAA" type="NUMERIC"  />
+			<field name="dateDemandeAffiliation" column="MADDEM" type="DATE"  />
+			 -->
+		</fields>
+		
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forNumeroAffilie" field-ref="affilieNumero" operation="EQUALS" />
+				<search-field name="forNumeroAffilieLike" field-ref="affilieNumero" operation="LIKE" />
+				<search-field name="forIdTiers" field-ref="idTiers" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withDateValidite" >
+			<search-group operator="AND">
+				<search-field name="forNumeroAffilie" field-ref="affilieNumero" operation="EQUALS" />
+				<search-field name="forNumeroAffilieLike" field-ref="affilieNumero" operation="LIKE" />
+				<search-field name="forDateValidite" field-ref="dateDebut" operation="GREATER_OR_EQUALS"/>
+				<search-group operator="OR">
+					<search-field name="forDateValidite" field-ref="dateFin" operation="NULL"/>
+					<search-field name="forDateValidite" field-ref="dateFin" operation="GREATER_OR_EQUALS"/>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		</simple-model>
+</model-mapping>

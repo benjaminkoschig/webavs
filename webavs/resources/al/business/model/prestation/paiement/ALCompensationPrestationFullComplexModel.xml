@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.prestation.paiement.CompensationPrestationFullComplexModel"
+					extend="ch.globaz.al.business.models.prestation.paiement.CompensationPrestationComplexModel">
+		<select-fields distinct="true">
+			<select-field name="nomAffilie" field-ref="tiersAffiliationSimpleModel.designation1"/>
+		</select-fields>
+		
+		<linked-model name="affiliationSimpleModel" model-ref="ch.globaz.naos.business.model.AffiliationSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="affilieNumero" field-ref="recapEntrepriseModel.numeroAffilie" operation="EQUALS" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="tiersAffiliationSimpleModel" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="affiliationSimpleModel.idTiers" operation="EQUALS" />
+			</join-group>
+		</linked-model>
+	</complexe-model>
+</model-mapping>

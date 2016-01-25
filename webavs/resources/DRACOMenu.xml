@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+
+	<!-- ************** -->
+	<!-- Menu Principal -->
+	<!-- ************** -->
+	<menu id="DS-MenuPrincipal">
+		<label defaultValue="Principal">
+			<language iso="de">Hauptmenü</language>
+		</label>
+		<nodes>
+			<node>
+				<label defaultValue="Recherche des déclarations">
+					<language iso="de">Suche der Lohnbescheinigungen</language>
+				</label>
+				<action command="/draco" responseTarget="fr_main">
+					<parameter name="userAction" value="draco.declaration.declaration.chercher" />
+				</action>
+			</node>
+			<node open="yes">
+				<label defaultValue="Traitements">
+					<language iso="de">Verarbeitungen</language>
+				</label>			
+				<nodes>
+					<node>
+						<label defaultValue="Préimpression déclaration">
+							<language iso="de">Vordruck Lohnbescheinigung</language>
+						</label>
+						<action command="/draco" responseTarget="fr_main">
+							<parameter name="userAction" value="draco.preimpression.preImpressionDeclaration.preImprimer" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LETTRE_RECLAMATION" />
+						<action command="/draco" responseTarget="fr_main">
+							<parameter name="userAction" value="draco.declaration.lettreReclamationNss.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label defaultValue="Saisie de masse">
+					<language iso="de">Masseneingabe</language>
+				</label>			
+				<nodes>
+					<node>
+						<label defaultValue="Saisie de la date de réception">
+							<language iso="de">Eingabe des Empfangsdatums</language>
+						</label>
+						<action command="/draco" responseTarget="fr_main">
+							<parameter name="userAction" value="draco.declaration.saisieMasseDateReception.afficher" />
+							<parameter name="_method" value="add" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Saisie automatique">
+							<language iso="de">Automatische Eingabe</language>
+						</label>
+						<action command="/draco" responseTarget="fr_main">
+							<parameter name="userAction" value="draco.declaration.saisieMasseAutomatique.afficher" />
+							<parameter name="_method" value="add" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+						<node open="no">
+				<label defaultValue="LTN">
+					<language iso="de">BGSA</language>
+				</label>
+				<nodes>
+					<node>
+						<label defaultValue="Attestations fiscales LTN">
+							<language iso="de">BGSA Steuerbestätigung</language>
+						</label>
+						<action command="/draco" responseTarget="fr_main">
+							<parameter name="userAction" value="draco.declaration.attestationFiscaleLtnGen.afficher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Décomptes impôts LTN">
+							<language iso="de">BGSA Steuer-abrechnungen</language>
+						</label>
+						<action command="/draco" responseTarget="fr_main">
+							<parameter name="userAction" value="draco.declaration.decompteImpotLtn.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label defaultValue="Paramètres">
+					<language iso="de">Parameter</language>
+				</label>			
+				<nodes>
+					<node>
+						<label defaultValue="Catalogue de textes">
+							<language iso="de">Textkatalog</language>
+						</label>
+						<action command="/babel" responseTarget="fr_main">
+							<parameter name="userAction" value="babel.cat.document.chercher" />
+							<parameter name="csGroupeDomaines" value="DRGRPDOM"/>
+							<parameter name="csGroupeTypesDocuments" value="DRGRPTDOC"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label defaultValue="Liste">
+					<language iso="de">Liste</language>
+				</label>			
+				<nodes>
+					<node>
+						<label defaultValue="Liste DS non fact. + 25 jours">
+							<language iso="de">Liste nicht fakt. LB + 25 Tagen</language>
+						</label>
+						<action command="/draco" responseTarget="fr_main">
+							<parameter name="userAction" value="draco.listes.listeDSRentre.afficher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Suivi du traitement des DS">
+							<language iso="de">Fortsetzung der Verarbeitung der LB</language>
+						</label>
+						<action command="/draco" responseTarget="fr_main">
+							<parameter name="userAction" value="draco.listes.suiviDem.afficher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Liste des DS importées">
+							<language iso="de">Liste der importierten LB </language>
+						</label>
+						<action command="/draco" responseTarget="fr_main">
+							<parameter name="userAction" value="draco.listes.listeDSImportee.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>			
+		</nodes>
+	</menu>
+	
+	<!-- ****************************** -->
+	<!-- Menu Option déclaration        -->
+	<!-- ****************************** -->
+	<menu id="DS-OptionsDeclaration">
+		<label defaultValue="Options">
+			<language iso="de">Optionen</language>
+		</label>
+		<nodes>
+			<node>
+				<label defaultValue="Détail">
+					<language iso="de">Detail</language>
+				</label>
+				<action command="/draco" responseTarget="fr_main">
+					<parameter name="userAction" value="draco.declaration.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+
+			<node>
+				<label defaultValue="Pré-remplir la déclaration">
+					<language iso="de">Lohnbescheinigung vorausfüllen</language>
+				</label>
+				<action command="/draco" responseTarget="fr_main">
+					<parameter name="userAction" value="draco.inscriptions.prerempliDeclaration.afficher" />
+					<parameter name="selectedId"  />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Saisie individuelle">
+					<language iso="de">Einzelene Eingabe</language>
+				</label>
+				<action command="/draco" responseTarget="fr_main">
+					<parameter name="userAction" value="draco.inscriptions.inscriptionsIndividuellesListe.afficher" />
+					<parameter name="selectedId"  />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+					<node>
+				<label defaultValue="Calcul des masses">
+					<language iso="de">Berechnung der Lohnsummen</language>
+				</label>
+				<action command="/draco" responseTarget="fr_main">
+					<parameter name="userAction" value="draco.inscriptions.valideMontantDeclarationProcess.afficher" />
+					<parameter name="selectedId"  />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+						<node>
+				<label defaultValue="Aperçu facture">
+					<language iso="de">Vorschau Rechnung</language>
+				</label>
+				<action command="/draco" responseTarget="fr_main">
+					<parameter name="userAction" value="draco.declaration.ligneDeclaration.chercher" />
+					<parameter name="selectedId"  />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Validation">
+					<language iso="de">Validierung</language>
+				</label>
+				<action command="/draco" responseTarget="fr_main">
+					<parameter name="userAction" value="draco.declaration.validation.afficher" />
+					<parameter name="selectedId"  />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Annuler validation">
+					<language iso="de">Validierung annullieren</language>
+				</label>
+				<action command="/draco" responseTarget="fr_main">
+					<parameter name="userAction" value="draco.declaration.annulerValidation.afficher" />
+					<parameter name="selectedId"  />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+
+	
+
+			<node>
+				<label defaultValue="Imprimer la déclaration">
+					<language iso="de">Lohnbescheinigung ausdrucken</language>
+				</label>
+				<action command="/draco" responseTarget="fr_main">
+					<parameter name="userAction" value="draco.declaration.imprimerDeclaration.afficher" />
+					<parameter name="selectedId"  />
+					<parameter name="idDeclaration"  />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Attestations fiscales LTN">
+					<language iso="de">BGSA Steuerausweisen</language>
+				</label>
+				<action command="/draco" responseTarget="fr_main">
+					<parameter name="userAction" value="draco.declaration.attestationFiscaleLtn.afficher" />
+					<parameter name="selectedId"  />
+					<parameter name="idDeclaration"  />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node id="MENU_LETTRE_RECLAMATION">
+				<label refId="MENU_LETTRE_RECLAMATION" />
+				<action command="/draco" responseTarget="fr_main">
+					<parameter name="userAction" value="draco.declaration.lettreReclamationNss.afficher" />
+					<parameter name="typeDeclaration"  />
+	 				<parameter name="numAffilie"  />
+					<parameter name="anneeDS"  />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- ****************************** -->
+	<!-- Menu Option ligne déclaration  -->
+	<!-- ****************************** -->
+	<menu id="DS-OptionsLigneDeclaration">
+		<label defaultValue="Options">
+			<language iso="de">Optionen</language>
+		</label>
+		<nodes>
+			<node>
+				<label defaultValue="Validation">
+					<language iso="de">Validierung</language>
+				</label>
+				<action command="/draco" responseTarget="fr_main">
+					<parameter name="userAction" value="draco.declaration.validation.afficher" />
+					<parameter name="idDeclaration"  />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Annuler validation">
+					<language iso="de">Validierung annullieren</language>
+				</label>
+				<action command="/draco" responseTarget="fr_main">
+					<parameter name="userAction" value="draco.declaration.annulerValidation.afficher" />
+					<parameter name="idDeclaration" />
+				</action>
+			</node>
+						<node>
+				<label defaultValue="Detail">
+					<language iso="de">Detail</language>
+				</label>
+				<action command="/draco" responseTarget="fr_main">
+					<parameter name="userAction" value="draco.declaration.afficher" />
+					<parameter name="selectedId"  />
+					<parameter name="idDeclaration"  />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- ************************** -->
+	<!-- Menu Option only detail    -->
+	<!-- ************************** -->
+	<menu id="DS-OnlyDetail">
+		<label refId="OPTIONS" />
+	</menu>
+	
+</menus>

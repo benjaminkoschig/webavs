@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="perseus/rentepont/simpleRentePont.xml"/>
+	<model-mapping import="perseus/rentepont/rentePont.xml"/>
+	<model-mapping import="perseus/rentepont/simpleQDRentePont.xml"/>
+	<model-mapping import="perseus/rentepont/QDRentePont.xml"/>
+	<model-mapping import="perseus/rentepont/simpleFactureRentePont.xml"/>
+	<model-mapping import="perseus/rentepont/factureRentePont.xml"/>
+	<model-mapping import="perseus/rentepont/simpleCreancierRentePont.xml"/>
+	<model-mapping import="perseus/rentepont/creancierRentePont.xml"/>
+</model-mapping>

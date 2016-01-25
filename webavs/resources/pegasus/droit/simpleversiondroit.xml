@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit">
+		<description>Version Droit PC</description>
+		<table name="PCVERDRO" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idVersionDroit" column="BDIVDR" comment="ID_VERSION_PCDROIT"/>
+			<field name="idDroit" column="BDIDRO" type="NUMERIC" mandatory="true" comment="ID_DROIT"/>
+			<field name="noVersion" column="BDNVER" type="NUMERIC" mandatory="true" comment="NO_VERSION"/>
+			<field name="dateAnnonce" column="BDDDAN" type="DATE" mandatory="true" comment="DATE_ANNONCE"/>
+			<field name="csEtatDroit" column="BDTETA" type="NUMERIC" mandatory="true" comment="CS_ETAT_DROIT"/>
+			<field name="idDecision" column="BDIDEC" type="NUMERIC" mandatory="false" comment="ID_DECISION"/>
+			<field name="csMotif" column="BDTMOT" type="NUMERIC" mandatory="true" comment="CS_MOTIF"/>
+			<field name="remarqueDecompte" column="BDREMD" type="STRING" dataType="VARCHAR(1024)" mandatory="false" comment="REMARQUE_DECOMPTE"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="idVersionDroit"/>
+				<search-field name="forNoVersionDroit" operation="EQUALS" field-ref="noVersion"/>
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="idDroit"/>
+			</search-group>
+		</search-definition>		
+	</simple-model>
+</model-mapping>

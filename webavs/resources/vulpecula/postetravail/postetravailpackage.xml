@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="vulpecula/postetravail/employeurSimpleModel.xml" />
+	<model-mapping import="vulpecula/postetravail/travailleurSimpleModel.xml" />
+	<model-mapping import="vulpecula/postetravail/posteTravailSimpleModel.xml" />
+	<model-mapping import="vulpecula/postetravail/tauxOccupationSimpleModel.xml" />
+	<model-mapping import="vulpecula/postetravail/adhesionCotisationPosteTravailSimpleModel.xml" />
+	<model-mapping import="vulpecula/postetravail/traductionSimpleModel.xml" />
+	
+	<!-- 	ComplexModels utilisés pour générer les objets métiers. -->
+	<!-- 	Ils chargent toutes les relations 1-1 -->
+	<model-mapping import="vulpecula/postetravail/employeurComplexModel.xml" />
+	<model-mapping import="vulpecula/postetravail/employeurParticulariteComplexModel.xml" />
+	<model-mapping import="vulpecula/postetravail/travailleurComplexModel.xml" />
+	<model-mapping import="vulpecula/postetravail/posteTravailComplexModel.xml" />
+	<model-mapping import="vulpecula/postetravail/adhesionCotisationPosteTravailComplexModel.xml" />
+	
+	<model-mapping import="vulpecula/postetravail/cotisationPlanComplexModel.xml" />
+	
+	<model-mapping import="vulpecula/postetravail/personneEtendueMetierComplexModel.xml" />
+</model-mapping>

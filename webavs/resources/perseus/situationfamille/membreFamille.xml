@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.situationfamille.MembreFamille">
+		<root-model name="simpleMembreFamille" model-ref="ch.globaz.perseus.business.models.situationfamille.SimpleMembreFamille"/>
+		<linked-model name="personneEtendue" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simpleMembreFamille.idTiers"/>
+			</join-group>
+		</linked-model>
+		
+	</complexe-model>
+</model-mapping>

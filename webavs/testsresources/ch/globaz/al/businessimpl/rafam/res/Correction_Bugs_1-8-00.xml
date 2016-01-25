@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="testsRafam.xsd">
+	<test id="1">
+		<description><![CDATA[Bug sur annonce annulée. Si une annonce d'un mauvais type a été annulée et une annonce d'un autre type a été crée, lors de la modification ultérieur du droit, 
+		une annonce de modification sera crée (correct) mais aussi une annonce de création correspondant à l'annonce annulée.
+		Test sur un dossier passé de IS à non-IS]]></description>
+		<idDroit>48530</idDroit>
+		<actions>
+			<action>
+				<update />
+			</action>
+		</actions>
+		<validations>
+			<validation id="1">
+				<load>
+					<etat>A_TRANSMETTRE</etat>
+				</load>
+				<check>
+					<genrePrestation>ENFANT</genrePrestation>
+					<typeAnnonce>68b</typeAnnonce>
+				</check>
+			</validation>
+		</validations>
+	</test>
+	
+	<test id="2">
+		<description><![CDATA[idem test #1, cas de passage ENF FNB -> ENF]]></description>
+		<idDroit>59487</idDroit>
+		<actions>
+			<action>
+				<update>
+					<data>
+						<debutDroit>01.07.2011</debutDroit>
+					</data>
+				</update>
+			</action>
+		</actions>
+		<validations>
+			<validation id="1">
+				<load>
+					<etat>A_TRANSMETTRE</etat>
+				</load>
+				<check>
+					<genrePrestation>ENFANT</genrePrestation>
+					<typeAnnonce>68b</typeAnnonce>
+				</check>
+			</validation>
+		</validations>
+	</test>
+	
+	<test id="3">
+		<description><![CDATA[idem test #1, cas de passage FORM FNB -> FORM]]></description>
+		<idDroit>58250</idDroit>
+		<actions>
+			<action>
+				<update />
+			</action>
+		</actions>
+		<validations>
+			<validation id="1">
+				<load>
+					<etat>A_TRANSMETTRE</etat>
+				</load>
+				<check>
+					<genrePrestation>FORMATION</genrePrestation>
+					<typeAnnonce>68a</typeAnnonce>
+				</check>
+			</validation>
+		</validations>
+	</test>
+	
+	<test id="4">
+		<description><![CDATA[idem test #1, cas de passage ADC -> non-ADC]]></description>
+		<idDroit>60324</idDroit>
+		<actions>
+			<action>
+				<update>
+					<data>
+						<debutDroit>01.07.2011</debutDroit>
+					</data>
+				</update>
+			</action>
+		</actions>
+		<validations>
+			<validation id="1">
+				<load>
+					<etat>A_TRANSMETTRE</etat>
+				</load>
+				<check>
+					<genrePrestation>ENFANT</genrePrestation>
+					<typeAnnonce>68b</typeAnnonce>
+				</check>
+			</validation>
+		</validations>
+	</test>
+	
+	<test id="5">
+		<description><![CDATA[idem test #1, cas de passage FORM -> IS]]></description>
+		<idDroit>17605</idDroit>
+		<actions>
+			<action>
+				<update />
+			</action>
+		</actions>
+		<validations>
+			<validation id="1">
+				<load>
+					<etat>A_TRANSMETTRE</etat>
+				</load>
+				<check>
+					<genrePrestation>ADI</genrePrestation>
+					<typeAnnonce>68b</typeAnnonce>
+				</check>
+			</validation>
+		</validations>
+	</test>
+	
+	<test id="6">
+		<description><![CDATA[idem test #1, cas de passage ENF -> ADC]]></description>
+		<idDroit>9137</idDroit>
+		<actions>
+			<action>
+				<update>
+					<data>
+						<debutDroit>01.02.2009</debutDroit>
+					</data>
+				</update>
+			</action>
+		</actions>
+		<validations>
+			<validation id="1">
+				<load>
+					<etat>A_TRANSMETTRE</etat>
+				</load>
+				<check>
+					<genrePrestation>ADC</genrePrestation>
+					<typeAnnonce>68b</typeAnnonce>
+				</check>
+			</validation>
+		</validations>
+	</test>
+	
+	<test id="7">
+		<description><![CDATA[Changement de type de prestation de NAIS/ACCE sur annonce déjà traitée]]></description>
+		<idDroit>42161</idDroit>
+		<actions>
+			<action>
+				<update />
+			</action>
+		</actions>
+		<validations>
+			<validation id="1">
+				<load>
+					<genrePrestation>NAISSANCE</genrePrestation>
+					<etat>A_TRANSMETTRE</etat>
+				</load>
+				<check>
+					<typeAnnonce>68c</typeAnnonce>
+				</check>
+			</validation>
+			<validation id="2">
+				<load>
+					<genrePrestation>ADOPTION</genrePrestation>
+					<etat>A_TRANSMETTRE</etat>
+				</load>
+				<check>
+					<typeAnnonce>68a</typeAnnonce>
+				</check>
+			</validation>
+		</validations>
+	</test>
+</tests>

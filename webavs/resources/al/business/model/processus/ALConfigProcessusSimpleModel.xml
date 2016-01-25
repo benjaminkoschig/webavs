@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.processus.ConfigProcessusModel">
+		<description>Attributs entité de l'application</description>
+		<table name="ALCONPRO" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idConfig" column="QID"  type="NUMERIC" comment="ID de la configuration"/>
+			<field name="businessProcessus" column="CSPROC" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Processus utilisé"/>		
+			<field name="template" column="CSTMPL" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Template lié à la configuration"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdConfig" field-ref="idConfig" operation="EQUALS"/>
+				<search-field name="forBusinessProcessus" field-ref="businessProcessus" operation="EQUALS"/>
+				<search-field name="forTemplate" field-ref="template" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

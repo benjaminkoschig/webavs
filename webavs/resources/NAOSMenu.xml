@@ -1,0 +1,987 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?> 
+<?xml-stylesheet type="text/xsl" href="menuHtml.xslt"?>
+<menus>
+	<!-- Menu principal -->
+	<menu id="AFMenuPrincipal">
+		<label refId="MENU_PRINCIPAL"/>
+		<nodes>
+			<node>
+				<label refId="MENU_AUTRE_DOSSIER"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.affiliation.autreDossier.afficher"/>
+						<parameter name="_method" value="upd"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_ANCIEN_NUMERO"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.affiliation.ancienNumero.afficher"/>
+						<parameter name="_method" value="upd"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_DERNIER"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.affiliation.affiliation.afficher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_NOUVEAU"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.wizard.wizard.afficherSaisieAffiliation"/>
+				</action>
+			</node>
+			<node open="yes">
+				<label refId="NAOS_MENU_IDE_TITRE"/>
+				<nodes>
+					<node>
+						<label refId="NAOS_MENU_IDE_ANNONCE_TITRE" />
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.ide.ideAnnonce.chercher"/>
+						</action>		
+					</node>
+					
+					<node>
+						<label refId="NAOS_MENU_IDE_TRAITEMENT_ANNONCE_TITRE" />
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.ide.ideTraitementAnnonce.afficher"/>
+						</action>		
+					</node>
+					
+					<node>
+						<label refId="NAOS_MENU_IDE_SYNCHRO_REGISTRE_TITRE" />
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.ide.ideSyncRegistre.afficher"/>
+						</action>		
+					</node>
+			</nodes>
+			</node>
+			<node open="yes">
+				<label refId="MENU_RELEVES_MAIN"/>
+				<nodes>
+					<node>
+						<label refId="MENU_RELEVES_IMPRESSIONS"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.masse.annonceSalaires.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_RELEVES_GESTION"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.releve.apercuReleve.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_RELEVES_SUIVI"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.releve.gestionReleve.afficher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="yes">
+				<label refId="MENU_ACOMPTES_MAIN"/>
+				<nodes>
+					<node>
+						<label refId="MENU_ACOMPTES_COMPARAISON"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.acompte.comparaisonAcompteMasse.afficher"/>
+						</action>
+					</node>
+					<node open="no">
+						<label refId="MENU_ACOMPTES_IMPRESSIONS"/>
+							<nodes>
+								<node>
+									<label refId="MENU_ACOMPTES_PREVISION"/>
+									<action command="/naos" responseTarget="fr_main">
+										<parameter name="userAction" value="naos.acompte.previsionAcompteImprimer.afficher"/>
+									</action>
+								</node>
+								<node>
+									<label refId="MENU_DECISION_COTISATIONS"/>
+									<action command="/naos" responseTarget="fr_main">
+										<parameter name="userAction" value="naos.decisionCotisations.decisionCotisations.afficher"/>
+									</action>
+								</node>
+								<node>
+									<label refId="MENU_ACOMPTES_BOUCLEMENT"/>
+									<action command="/naos" responseTarget="fr_main">
+										<parameter name="userAction" value="naos.acompte.bouclementAcompteImprimer.afficher"/>
+									</action>
+								</node>
+								<node>
+									<label refId="MENU_ACOMPTES_DECISION"/>
+									<action command="/naos" responseTarget="fr_main">
+											<parameter name="userAction" value="naos.masse.confirmationSalaires.afficher"/>
+									</action>
+								</node>
+							</nodes>
+					</node>
+					<!--node open="no">
+						<label refId="MENU_ACOMPTES_LISTES"/>
+							<nodes>
+								<node>
+									<label refId="MENU_ACOMPTES_PREVISION"/>
+									<action command="/naos" responseTarget="fr_main">
+										<parameter name="userAction" value="naos.acompte.previsionAcompte.afficher"/>
+									</action>
+								</node>
+							</nodes>
+					</node-->
+				</nodes>
+			</node>
+			<node id="menu_node_ancien_controle_employeur" open="no">
+				<label refId="MENU_CONTROLE_MAIN"/>
+				<nodes>
+					<node>
+						<label refId="MENU_CONTROLE_GESTION"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.controleEmployeur.controleEmployeur.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_REVISEUR"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.controleEmployeur.reviseur.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_REVISEUR_SAISIE"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.controleEmployeur.saisieRapideReviseur.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_CONTROLE_ATTRIBUTION_PTS"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.controleEmployeur.attributionPts.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_CONTROLE_ATTRIBUTION_PTS_HISTORIQUE"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.controleEmployeur.attributionPts.historique"/>
+						</action>
+					</node>
+					<node open="no">
+						<label refId="MENU_LISTES_MAIN"/>
+							<nodes>
+								<node>
+									<label refId="MENU_CONTROLES_ATTRIBUES"/>
+									<action command="/naos" responseTarget="fr_main">
+										<parameter name="userAction" value="naos.controleEmployeur.controlesAttribues.afficher"/>
+									</action>
+								</node>
+								<node>
+									<label refId="MENU_CONTROLES_A_EFFECTUER"/>
+									<action command="/naos" responseTarget="fr_main">
+										<parameter name="userAction" value="naos.controleEmployeur.controlesAEffectuer.afficher"/>
+									</action>
+								</node>
+								<node>
+									<label refId="STATCONT_MENU"/>
+									<action command="/naos" responseTarget="fr_main">
+										<parameter name="userAction" value="naos.statOfas.statOFASControle.afficher"/>
+									</action>
+								</node>
+							</nodes>
+					</node>
+				</nodes>
+			</node>
+			
+			<node open="yes">
+				<label refId="MENU_TAXECO2_MAIN"/>
+				<nodes>
+					<node>
+						<label refId="MENU_TAXECO2_GESTION"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.taxeCo2.taxeCo2.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_TAXECO2_FIGER_COMPTEUR"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.taxeCo2.figerTaxeCo2.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_TAXECO2_MASSE"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.taxeCo2.masseTaxeCo2.afficher"/>
+						</action>
+					</node>
+					<node open="no">
+						<label refId="MENU_TAXECO2_IMPRESSION_MAIN"/>
+							<nodes>
+								<node>
+									<label refId="MENU_TAXECO2_LISTE_RADIES"/>
+									<action command="/naos" responseTarget="fr_main">
+										<parameter name="userAction" value="naos.taxeCo2.listeRadieTaxeCo2.afficher"/>
+									</action>
+								</node>
+								<node open="no">
+								<label refId="MENU_TAXECO2_LISTE_EXCEL"/>
+									<nodes>
+										<node>
+											<label refId="MENU_TAXECO2_LISTE_RADIES"/>
+											<action command="/naos" responseTarget="fr_main">
+												<parameter name="userAction" value="naos.taxeCo2.listeExcelRadieTaxeCo2.afficher"/>
+											</action>
+										</node>
+										<node>
+											<label refId="MENU_TAXECO2_LISTE"/>
+											<action command="/naos" responseTarget="fr_main">
+												<parameter name="userAction" value="naos.taxeCo2.listeExcelTaxeCo2.afficher"/>
+											</action>
+										</node>
+										<node>
+											<label refId="MENU_REINJECTION_LISTE_EXCEL" />
+											<action command="/naos" responseTarget="fr_main">
+												<parameter name="userAction" value="naos.taxeCo2.reinjectionListeExcel.afficher" />
+											</action>
+										</node>
+									</nodes>
+								</node>
+							</nodes>
+					</node>
+				</nodes>
+			</node>
+			
+			<node open="no">
+				<label refId="MENU_BENEFICIAIREPC"/>
+				<nodes>
+					<node>
+						<label refId="MENU_BENEFICIAIREPC_RECHERCHE"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.beneficiairepc.quittance.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_BENEFICIAIREPC_JOURNAUX"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.beneficiairepc.journalQuittance.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_BENEFICIAIREPC_IMPRESSION"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.beneficiairepc.impression.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_BENEFICIAIREPC_IMPRESSION_ERREURS"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.beneficiairepc.impressionErreurs.afficher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+						
+			<node open="yes">
+				<label refId="MENU_CAP"/>
+				<nodes>
+					<node>
+						<label refId="MENU_CAP_DOSSIER"/>
+						<action command="/auriga" responseTarget="fr_main">
+							<parameter name="userAction" value="auriga.decisioncap.decisionCapSearch.afficherCapSearch"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_CAP_RENOUVELLEMENT"/>
+						<action command="/auriga" responseTarget="fr_main">
+								<parameter name="userAction" value="auriga.renouvellementdecisionmasse.renouvellementDecisionMasse.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_CAP_SORTIE"/>
+						<action command="/auriga" responseTarget="fr_main">
+								<parameter name="userAction" value="auriga.sortiecap.sortieCap.afficher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			
+			<node open="yes">
+				<label refId="MENU_CGAS"/>
+				<nodes>
+					<node>
+						<label refId="MENU_CGAS_DOSSIER"/>
+						<action command="/aries" responseTarget="fr_main">
+								<parameter name="userAction" value="aries.decisioncgas.decisionCgasSearch.afficherCgasSearch"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_CGAS_RENOUVELLEMENT"/>
+						<action command="/aries" responseTarget="fr_main">
+								<parameter name="userAction" value="aries.renouvellementdecisionmasse.renouvellementDecisionMasse.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_CGAS_SORTIE"/>
+						<action command="/aries" responseTarget="fr_main">
+								<parameter name="userAction" value="aries.sortiecgas.sortieCgas.afficher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			
+			<node open="no">
+				<label refId="MENU_OPERATION_MAIN"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPERATION_MUTATION"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.annonceAffilie.impressionMutation.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPERATION_RENTIERS"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.rentier.export.detail"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPERATION_SORTIE"/>
+						<action command="/phenix" responseTarget="fr_main">
+								<parameter name="userAction" value="phenix.principale.sortie.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="EPURATION_CAS_NON_SOUMIS"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.affiliation.epuCasNonSoumis.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPERATION_ATTESTATION_PERSONNELLE" />
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.attestation.attestationPersonnelle.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPERATION_CONTROLE_LPP" />
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.controleLpp.controleLppAnnuel.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label refId="MENU_LISTES_MAIN"/>
+				<nodes>
+					<node>
+						<label refId="MENU_LISTES_NOUVPERS"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.tent.export.detail"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LISTES_PROVCOT"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.affiliation.affiliationProvisoires.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LISTES_AFFSANSCOT"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.affiliation.affiliationNonProvisoires.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LISTES_NASANSCI"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.affiliation.affiliationNAIndSansCI.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LISTES_RADIESSOLDES"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.affiliation.soldesAffiliesRadies.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LISTES_STATISTIQUESOFAS"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.statOfas.statistiquesOfas.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LISTES_TRIMESTRIELLE_MASSE_SUPP"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.masse.trimestrielleAvecMasseSupp.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LISTE_NOUVELLE_AFFILIATION"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.affiliation.listeNouvelleAffiliation.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LISTE_AFFILIATION_MODE_FACTURATION"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.affiliation.listeAffiliationModeFacturation.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LISTE_AGENCE_COMMUNALE"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.listeAgenceCommunale.listeAgenceCommunale.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="TITRE_DOCUMENT_AFF_FG_REDUIT"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.affiliation.listeAffilieFraisGestionReduit.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="NAOS_MENU_LISTE_ASSURES_BY_AFFILIATION"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.affiliation.listeNbrAssuresByAffiliation.afficher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label refId="MENU_PARAM_MAIN"/>
+				<nodes>
+					<node>
+						<label refId="MENU_PARAM_ASSURANCES"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.assurance.assurance.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PARAM_PLANCAISSE"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.planCaisse.planCaisse.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PARAM_CATTEXTES"/>
+						<action command="/babel" responseTarget="fr_main">
+								<parameter name="userAction" value="babel.cat.document.chercher"/>
+								<parameter name="csGroupeDomaines" value="VEGRPDOM"/>
+								<parameter name="csGroupeTypesDocuments" value="VETYPDOCS"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			
+		</nodes>
+	</menu>
+	
+	<!-- Options sur une affiliation -->
+	<menu id="AFOptionsAffiliation">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node open="yes">
+				<label refId="OPTION_COTISATIONS_MAIN"/>
+				<nodes>
+					<node>
+						<label refId="OPTION_COTISATIONS_PLANS"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.planAffiliation.planAffiliation.chercher"/>
+								<parameter name="affiliationId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTION_COTISATIONS_COTI"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.cotisation.cotisation.chercher"/>
+								<parameter name="affiliationId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTION_COTISATIONS_MASSES"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.masse.masseModifier.afficher"/>
+								<parameter name="affiliationId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTION_COTISATIONS_TAUXMOYEN"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.tauxAssurance.tauxMoyen.chercher"/>
+								<parameter name="affiliationId" value="" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="yes">
+				<label refId="OPTION_ATTRIBUTS_MAIN"/>
+				<nodes>
+					<node>
+						<label refId="OPTION_ATTRIBUTS_ADHESION"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.adhesion.adhesion.chercher"/>
+								<parameter name="affiliationId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTION_ATTRIBUTS_PARICULARITE"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.particulariteAffiliation.particulariteAffiliation.chercher"/>
+								<parameter name="affiliationId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTION_ATTRIBUTS_LIEN"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.lienAffiliation.lienAffiliation.chercher"/>
+								<parameter name="affiliationId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTION_ATTRIBUTS_NBRASSURES"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.nombreAssures.nombreAssures.chercher"/>
+								<parameter name="affiliationId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTION_ATTRIBUTS_SUIVICAISSES"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.suiviCaisseAffiliation.suiviCaisseAffiliation.chercher"/>
+								<parameter name="affiliationId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTION_ATTRIBUTS_ADRESSES"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.affiliation.affiliation.rechercheAdressesTiers"/>
+								<parameter name="affiliationId" value="" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label refId="OPTION_MUTATIONS_MAIN"/>
+				<nodes>
+					<node>
+						<label refId="OPTION_MUTATIONS_GESTMUTA"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.annonceAffilie.annonceAffilie.chercher"/>
+								<parameter name="affiliationId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTION_MUTATIONS_AVISCAISSES"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.avisMutation.avisMutation.selectionImpression"/>
+								<parameter name="affiliationId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTION_MUTATIONS_BORDEREAU_MUTATION"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.affiliation.bordereauMutation.afficher"/>
+								<parameter name="selectedId" value="-id-" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label refId="OPTION_DOCUMENTS_MAIN"/>
+				<nodes>
+					<node>
+						<label refId="OPTION_DOCUMENTS_RELEVE"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.masse.annonceSalaires.afficher"/>
+								<parameter name="selectedId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTION_DOCUMENT_DECISION_COTISATIONS"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.decisionCotisations.decisionCotisations.afficher"/>
+								<parameter name="selectedId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_ACOMPTES_BOUCLEMENT"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.acompte.bouclementAcompteImprimer.afficher"/>
+								<parameter name="selectedId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_ACOMPTES_PREVISION"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.acompte.previsionAcompteImprimer.afficher"/>
+							<parameter name="selectedId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTION_DOCUMENTS_ADAPTACOMPTE"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.masse.confirmationSalaires.afficher"/>
+								<parameter name="selectedId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTION_DOCUMENTS_ATTESTATION"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.affiliation.attestationAffiliation.afficher"/>
+								<parameter name="selectedId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTION_DOCUMENTS_CARTOTHEQUE"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.affiliation.ficheCartotheque.afficher"/>
+								<parameter name="selectedId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTION_DOCUMENTS_ATTESTATION_CHARGES_SOCIALES"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.attestation.attestationChaSocProcess.afficher"/>
+								<parameter name="selectedId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTION_DOCUMENTS_LETTRE_BIENVENUE"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.affiliation.lettreBienvenue.afficher"/>
+								<parameter name="selectedId" value="-id-" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label refId="OPTION_OPERATIONS_MAIN"/>
+				<nodes>
+					<node>
+						<label refId="OPTION_OPERATIONS_RETRO"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.calculRetroactif.calculRetroactif.generer"/>
+								<parameter name="affiliationId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_RELEVES_MAIN"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.releve.apercuReleve.chercher"/>
+								<parameter name="affiliationId" value="" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node>
+				<label refId="OPTION_COTPERS"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.affiliation.affiliation.rechercheDecisionCP"/>
+						<parameter name="affiliationId" value="" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTION_CTRLEMPLOYEUR"/>
+				<action command="/hercule" responseTarget="fr_main">
+					<parameter name="userAction" value="hercule.controleEmployeur.listeControleEmployeur.chercher" />
+					<parameter name="likeNumAffilie" value="" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTION_COMPTE"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.affiliation.affiliation.rechercheIdCompteAnnexe"/>
+						<parameter name="affiliationId" value="" />
+				</action>
+			</node>
+			<node id="naos_af_ged">
+				<label refId="OPTION_GED"/>
+				<action command="/naos" responseTarget="_blank">
+						<parameter name="userAction" value="naos.affiliation.affiliation.gedafficherdossier"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTION_GESTENVOI"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.affiliation.affiliation.gestionEnvois"/>
+						<parameter name="affiliationId" value="" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTION_ANNONCEIDE"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.ide.ideAnnonce.chercher"/>
+						<parameter name="likeNumAffilie" value="" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Options liste affiliation -->
+	<menu id="AFOptionsAffiliationListe">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="OPTION_COTISATIONS_PLANS"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.planAffiliation.planAffiliation.chercher"/>
+						<parameter name="affiliationId" value="" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTION_COTISATIONS_COTI"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.cotisation.cotisation.chercher"/>
+						<parameter name="affiliationId" value="" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTION_ATTRIBUTS_PARICULARITE"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.particulariteAffiliation.particulariteAffiliation.chercher"/>
+						<parameter name="affiliationId" value="" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTION_ATTRIBUTS_LIEN"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.lienAffiliation.lienAffiliation.chercher"/>
+						<parameter name="affiliationId" value="" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTION_ATTRIBUTS_SUIVICAISSES"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.suiviCaisseAffiliation.suiviCaisseAffiliation.chercher"/>
+						<parameter name="affiliationId" value="" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTION_COTPERS"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.affiliation.affiliation.rechercheDecisionCP"/>
+						<parameter name="affiliationId" value="" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTION_CTRLEMPLOYEUR"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.controleEmployeur.controleEmployeur.chercher"/>
+						<parameter name="affiliationId" value="" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTION_COMPTE"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.affiliation.affiliation.rechercheIdCompteAnnexe"/>
+						<parameter name="affiliationId" value="" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTION_GESTENVOI"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.affiliation.affiliation.gestionEnvois"/>
+						<parameter name="affiliationId" value="" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Options adhésion -->
+	<menu id="AFOptionsAdhesion">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="OPTION_COTISATIONS_COTI"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.cotisation.cotisation.chercher"/>
+						<parameter name="adhesionId" value="" />
+						<parameter name="planCaisseId" value="" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Options plan affiliation -->
+	<menu id="AFOptionsPlanAffiliation">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="OPTION_COTISATIONS_COTI"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.cotisation.cotisation.chercher"/>
+						<parameter name="planAffiliationId" value="" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Options plan caisse -->
+	<menu id="AFOptionsPlanCaisse">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="OPTION_COUVERTURE"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.couverture.couverture.chercher"/>
+						<parameter name="planCaisseId" value="" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Options assurance -->
+	<menu id="AFOptionsAssurances">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="OPTION_TAUX"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.tauxAssurance.tauxAssurance.chercher"/>
+						<parameter name="assuranceId" value="" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTION_PARAMTAUX"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.parametreAssurance.parametreAssurance.chercher"/>
+						<parameter name="assuranceId" value="" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Options couverture -->
+	<menu id="AFOptionsCouverture">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="OPTION_TAUX"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.couverture.couverture.chercherTauxAssurance"/>
+						<parameter name="couvertureId" value="" />
+						<parameter name="_s_push" value="no" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTION_PARAMTAUX"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.couverture.couverture.chercherParamAssurance"/>
+						<parameter name="couvertureId" value="" />
+						<parameter name="_s_push" value="no" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Options cotisation -->
+	<menu id="AFOptionsCotisation">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="OPTION_EXCEPTION"/>
+				<action command="/naos" responseTarget="fr_main">
+						<parameter name="userAction" value="naos.cotisation.cotisation.afficherCreeException"/>
+						<parameter name="cotisationId" value="" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Menu Option des contrôles d'employeurs -->
+	<menu id="AFOptionsControlEmployeur">
+		<label refId="MENU_OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_IMPRIMER_RAPPORT" />
+				<action command="/naos" responseTarget="fr_main">
+					<parameter name="userAction" value="naos.controleEmployeur.controleEmployeur.imprimerControle" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_IMPRIMER_LIBRE" />
+				<action command="/naos" responseTarget="fr_main">
+					<parameter name="userAction" value="naos.controleEmployeur.controleEmployeur.imprimerlettrelibre" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_LETTRE_PROCHAIN_CONTROLE" />
+				<action command="/naos" responseTarget="fr_main">
+					<parameter name="userAction" value="naos.controleEmployeur.controleEmployeur.lettreProchainControle" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Menu Option des contrôles d'employeurs attribution des points-->
+	<menu id="AFOptionsControlEmployeurAttributionPts">
+		<label refId="MENU_OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_HISTORIQUE" />
+				<action command="/naos" responseTarget="fr_main">
+					<parameter name="userAction" value="naos.controleEmployeur.attributionPts.historique" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Menu Option vide -->
+	<menu id="AFMenuVide">
+		<label refId="MENU_OPTIONS"/>
+	</menu>
+	
+	<!-- ****************************** -->
+	<!-- Menu Option journal quittances -->
+	<!-- ****************************** -->
+	<menu id="AF-journalQuittances">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Facturer">
+					<language iso="de">fakturieren</language>
+				</label>
+				<action command="/naos" responseTarget="fr_main">
+					<parameter name="userAction" value="naos.beneficiairepc.journalQuittances.afficherGenerer" />
+					<parameter name="idJournalQuittances" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Inscrire au CI">
+					<language iso="de">IK registrieren</language>
+				</label>
+				<action command="/naos" responseTarget="fr_main">
+					<parameter name="userAction" value="naos.beneficiairepc.journalQuittances.afficherComptabiliser" />
+					<parameter name="idJournalQuittances" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Quittances">
+					<language iso="de">Quittances</language>
+				</label>
+				<action command="/naos" responseTarget="fr_main">
+					<parameter name="userAction" value="naos.beneficiairepc.quittance.chercher" />
+					<parameter name="idJournalQuittances" value="-id-"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- ******************** -->
+	<!-- Menu Option Taxe CO2 -->
+	<!-- ******************** -->
+	<menu id="AF-taxeCo2">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Imprimer lettre">
+					<language iso="de">Brief</language>
+				</label>
+				<action command="/naos" responseTarget="fr_main">
+					<parameter name="userAction" value="naos.taxeCo2.lettreTaxeCo2.afficher"/>
+					<parameter name="selectedId" value="" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+</menus>

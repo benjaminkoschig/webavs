@@ -1,0 +1,52 @@
+<html>
+<head>
+<title>Framework WebThings - 1.3.9 release notes</title>
+</head>
+<body>
+<h2>Framework WebThings - 1.3.9 release notes</h2>
+<p>R-1.3.9-20060517 Date: 17.05.2006</p>
+<h3>Améliorations depuis 1.2</h3>
+<ul>
+	<li>[1.3.9] menu: tag permettant d'activer / désactiver [node] dans un menu: menuActivateNode.</li>
+	<li>[1.3.9] menu: tag permettant d'exclure un [node] dans un menu popup: menuExcludeNode.</li>
+	<li>[1.3.9] template "process": le bouton "Ok" n'apparaît plus lorsqu'un process a été lancé. Possibilité néanmoins de le remettre en modifiant la variable "showProcessButton". 
+		Egalement possibilité de le renommer <i>via</i> la variable "okButtonLabel".</li>
+	<li><hr></li>
+	<li>[1.3.8] action de menu: support d'un responseTarget "_blank";</li>
+	<li><hr></li>
+	<li>[1.3.7] amélioration drastique des performances du tag "menu popup", d'un facteur 4 à 5;</li>
+	<li>[1.3.7] amélioration de l'urlStack.jsp;</li>
+	<li><hr></li>
+	<li>[1.3.6] tag menu: warning dans les logs en cas de menu non trouvé;</li>
+	<li>[1.3.6] templates: propreté HTML;</li>
+	<li>[1.3.6] template process: la méthode du formulaire est mise à "post", comme pour les autres templates;</li>
+	<li><hr></li>
+	<li>[1.3.5] /common et templates: propreté HTML;</li>
+	<li>[1.3.5] taglib dyntable: ajout de paramètres pour contrôler la présence des boutons ajouter et modifier;</li>
+	<li><hr></li>
+	<li>[1.3.4] tmpl: capage et process: ajout de menu.js;</li>
+	<li><hr></li>
+	<li>[1.3.2] menu: prise en compte des menus inactifs ("grisés");</li>
+	<li>[1.3.2] améliorations diverses des pages "common";</li>
+	<li><hr></li>
+	<li>[1.3.1] réimplémentation de la gestion des boutons dans les pages (suppresion des balises "active=xxx");</li>
+	<li>[1.3.1] ajout de FWChooserTag.getSelectLink(). Exemple d'utilisation dans la FAQ R&amp;T;</li>
+	<li>[1.3.1] dans tous les templates, ajout de &lt;meta&gt; pour décourager les browsers à mettre les pages en cache;</li>
+	<li>[1.3.1] suppression des balises <code>&lt;download&gt;</code> dans list et select.</li>
+</ul>
+
+<h3>Bugs corrigés depuis 1.2</h3>
+<ul>
+	<li>[1.3.7] corrections dans menu.css;</li>
+	<li><hr></li>
+	<li>[1.3.3] Corrections dans les scripts de gestion des boutons.</li>
+	<li><hr></li>
+	<li>[1.3.1] Les custom tags HTML gèrent la possibilité de valeurs nulles dans les propriétés des vBeans.</li>
+</ul>
+
+<h3>Dépendances</h3>
+<ul>
+	<li>Framework Jade: compilé avec framework_2-1-37</li>
+</ul>
+</body>
+</html>

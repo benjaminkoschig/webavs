@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.vulpecula.business.models.decomptes.HistoriqueDecompteSimpleModel">
+		<table name="PT_HISTORIQUE_DECOMPTES" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="id" column="ID" comment="Id de l'historique" />
+			<field name="idDecompte" column="ID_PT_DECOMPTES" type="NUMERIC" comment="lien sur le décompte" />
+			<field name="date" column="DATE" type="DATE" />
+			<field name="heure" column="HEURE" type="NUMERIC" />
+			<field name="etat" column="CS_ETAT" type="NUMERIC" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		
+		<order-by>
+			<order-field field-ref="id" />
+		</order-by>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+	</simple-model>
+</model-mapping>

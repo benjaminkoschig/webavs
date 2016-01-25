@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.decomptes.CotisationDecompteComplexModel">
+
+		<root-model name="cotisationDecompteSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.decomptes.CotisationDecompteSimpleModel" />
+
+		<linked-model name="cotisationComplexModel"
+			model-ref="ch.globaz.vulpecula.external.models.CotisationComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="cotisationSimpleModel.cotisationId"
+					operation="EQUALS" field-ref="cotisationDecompteSimpleModel.idCotisation" />
+			</join-group>
+		</linked-model>
+				
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="cotisationDecompteSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdLigneDecompte"
+					field-ref="cotisationDecompteSimpleModel.idLigneDecompte" operation="EQUALS" />
+				<search-field name="forIdCotisation"
+					field-ref="cotisationDecompteSimpleModel.idCotisation" operation="EQUALS" />
+				<search-field name="forIdIn"
+					field-ref="cotisationDecompteSimpleModel.idLigneDecompte" operation="IN" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.droit.Droit">
+		<root-model name="simpleDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroit"/>
+		<linked-model name="simpleVersionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>
+			</join-group>		
+		</linked-model>
+		<linked-model name="demande" model-ref="ch.globaz.pegasus.business.models.demande.Demande" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleDemande.idDemande" operation="EQUALS" field-ref="simpleDroit.idDemandePC"/>
+			</join-group>
+		</linked-model>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDemandePc" operation="EQUALS" field-ref="simpleDroit.idDemandePC"/>
+				<search-field name="forCsEtatDroit" operation="EQUALS" field-ref="simpleVersionDroit.csEtatDroit"/>
+				<search-field name="forCsSexe" operation="EQUALS" field-ref="demande.dossier.demandePrestation.personneEtendue.personne.sexe"/>
+				<search-field name="forDateNaissance" operation="EQUALS" field-ref="demande.dossier.demandePrestation.personneEtendue.personne.dateNaissance"/>
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simpleVersionDroit.idVersionDroit"/>
+				<search-field name="forIdTiers" operation="EQUALS" field-ref="demande.dossier.demandePrestation.demandePrestation.idTiers"/>
+				<search-field name="likeNom" operation="LIKE" field-ref="demande.dossier.demandePrestation.personneEtendue.tiers.designationUpper1"/>
+				<search-field name="likeNss" operation="LIKE" field-ref="demande.dossier.demandePrestation.personneEtendue.personneEtendue.numAvsActuel"/>
+				<search-field name="likePrenom" operation="LIKE" field-ref="demande.dossier.demandePrestation.personneEtendue.tiers.designationUpper2"/>
+				<search-field name="forCsEtatDroitIn" operation="IN" field-ref="simpleVersionDroit.csEtatDroit"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="currentVersion">
+			<search-group operator="AND">
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>
+				<search-field name="likeNss" operation="LIKE" field-ref="demande.dossier.demandePrestation.personneEtendue.personneEtendue.numAvsActuel"/>
+				<search-field name="forNss" operation="EQUALS" field-ref="demande.dossier.demandePrestation.personneEtendue.personneEtendue.numAvsActuel"/>
+				
+				<search-field name="forIdDemandePc" operation="EQUALS" field-ref="simpleDroit.idDemandePC"/>
+				<search-field name="forIdTiers" operation="EQUALS" field-ref="demande.dossier.demandePrestation.demandePrestation.idTiers"/>
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<![CDATA[ 
+						#{simpleVersionDroit.noVersion} =
+							(
+								select MAX( #{versionDroit.noVersion} ) from @{versionDroit} 
+									where #{versionDroit.idDroit} = #{simpleDroit.idDroit}
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+		
+		
+		<search-definition name="currentVersionWithDateFinDemandeNull">
+			<search-group operator="AND">
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>
+				<search-field name="likeNss" operation="LIKE" field-ref="demande.dossier.demandePrestation.personneEtendue.personneEtendue.numAvsActuel"/>
+				<search-field name="forNss" operation="EQUALS" field-ref="demande.dossier.demandePrestation.personneEtendue.personneEtendue.numAvsActuel"/>
+				<search-field name="forDateNaissance" operation="NULL" field-ref="demande.simpleDemande.dateFin"/>
+				<search-field name="forCsEtatDemande" operation="EQUALS" field-ref="demande.simpleDemande.csEtatDemande"/>
+				<search-field name="forCsEtatDroit" operation="EQUALS" field-ref="simpleVersionDroit.csEtatDroit"/>
+				<search-field name="forIdDemandePc" operation="EQUALS" field-ref="simpleDroit.idDemandePC"/>
+				<search-field name="forIdTiers" operation="EQUALS" field-ref="demande.dossier.demandePrestation.demandePrestation.idTiers"/>
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<![CDATA[ 
+						#{simpleVersionDroit.noVersion} =
+							(
+								select MAX( #{versionDroit.noVersion} ) from @{versionDroit} 
+									where #{versionDroit.idDroit} = #{simpleDroit.idDroit}
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+		
+		
+	    <search-definition name="withOldDemande">
+			<search-group operator="AND">
+			 	<search-field name="forIdDemandePc" operation="NOT_EQUALS" field-ref="simpleDroit.idDemandePC"/>
+	    	    <search-field name="forIdTiers" operation="EQUALS" field-ref="demande.dossier.demandePrestation.demandePrestation.idTiers"/>
+				<search-literal>
+					<declare-model name="simpleDemande" model-ref="ch.globaz.pegasus.business.models.demande.SimpleDemande"/>
+					<![CDATA[ 
+						#{demande.simpleDemande.dateFin} =
+							(
+								select MAX( #{simpleDemande.dateFin} ) 
+								  from @{simpleDemande} 
+								 where #{simpleDemande.idDemande} = #{simpleDroit.idDemandePC}
+								   and (#{simpleDemande.dateFin} < ${forDateFinDemande:simpleDemande.dateFin} and #{simpleDemande.dateFin} > 0)
+							)
+					 ]]>
+				</search-literal>
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<![CDATA[ 
+						#{simpleVersionDroit.noVersion} =
+							(
+								select MAX( #{versionDroit.noVersion} ) 
+								  from @{versionDroit} 
+								 where #{versionDroit.idDroit} = #{simpleDroit.idDroit}
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="nomPrenom">
+			<order-field field-ref="demande.dossier.demandePrestation.personneEtendue.tiers.designationUpper1"/>
+			<order-field field-ref="demande.dossier.demandePrestation.personneEtendue.tiers.designationUpper2"/>
+			<order-field field-ref="simpleVersionDroit.noVersion" order="DESC"/>
+		</order-by>
+		<order-by>
+			<order-field field-ref="simpleVersionDroit.noVersion" order="DESC"/>
+			<order-field field-ref="demande.simpleDemande.dateDebut" order="DESC"/>
+		</order-by>			
+	</complexe-model>
+</model-mapping>

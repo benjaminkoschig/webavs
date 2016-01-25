@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.situationfamille.SimpleEnfant">
+		<description>Tables des enfants pour une demande de PC Famille</description>
+		<table name="PFENFANT" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idEnfant" column="IFIDEN" comment="Clé primaire de la table des enfants"/>
+			<field name="idMembreFamille" column="IFIDMF" type="NUMERIC" mandatory="true" comment="Identifiant du membre famille"/>
+			
+		</fields>
+	
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdMembreFamille" operation="EQUALS" field-ref="idMembreFamille"/>
+			</search-group>
+		</search-definition>
+		
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+       <complexe-model className="ch.globaz.vulpecula.business.models.travailleur.PersonneEtendueMetierComplexModel">
+             <root-model name="personneEtendue"
+                    model-ref="ch.globaz.pyxis.business.model.PersonneEtendueSimpleModel" />
+             <linked-model name="personne"
+                    model-ref="ch.globaz.pyxis.business.model.PersonneSimpleModel"
+                    join-type="INNER">
+                    <join-group operator="AND">
+                           <join-field name="idTiers" field-ref="personneEtendue.idTiers" />
+                    </join-group>
+             </linked-model>
+             <linked-model name="tiers"
+                    model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="INNER">
+                    <join-group operator="AND">
+                           <join-field name="idTiers" field-ref="personneEtendue.idTiers" />
+                    </join-group>
+             </linked-model>
+             
+             <!-- 
+             
+                    SEARCH DEFINITIONS
+             
+             -->
+             <search-definition>
+                    <search-group operator="AND">
+                           <search-field name="forDesignation1Like" field-ref="tiers.designationUpper1"
+                                  operation="LIKE" />
+                           <search-field name="forDesignation2Like" field-ref="tiers.designationUpper2"
+                                  operation="LIKE" />
+                           <search-field name="forDesignation1" field-ref="tiers.designationUpper1"
+                                  operation="EQUALS" />
+                           <search-field name="forDesignation2" field-ref="tiers.designationUpper2"
+                                  operation="EQUALS" />
+                           <search-field name="forNumeroAvsActuel" field-ref="personneEtendue.numAvsActuel"
+                                  operation="LIKE" />
+                           <search-field name="forIdTiers" field-ref="tiers.idTiers"
+                                  operation="EQUALS" />
+                           <search-field name="forDateNaissance" field-ref="personne.dateNaissance"
+                                  operation="EQUALS" />
+                           <search-field name="for_personneMorale" field-ref="tiers._personneMorale"
+                                  operation="EQUALS" />
+                           <search-field name="forNoContribuable" field-ref="personneEtendue.numContribuableActuel"
+                                  operation="LIKE" />
+                           <search-field name="for_isInactif" field-ref="tiers._inactif"
+                                  operation="EQUALS" />
+                           <search-field name="personnePhysique" field-ref="tiers._personnePhysique" operation="EQUALS"  />			
+						   <search-group operator="OR">
+								<search-field name="sexeHomme" field-ref="personne.sexe" operation="EQUALS" />
+								<search-field name="sexeFemme" field-ref="personne.sexe" operation="EQUALS" />
+						   </search-group>	
+						   <!-- <search-field name="forNumeroAvsActuel" operation="NOT_NULL" field-ref="personneEtendue.numAvsActuel"/>  -->       
+                    </search-group>
+             </search-definition>
+       </complexe-model>
+</model-mapping>

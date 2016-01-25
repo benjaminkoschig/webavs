@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<satellites>
+	<satellite code="1" langue="fr" valeur="Lyon"/>
+	<satellite code="1" langue="de" valeur="Lyon"/>
+	<satellite code="1" langue="it" valeur="Lyon"/>		
+	
+	<satellite code="2" langue="fr" valeur="Düsseldorf"/>
+	<satellite code="2" langue="de" valeur="Düsseldorf"/>
+	<satellite code="2" langue="it" valeur="Duesseldorf"/>	
+	
+	<satellite code="3" langue="fr" valeur="Milan"/>
+	<satellite code="3" langue="de" valeur="Mailand"/>
+	<satellite code="3" langue="it" valeur="Milano"/>		
+	
+	<satellite code="4" langue="fr" valeur="Londres"/>
+	<satellite code="4" langue="de" valeur="London"/>
+	<satellite code="4" langue="it" valeur="Londa"/>
+	
+	<satellite code="5" langue="fr" valeur="Barcelone"/>
+	<satellite code="5" langue="de" valeur="Barcelona"/>
+	<satellite code="5" langue="it" valeur="Barcellona"/>	
+	
+	<satellite code="6" langue="fr" valeur="Montréal"/>
+	<satellite code="6" langue="de" valeur="Montreal"/>
+	<satellite code="6" langue="it" valeur="Montreal"/>		
+	
+	<satellite code="7" langue="fr" valeur="Buenos Aires"/>
+	<satellite code="7" langue="de" valeur="Buenos Aires"/>
+	<satellite code="7" langue="it" valeur="Buenos Aires"/>	
+	
+	<satellite code="8" langue="fr" valeur="Rio de Janeiro"/>
+	<satellite code="8" langue="de" valeur="Rio de Janeiro"/>
+	<satellite code="8" langue="it" valeur="Rio de Janeiro"/>	
+	
+	<satellite code="9" langue="fr" valeur="Sidney"/>
+	<satellite code="9" langue="de" valeur="Sidney"/>
+	<satellite code="9" langue="it" valeur="Sidney"/>
+	
+	<satellite code="10" langue="fr" valeur="Genève"/>
+	<satellite code="10" langue="de" valeur="Genf"/>
+	<satellite code="10" langue="it" valeur="Ginevra"/>											
+</satellites>

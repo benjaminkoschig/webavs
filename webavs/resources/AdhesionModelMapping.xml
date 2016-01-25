@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.naos.business.model.AdhesionSimpleModel">
+		<table name="AFADHEP" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="adhesionId" column="MRIADH"  />
+			<field name="adhesionId" column="MRIADH" type="NUMERIC"  />
+			<field name="affiliationId" column="MAIAFF" type="NUMERIC"  />
+			<field name="dateDebut" column="MRDDEB" type="DATE"  />
+			<field name="dateFin" column="MRDFIN" type="DATE"  />
+			<field name="typeAdhesion" column="MRTADH" type="NUMERIC"  />
+			<field name="planCaisseId" column="MSIPLC" type="NUMERIC"  />
+			<field name="idTiers" column="HTITIE" type="NUMERIC"  />
+		</fields>
+		</simple-model>
+</model-mapping>

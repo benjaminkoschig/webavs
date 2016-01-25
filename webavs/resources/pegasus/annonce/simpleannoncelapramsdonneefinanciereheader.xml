@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.annonce.SimpleAnnonceLapramsDonneeFinanciereHeader">
+		<description>Annonce LAPRAMS Donnees financieres</description>
+		<table name="PCLAPDFH" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAnnonceLAPRAMSDoFinH" column="DJILAD" comment="ID_LAPRAMS_DOFINH"/>
+			<field name="idAnnonceLaprams" column="DJICOL" type="NUMERIC" comment="ID_COMMUNICATION_LAPRAMS"/>
+			<field name="idDonneeFinanciereHeader" column="DJIDFH" type="NUMERIC" comment="ID_DONNEE_FINANCIERE_HEADER"/>
+		<!--<field name="csRoleMembreFamille" column="DJTRMF" type="NUMERIC" comment="CS_ROLE_MEMBRE_FAMILLE"/> -->
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="inIdsAnnonceHeader" operation="IN" field-ref="idAnnonceLaprams"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

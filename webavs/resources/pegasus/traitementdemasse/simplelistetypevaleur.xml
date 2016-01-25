@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.traitementdemasse.SimpleListeTypeValeur">
+		<description>Liste des type de valeurs traitées</description>
+		<table name="PCVTVALT" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idListeTypeValeur" column="ANITVT" comment="ID_LISTE_TYPE_VALEUR_TRAITE"/>			
+			<field name="idAction" mandatory="true" column="ANIACT" type="NUMERIC" comment="ID_ACTION"/>
+			<field name="idTypeDeValeur" mandatory="true" column="ANITVA" type="NUMERIC" comment="ID_TYPE_DE_VALEUR"/>
+		</fields>
+	</simple-model>
+</model-mapping> 

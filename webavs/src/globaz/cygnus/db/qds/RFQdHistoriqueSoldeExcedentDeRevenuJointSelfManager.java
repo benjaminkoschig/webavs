@@ -1,0 +1,94 @@
+/*
+ * Créé le 20 janvier 2009
+ */
+package globaz.cygnus.db.qds;
+
+import globaz.globall.db.BEntity;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BStatement;
+import globaz.prestation.tools.sql.PRWhereStringBuffer;
+
+/**
+ * @author jje
+ */
+public class RFQdHistoriqueSoldeExcedentDeRevenuJointSelfManager extends BManager {
+
+    // ~ Static fields/initializers
+    // -------------------------------------------------------------------------------------
+
+    // ~ Instance fields
+    // ------------------------------------------------------------------------------------------------
+
+    // private transient String fromClause = null;
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private String forIdQd = "";
+
+    // ~ Constructors
+    // ---------------------------------------------------------------------------------------------------
+
+    /**
+     * Crée une nouvelle instance de la classe RFQdHistoriqueSoldeExcedentDeRevenuJointSelfManager.
+     */
+    public RFQdHistoriqueSoldeExcedentDeRevenuJointSelfManager() {
+        super();
+        wantCallMethodBeforeFind(true);
+    }
+
+    // ~ Methods
+    // --------------------------------------------------------------------------------------------------------
+
+    /**
+     * Redéfinition de la méthode _getOrder du parent afin de changer le tri de la requête
+     * 
+     * @param statement
+     */
+    @Override
+    protected String _getOrder(BStatement statement) {
+        StringBuffer order = new StringBuffer("n." + RFQdSoldeExcedentDeRevenu.FIELDNAME_ID_SOLDE_EXCEDENT);
+        order.append(" DESC");
+        return order.toString();
+    }
+
+    /**
+     * Redéfinition de la méthode _getWhere du parent afin de générer le WHERE de la requête en fonction des besoins
+     * 
+     * @param statement
+     */
+    @Override
+    protected String _getWhere(BStatement statement) {
+
+        PRWhereStringBuffer sqlWhere = new PRWhereStringBuffer(_getCollection());
+
+        sqlWhere.newClause().append("n." + RFQdSoldeExcedentDeRevenu.FIELDNAME_ID_QD).appendEgal().append(getForIdQd());
+
+        return sqlWhere.toString();
+    }
+
+    /**
+     * Définition de l'entité (RFQdHistoriqueSoldeExcedentDeRevenuJointSelfManager)
+     */
+    @Override
+    protected BEntity _newEntity() throws Exception {
+        return new RFQdHistoriqueSoldeExcedentDeRevenuJointSelf();
+    }
+
+    /**
+     * @return the forIdQd
+     */
+    public String getForIdQd() {
+        return forIdQd;
+    }
+
+    /**
+     * @param forIdQd
+     *            the forIdQd to set
+     */
+    public void setForIdQd(String forIdQd) {
+        this.forIdQd = forIdQd;
+    }
+
+}

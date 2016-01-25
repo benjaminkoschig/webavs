@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+
+	<complexe-model className="ch.globaz.pegasus.business.models.renteijapi.RenteMembreFamilleCalcule">
+	
+		<root-model name="simpleDonneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+		
+		<linked-model name="simpleRenteAvsAi" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleAllocationImpotent" model-ref="ch.globaz.pegasus.business.models.renteijapi.SimpleAllocationImpotent" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleVersionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idVersionDroit"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleVersionDroitPCA" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>
+			</join-group>		
+		</linked-model>
+
+	   <linked-model name="simpleDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroit" join-type="INNER"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>
+			</join-group>		
+		</linked-model>
+
+		<linked-model name="membreFamilleEtendu" model-ref="ch.globaz.pegasus.business.models.droit.MembreFamilleEtendu" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="droitMembreFamille.simpleDroitMembreFamille.idDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>
+				<join-field name="droitMembreFamille.simpleDroitMembreFamille.idDroitMembreFamille" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDroitMembreFamille"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simpleVersionDroitPCA.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simplePlanDeCalcul" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPCAccordee"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simplePersonneDansPlanCalcul" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePersonneDansPlanCalcul" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPlanDeCalcul" operation="EQUALS" field-ref="simplePlanDeCalcul.idPlanDeCalcul"/>
+				<join-field name="idDroitMembreFamille" operation="EQUALS" field-ref="membreFamilleEtendu.droitMembreFamille.simpleDroitMembreFamille.idDroitMembreFamille"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-field name="forCsEtatVersionDroit" operation="EQUALS" field-ref="simpleVersionDroit.csEtatDroit"/>
+		</search-definition>
+
+		<search-definition name="withDateValable">
+			<search-group operator="AND">
+				<join-field field-ref="simpleDonneeFinanciereHeader.csTypeDonneeFinanciere" operation="in" value="64007001,64007003"/>
+				<search-field name="forCsEtatVersionDroit" operation="EQUALS" field-ref="simpleVersionDroit.csEtatDroit"/>
+				<search-field name="forIsPlanRetenu" operation="EQUALS" field-ref="simplePlanDeCalcul.isPlanRetenu"/>
+				<search-field name="forDate" operation="LESS_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateDebut"/>
+				<search-field name="forDate" operation="NULL" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+
+				<search-field name="forDate" operation="LESS_OR_EQUALS" field-ref="simplePCAccordee.dateDebut"/>
+				<search-group operator="OR">
+					<search-field name="forDate" operation="GREATER_OR_EQUALS" field-ref="simplePCAccordee.dateFin"/>
+					<search-field name="forDate" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
+				</search-group>	
+
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="donneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+					<![CDATA[ 
+						#{donneeFinanciereHeader.isSupprime} = 2 
+						and #{simpleDonneeFinanciereHeader.idVersionDroit} = 
+							(
+								select MAX( #{versionDroit.idVersionDroit} ) from @{versionDroit} 
+								 inner join  @{donneeFinanciereHeader} on ( #{versionDroit.idVersionDroit} = #{donneeFinanciereHeader.idVersionDroit} )
+								 where #{simpleDonneeFinanciereHeader.idEntity} = #{donneeFinanciereHeader.idEntity}
+								   and #{donneeFinanciereHeader.dateDebut} <= ${forDate:donneeFinanciereHeader.dateDebut} 
+								   and ((#{donneeFinanciereHeader.dateFin} is null or #{donneeFinanciereHeader.dateFin} = 0 ) 
+								   	or #{donneeFinanciereHeader.dateFin}>= ${forDate:donneeFinanciereHeader.dateFin} )	
+							)
+					 ]]>
+				</search-literal>
+
+				
+				<search-literal>
+					<declare-model name="versionDroitPCA" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<![CDATA[ 
+						and #{simpleDonneeFinanciereHeader.idVersionDroit} = 
+							(
+								select MAX( #{versionDroitPCA.idVersionDroit} ) from @{versionDroit} 
+								 where #{versionDroitPCA.idVersionDroit}} = #{simplePCAccordee.idVersionDroit}}
+								   and #{versionDroit.csEtatDroit} = ${forCsEtatVersionDroit:simpleVersionDroit.csEtatDroit} 
+							)
+					 ]]>
+				</search-literal>
+				
+				<search-literal>
+					<![CDATA[ 
+						#{simpleDonneeFinanciereHeader.idDroitMembreFamille} = #{membreFamilleEtendu.droitMembreFamille.simpleDroitMembreFamille.idDroitMembreFamille}
+					 ]]>
+				</search-literal>
+
+			</search-group>
+		</search-definition>
+
+	</complexe-model>
+</model-mapping>

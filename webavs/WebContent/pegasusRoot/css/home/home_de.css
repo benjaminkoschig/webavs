@@ -1,0 +1,90 @@
+.areaTitre{
+	background-color:#DDDDFF;
+	cursor:hand;
+}
+
+.areaTitre h1 {
+	font-size:12pt;
+	margin:0px 5px;	
+}
+
+.areaTitre p {
+	position:relative;
+}
+
+.areaPeriodesModified {
+	border: 3px outset #999999;
+	padding: 10px;
+	margin: 5px;
+	background-color:lightblue;
+}
+
+.areaPeriodeDataTable, #homeDetail{
+	width:100%;
+}
+#homeDetail{
+	padding-top:10px;
+}
+
+.areaPeriodeDetail {
+	width:600px;
+}
+
+.mainContainerAjax {
+	background-color:#F8F9F9 !important;
+}
+
+/*
+.areaPeriodeDataTable tr.odd{
+	background-color: #ddd;	
+}
+
+.areaPeriodeDataTable tr.nonodd{
+	background-color:#eee;
+}
+
+.areaPeriodeDataTable tr.highlighted{
+    background : #638fbc;
+    color : #ffffe8;
+	cursor : hand;
+}
+
+.areaPeriodeDataTable tr.highlight {
+    background-color : #aaaa55;
+}
+.areaPeriodeDetail {
+	margin-top:15px;	
+}
+.areaPeriodeDataTable {
+	border-collapse: collapse;
+	border:1px solid black;
+}
+
+.areaPeriodeDataTable td {
+	border:1px solid black;
+}
+*/
+.areaPeriodeDataTable td.isReconnu {
+	text-align: center;
+}
+
+
+.detailAdresseTiers {
+	width:7cm;
+	font-family:Verdana,Arial;
+	font-size:x-small;
+	font-weight:bold;
+}
+
+fieldset {
+	border : 0px solid #356AA0;
+	margin-bottom: 10px;
+	padding:5px 10px; 
+}
+
+fieldset legend{
+	text-align:center;
+	color: #356AA0;
+	padding: 2px 5px;
+	font-size: 1.1em;
+}

@@ -1,0 +1,170 @@
+@CHARSET "ISO-8859-1";
+
+*{
+	margin:0;
+	padding:0;
+}
+
+.label{
+	width:120px;
+	padding-top:2px;
+	display:inline-block;
+	text-align:left;
+	font-weight:bold;
+}
+
+.labelPaiement{
+	width:150px;
+	padding-top:2px;
+	display:inline-block;
+	text-align:left;
+	font-weight:bold;
+	height: 25px;
+	margin-top:20px;
+}
+.value{
+	padding-right: 75px;
+}
+#cssValueHack{
+	margin-left:3px;
+}
+#lneBeneficiaire{
+	/*border:1px solid red;*/
+	height:22px;
+	padding-bottom:5px;
+	border-bottom:2px solid #226194;
+}
+#lneRefPaiementCon{
+width:500px;}
+#lneRefPaiementReq{
+width:500px;}
+
+#zoneAdressePaiementReq{
+	margin-top:10px;
+	padding-top:10px;
+	margin-bottom:10px;
+	padding-bottom:10px;
+	width:45%;
+}
+.labelRefPaiement{
+	width:500px;
+}
+.adresseConjoint{
+	float:left;
+}
+#zoneAdressePaiementCon{
+	margin-top:10px;
+	padding-top:10px;
+	margin-bottom:10px;
+	padding-bottom:10px;
+	padding-left:10px;
+	width:45%;
+	border-left:2px solid #226194;
+}
+
+#requerantInfos,#conjointInfos{
+	width:100%;
+	margin-bottom:5px;
+}
+
+
+#blocAdr{
+	width:486px;
+	display:inline;
+	vertical-align:top;
+	/*border:1px solid black;*/
+}
+
+#labelAdresseReq{
+	float:left;
+	height:90px;
+}
+
+#labelAdresseCon{
+	float:left;
+	height:90px;
+}
+#descAdresse{
+	
+	float:left;
+	text-align:left;
+	height:auto;
+}
+#buttonAdresse{
+	float:right;
+	width:26px;
+}
+
+#zoneResultatCalcule tr.even{
+	background-color: #ffffff;
+}
+#zoneResultatCalcule tr.odd{
+	background-color: #E8EEF4;
+}
+
+
+.detailAdresseTiers{
+	width:7cm;
+	font-family:Verdana,Arial;
+	font-size:x-small;
+	font-weight:bold;
+	border-left: 3px solid #356AA0; 
+	margin-left:10px;
+	padding-left:5px;
+}
+
+#calculTitre{
+	font-size:14px;
+	font-weight:bold;
+	clear:both;
+	margin: 18px 0px 5px 0px;
+}
+
+
+#zoneResultatCalcule{
+	border-top:2px solid #226194;
+	padding-top:10px;
+}
+
+#resultasCalcule{
+	border-collapse:collapse;
+	border: 1px solid  #356AA0;
+}
+
+.plandecalcultd {
+	cursor: pointer;
+}
+#toutAfficher{
+	cursor: pointer;
+}
+
+.retenu{
+	/*border-bottom: 3px solid #FFECCC;*/
+	/*border-top: 3px solid #FFECCC;*/
+	background-color: #FFECCC;
+}
+.linkToParent{
+	background-color: #FFECCC;
+	cursor: pointer;
+}
+
+.titre{
+	font-weight:bold;
+	width:100%;
+	margin-bottom:5px;
+}
+#zoneJA{
+	border-top:2px solid #226194;
+	padding-top:10px;
+}
+
+.btnDisplayPCAL img{
+	border:none;
+}
+.pcal_no_dispo{
+	opacity: 0.4;
+}
+
+label{
+	font-weight: bold;
+}

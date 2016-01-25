@@ -1,0 +1,369 @@
+<%@page import="globaz.fweb.util.JavascriptEncoder"%>
+<%@page import="globaz.jade.context.JadeThread"%>
+<%@page import="ch.globaz.pyxis.business.model.PersonneEtendueSearchComplexModel"%>
+<%@page import="ch.globaz.amal.businessimpl.utils.AMGestionTiers"%>
+<script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/widget/globazwidget.js"></script>
+<%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
+<%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
+
+<%@page import="ch.globaz.pyxis.business.service.PersonneEtendueService"%>
+<%@page import="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel"%>
+<%@page import="globaz.pyxis.db.adressecourrier.TIPays"%>
+<%@page import="ch.globaz.pyxis.business.model.TiersSimpleModel"%>
+<%@page import="ch.globaz.pyxis.business.model.PersonneSimpleModel"%>
+<%@page import="globaz.prestation.interfaces.tiers.PRTiersHelper"%>
+
+<%@page import="java.util.Iterator"%>
+<%@page import="java.util.Arrays"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.Map"%>
+<%@page import="globaz.jade.client.util.JadeStringUtil"%>
+<%@page import="globaz.globall.util.JADate"%>
+<%@page import="ch.horizon.jaspe.util.JACalendar"%>
+<%@page import="ch.horizon.jaspe.util.JAUtil"%>
+<%@page import="globaz.jade.client.util.JadeDateUtil"%>
+<%@page import="globaz.amal.vb.contribuable.AMContribuableViewBean"%>
+<%@page import="ch.globaz.amal.business.models.contribuable.SimpleContribuable"%>
+<%@page import="ch.globaz.amal.business.models.contribuable.Contribuable"%>
+<%@page import="ch.globaz.pyxis.business.service.PersonneEtendueService"%>
+<%@page import="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel"%>
+<%@page import="globaz.framework.bean.FWViewBeanInterface"%>
+<%@page import="ch.globaz.amal.business.constantes.IAMActions"%>
+<%@page import="globaz.jade.log.*"%>
+<%@page import="globaz.pyxis.db.adressecourrier.TIPays"%>
+<%@page import="ch.globaz.pyxis.business.model.TiersSimpleModel"%>
+<%@page import="ch.globaz.pyxis.business.model.PersonneSimpleModel"%>
+<%@page import="globaz.prestation.interfaces.tiers.PRTiersHelper"%>
+<%@page import="globaz.amal.utils.AMUserHelper"%>
+
+<script type="text/javascript" src="<%=servletContext%><%=(mainServletPath+"Root")%>/scripts/ajax_amal.js"></script>
+<script type="text/javascript" src="<%=servletContext%><%=(mainServletPath+"Root")%>/scripts/util_webamal.js"></script>
+
+<script type="text/javascript">
+searchAjaxInputId = "searchNssCriteria";
+autoSuggestContainerId = "autoSuggestContainer";
+prefixModel = 'contribuable';
+var valuesFromSync = new Array();
+valNomAC = "";
+$(document).ready(function() {
+	<%
+		if (!(request.getParameter("mode") == null) && "transfert".equals(request.getParameter("mode"))) {			
+	%>
+			<% if (!JadeStringUtil.isBlankOrZero(viewBean.getContribuableInfos().getNnss())) { %>
+				$('#partialforNumAvs').val("<%=viewBean.getContribuableInfos().getNnss().length()>0?viewBean.getContribuableInfos().getNnss().substring(4):viewBean.getContribuableInfos().getNnss()%>");
+			<% } %>
+		
+			$('#nomTiers').val("<%=viewBean.getContribuableInfos().getNom() %>");
+			$('#prenomTiers').val("<%=viewBean.getContribuableInfos().getPrenom() %>");
+			$('#dateNaissance').val("<%=viewBean.getContribuableInfos().getDateNaissance() %>");
+			$('#numContribuable').val("<%=viewBean.getContribuableInfos().getNumeroContribuableActuelFormate() %>");
+	<%
+		}
+	%>
+	
+	isFromSelectionTiers = '<%=JavascriptEncoder.getInstance().encode(request.getParameter("selectedIndex")!=null?request.getParameter("selectedIndex"):"")%>';
+	initNssInputComponent('<%=JavascriptEncoder.getInstance().encode(idEcran)%>','forNumAvs');
+
+	if(isFromSelectionTiers!=''){			
+		mlog('before synchroTiersAlloc');
+		synchroTiersAjax();
+	}	
+	
+	$("#partialforNumAvs").change(function() {
+		$("#contribuable\\.personneEtendue\\.personneEtendue\\.numAvsActuel").val($(this).val());
+	});
+	
+	$("#numContribuable").blur(function() {
+		var val = $(this).val();
+		if (val.indexOf('.')<0 && val.length==11) {
+			$(this).val(val.substr(0,3)+"."+val.substr(3,3)+"."+val.substr(6,3)+"."+val.substr(9,2)); 
+		}
+	});
+});
+
+	//définir cette méthode si traitement après remplissage ajax du formulaire
+	function callbackFillInputAjax(){
+	
+		mlog('callbackFillInputAjax - begin');
+		var allocSync = false;
+		var tiersSync = false;
+		var idAllocataire = '';
+		
+		if(!tiersSync && document.getElementById(prefixModel+'.personneEtendue.tiers.idTiers').value!=''){
+			tiersSync=true;
+			//document.getElementById("tiersSelector").disabled = true;
+			//document.getElementById("partialforNumAvs").disabled = true; 
+		} else {
+			$("#zoneTiers :input").removeAttr("disabled");
+		}
+			
+		accordStatutLogoWithResponse(tiersSync);
+	}
+
+</script>
+<%
+	PersonneEtendueComplexModel personne= viewBean.getContribuable().getPersonneEtendue();
+	boolean idTiersEmpty = JadeStringUtil.isBlankOrZero(personne.getTiers().getIdTiers());
+	if(viewBeanIsNew){
+%>
+		<TR>		
+			<td colspan="4">
+				<TABLE id="zoneTiers">
+	             	<tr>
+	             	
+	             		<td class="label subtitle" colspan="4" style="font-weight:bold">
+	             		<%if(viewBean.getContribuable().isNew()){ %>
+	             			<ct:FWLabel key="JSP_AM_FA_D_TIERS"/>               			         
+                			<div id="idTiers"></div>
+                			<div><a class="syncLink" href="#" onclick="synchroTiersAjax();" title="<%=objSession.getLabel("JSP_AM_LINK_SYNC_TIERS")%>"></a></div>
+                			<div id="statutSynchroTiers" name="statutSync"></div>                			
+                		<%}else{ %>
+                			<ct:FWLabel key="JSP_AM_FA_D_TIERS"/>
+                			<div id="idTiers"> (<a href="<%=servletContext + "/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId="+viewBean.getContribuable().getPersonneEtendue().getId()%>"><%=viewBean.getContribuable().getPersonneEtendue().getId()%></a>)</div>
+                			<div id="statutSynchroTiers"><img src="images/dialog-ok-apply.png" alt="Synchronisation réussie" width="16" height="16"/></div>
+                		<%}%>
+	                	</td>
+	                </tr>
+					<TR>		
+						<TD width="180px">
+							<ct:FWLabel key="JSP_AM_FA_D_NSS"/>
+						</TD>
+					   <td>
+					        <!--  Champs nécessaire pour écriture dans les tiers (création / update) -->
+			                <ct:inputHidden name="contribuable.personneEtendue.tiers.idTiers"/>
+			                <ct:inputHidden name="contribuable.personneEtendue.personne.idTiers"/>
+			                <ct:inputHidden name="contribuable.personneEtendue.personneEtendue.idTiers"/>
+			                <ct:inputHidden name="contribuable.personneEtendue.personneEtendue.spy"/>
+			                <ct:inputHidden name="contribuable.personneEtendue.personne.spy"/>
+			                <ct:inputHidden name="contribuable.personneEtendue.tiers.spy"/>
+			               
+                 
+                    	<% if (viewBean.getContribuable().isNew()) { %>	
+                    		<nss:nssPopup avsMinNbrDigit="2" nssMinNbrDigit="2" name="forNumAvs" newnss="true" tabindex="1" />
+                    		<ct:inputHidden name="contribuable.personneEtendue.personneEtendue.numAvsActuel"/>
+                    	
+                    	<%}else{ %>
+                    		<ct:inputText tabindex="1" name="contribuable.personneEtendue.personneEtendue.numAvsActuel" 
+                    		styleClass="nss readOnly" readonly="readonly" />
+                    	<%}%>
+						<% 
+							Object[] tiersMethodsName = new Object[]{
+									
+									new String[]{"contribuable.personneEtendue.personneEtendue.numAvsActuel","numAvsActuel"},
+								};
+						if (idTiersEmpty) { %>	
+                    	<ct:FWSelectorTag name="tiersSelector"
+								methods="<%=tiersMethodsName%>"
+								providerApplication="pyxis" 
+								providerPrefix="TI"
+								providerAction="pyxis.tiers.tiers.chercher"
+						/>
+						<% } %>
+                    	<div id="autoSuggestContainer" class="suggestList"></div>
+                  	</td>					
+						<TD>
+							<ct:FWLabel key="JSP_AM_FA_D_NO_CONTRIBUABLE"/>
+						</TD>
+						<TD>
+							<input disabled="disabled" tabindex="6" type="text" id="numContribuable" name="contribuable.personneEtendue.personneEtendue.numContribuableActuel" value='<%=(!viewBeanIsNew?viewBean.getContribuable().getPersonneEtendue().getPersonneEtendue().getNumContribuableActuel():"")%>'/>
+						</TD>
+					</TR>
+					<TR>		
+						<TD>
+							<ct:FWLabel key="JSP_AM_FA_D_TITRE"/>
+						</TD>
+						<TD>
+							<ct:select tabindex="2" wantBlank="true" id="titreTiers" name="contribuable.personneEtendue.tiers.titreTiers">
+	                    		<ct:optionsCodesSystems csFamille="PYTITRE"></ct:optionsCodesSystems>	
+	                    	</ct:select> 	
+						</TD>	
+						<TD>Sexe</TD>	
+						<TD>
+							<ct:select wantBlank="true" tabindex="6" id="sexeTiers" name="contribuable.personneEtendue.personne.sexe">
+	                    		<ct:optionsCodesSystems csFamille="PYSEXE"></ct:optionsCodesSystems>	
+	                    	</ct:select> 	
+						</TD>
+						
+					</TR>
+					<TR>		
+						<TD>
+							<ct:FWLabel key="JSP_AM_FA_D_NOM"/>
+						</TD>
+						<TD>
+							<input disabled="disabled" tabindex="4" type="text" id="nomTiers" name="contribuable.personneEtendue.tiers.designation1" data-g-string="addSymboleMandatory:true"/>
+						</TD>		
+						<TD>
+							<ct:FWLabel key="JSP_AM_FA_D_DATE_NAISSANCE"/>																										
+						</TD>
+						<TD>
+							<% JADate d = new JADate(JACalendar.today().toAMJ());								
+								int year = d.getYear();
+							%>
+							<input type="text" tabindex="7" data-g-calendar="yearRange:¦<%=year-80 %>:<%=year%>¦,addSymboleMandatory:true"  name="contribuable.personneEtendue.personne.dateNaissance" id="dateNaissance" disabled="disabled" class="clearable" value='<%=(!viewBeanIsNew?viewBean.getContribuable().getPersonneEtendue().getPersonne().getDateNaissance():"")%>' />
+						</TD>
+					</TR>
+					<TR>		
+						<TD>
+							<ct:FWLabel key="JSP_AM_FA_D_PRENOM"/>
+						</TD>
+						<TD>
+							<input disabled="disabled" tabindex="4" type="text" id="prenomTiers" name="contribuable.personneEtendue.tiers.designation2" data-g-string="addSymboleMandatory:true"/>
+						</TD>	
+						<TD>
+							<ct:FWLabel key="JSP_AM_FA_D_ETAT_CIVIL"/>					
+						</TD>
+						<TD>	
+							<%if (contribReprise && "Monsieur Et Madame".equalsIgnoreCase(viewBean.getContribuableInfos().getCivilite())) { 
+                    			viewBean.getContribuable().getPersonneEtendue().getPersonne().setEtatCivil("515002");
+							} else {
+								viewBean.getContribuable().getPersonneEtendue().getPersonne().setEtatCivil("");
+							}
+							%>							 			
+	                    
+	                    	<ct:select id="etatCivil" tabindex="8" wantBlank="true" name="contribuable.personneEtendue.personne.etatCivil">
+	                    		<ct:optionsCodesSystems csFamille="PYETATCIVI"></ct:optionsCodesSystems>	
+	                    	</ct:select>	
+						</TD>													
+					</TR>
+					<TR>		
+						<TD>
+							<ct:FWLabel key="JSP_AM_FA_D_LANGUE_AFFILIE"/>
+						</TD>
+						<TD>
+							<ct:select tabindex="5" id="tiersLangue" name="contribuable.personneEtendue.tiers.langue" defaultValue="503001">
+	                    		<ct:optionsCodesSystems csFamille="PYLANGUE"></ct:optionsCodesSystems>	
+	                    	</ct:select>
+						</TD>
+						<td><ct:FWLabel key="JSP_AM_FA_D_NATIONALITE"/></td>
+						<td>
+							<ct:FWListSelectTag tabindex="9" name="contribuable.personneEtendue.tiers.idPays" data="<%=PRTiersHelper.getPays(objSession)%>"
+								defaut="<%=JadeStringUtil.isIntegerEmpty(personne.getTiers().getIdPays())?TIPays.CS_SUISSE:personne.getTiers().getIdPays()%>"/>
+							<input type="hidden" id="isSync" value="0" />
+						</td>		
+					</TR>
+				</TABLE>
+				<div>&nbsp;</div>
+				<%if (contribReprise) { %>
+				<TABLE id="zoneTiersAdresse" border="0">
+					<TR>
+						<td class="label subtitle" style="font-weight:bold">
+	             		Adresse
+	             		</td>	
+	             		<td colspan="3">
+	             			<input type="checkbox" name="addAdresse" value="1">Créer adresse(s)
+	             		</td>	               	
+	             	</TR>
+	             	<TR>
+	             	<%
+						int nbRows=3;
+						String desti = viewBean.getContribuableInfos().getNom()+" "+viewBean.getContribuableInfos().getPrenom();
+						String adr1 = viewBean.getContribuableInfos().getAdresse1();
+						String adr2 = viewBean.getContribuableInfos().getAdresse2();
+						String adr3 = viewBean.getContribuableInfos().getAdresse3();
+						String rue = viewBean.getContribuableInfos().getRue();
+						String noRue = viewBean.getContribuableInfos().getNumero();
+						String casePostal = viewBean.getContribuableInfos().getCasepostale();
+						String npa = viewBean.getContribuableInfos().getNpa();
+						String commune = viewBean.getContribuableInfos().getCommune();
+					%>
+						<TD width="180px">&nbsp;</TD>
+						<TD>&nbsp;</TD>
+						<TD width="180px">&nbsp;</TD>	
+						<TD>&nbsp;</TD>							
+					</TR>		
+					<TR>
+						<TD>Destinataire</TD>
+						<TD><input type="text" name="adresse1" value="<%=adr1%>"/></TD>
+						<TD>Rue ou lieu-dit / Numéro</TD>
+						<TD><input type="text" name="rue" value="<%=rue%>" data-g-string="addSymboleMandatory:true"/> / <input type="text" name="noRue" style="width:50px" value="<%=noRue%>" data-g-string="addSymboleMandatory:true"/></TD>
+					</TR>
+					<TR>
+						<TD>(Suite)</TD>
+						<TD><input type="text" name="adresse2" value="<%=adr2%>"/></TD>
+						<TD>Case postale</TD>
+						<TD><input type="text" name="casepostal" value="<%=casePostal%>" /></TD>
+					</TR>	
+					<TR>
+						<TD>(Suite)</TD>
+						<TD><input type="text" name="adresse3" value="<%=adr3%>" /></TD>
+						<TD>Localité</TD>
+						<TD><input type="text" name="npa" value="<%=npa%>" data-g-string="addSymboleMandatory:true"/>&nbsp;<input type="text" name="commune" value="<%=commune%>" /></TD>
+					</TR>							
+				</TABLE>
+				<% } %>
+				<input type="hidden" name="contribuableHistorique" id="contribuableHistorique" value="1" />
+			</td>
+		<tr>		
+<% //fin if(!viewBeanIsNew){
+		if (contribReprise) {
+			boolean tiersFind = false; 
+		
+			AMGestionTiers gestionTiers = new AMGestionTiers();
+			PersonneEtendueSearchComplexModel searchModel = new PersonneEtendueSearchComplexModel();
+			String noContribuableFormate = viewBean.getContribuableInfos().getNumeroContribuableActuelFormate();
+			if (!JadeStringUtil.isBlankOrZero(noContribuableFormate)) {
+				searchModel.setForNoContribuable(noContribuableFormate);
+				searchModel = gestionTiers.findTiers(searchModel);
+				if (!(searchModel==null) && searchModel.getSearchResults().length>0) {
+					tiersFind = true;
+				}
+			}
+			
+			if (!tiersFind) {
+				String noNSS = viewBean.getContribuableInfos().getNnss();	
+				if (!JadeStringUtil.isBlankOrZero(noNSS)) {
+					searchModel = new PersonneEtendueSearchComplexModel();		
+					searchModel.setForNumeroAvsActuel(noNSS);
+					searchModel = gestionTiers.findTiers(searchModel);
+					if (!(searchModel==null) && searchModel.getSearchResults().length>0) {
+						tiersFind = true;
+					}
+				}
+			}
+			
+			if (!tiersFind) {
+				searchModel = new PersonneEtendueSearchComplexModel();				
+				String nomUpper = viewBean.getContribuableInfos().getNomUpper();
+				String prenomUpper = viewBean.getContribuableInfos().getPrenomUpper();
+				String dateNaissance = viewBean.getContribuableInfos().getDateNaissance();
+				if ((!JadeStringUtil.isEmpty(nomUpper)) && (!JadeStringUtil.isEmpty(prenomUpper)) 
+						&& (JadeDateUtil.isGlobazDate(dateNaissance))) {
+					searchModel.setForDesignation1(viewBean.getContribuableInfos().getNomUpper());
+					searchModel.setForDesignation2(viewBean.getContribuableInfos().getPrenomUpper());
+					searchModel.setForDateNaissance(viewBean.getContribuableInfos().getDateNaissance());
+					searchModel = gestionTiers.findTiers(searchModel);
+					if (!(searchModel==null) && searchModel.getSearchResults().length>0) {
+						tiersFind = true;
+					}
+				}
+			}
+				
+			if (tiersFind) {
+				PersonneEtendueComplexModel personneFind = (PersonneEtendueComplexModel) searchModel.getSearchResults()[0];		
+				%>
+					<script type="text/javascript">
+					$(document).ready(function() {
+						$("#zoneTiers span").attr("title","Valeur dans Pyxis");
+						$("#zoneTiers span").attr("style","cursor:help;font-style:italic");
+						
+						if ($('#partialforNumAvs').val().length==0) {
+							<%
+							if (personneFind.getPersonneEtendue().getNumAvsActuel().length()>0) {
+							%>
+								$("#partialforNumAvs").val('<%=personneFind.getPersonneEtendue().getNumAvsActuel().substring(4)%>');
+							<% } %>
+						}
+
+						$('#synchroniserTiers').removeAttr('style');
+						$('#synchroniserTiers').attr('style','cursor: pointer;');		
+						
+					});
+					</script>
+				<%
+			}
+		}
+	}
+%>				

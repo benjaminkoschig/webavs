@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+   <simple-model className="ch.globaz.aries.business.models.SimpleSortieCGAS">
+      <description>Sortie de type CGAS</description>
+      <table name="ARSORTIE" hasCreationSpy="true" hasSpy="true"
+             alwaysIncrementPrimaryKey="true"/>
+      <fields>
+         <primary-key name="idSortie" column="SOIDSO" type="NUMERIC" dataType="NUMERIC(15,0)"
+                mandatory="true"
+                comment="Identifiant de la sortie CGAS"/>
+         <field name="idDecision" column="SOIDDE" type="NUMERIC" dataType="NUMERIC(15,0)"
+                mandatory="true"
+                comment="Identifiant de la décision"/>
+         <field name="dateSortie" column="SODSOR" type="DATE"
+                dataType="NUMERIC(8,0)"
+                mandatory="true"
+                comment="Date de la sortie"/>
+         <field name="montantExtourne" column="SOMEXT" type="AMOUNT" dataType="NUMERIC(15,2)"
+                mandatory="true"
+                comment="Montant de l'extourne"/>
+         <field name="idPassageFacturation" column="SOIDPF" type="NUMERIC"
+                dataType="NUMERIC(15,0)"
+                mandatory="true"
+                comment="Identifiant du passage de facturation"/>
+         <field name="etat" column="SOETAT" type="NUMERIC" dataType="NUMERIC(8,0)"
+                mandatory="true"
+                comment="Etat de la sortie"/>
+      </fields>
+   </simple-model>
+</model-mapping>

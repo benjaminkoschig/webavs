@@ -1,0 +1,76 @@
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/corvusRoot/rentesaccordees/renteVerseeATort_de.css" />
+<style type="text/css">
+	#divExecuterProcess {
+		display: block;
+	}
+	#boutonOk {
+		display: inline-block;
+		position: relative;
+		left: 40%;
+	}
+	#imageOK {
+		display: inline-block;
+		position: relative;
+		vertical-align: middle;
+		left: 40%;
+		width: 10%;
+	}
+</style>
+<%@ include file="/theme/detail_el/bodyStart.jspf" %>
+<%--  ******************************************************************* Corps de la page ******************************************************************* --%>
+	<input	type="hidden" 
+			id="idDemandeRente" 
+			value="${viewBean.idDemandeRente}" />
+	<table width="100%">
+		<tbody>
+			<tr>
+				<td width="20%">
+					&#160;
+				</td>
+				<td width="80%">
+					&#160;
+				</td>
+			</tr>
+			<tr class="forceTRHeight">
+				<td class="alignLeft">
+					<strong>
+						<ct:FWLabel key="JSP_PREPARER_DECISION_SPECIAL_REQUERANT" />&#160;:&#160;
+					</strong>
+				</td>
+				<td class="alignLeft">
+					<span>
+						<strong>
+							${viewBean.detailRequerant}
+						</strong>
+					</span>
+				</td>
+			</tr>
+			<tr class="forceTRHeight">
+				<td class="alignLeft">
+					<strong>
+						<ct:FWLabel key="JSP_PREPARER_DECISION_SPECIAL_NO_DEMANDE" />&#160;:&#160;
+					</strong>
+				</td>
+				<td class="alignLeft">
+					<strong>
+						${viewBean.idDemandeRente}
+					</strong>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					&#160;
+				</td>
+			</tr>
+			<tr class="forceTRHeight">
+				<td class="alignLeft">
+					<ct:FWLabel key="JSP_PREPARER_DECISION_SPECIAL_ADRESSE_EMAIL" />&#160;:&#160;
+				</td>
+				<td class="alignLeft">
+					<input	type="text" 
+							id="adresseEmailGestionnaire" 
+							name="adresseEmailGestionnaire" 
+							data-g-email="mandatory:true" 
+							value="${viewBean.adresseEmailGestionnaire}" />
+				</td>
+			</tr>

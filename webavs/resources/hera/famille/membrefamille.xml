@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.hera.business.models.famille.MembreFamille">
+		<root-model name="simpleMembreFamille" model-ref="ch.globaz.hera.business.models.famille.SimpleMembreFamille"/>
+		<linked-model name="personneEtendue" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simpleMembreFamille.idTiers"/>
+			</join-group>
+		</linked-model>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdMembreFamille" field-ref="simpleMembreFamille.idMembreFamille" operation="EQUALS" />
+				<search-field name="forIdMembreFamilleIn" field-ref="simpleMembreFamille.idMembreFamille" operation="IN" />
+				<search-field name="forNss" field-ref="personneEtendue.personneEtendue.numAvsActuel" operation="EQUALS" />
+				<search-field name="forIdTiers" field-ref="personneEtendue.personneEtendue.idTiers" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

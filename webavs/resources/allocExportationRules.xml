@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules>
+    <!-- un noeud enfant représente une règle d'exportation (combinaison alloc-enfant => règle)-->
+    <!--  l'attribut numero sert à identifier la règle utilisé (uniquement pour les tests auto) -->
+    <!-- tous les allocataires dont le pays d'origine est membre de l'europe et qui ne sont pas spécifiés explicitement -->
+    <allocataire from="EUROPE">
+        <!-- dont les enfants vivent dans un pays membre de l'europe -->
+        <enfant pays="EUROPE" numero="1">
+            <lafam16>1</lafam16>
+            <lafam1625>1</lafam1625>
+            <lfa16>1</lfa16>
+            <lfa1625>1</lfa1625>
+            <lfaMenage>1</lfaMenage>
+        </enfant>
+        <!-- pas nécessaire puisque CH dans EUROPE mais pour compréhension -->
+        <enfant pays="CH" numero="2">
+            <lafam16>1</lafam16>
+            <lafam1625>1</lafam1625>
+            <lfa16>1</lfa16>
+            <lfa1625>1</lfa1625>
+            <lfaMenage>1</lfaMenage>
+        </enfant>
+        <!-- dont les enfants vivent dans n'importe quel pays autre que europe et suisse -->
+        <enfant numero="3">
+            <lafam16>0</lafam16>
+            <lafam1625>0</lafam1625>
+            <lfa16>0</lfa16>
+            <lfa1625>0</lfa1625>
+            <lfaMenage>0</lfaMenage>
+        </enfant>
+    </allocataire>
+    <allocataire from="SI(Slovénie)">
+    	<!-- dont les enfants vivent dans un pays membre de l'europe -->
+        <enfant pays="EUROPE" numero="4">
+            <lafam16>1</lafam16>
+            <lafam1625>1</lafam1625>
+            <lfa16>1</lfa16>
+            <lfa1625>1</lfa1625>
+            <lfaMenage>0</lfaMenage>
+        </enfant>
+        <enfant numero="5">
+            <lafam16>1</lafam16>
+            <lafam1625>1</lafam1625>
+            <lfa16>1</lfa16>
+            <lfa1625>1</lfa1625>
+            <lfaMenage>0</lfaMenage>
+        </enfant>
+    </allocataire>
+    <!-- prière de formater un pays tel que : CODE_PAYS(Nom complet)-->
+    <allocataire from="BE(Belgique),ES(Espagne),FR(France),IT(Italie),PT(Portugal)">
+         <enfant pays="EUROPE" numero="6">
+            <lafam16>1</lafam16>
+            <lafam1625>1</lafam1625>
+            <lfa16>1</lfa16>
+            <lfa1625>1</lfa1625>
+            <lfaMenage>1</lfaMenage>
+        </enfant>
+        <enfant numero="7">
+            <lafam16>0</lafam16>
+            <lafam1625>0</lafam1625>
+            <lfa16>1</lfa16>
+            <lfa1625>1</lfa1625>
+            <lfaMenage>0</lfaMenage>
+        </enfant>
+    </allocataire>
+    <allocataire from="HR(Croatie),MK(Macédoine),SM(St-Marin),TR(Turquie)">
+         <enfant pays="CH" numero="8">
+            <lafam16>1</lafam16>
+            <lafam1625>1</lafam1625>
+            <lfa16>1</lfa16>
+            <lfa1625>1</lfa1625>
+            <lfaMenage>1</lfaMenage>
+        </enfant>
+        <enfant numero="9">
+            <lafam16>0</lafam16>
+            <lafam1625>0</lafam1625>
+            <lfa16>1</lfa16>
+            <lfa1625>1</lfa1625>
+            <lfaMenage>0</lfaMenage>
+        </enfant>
+    </allocataire>
+    <allocataire from="BA(Bosnie-Herzégovine),ME(Monténégro),RS(Serbie)">
+        <enfant pays="CH" numero="12">
+            <lafam16>1</lafam16>
+            <lafam1625>1</lafam1625>
+            <lfa16>1</lfa16>
+            <lfa1625>1</lfa1625>
+            <lfaMenage>1</lfaMenage>
+        </enfant>
+        <enfant numero="13">
+            <lafam16>1</lafam16>
+            <lafam1625>1</lafam1625>
+            <lfa16>1</lfa16>
+            <lfa1625>1</lfa1625>
+            <lfaMenage>0</lfaMenage>
+        </enfant>
+    </allocataire>
+    <allocataire>
+        <enfant pays="CH" numero="14">
+            <lafam16>1</lafam16>
+            <lafam1625>1</lafam1625>
+            <lfa16>1</lfa16>
+            <lfa1625>1</lfa1625>
+            <lfaMenage>1</lfaMenage>
+        </enfant>
+        <enfant numero="15">
+            <lafam16>0</lafam16>
+            <lafam1625>0</lafam1625>
+            <lfa16>0</lfa16>
+            <lfa1625>0</lfa1625>
+            <lfaMenage>0</lfaMenage>
+        </enfant>
+    </allocataire>
+    <!-- tous les allocataires visés par un article précis défini par l'OAFam (pas utilisé pour le moment)-->
+    <allocataire from="OAFam">
+        <enfant numero="16">
+            <lafam16>1</lafam16>
+            <lafam1625>1</lafam1625>
+            <p_achat>1</p_achat>
+            <lfa16>0</lfa16>
+            <lfa1625>0</lfa1625>
+            <lfaMenage>0</lfaMenage>
+        </enfant>
+    </allocataire>
+    <!-- liste des pays membre de l'europe (UE/AELE)-->
+    <europe>
+        <pays name="Allemagne" group="UE">DE</pays>
+        <pays name="Autriche" group="UE">AT</pays>
+        <pays name="Belgique" group="UE">BE</pays>
+        <pays name="Bulgarie" group="UE">BG</pays>
+        <pays name="Chypre" group="UE">CY</pays>
+        <!-- <pays name="Croatie" group="UE">HR</pays> Etat ayant conclu avec la Suise une convention de sécurité sociale  -->
+        <pays name="Danemark" group="UE">DK</pays>
+        <pays name="Espagne" group="UE">ES</pays>
+        <pays name="Estonie" group="UE">EE</pays>
+        <pays name="Finlande" group="UE">FI</pays>
+        <pays name="France" group="UE">FR</pays>
+        <pays name="Grèce" group="UE">GR</pays>
+        <pays name="Hongrie" group="UE">HU</pays>
+        <pays name="Irlande" group="UE">IE</pays>
+        <pays name="Italie" group="UE">IT</pays>
+        <pays name="Lettonie" group="UE">LV</pays>
+        <pays name="Lituanie" group="UE">LT</pays>
+        <pays name="Luxembourg" group="UE">LU</pays>
+        <pays name="Malte" group="UE">MT</pays>
+        <pays name="Pays-Bas" group="UE">NL</pays>
+        <pays name="Pologne" group="UE">PL</pays>
+        <pays name="Portugal" group="UE">PT</pays>
+        <pays name="République Tchèque" group="UE">CZ</pays>
+        <pays name="Roumanie" group="UE">RO</pays>
+        <pays name="Royaume-Uni" group="UE">GB</pays>
+        <pays name="Slovaquie" group="UE">SK</pays>
+        <pays name="Slovénie" group="UE">SI</pays>
+        <pays name="Suède" group="UE">SE</pays>
+        <pays name="Islande" group="AELE">IS</pays>
+        <pays name="Liechtenstein" group="AELE">LI</pays>
+        <pays name="Norvège" group="AELE">NO</pays>
+        <pays name="Suisse" group="AELE">CH</pays>
+    </europe>
+    
+</rules>

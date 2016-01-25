@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.corvus.business.models.rentesaccordees.SimpleRenteVerseeATort">
+
+		<description>Rente versée à tort</description>
+
+		<table name="RERENVAT" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+
+		<fields>
+			<primary-key name="idRenteVerseeATort" column="WKIRVT" comment="ID_PRESTATION_ACCORDEE"/>
+			<field name="csTypeRenteVerseeATort" dataType="NUMERIC(9,0)" type="NUMERIC" column="WKTTYP" mandatory="true" />
+			<field name="dateDebut" type="MONTH_YEAR" column="WKDDEB" mandatory="true" />
+			<field name="dateFin" type="MONTH_YEAR" column="WKDFIN" mandatory="true" />
+			<field name="descriptionSaisieManuelle" type="STRING" dataType="VARCHAR(255)" column="WKLDES" mandatory="false" />
+			<field name="idDemandeRente" type="NUMERIC" column="WKIDEM" dataType="NUMERIC(15,0)" mandatory="true" />
+			<field name="idRenteAccordeeAncienDroit" type="NUMERIC" column="WKIRAD" dataType="NUMERIC(15,0)" mandatory="true" />
+			<field name="idRenteAccordeeNouveauDroit" type="NUMERIC" column="WKIRND" dataType="NUMERIC(15,0)" mandatory="false" />
+			<field name="idTiers" type="NUMERIC" dataType="NUMERIC(15,0)" column="WKITIE" mandatory="true" />
+			<field name="montant" type="NUMERIC" dataType="NUMERIC(15,2)" column="WKMMON" mandatory="true" />
+			<field name="_saisieManuelle" type="STRING" dataType="VARCHAR(1)" column="WKBSMA" mandatory="true" />
+		</fields>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field operation="EQUALS" name="forIdRenteVerseeATort" field-ref="idRenteVerseeATort" />
+			</search-group>
+		</search-definition>
+
+	</simple-model>
+</model-mapping>

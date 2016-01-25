@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN" "http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
+<taglib>
+	<tlibversion>1.0</tlibversion>
+	<jspversion>1.1</jspversion>
+	<shortname>misc</shortname>
+	<uri>misc</uri>
+	<info>Globaz Tag library</info>
+
+	<tag>
+		<name>scriptimport</name>
+		<tagclass>globaz.fweb.taglib.misc.ScriptImport</tagclass>
+		<bodycontent>empty</bodycontent>
+		<info>Tag pour importer un fichier script</info>
+		<attribute>
+			<name>filename</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>basedir</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>contextpath</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+</taglib>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.revenusdepenses.SimpleRevenuHypothetique">
+		<description>REVENU_HYPOTHETIQUE</description>
+		<table name="PCREHYP" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idRevenuHypothetique" column="BZIRHY" comment="ID_REVENU_HYPOTHETIQUE"/>			
+			<field name="idDonneeFinanciereHeader" mandatory="true" column="BZIDFH" type="NUMERIC" comment="DONNEE_FINANCIERE_HEADER"/>
+			<field name="montantRevenuHypothetiqueNet" column="BZNRHN" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_REVENU_HYPOTHETIQUE_NET"/>			
+			<field name="montantRevenuHypothetiqueBrut" column="BZNRHB" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_REVENU_HYPOTHETIQUE_BRUT"/>
+			<field name="deductionsSociales" column="BZNDSO" type="NUMERIC" dataType="NUMERIC(15,2)" comment="DEDUCTIONS_SOCIALES"/>
+			<field name="deductionLPP" column="BZNLPP" type="NUMERIC" dataType="NUMERIC(15,2)" comment="DEDUCTION_LPP"/>
+			<field name="fraisDeGarde" column="BZNFDG" type="NUMERIC" dataType="NUMERIC(15,2)" comment="FRAIS_DE_GARDE"/>
+			<field name="csMotif" column="BZTMOT" mandatory="true" type="NUMERIC" comment="CS_MOTIF"/>
+			<field name="autreMotif" column="BZLAMO" type="STRING" comment="AUTRE_MOTIF"/>			
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.decision.DecisionDate">
+		<!-- model root decsion apres calcul -->
+		<root-model name="simpleDecisionHeader" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader" select-fields="false"/>
+		
+		<select-fields>
+			<select-field name="dateDecision" field-ref="simpleDecisionHeader.dateDecision" />
+			<select-field name="idDecisionHeader" field-ref="simpleDecisionHeader.idDecisionHeader" />
+		</select-fields>
+		
+		<!-- decision de suppression -->
+		<!--<linked-model name="simpleDecisionSuppression" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionSuppression" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="simpleDecisionHeader.idDecisionHeader"/>
+			</join-group>
+		</linked-model> -->
+		
+		<!-- decision apres calcul -->
+		<linked-model name="simpleDecisionApresCalcul" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionApresCalcul" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="simpleDecisionHeader.idDecisionHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="OR">
+				<search-field name="forIdVersionDroit" field-ref="simpleDecisionApresCalcul.idVersionDroit" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

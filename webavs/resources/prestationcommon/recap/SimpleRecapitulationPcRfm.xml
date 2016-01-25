@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.prestation.business.models.recap.SimpleRecapitulationPcRfm">
+		<description>
+			Récapitulatif du paiement mensuel des PC/RFM
+		</description>
+		<table name="PCRFMREC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="id" column="ID" comment="clé primaire de cette table" />
+			<field name="mois" column="MOIS" type="MONTH_YEAR" mandatory="true" dataType="NUMERIC(8,0)" comment="Mois de la récapitulation du paiement mensuel" />
+			<field name="code" column="CODE" type="ENUM" mandatory="true" comment="Code de récapitulation" />
+			<field name="valeur" column="VALEUR" type="NUMERIC" mandatory="false" dataType="NUMERIC(15,2)" comment="Valeur correspondant au code récap" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" operation="EQUALS" field-ref="id" />
+				<search-field name="forMois" operation="EQUALS" field-ref="mois" />
+				<search-field name="forCode" operation="EQUALS" field-ref="code" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

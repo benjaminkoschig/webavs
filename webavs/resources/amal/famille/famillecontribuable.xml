@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.famille.FamilleContribuable">
+		<root-model name="simpleFamille" model-ref="ch.globaz.amal.business.models.famille.SimpleFamille"/>
+		<linked-model name="simpleDetailFamille" model-ref="ch.globaz.amal.business.models.detailfamille.SimpleDetailFamille" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idFamille" operation="EQUALS" field-ref="simpleFamille.idFamille"/>
+			</join-group>
+		</linked-model>
+ 
+		<linked-model name="personneEtendue" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simpleFamille.idTier"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleContribuable" model-ref="ch.globaz.amal.business.models.contribuable.SimpleContribuable" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idContribuable" operation="EQUALS" field-ref="simpleFamille.idContribuable"/>
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdContribuable" field-ref="simpleFamille.idContribuable" operation="EQUALS" />
+				<search-field name="forIsContribuable" field-ref="simpleFamille.isContribuable" operation="EQUALS"/>
+				<search-field name="forIdTier" field-ref="simpleFamille.idTier" operation="EQUALS"/>		
+				<search-field name="forAnneeHistorique" field-ref="simpleDetailFamille.anneeHistorique" operation="EQUALS"/>
+				<search-field name="forIdFamille" field-ref="simpleFamille.idFamille" operation="EQUALS"/>
+				<search-field name="forFinDroit" field-ref="simpleDetailFamille.finDroit" operation="EQUALS"/>
+				<search-field name="forFinDefinitive" field-ref="simpleFamille.finDefinitive" operation="EQUALS"/>
+				<search-field name="forCodeActif" field-ref="simpleDetailFamille.codeActif" operation="EQUALS"/>
+				<search-field name="inTypeDemande" field-ref="simpleDetailFamille.typeDemande" operation="IN"/>
+				<search-field name="forNumeroContribuable" field-ref="personneEtendue.personneEtendue.numContribuableActuel" operation="EQUALS"/>
+				<search-field name="inNumerosContribuables" field-ref="personneEtendue.personneEtendue.numContribuableActuel" operation="IN"/>
+				<search-field name="forContribuableActif" field-ref="simpleContribuable.isContribuableActif" operation="EQUALS"/>
+				<search-field name="forNNSS" field-ref="personneEtendue.personneEtendue.numAvsActuel" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+
+		<order-by name="default">
+			<order-field field-ref="simpleDetailFamille.anneeHistorique" order="DESC"/>
+			<order-field field-ref="simpleFamille.isContribuable" order="ASC"/>
+			<order-field field-ref="simpleFamille.pereMereEnfant" />
+			<order-field field-ref="simpleFamille.dateNaissance" />			
+			<order-field field-ref="simpleFamille.nomPrenom" />
+			<order-field field-ref="simpleDetailFamille.debutDroit" order="DESC"/>
+		</order-by>
+		
+		<order-by name="vueGlobale">
+			<order-field field-ref="simpleDetailFamille.anneeHistorique" order="DESC"/>
+			<order-field field-ref="simpleFamille.isContribuable" order="ASC"/>
+			<order-field field-ref="simpleDetailFamille.idDetailFamille" order="ASC"/>
+		</order-by>
+		
+		<order-by name="processTri">
+			<order-field field-ref="simpleFamille.idFamille" order="ASC"/>
+			<order-field field-ref="simpleDetailFamille.anneeHistorique" order="DESC"/>
+		</order-by>
+		
+		<order-by name="processPublipostage">
+			<order-field field-ref="simpleFamille.idContribuable" order="ASC"/>
+			<order-field field-ref="simpleFamille.isContribuable" order="ASC"/>
+			<order-field field-ref="simpleFamille.pereMereEnfant" />
+			<order-field field-ref="personneEtendue.tiers.designationUpper1" />
+			<order-field field-ref="personneEtendue.tiers.designationUpper2" />
+		</order-by>
+
+		
+	</complexe-model>
+</model-mapping>

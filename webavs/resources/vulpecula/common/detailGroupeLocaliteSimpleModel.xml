@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.vulpecula.external.models.DetailGroupeLocaliteSimpleModel">
+		<table name="TILGRL" hasCreationSpy="false" hasSpy="true" 
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="HLGLID" 
+				comment="id du détail de groupe de localité"/>
+			<field name="idGroupeLocalite" column="HGRPID" type="NUMERIC"
+				comment ="id du groupe de localité"/>
+			<field name="idLocalite" column="HGREID" type="NUMERIC"
+				comment ="id de la localité"/>
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forIdGroupeLocalite" field-ref="idGroupeLocalite" operation="EQUALS"/>
+				<search-field name="forIdLocalite" field-ref="idLocalite" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="id" />
+		</order-by>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+	</simple-model>
+</model-mapping>

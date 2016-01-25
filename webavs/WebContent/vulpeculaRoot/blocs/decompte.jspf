@@ -1,0 +1,51 @@
+<%-- L'utilisation de ce bloc nécessite qu'une variable decompte soit présente
+dans le pageContext ! --%>
+<div class="bloc bloc400">
+	<input id="idDecompte" type="hidden" value="${decompte.id}">
+	<div class="header">
+	<div style="float: right;">
+		<a style="align:right;" href="vulpecula?userAction=vulpecula.afficherGed.afficherGed.afficherGed&selectedId=${decompte.idGed}&serviceNameId=VULPECULA" target="GED_CONSULT">
+			<ct:FWLabel key="JSP_GED" /> (${decompte.idGed})
+		</a>
+		</div>
+		
+		<a href="vulpecula?userAction=vulpecula.decomptedetail.decomptedetail.afficher&selectedId=${decompte.id}">
+			<ct:FWLabel key="JSP_DECOMPTE" /> (${decompte.id})
+		</a>
+		
+	</div>		
+	<table width="100%">
+		<tr>
+			<td class="label">
+				<label><ct:FWLabel key='JSP_NO_DECOMPTE'/></label>
+			</td>
+			<td class="value"><span>${decompte.numeroDecompte}</span></td>
+		</tr>
+		<tr>
+			<td class="label">
+				<label><ct:FWLabel key='JSP_DECOMPTE_TYPE'/></label>
+			</td>
+			<td class="value"><span><ct:FWCodeLibelle csCode="${decompte.type.value}"/></span></td>
+		</tr>
+		<tr>
+			<td class="label">
+				<label><ct:FWLabel key='JSP_DECOMPTE_DATE'/></label>
+			</td>
+			<td class="value"><span id="date_decompte">${decompte.dateEtablissement}</span></td>
+		</tr>
+		<tr>
+			<td class="label">
+				<label><ct:FWLabel key='JSP_DECOMPTE_PERIODE'/></label>
+			</td>
+			<td class="value">
+				<span>${decompte.periode.periodeDebutAsSwissValue} - ${decompte.periode.periodeFinAsSwissValue}</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="label">
+				<label><ct:FWLabel key='JSP_DECOMPTE_ETAT'/></label>			
+			</td>
+			<td class="value"><ct:FWCodeLibelle csCode="${decompte.etat.value}"/></td>
+		</tr>
+	</table>
+</div>

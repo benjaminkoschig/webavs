@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="vulpecula/syndicat/affiliationSyndicatSimpleModel.xml"/>
+	<model-mapping import="vulpecula/syndicat/affiliationSyndicatComplexModel.xml"/>
+	<model-mapping import="vulpecula/syndicat/parametreSyndicatSimpleModel.xml"/>
+	<model-mapping import="vulpecula/syndicat/parametreSyndicatComplexModel.xml"/>
+</model-mapping>

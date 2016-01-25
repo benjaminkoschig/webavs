@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.creancier.SimpleCreancier">
+		<description>Gestion des Créanciers</description>
+		<table name="PFCREANC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idCreancier" column="IZIDCR" comment="Identifiant du créancier"/>
+			<field name="idDemande" column="IZIDDE" type="NUMERIC" mandatory="true" comment="Identifiant de la demande"/>
+			<field name="idTiers" column="IZIDTI" type="NUMERIC" mandatory="true" comment="Identifiant du tiers"/>
+			<field name="idDomaineApplicatif" column="IZIDDA" type="NUMERIC" mandatory="true" comment="Identifiant du domaine applicatif"/>
+			<field name="montantRevendique" column="IZMONT" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="Montant revendiqué par le créancier"/>	
+			<field name="montantAccorde" column="IZMOAC" type="NUMERIC" dataType="NUMERIC (15,2)" mandatory="false" comment="Montant de la créance accordé"/>
+			<field name="csTypeCreance" column="IZTYPE" type="NUMERIC" mandatory="false" comment="Code systeme du type de créance"/>
+			<field name="referencePaiement" column="IZREFP" type="STRING" mandatory="false" comment="Reference de paiement"/>	
+			<field name="idOrdreVersement" column="IZIDOV" type="NUMERIC" mandatory="false" comment="Identifiant de l'ordre de versement"/>
+		
+		</fields>
+	</simple-model>
+</model-mapping>

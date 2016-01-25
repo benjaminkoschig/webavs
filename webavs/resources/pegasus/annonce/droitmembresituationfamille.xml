@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.annonce.DroitMembreSituationFamille">
+	
+		<root-model name="simpleDroitMembreFamille" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille"  select-fields="false" />
+
+		<select-fields>
+			<select-field name="idDroitMembreFamille" field-ref="simpleDroitMembreFamille.idDroitMembreFamille"/>
+			<select-field name="idTiers" field-ref="simpleMembreFamille.idTiers"/>	
+			<select-field name="csRoleFamille" field-ref="simpleDroitMembreFamille.csRoleFamillePC"/>			
+		</select-fields>
+		
+
+		<linked-model name="simpleMembreFamille" model-ref="ch.globaz.hera.business.models.famille.SimpleMembreFamille" join-type="INNER"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idMembreFamille" operation="EQUALS" field-ref="simpleDroitMembreFamille.idMembreFamilleSF"/>
+			</join-group>		
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleDroitMembreFamille.idDroit"/>
+				<search-field name="forInCsRoleFamille" operation="IN" field-ref="simpleDroitMembreFamille.csRoleFamillePC"/>
+			</search-group>
+		</search-definition>
+
+	</complexe-model>
+</model-mapping>
+
+
+

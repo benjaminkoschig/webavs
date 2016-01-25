@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.fortuneusuelle.SimpleCapitalLPP">
+		<description>CAPITAL LPP</description>
+		<table name="PCCALPP" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idCapitalLPP" column="CJICAL" comment="ID_CAPITAL_LPP"/>		
+			<field name="idDonneeFinanciereHeader" mandatory="true" column="CJIDFH" type="NUMERIC" comment="DONNEE_FINANCIERE_HEADER"/>
+			<field name="csTypePropriete" mandatory="true" column="CJTPPT" type="NUMERIC" comment="CS_TYPE_PROPRIETE"/>
+			<field name="PartProprieteNumerateur" column="CJNPPN" type="NUMERIC" comment="PART_PROPRIETE"/>
+			<field name="PartProprieteDenominateur" column="CJNPPD" type="NUMERIC" comment="PART_PROPRIETE"/>
+			<field name="montantCapitalLPP" mandatory="true" column="CJNMCL" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_CAPITAL_LPP"/>
+			<field name="noPoliceNoCompte" mandatory="true" column="CJLNPC" type="STRING" comment="NO_POLICE_NO_COMPTE"/>
+			<field name="idInstitutionPrevoyance" mandatory="true" column="CJIIPR" type="NUMERIC" comment="ID_INSTITUTION_PREVOYANCE"/>
+			<field name="destinationLiberation" column="CJLDLI" type="STRING" comment="DESTINATION_LIBERATION"/>
+			<field name="isSansInteret" column="CJBSIN" type="BOOLEAN" comment="IS_SANS_INTERET"/>						
+			<field name="montantInteret" column="CJNMIN" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_INTERET"/>
+			<field name="montantFrais" column="CJNMFR" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_FRAIS"/>
+			<field name="dateLiberation" column="CJDLIB" type="DATE" comment="DATE_LIBERATION"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

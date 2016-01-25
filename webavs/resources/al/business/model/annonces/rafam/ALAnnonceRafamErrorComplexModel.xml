@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.rafam.AnnonceRafamErrorComplexModel">
+		<root-model name="annonceRafamModel" model-ref="ch.globaz.al.business.models.rafam.AnnonceRafamModel"/>
+		
+		<linked-model name="erreurAnnonceRafamModel" model-ref="ch.globaz.al.business.models.rafam.ErreurAnnonceRafamModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idAnnonce" field-ref="annonceRafamModel.idAnnonce"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="errorPeriodModel" model-ref="ch.globaz.al.business.models.rafam.ErrorPeriodModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idErreurAnnonce" field-ref="erreurAnnonceRafamModel.idErreurAnnonce"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="overlapInformationModel" model-ref="ch.globaz.al.business.models.rafam.OverlapInformationModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idErreurAnnonce" field-ref="erreurAnnonceRafamModel.idErreurAnnonce"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-literal><![CDATA[ (#{erreurAnnonceRafamModel.code} IS NOT NULL) ]]></search-literal>
+				<search-field name="forIdAnnonce" field-ref="erreurAnnonceRafamModel.idAnnonce" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="errInsignificance">
+			<search-group operator="AND">
+				<search-field name="forEtat" field-ref="annonceRafamModel.etat" operation="NOT_EQUALS"/>
+				<search-field name="forInsignificance" field-ref="overlapInformationModel.insignificance" operation="EQUALS"/>
+				<search-field name="forIdAnnonce" field-ref="erreurAnnonceRafamModel.idAnnonce" operation="EQUALS"/>
+				<search-field name="forDateReception" field-ref="annonceRafamModel.dateReception" operation="LESS"/>
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

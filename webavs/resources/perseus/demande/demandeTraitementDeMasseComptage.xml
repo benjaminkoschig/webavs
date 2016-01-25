@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.demande.DemandeTraitementMasseComptage">
+	
+		<root-model name="simpleEntite" model-ref="ch.globaz.jade.process.business.models.entity.SimpleEntity"/>
+	    <select-fields>
+			<select-field name="keyProperty" field-ref="simpleProperty.key" />
+	    </select-fields>
+
+	    <linked-model name="simpleProperty" model-ref="ch.globaz.jade.process.business.models.property.SimplePropriete" join-type="INNER" select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="idEntite" operation="EQUALS" field-ref="simpleEntite.idEntite"/>
+			</join-group>		
+		</linked-model>
+
+	   	<search-definition>
+	   		<search-group operator="AND">
+	   		    <search-field name="forExecutionProcess" operation="EQUALS" field-ref="simpleEntite.idExecutionProcess"/>
+	   		    <search-field name="forKeyProperty" operation="EQUALS" field-ref="keyProperty"/>
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

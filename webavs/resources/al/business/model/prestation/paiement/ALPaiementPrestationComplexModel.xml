@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.prestation.paiement.PaiementPrestationComplexModel"
+					extend="ch.globaz.al.business.models.prestation.paiement.CompensationPaiementPrestationComplexModel">
+		<select-fields distinct="true">
+			<select-field name="numeroCompte" field-ref="detailPrestationModel.numeroCompte"/>
+			<select-field name="idTiersBeneficiaire" field-ref="detailPrestationModel.idTiersBeneficiaire"/>
+			<select-field name="idTiersAllocataire" field-ref="allocataireComplexModel.allocataireModel.idTiersAllocataire"/>
+			<select-field name="idDossier" field-ref="dossierModel.idDossier"/>
+			<select-field name="nssAllocataire" field-ref="allocataireComplexModel.personneEtendueComplexModel.personneEtendue.numAvsActuel"/>
+			<select-field name="bonificationRecap" field-ref="recapEntrepriseModel.bonification"/>
+			<select-field name="nomAllocataire" field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation1"/>
+			<select-field name="prenomAllocataire" field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation2"/>
+			<select-field name="numeroFacture" field-ref="recapEntrepriseModel.numeroFacture" />
+		</select-fields>
+		
+		<linked-model name="allocataireComplexModel" model-ref="ch.globaz.al.business.models.allocataire.AllocataireComplexModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="allocataireModel.idAllocataire" field-ref="dossierModel.idAllocataire" operation="EQUALS" />
+			</join-group>
+		</linked-model>
+				
+		<order-by name="paiementDirect">
+			<order-field field-ref="nssAllocataire" order="ASC"/>
+			<!--d'abord les restitution, ensuite les extournes et versement -->
+			<order-field field-ref="bonificationEntete" order="DESC"/>
+			<order-field field-ref="montantDetail" order="ASC" />
+			<!-- <order-field field-ref="numeroCompte" order="ASC" /> -->
+		</order-by>
+		
+		<order-by name="paiementDirectTest">
+			<order-field field-ref="nssAllocataire" order="ASC"/>
+			<!--d'abord les restitution, ensuite les extournes et versement -->
+			<order-field field-ref="bonificationEntete" order="DESC"/>
+			<order-field field-ref="idEntete" order="ASC"/>	
+		</order-by>
+	</complexe-model>
+</model-mapping>

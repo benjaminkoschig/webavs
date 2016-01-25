@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.naos.business.model.AffiliationComplexModel">
+		<root-model name="affiliationSimpleModel" model-ref="ch.globaz.naos.business.model.AffiliationSimpleModel"/>
+	   
+		<linked-model name="tiersSimpleModel" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="affiliationSimpleModel.idTiers"/>
+			</join-group>		
+		</linked-model>
+	  
+	   	<search-definition>
+			<search-group operator="AND">
+				<search-field name="forNumeroAffilie"  operation="EQUALS" field-ref="affiliationSimpleModel.affilieNumero"/>
+				<search-field name="forNumeroAffilieLike"  operation="LIKE" field-ref="affiliationSimpleModel.affilieNumero"/>
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

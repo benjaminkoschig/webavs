@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.calcul.AutreRenteCalcul">
+		<root-model name="autreRente" model-ref="ch.globaz.pegasus.business.models.renteijapi.AutreRente"/>
+	
+		<linked-model name="simpleVersionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="autreRente.simpleDonneeFinanciereHeader.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<select-fields>
+			<select-field name="idDroit" field-ref="simpleVersionDroit.idDroit"/>
+			<select-field name="noVersion" field-ref="simpleVersionDroit.noVersion"/>
+		</select-fields>
+		
+		<search-definition name="calcul">
+			<search-group operator="AND">
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>
+				<search-field name="forCsTypeDonneFinanciere" field-ref="autreRente.simpleDonneeFinanciereHeader.csTypeDonneeFinanciere" operation="EQUALS" value="64007004"/>
+				<search-field name="forIsSupprime" field-ref="autreRente.simpleDonneeFinanciereHeader.isSupprime" operation="EQUALS" value="2"/>
+				<search-field name="forCsGenreRente" field-ref="autreRente.simpleAutreRente.csGenre" operation="EQUALS" value="64018003"/>
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="dfHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+					
+					<![CDATA[ 
+						#{autreRente.simpleDonneeFinanciereHeader.isSupprime} = 2 AND
+						#{autreRente.simpleDonneeFinanciereHeader.idVersionDroit} =
+							(
+								select MAX( #{versionDroit.idVersionDroit} ) from @{versionDroit} 
+									inner join  @{dfHeader} on ( #{versionDroit.idVersionDroit} = #{dfHeader.idVersionDroit} )
+									where #{dfHeader.idEntity} = #{autreRente.simpleDonneeFinanciereHeader.idEntity}
+										 
+							)
+					 ]]>
+				</search-literal>
+			
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

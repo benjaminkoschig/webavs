@@ -1,0 +1,8 @@
+<TITLE><%=idEcran%></TITLE>
+</HEAD>
+<BODY onload="doInitThings()" onKeyDown="keyDown();actionKeyDown();" onKeyUp="keyUp();actionKeyUp();">
+<table cellspacing="0" cellpadding="0" style="background-color: #B3C4DB; width: 100%; height: <%=tableHeight%>;">
+	<TBODY>
+		<TR>
+			<TH colspan="3" height="10" class="thDetail">
+				<SPAN class="idEcran"><%=(null==idEcran)?"":idEcran%></SPAN>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.home.PeriodeServiceEtat">
+		<root-model name="simplePeriodeServiceEtat" model-ref="ch.globaz.pegasus.business.models.home.SimplePeriodeServiceEtat" />
+		<linked-model name="simpleHome" model-ref="ch.globaz.pegasus.business.models.home.SimpleHome" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idHome" operation="EQUALS" field-ref="simplePeriodeServiceEtat.idHome" />
+			</join-group>
+		</linked-model>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdHome" field-ref="simplePeriodeServiceEtat.idHome" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		<order-by>
+			<order-field field-ref="simplePeriodeServiceEtat.dateDebut" order="DESC"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

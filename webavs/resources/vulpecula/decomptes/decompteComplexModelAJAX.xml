@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.decomptes.DecompteComplexModelAJAX">
+
+		<root-model name="decompteSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.decomptes.DecompteSimpleModel" />
+
+		<linked-model name="employeurComplexModel"
+			model-ref="ch.globaz.vulpecula.business.models.employeur.EmployeurComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="affiliationTiersComplexModel.affiliation.affiliationId"
+					operation="EQUALS" field-ref="decompteSimpleModel.idEmployeur" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="taxationOfficeSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.taxationoffice.TaxationOfficeSimpleModel"
+			join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idDecompte" operation="EQUALS" field-ref="decompteSimpleModel.id" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="decompteSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forNoDecompte" field-ref="decompteSimpleModel.numeroDecompte"
+					operation="LIKE" />
+				<search-field name="forIdEmployeur"
+					field-ref="decompteSimpleModel.idEmployeur" operation="EQUALS" />
+				<search-field name="forIdConvention"
+					field-ref="employeurComplexModel.administrationComplexModel.admin.idTiersAdministration" operation="EQUALS"/>
+				<search-field name="likeNoAffilie"
+					field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.affilieNumero" operation="LIKE" />
+				<search-field name="forDateDe"
+					field-ref="decompteSimpleModel.periodeDebut" operation="GREATER_OR_EQUALS" />
+				<search-field name="forDateAu"
+					field-ref="decompteSimpleModel.periodeDebut" operation="LESS_OR_EQUALS" />	
+				<search-field name="forType"
+					field-ref="decompteSimpleModel.type" operation="EQUALS" />
+				<search-field name="forEtat"
+					field-ref="decompteSimpleModel.etat" operation="EQUALS" />
+				<search-field name="inEtats"
+					field-ref="decompteSimpleModel.etat" operation="IN" />
+				<search-field name="inTypes"
+					field-ref="decompteSimpleModel.type" operation="IN" />
+				<search-field name="likeRaisonSociale"
+					field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.raisonSociale" operation="LIKE" />
+				<search-field name="likeRaisonSocialeUpper" 
+					field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.raisonSocialeUpper" operation="LIKE" />
+				<search-field name="forIdPassage" field-ref="decompteSimpleModel.idPassageFacturation" operation="EQUALS" />
+				<search-field name="wantRectifie"
+					field-ref="decompteSimpleModel.rectifie" operation="EQUALS" />
+				<search-field name="beforeDate" operation="LESS" field-ref="decompteSimpleModel.periodeDebut" />	
+				<search-field name="forDateReception"
+					field-ref="decompteSimpleModel.dateReception" operation="EQUALS" />	
+				<search-field name="forEtatTaxation" field-ref="taxationOfficeSimpleModel.etat" operation="EQUALS" />		
+			</search-group>
+		</search-definition>
+		
+		<order-by name="default">
+			<order-field field-ref="decompteSimpleModel.dateEtablissement" order="DESC" />		
+			<order-field field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.raisonSociale" order="ASC" />		
+		</order-by>
+		
+		<order-by name="idAsc">
+			<order-field field-ref="decompteSimpleModel.id" order="ASC"/>
+		</order-by> 
+		<order-by name="idDesc">
+			<order-field field-ref="decompteSimpleModel.id" order="DESC"/>
+		</order-by> 	
+		<order-by name="noDecompteAsc">
+			<order-field field-ref="decompteSimpleModel.numeroDecompte" order="ASC"/>
+		</order-by> 
+		<order-by name="noDecompteDesc">
+			<order-field field-ref="decompteSimpleModel.numeroDecompte" order="DESC"/>
+		</order-by> 
+		<order-by name="noAffilieAsc">
+			<order-field field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.affilieNumero" order="ASC"/>
+		</order-by> 
+		<order-by name="noAffilieDesc">
+			<order-field field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.affilieNumero" order="DESC"/>
+		</order-by> 
+		<order-by name="raisonSocialeAsc">
+			<order-field field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.raisonSociale" order="ASC"/>
+		</order-by> 
+		<order-by name="raisonSocialeDesc">
+			<order-field field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.raisonSociale" order="DESC"/>
+		</order-by> 
+		<order-by name="conventionAsc">
+			<order-field field-ref="employeurComplexModel.administrationComplexModel.tiers.designation1" order="ASC"/>
+		</order-by> 
+		<order-by name="conventionDesc">
+			<order-field field-ref="employeurComplexModel.administrationComplexModel.tiers.designation1" order="DESC"/>
+		</order-by> 
+		<order-by name="periodeDebutDesc">
+			<order-field field-ref="decompteSimpleModel.periodeDebut" order="DESC" />
+		</order-by>	
+		<order-by name="dateReceptionAsc">
+			<order-field field-ref="decompteSimpleModel.dateReception" order="ASC" />
+		</order-by>	
+		<order-by name="dateReceptionDesc">
+			<order-field field-ref="decompteSimpleModel.dateReception" order="DESC" />
+		</order-by>			
+	</complexe-model>
+</model-mapping>

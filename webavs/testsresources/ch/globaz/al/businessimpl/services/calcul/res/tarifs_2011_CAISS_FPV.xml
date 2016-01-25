@@ -1,0 +1,35 @@
+<tarifs xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="tarifsTests.xsd">
+	<periode date="01.01.2011">
+		<legislation cs="CAISSE">
+			<categorie cs="FPV_GEOM">
+				<test testId="1" type="ENF" capableExercer="true" montant="210" age="16" residence="CH" rng="1"/>
+				<test testId="2" type="ENF" capableExercer="true" montant="0" age="17" residence="CH" rng="1"/>
+				
+				<test testId="3" type="ENF" capableExercer="true" montant="400" age="16" residence="CH" rng="3"/>
+				<test testId="4" type="ENF" capableExercer="true" montant="0" age="17" residence="CH" rng="3"/>
+				
+				<test testId="5" type="FORM" capableExercer="true" montant="260" age="17" residence="CH" rng="1"/>
+				<test testId="6" type="FORM" capableExercer="true" montant="0" age="26" residence="CH" rng="1"/>
+				
+				<test testId="7" type="FORM" capableExercer="true" montant="450" age="17" residence="CH" rng="3"/>
+				<test testId="8" type="FORM" capableExercer="true" montant="0" age="26" residence="CH" rng="3"/>
+				
+				<test testId="9" type="NAIS" montant="1600" residence="CH"/>
+				
+				<test testId="10" type="ENF" capableExercer="true" montant="210" age="16" residence="ETR" rng="1"/>
+				<test testId="11" type="ENF" capableExercer="true" montant="0" age="17" residence="ETR" rng="1"/>
+				
+				<test testId="12" type="ENF" capableExercer="true" montant="400" age="16" residence="ETR" rng="3"/>
+				<test testId="13" type="ENF" capableExercer="true" montant="0" age="17" residence="ETR" rng="3"/>
+				
+				<test testId="14" type="FORM" capableExercer="true" montant="260" age="17" residence="ETR" rng="1"/>
+				<test testId="15" type="FORM" capableExercer="true" montant="0" age="26" residence="ETR" rng="1"/>
+				
+				<test testId="16" type="FORM" capableExercer="true" montant="450" age="17" residence="ETR" rng="3"/>
+				<test testId="17" type="FORM" capableExercer="true" montant="0" age="26" residence="ETR" rng="3"/>
+				
+				<test testId="18" type="NAIS" montant="0" residence="ETR"/>
+			</categorie>
+		</legislation>
+	</periode>
+</tarifs>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.demande.DemandeTraitementMasse">
+		
+		<select-fields>
+			<!-- Décision -->
+			<select-field name="idDecision" field-ref="simpleDecision.idDecision" />
+			<select-field name="csTypeDecision" field-ref="simpleDecision.csTypeDecision" />
+			<!-- -->
+			<select-field name="nom" field-ref="dossier.demandePrestation.personneEtendue.tiers.designation1" />
+			<select-field name="prenom" field-ref="dossier.demandePrestation.personneEtendue.tiers.designation2" />
+			<select-field name="nss" field-ref="dossier.demandePrestation.personneEtendue.personneEtendue.numAvsActuel" />
+		</select-fields>
+		
+		<root-model name="simpleDemande" model-ref="ch.globaz.perseus.business.models.demande.SimpleDemande" />
+		<linked-model name="simpleDecision" model-ref="ch.globaz.perseus.business.models.decision.SimpleDecision" select-fields="false" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="dossier" model-ref="ch.globaz.perseus.business.models.dossier.Dossier" select-fields="false" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="dossier.idDossier" operation="EQUALS" field-ref="simpleDemande.idDossier"/>
+			</join-group>		
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forCsCaisse" operation="EQUALS" field-ref="simpleDemande.csCaisse"/>
+				<search-field name="forCsEtatDemande" operation="EQUALS" field-ref="simpleDemande.csEtatDemande"/>
+				<search-field name="notCsEtatDemande" operation="NOT_EQUALS" field-ref="simpleDemande.csEtatDemande"/>
+				<search-field name="forCsTypeDemande" operation="EQUALS" field-ref="simpleDemande.typeDemande"/>
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="simpleDemande.idDossier"/>
+				
+				<search-field name="forListCsTypes" operation="IN" field-ref="simpleDecision.csTypeDecision" />
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simpleDecision.csEtat"/>
+				<search-field name="forCsTypeDecision" operation="EQUALS" field-ref="simpleDecision.csTypeDecision"/>
+				
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/>
+
+				<search-field name="greaterDateDebut" operation="GREATER" field-ref="simpleDemande.dateDebut"/>
+				<search-field name="lessDateDebut" operation="LESS" field-ref="simpleDemande.dateDebut"/>
+				
+				<search-field name="betweenDateFin" operation="LESS" field-ref="simpleDemande.dateFin"/>
+
+				<search-field name="forNotIdDemande" operation="NOT_EQUALS" field-ref="simpleDemande.idDemande" />
+
+				<search-field name="forDateFin" operation="EQUALS" field-ref="simpleDemande.dateFin" />
+				
+				<search-field name="forDateDebut" operation="EQUALS" field-ref="simpleDemande.dateDebut" />
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="populationSansDateDeFin">
+			<search-group operator="AND">
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simpleDecision.csEtat"/>
+				<search-field name="forListCsTypes" operation="IN" field-ref="simpleDecision.csTypeDecision" />
+				
+				<search-field name="lessDateDebut" operation="LESS_OR_EQUALS" field-ref="simpleDemande.dateDebut"/>
+
+				<search-field name="forDateFin" operation="NULL" field-ref="simpleDemande.dateFin" />
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="simpleDemande.idDossier" />
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="populationAvecDateFinFinAnnee">
+			<search-group operator="AND">
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simpleDecision.csEtat"/>
+				<search-field name="forCsTypeDecision" operation="EQUALS" field-ref="simpleDecision.csTypeDecision" />		
+				<search-field name="fromRI" operation="EQUALS" field-ref="simpleDemande.fromRI" />
+				<search-field name="forDateFin" operation="EQUALS" field-ref="simpleDemande.dateFin" />
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="simpleDemande.idDossier" />
+								
+				<search-literal>
+					<declare-model name="demandeMax" model-ref="ch.globaz.perseus.business.models.demande.SimpleDemande"/>
+					<declare-model name="decisionMax" model-ref="ch.globaz.perseus.business.models.decision.SimpleDecision"/>
+					<![CDATA[ 
+						#{simpleDemande.idDemande} =
+							(
+								select MAX( #{decisionMax.idDemande} ) from @{decisionMax}
+									inner join  @{demandeMax} on #{decisionMax.idDemande} = #{demandeMax.idDemande}   
+									where #{demandeMax.idDossier} = #{simpleDemande.idDossier} 
+										and (#{demandeMax.dateFin} is NULL OR #{demandeMax.dateFin} = 0 OR #{demandeMax.dateFin} >= ${forDateFinMax:demandeMax.dateFin} ) 
+										and #{decisionMax.csEtat} = ${forCsEtat:simpleDecision.csEtat}
+							)
+					 ]]>
+				</search-literal>			
+			</search-group>
+		</search-definition>
+			
+		<order-by name="dateDebutDesc">
+			<order-field field-ref="simpleDemande.dateDebut" order="DESC"/>
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>
+
+
+
+
+
+
+
+
+
+

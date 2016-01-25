@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.revenusdepenses.SimpleLibelleContratEntretienViager">
+		<description>LIBELLE_CONTRAT_ENTRETIEN_VIAGER</description>
+		<table name="PCTCEVI" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idLibelleContratEntretienViager" column="CBILCE" comment="ID_LIBELLE_CONTRAT_ENTRETIEN_VIAGER"/>			
+			<field name="csLibelleContratEntretienViager" mandatory="true" column="CBTLCE" type="NUMERIC" comment="CS_LIBELLE_CONTRAT_ENTRETIEN_VIAGER"/>
+			<field name="idContratEntretienViager"  mandatory="true" column="CBIECE" type="NUMERIC" comment="ID_CONTRAT_ENTRETIEN_VIAGER"/>			
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdContratEntretienViager" operation="EQUALS" field-ref="idContratEntretienViager"/>
+				<search-field name="forIdLibelleContratEntretienViager" operation="EQUALS" field-ref="idLibelleContratEntretienViager"/>
+				<search-field name="inIdContratEntretienViager" operation="IN" field-ref="idContratEntretienViager"/>
+			</search-group>
+		</search-definition>
+		
+	</simple-model>
+</model-mapping>

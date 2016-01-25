@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.vulpecula.external.models.GroupeLocaliteSimpleModel">
+		<table name="TIGRPL" hasCreationSpy="false" hasSpy="true" 
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="HGRPID" 
+				comment="Id du groupe de localité" />
+			<field name="nomGroupeFR" column="HGRNMF" type="STRING" 
+				comment="Nom du groupe en français" />
+			<field name="nomGroupeDE" column="HGRNMD" type="STRING" 
+				comment="Nom du groupe en allemand" />
+			<field name="nomGroupeIT" column="HGRNMI" type="STRING" 
+				comment="Nom du groupe en italien" />
+			<field name="noGroupe" column="HGREID" type="NUMERIC"
+				comment="Numéro de groupe" />
+			<field name="typeGroupe" column="HGRCTY" type="STRING"
+				comment="Type de groupe" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forNoGroupe" field-ref="noGroupe" operation="EQUALS" />
+				<search-field name="forTypeGroupe" field-ref="typeGroupe" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="id" />
+		</order-by>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+	</simple-model>
+</model-mapping>

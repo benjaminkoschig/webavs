@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--globaz.jade.publish.server.JadePublishServer: serveur de publication-->
+<globaz.jade.publish.server.JadePublishServer>
+	<!--serverStoreLocation: repertoire local pour le stockage temporaire des fichiers a publier, par defaut: Jade.persistenceDir-->
+	<!--instanceStore: declaration du systeme de persistance: -->
+	<!--               - ram: pas de persistance-->
+	<!--               - db: persistance en base de donnees via JDBC-->
+	<!--               - db4o: persistance dans fichier local avec db4o-->
+	<instanceStore>globaz.jade.publish.plugin.persistence.ram.JadePublishInstanceStoreImpl</instanceStore>
+	<!--<instanceStore>globaz.jade.publish.plugin.persistence.db.JadePublishInstanceStoreImpl</instanceStore>-->
+	<!--<instanceStore>globaz.jade.publish.plugin.persistence.db4o.JadePublishInstanceStoreImpl</instanceStore>-->
+	<!--queues: liste des files d'attente-->
+	<queues>
+		<!--queue: declaration d'une file d'attente-->
+		<!--  name [REQUIRED]: nom de la file d'attente-->
+		<queue name="PUBLISH" class="globaz.jade.publish.server.JadePublishQueue">
+			<!--queueType: type de la queue -->
+			<!--  PUBLISH: queue utilisee pour la publication des documents-->
+			<!--  STORE: queue utilisee pour sauvegarder: -->
+			<!--         - des documents non publies (aucunes resources attribuees)-->
+			<!--         - des documents qui ont eu des erreurs lors de la publication-->
+			<!--maxConcurrentJobs: nombre maximum de publication concurrents dans la file d'attente (1 par defaut)-->
+			<!--createThreads: 'true' pour creer les threads necessaire au demarrage,-->
+			<!--               'false' pour les creer qu'en cas de besoin ('false' par defaut)-->
+			<!--hold: 'true' pour que la file d'attente soit initialement arretee,-->
+			<!--      'false' pour qu'elle soit demarree ('false' par defaut)-->
+			<queueType>PUBLISH</queueType>
+			<maxConcurrentJobs>1</maxConcurrentJobs>
+			<createThreads>false</createThreads>
+			<hold>false</hold>
+		</queue>
+		<queue name="STORE" class="globaz.jade.publish.server.JadePublishQueue">
+			<queueType>STORE</queueType>
+			<maxConcurrentJobs>1</maxConcurrentJobs>
+			<createThreads>false</createThreads>
+			<hold>false</hold>
+		</queue>
+	</queues>
+</globaz.jade.publish.server.JadePublishServer>

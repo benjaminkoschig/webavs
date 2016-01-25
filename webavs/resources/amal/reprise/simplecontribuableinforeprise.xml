@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.reprise.SimpleContribuableInfoReprise">
+		<description>Infos Contribuable Reprise RP_AMAL_MACTBINF</description>
+		<table name="RP_AMAL_MACTBINF" hasSpy="false" hasCreationSpy="false" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idContribuableInfo" column="ID_INFO_CONTIBUABLE" comment="Id Contribuable info"/>
+			<field name="idContribuable" column="ID_CONTRIBUABLE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="Id contribuable"/>
+			<field name="civilite" column="CIVILITE" type="STRING" dataType="VARCHAR(24)" comment="civilite"/>
+			<field name="nomDeFamille" column="NOM_DE_FAMILLE" type="STRING" dataType="VARCHAR(24)" comment="Nom"/>
+			<field name="prenom" column="PRENOM" type="STRING" dataType="VARCHAR(24)" comment="prenom"/>
+			<field name="ligneAdresse1" column="LIGNE_ADRESSE_1" type="STRING" dataType="VARCHAR(24)" comment="adresse1"/>			
+			<field name="ligneAdresse2" column="LIGNE_ADRESSE_2" type="STRING" dataType="VARCHAR(24)" comment="adresse2"/>			
+			<field name="ligneAdresse3" column="LIGNE_ADRESSE_3" type="STRING" dataType="VARCHAR(24)" comment="adresse3"/>
+			<field name="nomDeRue" column="NOM_DE_RUE" type="STRING" dataType="VARCHAR(24)" comment="rue"/>
+			<field name="numeroDeRue" column="NUMERO_DE_RUE" type="STRING" dataType="VARCHAR(20)" comment="numero"/>			
+			<field name="casePostale" column="CASE_POSTALE" type="STRING" dataType="VARCHAR(25)" comment="case postale"/>			
+			<field name="numeroPostal" column="NUMERO_POSTAL" type="STRING" dataType="VARCHAR(8)" comment="numero postal"/>			
+			<field name="commune" column="COMMUNE" type="STRING" dataType="VARCHAR(20)" comment="commune"/>
+			<field name="dateNaissanceActuelle" column="DATE_NAISSANCE_ACTUELLE" type="DATE" comment="date de naissance"/>
+			<field name="dateNaissancePrecedente" column="DATE_NAISSANCE_PRECEDENTE" type="DATE" comment="date de naissance précédente"/>
+			<field name="dateNaissanceCommune" column="DATE_NAISSANCE_COMMUNE" type="DATE" comment="date de naissance zone commune"/>
+			<field name="numeroContribuableActuel" column="NO_CONTRIBUABLE_ACTUEL" type="NUMERIC" dataType="NUMERIC(11,0)" comment="numero contribuable"/>
+			<field name="numeroContribuableActuelFormate" column="NO_CONTRIBUABLE_ACTUEL_FORMATE" type="STRING" dataType="VARCHAR(15)" comment="numero contribuable formate"/>
+			<field name="numeroContribuableNouveauFormatNouvelleValeur" column="NO_CTR_NOUVEAU_FORMAT_NOUVELLE_VALEUR" type="STRING" dataType="VARCHAR(15)" comment="numero contribuable nouveau"/>
+			<field name="numeroContribuableNouveauFormatAncienneValeur" column="NO_CTR_NOUVEAU_FORMAT_ANCIENNE_VALEUR" type="STRING" dataType="VARCHAR(15)" comment="numero contribuable nouveau precedent"/>
+			<field name="numeroContribuableAncienFormatNouvelleValeur" column="NO_CTR_ANCIEN_FORMAT_NOUVELLE_VALEUR" type="STRING" dataType="VARCHAR(15)" comment="numero contribuable ancien"/>
+			<field name="numeroContribuableAncienFormatAncienneValeur" column="NO_CTR_ANCIEN_FORMAT_ANCIENNE_VALEUR" type="STRING" dataType="VARCHAR(15)" comment="numero contribuable ancien precedent"/>
+			<field name="nnss" column="NNSS" type="STRING" dataType="VARCHAR(20)" comment="NNSS"/>
+			<field name="nomDeFamilleMajuscules" column="NOM_DE_FAMILLE_MAJUSCULES" type="STRING" dataType="VARCHAR(24)" comment="Nom Upper"/>
+			<field name="prenomMajuscules" column="PRENOM_MAJUSCULES" type="STRING" dataType="VARCHAR(24)" comment="Prenom Upper"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

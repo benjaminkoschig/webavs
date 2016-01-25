@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.situationfamille.EnfantFamille">
+		<root-model name="simpleEnfantFamille" model-ref="ch.globaz.perseus.business.models.situationfamille.SimpleEnfantFamille"/>
+		<linked-model name="enfant" model-ref="ch.globaz.perseus.business.models.situationfamille.Enfant" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleEnfant.idEnfant" operation="EQUALS" field-ref="simpleEnfantFamille.idEnfant"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdSituationFamiliale" operation="EQUALS" field-ref="simpleEnfantFamille.idSituationFamiliale" />
+				<search-field name="betweenDateNaissanceDebut" operation="GREATER_OR_EQUALS" field-ref="enfant.membreFamille.personneEtendue.personne.dateNaissance"/>
+				<search-field name="betweenDateNaissanceFin" operation="LESS_OR_EQUALS" field-ref="enfant.membreFamille.personneEtendue.personne.dateNaissance"/>
+				<search-field name="forCsFormationIn" operation="IN" field-ref="simpleEnfantFamille.csFormation" />
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="enfant.membreFamille.personneEtendue.personne.dateNaissance" order="DESC"/>
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

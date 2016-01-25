@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<model-mapping import="amal/reprise/simplecontribuablereprise.xml"/>
+	<model-mapping import="amal/reprise/simplecontribuableinforeprise.xml"/>
+	<model-mapping import="amal/reprise/contribuablereprise.xml"/>
+	<model-mapping import="amal/reprise/simplefamillereprise.xml"/>
+	<model-mapping import="amal/reprise/simpleinnermfreprise.xml"/>
+</model-mapping>

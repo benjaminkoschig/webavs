@@ -1,0 +1,13 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page isELIgnored ="true" %>
+<% String rootPath = servletContext+(mainServletPath+"Root");%>
+
+<link rel="stylesheet" type="text/css" href="<%=servletContext%>/theme/ajax/templateZoneAjax.css"/>
+<link rel="stylesheet" type="text/css" href="<%=servletContext%>/theme/widget.css"/>
+<link rel="stylesheet" type="text/css" href="<%=rootPath%>/css/dataTableStyle.css"/>
+<link rel="stylesheet" type="text/css" href="<%=rootPath%>/css/saisieStyle.css"/>
+
+<script type="text/javascript" src="<%=servletContext%>/scripts/widget/globazwidget.js"></script> 
+<script type="text/javascript" src="<%=servletContext%>/scripts/ajax/ajaxUtils.js"/></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/ajax/AbstractScalableAJAXTableZone.js"/></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/ajax/AbstractSimpleAJAXDetailZone.js"/></script>

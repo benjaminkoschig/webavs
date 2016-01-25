@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<!--# set echo="url" -->
+<%
+globaz.framework.controller.FWController controller = (globaz.framework.controller.FWController) session.getAttribute("objController");
+globaz.globall.db.BSession objSession = (globaz.globall.db.BSession)controller.getSession();
+String languePage = globaz.framework.controller.FWDefaultServletAction.getIdLangueIso(session);
+String servletContext = request.getContextPath();
+String mainServletPath = (String)request.getAttribute("mainServletPath");
+String actionNew =  servletContext + mainServletPath + "?userAction=" + request.getParameter("userAction").substring(0,request.getParameter("userAction").lastIndexOf('.')) + ".afficher&_method=add";
+String userActionNew = request.getParameter("userAction").substring(0,request.getParameter("userAction").lastIndexOf('.')) + ".afficher";
+boolean bButtonNew = objSession.hasRight(userActionNew, "ADD");
+boolean bButtonFind = true;
+boolean bShowExportButton = false;
+String userActionExport = null; // à modifier pour forcer une action d'exportation spécifique
+int subTableHeight = 100;
+String IFrameHeight = "350";
+String idEcran = null;
+String applicationId = ((globaz.globall.db.BSession)session.getAttribute(globaz.framework.servlets.FWServlet.OBJ_SESSION)).getApplicationId();
+
+if (mainServletPath == null) {
+	mainServletPath = "";
+}
+String btnFindLabel = "Rechercher";
+String btnNewLabel = "Nouveau";
+String btnExportLabel = "Export";
+if ("DE".equals(languePage)) {
+	btnFindLabel = "Suchen";
+	btnNewLabel = "Neu";
+}
+boolean rememberSearchCriterias = false;
+boolean fromSL = request.getParameter("selectedIndex") != null;
+%>
+<head>
+<script type="text/javascript">
+var langue = "<%=languePage%>";
+</script>

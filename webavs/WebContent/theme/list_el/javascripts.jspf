@@ -1,0 +1,63 @@
+<script type="text/javascript">
+	var langue = "${languePage}"; 
+</script>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<meta http-equiv="Cache-Control" content="no-cache" />
+<meta name="User-Lang" content="${languePage}"/> 
+<meta name="Context_URL" content="${pageContext.request.contextPath}"/>  
+<meta name="formAction" content="${mainPath}"/>  
+<link rel="stylesheet" type="text/css" href="${rootPath}/moduleStyle.css"/>
+<title></title>
+<link type="text/css" href="${pageContext.request.contextPath}/theme/jquery/jquery-ui.css" rel="stylesheet" />
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/dates.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/jquery.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/jquery-ui.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/params.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/calendar/AnchorPosition.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/calendar/PopupWindow.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/autocomplete.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/selectionPopup.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/utils.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/menu.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/menuPopup.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/rcListKeyAccelerator.js"></script>
+<%@ include file="/jade/notation/notationLibJs_el.jspf" %> 
+
+<script>
+	var selection = '<c:out value="${isSelection}" />'
+</script>
+<script type="text/javascript">
+var errorObj = new Object();
+errorObj.text = "";
+
+function showErrors() {
+	if (errorObj.text != "") {
+		showModalDialog('${pageContext.request.contextPath}/errorModalDlg.jsp',errorObj,'dialogHeight:20;dialogWidth:25;status:no;resizable:no');	
+	}
+}
+
+function popUp(section, page, id) {
+	var pageName = "/";
+	if(section != "") {
+		pageName += section + "/";
+	}
+	pageName += page + "_cMenu.jsp?id=" + id;
+    var newWin = window.open(pageName, '_blank', 'top=50, left=50, width=250,height=200, scrollbars=no, menubars=no, resizable=no, titlebar=no,location=no, status=no');
+}
+
+var popupSection = "";
+var popupPage = "";
+
+$(function () {
+	if(top.fr_error!=null) {
+		top.fr_error.location.reload();
+	}
+	<c:if test="${autoShowErrorPopup}">
+		showErrors();
+	</c:if>
+	onCustomLoad();	
+});
+</script>

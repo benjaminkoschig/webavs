@@ -1,0 +1,56 @@
+<%
+vBeanHasErrors = viewBean.getMsgType().equals (globaz.framework.bean.FWViewBeanInterface.ERROR);
+%>
+<script type="text/javascript">
+<!--hide this script from non-javascript-enabled browsers
+
+var errorObj = new Object();
+errorObj.text = "";
+
+function showErrors() {
+	if (errorObj.text != "") {
+		showModalDialog('<%=servletContext%>/errorModalDlg.jsp',errorObj,'dialogHeight:20;dialogWidth:25;status:no;resizable:no');	
+	}
+}
+
+
+function popUp(section, page, id) {
+	var pageName = "/";
+	if(section != "") {
+		pageName += section + "/";
+	}
+	pageName += page + "_cMenu.jsp?id=" + id;
+    var newWin = window.open(pageName, '_blank', 'top=50, left=50, width=250,height=200, scrollbars=no, menubars=no, resizable=no, titlebar=no,location=no, status=no');
+}
+
+var popupSection = "";
+var popupPage = "";
+
+function doOnload() {
+	if(top.fr_error!=null) {
+		top.fr_error.location.reload();
+	}
+	<%
+	if (autoShowErrorPopup) {
+	%>
+	showErrors();
+	<%
+	}
+	%>
+	try {
+		customOnLoad();
+	} catch (e){}
+}
+// stop hiding -->
+</script>
+
+</HEAD>
+
+<BODY onLoad="doOnload();"
+      style="margin-left:0px; margin-right:0px;"  bgcolor="#F0F0F0">
+<TABLE width="100%" border="0" cellspacing="0">
+	<TBODY>
+		<TR align="center" >
+		<% if (isSelection) { %>
+			<th width="15px">&nbsp;</th>
+		<% } %>

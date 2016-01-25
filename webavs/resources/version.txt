@@ -1,0 +1,24 @@
+APG
+======
+Version 0-0-00 (29.04.2005)
+	- Création environnement APG
+	
+Version 1-0-01 (15.03.2006)
+	- version de près-production
+
+Version 1-0-02
+	- modifications impossible de certains champs dans le masque de saisie des droits APG et APG_MAT
+
+Version 1-0-03
+	-
+	
+Version 1-0-04(28.04.2006)
+	- 
+
+Version 1-0-06(23.05.2006)
+	- Modification de la gestion des génération des compensations (spécial CCJU)
+	
+Version 1-0-07(19.07.2006)
+	- Diverses modifications dans la décision Maternité
+		--> Ajout de différents textes selon certains critères
+		--> Modification de la mise en page

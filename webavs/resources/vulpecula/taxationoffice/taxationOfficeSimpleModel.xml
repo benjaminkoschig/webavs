@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.taxationoffice.TaxationOfficeSimpleModel">
+		<table name="PT_TAXATIONS_OFFICE" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="id de la taxation d'office" />
+			<field name="idDecompte" column="ID_PT_DECOMPTES" type="NUMERIC"
+				comment="id du décompte" />
+			<field name="idPassageFacturation" column="ID_FAPASSP" type="NUMERIC"
+				comment="id du passage en facturation" />
+			<field name="etat" column="CS_ETAT" type="NUMERIC"
+				comment="etat de la taxation d'office" />
+		</fields>
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+		<order-by name="idAsc">
+			<order-field field-ref="id" />
+		</order-by>
+	</simple-model>
+</model-mapping>

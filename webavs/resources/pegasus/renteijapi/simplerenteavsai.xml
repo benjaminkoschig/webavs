@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--  fichier de mapping du modele simple simpleRenteAvsAi -->
+<!--  SCE, 6.2010 -->
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.renteijapi.SimpleRenteAvsAi">
+		<description>Modele de la table des rentes avs ai</description>
+		<table name="PCRAVSAI" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idRenteAvsAi" column="CNIIDE" comment="ID_RENTE_AVS_AI"/>
+			<field name="idDonneeFinanciereHeader" column="CNIDFE" type="NUMERIC" mandatory="true"  comment="ID_DONNEE_FINANCIERE_HEADER"/>
+			<field name="idDonneeFinanciereHeader" column="CNIDFE" type="NUMERIC" mandatory="true"  comment="ID_DONNEE_FINANCIERE_HEADER"/>
+			
+			<field name="dateDecision" column="CNDDEC" type="DATE" mandatory="true" comment="DATE_DECISION"/>
+			<field name="dateDepot" column="CNDDEP" type="DATE"  mandatory="true" comment="DATE_DEPOT"/>
+			<field name="dateEcheance" column="CNDECH" type="DATE"  mandatory="true" comment="DATE_ECHEANCE"/>
+			<field name="csTypeRente" column="CNTREN" type="NUMERIC"  mandatory="true" comment="CS_TYPE_RENTE"/>
+			<field name="montant" column="CNMMON" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT"/>
+			<field name="csTypePc" column="CNTTPC" type="NUMERIC" mandatory="false" comment="CS_TYPE_PC"/>
+			<field name="degreInvalidite" column="CNIDEG" type="NUMERIC" dataType="NUMERIC(5,2)" mandatory="false" comment="DEGRE_INVALIDITE"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

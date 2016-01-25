@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee">
+		<description>PC accordee</description>
+		<table name="PCPCACC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idPCAccordee" column="CUIPCA" comment="ID_PC_ACCORDEE"/>
+			<field name="idEntity" column="CUIENT" type="NUMERIC" mandatory="true" comment="ID_ENTITY"/>
+			<field name="idEntityGroup" column="CUIEGR" type="NUMERIC" mandatory="false" comment="ID_ENTITY_GROUP"/>
+			<field name="idPcaParent" column="CUIPPA" type="NUMERIC" mandatory="false" comment="ID_PCA_PARENT"/>
+			<field name="idPrestationAccordee" column="CUIPRA" type="NUMERIC" mandatory="true" comment="ID_PRESTATION_ACCORDEE"/>
+			<field name="idPrestationAccordeeConjoint" column="CUIPRC" type="NUMERIC" mandatory="false" comment="ID_PRESTATION_ACCORDEE_CONJOINT"/>
+			<field name="idVersionDroit" column="CUIVDR" type="NUMERIC" mandatory="true" comment="ID_VERSION_DROIT"/>
+			<field name="csEtatPC" column="CUTETA" type="NUMERIC" mandatory="true" comment="CS_ETAT_PCACCORDE"/>
+			<field name="csGenrePC" column="CUTGEN" type="NUMERIC" mandatory="true" comment="CS_GENRE_PC"/>
+			<field name="csRoleBeneficiaire" column="CUTRBE" type="NUMERIC" mandatory="true" comment="CS_ROLE_BENEFICIAIRE"/>
+			<field name="csTypePC" column="CUTTYP" type="NUMERIC" mandatory="true" comment="CS_TYPE_PC"/>
+			<field name="codeRente" column="CUNCRE" type="NUMERIC" mandatory="true" comment="CODE_RENTE"/>
+			<field name="dateDebut" column="CUDDEB" type="MONTH_YEAR" mandatory="true" comment="DATE_DEBUT"/>
+			<field name="dateFin" column="CUDFIN" type="MONTH_YEAR" mandatory="false" comment="DATE_FIN"/>
+			<field name="hasCalculComparatif" column="CUICCM" type="BOOLEAN" mandatory="false" comment="HAS_CALCUL_COMPARATIF"/>
+			<field name="hasJoursAppoint" column="CUBJOA" type="BOOLEAN" mandatory="true" comment="HAS_JOURS_APPOINT"/> 
+			<field name="isSupprime" column="CUBSUP" type="BOOLEAN" mandatory="true" comment="IS_SUPPRIMER"/>
+			<field name="isCalculManuel" column="CUBCMA" type="BOOLEAN" mandatory="true" comment="IS_CALCUL_MANUEL"/>
+			<field name="isCalculRetro" column="CUBRET" type="BOOLEAN" mandatory="false" comment="IS_CALCUL_RETROACTIF"/>
+			<field name="isDateFinForce" column="CUBDFF" type="BOOLEAN" mandatory="false" comment="IS_DATE_FIN_FORCE"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPCAccordee" operation="EQUALS" field-ref="idPCAccordee"/>
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="idVersionDroit"/>
+				<search-field name="forIdPrestationsAccordee" operation="EQUALS" field-ref="idPrestationsAccordee"/>
+				<search-field name="forIsCalculRetro" operation="EQUALS" field-ref="isCalculRetro" />
+			    <search-field name="forIsSupprime" operation="EQUALS" field-ref="isSupprime" />
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="WITH_IS_SUPPRIME">
+			<search-group operator="AND">
+				<search-field name="forIdPCAccordee" operation="EQUALS" field-ref="idPCAccordee"/>
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="idVersionDroit"/>
+				<search-field name="forIdPrestationsAccordee" operation="EQUALS" field-ref="idPrestationsAccordee"/>
+				<search-field name="forIsCalculRetro" operation="EQUALS" field-ref="isCalculRetro" />
+			    <search-field name="forIsSupprime" operation="EQUALS" field-ref="isSupprime" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

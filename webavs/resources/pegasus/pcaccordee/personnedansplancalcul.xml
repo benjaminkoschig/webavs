@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.pcaccordee.PersonneDansPlanCalcul">
+	
+		<root-model name="simplePersonneDansPlanCalcul" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePersonneDansPlanCalcul"/>
+		
+		<linked-model name="membreFamille" model-ref="ch.globaz.pegasus.business.models.droit.DroitMembreFamille" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleDroitMembreFamille.idDroitMembreFamille" operation="EQUALS" field-ref="simplePersonneDansPlanCalcul.idDroitMembreFamille"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPersonneDansPlanCalcul" operation="EQUALS" field-ref="simplePersonneDansPlanCalcul.idPersonneDansPlanCalcul"/>
+				<search-field name="forIdPlanDeCalcul" operation="EQUALS" field-ref="simplePersonneDansPlanCalcul.idPlanDeCalcul"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="membreFamille.membreFamille.personneEtendue.tiers.designationUpper1"/>
+			<order-field field-ref="membreFamille.membreFamille.personneEtendue.tiers.designationUpper2"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,48 @@
+   		<% 
+		if ("yes".equalsIgnoreCase(request.getParameter("processStarted"))) { 
+		%>
+		<TR class="title">
+			<TD colspan="2" style="color:white; text-align:center">
+			<SPAN style="color:palegreen">&gt;</SPAN> <%=MSG_PROCESS_OK%> <SPAN style="color:palegreen">&lt;</SPAN>
+			</TD>
+		</TR>
+		<% 
+		}
+		%>
+
+			</TBODY>
+        </TABLE>
+		<INPUT type="hidden" name="selectedId" value="<%=selectedIdValue%>">
+		<INPUT Type="hidden" name="userAction" value="<%=usrAction%>">
+		<INPUT type="hidden" name="_method" value='<%=request.getParameter("_method")%>'>
+		<INPUT type="hidden" name="_valid" value='<%=request.getParameter("_valid")%>'>
+		<INPUT type="hidden" name="_sl" value="">
+	</FORM>
+			</TD>
+			<TD width="5">&nbsp;</TD>
+		</TR>
+		<TR>
+			<TD colspan="3" height="13"><%=(autoShowErrorPopup || !vBeanHasErrors) ? "&nbsp;" : "[ <a id=\"showErrorLink\" href=\"javascript:showErrors();\">visualiser les erreurs</a> ]"%></TD>
+		</TR>
+		<TR>
+			<TD bgcolor="#FFFFFF" colspan="3" align="right" height="18">
+				<input class="btnCtrl" id="btnVal" type="button" value="<%=btnValLabel%>" onclick="doActionOk()">
+				<input class="btnCtrl" id="btnCan" type="button" value="<%=btnCanLabel%>" onclick="doActionCancel(); action(ROLLBACK);">
+			</TD>
+		</TR>
+		<TR>
+			<TD bgcolor="#FFFFFF"></TD>
+			<TD bgcolor="#FFFFFF" colspan="2" align="left"><FONT  color="#FF0000">
+				<% if (vBeanHasErrors) {%>
+					<script>
+						errorObj.text = "<%=globaz.framework.util.FWTextFormatter.slash(globaz.framework.util.FWTextFormatter.newLineToBr(viewBean.getMessage()), '\"')%>";
+						<%
+							viewBean.setMessage("");
+							viewBean.setMsgType(globaz.framework.bean.FWViewBeanInterface.OK);
+						%>
+					</script>
+				<% } %>
+			</FONT></TD>
+		</TR>
+	</TBODY>
+</TABLE>

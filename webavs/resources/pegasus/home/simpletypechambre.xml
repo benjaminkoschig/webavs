@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.home.SimpleTypeChambre">
+		<description>Modele de la table des types de chambre de home</description>
+		<table name="PCTYCHAM" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idTypeChambre" column="BMITYP" comment=""/>
+			<field name="idHome" column="BMIHOM" type="NUMERIC" mandatory="true"/>
+			<field name="designation" column="BMLDES" type="STRING"  mandatory="true"/>
+			<field name="isParticularite" column="BMBPAR" type="BOOLEAN" mandatory="true"/>
+			<field name="idTiersParticularite" column="BMITPA" type="NUMERIC" mandatory="false" />
+			<field name="csCategorie" column="BMTCAT" type="NUMERIC" mandatory="false"/>
+			<field name="isApiFacturee" column="BMBAFA" type="BOOLEAN" mandatory="true"/>
+			<field name="csCategorieArgentPoche" column="BMTCAA" type="NUMERIC" mandatory="false"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdHome" field-ref="idHome" operation="EQUALS"/>
+				<search-field name="forIdTypeChambre" field-ref="idTypeChambre" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

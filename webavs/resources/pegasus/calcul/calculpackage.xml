@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="pegasus/calcul/calculmoissuivant.xml"/>
+	<model-mapping import="pegasus/calcul/calculdonneesdroit.xml"/>
+	<model-mapping import="pegasus/calcul/calculdonneescc.xml"/>
+	<model-mapping import="pegasus/calcul/calculplageinitial.xml"/>
+	<model-mapping import="pegasus/calcul/calculplagesexistantes.xml"/>
+	<model-mapping import="pegasus/calcul/calculvariablemetier.xml"/>
+	<model-mapping import="pegasus/calcul/autrerentecalcul.xml"/>
+	<model-mapping import="pegasus/calcul/calculdonneeshome.xml"/>
+	<model-mapping import="pegasus/calcul/calculdernierepca.xml"/>
+	<model-mapping import="pegasus/calcul/calculmembrefamille.xml"/>
+	<model-mapping import="pegasus/calcul/calculpcareplace.xml"/>
+</model-mapping>

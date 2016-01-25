@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.pcaccordee.AllocationNoel">
+		
+		<root-model name="simpleAllocationNoel" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimpleAllocationNoel"/>
+		<!--  PCA -->
+		<linked-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="simpleAllocationNoel.idPCAccordee"/>
+			</join-group>
+		</linked-model>
+		
+		
+			
+		<!--  prestations accordees repracc -->
+		<linked-model name="simplePrestationsAccordees" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="simpleAllocationNoel.idPrestationAccordee"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="personneEtendue" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simplePrestationsAccordees.idTiersBeneficiaire"/>
+			</join-group>
+		</linked-model>
+		
+		<!-- prestations acorddes repracc conjoint -->
+		<linked-model name="simplePrestationsAccordeesConjoint" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="simpleAllocationNoel.idPrestationAccordeeConjoint"/>
+				<join-field field-ref="simpleAllocationNoel.idPrestationAccordeeConjoint" operation="NOT_NULL"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPCAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPCAccordee"/>	
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+		</order-by>
+	</complexe-model>
+</model-mapping>

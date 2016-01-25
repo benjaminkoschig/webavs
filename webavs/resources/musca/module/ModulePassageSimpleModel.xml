@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.musca.business.models.ModulePassageModel">
+		<table name="FAMOPAP" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="idPassage" column="IDPASSAGE" comment="Id du passage" />
+			<field name="idAction" column="IDACTION" type="NUMERIC" dataType="NUMERIC(8,0)" comment="état du module dans le passage"/>
+			<field name="idModuleFacturation" column="IDMODFAC" type="NUMERIC"  comment="Id du module de facturation"/>
+			<field name="idPlan" column="IDPLAN" type="NUMERIC" comment="Id du plan de facturation"/>
+		
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPassage" field-ref="idPassage" operation="EQUALS"/>
+				
+			</search-group>
+		</search-definition>
+	</simple-model>
+	
+</model-mapping>

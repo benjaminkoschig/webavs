@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="perseus/decision/simpleDecision.xml"/>
+	<model-mapping import="perseus/decision/decision.xml"/>
+	<model-mapping import="perseus/decision/simpleDecisionMotif.xml"/>
+	<model-mapping import="perseus/decision/decisionMotif.xml"/>
+	<model-mapping import="perseus/decision/simpleCopieDecision.xml"/>
+	<model-mapping import="perseus/decision/copieDecision.xml"/>
+	<model-mapping import="perseus/decision/simpleAnnexeDecision.xml"/>
+	<model-mapping import="perseus/decision/annexeDecision.xml"/>
+	<model-mapping import="perseus/decision/decisionfortypedocument.xml"/>
+	<model-mapping import="perseus/decision/decisionOO.xml"/>
+</model-mapping>

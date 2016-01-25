@@ -1,0 +1,58 @@
+@import url("../theme/master2.css");
+
+TABLE#subtable {
+	width: 100%;
+	border: 0;
+}
+
+.PRlibelleExtraLongDisabled{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 12cm;
+    font-weight : bold;
+}
+
+
+.IJAfficheText{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 7cm;
+    font-size : x-small;
+    font-weight : bold;
+}
+
+.red{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+	width : 20cm;
+	color : red;
+    font-size : x-small;
+}
+
+.libelleExtraLong{
+    width : 12cm;
+}
+
+.LYlibelleExtraLongDisabled{
+	font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 12cm;
+}
+
+.LYlibelleLongDisabled{
+	font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 7cm;
+}
+
+.oddRow{
+    font-size : x-small;
+    font-family : Verdana,Arial;
+    background : #ffffff;
+}
+
+.evenRow{
+    font-size : x-small;
+    font-family : Verdana, Arial;
+    background : #E8EEF4;
+}

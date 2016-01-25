@@ -1,0 +1,102 @@
+<%@page import="globaz.jade.common.Jade"%>
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<meta http-equiv="Cache-Control" content="no-cache" /> 
+<meta name="User-Lang" content="${languePage}"/> 
+<meta name="Context_URL" content="${pageContext.request.contextPath}"/>
+<meta name="formAction" content="${mainPath}"/>    
+<link rel="stylesheet" type="text/css" href="${rootPath}/moduleStyle.css" />
+<link type="text/css" href="${pageContext.request.contextPath}/theme/jquery/jquery-ui.css" rel="stylesheet" />
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/jquery.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/jquery-ui.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/dates.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/actions.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/formUtil.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/shortKeys.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/params.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/actionsForButtons.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/autocomplete.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/selectionPopup.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/calendar/AnchorPosition.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/calendar/CalendarPopup.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/calendar/date.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/calendar/PopupWindow.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/ValidationGroups.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/utils.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/menu.js"></script>
+<%@ include file="/jade/notation/notationLibJs_el.jspf" %> 
+
+<style type="text/css">
+body {
+	background-color: ${appColor};
+}
+</style>
+<script type="text/javascript">
+
+<c:choose>
+	<c:when test="${languePage=='FR'}">
+		shortKeys[82] = 'btnFind';//  R (Rechercher)
+		shortKeys[78] = 'btnNew';//   N (Nouveau)
+	</c:when>
+	<c:when test="${languePage=='DE'}">
+		shortKeys[83] = 'btnFind';//  S (Suchen)
+		shortKeys[78] = 'btnNew';//   N (Neu)
+	</c:when>
+</c:choose>
+
+var timeWaiting = 1;
+var timeWaitingId = -1;
+var bFind = false;
+var servlet = "${mainPath}";
+
+function onExport() {
+	var exportAction;
+	var oldUserAction = document.forms[0].elements.userAction.value;
+	<c:choose>
+		<c:when test="${userActionExport==null}" >
+			exportAction = oldUserAction.substring(0, oldUserAction.lastIndexOf('.')) + '.exporter';
+		</c:when>
+		<c:otherwise>
+			exportAction = '${userActionExport}';
+		</c:otherwise>
+	</c:choose>
+	setUserAction(exportAction);
+	var oldSubmit = document.forms[0].onsubmit;
+	document.forms[0].onsubmit = "onClickFind();"
+	document.forms[0].submit();
+	setUserAction(oldUserAction);
+	document.forms[0].onsubmit = oldSubmit;
+}
+</script>
+<c:if test="${rememberSearchCriterias && !fromSL}">
+	<ct:genSearchCriteriasJS/>
+</c:if>
+
+<script type="text/javascript">
+<c:if test="${rememberSearchCriterias && !fromSL}">
+	function initRc( ) {
+		setFieldFromRequest();
+		try {
+			initCheckBox();
+		} catch (ex) {}
+	}
+</c:if>
+
+function fwInitPage() {
+	setFocus();
+	setFormAction(servlet);
+	setUserAction(usrAction);
+	document.getElementById('fr_list').onreadystatechange=fnStartInit;
+	<c:if test="${rememberSearchCriterias && !fromSL}">
+		initRc();
+	</c:if>
+	try {
+		postInit();
+	} catch (noSuchMethodException) {}
+	if (bFind) {
+		document.forms[0].submit();
+	}
+	$('html').triggerHandler(eventConstant.JADE_FW_ACTION_DONE);
+}
+</script>

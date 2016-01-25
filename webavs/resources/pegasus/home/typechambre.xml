@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.home.TypeChambre">
+		<root-model name="simpleTypeChambre" model-ref="ch.globaz.pegasus.business.models.home.SimpleTypeChambre"/>		
+		<linked-model name="personneEtendue" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simpleTypeChambre.idTiersParticularite"/>
+			</join-group>		
+		</linked-model>
+		<linked-model name="home" model-ref="ch.globaz.pegasus.business.models.home.Home" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleHome.idHome" operation="EQUALS" field-ref="simpleTypeChambre.idHome"/>
+			</join-group>		
+		</linked-model>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdHome" operation="EQUALS" field-ref="simpleTypeChambre.idHome"/>
+				<search-field name="forIdTypeChambre" operation="EQUALS" field-ref="simpleTypeChambre.idTypeChambre"/> 
+				<search-field name="forCsCategorie" operation="EQUALS" field-ref="simpleTypeChambre.csCategorie"/> 
+				<search-field name="forDesignation" operation="EQUALS" field-ref="simpleTypeChambre.designation"/> 
+				<search-field name="forIdTiersParticularite" operation="EQUALS" field-ref="simpleTypeChambre.idTiersParticularite"/> 
+				<search-field name="forIsApiFacturee" operation="EQUALS" field-ref="simpleTypeChambre.isApiFacturee"/> 
+				<search-field name="forIsParticularite" operation="EQUALS" field-ref="simpleTypeChambre.isParticularite"/> 	
+				<search-field name="notForIdTypeChambre" operation="NOT_EQUALS" field-ref="simpleTypeChambre.idTypeChambre"/>
+				<search-field name="forHomeTypeAdresse" operation="EQUALS" field-ref="home.adresse.avoirAdresse.typeAdresse"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="forTierParticularite">
+			<search-group operator="AND">
+			<search-field name="forHomeTypeAdresse" operation="EQUALS" field-ref="home.adresse.avoirAdresse.typeAdresse"/>
+			  <search-field name="forIdHome" operation="EQUALS" field-ref="simpleTypeChambre.idHome"/>
+				<search-group operator="OR">
+					<search-field name="forIdTiersParticularite" operation="EQUALS" field-ref="simpleTypeChambre.idTiersParticularite"/>
+					<search-field name="forIdTiersParticularite" operation="NULL" field-ref="simpleTypeChambre.idTiersParticularite"/>
+				</search-group>
+			</search-group>
+		</search-definition>
+		<order-by>
+			<order-field field-ref="simpleTypeChambre.designation"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

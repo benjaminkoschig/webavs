@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.absencejustifiee.AbsenceJustifieeSimpleModel">
+		<table name="PT_ABSENCES_JUSTIFIEES" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="Id de l'absence justifiée" />
+			<field name="idPosteTravail" column="ID_PT_POSTES_TRAVAILS" type="NUMERIC"
+				comment="id posteTravail" />
+			<field name="type" column="CS_TYPE" type="NUMERIC"
+				comment="type d'absence justifiée" />
+			<field name="etat" column="CS_ETAT" type="NUMERIC"
+				comment="état de l'absence justifiée" />
+			<field name="dateDebutAbsence" column="DATE_DEBUT_ABSENCE" type="DATE"
+				comment="date du début de l'absence justifiée" />
+			<field name="dateFinAbsence" column="DATE_FIN_ABSENCE" type="DATE"
+				comment="date de fin de l'absence justifiée" />
+			<field name="montantBrut" column="MONTANT_BRUT" type="NUMERIC"
+				comment="montant brut de l'absence justifiée" />
+			<field name="montantVerse" column="MONTANT_VERSE" type="NUMERIC"
+				comment="montant versé de l'absence justifiée" />
+			<field name="idPassageFacturation" column="ID_FAPASSP" type="NUMERIC"
+				comment="id du passage facturation" />
+			<field name="tauxAVS" column="TAUX_AVS" type="NUMERIC"
+				comment="taux AVS" />
+			<field name="tauxAC" column="TAUX_AC" type="NUMERIC"
+				comment="taux AC" />
+			<field name="beneficiaire" column="CS_BENEFICIAIRE" type="NUMERIC"
+				comment="bénéficiaire de l'absence justifiée" />
+			<field name="lienParente" column="CS_LIEN_PARENTE" type="NUMERIC"
+				comment="lien de parenté pour l'absence justifiée" />
+			<field name="nombreDeJours" column="NB_JOURS" type="NUMERIC"
+				comment="nombre de jours de l'absence justifiée" />
+			<field name="nombreHeuresParJour" column="NB_HEURES_PAR_JOUR" type="NUMERIC"
+				comment="nombre d'heures effectuées par jour pour ce poste" />
+			<field name="salaireHoraire" column="SALAIRE_HORAIRE" type="NUMERIC"
+				comment="salaire horaire pour l'absence justfiée" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forIdPosteTravail" field-ref="idPosteTravail" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="id" />
+		</order-by>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+	</simple-model>
+</model-mapping>

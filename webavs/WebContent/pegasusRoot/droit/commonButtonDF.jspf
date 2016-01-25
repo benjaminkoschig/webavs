@@ -1,0 +1,9 @@
+<pe:DroitDFButtons droitName="viewBean.droit">
+	<input class="btnAjaxUpdate" type="button" value="<%=btnUpdLabel%>">
+	<input class="btnAjaxDelete" type="button" value="<%=btnDelLabel%>">
+	<input class="btnAjaxAdd" type="button" value="<%=btnNewLabel%>">
+	<input class="btnAjaxValidate" type="button" value="<%=btnValLabel%>">
+	<input class="btnAjaxValidateNouvellePeriode" type="button" value="<%=objSession.getLabel("JSP_PC_DOFINH_VALIDER_NOUVELLE_PERIODE")%>">
+	<input class="btnAjaxClorePeriode" style="display: none" type="button" value="<%=objSession.getLabel("JSP_PC_DOFINH_CLORE_PERIODE")%>">
+	<input class="btnAjaxCancel" type="button" value="<%=objSession.getLabel("JSP_PC_SGL_D_ANNULER")%>">
+</pe:DroitDFButtons>

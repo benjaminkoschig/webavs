@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.calcul.CalculVariableMetier">
+		<root-model name="simpleVariableMetier" model-ref="ch.globaz.pegasus.business.models.variablemetier.SimpleVariableMetier" select-fields="false"/>
+		
+		<select-fields>
+			<select-field name="csTypeVariableMetier" field-ref="simpleVariableMetier.csTypeVariableMetier"/>
+			<select-field name="dateDebut" field-ref="simpleVariableMetier.dateDebut"/>
+			<select-field name="dateFin" field-ref="simpleVariableMetier.dateFin"/>
+			<select-field name="taux" field-ref="simpleVariableMetier.taux"/>
+			<select-field name="montant" field-ref="simpleVariableMetier.montant"/>
+			<select-field name="fractionNumerateur" field-ref="simpleVariableMetier.fractionNumerateur"/>
+			<select-field name="fractionDenominateur" field-ref="simpleVariableMetier.fractionDenominateur"/>
+		</select-fields>
+		
+	</complexe-model>
+</model-mapping>

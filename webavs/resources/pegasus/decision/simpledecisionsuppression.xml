@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.decision.SimpleDecisionSuppression">
+		<description>Decision de supression</description>
+		<table name="PCDECSUP" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDecisionSuppression" column="DSIDEN" comment="ID_DECISION_SUPPRESSION"/>
+			<field name="idDecisionHeader" column="DSIDHE" type="NUMERIC" mandatory="false" comment="ID_DECISION_HEADER"/>
+			<field name="idVersionDroit" column="DSIVDR" type="NUMERIC" mandatory="false" comment="ID_VERSION_DROIT"/>
+			<field name="csMotif" column="DSTMOT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="CS_MOTIF"/>
+			<field name="dateSuppression" column="DSDSUP" type="MONTH_YEAR" mandatory="false" comment="DATE_SUPPRESSION"/>
+			<field name="csSousMotif" column="DSTSMO" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="CS_SOUS_MOTIF"/>
+			<field name="champLibreMotif" column="DSTCLM" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="CHAMP_LIBRE_MOTIF"/>
+			<field name="isRestitution" column="DSBRES" type="BOOLEAN" mandatory="false" comment="IS_RESTITUTION"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDecisionSuppression" operation="EQUALS" field-ref="idDecisionSuppression" />
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="idVersionDroit" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

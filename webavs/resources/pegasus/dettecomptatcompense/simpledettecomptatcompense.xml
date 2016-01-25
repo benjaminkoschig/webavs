@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.dettecomptatcompense.SimpleDetteComptatCompense">
+		<description>Gestion des dettes en comptats compensées</description>
+		<table name="PCDETCOM" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDetteComptatCompense" column="DAIDCC" comment="ID_DETTE_EN_COMPTAT"/>
+			<field name="idVersionDroit" column="DAIDVER" type="NUMERIC" mandatory="true" comment="ID_VERSION_DROIT"/>
+			<field name="idSectionDetteEnCompta" column="DAISDC" type="NUMERIC" mandatory="true" comment="ID_SECTION_DETTE_COMPTAT"/>
+			<!-- <field name="idRoleCA" column="DAIRCA" type="NUMERIC" mandatory="true" comment="ID_ROLE_CA"/> -->
+			<field name="montantModifie" column="DAMMOD" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT_MODIFIE"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="idVersionDroit" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

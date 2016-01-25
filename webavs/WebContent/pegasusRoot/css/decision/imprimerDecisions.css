@@ -1,0 +1,19 @@
+@CHARSET "ISO-8859-1";
+#decisionsTable{
+	width: 100%;
+}
+.thChkPrint{
+	text-align:center;
+}
+#thPrintDec{
+	padding-top:30px;
+	padding-bottom:10px;
+}
+
+#infoProcess{
+	background-color:green;
+	text-align:center;
+	text-size:14px;
+	height:30px;
+	font-weight:bold;
+}

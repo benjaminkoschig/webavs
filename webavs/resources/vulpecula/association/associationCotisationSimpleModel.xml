@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.association.AssociationCotisationSimpleModel">
+		<table name="PT_ASSOCIATION_COTISATION" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="Id de la table association cotisation" />
+			<field name="idCotisationAssociationProfessionnelle" column="ID_PT_COTISATIONS_AP" type="NUMERIC" comment="id de la cotisation assocaition professionnelle" />
+			<field name="idEmployeur" column="ID_PT_EMPLOYEURS" type="NUMERIC" comment="id employeur" />
+			<field name="genre" column="CS_GENRE" type="NUMERIC" comment="membre, non-membre, non taxé" />
+			<field name="periodeDebut" column="DATE_DEBUT" type="DATE" comment="début d'activité de la cotisation" />
+			<field name="periodeFin" column="DATE_FIN" type="DATE" comment="fin d'activité de la cotisation" />
+			<field name="masseSalariale" column="MASSE_SALARIALE" type="NUMERIC" comment="taux de la masse salariale" />
+			<field name="reductionFacture" column="REDUCTION_FACTURE" type="NUMERIC" comment="taux de réduction facture" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id"
+					operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+		<order-by name="idAsc">
+			<order-field field-ref="id" />
+		</order-by>
+	</simple-model>
+</model-mapping>

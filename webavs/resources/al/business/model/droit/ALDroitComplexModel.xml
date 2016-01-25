@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'une liste de droit -->
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.droit.DroitComplexModel">
+		<root-model name="droitModel" model-ref="ch.globaz.al.business.models.droit.DroitModel"/>
+		<linked-model name="enfantComplexModel" model-ref="ch.globaz.al.business.models.droit.EnfantComplexModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="enfantModel.idEnfant" field-ref="droitModel.idEnfant"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="tiersBeneficiaireModel" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="droitModel.idTiersBeneficiaire"/>
+			</join-group>
+		</linked-model>
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="droitModel.idDossier" operation="EQUALS"/>
+				<search-field name="forIdDroit" field-ref="droitModel.idDroit" operation="EQUALS"/>	
+				<search-field name="forIdEnfant" field-ref="droitModel.idEnfant" operation="EQUALS"/>	
+				<search-field name="inTypeDroit" field-ref="droitModel.typeDroit" operation="IN"/>
+				<search-field name="forTypeDroit" field-ref="droitModel.typeDroit" operation="EQUALS"/>	
+				<search-field name="forIdTiersEnfant" field-ref="enfantComplexModel.enfantModel.idTiersEnfant" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		<search-definition name="echeancesDroit">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="droitModel.idDossier" operation="EQUALS"/>
+				<search-field name="forIdEnfant" field-ref="droitModel.idEnfant" operation="EQUALS"/>
+				<search-field name="forTypeDroit" field-ref="droitModel.typeDroit" operation="EQUALS"/>				
+			</search-group>
+		</search-definition>
+		<search-definition name="chevauchementDroitsExistants">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="droitModel.idDossier" operation="EQUALS"/>
+				<search-field name="forIdEnfant" field-ref="droitModel.idEnfant" operation="EQUALS"/>
+				<search-field name="inTypeDroit" field-ref="droitModel.typeDroit" operation="IN"/>
+				<search-field name="forDebutDroit" field-ref="droitModel.finDroitForcee" operation="GREATER_OR_EQUALS" />
+				<search-field name="forFinDroitForcee" field-ref="droitModel.debutDroit" operation="LESS_OR_EQUALS" />				
+			</search-group>
+		</search-definition>
+		<!-- Deprecated ? (à vérifier) -->
+		<!-- <search-definition name="annoncesRafamAAnnoncer">
+			<search-group operator="AND">
+				<search-field name="forFinDroitForcee" field-ref="droitModel.finDroitForcee" operation="GREATER"/>
+				<search-field name="forIdDossier" field-ref="droitModel.idDossier" operation="EQUALS"/>
+				<search-field name="forTypeDroit" field-ref="droitModel.typeDroit" operation="NOT_EQUALS" value="61150004"/>	
+			</search-group>
+		</search-definition>-->
+		
+		<search-definition name="droitsForIdTiers">
+			<search-group operator="AND">
+				<search-field name="forIdTiersEnfant" field-ref="enfantComplexModel.enfantModel.idTiersEnfant" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		
+		
+		<order-by name="echeancesDroit">
+			<order-field field-ref="droitModel.finDroitForcee" order="DESC"/>
+		</order-by> 
+		
+		<order-by name="calculDroits">
+			<order-field field-ref="enfantComplexModel.personneEtendueComplexModel.personne.dateNaissance" order="ASC"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

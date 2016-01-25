@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+   <simple-model className="ch.globaz.auriga.business.models.SimpleDecisionCAP">
+      <description>Décision de type CAP</description>
+      <table name="AUDECI" hasCreationSpy="true" hasSpy="true"
+             alwaysIncrementPrimaryKey="true"/>
+      <fields>
+         <primary-key name="idDecision" column="DEIDDE" type="NUMERIC" dataType="NUMERIC(15,0)"
+                      mandatory="true"
+                      comment="Identifiant"/>
+         <field name="idAffiliation" column="MAIAFF" type="NUMERIC" dataType="NUMERIC(15,0)"
+                mandatory="true"
+                comment="Identifiant de l'affiliation liée"/>
+         <field name="idPassageFacturation" column="DEIDLF" type="NUMERIC"
+                dataType="NUMERIC(15,0)"
+                mandatory="false"
+                comment="Identifiant du passage de facturation"/>
+         <field name="type" column="DETYPE" type="NUMERIC" dataType="NUMERIC(8,0)"
+                mandatory="true"
+                comment="Type de la décision"/>
+         <field name="annee" column="DEANNE" type="NUMERIC" dataType="NUMERIC(4,0)"
+                mandatory="true"
+                comment="Année"/>
+         <field name="etat" column="DEETAT" type="NUMERIC" dataType="NUMERIC(8,0)"
+                mandatory="true"
+                comment="Etat"/>
+         <field name="dateDebut" column="DEDDEB" type="DATE"
+                dataType="NUMERIC(8,0)"
+                mandatory="true"
+                comment="Date de début"/>
+         <field name="dateFin" column="DEDFIN" type="DATE"
+                dataType="NUMERIC(8,0)"
+                mandatory="true"
+                comment="Date de fin"/>
+         <field name="idResponsable" column="DEIDRE" type="STRING" dataType="VARCHAR(16)"
+                mandatory="true"
+                comment="Identifant du responsable du dossier"/>
+         <field name="dateDonnees" column="DEDDON" type="DATE"
+                dataType="NUMERIC(8,0)"
+                mandatory="true"
+                comment="Date des données"/>
+         <field name="revenuIFD" column="DERIFD" type="AMOUNT" dataType="NUMERIC(15,2)"
+                mandatory="false"
+                comment="Montant revenu IFD"/>
+         <field name="revenuFRV" column="DERFRV" type="AMOUNT" dataType="NUMERIC(15,2)"
+                mandatory="false"
+                comment="Montant revenu FRV"/>
+         <field name="categorie" column="DECATE" type="NUMERIC" dataType="NUMERIC(9,0)"
+                mandatory="false"
+                comment="categorie exploitant"/>
+         <field name="tauxAssurance" column="DETAUX" type="NUMERIC" dataType="NUMERIC(3,2)"
+                mandatory="false"
+                comment="taux assurance"/>
+         <field name="forfait" column="DEFORF" type="AMOUNT" dataType="NUMERIC(15,2)"
+                mandatory="false"
+                comment="Montant forfaitaire"/>
+         <field name="cotisationBrute" column="DECOTB" type="AMOUNT"
+                dataType="NUMERIC(15,2)"
+                mandatory="false"
+                comment="Montant cotisation annuelle brute"/>
+         <field name="prestation" column="DEPRES" type="AMOUNT"
+                dataType="NUMERIC(15,2)"
+                mandatory="false"
+                comment="Montant prestation"/>
+         <field name="cotisationAnnuelle" column="DECOTA" type="AMOUNT"
+                dataType="NUMERIC(15,2)"
+                mandatory="false"
+                comment="Montant cotisation annuelle"/>
+         <field name="cotisationTrimestrielle" column="DECOTT" type="AMOUNT"
+                dataType="NUMERIC(15,2)"
+                mandatory="false"
+                comment="Montant cotisation trimestrielle"/>
+         <field name="cotisationMensuelle" column="DECOTM" type="AMOUNT"
+                dataType="NUMERIC(15,2)"
+                mandatory="false"
+                comment="Montant cotisation mensuelle"/>
+         <field name="cotisationPeriode" column="DECOTP" type="AMOUNT"
+                dataType="NUMERIC(15,2)"
+                mandatory="false"
+                comment="Montant cotisation periode"/>
+         <field name="idAssurance" column="MBIASS" type="NUMERIC" dataType="NUMERIC(15,0)"
+                mandatory="true"
+                comment="Identifiant de l'assurance liée"/>
+         <field name="idDecisionRectifiee" column="DEIDDR" type="NUMERIC" dataType="NUMERIC(15,0)"
+                mandatory="true"
+                comment="Identifiant de la décision qui est rectifiée (ancienne décision)"/>
+      </fields>
+      
+       <search-definition>
+         <search-group operator="AND">
+             <search-field name="notInIdDecision" operation="NOT_IN" field-ref="idDecision" />
+            <search-field name="inEtat" operation="IN" field-ref="etat" />
+            <search-field name="forDateDebutLessEqual" operation="LESS_OR_EQUALS" field-ref="dateDebut" />
+             <search-field name="forDateFinGreaterEqual" operation="GREATER_OR_EQUALS" field-ref="dateFin" />
+            <search-field name="forIdAffiliation" operation="EQUALS" field-ref="idAffiliation" />
+            <search-field name="forAnnee" operation="EQUALS" field-ref="annee" />
+            <search-field name="forEtat" operation="EQUALS" field-ref="etat" />
+            <search-field name="forIdPassageFacturation" operation="EQUALS" field-ref="idPassageFacturation" />
+            <search-field name="forNotEtat" operation="NOT_EQUALS" field-ref="etat" />
+            <search-field name="fromAnnee" operation="GREATER_OR_EQUALS" field-ref="annee" />
+            <search-field name="forType" operation="EQUALS" field-ref="type" />
+            <search-field name="forNotType" operation="NOT_EQUALS" field-ref="type" />
+            <search-field name="inType" operation="IN" field-ref="type" />
+         </search-group>
+      </search-definition>
+      
+      <order-by>
+		<order-field field-ref="annee" order="DESC" />
+		<order-field field-ref="dateDonnees" order="DESC" />
+	  </order-by>
+	  
+   </simple-model>
+</model-mapping>

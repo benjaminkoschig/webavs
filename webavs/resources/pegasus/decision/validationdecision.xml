@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.decision.ValidationDecision">
+
+		<root-model name="simpleValidationDecision" model-ref="ch.globaz.pegasus.business.models.decision.SimpleValidationDecision" select-fields="true"/>
+		
+		<linked-model name="simpleDecisionHeader" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="simpleValidationDecision.idDecisionHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDecisionApresCalcul" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionApresCalcul" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="simpleValidationDecision.idDecisionHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPca" field-ref="simpleValidationDecision.idPCAccordee" operation="EQUALS" />
+				<search-field name="forCsTypePreparation" field-ref="simpleDecisionApresCalcul.csTypePreparation" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

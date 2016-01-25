@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.subsideannee.SimpleSubsideAnnee">
+		<description>Subside annee</description>
+		<table name="MAPARSUA" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idSubsideAnnee" column="IDSUAN" comment="Id subside annee"/>
+			<field name="anneeSubside" column="ANNSUB" type="NUMERIC" dataType="NUMERIC(4,0)" mandatory="true" comment="Annee subside"/>
+			<field name="limiteRevenu" column="LIMREV" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Limite revenu"/>
+			<field name="subsideAdulte" column="SUBADU" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Subside adulte"/>
+			<field name="subsideAdo" column="SUBADO" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Subside adolescent"/>
+			<field name="subsideEnfant" column="SUBENF" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Subside enfant"/>
+			<field name="subsideSalarie1618" column="SU1618" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Subside salarie 16-18 ans"/>
+			<field name="subsideSalarie1925" column="SU1925" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Subside salarie 19-25 ans"/>			
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdSubsideAnnee" field-ref="idSubsideAnnee" operation="EQUALS"/>
+				<search-field name="forAnneeSubside" field-ref="anneeSubside" operation="EQUALS"/>
+				<search-field name="forLimiteRevenu" field-ref="limiteRevenu" operation="EQUALS"/>
+				<search-field name="forLimiteRevenuLOE" field-ref="limiteRevenu" operation="LESS_OR_EQUALS"/>
+				<search-field name="forLimiteRevenuGOE" field-ref="limiteRevenu" operation="GREATER_OR_EQUALS"/>							
+			</search-group>
+		</search-definition>
+		<order-by>
+			<order-field field-ref="anneeSubside" order="DESC"/>
+			<order-field field-ref="limiteRevenu"/>
+		</order-by>
+		
+		<order-by name="anneeDesc">
+			<order-field field-ref="anneeSubside" order="DESC"/>
+		</order-by>
+		
+		<order-by name="anneeAsc">
+			<order-field field-ref="anneeSubside" order="ASC"/>
+		</order-by>
+		
+		<order-by name="limiteRevenuDesc">
+			<order-field field-ref="limiteRevenu" order="DESC"/>
+		</order-by>
+		
+		<order-by name="limiteRevenuAsc">
+			<order-field field-ref="limiteRevenu" order="ASC"/>
+		</order-by>
+		
+		<order-by name="subsideAdoDesc">
+			<order-field field-ref="subsideAdo" order="DESC"/>
+		</order-by>
+		
+		<order-by name="subsideAdoAsc">
+			<order-field field-ref="subsideAdo" order="ASC"/>
+		</order-by>
+		
+		<order-by name="subsideAdulteDesc">
+			<order-field field-ref="subsideAdulte" order="DESC"/>
+		</order-by>
+		
+		<order-by name="subsideAdulteAsc">
+			<order-field field-ref="subsideAdulte" order="ASC"/>
+		</order-by>
+		
+		<order-by name="subsideEnfantDesc">
+			<order-field field-ref="subsideEnfant" order="DESC"/>
+		</order-by>
+		
+		<order-by name="subsideEnfantAsc">
+			<order-field field-ref="subsideEnfant" order="ASC"/>
+		</order-by>
+		
+		<order-by name="subsideSalarie1618Desc">
+			<order-field field-ref="subsideSalarie1618" order="DESC"/>
+		</order-by>
+		
+		<order-by name="subsideSalarie1618Asc">
+			<order-field field-ref="subsideSalarie1618" order="ASC"/>
+		</order-by>
+		
+		<order-by name="subsideSalarie1925Desc">
+			<order-field field-ref="subsideSalarie1925" order="DESC"/>
+		</order-by>
+		
+		<order-by name="subsideSalarie1925Asc">
+			<order-field field-ref="subsideSalarie1925" order="ASC"/>
+		</order-by>										
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.rentepont.SimpleQDRentePont">
+		<description>Rente-pont</description>
+		<table name="PFQDREPO" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idQDRentePont" column="JDIDQD" comment=""/>
+			<field name="idDossier" column="JDIDOS" type="NUMERIC" mandatory="true" comment="ID_DOSSIER"/>
+			<field name="montantUtilise" column="JDMNTU" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="Montant utilisé"/>
+			<field name="montantLimite" column="JDLIMI" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="Montant limite pour la QD"/>
+			<field name="annee" column="JDANNE" type="NUMERIC" mandatory="true" comment="Année de la QD"/>
+			<field name="excedantRevenu" column="JDEXRE" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="Excedant de revenu"/>
+			<field name="excedantRevenuCompense" column="JDEXRC" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="Excedant de revenu compensé"/>
+		</fields> 
+		
+	</simple-model>
+	
+</model-mapping>

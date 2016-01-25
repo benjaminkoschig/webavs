@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.traitementdemasse.SimpleDefinitionTraitement">
+		<description>Permetd de définir un traitement</description>
+		<table name="PCDEFTRA" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDefinitionTraitement" column="ACIDEF" comment="ID_DEFINITION_TRAITEMENT"/>			
+			<field name="idEchantillon" mandatory="true" column="ACIECH" type="NUMERIC" comment="ID_ECHANTILLON"/>
+			<field name="hasVersion" column="ACBVER" type="BOOLEAN" comment="HAS_VERSION"/>
+			<field name="description" column="ACDESC" type="STRING" dataType="VARCHAR(255)" comment="DESCRIPTION"/>
+		</fields>
+	</simple-model>
+</model-mapping> 

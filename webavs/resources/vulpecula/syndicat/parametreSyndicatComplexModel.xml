@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.syndicat.ParametreSyndicatComplexModel">
+		
+		<root-model name="parametreSyndicatSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.syndicat.ParametreSyndicatSimpleModel" />
+
+		<linked-model name="administrationSyndicatComplexModel"
+			model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS"
+					field-ref="parametreSyndicatSimpleModel.idSyndicat" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="administrationCaisseMetierComplexModel"
+			model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS"
+					field-ref="parametreSyndicatSimpleModel.idCaisseMetier" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="parametreSyndicatSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdSyndicat" field-ref="parametreSyndicatSimpleModel.idSyndicat" operation="EQUALS" />
+				<search-field name="forIdCaisseMetier" field-ref="parametreSyndicatSimpleModel.idCaisseMetier" operation="EQUALS" />
+				<search-field name="afterOrEqualsDateDebut" field-ref="parametreSyndicatSimpleModel.dateDebut" operation="GREATER_OR_EQUALS" />
+				<search-field name="beforeOrEqualsDateDebut" field-ref="parametreSyndicatSimpleModel.dateDebut" operation="LESS_OR_EQUALS" />
+				<search-group operator="AND">
+					<search-group operator="OR">
+						<search-field name="beforeOrEqualsDateFin" field-ref="parametreSyndicatSimpleModel.dateFin" operation="LESS_OR_EQUALS" />
+						<search-field name="afterOrEqualsDateFin" field-ref="parametreSyndicatSimpleModel.dateFin" operation="GREATER_OR_EQUALS" />
+						<search-field name="dateFinIsZero" field-ref="parametreSyndicatSimpleModel.dateFin" operation="EQUALS" />
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		<order-by>
+			<order-field field-ref="parametreSyndicatSimpleModel.dateDebut" order="ASC" />
+		</order-by>
+		
+		<order-by name="dateDebutDesc">
+			<order-field field-ref="parametreSyndicatSimpleModel.dateDebut" order="DESC" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.corvus.business.models.rentesaccordees.SimpleInformationsComptabilite">
+		<description>Informations compatibilite</description>
+		<table name="REINCOM" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idInfoCompta" column="YNIIIC" comment="ID_INFO_COMPTA"/>
+			
+			<field name="idTiersAdressePmt" type="NUMERIC" column="YNITAP" comment="ID_TIERS_ADRESSE_PMT" />
+			<field name="idCompteAnnexe" type="NUMERIC" column="YNICOA" comment="ID_COMPTE_ANNEXE" />
+		</fields>
+	</simple-model>
+</model-mapping>

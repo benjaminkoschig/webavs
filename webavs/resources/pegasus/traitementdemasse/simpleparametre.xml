@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.traitementdemasse.SimpleParametre">
+		<description>Peremet de creer des parametres</description>
+		<table name="PCPARMET" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idParametre" column="AJIPAR" comment="ID_PARAMETRE"/>			
+			<field name="idAction" column="AJIACT" type="NUMERIC" comment="ID_ACTION"/>
+			<field name="idEchantillon" column="AJIECH" type="NUMERIC" comment="ID_ECHANTILLON"/>
+			<field name="idParamAjax"  mandatory="true"  column="AJIPAJ" type="NUMERIC" comment="ID_PARAMETRE_AJAX"/>
+			<field name="csType"  mandatory="true"  column="AJCSTY" type="NUMERIC" comment="CS_TYPE"/>
+			<field name="dataSource" column="AJDASR" type="NUMERIC" comment="DATA_SOURCE"/>
+			<field name="name"  mandatory="true" column="AJNAME" type="STRING" dataType="VARCHAR(255)" comment="NAME"/>
+			<field name="ordre" column="AJORDR" type="NUMERIC" comment="ORDRE"/>
+		</fields>
+		<search-definition> 
+			<search-group operator="AND">
+				<search-field name="forIdAction" operation="EQUALS" field-ref="idAction"/>
+			    <search-field name="forIdEchantillon" operation="EQUALS" field-ref="idEchantillon"/>
+			</search-group>
+		</search-definition>	
+	</simple-model>
+</model-mapping> 

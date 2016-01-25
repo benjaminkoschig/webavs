@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<!-- modeles simple -->
+	<model-mapping import="pegasus/decision/simpledecisionheader.xml"/>
+	<model-mapping import="pegasus/decision/simpledecisionaprescalcul.xml"/>
+	<model-mapping import="pegasus/decision/simpledecisionsuppression.xml"/>
+	<model-mapping import="pegasus/decision/simpledecisionrefus.xml"/>	
+	<model-mapping import="pegasus/decision/simplecopiesdecision.xml"/>
+	<model-mapping import="pegasus/decision/simpleannexesdecision.xml"/>
+	<model-mapping import="pegasus/decision/simplevalidationdecision.xml"/>
+	<!-- modeles complexes -->
+	<model-mapping import="pegasus/decision/decisionheader.xml"/>
+	<model-mapping import="pegasus/decision/decisionrefus.xml"/>
+	<model-mapping import="pegasus/decision/decisionsuppression.xml"/>
+	<model-mapping import="pegasus/decision/decisionaprescalcul.xml"/>
+	<model-mapping import="pegasus/decision/decision.xml"/>
+	<model-mapping import="pegasus/decision/copiesdecision.xml"/>
+	<model-mapping import="pegasus/decision/listdecisions.xml"/>
+	<model-mapping import="pegasus/decision/listdecisionsvalidees.xml"/>
+	<model-mapping import="pegasus/decision/decisionaprescalculoo.xml"/>
+	<model-mapping import="pegasus/decision/decisionpcaplancalcule.xml"/>
+	<model-mapping import="pegasus/decision/validationdecision.xml"/>
+	<model-mapping import="pegasus/decision/validationdecisionsuppressionwithpca.xml"/>
+	<model-mapping import="pegasus/decision/decisiondate.xml"/>
+	<model-mapping import="pegasus/decision/fordeletedecision.xml"/>
+</model-mapping>

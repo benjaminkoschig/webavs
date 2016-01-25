@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.ij.business.models.IJPeriodeControleAbsences">
+
+		<root-model name="periode" model-ref="ch.globaz.ij.business.models.IJSimplePeriodeControleAbsence" select-fields="true" />
+
+		<linked-model name="dossier" model-ref="ch.globaz.ij.business.models.IJSimpleDossierControleAbsences" join-type="INNER" select-fields="true">
+			<join-group operator="AND">
+				<join-field name="idDossierControleAbsences" operation="EQUALS" field-ref="periode.idDossierControleAbsence" />
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdTiers" operation="EQUALS" field-ref="dossier.idTiers" />
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="dossier.idDossierControleAbsences" />
+			</search-group>
+		</search-definition>
+ 		<order-by name="orderByOrdreDesc">
+			<order-field field-ref="periode.ordre" order="DESC" />
+		</order-by>
+		<order-by name="orderByOrdreAsc">
+			<order-field field-ref="periode.ordre" order="ASC" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

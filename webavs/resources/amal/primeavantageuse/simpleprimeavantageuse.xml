@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.primeavantageuse.SimplePrimeAvantageuse">
+		<description>Primes avantageuses</description>
+		<table name="MAPAPRAV" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idPrimeAvantageuse" column="IDPRAV" comment="Id prime avantageuse"/>
+			<field name="anneeSubside" column="ANSUBP" type="NUMERIC" dataType="NUMERIC(4,0)" mandatory="false" comment="Année subside"/>
+			<field name="montantPrimeAdulte" column="MTPADU" type="NUMERIC" dataType="NUMERIC(6,2)" mandatory="false" comment="Montant prime adulte"/>
+			<field name="montantPrimeEnfant" column="MTPENF" type="NUMERIC" dataType="NUMERIC(6,2)" mandatory="false" comment="Montant prime enfant"/>
+			<field name="montantPrimeFormation" column="MTPFOR" type="NUMERIC" dataType="NUMERIC(6,2)" mandatory="false" comment="Montant prime formation"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forAnneeSubside" field-ref="anneeSubside" operation="EQUALS"/>
+			</search-group>
+		</search-definition>	
+		<order-by>
+			<order-field field-ref="anneeSubside" order="DESC"/>
+		</order-by>	
+		
+		<order-by name="anneeDesc">
+			<order-field field-ref="anneeSubside" order="DESC"/>
+		</order-by>
+		
+		<order-by name="anneeAsc">
+			<order-field field-ref="anneeSubside" order="ASC"/>
+		</order-by>
+		
+		<order-by name="montantPrimeAdulteDesc">
+			<order-field field-ref="montantPrimeAdulte" order="DESC"/>
+		</order-by>
+		
+		<order-by name="montantPrimeAdulteAsc">
+			<order-field field-ref="montantPrimeAdulte" order="ASC"/>
+		</order-by>
+		
+		<order-by name="montantPrimeEnfantDesc">
+			<order-field field-ref="montantPrimeEnfant" order="DESC"/>
+		</order-by>
+		
+		<order-by name="montantPrimeEnfantAsc">
+			<order-field field-ref="montantPrimeEnfant" order="ASC"/>
+		</order-by>
+		
+		<order-by name="montantPrimeFormationDesc">
+			<order-field field-ref="montantPrimeFormation" order="DESC"/>
+		</order-by>
+		
+		<order-by name="montantPrimeFormationAsc">
+			<order-field field-ref="montantPrimeFormation" order="ASC"/>
+		</order-by>				
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,62 @@
+<?xml  version="1.0" ?>
+<rights>
+    <!-- Tiers -->
+    <validatable name='globaz.pyxis.db.tiers.TITiers'>
+      <!--
+      <property name="designation1" maxlength="40"/>
+      <property name="designation2" maxlength="40"/>
+      <property name="designation3" maxlength="40"/>
+      <property name="designation4" maxlength="40"/>
+      -->
+      
+      <element name='validation.pyxis.tiers.inactiver' errorlabel="NO_RIGHTS_FOR_THIS_OPERATION">
+        <whenProperty name='inactif'>
+          <hasChanged />
+        </whenProperty>
+      </element>
+    </validatable>
+
+    <!-- PersonneAvs -->
+    <!--
+    <validatable name='globaz.pyxis.db.tiers.TITiersViewBean'>
+      <element name='validation.pyxis.tiers.numAvs' errorlabel="">
+        <whenProperty name='numAvsActuel'>
+          <hasChanged />
+        </whenProperty>
+      </element>
+    </validatable>
+     -->
+
+    <!-- Adresse -->
+    <!--
+    <validatable name='globaz.pyxis.db.adressecourrier.TIAdresse'>
+      <element name='validation.pyxis.adresse.rue' errorlabel="">
+          <whenPropertiesNotInManager name="globaz.pyxis.db.adressecourrier.TIRueManager" >
+            <forCriteria name="setForNomRech" property="rue"/>  
+            <forCriteria name="setForNpaAdressage" property="localiteCode"/>  
+         </whenPropertiesNotInManager>
+      </element>
+    </validatable>
+     -->
+    
+    <!-- avoir Adresse -->
+    <!--
+    <validatable name='globaz.pyxis.db.adressecourrier.TIAvoirAdresse'>
+      <element name='validation.pyxis.adresse.rentes' errorlabel="NO_RIGHTS_FOR_THIS_OPERATION">
+        <whenProperty name='idApplication' errorlabel="">
+          <hasValueIn>
+          	<value>519006</value>
+          </hasValueIn>
+        </whenProperty>
+      </element>
+   
+      <element name='validation.pyxis.adresse.courrier' errorlabel="NO_RIGHTS_FOR_THIS_OPERATION">
+        <whenProperty name='typeAdresse' errorlabel="">
+          <hasValueIn>
+          	<value>508001</value>
+          </hasValueIn>
+        </whenProperty>
+      </element>
+    </validatable>
+     -->
+</rights>

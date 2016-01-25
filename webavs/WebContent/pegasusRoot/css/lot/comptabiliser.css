@@ -1,0 +1,14 @@
+.lot{
+	font-weight:bold;
+}
+.italic{
+	font-style:italic;
+}
+
+#descLot{
+	width:70px;
+}
+
+.lotTitle{
+	height:40px;
+}

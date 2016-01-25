@@ -1,0 +1,1196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+
+	<!-- ************** -->
+	<!-- Menu Principal -->
+	<!-- ************** -->
+	<menu id="CI-MenuPrincipal">
+		<label defaultValue="Menu">
+			<language iso="de">Hauptmenü</language>
+		</label>
+		<nodes>
+					
+			<node open="yes">
+				<label defaultValue="Splitting">
+					<language iso="de">Splitting</language>
+				</label>	
+				<nodes>
+					<node>
+						<label refId="MSG_MENU_SPLITTING_DOSSIER"/>	
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.splitting.dossierSplitting.chercher"/>
+						</action>
+					</node>
+				</nodes>
+
+			</node> 
+			<node open="yes">
+				<label refId="MSG_MENU_JOURNAL_PRINC"/>
+				<nodes>
+					<node>
+						<label refId="MSG_OPTIONS_JOURNAL_IMPRIMER"/>	
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.inscriptions.journal.imprimer"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MSG_MENU_INSCRIPTIONS_DOSSIER"/>	
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.inscriptions.journal.chercher"/>
+						</action>
+					</node>
+
+					<node>
+						<label refId="MSG_OPTIONS_DECLARATION_IMPORTER"/>	
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.inscriptions.declaration.afficher"/>
+						</action>
+					</node>
+				</nodes>
+			
+			</node>
+			<node open="yes">
+				<label refId="MSG_MENU_PRINCIPAL_COMPTE_CI"/>
+				<nodes>
+					<node>
+						<label refId="MSG_MENU_COMPTE_CI"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.compte.compteIndividuel.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MSG_MENU_INSCRIPTIONS_SUSPENS"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.compte.ecrituresSuspens.chercher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="yes">
+				<label refId="MSG_MENU_ANNONCE"/>
+				<nodes>
+					<node>
+						<label refId="MSG_MENU_ANNONCE"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.compte.annonceSuspens.chercher"/>
+						</action>
+					</node>
+					<node id="annonce_centrale" >
+						<label refId="MENU_CI_ANNONCE_CENTRALE"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.compte.annonceCentrale.chercher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label refId="MSG_MASSE_SALARIAL"/>
+				<nodes>
+					<node>
+						<label refId="MSG_MASSE_SALARIALE_COMP"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.compte.compteIndividuel.compareMasseSalariale"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MASSE_SALARIALE_LISTE"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.compte.compareMasseSalarialeListe.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MSG_MENU_INSCRIPTIONS_MANUELLES"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.compte.InscriptionsManuelles.chercher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label refId="MSG_MENU_PROCESS_PRINCIPAL"/>
+				<nodes>
+					<node>
+						<label refId="IK_STAT"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.process.statistiquesCiProcess.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MSG_DOUBLE_ECRITURE"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.process.detectionDoublEcritureProcess.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MSG_MENU_PROCESS_INSC_ACTIF"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.process.imprimerInscriptionActif.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MSG_TRANSFERT_AFFILIE"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.compte.transfertAffilie.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MSG_TRANSFER_PREVHOR"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.compte.exportPrevhor.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MSG_JOURNAUX_PARTIEL"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.process.imprimerListJournauxPartielsProcess.afficher"/>
+						</action>
+					</node>
+					
+					<node>
+						<label refId="MENU_CI_CONTROLE_CI_INACTIF_INVALIDE" />
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.process.controleCIInactifInvalide.afficher" />
+						</action>
+					</node>
+					
+				</nodes>
+			</node>
+			<node open="no">
+				<label refId="MSG_MENU_DECLARATION_SALAIRE"/>
+				<nodes>
+					<node>
+						<label refId="MSG_MENU_EXCEPTIONS"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.compte.exceptions.chercher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>		
+			<node open="no">
+				<label refId="MSG_COMPARAISON_MENU"/>
+				<nodes>
+					<node>
+						<label refId="MSG_ANOMALIE_MENU"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.comparaison.anomalieCI.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MSG_COMPARAISON_SAUVAGARDE"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.comparaison.comparaisonEnteteProcess.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MSG_COMPARAISON_LANCE_COMPARE"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.comparaison.comparaisonEnteteParcoursProcess.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MSG_COMPARAISON_CORRECTION"/>
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.comparaison.comparaisonCorrigeAnomaliesProcess.afficher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>	
+			<node open="no">
+				<label refId="BTA_MENU">
+					<language iso="de">BTA_MENU</language>
+				</label>	
+				<nodes>
+					<node>
+						<label refId="MSG_MENU_BTA_DOSSIER"/>	
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.bta.dossierBta.chercher"/>
+						</action>
+					</node>
+					<node>
+					<label refId="MSG_OPTIONS_DOSSIER_BTA_INSCRIPTION" />
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.bta.inscriptionBta.afficher" />
+						</action>
+					</node>
+					<node>
+					<label refId="MSG_MENU_BTA_REPETITION" />
+						<action command="/pavo" responseTarget="fr_main">
+							<parameter name="userAction" value="pavo.bta.repetitionBta.afficher" />
+						</action>
+					</node>
+				</nodes>
+				
+			</node> 
+			
+			<node open="no">
+				<label refId="PARAMETRE_MENU"/>
+				<nodes>
+					<node>
+						<label refId="PARAMETRE_MENU_CT"/>
+						<action command="/babel" responseTarget="fr_main">							
+							<parameter name="userAction" value="babel.cat.document.chercher"/>
+							<parameter name="csGroupeDomaines" value="CIGRPDMCT"/>
+							<parameter name="csGroupeTypesDocuments" value="CIGRPTDCT"/>
+						</action>
+					</node>				
+					
+				</nodes>
+			</node>	
+					
+		</nodes>
+	</menu>
+	
+	<!-- ****************************** -->
+	<!-- Menu Option dossier Splitting spez -->
+	<!-- ****************************** -->
+	<menu id="dossierSplitting-detail">
+		<label refId="MSG_OPTIONS_PRINCIPAL" />
+		<nodes>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_OUVRIR" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.ouvrir" />
+					<parameter name="idDossierSplitting"/>
+					
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_IMPRIMER_ACCUSE_AND_INVITATION" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.imprimerAccuseInvitation" />
+					<parameter name="idDossierSplitting"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_DOMICILE_AS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.domicileSplitting.chercherDomicile" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="0"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_DOMICILE_CO" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.domicileSplitting.chercherDomicile" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="1"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_MANDAT_AS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.mandatSplitting.chercherMandat" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="0"/>
+				</action>
+			</node>
+				<node>
+				<label refId="MSG_OPTIONS_DOSSIER_MANDAT_CO" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.mandatSplitting.chercherMandat" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="1"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_RCI_AS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.apercuRCI" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="0"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_RCI_CO" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.apercuRCI" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="1"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_RCI_IMP" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.imprimerAnalyse.afficher" />
+					<parameter name="selectedId"/>
+					<parameter name="idDossierSplitting"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_EXECUTER" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.executerSplitting" />
+					<parameter name="idDossierSplitting"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_REVOQUE" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.revoquer" />
+					<parameter name="idDossierSplitting"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_ROUVRIR" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.rouvrir" />
+					<parameter name="idDossierSplitting"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_IMPRIMER" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.imprimerApercu.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>		
+			<node>
+				<label refId="MSG_ANNULE_SPLITTING" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.annulerDossier" />
+					<parameter name="idDossierSplitting"/>
+				</action>
+			</node>						
+			
+			
+		</nodes>
+	</menu>
+	
+	<!-- ****************************** -->
+	<!-- Menu Option detailSplittingNoRighct-->
+	<!-- ****************************** -->
+	<menu id="dossierSplNoRight-detail">
+		<label refId="MSG_OPTIONS_PRINCIPAL" />
+		<nodes>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_DOMICILE_AS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.domicileSplitting.chercherDomicile" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="0"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_DOMICILE_CO" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.domicileSplitting.chercherDomicile" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="1"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_MANDAT_AS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.mandatSplitting.chercherMandat" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="0"/>
+				</action>
+			</node>
+				<node>
+				<label refId="MSG_OPTIONS_DOSSIER_MANDAT_CO" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.mandatSplitting.chercherMandat" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="1"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_RCI_AS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.apercuRCI" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="0"/>
+				</action>
+			</node>
+				<node>
+				<label refId="MSG_OPTIONS_DOSSIER_RCI_CO" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.apercuRCI" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="1"/>
+				</action>
+			</node>
+			
+			
+		</nodes>
+	</menu>
+	<!-- ****************************** -->
+	<!-- Menu Option dossier Splitting navigation -->
+	<!-- ****************************** -->
+	<menu id="splitting-navigation">
+		<label refId="MSG_OPTIONS_PRINCIPAL" />
+		<nodes>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.afficher" />
+					<parameter name="selectedId"/>
+					
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_DOMICILE_AS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.domicileSplitting.chercherDomicile" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="0"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_DOMICILE_CO" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.domicileSplitting.chercherDomicile" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="1"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_MANDAT_AS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.mandatSplitting.chercherMandat" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="0"/>
+				</action>
+			</node>
+				<node>
+				<label refId="MSG_OPTIONS_DOSSIER_MANDAT_CO" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.mandatSplitting.chercherMandat" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="1"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_RCI_AS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.apercuRCI" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="0"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_RCI_CO" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.apercuRCI" />
+					<parameter name="idDossierSplitting"/>
+					<parameter name="typePersonne" value="1"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- ****************************** -->
+	<!-- Menu Option mandatSplittingDetail-->
+	<!-- ****************************** -->
+	<menu id="mandatSplitting-detail">
+		<label refId="MSG_OPTIONS_PRINCIPAL" />
+		<nodes>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.afficherDepuisMandat" />
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_MANDAT_REVENUS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.revenuSplitting.chercherRevenu" />
+					<parameter name="idMandatSplitting"/>
+				</action>
+			</node>
+				<node>
+				<label refId="MSG_OPTIONS_MANDAT_APERCU_RCI" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.mandatSplitting.apercuRCI" />
+					<parameter name="idMandatSplitting"/>
+								</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_MANDAT_REVOQUE" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.mandatSplitting.revoquer" />
+				
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- ****************************** -->
+	<!-- Menu Option detailSplittingNoRighct-->
+	<!-- ****************************** -->
+	<menu id="mandatSplNoRight-detail">
+		<label refId="MSG_OPTIONS_PRINCIPAL" />
+		<nodes>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.dossierSplitting.afficherDepuisMandat" />
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_MANDAT_REVENUS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.revenuSplitting.chercherRevenu" />
+					<parameter name="idMandatSplitting"/>
+				</action>
+			</node>
+
+				<node>
+				<label refId="MSG_OPTIONS_MANDAT_APERCU_RCI" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.mandatSplitting.apercuRCI" />
+					<parameter name="idMandatSplitting"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>	
+	<!-- ****************************** -->
+	<!-- Menu Option detailSplittingNoRighct-->
+	<!-- ****************************** -->
+	<menu id="revenuSplitting-detail">
+		<label refId="MSG_OPTIONS_PRINCIPAL" />
+		<nodes>
+			
+			<node>
+				<label refId="MSG_OPTIONS_MANDAT" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.splitting.mandatSplitting.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- ****************************** -->
+	<!-- Menu Option journalDetail-->
+	<!-- ****************************** -->
+	<menu id="journal-detail">
+		<label refId="MSG_OPTIONS_PRINCIPAL" />
+		<nodes>
+			
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_INSCRIPTIONS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.ecriture.chercherSurPage" />
+					<parameter name="idJournal"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_COMPTABILISER" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.inscriptions.journalComptabiliser.afficher" />
+					<parameter name="idJournal"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_IMPRIMER" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.inscriptions.journal.imprimer" />
+					<parameter name="fromIdJournal"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_DETAIL" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.inscriptions.journal.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- ****************************** -->
+	<!-- Menu Option journalDeclaration-->
+	<!-- ****************************** -->
+	<menu id="journal-detailDeclaration">
+		<label refId="MSG_OPTIONS_PRINCIPAL" />
+		<nodes>
+			
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_INSCRIPTIONS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.ecriture.chercherSurPage" />
+					<parameter name="idJournal"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_COMPTABILISER" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.inscriptions.journalComptabiliser.afficher" />
+					<parameter name="idJournal"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_IMPRIMER" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.inscriptions.journal.imprimer" />
+					<parameter name="fromIdJournal"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_INSCRIPTIONS_NONRA" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.ecrituresNonRA.chercher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_INSCRIPTIONS_NON_RA_IMPRIMER" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.ecrituresNonRA.imprimer" />
+					<parameter name="fromIdJournal"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_DETAIL" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.inscriptions.journal.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- ***************************************** -->
+	<!-- Menu Option JournalCotisationsPersonnelle -->
+	<!-- ***************************************** -->
+	<menu id="journal-detailCotPers">
+		<label refId="MSG_OPTIONS_PRINCIPAL" />
+		<nodes>
+			
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_INSCRIPTIONS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.ecriture.chercherSurPage" />
+					<parameter name="fromIdJournal"/>
+					<parameter name="idJournal"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_COMPTABILISER" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.inscriptions.journalComptabiliser.afficher" />
+					<parameter name="idJournal"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_IMPRIMER" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.inscriptions.journal.imprimer" />
+					<parameter name="fromIdJournal"/>
+					<parameter name="selectedId"/>
+					<parameter name="idJournal"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DEMANDE_CA_IMPRIMER" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.inscriptions.demandeCAImprimer.afficher" />
+					<parameter name="idJournal"/>
+					<parameter name="libelle"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_DETAIL" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.inscriptions.journal.afficher" />
+					<parameter name="fromIdJournal"/>
+					<parameter name="selectedId"/>
+					<parameter name="idJournal"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+		<menu id="journalAlreadyInscrit">
+		<label refId="MSG_OPTIONS_PRINCIPAL" />
+		<nodes>
+			
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_INSCRIPTIONS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.ecriture.chercherSurPage" />
+					<parameter name="idJournal"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_IMPRIMER" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.inscriptions.journal.imprimer" />
+					<parameter name="fromIdJournal"/>
+					<parameter name="selectedId"/>
+					<parameter name="idJournal"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_DETAIL" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.inscriptions.journal.afficher" />
+					<parameter name="selectedId"/>
+					<parameter name="idJournal"/>
+					<parameter name="fromIdJournal"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+		
+		<menu id="journalNoRight-detail">
+		<label refId="MSG_OPTIONS_PRINCIPAL" />
+		<nodes>
+			
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_INSCRIPTIONS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.ecriture.chercherSurPage" />
+					<parameter name="idJournal"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_IMPRIMER" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.inscriptions.journal.imprimer" />
+					<parameter name="fromIdJournal"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_DETAIL" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.inscriptions.journal.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<menu id="compteIndividuelNoSpez-detail">
+		<label refId="MSG_OPTIONS_PRINCIPAL" />
+		<nodes>
+			
+			<node>
+				<label refId="MSG_OPTIONS_COMPTE_ARC" />
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.gestion.inputAnnonce.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_INSCRIPTIONS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.ecriture.chercherEcriture" />
+					<parameter name="compteIndividuelId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_COMPTE_RASSEMBLEMENT" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.rassemblementOuverture.chercherRassemblementOuverture" />
+					<parameter name="compteIndividuelId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_COMPTE_SPLITTING" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.periodeSplitting.chercherPeriodeSplitting" />
+					<parameter name="compteIndividuelId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_CI" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.compteIndividuel.imprimer" />
+					<parameter name="compteIndividuelId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<menu id="compteIndividuel-detail">
+		<label refId="MSG_OPTIONS_PRINCIPAL" />
+		<nodes>
+			
+			<node>
+				<label refId="MSG_OPTIONS_COMPTE_ARC" />
+				<action command="/hermes" responseTarget="fr_main">
+					<parameter name="userAction" value="hermes.gestion.inputAnnonce.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_JOURNAL_INSCRIPTIONS" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.ecriture.chercherEcriture" />
+					<parameter name="compteIndividuelId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_COMPTE_RASSEMBLEMENT" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.rassemblementOuverture.chercherRassemblementOuverture" />
+					<parameter name="compteIndividuelId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_COMPTE_SPLITTING" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.periodeSplitting.chercherPeriodeSplitting" />
+					<parameter name="compteIndividuelId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_CI" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.compteIndividuel.imprimer" />
+					<parameter name="compteIndividuelId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_MENU_COPIER_ECRITURES" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.compteIndividuel.extournerAfficher" />
+					<parameter name="compteIndividuelId"/>
+				</action>
+			</node>			
+			<node>
+					<label refId="MSG_MENU_IMPR_CA" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.compteIndividuel.certificatAfficher" />
+						<parameter name="compteIndividuelId"/>	
+					</action>
+				</node>			
+			<node>	
+				<label refId="MSG_MENU_IMPR_AT" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.compteIndividuel.attestationAfficher" />
+					<parameter name="compteIndividuelId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<menu id="ecriture-detailTemp">
+		<label refId="MSG_OPTIONS_PRINCIPAL" />
+		<nodes>
+			
+			<node>
+				<label refId="MSG_OPTIONS_ECRITURE_EXTOURNE" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.ecriture.extourne" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_ECRITURE_COMPTABILISE" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.ecriture.comptabiliser" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_ECRITURE_COPIE" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.ecriture.copie" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_ECLATER_ECRITURE" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.compte.ecriture.eclate" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_ECRITURE_JOURNAL" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.inscriptions.journal.afficherDepuisEcriture" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+
+		</nodes>
+	</menu>
+		
+		<menu id="ecriture-detail">
+			<label refId="MSG_OPTIONS_PRINCIPAL" />
+			<nodes>
+				
+				<node>
+					<label refId="MSG_OPTIONS_ECRITURE_EXTOURNE" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.ecriture.extourne" />
+						<parameter name="selectedId"/>
+					</action>
+				</node>
+				<node>
+					<label refId="MSG_OPTIONS_ECRITURE_COPIE" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.ecriture.copie" />
+						<parameter name="selectedId"/>
+					</action>
+				</node>
+				<node>
+					<label refId="MSG_ECLATER_ECRITURE" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.ecriture.eclate" />
+						<parameter name="selectedId"/>
+					</action>
+				</node>
+				<node>
+					<label refId="MSG_OPTIONS_ECRITURE_JOURNAL" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.inscriptions.journal.afficherDepuisEcriture" />
+						<parameter name="selectedId"/>
+					</action>
+				</node>
+	
+			</nodes>
+		</menu>
+		
+		<menu id="ecriture-detailNoSpez">
+			<label refId="MSG_OPTIONS_PRINCIPAL" />
+			<nodes>
+				
+				<node>
+					<label refId="MSG_OPTIONS_ECRITURE_EXTOURNE" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.ecriture.extourne" />
+						<parameter name="selectedId"/>
+					</action>
+				</node>
+				<node>
+					<label refId="MSG_OPTIONS_ECRITURE_COPIE" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.ecriture.copie" />
+						<parameter name="selectedId"/>
+					</action>
+				</node>
+				<node>
+					<label refId="MSG_ECLATER_ECRITURE" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.ecriture.eclate" />
+						<parameter name="selectedId"/>
+					</action>
+				</node>
+				<node>
+					<label refId="MSG_OPTIONS_ECRITURE_JOURNAL" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.inscriptions.journal.afficherDepuisEcriture" />
+						<parameter name="selectedId"/>
+					</action>
+				</node>
+	
+			</nodes>
+	</menu>
+	<menu id="ecriture-detailGre6">
+			<label refId="MSG_OPTIONS_PRINCIPAL" />
+			<nodes>
+				
+				<node>
+					<label refId="MSG_OPTIONS_ECRITURE_EXTOURNE" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.ecriture.extourne" />
+						<parameter name="selectedId"/>
+					</action>
+				</node>
+				<node>
+					<label refId="MSG_REAFFECTER_CI" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.ecritureGenre6.afficher" />
+						<parameter name="selectedId"/>
+					</action>
+				</node>
+				<node>
+					<label refId="MSG_OPTIONS_ECRITURE_JOURNAL" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.inscriptions.journal.afficherDepuisEcriture" />
+						<parameter name="selectedId"/>
+					</action>
+				</node>
+			</nodes>
+	</menu>
+	<menu id="ecriture-detailSuspens">
+			<label refId="MSG_OPTIONS_PRINCIPAL" />
+			<nodes>
+				
+				<node>
+					<label refId="ECRITURE_CONV_GENRE_6" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.process.conversionGenre6.executer" />
+						<parameter name="selectedId"/>
+					</action>
+				</node>
+			</nodes>
+		</menu>
+	
+	<menu id="rassemblement-detail">
+			<label refId="MSG_OPTIONS_PRINCIPAL" />
+			<nodes>
+				<node>
+					<label refId="MSG_OPTIONS_RASSEMBL" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.rassemblementOuverture.envoiCI" />
+						<parameter name="selectedId"/>
+					</action>
+				</node>
+				<node>
+					<label refId="MSG_OPTIONS_RASSEMBL_CONJOINT" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.rassemblementOuverture.envoiCIConjoint" />
+						<parameter name="selectedId"/>
+					</action>
+				</node>	
+				<node>
+					<label refId="MSG_RASSEMBLEMENT_ECRITURES" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.rassemblementOuverture.chercherEcrituresRassemblement" />
+						<parameter name="rassemblementOuvertureId"/>
+					</action>
+				</node>
+				<node>
+					<label refId="MSG_RASSEMBLEMENT_IMPRIMER" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.compteIndividuel.imprimer" />
+						<parameter name="rassemblementEcritureId"/>
+					</action>
+				</node>					
+	
+			</nodes>
+		</menu>
+	<menu id="rassemblementNoSpli-detail">
+			<label refId="MSG_OPTIONS_PRINCIPAL" />
+			<nodes>
+				<node>
+					<label refId="MSG_OPTIONS_RASSEMBL" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.rassemblementOuverture.envoiCI" />
+						<parameter name="selectedId"/>
+					</action>
+				</node>
+				<node>
+					<label refId="MSG_RASSEMBLEMENT_ECRITURES" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.rassemblementOuverture.chercherEcrituresRassemblement" />
+						<parameter name="rassemblementOuvertureId"/>
+					</action>
+				</node>
+				<node>
+					<label refId="MSG_RASSEMBLEMENT_IMPRIMER" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.compteIndividuel.imprimer" />
+						<parameter name="rassemblementEcritureId"/>
+					</action>
+				</node>					
+	
+			</nodes>
+		</menu>
+		
+	<menu id="annonceSuspens-detail">
+			<label refId="MSG_OPTIONS_PRINCIPAL" />
+			<nodes>
+				<node id="OPTION_ECRITURES">
+					<label refId="MSG_OPTIONS_CENTRALE_CI" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.compteIndividuel.chercherEcritureAnnonce" />
+						<parameter name="annonceSuspensId"/>
+					</action>
+				</node>
+				<node>
+					<label refId="MSG_ANNONCERECUE" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.compte.compteIndividuel.chercherDetailAnnonce" />
+						<parameter name="annonceSuspensId"/>
+					</action>
+				</node>
+			</nodes>
+		</menu>
+	<menu id="anomalie-detail">
+			<label refId="MSG_OPTIONS_PRINCIPAL" />
+			<nodes>
+				<node>
+					<label refId="MSG_COMPARAISON_IMPRIMER_STATISTIQUES" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.comparaison.comparaisonStatistiqueImprimer.afficher" />
+					</action>
+				</node>
+
+				<node>
+					<label refId="MSG_COMPARAISON_IMPRIMER_ANOMALIES" />
+					<action command="/pavo" responseTarget="fr_main">
+						<parameter name="userAction" value="pavo.comparaison.comparaisonAnomaliesImprimer.afficher" />
+
+					</action>
+				</node>					
+	
+			</nodes>
+		</menu>		
+	<!-- ************************** -->
+	<!-- Menu Option only detail    -->
+	<!-- ************************** -->
+	<menu id="CI-OnlyDetail">
+		<label refId="OPTIONS" />
+	</menu>
+	
+	<!-- ****************************** -->
+	<!-- Menu Option dossierBtaDetail-->
+	<!-- ****************************** -->
+	<menu id="dossierBta-detail">
+		<label refId="MSG_OPTIONS_PRINCIPAL" />
+		<nodes>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_BTA_DETAIL" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.bta.dossierBta.afficher" />
+					<parameter name="idDossierBta"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_BTA_DECISION" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.bta.decisionBta.afficher" />
+					<parameter name="idDossierBta"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MSG_OPTIONS_DOSSIER_BTA_INSCRIPTION_RETRO" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.bta.inscriptionRetroBta.afficher" />
+					<parameter name="idDossierBta"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	
+	<!-- ****************************** -->
+	<!-- Menu Option annonceCentrale-->
+	<!-- ****************************** -->
+	<menu id="CI-MenuOptionAnnonceCentrale">
+		<label refId="MSG_OPTIONS_PRINCIPAL"/>
+		<nodes>
+			<node id="generer_annonce_centrale">
+				<label refId="MENU_OPTION_CI_ANNONCE_CENTRALE_GENERER_ANNONCE" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.process.annonceCentraleGeneration.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node id="imprimer_protocole_annonce_centrale">
+				<label refId="MENU_OPTION_CI_ANNONCE_CENTRALE_REIMPRIMER_PROTOCOLE" />
+				<action command="/pavo" responseTarget="fr_main">
+					<parameter name="userAction" value="pavo.process.annonceCentraleImpressionRapport.afficher" />
+					<parameter name="selectedId"/>
+					<parameter name="modeFonctionnement" value="reimpression"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	
+</menus>

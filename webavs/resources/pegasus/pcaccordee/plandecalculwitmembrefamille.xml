@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.pcaccordee.PlanDeCalculWitMembreFamille">
+	
+		<root-model name="simplePlanDeCalcul" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul"/>
+		
+		<linked-model name="simplePersonneDansPlanCalcul" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePersonneDansPlanCalcul" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPlanDeCalcul" operation="EQUALS" field-ref="simplePlanDeCalcul.idPlanDeCalcul"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="droitMembreFamille" model-ref="ch.globaz.pegasus.business.models.droit.DroitMembreFamille" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleDroitMembreFamille.idDroitMembreFamille" operation="EQUALS" field-ref="simplePersonneDansPlanCalcul.idDroitMembreFamille"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDonneesPersonnelles" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneesPersonnelles" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDonneesPersonnelles" operation="EQUALS" field-ref="droitMembreFamille.simpleDroitMembreFamille.idDonneesPersonnelles"/>
+			</join-group>
+		</linked-model>
+		
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPCAccordee" operation="EQUALS" field-ref="simplePlanDeCalcul.idPCAccordee"/>
+				<search-field name="forCsRoleFamille" operation="EQUALS" field-ref="droitMembreFamille.simpleDroitMembreFamille.csRoleFamillePC"/>
+				<search-field name="forIdPcal" operation="EQUALS" field-ref="simplePlanDeCalcul.idPlanDeCalcul"/>
+				<search-field name="forComprisPcal" operation="EQUALS" field-ref="simplePersonneDansPlanCalcul.isComprisDansCalcul"/>
+				<search-field name="forIsPlanRetenu" operation="EQUALS" field-ref="simplePlanDeCalcul.isPlanRetenu"/>
+				<search-field name="inIdPCAccordee" operation="IN" field-ref="simplePlanDeCalcul.idPCAccordee"/>
+				<search-field name="inCsRoleFamille" operation="IN" field-ref="droitMembreFamille.simpleDroitMembreFamille.csRoleFamillePC"/>
+			</search-group>
+		</search-definition> 
+		
+		<order-by name="orderByNaissance">
+			<order-field order="DESC" field-ref="droitMembreFamille.membreFamille.personneEtendue.personne.dateNaissance"/>
+		</order-by>
+		
+		<order-by>
+			<order-field field-ref="simplePlanDeCalcul.isPlanRetenu" />
+			<order-field order="DESC" field-ref="simplePlanDeCalcul.montantPCMensuelle" />
+			<order-field field-ref="simplePlanDeCalcul.idPlanDeCalcul" />
+			<order-field field-ref="droitMembreFamille.membreFamille.personneEtendue.personne.dateNaissance" />
+			<order-field field-ref="simplePersonneDansPlanCalcul.idDroitMembreFamille" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

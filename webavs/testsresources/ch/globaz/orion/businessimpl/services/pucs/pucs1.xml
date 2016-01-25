@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<DeclareSalary xmlns="http://www.swissdec.ch/schema/sd/20051002/SalaryDeclarationServiceTypes">
+
+    <ns1:RequestContext xmlns:ns1="http://www.swissdec.ch/schema/sd/20051002/SalaryDeclarationContainer">
+
+        <ns1:UserAgent>
+
+            <ns1:Producer/>
+            <ns1:Name/>
+
+            <ns1:Version/>
+
+            <ns1:Certificate/>
+
+        </ns1:UserAgent>
+
+
+        <ns1:CompanyName>
+
+            <ns2:HR-RC-Name xmlns:ns2="http://www.swissdec.ch/schema/sd/20051002/SalaryDeclaration"/>
+
+        </ns1:CompanyName>
+ 
+       <ns1:TransmissionDate>2013-01-02T13:55:18.164+01:00</ns1:TransmissionDate>
+
+        <ns1:RequestID/>
+
+        <ns1:LanguageCode/>
+
+    </ns1:RequestContext>
+
+    <ns3:Job xmlns:ns3="http://www.swissdec.ch/schema/sd/20051002/SalaryDeclarationContainer">
+
+        <ns3:Addressees/>
+ 
+   </ns3:Job>
+
+    <ns4:SalaryDeclaration schemaVersion="0" xmlns:ns4="http://www.swissdec.ch/schema/sd/20051002/SalaryDeclarationContainer">
+
+        <ns5:Company xmlns:ns5="http://www.swissdec.ch/schema/sd/20051002/SalaryDeclaration">
+
+            <ns5:CompanyDescription>
+
+                <ns5:Name>
+
+                    <ns5:HR-RC-Name>JLG SARL</ns5:HR-RC-Name>
+
+                </ns5:Name>
+   
+             <ns5:Address>
+ 
+                   <ns5:ZIP-Code/>
+ 
+                   <ns5:City/>
+ 
+               </ns5:Address>
+ 
+           </ns5:CompanyDescription>
+  
+          <ns5:Staff>
+
+                <ns5:Person>
+
+                    <ns5:Particulars>
+
+                        <ns5:Social-InsuranceIdentification>
+
+                            <ns5:SV-AS-Number>7565177696249</ns5:SV-AS-Number>
+ 
+                       </ns5:Social-InsuranceIdentification>
+   
+                     <ns5:Lastname>MORALES</ns5:Lastname>
+   
+                     <ns5:Firstname>JEAN-BERNARD</ns5:Firstname>
+   
+                     <ns5:Sex>M</ns5:Sex>
+
+                        <ns5:DateOfBirth>1947-10-23</ns5:DateOfBirth>
+ 
+                       <ns5:Nationality>FR</ns5:Nationality>
+  
+                      <ns5:CivilStatus/>
+
+                        <ns5:Address>
+  
+                          <ns5:ZIP-Code/>
+ 
+                           <ns5:City/>
+ 
+                       </ns5:Address>
+ 
+                       <ns5:ResidenceCanton/>
+  
+                  </ns5:Particulars>
+ 
+                   <ns5:Work>
+        
+                <ns5:WorkplaceCanton>GE</ns5:WorkplaceCanton>
+   
+                 </ns5:Work>
+ 
+                   <ns5:AHV-AVS-Salaries>
+     
+                   <ns5:AHV-AVS-Salary institutionIDRef="#106.1">
+
+                            <ns5:AccountingTime>
+
+                                <ns5:from>2012-02-01</ns5:from>
+
+                                <ns5:until>2012-10-30</ns5:until>
+
+                            </ns5:AccountingTime>
+
+                            <ns5:AHV-AVS-Income>81000.00000</ns5:AHV-AVS-Income>
+
+                            <ns5:AHV-AVS-Open>0.00000</ns5:AHV-AVS-Open>
+
+                            <ns5:ALV-AC-Income>81000.00000</ns5:ALV-AC-Income>
+
+                            <ns5:ALVZ-ACS-Income>0.00000</ns5:ALVZ-ACS-Income>
+ 
+                       </ns5:AHV-AVS-Salary>
+ 
+                       <ns5:AHV-AVS-Salary institutionIDRef="#106.1">
+
+                            <ns5:AccountingTime>
+ 
+                               <ns5:from>2012-11-01</ns5:from>
+
+                                <ns5:until>2012-12-31</ns5:until>
+ 
+                           </ns5:AccountingTime>
+  
+                          <ns5:AHV-AVS-Income>24200.00000</ns5:AHV-AVS-Income>
+   
+                         <ns5:AHV-AVS-Open>0.00000</ns5:AHV-AVS-Open>
+
+                            <ns5:ALV-AC-Income>0</ns5:ALV-AC-Income>
+
+                            <ns5:ALVZ-ACS-Income>0</ns5:ALVZ-ACS-Income>
+
+                        </ns5:AHV-AVS-Salary>
+
+                    </ns5:AHV-AVS-Salaries>
+
+                    <ns5:FAK-CAF-Salaries>
+
+                        <ns5:FAK-CAF-Salary>
+
+			<ns5:FAK-CAF-Period>
+
+                                <ns5:from>2012-02-01</ns5:from>
+
+                                <ns5:until>2012-10-30</ns5:until>
+
+                            </ns5:FAK-CAF-Period>
+
+                            <ns5:FAK-CAF-ContributorySalary>81000.00000</ns5:FAK-CAF-ContributorySalary>
+
+                            <ns5:FAK-CAF-WorkplaceCanton>GE</ns5:FAK-CAF-WorkplaceCanton>
+
+                       </ns5:FAK-CAF-Salary>
+
+                        <ns5:FAK-CAF-Salary>
+
+                            <ns5:FAK-CAF-Period>
+
+                                <ns5:from>2012-11-01</ns5:from>
+ 
+                               <ns5:until>2012-12-31</ns5:until>
+ 
+                           </ns5:FAK-CAF-Period>
+
+                            <ns5:FAK-CAF-ContributorySalary>24200.00000</ns5:FAK-CAF-ContributorySalary>
+
+                            <ns5:FAK-CAF-WorkplaceCanton>GE</ns5:FAK-CAF-WorkplaceCanton>
+
+                        </ns5:FAK-CAF-Salary>
+
+                    </ns5:FAK-CAF-Salaries>
+
+                </ns5:Person>
+
+                <ns5:Person>
+
+                    <ns5:Particulars>
+
+                        <ns5:Social-InsuranceIdentification>
+ 
+                           <ns5:SV-AS-Number>7568649100008</ns5:SV-AS-Number>
+    
+                    </ns5:Social-InsuranceIdentification>
+          
+              <ns5:Lastname>GUIDEZ</ns5:Lastname>
+ 
+                       <ns5:Firstname>JEAN LUC EMILE LEON</ns5:Firstname>
+   
+                     <ns5:Sex>M</ns5:Sex>
+  
+                      <ns5:DateOfBirth>1955-04-25</ns5:DateOfBirth>
+   
+                     <ns5:Nationality>FR</ns5:Nationality>
+ 
+                       <ns5:CivilStatus/>
+  
+                      <ns5:Address>
+      
+                      <ns5:ZIP-Code/>
+  
+                          <ns5:City/>
+  
+                      </ns5:Address>
+
+                        <ns5:ResidenceCanton/>
+ 
+                   </ns5:Particulars>
+
+                    <ns5:Work>
+      
+                  <ns5:WorkplaceCanton>GE</ns5:WorkplaceCanton>
+
+                    </ns5:Work>
+    
+                <ns5:AHV-AVS-Salaries>
+
+                        <ns5:AHV-AVS-Salary institutionIDRef="#106.1">
+
+                            <ns5:AccountingTime>
+
+                                <ns5:from>2012-01-01</ns5:from>
+  
+                              <ns5:until>2012-12-31</ns5:until>
+  
+                          </ns5:AccountingTime>
+              
+              <ns5:AHV-AVS-Income>137784.00000</ns5:AHV-AVS-Income>
+
+                            <ns5:AHV-AVS-Open>0.00000</ns5:AHV-AVS-Open>
+   
+                         <ns5:ALV-AC-Income>126000.00000</ns5:ALV-AC-Income>
+  
+                          <ns5:ALVZ-ACS-Income>11784.00000</ns5:ALVZ-ACS-Income>
+    
+                    </ns5:AHV-AVS-Salary>
+
+                    </ns5:AHV-AVS-Salaries>
+
+                    <ns5:FAK-CAF-Salaries>
+
+                       <ns5:FAK-CAF-Salary>
+
+                            <ns5:FAK-CAF-Period>
+
+                                <ns5:from>2012-01-01</ns5:from>
+
+                                <ns5:until>2012-12-31</ns5:until>
+
+                            </ns5:FAK-CAF-Period>
+
+                            <ns5:FAK-CAF-ContributorySalary>137784.00000</ns5:FAK-CAF-ContributorySalary>
+
+                            <ns5:FAK-CAF-WorkplaceCanton>GE</ns5:FAK-CAF-WorkplaceCanton>
+
+                        </ns5:FAK-CAF-Salary>
+ 
+                   </ns5:FAK-CAF-Salaries>
+     
+           </ns5:Person>
+   
+             <ns5:Person>
+  
+                  <ns5:Particulars>
+    
+                    <ns5:Social-InsuranceIdentification>
+      
+                      <ns5:SV-AS-Number>7568920921926</ns5:SV-AS-Number>
+       
+                 </ns5:Social-InsuranceIdentification>
+    
+                    <ns5:Lastname>MAURY</ns5:Lastname>
+       
+                 <ns5:Firstname>LUC MAURICE</ns5:Firstname>
+
+
+                        <ns5:Sex>M</ns5:Sex>
+
+                        <ns5:DateOfBirth>1940-11-06</ns5:DateOfBirth>
+
+                        <ns5:Nationality>CH</ns5:Nationality>
+
+                        <ns5:CivilStatus/>
+    
+                    <ns5:Address>
+
+                            <ns5:ZIP-Code/>
+ 
+                           <ns5:City/>
+     
+                   </ns5:Address>
+ 
+                       <ns5:ResidenceCanton/>
+ 
+                   </ns5:Particulars>
+  
+                  <ns5:Work>
+                        <ns5:WorkplaceCanton>GE</ns5:WorkplaceCanton>
+ 
+                   </ns5:Work>
+                    <ns5:AHV-AVS-Salaries>
+   
+                     <ns5:AHV-AVS-Salary institutionIDRef="#106.1">
+
+                            <ns5:AccountingTime>
+                          
+      <ns5:from>2012-01-01</ns5:from>
+
+                                <ns5:until>2012-12-31</ns5:until>
+           
+                 </ns5:AccountingTime>
+        
+                    <ns5:AHV-AVS-Income>36800.00000</ns5:AHV-AVS-Income>
+  
+                          <ns5:AHV-AVS-Open>0.00000</ns5:AHV-AVS-Open>
+
+                            <ns5:ALV-AC-Income>0</ns5:ALV-AC-Income>
+
+                            <ns5:ALVZ-ACS-Income>0</ns5:ALVZ-ACS-Income>
+ 
+                       </ns5:AHV-AVS-Salary>
+
+                    </ns5:AHV-AVS-Salaries>
+  
+                  <ns5:FAK-CAF-Salaries>
+
+                        <ns5:FAK-CAF-Salary>
+ 
+                           <ns5:FAK-CAF-Period>
+
+                                <ns5:from>2012-01-01</ns5:from>
+
+                                <ns5:until>2012-12-31</ns5:until>
+ 
+                           </ns5:FAK-CAF-Period>
+
+                            <ns5:FAK-CAF-ContributorySalary>36800.00000</ns5:FAK-CAF-ContributorySalary>
+   
+                         <ns5:FAK-CAF-WorkplaceCanton>GE</ns5:FAK-CAF-WorkplaceCanton>
+
+                        </ns5:FAK-CAF-Salary>
+           
+         </ns5:FAK-CAF-Salaries>
+
+                </ns5:Person>
+  
+              <ns5:Person>
+       
+             <ns5:Particulars>
+ 
+                       <ns5:Social-InsuranceIdentification>
+ 
+                           <ns5:SV-AS-Number>7565725898149</ns5:SV-AS-Number>
+ 
+                       </ns5:Social-InsuranceIdentification>
+ 
+                       <ns5:Lastname>MULLER</ns5:Lastname>
+  
+                      <ns5:Firstname>CHRISTIAN</ns5:Firstname>
+
+                        <ns5:Sex>M</ns5:Sex>
+
+                        <ns5:DateOfBirth>1967-11-12</ns5:DateOfBirth>
+   
+                     <ns5:Nationality>CH</ns5:Nationality>
+ 
+                       <ns5:CivilStatus/>
+               
+         		<ns5:Address>
+
+                            <ns5:ZIP-Code/>
+ 
+                           <ns5:City/>
+
+			 </ns5:Address>
+
+                        <ns5:ResidenceCanton/>
+  
+                  </ns5:Particulars>
+ 
+                   <ns5:Work>
+
+                        <ns5:WorkplaceCanton>GE</ns5:WorkplaceCanton>
+
+                    </ns5:Work>
+                    <ns5:AHV-AVS-Salaries>
+
+                        <ns5:AHV-AVS-Salary institutionIDRef="#106.1">
+ 
+                           <ns5:AccountingTime>
+
+                                <ns5:from>2012-01-01</ns5:from>
+ 
+                               <ns5:until>2012-03-25</ns5:until>
+
+                            </ns5:AccountingTime>
+
+                            <ns5:AHV-AVS-Income>1067.20000</ns5:AHV-AVS-Income>
+
+                            <ns5:AHV-AVS-Open>0.00000</ns5:AHV-AVS-Open>
+ 
+                           <ns5:ALV-AC-Income>1067.20000</ns5:ALV-AC-Income>
+  
+                          <ns5:ALVZ-ACS-Income>0.00000</ns5:ALVZ-ACS-Income>
+
+                        </ns5:AHV-AVS-Salary>
+  
+<ns5:AHV-AVS-Salary institutionIDRef="#106.1">
+
+                            <ns5:AccountingTime>
+
+                                <ns5:from>2012-05-01</ns5:from>
+
+                                <ns5:until>2012-10-30</ns5:until>
+
+                            </ns5:AccountingTime>
+
+                            <ns5:AHV-AVS-Income>81000.00000</ns5:AHV-AVS-Income>
+
+                            <ns5:AHV-AVS-Open>0.00000</ns5:AHV-AVS-Open>
+
+                            <ns5:ALV-AC-Income>81000.00000</ns5:ALV-AC-Income>
+
+                            <ns5:ALVZ-ACS-Income>0.00000</ns5:ALVZ-ACS-Income>
+ 
+                       </ns5:AHV-AVS-Salary>
+ 
+                 </ns5:AHV-AVS-Salaries>
+  
+                  <ns5:FAK-CAF-Salaries>
+
+                        <ns5:FAK-CAF-Salary>
+
+                            <ns5:FAK-CAF-Period>
+
+                                <ns5:from>2012-01-01</ns5:from>
+
+                                <ns5:until>2012-12-31</ns5:until>
+ 
+                           </ns5:FAK-CAF-Period>
+  
+                          <ns5:FAK-CAF-ContributorySalary>1067.20000</ns5:FAK-CAF-ContributorySalary>
+
+                            <ns5:FAK-CAF-WorkplaceCanton>GE</ns5:FAK-CAF-WorkplaceCanton>
+          
+              </ns5:FAK-CAF-Salary>
+
+                    </ns5:FAK-CAF-Salaries>
+
+                </ns5:Person>
+
+            </ns5:Staff>
+
+            <ns5:Insurances>
+
+                <ns5:AHV-AVS institutionID="#106.1">
+
+                    <ns5:AK-CC-BranchNumber/>
+
+                    <ns5:AK-CC-CustomerNumber>072.631-00</ns5:AK-CC-CustomerNumber>
+
+                </ns5:AHV-AVS>
+                <ns5:UVG-LAA>
+
+                    <ns5:Suva institutionID="#instLAA">
+
+                        <ns5:SuvaCustomerNumber/>
+
+                        <ns5:SuvaSubNumber/>
+ 
+                   </ns5:Suva>
+  
+              </ns5:UVG-LAA>
+ 
+               <ns5:BVG-LPP institutionID="#instLPP">
+
+                    <ns5:InsuranceID/>
+ 
+                   <ns5:InsuranceCompanyName>WINTERTHUR ASSURANCE                    </ns5:InsuranceCompanyName>
+
+                    <ns5:CustomerIdentity/>
+  
+                  <ns5:ContractIdentity/>
+   
+            </ns5:BVG-LPP>
+
+                <ns5:FAK-CAF institutionID="#instAF">
+  
+                  <ns5:FAK-CAF-BranchNumber/>
+ 
+                   <ns5:FAK-CAF-CustomerNumber>072.631-00</ns5:FAK-CAF-CustomerNumber>
+  
+              </ns5:FAK-CAF>
+    
+        </ns5:Insurances>
+ 
+           <ns5:SalaryTotals>
+  
+              <ns5:AHV-AVS-Totals institutionIDRef="#106.1">
+           
+         <ns5:Total-AHV-AVS-Incomes>280851.20000</ns5:Total-AHV-AVS-Incomes>
+  
+                  <ns5:Total-AHV-AVS-Open>0</ns5:Total-AHV-AVS-Open>
+ 
+                   <ns5:Total-ALV-AC-Incomes>208067.20000</ns5:Total-ALV-AC-Incomes>
+  
+                  <ns5:Total-ALVZ-ACS-Incomes>11784.00000</ns5:Total-ALVZ-ACS-Incomes>
+ 
+                   <ns5:Total-ALV-AC-Open>0</ns5:Total-ALV-AC-Open>
+      
+          </ns5:AHV-AVS-Totals>
+           
+     <ns5:FAK-CAF-FLG-LFA-Totals>
+
+                    <ns5:Total-FAK-CAF-IncomesPerCanton>
+
+<ns5:Total-FAK-CAF-Incomes>280851.20000</ns5:Total-FAK-CAF-Incomes>
+   
+                     <ns5:Canton>GE</ns5:Canton>
+                    </ns5:Total-FAK-CAF-IncomesPerCanton>
+ 
+                   <ns5:Total-FLG-LFA-Incomes>280851.20000</ns5:Total-FLG-LFA-Incomes>
+            
+    </ns5:FAK-CAF-FLG-LFA-Totals>
+      
+      </ns5:SalaryTotals>
+    
+        <ns5:SalaryCounters/>
+ 
+       </ns5:Company>
+  
+      <ns6:GeneralSalaryDeclarationDescription xmlns:ns6="http://www.swissdec.ch/schema/sd/20051002/SalaryDeclaration">
+   
+         <ns6:CreationDate>2013-01-02T13:55:18.163+01:00</ns6:CreationDate>
+      
+      <ns6:AccountingPeriod>2012</ns6:AccountingPeriod>
+
+        </ns6:GeneralSalaryDeclarationDescription>
+
+    </ns4:SalaryDeclaration>
+</DeclareSalary>
+

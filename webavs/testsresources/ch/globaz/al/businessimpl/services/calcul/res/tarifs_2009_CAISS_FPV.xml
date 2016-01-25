@@ -1,0 +1,101 @@
+<tarifs xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="tarifsTests.xsd">
+	<periode date="01.01.2009">
+		<legislation cs="CAISSE">
+			<categorie cs="FPV_AFIT">
+				
+				<test testId="1" type="ENF" capableExercer="true" montant="400" age="16" residence="CH" rng="3"/>
+				<test testId="2" type="ENF" capableExercer="true" montant="0" age="17" residence="CH" rng="3"/>
+				
+				<test testId="3" type="FORM" capableExercer="true" montant="300" age="17" residence="CH" rng="1"/>
+				<test testId="4" type="FORM" capableExercer="true" montant="0" age="26" residence="CH" rng="1"/>
+				
+				<test testId="5" type="FORM" capableExercer="true" montant="500" age="17" residence="CH" rng="3"/>
+				<test testId="6" type="FORM" capableExercer="true" montant="0" age="26" residence="CH" rng="3"/>
+				
+				<test testId="7" type="NAIS" montant="2000" residence="CH"/>
+				
+				<test testId="8" type="ENF" capableExercer="true" montant="400" age="16" residence="ETR" rng="3"/>
+				<test testId="9" type="ENF" capableExercer="true" montant="0" age="17" residence="ETR" rng="3"/>
+				
+				<test testId="10" type="FORM" capableExercer="true" montant="300" age="17" residence="ETR" rng="1"/>
+				<test testId="11" type="FORM" capableExercer="true" montant="0" age="26" residence="ETR" rng="1"/>
+				
+				<test testId="12" type="FORM" capableExercer="true" montant="500" age="17" residence="ETR" rng="3"/>
+				<test testId="13" type="FORM" capableExercer="true" montant="0" age="26" residence="ETR" rng="3"/>
+			
+				<test testId="14" type="NAIS" montant="0" residence="ETR"/>
+			</categorie>
+			
+			<categorie cs="FPV_AGA">
+				<test testId="15" type="NAIS" montant="2000" residence="CH"/>
+				<test testId="16" type="NAIS" montant="0" residence="ETR"/>
+			</categorie>
+			
+			<categorie cs="FPV_AT">
+				<test testId="17" type="ENF" capableExercer="true" montant="390" age="16" residence="CH" rng="3"/>
+				<test testId="18" type="ENF" capableExercer="true" montant="0" age="17" residence="CH" rng="3"/>
+				
+				<test testId="19" type="FORM" capableExercer="true" montant="440" age="17" residence="CH" rng="3"/>
+				<test testId="20" type="FORM" capableExercer="true" montant="0" age="26" residence="CH" rng="3"/>
+				
+				<test testId="21" type="NAIS" montant="2000" residence="CH"/>
+				
+				<test testId="22" type="ENF" capableExercer="true" montant="390" age="16" residence="ETR" rng="3"/>
+				<test testId="23" type="ENF" capableExercer="true" montant="0" age="17" residence="ETR" rng="3"/>
+				
+				<test testId="24" type="FORM" capableExercer="true" montant="440" age="17" residence="ETR" rng="3"/>
+				<test testId="25" type="FORM" capableExercer="true" montant="0" age="26" residence="ETR" rng="3"/>
+				
+				<test testId="26" type="NAIS" montant="0" residence="ETR"/>
+			</categorie>
+			
+			<categorie cs="FPV_GAR">
+				<test testId="27" type="NAIS" montant="2000" residence="CH"/>
+				<test testId="28" type="NAIS" montant="0" residence="ETR"/>
+			</categorie>
+			
+			<categorie cs="FPV_GEOM">
+				
+				<test testId="29" type="ENF" capableExercer="true" montant="380" age="16" residence="CH" rng="3"/>
+				<test testId="30" type="ENF" capableExercer="true" montant="0" age="17" residence="CH" rng="3"/>
+				
+				<test testId="31" type="FORM" capableExercer="true" montant="430" age="17" residence="CH" rng="3"/>
+				<test testId="32" type="FORM" capableExercer="true" montant="0" age="26" residence="CH" rng="3"/>
+				
+				<test testId="33" type="ENF" capableExercer="true" montant="380" age="16" residence="ETR" rng="3"/>
+				<test testId="34" type="ENF" capableExercer="true" montant="0" age="17" residence="ETR" rng="3"/>
+				
+				<test testId="35" type="FORM" capableExercer="true" montant="430" age="17" residence="ETR" rng="3"/>
+				<test testId="36" type="FORM" capableExercer="true" montant="0" age="26" residence="ETR" rng="3"/>
+			</categorie>
+			
+			<categorie cs="FPV_IAV">
+				<test testId="37" type="NAIS" montant="1800" residence="CH"/>
+				<test testId="38" type="NAIS" montant="0" residence="ETR"/>
+			</categorie>
+			
+			<categorie cs="FPV_LIBR">
+				<test testId="39" type="NAIS" montant="1800" residence="CH"/>
+				<test testId="40" type="NAIS" montant="0" residence="ETR"/>
+			</categorie>
+			
+			<categorie cs="FPV_NOT">	
+				<test testId="41" type="ENF" capableExercer="true" montant="400" age="16" residence="CH" rng="3"/>
+				<test testId="42" type="ENF" capableExercer="true" montant="0" age="17" residence="CH" rng="3"/>
+				
+				<test testId="43" type="FORM" capableExercer="true" montant="450" age="17" residence="CH" rng="3"/>
+				<test testId="44" type="FORM" capableExercer="true" montant="0" age="26" residence="CH" rng="3"/>
+				
+				<test testId="45" type="NAIS" montant="2500" residence="CH"/>
+				
+				<test testId="46" type="ENF" capableExercer="true" montant="400" age="16" residence="ETR" rng="3"/>
+				<test testId="47" type="ENF" capableExercer="true" montant="0" age="17" residence="ETR" rng="3"/>
+				
+				<test testId="48" type="FORM" capableExercer="true" montant="450" age="17" residence="ETR" rng="3"/>
+				<test testId="49" type="FORM" capableExercer="true" montant="0" age="26" residence="ETR" rng="3"/>
+				
+				<test testId="50" type="NAIS" montant="0" residence="ETR"/>
+			</categorie>
+		</legislation>
+	</periode>
+</tarifs>

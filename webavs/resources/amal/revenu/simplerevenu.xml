@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.revenu.SimpleRevenu">
+		<description>Revenu générique (taxation)</description>
+		<table name="MAREVGEN" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idRevenu" column="IDREGE" comment="Clef primaire Revenu"/>
+			<field name="idRevenuHistorique" column="IDREVE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_REVENU_HISTORIQUE"/>
+			<field name="idContribuable" column="IDCONT" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_CONTRIBUABLE"/>
+			<field name="numeroContribuable" column="NOCONT" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="NUMERO_CONTRIBUABLE"/>
+			<field name="profession" column="CSPROF" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="CODE_PROFESSION"/>
+			<field name="etatCivil" column="CSCIVI" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="ETAT_CIVIL"/>
+			<field name="nbEnfants" column="NBENFA" type="NUMERIC" dataType="NUMERIC(2,0)" mandatory="false" comment="NOMBRE_ENFANTS"/>
+			<field name="nbEnfantSuspens" column="NBENSU" type="NUMERIC" dataType="NUMERIC(1,0)" mandatory="false" comment="NOMBRE_ENFANTS_SUSPEND"/>
+			<field name="dateAvisTaxation" column="DAAVTA" type="DATE" mandatory="false" comment="DATE_AVIS_TAXATION"/>
+			<field name="noLotAvisTaxation" column="NOLOTA" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="NUMERO_LOT_AVIS_TAXATION"/>
+			<field name="typeTaxation" column="CSTYTA" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="TYPE_TAXATION"/>
+			<field name="codeSuspendu" column="CSSUSP" type="NUMERIC" dataType="NUMERIC(1,0)" mandatory="false" comment="CODE_SUSPENDU"/>
+			<field name="nbJours" column="NBJOUR" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="NOMBRE_JOURS"/>
+			<field name="dateSaisie" column="DASAIS" type="DATE" mandatory="false" comment="DATE_SAISIE"/>								
+			<field name="dateTraitement" column="DATRAI" type="DATE" mandatory="false" comment="DATE_TRAITEMENT"/>
+			<field name="anneeTaxation" column="ANNTAX" type="NUMERIC" dataType="NUMERIC(4,0)" mandatory="false" comment="ANNEE_TAXATION"/>
+			<field name="revDetUniqueOuiNon" column="RDUNON" type="BOOLEAN" mandatory="false" comment="REVENU_DETERMINANT_UNIQUE_OUI_NON"/>
+			<field name="revDetUnique" column="REDETU" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="REVENU_DETERMINANT_UNIQUE"/>
+			<field name="typeRevenu" column="CSTYPE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Type de revenu"/>						
+			<field name="typeSource" column="CSTYSO" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Source des données (FISC VS MANUEL)"/>						
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdRevenu" field-ref="idRevenu" operation="EQUALS"/>
+				<search-field name="forIdRevenuHistorique" field-ref="idRevenuHistorique" operation="EQUALS"/>
+				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS"/>
+				<search-field name="forAnneeTaxation" field-ref="anneeTaxation" operation="EQUALS"/>
+				<search-field name="forTypeTaxation" field-ref="typeTaxation" operation="EQUALS"/>
+				<search-field name="inTypeTaxation" field-ref="typeTaxation" operation="IN"/>
+				<search-field name="forTypeSource" field-ref="typeSource" operation="EQUALS"/>
+				<search-field name="inTypeSource" field-ref="typeSource" operation="IN"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="orderByAnneeTaxation">
+			<order-field field-ref="anneeTaxation" order="DESC"/>
+		</order-by>
+		<!-- INDEX CREATION : CREATE INDEX MAREVEN1 on MAREVENU (IDCONT); -->
+		
+	</simple-model>
+</model-mapping>

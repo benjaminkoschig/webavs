@@ -1,0 +1,728 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="menu.xsd">
+
+	<menu id="CO-MenuPrincipal">
+		<label refId="AQUILA_MENU_PRINCIPAL"/>
+		<nodes>
+			<node>
+				<label refId="AQUILA_MENU_DOSSIER"/>
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.poursuite.contentieux.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="AQUILA_MENU_OPERATIONS"/>
+				<nodes>
+					<node>
+						<label refId="AQUILA_MENU_CONTENTIEUX"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.process.processContentieux.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_MENU_JOURNAUX"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.journaux.journalBatch.chercher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node>
+				<label refId="AQUILA_MENU_IRRECOUVRABLES"/>
+				<nodes>
+					<node>
+						<label refId="AQUILA_MENU_DOSSIER_IRRECOUVRABLES"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.irrecouvrables.compteAnnexe.chercher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node>
+				<label refId="AQUILA_MENU_RECOUVREMENT"/>
+				<nodes>
+					<node>
+						<label refId="AQUILA_MENU_DOSSIER_RECOUVREMENT"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.irrecouvrables.recouvrementCompteAnnexe.chercher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label refId="AQUILA_MENU_LISTES"/>
+				<nodes>
+					<node>
+						<label refId="AQUILA_MENU_DOSSIERS_ETAPE"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.print.listDossiersEtape.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_MENU_PAIEMENT"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.paiement.paiement.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_MENU_PAIEMENT_EXCEL"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.print.listPaiementExcel.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_MENU_PLAINTE_EXCEL"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.print.listPlainteExcel.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_MENU_STATISTIQUE"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.print.listStatistiqueExcel.afficher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label refId="AQUILA_MENU_REPRESENTATION"/>
+				<nodes>
+					<node>
+						<label refId="AQUILA_MENU_ADMINISTRATEURS"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.administrateurs.administrateur.chercher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label refId="AQUILA_MENU_PARAMETRES"/>
+				<nodes>
+					<node>
+						<label refId="AQUILA_MENU_CATALOGUES_TEXTES"/>
+						<action command="/babel" responseTarget="fr_main">
+							<parameter name="userAction" value="babel.cat.document.chercher"/>
+							<parameter name="csGroupeDomaines" value="CODOMDOC"/>
+							<parameter name="csGroupeTypesDocuments" value="COETAEP"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_MENU_SEQUENCE_CONTENTIEUX"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.batch.sequence.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_MENU_PARAMETRAGE_TAXES"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.batch.paramTaxes.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_MENU_ETAPES"/>
+						<nodes>
+							<node>
+								<label refId="AQUILA_MENU_ETAPES"/>
+								<action command="/aquila" responseTarget="fr_main">
+									<parameter name="userAction" value="aquila.batch.etape.chercher"/>
+								</action>
+							</node>
+							<node>
+								<label refId="AQUILA_MENU_INFO_ETAPES"/>
+								<action command="/aquila" responseTarget="fr_main">
+									<parameter name="userAction" value="aquila.infos.etapeInfoConfig.chercher"/>
+								</action>
+							</node>
+							<node>
+								<label refId="AQUILA_MENU_DUMP_CONFIG"/>
+								<action command="/aquila" responseTarget="fr_main">
+									<parameter name="userAction" value="aquila.process.processDumpConfigEtapes.afficher"/>
+								</action>
+							</node>
+						</nodes>
+					</node>
+				</nodes>
+			</node>
+		</nodes>
+	</menu>
+	<menu id="CO-OptionsDefaut">
+		<label refId="AQUILA_OPTIONS"/>
+	</menu>
+	<menu id="CO-OptionsIrrecouvrables">
+		<label refId="AQUILA_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="AQUILA_OPTIONS_SECTION"/>
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.irrecouvrables.sections.chercher"/>
+					<parameter name="selectedId"/>
+					<parameter name="idExterneRole"/>
+					<parameter name="description"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<menu id="CO-OptionsPlaintesPenales">
+		<label refId="AQUILA_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="AQUILA_OPTIONS_PLAINTE_PENALE"/>
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.plaintes.plaintePenale.afficher"/>
+					<parameter name="selectedId"/>
+					<parameter name="idCompteAuxiliaire"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<menu id="CO-OptionsARD">
+		<label refId="AQUILA_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="AQUILA_OPTIONS_ARD"/>
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.ard.ARD.afficher"/>
+					<parameter name="selectedId"/>
+					<parameter name="idCompteAnnexe"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<menu id="CO-OptionsDossierContexte">
+		<label refId="AQUILA_OPTIONS_DOSSIER"/>
+		<nodes>
+			<node>
+				<label refId="AQUILA_OPTIONS_DOSSIER"/>
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.poursuite.contentieux.afficher"/>
+					<parameter name="selectedId"/>
+					<parameter name="libSequence"/>
+					<parameter name="idSection"/>
+					<parameter name="refresh"/>
+				</action>
+			</node>
+			<node>
+				<label refId="AQUILA_OPTIONS_HISTORIQUE"/>
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.poursuite.historique.chercher"/>
+					<parameter name="selectedId"/>
+					<parameter name="libSequence"/>
+					<parameter name="idSection"/>
+					<parameter name="refresh"/>
+				</action>
+			</node>
+			<node>
+				<label refId="AQUILA_OPTIONS_ANNULATION"/>
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.suiviprocedure.annulerEtape.afficher"/>
+					<parameter name="selectedId"/>
+					<parameter name="libSequence"/>
+					<parameter name="idSection"/>
+					<parameter name="refresh"/>
+				</action>
+			</node>
+
+			<node id="AQUILA_OPTIONS_ARD">
+				<label refId="AQUILA_OPTIONS_ARD"/>
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.suiviprocedure.detailARD.chercher"/>
+					<parameter name="selectedId"/>
+					<parameter name="libSequence"/>
+					<parameter name="refresh"/>
+					<parameter name="idCompteAuxiliaire"/>
+				</action>
+			</node>
+			<node id="ged">
+		        <label defaultValue="Ged" />
+		        <action command="/naos" responseTarget="_blank">
+		          <parameter name="userAction" value="naos.affiliation.affiliation.gedafficherdossier" />
+		          <parameter name="noAffiliationId"/>
+		          <parameter name="idRole"/>
+		          <parameter name="idContentieux"/>
+		          <parameter name="idSection"/>
+        		</action>
+			</node>
+		</nodes>
+	</menu>
+	<menu id="CO-OptionsDossierMenu">
+		<label refId="AQUILA_OPTIONS"/>
+		<nodes>
+			<node open="yes">
+				<label refId="AQUILA_OPTIONS_DOSSIER"/>
+				<nodes>
+					<node>
+						<label refId="AQUILA_OPTIONS_DOSSIER"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.poursuite.contentieux.afficher"/>
+							<parameter name="selectedId"/>
+							<parameter name="libSequence"/>
+							<parameter name="idSection"/>
+							<parameter name="refresh"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_OPTIONS_HISTORIQUE"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.poursuite.historique.chercher"/>
+							<parameter name="selectedId"/>
+							<parameter name="libSequence"/>
+							<parameter name="idSection"/>
+							<parameter name="refresh"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_OPTIONS_ANNULATION"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.suiviprocedure.annulerEtape.afficher"/>
+							<parameter name="selectedId"/>
+							<parameter name="libSequence"/>
+							<parameter name="idSection"/>
+							<parameter name="refresh"/>
+						</action>
+					</node>
+					<node id="AQUILA_OPTIONS_ARD">
+						<label refId="AQUILA_OPTIONS_ARD"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.suiviprocedure.detailARD.chercher"/>
+							<parameter name="selectedId"/>
+							<parameter name="libSequence"/>
+							<parameter name="refresh"/>
+							<parameter name="idCompteAuxiliaire"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="yes">
+				<label refId="AQUILA_OPTIONS_RACCOURCIS"/>
+				<nodes>
+					<node id="AQUILA_COMPTE">
+						<label refId="AQUILA_COMPTE"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.comptes.apercuComptes.afficher"/>
+							<parameter name="selectedId"/>
+							<parameter name="idContentieuxSrc"/>
+							<parameter name="libSequence"/>
+						</action>
+					</node>
+					<node id="AQUILA_OPTIONS_EXTRAIT_DE_COMPTE">
+						<label refId="AQUILA_OPTIONS_EXTRAIT_DE_COMPTE"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.comptes.apercuCompteResume.chercher"/>
+							<parameter name="id"/>
+							<parameter name="forIdSection"/>
+							<parameter name="idContentieuxSrc"/>
+							<parameter name="libSequence"/>
+						</action>
+					</node>
+					<node id="AQUILA_SECTION">
+						<label refId="AQUILA_SECTION"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.comptes.apercuParSection.afficher"/>
+							<parameter name="id"/>
+							<parameter name="idContentieuxSrc"/>
+							<parameter name="libSequence"/>
+						</action>
+					</node>
+					<node id="AQUILA_TIERS" active="no">
+						<label refId="AQUILA_TIERS"/>
+						<action command="/pyxis" responseTarget="fr_main">
+							<parameter name="userAction" value="pyxis.tiers.tiers.afficher"/>
+							<parameter name="idTiers"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>
+	</menu>
+
+	<menu id="CO-OptionsAdministrateursDossier">
+		<label refId="AQUILA_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="AQUILA_OPTIONS_ADMINISTRATEUR"/>
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.administrateurs.administrateur.afficher"/>
+					<parameter name="selectedId"/>
+					<parameter name="forIdExterneLike"/>
+					<parameter name="nomAffilie"/>
+					<parameter name="numeroAdministrateur"/>
+				</action>
+			</node>
+			<node>
+				<label refId="AQUILA_OPTIONS_PLAINTES_PENALES"/>
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.plaintes.plaintePenale.chercher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="AQUILA_OPTIONS_ARD"/>
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.ard.ARD.chercher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="AQUILA_OPTIONS_COMPTE_ANNEXE"/>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuComptes.afficher"/>
+					<parameter name="id"/>
+					<parameter name="idAdministrateurSrc"/>
+				</action>
+			</node>
+			<node>
+				<label refId="AQUILA_OPTIONS_SECTION"/>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuParSection.chercher"/>
+					<parameter name="selectedId"/>
+					<parameter name="idAdministrateurSrc"/>
+				</action>
+			</node>
+			<node>
+				<label refId="AQUILA_OPTIONS_EXTRAIT_DE_COMPTE"/>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuCompteResume.chercher"/>
+					<parameter name="id"/>
+					<parameter name="_sectionEtat" value="1000"/>
+					<parameter name="_triType" value="1000"/>
+					<parameter name="idAdministrateurSrc"/>
+				</action>
+			</node>
+			<node>
+				<label refId="AQUILA_OPTIONS_IMPR_EXTRAIT_CPT_ANNEXE"/>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.print.listExtraitCompteAnnexe.afficherExtraitCA"/>
+					<parameter name="id"/>
+					<parameter name="idAdministrateurSrc"/>
+				</action>
+			</node>
+			<node>
+				<label refId="AQUILA_OPTIONS_COMPTES_COURANTS"/>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuComptesCourants.chercher"/>
+					<parameter name="id"/>
+					<parameter name="_compteType" value="1000"/>
+					<parameter name="idAdministrateurSrc"/>
+				</action>
+			</node>
+			<node>
+				<label refId="AQUILA_OPTIONS_COMPTEURS"/>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuCompteur.chercher"/>
+					<parameter name="id"/>
+					<parameter name="forSelectionTri" value="1"/>
+					<parameter name="idAdministrateurSrc"/>
+				</action>
+			</node>
+			<node>
+				<label refId="AQUILA_OPTIONS_TRANSFERT_SOLDES"/>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.transfertSoldes.afficherTransfertSoldes"/>
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="AQUILA_OPTIONS_INTERETS_MORATOIRES"/>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.interets.gestionInterets.chercher"/>
+					<parameter name="idCompteAnnexe"/>
+					<parameter name="idAdministrateurSrc"/>
+				</action>
+			</node>
+			<node>
+				<label refId="AQUILA_OPTIONS_HISTORIQUE_COMPTE_ANNEXE"/>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.historiqueCompteAnnexe.chercher"/>
+					<parameter name="idCompteAnnexe"/>
+					<parameter name="idAdministrateurSrc"/>
+				</action>
+			</node>
+			<node>
+				<label refId="AQUILA_TIERS"/>
+				<action command="/pyxis" responseTarget="fr_main">
+					<parameter name="userAction" value="pyxis.tiers.tiers.afficher"/>
+					<parameter name="idTiers"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<menu id="CO-OptionsAdministrateurs">
+		<label refId="AQUILA_OPTIONS"/>
+		<nodes>
+			<node open="yes">
+				<label refId="AQUILA_OPTIONS_DOSSIER"/>
+				<nodes>
+					<node>
+						<label refId="AQUILA_OPTIONS_ADMINISTRATEUR"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.administrateurs.administrateur.afficher"/>
+							<parameter name="selectedId"/>
+							<parameter name="forIdExterneLike"/>
+							<parameter name="nomAffilie"/>
+							<parameter name="numeroAdministrateur"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_OPTIONS_PLAINTES_PENALES"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.plaintes.plaintePenale.chercher"/>
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_OPTIONS_ARD"/>
+						<action command="/aquila" responseTarget="fr_main">
+							<parameter name="userAction" value="aquila.ard.ARD.chercher"/>
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="yes">
+				<label refId="AQUILA_OPTIONS_RACCOURCIS"/>
+				<nodes>
+					<node>
+						<label refId="AQUILA_OPTIONS_COMPTE_ANNEXE"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.comptes.apercuComptes.afficher"/>
+							<parameter name="id"/>
+							<parameter name="idAdministrateurSrc"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_OPTIONS_SECTION"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.comptes.apercuParSection.chercher"/>
+							<parameter name="selectedId"/>
+							<parameter name="idAdministrateurSrc"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_OPTIONS_EXTRAIT_DE_COMPTE"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.comptes.apercuCompteResume.chercher"/>
+							<parameter name="id"/>
+							<parameter name="_sectionEtat" value="1000"/>
+							<parameter name="_triType" value="1000"/>
+							<parameter name="idAdministrateurSrc"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_OPTIONS_IMPR_EXTRAIT_CPT_ANNEXE"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.print.listExtraitCompteAnnexe.afficherExtraitCA"/>
+							<parameter name="id"/>
+							<parameter name="idAdministrateurSrc"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_OPTIONS_COMPTES_COURANTS"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.comptes.apercuComptesCourants.chercher"/>
+							<parameter name="id"/>
+							<parameter name="_compteType" value="1000"/>
+							<parameter name="idAdministrateurSrc"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_OPTIONS_COMPTEURS"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.comptes.apercuCompteur.chercher"/>
+							<parameter name="id"/>
+							<parameter name="forSelectionTri" value="1"/>
+							<parameter name="idAdministrateurSrc"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_OPTIONS_TRANSFERT_SOLDES"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.comptes.transfertSoldes.afficherTransfertSoldes"/>
+							<parameter name="id"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_OPTIONS_INTERETS_MORATOIRES"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.interets.gestionInterets.chercher"/>
+							<parameter name="idCompteAnnexe"/>
+							<parameter name="idAdministrateurSrc"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_OPTIONS_HISTORIQUE_COMPTE_ANNEXE"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.comptes.historiqueCompteAnnexe.chercher"/>
+							<parameter name="idCompteAnnexe"/>
+							<parameter name="idAdministrateurSrc"/>
+						</action>
+					</node>
+					<node>
+						<label refId="AQUILA_TIERS"/>
+						<action command="/pyxis" responseTarget="fr_main">
+							<parameter name="userAction" value="pyxis.tiers.tiers.afficher"/>
+							<parameter name="idTiers"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>
+	</menu>
+
+	<menu id="CO-OptionsEtapes">
+		<label refId="AQUILA_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="AQUILA_OPTIONS_ETAPE"/>
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.batch.etape.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="AQUILA_MENU_INFO_ETAPES"/>
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.infos.etapeInfoConfig.chercher"/>
+					<parameter name="forLibAction"/>
+					<parameter name="forLibSequence"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<menu id="CO-OptionsHistorique">
+		<label refId="AQUILA_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="AQUILA_OPTIONS_DETAIL_HISTORIQUE"/>
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.poursuite.historique.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node id="AFFICHER_JOURNAL">
+				<label refId="AQUILA_OPTIONS_JOURNAL"/>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuJournal.afficher"/>
+					<parameter name="id"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ***************************************** -->
+	<!-- Menu Option elements journal -->
+	<!-- ***************************************** -->
+	<menu id="CO-JournalElements">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Journal" />
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.journaux.journalBatch.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_ELEMENTS" />
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.journaux.elementJournalBatch.chercher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_IMPRIMER" />
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.print.imprimerJournal.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_VALIDER" />
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.process.validerJournal.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_EXECUTER" />
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.process.executerJournal.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_ANNULER" />
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.process.annulerJournal.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ************************** -->
+	<!-- Menu Option only detail    -->
+	<!-- ************************** -->
+	<menu id="CO-OnlyDetail">
+		<label refId="OPTIONS" />
+	</menu>
+
+	<!-- ***************************************** -->
+	<!-- Menu Option elements taxes -->
+	<!-- ***************************************** -->
+	<menu id="CO-ParamTaxe">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="PARAM_TAXE_RECHERCHE" />
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.batch.paramTaxes.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="PARAM_TAXE_DETAIL" />
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.batch.paramTaxes.afficher" />
+					<parameter name="selectedId"/>
+					<parameter name="idTaxe"/>
+					<parameter name="idEtape"/>
+					<parameter name="imputerTaxes"/>
+					<parameter name="idRubrique"/>
+					<parameter name="typeTaxe"/>
+					<parameter name="montantFixe"/>
+					<parameter name="baseTaxe"/>
+					<parameter name="idTraduction"/>
+					<parameter name="typeTaxeEtape"/>
+					<parameter name="Etape"/>
+					<parameter name="Libelle"/>
+					<parameter name="idSequence"/>
+				</action>
+			</node>
+			<node>
+				<label refId="PARAM_TAXE_TRANCHE_TAXE" />
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.batch.trancheTaxe.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="idTaxe"/>
+					<parameter name="typeTaxeEtape"/>
+					<parameter name="Etape"/>
+					<parameter name="Libelle"/>
+				</action>
+			</node>
+			<node>
+				<label refId="PARAM_TAXE_RUBRIQUE" />
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.batch.parametreTaxe.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="idRubrique"/>
+					<parameter name="idTaxe"/>
+					<parameter name="typeTaxeEtape"/>
+					<parameter name="Etape"/>
+					<parameter name="Libelle"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+</menus>

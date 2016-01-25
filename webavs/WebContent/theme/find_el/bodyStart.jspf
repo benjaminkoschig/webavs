@@ -1,0 +1,10 @@
+<title>${idEcran}</title>
+</head>
+<body onLoad="this.focus(); fwInitPage();" onKeyDown="keyDown()" onKeyUp="keyUp();">
+<form name="mainForm" action="${mainPath}" target="fr_list" onsubmit="onClickFind();showWaitingPopup()">
+<table class="find" cellspacing="0">
+	<tbody>
+		<tr>
+			<th class="title" colspan="2">
+				<div style="width: 100%">
+					<span class="idEcran">${idEcran}</span>

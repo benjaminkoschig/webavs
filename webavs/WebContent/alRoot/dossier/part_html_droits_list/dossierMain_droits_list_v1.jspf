@@ -1,0 +1,227 @@
+<%@page import="ch.globaz.al.business.models.droit.CalculBusinessModel"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="java.util.ArrayList" %>
+<%@page import="globaz.jade.client.util.JadeStringUtil"%>
+<script type="text/javascript">
+
+</script>
+			<thead>
+<%if(Integer.parseInt(modeAffichageDroits)>1){ %>
+	<tr><td colspan="12" style="background-color:red;">ANCIENNE VERSION</td></tr>
+<%} %>
+              	<tr>
+                  <th scope="col"></th>
+                  <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_NOM"/></th>
+                  <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_PAYS"/></th>
+                  <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_DATENAISSANCE"/></th>
+                  <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_DATEDEBUT"/></th>
+                  <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_DATEFIN"/></th>
+                  <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_MOTIF"/></th>
+                  <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_TYPE"/></th>
+                  <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_INFO"/></th>
+                  
+                  <%
+                  //Les colonnes de la liste des droits diffèrent dans le cas d'un dossier CS
+                  if(ALCSDossier.STATUT_CS.equals(viewBean.getDossierComplexModel().getDossierModel().getStatut())){ %>
+                 	<th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_CSLOI1"/>&nbsp;<%=(viewBean.getDroitsList().size()>0 && !JadeStringUtil.isEmpty(((CalculBusinessModel)viewBean.getDroitsList().get(0)).getTarif()))?objSession.getCode(((CalculBusinessModel)viewBean.getDroitsList().get(0)).getTarif()):objSession.getCode(viewBean.getAffiliation().getCanton()) %></th>
+                  	<th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_CSLOI2"/>&nbsp;<%=objSession.getCode(viewBean.getDossierComplexModel().getDossierModel().getLoiConjoint()) %></th>
+                  	<th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_CSDIFF"/></th>
+                  	<th scope="col"></th>
+                 
+                  <%}else{%>
+                  	<th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_MONTANT"/></th>
+                  	<th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_TARIF"/></th>
+                  	<th scope="col" ></th>
+                  <%} %>         
+                </tr>
+     </thead>           
+	<tbody>
+
+<%
+   	int nbDroits = viewBean.getDroitsList().size();
+       
+        		for (int i=0; i < nbDroits ; i++) {
+        			
+                	CalculBusinessModel line = (CalculBusinessModel)viewBean.getDroitsList().get(i);
+                	//les droits naissance et accueil sont affichés en dessous du total
+                	if(!ALCSDroit.TYPE_ACCE.equals(line.getType()) && !ALCSDroit.TYPE_NAIS.equals(line.getType())){
+                		
+	                	condition = (lineDisplayCpt % 2 == 0);
+	                	if(!condition)
+	                		rowStyle="odd";
+	                	else
+	                		rowStyle="nonodd";
+	                	
+	                	lineDisplayCpt++;
+	                
+	        		 	//Cas d'un droit normal
+						if(line.getDroit() != null){
+							//On définit le style css du champ fin validité en fonction de l'état d'activité du droit à la date de calcul
+			
+		        		 	String inactiveStyle = line.isActif()?"active":"inactive";
+		      
+		        		 	if(!line.getDroit().getId().equals(previousId)){
+		        		 		montantCalcule = line.getCalculResultMontantBase();
+		        		 	}
+		        		 	
+		        			String actionDetail = detailLink.concat(line.getDroit().getId())+"&montantCalcule="+montantCalcule+"'";
+		        		 	
+		        		 	previousId = line.getDroit().getId();
+		                	%>
+			               	<tr class="<%=rowStyle%><%if(line.isHideDroit()) {%> hideDroitInfos<% } %>" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'highlighted')" onMouseOut="jscss('swap', this, 'highlighted', '<%=rowStyle%>')">
+				                  <td>
+				                  		<span><ct:ifhasright element="al.droit.droit.supprimerDroit" crud="crud">
+				                  		<a title='<ct:FWLabel key="LINK_DEL_DROIT_DESC"/>' class="deleteLink" 
+				                  			href="<%=servletContext + mainServletPath + "?userAction=al.droit.droit.supprimerDroit&id="+line.getDroit().getId()%>"
+				                  			onclick="return confirm('<%=JavascriptEncoder.getInstance().encode(objSession.getLabel("MESSAGE_SUPPRESSION")) %>')"/>
+										<%if(ALCSDroit.TYPE_ENF.equals(line.getDroit().getDroitModel().getTypeDroit())){ %>
+											<a title='<ct:FWLabel key="LINK_TO_FORMATION_DESC"/>' class="formationLink" 
+				                  			href="<%=servletContext + mainServletPath + "?userAction=al.droit.droit.toformation&id="+line.getDroit().getId()%>"/>
+				                  		<%} %>
+				                  		
+				                  		<%if(!viewBean.getDossierComplexModel().isNew()){ 
+					                    	String bonification = JadeNumericUtil.isEmptyOrZero(viewBean.getDossierComplexModel().getDossierModel().getIdTiersBeneficiaire())?ALCSPrestation.BONI_INDIRECT:ALCSPrestation.BONI_DIRECT;
+					                    %>
+					                    	<a class="addLink" href="<%=servletContext + mainServletPath + "?userAction=al.prestation.generationDossier.afficher&_method=add&idDossier="+viewBean.getDossierComplexModel().getDossierModel().getIdDossier()+"&periodicite="+viewBean.getAffiliation().getPeriodicitieAffiliation()+"&bonification="+bonification+"&idDroit="+line.getDroit().getDroitModel().getIdDroit()%>" title='<%=objSession.getLabel("LINK_NEW_PRESTATION_DESC") %>'/>
+					                    <%} %></ct:ifhasright></span></td>
+				         
+				                  <td class="text" onclick="<%=actionDetail%>">
+				                  		<span><%=(line.getDroit().getEnfantComplexModel()!= null)?line.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel().getTiers().getDesignation1()+"&nbsp;":""%>
+				                  		<%=(line.getDroit().getEnfantComplexModel()!= null)?line.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel().getTiers().getDesignation2()+"&nbsp;":""%> </span>
+				                  </td>
+				                  <td onclick="<%=actionDetail%>"><span><%=(line.getDroit().getEnfantComplexModel()!= null)?line.getDroit().getEnfantComplexModel().getPaysModel().getCodeIso():""%></span></td>
+				                  <td onclick="<%=actionDetail%>"><span><%=(line.getDroit().getEnfantComplexModel()!= null)?line.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonne().getDateNaissance():"" %></span></td>
+				                  <td class="<%=inactiveStyle%>" onclick="<%=actionDetail%>"><span><%=line.getDroit().getDroitModel().getDebutDroit()%></span></td>
+				                  <td class="<%=inactiveStyle%>" onclick="<%=actionDetail%>"><span><%=line.getDroit().getDroitModel().getFinDroitForcee()%></span></td>
+				                  <td onclick="<%=actionDetail%>"><span><%=objSession.getCode(line.getDroit().getDroitModel().getMotifFin()) %></span></td>
+				                  <td onclick="<%=actionDetail%>"><span><%=objSession.getCode(line.getType())%></span></td>
+
+				                  <td onclick="<%=actionDetail%>" align="center"><%=(!JadeStringUtil.isEmpty(viewBean.getDroitsListHTMLWarnings(i))) ?"<a href='#' class='warningLink info_bulle'>"+viewBean.getDroitsListHTMLWarnings(i)+"</a>":""%></td>
+				                  <% 
+				                   	//Les colonnes de la liste des droits diffèrent dans le cas d'un dossier CS
+			                  	  	if(ALCSDossier.STATUT_CS.equals(viewBean.getDossierComplexModel().getDossierModel().getStatut())){ %>
+			                  	  	 	<td class="number" onclick="<%=actionDetail%>"><%=line.getMontantAllocataire()==null?" - ":JANumberFormatter.fmt(line.getMontantAllocataire(), true, true, false, 2)%></td>
+				                  		<td class="number" onclick="<%=actionDetail%>"><%=line.getMontantAutreParent()==null?" - ":JANumberFormatter.fmt(line.getMontantAutreParent(), true, true, false, 2)%></td>
+				                  		<td class="number" onclick="<%=actionDetail%>"><%=line.getCalculResultMontantEffectif()==null?" - ":JANumberFormatter.fmt(line.getCalculResultMontantEffectif(), true, true, false, 2)%></td>
+				                  		<td></td>
+			                  	  <%}else{ %>
+				                  		<td class="number" onclick="<%=actionDetail%>"><%=line.getCalculResultMontantEffectif()==null?" - ":JANumberFormatter.fmt(line.getCalculResultMontantEffectif(), true, true, false, 2)%></td>
+				                  		<td onclick="<%=actionDetail%>"><%=objSession.getCode(line.getTarif())%></td>
+				                  		<td></td>
+				                  <%} %>            
+				            </tr>
+						<%
+						}
+							
+	        		 	//Cas d'un supplément calculé automatiquement(droitComplexModel pas défini)
+						else{ %>
+							<tr class="<%=rowStyle%>" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'highlighted')" onMouseOut="jscss('swap', this, 'highlighted', '<%=rowStyle%>')">
+			                  <td></td>
+			                  <td></td>
+			                  <td></td>
+			                  <td></td>
+			                  <td></td>
+			                  <td></td>
+			                  <td></td>
+			                  <td><%=objSession.getCode(line.getType())%></td>
+			                  <td></td>
+			                  <% 
+			                   	//Les colonnes de la liste des droits diffèrent dans le cas d'un dossier CS
+		                  	  	if(ALCSDossier.STATUT_CS.equals(viewBean.getDossierComplexModel().getDossierModel().getStatut())){ %>
+		                  	  	 	<td class="number"><%=line.getCalculResultMontantBase()==null?" - ":JANumberFormatter.fmt(line.getCalculResultMontantBase(), true, true, false, 2)%></td>
+			                  		<td class="number" ><%=line.getMontantAutreParent()==null?" - ":JANumberFormatter.fmt(line.getMontantAutreParent(), true, true, false, 2)%></td>
+			                  		<td class="number" ><%=line.getCalculResultMontantEffectif()==null?" - ":JANumberFormatter.fmt(line.getCalculResultMontantEffectif(), true, true, false, 2)%></td>
+			                  		<td></td>
+		                  	  <%}else{ %>
+			                  		<td class="number"><%=line.getCalculResultMontantEffectif()==null?" - ":JANumberFormatter.fmt(line.getCalculResultMontantEffectif(), true, true, false, 2)%></td>
+			                  		<td></td>
+			                  		<td></td>
+			                  <%} %>            
+			            </tr> <%
+						}
+                	}
+                } 
+        		
+        		condition = (lineDisplayCpt % 2 == 0);
+            	if(!condition)
+            		rowStyle="odd";
+            	else
+            		rowStyle="nonodd";
+            	
+            	lineDisplayCpt++;
+        		//Affichage de la ligne du total
+                %>
+                </tbody>
+                <tfoot>
+                  <tr class="tfoot <%=rowStyle%>">
+                    <td>
+                    	<%if(!viewBean.getDossierComplexModel().isNew()){ %>
+                    		<ct:ifhasright element="al.droit.droit.afficher" crud="c">
+                    			<a class="addLink" href="<%=servletContext + mainServletPath + "?userAction=al.droit.droit.afficher&_method=add&idDossier="+viewBean.getDossierComplexModel().getDossierModel().getIdDossier() %>" title='<%=objSession.getLabel("LINK_NEW_DROIT_DESC") %>'/>
+                    		</ct:ifhasright>
+                    	<%} %>
+                    </td>
+                   
+                    <td <%=ALCSDossier.STATUT_CS.equals(viewBean.getDossierComplexModel().getDossierModel().getStatut())?"colspan='9'":"colspan='7'" %> ></td>	
+                    <td class="<%=viewBean.isCalculError()?"":"total"%>"><%=viewBean.isCalculError()?"<a href='#' class='warningLink info_bulle'><span>"+objSession.getLabel("CALCUL_ERROR_MSG")+"</span></a>":objSession.getLabel("MONTANT_TOTAL") %></td>
+                    <td class="number" id="result_calcul">
+                    		<%=viewBean.getMontantTotal()==null?" - ":JANumberFormatter.fmt(viewBean.getMontantTotal(), true, true, false, 2)%>
+                    		<%=JadeNumericUtil.isNumericPositif(viewBean.getDossierComplexModel().getDossierModel().getMontantForce()) ? "<br /><span class=\"montantForce\">"+viewBean.getDossierComplexModel().getDossierModel().getMontantForce()+"</span>":"" %>
+                    		
+                    </td>
+                    <%if(!ALCSDossier.STATUT_CS.equals(viewBean.getDossierComplexModel().getDossierModel().getStatut())){ %>
+               			<td></td>
+               		<%} %>
+               		<td></td>
+                  </tr>
+                  
+                 <% 
+                 //affichage des éventuelles droits naissance / accueil
+                 for (int i=0; i < nbDroits ; i++) {
+         			
+                 	CalculBusinessModel line = (CalculBusinessModel)viewBean.getDroitsList().get(i);
+                 		
+                 	//les droits naissance et accueil sont affichés en dessous du total
+                 	if((line.getDroit()!= null) && (ALCSDroit.TYPE_ACCE.equals(line.getType()) || ALCSDroit.TYPE_NAIS.equals(line.getType()))){
+                 		
+                 		String inactiveStyle = ALServiceLocator.getDroitBusinessService().isDroitActif(line.getDroit().getDroitModel(),viewBean.getDateCalcul())?"active":"inactive";
+	                 	
+                 		condition = (lineDisplayCpt % 2 == 0);
+	                	if(!condition)
+	                		rowStyle="odd";
+	                	else
+	                		rowStyle="nonodd";
+	                	
+	                	lineDisplayCpt++;
+                	%>	
+                 		<tr class="<%=rowStyle%>">
+				            <td></td>
+				            <td class="text">
+				                  <%=(line.getDroit().getEnfantComplexModel()!= null)?line.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel().getTiers().getDesignation1()+"&nbsp;":""%>
+				                  <%=(line.getDroit().getEnfantComplexModel()!= null)?line.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel().getTiers().getDesignation2()+"&nbsp;":""%> 
+				            </td>
+				            <td><%=(line.getDroit().getEnfantComplexModel()!= null)?line.getDroit().getEnfantComplexModel().getPaysModel().getCodeIso():""%></td>
+				            <td><%=(line.getDroit().getEnfantComplexModel()!= null)?line.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonne().getDateNaissance():"" %></td>
+				            <td class="<%=inactiveStyle%>"><%=line.getDroit().getDroitModel().getDebutDroit()%></td>
+				            <td class="<%=inactiveStyle%>"><%=line.getDroit().getDroitModel().getFinDroitForcee()%></td>
+				            <td><%=objSession.getCode(line.getDroit().getDroitModel().getMotifFin()) %></td>
+				            <td><%=objSession.getCode(line.getType())%></td>
+				            <td></td>
+				            <% 
+				            //Les colonnes de la liste des droits diffèrent dans le cas d'un dossier CS
+			                if(ALCSDossier.STATUT_CS.equals(viewBean.getDossierComplexModel().getDossierModel().getStatut())){ %>
+			                  	<td class="numberTFoot"><%=line.getMontantAllocataire()==null?" - ":line.getMontantAllocataire()%></td>
+				                <td class="numberTFoot"><%=line.getMontantAutreParent()==null?" - ":line.getMontantAutreParent() %></td>
+				                <td class="numberTFoot"><%=line.getCalculResultMontantEffectif()==null?" - ":JANumberFormatter.fmt(line.getCalculResultMontantEffectif(), true, true, false, 2)%></td>
+			                <%}else{ %>
+				                <td class="numberTFoot"><%=line.getCalculResultMontantEffectif()==null?" - ":JANumberFormatter.fmt(line.getCalculResultMontantEffectif(), true, true, false, 2)%></td>
+				                <td><%=objSession.getCode(line.getTarif())%></td>
+				            <%} %>
+				            <td></td>            
+				        </tr>
+                 	<%}
+                 
+                 }
+                 %> 
+                 </foot>

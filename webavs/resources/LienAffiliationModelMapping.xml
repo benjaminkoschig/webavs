@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.naos.business.model.LienAffiliationSimpleModel">
+		
+		<table name="AFLIENP" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="lienAffiliationId" column="MWILIE" comment="lienAffiliationId" />
+			<field name="lienAffiliationId" column="MWILIE" type="NUMERIC"  />
+			<field name="affiliationId" column="MAIAFF" type="NUMERIC"  />
+			<field name="aff_AffiliationId" column="AFA_MAIAFF" type="NUMERIC"  />
+			<field name="typeLien" column="MWTLIE" type="NUMERIC"  />
+			<field name="dateDebut" column="MWDDEB" type="DATE"  />
+			<field name="dateFin" column="MWDFIN" type="DATE"  />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forChildAffiliationId" field-ref="affiliationId" operation="EQUALS" />
+				<search-field name="forParentAffiliationId" field-ref="aff_AffiliationId" operation="EQUALS" />
+				
+				<search-field name="forTypeLien" field-ref="typeLien" operation="EQUALS" />
+				<search-group operator="AND">
+					<search-field  field-ref="dateDebut" operation="LESS_OR_EQUALS" name="forDateLien"/>
+					<search-group operator="OR">
+						<search-field  field-ref="dateFin" operation="GREATER_OR_EQUALS" name="forDateLien" />
+						<search-field  field-ref="dateFin" operation="NULL"  name="forDateLien"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

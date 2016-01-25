@@ -1,0 +1,187 @@
+<!-- #dialog is the id of a DIV defined in the code below -->
+<div id="boxes">
+    <!-- #customize your modal window here -->
+    <div id="dialog" class="window">
+    <div id="conteneurRevenus">
+		<table class="tdSubsides" width="100%">
+			<tr >
+				<th>&nbsp;</th>
+				<th style='font-family:"Consolas";font-size:16px' colspan="2"><b>CREATION DE DOCUMENT AMAL</b></td>
+		        <!-- close button is defined as close class -->
+				<th>
+					<a href="#" class="close">
+						<img id="imageClose"
+						src="<%=request.getContextPath()%>/images/amal/fileclose.png" 
+						title="Fermer la fenêtre" 
+						border="0"
+						width="18px"
+						height="18px"
+						>
+					</a>
+				</th>
+			</tr>
+			<tr class="zoneTiers" ><td colspan="4">&nbsp;</td></tr>
+			<tr class="zoneTiers" >
+				<td>&nbsp;</td>
+				<td>Numéro du modèle : </td>
+				<td align="right">
+					<input id="noModele" type="text" onKeyUp="combo_request(this.value)"/>
+				</td>
+				<td></td>
+			</tr>
+			<tr class="zoneTiers" >
+				<td></td>
+				<td colspan="2" align="right">
+				
+					<select style='font-family:"Consolas";font-size:16px;' id="listeModele" onclick="vignette_request(this.value)">
+						<%
+						// Recherche des documents introduits dans le système
+						String csFirstDocumentCodeSystem = "";
+						String csFirstDocumentLibelleShort = "";
+						int iIndexSelected = 0;
+						for (int iModel = 0; iModel < viewBean.getParametreModelComplexSearch().getSize(); iModel++) {
+							ParametreModelComplex currentModel = (ParametreModelComplex) viewBean.getParametreModelComplexSearch().getSearchResults()[iModel];
+							if(currentModel.getSimpleParametreModel().getDocumentAvecListe()){
+								continue;
+							}
+							String documentCodeSysteme = currentModel.getFormuleList().getDefinitionformule().getCsDocument();
+							// Recherche dans les codes systèmes
+							for (Iterator it = viewBean.getListeDocuments().iterator(); it.hasNext();) {
+								FWParametersCode code = (FWParametersCode) it.next();
+								// Code système
+								String codeSysteme = code.getId();
+								if (documentCodeSysteme.equals(codeSysteme)) {
+									// -------------------------------------------------
+									// Information des codes systèmes
+									// -------------------------------------------------
+									// CU
+									String codeUtilisateur = code.getCodeUtilisateur(objSession.getIdLangue())
+											.getCodeUtilisateur();
+									// Libelle Short
+									String codeLibelleShort = code.getLibelle().trim();
+									if(iIndexSelected==0){
+										csFirstDocumentLibelleShort = codeLibelleShort;
+										csFirstDocumentCodeSystem = codeSysteme;
+									}
+									// Libelle Long
+									String codeLibelle = code.getCodeUtilisateur(objSession.getIdLangue()).getLibelle().trim();
+									// -------------------------------------------------
+									// Information des paramètres de documents
+									// -------------------------------------------------
+									String directBatch = currentModel.getFormuleList().getDefinitionformule().getCsManuAuto();
+									String traitementDossier = currentModel.getSimpleParametreModel().getCodeTraitementDossier();
+									
+									// -------------------------------------------------
+									// Formattage de la liste à afficher
+									// -------------------------------------------------
+									// 1) no du document sur 6 digits
+									String workCodeUtilisateur = codeUtilisateur;
+									int iCompteur = 6-workCodeUtilisateur.length();
+									for(int iChar=0; iChar<iCompteur;iChar++){
+										workCodeUtilisateur="&nbsp;"+workCodeUtilisateur;
+									}
+									// 2) code du document sur 10 lettres
+									String workCodeLibelleShort = codeLibelleShort;
+									iCompteur=10-workCodeLibelleShort.length();
+									for(int iChar=0; iChar<iCompteur;iChar++){
+										workCodeLibelleShort="&nbsp;"+workCodeLibelleShort;
+									}
+									for(int iChar = 0; iChar < 4; iChar++){
+										workCodeLibelleShort+="&nbsp;";
+									}
+									// 3) Libellé du document complet sur 50 lettres
+									String workCodeLibelle = codeLibelle;
+									iCompteur = 54 - workCodeLibelle.length();
+									for(int iChar = 0;iChar<iCompteur;iChar++){
+										workCodeLibelle += "&nbsp";
+									}
+									// 4) * indiquant les documents interactifs
+									String workIsDirect = "";
+									if (currentModel.getFormuleList().getDefinitionformule().getCsManuAuto().equals("42001100")) {
+										workIsDirect ="*";
+									}else{
+										workIsDirect = "&nbsp;";
+									}
+									String documentListeLibelle = workCodeUtilisateur+workCodeLibelleShort+workCodeLibelle+workIsDirect;
+									iIndexSelected++;
+									%>
+									<option style='background-color:black;color:lime'<%=(iIndexSelected==0?"selected=\"selected\"":"")%> value='<%=codeLibelleShort+","+codeSysteme+","+codeUtilisateur+","+directBatch+","+traitementDossier%>'><%=documentListeLibelle %></option>
+									<% // End for
+									break;
+								}
+							}
+						}
+						%>
+					</select>
+				</td>
+				<td></td>
+			</tr>
+			<tr class="zoneTiers" >
+				<td colspan="4" >&nbsp;</td>
+			</tr>
+			<tr class="zoneTiers" id="previewLigne">
+				<td></td>
+				<td style="width:200px"></td>
+				<td id="previewColonne">
+					<div>
+						<img id="modeleSpecimen" class="<%=csFirstDocumentCodeSystem %>"
+							src="<%=request.getContextPath()%>/images/amal/<%=csFirstDocumentLibelleShort%>preview.png" 
+							width="372px"
+							height="526px"
+							border="1 px solid black"
+							onmouseover="ShowMagnifier(this);"
+							>
+							<script type="text/javascript">
+							docMagnifier="<%=csFirstDocumentLibelleShort%>";
+							docMagnifierPath="<%=request.getContextPath()%>/images/amal/";
+							</script>
+					</div>
+				</td>
+				<td></td>
+			</tr>
+			<tr class="zoneTiers" ><td colspan="4">&nbsp;</td></tr>
+			<tr class="zoneTiers" >
+				<td></td>
+				<td colspan="2" align="center">
+					<input class="btnCtrl" id="btnGenerateDocument" onclick="onClickGenerateDocument()" type="button" value="Générer le document">
+				</td>
+				<td></td>
+			</tr>
+			<tr class="zoneTiers" ><td colspan="4">&nbsp;</td></tr>
+		</table>
+	</div>
+    </div>
+ 
+     
+    <!-- Do not remove div#mask, because you'll need it to fill the whole screen --> 
+    <div id="mask"></div>
+</div>
+
+
+<style>
+ 
+/* Z-index of #mask must lower than #boxes .window */
+#mask {
+  position:absolute;
+  z-index:9000;
+  background-color:#000;
+  display:none;
+}
+   
+#boxes .window {
+  position:absolute;
+  width:400px;
+  height:200px;
+  display:none;
+  z-index:9999;
+}
+ 
+ 
+/* Customize your modal window here, you can add background image too */
+#boxes #dialog {
+  width:400px; 
+  height:200px;
+  background-color:#D7E4FF;
+}
+</style>
+

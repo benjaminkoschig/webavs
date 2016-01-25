@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.calcul.CalculPlageInitial">
+	
+		<root-model name="simpleDonneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader" select-fields="false"/>
+		
+		<linked-model name="simpleRenteAvsAi" model-ref="ch.globaz.pegasus.business.models.renteijapi.SimpleRenteAvsAi" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>		
+		</linked-model>		
+		
+		<linked-model name="simpleIJAI" model-ref="ch.globaz.pegasus.business.models.renteijapi.SimpleIndemniteJournaliereAi" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>		
+		</linked-model>		
+		
+		<linked-model name="simpleAPIAVSAI" model-ref="ch.globaz.pegasus.business.models.renteijapi.SimpleAllocationImpotent" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>		
+		</linked-model>		
+		
+		<select-fields>
+			<select-field name="idDonneeFinanciereHeader" 	field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			<select-field name="idVersionDroit" 			field-ref="simpleDonneeFinanciereHeader.idVersionDroit"/>
+			<select-field name="dateDebut" 					field-ref="simpleDonneeFinanciereHeader.dateDebut"/>
+			<select-field name="csTypeDonneeFinanciere" 	field-ref="simpleDonneeFinanciereHeader.csTypeDonneeFinanciere"/>
+			<select-field name="dateDepotAvsAi" 			field-ref="simpleRenteAvsAi.dateDepot"/>
+			<select-field name="dateDepotIjAi" 				field-ref="simpleIJAI.dateDepot"/>
+			<select-field name="dateDepotApiAvsAi" 			field-ref="simpleAPIAVSAI.dateDepot"/>
+			<select-field name="dateDecisionAvsAi"			field-ref="simpleRenteAvsAi.dateDecision"/>
+			<select-field name="dateDecisionApiAvsAi"		field-ref="simpleAPIAVSAI.dateDecision"/>
+			<select-field name="dateDecisionIjAi"			field-ref="simpleIJAI.dateDecision"/>
+		</select-fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+			<search-field name="forIsSupprime" field-ref="simpleDonneeFinanciereHeader.isSupprime" operation="EQUALS" value="2"/>
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idVersionDroit" />
+				<search-group operator="OR">				
+					<search-field name="forCsTypeDonneeFinanciere0" field-ref="simpleDonneeFinanciereHeader.csTypeDonneeFinanciere" operation="EQUALS" value="64007001"/>
+					<search-field name="forCsTypeDonneeFinanciere1" field-ref="simpleDonneeFinanciereHeader.csTypeDonneeFinanciere" operation="EQUALS" value="64007002"/>
+					<search-field name="forCsTypeDonneeFinanciere2" field-ref="simpleDonneeFinanciereHeader.csTypeDonneeFinanciere" operation="EQUALS" value="64007003"/>
+				</search-group>
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="donneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+					<![CDATA[ 
+						#{simpleDonneeFinanciereHeader.isSupprime} = 2 AND
+						#{simpleDonneeFinanciereHeader.idVersionDroit} =
+							(
+								select MAX( #{versionDroit.idVersionDroit} ) from @{versionDroit} 
+									inner join  @{donneeFinanciereHeader} on ( #{versionDroit.idVersionDroit} = #{donneeFinanciereHeader.idVersionDroit} )
+									where #{simpleDonneeFinanciereHeader.idEntity} = #{donneeFinanciereHeader.idEntity}
+							)
+					 ]]>
+				</search-literal>				
+			</search-group>
+		</search-definition>		
+		
+		<order-by>
+			<order-field field-ref="simpleDonneeFinanciereHeader.dateDebut" />
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

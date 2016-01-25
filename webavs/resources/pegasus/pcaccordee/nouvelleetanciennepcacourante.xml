@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.pcaccordee.NouvelleEtAnciennePcaCourante">
+	
+		<root-model name="nouvellePca" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" select-fields="true" />
+		
+		<select-fields>
+			<select-field name="idDroit" field-ref="simpleVersionDroitNew.idDroit" />
+		</select-fields>
+		
+		<linked-model name="nouveauPlanDeCalcul" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul" join-type="INNER" select-fields="true">
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="nouvellePca.idPCAccordee"/>
+				<join-field name="isPlanRetenu" operation="EQUALS" value="TRUE"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="nouvellePrestationsAccordees" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="nouvellePca.idPrestationAccordee"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="nouvellePrestationsAccordeesConjoint" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="nouvellePca.idPrestationAccordeeConjoint"/>
+				<join-field field-ref="nouvellePca.idPrestationAccordeeConjoint" operation="NOT_NULL"/>
+			</join-group>
+		</linked-model>
+			
+	    <linked-model name="simpleVersionDroitNew" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER" select-fields="false" >
+			<join-group operator="OR">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="nouvellePca.idVersionDroit"/>
+			</join-group>		
+		</linked-model>
+
+		<linked-model name="simpleVersionDroitOld" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER" select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleVersionDroitNew.idDroit"/>
+			</join-group>		
+		</linked-model>
+		
+	    <linked-model name="anciennePca" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" join-type="INNER" select-fields="true" >
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simpleVersionDroitOld.idVersionDroit"/>
+				<join-field name="csRoleBeneficiaire" operation="EQUALS" field-ref="nouvellePca.csRoleBeneficiaire"/>
+			</join-group>		
+		</linked-model>
+	    
+	    <linked-model name="ancienPlanDeCalcul" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul" join-type="INNER" select-fields="true" >
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="anciennePca.idPCAccordee"/>
+				<join-field name="isPlanRetenu" operation="EQUALS" value="TRUE"/>
+			</join-group>		
+		</linked-model>
+		
+		<search-definition name="forOldCurent">
+			<search-group operator="AND">
+				<search-field name="forDateFinPca" operation="NULL"  field-ref="anciennePca.dateFin" />
+			    <search-field name="inIdsVersionDroit" operation="IN"  field-ref="simpleVersionDroitNew.idVersionDroit" />
+				<search-field name="forDateFinPca" operation="NULL" field-ref="anciennePca.idPcaParent"/>
+				<search-field name="forDateFinPca" operation="NULL" field-ref="nouvellePca.idPcaParent"/>
+				
+				<search-literal>
+					<declare-model name="versionDroitMax" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="pcaPrecedanteMax" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee"/>
+					<![CDATA[ 
+						#{anciennePca.isSupprime} = 2 and
+						#{simpleVersionDroitOld.noVersion} = (select max(#{versionDroitMax.noVersion})
+															 from @{versionDroitMax} 
+														    inner join @{pcaPrecedanteMax} 
+															   on (#{versionDroitMax.idVersionDroit} = #{pcaPrecedanteMax.idVersionDroit}) 
+														    where #{versionDroitMax.idDroit} = #{simpleVersionDroitNew.idDroit}
+														      and #{versionDroitMax.noVersion} < #{simpleVersionDroitNew.noVersion} 
+															  and (#{pcaPrecedanteMax.dateFin} = 0  or #{pcaPrecedanteMax.dateFin} is null
+															  	or #{pcaPrecedanteMax.isDateFinForce} = 1
+															  )
+															  and #{pcaPrecedanteMax.isSupprime} = 2  
+															  
+											  )
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

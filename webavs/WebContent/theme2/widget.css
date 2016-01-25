@@ -1,0 +1,42 @@
+.widget {
+	z-index: 10000;
+	position:absolute;
+	border:1px solid black;
+	background-color:white;
+}
+
+.widget .widgetSuggestion {
+	cursor: pointer;
+}
+
+.widget .widgetSuggestionHOVER {
+	background-color: blue;
+	color:white;
+}
+
+.widget .widgetCount {
+	color:green; 
+	font: bold 8pt Arial;
+	margin-top:3px;
+}
+
+.widgetHint {
+	z-index: 10000;
+	background-color:#ffffe1 !important;
+	border:1px solid black !important;
+	position:absolute;
+	padding:2px;
+}
+
+.jadeAutocompleteAjax, .widget{
+	border-left: 6px solid #356AA0 !important; 
+	border-bottom : solid 1px #356AA0 !important;
+	border-right : solid 1px #356AA0 !important;
+	border-top : solid 1px #356AA0 !important;
+	width : 210px;
+}
+.widget ul{
+	list-style-type : none;
+	margin : 0;
+	padding : 0;
+}

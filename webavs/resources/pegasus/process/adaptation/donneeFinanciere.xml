@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.process.adaptation.DonneeFinanciere">
+		<root-model name="simpleDroitMembreFamille" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille" select-fields="false" />
+		<select-fields>
+			<select-field name="idMembreFamille" field-ref="simpleDroitMembreFamille.idDroitMembreFamille"/>
+			<select-field name="csRole" field-ref="simpleDroitMembreFamille.csRoleFamillePC"/>
+			<select-field name="csTypeDonneeFinanciere" field-ref="simpleDonneeFinanciereHeader.csTypeDonneeFinanciere"/>
+			<select-field name="renteAVSAIMontant" field-ref="simpleRenteAVSAI.montant"/>
+			<select-field name="renteAVSAICsType" field-ref="simpleRenteAVSAI.csTypeRente"/>
+			<select-field name="renteAVSAICsTypeSansRente" field-ref="simpleRenteAVSAI.csTypePc"/>
+			<select-field name="dessaisissementFortuneMontant" field-ref="simpleDessaisissementFortune.montantBrut"/>
+			<select-field name="dessaisissementFortuneDeductions" field-ref="simpleDessaisissementFortune.deductionMontantDessaisi"/>
+			<select-field name="taxeJournaliereIdTypeChambre" field-ref="simpleTaxeJournaliereHome.idTypeChambre"/>
+			<select-field name="prixChambreJournalier" field-ref="simplePrixChambre.prixJournalier"/>
+			<select-field name="isParticipationLCA" field-ref="simpleTaxeJournaliereHome.isParticipationLCA"/>
+			<select-field name="montantJournalierLCA" field-ref="simpleTaxeJournaliereHome.montantJournalierLCA"/>
+		</select-fields>
+		
+		<linked-model name="simpleDonneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDroitMembreFamille" operation="EQUALS" field-ref="simpleDroitMembreFamille.idDroitMembreFamille"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleDessaisissementFortune" model-ref="ch.globaz.pegasus.business.models.dessaisissement.SimpleDessaisissementFortune" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleRenteAVSAI" model-ref="ch.globaz.pegasus.business.models.renteijapi.SimpleRenteAvsAi" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleTaxeJournaliereHome" model-ref="ch.globaz.pegasus.business.models.habitat.SimpleTaxeJournaliereHome" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleTypeChambre" model-ref="ch.globaz.pegasus.business.models.home.SimpleTypeChambre" join-type="LEFT_OUTER" select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="idTypeChambre" operation="EQUALS" field-ref="simpleTaxeJournaliereHome.idTypeChambre"/>
+			</join-group>
+		</linked-model>
+				
+		<linked-model name="simplePrixChambre" model-ref="ch.globaz.pegasus.business.models.home.SimplePrixChambre" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTypeChambre" operation="EQUALS" field-ref="simpleTypeChambre.idTypeChambre"/>
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+			
+				<search-field name="forIdMembreFamilleSFIn" operation="IN" field-ref="simpleDonneeFinanciereHeader.csTypeDonneeFinanciere"  value="64007001, 64007029, 64007008"/>
+				<search-field name="forIdMembreFamilleSFIn" operation="IN" field-ref="simpleDroitMembreFamille.idMembreFamilleSF" />
+		
+				<search-field name="forIsSupprime" field-ref="simpleDonneeFinanciereHeader.isSupprime" operation="EQUALS" value="2"/>
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleDroitMembreFamille.idDroit" /> 
+			
+				<search-group operator="AND">
+					<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+						<search-field name="forDateValable" operation="NULL" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+					</search-group>
+				</search-group>
+			
+				<search-group operator="OR">
+					<search-group operator="AND">
+					 	<search-field name="forDateValable" operation="NOT_NULL" field-ref="simpleTaxeJournaliereHome.idTaxeJournaliereHome"/>
+						<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="simplePrixChambre.dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="simplePrixChambre.dateFin"/>
+							<search-field name="forDateValable" operation="NULL" field-ref="simplePrixChambre.dateFin"/>
+						</search-group>
+					</search-group>
+					<search-field name="forDateValable" operation="NULL" field-ref="simpleTaxeJournaliereHome.idTaxeJournaliereHome"/>
+				</search-group>
+				
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="donneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+					<![CDATA[ 
+						#{simpleDonneeFinanciereHeader.idVersionDroit} =
+							(
+								select MAX( #{versionDroit.idVersionDroit} ) from @{versionDroit} 
+									inner join  @{donneeFinanciereHeader} 
+									   on (#{versionDroit.idVersionDroit} = #{donneeFinanciereHeader.idVersionDroit} )
+									where #{simpleDonneeFinanciereHeader.idEntity} = #{donneeFinanciereHeader.idEntity}
+									  and #{versionDroit.noVersion} < ${forNoVersion:versionDroit.noVersion}
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>		
+		
+	</complexe-model>
+</model-mapping>

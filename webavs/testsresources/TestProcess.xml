@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<!-- Fichier de définition des URL pour accéder aux services REE -->
+<beans>
+	<bean id="Test.process1"
+		class="ch.globaz.jade.process.business.conf.JadeProcessDefinitionBean">
+		<property name="classNamePopulation" value="ch.globaz.jade.process.PopulationTest" />
+		<property name="description">
+			<map>
+				<entry key="FR" value="Desc Fr" />
+				<entry key="DE" value="Desc de" />
+				<entry key="IT" value="Desc it" />
+			</map>
+		</property>
+		<property name="steps">
+			<map>
+				<entry key="1"> 
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameCosumer" value="ch.globaz.jade.process.ConsumerTest" />
+						<property name="classNameProvider" value="ch.globaz.jade.process.ProviderTest" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Desc Fr" />
+								<entry key="DE" value="Desc de" />
+								<entry key="IT" value="Desc it" />
+							</map>
+						</property>  
+					</bean>
+				</entry>
+				<entry key="2">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameCosumer" value="ch.globaz.jade.process.ConsumerTest" />
+						<property name="classNameProvider" value="ch.globaz.jade.process.ProviderTest" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Desc Fr" />
+								<entry key="DE" value="Desc de" />
+								<entry key="IT" value="Desc it" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+</beans>

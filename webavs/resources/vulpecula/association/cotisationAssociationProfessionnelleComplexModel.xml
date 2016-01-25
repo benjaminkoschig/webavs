@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.association.CotisationAssociationProfessionnelleComplexModel">
+
+		<root-model name="cotisationAssociationProfessionnelleSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.association.CotisationAssociationProfessionnelleSimpleModel" />
+
+		<linked-model name="administrationComplexModel"
+			model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS"
+					field-ref="cotisationAssociationProfessionnelleSimpleModel.idAssociationProfessionnelle" />
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="cotisationAssociationProfessionnelleSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forLibelleLike" field-ref="cotisationAssociationProfessionnelleSimpleModel.libelle"
+					operation="LIKE" />	
+				<search-field name="forLibelleUpperLike" field-ref="cotisationAssociationProfessionnelleSimpleModel.libelleUpper"
+					operation="LIKE" />		
+				<search-group operator="AND">
+					<search-group operator="OR">	
+						<search-field name="forAssociationUpper1Like" field-ref="administrationComplexModel.tiers.designationUpper1"
+							operation="LIKE" />
+						<search-field name="forAssociationUpper2Like" field-ref="administrationComplexModel.tiers.designationUpper2"
+							operation="LIKE" />
+					</search-group>	
+				</search-group>
+				<search-field name="forCodeLike" field-ref="administrationComplexModel.admin.codeAdministration" operation="LIKE" />
+				<search-field name="forGenre" field-ref="cotisationAssociationProfessionnelleSimpleModel.genre" operation="EQUALS" />
+				<search-field name="forGenreNot" field-ref="cotisationAssociationProfessionnelleSimpleModel.genre" operation="NOT_EQUALS" />
+				<search-field name="forIdAssociation" field-ref="administrationComplexModel.admin.idTiersAdministration" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

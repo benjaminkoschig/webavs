@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.congepaye.CongePayeSimpleModel">
+		<table name="PT_CONGES_PAYES" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="Id du congé payé" />				
+			<field name="idPosteTravail" column="ID_PT_POSTES_TRAVAILS" type="NUMERIC"
+				comment="id posteTravail" />
+			<field name="idPassageFacturation" column="ID_FAPASSP" type="NUMERIC"
+				comment="id du passage facturation" />			
+			<field name="etat" column="CS_ETAT" type="NUMERIC"
+				comment="état du congé payé" />
+			<field name="anneeDebut" column="ANNEE_DEBUT" type="NUMERIC"
+				comment="année de début du congé payé" />
+			<field name="anneeFin" column="ANNEE_FIN" type="NUMERIC"
+				comment="année de fin du congé payé" />
+			<field name="salaireNonDeclare" column="SALAIRE_NON_DECLARE" type="NUMERIC"
+				comment="salaire non déclaré" />
+			<field name="dateSalaireNonDeclare" column="DATE_SALAIRE_NON_DECLARE" type="DATE"
+				comment="date du salaire non déclaré" />
+			<field name="tauxCP" column="TAUX_CP" type="NUMERIC"
+				comment="taux congé payé" />
+			<field name="beneficiaire" column="CS_BENEFICIAIRE" type="NUMERIC"
+				comment="bénéficiaire de l'absence justifiée" />
+			<field name="totalSalaire" column="TOTAL_SALAIRE" type="NUMERIC"
+				comment="salaire déclaré plus salaire non déclaré" />
+			<field name="salaireDeclare" column="SALAIRE_DECLARE" type="NUMERIC"
+				comment="salaire déclaré" />
+			<field name="montantNet" column="MONTANT_NET" type="NUMERIC"
+				comment="montant net" />	
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forIdPosteTravail" field-ref="idPosteTravail" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="id" />
+		</order-by>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+	</simple-model>
+</model-mapping>

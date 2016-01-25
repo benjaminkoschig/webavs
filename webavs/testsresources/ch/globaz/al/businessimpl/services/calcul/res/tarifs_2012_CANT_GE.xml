@@ -1,0 +1,94 @@
+<tarifs xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="tarifsTests.xsd">
+	<periode date="01.01.2012">
+		<legislation cs="CANTONAL">
+			<categorie cs="GE">
+				<!-- ENF, CH, capable exercer -->
+				<test testId="4.1.1.1" type="ENF" capableExercer="true" montant="300" age="16" rng="1" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="4.1.1.2" type="ENF" capableExercer="false" montant="300" age="16" rng="1" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="4.1.1.3" type="ENF" capableExercer="true" montant="0" age="20" rng="1" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="4.1.1.4" type="ENF" capableExercer="false" montant="400" age="20" rng="1" residence="CH"/>
+				<!-- ENF, CH, capable exercer -->
+				<test testId="4.1.1.5" type="ENF" capableExercer="true" montant="400" age="16" rng="3" residence="CH"/>
+				<!-- ENF, CH, incapable d'exercer -->
+				<test testId="4.1.1.6" type="ENF" capableExercer="false" montant="400" age="16" rng="3" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, capable exercer -->
+				<test testId="4.1.1.7" type="ENF" capableExercer="true" montant="0" age="20" rng="3" residence="CH"/>
+				<!-- ENF, CH, plus de 16 ans, incapable d'exercer -->
+				<test testId="4.1.1.8" type="ENF" capableExercer="false" montant="500" age="20" rng="3" residence="CH"/>
+				
+				<!-- FORM, CH, capable exercer -->
+				<test testId="4.1.1.9" type="FORM" capableExercer="true" montant="400" age="17" rng="1" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="4.1.1.10" type="FORM" capableExercer="false" montant="0" age="17" rng="1" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="4.1.1.11" type="FORM" capableExercer="true" montant="0" age="26" rng="1" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="4.1.1.12" type="FORM" capableExercer="false" montant="0" age="26" rng="1" residence="CH"/>
+				<!-- FORM, CH, capable exercer -->
+				<test testId="4.1.1.13" type="FORM" capableExercer="true" montant="500" age="17" rng="3" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer -->
+				<test testId="4.1.1.14" type="FORM" capableExercer="false" montant="0" age="17" rng="3" residence="CH"/>
+				<!-- FORM, CH, capable exercer, plus de 25 ans -->
+				<test testId="4.1.1.15" type="FORM" capableExercer="true" montant="0" age="26" rng="3" residence="CH"/>
+				<!-- FORM, CH, incapable d'exercer, plus de 25 ans -->
+				<test testId="4.1.1.16" type="FORM" capableExercer="false" montant="0" age="26" rng="3" residence="CH"/>
+				
+				<!-- NAIS, CH-->
+				<test testId="4.1.1.17" type="NAIS" montant="2000" rng="1" residence="CH"/>
+				<!-- NAIS, CH-->
+				<test testId="4.1.1.18" type="NAIS" montant="3000" rng="3" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="4.1.1.19" type="ACCE" montant="2000" rng="1" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="4.1.1.20" type="ACCE" montant="3000" rng="3" residence="CH"/>
+				
+				
+				<!-- ENF, ETR, capable exercer -->
+				<test testId="4.1.1.21" type="ENF" capableExercer="true" montant="300" age="16" rng="1" residence="ETR"/>
+				<!-- ENF, ETR, incapable d'exercer -->
+				<test testId="4.1.1.22" type="ENF" capableExercer="false" montant="300" age="16" rng="1" residence="ETR"/>
+				<!-- ENF, ETR, plus de 16 ans, capable exercer -->
+				<test testId="4.1.1.23" type="ENF" capableExercer="true" montant="0" age="20" rng="1" residence="ETR"/>
+				<!-- ENF, ETR, plus de 16 ans, incapable d'exercer -->
+				<test testId="4.1.1.24" type="ENF" capableExercer="false" montant="400" age="20" rng="1" residence="ETR"/>
+				<!-- ENF, ETR, capable exercer -->
+				<test testId="4.1.1.25" type="ENF" capableExercer="true" montant="400" age="16" rng="3" residence="ETR"/>
+				<!-- ENF, ETR, incapable d'exercer -->
+				<test testId="4.1.1.26" type="ENF" capableExercer="false" montant="400" age="16" rng="3" residence="ETR"/>
+				<!-- ENF, ETR, plus de 16 ans, capable exercer -->
+				<test testId="4.1.1.27" type="ENF" capableExercer="true" montant="0" age="20" rng="3" residence="ETR"/>
+				<!-- ENF, ETR, plus de 16 ans, incapable d'exercer -->
+				<test testId="4.1.1.28" type="ENF" capableExercer="false" montant="500" age="20" rng="3" residence="ETR"/>
+				
+				<!-- FORM, ETR, capable exercer -->
+				<test testId="4.1.1.29" type="FORM" capableExercer="true" montant="400" age="17" rng="1" residence="ETR"/>
+				<!-- FORM, ETR, incapable d'exercer -->
+				<test testId="4.1.1.30" type="FORM" capableExercer="false" montant="0" age="17" rng="1" residence="ETR"/>
+				<!-- FORM, ETR, capable exercer, plus de 25 ans -->
+				<test testId="4.1.1.31" type="FORM" capableExercer="true" montant="0" age="26" rng="1" residence="ETR"/>
+				<!-- FORM, ETR, incapable d'exercer, plus de 25 ans -->
+				<test testId="4.1.1.32" type="FORM" capableExercer="false" montant="0" age="26" rng="1" residence="ETR"/>
+				<!-- FORM, ETR, capable exercer -->
+				<test testId="4.1.1.33" type="FORM" capableExercer="true" montant="500" age="17" rng="3" residence="ETR"/>
+				<!-- FORM, ETR, incapable d'exercer -->
+				<test testId="4.1.1.34" type="FORM" capableExercer="false" montant="0" age="17" rng="3" residence="ETR"/>
+				<!-- FORM, ETR, capable exercer, plus de 25 ans -->
+				<test testId="4.1.1.35" type="FORM" capableExercer="true" montant="0" age="26" rng="3" residence="ETR"/>
+				<!-- FORM, ETR, incapable d'exercer, plus de 25 ans -->
+				<test testId="4.1.1.36" type="FORM" capableExercer="false" montant="0" age="26" rng="3" residence="ETR"/>
+				
+				<!-- NAIS, ETR-->
+				<test testId="4.1.1.37" type="NAIS" montant="0" rng="1" residence="ETR"/>
+				<!-- NAIS, ETR-->
+				<test testId="4.1.1.38" type="NAIS" montant="0" rng="3" residence="ETR"/>
+				<!-- ACCE, ETR-->
+				<test testId="4.1.1.39" type="ACCE" montant="0" rng="1" residence="ETR"/>
+				<!-- ACCE, ETR-->
+				<test testId="4.1.1.40" type="ACCE" montant="0" rng="3" residence="ETR"/>
+			</categorie>
+		</legislation>
+	</periode>
+</tarifs>

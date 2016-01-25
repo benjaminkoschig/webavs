@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.lyra.business.models.echeance.LYSimpleEcheance">
+		<description>
+			Une liste d'échéances
+		</description>
+		<table	name="LYECHEAN" 
+				hasSpy="true" 
+				hasCreationSpy="false" 
+				alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key	name="idEcheance" 
+							column="WMIECH" 
+							mandatory="true"
+							type="NUMERIC" 
+							dataType="NUMERIC(15,0)" 
+							comment="Identifiant" />
+			<field	name="csDomaineApplicatif" 
+					column="WMTDAP" 
+					mandatory="false"
+					type="NUMERIC" 
+					dataType="NUMERIC(8,0)" 
+					comment="code système du domaine applicatif" />
+			<field	name="processEcheance" 
+					column="WMLCLI" 
+					mandatory="true" 
+					type="STRING" 
+					dataType="VARCHAR(255)" 
+					comment="chemin complet vers le processus à lancer pour cette échéance" />
+			<field	name="jspProcessEcheance" 
+					column="WMLJSP" 
+					mandatory="false" 
+					type="STRING" 
+					dataType="VARCHAR(255)" 
+					comment="chemin complet vers la JSP pour les paramètres du process" />
+			<field	name="descriptionEcheance" 
+					column="WMLDES" 
+					mandatory="false" 
+					type="STRING" 
+					dataType="VARCHAR(40)" 
+					comment="une brève description de l'échéance" />
+			<field	name="numeroOrdre" 
+					column="WMORDR" 
+					mandatory="false" 
+					type="NUMERIC" 
+					dataType="NUMERIC(8,0)" 
+					comment="ordre de tri des processus dans la liste" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field	name="forCsDomaineApplicatif" 
+								operation="EQUALS" 
+								field-ref="csDomaineApplicatif" />
+				<search-field	name="forIdEcheance" 
+								operation="EQUALS" 
+								field-ref="idEcheance" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

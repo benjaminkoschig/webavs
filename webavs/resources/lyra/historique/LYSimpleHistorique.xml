@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.lyra.business.models.historique.LYSimpleHistorique">
+		<description>
+			Un historique d'échéance
+		</description>
+		<table	name="LYHISTOR" 
+				hasSpy="true" 
+				hasCreationSpy="false" 
+				alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key	name="idHistorique" 
+							column="WOIHIS" 
+							mandatory="true"
+							type="NUMERIC" 
+							dataType="NUMERIC(15,0)" 
+							comment="Identifiant" />
+			<field	name="idEcheance" 
+					column="WOIECH" 
+					mandatory="true"
+					type="NUMERIC" 
+					dataType="NUMERIC(15,0)" 
+					comment="identifiant de l'échéance concernée par cet historique" />
+			<field	name="dateExecution" 
+					column="WODEXE" 
+					mandatory="true" 
+					type="NUMERIC" 
+					dataType="NUMERIC(8,0)" 
+					comment="date de l'éxecution du processus de l'échéance" />
+			<field	name="visaUtilisateur" 
+					column="WOLVIS" 
+					mandatory="true" 
+					type="STRING" 
+					dataType="VARCHAR(10)" 
+					comment="Visa de l'utilisateur ayant lancé le processus" />
+			<field	name="csEtat" 
+					column="WOTETA" 
+					mandatory="true" 
+					type="NUMERIC" 
+					dataType="NUMERIC(8,0)" 
+					comment="Etat de fin du processus d'échéance (succès ou erreur)" />
+			<field	name="idLog" 
+					column="WOILOG" 
+					mandatory="true" 
+					type="NUMERIC" 
+					dataType="NUMERIC(15,0)" 
+					comment="Identifiant du log du processus" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field	name="forIdHistorique" 
+								operation="EQUALS" 
+								field-ref="idHistorique" />
+				<search-field	name="forIdEcheance" 
+								operation="EQUALS" 
+								field-ref="idEcheance" />
+				<search-field	name="forDateExecution" 
+								operation="EQUALS" 
+								field-ref="dateExecution" />
+				<search-field	name="depuisDate" 
+								operation="GREATER_OR_EQUALS" 
+								field-ref="dateExecution" />
+				<search-field	name="avantDate" 
+								operation="LESSER" 
+								field-ref="dateExecution" />
+				<search-field	name="forVisaUtilisateur" 
+								operation="LIKE" 
+								field-ref="visaUtilisateur" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

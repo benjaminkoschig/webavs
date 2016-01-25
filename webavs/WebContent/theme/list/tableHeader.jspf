@@ -1,0 +1,5 @@
+	    </TR>
+	<%	String rowStyle = "";
+		for (int i=0; i < size ; i++) {
+			boolean condition = (i % 2 == 0);
+	%>

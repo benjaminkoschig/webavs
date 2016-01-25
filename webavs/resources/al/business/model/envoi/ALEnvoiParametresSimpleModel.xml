@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.envoi.EnvoiParametresSimpleModel">
+		<description>Détail des paramètres applicatifs pour les lettres aux postes de travail</description>
+		<table name="ALPARENV" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idParametreEnvoi" column="IDPENV" comment=""/>
+			<field name="csTypeParametre" column="CSCOPA" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="CODE SYSTEME TYPE PARAMETRE"/>
+			<field name="valeurParametre" column="SVALUE" type="STRING" dataType="VARCHAR(255)" mandatory="true" comment="VALEUR DU PARAMETRE"/>
+		</fields>
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdParametreEnvoi" field-ref="idParametreEnvoi" operation="EQUALS"/>
+				<search-field name="forCsTypeParametre" field-ref="csTypeParametre" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="default">
+			<order-field field-ref="csTypeParametre" order="DESC"/>
+		</order-by>
+		
+	</simple-model>
+</model-mapping>

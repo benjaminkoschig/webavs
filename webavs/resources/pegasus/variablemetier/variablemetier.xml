@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.variablemetier.VariableMetier">
+		<root-model name="simpleVariableMetier" model-ref="ch.globaz.pegasus.business.models.variablemetier.SimpleVariableMetier"/>
+		
+		<linked-model name="complexCodeSysteme" model-ref="ch.globaz.jade.business.models.codesysteme.ComplexCodeSysteme" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleCodeSysteme.idCodeSysteme" operation="EQUALS" field-ref="simpleVariableMetier.csTypeVariableMetier"/>
+			</join-group>
+		</linked-model>
+	   
+	   	<search-definition>
+			<search-group operator="AND">
+				<search-field name="forCsTypeVariableMetier"  operation="EQUALS" field-ref="simpleVariableMetier.csTypeVariableMetier"/>
+				<search-field name="forLangue" operation="EQUALS" field-ref="complexCodeSysteme.simpleTraduction.langue"/>
+			</search-group>
+		</search-definition>
+		
+		<!--Recherche la varibleMetier ouverte(valable)
+		<search-definition name="withPeriodeOpen">
+			<search-group operator="AND">
+				<search-field name="forCsTypeVariableMetier" operation="EQUALS" field-ref="simpleVariableMetier.csTypeVariableMetier"/>
+				<search-field name="forDateFin" operation="NULL" field-ref="dateFin"/>
+			</search-group>
+		</search-definition> -->
+		
+		<!-- Recherche les variableMetier valable pour la date donnee en parametre-->
+	    <search-definition name="withDateValable">
+			<search-group operator="AND">
+				<search-field name="forCsTypeVariableMetier" operation="EQUALS" field-ref="simpleVariableMetier.csTypeVariableMetier"/>
+				<search-field name="forLangue" operation="EQUALS" field-ref="complexCodeSysteme.simpleTraduction.langue"/>
+				<search-group operator="AND">
+					<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="simpleVariableMetier.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="simpleVariableMetier.dateFin"/>
+						<search-field name="forDateValable" operation="NULL" field-ref="simpleVariableMetier.dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+	 	<order-by>
+	 		<order-field field-ref="complexCodeSysteme.simpleTraduction.traduction" order="ASC" />
+			<order-field field-ref="simpleVariableMetier.dateDebut" order="DESC"/>
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

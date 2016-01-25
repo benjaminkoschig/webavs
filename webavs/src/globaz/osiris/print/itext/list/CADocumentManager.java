@@ -1,0 +1,874 @@
+package globaz.osiris.print.itext.list;
+
+import globaz.babel.api.ICTDocument;
+import globaz.babel.api.ICTListeTextes;
+import globaz.babel.api.ICTTexte;
+import globaz.caisse.helper.CaisseHelperFactory;
+import globaz.caisse.report.helper.CaisseHeaderReportBean;
+import globaz.caisse.report.helper.ICaisseReportHelper;
+import globaz.docinfo.TIDocumentInfoHelper;
+import globaz.framework.printing.itext.FWIDocumentManager;
+import globaz.framework.printing.itext.exception.FWIException;
+import globaz.framework.util.FWMessage;
+import globaz.globall.db.BProcess;
+import globaz.globall.db.BSession;
+import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.db.GlobazServer;
+import globaz.globall.format.IFormatData;
+import globaz.globall.util.JACalendar;
+import globaz.globall.util.JANumberFormatter;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.osiris.application.CAApplication;
+import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
+import globaz.osiris.db.comptes.CASection;
+import globaz.osiris.external.IntTiers;
+import globaz.osiris.translation.CACodeSystem;
+import globaz.pyxis.api.ITIRole;
+import globaz.pyxis.application.TIApplication;
+import globaz.pyxis.db.tiers.TITiersViewBean;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+
+/**
+ * Classe abstraite parente de tous les documents du projet osiris. Centralise les fonctionalités communes aux documents
+ * 
+ * @see globaz.framework.printing.itext.FWIDocumentManager
+ * @author Kurus, 10-mai-2005
+ */
+public abstract class CADocumentManager extends FWIDocumentManager {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    public final static String JASP_PROP_BODY_ADR_CAISSE_BVR = "body.adr.caisse.bvr.";
+    /** Template properties */
+    public final static String JASP_PROP_BODY_AFFILIE = "body.affilie.";
+    public final static String JASP_PROP_BODY_CACLIBELLE = "body.caclibelle.";
+    public final static String JASP_PROP_BODY_CACMONTANT = "body.cacmontant.";
+    public final static String JASP_PROP_BODY_CACREPORT = "body.cacreport.";
+    public final static String JASP_PROP_BODY_CACTEXT_MINIMEPOS = "body.cactext.minimepos.";
+    public final static String JASP_PROP_BODY_COL_LIBELLE_CACFRAIS = "body.col.libelle.cacfrais.";
+    public final static String JASP_PROP_BODY_COL_LIBELLE_CACINTERET = "body.col.libelle.cacinteret.";
+    public final static String JASP_PROP_BODY_COL_LIBELLE_CACMONTANTINIT = "body.col.libelle.cacmontantinit.";
+    public final static String JASP_PROP_BODY_COL_LIBELLE_CACPAIEMENT = "body.col.libelle.cacpaiement.";
+    public final static String JASP_PROP_BODY_COL_LIBELLE_CACTAXESSOMM = "body.col.libelle.cactaxessomm.";
+    public final static String JASP_PROP_BODY_COMPANY_NAME = "nom.caisse.";
+    public final static String JASP_PROP_BODY_EXERCICE = "body.exercice.";
+    public final static String JASP_PROP_BODY_FORMULE_DESTINATAIRE_FEMME = "body.formule.destinataire.femme.";
+    public final static String JASP_PROP_BODY_FORMULE_DESTINATAIRE_HOMME = "body.formule.destinataire.homme.";
+    public final static String JASP_PROP_BODY_FORMULE_DESTINATAIRE_HOMME_FEMME = "body.formule.destinataire.homme.femme.";
+    public final static String JASP_PROP_BODY_LABEL_CACPAGE = "body.label.cacpage.";
+    public final static String JASP_PROP_BODY_NUMERO_COMPTE = "body.numero.compte.";
+    public final static String JASP_PROP_BODY_TRI_NOM = "body.tri.nom.";
+    public final static String JASP_PROP_BODY_TRI_NUMERO = "body.tri.numero.";
+    /** Seuil de l'exécution directe ou différée */
+    private static final int JOB_QUEUE_THRESHOLD = 10;
+
+    private static final String TEXTE_INTROUVABLE = "[TEXTE INTROUVABLE]";
+
+    /**
+     * remplace dans message {n} par args[n].
+     * <p>
+     * Evite que {@link MessageFormat} ne lance une erreur ou ne se comporte pas correctement si le message contient des
+     * apostrophes.
+     * </p>
+     * <p>
+     * En attendant qu'elle soit dans le framework.
+     * </p>
+     * 
+     * @param message
+     *            le message dans lequel se trouve les groupes à remplacer
+     * @param args
+     *            les valeurs de remplacement (les nulls sont permis, ils seront remplacés par "")
+     * @return le message formatté
+     * @see MessageFormat
+     */
+    public static final String formatMessage(String message, Object[] args) {
+        StringBuffer buffer = new StringBuffer(message);
+
+        // doubler les guillemets simples si necessaire
+        for (int idChar = 0; idChar < buffer.length(); ++idChar) {
+            if ((buffer.charAt(idChar) == '\'')
+                    && ((idChar == (buffer.length() - 1)) || (buffer.charAt(idChar + 1) != '\''))) {
+                buffer.insert(idChar, '\'');
+                ++idChar;
+            }
+        }
+
+        // remplacer les arguments null par chaine vide
+        for (int idArg = 0; idArg < args.length; ++idArg) {
+            if (args[idArg] == null) {
+                args[idArg] = "";
+            }
+        }
+
+        // remplacer et retourner
+        return MessageFormat.format(buffer.toString(), args);
+    }
+
+    /**
+     * Transforme un montant avec les paramètres :
+     * <UL>
+     * <LI><I>format : </I>#'###.##</LI>;
+     * <LI><I>multiple : </I>0.05</LI>;
+     * <LI><I>décimales :</I>2</LI>;
+     * <LI><I>arrondi : </I>au plus proche</LI>.
+     * </UL>
+     * 
+     * @return un String représentant le montant formattée.
+     * @param un
+     *            montant à formatter.
+     */
+    public static final String formatMontant(String montant) {
+        if (JadeStringUtil.isBlank(montant)) {
+            return "";
+        }
+        // rechercher un formatteur de date pour la langue du document
+        return JANumberFormatter.format(montant);
+    }
+
+    /** Collection pour un DataSource */
+    private ArrayList beanList = new ArrayList();
+    /** Entité courante */
+    private Object currentEntity = null;
+    // Champs pour le catalogue de textes
+    protected ICTDocument document;
+    /** Liste des entités à traiter */
+    private ArrayList entityList = new ArrayList();
+    /** Document principal */
+    private CADocumentManager firstDocument = null;
+    protected String idDocument = "";
+    /** Itérateur sur la liste des entités */
+    private Iterator iEntityList = null;
+    /** L'annonce de l'assuré */
+    // protected CAExtraitAnnonceAssureBean annonceAssure = null;
+    /** Langue du document */
+    private String langue = getSession().getIdLangueISO();
+
+    /** Liste annexes */
+    private String listeAnnexes = "";
+    protected String nomDocument = "";
+    protected int numDocument = 0;
+    private String numeroReferenceInforom = "";
+    /** PrintCompletionDoc */
+    private boolean printCompletionDoc = true;
+
+    /** PrintOutline */
+    private boolean printOutline = false;
+
+    /** Map d'une ligne de données */
+    private Map row = new HashMap();
+
+    protected String typeDocument = "";
+
+    /*
+     * @TODO Supprimer ces vieux constructeurs
+     */
+    public CADocumentManager() throws Exception {
+        this(new BSession(CAApplication.DEFAULT_APPLICATION_OSIRIS), FWIDocumentManager.DEFAULT_FILE_NAME);
+    }
+
+    public CADocumentManager(BProcess parent) throws FWIException {
+        this(parent, CAApplication.DEFAULT_OSIRIS_ROOT, FWIDocumentManager.DEFAULT_FILE_NAME);
+    }
+
+    /**
+     * Initialise le document
+     * 
+     * @param parent
+     *            Le processus parent
+     * @param fileName
+     *            Le nom du fichier
+     * @throws FWIException
+     *             En cas de problème d'initialisaion
+     */
+    public CADocumentManager(BProcess parent, String fileName) throws FWIException {
+        this(parent, CAApplication.DEFAULT_OSIRIS_ROOT, fileName);
+    }
+
+    /**
+     * @param parent
+     * @param rootApplication
+     * @param fileName
+     * @throws FWIException
+     */
+    public CADocumentManager(BProcess parent, String rootApplication, String fileName) throws FWIException {
+        super(parent, rootApplication, fileName);
+    }
+
+    public CADocumentManager(BSession parent) throws FWIException {
+        this(parent, CAApplication.DEFAULT_OSIRIS_ROOT, FWIDocumentManager.DEFAULT_FILE_NAME);
+    }
+
+    /**
+     * Initialise le document
+     * 
+     * @param parent
+     *            La session parente
+     * @param fileName
+     *            Le nom du fichier
+     * @throws FWIException
+     *             En cas de problème d'initialisaion
+     */
+    public CADocumentManager(BSession parent, String fileName) throws FWIException {
+        this(parent, CAApplication.DEFAULT_OSIRIS_ROOT, fileName);
+    }
+
+    /**
+     * @param session
+     * @param rootApplication
+     * @param fileName
+     * @throws FWIException
+     */
+    public CADocumentManager(BSession session, String rootApplication, String fileName) throws FWIException {
+        super(session, rootApplication, fileName);
+    }
+
+    /**
+     * @see globaz.framework.printing.itext.FWIDocumentManager#_createDocumentInfo()
+     */
+    @Override
+    protected void _createDocumentInfo() {
+        super._createDocumentInfo();
+        super.getDocumentInfo().setDocumentTypeNumber(getNumeroReferenceInforom());
+    }
+
+    /**
+     * @return La langue du document
+     */
+    protected String _getLangue() {
+        return langue.toUpperCase();
+    }
+
+    /**
+     * Retourne un String représentant la valeur de la propriété
+     * 
+     * @param property
+     *            Le nom de la propriété
+     * @param additionalValue
+     *            Une valeur additionnelle
+     * @return La valeur de la propriété
+     */
+    protected String _getProperty(String property, String additionalValue) {
+        StringBuffer buffer = new StringBuffer("");
+        if ((!JadeStringUtil.isBlank(property))
+                && (getTemplateProperty(getDocumentInfo(), property + _getLangue()) != null)) {
+            buffer.append(getTemplateProperty(getDocumentInfo(), property + _getLangue()));
+        }
+        if (!JadeStringUtil.isBlank(additionalValue)) {
+            buffer.append(additionalValue);
+        }
+        return buffer.toString();
+    }
+
+    /**
+     * Gestion de l'en-tête/pied de page/signature
+     * 
+     * @param adresseDestination
+     *            L'adresse du destinataire du document
+     * @param annonce
+     *            L'annonce de l'assuré concernée par ce document
+     * @param hasHeader
+     *            <code>true</code> si le document contient un en-tête
+     * @param hasFooter
+     *            <code>true</code> si le document contient un pied de page
+     * @param hasSignature
+     *            <code>true</code> si le document contient une signature
+     * @throws Exception
+     *             En cas de problème
+     */
+    protected void _handleHeaders(Object adresseDestination, boolean hasHeader, boolean hasFooter, boolean hasSignature)
+            throws Exception {
+        this._handleHeaders(adresseDestination, hasHeader, hasFooter, hasSignature, JACalendar.today().toString());
+    }
+
+    /**
+     * Gestion de l'en-tête/pied de page/signature
+     * 
+     * @param adresseDestination
+     *            L'adresse du destinataire du document
+     * @param annonce
+     *            L'annonce de l'assuré concernée par ce document
+     * @param hasHeader
+     *            <code>true</code> si le document contient un en-tête
+     * @param hasFooter
+     *            <code>true</code> si le document contient un pied de page
+     * @param hasSignature
+     *            <code>true</code> si le document contient une signature
+     * @throws Exception
+     *             En cas de problème
+     */
+    protected void _handleHeaders(Object adresseDestination, boolean hasHeader, boolean hasFooter,
+            boolean hasSignature, String date) throws Exception {
+        getDocumentInfo().setTemplateName("");
+        ICaisseReportHelper caisseReportHelper = CaisseHelperFactory.getInstance().getCaisseReportHelper(
+                getDocumentInfo(), getSession().getApplication(), _getLangue());
+        CaisseHeaderReportBean headerBean = new CaisseHeaderReportBean();
+
+        if (CAApplication.getApplicationOsiris().getCAParametres().isConfidentiel()) {
+            headerBean.setConfidentiel(true);
+        }
+        // Adresse du destinataire
+        if (adresseDestination != null) {
+            if (adresseDestination instanceof CAPlanRecouvrement) {
+                headerBean.setAdresse(((CAPlanRecouvrement) adresseDestination).getAdressePaiementTiers());
+            } else {
+                headerBean.setAdresse((String) adresseDestination);
+            }
+        }
+        // Date
+        headerBean.setDate(formatDate(date));
+        headerBean.setUser(getSession().getUserInfo());
+        headerBean.setTelCollaborateur(getSession().getUserInfo().getPhone());
+        if (!JadeStringUtil.isBlank(getSession().getUserFullName())) {
+            headerBean.setNomCollaborateur(getSession().getUserFullName());
+        } else {
+            headerBean.setNomCollaborateur(getSession().getUserInfo().getFirstname() + " "
+                    + getSession().getUserInfo().getLastname());
+        }
+        headerBean.setEmailCollaborateur(getSession().getUserInfo().getEmail());
+
+        // Paramètres relatifs à l'annonce
+        headerBean.setNoAffilie("");
+        if ((adresseDestination != null) && (adresseDestination instanceof CAPlanRecouvrement)) {
+            if (!JadeStringUtil.isBlank(((CAPlanRecouvrement) adresseDestination).getCompteAnnexe().getId())) {
+                String numAff = ((CAPlanRecouvrement) adresseDestination).getCompteAnnexe().getIdExterneRole();
+                headerBean.setNoAffilie(numAff);
+
+                getDocumentInfo().setDocumentProperty("numero.affilie.formatte", numAff);
+                try {
+                    IFormatData affilieFormater = ((TIApplication) GlobazServer.getCurrentSystem().getApplication(
+                            TIApplication.DEFAULT_APPLICATION_PYXIS)).getAffileFormater();
+                    getDocumentInfo().setDocumentProperty("numero.affilie.non.formatte",
+                            affilieFormater.unformat(numAff));
+                    TIDocumentInfoHelper.fill(getDocumentInfo(), ((CAPlanRecouvrement) adresseDestination)
+                            .getCompteAnnexe().getIdTiers(), getSession(), ITIRole.CS_AFFILIE, numAff, affilieFormater
+                            .unformat(numAff));
+                } catch (Exception e) {
+                    getDocumentInfo().setDocumentProperty("numero.affilie.non.formatte", numAff);
+                }
+                getDocumentInfo().setDocumentProperty("annee", String.valueOf(JACalendar.today().getYear()));
+                getDocumentInfo().setArchiveDocument(true);
+            }
+        }
+        // if (annonceAssure != null) {
+        // headerBean.setNoAvs(annonceAssure.getNumeroAvs());
+        // } else {
+        // headerBean.setNoAvs("");
+        // }
+        if (hasHeader) {
+            caisseReportHelper.addHeaderParameters(this, headerBean);
+        }
+        if (hasFooter) {
+            caisseReportHelper.addFooterParameters(this);
+        }
+        if (hasSignature) {
+            caisseReportHelper.addSignatureParameters(this);
+        }
+    }
+
+    /**
+     * @return La valeur courante de la propriété
+     */
+    // public HEExtraitAnnonceAssureBean getAnnonceAssure() {
+    // return annonceAssure;
+    // }
+    /**
+     * @param user
+     *            La nouvelle valeur de la propriété
+     */
+    // public void setAnnonceAssure(HEExtraitAnnonceAssureBean bean) {
+    // annonceAssure = bean;
+    // }
+    /**
+     * Retourne un String représentant l'adresse sur plusieurs lignes
+     * 
+     * @param info
+     *            L'info d'où vient l'adresse
+     * @return La représentation de l'adresse
+     */
+    // protected String _getAdresseString(HEInfos adresse) {
+    // StringBuffer adresseString = new StringBuffer();
+    // adresseString.append(annonceAssure.getNomPrenom() + "\n\n");
+    // adresseString.append(adresse.getLibInfo());
+    // return adresseString.toString();
+    // }
+    // public String getAdressePrincipale() throws Exception {
+    // //l'adresse de paiement est l'adresse de courrier
+    // String result = getAdresseCourrier();
+    // if (!JadeStringUtil.isBlank(result)) {
+    // return result;
+    // } else
+    // return getAdresseDomicile();
+    // }
+    // /** ALD Ajout bulletins de soldes : 2004.08.26
+    // * Retourne l'adresse de domicile du tiers
+    // * Ex: Soit le n° avs, le n° affilié ou le n° de contribuable
+    // */
+    // public String getAdresseDomicile() throws Exception {
+    // // Récupérer le tiers
+    // IntTiers tiers = compteAnnexe.getTiers();
+    // if (tiers == null)
+    // return "";
+    // else
+    // return tiers.getAdresseAsString(TIAvoirAdresse.CS_DOMICILE,
+    // globaz.pyxis.db.divers.TIApplication.CS_DEFAUT,
+    // JACalendar.today().toStr("."));
+    // }
+    // /** ALD Ajout bulletins de soldes : 2004.08.26
+    // * Retourne l'adresse de domicile du tiers
+    // * Ex: Soit le n° avs, le n° affilié ou le n° de contribuable
+    // */
+    // public String getAdresseCourrier() throws Exception {
+    // // Récupérer le tiers
+    // IntTiers tiers = compteAnnexe.getTiers();
+    // if (tiers == null)
+    // return "";
+    // else
+    // return tiers.getAdresseAsString(TIAvoirAdresse.CS_COURRIER,
+    // globaz.pyxis.db.divers.TIApplication.CS_FACTURATION,
+    // JACalendar.today().toStr("."));
+    // }
+
+    /**
+     * Spécifie la langue du document
+     * 
+     * @param langue
+     *            La langue du document
+     */
+    protected void _setLangueDocument(String langueDoc) {
+        if (!JadeStringUtil.isBlank(langueDoc)) {
+            langue = langueDoc;
+        }
+    }
+
+    /**
+     * Spécifie la langue du document en fonction de la langue de l'affilié
+     * 
+     * @param TITiersViewBean
+     *            La langue de l'affilié
+     */
+    protected void _setLangueFromAffilie(TITiersViewBean affilie) {
+        if (affilie != null) {
+            langue = getSession().getCode(affilie.getLangue());
+        }
+    }
+
+    /**
+     * Spécifie la langue du document en fonction de la langue d'un tiers
+     * 
+     * @param tiers
+     *            Le tiers
+     */
+    protected void _setLangueFromTiers(IntTiers tiers) {
+        if (tiers != null) {
+            langue = tiers.getLangueISO();
+        }
+    }
+
+    /**
+     * Ajoute un groupe d'entités à la liste
+     * 
+     * @param allEntities
+     *            Le groupe d'entités
+     * @return <code>true</code> si l'ajout s'est bien passé
+     */
+    public boolean addAllEntities(Collection allEntities) {
+        return entityList.addAll(allEntities);
+    }
+
+    /**
+     * Ajoute une entité à la liste
+     * 
+     * @param entity
+     *            L'entité
+     * @return <code>true</code> si l'ajout s'est bien passé
+     */
+    public boolean addEntity(Object entity) {
+        return entityList.add(entity);
+    }
+
+    /**
+     * Ne fait rien par défaut
+     * 
+     * @see globaz.framework.printing.itext.api.FWIDocumentInterface#beforeBuildReport()
+     */
+    @Override
+    public void beforeBuildReport() throws FWIException {
+    }
+
+    /**
+     * Ne fait rien par défaut
+     * 
+     * @see globaz.framework.printing.itext.api.FWIDocumentInterface#beforeExecuteReport()
+     */
+    @Override
+    public void beforeExecuteReport() throws FWIException {
+    }
+
+    /**
+     * @see globaz.framework.printing.itext.api.FWIDocumentInterface#beforePrintDocument()
+     */
+    @Override
+    public boolean beforePrintDocument() {
+        if (firstDocument != null) {
+            // Gestion du titre et du nom
+            setDocumentTitle(firstDocument.getExporter().getExportFileName());
+            getExporter().setExportFileName(firstDocument.getExporter().getExportFileName());
+        }
+        try {
+            if (isPrintOutline()) {
+                super.getExporter().setExporterOutline(JRExporterParameter.OUTLINE_ALL);
+            } else {
+                super.getExporter().setExporterOutline(JRExporterParameter.OUTLINE_NONE);
+            }
+            return isPrintCompletionDoc() && super.beforePrintDocument();
+        } catch (FWIException e) {
+            // CAST OMMIT
+        }
+        return super.beforePrintDocument();
+    }
+
+    /**
+     * Retourne l'entité courante
+     * 
+     * @return L'entité
+     */
+    public Object currentEntity() {
+        return currentEntity;
+    }
+
+    /**
+     * Regroupe tous les textes du même niveau en les séparant par la chaine de caractères passée en paramètre.
+     * 
+     * @param niveau
+     *            du catalogue de texte
+     * @param out
+     *            buffer regroupant les textes du même niveau
+     * @param paraSep
+     *            Chaine de séparation entre les positions du niveau.
+     */
+    protected void dumpNiveau(int niveau, StringBuffer out, String paraSep) {
+        try {
+            for (Iterator paraIter = loadCatalogue().getTextes(niveau).iterator(); paraIter.hasNext();) {
+                if (out.length() > 0) {
+                    out.append(paraSep);
+                }
+
+                out.append(((ICTTexte) paraIter.next()).getDescription());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            out.append(CADocumentManager.TEXTE_INTROUVABLE);
+            getMemoryLog()
+                    .logMessage(e.toString(), FWMessage.ERREUR, getSession().getLabel("ERROR_DUMP_TEXT") + niveau);
+        }
+    }
+
+    /**
+     * Transforme une date au format jj.mm.aaaa en une date en toutes lettres en utilisant la langue du document.
+     * 
+     * @param date
+     *            une date au format jj.mm.aaaa
+     * @return une date au format java.text FULL (exemple 1er juiller 2005)
+     */
+    protected String formatDate(String date) {
+        if (JadeStringUtil.isBlank(date)) {
+            return "";
+        }
+
+        // rechercher un formatteur de date pour la langue du document
+        return JACalendar.format(date, _getLangue());
+    }
+
+    /**
+     * remplace dans message {n} par args[n].
+     * <p>
+     * Evite que {@link MessageFormat} ne lance une erreur ou ne se comporte pas correctement si le message contient des
+     * apostrophes.
+     * </p>
+     * 
+     * @param message
+     *            le message dans lequel se trouve les groupes à remplacer
+     * @param args
+     *            les valeurs de remplacement (les nulls sont permis, ils seront remplacés par "")
+     * @return le message formatté
+     * @see MessageFormat
+     */
+    protected String formatMessage(StringBuffer message, Object[] args) {
+        return CADocumentManager.formatMessage(message.toString(), args);
+    }
+
+    /**
+     * permet de trouver l'année pour l'idExterne d'une section (utilisé par ex. par la ligne technique à la FER)
+     */
+    protected String getAnneeFromSection(CASection section) {
+        String annee = "";
+        if ((section != null) && (section.getIdExterne() != null)) {
+            if (section.getIdExterne().length() >= 4) {
+                annee = section.getIdExterne().substring(0, 4);
+            }
+        }
+        return annee;
+    }
+
+    /**
+     * @return un JRDataSource de type JRMapCollectionDataSource
+     */
+    protected JRDataSource getEntityBeanDataSource() {
+        return new JRMapCollectionDataSource(beanList);
+    }
+
+    /**
+     * @return the idDocument
+     */
+    public String getIdDocument() {
+        return idDocument;
+    }
+
+    /**
+     * @return La liste des annexes
+     */
+    public String getListeAnnexes() {
+        return listeAnnexes;
+    }
+
+    /**
+     * @return the nomDocument
+     */
+    protected String getNomDocument() {
+        return nomDocument;
+    }
+
+    /**
+     * @return the numDocument
+     */
+    protected int getNumDocument() {
+        return numDocument;
+    }
+
+    /**
+     * @return the numeroReferenceInforom
+     */
+    public String getNumeroReferenceInforom() {
+        return numeroReferenceInforom;
+    }
+
+    /**
+     * Recherche de l'info de l'assuré
+     * 
+     * @param String
+     *            idArc Id de l'annonce
+     * @param String
+     *            systemCode
+     * @return info de type HEInfos
+     */
+    // public HEInfos getInfoAssure(String idArc, String systemCode) throws
+    // Exception {
+    // HEInfos info = null;
+    // // Recherche de l'info de l'assuré
+    // HEInfosManager infosManager = new HEInfosManager();
+    // infosManager.setSession(getSession());
+    // infosManager.setForIdArc(idArc);
+    // infosManager.setForTypeInfo(systemCode);
+    // infosManager.find();
+    // if (infosManager.size() > 0) {
+    // info = ((HEInfos) infosManager.getEntity(0));
+    // return info;
+    // }
+    // return new HEInfos();
+    // }
+
+    /**
+     * Récupère les textes du catalogue de texte
+     * 
+     * @param niveau
+     * @param position
+     * @return
+     */
+    protected StringBuffer getTexte(int niveau, int position) {
+        StringBuffer resString = new StringBuffer("");
+        try {
+            ICTListeTextes listeTextes = loadCatalogue().getTextes(niveau);
+            resString.append(listeTextes.getTexte(position));
+        } catch (Exception e3) {
+            getMemoryLog().logMessage(e3.toString(), FWMessage.ERREUR,
+                    getSession().getLabel("ERROR_GETTING_LIST_TEXT") + niveau + ":" + position);
+        }
+        return resString;
+    }
+
+    /**
+     * @return the typeDocument
+     */
+    protected String getTypeDocument() {
+        return typeDocument;
+    }
+
+    public boolean isPrintCompletionDoc() {
+        return printCompletionDoc;
+    }
+
+    public boolean isPrintOutline() {
+        return printOutline;
+    }
+
+    /**
+     * @see globaz.globall.db.BProcess#jobQueue()
+     */
+    @Override
+    public GlobazJobQueue jobQueue() {
+        if (entityList.size() <= CADocumentManager.JOB_QUEUE_THRESHOLD) {
+            return GlobazJobQueue.READ_SHORT;
+        } else {
+            return GlobazJobQueue.READ_LONG;
+        }
+    }
+
+    /**
+     * retourne le catalogue de texte pour le document courant.
+     * 
+     * @return DOCUMENT ME!
+     * @throws Exception
+     *             DOCUMENT ME!
+     */
+    protected ICTDocument loadCatalogue() throws Exception {
+        if (document == null) {
+            ICTDocument loader = (ICTDocument) getSession().getAPIFor(ICTDocument.class);
+
+            loader.setActif(Boolean.TRUE);
+            if (!JadeStringUtil.isBlank(getNomDocument())) {
+                loader.setNom(getNomDocument());
+            } else if (!JadeStringUtil.isBlank(getIdDocument())) {
+                loader.setIdDocument(getIdDocument());
+            } else {
+                loader.setDefault(Boolean.TRUE);
+            }
+            loader.setCodeIsoLangue(_getLangue());
+            loader.setCsDomaine(CACodeSystem.CS_DOMAINE_CA);
+            loader.setCsTypeDocument(getTypeDocument());
+
+            ICTDocument[] candidats = loader.load();
+
+            document = candidats[numDocument];
+        }
+
+        return document;
+    }
+
+    /**
+     * Initialise une nouvelle ligne de donnée pour la Map JRDataSource
+     */
+    protected void newLineEntityBean() {
+        if (row.size() > 0) {
+            beanList.add(row);
+        }
+        row = new HashMap();
+    }
+
+    /**
+     * Retourne <code>true</code> s'il reste des entités à traiter et prépare l'entité courante.
+     * 
+     * @see globaz.framework.printing.itext.api.FWIDocumentInterface#next()
+     * @return <code>true</code> s'il reste des entités
+     * @throws FWIException
+     *             En cas de problème
+     */
+    @Override
+    public boolean next() throws FWIException {
+        if (iEntityList == null) {
+            iEntityList = entityList.iterator();
+        }
+        boolean hasNext = iEntityList.hasNext();
+        if (hasNext) {
+            currentEntity = iEntityList.next();
+        }
+        return hasNext;
+    }
+
+    /**
+     * Set un champ d'information pour la Map JRDataSource
+     * 
+     * @param name
+     * @param obj
+     */
+    protected void setEntityBean(String name, Object obj) {
+        row.put(name, obj);
+    }
+
+    /**
+     * @param document
+     *            Document principal
+     */
+    public void setFirstDocument(CADocumentManager document) {
+        firstDocument = document;
+    }
+
+    /**
+     * @param idDocument
+     *            the idDocument to set
+     */
+    public void setIdDocument(String idDocument) {
+        this.idDocument = idDocument;
+    }
+
+    /**
+     * @param liste
+     *            des annexes
+     */
+    public void setListeAnnexes(String string) {
+        listeAnnexes = string;
+    }
+
+    /**
+     * @param nomDocument
+     *            the nomDocument to set
+     */
+    protected void setNomDocument(String nomDocument) {
+        this.nomDocument = nomDocument;
+    }
+
+    /**
+     * @param numDocument
+     *            the numDocument to set
+     */
+    protected void setNumDocument(int numDocument) {
+        this.numDocument = numDocument;
+    }
+
+    /**
+     * Référence Inforom du document
+     * 
+     * @param numeroReferenceInforom
+     *            the numeroReferenceInforom to set
+     */
+    public void setNumeroReferenceInforom(String numeroReferenceInforom) {
+        this.numeroReferenceInforom = numeroReferenceInforom;
+    }
+
+    public void setPrintCompletionDoc(boolean b) {
+        printCompletionDoc = b;
+    }
+
+    public void setPrintOutline(boolean b) {
+        printOutline = b;
+    }
+
+    /**
+     * Définit le type du document
+     * 
+     * @param typeDocument
+     *            the typeDocument to set
+     */
+    protected void setTypeDocument(String typeDocument) {
+        this.typeDocument = typeDocument;
+    }
+
+}

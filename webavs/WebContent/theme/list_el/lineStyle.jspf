@@ -1,0 +1,9 @@
+	<c:set var="condition" value="${status.index%2==0}" />
+	<c:choose>
+		<c:when test="${condition}">
+			<c:set var="rowStyle" value="row" />
+		</c:when>
+		<c:otherwise>
+			<c:set var="rowStyle" value="rowOdd" />
+		</c:otherwise>
+	</c:choose>

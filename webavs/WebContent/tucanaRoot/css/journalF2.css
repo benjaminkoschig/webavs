@@ -1,0 +1,49 @@
+table{
+	width: 100%;
+	font-family : Verdana,Courrier;
+	font-size : 6pt;
+	border: 1px solid black;
+
+}
+table.entete{
+	width: 100%;
+	font-family : Verdana,Courrier;
+	font-size : 10pt;
+	border: 1px solid black;
+
+}
+th {
+	background-color: #226194;
+	color: white;
+}
+th.background {
+	font-weight: bold;
+}
+td{
+	background-color: #B3C4DB;
+}
+td.background{
+
+}
+td.entete{
+	font-weight: bold;
+	background-color: white;
+	color: black;
+	height: 50px;
+}
+
+td.background-bold{
+	font-weight: bold;
+	background-color: #226194;
+	color: white;
+}
+td.number{
+	text-align: right;
+}
+@page {
+	  size: landscape;
+	  margin-top: 10cm
+}
+#copyright {
+	display: none;
+}

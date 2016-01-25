@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.vulpecula.business.models.is.TauxImpositionSimpleModel">
+		<table name="PT_TAUX_IMPOSITION" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID" comment="Id de l'absence" />
+			<field name="periodeDebut" column="PERIODE_DEBUT" type="DATE" comment="lien sur la ligne du decompte" />
+			<field name="periodeFin" column="PERIODE_FIN" type="DATE" />
+			<field name="canton" column="CS_CANTON" type="NUMERIC" />
+			<field name="typeImposition" column="CS_TYPE_IMP" type="NUMERIC" />
+			<field name="taux" column="TAUX" type="NUMERIC" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forCanton" field-ref="canton" operation="EQUALS" />
+				<search-field name="forTypeImposition" field-ref="typeImposition" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		
+		<order-by>
+			<order-field field-ref="id" />
+		</order-by>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+	</simple-model>
+</model-mapping>

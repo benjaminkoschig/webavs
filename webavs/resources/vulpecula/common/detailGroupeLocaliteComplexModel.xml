@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.vulpecula.external.models.DetailGroupeLocaliteComplexModel">
+		<root-model name="detailGroupeLocaliteSimpleModel"
+			model-ref="ch.globaz.vulpecula.external.models.DetailGroupeLocaliteSimpleModel"/>
+		
+		<linked-model name="groupeLocaliteSimpleModel" 
+					model-ref="ch.globaz.vulpecula.external.models.GroupeLocaliteSimpleModel"
+					join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="id" operation="EQUALS" 
+					field-ref="detailGroupeLocaliteSimpleModel.idGroupeLocalite" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="detailGroupeLocaliteSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdGroupeLocalite" field-ref="detailGroupeLocaliteSimpleModel.idGroupeLocalite" 
+					operation="EQUALS"/>
+				<search-field name="forIdLocalite" field-ref="detailGroupeLocaliteSimpleModel.idLocalite" 
+					operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="detailGroupeLocaliteSimpleModel.id" order="DESC"/>
+		</order-by>
+		
+		<order-by name="idAsc">
+			<order-field field-ref="detailGroupeLocaliteSimpleModel.id" order="ASC"/>
+		</order-by>
+		
+		<order-by name="idGroupeLocaliteDesc">
+			<order-field field-ref="detailGroupeLocaliteSimpleModel.idGroupeLocalite" order="DESC"/>
+		</order-by>
+		
+		<order-by name="idGroupeLocaliteAsc">
+			<order-field field-ref="detailGroupeLocaliteSimpleModel.idGroupeLocalite" order="ASC"/>
+		</order-by>
+		
+		<order-by name="idLocaliteDesc">
+			<order-field field-ref="detailGroupeLocaliteSimpleModel.idLocalite" order="DESC"/>
+		</order-by>
+		
+		<order-by name="idLocaliteAsc">
+			<order-field field-ref="detailGroupeLocaliteSimpleModel.idLocalite" order="ASC"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.globaz.ch/amal/xmlns/am-0001/1" xmlns:am-0001="http://www.globaz.ch/amal/xmlns/am-0001/1" targetNamespace="http://www.globaz.ch/amal/xmlns/am-0001/1" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="Contribuables">
+		<xs:annotation>
+			<xs:documentation>Nœud de plus haut niveau</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Contribuable" type="Contribuable" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="paramJobSeq" type="xs:integer" use="required"/>
+			<xs:attribute name="paramJobDate" type="xs:string" use="required"/>
+			<xs:attribute name="paramDateDecision" type="xs:string" use="required"/>
+			<xs:attribute name="paramPeriodeMin" type="xs:string" use="required"/>
+			<xs:attribute name="paramPeriodeMax" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="Contribuable">
+		<xs:sequence>
+			<xs:element name="Personne" type="Personne" maxOccurs="2"/>
+			<xs:element name="Taxations">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Taxation" type="Taxation" maxOccurs="10"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Adresse" type="Adresse"/>
+		</xs:sequence>
+		<xs:attribute name="ndc" type="xs:string" use="required"/>
+		<xs:attribute name="typeCtr" type="TypeContribuable"/>
+		<xs:attribute name="ndcprecedent" type="xs:string"/>
+	</xs:complexType>
+	<xs:complexType name="Personne">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="type" type="TypePersonne"/>
+				<xs:attribute name="nip" type="xs:integer"/>
+				<xs:attribute name="sexe" type="CodeSexe"/>
+				<xs:attribute name="ecPers" type="EtatCivil"/>
+				<xs:attribute name="dateNaiss" type="xs:string"/>
+				<xs:attribute name="navs13" type="xs:integer"/>
+				<xs:attribute name="nom" type="xs:string"/>
+				<xs:attribute name="prenom" type="xs:string"/>
+				<xs:attribute name="nomJeuneFille" type="xs:string"/>
+				<xs:attribute name="dateDeces" type="xs:string"/>
+				<xs:attribute name="ndcConj" type="xs:string"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="Adresse">
+		<xs:sequence>
+			<xs:element name="designation" type="xs:string" minOccurs="0"/>
+			<xs:element name="nomPrenom" type="xs:string" minOccurs="0"/>
+			<xs:element name="nomSuite" type="xs:string" minOccurs="0"/>
+			<xs:element name="rue" type="xs:string" minOccurs="0"/>
+			<xs:element name="rueSuite" type="xs:string" minOccurs="0"/>
+			<xs:element name="npa" type="xs:string" minOccurs="0"/>
+			<xs:element name="localite" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Taxation">
+		<xs:sequence>
+			<xs:element name="rub" type="rubrique" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="periode" type="xs:integer"/>
+		<xs:attribute name="dateDec" type="xs:string"/>
+		<xs:attribute name="ecTax" type="EtatCivil"/>
+		<xs:attribute name="nbJours" type="xs:integer"/>
+		<xs:attribute name="rdu" type="xs:integer"/>
+		<xs:attribute name="genre" type="GenreTaxation"/>
+		<xs:attribute name="codeProfession" type="CodeProfession"/>
+		<xs:attribute name="departCommuneDate" type="xs:string"/>
+	</xs:complexType>
+	<xs:complexType name="rubrique">
+		<xs:simpleContent>
+			<xs:extension base="xs:integer">
+				<xs:attribute name="id" type="xs:string"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="TypeContribuable">
+		<xs:restriction base="xs:integer">
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+			<xs:enumeration value="3"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TypePersonne">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="principal"/>
+			<xs:enumeration value="conjoint"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CodeSexe">
+		<xs:restriction base="xs:integer">
+			<xs:enumeration value="0"/>
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EtatCivil">
+		<xs:restriction base="xs:integer">
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+			<xs:enumeration value="3"/>
+			<xs:enumeration value="4"/>
+			<xs:enumeration value="5"/>
+			<xs:enumeration value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="GenreTaxation">
+		<xs:restriction base="xs:integer">
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+			<xs:enumeration value="5"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CodeProfession">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="S"/>
+			<xs:enumeration value="I"/>
+			<xs:enumeration value="A"/>
+			<xs:enumeration value="R"/>
+			<xs:enumeration value="?"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

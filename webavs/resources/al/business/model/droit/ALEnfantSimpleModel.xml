@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.droit.EnfantModel">
+		<description>Enfant lié à un droit</description>
+		<table name="ALENFANT" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key comment="ID de l'enfant" column="CID" name="idEnfant"/>
+			<field comment="ID (FK) du tiers enfant" column="HTITIE" type="NUMERIC" name="idTiersEnfant" mandatory="true"/>
+			<field comment="ID (FK) du pays de résidence" column="HNIPAY"  type="NUMERIC" name="idPaysResidence" mendatory="true" />
+			<field comment="Capable d'exercer" column="CCAPEX" type="BOOLEAN" name="capableExercer" mandatory="true"/>
+			<field comment="Indique si l'allocation de naissance/accueil a été versée" column="CNAISV" type="BOOLEAN" name="allocationNaissanceVersee" mandatory="true"/>
+			<field comment="Montant forcé de l'allocation de naissance/accueil" column="CMOFOT" type="NUMERIC" dataType="NUMERIC(9,2)" name="montantAllocationNaissanceFixe"/>
+			<field comment="Canton de résidence de l'enfant" column="CSCARE" type="NUMERIC" dataType="NUMERIC(8,0)" name="cantonResidence"/>
+			<field comment="Type d'allocation de naissance" column="CSNATY" type="NUMERIC" dataType="NUMERIC(8,0)" name="typeAllocationNaissance" mandatory="true"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdEnfant" field-ref="idEnfant" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.situationfamille.SimpleMembreFamille">
+		<description>Tables des membres d'une famille pour une demande de PC Famille</description>
+		<table name="PFMEMFAM" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idMembreFamille" column="IEIDMF" comment="Clé primaire de la table des membres famille"/>
+			<field name="idTiers" column="IEIDTI" type="NUMERIC" mandatory="true" comment="Identifiant du tiers (pyxis)"/>
+			<field name="isAI" column="IEISAI" type="BOOLEAN" mandatory="false" comment="Si le membre est à l'AI"/>
+		</fields>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdTiers" operation="EQUALS" field-ref="idTiers"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+	
+</model-mapping>

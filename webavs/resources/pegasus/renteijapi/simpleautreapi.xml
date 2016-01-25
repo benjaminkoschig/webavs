@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--  fichier de mapping du modele simple SimpleAutreApi -->
+<!--  DMA, 6.2010 -->
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.renteijapi.SimpleAutreApi">
+		<description>Modele de la table autre API</description>
+		<table name="PCAUTAPI" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAutreApi" column="COIDAA" comment="ID_AUTRE_API"/>
+			<field name="idDonneeFinanciereHeader" column="COIDDF" type="NUMERIC"  mandatory="true"  comment="ID_DONNEE_FINANCIERE_HEADER"/>
+			<field name="csDegre" column="COTDEG" type="NUMERIC"  mandatory="true"  comment="CS_DEGRE_API"/>
+			<field name="csType" column="COTAPI" type="NUMERIC"  mandatory="true"  comment="CS_TYPE_API"/>
+			<field name="csGenre" column="COTGEN" type="NUMERIC"  mandatory="false"  comment="ID_AUTRE_API"/>
+			<field name="montant" column="COMMON" type="NUMERIC" dataType="NUMERIC(15,2)"  mandatory="true"  comment="MONTANT_API"/>
+			<field name="autre" column="COLAUT" type="STRING"  mandatory="false"  comment="ID_AUTRE_API"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>
+

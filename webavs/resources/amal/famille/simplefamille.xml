@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.famille.SimpleFamille">
+		<description>Famille Contribuable</description>
+		<table name="MAFAMILL" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idFamille" column="IDFAMI" comment=""/>
+			<!--<field name="idDetailFamille" column="IDDEFA" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_DETAIL_FAMILLE"/>-->
+			<field name="idContribuable" column="IDCONT" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_CONTRIBUABLE"/>
+			<field name="noAVS" column="NUMAVS" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="NUMERO_AVS"/>
+			<field name="pereMereEnfant" column="CSPMEN" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="PERE_MERE_ENFANT"/>
+			<field name="nomPrenom" column="NOMPRE" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="NOM_PRENOM"/>
+			<field name="nomPrenomUpper" column="NOMPRU" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="NOM_PRENOM_UPPER"/>
+			<field name="dateNaissance" column="DANAIS" type="DATE" mandatory="false" comment="DATE_NAISSANCE"/>
+			<field name="sexe" column="CSSEXE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="SEXE"/>											 
+			<field name="finDefinitive" column="FINDEF" type="MONTH_YEAR" dataType="NUMERIC(6,0)" mandatory="false" comment="FIN_DEFINITIVE"/>
+			<field name="codeTraitementDossier" column="CSTRDO" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="CODE_TRAITEMENT_DOSSIER"/>
+			<field name="nnssContribuable" column="NNSSCO" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="NNSS_CONTRIBUABLE"/>
+			<field name="noPersonne" column="NOPERS" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="NUMERO_PERSONNE"/>
+			<field name="typeAvisRIP" column="CSTRIP" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="TYPE_AVIS_RIP"/>
+			<field name="dateAvisRIP" column="DAARIP" type="DATE" mandatory="false" comment="DATE_AVIS_RIP"/>
+			<field name="typeNoPersonne" column="CSTNPE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="TYPE_NUMERO_PERSONNE"/>
+			<field name="idTier" column="IDTIER" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="IdTier"/>
+			<field name="isContribuable" column="ISCONT" type="BOOLEAN" mandatory="false" comment="Is contribuable"/>
+			<field name="tauxDeductIc" column="TAUXIC" type="NUMERIC" dataType="NUMERIC(3,0)" mandatory="false" comment="Taux deduction IC"/>
+			<field name="tauxDeductIfd" column="TXDIFD" type="NUMERIC" dataType="NUMERIC(3,0)" mandatory="false" comment="Taux deduction IFD"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdFamille" field-ref="idFamille" operation="EQUALS"/>
+				<search-field name="isContribuable" field-ref="isContribuable" operation="EQUALS"/>
+				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS"/>		
+				<search-field name="likeNoAVS" field-ref="noAVS" operation="EQUALS"/>		
+				<search-field name="likeNomPrenom" field-ref="nomPrenomUpper" operation="LIKE"/>		
+				<search-field name="forDateNaissance" field-ref="dateNaissance" operation="EQUALS"/>
+				<search-field name="forNoPersonne" field-ref="noPersonne" operation="EQUALS"/>
+				<search-field name="forIdTiers" field-ref="idTier" operation="EQUALS"/>
+				<search-field name="forFinDefinitive" field-ref="finDefinitive" operation="EQUALS"/>
+				<search-field name="inPereMereEnfant" field-ref="pereMereEnfant" operation="IN"/>
+				<search-field name="inNumerosPersonnes" field-ref="noPersonne" operation="IN"/>
+				<search-field name="forPereMereEnfant" field-ref="pereMereEnfant" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="calculs">
+			<search-group operator="AND">
+				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS"/>
+				<search-field name="forDateNaissanceGOE" field-ref="dateNaissance" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forDateNaissanceLOE" field-ref="dateNaissance" operation="LESS_OR_EQUALS"/>
+				<search-field name="forFinDefinitiveNull" field-ref="finDefinitive" operation="NULL"/>
+				<search-field name="forFinDefinitiveLOE" field-ref="finDefinitive" operation="LESS_OR_EQUALS"/>
+				<search-field name="forPereMereEnfant" field-ref="pereMereEnfant" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="subsides">
+			<search-group operator="AND">
+				<search-field name="forIdFamille" field-ref="idFamille" operation="EQUALS"/>
+				<search-field name="isContribuable" field-ref="isContribuable" operation="EQUALS"/>
+				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS"/>		
+				<search-field name="forPereMereEnfant" field-ref="pereMereEnfant" operation="EQUALS"/>
+				<search-field name="forDifferentPereMereEnfant" field-ref="pereMereEnfant" operation="NOT_EQUALS"/>
+				<search-group operator="OR">
+					<search-field name="forFinDefinitive" field-ref="finDefinitive" operation="EQUALS"/>
+					<search-field name="forFinDefinitiveLOE" field-ref="finDefinitive" operation="LESS_OR_EQUALS"/>
+					<search-field name="forFinDefinitiveGOE" field-ref="finDefinitive" operation="GREATER_OR_EQUALS"/>
+				</search-group>
+				<search-field name="forDateNaissanceGOE" field-ref="dateNaissance" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forDateNaissanceLOE" field-ref="dateNaissance" operation="LESS_OR_EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="calculSupplementContribution">
+			<search-group operator="AND">
+				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS"/>		
+				<search-field name="forDifferentPereMereEnfant" field-ref="pereMereEnfant" operation="NOT_EQUALS"/>
+				<search-group operator="OR">
+					<search-field name="forFinDefinitive" field-ref="finDefinitive" operation="EQUALS"/>
+					<search-field name="forFinDefinitiveLOE" field-ref="finDefinitive" operation="LESS_OR_EQUALS"/>
+					<search-field name="forFinDefinitiveGOE" field-ref="finDefinitive" operation="GREATER_OR_EQUALS"/>
+				</search-group>
+				<search-field name="forIdTiersNotEmpty" field-ref="idTier" operation="NOT_NULL" />
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<!--<order-field field-ref="noPersonne" />-->
+			<order-field field-ref="isContribuable" order="ASC"/>
+			<order-field field-ref="pereMereEnfant" />
+			<order-field field-ref="dateNaissance" />			
+			<order-field field-ref="nomPrenom" order="ASC"/>
+		</order-by>
+		
+		<!-- INDEX CREATION : CREATE INDEX MAFAMIL1 on MAFAMILL (IDCONT); -->
+		
+	</simple-model>
+</model-mapping>

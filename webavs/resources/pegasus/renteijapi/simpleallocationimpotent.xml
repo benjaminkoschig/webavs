@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--  fichier de mapping du modele simple Allocation Impotent -->
+<!--  SCE, 6.2010 -->
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.renteijapi.SimpleAllocationImpotent">
+		<description>Modele de la table simple allocation impotent</description>
+		<table name="PCALOCIM" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAllocationImpotent" column="CLIDEN" comment="ID_ALLOCATION_IMPOTENT"/>
+			<field name="idDonneeFinanciereHeader" column="CLIDFE" type="NUMERIC" mandatory="true"  comment="ID_DONNEE_FINANCIERE_HEADER"/>
+			<field name="montant" column="CLMMON" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT_ALLOCATION"/>
+			<field name="dateDecision" column="CLDDEC" type="DATE" mandatory="true" comment="DATE_DECISION"/>
+			<field name="dateDepot" column="CLDDEP" type="DATE"  mandatory="true" comment="DATE_DEPOT"/>
+			<field name="csTypeRente" column="CLTREN" type="NUMERIC"  mandatory="true" comment="CS_TYPE_RENTE"/>
+			<field name="csGenre" column="CLTGEN" type="NUMERIC" mandatory="true" comment="CS_GENRE_RENTE"/>
+			<field name="csDegre" column="CLTDEG" type="NUMERIC" mandatory="true" comment="CS_DEGRE_RENTE"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

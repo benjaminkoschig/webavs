@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.revisionquadriennale.ListRevisions">
+		<root-model name="simpleDemande" model-ref="ch.globaz.pegasus.business.models.demande.SimpleDemande" select-fields="false"/>
+		
+		<select-fields>
+			<select-field name="idDemande" field-ref="simpleDemande.idDemande" />
+			<select-field name="dateProchaineRevision" field-ref="simpleDemande.dateProchaineRevision" />
+			<select-field name="motifProchaineRevision" field-ref="simpleDemande.motifProchaineRevision" />
+			<select-field name="idGestionnaire" field-ref="simpleDemande.idGestionnaire" />
+			<select-field name="idTiers" field-ref="dossier.demandePrestation.personneEtendue.tiers.idTiers" />
+			<select-field name="numAvsActuel" field-ref="dossier.demandePrestation.personneEtendue.personneEtendue.numAvsActuel" />
+			<select-field name="designation1" field-ref="dossier.demandePrestation.personneEtendue.tiers.designation1" />
+			<select-field name="designation2" field-ref="dossier.demandePrestation.personneEtendue.tiers.designation2" />
+			<select-field name="dateNaissance" field-ref="dossier.demandePrestation.personneEtendue.personne.dateNaissance" />
+			<select-field name="sexe" field-ref="dossier.demandePrestation.personneEtendue.personne.sexe" />
+			<select-field name="idPays" field-ref="dossier.demandePrestation.personneEtendue.tiers.idPays" />
+			<select-field name="agenceDesignation1" field-ref="tiersAgence.designation1" />
+			<select-field name="agenceDesignation2" field-ref="tiersAgence.designation2" />
+			<select-field name="agenceRelationDebut" field-ref="compositionTiersAgence.debutRelation" />
+			<select-field name="agenceRelationFin" field-ref="compositionTiersAgence.finRelation" />
+			<select-field name="idDroit" field-ref="simpleDroit.idDroit" />	
+		</select-fields>
+		
+		<linked-model name="dossier" model-ref="ch.globaz.pegasus.business.models.dossier.Dossier" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="dossier.idDossier" operation="EQUALS" field-ref="simpleDemande.idDossier"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroit" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDemandePC" operation="EQUALS" field-ref="simpleDemande.idDemande"/>
+			</join-group>		
+		</linked-model>
+		
+		
+		<linked-model name="compositionTiersAgence" model-ref="ch.globaz.pyxis.business.model.CompositionTiersSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiersParent" operation="EQUALS" field-ref="dossier.demandePrestation.personneEtendue.tiers.idTiers"/>
+				<join-field name="typeLien" operation="EQUALS" value="507007"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="tiersAgence" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="compositionTiersAgence.idTiersEnfant"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forMoisAnnee" operation="EQUALS" field-ref="simpleDemande.dateProchaineRevision"/>  
+				<search-field name="forMoisAnneeGreaterOrEquals" operation="GREATER_OR_EQUALS" field-ref="simpleDemande.dateProchaineRevision"/>
+				<search-field name="forMoisAnneeLessOrEquals" operation="LESS_OR_EQUALS" field-ref="simpleDemande.dateProchaineRevision"/>
+				<search-group operator="OR"> 
+					<search-field name="forMoisDateFin" operation="NULL" field-ref="simpleDemande.dateFin" />
+					<search-field name="forMoisDateFin" operation="GREATER" field-ref="simpleDemande.dateFin" />
+				</search-group>
+				
+				<search-group operator="OR">
+					<search-field name="forDateDebut" operation="NULL" field-ref="compositionTiersAgence.debutRelation"/>
+					<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="compositionTiersAgence.debutRelation"/>
+				</search-group>
+				<search-group operator="OR">
+					<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="compositionTiersAgence.finRelation"/>
+					<search-field name="forDateDebut" operation="NULL" field-ref="compositionTiersAgence.finRelation"/>
+					<search-field name="forDateFin" operation="LESS_OR_EQUALS" field-ref="compositionTiersAgence.finRelation"/>
+				</search-group>
+				
+			</search-group>
+		</search-definition>
+		
+		<order-by name="nomPrenom">
+			<order-field field-ref="dossier.demandePrestation.personneEtendue.tiers.designationUpper1" order="DESC"/>
+			<order-field field-ref="dossier.demandePrestation.personneEtendue.tiers.designationUpper2" order="DESC"/>
+			<order-field field-ref="compositionTiersAgence.debutRelation" order="DESC"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

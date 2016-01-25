@@ -1,0 +1,121 @@
+package ch.globaz.pegasus.business.models.pcaccordee;
+
+import globaz.jade.persistence.model.JadeSimpleModel;
+
+public class SimplePlanDeCalcul extends JadeSimpleModel {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private String etatPC = null;
+    private String excedentPCAnnuel = null;
+    private String idPCAccordee = null;
+    private String idPlanDeCalcul = null;
+    private Boolean isPlanCalculAccessible = Boolean.FALSE;
+    private Boolean isPlanRetenu = Boolean.FALSE;
+    private String montantPCMensuelle = null;
+    private String primeMoyenneAssMaladie = null;
+
+    private byte[] resultatCalcul = null;
+
+    public String getEtatPC() {
+        return etatPC;
+    }
+
+    public String getExcedentPCAnnuel() {
+        return excedentPCAnnuel;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see globaz.jade.persistence.model.JadeAbstractModel#getId()
+     */
+    @Override
+    public String getId() {
+        return idPlanDeCalcul;
+    }
+
+    public String getIdPCAccordee() {
+        return idPCAccordee;
+    }
+
+    public String getIdPlanDeCalcul() {
+        return idPlanDeCalcul;
+    }
+
+    public Boolean getIsPlanCalculAccessible() {
+        return isPlanCalculAccessible;
+    }
+
+    public Boolean getIsPlanRetenu() {
+        return isPlanRetenu;
+    }
+
+    public String getMontantPCMensuelle() {
+        return montantPCMensuelle;
+    }
+
+    public String getPrimeMoyenneAssMaladie() {
+        return primeMoyenneAssMaladie;
+    }
+
+    /**
+     * @return the resultatCalcul
+     */
+    public byte[] getResultatCalcul() {
+        return resultatCalcul;
+    }
+
+    public void setEtatPC(String etatPC) {
+        this.etatPC = etatPC;
+    }
+
+    public void setExcedentPCAnnuel(String excedantPCAnnuel) {
+        excedentPCAnnuel = excedantPCAnnuel;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see globaz.jade.persistence.model.JadeAbstractModel#setId(java.lang.String)
+     */
+    @Override
+    public void setId(String id) {
+        idPlanDeCalcul = id;
+    }
+
+    public void setIdPCAccordee(String idPCAccordee) {
+        this.idPCAccordee = idPCAccordee;
+    }
+
+    public void setIdPlanDeCalcul(String idPlanDeCalcul) {
+        this.idPlanDeCalcul = idPlanDeCalcul;
+    }
+
+    public void setIsPlanCalculAccessible(Boolean isPlanCalculAccessible) {
+        this.isPlanCalculAccessible = isPlanCalculAccessible;
+    }
+
+    public void setIsPlanRetenu(Boolean isPlanRetenu) {
+        this.isPlanRetenu = isPlanRetenu;
+    }
+
+    public void setMontantPCMensuelle(String montantPCMensuelle) {
+        this.montantPCMensuelle = montantPCMensuelle;
+    }
+
+    public void setPrimeMoyenneAssMaladie(String primeMoyenneAssMaladie) {
+        this.primeMoyenneAssMaladie = primeMoyenneAssMaladie;
+    }
+
+    /**
+     * @param resultatCalcul
+     *            the resultatCalcul to set
+     */
+    public void setResultatCalcul(byte[] resultatCalcul) {
+        this.resultatCalcul = resultatCalcul;
+    }
+
+}

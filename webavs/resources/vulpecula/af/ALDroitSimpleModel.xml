@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.vulpecula.business.models.af.DroitModel">
+		<description>Droit aux allocations familiale d'un dossier</description>
+		<table name="ALDROIT" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDroit" column="FID" comment="ID du droit"/>
+			<field name="idEnfant" column="CID" type="NUMERIC" mandatory="false" comment="ID (FK) de l'enfant lié au droit"/>
+			<field name="typeDroit" column="CSTYPR" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Type de droit (ENF, FORM, MEN, ...), code système"/>
+			<field name="etatDroit" column="CSETAT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Etat du droit (actif, suspendu, ...), code système"/>
+			<field comment="Statut familial" column="CSTAF" type="NUMERIC" dataType="NUMERIC(8,0)" name="statutFamilial" mandatory="false"/>
+			<field name="debutDroit" column="FDDR" type="DATE" mandatory="true" comment="Date de début de droit"/>
+			<field name="finDroitForcee" column="FFDRF" type="DATE" mandatory="false" comment="Date de fin de droit indiquée par l'utilisateur"/>
+			<field name="dateAttestationEtude" column="FATTED" type="DATE" mandatory="false" comment="Date de l'attestation de formation indiquée par l'utilisateur"/>
+			<field name="motifFin" column="CSMODR" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Motif de fin de droit"/>
+			<field name="idDossier" column="EID" type="NUMERIC" mandatory="true" comment="ID (FK) auquel le droit appartient"/>
+			<field name="idTiersBeneficiaire" column="HTITIE" type="NUMERIC" mandatory="true" comment="ID (FK) du tiers bénéficiaire"/>
+			<field name="tauxVersement" column="FTVERS" type="NUMERIC" dataType="NUMERIC(5,2)" mandatory="true" comment="Taux de versement du droit"/>
+			<field name="motifReduction" column="CSMORE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Motif de réduction"/>
+			<field name="montantForce" column="FMOFOR" type="NUMERIC" dataType="NUMERIC(9,2)" mandatory="false" comment="montant à forcer"/>
+			<field name="force" column="FORCE" type="BOOLEAN" mandatory="true" comment="Indique si un montant forcé a été indiqué"/>
+			<field name="tarifForce" column="CSTARF" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Tarif à forcer (canton, caisse, ...), code système"/>
+			<field name="imprimerEcheance" column="FIMECH" type="BOOLEAN" mandatory="true" comment="Indique si l'échéance doit être imprimée ou non"/>
+			<field name="supplementActif" column="FSUPAC" type="BOOLEAN" mandatory="true" comment="Indique si un calcul du supplément est actif pour le droit (utilisé uniquement pour les caisses horlogères)"/>
+			<field name="supplementFnb" column="FSUFNB" type="BOOLEAN" mandatory="true" comment="Indique si le montant versé est un supplément FNB"/>
+			<field name="attestationAlloc" column="FATTAL"  type="BOOLEAN" mandatory="true" comment="Indique si prendre en compte allocataire ou tiers bénéficiaire pour edition des attestations de versement"/>
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+								
+				<search-group operator="AND">
+				<search-field name="forDateDebut" field-ref="debutDroit" operation="LESS_OR_EQUALS" />
+				<search-group operator="AND">					
+					<search-group operator="OR">
+						<search-field name="forDateFin" field-ref="finDroitForcee" operation="GREATER_OR_EQUALS" />
+						<search-field name="forDateFin" field-ref="finDroitForcee" operation="NULL" />
+					</search-group>
+				</search-group>
+			</search-group>
+				
+			<!-- 	<search-field name="forIdDroit" field-ref="idDroit" operation="EQUALS"/>   			-->
+			<!--	<search-field name="forIdEnfant" field-ref="idEnfant" operation="EQUALS"/>			-->
+			<!--	<search-field name="forTypeDroit" field-ref="typeDroit" operation="EQUALS"/>		-->
+			<!--	<search-field name="forEtatDroit" field-ref="etatDroit" operation="EQUALS"/>		-->
+			<!--	<search-field name="forDateEcheanceForcee" field-ref="finDroitForcee" operation="EQUALS"/> -->
+			</search-group>
+		</search-definition>
+		
+		<order-by name="idDossier">
+			<order-field field-ref="idDossier" order="ASC"/>
+		</order-by>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="pegasus/dessaisissement/simpledessaisissementfortune.xml"/>
+	<model-mapping import="pegasus/dessaisissement/simpledessaisissementrevenu.xml"/>
+	<model-mapping import="pegasus/dessaisissement/dessaisissementfortune.xml"/>
+	<model-mapping import="pegasus/dessaisissement/dessaisissementfortuneauto.xml"/>
+	<model-mapping import="pegasus/dessaisissement/dessaisissementrevenu.xml"/>
+	<model-mapping import="pegasus/dessaisissement/dessaisissementrevenuauto.xml"/>
+</model-mapping>

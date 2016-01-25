@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.param.business.models.ParameterModel">
+		<description>Paramètres généraux de l'application</description>
+		<table name="ALPARAM" hasCreationSpy="false" hasSpy="true"  alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idParam" column="PPAID"  type="NUMERIC" comment="ID du paramètre"/>
+			<field name="idCleDiffere" column="PPACDI" type="STRING" dataType="VARCHAR(100)" mandatory="true" comment="clé (nom) du paramètre"/>		
+			<field name="idApplParametre" column="PPARAP" type="STRING" dataType="VARCHAR(10)" mandatory="true" comment="Application du paramètre"/>
+			<field name="idActeurParametre" column="PPARIA" type="NUMERIC" dataType="NUMERIC(12,0)" mandatory="true" comment="Acteur du paramètre?"/>
+			<field name="dateDebutValidite" column="PPADDE" type="DATE" dataType="NUMERIC(8,0)" mandatory="true" comment="Début de validité du paramètre"/>
+			<field name="plageValDeParametre" column="PPARPD" type="NUMERIC" dataType="NUMERIC(13,6)"  mandatory="true" comment="Début de la plage valeur du paramètre"/>
+			<field name="idCodeSysteme" column="PCOSID" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Id du code système"/>	
+			<field name="plageValFinParametre" column="PPARPF" type="NUMERIC" dataType="NUMERIC(13,6)" mandatory="false" comment="Fin de la plage valeur du paramètre"/>	
+			<field name="valeurAlphaParametre" column="PPARVA" type="STRING" dataType="VARCHAR(128)" mandatory="false" comment="Valeur alphanumérique du paramètre"/>	
+			<field name="valeurNumParametre" column="PPRAVN" type="NUMERIC" dataType="NUMERIC(13,6)" mandatory="false" comment="Valeur numérique du paramètre"/>	
+			<field name="designationParametre" column="PPRADE" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="Désignation du paramètre"/>	
+			<field name="uniteParametre" column="CSTYUN" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Unité du paramètre"/>
+			<field name="idTypeCode" column="PCOITC" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Type du code système du paramètre"/>			
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdCleDiffere" field-ref="idCleDiffere" operation="EQUALS"/>
+				<search-field name="forIdApplParametre" field-ref="idApplParametre" operation="EQUALS"/>
+				<search-field name="forIdActeurParametre" field-ref="idActeurParametre" operation="EQUALS"/>
+				<search-field name="forDateDebutValidite" field-ref="dateDebutValidite" operation="LESS_OR_EQUALS"/>
+				<search-field name="forPlageValParametre" field-ref="plageValDeParametre" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forPlageValParametre" field-ref="plageValFinParametre" operation="LESS_OR_EQUALS"/>
+				<search-field name="forIdCodeSysteme" field-ref="idCodeSysteme" operation="EQUALS"/>
+				<search-field name="forValeurAlphaParametre" field-ref="valeurAlphaParametre" operation="EQUALS"/>
+				<search-field name="forValeurNumParametre" field-ref="valeurNumParametre" operation="EQUALS"/>
+				<search-field name="likeDesignationParametre" field-ref="designationParametre" operation="LIKE"/>
+				<search-field name="forUniteParametre" field-ref="uniteParametre" operation="EQUALS"/>
+				<search-field name="forIdTypeCode" field-ref="idTypeCode" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		<search-definition name="fromEcranGestion">
+			<search-group operator="AND">
+				<search-field name="forIdCleDiffere" field-ref="idCleDiffere" operation="LIKE"/>
+			</search-group>
+		</search-definition>
+		<order-by name="default">
+			<order-field field-ref="dateDebutValidite" order="DESC"/>
+		</order-by> 	
+		<order-by name="fromEcranGestion">
+			<order-field field-ref="idCleDiffere" order="ASC"/>
+		</order-by> 	
+	</simple-model>
+</model-mapping>

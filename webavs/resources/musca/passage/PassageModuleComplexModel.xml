@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'une liste de récapitulatif d'impression aux entreprises -->
+
+<model-mapping>
+	<complexe-model className="ch.globaz.musca.business.models.PassageModuleComplexModel">
+		<select-fields distinct="true">
+			<select-field name="idPassage" field-ref="passageModel.idPassage"/>
+			<select-field name="libellePassage" field-ref="passageModel.libellePassage"/>
+			<select-field name="typeFacturation" field-ref="passageModel.typeFacturation"/>
+			<select-field name="datePeriode" field-ref="passageModel.datePeriode"/>
+			<select-field name="dateFacturation" field-ref="passageModel.dateFacturation"/>
+			<select-field name="status" field-ref="passageModel.status"/>
+				
+			<select-field name="idModuleFacturation" field-ref="moduleModel.idModuleFacturation"/>
+			<select-field name="idTypeModule" field-ref="moduleModel.idTypeModule"/>
+				
+			<select-field name="idAction" field-ref="modulePassageModel.idAction"/>
+			<select-field name="idPlan" field-ref="modulePassageModel.idPlan"/>
+		
+		</select-fields>
+		<root-model name="passageModel" model-ref="ch.globaz.musca.business.models.PassageModel" select-fields="false" />
+		
+		<linked-model name="modulePassageModel" model-ref="ch.globaz.musca.business.models.ModulePassageModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPassage" field-ref="passageModel.idPassage"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="moduleModel" model-ref="ch.globaz.musca.business.models.ModuleModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idModuleFacturation" field-ref="modulePassageModel.idModuleFacturation"/>
+			</join-group>
+		</linked-model>
+			
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forStatus" field-ref="status" operation="EQUALS"/>
+				<search-field name="forNotTypeFacturation" field-ref="typeFacturation" operation="NOT_EQUALS"/>
+				<search-field name="inPassageTypeModule" field-ref="idTypeModule" operation="IN"/>
+			</search-group>
+		</search-definition>
+		
+		
+	</complexe-model>
+</model-mapping>
+

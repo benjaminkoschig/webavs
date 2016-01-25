@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.calcul.CalculDernierePCA">
+		
+		<select-fields>
+			<select-field name="dateDebut" field-ref="simplePCAccordee.dateDebut" />
+			<select-field name="idPCAccordee" field-ref="simplePCAccordee.idPCAccordee" />
+		</select-fields>
+		
+		<root-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" select-fields="false"/>
+		
+		<linked-model name="simpleVersionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+		
+		
+				
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forNoVersionDroit" operation="EQUALS" field-ref="simpleVersionDroit.noVersion"/>
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>
+			</search-group>
+		</search-definition>
+		
+			
+		<order-by name="byDateDebut">
+			<order-field field-ref="dateDebut" order="DESC"/>
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

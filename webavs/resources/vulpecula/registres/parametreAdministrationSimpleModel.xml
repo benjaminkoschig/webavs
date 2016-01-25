@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.parametre.ParametreAdministrationSimpleModel">
+		<table name="PT_PARAMETRES_TIERSADMIN" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID" comment="Id du parametre" />
+			<field name="idAdministration" column="ID_TIADMIP" type="NUMERIC" comment="id de l'administration (TIADMIP)" />
+			<field name="familleCodeSysteme" column="CS_FAMILLE_CODE_SYSTEME" type="NUMERIC" comment="code systeme repesentant la famille de code pour ce parametre" />
+			<field name="csParametre" column="CS_PARAMETRE" type="NUMERIC" comment="code systeme du parametre" />			
+			<field name="dateValidite" column="DATE_VALEUR_VALIDITE" type="NUMERIC" comment="date de validite du parametre" />
+			<field name="plageValeurDebut" column="PLAGE_VALEUR_DEBUT" type="NUMERIC" comment="valeur de debut de la plage" />
+			<field name="plageValeurFin" column="PLAGE_VALEUR_FIN" type="NUMERIC" comment="valeur de fin de la plage" />
+			<field name="valeur" column="VALEUR" type="NUMERIC" comment="valeur du parametre" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forIdAdministration" field-ref="idAdministration" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

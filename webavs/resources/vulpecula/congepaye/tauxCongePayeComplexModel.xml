@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.congepaye.TauxCongePayeComplexModel">
+		
+		<root-model name="tauxCongePayeSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.congepaye.TauxCongePayeSimpleModel" />
+			
+		<linked-model name="assuranceSimpleModel"
+			model-ref="ch.globaz.naos.business.model.AssuranceSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="assuranceId"
+					operation="EQUALS" field-ref="tauxCongePayeSimpleModel.idAssurance" />
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="tauxCongePayeSimpleModel.id" operation="EQUALS" />
+				<search-field name="forIdCongePaye" field-ref="tauxCongePayeSimpleModel.idCongePaye" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,820 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="PHENIX_DECISION_IND_VERSO_FR"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="28"
+		 rightMargin="15"
+		 topMargin="5"
+		 bottomMargin="5"
+		 whenNoDataType="AllSectionsNoDetail"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="2" />
+	<reportFont name="ARIAL" isDefault="false" fontName="arial.ttf" size="11" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="ARIAL.TTF" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+		<background>
+			<band height="815"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="16"
+						width="262"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Personnes de conditions indépendante]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="6"
+						y="34"
+						width="262"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-1"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Principe]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="52"
+						width="262"
+						height="220"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-8"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<text><![CDATA[Sont soumises à l'obligation de verser une cotisation personnelle AVS/AI/APG toutes les personnes qui exercent une activité lucrative indépendante. L'obligation débute au 1er janvier de l'année qui suit celle où l'assuré a accompli sa 17ème année. Elle subsiste tant que s'exerce l'activité lucrative. Toutefois, pour les hommes ayant accompli leur 65e année et les femmes leur 64e année (63ème année jusqu'au 31.12.2004), les cotisations sont perçues uniquement sur la part du gain annuel qui excède 16'800 fr.. En outre, lorsque le revenu annuel provenant d'une activité indépendante exercée à titre accessoire n'excède pas 2'000 fr., la cotisation n'est perçue qu'à la demande de l'assuré. Il appartient à celui-ci d'informer la Caisse que ce revenu provient d'une telle activité.
+Sont également soumis à l'obligation de verser une contriburion AFI conformément à la loi cantonale sur les allocations familiales aux agriculteurs indépendants : a) les personnes de condition indépendante, domiciliées en Valais, qui vouent dans le canton leur activité principale à l'agriculture; b) les salariés domiciliés en Valais qui exercent dans lae canton , à titre accessoire, une activité indépendante appréciable dans l'agriculture; c) les personnes morales de droit privé qui exploitent, en Valais, un domaine agricole. L'obligation de contribuer commence dès le 1er janvier de l'année qui suit celle où la personne assujettie a accompli sa 20ème année. Elle subsiste tant que l'intéressé doit cotiser au titre de l'AVS.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="283"
+						y="16"
+						width="262"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-9"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Personnes sans activité lucrative]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="283"
+						y="34"
+						width="262"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-10"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Principe]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="283"
+						y="52"
+						width="262"
+						height="159"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-11"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<text><![CDATA[Sont soumis à l'obligation de verser une cotisation personnelle AVS/AI/APG en qualité de personnes sans activité lucrative les hommes ainsi que les femmes qui n'exercent aucune activité lucrative ou dont l'activité lucrative n'est pas durablement exercée à plein temps et dont les cotisations payées sur le revenu d'un travail n'atteignent pas la moitié de la cotisation due comme assuré sans activité lucrative; leurs cotisations payées sur le revenu du travail doivent dans tous les cas atteindre le montant de la cotisation minimale. Un ssuré entrant dans cette catégorie peut demander à la Caisse compensation, preuve à l'appui, que les cotisation s versées pour une année sur le revenu de son activité lucrative soient imputées sur celles qu'il doit acquitter, pour la même année, comme personne sans activité lucrative. Toute fois, les personnes mariées, sans activité lucrative, peuvent être exemptées de cotiser à conditon que leur conjoint exerce une activité lucrative au sens de la loi AVS (activité durable et à plein temps) et paie, sur le produit de cette activité, au moins le double de la cotisatin minimale AVS/AI/APG (actuellement Fr. 850.- par an).]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="6"
+						y="283"
+						width="262"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-1"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Calcul]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="302"
+						width="262"
+						height="361"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-65"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<text><![CDATA[En général, les cotisations et contributions sont fixées chaque année sur la base du revenu effectivement obtenu durant l'année. En fait, elles doivent être déterminées d'après le revenu ressortant de la taxation fiscale définitive. Est alors déterminant le revenu provenant de l'activité lucrative indépendante, donc sans les autres éléments de revenu et sans la déduction des cotisations personnelles AVS/AI/APG. Les déductions sociales effectuées pour l'impôt ne sont non plus admises, de sorte que le reevenu déterminant pour l'AVS diffère sensiblement du revenu porté sur le bordereau d'impôt. Du revenu fiscal est déduit un intérêt (3.5% dès le 1er janvier 2000), calculé sur le capital propre investi dans l'entreprise (actif moins passif).
+
+A défaut de taxation fiscale, la Caisse doit estimer elle-même le revenu soumis à cotisations.
+
+La Caisse ne connaît pas, au moment où elle établit la facture périodique des cotisations, le revenu effectif dur lequel doit être calculée la cotisation personnelle. Elle notifie donc, en principale au cours du 1er trimestre de chaque année, une décision fixant, sous réserve de rectification ultérieure, les cotisations dues pour l'année en question. En fait, ces cotisations représentent des acomptes. Si les éléments de revenu pris en considération pour fixer les acomptes diffèrent sensiblement du revenu probable, nous vous invitons à informer la Caisse de compensation afin que les acomptes puissent être adaptés. Des intérêts moratoires sont perçus en cas de différence importante (25%) entre les cotisations effectivement dues et les acomptes facturés. Lorsque la Caisse de compensation aura convenu la communication fiscale définitive concernant le revenu et la fortune de l'année en question, elle procédera à l'ajustement entre les acomptes facturés et les cotisations effectivement dues.
+
+Jusqu'au 31.12.2000,  les cotisations doivent, en règle générale, être fixées chaque 2 ans sur la base du revenu moyen ressortant de la taxation fiscale définitive la plus récente.
+
+Les cotisations AVS/AI/APG et la contribution AFI sont calculées selon les taux fixés par les dispositions légales en % du revenu, soit : ]]></text>
+				</staticText>
+				<rectangle radius="0" >
+					<reportElement
+						mode="Opaque"
+						x="8"
+						y="671"
+						width="89"
+						height="17"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="rectangle-1"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<rectangle radius="0" >
+					<reportElement
+						mode="Opaque"
+						x="95"
+						y="671"
+						width="86"
+						height="17"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="rectangle-2"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<rectangle radius="0" >
+					<reportElement
+						mode="Opaque"
+						x="180"
+						y="671"
+						width="88"
+						height="17"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="rectangle-3"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<rectangle radius="0" >
+					<reportElement
+						mode="Opaque"
+						x="8"
+						y="687"
+						width="89"
+						height="17"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="rectangle-4"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<rectangle radius="0" >
+					<reportElement
+						mode="Opaque"
+						x="95"
+						y="687"
+						width="86"
+						height="17"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="rectangle-5"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<rectangle radius="0" >
+					<reportElement
+						mode="Opaque"
+						x="180"
+						y="687"
+						width="88"
+						height="17"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="rectangle-6"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<rectangle radius="0" >
+					<reportElement
+						mode="Opaque"
+						x="8"
+						y="703"
+						width="89"
+						height="17"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="rectangle-7"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<rectangle radius="0" >
+					<reportElement
+						mode="Opaque"
+						x="95"
+						y="703"
+						width="86"
+						height="17"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="rectangle-8"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<rectangle radius="0" >
+					<reportElement
+						mode="Opaque"
+						x="180"
+						y="703"
+						width="88"
+						height="17"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="rectangle-9"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="98"
+						y="673"
+						width="81"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-13"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[AVS/AI/APG]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="183"
+						y="673"
+						width="83"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-14"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[AFI]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="10"
+						y="690"
+						width="84"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-15"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[du 1.1.96 au 31.12.01]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="98"
+						y="690"
+						width="81"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-16"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[5.116% à 9.5%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="183"
+						y="690"
+						width="83"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-17"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[0.84% à 1.56%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="10"
+						y="705"
+						width="84"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-18"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[dès le 1.1.02]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="98"
+						y="705"
+						width="81"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-19"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[5.116% à 9.5%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="183"
+						y="705"
+						width="83"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-20"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[1.05% à 1.95%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="729"
+						width="262"
+						height="50"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-21"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<text><![CDATA[La cotisation AVS/AI/APG minimale s'élève cependant à 425 fr. dès le 1er janvier 2003 (390 fr. jusqu'au 31.12.2002).
+
+La contribution aux frais de gestion (FG) s'élève à 3% de la cotisation AVS/AI/APG.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="283"
+						y="213"
+						width="262"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-22"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Calcul]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="283"
+						y="228"
+						width="262"
+						height="101"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-23"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<text><![CDATA[Les cotisations sont fixées chaque année d'après la fortune et le revenu acquis sous forme de rente effectivement obtenu durant l'année. En fait, elles doivent être déterminées sur la base des éléments ressortant de la taxation fiscale définitive ou, à défaut, d'après les éléments en possession de la Caisse. Pour le calcul des cotisaitons, le revenu annuel acquis sous  forme de rente est multiplié par 20 et ajouté au montant de la fortune. La cotisation AVS/AI/APG se calcule selon un tableau fixé par les dispostions légales. Dès 2003, elle s'échelonne de 425 à 10'100 fr. par an (de 390 à 10'100 fr. entre 1996 et 2002). La contribution aux frais de gestion (FG) s'élève à 3% de la cotisation AVS/AI/APG.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="283"
+						y="332"
+						width="262"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-24"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Intérêts moratoires]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="283"
+						y="348"
+						width="262"
+						height="168"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-25"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<text><![CDATA[Lorsque les cotisations ne sont pas payées dans les délais, un intérêt moratoire de 5% l'an doit être perçu. Ces intérêts sont dus quel que soit le montant des cotisations et calculés par jour. (jusqu'au 31.12.2000, les intérêts moratoires sont calculés à 6% l'an ou 0.5% par mois et perçus lorsque les cotisations dues atteignent 3'000 fr.).
+Selon les cas, les intérêts moratoires courent dès le terme de la période de paiement, dès la date de la décisions de cotisation (jusqu'au 31.12.2000, dès le mois qui suit celui au cours duquel la décisions a été notifiée) ou dès le jour qui suit la fin de l'année civile pour laquelle les cotisations sont dues.
+Lorsque la différence entre les acomptes versés et les cotisations effectivement dues atteint au moins 25%, les intérêts sont dus dès le 1er janvier après la fin de l'année civile qui suit l'année de cotisation.
+En cas de réclamation de cotisations arriérées, les intérêts dus jusqu'à accompagne la décision. Les intérêts dus après la notificaton de la décision feront l'objet d'un décompte ultérieur. Les intérêts dus pour les cotisations des périodes courantes sont perçus lorsque la créance de cotisations n'a pas été payée dans les 30 jours.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="283"
+						y="517"
+						width="262"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-26"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Sommation]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="283"
+						y="536"
+						width="262"
+						height="50"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-27"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<text><![CDATA[Si les cotisations dues en vertu de la présente décision n'étaient pas payées dans les délai imparti, nous devrions vous notifier une sommation conformément à l'art. 34a RAVS. Cas échéant, une taxe comprise entre Fr. 20.- et 200.- serait mise à votre charge.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="283"
+						y="586"
+						width="262"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-28"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Moyens de droit]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="283"
+						y="605"
+						width="262"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-29"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Recours]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="283"
+						y="620"
+						width="262"
+						height="71"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-30"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<text><![CDATA[Le recours sera formé par écrit dans les 30 jours dès la notification de la décision auprès du Tribunal cantonal des assurances à Sion. Il sera signé par son auteur ou la personne légitimée pour recourir. L'acte de recours doit contenir un exposé succint des faits et des motifs invoqués, ainsi que les conclusions. La décision devra être jointe au recours avec l'enveloppe qui la contenait. Il en sera de même des moyens de preuve, s'ils sont en possession du recourant; sinon ils devront être indiqués avec précision.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="283"
+						y="693"
+						width="262"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-31"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Réduction et remise des cotisations]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="283"
+						y="711"
+						width="262"
+						height="103"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-32"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<text><![CDATA[Les personnes pour lesquelles le paiement des cotisations personnelles constituerait une charge trop lourde pourront obtenir, sur demande motivée, une réduction équitable. L'existence de la charge trop lourde ne peut être admise que dans les cas où l'assuré n'est pas en mesure de couvrir ses besoins essentiels ou ceux de sa famille ou ne les couvrirait plus après paiement de la cotisation.
+Dans les cas où le paiement de la cotisation minimale mettrait l'assuré dans une situation intolérable, celui-ci pourra obtenir, sur demande motivée, la remise des cotisations. Le canton et la commune de domicile verseront pour cet assuré la cotisation minimale.
+]]></text>
+				</staticText>
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

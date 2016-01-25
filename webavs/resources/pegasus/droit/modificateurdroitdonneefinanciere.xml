@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.droit.ModificateurDroitDonneeFinanciere">
+		<root-model name="simpleDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroit"/>
+		<linked-model name="simpleVersionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>
+			</join-group>		
+		</linked-model>
+		<linked-model name="simpleDroitMembreFamille" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>
+			</join-group>		
+		</linked-model>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simpleVersionDroit.idVersionDroit" />
+				<search-field name="forRoleMembreFamille" operation="EQUALS" field-ref="simpleDroitMembreFamille.csRoleFamillePC"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="byVersion">
+			<order-field field-ref="simpleVersionDroit.noVersion" order="DESC"/>
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

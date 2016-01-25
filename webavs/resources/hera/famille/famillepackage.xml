@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="hera/famille/simplemembrefamille.xml"/>
+	<model-mapping import="hera/famille/membrefamille.xml"/>
+	<model-mapping import="hera/famille/simpleperiode.xml"/>
+	<model-mapping import="hera/famille/simpleconjoint.xml"/>
+	<model-mapping import="hera/famille/simplerelationconjoint.xml"/>
+	<model-mapping import="hera/famille/relationconjoint.xml"/>
+	<model-mapping import="hera/famille/datenaissanceconjoint.xml"/>
+</model-mapping>

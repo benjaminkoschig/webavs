@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.processus.ProcessusPeriodiqueModel">
+		<description>Processus périodiques de l'application</description>
+		<table name="ALPROPER" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idProcessusPeriodique" column="QPID"  type="NUMERIC" comment="ID du processus périodique"/>
+			<field name="idPeriode" column="QPIDPER" type="NUMERIC" mandatory="true" comment="id de la période lié au processus périodique"/>		
+			<field name="idConfig" column="QPIDCON" type="NUMERIC" mandatory="true" comment="id de la config lié au processus périodique"/>		
+			<field name="etat" column="CSETAT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Etat du processus périodique"/>	
+			<field name="isPartiel" column="QPPART" type="BOOLEAN"  mandatory="true" comment="Processus périodique partiel ou non"/>
+			<field name="idPassageFactu" column="QIDPSGF" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="Passage de facturation lié au processus"/>	
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPassageFactu" field-ref="idPassageFactu" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+	
+	
+</model-mapping>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.donneesfinancieres.DonneeFinanciere">
+		<root-model name="simpleDonneeFinanciere" model-ref="ch.globaz.perseus.business.models.donneesfinancieres.SimpleDonneeFinanciere"/>
+		<linked-model name="demande" model-ref="ch.globaz.perseus.business.models.demande.Demande" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleDemande.idDemande" operation="EQUALS" field-ref="simpleDonneeFinanciere.idDemande"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="membreFamille" model-ref="ch.globaz.perseus.business.models.situationfamille.MembreFamille" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleMembreFamille.idMembreFamille" operation="EQUALS" field-ref="simpleDonneeFinanciere.idMembreFamille"/>
+			</join-group>
+		</linked-model>
+				
+	</complexe-model>
+</model-mapping>

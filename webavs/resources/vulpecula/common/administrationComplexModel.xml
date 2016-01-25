@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.vulpecula.external.models.AdministrationComplexModel">
+		<root-model name="admin" model-ref="ch.globaz.pyxis.business.model.AdministrationSimpleModel" />
+		<linked-model name="tiers"	model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel"	join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="admin.idTiersAdministration" />
+			</join-group>
+		</linked-model>
+		
+		<!-- SEARCH DEFINITIONS	 -->
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdTiersAdministration" field-ref="admin.idTiersAdministration" operation="EQUALS" />
+				<search-group operator="AND">
+					<search-group operator="OR">
+						<search-field name="forDesignation1Like" field-ref="tiers.designationUpper1" operation="LIKE" />
+						<search-field name="forDesignation2Like" field-ref="tiers.designationUpper2" operation="LIKE" />
+					</search-group>
+				</search-group>
+				<search-field name="forGenreAdministration" field-ref="admin.genreAdministration" operation="EQUALS" />
+				<search-field name="forCodeAdministration" field-ref="admin.codeAdministration" operation="EQUALS" />
+				<search-field name="forCodeAdministrationLike" field-ref="admin.codeAdministration" operation="LIKE" />
+				<search-field name="forCanton" field-ref="admin.canton" operation="EQUALS" />
+				<search-field name="inGenreAdministration" field-ref="admin.genreAdministration" operation="IN" />
+				<search-field name="forIdTiersAdministrationIn" field-ref="admin.idTiersAdministration" operation="IN" />
+			</search-group>
+		</search-definition>
+		
+		<order-by name="des2des1">
+			<order-field field-ref="tiers.designation2" order="ASC"/>
+			<order-field field-ref="tiers.designation1" order="ASC"/>
+		</order-by>
+		
+		<order-by name="des1des2">
+			<order-field field-ref="tiers.designation1" order="ASC"/>
+			<order-field field-ref="tiers.designation2" order="ASC"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

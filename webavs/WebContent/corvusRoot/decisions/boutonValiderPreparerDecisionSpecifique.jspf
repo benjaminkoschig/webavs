@@ -1,0 +1,29 @@
+			<tr class="forceTRHeight">
+				<td colspan="2">
+					&#160;
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<c:choose>
+						<c:when test="${viewBean.interdirePreparationCarMelangeRentesAvecEtSansCodeCasSpecial}">
+							<div id="divMessageInterdiction" data-g-boxmessage="type:WARN">
+								<ct:FWLabel key="ERREUR_PREPARATION_DECISION_COMPORTANT_RENTES_AVEC_ET_SANS_AJOURNEMENT" />
+							</div>
+						</c:when>
+						<c:otherwise>
+							<div id="divExecuterProcess">
+								<span id="boutonOk">
+									Ok
+								</span>
+								<span id="imageOK">
+									<img 	id="imageProcessExecute" 
+											src="<%=request.getContextPath()%>/images/smal_ml_good.png" />
+								</span>
+							</div>
+						</c:otherwise>
+					</c:choose>
+				</td>
+			</tr>
+		</tbody>
+	</table>

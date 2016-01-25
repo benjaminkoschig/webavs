@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.journalisation.HistoriqueImportation">
+		<root-model name="simpleJournalisation" model-ref="ch.globaz.amal.business.models.journalisation.SimpleJournalisation"/>
+				
+		<linked-model name="simpleReferenceProvenanceJournalisation" model-ref="ch.globaz.amal.business.models.journalisation.SimpleReferenceProvenanceJournalisation" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idJournalisation" operation="EQUALS" field-ref="simpleJournalisation.idJournalisation"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forProvenance" field-ref="simpleReferenceProvenanceJournalisation.idReferenceProvenance" operation="EQUALS" />		
+			</search-group>
+		</search-definition>
+
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.revenusdepenses.SimpleAllocationsFamiliales">
+		<description>ALLOCATIONS_FAMILIALES</description>
+		<table name="PCALFAM" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAllocationsFamiliales" column="CAIAFA" comment="ID_ALLOCATIONS_FAMILIALES"/>		
+			<field name="idDonneeFinanciereHeader" mandatory="true" column="CAIDFH" type="NUMERIC" comment="DONNEE_FINANCIERE_HEADER"/>	
+			<field name="montantMensuel" mandatory="true" column="CANMME" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_MENSUEL"/>
+			<field name="idCaisseAf" mandatory="true" column="CAICAF" type="NUMERIC" comment="ID_CAISSE_AF"/>
+			<field name="dateEcheance" column="CADECH" type="DATE" comment="DATE_ECHEANCE"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

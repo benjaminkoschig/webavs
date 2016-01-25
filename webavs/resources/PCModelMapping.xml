@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="pegasus/dossier/dossierpackage.xml"/>
+	<model-mapping import="pegasus/home/homepackage.xml"/>
+	<model-mapping import="pegasus/demande/demandepackage.xml"/>
+	<model-mapping import="pegasus/droit/droitpackage.xml"/>
+	<model-mapping import="pegasus/calcul/calculpackage.xml"/>
+	<model-mapping import="pegasus/pcaccordee/pcaccordeepackage.xml"/>
+	<model-mapping import="pegasus/fortuneparticuliere/fortuneparticulierepackage.xml"/>
+	<model-mapping import="pegasus/fortuneusuelle/fortuneusuellepackage.xml"/>
+	<model-mapping import="pegasus/dessaisissement/dessaisissementpackage.xml"/>
+	<model-mapping import="pegasus/variablemetier/variablemetierpackage.xml"/>
+	<model-mapping import="pegasus/revenusdepenses/revenusdepensespackage.xml"/>
+	<model-mapping import="pegasus/monnaieetrangere/monnaieetrangerepackage.xml"/>
+	<model-mapping import="pegasus/renteijapi/renteijapipackage.xml"/>
+	<model-mapping import="pegasus/habitat/habitatpackage.xml"/>
+	<model-mapping import="pegasus/decision/decisionpackage.xml"/>
+	<model-mapping import="pegasus/lot/lotpackage.xml"/>
+	<model-mapping import="pegasus/annonce/annoncepackage.xml"/>
+	<model-mapping import="pegasus/parametre/parametrepackage.xml"/>
+	<model-mapping import="pegasus/creancier/creancierpackage.xml"/>
+	<model-mapping import="pegasus/process/processpackage.xml"/>
+	<model-mapping import="pegasus/transfert/transfertpackage.xml"/>
+	<model-mapping import="pegasus/mutation/mutationpackage.xml"/>
+	<model-mapping import="pegasus/dettecomptatcompense/dettecomptatcompensepackage.xml"/>
+	<model-mapping import="pegasus/summary/summaryPackage.xml"/>
+	<model-mapping import="pegasus/blocage/blocagepackage.xml"/>
+	<model-mapping import="pegasus/revisionquadriennale/revisionquadriennalepackage.xml"/>
+	<model-mapping import="pegasus/donneeFianciere/donneeFiancierePackage.xml"/>
+	<model-mapping import="pegasus/externalmodule/externalmodulepackage.xml"/>
+</model-mapping> 

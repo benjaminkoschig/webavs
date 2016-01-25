@@ -1,0 +1,65 @@
+<link rel="stylesheet" type="text/css" href="<%=servletContext%>/theme/notations.css" media="screen" />
+
+<script type="text/javascript" src="<%=servletContext%>/scripts/globazJqueryPlugin.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/core/core.js"></script>
+
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/utils/utils.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/utils/utilsInput.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/utils/utilsFormatter.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/utils/utilsDate.js"></script> 
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/utils/utilsString.js"></script> 
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/utils/globazLogging.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/utils/globazWidgetRead.js"></script>
+
+
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/core/jquery.i18n.properties.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/core/jsManager.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/core/notationManager.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/core/notationSetup.js"></script>
+
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/utils/globazGrowl.js"></script>
+
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazExternalLink.js"></script> 
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazNumber.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazAmount.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazRate.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazCalendar.js"></script> 
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazAutoComplete.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazTooltipMarker.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazPeriodFormatter.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazString.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazCommutator.js"></script> 
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazSelect.js"></script> 
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazAmountFormatter.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazCellFormatter.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazMultiWidgets.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazDealLaterPeriod.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazAdresse.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazCellSum.js"></script> 
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazDetailNavigator.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazDownload.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazListWidget.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazActionImage.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazClone.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazSelectAutoComplete.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazMultiSelect.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazMultiString.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazEmail.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazMasterCheckBox.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazProgessBar.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazBubble.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazUpload.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/technical/globazBoxMessage.js"></script>
+
+
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/business/globazAdressePaiementWidget.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/business/globazEcheance.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/business/globazIban.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/business/globazNote.js"></script>
+
+
+<script type="text/javascript" src="<%=servletContext%>/scripts/ajax/ajaxUtils.js"></script>
+
+<link rel="stylesheet" type="text/css" href="<%=servletContext%>/scripts/growl/ui.notify.css" media="screen" />
+<script type="text/javascript" src="<%=servletContext%>/scripts/growl/src/jquery.notify.js"></script>
+

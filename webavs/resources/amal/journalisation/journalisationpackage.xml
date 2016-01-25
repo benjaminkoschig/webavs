@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<model-mapping import="amal/journalisation/simpleJournalisation.xml"/>	
+	<model-mapping import="amal/journalisation/simpleReferenceProvenanceJournalisation.xml"/>
+	<model-mapping import="amal/journalisation/historiqueImportation.xml"/>
+</model-mapping>

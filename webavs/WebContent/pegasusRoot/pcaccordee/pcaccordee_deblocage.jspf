@@ -1,0 +1,82 @@
+
+    <div id="deblocageDialog" style="display:none">
+		<table class=""><!--
+			<tr >
+				<th>&nbsp;</th>
+				<th style='font-family:"Consolas";font-size:16px' colspan="2"><b>Date de déblocage de la PC</b></td>
+		         close button is defined as close class 
+				<th>
+					<a href="#" class="close">
+						<img id="imageClose"
+						src="<%=request.getContextPath()%>/images/amal/fileclose.png" 
+						title="Fermer la fenêtre" 
+						border="0"
+						width="18px"
+						height="18px"
+						>
+					</a>
+				</th>
+			</tr>
+			--><tr class="zoneTiers" id="previewLigne">
+				<td></td>
+				<td id="previewColonne" align="left" >
+					
+				</td>
+				<td id="donneesCalculColonne" align="right" valign="top">
+						<div id="donneesCalculGlobal" style='width: 360px;height: 80px;'>	
+							<table id="donneesCalculGlobalTable" width="100%" style="border: 1px solid #B3C4DB ;border-collapse:collapse; background-color:#FFFFFF" >
+							
+								<tr style="font-weight: bold; background-color:#eeeeee">
+									<td style="border-bottom: 1px solid black;text-align: center;" colspan="5">Choix de la date</td>
+								</tr>
+								<br>
+								<tr>
+									<td colspan="5" id="error" style="text-align: center;"><label style="text-align: center;color: red;">&nbsp;</label></td>
+								</tr>	
+								<tr>
+									<td style="padding-left: 10px;">Date de blocage </td>
+									<td colspan="3"><%=viewBean.getEntete().getCreationDate()%></td>
+								</tr>	
+								<tr>
+									<td style="padding-left: 10px;">Date de libération</td>
+									<td colspan="3"><input tabindex="6" type="text" id="date" data-g-calendar="type:month, mandatory:true"/></td>
+								</tr>
+								<tr>
+									<td colspan="5">&nbsp;</td>
+								</tr>	
+								<br>
+							</table>
+						</div>
+						
+				</td>
+				<td></td>
+			</tr>
+			<tr class="zoneTiers" ><td colspan="4">&nbsp;</td></tr>
+			<tr class="zoneTiers" >
+				<td></td>
+				<td colspan="2" align="center">
+					<input class="btnDebloquer" id="btnGenerateDocument"  type="button" value="Débloquer">
+					<input class="close" id="btnGenerateDocument"  type="button" value="Annuler">
+				</td>
+				<td></td>
+			</tr>
+			<tr class="zoneTiers" ><td colspan="4">&nbsp;</td></tr>
+		</table>
+	</div>
+ <style>
+ 
+.ui-dialog-content {
+	background-color:  #B3C4DB !important;
+	overflow: hidden !important;
+	
+}
+
+.ui-dialog-title { 
+  float:none !important; 
+  display: block; 
+  text-align: center; 
+} 
+
+</style>
+ 
+   

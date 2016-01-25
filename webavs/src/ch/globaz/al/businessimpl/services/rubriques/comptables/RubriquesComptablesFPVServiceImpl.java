@@ -1,0 +1,150 @@
+package ch.globaz.al.businessimpl.services.rubriques.comptables;
+
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import ch.globaz.al.business.constantes.ALCSDossier;
+import ch.globaz.al.business.constantes.ALCSDroit;
+import ch.globaz.al.business.constantes.ALCSPrestation;
+import ch.globaz.al.business.constantes.ALConstRubriques;
+import ch.globaz.al.business.models.dossier.DossierModel;
+import ch.globaz.al.business.models.prestation.DetailPrestationModel;
+import ch.globaz.al.business.models.prestation.EntetePrestationModel;
+import ch.globaz.al.business.services.ALServiceLocator;
+import ch.globaz.al.business.services.rubriques.comptables.RubriquesComptablesFPVService;
+import ch.globaz.naos.business.data.AssuranceInfo;
+import ch.globaz.param.business.exceptions.ParamException;
+
+/**
+ * Implémentation du service spécifique permettant de récupérer une rubrique comptable pour la FPV
+ * 
+ * @author gmo
+ * 
+ */
+public class RubriquesComptablesFPVServiceImpl extends RubriquesComptablesServiceImpl implements
+        RubriquesComptablesFPVService {
+
+    /**
+     * Retourne le code de la caisse AF à laquelle l'affiliation adhère (plan-caisse)
+     * 
+     * @param dossier
+     *            Dossier pour lequel le canton de l'affilié doit être récupéré
+     * @param date
+     *            Date pour laquelle effectuer la récupération
+     * @return Code de la caisse prof de l'affiliation
+     * 
+     * @throws JadePersistenceException
+     *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
+     *             faire
+     * @throws JadeApplicationException
+     *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     */
+    private String getCodeCAF(DossierModel dossier, String date) throws JadeApplicationException,
+            JadePersistenceException {
+        if (RubriquesComptablesFPVService.forceCodeCAF == null) {
+            AssuranceInfo assurance = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(dossier, date);
+            return assurance.getCodeCaisseProf();
+        } else {
+            return RubriquesComptablesFPVService.forceCodeCAF;
+        }
+    }
+
+    @Override
+    protected String getRubriqueIndependant(DossierModel dossier, EntetePrestationModel entete,
+            DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
+
+        String codeCaisse = getCodeCAF(dossier, date);
+        String canton = getCanton(dossier, detail, date);
+        String rubriqueKey = "";
+
+        if (ALCSPrestation.STATUT_ADI.equals(entete.getStatut())) {
+            rubriqueKey = ALConstRubriques.RUBRIQUE_MULTICAISSE_INDEPENDANT_ADI;
+        } else if (ALCSDroit.TYPE_ACCE.equals(detail.getTypePrestation())
+                || ALCSDroit.TYPE_NAIS.equals(detail.getTypePrestation())) {
+            rubriqueKey = ALConstRubriques.RUBRIQUE_MULTICAISSE_INDEPENDANT_NAIS_ACCE;
+        } else if (ALCSDroit.TYPE_ENF.equals(detail.getTypePrestation())) {
+            rubriqueKey = ALConstRubriques.RUBRIQUE_MULTICAISSE_INDEPENDANT_ENF;
+        } else if (ALCSDroit.TYPE_FORM.equals(detail.getTypePrestation())) {
+            rubriqueKey = ALConstRubriques.RUBRIQUE_MULTICAISSE_INDEPENDANT_FORM;
+        }
+
+        String rubrique = "";
+        rubriqueKey = rubriqueKey.replace(ALConstRubriques.RUBRIQUE_MULTICAISSE_CODE_PATTERN, codeCaisse);
+
+        try {
+            rubrique = getRubrique(date, rubriqueKey + "." + canton.toLowerCase());
+            return rubrique;
+        } catch (ParamException e) {
+            // le paramètre n'a pas pu être récupéré. Tentative de récupérer la rubrique sans l'information
+            // du canton
+            return getRubrique(date, rubriqueKey);
+        } catch (JadePersistenceException e) {
+            throw e;
+        } catch (JadeApplicationException e) {
+            throw e;
+        }
+    }
+
+    @Override
+    protected String getRubriqueRestitution(DossierModel dossier, EntetePrestationModel entete,
+            DetailPrestationModel detail, String date) throws JadePersistenceException, JadeApplicationException {
+
+        String canton = getCanton(dossier, detail, date);
+        String codeCaisse = getCodeCAF(dossier, date);
+        String rubrique = "";
+
+        if (ALCSDossier.ACTIVITE_INDEPENDANT.equals(dossier.getActiviteAllocataire())) {
+            rubrique = getRubriqueRestitutionIndependant(canton, codeCaisse, date);
+            return rubrique;
+        } else if (ALCSDossier.ACTIVITE_SALARIE.equals(dossier.getActiviteAllocataire())) {
+            rubrique = ALConstRubriques.RUBRIQUE_MULTICAISSE_SALARIE_RESTITUTION.replace(
+                    ALConstRubriques.RUBRIQUE_MULTICAISSE_CODE_PATTERN, codeCaisse);
+            rubrique = (new StringBuffer(rubrique).append(".").append(canton)).toString().toLowerCase();
+        }
+
+        return getRubrique(date, rubrique);
+    }
+
+    private String getRubriqueRestitutionIndependant(String canton, String codeCaisse, String date)
+            throws JadeApplicationException, JadePersistenceException {
+
+        String rubriqueKey = ALConstRubriques.RUBRIQUE_MULTICAISSE_INDEPENDANT_RESTITUTION.replace(
+                ALConstRubriques.RUBRIQUE_MULTICAISSE_CODE_PATTERN, codeCaisse);
+
+        try {
+            return getRubrique(date, rubriqueKey + "." + canton.toLowerCase());
+        } catch (ParamException e) {
+            // le paramètre n'a pas pu être récupéré. Tentative de récupérer la rubrique sans l'information
+            // du canton
+            return getRubrique(date, rubriqueKey);
+        } catch (JadePersistenceException e) {
+            throw e;
+        } catch (JadeApplicationException e) {
+            throw e;
+        }
+    }
+
+    @Override
+    protected String getRubriqueSalarie(DossierModel dossier, EntetePrestationModel entete,
+            DetailPrestationModel detail, String date) throws JadeApplicationException, JadePersistenceException {
+        String canton = getCanton(dossier, detail, date);
+        String codeCaisse = getCodeCAF(dossier, date);
+        String rubrique = "";
+
+        if (ALCSPrestation.STATUT_ADI.equals(entete.getStatut())) {
+            rubrique = ALConstRubriques.RUBRIQUE_MULTICAISSE_SALARIE_ADI;
+        } else if (ALCSDroit.TYPE_ACCE.equals(detail.getTypePrestation())
+                || ALCSDroit.TYPE_NAIS.equals(detail.getTypePrestation())) {
+            rubrique = ALConstRubriques.RUBRIQUE_MULTICAISSE_SALARIE_NAIS_ACCE;
+        } else if (ALCSDroit.TYPE_ENF.equals(detail.getTypePrestation())) {
+            rubrique = ALConstRubriques.RUBRIQUE_MULTICAISSE_SALARIE_ENF;
+        } else if (ALCSDroit.TYPE_FORM.equals(detail.getTypePrestation())) {
+            rubrique = ALConstRubriques.RUBRIQUE_MULTICAISSE_SALARIE_FORM;
+        }
+
+        rubrique = rubrique.replace(ALConstRubriques.RUBRIQUE_MULTICAISSE_CODE_PATTERN, codeCaisse);
+
+        return getRubrique(date, (new StringBuffer(rubrique).append(".").append(canton)).toString().toLowerCase());
+
+    }
+
+}

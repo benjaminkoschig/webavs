@@ -1,0 +1,235 @@
+package ch.globaz.perseus.business.constantes;
+
+public enum CSPaysISO {
+    AFGHANISTAN("AF", "AFG"),
+    AFRIQUE_DU_SUD("ZA", "ZAF"),
+    ALBANIE("AL", "ALB"),
+    ALGERIE("DZ", "DZA"),
+    ALLEMAGNE("DE", "DEU"),
+    ANDORRE("AD", "AND"),
+    ANGOLA("AO", "AGO"),
+    ANTIGUA_ET_BARBUDA("AG", "ATG"),
+    ARABIE_SAOUDITE("SA", "SAU"),
+    ARGENTINE("AR", "ARG"),
+    ARMENIE("AM", "ARM"),
+    AUSTRALIE("AU", "AUS"),
+    AUTRICHE("AT", "AUT"),
+    AZERBAIDJAN("AZ", "AZE"),
+    BAHAMAS("BS", "BHS"),
+    BAHREIN("BH", "BHR"),
+    BANGLADESCH("BD", "BGD"),
+    BARBADE("BB", "BRB"),
+    BELARUS("BY", "BLR"),
+    BELGIQUE("BE", "BEL"),
+    BELIZE("BZ", "BLZ"),
+    BENIN("BJ", "BEN"),
+    BHOUTAN("BT", "BTN"),
+    BOLIVIE("BO", "BOL"),
+    BOSNIE_HERZEGOVINE("BA", "BIH"),
+    BOTSWANA("BW", "BWA"),
+    BRESIL("BR", "BRA"),
+    BRUNEI("BN", "BRN"),
+    BULGARIE("BG", "BGR"),
+    BURKINA_FASO("BF", "BFA"),
+    BURUNDI("BI", "BDI"),
+    CAMEROUN("CM", "CMR"),
+    CANADA("CA", "CAN"),
+    CAP_VERT("CV", "CPV"),
+    CHILI("CL", "CHL"),
+    CHINE("CN", "CHN"),
+    CHYPRE("CY", "CYP"),
+    CITE_DU_VATICAN("VA", "VAT"),
+    COLOMBIE("CO", "COL"),
+    COMORES("KM", "COM"),
+    CONGO("CG", "COG"),
+    COSTA_RICA("CR", "CRI"),
+    COTE_DIVOIRE("CI", "CIV"),
+    CROATIE("HR", "HRV"),
+    CUBA("CU", "CUB"),
+    DANEMARK("DK", "DNK"),
+    DJIBOUTI("DJ", "DJI"),
+    DOMINIQUE("DM", "DMA"),
+    EGYPTE("EG", "EGY"),
+    EL_SALVADOR("SV", "SLV"),
+    EMIRATS_ARABES_UNIS("AE", "ARE"),
+    EQUATEUR("EC", "ECU"),
+    ERYTHREE("ER", "ERI"),
+    ESPAGNE("ES", "ESP"),
+    ESTONIE("EE", "EST"),
+    ETATS_UNIS("US", "USA"),
+    ETHIOPIE("ET", "ETH"),
+    FEDERATION_DE_RUSSIE("RU", "RUS"),
+    FIDJI("FJ", "FJI"),
+    FINLANDE("FI", "FIN"),
+    FRANCE("FR", "FRA"),
+    GABON("GA", "GAB"),
+    GAMBIE("GM", "GMB"),
+    GEORGIE("GE", "GEO"),
+    GHANA("GH", "GHA"),
+    GRANDE_BRETAGNE("GB", "GBR"),
+    GRECE("GR", "GRC"),
+    GRENADE("GD", "GRD"),
+    GUATEMALA("GT", "GTM"),
+    GUINEE("GN", "GIN"),
+    GUINEE_BISSAU("GW", "GNB"),
+    GUINEE_EQUATORIALE("GQ", "GNQ"),
+    GUYANA("GY", "GUY"),
+    HAITI("HT", "HTI"),
+    HONDURAS("HN", "HND"),
+    HONGRIE("HU", "HUN"),
+    ILES_MARSHALL("MH", "MHL"),
+    ILES_SALOMON("SB", "SLB"),
+    INDE("IN", "IND"),
+    INDONESIE("ID", "IDN"),
+    IRAK("IQ", "IRQ"),
+    IRAN("IR", "IRN"),
+    IRLANDE("IE", "IRL"),
+    ISLANDE("IS", "ISL"),
+    ISRAEL("IL", "ISR"),
+    ITALIE("IT", "ITA"),
+    JAMAIQUE("JM", "JAM"),
+    JAPON("JP", "JPN"),
+    JORDANIE("JO", "JOR"),
+    KAZAKHSTAN("KZ", "KAZ"),
+    KENYA("KE", "KEN"),
+    KIRGHIZISTAN("KG", "KGZ"),
+    KIRIBATI("KI", "KIR"),
+    KOWEIT("KW", "KWT"),
+    LAOS("LA", "LAO"),
+    LESOTHO("LS", "LSO"),
+    LETTONIE("LV", "LVA"),
+    LIBAN("LB", "LBN"),
+    LIBERIA("LR", "LBR"),
+    LIECHTENSTEIN("LI", "LIE"),
+    LITUANIE("LT", "LTU"),
+    LUXEMBOURG("LU", "LUX"),
+    LYBIE("LY", "LBY"),
+    MACEDOINE("MK", "MKD"),
+    MADAGASCAR("MG", "MDG"),
+    MALAISIE("MY", "MYS"),
+    MALAWI("MW", "MWI"),
+    MALDIVES("MV", "MDV"),
+    MALI("ML", "MLI"),
+    MALTE("MT", "MLT"),
+    MAROC("MA", "MAR"),
+    MAURICE("MU", "MUS"),
+    MAURITANIE("MR", "MRT"),
+    MEXIQUE("MX", "MEX"),
+    MICRONESIE("FM", "FSM"),
+    MOLDAVIE("MD", "MDA"),
+    MONACO("MC", "MCO"),
+    MONGOLIE("MN", "MNG"),
+    MONTENEGRO("ME", "MNE"),
+    MOZAMBIQUE("MZ", "MOZ"),
+    NAMIBIE("NA", "NAM"),
+    NAURU("NR", "NRU"),
+    NEPAL("NP", "NPL"),
+    NICARAGUA("NI", "NIC"),
+    NIGER("NE", "NER"),
+    NIGERIA("NG", "NGA"),
+    NORVÈGE("NO", "NOR"),
+    NOUVELLE_ZELANDE("NZ", "NZL"),
+    OMAN("OM", "OMN"),
+    OUGANDA("UG", "UGA"),
+    OUZBEKISTAN("UZ", "UZB"),
+    PAKISTAN("PK", "PAK"),
+    PALAU("PW", "PLW"),
+    PANAMA("PA", "PAN"),
+    PAPOUASIE_NOUVELLE_GUINEE("PG", "PNG"),
+    PARAGUAY("PY", "PRY"),
+    PAYS_BAS("NL", "NLD"),
+    PEROU("PE", "PER"),
+    PHILIPPINES("PH", "PHL"),
+    POLOGNE("PL", "POL"),
+    PORTUGAL("PT", "PRT"),
+    QUATAR("QA", "QAT"),
+    REPUBLIQUE_CENTRAFRICAINE("CF", "CAF"),
+    REPUBLIQUE_DE_COREE_SUD("KR", "KOR"),
+    REPUBLIQUE_DOMINICAINE("DO", "DOM"),
+    REPUBLIQUE_POPULAIRE_DE_COREE_NORD("KP", "PRK"),
+    REPUBLIQUE_TCHEQUE("CZ", "CZE"),
+    ROUMANIE("RO", "ROU"),
+    RWANDA("RW", "RWA"),
+    SAINT_CHRISTOPHE_ET_NEVIS("KN", "KNA"),
+    SAINT_MARIN("SM", "SMR"),
+    SAINT_VINCENT_ET_GRENADINES("VC", "VCT"),
+    SAINTE_LUCIE("LC", "LCA"),
+    SAMOA("WS", "WSM"),
+    SAO_TOME_ET_PRINCIPE("ST", "STP"),
+    SENEGAL("SN", "SEN"),
+    SERBIE("RS", "SRB"),
+    SEYCHELLES("SC", "SYC"),
+    SIERRA_LEONE("SL", "SLE"),
+    SINGAPOUR("SG", "SGP"),
+    SLOVAQUIE("SK", "SVK"),
+    SLOVENIE("SI", "SVN"),
+    SOMALIE("SO", "SOM"),
+    SOUDAN("SD", "SDN"),
+    SRI_LANKA("LK", "LKA"),
+    SUEDE("SE", "SWE"),
+    SUISSE("CH", "CHE"),
+    SURINAME("SR", "SUR"),
+    SWAZILAND("SZ", "SWZ"),
+    SYRIE("SY", "SYR"),
+    TADJIKISTAN("TJ", "TJK"),
+    TAIWAN("TW", "TWN"),
+    TANZANIE("TZ", "TZA"),
+    TCHAD("TD", "TCD"),
+    THAILANDE("TH", "THA"),
+    TOGO("TG", "TGO"),
+    TONGA("TO", "TON"),
+    TRINITE_ET_TOBAGO("TT", "TTO"),
+    TUNISIE("TN", "TUN"),
+    TURKMENISTAN("TM", "TKM"),
+    TURQUIE("TR", "TUR"),
+    TUVALU("TV", "TUV"),
+    UKRAINE("UA", "UKR"),
+    URUGUAY("UY", "URY"),
+    VANUATU("VU", "VUT"),
+    VENEZUELA("VE", "VEN"),
+    VIET_NAM("VN", "VNM"),
+    YEMEN("YE", "YEM"),
+    ZAMBIE("ZM", "ZMB"),
+    ZIMBABWE("ZW", "ZWE");
+
+    /**
+     * Permet de retrouver un élément d'énumeration sur la base de son code system
+     * 
+     * @param codeSystem
+     *            Le code système
+     * @return Le type d'enum correspondant
+     */
+    public static CSPaysISO getEnumFromCodeSystem(String codeSystem) {
+        CSPaysISO[] allValues = CSPaysISO.values();
+        for (int i = 0; i < allValues.length; i++) {
+            CSPaysISO vm = allValues[i];
+            if (vm.codeSystem.equals(codeSystem)) {
+                return vm;
+            }
+        }
+        return null;
+    }
+
+    private String codeSystem;
+    private String value;
+
+    private CSPaysISO(String codeSystem, String value) {
+        this.codeSystem = codeSystem;
+        this.value = value;
+    }
+
+    /**
+     * @return the codeSystem
+     */
+    public String getCodeSystem() {
+        return codeSystem;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+}

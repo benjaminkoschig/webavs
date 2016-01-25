@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.process.statistiquesofas.PlanCalculeDemandeDroitMembreFamille">
+		<root-model name="simplePlanDeCalcul" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul" select-fields="false" />
+		
+		<select-fields>
+			<select-field name="dateDebutDemande" field-ref="simpleDemande.dateDebut" />
+			<select-field name="csRoleFamillePC" field-ref="membreFamilleEtendu.droitMembreFamille.simpleDroitMembreFamille.csRoleFamillePC" />
+			<select-field name="numCommuneOfs" field-ref="localiteSimpleModel.numCommuneOfs" />
+			<select-field name="dateNaissance" field-ref="membreFamilleEtendu.droitMembreFamille.membreFamille.personneEtendue.personne.dateNaissance" />
+			<select-field name="canton" field-ref="localiteSimpleModel.idCanton" />
+			<select-field name="sexe" field-ref="membreFamilleEtendu.droitMembreFamille.membreFamille.personneEtendue.personne.sexe" />
+			<select-field name="nationalite" field-ref="membreFamilleEtendu.droitMembreFamille.membreFamille.personneEtendue.tiers.idPays" />
+			<select-field name="idPlandDeCalcule" field-ref="simplePlanDeCalcul.idPlanDeCalcul" />
+			<select-field name="numAvs" field-ref="membreFamilleEtendu.droitMembreFamille.membreFamille.personneEtendue.personneEtendue.numAvsActuel" />
+			<select-field name="csGenrePC" field-ref="simplePCAccordee.csGenrePC" />
+			<select-field name="isEnfant" field-ref="membreFamilleEtendu.simpleDonneesPersonnelles.isEnfant" />
+			<select-field name="etatCivil" field-ref="membreFamilleEtendu.droitMembreFamille.membreFamille.personneEtendue.personne.etatCivil" />
+			<select-field name="idDroit" field-ref="simpleDroit.idDroit" />
+			<select-field name="idMembreFamilleSF" field-ref="membreFamilleEtendu.droitMembreFamille.simpleDroitMembreFamille.idMembreFamilleSF" />
+			<select-field name="idVersionDroit" field-ref="simplePCAccordee.idVersionDroit" />
+			<select-field name="idPcaParent" field-ref="simplePCAccordee.idPcaParent" />
+			<select-field name="idTiersMembreFamille" field-ref="membreFamilleEtendu.droitMembreFamille.membreFamille.simpleMembreFamille.idTiers" />
+		</select-fields>
+		
+		<linked-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="simplePlanDeCalcul.idPCAccordee"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simplePersonneDansPlanCalcul" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePersonneDansPlanCalcul" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPlanDeCalcul" operation="EQUALS" field-ref="simplePlanDeCalcul.idPlanDeCalcul"/>
+			</join-group>
+		</linked-model>
+				
+		<linked-model name="membreFamilleEtendu" model-ref="ch.globaz.pegasus.business.models.droit.MembreFamilleEtendu" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="droitMembreFamille.simpleDroitMembreFamille.idDroitMembreFamille" operation="EQUALS" field-ref="simplePersonneDansPlanCalcul.idDroitMembreFamille"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="localiteSimpleModel" model-ref="ch.globaz.pyxis.business.model.LocaliteSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idLocalite" operation="EQUALS" field-ref="membreFamilleEtendu.simpleDonneesPersonnelles.idDernierDomicileLegale"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroit" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="membreFamilleEtendu.droitMembreFamille.simpleDroitMembreFamille.idDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDemande" model-ref="ch.globaz.pegasus.business.models.demande.SimpleDemande" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDemande" operation="EQUALS" field-ref="simpleDroit.idDemandePC"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPCAccordee" operation="EQUALS" field-ref="simplePlanDeCalcul.idPCAccordee"/>
+				<search-field name="isPlanRetenu" operation="EQUALS" field-ref="simplePlanDeCalcul.isPlanRetenu"/>
+				<search-field name="isComprisDansCalcul" operation="EQUALS" field-ref="simplePersonneDansPlanCalcul.isComprisDansCalcul"/>
+			</search-group>
+		</search-definition> 		
+		
+		
+	</complexe-model>
+</model-mapping>

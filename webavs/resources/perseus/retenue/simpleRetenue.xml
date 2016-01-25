@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.retenue.SimpleRetenue">
+		<description>Retenue sur paiement mensuel</description>
+		<table name="PFRETENU" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idRetenue" column="JKIDRE" comment="ID de la retenue"/>
+			<field name="idPcfAccordee" type="NUMERIC" column="JKIPCF" comment="Id de la PCF Accordée" />
+			<field name="csTypeRetenue" type="NUMERIC" column="JKTTYP" comment="Code système du type de retenue" />		
+			<field name="idTiersAdressePmt" type="NUMERIC" column="JKITAP" comment="Id tiers pour l'adresse de paiement" />
+			<field name="idDomaineApplicatif" type="NUMERIC" column="JKIDOA" comment="Id domaine applicatif pour l'adresse de paiement" />
+			<field name="montantRetenuMensuel" type="NUMERIC" dataType="NUMERIC(15,2)" column="JKMREM" comment="Montant mensuel retenu" />
+			<field name="montantDejaRetenu" type="NUMERIC" dataType="NUMERIC(15,2)" column="JKMMDR" comment="Montant deja retenu" />
+			<field name="montantTotalARetenir" type="NUMERIC" dataType="NUMERIC(15,2)" column="JKMTAR" comment="Montant total a retenir" />
+			<field name="dateDebutRetenue" type="MONTH_YEAR" column="JKDDER" comment="mois de debut de la retenue" />
+			<field name="dateFinRetenue" type="MONTH_YEAR" column="JKDDFR" comment="mois de fin de la retenue" />			
+			<field name="tauxImposition" type="NUMERIC" dataType="NUMERIC(5,2)" column="JKMTAU" comment="taux impostion pour impot a la source" />
+			<field name="idParentRetenue" type="NUMERIC" column="JKIPAR" comment="Id de la retenue source de la copie" />		
+			<field name="idCompteAnnexe" type="NUMERIC" column="JKIDCA" comment="Id du compte annexe pour les factures existantes" />
+			<field name="idExterneSection" type="STRING" column="JKIEXS" comment="Id externe de la section pour les factures existantes" />
+			<field name="idTypeSection" type="STRING" column="JKTYSE" comment="Type de section pour la les factures existantes" />
+			<field name="idTauxIS" type="NUMERIC" column="JKIDTA" comment="Id du taux d'impot à la source" />
+			<field name="baremeIS" type="STRING" column="JKBAIS" comment="categorie du taux d'impot a la source" />
+						
+		</fields>
+		
+		<search-definition>
+				<search-group operator="AND">
+					<search-field name="forIdPcfAccordee" field-ref="idPcfAccordee" operation="EQUALS"/>
+					<search-field name="forCsTypeRetenue" field-ref="csTypeRetenue" operation="EQUALS"/>
+					<search-field name="forNotCsTypeRetenue" field-ref="csTypeRetenue" operation="NOT_EQUALS"/>	
+				</search-group>
+		</search-definition>
+
+		<search-definition name="withMoisValable">
+				<search-group operator="AND">
+					<search-field name="forIdPcfAccordee" field-ref="idPcfAccordee" operation="EQUALS"/>
+					<search-field name="forCsTypeRetenue" field-ref="csTypeRetenue" operation="EQUALS"/>
+					<search-field name="forMoisValable" operation="LESS_OR_EQUALS" field-ref="dateDebutRetenue"/>
+					<search-group operator="OR">
+						<search-field name="forMoisValable" operation="GREATER_OR_EQUALS" field-ref="dateFinRetenue"/>
+						<search-field name="forMoisValable" operation="NULL" field-ref="dateFinRetenue"/>
+					</search-group>
+				</search-group>
+		</search-definition>
+		
+	</simple-model>
+
+		
+</model-mapping>
+	
+	

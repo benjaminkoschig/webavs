@@ -1,0 +1,85 @@
+<div class="subtitle"><ct:FWLabel key="JSP_AM_FA_D_MEMBRE_FAMILLE"/> - <%=objSession.getCodeLibelle(viewBean.getFamilleContribuable().getSimpleFamille().getPereMereEnfant())%></div>
+<div class="relLink">
+	<%if (!JadeStringUtil.isEmpty(linkRetourDetail)) { %>
+		<a href="<%=linkRetourDetail%>"><%=linkRetourDetailLibelle%></a>
+	<% } %>
+</div>							
+<div class="infoMembreFamille">
+	<table>
+		<col width="122px" align="left"></col>
+		<col width="*" align="left"></col>
+		<col align="right"></col>
+		<tr style="height:20px">
+			<td><ct:FWLabel key="JSP_AM_CON_D_NSS"/></td>										
+			<% if (idTiersEmpty) { %>
+				<td style="background-color:#FFFFFF" title="<ct:FWLabel key="JSP_AM_FA_D_TITLE_IMG_UNKNOWN"/>">
+					<%if (!JadeStringUtil.isEmpty(viewBean.getFamilleContribuable().getSimpleFamille().getNnssContribuable()) &&
+							!"0".equals(viewBean.getFamilleContribuable().getSimpleFamille().getNnssContribuable())) { %>
+						<%=viewBean.getFamilleContribuable().getSimpleFamille().getNnssContribuable()%>
+					<% } %>
+				</td>																										
+			<% } else { %>
+				<td style="background-color: #FFFFFF">
+				<%if (!JadeStringUtil.isEmpty(viewBean.getFamilleContribuable().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel())) { %>
+					<%=viewBean.getFamilleContribuable().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel()%>
+				<% } %>
+				</td>
+			<% } %>
+			<td style="background-color: #FFFFFF">
+			<%				
+			if(!JadeStringUtil.isBlankOrZero(viewBean.getFamilleContribuable().getSimpleFamille().getIdTier())){ 
+			%>
+				<a href="<%=servletContext + "/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId="+viewBean.getFamilleContribuable().getSimpleFamille().getIdTier()%>">
+				<img
+					width="18px"
+					height="18px"
+					src="<%=request.getContextPath()%>/images/amal/link.png" title="Tiers <%=viewBean.getFamilleContribuable().getSimpleFamille().getIdTier() %>" border="0">
+				</a>
+			<%
+			}
+			%>
+			</td>
+		</tr>
+		<tr style="height:20px">
+			<td><ct:FWLabel key="JSP_AM_CON_D_NOM_PRENOM"/></td>										
+			<% if (idTiersEmpty) { %>
+			<td style="background-color:#FFFFFF;" title="<ct:FWLabel key="JSP_AM_FA_D_TITLE_IMG_UNKNOWN"/>">
+				<%=viewBean.getFamilleContribuable().getSimpleFamille().getNomPrenom()%>
+			</td>
+			<td class="imgUnknown" title="<ct:FWLabel key="JSP_AM_FA_D_TITLE_IMG_UNKNOWN"/>">
+			<img src="<%=request.getContextPath()%>/images/amal/status_unknown.png" />
+			</td>																				
+			<% } else { %>
+			<td colspan="2" style="background-color: #FFFFFF">
+				<%if (JadeStringUtil.isBlankOrZero(viewBean.getFamilleContribuable().getPersonneEtendue().getPersonne().getDateDeces())) { %>
+					<%=viewBean.getFamilleContribuable().getPersonneEtendue().getTiers().getDesignation1()%> 
+					<%=viewBean.getFamilleContribuable().getPersonneEtendue().getTiers().getDesignation2()%>
+				<% } else { %>
+					<span  style="color:red">(</span>
+					<%=viewBean.getFamilleContribuable().getPersonneEtendue().getTiers().getDesignation1()%> 
+					<%=viewBean.getFamilleContribuable().getPersonneEtendue().getTiers().getDesignation2()%>
+					<span  style="color:red">)</span>
+					<span style="font-family:wingdings">U</span>
+				<% } %>
+			</td>
+			<% } %>										
+		</tr>
+		<tr style="height:20px">
+			<td></td>										
+			<% if (idTiersEmpty) { %>
+			<td colspan="2" style="background-color:#FFFFFF" title="<ct:FWLabel key="JSP_AM_FA_D_TITLE_IMG_UNKNOWN"/>">
+				<%=viewBean.getFamilleContribuable().getSimpleFamille().getDateNaissance()%> - <%=viewBean.getSexe(viewBean.getFamilleContribuable().getSimpleFamille().getSexe())%>											
+			</td>
+			<% } else { %>
+			<td colspan="2" style="background-color:#FFFFFF">
+				<%=viewBean.getFamilleContribuable().getPersonneEtendue().getPersonne().getDateNaissance()%> - <%=viewBean.getSexe(viewBean.getFamilleContribuable().getPersonneEtendue().getPersonne().getSexe())%> - <%=viewBean.getPays(viewBean.getFamilleContribuable().getPersonneEtendue().getTiers().getIdPays())%>
+			</td>
+			<% } %>
+		</tr>
+		<tfoot>
+			<tr>
+				<td colspan="2"></td>
+			</tr>
+		</tfoot>
+	</table>
+</div>

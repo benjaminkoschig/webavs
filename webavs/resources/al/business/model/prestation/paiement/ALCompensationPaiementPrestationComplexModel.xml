@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.prestation.paiement.CompensationPaiementPrestationComplexModel">
+		<select-fields distinct="true">
+			<select-field name="idDetailPrestation" field-ref="detailPrestationModel.idDetailPrestation"/>
+			<select-field name="idEntete" field-ref="entetePrestationModel.idEntete"/>
+			<select-field name="idRecap" field-ref="recapEntrepriseModel.idRecap"/>
+			<select-field name="montantDetail" field-ref="detailPrestationModel.montant" />
+			<select-field name="bonificationEntete" field-ref="entetePrestationModel.bonification"/>
+			<select-field name="etatDossier" field-ref="dossierModel.etatDossier"/>
+			<select-field name="finValidite" field-ref="dossierModel.finValidite"/>
+			<select-field name="presPeriodeA" field-ref="entetePrestationModel.periodeA"/>
+		</select-fields>
+		<root-model name="detailPrestationModel" model-ref="ch.globaz.al.business.models.prestation.DetailPrestationModel" select-fields="false"/>
+		
+		<linked-model name="entetePrestationModel" model-ref="ch.globaz.al.business.models.prestation.EntetePrestationModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idEntete" field-ref="detailPrestationModel.idEntete"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="dossierModel" model-ref="ch.globaz.al.business.models.dossier.DossierModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="recapEntrepriseModel" model-ref="ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idRecap" field-ref="entetePrestationModel.idRecap"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forPeriodeA" field-ref="recapEntrepriseModel.periodeA" operation="LESS_OR_EQUALS" />
+				<search-field name="inActivites" field-ref="dossierModel.activiteAllocataire" operation="IN" />
+				<search-field name="forEtat" field-ref="recapEntrepriseModel.etatRecap" operation="EQUALS" />
+				<search-field name="forBonification" field-ref="recapEntrepriseModel.bonification" operation="EQUALS" />
+				<search-field name="inBonifications" field-ref="recapEntrepriseModel.bonification" operation="IN" />
+				<search-field name="forIdPassage" field-ref="entetePrestationModel.idPassage" operation="EQUALS" />
+				<search-field name="forIdJournal" field-ref="entetePrestationModel.idJournal" operation="EQUALS" />
+				<search-field name="forIdProcessusPeriodique" field-ref="recapEntrepriseModel.idProcessusPeriodique" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		<search-definition name="montantNonZero">
+			<search-group operator="AND">
+				<search-field name="forPeriodeA" field-ref="recapEntrepriseModel.periodeA" operation="LESS_OR_EQUALS" />
+				<search-field name="inActivites" field-ref="dossierModel.activiteAllocataire" operation="IN" />
+				<search-field name="forEtat" field-ref="recapEntrepriseModel.etatRecap" operation="EQUALS" />
+				<search-field name="forBonification" field-ref="recapEntrepriseModel.bonification" operation="EQUALS" />
+				<search-field name="inBonifications" field-ref="recapEntrepriseModel.bonification" operation="IN" />
+				<search-field name="forIdPassage" field-ref="entetePrestationModel.idPassage" operation="EQUALS" />
+				<search-field name="forIdJournal" field-ref="entetePrestationModel.idJournal" operation="EQUALS" />
+				<search-field name="forIdProcessusPeriodique" field-ref="recapEntrepriseModel.idProcessusPeriodique" operation="EQUALS" />
+				<search-field name="constantMontant" field-ref="entetePrestationModel.montantTotal" operation="NOT_EQUALS" value="0" />		
+			</search-group>
+		</search-definition>		
+		<search-definition name="montantNonZeroAndAdiZero">
+			<search-group operator="AND">
+				<search-field name="forPeriodeA" field-ref="recapEntrepriseModel.periodeA" operation="LESS_OR_EQUALS" />
+				<search-field name="inActivites" field-ref="dossierModel.activiteAllocataire" operation="IN" />
+				<search-field name="forEtat" field-ref="recapEntrepriseModel.etatRecap" operation="EQUALS" />
+				<search-field name="forBonification" field-ref="recapEntrepriseModel.bonification" operation="EQUALS" />
+				<search-field name="inBonifications" field-ref="recapEntrepriseModel.bonification" operation="IN" />
+				<search-field name="forIdPassage" field-ref="entetePrestationModel.idPassage" operation="EQUALS" />
+				<search-field name="forIdJournal" field-ref="entetePrestationModel.idJournal" operation="EQUALS" />
+				<search-field name="forIdProcessusPeriodique" field-ref="recapEntrepriseModel.idProcessusPeriodique" operation="EQUALS" />
+				<search-group operator="OR">
+					<search-field name="constantMontant" field-ref="entetePrestationModel.montantTotal" operation="NOT_EQUALS" value="0" />
+					<search-group operator="AND">
+						<search-field name="constantStatut" field-ref="entetePrestationModel.statut" operation="EQUALS" value="61230003" />
+						<search-field name="constantMontant" field-ref="entetePrestationModel.montantTotal" operation="EQUALS" value="0" />	
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>	
+		
+		<search-definition name="montantZeroNonAdi">
+			<search-group operator="AND">
+				<search-field name="forPeriodeA" field-ref="recapEntrepriseModel.periodeA" operation="LESS_OR_EQUALS" />
+				<search-field name="inActivites" field-ref="dossierModel.activiteAllocataire" operation="IN" />
+				<search-field name="forEtat" field-ref="recapEntrepriseModel.etatRecap" operation="EQUALS" />
+				<search-field name="forBonification" field-ref="recapEntrepriseModel.bonification" operation="EQUALS" />
+				<search-field name="inBonifications" field-ref="recapEntrepriseModel.bonification" operation="IN" />
+				<search-field name="forIdPassage" field-ref="entetePrestationModel.idPassage" operation="EQUALS" />
+				<search-field name="forIdJournal" field-ref="entetePrestationModel.idJournal" operation="EQUALS" />
+				<search-field name="forIdProcessusPeriodique" field-ref="recapEntrepriseModel.idProcessusPeriodique" operation="EQUALS" />		
+				<search-field name="constantMontant" field-ref="entetePrestationModel.montantTotal" operation="EQUALS" value="0" />
+				<search-field name="constantStatut" field-ref="entetePrestationModel.statut" operation="NOT_EQUALS" value="61230003" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

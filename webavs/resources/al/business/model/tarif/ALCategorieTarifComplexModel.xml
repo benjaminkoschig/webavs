@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.al.business.models.tarif.CategorieTarifComplexModel">
+		<root-model name="categorieTarifModel" model-ref="ch.globaz.al.business.models.tarif.CategorieTarifModel"/>
+		<linked-model name="legislationTarifModel" model-ref="ch.globaz.al.business.models.tarif.LegislationTarifModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idLegislationTarif" field-ref="categorieTarifModel.idLegislation"/>
+			</join-group>	
+		</linked-model>
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forCategorieTarif" field-ref="categorieTarifModel.categorieTarif" operation="EQUALS"/>
+				<search-field name="forLegislationTarif" field-ref="legislationTarifModel.typeLegislation" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

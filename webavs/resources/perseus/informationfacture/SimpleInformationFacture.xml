@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.informationfacture.SimpleInformationFacture">
+		<description>Information sur les factures PC Familles</description>
+		<table name="PFINFOFA" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idInformationFacture" column="ID" comment=""/>
+			<field name="idDossier" column="FK_PFDOSSI" type="NUMERIC" mandatory="true" comment="Identifiant du dossier lié"/>
+			<field name="date" column="DATE_SAISIE" type="DATE" mandatory="true" comment="Date de l'ajout de l'information"/>
+			<field name="description" column="DESCRIPTION" type="STRING" mandatory="false" comment="Information sur la facture"/>
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="idDossier" />
+			</search-group>
+		</search-definition>
+	</simple-model>	
+</model-mapping>

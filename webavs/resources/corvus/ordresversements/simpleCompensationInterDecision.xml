@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.corvus.business.models.ordresversements.SimpleCompensationInterDecision">
+		<description>
+			Une compensation inter décision
+		</description>
+		<table name="RECPIDEC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="idCompensationInterDecision" column="ZXICID" comment="Identifiant de la compensation inter décision" />
+
+			<field name="idOrdreVersementCompense" column="ZXIOVE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID de l'ordre de versement pointant sur la décision auquelle on ajoute de l'argent pour compenser" />
+			<field name="idOrdreVersementPonctionne" column="ZXIOVC" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID de l'ordre de versement pointant sur la décision auquelle on retire de l'argent pour compenser" />
+			<field name="idTiersDecisionPonctionnee" column="ZXITIE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID du tiers auquel on a retiré de l'argent pour la compensation"/>
+			<field name="montant" column="ZXMMON" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="Montant transitant entre les décisions" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field operation="EQUALS" name="forIdCompensationInterDecision" field-ref="idCompensationInterDecision" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

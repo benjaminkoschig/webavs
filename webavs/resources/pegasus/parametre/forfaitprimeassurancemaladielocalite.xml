@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.parametre.ForfaitPrimeAssuranceMaladieLocalite">
+
+		<root-model name="simpleForfaitPrimesAssuranceMaladie" model-ref="ch.globaz.pegasus.business.models.parametre.SimpleForfaitPrimesAssuranceMaladie"/>
+	    
+	    <linked-model name="simpleZoneForfaits" model-ref="ch.globaz.pegasus.business.models.parametre.SimpleZoneForfaits" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idZoneForfait" operation="EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.idZoneForfait"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleLienZoneLocalite" model-ref="ch.globaz.pegasus.business.models.parametre.SimpleLienZoneLocalite" join-type="INNER">
+			<join-group operator="AND"> 
+			    <join-field name="idZoneForfait" operation="EQUALS" field-ref="simpleZoneForfaits.idZoneForfait"/>
+			    
+			    <join-group operator="OR"> 
+					<join-group operator="AND">
+						<join-field name="dateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.dateDebut"/>
+						
+						<join-group operator="OR"> 
+							<join-field name="dateFin" operation="LESS_OR_EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.dateDebut"/>
+							<join-field name="dateFin" operation="NULL" field-ref="simpleLienZoneLocalite.dateFin"/>
+						</join-group>
+						
+						<join-group operator="OR"> 
+							<join-field name="dateFin" operation="LESS_OR_EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.dateFin"/>
+							<join-field name="dateFin" operation="NULL" field-ref="simpleForfaitPrimesAssuranceMaladie.dateFin"/>
+							<join-field name="dateFin" operation="NULL" field-ref="simpleLienZoneLocalite.dateFin"/>
+						</join-group>
+						
+						<join-group operator="OR"> 
+							<join-field name="dateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.dateFin"/>
+							<join-field name="dateFin" operation="NULL" field-ref="simpleForfaitPrimesAssuranceMaladie.dateFin"/>
+						</join-group>		
+					</join-group>
+					
+					<join-group operator="AND">
+					    <join-field name="dateDebut" operation="LESS_OR_EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.dateDebut"/>
+					    <join-group operator="OR"> 
+						    <join-field name="dateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.dateFin"/>
+						    <join-field name="dateFin" operation="NULL" field-ref="simpleForfaitPrimesAssuranceMaladie.dateFin"/>
+					    </join-group>	
+						<join-group operator="OR"> 
+					  		<join-field name="dateFin" operation="GREATER_OR_EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.dateFin"/>
+					  		<join-field name="dateFin" operation="NULL" field-ref="simpleLienZoneLocalite.dateFin"/>
+						</join-group>	
+					</join-group>
+				</join-group>
+			</join-group>			
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forCsTypePrime" operation="EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.csTypePrime"/>
+				<search-field name="forIdLocalite" operation="EQUALS"  field-ref="simpleLienZoneLocalite.idLocalite"/>
+				<search-field name="forDateFin" operation="LESS_OR_EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.dateDebut"/>
+			<!--	<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.dateDebut"/> -->
+				<search-group operator="AND">
+					<search-group operator="OR">
+						<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.dateFin"/>
+						<search-field name="forDateFin" operation="NULL" field-ref="simpleForfaitPrimesAssuranceMaladie.dateFin"/>
+					</search-group> 
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+	   	<search-definition name="withPeriodeCsTypePrime">
+			<search-group operator="AND">
+				<search-field name="forCsTypePrime" operation="EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.csTypePrime"/>
+				<search-field name="forIdLocalite" operation="EQUALS"  field-ref="simpleLienZoneLocalite.idLocalite"/>
+				<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.dateDebut"/>
+			</search-group>
+		</search-definition>
+
+		<order-by>
+			<order-field field-ref="simpleForfaitPrimesAssuranceMaladie.csTypePrime" order="DESC"/>
+			<order-field field-ref="simpleForfaitPrimesAssuranceMaladie.dateDebut" order="DESC"/>
+		</order-by>	
+	</complexe-model>
+</model-mapping>

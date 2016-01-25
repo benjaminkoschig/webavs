@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.dossier.LienDossierModel">
+		<description>Liens entre dossiers</description>
+		<table name="ALLIEDOS" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idLien" column="LDID" comment="ID du lien"/>
+			<field name="typeLien" column="CSLDTY" type="NUMERIC" mandatory="true" comment="type de lien"/>
+			<field name="idDossierPere" column="EIDP" type="NUMERIC" mandatory="true" comment="ID (FK) du dossier père du lien"/>
+			<field name="idDossierFils" column="EIDF" type="NUMERIC" mandatory="true" comment="D (FK) du dossier fils du lien"/>>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDossierPere" field-ref="idDossierPere" operation="EQUALS"/>
+				<search-field name="forIdDossierFils" field-ref="idDossierFils" operation="EQUALS"/>
+				<search-field name="forTypeLien" field-ref="typeLien" operation="EQUALS"/>	
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.decision.DecisionRefus">
+		<!-- model root decsion de refus -->
+		<root-model name="simpleDecisionRefus" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionRefus"/>
+		<!-- header lie a la decision de refus -->
+		<linked-model name="decisionHeader" model-ref="ch.globaz.pegasus.business.models.decision.DecisionHeader" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleDecisionHeader.idDecisionHeader" operation="EQUALS" field-ref="simpleDecisionRefus.idDecisionHeader"/>
+			</join-group>
+		</linked-model>
+		<!-- demande lie la decision de refus -->
+		<linked-model name="demande" model-ref="ch.globaz.pegasus.business.models.demande.Demande" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleDemande.idDemande" operation="EQUALS" field-ref="simpleDecisionRefus.idDemandePc"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDecisionHeader" operation="EQUALS" field-ref="simpleDecisionRefus.idDecisionHeader"/>
+				<search-field name="forIdDecisionRefus" operation="EQUALS" field-ref="simpleDecisionRefus.idDecisionRefus"/>
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDecisionRefus.idDemandePc"/>
+				</search-group>
+		</search-definition>
+		
+	</complexe-model>
+	
+</model-mapping>

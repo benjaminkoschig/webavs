@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.prestation.paiement.CompensationPrestationComplexModel"
+					extend="ch.globaz.al.business.models.prestation.paiement.CompensationPaiementPrestationComplexModel">
+		<select-fields distinct="true">
+			<select-field name="periodeRecapDe" field-ref="recapEntrepriseModel.periodeDe"/>
+			<select-field name="periodeRecapA" field-ref="recapEntrepriseModel.periodeA"/>
+			<select-field name="numeroCompte" field-ref="detailPrestationModel.numeroCompte"/>
+			<select-field name="numeroAffilie" field-ref="recapEntrepriseModel.numeroAffilie"/>
+			<select-field name="numeroFacture" field-ref="recapEntrepriseModel.numeroFacture" />
+			<select-field name="genreAssurance" field-ref="recapEntrepriseModel.genreAssurance"/>
+		</select-fields>
+	</complexe-model>
+</model-mapping>

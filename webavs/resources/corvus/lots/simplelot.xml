@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.corvus.business.models.lots.SimpleLot">
+		<description>Lot</description>
+		<table name="RELOTS" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idLot" column="YTILOT" comment="ID_LOT"/>
+			
+			<field name="csTypeLot" type="NUMERIC" column="YTTTYP" comment="CS_TYPE_LOT" />
+			<field name="dateCreation" type="DATE" column="YTDCRE" comment="DATE_CREATION" />
+			<field name="dateEnvoi" type="DATE" column="YTDENV" comment="DATE_ENVOI" />
+			<field name="csEtat" type="NUMERIC" column="YTTETA" comment="CS_ETAT" />
+			<field name="csProprietaire" type="NUMERIC" column="YTTOWN" comment="CS_PROPRIETAIRE_DE_LOT" />
+			<field name="description" type="STRING" column="YTLDES" comment="DESCRIPTION" />
+			<field name="idJournalCA" type="NUMERIC" column="YTIJCA" comment="ID_JOURNAL_CA" />
+			
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forCsType" field-ref="csTypeLot" operation="EQUALS"/>
+				<search-field name="forCsEtat" field-ref="csEtat" operation="EQUALS"/>
+				<search-field name="forCsProprietaire" field-ref="csProprietaire" operation="EQUALS"/>
+				<search-field name="fromDateCreation" field-ref="dateCreation" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forDateDebut" field-ref="dateCreation" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forDateFin" field-ref="dateCreation" operation="LESS_OR_EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="lotForPC">
+			<search-group operator="AND">
+				<search-field name="forCsType" field-ref="csTypeLot" operation="EQUALS"/>
+				<search-field name="forCsEtat" field-ref="csEtat" operation="EQUALS"/>
+				<search-field name="fromDateCreation" field-ref="dateCreation" operation="GREATER_OR_EQUALS"/>
+				<search-group operator="OR">
+					<search-group operator="AND">
+						<search-field name="inCsType" field-ref="csTypeLot" operation="IN"/>
+						<search-field name="forCsProprietaire" field-ref="csProprietaire" operation="EQUALS"/>
+					</search-group>
+					<search-group operator="AND">
+						<search-field name="forCsProprietaire" field-ref="csProprietaire" operation="EQUALS" value="52858001" />
+						<search-field name="forCsType2" field-ref="csTypeLot" operation="EQUALS"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="dateCreation" order="DESC"/>
+			<order-field field-ref="csTypeLot"/>
+		</order-by>
+	</simple-model>
+</model-mapping>

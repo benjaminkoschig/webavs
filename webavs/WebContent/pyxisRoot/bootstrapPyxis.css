@@ -1,0 +1,27 @@
+/*!
+ * Surcharge des styles Bootstrap pour pyxis
+ */
+ table.moduleTable * {
+	font-size: 11px;
+}
+
+.row-fluid .span4, .row-fluid .span8, .row-fluid .span12 {
+  border : solid 1px silver;
+  margin : 2px 0px 10px 0px;
+  height: 80px;
+  overflow:auto;
+ }
+ 
+ .row-fluid .span12 {
+  height: auto;
+ }
+
+ .row-fluid [class*="span"] {
+  	min-height: 80px !important;
+  	margin-left: 1.2048192771084338%;
+    *margin-left: 1.144578313253012%;
+ }
+
+ .lastModification {
+ 	width:inherit;
+ }

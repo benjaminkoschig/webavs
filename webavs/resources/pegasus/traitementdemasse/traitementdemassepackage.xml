@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="pegasus/traitementdemasse/simpleaction.xml"/>
+	<model-mapping import="pegasus/traitementdemasse/simpledefinitionparametre.xml"/>
+	<model-mapping import="pegasus/traitementdemasse/simpledefinitiontraitement.xml"/>
+	<model-mapping import="pegasus/traitementdemasse/simpleEchantillon.xml"/>
+    <model-mapping import="pegasus/traitementdemasse/simpleentite.xml"/>
+	<model-mapping import="pegasus/traitementdemasse/simpleetataction.xml"/>
+	<model-mapping import="pegasus/traitementdemasse/simpleexecutiontraitement.xml"/>
+	<model-mapping import="pegasus/traitementdemasse/simplelisteaction.xml"/>
+	<model-mapping import="pegasus/traitementdemasse/simpleloginfos.xml"/>
+	<model-mapping import="pegasus/traitementdemasse/simpleparametre.xml"/>
+	<model-mapping import="pegasus/traitementdemasse/simpleparametreutilisee.xml"/>
+	<model-mapping import="pegasus/traitementdemasse/simpletypedevaleur.xml"/>
+	<model-mapping import="pegasus/traitementdemasse/simplevaleurtraitee.xml"/>
+	<model-mapping import="pegasus/traitementdemasse/simplelistetypevaleur.xml"/>
+	<model-mapping import="pegasus/traitementdemasse/definitionTraitement.xml"/>
+    <model-mapping import="pegasus/traitementdemasse/definitionParametre.xml"/>
+    <model-mapping import="pegasus/traitementdemasse/definitionListeAction.xml"/>
+</model-mapping> 

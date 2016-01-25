@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.contribuable.Contribuable">
+		<root-model name="contribuable" model-ref="ch.globaz.amal.business.models.contribuable.SimpleContribuable"/>
+				
+		<linked-model name="famille" model-ref="ch.globaz.amal.business.models.famille.SimpleFamille" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idContribuable" operation="EQUALS" field-ref="contribuable.idContribuable"/>
+			</join-group>
+		</linked-model>
+ 
+		<linked-model name="personneEtendue" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="famille.idTier"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdContribuable" field-ref="contribuable.idContribuable" operation="EQUALS" />
+				<search-field name="forIdTier" field-ref="famille.idTier" operation="EQUALS" />				
+				<search-field name="likeNom" operation="LIKE" field-ref="personneEtendue.tiers.designationUpper1"/>  
+				<search-field name="likePrenom" operation="LIKE" field-ref="personneEtendue.tiers.designationUpper2"/>					
+				<search-field name="likeNss" operation="LIKE" field-ref="personneEtendue.personneEtendue.numAvsActuel"/>
+				<search-field name="forCsSexe" operation="EQUALS" field-ref="personneEtendue.personne.sexe"/>  
+				<search-field name="forDateNaissance" operation="EQUALS" field-ref="personneEtendue.personne.dateNaissance"/>
+				<search-field name="forNoContribuable" operation="LIKE" field-ref="personneEtendue.personneEtendue.numContribuableActuel"/>
+				<search-field name="forTypeNoPersonne" operation="EQUALS" field-ref="famille.typeNoPersonne"/>
+				<search-field name="forNoPersonne" operation="EQUALS" field-ref="famille.noPersonne"/>
+				<search-field name="forIsContribuable" operation="EQUALS" field-ref="famille.isContribuable"/>
+				<search-field name="forIdContribuableDifferent" operation="NOT_EQUALS" field-ref="contribuable.idContribuable"/>
+				<search-field name="forContribuableActif" field-ref="contribuable.isContribuableActif" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		<order-by>
+			<order-field field-ref="famille.isContribuable" order="ASC"/>
+			<order-field field-ref="famille.pereMereEnfant"/>
+			<order-field field-ref="famille.dateNaissance"/>
+			<order-field field-ref="personneEtendue.tiers.designationUpper1" order="ASC"/>			
+			<order-field field-ref="personneEtendue.tiers.designationUpper2" order="ASC"/>			
+		</order-by>
+
+	</complexe-model>
+</model-mapping>

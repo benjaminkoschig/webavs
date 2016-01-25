@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.fortuneusuelle.SimpleTitre">
+		<description>TITRE</description>
+		<table name="PCTITRE" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idTitre" column="CKITIT" comment="ID_TITRE"/>		
+			<field name="idDonneeFinanciereHeader" mandatory="true" column="CKIDFH" type="NUMERIC" comment="DONNEE_FINANCIERE_HEADER"/>
+			<field name="csTypePropriete" mandatory="true" column="CKTPPT" type="NUMERIC" comment="CS_TYPE_PROPRIETE"/>
+			<field name="PartProprieteNumerateur" column="CKNPPN" type="NUMERIC" comment="PART_PROPRIETE"/>
+			<field name="PartProprieteDenominateur" column="CKNPPD" type="NUMERIC" comment="PART_PROPRIETE"/>
+			<field name="csGenreTitre" mandatory="true" column="CKTGTI" type="NUMERIC" comment="CS_GENRE_TITRE"/>
+			<field name="autreGenreTitre" column="CKLGTI" type="STRING" comment="AUTRE_GENRE_TITRE"/>
+			<field name="designationTitre" column="CKLDTI" type="STRING" comment="DESIGNATION_TITRE"/>
+			<field name="numeroValeur" column="CKLVAL" type="STRING" comment="NUMERO_VALEUR"/>
+			<field name="montantTitre" column="CKNMTI" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_TITRE"/>						
+			<field name="isSansRendement" column="CKBSRE" type="BOOLEAN" comment="IS_SANS_RENDEMENT"/>			
+			<field name="rendementTitre" column="CKNRTI" type="NUMERIC" comment="RENDEMENT_TITRE"/>
+			<field name="droitDeGarde" column="CKNDDG" type="NUMERIC" comment="DROIT_DE_GARDE"/>			
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--  fichier de mapping du modele complexe monnaieEtrangere -->
+<!--  SCE, 6.2010 -->
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.monnaieetrangere.MonnaieEtrangere">
+		<root-model name="simpleMonnaieEtrangere" model-ref="ch.globaz.pegasus.business.models.monnaieetrangere.SimpleMonnaieEtrangere"/>
+		
+		<!--  recherche par defaut -->		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forCsTypeMonnaie"  operation="EQUALS" field-ref="simpleMonnaieEtrangere.csTypeMonnaie"/>
+			</search-group>
+		</search-definition>
+
+		<!-- Recherche les variableMetier valable pour la date donnee en parametre-->
+	    <search-definition name="withDateValable">
+			<search-group operator="AND">
+				<search-field name="forCsTypeMonnaie" operation="EQUALS" field-ref="simpleMonnaieEtrangere.csTypeMonnaie"/>
+				<search-group operator="AND">
+					<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="simpleMonnaieEtrangere.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="simpleMonnaieEtrangere.dateFin"/>
+						<search-field name="forDateValable" operation="NULL" field-ref="simpleMonnaieEtrangere.dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+	 
+		 <!--  order par defaut -->
+	 	<order-by>
+	 		<order-field field-ref="simpleMonnaieEtrangere.csTypeMonnaie" order="DESC"/>
+			<order-field field-ref="simpleMonnaieEtrangere.dateDebut" order="DESC"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

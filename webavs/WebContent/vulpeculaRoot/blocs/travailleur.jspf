@@ -1,0 +1,29 @@
+<%-- L'utilisation de ce bloc nécessite qu'une variable travailleur soit présente
+dans le pageContext ! --%>
+<div class=header>
+	<a href="?userAction=vulpecula.postetravaildetail.travailleurdetail.afficher&selectedId=${travailleur.id}">Travailleur (${travailleur.id})</a> - <a href="${pageContext.request.contextPath}\pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=${travailleur.idTiers}">Tiers</a>
+</div>
+<div>
+<table>
+	<tr>
+		<td class="label"><ct:FWLabel key="JSP_NSS"/></td>
+		<td class="value">${travailleur.numAvsActuel}</td>
+	</tr>
+	<tr>
+		<td class="label"><ct:FWLabel key="JSP_NOM"/> <ct:FWLabel key="JSP_PRENOM"/></td>
+		<td class="value">${travailleur.designation1}&nbsp;${travailleur.designation2}</td>
+	</tr>
+	<tr>
+		<td class="label"><ct:FWLabel key="JSP_DATE_NAISSANCE"/></td>
+		<td class="value">
+			<span style="margin-right: 4px;">${travailleur.dateNaissance}</span>
+			<span style="margin-right: 4px;">${travailleur.pays.codeIso}</span>
+			<span><ct:FWCode csCode="${travailleur.sexe}" /></span>
+		</td>
+	</tr>
+	<tr>
+		<td class="label"><ct:FWLabel key="JSP_PERMIS_TRAVAIL"/></td>
+		<td class="value"><ct:FWCodeLibelle csCode="${travailleur.permisTravail.value}" /></td>
+	</tr>
+</table>
+</div>

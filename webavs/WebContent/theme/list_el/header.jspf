@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<%--  *********************************************** Déclaration des taglibs et paramétrage JSTL/EL ********************************************************* --%>
+<%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
+<%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ page trimDirectiveWhitespaces="true" %>
+<%@ page isELIgnored ="false" %>
+
+<%-- Définition des variables "d'environnement" --%> 
+<ct:setLanguePage/>
+<ct:setAutoShowErrorPopup/>
+
+<%-- Définition des variables path --%>
+<c:set var="mainPath" value="${pageContext.request.contextPath}${requestScope.mainServletPath}" scope="page" />
+<c:set var="rootPath" value="${mainPath}Root" scope="page" />
+<c:set var="baseLink" value="${requestScope.mainServletPath}?userAction=${param.userAction}" scope="page" />
+<c:set var="baseLinkWithoutSlash" value="${fn:substring(baseLink,1,fn:length(baseLink))}" scope="page" />
+<c:set var="dotTab" value="${fn:split(baseLinkWithoutSlash,'.')}" scope="page" />
+<c:set var="partialUserAction" value="${fn:replace(baseLinkWithoutSlash,dotTab[fn:length(dotTab)-1],'')}" scope="page" />
+<c:set var="target" value="parent" scope="page" />
+<c:set var="targetLocation"  value="${target}.location.href" scope="page" />
+
+<%-- Langue des boutons selon la langue de la page --%>
+<c:choose>
+	<c:when test="${languePage=='DE'}">
+		<c:set var="optionsPopupLabel" value="Optionen" scope="page" />
+		<c:set var="menuDetailLabel" value="Detail" scope="page" />
+	</c:when>
+	<c:when test="${languePage=='FR'}">
+		<c:set var="optionsPopupLabel" value="Options" scope="page" />
+		<c:set var="menuDetailLabel" value="Détail" scope="page" />
+	</c:when>
+</c:choose>
+
+<%-- Vérifier si la variable "isSelection" a vraiment une raison d'être dans les nouveaux développements--%>
+<c:set var="isSelection" value="${param.colonneSelection=='yes'}" scope="page" />
+<c:if test="${isSelection}">
+	<c:set var="selectionStr" value="&colonneSelection=yes" scope="page" />
+</c:if>
+
+<%-- Définition de la pagination --%> 
+<c:set var="wantPagination" value="true" scope="page" />
+<%-- Les informations de pagination ne servent à rien --> Ne montre pas le nombre total d'éléments mais le nombre affiché --%>
+<c:set var="wantPaginationPosition" value="false" scope="page" />
+<c:set var="findPreviousLink" value="${partialUserAction}precedant${selectionStr}" scope="page"/>
+<c:set var="findNextLink" value="${partialUserAction}suivant${selectionStr}" scope="page" />
+<c:set var="detailLink" value="${partialUserAction}afficher&selectedId=" scope="page" />
+
+<c:set var="vBeanHasErrors" value="${viewBean.messageTypeError}" scope="page" />
+
+<%-- HTML --%>
+<html>
+<head>

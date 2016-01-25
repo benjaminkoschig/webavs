@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.fortuneusuelle.SimpleBienImmobilierNonHabitable">
+		<description>BIEN IMMOBILIER NON HABITABLE</description>
+		<table name="PCBINHA" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idBienImmobilierNonHabitable" column="CGIBIN" comment="ID_BIEN_IMMOBILIER_NON_HABITABLE"/>		
+			<field name="idDonneeFinanciereHeader" mandatory="true" column="CGIDFH" type="NUMERIC" comment="DONNEE_FINANCIERE_HEADER"/>
+			<field name="csTypePropriete" mandatory="true" column="CGTPPT" type="NUMERIC" comment="CS_TYPE_PROPRIETE"/>
+			<field name="PartProprieteDenominateur" column="CGNPPD" type="NUMERIC" comment="PART_PROPRIETE"/>
+			<field name="PartProprieteNumerateur" column="CGNPPN" type="NUMERIC" comment="PART_PROPRIETE"/>
+			<field name="valeurVenale" mandatory="true" column="CGNVVE" type="NUMERIC" dataType="NUMERIC(15,2)" comment="VALEUR_VENALE"/>
+			<field name="csTypeBien" mandatory="true" column="CGTBIE" type="NUMERIC" comment="CS_TYPE_BIEN"/>
+			<field name="autresTypeBien" column="CGLABI" type="STRING" comment="AUTRES_TYPE_BIEN"/>
+			<field name="noFeuillet" column="CGLNFE" type="STRING" comment="NO_FEUILLET"/>
+			<field name="idCommuneDuBien" mandatory="true" column="CGICBI" type="NUMERIC" comment="ID_COMMUNE_DU_BIEN"/>
+			<field name="idPays" mandatory="true" column="CGIDPA" type="NUMERIC" comment="ID_PAYS"/>
+			<field name="montantDetteHypothecaire" column="CGNMDH" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_DETTE_HYPOTHECAIRE"/>
+			<field name="noHypotheque" column="CGLNHY" type="STRING" comment="NO_HYPOTHEQUE"/>
+			<field name="nomCompagnie" column="CGLNCO" type="NUMERIC" comment="NOM_COMPAGNIE"/>
+			<field name="montantInteretHypothecaire" column="CGNMIH" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_INTERET_HYPOTHECAIRE"/>
+			<field name="montantRendement" mandatory="true" column="CGNMRE" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_RENDEMENT"/>			
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

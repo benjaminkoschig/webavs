@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="pegasus/fortuneusuelle/simpleassurancevie.xml"/>
+	<model-mapping import="pegasus/fortuneusuelle/simpleautresdettesprouvees.xml"/>
+	<model-mapping import="pegasus/fortuneusuelle/simplebienimmobilierhabitationnonprincipale.xml"/>
+	<model-mapping import="pegasus/fortuneusuelle/simplebienimmobiliernonhabitable.xml"/>
+	<model-mapping import="pegasus/fortuneusuelle/simplebienimmobilierservanthabitationprincipale.xml"/>
+	<model-mapping import="pegasus/fortuneusuelle/simplecapitallpp.xml"/>
+	<model-mapping import="pegasus/fortuneusuelle/simplecomptebancaireccp.xml"/>
+	<model-mapping import="pegasus/fortuneusuelle/simpletitre.xml"/>
+	
+	<model-mapping import="pegasus/fortuneusuelle/assurancevie.xml"/>
+	<model-mapping import="pegasus/fortuneusuelle/autresdettesprouvees.xml"/>
+	<model-mapping import="pegasus/fortuneusuelle/bienimmobilierhabitationnonprincipale.xml"/>
+	<model-mapping import="pegasus/fortuneusuelle/bienimmobiliernonhabitable.xml"/>
+	<model-mapping import="pegasus/fortuneusuelle/bienimmobilierservanthabitationprincipale.xml"/>
+	<model-mapping import="pegasus/fortuneusuelle/capitallpp.xml"/>
+	<model-mapping import="pegasus/fortuneusuelle/comptebancaireccp.xml"/>
+	<model-mapping import="pegasus/fortuneusuelle/titre.xml"/>	
+	
+	<model-mapping import="pegasus/fortuneusuelle/fortuneusuelle.xml"/>
+	
+</model-mapping>

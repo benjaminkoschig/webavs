@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.primesassurance.SimplePrimesAssurance">
+		<description>Primes moyennes par caisse maladie</description>
+		<table name="MAASSPRM" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idPrimeMoyenne" column="IDPRM" comment="Clef primaire"/>
+			<field name="idTiers" column="IDTIER" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="Id tiers"/>
+			<field name="noCaisseMaladie" column="NOCAIS" type="NUMERIC" dataType="NUMERIC(6,0)" mandatory="false" comment="No caisse maladie"/>
+			<field name="anneeHistorique" column="ANHIST" type="NUMERIC" dataType="NUMERIC(4,0)" mandatory="fale" comment="Année historique"/>
+			<field name="montantPrimeAdulte" column="MTPADU" type="NUMERIC" dataType="NUMERIC(6,2)" mandatory="fale" comment="Montant prime adulte"/>
+			<field name="montantPrimeFormation" column="MTPFOR" type="NUMERIC" dataType="NUMERIC(6,2)" mandatory="fale" comment="Montant prime formation"/>
+			<field name="montantPrimeEnfant" column="MTPENF" type="NUMERIC" dataType="NUMERIC(6,2)" mandatory="fale" comment="Montant prime enfant"/>
+		</fields>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdTiers" field-ref="idTiers" operation="EQUALS"/>
+				<search-field name="forNoCaisseMaladie" field-ref="noCaisseMaladie" operation="EQUALS"/>
+				<search-field name="forAnneeHistorique" field-ref="anneeHistorique" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="anneeHistorique" order="DESC" />
+		</order-by>
+		
+		<order-by name="anneeHistoriqueDesc">
+			<order-field field-ref="anneeHistorique" order="DESC" />
+		</order-by>
+		<order-by name="anneeHistoriqueAsc">
+			<order-field field-ref="anneeHistorique" order="ASC" />
+		</order-by>
+		
+		<order-by name="montantPrimeAdulteDesc">
+			<order-field field-ref="montantPrimeAdulte" order="DESC" />
+		</order-by>
+		<order-by name="montantPrimeAdulteAsc">
+			<order-field field-ref="montantPrimeAdulte" order="ASC" />
+		</order-by>
+		
+		<order-by name="montantPrimeFormationDesc">
+			<order-field field-ref="montantPrimeFormation" order="DESC" />
+		</order-by>
+		<order-by name="montantPrimeFormationAsc">
+			<order-field field-ref="montantPrimeFormation" order="ASC" />
+		</order-by>
+		
+		<order-by name="montantPrimeEnfantDesc">
+			<order-field field-ref="montantPrimeEnfant" order="DESC" />
+		</order-by>
+		<order-by name="montantPrimeEnfantAsc">
+			<order-field field-ref="montantPrimeEnfant" order="ASC" />
+		</order-by>
+	</simple-model>
+</model-mapping>
+

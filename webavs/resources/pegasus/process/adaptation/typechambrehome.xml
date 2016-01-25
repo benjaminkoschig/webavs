@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.process.adaptation.TypeChambreHome" >
+
+		<root-model name="simpleTaxeJournaliereHome" model-ref="ch.globaz.pegasus.business.models.habitat.SimpleTaxeJournaliereHome"/>
+		
+		<select-fields> 
+			<select-field name="idTypeChambre" field-ref="simpleTypeChambre.idTypeChambre" />
+		</select-fields>
+		
+		<linked-model name="simpleDonneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleTaxeJournaliereHome.idDonneeFinanciereHeader"/>
+			</join-group>		
+		</linked-model>
+
+		<linked-model name="simpleDroitMembreFamille" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDroitMembreFamille" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDroitMembreFamille"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleMembreFamille" model-ref="ch.globaz.hera.business.models.famille.SimpleMembreFamille" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idMembreFamille" operation="EQUALS" field-ref="simpleDroitMembreFamille.idMembreFamilleSF"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleTypeChambre" model-ref="ch.globaz.pegasus.business.models.home.SimpleTypeChambre" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTypeChambre" operation="EQUALS" field-ref="simpleTaxeJournaliereHome.idTypeChambre"/>
+			</join-group>
+		</linked-model>
+
+		<search-definition>	
+			<search-group operator="AND">
+				<search-field name="forCsCategorie" operation="EQUALS" field-ref="simpleTypeChambre.csCategorie"/>
+				<search-field name="forIdTiers" operation="EQUALS" field-ref="simpleMembreFamille.idTiers"/>
+				<search-field name="forIdTypeChambre" operation="EQUALS" field-ref="simpleTypeChambre.idTypeChambre"/>
+				<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateDebut"/>
+				<search-field name="forIsSupprime" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.isSupprime"/>
+				
+				<search-group operator="OR">
+					<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+					<search-field name="forDateValable" operation="NULL" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+				</search-group>
+			</search-group>
+		</search-definition>
+
+	</complexe-model>
+</model-mapping>

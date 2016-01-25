@@ -1,0 +1,8 @@
+<title>${idEcran}</title>
+</head>
+<body class="isAjaxSaclable">
+<table cellspacing="0" cellpadding="0" style="background-color: #B3C4DB; width: 100%; height: ${tableHeight};">
+	<Tbody>
+		<tr>
+			<th colspan="3" height="10" class="thDetail">
+				<span class="idEcran">${idEcran}</span>

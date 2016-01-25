@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.traitementdemasse.SimpleDefinitionParametre">
+		<description>Permet de définir les paramétres liée a une action et a un traitement</description>
+		<table name="PCDEFPAR" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDefinitionParametre" column="ABIDEP" comment="ID_DEFINITION_PARAMETRE"/>			
+			<field name="idDefinitionTraitement" mandatory="true" column="ABIDTR" type="NUMERIC" comment="ID_DEFINITION_TRAITEMENT"/>
+			<field name="idParametre" mandatory="true" column="ABIPAR" type="NUMERIC" comment="ID_PARAMETRE"/>
+			<field name="modifiable" column="ABBMOD" type="BOOLEAN" comment="MODIFIABLE"/>
+			<field name="affichable" column="ABAFIC" type="BOOLEAN" comment="AFFICHABLE"/>
+			<field name="valeur" column="ABVALE" type="STRING" dataType="VARCHAR(255)" comment="VALEUR"/>
+		</fields>
+		
+		<search-definition> 
+			<search-group operator="AND">
+				<search-field name="forIdTraitement" operation="EQUALS" field-ref="idDefinitionTraitement"/>
+			    <search-field name="forIdParametre" operation="EQUALS" field-ref="idParametre"/>
+			</search-group>
+		</search-definition>	
+	</simple-model>
+	
+</model-mapping> 

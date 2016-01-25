@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.vulpecula.business.models.decomptes.DecompteSimpleModel">
+		<table name="PT_DECOMPTES" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="id" column="ID" comment="Id du décompte" />
+			<field name="idEmployeur" column="ID_PT_EMPLOYEURS" type="NUMERIC" comment="lien sur l'employeur" />
+			<field name="idPassageFacturation" column="ID_PASSAGE_FACTURATION" type="NUMERIC" comment="numéro de passage de facturation"/>
+			<field name="idRapportControle" column="ID_CECONTP" type="NUMERIC" comment="lien sur le rapport de contrôle DS" />
+			<field name="interetsMoratoires" column="CS_INTERETS" type="NUMERIC" comment="lien sur le groupe de code système des intérêts moratoires" />
+			<field name="numeroDecompte" column="NUMERO_DECOMPTE" type="STRING" comment="Numéro du décompte" />
+			<field name="dateEtablissement" column="DATE_ETABLISSEMENT" type="DATE" comment="date de l'établissement du décompte" />
+			<field name="dateReception" column="DATE_RECEPTION" type="DATE" comment="date de la réception" />
+			<field name="dateRappel" column="DATE_RAPPEL" type="DATE" comment="date à laquelle le décompte est passé à l'état sommation" />
+			<field name="montantControle" column="MONTANT_CONTROLE" type="NUMERIC" comment="montant pour le contrôle du décompte" />
+			<field name="periodeDebut" column="PERIODE_DEBUT" type="NUMERIC" comment="Période de début du décompte, mois et année sous la forme AAAAMM" />
+			<field name="periodeFin" column="PERIODE_FIN" type="NUMERIC" comment="Période de fin du décompte, mois et année sous la forme AAAAMM" />
+			<field name="type" column="CS_TYPE" type="NUMERIC" comment="Code System : type du décompte" />
+			<field name="etat" column="CS_ETAT" type="NUMERIC" comment="Code System : etat du décompte" />
+			<field name="remarqueRectification" column="REMARQUE_RECTIFICATION" type="STRING" comment="commentaire de rectification pour le document" />
+			<field name="manuel" column="MANUEL" type="BOOLEAN" comment="Est-ce qu'il s'agit d'un décompte manuel ou génére vide"/>
+			<field name="motifProlongation" column="CS_MOTIF_PROLONGATION" type="NUMERIC" comment="motif de prolongation du rappel"/>
+			<field name="rectifie" column="RECTIFIE" type="BOOLEAN" comment="est-ce un décompte rectifié"/>
+			<field name="controleAC2" column="CONTROLEAC2" type="BOOLEAN" comment="est-ce que c'est un décompte où l'on effectue un contrôle AC2" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+		
+		<order-by name="idAsc">
+			<order-field field-ref="id" />
+		</order-by>
+		
+	</simple-model>
+</model-mapping>

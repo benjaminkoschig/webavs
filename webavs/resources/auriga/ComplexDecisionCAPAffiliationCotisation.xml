@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.auriga.business.models.ComplexDecisionCAPAffiliationCotisation">
+		
+		<root-model name="decisionCAP"
+			model-ref="ch.globaz.auriga.business.models.SimpleDecisionCAP" />
+				
+		<linked-model name="affiliation"
+			model-ref="ch.globaz.naos.business.model.AffiliationSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="affiliationId" field-ref="decisionCAP.idAffiliation" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="adhesion"
+			model-ref="ch.globaz.naos.business.model.AdhesionSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="affiliationId" field-ref="affiliation.affiliationId" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="cotisation"
+			model-ref="ch.globaz.naos.business.model.CotisationSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="adhesionId" field-ref="adhesion.adhesionId" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="assurance"
+			model-ref="ch.globaz.naos.business.model.AssuranceSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="assuranceId" field-ref="cotisation.assuranceId" />
+			</join-group>
+		</linked-model>
+		
+				
+		<search-definition>
+			<search-group operator="AND">
+				
+				<search-field name="inEtatDecision" field-ref="decisionCAP.etat" operation="IN" />
+				<search-field name="forDateFinDecision" field-ref="decisionCAP.dateFin" operation="EQUALS" />
+				<search-field name="forNotEtatDecision" field-ref="decisionCAP.etat" operation="NOT_EQUALS" />
+				<search-field name="forNumeroAffilieGreaterEqual" field-ref="affiliation.affilieNumero" operation="GREATER_OR_EQUALS" />
+				<search-field name="forNumeroAffilieLessEqual" field-ref="affiliation.affilieNumero" operation="LESS_OR_EQUALS" />
+				<search-field name="forGenreAssurance" field-ref="assurance.assuranceGenre" operation="EQUALS" />
+				<search-field name="inTypeAssurance" field-ref="assurance.typeAssurance" operation="IN" />
+				
+				
+				
+				<search-group operator="AND">
+					<search-group operator="OR">
+						<search-field name="forDateFinAffiliationGreater"  field-ref="affiliation.dateFin" operation="GREATER"  />
+						<search-field name="forDateFinAffiliationGreater"  field-ref="affiliation.dateFin" operation="NULL"/>
+					</search-group>
+				</search-group>
+				
+				<search-group operator="AND">
+					<search-group operator="OR">
+						<search-field name="forDateFinCotisationGreater"  field-ref="cotisation.dateFin" operation="GREATER"  />
+						<search-field name="forDateFinCotisationGreater"  field-ref="cotisation.dateFin" operation="NULL"/>
+					</search-group>
+				</search-group>
+				
+			</search-group>
+		</search-definition>
+		
+		  <!--ATTENTION ! Ne pas modifier cet order-by par défaut qui est utilisé dans DecisionCAPServiceImpl.renouvelerDecisionCAPSMasse(...)-->
+		<order-by>
+			<order-field field-ref="affiliation.affilieNumero" order="ASC" />
+			<order-field field-ref="decisionCAP.dateDonnees" order="DESC" />	
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

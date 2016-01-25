@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe utiliser pour la recherche d'échéances de droit -->
+
+<model-mapping>
+	<complexe-model className="ch.globaz.al.business.models.tarif.EcheanceComplexModel">
+		<select-fields distinct="true">
+			<select-field name="ageDebut" field-ref="critereTarifModel.debutCritere"/>
+			<select-field name="ageFin" field-ref="critereTarifModel.finCritere"/>
+		</select-fields>
+			<root-model name="critereTarifModel" model-ref="ch.globaz.al.business.models.tarif.CritereTarifModel"  select-fields="false"/>
+			
+			<linked-model name="prestationTarifModel" model-ref="ch.globaz.al.business.models.tarif.PrestationTarifModel" join-type="LEFT_OUTER" select-fields="false">
+				<join-group operator="AND">
+					<join-field name="idCritereAge" field-ref="critereTarifModel.idCritereTarif"/>
+				</join-group>
+			</linked-model>
+			
+			<linked-model name="categorieTarifModel" model-ref="ch.globaz.al.business.models.tarif.CategorieTarifModel" join-type="LEFT_OUTER" select-fields="false">
+				<join-group operator="AND">
+					<join-field name="idCategorieTarif" field-ref="prestationTarifModel.idCategorieTarif"/>
+				</join-group>
+			</linked-model>
+			
+			<search-definition name="default">
+				<search-group operator="AND">
+					<search-field name="forCapableExercer" field-ref="prestationTarifModel.capableExercer" operation="EQUALS"/>
+					<search-field name="forCategorieResident" field-ref="prestationTarifModel.categorieResident" operation="EQUALS"/>
+					<search-field name="forCategorieTarif" field-ref="categorieTarifModel.categorieTarif" operation="EQUALS" />
+					<search-field name="forDebutValiditePrestation" field-ref="prestationTarifModel.debutValidite" operation="LESS_OR_EQUALS"/>
+						<search-group operator="OR">
+						<search-field name="forFinValiditePrestation" field-ref="prestationTarifModel.finValidite" operation="GREATER_OR_EQUALS"/>
+							<search-field name="forFinValiditePrestation" field-ref="prestationTarifModel.finValidite" operation="NULL"/>
+						</search-group>
+					<search-field name="forTypePrestation" field-ref="prestationTarifModel.typePrestation" operation="EQUALS"/>
+					
+				</search-group>
+			</search-definition>
+			
+			<order-by name="default">
+			<order-field field-ref="ageDebut" order="ASC"/>
+			<!--	<order-field field-ref="critereTarifModel.debutCritere" order="ASC"/>-->
+			</order-by> 	
+	
+	</complexe-model>
+</model-mapping>
+

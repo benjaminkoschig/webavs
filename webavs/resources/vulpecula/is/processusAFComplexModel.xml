@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.is.ProcessusAFComplexModel">
+
+		<root-model name="processusPeriodiqueModel"
+			model-ref="ch.globaz.al.business.models.processus.ProcessusPeriodiqueModel" />
+
+		<linked-model name="configProcessusModel"
+			model-ref="ch.globaz.al.business.models.processus.ConfigProcessusModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field
+					name="idConfig"
+					operation="EQUALS"
+					field-ref="processusPeriodiqueModel.idConfig" />
+			</join-group>
+		</linked-model>
+			
+		<linked-model name="passageModel"
+			model-ref="ch.globaz.musca.business.models.PassageModel"
+			join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field
+					name="idPassage"
+					operation="EQUALS"
+					field-ref="processusPeriodiqueModel.idPassageFactu" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="journalSimpleModel"
+			model-ref="ch.globaz.osiris.business.model.JournalSimpleModel"
+			join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field
+					name="idJournal"
+					operation="EQUALS"
+					field-ref="passageModel.idJournal" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="periodeAFModel" 
+			model-ref="ch.globaz.al.business.models.periodeAF.PeriodeAFModel"
+			join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field
+					name="idPeriodeAF"
+					operation="EQUALS"
+					field-ref="processusPeriodiqueModel.idPeriode" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+				<search-group operator="AND">
+					<search-field name="forId" field-ref="processusPeriodiqueModel.idProcessusPeriodique" operation="EQUALS"/>
+					<search-field name="forBusinessProcessus" field-ref="configProcessusModel.businessProcessus" operation="EQUALS" />
+					<search-field name="forIsPartiel" field-ref="processusPeriodiqueModel.isPartiel" operation="EQUALS" />
+					<search-field name="forEtat" field-ref="processusPeriodiqueModel.etat" operation="EQUALS" />
+					<search-field name="forIdsNotIn" field-ref="processusPeriodiqueModel.idProcessusPeriodique" operation="NOT_IN" />
+					<search-field name="forDatePeriode" field-ref="periodeAFModel.datePeriode" operation="EQUALS" />
+				</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

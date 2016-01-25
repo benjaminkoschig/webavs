@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader">
+		<description>Header des decisions</description>
+		<table name="PCDECHEA" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDecisionHeader" column="DHIDEN" comment="ID_DECISION_HEADER"/>
+			<field name="idTiersBeneficiaire" column="DHITIE" type="NUMERIC" mandatory="false" comment="ID_TIERS_BENEFICIAIRE"/>
+			<field name="idTiersCourrier" column="DHITCO" type="NUMERIC" mandatory="false" comment="ID_TIERS_COURRIER"/>
+			<field name="idPrestation" column="DHIPRE" type="NUMERIC" mandatory="false" comment="ID_PRESTATION"/>
+			
+			<field name="csTypeDecision" column="DHTTYP" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="CS_TYPE_DECISION"/>
+			<field name="noDecision" column="DHNDEC" type="STRING" dataType="VARCHAR(11)" mandatory="false" comment="NO_DECISION"/>
+			<field name="csGenreDecision" column="DHTGEN" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="CS_GENRE_DECISION"/>
+			<field name="dateDecision" column="DHDDEC" type="DATE" mandatory="false" comment="DATE_DECISION"/>
+			<field name="csEtatDecision" column="DHTETA" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="CS_ETAT_DECISION"/>
+			<field name="datePreparation" column="DHDPRE" type="DATE" mandatory="false" comment="DATE_PREPARATION"/>
+			<field name="preparationPar" column="DHLPRE" type="STRING" dataType="VARCHAR(20)" mandatory="false" comment="PREPARATION_PAR"/>
+			<field name="dateValidation" column="DHDVAL" type="DATE" mandatory="false" comment="DATE_VALIDATION"/>
+			<field name="validationPar" column="DHLVAL" type="STRING" dataType="VARCHAR(20)" mandatory="false" comment="VALIDATION_PAR"/>
+			<field name="dateDebutDecision" column="DHDDDR" type="MONTH_YEAR" mandatory="false" comment="DATE_DEBUT_DECISION"/>
+			<field name="dateFinDecision" column="DHFDDR" type="MONTH_YEAR" mandatory="false" comment="DATE_FIN_DECISION"/>
+			<field name="idDecisionConjoint" column="DHIDCO" type="NUMERIC" mandatory="false" comment="ID_DECISION_HEADER_CONJOINT_LIE"/>
+			
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDecisionHeader" operation="EQUALS" field-ref="idDecisionHeader" />
+				<search-field name="forInIdDecisionHeader" operation="IN" field-ref="idDecisionHeader" />
+			</search-group>
+		</search-definition>
+		<search-definition name="devalidation">
+			<search-group operator="AND">
+				<search-field name="forInIdDecisionHeader" operation="IN" field-ref="idDecisionHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

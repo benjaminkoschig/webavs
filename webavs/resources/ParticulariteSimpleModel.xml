@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.naos.business.model.ParticulariteSimpleModel">
+		<table name="AFPARTP" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="particulariteId" column="MFIPAR" />
+			<field name="affiliationId" column="MAIAFF" type="NUMERIC"  />
+			<field name="particularite" column="MFTPAR" type="NUMERIC"  />
+			<field name="dateDebut" column="MFDDEB" type="DATE"  />
+			<field name="dateFin" column="MFDFIN" type="DATE"  />
+			<field name="champNumerique" column="MFMNUM" type="NUMERIC"  />
+			<field name="champAlphanumerique" column="MFLALP" type="NUMERIC"  />
+		</fields>
+		
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forParticularite" field-ref="particularite" operation="EQUALS" />
+				<search-field name="forIdAffiliation" field-ref="affiliationId" operation="EQUALS" />
+				<search-field name="forDateDebutLessOrEquals" field-ref="dateDebut" operation="LESS_OR_EQUALS" />
+			</search-group>
+		</search-definition>
+
+		<order-by>
+			<order-field field-ref="dateFin" />
+			<order-field field-ref="dateDebut" />
+		</order-by>
+		
+		</simple-model>
+</model-mapping>

@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app id="WebApp">
+	<display-name>webavs</display-name>
+	<filter id="GlobazResponseFilter">
+		<filter-name>ResponseFilter</filter-name>
+		<filter-class>globaz.jade.servlet.filter.JadeResponseFilter</filter-class>
+	</filter>
+	<filter id="GlobazRequestFilter">
+		<filter-name>RequestFilter</filter-name>
+		<filter-class>globaz.jade.servlet.filter.JadeRequestFilter</filter-class>
+	</filter>
+	
+	<!-- 
+	<filter id="GlobazGZIPFilter">
+		<filter-name>GZIPFilter</filter-name>
+		<filter-class>globaz.jade.servlet.filter.JadeGZipFilter</filter-class>
+	</filter>
+ -->	
+
+<!-- ResponseFilterMapping: uncomment to protect from HttpResponseSplitting attacks-->
+<!-- 
+	<filter-mapping id="GlobazResponseFilterMapping">
+		<filter-name>ResponseFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+-->
+
+<!-- RequestFilterMapping: uncomment to protect from XSS attacks-->
+<!-- 
+	<filter-mapping id="GlobazRequestFilterMapping">
+		<filter-name>RequestFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+-->
+
+<!-- 
+	<filter-mapping id="GlobazGZIPFilterMapping">
+		<filter-name>GZIPFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	 -->
+ 
+	<!--  Utilisation de la servlet de gestion de la persistence -->
+	<servlet>
+		<servlet-name>persistence</servlet-name>
+		<display-name>persistence</display-name>
+		<servlet-class>globaz.jade.servlet.http.JadeHttpPersitenceServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>persistence</servlet-name>
+		<url-pattern>/persistence</url-pattern>
+	</servlet-mapping>
+	
+		<!-- Servlet pour la documentation est les testes des notations javascript -->
+	<servlet>
+		<servlet-name>notation</servlet-name>
+		<display-name>notation</display-name>
+		<servlet-class>globaz.jade.servlet.http.JadeHttpNotationServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>notation</servlet-name>
+		<url-pattern>/notation</url-pattern>
+	</servlet-mapping>
+	
+
+	<servlet id="GlobazDwrServlet">
+		<servlet-name>dwr-invoker</servlet-name>
+		<display-name>DWR Servlet</display-name>
+		<description>Direct Web Remoter Servlet</description>
+		<servlet-class>uk.ltd.getahead.dwr.DWRServlet</servlet-class>
+		<init-param>
+			<param-name>debug</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>scriptCompressed</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazJobMonitorServlet">
+		<servlet-name>jobmonitor</servlet-name>
+		<display-name>jobmonitor</display-name>
+		<servlet-class>globaz.jade.servlet.http.JadeJobMonitorServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazAlServlet">
+		<servlet-name>ALMainServlet</servlet-name>
+		<display-name>ALMainServlet</display-name>
+		<servlet-class>ch.globaz.al.web.servlet.ALMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazPyxisServlet">
+		<servlet-name>pyxis</servlet-name>
+		<display-name>PYXIS</display-name>
+		<servlet-class>globaz.pyxis.servlet.TIMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazPegasusServlet">
+		<servlet-name>pegasus</servlet-name>
+		<display-name>PEGASUS</display-name>
+		<servlet-class>ch.globaz.pegasus.web.servlet.PCMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet> 
+	<servlet id="GlobazPerseusServlet">
+		<servlet-name>perseus</servlet-name>
+		<display-name>PERSEUS</display-name>
+		<servlet-class>ch.globaz.perseus.web.servlet.PFMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazAurigaServlet">
+		<servlet-name>auriga</servlet-name>
+		<display-name>AURIGA</display-name>
+		<servlet-class>ch.globaz.auriga.web.servlet.AUMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazAriesServlet">
+		<servlet-name>aries</servlet-name>
+		<display-name>ARIES</display-name>
+		<servlet-class>ch.globaz.aries.web.servlet.ARMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>  
+	<servlet id="GlobazCygnusServlet">
+		<servlet-name>cygnus</servlet-name>
+		<display-name>CYGNUS</display-name>
+		<servlet-class>globaz.cygnus.servlet.RFMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazNaosServlet">
+		<servlet-name>naos</servlet-name>
+		<display-name>NAOS</display-name>
+		<servlet-class>globaz.naos.servlet.AFMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazPavoServlet">
+		<servlet-name>pavo</servlet-name>
+		<display-name>PAVO</display-name>
+		<servlet-class>globaz.pavo.servlet.CIMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazHermesServlet">
+		<servlet-name>hermes</servlet-name>
+		<display-name>HERMES</display-name>
+		<servlet-class>globaz.hermes.servlet.HEMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazHeliosServlet">
+		<servlet-name>helios</servlet-name>
+		<display-name>HELIOS</display-name>
+		<servlet-class>globaz.helios.servlet.CGMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazMuscaServlet">
+		<servlet-name>musca</servlet-name>
+		<display-name>MUSCA</display-name>
+		<servlet-class>globaz.musca.servlet.FAMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazOrionServlet">
+		<servlet-name>orion</servlet-name>
+		<display-name>ORION</display-name>
+		<servlet-class>ch.globaz.orion.servlet.EBMainServlet</servlet-class>
+	<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazPhenixServlet">
+		<servlet-name>phenix</servlet-name>
+		<display-name>PHENIX</display-name>
+		<servlet-class>globaz.phenix.servlet.CPMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazDracoServlet">
+		<servlet-name>draco</servlet-name>
+		<display-name>DRACO</display-name>
+		<servlet-class>globaz.draco.servlet.DSMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazOsirisServlet">
+		<servlet-name>osiris</servlet-name>
+		<display-name>OSIRIS</display-name>
+		<servlet-class>globaz.osiris.servlet.CAMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<!--
+	<servlet id="GlobazJadeServlet">
+		<servlet-name>jade</servlet-name>
+		<display-name>JADE</display-name>
+		<servlet-class>globaz.development.JadeShellServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>-->
+	<servlet id="GlobazAquilaServlet">
+		<servlet-name>aquila</servlet-name>
+		<display-name>aquila</display-name>
+		<servlet-class>globaz.aquila.servlet.COMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazLeoServlet">
+		<servlet-name>leo</servlet-name>
+		<display-name>leo</display-name>
+		<servlet-class>globaz.leo.servlet.LEMainServlet</servlet-class>
+		<load-on-startup>-1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazApgServlet">
+		<servlet-name>apg</servlet-name>
+		<display-name>APG</display-name>
+		<servlet-class>globaz.apg.servlet.APMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazIjServlet">
+		<servlet-name>ij</servlet-name>
+		<display-name>IJ</display-name>
+		<servlet-class>globaz.ij.servlet.IJMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazHeraServlet">
+		<servlet-name>hera</servlet-name>
+		<display-name>HERA</display-name>
+		<servlet-class>globaz.hera.servlet.SFMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazBabelServlet">
+		<servlet-name>babel</servlet-name>
+		<display-name>BABEL</display-name>
+		<servlet-class>globaz.babel.servlet.CTMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazCepheusServlet">
+		<servlet-name>cepheus</servlet-name>
+		<display-name>CEPHEUS</display-name>
+		<servlet-class>globaz.cepheus.servlet.DOMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazLyraServlet">
+		<servlet-name>lyra</servlet-name>
+		<display-name>LYRA</display-name>
+		<servlet-class>globaz.lyra.servlet.LYMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazFWMainServlet">
+		<servlet-name>FXMainServlet</servlet-name>
+		<display-name>FXMainServlet</display-name>
+		<servlet-class>globaz.fx.common.application.servlet.FXMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazCorvusServlet">
+		<servlet-name>corvus</servlet-name>
+		<display-name>CORVUS</display-name>
+		<servlet-class>globaz.corvus.servlet.REMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazLibraServlet">
+		<servlet-name>libra</servlet-name>
+		<display-name>LIBRA</display-name>
+		<servlet-class>globaz.libra.servlet.LIMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazCampusServlet">
+		<servlet-name>campus</servlet-name>
+		<display-name>CAMPUS</display-name>
+		<servlet-class>globaz.campus.servlet.GEMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<!--
+	<servlet id="GlobazLacertaServlet">
+		<servlet-name>lacerta</servlet-name>
+		<display-name>LACERTA</display-name>
+		<servlet-class>globaz.lacerta.servlet.LAMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	-->
+	<servlet id="GlobazLynxServlet">
+		<servlet-name>lynx</servlet-name>
+		<display-name>LYNX</display-name>
+		<servlet-class>globaz.lynx.servlet.LXMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazHerculeServlet">
+		<servlet-name>hercule</servlet-name>
+		<display-name>HERCULE</display-name>
+		<servlet-class>globaz.hercule.servlet.CEMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazTucanaServlet">
+		<servlet-name>tucana</servlet-name>
+		<display-name>TUCANA</display-name>
+		<servlet-class>globaz.tucana.servlet.TUMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet id="GlobazAmalServlet">
+		<servlet-name>amal</servlet-name>
+		<display-name>AMAL</display-name>
+		<servlet-class>ch.globaz.amal.web.servlet.AMMainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping id="GlobazVulpeculaServletMapping">
+		<servlet-name>vulpecula</servlet-name>
+		<url-pattern>/vulpecula</url-pattern>
+	</servlet-mapping>
+	<servlet id="GlobazPropertiesServlet">
+		<servlet-name>properties-service</servlet-name>
+		<display-name>properties-service</display-name>
+		<servlet-class>globaz.jade.servlet.http.JadeHttpPropertiesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping id="GlobazDwrServletMapping">
+		<servlet-name>dwr-invoker</servlet-name>
+		<url-pattern>/dwr/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazJobMonitorServletMapping">
+		<servlet-name>jobmonitor</servlet-name>
+		<url-pattern>/jobmonitor</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazPyxisServletMapping">
+		<servlet-name>pyxis</servlet-name>
+		<url-pattern>/pyxis</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazNaosServletMapping">
+		<servlet-name>naos</servlet-name>
+		<url-pattern>/naos</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazPavoServletMapping">
+		<servlet-name>pavo</servlet-name>
+		<url-pattern>/pavo</url-pattern>
+	</servlet-mapping>
+	<!--
+	<servlet-mapping id="GlobazJadeServletMapping">
+		<servlet-name>jade</servlet-name>
+		<url-pattern>/jade</url-pattern>
+	</servlet-mapping>-->
+	<servlet-mapping id="GlobazHeliosServletMapping">
+		<servlet-name>helios</servlet-name>
+		<url-pattern>/helios</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazHermesServletMapping">
+		<servlet-name>hermes</servlet-name>
+		<url-pattern>/hermes</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazMuscaServletMapping">
+		<servlet-name>musca</servlet-name>
+		<url-pattern>/musca</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazPhenixServletMapping">
+		<servlet-name>phenix</servlet-name>
+		<url-pattern>/phenix</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazDracoServletMapping">
+		<servlet-name>draco</servlet-name>
+		<url-pattern>/draco</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazOsirisServletMapping">
+		<servlet-name>osiris</servlet-name>
+		<url-pattern>/osiris</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazAquilaServletMapping">
+		<servlet-name>aquila</servlet-name>
+		<url-pattern>/aquila</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazLeoServletMapping">
+		<servlet-name>leo</servlet-name>
+		<url-pattern>/leo</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazApgServletMapping">
+		<servlet-name>apg</servlet-name>
+		<url-pattern>/apg</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazIjServletMapping">
+		<servlet-name>ij</servlet-name>
+		<url-pattern>/ij</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazHeraServletMapping">
+		<servlet-name>hera</servlet-name>
+		<url-pattern>/hera</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazBabelServletMapping">
+		<servlet-name>babel</servlet-name>
+		<url-pattern>/babel</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazCepheusServletMapping">
+		<servlet-name>cepheus</servlet-name>
+		<url-pattern>/cepheus</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazLyraServletMapping">
+		<servlet-name>lyra</servlet-name>
+		<url-pattern>/lyra</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazFXMainServletMapping">
+		<servlet-name>FXMainServlet</servlet-name>
+		<url-pattern>/fx</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazCorvusServletMapping">
+		<servlet-name>corvus</servlet-name>
+		<url-pattern>/corvus</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazCampusServletMapping">
+		<servlet-name>campus</servlet-name>
+		<url-pattern>/campus</url-pattern>
+	</servlet-mapping>
+	<!--
+	<servlet-mapping id="GlobazLacertaServletMapping">
+		<servlet-name>lacerta</servlet-name>
+		<url-pattern>/lacerta</url-pattern>
+	</servlet-mapping>
+	-->
+	<servlet-mapping id="GlobazLynxServletMapping">
+		<servlet-name>lynx</servlet-name>
+		<url-pattern>/lynx</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazHerculeServletMapping">
+		<servlet-name>hercule</servlet-name>
+		<url-pattern>/hercule</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazTucanaServletMapping">
+		<servlet-name>tucana</servlet-name>
+		<url-pattern>/tucana</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazOrionServletMapping">
+	<servlet-name>orion</servlet-name>
+	<url-pattern>/orion</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazLibraServletMapping">
+		<servlet-name>libra</servlet-name>
+		<url-pattern>/libra</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazAlServletMapping">
+		<servlet-name>ALMainServlet</servlet-name>
+		<url-pattern>/al</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazPegasusServletMapping">
+		<servlet-name>pegasus</servlet-name>
+		<url-pattern>/pegasus</url-pattern>
+	</servlet-mapping> 
+	<servlet-mapping id="GlobazPerseusServletMapping">
+		<servlet-name>perseus</servlet-name>
+		<url-pattern>/perseus</url-pattern>
+	</servlet-mapping> 
+	<servlet-mapping id="GlobazAurigaServletMapping">
+		<servlet-name>auriga</servlet-name>
+		<url-pattern>/auriga</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazAriesServletMapping">
+		<servlet-name>aries</servlet-name>
+		<url-pattern>/aries</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazCygnusServletMapping">
+		<servlet-name>cygnus</servlet-name>
+		<url-pattern>/cygnus</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping id="GlobazAmalServletMapping">
+		<servlet-name>amal</servlet-name>
+		<url-pattern>/amal</url-pattern>
+	</servlet-mapping>
+	<servlet id="GlobazVulpeculaServlet">
+		<servlet-name>vulpecula</servlet-name>
+		<display-name>VULPECULA</display-name>
+		<servlet-class>ch.globaz.vulpecula.web.servlet.PTMainServlet</servlet-class>
+	</servlet>
+	<servlet-mapping id="GlobazPropertiesServletMapping">
+		<servlet-name>properties-service</servlet-name>
+		<url-pattern>/properties-service</url-pattern>
+	</servlet-mapping>
+	<taglib id="GlobazTagLib">
+		<taglib-uri>taglib</taglib-uri>
+		<taglib-location>/WEB-INF/taglib.tld</taglib-location>
+	</taglib>
+	<taglib id="aquilaTagLib">
+		<taglib-uri>aquila</taglib-uri>
+		<taglib-location>/WEB-INF/aquila.tld</taglib-location>
+	</taglib>
+	<taglib id="pegasusTagLib">
+		<taglib-uri>pegasus</taglib-uri>
+		<taglib-location>/WEB-INF/pegasus.tld</taglib-location>
+	</taglib>
+	<taglib id="globaz-dyntableTagLib">
+		<taglib-uri>globaz-dyntable</taglib-uri>
+		<taglib-location>/WEB-INF/dyntable.tld</taglib-location>
+	</taglib>
+	<taglib id="globaz-layoutTagLib">
+		<taglib-uri>globaz-layout</taglib-uri>
+		<taglib-location>/WEB-INF/layout.tld</taglib-location>
+	</taglib>
+	<taglib id="globaz-miscTagLib">
+		<taglib-uri>globaz-misc</taglib-uri>
+		<taglib-location>/WEB-INF/misc.tld</taglib-location>
+	</taglib>
+	<taglib id="globaz-alTagLib">
+		<taglib-uri>globaz-al</taglib-uri>
+		<taglib-location>/WEB-INF/ALTaglib.tld</taglib-location>
+	</taglib>
+</web-app>

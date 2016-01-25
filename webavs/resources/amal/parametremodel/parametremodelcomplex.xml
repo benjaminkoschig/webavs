@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.parametremodel.ParametreModelComplex">
+		<root-model name="formuleList" model-ref="ch.globaz.envoi.business.models.parametrageEnvoi.FormuleList"/>
+					
+		<linked-model name="simpleParametreModel" model-ref="ch.globaz.amal.business.models.parametremodel.SimpleParametreModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idFormule" operation="EQUALS" field-ref="formuleList.formule.idFormule"/>
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forLangue" field-ref="formuleList.formule.csLangue" operation="EQUALS"/>
+			
+				<search-field name="forIdFormule" operation="EQUALS" field-ref="formuleList.formule.idFormule"/>	
+				<search-field name="forNomWord" operation="LIKE" field-ref="formuleList.formule.libelleDocument"/>
+				<search-literal>
+					
+					<![CDATA[ 
+						#{formuleList.definitionformule.csDocument} IN (
+							(
+								select PCOSID from (select PCOSID,PCOLUT  from ccjuweb.FWCOUP where PLAIDE = 'F' 
+									and PCOSID in (select PCOSID from ccjuweb.FWCOSP where PPTYGR = 'AMMODELES' and PCOITC <> 0) 
+									and PCOLUT like ${forlibelleDocument:formuleList.definitionformule.typesGEDSedex}  order by PCOLUT)
+							))
+					 ]]>
+				</search-literal>					
+			</search-group>		
+		</search-definition>
+		
+		<search-definition name="basic">
+			<search-group operator="AND">
+				<search-field name="forLangue" field-ref="formuleList.formule.csLangue" operation="EQUALS"/>
+				<search-field name="forIdFormule" operation="EQUALS" field-ref="formuleList.formule.idFormule"/>	
+				<search-field name="forNomWord" operation="LIKE" field-ref="formuleList.formule.libelleDocument"/>
+						
+			</search-group>		
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="formuleList.definitionformule.csDocument"/>
+		</order-by>
+
+	</complexe-model>
+</model-mapping>

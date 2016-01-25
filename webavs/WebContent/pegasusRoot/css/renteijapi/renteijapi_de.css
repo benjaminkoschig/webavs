@@ -1,0 +1,36 @@
+.areaDessaisiAuto td{
+	border:1px solid black;
+	
+}
+	 
+.areaDessaisiAuto {
+	border:1px solid black;
+	margin:5px 0px;
+	border-collapse: collapse;
+}
+
+.areaDessaisiAuto tr{
+	background-color:#eee;
+}
+
+.areaDessaisiAuto tr.odd{
+	background-color: #ddd;	
+}
+
+.areaDessaisiAuto THEAD TD {
+	background-color: #226194; 
+	COLOR: white;
+}
+
+.areaTitreAVS {
+	position: absolute;
+	right: 25px;
+}
+
+.revenuNature{
+	width:410px;
+}
+/* classe pour affichage indicateur infobulle Test*/
+
+/*border-color:#D01F3C*/
+}

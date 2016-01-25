@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.revenu.RevenuHistoriqueComplex">
+		<root-model name="simpleRevenuHistorique" model-ref="ch.globaz.amal.business.models.revenu.SimpleRevenuHistorique"/>
+	
+		<linked-model name="revenuFullComplex" model-ref="ch.globaz.amal.business.models.revenu.RevenuFullComplex" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleRevenu.idRevenu" operation="EQUALS" field-ref="simpleRevenuHistorique.idRevenu"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleRevenuDeterminant" model-ref="ch.globaz.amal.business.models.revenu.SimpleRevenuDeterminant" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idRevenuDeterminant" operation="EQUALS" field-ref="simpleRevenuHistorique.idRevenuDeterminant"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdRevenuHistorique" field-ref="simpleRevenuHistorique.idRevenuHistorique" operation="EQUALS" />		
+				<search-field name="forIdRevenu" field-ref="simpleRevenuHistorique.idRevenu" operation="EQUALS" />		
+				<search-field name="forIdRevenuDeterminant" field-ref="simpleRevenuHistorique.idRevenuDeterminant" operation="EQUALS" />		
+				<search-field name="forIdContribuable" field-ref="simpleRevenuHistorique.idContribuable" operation="EQUALS" />		
+				<search-field name="forAnneeHistorique" field-ref="simpleRevenuHistorique.anneeHistorique" operation="EQUALS" />
+				<search-field name="forRevenuActif" field-ref="simpleRevenuHistorique.codeActif" operation="EQUALS" />			
+			</search-group>
+		</search-definition>		
+
+	</complexe-model>
+</model-mapping>

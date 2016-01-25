@@ -1,0 +1,14 @@
+				</DIV>
+			</TH>
+		</TR>
+		<TR>
+			<TD bgcolor="gray" colspan="2" height="0"></TD>
+		</TR>
+		<TR>
+			<TD width="5">&nbsp;</TD>
+			<TD>
+				<TABLE border="0" height="<%=subTableHeight%>" cellspacing="0" cellpadding="0">
+					<TBODY>
+						<TR>
+							<TD height="20">&nbsp;</TD>
+						</TR>

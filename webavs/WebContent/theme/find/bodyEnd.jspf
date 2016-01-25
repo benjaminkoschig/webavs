@@ -1,0 +1,40 @@
+			</TD>
+		</TR>
+	</TBODY>
+</TABLE>
+</FORM>
+<div id="waitingPopup" style="width:120;height:50;position : absolute ; visibility : hidden">
+<table border="0" cellspacing="0" cellpadding="0" bgColor="#FFFFFF" style="border: solid  1 black ; width:200;height:100%;">
+<tr><td><img src="<%=request.getContextPath()%>/images/<%=languePage%>/labelRecherche.gif"></td><td><img src="<%=request.getContextPath()%>/images/points.gif"></td><td><img src="<%=request.getContextPath()%>/images/disc.gif"></td></tr>
+</table>
+</div>
+
+<script type="text/javascript" src="<%=request.getContextPath()%>/scripts/calendar/AnchorPosition.js"></script>
+<script type="text/javascript">
+
+	document.getElementById("waitingPopup").style.left = document.body.clientWidth/2 - document.getElementById("waitingPopup").offsetWidth/2;
+	document.getElementById("waitingPopup").style.top  = getAnchorPosition("waitingPopup").y + <%=IFrameHeight%>/2 - document.getElementById("waitingPopup").clientHeight/2;
+	if (bFind)
+		showWaitingPopup();
+
+	oBtnFind = document.getElementById("btnFind");
+	if (oBtnFind) {
+		savedFindOnClick = oBtnFind.onclick;
+	}
+	oBtnNew = document.getElementById("btnNew");
+	if (oBtnNew) {
+		savedNewOnClick = oBtnNew.onclick;
+	}
+
+	oBtnExport = document.getElementById("btnExport");
+	if (oBtnExport) {
+		savedExportOnClick = oBtnExport.onclick;
+	}
+
+/*	if (document.getElementById("btnFind"))
+		document.getElementById("btnFind").onclick=showWaitingPopup;*/
+</script>
+
+
+<IFRAME id="fr_list"  name="fr_list" scrolling="YES" style="border : solid 1px black; width:100%;" height="<%=IFrameHeight%>">
+</IFRAME>

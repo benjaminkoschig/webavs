@@ -1,0 +1,221 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>Edwin COX</Author>
+  <LastAuthor>Edwin COX</LastAuthor>
+  <LastPrinted>2012-03-13T11:41:51Z</LastPrinted>
+  <Created>2012-03-12T07:17:12Z</Created>
+  <LastSaved>2012-04-25T14:39:27Z</LastSaved>
+  <Company>Globaz</Company>
+  <Version>14.00</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <AllowPNG/>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>11820</WindowHeight>
+  <WindowWidth>18915</WindowWidth>
+  <WindowTopX>120</WindowTopX>
+  <WindowTopY>75</WindowTopY>
+  <ActiveSheet>1</ActiveSheet>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s62">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+  </Style>
+  <Style ss:ID="s63">
+   <Alignment ss:Vertical="Center"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+   <Interior ss:Color="#B8CCE4" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s64">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s65">
+   <Borders/>
+  </Style>
+  <Style ss:ID="s66">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+  </Style>
+  <Style ss:ID="s67">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+  </Style>
+ </Styles>
+ <Names>
+  <NamedRange ss:Name="AF_CHAMP_COMMUNE_POLITIQUE" ss:RefersTo="='Cas AF'!R2C1"/>
+  <NamedRange ss:Name="AF_CHAMP_MONTANT" ss:RefersTo="='Cas AF'!R2C6"/>
+  <NamedRange ss:Name="AF_CHAMP_NOM" ss:RefersTo="='Cas AF'!R2C3"/>
+  <NamedRange ss:Name="AF_CHAMP_NOM_ENFANT" ss:RefersTo="='Cas AF'!R2C5"/>
+  <NamedRange ss:Name="AF_CHAMP_NSS" ss:RefersTo="='Cas AF'!R2C2"/>
+  <NamedRange ss:Name="AF_CHAMP_NSS_ENFANT" ss:RefersTo="='Cas AF'!R2C4"/>
+  <NamedRange ss:Name="AF_COMMUNE_POLITIQUE" ss:RefersTo="='Cas AF'!R3C1"/>
+  <NamedRange ss:Name="AF_MONTANT" ss:RefersTo="='Cas AF'!R3C6"/>
+  <NamedRange ss:Name="AF_NOM" ss:RefersTo="='Cas AF'!R3C3"/>
+  <NamedRange ss:Name="AF_NOM_ENFANT" ss:RefersTo="='Cas AF'!R3C5"/>
+  <NamedRange ss:Name="AF_NSS" ss:RefersTo="='Cas AF'!R3C2"/>
+  <NamedRange ss:Name="AF_NSS_ENFANT" ss:RefersTo="='Cas AF'!R3C4"/>
+  <NamedRange ss:Name="CHAMP_NOM" ss:RefersTo="='Cas AF'!R2C3"/>
+  <NamedRange ss:Name="CHAMP_NSS" ss:RefersTo="='Cas AF'!R2C2"/>
+  <NamedRange ss:Name="CHAMP_USER" ss:RefersTo="='Cas AF'!R1C1"/>
+  <NamedRange ss:Name="INDE_CHAMP_COMMUNE_POLITIQUE"
+   ss:RefersTo="='Indépendants avec enfants'!R2C1"/>
+  <NamedRange ss:Name="INDE_CHAMP_NOM"
+   ss:RefersTo="='Indépendants avec enfants'!R2C3"/>
+  <NamedRange ss:Name="INDE_CHAMP_NOM_ENFANT"
+   ss:RefersTo="='Indépendants avec enfants'!R2C5"/>
+  <NamedRange ss:Name="INDE_CHAMP_NSS"
+   ss:RefersTo="='Indépendants avec enfants'!R2C2"/>
+  <NamedRange ss:Name="INDE_CHAMP_NSS_ENFANT"
+   ss:RefersTo="='Indépendants avec enfants'!R2C4"/>
+  <NamedRange ss:Name="INDE_COMMUNE_POLITIQUE"
+   ss:RefersTo="='Indépendants avec enfants'!R3C1"/>
+  <NamedRange ss:Name="INDE_NOM" ss:RefersTo="='Indépendants avec enfants'!R3C3"/>
+  <NamedRange ss:Name="INDE_NOM_ENFANT"
+   ss:RefersTo="='Indépendants avec enfants'!R3C5"/>
+  <NamedRange ss:Name="INDE_NSS" ss:RefersTo="='Indépendants avec enfants'!R3C2"/>
+  <NamedRange ss:Name="INDE_NSS_ENFANT"
+   ss:RefersTo="='Indépendants avec enfants'!R3C4"/>
+  <NamedRange ss:Name="USER" ss:RefersTo="='Cas AF'!R1C2"/>
+ </Names>
+ <Worksheet ss:Name="Cas AF">
+  <Table ss:ExpandedColumnCount="7" ss:ExpandedRowCount="5" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60" ss:DefaultRowHeight="15">
+   <Column ss:AutoFitWidth="0" ss:Width="108" ss:Span="1"/>
+   <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="160.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="121.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="156.75"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="76.5"/>
+   <Column ss:Width="139.5"/>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s62"><Data ss:Type="String">Utilisateur</Data><NamedCell
+      ss:Name="CHAMP_USER"/></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">User</Data><NamedCell
+      ss:Name="USER"/></Cell>
+    <Cell ss:Index="5" ss:StyleID="s66"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Commune politique</Data><NamedCell
+      ss:Name="AF_CHAMP_COMMUNE_POLITIQUE"/></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">NSS</Data><NamedCell
+      ss:Name="AF_CHAMP_NSS"/><NamedCell ss:Name="AF_CHAMP_NSS"/></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Nom du requérant</Data><NamedCell
+      ss:Name="AF_CHAMP_NOM"/><NamedCell ss:Name="AF_CHAMP_NOM"/></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">NSS enfant</Data><NamedCell
+      ss:Name="AF_CHAMP_NSS_ENFANT"/></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Nom enfant</Data><NamedCell
+      ss:Name="AF_CHAMP_NOM_ENFANT"/></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Montant</Data><NamedCell
+      ss:Name="AF_CHAMP_MONTANT"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s66"><NamedCell ss:Name="AF_COMMUNE_POLITIQUE"/></Cell>
+    <Cell ss:StyleID="s62"><NamedCell ss:Name="AF_NSS"/></Cell>
+    <Cell ss:StyleID="s62"><NamedCell ss:Name="AF_NOM"/></Cell>
+    <Cell ss:StyleID="s64"><NamedCell ss:Name="AF_NSS_ENFANT"/></Cell>
+    <Cell ss:StyleID="s64"><NamedCell ss:Name="AF_NOM_ENFANT"/></Cell>
+    <Cell ss:StyleID="s64"><NamedCell ss:Name="AF_MONTANT"/></Cell>
+   </Row>
+   <Row ss:Index="5" ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s65"/>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Unsynced/>
+   <Print>
+    <ValidPrinterInfo/>
+    <PaperSizeIndex>9</PaperSizeIndex>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveCol>1</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Indépendants avec enfants">
+  <Table ss:ExpandedColumnCount="5" ss:ExpandedRowCount="3" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60" ss:DefaultRowHeight="15">
+   <Column ss:AutoFitWidth="0" ss:Width="108"/>
+   <Column ss:AutoFitWidth="0" ss:Width="96.75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="162" ss:Span="1"/>
+   <Column ss:Index="5" ss:AutoFitWidth="0" ss:Width="160.5"/>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s62"><Data ss:Type="String">Utilisateur</Data><NamedCell
+      ss:Name="CHAMP_USER"/></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">User</Data><NamedCell
+      ss:Name="USER"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="24">
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Commune politique</Data><NamedCell
+      ss:Name="INDE_CHAMP_COMMUNE_POLITIQUE"/></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">NSS</Data><NamedCell
+      ss:Name="INDE_CHAMP_NSS"/></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Nom</Data><NamedCell
+      ss:Name="INDE_CHAMP_NOM"/></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">NSS enfant</Data><NamedCell
+      ss:Name="INDE_CHAMP_NSS_ENFANT"/></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Nom enfant</Data><NamedCell
+      ss:Name="INDE_CHAMP_NOM_ENFANT"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s66"><NamedCell ss:Name="INDE_COMMUNE_POLITIQUE"/></Cell>
+    <Cell ss:StyleID="s62"><NamedCell ss:Name="INDE_NSS"/></Cell>
+    <Cell ss:StyleID="s62"><NamedCell ss:Name="INDE_NOM"/></Cell>
+    <Cell ss:StyleID="s62"><NamedCell ss:Name="INDE_NSS_ENFANT"/></Cell>
+    <Cell ss:StyleID="s62"><NamedCell ss:Name="INDE_NOM_ENFANT"/></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Layout x:Orientation="Landscape"/>
+    <Header x:Margin="0.31496062992125984"/>
+    <Footer x:Margin="0.31496062992125984"/>
+    <PageMargins x:Bottom="0.74803149606299213" x:Left="0.70866141732283472"
+     x:Right="0.39370078740157483" x:Top="0.74803149606299213"/>
+   </PageSetup>
+   <Unsynced/>
+   <Print>
+    <ValidPrinterInfo/>
+    <PaperSizeIndex>9</PaperSizeIndex>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveCol>1</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>

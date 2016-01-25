@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="vulpecula/caissemaladie/affiliationCaisseMaladieSimpleModel.xml"/>
+	<model-mapping import="vulpecula/caissemaladie/affiliationCaisseMaladieComplexModel.xml"/>
+	<model-mapping import="vulpecula/caissemaladie/suiviCaisseMaladieSimpleModel.xml"/>
+	<model-mapping import="vulpecula/caissemaladie/suiviCaisseMaladieComplexModel.xml"/>
+</model-mapping>

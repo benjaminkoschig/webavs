@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'une liste de récapitulatif d'impression aux entreprises -->
+
+<model-mapping>
+	<complexe-model className="ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseImpressionComplexModel">
+		<select-fields distinct="true">
+			<select-field name="numNSS" field-ref="personneEtendueModel.numAvsActuel"/>
+			<select-field name="nomAllocataire" field-ref="tiersAllocModel.designation1"/>
+			<select-field name="prenomAllocataire" field-ref="tiersAllocModel.designation2"/>
+			<select-field name="idDossier" field-ref="entetePrestationModel.idDossier"/>
+			<select-field name="activiteAllocataire" field-ref="dossierModel.activiteAllocataire"/>
+			<select-field name="statutDossier" field-ref="dossierModel.statut"/>
+			<select-field name="periodeAEntete" field-ref="entetePrestationModel.periodeA"/>
+			<select-field name="periodeDeEntete" field-ref="entetePrestationModel.periodeDe"/>
+			<select-field name="typeUnite" field-ref="entetePrestationModel.unite"/>
+			<select-field name="nbreUnite" field-ref="entetePrestationModel.nombreUnite"/>
+			<select-field name="nbrEnfant" field-ref="entetePrestationModel.nombreEnfants"/>
+			<select-field name="montant" field-ref="entetePrestationModel.montantTotal"/>
+			<select-field name="numSalarieExterne" field-ref="dossierModel.numSalarieExterne"/>
+			<select-field name="agenceCommunale" field-ref="tiersLiaisonComplexModel.tiersLie.designation1"/>
+			<select-field name="intituleAgenceComm" field-ref="tiersLiaisonComplexModel.tiersLie.designation2"/>
+			<select-field name="idEntete" field-ref="entetePrestationModel.idEntete"/>
+			<!--<select-field name="idAffilie" field-ref="affiliationSimpleModel.affiliationId"/>-->
+		</select-fields>
+		<root-model name="recapEntrepriseModel" model-ref="ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseModel" />
+		
+		<linked-model name="affiliationSimpleModel" model-ref="ch.globaz.naos.business.model.AffiliationSimpleModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="affilieNumero" field-ref="recapEntrepriseModel.numeroAffilie"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="tiersLiaisonComplexModel" model-ref="ch.globaz.pyxis.business.model.TiersLiaisonComplexModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="tiersReference.idTiers" field-ref="affiliationSimpleModel.idTiers"/>
+			</join-group>
+		</linked-model>
+			
+		<linked-model name="entetePrestationModel" model-ref="ch.globaz.al.business.models.prestation.EntetePrestationModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idRecap" field-ref="recapEntrepriseModel.idRecap"/>
+			</join-group>
+		</linked-model>
+		
+		
+		<linked-model name="dossierModel" model-ref="ch.globaz.al.business.models.dossier.DossierModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDossier" field-ref="entetePrestationModel.idDossier"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="allocataireModel" model-ref="ch.globaz.al.business.models.allocataire.AllocataireModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idAllocataire" field-ref="dossierModel.idAllocataire"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="tiersAllocModel" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="allocataireModel.idTiersAllocataire"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="personneEtendueModel" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="allocataireModel.idTiersAllocataire"/>
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forPeriodeDe" field-ref="recapEntrepriseModel.periodeDe" operation="EQUALS"/>
+				<search-field name="forPeriodeA" field-ref="recapEntrepriseModel.periodeA" operation="LESS_OR_EQUALS"/>	
+				<search-field name="forIdRecap" field-ref="recapEntrepriseModel.idRecap" operation="EQUALS"/>
+				<search-field name="forTypeAlloc" field-ref="dossierModel.activiteAllocataire"  operation="EQUALS"/>
+				<search-field name="notInActiviteAlloc" field-ref="dossierModel.activiteAllocataire" operation="NOT_IN"/>
+				<search-field name="forIdTiersBeneficiaire" field-ref="dossierModel.idTiersBeneficiaire" operation="EQUALS"/>
+				<search-field name="notForIdtiersBeneficiaire" field-ref="dossierModel.idTiersBeneficiaire" operation="NOT_EQUALS"/>
+				<search-field name="inTypeBonification" field-ref="recapEntrepriseModel.bonification" operation="IN"/>
+				<search-field name="forEtatRecap" field-ref="recapEntrepriseModel.etatRecap" operation="EQUALS"/>
+				<search-field name="forNumeroLot" field-ref="recapEntrepriseModel.numeroLot" operation="EQUALS"/>
+				<search-field name="forTypeLiaison" field-ref="tiersLiaisonComplexModel.composition.typeLien" operation="EQUALS"/>
+				<search-field name="constanteNumProcessus" field-ref="recapEntrepriseModel.idProcessusPeriodique" operation="EQUALS" value="0"/>
+			</search-group>
+		</search-definition>
+		<search-definition name="numRecap">
+			<search-group operator="AND">
+				<search-field name="forIdRecap" field-ref="recapEntrepriseModel.idRecap" operation="EQUALS"/>		
+			</search-group>
+		</search-definition>
+		<search-definition name="numProcessus">
+			<search-group operator="AND">
+				<search-field name="notInActiviteAlloc" field-ref="dossierModel.activiteAllocataire" operation="NOT_IN"/>		
+				<search-field name="forNumProcessus" field-ref="recapEntrepriseModel.idProcessusPeriodique" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="default">
+			<order-field field-ref="recapEntrepriseModel.numeroAffilie" order="ASC"/>
+			<order-field field-ref="activiteAllocataire" order="ASC"/>
+			<order-field field-ref="recapEntrepriseModel.idRecap" order="ASC"/>
+			<order-field field-ref="nomAllocataire" order="ASC"/>
+			<order-field field-ref="prenomAllocataire" order="ASC"/>
+			<order-field field-ref="numNSS" order="ASC"/>
+			<order-field field-ref="periodeAEntete" order="DESC"/>
+			<order-field field-ref="periodeDeEntete" order="DESC"/>
+			<order-field field-ref="idEntete" order="ASC"/>
+		</order-by> 
+		<order-by name="agenceCommunale">
+			<order-field field-ref="intituleAgenceComm" order="ASC"/>
+		</order-by> 		
+			
+	</complexe-model>
+</model-mapping>
+

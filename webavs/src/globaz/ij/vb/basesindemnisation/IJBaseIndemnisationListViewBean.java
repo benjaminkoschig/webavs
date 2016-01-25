@@ -1,0 +1,91 @@
+/*
+ * Créé le 8 sept. 05
+ */
+package globaz.ij.vb.basesindemnisation;
+
+import globaz.framework.bean.FWListViewBeanInterface;
+import globaz.framework.db.postit.FWNoteP;
+import globaz.globall.db.BEntity;
+import globaz.globall.db.BStatement;
+import globaz.ij.application.IJApplication;
+import globaz.ij.db.basesindemnisation.IJBaseIndemnisation;
+import globaz.ij.db.basesindemnisation.IJBaseIndemnisationManager;
+
+/**
+ * <H1>Description</H1>
+ * 
+ * @author scr
+ */
+public class IJBaseIndemnisationListViewBean extends IJBaseIndemnisationManager implements FWListViewBeanInterface {
+
+    // ~ Instance fields
+    // ------------------------------------------------------------------------------------------------
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    private static final String ALL_FIELDS = "XKDDEB, XKDFIN, XKIBIN, XKNJCO, XKNJIN, XKNJEX, "
+            + "XKLATT, XKNJOI, XKTMOI, XKLREM, XKTETA, XKIPAR, " + "XKIPAI, XKTCIS, XKMTIS, XKTTIJ, XKICOR, XKTTBA";
+
+    public static final String FIELDNAME_COUNT_POSTIT = "CNTPOST";
+
+    private boolean hasPostitField = false;
+
+    // ~ Methods
+    // --------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected String _getFields(BStatement statement) {
+        if (hasPostitField) {
+            return ALL_FIELDS + ", (" + createSelectCountPostit(_getCollection()) + ") AS " + FIELDNAME_COUNT_POSTIT
+                    + " ";
+        } else {
+            return super._getFields(statement);
+        }
+    }
+
+    /**
+     * (non-Javadoc)
+     * 
+     * @see globaz.globall.db.BManager#_newEntity()
+     */
+    @Override
+    protected BEntity _newEntity() throws Exception {
+        return new IJBaseIndemnisationViewBean();
+    }
+
+    /**
+     * creation du count pour les postit de l'entity
+     * 
+     * @return
+     */
+    private String createSelectCountPostit(String schema) {
+
+        StringBuffer query = new StringBuffer();
+        query.append("SELECT COUNT(*) FROM ");
+        query.append(schema);
+        query.append(FWNoteP.TABLE_NAME);
+        query.append(" WHERE ");
+        query.append("NPSRCID");
+        query.append(" = ");
+        query.append(IJBaseIndemnisation.FIELDNAME_IDBASEINDEMNISATION);
+        query.append(" AND ");
+        query.append("NPTBLSRC");
+        query.append(" = '");
+        query.append(IJApplication.KEY_POSTIT_BASES_INDEMNISATION);
+        query.append("'");
+
+        return query.toString();
+    }
+
+    public boolean hasPostitField() {
+        return hasPostitField;
+    }
+
+    public void setHasPostitField(boolean hasPostitField) {
+        this.hasPostitField = hasPostitField;
+    }
+
+}

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.habitat.TaxeJournaliereHomeDroit">
+		
+		<root-model name="simpleDonneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader" />
+		
+		<linked-model name="simpleTaxeJournaliereHome" model-ref="ch.globaz.pegasus.business.models.habitat.SimpleTaxeJournaliereHome" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.VersionDroit" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleVersionDroit.idVersionDroit" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idVersionDroit"/>
+			</join-group>
+		</linked-model> 
+		 
+		<search-definition> 
+			<search-group operator="AND">
+				<search-field name="forIdHome" operation="EQUALS" field-ref="simpleTaxeJournaliereHome.idHome"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="forVersioned">
+			<search-group operator="AND">
+				<search-field name="forIdHome" operation="EQUALS" field-ref="simpleTaxeJournaliereHome.idHome"/>
+				<search-group operator="AND">
+					<search-field name="forDate" operation="LESS_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDate" operation="GREATER_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+						<search-field name="forDate" operation="NULL" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+					</search-group>
+				</search-group>
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="donneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+					<![CDATA[ 
+					   #{simpleDonneeFinanciereHeader.isSupprime} = 2 AND
+					    #{versionDroit.demande.simpleDemande.csEtatDemande} = 64001003 AND
+					    #{simpleDonneeFinanciereHeader.csTypeDonneeFinanciere} = 64007008 AND
+						#{simpleDonneeFinanciereHeader.idVersionDroit} =
+							(
+								select MAX( #{versionDroit.idVersionDroit} ) from @{versionDroit} 
+								 inner join  @{donneeFinanciereHeader} 
+								    on  #{versionDroit.idVersionDroit} = #{donneeFinanciereHeader.idVersionDroit} 
+								 where #{simpleDonneeFinanciereHeader.idEntity} = #{donneeFinanciereHeader.idEntity}
+								   and #{donneeFinanciereHeader.dateDebut} <= ${forDate:donneeFinanciereHeader.dateDebut} 
+								   and #{donneeFinanciereHeader.idDonneeFinanciereHeader} = #{simpleDonneeFinanciereHeader.idDonneeFinanciereHeader}
+								   and (
+								   		(#{donneeFinanciereHeader.dateFin} is null or #{donneeFinanciereHeader.dateFin} = 0 ) 
+								   		 or #{donneeFinanciereHeader.dateFin} >= ${forDate:donneeFinanciereHeader.dateFin} 
+								   		 )	
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="forVersionedForLaprams">
+			<search-group operator="AND">
+
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="versionDroit.simpleVersionDroit.idDroit"/>
+				<search-field name="forIdDroitMemembreFamill" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDroitMembreFamille"/>
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="donneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+					<![CDATA[ 
+					    #{simpleDonneeFinanciereHeader.isSupprime} = 2 AND
+						#{simpleDonneeFinanciereHeader.idVersionDroit} =
+							(
+								select MAX( #{versionDroit.idVersionDroit} ) from @{versionDroit} 
+									inner join  @{donneeFinanciereHeader} on ( #{versionDroit.idVersionDroit} = #{donneeFinanciereHeader.idVersionDroit} )
+									where #{simpleDonneeFinanciereHeader.idEntity} = #{donneeFinanciereHeader.idEntity}
+										and #{versionDroit.noVersion} <= ${forNoVersionDroit:versionDroit.noVersion}
+										
+										 
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition> 
+		
+		<order-by>
+			<order-field field-ref="simpleDonneeFinanciereHeader.idEntityGroup" />
+			<order-field field-ref="simpleDonneeFinanciereHeader.dateDebut" order="DESC" />
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

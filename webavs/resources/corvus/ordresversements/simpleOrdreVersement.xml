@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.corvus.business.models.ordresversements.SimpleOrdreVersement">
+		<description>
+			Un ordre de versement
+		</description>
+		<table name="REORVER" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="idOrdreVersement" column="YVIOVE" comment="Identifiant de l'ordre de versement" />
+
+			<field name="csRole" column="YVIROL" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" />
+			<field name="csType" column="YVTTYP" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" />
+			<field name="idDomainApplication" column="YVIDOA" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" />
+			<field name="idExterne" column="YVIEXT" type="STRING" dataType="VARCHAR(23)" mandatory="false" />
+			<field name="idPrestation" column="YVIPRE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" />
+			<field name="idRenteAccordeeCompensee" column="YVIRAC" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" />
+			<field name="idRenteAccordeeDiminuee" column="YVIRAD" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" />
+			<field name="idRenteVerseeATort" column="YVIRVT" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" />
+			<field name="idRoleCompteAnnexe" column="YVIRCA" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" />
+			<field name="idTiers" column="YVITIE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" />
+			<field name="idTiersAdressePaiement" column="YVITAP" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" />
+			<field name="montant" column="YVMMON" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" />
+			<field name="montantDette" column="YVMMAC" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" />
+			<field name="noFacture" column="YVLNOF" type="STRING" dataType="VARCHAR(23)" mandatory="false" />
+
+			<field name="_isCompensationInterDecision" column="YVBCID" type="STRING" dataType="VARCHAR(1)" mandatory="false" />
+			<field name="_isCompense" column="YVBCMP" type="STRING" dataType="VARCHAR(1)" mandatory="false" />
+			<field name="_isValide" column="YVBVAL" type="STRING" dataType="VARCHAR(1)" mandatory="false" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field operation="EQUALS" name="forIdPrestation" field-ref="idPrestation" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

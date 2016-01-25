@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.droit.DonneesPersonnelles">
+		<root-model name="simpleDonneesPersonnelles" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneesPersonnelles"/>
+		
+		<linked-model name="localite" model-ref="ch.globaz.pyxis.business.model.LocaliteSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idLocalite" operation="EQUALS" field-ref="simpleDonneesPersonnelles.idDernierDomicileLegale"/>
+			</join-group>
+		</linked-model>	
+		
+		<linked-model name="droitMbrFam" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idDonneesPersonnelles" operation="EQUALS" field-ref="simpleDonneesPersonnelles.idDonneesPersonnelles"/>				
+			</join-group>
+		</linked-model>
+
+		<search-definition name="forDroit">
+			<search-group operator="AND">
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="droitMbrFam.idDroit"/>
+				<search-field name="forIdDroitMembreFamille" operation="EQUALS" field-ref="droitMbrFam.idDroitMembreFamille"/>
+				<search-field name="forCsRoleFamillePC" operation="EQUALS" field-ref="droitMbrFam.csRoleFamillePC"/>
+ 			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

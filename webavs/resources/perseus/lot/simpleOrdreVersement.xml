@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.lot.SimpleOrdreVersement">
+		<description>Table des ordres de versements</description>
+		<table name="PFORDVER" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idOrdreVersement" column="IVIDOR" comment="Clé primaire de la table"/>
+			<field name="idPrestation" column="IVIDPR" type="NUMERIC" mandatory="true" comment="Identifiant de la prestation"/>
+			<field name="idTiersAdressePaiement" column="IVIDTA" type="NUMERIC" mandatory="false" comment="Identifiant de l'adresse de paiement du tiers"/>
+			<field name="idTiers" column="IVIDTI" type="NUMERIC" mandatory="false" comment="Identifiant du tiers"/>
+			<field name="idExterne" column="IVIDEX" type="NUMERIC" mandatory="false" comment="Identifiant externe"/>
+			<field name="idDomaineApplication" column="IVIDDA" type="NUMERIC" mandatory="false" comment="Identifiant du domaine d'application"/>
+			<field name="idRole" column="IVIDRO" type="NUMERIC"  mandatory="false" comment="Identifiant du rôle"/>
+			<field name="csRole" column="IVCSRO" type="NUMERIC" mandatory="false" comment="Code système du rôle"/>
+			<field name="csTypeVersement" column="IVCSTY" type="NUMERIC" mandatory="false" comment="Code système du type de versement"/>
+			<field name="montantVersement" column="IVMONT" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Montant du versement"/>
+			<field name="numFacture" column="IVNUFA" type="STRING" mandatory="false" comment="Numéro de facture"/>
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdOrdreVersement" operation="EQUALS" field-ref="idOrdreVersement" />
+				<search-field name="forIdPrestation" operation="EQUALS" field-ref="idPrestation" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

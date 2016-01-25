@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.naos.business.model.PlanAffiliationSimpleModel">
+		<table name="AFPLAFP" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="planAffiliationId" column="MUIPLA" comment="id du plan affiliation"  />		
+			<field name="libelle" column="MULLIB" type="STRING" comment="Libellé du plan affiliation"/>
+			<field name="affiliationId" column="MAIAFF" type="NUMERIC" mandatory="true" comment="Identifiant affiliation"/>
+			<!-- TOUS LES CHAMPS NE SONT PAS MAPPES, pas utiles au service -->
+		</fields>
+		</simple-model>
+</model-mapping>

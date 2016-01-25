@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="vulpecula/taxationoffice/taxationOfficeSimpleModel.xml" />
+	<model-mapping import="vulpecula/taxationoffice/taxationOfficeComplexModel.xml" />
+	<model-mapping import="vulpecula/taxationoffice/ligneTaxationSimpleModel.xml" />
+	<model-mapping import="vulpecula/taxationoffice/ligneTaxationComplexModel.xml" />
+</model-mapping>

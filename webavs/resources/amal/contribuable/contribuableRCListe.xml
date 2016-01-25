@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.contribuable.ContribuableRCListe">
+		<select-fields distinct="true">
+			<select-field name="idContribuable" field-ref="simpleContribuable.idContribuable" />
+			<select-field name="isContribuableActif" field-ref="simpleContribuable.isContribuableActif" />
+			<select-field name="idContribuableFamille" field-ref="famille.idContribuable" />
+			<select-field name="idTier" field-ref="simpleContribuable.idTier" />
+			<select-field name="dateNaissance" field-ref="personneEtendue.personne.dateNaissance" />
+			<select-field name="designation1" field-ref="personneEtendue.tiers.designation1" />
+			<select-field name="designation2" field-ref="personneEtendue.tiers.designation2" />
+			<select-field name="designationUpper1" field-ref="personneEtendue.tiers.designationUpper1" />
+			<select-field name="designationUpper2" field-ref="personneEtendue.tiers.designationUpper2" />
+			<select-field name="numContribuable" field-ref="personneEtendue.personneEtendue.numContribuableActuel" />
+			<select-field name="sexe" field-ref="personneEtendue.personne.sexe" />
+			<select-field name="numAvsActuel" field-ref="personneEtendue.personneEtendue.numAvsActuel" />
+			<select-field name="isContribuable" field-ref="famille.isContribuable" />
+			<select-field name="dateDeces" field-ref="personneEtendue.personne.dateDeces" />
+			<select-field name="idFamille" field-ref="famille.idFamille" />
+
+			<select-field name="familleNomPrenom" field-ref="famille.nomPrenom"/>
+			<select-field name="familleNomPrenomUpper" field-ref="famille.nomPrenomUpper"/>
+			<select-field name="familleDateNaissance" field-ref="famille.dateNaissance"/>
+			<select-field name="familleNoAVS" field-ref="famille.noAVS"/>
+			<select-field name="familleSexe" field-ref="famille.sexe"/>
+			<select-field name="numPersonnel" field-ref="famille.noPersonne"/>
+		</select-fields>
+		
+		<root-model select-fields="false" name="simpleContribuable" model-ref="ch.globaz.amal.business.models.contribuable.SimpleContribuable"/>
+
+		<linked-model select-fields="false" name="famille" model-ref="ch.globaz.amal.business.models.famille.SimpleFamille" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idContribuable" operation="EQUALS" field-ref="idContribuable"/>
+			</join-group>
+		</linked-model>
+				
+		<linked-model select-fields="false" name="personneEtendue" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="famille.idTier"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS" />
+				<search-field name="forContribuableActif" field-ref="isContribuableActif" operation="EQUALS" />
+				<search-field name="likeNom" operation="LIKE" field-ref="designationUpper1"/>
+				<search-field name="likePrenom" operation="LIKE" field-ref="designationUpper2"/>
+				<search-field name="likeNss" operation="LIKE" field-ref="numAvsActuel"/>
+				<search-field name="forDateNaissance" operation="EQUALS" field-ref="dateNaissance"/>
+				<search-field name="forNoContribuable" operation="LIKE" field-ref="numContribuable"/>
+				<search-field name="forCsSexe" operation="EQUALS" field-ref="sexe"/>
+				<search-field name="isContribuable" operation="EQUALS" field-ref="isContribuable" />				
+				<search-field name="forNumPersonnel" operation="EQUALS" field-ref="numPersonnel" />
+			</search-group>
+		</search-definition>				
+
+		<search-definition name="notTiers">
+			<search-group operator="AND">
+				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS" />
+				<search-field name="forContribuableActif" field-ref="isContribuableActif" operation="EQUALS" />
+				<search-field name="likeNom" operation="LIKE" field-ref="familleNomPrenomUpper"/>
+				<search-field name="likeNss" operation="LIKE" field-ref="familleNoAVS"/>
+				<search-field name="forDateNaissance" operation="EQUALS" field-ref="familleDateNaissance"/>
+				<search-field name="forCsSexe" operation="EQUALS" field-ref="familleSexe"/>
+				<search-field name="isContribuable" operation="EQUALS" field-ref="isContribuable" />	
+				<search-field name="forNumPersonnel" operation="EQUALS" field-ref="numPersonnel" />			
+			</search-group>
+		</search-definition>				
+				
+		<order-by name="nomPrenom">
+			<order-field field-ref="designationUpper1"/>
+			<order-field field-ref="designationUpper2"/>
+		</order-by>
+
+	</complexe-model>
+</model-mapping>

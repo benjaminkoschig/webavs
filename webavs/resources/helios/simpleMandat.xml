@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model-mapping>
+    <simple-model className="ch.globaz.helios.business.models.MandatSimpleModel">
+        <table name="CGMANDP" hasSpy="true" hasCreationSpy="false" alwaysIncrementPrimaryKey="false"/>
+        <fields>
+            <primary-key name="idMandat" comment="Comments : idmandat" column="IDMANDAT"/>
+            <field type="STRING" name="libelleFr" comment="comment : LIBELLEFR" column="LIBELLEFR"/>
+            <field type="STRING" name="libelleDe" comment="comment : LIBELLEDE" column="LIBELLEDE"/>
+            <field type="STRING" name="libelleIt" comment="comment : LIBELLEIT" column="LIBELLEIT"/>
+            <field type="NUMERIC" name="idTiers" comment="comment : IDTIERS" column="IDTIERS"/>
+          <!--
+          	<field type="BOOLEAN" name="estMandatConsolida" comment="comment : ESTMANDATCONSOLIDA" column="ESTMANDATCONSOLIDA"/>
+            <field type="BOOLEAN" name="estComptabiliteAvs" comment="comment : ESTCOMPTABILITEAVS" column="ESTCOMPTABILITEAVS"/>
+            <field type="BOOLEAN" name="ventilerCompte1102" comment="comment : VENTILERCOMPTE1102" column="VENTILERCOMPTE1102"/>
+            <field type="BOOLEAN" name="controleCompte1106" comment="comment : CONTROLECOMPTE1106" column="CONTROLECOMPTE1106"/>
+            <field type="BOOLEAN" name="utilise650dcmf" comment="comment : UTILISE650DCMF" column="UTILISE650DCMF"/>
+            <field type="BOOLEAN" name="imprimerJournalMan" comment="comment : IMPRIMERJOURNALMAN" column="IMPRIMERJOURNALMAN"/>
+            <field type="BOOLEAN" name="estVerrouille" comment="comment : ESTVERROUILLE" column="ESTVERROUILLE"/>
+            <field type="BOOLEAN" name="utiliseLivres" comment="comment : UTILISELIVRES" column="UTILISELIVRES"/>
+          -->
+            <field type="NUMERIC" name="idClassificationPr" comment="comment : IDCLASSIFICATIONPR" column="IDCLASSIFICATIONPR"/>
+            <field type="NUMERIC" name="idTypePlanCompta" comment="comment : IDTYPEPLANCOMPTA" column="IDTYPEPLANCOMPTA"/>
+            <field type="NUMERIC" name="noCaisse" comment="comment : NOCAISSE" column="NOCAISSE"/>
+            <field type="NUMERIC" name="noAgence" comment="comment : NOAGENCE" column="NOAGENCE"/>
+        </fields>
+
+		<search-definition>
+				<search-group operator="AND">
+					<search-field name="likeLibelleFr" field-ref="libelleFr" operation="LIKE" />
+					<search-field name="likeLibelleDe" field-ref="libelleDe" operation="LIKE" />
+					<search-field name="likeLibelleIt" field-ref="libelleIt" operation="LIKE" />
+				</search-group>
+		</search-definition>
+
+        <order-by name="idDesc">
+            <order-field order="DESC" field-ref="idMandat"/>
+        </order-by>
+        <order-by name="idAsc">
+            <order-field order="ASC" field-ref="idMandat"/>
+        </order-by>
+    </simple-model>
+</model-mapping>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.parametre.SimpleConversionRente">
+	<description>Tableau pour convertir en rentes viagères les prestations en capital</description>
+	<table name="PCCONREV" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="idConversionRente" column="CYIDCR" comment="ID_CONVERSION_RENTE" />
+			<field name="age" column="CYNAGE" type="NUMERIC" mandatory="true" comment="AGE" />
+			<field name="renteFemme" column="CYMRAF" type="NUMERIC" dataType="NUMERIC(15,2)"  mandatory="true" comment="RENTE_ANNUELLE_FEMME" />
+			<field name="renteHomme" column="CYMRAH" type="NUMERIC" dataType="NUMERIC(15,2)"  mandatory="true" comment="RENTE_ANNUELLE_HOMME" />
+			<field name="typeDeValeur" column="CYCSTV" type="NUMERIC"  mandatory="true" comment="TYPE_DE_VALEUR_AFC" />
+			<field name="dateDebut" column="CYDDEB" type="DATE"  mandatory="true" comment="DATE_DEBUT" />
+			<field name="dateFin" column="CYDFIN" type="DATE"  mandatory="false" comment="DATE_FIN" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forAge"  operation="EQUALS" field-ref="age"/>
+				<search-field name="forDateFin"  operation="NULL" field-ref="dateFin"/>
+				<search-field name="forDateDebut"  operation="EQUALS" field-ref="dateDebut"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping> 
+ 

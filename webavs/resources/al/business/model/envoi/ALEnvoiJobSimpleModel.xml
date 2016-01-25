@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.envoi.EnvoiJobSimpleModel">
+		<description>Données du contrôleur des envois/jobs pour AF</description>
+		<table name="ALCTLJOB" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idJob" column="IDJOB" comment="Clef primaire Controleur Envoi"/>
+			<field name="jobDescription" column="DESCR" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="DESCRIPTION_JOB"/>
+			<field name="jobType" column="CSJOBT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="TYPE_ENVOI_JOB"/>
+			<field name="jobSubType" column="CSJBST" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="SOUS_TYPE_ENVOI_JOB"/>
+			<field name="jobDate" column="DAJOB" type="DATE" mandatory="false" comment="DATE_DU_JOB"/>
+			<field name="jobStatus" column="CSJOBS" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="STATUS_ENVOI_JOB"/>
+			<field name="jobUser" column="USER" type="STRING" dataType="VARCHAR(64)" mandatory="false" comment="USER_JOB"/>
+		</fields>
+		
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdJob" field-ref="idJob" operation="EQUALS"/>
+				<search-field name="forJobType" field-ref="jobType" operation="EQUALS"/>
+				<search-field name="forJobSubType" field-ref="jobSubType" operation="EQUALS"/>
+				<search-field name="forJobDate" field-ref="jobDate" operation="EQUALS"/>
+				<search-field name="forJobDateMin" field-ref="jobDate" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forJobDateMax" field-ref="jobDate" operation="LESS_OR_EQUALS"/>
+				<search-field name="forJobStatus" field-ref="jobStatus" operation="EQUALS"/>
+				<search-field name="forNotJobStatusEnvoi" field-ref="jobStatus" operation="NOT_EQUALS"/>
+				<search-field name="forJobUser" field-ref="jobUser" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="default">
+			<order-field field-ref="idJob" order="DESC"/>
+		</order-by>
+		
+	</simple-model>
+</model-mapping>

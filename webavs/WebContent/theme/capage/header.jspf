@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--# set echo="url" -->
+<%-- Initialisations --%>
+<%
+String languePage = globaz.framework.controller.FWDefaultServletAction.getIdLangueIso(session);
+boolean bButtonNew = true;
+boolean bButtonFind = true;
+String servletContext = request.getContextPath();
+String mainServletPath = (String)request.getAttribute("mainServletPath");
+String actionNew =  servletContext + mainServletPath + "?userAction=" + request.getParameter("userAction").substring(0,request.getParameter("userAction").lastIndexOf('.')) + ".afficher&_method=add";
+//String actionFind = "javascript:document.forms[0].submit();";
+int subTableHeight = 100;
+String IFrameListHeight = "150";
+String IFrameDetailHeight ="230";
+String applicationId = ((globaz.globall.db.BSession)session.getAttribute(globaz.framework.servlets.FWServlet.OBJ_SESSION)).getApplicationId();
+
+if (mainServletPath == null) {
+	mainServletPath = "";
+}
+String btnFindLabel = "Rechercher";
+String btnNewLabel = "Nouveau";
+if ("DE".equals(languePage)) {
+	btnFindLabel = "Suchen";
+	btnNewLabel = "Neu";
+}
+String idEcran = null;
+%>
+<HEAD>
+<SCRIPT language="JavaScript">
+var langue = "<%=languePage%>"; 
+</SCRIPT>

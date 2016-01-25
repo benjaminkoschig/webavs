@@ -1,0 +1,855 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus  xsi:noNamespaceSchemaLocation="menu.xsd">
+
+	<!-- ************** -->
+	<!-- Menu Principal -->
+	<!-- ************** -->
+	<menu id="CP-MenuPrincipal">
+		<label defaultValue="Principal">
+			<language iso="de">Hauptmenü</language>
+		</label>
+		<nodes>
+			<node>
+				<label defaultValue="Dernier dossier">
+					<language iso="de">Letztes Dossier</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.principale.decision.dernierDossier" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Autre dossier">
+					<language iso="de">Anderes Dossier</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.principale.autreDossier.afficher"/>
+					<parameter name="_method" value="upd"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Rechercher">
+					<language iso="de">Suchen</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.principale.decisionSuivi.chercher"/>
+					<parameter name="_method" value="upd"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Sortie">
+					<language iso="de">Abgang</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.principale.sortie.chercher" />
+				</action>
+			</node>
+			<node open="yes">
+				<label defaultValue="Communications">
+					<language iso="de">Steuermeldungen</language>
+				</label>			
+				<nodes>
+					<node>
+						<label defaultValue="Génération des demandes">
+							<language iso="de">Generierung der Anfragen</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.communications.miseAjourComFisc.afficher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Gestion des demandes">
+							<language iso="de">Verwaltung der Anfragen</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.communications.communicationFiscaleAffichage.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Impression">
+							<language iso="de">Ausdruck</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.communications.communicationImprimer.afficher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Envoi">
+							<language iso="de">Versand</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.communications.communicationEnvoyer.afficher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Réception">
+							<language iso="de">Empfang</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.communications.journalRetour.receptionner" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Journaux de réception">
+							<language iso="de">Empfangsjournals</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.communications.journalRetour.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Validation Journaux de réception">
+							<language iso="de">Validierung Empfangsjournale</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.communications.validationJournalRetour.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Dévalidation Journaux de réception">
+							<language iso="de">Devalidierung Empfangsjournale</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.communications.devalidationJournalRetour.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Communications en retour (toutes)">
+							<language iso="de">Steuermeldungen zurück (alle)</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.communications.apercuCommunicationFiscaleRetour.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Rejets (SEDEX)">
+							<language iso="de">Aussortierung (SEDEX)</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.communications.rejets.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Impression rejets">
+							<language iso="de">Drucken Aussortierung (SEDEX)</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.communications.rejets.afficherImpression" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Traitement des anomalies (FISC)">
+							<language iso="de">Verarbeitung der Anomalien (FISKUS)</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.communications.traitementAnomalies.receptionner" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Avancement des journaux">
+							<language iso="de">Zunahme der Journale</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.communications.avancementJournauxCF.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Statistique">
+							<language iso="de">Statistiken</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.listes.listeCommunicationStatistique.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label defaultValue="Traitement annuel">
+					<language iso="de">Jährliche Verarbeitung</language>
+				</label>
+				<nodes>
+					<node>
+						<label defaultValue="Report des décisions encodées en avance">
+							<language iso="de">Übernahme die im Voraus eingegebene Verfügungen</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.process.decision.reporter" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Génération des acomptes">
+							<language iso="de">Generierung der Anzahlungen</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.process.acompte.creation" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Différence entre la cotisation annuelle de l'acompte et celle facturée">
+							<language iso="de">Differenz zwischen dem jährlichen Beitrag der Anzahlung und dem fakturierten Beitrag</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.listes.listeAcompteCotisationAnnuelleDifferente.afficher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Suppression des acomptes">
+							<language iso="de">Löschung der Anzahlungen</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.process.acompte.suppression" />
+						</action>
+					</node>
+				</nodes>
+			</node>		
+			<node open="yes">
+				<label defaultValue="Impressions">
+					<language iso="de">Ausdrucke</language>
+				</label>			
+				<nodes>
+					<node>
+						<label defaultValue="Impression décisions">
+							<language iso="de">Ausdruck Verfügungen</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.principale.decision.imprimerLot" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Imprimer Listes">
+							<language iso="de">Liste ausdrucken</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.listes.imprimerListes.afficher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Réinjection Listes">
+							<language iso="de">Liste eingliedern</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.listes.reinjectionConcordanceCICotPersListeExcel.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label defaultValue="Maintenance">
+					<language iso="de">Vorlagen</language>
+				</label>		
+				<nodes>
+					<node>
+					   <label defaultValue="Décisions non comptabilisée">
+						  <language iso="de">Nicht verbuchte Verfügungen</language>
+					   </label>
+					   <action command="/phenix" responseTarget="fr_main">
+						   <parameter name="userAction" value="phenix.principale.decisionNonComptabilisee.chercher"/>
+						   <parameter name="_method" value="upd"/>
+					   </action>
+				    </node>	
+					<node>
+						<label defaultValue="Mise à jour des montants d'affiliations">
+							<language iso="de">Aktualisierung der Erfassungsbeträge</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.principale.miseAjourMontantsAffiliation.afficher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Mise à jour code actif">
+							<language iso="de">Aktualisierung des aktiven Codes</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.principale.miseAjourCodeActifDecision.afficher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Table fortune">
+							<language iso="de">Vermögenstabelle</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.divers.tableFortune.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Table non-actif">
+							<language iso="de">NE Tabelle</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.divers.tableNonActif.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Table indépendant">
+							<language iso="de">SE Tabelle</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.divers.tableIndependant.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Table rentier">
+							<language iso="de">Rentner Tabelle</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.divers.tableRentier.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Table AFI">
+							<language iso="de">FZS Tabelle</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.divers.tableAFI.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Periode fiscale">
+							<language iso="de">Steuerperiode</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.divers.periodeFiscale.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Revenu-Cotisation/canton">
+							<language iso="de">Einkommen-Beiträge/Kanton</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.divers.revenuCotisationCanton.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Paramètre application/canton">
+							<language iso="de">Parameter Applikation/Kanton</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.divers.parametreCanton.chercher" />
+						</action>
+					</node>
+			<!--	<node>
+						<label defaultValue="Parametres AVS">
+							<language iso="de">AHV Parameter</language>
+						</label>
+						<action command="/fx" responseTarget="fr_main">
+							<parameter name="userAction" value="fx.code.param.chercher&amp;module=PHENIX" />
+						</action>
+					</node> -->	
+				</nodes>
+			</node>
+			<node open="no">
+				<label defaultValue="Paramètres">
+					<language iso="de">Parameter</language>
+				</label>			
+				<nodes>
+					<node>
+						<label defaultValue="Remarque type">
+							<language iso="de">Standard Bemerkung</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.principale.remarqueType.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Catalogue de textes">
+							<language iso="de">Textkatalog</language>
+						</label>
+						<action command="/babel" responseTarget="fr_main">
+							<parameter name="userAction" value="babel.cat.document.chercher" />
+							<parameter name="csGroupeDomaines" value="CPGRPDMCT"/>
+							<parameter name="csGroupeTypesDocuments" value="CPGRPTDCT"/>
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Configuration plausibilités">
+							<language iso="de">Konfiguration der Plausibilitäten</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.communications.reglePlausibilite.rechercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Configuration Com. Fisc.">
+							<language iso="de">Konfiguration der Steuermeldungen</language>
+						</label>
+						<action command="/phenix" responseTarget="fr_main">
+							<parameter name="userAction" value="phenix.communications.receptionReader.rechercher" />
+							<parameter name="_method" value="upd"/>
+						</action>
+					</node>				
+				</nodes>
+			</node>		
+		</nodes>
+	</menu>
+	
+	<!-- ****************************** -->
+	<!-- Menu Option decisions -->
+	<!-- ****************************** -->
+	<menu id="CP-decision">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Impression">
+					<language iso="de">Ausdruck</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.principale.decision.imprimer" />
+					<parameter name="idDecision" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Duplicata">
+					<language iso="de">Duplikat</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.principale.decision.duplicata" />
+					<parameter name="idDecision" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Valider">
+					<language iso="de">Validieren</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.principale.decisionValider.afficher" />
+					<parameter name="_method" value="upd"/>
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Cotisations">
+					<language iso="de">Beiträge</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.principale.cotisation.chercher" />
+					<parameter name="idDecision" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Remarques">
+					<language iso="de">Bermerkungen</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.principale.remarqueDecision.chercher" />
+					<parameter name="idDecision" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Données du calcul">
+					<language iso="de">Berechnungsangaben</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.principale.donneesCalcul.chercher" />
+					<parameter name="idDecision" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Dévalidation">
+					<language iso="de">Devalidierung</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.principale.decision.devalider" />
+					<parameter name="idDecision" value="-id-"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- ****************************** -->
+	<!-- Menu Option remarque type -->
+	<!-- ****************************** -->
+	<menu id="CP-remarquesTypes">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Commentaire associé">
+					<language iso="de">Verknüpfte Mitteilung</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.principale.commentaireRemarqueType.chercher" />
+					<parameter name="idRemarqueType" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Type de décision associé">
+					<language iso="de">Verknüpfte Verfugungsart</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.principale.lienTypeDecRemarque.chercher" />
+					<parameter name="idRemarqueType" value="-id-"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- ****************************** -->
+	<!-- Menu Option plausibilites  -->
+	<!-- ****************************** -->
+	<menu id="CP-plausibilites">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Configuration">
+					<language iso="de">Konfiguration</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.reglePlausibilite.configurer" />
+					<parameter name="idPlausibilite" value="-id-"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- ****************************** -->
+	<!-- Menu Option communications fiscales retour  -->
+	<!-- ****************************** -->
+	<menu id="CP-communicationFiscaleRetour">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Abandonner">
+					<language iso="de">Abbrechen</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.apercuCommunicationFiscaleRetour.abandonner" />
+					<parameter name="idRetour" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Générer">
+					<language iso="de">Generieren</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.apercuCommunicationFiscaleRetour.generer" />
+					<parameter name="idRetour" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Réinitialiser">
+					<language iso="de">Neu initialisieren</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.apercuCommunicationFiscaleRetour.reinitialiser" />
+					<parameter name="idRetour" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Impression">
+					<language iso="de">Ausdruck</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.apercuCommunicationFiscaleRetour.imprimer" />
+					<parameter name="idRetour" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Enquêter">
+					<language iso="de">Untersuchen</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.apercuCommunicationFiscaleRetour.enqueterEnMasse" />
+					<parameter name="idRetour" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Afficher original">
+					<language iso="de">Original anzeigen</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.apercuCommunicationFiscaleRetour.afficherOriginale" />
+					<parameter name="idRetour" value="-id-"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>	
+	
+	<!-- ****************************** -->
+	<!-- Menu Rejets  -->
+	<!-- ****************************** -->
+	<menu id="CP-Rejets">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Traité/non-traité">
+					<language iso="de">Behandelt</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.rejets.changerStatus" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Abandonner">
+					<language iso="de">Abbrechen</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.rejets.abandonner" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>			
+		</nodes>
+	</menu>	
+	<!-- ****************************** -->
+	<!-- Menu Option journal retour -->
+	<!-- ****************************** -->
+	<menu id="CP-journalRetour">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Communications en retour">
+					<language iso="de">Steuermeldungen als Gegenleistung</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.apercuCommunicationFiscaleRetour.chercher" />
+					<parameter name="idJournalRetour" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Générer">
+					<language iso="de">Generieren</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.journalRetour.generer" />
+					<parameter name="idJournalRetour" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Imprimer">
+					<language iso="de">Ausdrucken</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.journalRetour.imprimer" />
+					<parameter name="idJournalRetour" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Abandonner">
+					<language iso="de">Abbrechen</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.journalRetour.abandonner" />
+					<parameter name="idJournalRetour" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Retourner">
+					<language iso="de">Rücksenden</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.journalRetour.retourner" />
+					<parameter name="idJournalRetour" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Supprimer">
+					<language iso="de">Löschen</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.journalRetour.supprimerCommunication" />
+					<parameter name="idJournalRetour" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Réinitialiser">
+					<language iso="de">Neu initialisieren</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.journalRetour.reinitialiser" />
+					<parameter name="idJournalRetour" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Fermer le journal">
+					<language iso="de">Schliessen</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.journalRetour.fermer" />
+					<parameter name="idJournalRetour" value="-id-"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- ****************************** -->
+	<!-- Menu Option Impression demande  -->
+	<!-- ****************************** -->
+	<menu id="CP-ImpressionDemande">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Imprimer">
+					<language iso="de">Ausdrucken</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.communicationFiscaleImpression.afficher" />
+					<parameter name="selectedId" value="-id-"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Envoi (Sedex)">
+					<language iso="de">Senden (Sedex)</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.envoiIndividuelSedex.afficher" />
+					<parameter name="selectedId" value="-id-"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!--***********************************-->
+	<!--Menu Validation Journaux Reception -->
+	<!--***********************************-->
+	<menu id="CP-ValidationJournauxReception">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Valider">
+					<language iso="de">Validieren</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.validationJournalRetour.valider" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Modifier">
+					<language iso="de">Ändern</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.validationJournalRetour.modifierDecision" />
+					<parameter name="selectedId" value="-id-"/>
+					<parameter name="idRetour" value="-id-"/>
+					<parameter name="_method" value="upd" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Supprimer">
+					<language iso="de">Löschen</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.validationJournalRetour.chercher" />
+					<parameter name="selectedId" value="-id-"/>
+					<parameter name="supprimer" value="true"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Décisions de la personne">
+					<language iso="de">Verfügungen der Person</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.principale.decision.chercher" />
+					<parameter name="selectedId" value="-id-"/>
+					<parameter name="idTiers" value="-id-"/>
+					<parameter name="idAffiliation" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Communication en retour">
+					<language iso="de">Steuermeldungen zurück</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.apercuCommunicationFiscaleRetour.afficher" />
+					<parameter name="idRetour" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Abandonner">
+					<language iso="de">Abbrechen</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.validationJournalRetour.abandonner" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+		<!--***********************************-->
+	<!--Menu Dévalidation Journaux Reception -->
+	<!--***********************************-->
+	<menu id="CP-DevalidationJournauxReception">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Dévalider">
+					<language iso="de">Devalidieren</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.communications.validationJournalRetour.devalider" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- ****************************** -->
+	<!-- Menu Option sortie  -->
+	<!-- ****************************** -->
+	<menu id="CP-Sortie">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Montants sorties">
+					<language iso="de">Abgansgbeträge</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.principale.sortieMontant.chercher" />
+					<parameter name="idSortie" value="-id-"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Décision">
+					<language iso="de">Verfügung</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.principale.decision.chercher" />
+					<parameter name="selectedId" value="-id-"/>
+					<parameter name="idTiers" value="-id-"/>
+					<parameter name="idAffiliation" value="-id-"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- ***************************************** -->
+	<!-- Menu Option décisions non comptabilisées  -->
+	<!-- ***************************************** -->
+	<menu id="CP-decisionNonComptabilisee">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Re-Comptabiliser">
+					<language iso="de">Wiederbuchen</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.process.decision.recomptabiliser" />
+					<parameter name="idDecision" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Re-Comptabiliser sans maj CI">
+					<language iso="de">Wiederbuchen ohne IK</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.process.decision.recomptabiliser" />
+					<parameter name="idDecision" value="-id-"/>
+					<parameter name="wantMajCI" value="no"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Re-Comptabiliser tous">
+					<language iso="de">Alle wiederbuchen</language>
+				</label>
+				<action command="/phenix" responseTarget="fr_main">
+					<parameter name="userAction" value="phenix.process.decision.recomptabiliser" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- ************************** -->
+	<!-- Menu Option only detail    -->
+	<!-- ************************** -->
+	<menu id="CP-OnlyDetail">
+		<label refId="OPTIONS" />
+	</menu>
+</menus>

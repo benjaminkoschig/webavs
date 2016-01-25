@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.revenu.SimpleRevenuHistorique">
+		<description>Revenu historique (liaison taxation - année de subside)</description>
+		<table name="MAREVENU" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idRevenuHistorique" column="IDREVE" comment="Clef primaire Revenu Historique"/>
+			<field name="idContribuable" column="IDCONT" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_CONTRIBUABLE"/>
+			<field name="idRevenuDeterminant" column="IDREDE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_REVENU_DETERMINANT"/>
+			<field name="idRevenu" column="IDREGE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_REVENU_GENERIQUE"/>
+			<field name="anneeHistorique" column="ANHIST" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="ANNEE_HISTORIQUE"/>
+			<field name="dateCreation" column="DACREA" type="DATE" mandatory="false" comment="DATE_CREATION"/>
+			<field name="codeActif" column="CACTIF" type="BOOLEAN" mandatory="false" comment="CODE_ACTIF"/>
+			<field name="isRecalcul" column="ISRECA" type="BOOLEAN" mandatory="false" comment="Is recalcul"/>
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdRevenuHistorique" field-ref="idRevenuHistorique" operation="EQUALS"/>
+				<search-field name="forIdRevenu" field-ref="idRevenu" operation="EQUALS"/>
+				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS"/>
+				<search-field name="forAnneeHistorique" field-ref="anneeHistorique" operation="EQUALS"/>
+				<search-field name="forRevenuActif" field-ref="codeActif" operation="EQUALS" />
+				<search-field name="forIsRecalcul" field-ref="isRecalcul" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+
+		<order-by name="default">
+			<order-field field-ref="anneeHistorique" order="DESC"/>
+		</order-by>
+		
+		<order-by name="revenuNavigation">
+			<order-field field-ref="anneeHistorique" order="ASC"/>
+		</order-by>
+		
+		<!-- INDEX CREATION : CREATE INDEX MAREVEN1 on MAREVENU (IDCONT); -->
+		
+	</simple-model>
+</model-mapping>

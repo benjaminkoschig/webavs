@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.lot.SimplePrestation">
+		<description>Prestation</description>
+		<table name="PCPRESTA" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idPrestation" column="PRIPRE" comment="ID_PRESTATION"/>
+			<field name="idCompteAnnexeRequerant" column="PRICAR" type="NUMERIC" mandatory="true" comment="ID_COMTPE_ANNEXE_REQUERANT"/>
+			<field name="idCompteAnnexeConjoint" column="PRICAC" type="NUMERIC" mandatory="false" comment="ID_COMTPE_ANNEXE_CONJOINT"/>
+			<field name="idLot" column="PRILOT" type="NUMERIC" mandatory="false" comment="ID_LOT"/>
+			<field name="idTiersBeneficiaire"  column="PRITBE" type="NUMERIC"  mandatory="false" comment="TIERS_BENEFICIAIRE" />
+			<field name="idVersionDroit" column="PRIVDR" type="NUMERIC" mandatory="false" comment="ID_VERSION_DROIT"/>
+			<field name="csTypePrestation" column="PRTPRE" type="NUMERIC"  mandatory="false" comment="CS_TYPE_PRESTATION" />
+			<field name="csEtat" column="PRTETA" type="NUMERIC" mandatory="false" comment="CS_ETAT"/>
+		    <field name="dateDebut" column="PRDDPC" type="MONTH_YEAR"  mandatory="false" comment="DATE_DEBUT" />
+			<field name="dateFin"  column="PRDFPC" type="MONTH_YEAR"  mandatory="false" comment="DATE_FIN" />
+			<field name="montantTotal" column="PRMTOT" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="MONTANT_TOTAL"/>
+			<field name="moisAn" column="PRDMAN" type="DATE" mandatory="false" comment="MOIS_ANNEE"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPrestation" operation="EQUALS" field-ref="idPrestation" />
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="csEtat" />
+				<search-field name="forIdLot" operation="EQUALS" field-ref="idLot" />
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="idVersionDroit" />
+				<search-field name="inIdPrestation" operation="IN" field-ref="idPrestation" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

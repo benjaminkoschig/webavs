@@ -1,0 +1,25 @@
+<tr class="<%=rowStyle%>">
+	<td></td>
+	<td class="text"><span>
+		<%=(line.getDroit().getEnfantComplexModel()!= null)?line.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel().getTiers().getDesignation1()+"&nbsp;":""%>
+		<%=(line.getDroit().getEnfantComplexModel()!= null)?line.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel().getTiers().getDesignation2()+"&nbsp;":""%> 
+	 </span></td>
+	<td><span><%=(line.getDroit().getEnfantComplexModel()!= null)?line.getDroit().getEnfantComplexModel().getPaysModel().getCodeIso():""%> </span></td>
+	<td><span><%=(line.getDroit().getEnfantComplexModel()!= null)?line.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonne().getDateNaissance():"" %> </span></td>
+	<td class="<%=inactiveStyle%>"><span><%=line.getDroit().getDroitModel().getDebutDroit()%> </span></td>
+	<td class="<%=inactiveStyle%>"><span><%=line.getDroit().getDroitModel().getFinDroitForcee()%> </span></td>
+	<td><span><%=objSession.getCode(line.getDroit().getDroitModel().getMotifFin()) %> </span></td>
+	<td><span><%=objSession.getCode(line.getType())%> </span></td>
+	<td></td>
+	<% 
+	//Les colonnes de la liste des droits diffèrent dans le cas d'un dossier CS
+	if(ALCSDossier.STATUT_CS.equals(viewBean.getDossierComplexModel().getDossierModel().getStatut())){ %>
+		<td class="numberTFoot"><%=line.getMontantAllocataire()==null?" - ":line.getMontantAllocataire()%></td>
+		<td class="numberTFoot"><%=line.getMontantAutreParent()==null?" - ":line.getMontantAutreParent() %></td>
+		<td class="numberTFoot"><%=line.getCalculResultMontantEffectif()==null?" - ":JANumberFormatter.fmt(line.getCalculResultMontantEffectif(), true, true, false, 2)%></td>
+	<%}else{ %>
+		<td class="numberTFoot"><%=line.getCalculResultMontantEffectif()==null?" - ":JANumberFormatter.fmt(line.getCalculResultMontantEffectif(), true, true, false, 2)%></td>
+		<td><%=objSession.getCode(line.getTarif())%></td>
+	<%} %>
+	<td></td>            
+</tr>

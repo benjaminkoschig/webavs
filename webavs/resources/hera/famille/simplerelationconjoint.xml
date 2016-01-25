@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.hera.business.models.famille.SimpleRelationConjoint">
+		<description>Relation conjoint</description>
+		<table name="SFRELCON" hasSpy="true" hasCreationSpy="false" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idRelationConjoint" column="WKIREC" comment="ID_RELATION_CONJOINT"/>
+
+			<field name="idConjoints" type="NUMERIC" column="WKICON" comment="ID_CONJOINTS" />
+			<field name="dateDebut" type="DATE" column="WKDDEB" comment="DATE_DEBUT"/>
+			<field name="dateFin" type="DATE" column="WKDFIN" comment="DATE_FIN"/>
+			<field name="typeRelation" type="NUMERIC" column="WKTTYP" comment="TYPE_RELATION"/>
+		</fields>
+	</simple-model>
+</model-mapping>

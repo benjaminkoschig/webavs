@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.qd.QD" extend="ch.globaz.perseus.business.models.qd.ComplexQD">
+  		
+   		<linked-model name="qdParente" model-ref="ch.globaz.perseus.business.models.qd.ComplexQD" join-type="LEFT_OUTER">
+   			<join-group operator="AND">
+   				<join-field name="simpleQD.idQD" operation="EQUALS" field-ref="simpleQD.idQDParente" />
+   			</join-group>
+   		</linked-model>
+   		
+   		<search-definition>
+   			<search-group operator="AND">
+   				<search-field name="forAnnee" operation="EQUALS" field-ref="qdAnnuelle.simpleQDAnnuelle.annee" /> 
+   				<search-field name="forCSTypeQD" operation="EQUALS" field-ref="simpleQD.csType" /> 
+   				<search-field name="forIdDossier" operation="EQUALS" field-ref="qdAnnuelle.simpleQDAnnuelle.idDossier" /> 
+   				<search-field name="forIdMembreFamille" operation="EQUALS" field-ref="membreFamille.simpleMembreFamille.idMembreFamille" /> 
+   				<search-field name="forIdQdAnnuelle" operation="EQUALS" field-ref="qdAnnuelle.simpleQDAnnuelle.idQDAnnuelle" /> 
+   				<search-field name="likeNom" operation="LIKE" field-ref="membreFamille.personneEtendue.tiers.designationUpper1"/>  
+				<search-field name="likePrenom" operation="LIKE" field-ref="membreFamille.personneEtendue.tiers.designationUpper2"/>  
+				<search-field name="likeNss" operation="LIKE" field-ref="membreFamille.personneEtendue.personneEtendue.numAvsActuel"/>  
+				<search-field name="inCSTypeQD" operation="IN" field-ref="simpleQD.csType" />
+			</search-group>
+   		</search-definition>
+   		
+   		<order-by>
+			<order-field field-ref="qdAnnuelle.dossier.demandePrestation.personneEtendue.tiers.designationUpper1"/>
+			<order-field field-ref="qdAnnuelle.dossier.demandePrestation.personneEtendue.tiers.designationUpper2"/>
+			<order-field field-ref="simpleQD.csType"/>
+		</order-by>
+   		
+	</complexe-model>
+</model-mapping>

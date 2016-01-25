@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="corvus/rentesaccordees/simpleprestationsaccordees.xml"/>
+	<model-mapping import="corvus/rentesaccordees/simpleinformationscomptable.xml"/>
+	<model-mapping import="corvus/rentesaccordees/simpleRenteAccordee.xml" />
+	<model-mapping import="corvus/rentesaccordees/RERenteJoinPeriode.xml" />
+	<model-mapping import="corvus/rentesaccordees/SimpleRenteVerseeATort.xml" />
+</model-mapping>

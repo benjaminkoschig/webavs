@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="prestationcommon/demande/simpledemande.xml"/>
+	<model-mapping import="prestationcommon/demande/demandeprestation.xml"/>
+</model-mapping>

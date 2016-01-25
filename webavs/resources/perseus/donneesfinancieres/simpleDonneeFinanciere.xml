@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.donneesfinancieres.SimpleDonneeFinanciere">
+		<description>Tables des données financières pour les membres de la famille dans PC Familles</description>
+		<table name="PFDONFIN" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDonneeFinanciere" column="IIIDDF" comment="Clé primaire de la table des données financières"/>
+			<field name="idDemande" column="IIIDPF" type="NUMERIC" mandatory="true" comment="Identifiant de la demande"/>
+			<field name="idMembreFamille" column="IIIDMF" type="NUMERIC" mandatory="true" comment="Identifiant du membre de la famille"/>
+			<field name="type" column="IITYPE" type="NUMERIC" mandatory="true" comment="Type de données financières"/>
+			<field name="valeur" column="IIVALE" type="NUMERIC" dataType="NUMERIC(15,2)" comment="Valeur de la donnée financière"/>	
+			<field name="valeurModifieeTaxateur" column="IIVALM" type="NUMERIC" dataType="NUMERIC(15,2)" comment="Valeur modifiée par le taxateur de la donnée financière"/>	
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="idDemande" /> 
+				<search-field name="forIdMembreFamille"  operation="EQUALS" field-ref="idMembreFamille" />
+			</search-group>
+		</search-definition>
+		
+	</simple-model>
+</model-mapping>

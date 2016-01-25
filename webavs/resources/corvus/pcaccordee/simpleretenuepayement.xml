@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.corvus.business.models.pcaccordee.SimpleRetenuePayement">
+		<description>Retenue Payement</description>
+		<table name="RERETEN" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idRetenue" column="YQIRET" comment="ID_RETENUE"/>		
+			<field name="idRenteAccordee" type="NUMERIC" dataType="NUMERIC(15,0)" column="YQIRAC" comment="ID_RENTE_ACCORDEE" />
+			<field name="csTypeRetenue" type="NUMERIC" dataType="NUMERIC(8,0)" column="YQTTYP" comment="TYPE_RETENUE" />		
+			<field name="idTiersAdressePmt" type="NUMERIC" dataType="NUMERIC(15,0)" column="YQITAP" comment="ID_ADRESS_TIERS_PAYEMENT" />
+			<field name="idDomaineApplicatif" type="NUMERIC" dataType="NUMERIC(15,0)" column="YQIDOA" comment="ID_DOMAINE_APPLICATIF" />
+			<field name="noFacture" type="STRING" dataType="VARCHAR(23)" column="YQLNFA" comment="NO_FACTURE" />
+			<field name="idExterne" type="STRING" dataType="VARCHAR(23)" column="YQIEXT" comment="ID_EXTERNE" />
+			<field name="role" type="NUMERIC" dataType="NUMERIC(8,0)" column="YQNROL" comment="ROLE" />
+			<field name="montantRetenuMensuel" type="NUMERIC" dataType="NUMERIC(15,0)" column="YQMREM" comment="MONTANT_RETENU_MENSUEL" />
+			<field name="montantDejaRetenu" type="NUMERIC" dataType="NUMERIC(15,0)" column="YQMMDR" comment="MONTANT_DEJA_RETENU" />
+			<field name="montantTotalARetenir" type="NUMERIC" dataType="NUMERIC(15,0)" column="YQMTAR" comment="MONTANT_TOTAL_A_RETENIR" />
+			<field name="dateDebutRetenue" type="MONTH_YEAR"  column="YQDDER" comment="DATE_DEBUT_RETENUE" />
+			<field name="csGenreRetenue" type="NUMERIC" dataType="NUMERIC(8,0)" column="YQTGEN" comment="GENRE_RETENUE" />
+			<field name="idRubrique" type="NUMERIC" dataType="NUMERIC(15,0)" column="YQIRUB" comment="ID_RUBRIQUE" />		
+			<field name="dateFinRetenue" type="MONTH_YEAR" column="YQDDFR" comment="DATE_FIN_RETENUE" />			
+			<field name="rex" type="STRING" dataType="VARCHAR(23)" column="YQLREX" comment="YQLREX" />
+			<field name="referenceInterne" type="STRING" dataType="VARCHAR(23)" column="YQLRIN" comment="YQLRIN" />
+			<field name="tauxImposition" type="NUMERIC" dataType="NUMERIC(15,0)" column="YQMTAU" comment="TAUX_IMPOSITION" />
+			<field name="cantonImposition" type="NUMERIC" dataType="NUMERIC(8,0)" column="YQLCAN" comment="CANTON_IMPOSITION" />
+			<field name="idTypeSection" type="NUMERIC" dataType="NUMERIC(15,0)" column="YQITSC" comment="TYPE_SECTION" />	
+			<field name="idParentRetenue" type="NUMERIC" dataType="NUMERIC(15,0)" column="YQIPAR" comment="ID_RETENUE_PARENT" />					
+		</fields>
+		<search-definition>
+				<search-group operator="AND">
+					<search-field name="forIdRente" field-ref="idRenteAccordee" operation="EQUALS"/>
+					<search-field name="inIdsRente" field-ref="idRenteAccordee" operation="IN"/>					
+				</search-group>
+		</search-definition>
+		
+		<order-by name="montantRetenuMensuelDesc">
+				<order-field field-ref="montantRetenuMensuel" order="DESC" />
+	    </order-by>
+	    <order-by name="montantRetenuMensuelAsc">
+				<order-field field-ref="montantRetenuMensuel" />
+	    </order-by>
+	    
+	    <order-by name="montantRetenuTotalDesc">
+				<order-field field-ref="montantTotalARetenir" order="DESC" />
+	    </order-by>
+	    <order-by name="montantRetenuTotalAsc">
+				<order-field field-ref="montantTotalARetenir" />
+	    </order-by>
+	    
+	   	<order-by name="montantRetenuDejaDesc">
+				<order-field field-ref="montantDejaRetenu" order="DESC" />
+	    </order-by>
+	    <order-by name="montantRetenuDejaAsc">
+				<order-field field-ref="montantDejaRetenu" />
+	    </order-by>
+	    
+	   	<order-by name="numeroDesc">
+				<order-field field-ref="idRetenue" order="DESC" />
+	    </order-by>
+	    <order-by name="numeroAsc">
+				<order-field field-ref="idRetenue" />
+	    </order-by>
+	        
+	    <order-by name="typeRetenueDesc">
+				<order-field field-ref="csTypeRetenue" order="DESC" />
+	    </order-by>
+	    <order-by name="typeRetenueAsc">
+				<order-field field-ref="csTypeRetenue" />
+	    </order-by>
+	</simple-model>
+
+		
+</model-mapping>
+	
+	

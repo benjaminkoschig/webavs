@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.revenusdepenses.SimpleContratEntretienViager">
+		<description>Contrat entretien viager</description>
+		<table name="PCCENVI" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idContratEntretienViager" column="CBICEV" comment="ID_CONTRAT_ENTRETIEN_VIAGER"/>			
+			<field name="idDonneeFinanciereHeader" mandatory="true" column="CBIDFH" type="NUMERIC" comment="DONNEE_FINANCIERE_HEADER"/>
+			<field name="montantContrat" mandatory="true" column="CBNMCO" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_CONTRAT"/>
+			<field name="csLibelle" column="CBTLIB" type="NUMERIC" comment="CS_LIBELLE"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

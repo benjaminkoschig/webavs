@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.lyra.business.model.parametres.LyraSimpleParametres">
+		<description>
+			Un paramètre pour une échéance
+		</description>
+		<table name="LYPARAME" hasSpy="true" hasCreationSpy="false" alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="idParametre" column="WNIPAR" comment="ID_PARAMETRE" />
+			<field name="idEcheance" column="WNIECH" type="NUMERIC" mandatory="true" comment="ID_ECHEANCE" />
+			<field name="nomParametre" column="WNLNOM" type="STRING" mandatory="true" comment="NOM_PARAMETRE" />
+			<field name="csTypeParametre" column="WNTTYP" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="CS_TYPE_PARAMETRE" />
+			<field name="defaultValue" column="WNLDEF" type="STRING" mandatory="false" comment="VALEUR_PAR_DEFAUT"/>
+			<field name="libelleParametreFR" column="WNLLIF" type="STRING" mandatory="false" comment="LIBELLE_FRANCAIS" />
+			<field name="libelleParametreDE" column="WNLLID" type="STRING" mandatory="false" comment="LIBELLE_ALLEMAND" />
+			<field name="libelleParametreIT" column="WNLLII" type="STRING" mandatory="false" comment="LIBELLE_ITALIEN" />
+			<field name="nomGroupeParametre" column="WNLNGR" type="STRING" mandatory="false" comment="NOM_GROUPE_PARAMETRE" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdEcheance" operation="EQUALS" field-ref="idEcheance" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

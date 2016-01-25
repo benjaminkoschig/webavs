@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="perseus/qd/simpleQD.xml"/>
+	<model-mapping import="perseus/qd/simpleQDAnnuelle.xml"/>
+	<model-mapping import="perseus/qd/simpleFacture.xml"/>
+	<model-mapping import="perseus/qd/complexQD.xml"/>
+	<model-mapping import="perseus/qd/qd.xml"/>
+	<model-mapping import="perseus/qd/qdAnnuelle.xml"/>
+	<model-mapping import="perseus/qd/facture.xml"/>
+</model-mapping>

@@ -1,0 +1,88 @@
+@CHARSET "ISO-8859-1";
+/* ************* bloc 1 , infos generales ***************** */
+
+*{
+	margin:0;padding:0;	
+}
+
+.lienTiers{
+	cursor:pointer;
+}
+
+a img{
+	border:none;
+}
+
+
+/* labels génériques */
+.label{
+	width:120px;
+	height:22px;
+	padding-top:2px;
+	display:inline-block;
+	text-align:left;
+	float:left;
+	font-weight:bold;
+}
+
+
+/* ****ligne requerant**** */
+#ligneRequerant{
+	border-bottom:2px solid #226194;
+	margin-bottom:10px;
+	padding-bottom:10px;
+	height:22px;
+	padding-bottom:5px;
+	
+}
+/* ****ligne beneficiare**** */
+#ligneBeneficiaire{
+	/*border:1px solid red;*/
+	height:22px;
+	padding-bottom:5px;
+	
+}
+
+/* label valeur requerant */
+#valRequerant{
+	font-weight:normal;
+	float:left;
+	width:550px;
+	text-align:left;
+	font-style:italic;
+}
+
+#ligneGestionnaire{
+	border-bottom:2px solid #226194;
+	margin-bottom:10px;
+	padding-bottom:10px;
+	width:100%;
+	height:22px;
+}
+#ligneGestionnaire select{
+	float:left;
+	margin-top:5px;
+	width:240px;
+}
+#ligneGestionnaire span{
+	font-weight:bold;
+}
+
+#lblEmail{
+	margin-left:120px;
+}
+
+.labelDateTransfert{
+	height:22px;
+	padding-top:2px;
+	display:inline-block;
+	text-align:right;
+	font-weight:bold;
+	margin-left:200px;
+	margin-right:10px;
+}
+
+#ligneInfoCaisse {
+	margin-top:10px;
+	width: 600px;
+}

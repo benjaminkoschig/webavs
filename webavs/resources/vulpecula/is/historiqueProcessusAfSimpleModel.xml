@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.vulpecula.business.models.is.HistoriqueProcessusAfSimpleModel">	
+		<table name="PT_HISTORIQUE_PROCESSUS_AF" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID" comment="Id de la table" />
+			<field name="idProcessus" column="ID_PROCESSUS" type="NUMERIC" comment="id du processus AF" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forIdProcessus" field-ref="idProcessus" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		
+		<order-by>
+			<order-field field-ref="id" />
+		</order-by>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+	</simple-model>
+</model-mapping>

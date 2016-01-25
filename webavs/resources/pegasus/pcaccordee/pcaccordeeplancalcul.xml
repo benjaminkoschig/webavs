@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.pcaccordee.PCAccordeePlanCalcul">
+		<root-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee"/>
+		
+		<linked-model name="simpleVersionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroit" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDemande" model-ref="ch.globaz.pegasus.business.models.demande.SimpleDemande" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDemande" operation="EQUALS" field-ref="simpleDroit.idDemandePC"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDossier" model-ref="ch.globaz.pegasus.business.models.dossier.SimpleDossier" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDossier" operation="EQUALS" field-ref="simpleDemande.idDossier"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simplePlanDeCalcul" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPCAccordee"/>
+				<join-field name="isPlanRetenu" operation="EQUALS" value="TRUE"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simplePrestationsAccordees" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPrestationAccordee"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPCAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPCAccordee"/>	
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/> 
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>	  
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simplePCAccordee.csEtatPC"/>
+				<search-field name="forNoVersion" operation="EQUALS" field-ref="simpleVersionDroit.noVersion"/>
+				<search-field name="forInIdPcaccordee" operation="IN" field-ref="simplePCAccordee.idPCAccordee"/>	
+			</search-group>
+		</search-definition>
+		
+		
+		<search-definition name="forPcaConjoint">
+			<search-group operator="AND">
+				<search-field name="forIdPCAccordee" operation="NOT_EQUALS" field-ref="simplePCAccordee.idPCAccordee"/>	
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simplePCAccordee.csEtatPC"/>
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+				<search-field name="forDateDebut" operation="EQUALS" field-ref="simplePCAccordee.dateDebut"/> 
+				<search-field name="forDateFin" operation="EQUALS" field-ref="simplePCAccordee.dateFin"/> 
+				<search-field name="forIsPlanRetenu" operation="EQUALS" field-ref="simplePlanDeCalcul.isPlanRetenu"/> 
+			</search-group>
+		</search-definition>
+		
+		
+		<!--  recherche en excluant les pca copie, idPcaParent null  -->
+		<search-definition name="forCurrentPcaForRetroWithoutCopie">
+			<search-group operator="AND">
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/> 
+				<search-field name="forNoVersion" operation="EQUALS" field-ref="simpleVersionDroit.noVersion"/>	
+				<search-field name="forIdPcaParent" operation="NULL" field-ref="simplePCAccordee.idPcaParent"/>
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+				<search-field name="forExcludePcaPartiel" operation="NOT_EQUALS" field-ref="simplePCAccordee.csEtatPC"/>
+			</search-group>
+		</search-definition>
+		
+		
+		<search-definition name="forOldVersionnedPcaWithMontantMensuelle">
+			<search-group operator="AND">
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/> 
+				<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="simplePCAccordee.dateDebut"/> 
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+				<!-- <search-field name="forMontantNotNull" operation="NOT_NULL" field-ref="simplePlanDeCalcul.montantPCMensuelle"/>  -->
+				<search-field name="forIdPcaParent" operation="NULL" field-ref="simplePCAccordee.idPcaParent"/> 
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="pcAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee"/>
+					<![CDATA[ 
+						#{simplePCAccordee.isSupprime} = 2  and
+						#{simpleVersionDroit.idVersionDroit} =
+							(
+								select MAX( #{versionDroit.idVersionDroit} ) 
+								  from @{versionDroit}
+								 inner join @{pcAccordee}  
+								    on ( #{versionDroit.idVersionDroit} = #{pcAccordee.idVersionDroit})
+							     where #{simplePCAccordee.idEntity} = #{pcAccordee.idEntity} 
+								   and #{simpleDroit.idDroit} =  #{versionDroit.idDroit}
+							       and #{versionDroit.noVersion} < ${forNoVersion:versionDroit.noVersion}
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="forCurrentVersionnedEtatPlanClaculNotEquals">
+			<search-group operator="AND">
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/> 
+				<search-field name="forCsEtatPlanCalcul" operation="NOT_EQUALS" field-ref="simplePlanDeCalcul.etatPC"/> 
+ 
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="pcAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee"/>
+					<![CDATA[ 
+						#{simplePCAccordee.isSupprime} = 2  and
+						#{simpleVersionDroit.idVersionDroit} =
+							(
+								select MAX( #{versionDroit.idVersionDroit} ) 
+								  from @{versionDroit}
+								 inner join @{pcAccordee}  
+								    on ( #{versionDroit.idVersionDroit} = #{pcAccordee.idVersionDroit})
+							     where #{simplePCAccordee.idEntity} = #{pcAccordee.idEntity} 
+								   and #{simpleDroit.idDroit} =  #{versionDroit.idDroit}
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="forOldVersionnedPcaWithMontantMensuelleForDecompte">
+			<search-group operator="AND">
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/> 
+				<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="simplePCAccordee.dateDebut"/> 
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+				<!-- <search-field name="forMontantNotNull" operation="NOT_NULL" field-ref="simplePlanDeCalcul.montantPCMensuelle"/>  -->
+				<!-- <search-field name="forIdPcaParent" operation="NULL" field-ref="simplePCAccordee.idPcaParent"/> -->
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="pcAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee"/>
+					<![CDATA[ 
+						#{simplePCAccordee.isSupprime} = 2   and
+						#{simpleVersionDroit.idVersionDroit} =
+							(
+								select MAX( #{versionDroit.idVersionDroit} ) 
+								  from @{versionDroit}
+								 inner join @{pcAccordee}  
+								    on ( #{versionDroit.idVersionDroit} = #{pcAccordee.idVersionDroit})
+							     where #{simplePCAccordee.idEntity} = #{pcAccordee.idEntity} 
+								   and #{simpleDroit.idDroit} =  #{versionDroit.idDroit}
+							       and #{versionDroit.noVersion} < ${forNoVersion:versionDroit.noVersion}
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+		
+		
+		<!-- Recherche les pca valables pour la date donnee en parametre
+	    <search-definition name="withDateValable">
+			<search-group operator="AND">
+				<search-field name="forInIdDemande" operation="IN" field-ref="simpleDemande.idDemande"/>		
+				<search-field name="forIsSupprimee" operation="EQUALS" field-ref="simplePCAccordee.isSupprime"/>
+				<search-group operator="AND">
+					<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="simplePCAccordee.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="simplePCAccordee.dateFin"/>
+						<search-field name="forDateValable" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition> 
+		-->
+		
+		
+		<!--  recherche des pca courantes, sans l'idPcaParent setter, pour la validation des décision lors de l'adaptation -->
+		<search-definition name="forCurrentPCAforAdaptation">
+			<search-group operator="AND">
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simplePCAccordee.csEtatPC"/>
+				<search-field name="forDateFin" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
+				<search-field name="forDroitCsMotif" operation="EQUALS" field-ref="simpleVersionDroit.csMotif"/>
+				<search-field name="forIdPcaParent" operation="NULL" field-ref="simplePCAccordee.idPcaParent" />
+				<search-field name="forInIdDemande" operation="IN" field-ref="simpleDemande.idDemande"/>		
+			</search-group>
+		</search-definition>
+		
+		
+		<!--  recherche des pca courantes, sans l'idPcaParent setter, pour les décisions DAC -->
+		<search-definition name="forCurrentPCAforDAC">
+			<search-group operator="AND">
+				<search-field name="forVersionDroit" operation="EQUALS" field-ref="simpleVersionDroit.idVersionDroit"/>
+				<search-field name="forDateFin" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
+				<search-field name="forIdPcaParent" operation="NULL" field-ref="simplePCAccordee.idPcaParent" />
+			</search-group>
+		</search-definition>
+		<order-by name="byDateDebut">
+			<order-field field-ref="simplePCAccordee.dateDebut" order="DESC"/>
+			<order-field field-ref="simplePrestationsAccordees.idTiersBeneficiaire" order="DESC"/>
+		</order-by>
+		<order-by>
+			<order-field field-ref="simplePCAccordee.dateDebut" order="DESC" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

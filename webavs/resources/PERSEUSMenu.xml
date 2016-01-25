@@ -1,0 +1,825 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="menuHtml.xslt"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+
+	<!-- ************** -->
+	<!-- Menu Principal -->
+	<!--  
+	
+			Detail du menu :
+			
+				> Dossiers
+				> Demandes 
+	
+	-->
+	<!-- ************** -->
+	<menu id="perseus-menuprincipal">
+		<label refId="MENU_PRINCIPAL"/>
+		<nodes>
+			<node>
+				<label refId="MENU_PF_DOSSIERS"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.dossier.dossier.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_DEMANDES"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.demande.demande.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_PCFACOORDEES"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.pcfaccordee.pcfAccordee.chercher"/>
+				</action>
+			</node>
+			<node>
+ 				<label refId="MENU_PF_DECISION"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.decision.decision.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_FACTURES"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.qd.facture.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_QD"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.qd.qd.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_LOT"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.lot.lot.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_RENTEPONT"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.rentepont.rentePont.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_FACTURES_RP"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.rentepont.factureRentePont.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_FACTURES_VALIDATION"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.rentepont.validationFacture.afficher"/>
+				</action>
+			</node>
+
+			<!-- Menu Paiements -->
+			<node>
+				<label refId="MENU_PF_PAIEMENT_MENSUEL"/>
+				<nodes>
+					<node id="PF-activerValidationDecision">
+						<label refId="MENU_PF_ACTIVER_VALIDATION_DECISION"/>
+						<action command="/perseus" responseTarget="fr_main">
+				 			<parameter name="userAction" value="perseus.paiements.validationDecision.activer"/>
+						</action>
+					</node>
+					<node id="PF-desactiverValidationDecision">
+						<label refId="MENU_PF_DESACTIVER_VALIDATION_DECISION"/>
+						<action command="/perseus" responseTarget="fr_main">
+				 			<parameter name="userAction" value="perseus.paiements.validationDecision.desactiver"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_LISTE_VERIFICATION"/>
+						<action command="/perseus" responseTarget="fr_main">
+				 			<parameter name="userAction" value="perseus.paiements.listeVerification.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_LISTE_VERIFICATION_RP"/>
+						<action command="/perseus" responseTarget="fr_main">
+				 			<parameter name="userAction" value="perseus.paiements.listeVerificationRentePont.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_EXECUTER_PAIEMENT"/>
+						<action command="/perseus" responseTarget="fr_main">
+				 			<parameter name="userAction" value="perseus.paiements.paiementMensuel.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_EXECUTER_PAIEMENT_RP"/>
+						<action command="/perseus" responseTarget="fr_main">
+				 			<parameter name="userAction" value="perseus.paiements.paiementMensuelRentePont.afficher"/>
+						</action>
+					</node>
+					
+				</nodes>
+			</node>
+			
+			<!-- Menu Listes -->
+			<node>
+				<label refId="MENU_PF_LISTES"/>
+				<nodes>
+					<node>
+						<label refId="MENU_PF_ECHEANCES"/>
+						<action command="/lyra" responseTarget="fr_main">
+							<parameter name="userAction" value="lyra.echeances.echeance.chercher"/>
+							<parameter name="forDomaineApplicatif" value ="52500004"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_ATTESTATIONS_FISCALES"/>
+						<action command="/perseus" responseTarget="fr_main">
+				 			<parameter name="userAction" value="perseus.attestationsfiscales.attestationsFiscales.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_ATTESTATIONS_FISCALES_RP"/>
+						<action command="/perseus" responseTarget="fr_main">
+				 			<parameter name="userAction" value="perseus.attestationsfiscalesRP.attestationsFiscalesRP.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_GENERATION_LISTE_IP"/>
+						<action command="/perseus" responseTarget="fr_main">
+				 			<parameter name="userAction" value="perseus.impotsource.listeImpotSource.afficher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			
+			<!-- Menu Parametres -->
+			<node open="no">
+				<label refId="MENU_PF_PARAMETRES"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTION_CATALOGUES_TEXTES"/>
+						<action command="/babel" responseTarget="fr_main">
+							<parameter name="userAction" value="babel.cat.document.chercher"/>
+							<parameter name="csGroupeDomaines" value="PFDOMAINES"/>
+							<parameter name="csGroupeTypesDocuments" value="PFTYPES"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_TAUX_IMPOT_SOURCE"/>
+						<action command="/perseus" responseTarget="fr_main">
+							<parameter name="userAction" value="perseus.impotsource.taux.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_PERIODE_IMPOT_SOURCE"/>
+						<action command="/perseus" responseTarget="fr_main">
+							<parameter name="userAction" value="perseus.impotsource.periodeImpotSource.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_VARIABLES_METIER"/>
+						<action command="/perseus" responseTarget="fr_main">
+							<parameter name="userAction" value="perseus.variablemetier.variableMetier.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_TRAITEMENT_ANNUEL"/>
+						<action command="/perseus" responseTarget="fr_main">
+							<parameter name="userAction" value="perseus.traitements.traitementAnnuel.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_TRAITEMENT_ANNUEL_AVEC_AF"/>
+						<action command="/perseus" responseTarget="fr_main">
+							<parameter name="userAction" value="perseus.traitements.traitementAnnuelAvecAF.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_TRAITEMENT_ADAPTATION"/>
+						<action command="/perseus" responseTarget="fr_main">
+							<parameter name="userAction" value="perseus.traitements.traitementAdaptation.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_REVISION_DOSSIER"/>
+						<action command="/perseus" responseTarget="fr_main">
+							<parameter name="userAction" value="perseus.revisiondossier.revisionDossier.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_ATTRIBUTION_NUM_DOSSIER_OFS"/>
+						<action command="/perseus" responseTarget="fr_main">
+							<parameter name="userAction" value="perseus.traitements.attributionNumeroOFS.afficher"/>
+						</action>
+					</node>
+					<!--
+					<node>
+						<label refId="MENU_PF_MISE_A_DISPOSITION_DETAIL_CALCUL"/>
+						<action command="/perseus" responseTarget="fr_main">
+							<parameter name="userAction" value="perseus.traitements.miseADispositionCalcul.afficher"/>
+						</action>
+					</node>
+					-->
+					<node>
+						<label refId="MENU_PF_ZONE_LOYER"/>
+						<nodes>
+							<node>
+								<label refId="MENU_PF_ZONES"/>
+								<action command="/perseus" responseTarget="fr_main">
+									<parameter name="userAction" value="perseus.parametres.simpleZone.chercher"/>
+								</action>
+							</node>
+							<node>
+								<label refId="MENU_PF_LOYERS"/>
+								<action command="/perseus" responseTarget="fr_main">
+									<parameter name="userAction" value="perseus.parametres.loyer.chercher"/>
+								</action>
+							</node>
+							<node>
+								<label refId="MENU_PF_LIEN_LOCALITE"/>
+								<action command="/perseus" responseTarget="fr_main">
+									<parameter name="userAction" value="perseus.parametres.lienLocalite.chercher"/>
+								</action>
+							</node>	
+						</nodes>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">				
+				<label refId="MENU_PF_TRAITEMENT"/>
+				<nodes>
+					<node>
+						<label refId="MENU_PF_ADAPTATION"/>
+						<action command="/fx" responseTarget="fr_main">
+							<parameter name="userAction" value="fx.process.jadeProcessList.afficher" />
+							<parameter name="keyProcess" value="Perseus.traitementAdaptation" /> 
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_ANNUEL"/>
+						<action command="/fx" responseTarget="fr_main">
+							<parameter name="userAction" value="fx.process.jadeProcessList.afficher" />
+							<parameter name="keyProcess" value="Perseus.traitementAnnuel" /> 
+						</action>
+					</node>
+				</nodes>	
+			</node>
+			<!-- Menu Statistiques -->
+			<node open="no">
+				<label refId="MENU_PF_STATISTIQUES"/>
+				<nodes>
+				<!--
+					<node>
+						<label refId="MENU_PF_DEMANDES_MENSUELLES"/>
+						<action command="/perseus" responseTarget="fr_main">
+				 			<parameter name="userAction" value="perseus.statistiques.statsDemandesParRegion.afficher"/>
+						</action>
+					</node>
+				-->
+					<node>
+						<label refId="MENU_PF_DEMANDES_MENSUELLES"/>
+						<action command="/perseus" responseTarget="fr_main">
+				 			<parameter name="userAction" value="perseus.statistiques.statsMensuelles.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_DEMANDES_DETAILS"/>
+						<action command="/perseus" responseTarget="fr_main">
+				 			<parameter name="userAction" value="perseus.statistiques.statsDetails.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_DEMANDES_JOURNALIERE"/>
+						<action command="/perseus" responseTarget="fr_main">
+				 			<parameter name="userAction" value="perseus.statistiques.statsDemandesJournalieres.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_STATISTIQUES_OFS"/>
+						<action command="/perseus" responseTarget="fr_main">
+				 			<parameter name="userAction" value="perseus.statistiques.statsOFS.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PF_STATS_RENTE_PONT"/>
+						<action command="/perseus" responseTarget="fr_main">
+				 			<parameter name="userAction" value="perseus.statistiques.statsRentePont.afficher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>
+	</menu>
+		
+	<!-- Menu Option Dossier -->
+	<menu id="perseus-optionsdossiers">
+		<label refId="MENU_PF_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_PF_OPTION_DOSSIERS_DEMANDES_DU_DOSSIER"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.demande.demande.chercher"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_DOSSIER_REFUS_NOUVELLE_DEMANDE"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.decision.decisionRefusDemande.afficher"/>
+					<parameter name="_method" value="add"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+			<node id="DEMANDE_ECHEANCESLIBRES">
+				<label refId="MENU_PF_OPTION_VOIR_ECHEANCESLIBRES"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.echeance.echeanceLibre.chercher"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_VOIR_QD"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.qd.qd.chercher"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_VOIR_FACTURES"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.qd.facture.chercher"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_DOSSIERS_AJOUTER_FACTURE"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.qd.facture.afficher"/>
+					<parameter name="_method" value="add"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_DOSSIERS_INFORMATION_FACTURE"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.informationfacture.informationFacture.chercher"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+			<node id="">
+				<label refId="MENU_PF_OPTION_PREPARER_DECISION_REFUS_FACTURE"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.decision.decisionRefusFacture.afficher"/>
+					<parameter name="_method" value="add"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_DOSSIERS_TABLEAU"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.dossier.tableau.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_DOSSIERS_RENTESPONT_DU_DOSSIER"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.rentepont.rentePont.chercher"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_VOIR_FACTURESRENTEPONT"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.rentepont.factureRentePont.chercher"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_ATTESTATION_FISCALE"/>
+				<action command="/perseus" responseTarget="fr_main">
+				 	<parameter name="userAction" value="perseus.attestationsfiscales.attestationsFiscales.afficher"/>
+				 	<parameter name="idDossier"/>
+					</action>
+				</node>
+			<node>
+				<label refId="MENU_PF_ATTESTATION_FISCALE_RP"/>
+				<action command="/perseus" responseTarget="fr_main">
+				 	<parameter name="userAction" value="perseus.attestationsfiscalesRP.attestationsFiscalesRP.afficher"/>
+			 		<parameter name="idDossier"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu options rentes-pont -->	
+	<menu id="perseus-optionsrentepont">
+		<label refId="MENU_PF_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_PF_OPTION_FAMILLE_MEMBRES"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.rentepont.situationfamiliale.afficher"/>
+					<parameter name="selectedId"/>
+					<parameter name="idRentePont"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_RENTEPONT_CREANCIER"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.rentepont.creancierRentePont.afficher"/>
+					<parameter name="_method" value="add"/>
+					<parameter name="idRentePont"/>
+				</action>
+			</node>
+			<node id="FACTURERENTEPONT">
+				<label refId="MENU_PF_OPTION_DOSSIERS_AJOUTER_FACTURE"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.rentepont.factureRentePont.afficher"/>
+					<parameter name="_method" value="add"/>
+					<parameter name="idDossier"/>
+					<parameter name ="idRentePont"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_VOIR_FACTURESRENTEPONT"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.rentepont.factureRentePont.chercher"/>
+					<parameter name="selectedId"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+		
+	<!-- Menu options Demandes -->	
+	<menu id="perseus-optionsdemandes">
+		<label refId="MENU_PF_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_PF_OPTION_FAMILLE_MEMBRES"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.situationfamille.situationfamiliale.afficher"/>
+					<parameter name="selectedId"/>
+					<parameter name="idDemande"/>
+				</action>
+			</node>
+			<node id="CALCULERPCFA">
+				<label refId="MENU_PF_OPTION_CALCULER_PCFACCORDEE"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.pcfaccordee.calcul.afficher"/>
+					<parameter name="_method" value="upd"/>
+					<parameter name="idDemande"/>
+				</action>
+			</node>
+			<node id="VOIRPCFA">
+				<label refId="MENU_PF_OPTION_VOIR_PCF_ACCORDEES"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.pcfaccordee.pcfAccordee.chercher"/>
+					<parameter name="idDemande"/>
+				</action>
+			</node>
+			<node id="DECSANSCALCUL">
+				<label refId="MENU_PF_OPTION_PREPARER_DECISION_SANS_CALCUL"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.decision.decision.afficher"/>
+					<parameter name="_method" value="add"/>
+					<parameter name="idDemande"/>
+				</action>
+			</node>
+			<node id="DEMANDE_PC_AVS_AI">
+				<label refId="MENU_PF_OPTION_DEMANDE_PC_AVS_AI"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.demande.demandePCAVSAIOuvertureQD.afficher"/>
+					<parameter name="idDemande"/>
+				</action>
+			</node>
+			<node id="CREANCIER">
+				<label refId="MENU_PF_DEMANDE_CREANCIER"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.creancier.creancier.afficher"/>
+					<parameter name="idDemande"/>
+				</action>
+			</node>
+			<node id="DECISIONS_DEMANDE">
+				<label refId="MENU_PF_OPTION_VOIR_DECISIONS"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.decision.decision.chercher"/>
+					<parameter name="idDemande"/>
+				</action>
+			</node>
+			<node id="COPIEDEM">
+				<label refId="MENU_PF_OPTION_COPIER"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.demande.copieDemande.afficher"/>
+					<parameter name="idDemande"/>
+					<parameter name="_method" value="upd"/>
+				</action>
+			</node>
+			<node id="OUVERTUREQD">
+				<label refId="MENU_PF_OPTION_OUVERTURE_QD"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.qd.ouvertureQd.afficher"/>
+					<parameter name="idDemande"/>
+					<parameter name="_method" value="upd"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_DOSSIERS_DEMANDES_DU_DOSSIER"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.demande.demande.chercher"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_DOSSIERS_TABLEAU"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.dossier.tableau.afficher"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_RETOUR_DOSSIER"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.dossier.dossier.afficher"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu options PCF Accordées -->	
+	<menu id="perseus-optionspcfaccordee">
+		<label refId="MENU_PF_OPTION_TITRE"/>
+		<nodes>
+			<node>
+				<label refId="MENU_PF_OPTION_FAMILLE_MEMBRES"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.situationfamille.situationfamiliale.afficher"/>
+					<parameter name="selectedId"/>
+					<parameter name="idDemande"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_RETENUES"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.retenue.retenue.afficher"/>
+					<parameter name="idPcfAccordee"/>
+				</action>
+			</node>
+		  	<node id="DECAVECCALCUL">
+				<label refId="MENU_PF_OPTION_PREPARER_DECISION_AVEC_CALCUL"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.decision.decision.afficher"/>
+					<parameter name="_method" value="add"/>
+					<parameter name="idDemande"/>
+					<parameter name="isProject" value="false"/>
+				</action>
+			</node>
+		  	<node id="PREPARTIONPROJETDECISION">
+				<label refId="MENU_PF_OPTION_PREPARER_PROJET_DECISION"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.decision.decision.afficher"/>
+					<parameter name="_method" value="add"/>
+					<parameter name="idDemande"/>
+					<parameter name="isProject" value="true"/>
+				</action>
+			</node>
+		  	<node id="DECISION_SUPPRESSIONVOLONTAIRE">
+				<label refId="MENU_PF_OPTION_DECISION_SUPPRESSIONVOLONTAIRE"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.decision.decision.afficher"/>
+					<parameter name="_method" value="add"/>
+					<parameter name="idDemande"/>
+					<parameter name="isNewSuppressionVolontaire" value="true"/>
+				</action>
+			</node>
+			<node id="DECISIONS_PCFACCORDEES">
+				<label refId="MENU_PF_OPTION_VOIR_DECISIONS"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.decision.decision.chercher"/>
+					<parameter name="idDemande"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_DOSSIERS_TABLEAU"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.dossier.tableau.afficher"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_RETOUR_DEMANDE"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.demande.demande.afficher"/>
+					<parameter name="idDemande"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_RETOUR_DOSSIER"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.dossier.dossier.afficher"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Menu Option Zone -->
+	<menu id="perseus-optionsZone">
+		<label refId="MENU_PF_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_PF_OPTION_LOCALITE_ZONE"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.parametres.lienLocalite.chercher"/>
+					<parameter name="idZone"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_LOYER_ZONE"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.parametres.loyer.chercher"/>
+					<parameter name="idZone"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Loyer -->
+	<menu id="perseus-optionsLoyer">
+		<label refId="MENU_PF_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_PF_OPTION_LOCALITE_LOYER"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.parametres.lienLocalite.chercher"/>
+					<parameter name="idZone"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Menu Option Lot -->
+	<menu id="perseus-optionsLot">
+		<label refId="MENU_PF_OPTION_TITRE"/>
+	  	<nodes>
+			<node id="prestation">
+				<label refId="MENU_PF_OPTION_PRESTATIONS"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.lot.prestation.chercher"/>
+					<parameter name="selectedId"/>
+					<parameter name="csTypeLot"/>
+					<parameter name="csEtatLot"/>
+					<parameter name="descriptionLot"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_LISTE_ORDRE_VERSEMSENT_LOT"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.lot.genererListeOrdresVersement.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node id="COMPTABILISE">
+				<label refId="MENU_PF_OPTION_COMPTABILISER"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.lot.comptabiliserLot.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node id="FACTURE">
+				<label refId="MENU_PF_OPTION_IMPRIMER_DECISION_FACTURE"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.lot.imprimerDecisionFacture.afficher"/>
+					<parameter name="_method" value="add"/>
+					<parameter name="idLot"/>
+				</action>
+			</node>
+			<node id="FACTURE_RP">
+				<label refId="MENU_PF_OPTION_IMPRIMER_DECISION_FACTURE_RP"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.lot.imprimerDecisionFacture.afficher"/>
+					<parameter name="_method" value="add"/>
+					<parameter name="idLot"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+		<!-- Menu Option Prestations  -->
+	<menu id="perseus-optionsprestation">
+		<label refId="MENU_OPTION_TITRE"/>
+		<nodes>
+			<node>
+				<label refId="MENU_PF_OPTION_ORDRE_DE_VERSEMENT"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.lot.ordreVersement.chercher"/>
+					<parameter name="selectedId"/>
+					<parameter name="idTierRequerant"/>
+					<parameter name="montantPrestation"/>
+				</action>
+			</node>
+			<node id="FACTURE">
+				<label refId="MENU_PF_OPTION_FACTURE"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.qd.detailfacture.afficher"/>
+					<parameter name="idFacture"/>
+				</action>
+			</node>
+			<node id="DECISION">
+				<label refId="MENU_PF_OPTION_DECISION"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.decision.decision.afficher"/>
+					<parameter name="idDecision"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Menu Option Decision -->
+	<menu id="perseus-optionsDecision">
+		<label refId="MENU_PF_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_PF_OPTION_RETOUR_DEMANDE"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.demande.demande.afficher"/>
+					<parameter name="idDemande"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_RETOUR_DOSSIER"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.dossier.dossier.afficher"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Echéance libre -->
+	<menu id="perseus-optionsEcheanceLibre">
+		<label refId="MENU_PF_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_PF_OPTION_RETOUR_DEMANDE"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.demande.demande.afficher"/>
+					<parameter name="idDemande"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_PF_OPTION_RETOUR_DOSSIER"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.dossier.dossier.afficher"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+<!-- Menu Option information Facture -->
+	<menu id="perseus-optionsInformations">
+		<label refId="MENU_PF_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_PF_OPTION_RETOUR_DOSSIER"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.dossier.dossier.afficher"/>
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- Menu Option Decision -->
+	<menu id="perseus-optionsfacture">
+		<label refId="MENU_PF_OPTION_TITRE"/>
+	  	<nodes>
+			
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Decision -->
+	<menu id="perseus-optionsqd">
+		<label refId="MENU_PF_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_PF_OPTION_FACTURES"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.qd.facture.chercher"/>
+					<parameter name="idQd"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- ************************** -->
+	<!-- Menu Option empty		    -->
+	<!-- ************************** -->
+	<menu id="perseus-optionsempty">
+		<label refId="MENU_OPTION_TITRE" />
+	</menu>
+	
+</menus>

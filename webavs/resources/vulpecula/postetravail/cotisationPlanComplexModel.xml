@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.posteTravail.CotisationPlanComplexModel">
+
+		<root-model name="cotisation"
+			model-ref="ch.globaz.naos.business.model.CotisationSimpleModel" />
+
+		<linked-model name="plan"
+			model-ref="ch.globaz.naos.business.model.PlanAffiliationSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="planAffiliationId" operation="EQUALS"
+					field-ref="cotisation.planAffiliationId" />
+			</join-group>
+		</linked-model>
+		<linked-model name="assurance"
+			model-ref="ch.globaz.naos.business.model.AssuranceSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="assuranceId" operation="EQUALS"
+					field-ref="cotisation.assuranceId" />
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdAffiliation" field-ref="plan.affiliationId"
+					operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		<order-by name="idDesc">
+			<order-field field-ref="cotisation.dateDebut" order="DESC" />
+		</order-by>
+		<order-by name="idAsc">
+			<order-field field-ref="cotisation.dateDebut" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

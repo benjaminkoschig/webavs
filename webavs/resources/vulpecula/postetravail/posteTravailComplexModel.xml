@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.postetravail.PosteTravailComplexModel">
+
+		<root-model name="posteTravailSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.postetravail.PosteTravailSimpleModel" />
+			
+		<select-fields>
+			<select-field name="employeurComplexModel.administrationComplexModel.tiers.designation1" field-ref="employeurComplexModel.administrationComplexModel.tiers.designation1" />
+			<select-field name="employeurComplexModel.administrationComplexModel.admin.idTiersAdministration" field-ref="employeurComplexModel.administrationComplexModel.admin.idTiersAdministration" />
+			<select-field name="employeurComplexModel.administrationComplexModel.admin.codeAdministration" field-ref="employeurComplexModel.administrationComplexModel.admin.codeAdministration" />
+			
+			<select-field name="employeurComplexModel.affiliationTiersComplexModel.affiliation.affiliationId" field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.affiliationId" />
+			<select-field name="employeurComplexModel.affiliationTiersComplexModel.affiliation.affilieNumero" field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.affilieNumero" />
+			<select-field name="employeurComplexModel.affiliationTiersComplexModel.affiliation.brancheEconomique" field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.brancheEconomique" />
+			<select-field name="employeurComplexModel.affiliationTiersComplexModel.affiliation.dateDebut" field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.dateDebut" />
+			<select-field name="employeurComplexModel.affiliationTiersComplexModel.affiliation.dateFin" field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.dateFin" />
+			<select-field name="employeurComplexModel.affiliationTiersComplexModel.affiliation.periodicite" field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.periodicite" />
+			<select-field name="employeurComplexModel.affiliationTiersComplexModel.affiliation.personnaliteJuridique" field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.personnaliteJuridique" />
+			<select-field name="employeurComplexModel.affiliationTiersComplexModel.affiliation.raisonSociale" field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.raisonSociale" />
+			<select-field name="employeurComplexModel.affiliationTiersComplexModel.affiliation.typeAffiliation" field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.typeAffiliation" />
+			<select-field name="employeurComplexModel.affiliationTiersComplexModel.affiliation.accesSecurite" field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.accesSecurite" />
+			
+			<select-field name="employeurComplexModel.affiliationTiersComplexModel.affiliation.idTiers" field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.idTiers" />
+			<select-field name="employeurComplexModel.affiliationTiersComplexModel.affiliation.idConvention" field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.idConvention" />
+						
+			<select-field name="travailleurComplexModel.travailleurSimpleModel.id" field-ref="travailleurComplexModel.travailleurSimpleModel.id" />
+			<select-field name="travailleurComplexModel.travailleurSimpleModel.annonceMeroba" field-ref="travailleurComplexModel.travailleurSimpleModel.annonceMeroba" />
+			<select-field name="travailleurComplexModel.travailleurSimpleModel.dateAnnonceMeroba" field-ref="travailleurComplexModel.travailleurSimpleModel.dateAnnonceMeroba" />
+			<select-field name="travailleurComplexModel.travailleurSimpleModel.genrePermisTravail" field-ref="travailleurComplexModel.travailleurSimpleModel.genrePermisTravail" />
+			<select-field name="travailleurComplexModel.travailleurSimpleModel.referencePermis" field-ref="travailleurComplexModel.travailleurSimpleModel.referencePermis" />
+			<select-field name="travailleurComplexModel.travailleurSimpleModel.spy" field-ref="travailleurComplexModel.travailleurSimpleModel.spy" />
+			
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.personneEtendue.idTiers" field-ref="travailleurComplexModel.personneEtendueComplexModel.personne.idTiers" />
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.personneEtendue.numAvsActuel" field-ref="travailleurComplexModel.personneEtendueComplexModel.personneEtendue.numAvsActuel" />
+			
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.personne.idTiers" field-ref="travailleurComplexModel.personneEtendueComplexModel.personne.idTiers" />
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.personne.dateNaissance" field-ref="travailleurComplexModel.personneEtendueComplexModel.personne.dateNaissance" />
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.personne.dateDeces" field-ref="travailleurComplexModel.personneEtendueComplexModel.personne.dateDeces" />
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.personne.etatCivil" field-ref="travailleurComplexModel.personneEtendueComplexModel.personne.etatCivil" />
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.personne.sexe" field-ref="travailleurComplexModel.personneEtendueComplexModel.personne.sexe" />
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.personne.canton" field-ref="travailleurComplexModel.personneEtendueComplexModel.personne.canton" />
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.personne.district" field-ref="travailleurComplexModel.personneEtendueComplexModel.personne.district" />
+			
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.tiers.idTiers" field-ref="travailleurComplexModel.personneEtendueComplexModel.tiers.idTiers" />
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.tiers.typeTiers" field-ref="travailleurComplexModel.personneEtendueComplexModel.tiers.typeTiers" />
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.tiers.titreTiers" field-ref="travailleurComplexModel.personneEtendueComplexModel.tiers.titreTiers" />
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.tiers.designation1" field-ref="travailleurComplexModel.personneEtendueComplexModel.tiers.designation1" />
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.tiers.designation2" field-ref="travailleurComplexModel.personneEtendueComplexModel.tiers.designation2" />
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.tiers.langue" field-ref="travailleurComplexModel.personneEtendueComplexModel.tiers.langue" />
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.tiers.politesseSpecFr" field-ref="travailleurComplexModel.personneEtendueComplexModel.tiers.politesseSpecFr" />
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.tiers.politesseSpecDe" field-ref="travailleurComplexModel.personneEtendueComplexModel.tiers.politesseSpecDe" />
+			<select-field name="travailleurComplexModel.personneEtendueComplexModel.tiers.politesseSpecIt" field-ref="travailleurComplexModel.personneEtendueComplexModel.tiers.politesseSpecIt" />
+		</select-fields>
+
+		<linked-model name="travailleurComplexModel"
+			model-ref="ch.globaz.vulpecula.business.models.travailleur.TravailleurComplexModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field name="travailleurSimpleModel.id"
+					operation="EQUALS" field-ref="posteTravailSimpleModel.idTravailleur" />
+			</join-group>
+		</linked-model>
+		<linked-model name="employeurComplexModel"
+			model-ref="ch.globaz.vulpecula.business.models.employeur.EmployeurComplexModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field name="affiliationTiersComplexModel.affiliation.affiliationId" operation="EQUALS"
+					field-ref="posteTravailSimpleModel.idEmployeur" />
+			</join-group>
+		</linked-model>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPosteTravail" field-ref="posteTravailSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdTiers"
+					field-ref="travailleurComplexModel.travailleurSimpleModel.idTiers" operation="EQUALS" />
+				<search-field name="forIdTravailleur"
+					field-ref="travailleurComplexModel.travailleurSimpleModel.id" operation="EQUALS" />
+				<search-field name="forIdAffilie"
+					field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.affiliationId"
+					operation="EQUALS" />
+				<search-field name="forIdEmployeur"
+					field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.affiliationId"
+					operation="EQUALS" />
+				<search-field name="likeNomTravailleur"
+					field-ref="travailleurComplexModel.personneEtendueComplexModel.tiers.designationUpper1"
+					operation="LIKE" />
+				<search-field name="likePrenomTravailleur"
+					field-ref="travailleurComplexModel.personneEtendueComplexModel.tiers.designationUpper2"
+					operation="LIKE" />
+				<search-field name="annonceMeroba" field-ref="travailleurComplexModel.travailleurSimpleModel.annonceMeroba" operation="EQUALS" />
+				<search-field name="forPeriodeDebut" field-ref="posteTravailSimpleModel.debutActivite" operation="GREATER_OR_EQUALS" />
+				<search-field name="forPeriodeFin" field-ref="posteTravailSimpleModel.finActivite" operation="LESS_OR_EQUALS" />
+				<search-field name="forIdConvention" field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.idConvention" operation="EQUALS" />
+				<search-field name="forQualificationIn" field-ref="posteTravailSimpleModel.qualification" operation="IN" />
+			</search-group>
+		</search-definition>
+		<search-definition name="aAnnoncer">
+			<search-group operator="AND">
+				<search-field name="annonceMeroba" field-ref="travailleurComplexModel.travailleurSimpleModel.annonceMeroba" operation="EQUALS" />
+				<search-field name="forPeriodeDebut" field-ref="posteTravailSimpleModel.debutActivite" operation="GREATER_OR_EQUALS" />
+				<search-field name="forPeriodeDebutLess" field-ref="posteTravailSimpleModel.debutActivite" operation="LESS_OR_EQUALS" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

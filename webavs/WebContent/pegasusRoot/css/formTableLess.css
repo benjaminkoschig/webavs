@@ -1,0 +1,56 @@
+@CHARSET "ISO-8859-1";
+
+.formTableLess{
+	
+}
+
+.formTableLess .td{
+	width: 154px;
+	display:inline-block;
+}
+
+.formTableLess span{
+ clear: both;
+}
+
+.formTableLess FIELDSET {
+	border-bottom : 2px solid #356AA0;
+	border-top : 0px;
+	border-left: 0px;
+	border-right:0xp; 
+	margin-bottom: 10px;
+	padding:5px 0; 
+}
+
+.formTableLess legend{
+	text-align:center;
+	color: #356AA0;
+	padding: 0px 5px;
+	font-size: 1em;
+}
+
+.formTableLess .input, .formTableLess input, .formTableLess  select{
+	width: 140px;
+}
+
+.formTableLess input,.formTableLess .input{
+	margin : 0 0px 3px 0;
+	padding: 0 0px 0 0px;
+}
+
+.formTableLess label, .formTableLess input, .formTableLess .input {
+	display: inline-table;
+}
+
+
+.formTableLess label{
+	width: 120px;
+	margin-left: 10px;
+	vertical-align: top;
+}
+	
+	
+.formTableLess br {
+	height:100px;
+	clear: both;
+}

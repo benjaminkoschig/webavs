@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--# set echo="url" -->
+<HEAD>
+<%
+String lastModification = ""; 
+String languePage = globaz.framework.controller.FWDefaultServletAction.getIdLangueIso(session);
+String usrAction = "";
+String servletContext = request.getContextPath();
+String mainServletPath = (String)request.getAttribute("mainServletPath");
+if (mainServletPath == null) {
+	mainServletPath = "";
+}
+String selectedIdValue = "";
+int tableHeight = 243;
+String subTableWidth = "100%";
+String formAction = servletContext + mainServletPath;
+String applicationId = ((globaz.globall.db.BSession)session.getAttribute(globaz.framework.servlets.FWServlet.OBJ_SESSION)).getApplicationId();
+
+String btnValLabel = "Valider";
+String btnCanLabel = "Annuler";
+if("DE".equals(languePage)) {
+	btnValLabel = "Best&auml;tigen";
+	btnCanLabel = "Annulieren";
+}
+String idEcran = null;
+boolean autoShowErrorPopup = session.getAttribute(globaz.framework.servlets.FWServlet.OBJ_NO_JSP_POPUP) == null;
+boolean vBeanHasErrors = false;
+
+%>
+<SCRIPT language="JavaScript">
+var langue = "<%=languePage%>"; 
+</SCRIPT>
+<%
+String MSG_PROCESS_OK = "The process successfully started.";
+if ("FR".equalsIgnoreCase(languePage)) {
+	MSG_PROCESS_OK = "La tâche a démarré avec succès.";
+} else if ("DE".equalsIgnoreCase(languePage)) {
+	MSG_PROCESS_OK = "Prozess erfolgreich gestartet.";
+}
+%>

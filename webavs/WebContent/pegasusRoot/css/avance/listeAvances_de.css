@@ -1,0 +1,49 @@
+.titre {
+	margin: 0px 0px 10px 0px; 
+ 	background-color: #FEFCFF;
+    border: 1px solid #9E9EC9;
+
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+  	border-radius: 5px;
+  	box-shadow 
+  	-webkit-box-shadow: rgba(49, 85, 244, 0.2) 0px 1px 3px;
+    -moz-box-shadow:rgba(49, 85, 244, 0.2) 0px 1px 3px;
+    box-shadow:rgba(49, 85, 244, 0.2) 0px 1px 3px;
+}
+#requerant, .labelRequerant{
+   vertical-align: top;
+   text-align: left;
+}
+
+.requerantDecalage {
+  display: inline-block;
+  margin-left: 5px
+}
+#infoDroit{
+	display: inline;
+	position: absolute;
+    right: 0;
+    top: 4px;
+}
+
+#infoDroit span{
+    display: inline-block;
+ 	width:9em;
+}
+h1 {
+	margin:0px;
+	padding:0px;
+	
+	font-size: 1.2em;
+}
+.areaAssure{
+	height:5em;
+	position: relative;
+	padding: 5px 3px;
+	width: inherit !important;
+	border: 1px solid #9E9EC9;
+}
+.labelRequerant,#infoDroit span{
+	font-weight: bold;
+}

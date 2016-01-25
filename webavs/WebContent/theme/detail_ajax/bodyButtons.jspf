@@ -1,0 +1,15 @@
+					</TBODY>
+				</TABLE>
+			</FORM>
+			</TD>
+			<TD width="5">&nbsp;</TD>
+		</TR>
+		<TR>
+			<TD colspan="3" height="13"><%=(autoShowErrorPopup || !vBeanHasErrors) ? "&nbsp;" : "[ <a id=\"showErrorLink\" href=\"javascript:showErrors();\">visualiser les erreurs</a> ]"%></TD>
+		</TR>
+	 	<TR valign ="bottom">
+		<TD colspan="3" align="left" style="font-family:verdana;font-size:9;">
+		<div class="lastModification">
+			<%=creationSpy == null ? "" : creationSpy%>Update: <%=lastModification%> 
+		</div>	
+		</TD>

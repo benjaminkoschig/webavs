@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.vulpecula.business.models.decomptes.LigneDecompteSimpleModel">
+		<table name="PT_DECOMPTE_LIGNES" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="id" column="ID" comment="Id de la ligne de décompte" />
+			<field name="idDecompte" column="ID_PT_DECOMPTES" type="NUMERIC" comment="lien sur le décompte" />
+			<field name="idPosteTravail" column="ID_PT_POSTES_TRAVAIL" type="NUMERIC" comment="lien sur le poste de travail" />
+			<field name="nombreHeures" column="NOMBRE_HEURES" type="NUMERIC" comment="nombre heures travaillées" />
+			<field name="salaireHoraire" column="SALAIRE_HORAIRE" type="NUMERIC" />
+			<field name="salaireTotal" column="SALAIRE_TOTAL" type="NUMERIC" />
+			<field name="periodeDebut" column="PERIODE_DEBUT" type="DATE" />
+			<field name="periodeFin" column="PERIODE_FIN" type="DATE" />
+			<field name="tauxContribuable" column="TAUX_CONTRIBUABLE" type="NUMERIC" />
+			<field name="sequence" column="SEQUENCE" type="NUMERIC" />
+			<field name="dateAnnonce" column="DATE_ANNONCE" type="STRING" />
+			<field name="dateAnnonceLPP" column="DATE_ANNONCE_LPP" type="DATE" />
+			<field name="montantFranchise" column="MONTANT_FRANCHISE" type="NUMERIC" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forSequence" field-ref="sequence" operation="EQUALS" />
+				<search-field name="fromSequence" field-ref="sequence" operation="GREATER_OR_EQUALS" />
+				<search-field name="toSequence" field-ref="sequence" operation="LESS_OR_EQUALS" />
+				<search-field name="forIdDecompte" field-ref="idDecompte" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		
+		<order-by>
+			<order-field field-ref="id" />
+		</order-by>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+		<order-by name="sequenceAsc">
+			<order-field field-ref="sequence" order="ASC"/>
+		</order-by>
+		<order-by name="sequenceDesc">
+			<order-field field-ref="sequence" order="DESC"/>
+		</order-by>	
+	</simple-model>
+</model-mapping>

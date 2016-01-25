@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="vulpecula/common/adhesionComplexModel.xml" />
+	<model-mapping import="vulpecula/common/cotisationComplexModel.xml" />
+	<model-mapping import="vulpecula/common/cotisationParametreComplexModel.xml" />
+	<model-mapping import="vulpecula/common/assuranceTauxComplexModel.xml" />
+	<model-mapping import="vulpecula/common/rubriqueSimpleModel.xml" />
+	<model-mapping import="vulpecula/common/referenceRubriqueSimpleModel.xml" />
+	<model-mapping import="vulpecula/common/referenceRubriqueComplexModel.xml" />
+	<model-mapping import="vulpecula/common/operationComplexModel.xml" />
+	<model-mapping import="vulpecula/common/administrationComplexModel.xml" />
+	<model-mapping import="vulpecula/common/detailGroupeLocaliteSimpleModel.xml" />
+	<model-mapping import="vulpecula/common/groupeLocaliteSimpleModel.xml" />
+	<model-mapping import="vulpecula/common/detailGroupeLocaliteComplexModel.xml" />
+</model-mapping>

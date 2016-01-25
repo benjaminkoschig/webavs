@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.decision.DecisionHeader">
+		<root-model name="simpleDecisionHeader" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader"/>
+		<linked-model name="personneEtendue" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simpleDecisionHeader.idTiersBeneficiaire"/>
+			</join-group>
+		</linked-model>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdTiers" field-ref="simpleDecisionHeader.idTiersBeneficiaire" operation="EQUALS" />
+				<search-field name="likeNom" field-ref="personneEtendue.tiers.designation1" operation="LIKE"/>
+				<search-field name="likePrenom" field-ref="personneEtendue.tiers.designation2" operation="LIKE"/>
+				<search-field name="likeNss" field-ref="personneEtendue.personneEtendue.numAvsActuel" operation="LIKE"/>
+				<search-field name="forDateNaissance" field-ref="personneEtendue.personne.dateNaissance" operation="EQUALS"/>
+				<search-field name="forCsSexe" field-ref="personneEtendue.personne.sexe" operation="EQUALS"/>
+				<search-field name="forCsEtat" field-ref="simpleDecisionHeader.csEtatDecision" operation="EQUALS"/>
+				<search-field name="forDepuisValidation" field-ref="simpleDecisionHeader.dateValidation" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forNoDecision" field-ref="simpleDecisionHeader.noDecision" operation="LIKE"/>
+				<search-field name="forIdDecision" field-ref="simpleDecisionHeader.idDecisionHeader" operation="EQUALS"/>
+				
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

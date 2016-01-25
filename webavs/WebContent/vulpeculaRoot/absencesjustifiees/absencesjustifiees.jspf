@@ -1,0 +1,161 @@
+<div style="clear: both;">
+<div style="float: left;">	
+	<table>
+		<tr>
+			<td>
+				<ct:FWLabel key="JSP_POSTE_TRAVAIL"/>
+			</td>
+			<td>
+				<c:choose>
+					<c:when test="${viewBean.nouveau}">
+						<select id="idPosteTravail" name="idPosteTravail">
+							<c:forEach var="posteTravail" items="${viewBean.posteTravailsPossibles}">
+								<option value="${posteTravail.id}">${posteTravail.id} - ${posteTravail.raisonSocialeEmployeur} (${posteTravail.affilieNumero})</option>				
+							</c:forEach>
+						</select>
+					</c:when>
+					<c:otherwise>
+						${absenceJustifiee.posteTravail.id} - ${absenceJustifiee.raisonSocialeEmployeur}
+					</c:otherwise>				
+				</c:choose>
+			</td>
+		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_COMPTE_BANCAIRE"/></td>
+			<td><span id="adressePaiementEmployeur"/></td>
+		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_GENRE_PRESTATION"/></td>
+			<td>
+				<select id="genrePrestations" name="genrePrestations" />
+					<c:if test="${not empty viewBean.absenceJustifiee.type.value}">
+						<option value="${viewBean.absenceJustifiee.type.value}"><ct:FWCodeLibelle csCode="${viewBean.absenceJustifiee.type.value}" /></option>	
+					</c:if>
+					<c:forEach var="codeSystem" items="${viewBean.genrePrestations}">
+						<option value="${codeSystem.id}">${codeSystem.libelle}</option>	
+					</c:forEach>
+				</select>
+				&nbsp;
+				<select id="parente" name=parente />
+					<c:if test="${not empty viewBean.absenceJustifiee.lienParente.value}">
+						<option><ct:FWCodeLibelle csCode="${viewBean.absenceJustifiee.lienParente.value}" /></option>	
+					</c:if>
+					<c:forEach var="codeSystem" items="${viewBean.parentes}">
+						<option value="${codeSystem.id}">${codeSystem.libelle}</option>	
+					</c:forEach>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_ABSENCE_DEBUT"/></td>
+			<td><input id="debutAbsence" name="debutAbsence" value="${absenceJustifiee.dateDebutAbsence}" data-g-calendar="mandatory:true" />
+			&nbsp;-&nbsp;<input id="finAbsence" name="finAbsence" value="${absenceJustifiee.dateFinAbsence}" data-g-calendar="mandatory:true" /></td>
+		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_BENEFICIAIRE"/></td>
+			<td colspan="2">
+				<select id="beneficiaire" name="beneficiaire">
+					<c:choose>
+						<c:when test="${viewBean.nouveau}">
+							<c:forEach var="codeSysteme" items="${viewBean.beneficiaires}">
+								<c:choose>
+									<c:when test="${codeSysteme.id == absenceJustifiee.beneficiaire.value}">
+										<option value="${codeSysteme.id}" selected="selected">${codeSysteme.code} - ${codeSysteme.libelle}</option>
+									</c:when>
+									<c:otherwise>
+										<option value="${codeSysteme.id}">${codeSysteme.code} - ${codeSysteme.libelle}</option>
+									</c:otherwise>
+								</c:choose>
+							</c:forEach>
+						</c:when>
+						<c:otherwise>
+							<option value="${absenceJustifiee.beneficiaire.value}"><ct:FWCode csCode="${absenceJustifiee.beneficiaire.value}" /> - <ct:FWCodeLibelle csCode="${absenceJustifiee.beneficiaire.value}" /></option>
+						</c:otherwise>
+					</c:choose>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_LOT"/></td>
+			<td colspan="2">
+				<span>
+					<input name="idPassageFacturation" type="hidden" value="${absenceJustifiee.passage.id}" />
+					<span id="idPassageFacturation">${absenceJustifiee.passage.id}</span>&nbsp;-&nbsp;<span id="nomPassageFacturation">${absenceJustifiee.passage.libelle}</span> 
+				</span>
+			</td>
+		</tr>
+		<c:if test="${not empty absenceJustifiee.etat}">
+			<tr>
+				<td><ct:FWLabel key="JSP_ETAT"/></td>
+				<td><ct:FWCodeLibelle csCode="${absenceJustifiee.etat.value}"/></td>
+			</tr>
+		</c:if>
+	</table>
+</div>
+<div style="float: right">
+	<table style="border-collapse: collapse;">
+		<tr>
+			<td></td>
+			<td><ct:FWLabel key="JSP_NOMBRE_JOURS"/></td>
+			<td>X</td>
+			<td><ct:FWLabel key="JSP_NOMBRE_HEURES_JOUR"/></td>
+			<td>=</td>
+			<td></td>			
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<input name="nombreDeJours" id="nombreDeJours" class="smallextended" type="text" value="${viewBean.nombreDeJours}" data-g-amount=""  />
+			</td>
+			<td width="12px;">X</td>
+			<td><input name="nombreHeuresParJour" id="nombreHeuresParJour" class="readOnly smallextended" value="${viewBean.nombreHeuresParJour}" type="text" data-g-amount="" readonly="readonly" tabindex="-1" /></td>
+			<td>=</td>
+			<td><input id="totalUnites" class="readOnly smallextended" type="text" value="0.00" data-g-amount="" readonly="readonly" disabled="disabled" tabindex="-1"/></td>
+		</tr>
+		<tr>
+			<td colspan="5"><ct:FWLabel key="JSP_SALAIRE_HORAIRE"/></td>
+			<td><input name="salaireHoraire" id="salaireHoraire" class="smallextended" type="text" value="${absenceJustifiee.salaireHoraire.toStringValue()}" data-g-amount="" /></td>
+		</tr>
+		<tr>
+			<td colspan="6">
+				<div>
+					<table id="cotisations" style="border-collapse: collapse; width: 100%">
+						<tr>
+							<td><ct:FWLabel key="JSP_MONTANT_BRUT"/></td>
+							<td style="text-align: right;">
+								<input id="montantBrut" name="montantBrut" class="smallextended"  type="text" value="${absenceJustifiee.montantBrut.toStringValue()}" data-g-amount="" />
+							</td>
+						</tr>
+						<tr class="cotisation">
+							<td class="border_left indentLeft">
+								<input name="tauxAVS" class="tauxAssurance readOnly" value="${absenceJustifiee.tauxAVS.value}" type="hidden" />
+								<span class="ajoutSuppressionCotisations">+</span> <ct:FWLabel key="JSP_COTISATIONS_PARITAIRES_AVS"/>&nbsp;
+								<span id="spanTauxAVS"><c:out value="${absenceJustifiee.tauxAVS.value}"></c:out></span>%
+							</td>
+							<td style="text-align: right;">
+								<input class="montantCotisation smallextended readOnly"  type="text" data-g-amount="" readonly="readonly" disabled="disabled" tabindex="-1"/>
+							</td>
+						</tr>
+						<tr class="cotisation">
+							<td class="border_left indentLeft">
+								<input name="tauxAC" class="tauxAC tauxAssurance" value="${absenceJustifiee.tauxAC.value}" type="hidden" />
+								<span class="ajoutSuppressionCotisations">+</span> <ct:FWLabel key="JSP_COTISATIONS_PARITAIRES_AC"/>&nbsp;
+								<span id="spanTauxAC"><c:out value="${absenceJustifiee.tauxAC.value}"></c:out></span>%
+							</td>
+							<td style="text-align: right;">
+								<input class="montantCotisation smallextended readOnly"  type="text" data-g-amount="" readonly="readonly" disabled="disabled" tabindex="-1"/>
+							</td>
+						</tr>						
+					</table>			
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_MONTANT_A_VERSER"/></td>
+			<td colspan="5" style="text-align: right;">
+				<input id="montantVerse" name="montantVerse" class="smallextended readOnly" value="${absenceJustifiee.montantVerse.toStringValue()}" data-g-amount="" readonly="readonly" disabled="disabled" tabindex="-1"/>
+			</td>
+		</tr>
+</table>
+</div>
+</div>

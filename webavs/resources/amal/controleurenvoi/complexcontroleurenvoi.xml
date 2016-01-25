@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.controleurEnvoi.ComplexControleurEnvoi">
+
+		<select-fields>
+			<select-field name="dateJob" field-ref="simpleControleurJob.dateJob" />
+			<select-field name="descriptionJob" field-ref="simpleControleurJob.descriptionJob" />
+			<select-field name="idJob" field-ref="simpleControleurJob.idJob" />
+			<select-field name="typeJob" field-ref="simpleControleurJob.typeJob" />
+			<select-field name="subTypeJob" field-ref="simpleControleurJob.subTypeJob" />
+			<select-field name="userJob" field-ref="simpleControleurJob.userJob" />
+			<select-field name="statusEnvoiJob" field-ref="simpleControleurJob.statusEnvoi"/>
+			<select-field name="statusEnvoi" field-ref="simpleEnvoiStatus.statusEnvoi" />
+		</select-fields>
+
+		<root-model select-fields="false"  name="simpleControleurJob" model-ref="ch.globaz.amal.business.models.controleurEnvoi.SimpleControleurJob"/>
+				
+		<linked-model select-fields="false"  name="simpleEnvoiStatus" model-ref="ch.globaz.amal.business.models.controleurEnvoi.SimpleControleurEnvoiStatus" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idJob" operation="EQUALS" field-ref="simpleControleurJob.idJob"/>
+			</join-group>
+		</linked-model>
+ 
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdJob" field-ref="idJob" operation="EQUALS" />
+				<search-field name="forTypeJob" field-ref="typeJob" operation="EQUALS" />
+				<search-field name="forStatusEnvoiJob" field-ref="statusEnvoiJob" operation="EQUALS" />
+				<search-field name="forStatusEnvoi" field-ref="statusEnvoi" operation="EQUALS" />
+				<search-field name="forUserJob" field-ref="userJob" operation="EQUALS" />
+				<search-field name="forDateJobMin" field-ref="simpleControleurJob.dateJob" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forDateJobMax" field-ref="simpleControleurJob.dateJob" operation="LESS_OR_EQUALS"/>
+			</search-group>
+		</search-definition>
+
+		<order-by>
+			<order-field field-ref="dateJob" order="DESC"/>
+			<order-field field-ref="userJob" order="DESC"/>
+			<order-field field-ref="idJob" order="DESC"/>
+		</order-by>
+
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.droit.CalculDroitEditingModel">
+		<description>Calculs  pour un droit </description>
+		<table name="ALEDIDRO" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+			<fields>
+				<primary-key name="idCalcul" column="DID" comment="id du calcul"/>
+				<field name="idDroit" column="FID" type="NUMERIC" mandatory="true" comment="ID (FK) du droit relatif au calcul"/>
+				<field name="montantResultEffectif" column="DMONEF" type="NUMERIC" dataType="NUMERIC(8,2)" mandatory="false" comment="Montant effective dur droit"/>
+				<field name="montantAllocataire" column="DMONAL" type="NUMERIC" dataType="NUMERIC(8,2)" mandatory="false" comment="Montant de l'allocataire (cas suppl canto)"/>
+				<field name="montantAutreParent" column="DMONAP" type="NUMERIC" dataType="NUMERIC(8,2)" mandatory="false" comment="Montant de l'autre parent (cas suppl canto)"/>
+				<field name="tarifEffectif" column="DTAREF" type="STRING" dataType="VARCHAR(15)" mandatory="false" comment="tarif effectif"/>
+				<field name="tarifCaisse" column="DTARCA" type="STRING" dataType="VARCHAR(15)" mandatory="false" comment="tarif du canton"/>
+				<field name="typePrestation" column="DTYPE" type="STRING" dataType="VARCHAR(15)" mandatory="true" comment="type prestation"/>
+				<field name="isHide" column="DCACHE" type="BOOLEAN" mandatory="true" comment="Indique si le droit est caché"/>
+				<field name="montantTotal" column="DTOTAL" type="NUMERIC" dataType="NUMERIC(8,2)" mandatory="false" comment="montant total des droits pour le dossier"/>
+				<field name="montantTotalUnite" column="DTOTUN" type="NUMERIC" dataType="NUMERIC(8,2)" mandatory="false" comment="montant total des droits pour le dossier à l'unité"/>
+				<field name="montantTotalDebut" column="DTOTDE" type="NUMERIC" dataType="NUMERIC(8,2)" mandatory="false" comment="montant total des droits pour le dossier pour jour début"/>
+				<field name="montantTotalFin" column="DTOTFI" type="NUMERIC" dataType="NUMERIC(8,2)" mandatory="false" comment="montant total des droits pour le dossier pour jour Fin"/>
+				<field name="user" column="DUSER" type="STRING" dataType="VARCHAR(15)" mandatory="true" comment="nom de l'utilisateur exportant les données"/>
+		
+			</fields>
+			<search-definition>
+				<search-group operator="AND">
+					<search-field name="inIdDroit" field-ref="idDroit" operation="IN"/>
+					<search-field name="forUser" field-ref="user" operation="EQUALS"/>
+				</search-group>
+			</search-definition>
+			<order-by name="default">
+			<order-field field-ref="idDroit" order="ASC"/>
+		</order-by>
+	</simple-model>
+</model-mapping>

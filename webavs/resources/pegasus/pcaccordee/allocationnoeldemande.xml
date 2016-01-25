@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.pcaccordee.AllocationNoelDemande">
+
+		<root-model name="simpleAllocationNoel" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimpleAllocationNoel"/>
+		
+		<linked-model name="simpleDemande" model-ref="ch.globaz.pegasus.business.models.demande.SimpleDemande" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDemande" operation="EQUALS" field-ref="simpleAllocationNoel.idDemande"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forAnnee" operation="EQUALS" field-ref="simpleAllocationNoel.anneeAllocation"/>	
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/> 
+				<search-field name="forIdD" operation="EQUALS" field-ref="simpleDemande.idDemande"/> 
+			</search-group>
+		</search-definition>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forAnnee" operation="EQUALS" field-ref="simpleAllocationNoel.anneeAllocation"/>	
+				<search-literal>
+					<declare-model name="demande" model-ref="ch.globaz.pegasus.business.models.demande.SimpleDemande"/>
+					<![CDATA[ 
+						#{simpleDemande.idDossier} =
+							(
+								select MAX( #{demande.idDossier} ) 
+								  from @{demande} 
+								 where #{demande.idDemande} = ${forIdDemande:simpleDemande.idDemande}
+							)
+					 ]]>
+				</search-literal>
+				
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

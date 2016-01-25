@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.postetravail.PosteTravailSimpleModel">
+		<table name="PT_POSTES_TRAVAILS" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="Id du poste de travail" />
+			<field name="idTravailleur" column="ID_PT_TRAVAILLEURS" type="NUMERIC"
+				comment="id travailleur" />
+			<field name="idEmployeur" column="ID_AFAFFIP" type="NUMERIC"
+				comment="id employeur" />
+			<field name="debutActivite" column="DATE_DEBUT_ACTIVITE" type="DATE"
+				comment="date du début de l'activité" />
+			<field name="finActivite" column="DATE_FIN_ACTIVITE" type="DATE"
+				comment="date de fin de l'activité" />
+			<field name="qualification" column="CS_QUALIFICATION" type="NUMERIC"
+				comment="qualification du travailleur" />
+			<field name="genreSalaire" column="CS_GENRE_SALAIRE" type="NUMERIC"
+				comment="genre de salaire" />
+			<field name="posteFranchiseAVS" column="POSTE_FRANCHISE_AVS"
+				type="BOOLEAN" comment="poste de franchise AVS" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdEmployeur" field-ref="idEmployeur" operation="EQUALS" />
+				<search-field name="forIdPosteTravail" field-ref="id"
+					operation="EQUALS" />
+				<search-field name="forIdTravailleur" field-ref="idTravailleur"
+					operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+		<order-by name="idAsc">
+			<order-field field-ref="id" />
+		</order-by>
+	</simple-model>
+</model-mapping>

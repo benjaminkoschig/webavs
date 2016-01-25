@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+<!-- Modèle complexe des prestation du tarif. PTA 27.04.2009 -->
+	<complexe-model className="ch.globaz.al.business.models.tarif.TarifComplexModel">
+		<root-model name="prestationTarifModel" model-ref="ch.globaz.al.business.models.tarif.PrestationTarifModel"/>
+		<linked-model name="categorieTarifModel" model-ref="ch.globaz.al.business.models.tarif.CategorieTarifModel" join-type="INNER">									
+		 	<join-group operator="AND">
+		 		<join-field name="idCategorieTarif" field-ref="prestationTarifModel.idCategorieTarif"/>
+		  	</join-group>
+		</linked-model>
+		<linked-model name="critereTarifModelAge" model-ref="ch.globaz.al.business.models.tarif.CritereTarifModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idCritereTarif" field-ref="prestationTarifModel.idCritereAge"/>
+			</join-group>		
+		</linked-model>
+		<linked-model name="critereTarifModelNbr" model-ref="ch.globaz.al.business.models.tarif.CritereTarifModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idCritereTarif" field-ref="prestationTarifModel.idCritereNombre"/>
+			</join-group>		
+		</linked-model>
+		<linked-model name="critereTarifModelRang" model-ref="ch.globaz.al.business.models.tarif.CritereTarifModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idCritereTarif" field-ref="prestationTarifModel.idCritereRang"/>
+			</join-group>		
+		</linked-model>
+		<linked-model name="critereTarifModelRevenuIndependant" model-ref="ch.globaz.al.business.models.tarif.CritereTarifModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idCritereTarif" field-ref="prestationTarifModel.idCritereRevenuIndependant"/>
+			</join-group>		
+		</linked-model>
+		<linked-model name="critereTarifModelRevenuNonActif" model-ref="ch.globaz.al.business.models.tarif.CritereTarifModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idCritereTarif" field-ref="prestationTarifModel.idCritereRevenuNonActif"/>
+			</join-group>		
+		</linked-model>		
+		<linked-model name="legislationTarifModel" model-ref="ch.globaz.al.business.models.tarif.LegislationTarifModel" join-type="INNER">
+			<join-group operator="AND">
+			<join-field name="idLegislationTarif" field-ref="categorieTarifModel.idLegislation"/>
+			</join-group>	
+		</linked-model>
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-group operator="OR">
+		  			<search-group operator="AND">
+		     			<search-field name="forValidite" field-ref="prestationTarifModel.debutValidite" operation="LESS_OR_EQUALS"/>
+			    		<search-field name="forValidite" field-ref="prestationTarifModel.finValidite" operation="GREATER_OR_EQUALS"/>
+			    	</search-group>	
+			    	<search-group operator="AND">	
+						<search-field name="forValidite" field-ref="prestationTarifModel.debutValidite" operation="LESS_OR_EQUALS"/>
+						<search-field name="forValidite" field-ref="prestationTarifModel.finValidite" operation="NULL"/>
+					</search-group>	
+				</search-group>	
+				<search-field name="inLegislations" field-ref="legislationTarifModel.typeLegislation" operation="IN"/>
+				<search-field name="inCategoriesTarif" field-ref="categorieTarifModel.categorieTarif" operation="IN"/>
+		  		<search-field name="forTypePrestation" field-ref="prestationTarifModel.typePrestation" operation="EQUALS"/>
+		  		<search-field name="forCapableExercer" field-ref="prestationTarifModel.capableExercer" operation="EQUALS"/>
+				<search-field name="forCategorieResident" field-ref="prestationTarifModel.categorieResident" operation="EQUALS"/>
+				<search-group operator="AND">
+					<search-group operator="AND">
+						<search-field name="forCritereRang" field-ref="critereTarifModelRang.debutCritere" operation="LESS_OR_EQUALS"/>
+						<search-field name="forCritereRang" field-ref="critereTarifModelRang.finCritere" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+				</search-group>
+				<search-group operator="AND">
+					<search-group operator="AND">
+						<search-field name="forCritereNombre" field-ref="critereTarifModelNbr.debutCritere" operation="LESS_OR_EQUALS"/>
+						<search-field name="forCritereNombre" field-ref="critereTarifModelNbr.finCritere" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+				</search-group>
+				<search-group operator="AND">
+					<search-group operator="AND">
+						<search-field name="forCritereRevenuIndependant" field-ref="critereTarifModelRevenuIndependant.debutCritere" operation="LESS_OR_EQUALS"/>
+						<search-field name="forCritereRevenuIndependant" field-ref="critereTarifModelRevenuIndependant.finCritere" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+				</search-group>
+				<search-group operator="AND">
+					<search-group operator="AND">
+						<search-field name="forCritereRevenuNonActif" field-ref="critereTarifModelRevenuNonActif.debutCritere" operation="LESS_OR_EQUALS"/>
+						<search-field name="forCritereRevenuNonActif" field-ref="critereTarifModelRevenuNonActif.finCritere" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+				</search-group>
+			    <search-group operator="OR">
+		  			<search-group operator="AND">
+						<search-field name="forCritereAge" field-ref="critereTarifModelAge.debutCritere" operation="LESS_OR_EQUALS"/>
+						<search-field name="forCritereAge" field-ref="critereTarifModelAge.finCritere" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+					<search-group operator="AND">
+						<search-field name="forMoisSeparationMois" field-ref="prestationTarifModel.moisSeparation" operation="LESS_OR_EQUALS"/>
+						<search-field name="forMoisSeparationAge" field-ref="critereTarifModelAge.finCritere" operation="EQUALS"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		<order-by name="default">
+			<order-field field-ref="prestationTarifModel.montant" order="DESC"/>
+			<order-field field-ref="legislationTarifModel.priorite" order="ASC"/>
+		</order-by> 
+	</complexe-model>
+</model-mapping>

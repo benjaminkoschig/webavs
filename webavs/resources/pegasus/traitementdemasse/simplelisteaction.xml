@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.traitementdemasse.SimpleListeAction">
+		<description>Lie les différentes action a la définition des traitements</description>
+		<table name="PCLISTAC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idListeAction" column="AHILIA" comment="ID_ACTION"/>			
+			<field name="idAction" mandatory="true" column="AHIACT" type="NUMERIC" comment="ID_ACTIOn"/>
+			<field name="idTraitement"  mandatory="true" column="AHITRA" type="NUMERIC" comment="ID_TRAITEMENT"/>
+			<field name="ordre" column="AHORDR" type="NUMERIC" comment="ORDRE"/>
+		</fields>
+	</simple-model>
+</model-mapping> 

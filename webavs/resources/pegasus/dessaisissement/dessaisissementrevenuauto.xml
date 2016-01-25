@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.dessaisissement.DessaisissementRevenuAuto">
+	
+		<root-model name="simpleDonneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+		
+		<linked-model name="membreFamilleEtendu" model-ref="ch.globaz.pegasus.business.models.droit.MembreFamilleEtendu" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="droitMembreFamille.simpleDroitMembreFamille.idDroitMembreFamille" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDroitMembreFamille"/>
+			</join-group>		
+		</linked-model>				
+		
+		<linked-model name="simplePretEnversTiers" model-ref="ch.globaz.pegasus.business.models.fortuneparticuliere.SimplePretEnversTiers" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleAssuranceRenteViagere" model-ref="ch.globaz.pegasus.business.models.fortuneparticuliere.SimpleAssuranceRenteViagere" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleNumeraire" model-ref="ch.globaz.pegasus.business.models.fortuneparticuliere.SimpleNumeraire" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleMarchandisesStock" model-ref="ch.globaz.pegasus.business.models.fortuneparticuliere.SimpleMarchandisesStock" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleBetail" model-ref="ch.globaz.pegasus.business.models.fortuneparticuliere.SimpleBetail" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleVehicule" model-ref="ch.globaz.pegasus.business.models.fortuneparticuliere.SimpleVehicule" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+				
+		<linked-model name="simpleCompteBancaireCCP" model-ref="ch.globaz.pegasus.business.models.fortuneusuelle.SimpleCompteBancaireCCP" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleTitre" model-ref="ch.globaz.pegasus.business.models.fortuneusuelle.SimpleTitre" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleCapitalLPP" model-ref="ch.globaz.pegasus.business.models.fortuneusuelle.SimpleCapitalLPP" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleAssuranceVie" model-ref="ch.globaz.pegasus.business.models.fortuneusuelle.SimpleAssuranceVie" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simplePensionAlimentaire" model-ref="ch.globaz.pegasus.business.models.revenusdepenses.SimplePensionAlimentaire" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleContratEntretienViager" model-ref="ch.globaz.pegasus.business.models.revenusdepenses.SimpleContratEntretienViager" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleAllocationsFamiliales" model-ref="ch.globaz.pegasus.business.models.revenusdepenses.SimpleAllocationsFamiliales" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleAutresRevenus" model-ref="ch.globaz.pegasus.business.models.revenusdepenses.SimpleAutresRevenus" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleBienImmobilierPrincipal" model-ref="ch.globaz.pegasus.business.models.fortuneusuelle.SimpleBienImmobilierServantHabitationPrincipale" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleBienImmobilierNonPrincipal" model-ref="ch.globaz.pegasus.business.models.fortuneusuelle.SimpleBienImmobilierHabitationNonPrincipale" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleBienImmobilierNonHabitable" model-ref="ch.globaz.pegasus.business.models.fortuneusuelle.SimpleBienImmobilierNonHabitable" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>		
+		
+		<linked-model name="revenuActiviteLucrativeDependante" model-ref="ch.globaz.pegasus.business.models.revenusdepenses.RevenuActiviteLucrativeDependante" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="simpleRevenuActiviteLucrativeDependante.idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>		
+		
+		<linked-model name="simpleRevenuActiviteLucrativeIndependante" model-ref="ch.globaz.pegasus.business.models.revenusdepenses.SimpleRevenuActiviteLucrativeIndependante" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>		
+		
+		<linked-model name="simpleAutreRente" model-ref="ch.globaz.pegasus.business.models.renteijapi.SimpleAutreRente" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>	
+		
+		<linked-model name="simpleAutreApi" model-ref="ch.globaz.pegasus.business.models.renteijapi.SimpleAutreApi" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>	
+				
+		<linked-model name="simpleIjApg" model-ref="ch.globaz.pegasus.business.models.renteijapi.SimpleIjApg" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>	
+
+		<linked-model name="simpleAllocationImpotent" model-ref="ch.globaz.pegasus.business.models.renteijapi.SimpleAllocationImpotent" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>	
+		
+		<linked-model name="simpleTaxeJournaliereHome" model-ref="ch.globaz.pegasus.business.models.habitat.SimpleTaxeJournaliereHome" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>	
+
+		<select-fields>
+			<select-field name="excedentRenteViagere" 						field-ref="simpleAssuranceRenteViagere.excedentRenteViagere"/>
+			<select-field name="montantRenteViagere" 						field-ref="simpleAssuranceRenteViagere.montantRenteViagere"/>
+			<select-field name="montantNumeraire" 							field-ref="simpleNumeraire.montant"/>
+			<select-field name="montantMarchandisesStock" 					field-ref="simpleMarchandisesStock.montant"/>
+			<select-field name="montantBetail" 								field-ref="simpleBetail.montant"/>
+			<select-field name="montantVehicule" 							field-ref="simpleVehicule.montant"/>
+			<select-field name="montantPretEnversTiers" 					field-ref="simplePretEnversTiers.montant"/>
+			<select-field name="montantTitre" 								field-ref="simpleTitre.montant"/>
+			<select-field name="montantCompteBancaireCCP" 					field-ref="simpleCompteBancaireCCP.montant"/>
+			<select-field name="montantCapitalLPP" 							field-ref="simpleCapitalLPP.montant"/>
+			<select-field name="montantValeurRachatAssuranceVie" 			field-ref="simpleAssuranceVie.montantValeurRachat"/>
+			<select-field name="montantPensionAlimentaire" 					field-ref="simplePensionAlimentaire.montant"/>
+			<select-field name="idTiersPensionAlimentaire" 					field-ref="simplePensionAlimentaire.idTiers"/>
+			<select-field name="csMotifPensionAlimentaire" 					field-ref="simplePensionAlimentaire.csMotif"/>
+			<select-field name="montantContratEntretienViager" 				field-ref="simpleContratEntretienViager.montantContrat"/>
+			<select-field name="idContratEntretienViager" 	        		field-ref="simpleContratEntretienViager.idContratEntretienViager"/>
+			<select-field name="montantAllocationsFamiliales" 				field-ref="simpleAllocationsFamiliales.montantMensuel"/>
+			<select-field name="montantAutresRevenus" 						field-ref="simpleAutresRevenus.montant"/>
+			<select-field name="libelleAutresRevenus" 						field-ref="simpleAutresRevenus.libelle"/>
+			<select-field name="montantBienImmobilierPrincipal"				field-ref="simpleBienImmobilierPrincipal.montantValeurFiscale"/>
+			<select-field name="montantBienImmobilierNonPrincipal"			field-ref="simpleBienImmobilierNonPrincipal.valeurVenale"/>
+			<select-field name="montantBienImmobilierNonHabitable"			field-ref="simpleBienImmobilierNonHabitable.valeurVenale"/>
+			<select-field name="MontantActiviteLucrativeDependante"			field-ref="revenuActiviteLucrativeDependante.simpleRevenuActiviteLucrativeDependante.montantActiviteLucrative"/>
+			<select-field name="NomEmployeurActiviteLucrativeDependante"	field-ref="revenuActiviteLucrativeDependante.employeur.designation1"/>
+			<select-field name="MontantActiviteLucrativeIndependante"		field-ref="simpleRevenuActiviteLucrativeIndependante.montantRevenu"/>
+			<select-field name="montantAutreRente"		                    field-ref="simpleAutreRente.montant"/>
+			<select-field name="csGenreAutreRente"		                    field-ref="simpleAutreRente.csGenre"/>
+			<select-field name="csTypeAutreRente"		                    field-ref="simpleAutreRente.csType"/>
+		    <select-field name="montantAutreApi"		                    field-ref="simpleAutreApi.montant"/>
+			<select-field name="csGenreAutreApi"		                    field-ref="simpleAutreApi.csGenre"/>
+			<select-field name="csTypeAutreApi"  		                    field-ref="simpleAutreApi.csType"/>
+		    <select-field name="montantAutreIjApg"		                    field-ref="simpleIjApg.montant"/>
+			<select-field name="autreGenreAutreIjApg"	                    field-ref="simpleIjApg.autreGenrePresation"/>
+			<select-field name="csGenreAutreIjApg" 		                    field-ref="simpleIjApg.csGenrePrestation"/>
+			<select-field name="csGenreAllocationImpotent" 		            field-ref="simpleAllocationImpotent.csGenre"/>
+			<select-field name="csTypeRenteAllocationImpotent" 		        field-ref="simpleAllocationImpotent.csTypeRente"/>
+			<select-field name="montantAllocationImpotent" 		            field-ref="simpleAllocationImpotent.montant"/>
+			<select-field name="idHomeTaxeJournaliereHome" 		            field-ref="simpleTaxeJournaliereHome.idHome"/>
+			<select-field name="montantJournaliereHome" 		            field-ref="simpleTaxeJournaliereHome.montantJournalierLCA"/>			
+		</select-fields>
+		
+		
+		<search-definition name="forVersioned">
+			<search-group operator="AND">
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="membreFamilleEtendu.droitMembreFamille.simpleDroitMembreFamille.idDroit"/>						
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idVersionDroit"/>
+				<search-field name="forIdDroitMembreFamille" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDroitMembreFamille"/>
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="donneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+					<![CDATA[ 
+					    #{simpleDonneeFinanciereHeader.isSupprime} = 2 AND
+					    #{simpleDonneeFinanciereHeader.isDessaisissementRevenu} = 1 AND					    
+						#{simpleDonneeFinanciereHeader.idVersionDroit} =
+							(
+								select MAX( #{versionDroit.idVersionDroit} ) from @{versionDroit} 
+									inner join  @{donneeFinanciereHeader} on ( #{versionDroit.idVersionDroit} = #{donneeFinanciereHeader.idVersionDroit} )
+									where #{simpleDonneeFinanciereHeader.idEntity} = #{donneeFinanciereHeader.idEntity}
+										and #{versionDroit.noVersion} <= ${forNumeroVersion:versionDroit.noVersion}
+										 
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="simpleDonneeFinanciereHeader.idEntityGroup" />
+			<order-field field-ref="simpleDonneeFinanciereHeader.dateDebut" order="DESC" />
+		</order-by>
+		
+		
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'un détail enfant adi mois -->
+
+<model-mapping>
+	<complexe-model className="ch.globaz.al.business.models.adi.AdiEnfantMoisComplexModel" >
+
+	<root-model name="adiEnfantMoisModel" model-ref="ch.globaz.al.business.models.adi.AdiEnfantMoisModel"/>
+	
+	<linked-model name="droitComplexModel" model-ref="ch.globaz.al.business.models.droit.DroitComplexModel" join-type="INNER" >
+			<join-group operator="AND">
+				<join-field name="droitModel.idDroit" field-ref="adiEnfantMoisModel.idDroit"/>
+			</join-group>
+	</linked-model>
+
+	<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDecompteAdi" field-ref="adiEnfantMoisModel.idDecompteAdi" operation="EQUALS"/>
+				<search-field name="forIdEnfant" field-ref="droitComplexModel.droitModel.idEnfant" operation="EQUALS"/>
+				<search-field name="forIdDroit" field-ref="droitComplexModel.droitModel.idDroit" operation="EQUALS"/>
+				<search-field name="forPeriode" field-ref="adiEnfantMoisModel.moisPeriode" operation="EQUALS"/>
+ 			</search-group>
+	</search-definition>
+	
+	<order-by name="impressionAdi">
+			<!--  <order-field field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.personneEtendue.numAvsActuel" order="ASC"/>-->
+			<order-field field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.personne.dateNaissance" order="ASC"/>
+			<order-field field-ref="droitComplexModel.enfantComplexModel.enfantModel.idEnfant" order="ASC"/>
+			<order-field field-ref="adiEnfantMoisModel.moisPeriode" order="ASC"/>
+	</order-by>
+	 
+	</complexe-model>
+
+</model-mapping>
+

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.parametreapplication.SimpleParametreApplication">
+		<description>Détail des paramètres applicatifs</description>
+		<table name="MAPARAPP" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idParametreApplication" column="IDPAPP" comment=""/>
+			<field name="csTypeParametre" column="CSCOPA" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="CODE SYSTEME TYPE PARAMETRE"/>
+			<field name="csGroupeParametre" column="CSGVAL" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="GROUPE DE PARAMETRES"/>
+			<field name="valeurParametre" column="SVALUE" type="STRING" dataType="VARCHAR(255)" mandatory="true" comment="VALEUR DU PARAMETRE"/>			
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdParametreApplication" field-ref="idParametreApplication" operation="EQUALS"/>
+				<search-field name="forCsTypeParametre" field-ref="csTypeParametre" operation="EQUALS"/>
+				<search-field name="forCsGroupeParametre" field-ref="csGroupeParametre" operation="EQUALS"/>
+				<search-field name="inCsGroupeParametre" field-ref="csGroupeParametre" operation="IN"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="csTypeParametre" order="DESC"/>
+		</order-by>
+		
+		<order-by name="orderByGroup">
+			<order-field field-ref="csGroupeParametre"/>
+		</order-by>
+		
+	</simple-model>
+</model-mapping>

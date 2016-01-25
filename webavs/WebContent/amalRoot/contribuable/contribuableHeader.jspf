@@ -1,0 +1,41 @@
+<%@page import="globaz.framework.util.FWCurrency"%>
+<%@page import="ch.globaz.amal.business.models.famille.FamilleContribuableView"%>
+<%@page import="globaz.amal.vb.contribuable.AMContribuableViewBean"%>
+<%@ page language="java" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
+<%@ include file="/theme/detail/header.jspf" %>
+<%@page import="globaz.jade.client.util.JadeStringUtil"%>
+<%@page import="java.util.List"%>
+<%@page import="ch.globaz.amal.business.models.contribuable.Contribuable"%>
+<%@page import="java.util.Iterator"%>
+<%@page import="globaz.amal.utils.AMContribuableHelper"%>
+<%@page import="java.util.Arrays"%>
+<%
+
+AMContribuableViewBean viewBean = (AMContribuableViewBean) session.getAttribute("viewBean");
+boolean viewBeanIsNew = "add".equals(request.getParameter("_method"));
+boolean viewBeanOnError = "fail".equals(request.getParameter("_valid"));
+
+boolean contribReprise = "transfert".equals(request.getParameter("mode")) || "1".equals(request.getParameter("fromHisto"));
+
+String linkRetourDetail = "";
+String detailLinkFamille = "amal?userAction=amal.famille.famille.afficher&selectedId=";
+String detailLinkFamilleNouveau = "amal?userAction=amal.famille.famille.nouveau&contribuableId=";
+detailLinkFamilleNouveau += viewBean.getContribuable().getContribuable().getIdContribuable();
+detailLinkFamilleNouveau +="&_method=add";
+String detailLinkDetailFamille = "amal?userAction=amal.detailfamille.detailfamille.afficher&selectedId=";
+
+String detailLinkRevenu = "amal?userAction=amal.revenu.revenu.afficher&selectedId=";
+String detailLinkRevenuNouveau = "amal?userAction=amal.revenu.revenu.nouveau&contribuableId=";
+detailLinkRevenuNouveau += viewBean.getContribuable().getContribuable().getIdContribuable();
+detailLinkRevenuNouveau+="&_method=add";
+
+String detailLinkRevenuHistorique = "amal?userAction=amal.revenuHistorique.revenuHistorique.afficher&selectedId=";
+String detailLinkRevenuHistoriqueNouveau = "amal?userAction=amal.revenuHistorique.revenuHistorique.nouveau&contribuableId=";
+detailLinkRevenuHistoriqueNouveau += viewBean.getContribuable().getContribuable().getIdContribuable();
+detailLinkRevenuHistoriqueNouveau+="&_method=add";
+
+String detailLinkRevenuSupprimer = "amal?userAction=amal.revenu.revenu.supprimer&selectedId=";
+String detailLinkRevenuHistoriqueSupprimer = "amal?userAction=amal.revenuhistorique.revenuhistorique.supprimer&selectedId=";
+String linkMembreSupprimer = "amal?userAction=amal.famille.famille.supprimer&selectedId=";
+%>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.creancier.Creancier">
+	
+		<root-model name="simpleCreancier" model-ref="ch.globaz.pegasus.business.models.creancier.SimpleCreancier"/>
+	    
+	    <linked-model name="simpleTiers" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="simpleCreancier.idTiers"/>
+			</join-group>		
+		</linked-model>
+
+	   	<search-definition>
+	   		<search-group operator="AND">
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleCreancier.idDemande"/>
+				<search-field name="forIdTiers" operation="EQUALS" field-ref="simpleCreancier.idTiers"/>
+			</search-group>
+		</search-definition>
+		<order-by name="nomPrenomAsc">
+			<order-field field-ref="simpleTiers.designation1"/>
+			<order-field field-ref="simpleTiers.designation2"/>
+		</order-by>
+		<order-by name="nomPrenomDesc">
+			<order-field field-ref="simpleTiers.designation1" order="DESC" />
+			<order-field field-ref="simpleTiers.designation2" order="DESC"/>
+		</order-by>
+		<order-by name="montantAsc" >
+			<order-field field-ref="simpleCreancier.montant" />
+		</order-by>
+		<order-by name="montantDesc" >
+			<order-field field-ref="simpleCreancier.montant" order="DESC"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

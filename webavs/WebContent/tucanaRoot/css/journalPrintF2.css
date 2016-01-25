@@ -1,0 +1,50 @@
+#journal {
+	padding: 5px;
+}
+
+@page { 
+		size:21.0cm 14.85cm;
+        margin-top:1.7cm;
+        margin-bottom:1.4cm;
+        margin-left:2cm;
+        margin-right:2cm 
+		}
+
+body{
+	font-size : 8pt;
+}
+table{
+	width: 100%;
+	font-family : Verdana,Courrier;
+	font-size : 6pt;
+	border: 1px solid black;
+}
+th {
+}
+th.background {
+	background-color: #A9A9A9;
+}
+td{
+
+}
+td.background{
+	background-color: #A9A9A9;
+}
+td.background-bold{
+	background-color: #A9A9A9;
+	font-weight: bolder;
+}
+td.number{
+	text-align: right;
+}
+ @page {
+	  size: landscape;
+	  margin-top: 10cm
+}
+#copyright {
+	padding-top: 20px;
+	width: 100%;
+	border-top: 1px solid black;
+	text-align: center;
+	display: block;
+}

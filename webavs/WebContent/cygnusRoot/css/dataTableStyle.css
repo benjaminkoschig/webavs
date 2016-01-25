@@ -1,0 +1,45 @@
+.dataTable {
+    /*height: 60px;     Expression CSS dans la jsp*/
+   overflow-y: auto;  
+   overflow-x:hidden; 
+   border-style: solid;
+   border-color: black;
+   border-width: 1px;
+}
+
+.dataTable table {
+   width:100%;
+}
+
+.dataTable table thead {
+   height: 15px;     
+}
+
+.dataTable table thead th {
+    border: solid 1px;
+    border-color :  #226194 #226194 #226194 #226194;
+    font-size : 11px;
+    font-weight:bold;
+}
+
+.dataTable table tbody tr td {
+   padding-right:10px;     
+}
+
+.areaPeriodeDataTable tr.odd{
+	background-color: #ddd;	
+}
+
+.areaPeriodeDataTable tr.nonodd{
+	background-color:#eee;
+}
+
+.areaPeriodeDataTable tr.highlighted{
+    background : #638fbc;
+    color : #ffffe8;
+	cursor : hand;
+}
+
+.areaPeriodeDataTable tr.highlight {
+    background-color : #aaaa55;
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.comptabilite.ReferenceRubriqueSimpleModel">
+		<table name="CARERUP" hasCreationSpy="false" hasSpy="true"
+			alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="idReferenceRubrique" column="IDREFRUBRIQUE"
+				comment="Id de la rubrique" />
+			<field name="idRubrique" column="IDRUBRIQUE" type="NUMERIC" comment="id de la rubrique" />
+			<field name="idCodeReference" column="IDCODEREFERENCE" type="NUMERIC" comment="id du code système représentant la référence rubrique" />
+		</fields>
+	</simple-model>
+</model-mapping>

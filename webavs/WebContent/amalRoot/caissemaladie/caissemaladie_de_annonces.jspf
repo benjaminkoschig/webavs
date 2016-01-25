@@ -1,0 +1,60 @@
+<!-- Pour que le bord haut des onglets ne soit pas masqué -->
+						<%@page import="globaz.amal.utils.AMParametresHelper"%>
+<div style="padding-bottom:5px;visible:hidden"></div>	
+						
+				<!-- *** Menu à onglets *** -->
+						<%
+						String[][] ONGLETS_PARAMETRES = {
+								{ "JSP_AM_ASSU_D_ONGLET_ANNONCES", "JSP_AM_ASSU_D_ONGLET_ANNONCES",
+									"amal.caissemaladie.caissemaladie" },
+							{ "JSP_AM_ASSU_D_ONGLET_PRIMES", "JSP_AM_ASSU_D_ONGLET_PRIMES",
+									"amal.primesassurance.primesAssurance" } 
+						};
+						%>
+						<%=AMParametresHelper.getOngletHtml(objSession,viewBean,ONGLETS_PARAMETRES,request,servletContext + mainServletPath)%>
+						<!-- ***  /menu onglets  **** -->		
+
+
+<table width="100%" border="0" id="tableCaisseMaladieAnnonces">
+	<col width="20x"></col>
+	<col width="180px" align="left"></col>
+	<col width="200px" align="center"></col>
+	<col width="200px" align="center"></col>
+	<col width="*"></col>
+	<tr>
+		<th></th>
+		<th>Date de l'envoi</th>
+		<th>Liste</th>
+		<th>Fichier Cosama</th>
+		<th colspan="6"></th>
+	</tr>
+	<tr id="div_loading_Annonces">
+						<td align="center" colspan="10">
+						<img id='ajaxLoaderImg'
+											width="16px"
+											height="16px"
+											src="<%=request.getContextPath()%>/images/amal/ajax-loader-1.gif" title="Chargement" border="0"
+											/>
+						</td>
+					</tr>
+	<script type="text/javascript">
+		//createAnnoncePage();
+	</script>
+<!-- 
+	<tr class="amalRowOdd" style="height:26px">
+		<td>&nbsp;</td>
+		<td>29.11.2011</td>
+		<td>
+			<button id="buttonSimulation" type="button" style="font-size: 10px">	
+				<b>Simulation</b>
+			</button>
+		</td>
+		<td>
+			<button id="buttonAnnonce" type="button" style="font-size: 10px">	
+				<b>Annonce</b>
+			</button>
+		</td> 
+		<td colspan="6"></td>									
+	</tr>
+ -->	
+</table>						

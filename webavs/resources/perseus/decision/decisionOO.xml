@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.decision.DecisionOO">
+		<root-model name="simpleDecision" model-ref="ch.globaz.perseus.business.models.decision.SimpleDecision"/>
+		
+		<linked-model name="demande" model-ref="ch.globaz.perseus.business.models.demande.Demande" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleDemande.idDemande" operation="EQUALS" field-ref="simpleDecision.idDemande"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="pcfAccordee" model-ref="ch.globaz.perseus.business.models.pcfaccordee.SimplePCFAccordee" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idDemande" operation="EQUALS" field-ref="demande.simpleDemande.idDemande"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="prestation" model-ref="ch.globaz.perseus.business.models.lot.Prestation" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="simplePrestation.idDecisionPcf" operation="EQUALS" field-ref="simpleDecision.idDecision"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdDecision" operation="EQUALS" field-ref="simpleDecision.idDecision"/>
+				<search-field name="forNumeroDecision" field-ref="prestation.lot.simpleLot.typeLot" operation="EQUALS" variable="CS_DECISION_TYPE_LOT"/>
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

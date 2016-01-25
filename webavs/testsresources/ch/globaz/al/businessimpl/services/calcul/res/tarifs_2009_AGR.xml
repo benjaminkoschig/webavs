@@ -1,0 +1,17 @@
+<tarifs xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="tarifsTests.xsd">
+	<periode date="01.01.2009">
+		<legislation cs="FEDERAL">
+			<categorie cs="FED">
+				<!-- NAIS, CH-->
+				<test testId="1" type="NAIS" montant="0" residence="CH"/>
+				<!-- ACCE, CH-->
+				<test testId="2" type="ACCE" montant="0" residence="CH"/>
+				
+				<!-- NAIS, ETR-->
+				<test testId="3" type="NAIS" montant="0" residence="ETR"/>
+				<!-- ACCE, ETR-->
+				<test testId="4" type="ACCE" montant="0" residence="ETR"/>
+			</categorie>
+		</legislation>
+	</periode>
+</tarifs>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.tarif.CritereTarifFkModel">
+		<description>Critères des tarifs</description>
+		<table name="ALCRITAR" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idCritereTarif" column="P4ID" comment="ID de la catégorie de tarif"/>
+		</fields>
+	</simple-model>
+	<simple-model className="ch.globaz.al.business.models.tarif.CritereTarifModel" extend="ch.globaz.al.business.models.tarif.CritereTarifFkModel">
+		<description>Critères des tarifs</description>
+		<fields>
+			<field comment="Début tarif" column="P4DEB" type="NUMERIC" dataType="NUMERIC(15,0)" name="debutCritere" mandatory="true"/>
+			<field comment="Fin tarif" column="P4FIN" type="NUMERIC" dataType="NUMERIC(15,0)" name="finCritere" mandatory="true"/>
+			<field comment="Spécifie la catégorie de tarif, Code Système" column="CSCTAR" type="NUMERIC" dataType="NUMERIC(8,0)" name="critereTarif" mandatory="true"/>
+		</fields>
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forDebut" field-ref="debutCritere" operation="EQUALS"/>
+				<search-field name="forFin" field-ref="finCritere" operation="EQUALS"/>
+				<search-field name="forCritereTarif" field-ref="critereTarif" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="forDeleteAll">
+			<search-field name="forIdCritereTarif" field-ref="idCritereTarif" operation="GREATER"/>
+		</search-definition>
+	</simple-model>
+</model-mapping>

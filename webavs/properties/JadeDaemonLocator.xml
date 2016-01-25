@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<globaz.jade.daemon.JadeDaemonLocator>
+	<!--daemons: liste des demons-->
+	<daemons>
+	  	<!-- 
+	  	<daemon name="ProcessSommation" class="globaz.jade.daemon.daemons.JadeDaemonRunRepeated">
+			<verbose>false</verbose>
+			<classname>ch.globaz.vulpecula.daemon.suividecompte.ProcessSommation</classname>
+			<username>BMSGLO</username>
+			<password>BMSGLO</password>
+			<minutes>1</minutes>
+		</daemon> 
+		
+		<daemon name="ProcessTaxationOffice" class="globaz.jade.daemon.daemons.JadeDaemonRunRepeated">
+			<verbose>false</verbose>
+			<classname>ch.globaz.vulpecula.daemon.suividecompte.ProcessTaxationOffice</classname>
+			<username>BMSGLO</username>
+			<password>BMSGLO</password>
+			<minutes>1</minutes>
+		</daemon>
+	 	-->
+		<!--daemon: declaration d'un demon-->
+		<!--  name [REQUIRED]: nom du demon-->
+		<!--  class [REQUIRED]: classe a utiliser pour le demon-->
+		<!--  doit implementer JadeDaemon-->
+<!-- 		<daemon name="CreationFichierXMLAnnoncesRAFamSedex" class="globaz.jade.daemon.daemons.JadeDaemonRunDaily">	 -->
+<!-- 			<verbose>false</verbose> -->
+<!-- 			<classname>globaz.al.process.rafam.ExportAnnoncesRafamSedex</classname> -->
+<!-- 			<time>20:00:00</time> -->
+<!-- 			<monday>true</monday> -->
+<!-- 			<tuesday>true</tuesday> -->
+<!-- 			<wednesday>true</wednesday> -->
+<!-- 			<thursday>true</thursday> -->
+<!-- 			<friday>true</friday> -->
+<!-- 			<saturday>false</saturday> -->
+<!-- 			<sunday>false</sunday> -->
+<!-- 			<userSedex><![CDATA[7RcBU1zGtiU=]]></userSedex> -->
+<!-- 			<passSedex><![CDATA[7RcBU1zGtiU=]]></passSedex> -->
+<!-- 		</daemon>    -->
+		
+<!-- 		<daemon name="CreationProtocoleRAFam" class="globaz.jade.daemon.daemons.JadeDaemonRunDaily"> -->
+<!-- 			<verbose>false</verbose> -->
+<!-- 			<classname>globaz.al.process.rafam.ALProtocoleRafam</classname> -->
+<!-- 			<time>07:30:00</time> -->
+<!-- 			<monday>true</monday> -->
+<!-- 			<tuesday>true</tuesday> -->
+<!-- 			<wednesday>true</wednesday> -->
+<!-- 			<thursday>true</thursday> -->
+<!-- 			<friday>true</friday> -->
+<!-- 			<saturday>false</saturday> -->
+<!-- 			<sunday>false</sunday> -->
+<!-- 			<userSedex><![CDATA[7RcBU1zGtiU=]]></userSedex> -->
+<!-- 			<passSedex><![CDATA[7RcBU1zGtiU=]]></passSedex> -->
+<!-- 		</daemon>   -->
+		
+<!-- 		<daemon name="ValidateInsignificance"  class="globaz.jade.daemon.daemons.JadeDaemonRunDaily"> -->
+<!-- 			<verbose>true</verbose>	<classname>globaz.al.process.rafam.ValidateInsignificance</classname> -->
+<!-- 			<time>07:15:00</time> -->
+<!-- 			<monday>true</monday> -->
+<!-- 			<tuesday>true</tuesday> -->
+<!-- 			<wednesday>true</wednesday> -->
+<!-- 			<thursday>true</thursday> -->
+<!-- 			<friday>true</friday> -->
+<!-- 			<saturday>false</saturday> -->
+<!-- 			<sunday>false</sunday> -->
+<!-- 			<userSedex><![CDATA[7RcBU1zGtiU=]]></userSedex> -->
+<!-- 			<passSedex><![CDATA[7RcBU1zGtiU=]]></passSedex> -->
+<!-- 		</daemon>  -->
+	</daemons>
+</globaz.jade.daemon.JadeDaemonLocator>

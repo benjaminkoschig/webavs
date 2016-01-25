@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.pcaccordee.PcaRetenue">
+		<root-model name="simpleRetenue" model-ref="ch.globaz.corvus.business.models.pcaccordee.SimpleRetenuePayement" select-fields="true"/>
+		
+		<select-fields>
+			<select-field name="csRoleFamillePC" field-ref="simpleDroitMembreFamille.csRoleFamillePC" />
+			<select-field name="idPCAccordee" field-ref="simplePCAccordee.idPCAccordee" />
+		</select-fields>
+				
+		<linked-model name="simplePrestationsAccordee" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="INNER" select-fields="false">
+			<join-group operator="OR">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="simpleRetenue.idRenteAccordee"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" join-type="INNER" select-fields="false">
+			<join-group operator="OR">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="simplePrestationsAccordee.idPrestationAccordee"/>
+				<join-field name="idPrestationAccordeeConjoint" operation="EQUALS" field-ref="simplePrestationsAccordee.idPrestationAccordee"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleVersionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleDroitMembreFamille" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>				
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleMembreFamille" model-ref="ch.globaz.hera.business.models.famille.SimpleMembreFamille" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idMembreFamille" operation="EQUALS" field-ref="simpleDroitMembreFamille.idMembreFamilleSF"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="personneEtendue" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simplePrestationsAccordee.idTiersBeneficiaire"/>
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simpleMembreFamille.idTiers"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPca" operation="EQUALS" field-ref="simplePCAccordee.idPCAccordee"/>	
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.calcul.CalculDonneesDroit">
+		<root-model name="simpleDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroit" select-fields="false"/>
+		
+		<linked-model name="droitMembreFamille" model-ref="ch.globaz.pegasus.business.models.droit.DroitMembreFamille" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="simpleDroitMembreFamille.idDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="donneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDroitMembreFamille" operation="EQUALS" field-ref="droitMembreFamille.simpleDroitMembreFamille.idDroitMembreFamille"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="requerantDroitPersonne" model-ref="ch.globaz.pegasus.business.models.droit.DroitMembreFamille" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="simpleDroitMembreFamille.csRoleFamillePC" operation="EQUALS" value="4235345" />
+				<join-field name="simpleDroitMembreFamille.idDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="requerantPersonne" join-type="LEFT_OUTER" model-ref="ch.globaz.pyxis.business.model.PersonneSimpleModel" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="requerantDroitPersonne.membreFamille.personneEtendue.personne.idTiers"/>
+			</join-group>
+		</linked-model>
+		
+			
+		<select-fields>
+			<select-field name="idDroit" field-ref="simpleDroit.idDroit"/>
+			<select-field name="idMembreFamille" field-ref="droitMembreFamille.membreFamille.simpleMembreFamille.idMembreFamille"/>
+			<select-field name="noVersion" field-ref="simpleVersionDroit.noVersion"/> 
+			<select-field name="dateDebutDonneeFinanciere" field-ref="donneeFinanciereHeader.dateDebut" />
+			<select-field name="dateFinDonneeFinanciere" field-ref="donneeFinanciereHeader.dateFin" />
+			<select-field name="csTypeDonneeFinanciere" field-ref="donneeFinanciereHeader.csTypeDonneeFinanciere" />
+			<select-field name="dateNaissance" field-ref="droitMembreFamille.membreFamille.personneEtendue.personne.dateNaissance"/>
+			<select-field name="dateDeces" field-ref="droitMembreFamille.membreFamille.personneEtendue.personne.dateDeces"/>
+			<select-field name="roleFamillePc" field-ref="droitMembreFamille.simpleDroitMembreFamille.csRoleFamillePC"/>
+		</select-fields> 
+	
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIsSupprime" field-ref="donneeFinanciereHeader.isSupprime" operation="EQUALS" value="2"/>			
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>
+			
+						<!--  avec date de fin plus petite ou égale OU nulle -->
+						<search-group operator="OR">
+							<search-field name="forDateFin" operation="GREATER_OR_EQUALS" field-ref="donneeFinanciereHeader.dateFin"/>
+							<search-field name="forDateFin" operation="NULL" field-ref="donneeFinanciereHeader.dateFin"/>
+						</search-group>
+						
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="donneeFinanciereHeaderVersion" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+					<![CDATA[ 
+						#{donneeFinanciereHeader.isSupprime} = 2 AND
+						#{donneeFinanciereHeader.idVersionDroit} =
+							(
+								select MAX( #{versionDroit.idVersionDroit} ) from @{versionDroit} 
+									inner join  @{donneeFinanciereHeaderVersion} on ( #{versionDroit.idVersionDroit} = #{donneeFinanciereHeaderVersion.idVersionDroit} )
+									where #{donneeFinanciereHeader.idEntity} = #{donneeFinanciereHeaderVersion.idEntity}
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+
+
+	
+	</complexe-model>
+</model-mapping>

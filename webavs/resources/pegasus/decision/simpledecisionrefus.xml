@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.decision.SimpleDecisionRefus">
+		<description>Decision de refus</description>
+		<table name="PCDECREF" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDecisionRefus" column="DRIDEN" comment="ID_DECISION_REFUS"/>
+			<field name="idDecisionHeader" column="DRIDHE" type="NUMERIC" mandatory="false" comment="ID_DECISION_HEADER"/>
+			<field name="idDemandePc" column="DSIDPC" type="NUMERIC" mandatory="false" comment="ID_DEMANDE_PC"/>
+			<field name="csMotif" column="DRTMOT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="CS_MOTIF"/>
+			<field name="csSousMotif" column="DRTSMO" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="CS_SOUS_MOTIF"/>
+			<field name="champLibreMotif" column="DRTCLM" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="CHAMP_LIBRE_MOTIF"/>
+			<field name="dateRefus" column="DRDREF" type="DATE" mandatory="false" comment="DATE_REFUS"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDecisionRefus" operation="EQUALS" field-ref="idDecisionRefus" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

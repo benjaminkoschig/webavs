@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.dossier.DossierFkModel">
+		<description>Dossier FK - Contient les informations de base permettant d'effectuer des jointures (FKs)</description>
+		<table name="ALDOS" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idDossier" column="EID" comment="ID du dossier"/>
+			<field name="idDossierConjoint" column="EIDCON" type="NUMERIC" mandatory="false" comment="ID du dossier du conjoint"/>
+			<field name="idAllocataire" column="BID" type="NUMERIC" mandatory="true" comment="ID de l'allocataire"/>
+			<field name="numeroAffilie" column="MALNAF" type="STRING" mandatory="true" comment="numéro de l'affilié"/>
+			<field name="idTiersBeneficiaire" column="IDTIBE" type="NUMERIC" mandatory="false" comment="ID du tiers bénéficiaire"/>
+			<field name="idTiersCaisseConjoint" column="IDTICC" type="NUMERIC" mandatory="false" comment="ID du tiers représentant la caisse AF du conjoint"/>
+			<field name="activiteAllocataire" column="CSCAAL" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="activité d'allocataire (salarié, indépendant, ...), code système"/>
+			<field name="complementActiviteAllocataire" column="CSCOMAAL" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="complément à l'activité allocataire (mission temporaire,autre,...), code système"/>
+			<field name="etatDossier" column="CSETAT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Etat du dossier (actif, radié, ...), code système"/>
+			<field name="statut" column="CSTATU" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="statut du dossier (N, NP, ...), code système"/>
+			<field name="numSalarieExterne" column="ENOSAL" type="STRING" dataType="VARCHAR(50)" mandatory="false" comment="numéro (libre)du salarié externe"/>
+			<field name="professionAccessoire" column="EACTACC" type="BOOLEAN" mandatory="true" comment="Indique si l'activité de l'allocataire lié au dossier est accessoire (utilisé pour les agriculteurs)" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+				<search-field name="forIdAllocataire" field-ref="idAllocataire" operation="EQUALS"/>
+				<search-field name="forEtatDossier" field-ref="etatDossier" operation="EQUALS"/>
+				<search-field name="forStatut" field-ref="statut" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+	<simple-model className="ch.globaz.al.business.models.dossier.DossierModel" extend="ch.globaz.al.business.models.dossier.DossierFkModel">
+		<description>Dossier - Contient la totalité des informations d'un dossier</description>
+		<fields>
+			<field name="tarifForce" column="CSTAFO" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="tarif forcé"/>
+			<field name="loiConjoint" column="CSLOCO" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="loi utilisée pour le calcul des allocation du conjoint. Utilisé pour les ADC"/>
+			<field name="categorieProf" column="ECAPRO" type="STRING" dataType="VARCHAR(10)" mandatory="true" comment="Catégorie professionnelle de la caisse de l'affilié"/>
+			<field name="debutValidite" column="EDVAL" type="DATE" dataType="NUMERIC(8,0)" mandatory="false" comment="Date de début de validité du dossier"/>
+			<field name="finValidite" column="EFVAL" type="DATE" dataType="NUMERIC(8,0)" mandatory="false" comment="Date de fin de validité du dossier"/>
+			<field name="nbJoursDebut" column="ENBJD" type="NUMERIC" dataType="NUMERIC(2,0)" mandatory="false" comment="Nombre de jour effectif du premier mois de droit si ce n'est pas un mois complet"/>
+			<field name="nbJoursFin" column="ENBJF" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="Nombre de jour effectif du dernier mois de droit si ce n'est pas un mois complet"/>
+			<field name="debutActivite" column="EDACT" type="DATE" dataType="NUMERIC(8,0)" mandatory="true" comment="Date de début d'activité de l'allocataire chez l'affilié"/>
+			<field name="finActivite" column="EFACT" type="DATE" dataType="NUMERIC(8,0)" mandatory="false" comment="Date de fin d'activité de l'allocataire chez l'affilié"/>
+			<field name="tauxOccupation" column="ETOCC" type="NUMERIC" dataType="NUMERIC(3,0)" mandatory="false" comment="Taux d'occupation de l'allocataire"/>
+			<field name="uniteCalcul" column="CSUNIT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Unité de calcul (Mois, Jour ou Heure), code système"/>
+			<field name="tauxVersement" column="ETVERS" type="NUMERIC" dataType="NUMERIC(5,2)" mandatory="true" comment="Taux de versement du dossier"/>
+			<field name="motifReduction" column="CSMORE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Motif de réduction du dossier, code système"/>
+			<field name="retenueImpot" column="EIMPOT" type="BOOLEAN"  mandatory="true" comment="Indique si une retenue d'impôt doit être effectuée"/>
+			<field name="imprimerDecision" column="EIMDEC" type="BOOLEAN"  mandatory="true" comment="Indique si la décision doit être imprimée"/>
+			<field name="montantForce" column="EMFOR" type="NUMERIC" dataType="NUMERIC(9,2)" mandatory="false" comment="Montant forcé du dossier"/>
+			<field name="reference" column="EREF" type="STRING" dataType="VARCHAR(15)" mandatory="true" comment="personne de référence pour le dossier"/>
+		</fields>
+		
+		<search-definition name="radiationDossierHorloger">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+				<search-field name="forIdAllocataire" field-ref="idAllocataire" operation="EQUALS"/>
+				<search-field name="forEtatDossier" field-ref="etatDossier" operation="EQUALS"/>
+				<search-field name="forStatut" field-ref="statut" operation="NOT_EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		
+		
+		
+	</simple-model>
+</model-mapping>

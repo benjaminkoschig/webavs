@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+
+	<!-- ************** -->
+	<!-- Menu Principal -->
+	<!--  
+	
+			Détail du menu :
+			
+				> Dossiers
+				> Echéancier
+				> Journalisations
+				
+				> Listes
+					> Listes et statistiques
+				
+				> Administration
+					> Formules
+					> Gestion des domaines
+					> Gestion des groupes
+					> Gestion des utilisateurs		
+	
+	-->
+	<!-- ************** -->
+	<menu id="li-menuprincipal">
+		<label refId="MENU_PRINCIPAL"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_DOSSIERS"/>
+				<action command="/libra" responseTarget="fr_main">
+					<parameter name="userAction" value="libra.dossiers.dossiersJointTiers.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_ECHEANCIER"/>
+				<action command="/libra" responseTarget="fr_main">
+					<parameter name="userAction" value="libra.journalisations.echeances.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_JOURNALISATIONS"/>
+				<action command="/libra" responseTarget="fr_main">
+					<parameter name="userAction" value="libra.journalisations.journalisations.chercher"/>
+				</action>
+			</node>
+	<!-- 	<node>
+				<label refId="MENU_LISTES"/>
+					<nodes>
+						<node>
+							<label refId="MENU_OPTION_LISTES"/>
+							<action command="/libra" responseTarget="fr_main">
+								<parameter name="userAction" value="libra.listes.listes.afficher"/>
+							</action>
+						</node>						
+					</nodes>
+			</node> -->				
+			<node>
+				<label refId="MENU_ADMINISTRATION"/>
+					<nodes>	
+						<node>
+							<label refId="MENU_OPTION_FORMULES"/>
+							<action command="/libra" responseTarget="fr_main">
+								<parameter name="userAction" value="libra.formules.formules.chercher"/>
+							</action>
+						</node>								
+						<node>
+							<label refId="MENU_OPTION_GESTION_DOMAINES"/>
+							<action command="/libra" responseTarget="fr_main">
+								<parameter name="userAction" value="libra.domaines.domaines.chercher"/>
+							</action>
+						</node>						
+						<node>
+							<label refId="MENU_OPTION_GESTION_GROUPES"/>
+							<action command="/libra" responseTarget="fr_main">
+								<parameter name="userAction" value="libra.groupes.groupes.chercher"/>
+							</action>
+						</node>	
+						<node>
+							<label refId="MENU_OPTION_GESTION_UTILISATEURS"/>
+							<action command="/libra" responseTarget="fr_main">
+								<parameter name="userAction" value="libra.utilisateurs.utilisateurs.chercher"/>
+							</action>
+						</node>						
+					</nodes>
+			</node>	
+		</nodes>
+	</menu>
+		
+	<!-- Menu Option Dossier -->
+	<menu id="libra-optionsdossiers">
+		<label refId="MENU_OPTION_TITRE"/>
+		  	<nodes>
+				<node>
+					<label refId="MENU_OPTION_ECHEANCES"/>
+						<action command="/libra" responseTarget="fr_main">
+							<parameter name="userAction" value="libra.journalisations.echeances.chercher"/>
+							<parameter name="selectedId"/>
+							<parameter name="idTiers"/>
+						</action>
+				</node>
+				<node>
+					<label refId="MENU_OPTION_JOURNALISATIONS"/>
+						<action command="/libra" responseTarget="fr_main">
+							<parameter name="userAction" value="libra.journalisations.journalisations.chercher"/>
+							<parameter name="selectedId"/>
+							<parameter name="idTiers"/>
+						</action>
+				</node>
+			</nodes>
+	</menu>
+	
+	<!-- Menu Option Echéances -->
+	<menu id="libra-optionsecheances">
+		<label refId="MENU_OPTION_TITRE"/>
+		  	<nodes>
+				<node id="reception">
+					<label refId="MENU_OPTION_RECEPTION"/>
+						<action command="/libra" responseTarget="fr_main">
+							<parameter name="userAction" value="libra.journalisations.echeances.executerAction"/>
+							<parameter name="selectedId"/>
+							<parameter name="action" value="reception"/>
+						</action>
+				</node>
+				<node id="rappel">
+					<label refId="MENU_OPTION_EXECUTION"/>
+						<action command="/libra" responseTarget="fr_main">
+							<parameter name="userAction" value="libra.journalisations.echeances.executerAction"/>
+							<parameter name="selectedId"/>
+							<parameter name="action" value="rappel"/>
+						</action>
+				</node>
+			</nodes>
+	</menu>
+
+	<!-- Menu Option journalisations -->
+	<menu id="libra-optionsjournalisations">
+		<label refId="MENU_OPTION_TITRE"/>
+		  	<nodes>
+				<node id="annulerReception">
+					<label refId="MENU_OPTION_ANN_RECEPTION"/>
+						<action command="/libra" responseTarget="fr_main">
+							<parameter name="userAction" value="libra.journalisations.echeances.executerAction"/>
+							<parameter name="selectedId"/>
+							<parameter name="action" value="annulerReception"/>
+						</action>
+				</node>
+			</nodes>
+	</menu>
+
+	<!-- Menu Option Formules -->
+	<menu id="libra-optionsformules">
+		<label refId="MENU_OPTION_TITRE"/>
+		  	<nodes>
+				<node>
+					<label refId="MENU_OPTION_DETAIL"/>
+						<action command="/libra" responseTarget="fr_main">
+							<parameter name="userAction" value="libra.formules.formulesDetail.afficher"/>
+							<parameter name="selectedId"/>
+							<parameter name="idTiers"/>
+						</action>
+				</node>
+				<node>
+					<label refId="MENU_OPTION_RAPPEL"/>
+						<action command="/libra" responseTarget="fr_main">
+							<parameter name="userAction" value="libra.formules.rappel.afficher"/>
+							<parameter name="selectedId"/>
+						</action>
+				</node>
+		<!-- 	<node>
+					<label refId="MENU_OPTION_CHAMPS"/>
+						<action command="/libra" responseTarget="fr_main">
+							<parameter name="userAction" value="libra.formules.champs.chercher"/>
+							<parameter name="selectedId"/>
+						</action>
+				</node>
+		 -->	<node>
+					<label refId="MENU_OPTION_LST_FORMULES"/>
+						<action command="/libra" responseTarget="fr_main">
+							<parameter name="userAction" value="libra.formules.formules.chercher"/>
+							<parameter name="selectedId"/>
+						</action>
+				</node>
+			</nodes>
+	</menu>
+		
+	<!-- ************************** -->
+	<!-- Menu Option only detail    -->
+	<!-- ************************** -->
+	<menu id="LI-OnlyDetail">
+		<label refId="OPTIONS" />
+	</menu>
+</menus>

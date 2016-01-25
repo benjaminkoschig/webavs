@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping >
+ 	<complexe-model className="ch.globaz.ij.business.models.IJPrononceJointDemande">
+ 		<root-model name="prononce" model-ref="ch.globaz.ij.business.models.IJSimplePrononce" select-fields="true"/>
+ 		<linked-model name="demande" model-ref="ch.globaz.prestation.business.models.demande.SimpleDemandePrestation" join-type="INNER" select-fields="true">
+ 			<join-group operator="AND">
+ 				<join-field operation="EQUALS" name="idDemande" field-ref="prononce.idDemande" />
+ 			</join-group>
+ 		</linked-model>
+ 		<search-definition >
+ 			<search-group operator="AND">
+ 				<search-field name="forIdTiers" 	operation="EQUALS" field-ref="demande.idTiers"/>
+ 				<search-field name="forIdPrononce" 	operation="EQUALS" field-ref="prononce.idPrononce" />
+ 				<search-field name="forPrononceSelectionne" 	operation="EQUALS" field-ref="prononce.prononceSelectionne" />
+ 			</search-group>
+ 		</search-definition>
+ 		<order-by name="orderByDateDeDebutDesc">
+			<order-field field-ref="prononce.dateDebutPrononce" order="DESC" />
+		</order-by>
+		<order-by name="orderByDateDeDebutAsc">
+			<order-field field-ref="prononce.dateDebutPrononce" order="ASC" />
+		</order-by>
+ 	</complexe-model>
+</model-mapping>

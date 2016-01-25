@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.corvus.business.models.rentesaccordees.SimpleRenteAccordee">
+		<description>
+			Une rente accordée
+		</description>
+		<table name="REREACC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="idRenteAccordee" column="YLIRAC" comment="Identifiant de la rente accordée" />
+			<field name="anneeAnticipation" column="YLLAAN" type="STRING" dataType="VARCHAR(8)" mandatory="false" />
+			<field name="anneeMontantRAM" column="YLDAMR" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" />
+			<field name="cleRegroupementDecision" column="YLLKEY" type="STRING" dataType="VARCHAR(64)" mandatory="false" />
+			<field name="codeAuxilliaire" column="YLLCAU" type="STRING" dataType="VARCHAR(8)" mandatory="false" />
+			<field name="codeCasSpeciaux1" column="YLLCS1" type="STRING" dataType="VARCHAR(8)" mandatory="false" />
+			<field name="codeCasSpeciaux2" column="YLLCS2" type="STRING" dataType="VARCHAR(8)" mandatory="false" />
+			<field name="codeCasSpeciaux3" column="YLLCS3" type="STRING" dataType="VARCHAR(8)" mandatory="false" />
+			<field name="codeCasSpeciaux4" column="YLLCS4" type="STRING" dataType="VARCHAR(8)" mandatory="false" />
+			<field name="codeCasSpeciaux5" column="YLLCS5" type="STRING" dataType="VARCHAR(8)" mandatory="false" />
+			<field name="codeMutation" column="YLLCMU" type="STRING" dataType="VARCHAR(8)" mandatory="false" />
+			<field name="codeRefugie" column="YLLREF" type="STRING" dataType="VARCHAR(8)" mandatory="false" />
+			<field name="codeSurvivantInvalide" column="YLLCSI" type="STRING" dataType="VARCHAR(8)" mandatory="false" />
+			<field name="csEtatCivil" column="YLTECI" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" />
+			<field name="csRelationAuRequerant" column="YLTRRE" type="NUMERIC" dataType="VARCHAR(8)" mandatory="false" />
+			<field name="dateDebutAnticipation" column="YLDDAN" type="MONTH_YEAR" mandatory="false" />
+			<field name="dateFinDroitPrevueEcheance" column="YLDFDE" type="MONTH_YEAR" mandatory="false" />
+			<field name="dateRevocationAjournement" column="YLDRAJ" type="MONTH_YEAR" mandatory="false" />
+			<field name="dureeAjournement" column="YLNDAJ" type="STRING" dataType="VARCHAR(8)" mandatory="false" />
+			<field name="idBaseCalcul" column="YLIBAC" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" />
+			<field name="idTiersBaseCalcul" column="YLITBC" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" />
+			<field name="idTiersComplementaire1" column="YLIPTC" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" />
+			<field name="idTiersComplementaire2" column="YLIDTC" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" />
+			<field name="montantReducationAnticipation" column="YLMRAN" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" />
+			<field name="montantRenteOrdiRemplacee" column="YLMROR" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" />
+			<field name="prescriptionAppliquee" column="YLLPAP" type="STRING" dataType="VARCHAR(8)" mandatory="false" />
+			<field name="reductionFauteGrave" column="YLNRFG" type="NUMERIC" dataType="NUMERIC(5,2)" mandatory="false" />
+			<field name="remarques" column="YLLREM" type="STRING" dataType="VARCHAR(255)" mandatory="false" />
+			<field name="supplementAjournement" column="YLMSAJ" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" />
+			<field name="supplementVeuvage" column="YLLSVE" type="STRING" dataType="VARCHAR(8)" mandatory="false" />
+			<field name="tauxReductionAnticipation" column="YLMTRA" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" />
+			<field name="csGenreDroitApi" column="YLGAPI" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field operation="EQUALS" name="forIdRenteAccordee" field-ref="idRenteAccordee" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

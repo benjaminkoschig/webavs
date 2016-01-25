@@ -1,0 +1,84 @@
+
+.onglets li {
+	border: #226194 1px solid; 
+	border-bottom: black 1px solid; 
+	background-color: #a0b0c4;
+	color:#d5dfed;
+	DISPLAY: inline; 
+	margin-RIGHT: 3px; 
+	padding:3px 5px;
+}
+.onglets li A {
+	TEXT-DECORATION: none;
+	color:#d5dfed;
+}
+.onglets li A:visited {
+	color:#d5dfed;
+}
+.onglets li A:hover {
+	color:white;
+}
+.onglets li.selected {
+	border: black 1px solid; 
+	border-BOTTOM: none 1px; 
+	background-color: #ffeccc; 
+	color:black;
+	padding-bottom:4px;
+}
+.onglets {
+	margin: 0px;
+	padding-bottom:3px;
+}
+
+.conteneurMembres {
+	background-color: #ffeccc;
+}
+
+
+.areaDessaisiAuto td{
+	border:1px solid black;
+	padding:2px 4px;
+
+}
+	 
+.titreTable{
+  font-weight: bold;
+  margin:0px 0px 5px 0px;
+}	 
+	 
+.areaDessaisiAuto {
+	border:1px solid black;
+	margin:0px 0px 5px 0px;
+	border-collapse: collapse;
+	width: auto;
+}
+
+.areaDessaisiAuto tr{
+	background-color:#eee;
+}
+
+.areaDessaisiAuto tr.odd{
+	background-color: #ddd;	
+}
+
+.areaDessaisiAuto THEAD TD {
+	background-color: #226194; 
+	COLOR: white;
+}
+
+.areaTitreAVS {
+	position: absolute;
+	right: 25px;
+	/*margin-left:100px;*/
+}
+
+.revenuNature{
+	width:410px;
+}
+
+.destinationLiberation{
+	width:266px;
+}
+.creancier{
+	width:350px;
+}

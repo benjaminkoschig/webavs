@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="testsRafam.xsd">
+	<test id="1">
+		<description><![CDATA[BZ 7345]]></description>
+		<idDroit>59414</idDroit>
+		<actions>
+			<action>
+				<update>
+					<data>
+						<capableExercer>false</capableExercer>
+						<finDroitForcee>31.05.2016</finDroitForcee>
+					</data>
+				</update>
+			</action>
+		</actions>
+		<validations>
+			<validation id="1">
+				<load>
+					<etat>A_TRANSMETTRE</etat>
+					<genrePrestation>ENFANT</genrePrestation>
+				</load>
+				<check>
+					<genrePrestation>ENFANT</genrePrestation>
+					<typeAnnonce>68a</typeAnnonce>
+				</check>
+			</validation>
+			<validation id="2">
+				<load>
+					<etat>A_TRANSMETTRE</etat>
+					<genrePrestation>ENFANT_EN_INCAPACITE</genrePrestation>
+				</load>
+				<check>
+					<genrePrestation>ENFANT_EN_INCAPACITE</genrePrestation>
+					<typeAnnonce>68a</typeAnnonce>
+				</check>
+			</validation>
+		</validations>
+	</test>
+</tests>

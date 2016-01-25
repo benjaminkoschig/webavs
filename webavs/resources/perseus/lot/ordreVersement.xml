@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.lot.OrdreVersement">
+	
+		<root-model name="simpleOrdreVersement" model-ref="ch.globaz.perseus.business.models.lot.SimpleOrdreVersement"/>
+		
+		<linked-model name="tiers" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="simpleOrdreVersement.idTiers"/>
+			</join-group>
+		</linked-model>	
+		
+		<linked-model name="simplePrestation" model-ref="ch.globaz.perseus.business.models.lot.SimplePrestation" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPrestation" operation="EQUALS" field-ref="simpleOrdreVersement.idPrestation"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPrestation" operation="EQUALS" field-ref="simpleOrdreVersement.idPrestation"/>
+				<search-field name="forIdLot" operation="EQUALS" field-ref="simplePrestation.idLot"/>
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

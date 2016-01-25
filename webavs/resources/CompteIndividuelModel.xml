@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.ci.business.models.CompteIndividuelModel">
+		<description>Compte individuel d'une personne</description>
+		<table name="CIINDIP" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idCompte" column="KAIIND" comment="ID du CI"/>
+			<field name="numAvsActuel" column="KANAVS" type="STRING" mandatory="true" comment="Numéro NSS du titulaire du compte"/>
+			<field name="nomPrenom" column="KALNOM" type="STRING" mandatory="true" comment="Nom et prénom du titulaire du compte"/>
+			<field name="idNationalite" column="KAIPAY" type="NUMERIC" mandatory="true" comment="Nationalité du titulaire du compte"/>
+			<field name="dateNaissance" column="KADNAI" type="DATE"  mandatory="true" comment="Date de naissance du titulaire du compte"/>
+			<field name="sexe" column="KATSEX" type="NUMERIC" mandatory="true" comment="Sexe du titulaire du compte"/>
+			
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forNumAvsActuel" field-ref="numAvsActuel" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

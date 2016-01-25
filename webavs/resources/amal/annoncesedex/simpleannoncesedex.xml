@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.annoncesedex.SimpleAnnonceSedex">
+		<description>Enregistrement Annonce Sedex</description>
+		<table name="MAMSGSDX" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAnnonceSedex" column="IDMSG" comment="clé primaire"/>
+			<field name="idContribuable" column="IDCONT" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_CONTRIBUABLE_DOSSIER"/>
+			<field name="idDetailFamille" column="IDDEFA" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_DETAILFAMILLE_SUBSIDE"/>
+			<field name="idTiersCM" column="HTITIE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="ID_CAISSE_MALADIE"/>
+			<field name="messageId" column="MSGID" type="STRING" dataType="VARCHAR(40)" mandatory="false" comment="Message ID"/>
+			<field name="numeroDecision" column="IDSDNO" type="STRING" dataType="VARCHAR(40)" mandatory="false" comment="ID_NUMERO_DECISION_RP"/>
+			<field name="numeroCourant" column="IDSDCO" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="ID_NUMERO_COURANT_RP"/>
+			<field name="dateMessage" column="DAMSG" type="DATE" mandatory="false" comment="DATE_AVIS_RIP"/>
+			<field name="messageType" column="MSGTYP" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="TYPE_MESSAGE_SEDEX_RIP"/>
+			<field name="messageSubType" column="MSGSTY" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="SUBTYPE_MESSAGE_SEDEX"/>
+			<field name="messageEmetteur" column="MSGSEN" type="STRING" dataType="VARCHAR(20)" mandatory="false" comment="ID_SEDEX_EMETTEUR"/>
+			<field name="messageRecepteur" column="MSGREC" type="STRING" dataType="VARCHAR(20)" mandatory="false" comment="ID_SEDEX_RECEPTEUR"/>
+			<field name="messageHeader" column="MSGHEA" type="STRING" dataType="VARCHAR(2200)" mandatory="false" comment="XML_MESSAGE_HEADER"/>
+			<field name="messageContent" column="MSGCON" type="STRING" dataType="VARCHAR(2200)" mandatory="false" comment="XML_MESSAGE_CONTENT"/>
+			<field name="status" column="CSSTAT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="STATUS_MESSAGE"/>
+			<field name="traitement" column="CSTRAI" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="TRAITEMENT_MESSAGE"/>
+			<field name="versionXSD" column="MSGVER" type="STRING" dataType="VARCHAR(20)" mandatory="false" comment="VERSION_XSD"/>
+			<field name="referenceIdMessage" column="REFERENCE_ID_MESSAGE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="ID MESSAGE REFERENCE"/>			
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdAnnonceSedex" field-ref="idAnnonceSedex" operation="EQUALS"/>
+				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS"/>
+				<search-field name="forIdDetailFamille" field-ref="idDetailFamille" operation="EQUALS"/>
+				<search-field name="forIdTiersCM" field-ref="idTiersCM" operation="EQUALS"/>
+				<search-field name="forDateMessage" field-ref="dateMessage" operation="EQUALS"/>
+				<search-field name="forDateMessageGOE" field-ref="dateMessage" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forDateMessageLOE" field-ref="dateMessage" operation="LESS_OR_EQUALS"/>
+				<search-field name="forMessageType" field-ref="messageType" operation="EQUALS"/>
+				<search-field name="forMessageSubType" field-ref="messageSubType" operation="EQUALS"/>
+				<search-field name="forMessageEmetteur" field-ref="messageEmetteur" operation="EQUALS"/>
+				<search-field name="forMessageRecepteur" field-ref="messageRecepteur" operation="EQUALS"/>
+				<search-field name="forNumeroDecision" field-ref="numeroDecision" operation="EQUALS"/>
+				<search-field name="forNumeroCourant" field-ref="numeroCourant" operation="EQUALS"/>
+				<search-field name="forMessageId" field-ref="messageId" operation="EQUALS"/>
+				<search-field name="inMessageEmetteur" field-ref="messageEmetteur" operation="IN"/>
+				<search-field name="inMessageRecepteur" field-ref="messageRecepteur" operation="IN"/>
+				<search-field name="inStatus" field-ref="status" operation="IN"/>
+				<search-field name="inTraitement" field-ref="traitement" operation="IN"/>
+				<search-field name="inMessageType" field-ref="messageType" operation="IN"/>
+				<search-field name="inMessageSubType" field-ref="messageSubType" operation="IN"/>
+				<search-field name="inIdTiersCM" field-ref="idTiersCM" operation="IN"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="idAnnonceSedex" order="DESC"/>
+			<order-field field-ref="dateMessage" order="DESC"/>
+		</order-by>
+		
+		<order-by name="orderByNoCourantDesc">
+			<order-field field-ref="numeroCourant" order="DESC"/>
+		</order-by>
+	</simple-model>
+</model-mapping>

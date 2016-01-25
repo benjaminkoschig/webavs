@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="vulpecula/is/tauxImpositionSimpleModel.xml"/>
+	<model-mapping import="vulpecula/is/processusAFComplexModel.xml"/>
+	<model-mapping import="vulpecula/is/entetePrestationComplexModel.xml"/>
+	<model-mapping import="vulpecula/is/historiqueProcessusAfSimpleModel.xml"/>
+</model-mapping>

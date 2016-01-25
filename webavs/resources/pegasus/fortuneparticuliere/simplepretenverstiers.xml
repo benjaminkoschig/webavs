@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.fortuneparticuliere.SimplePretEnversTiers">
+		<description>Prêt envers tiers</description>
+		<table name="PCPRENTI" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idPretEnversTiers" column="BTIPET" comment="ID_PRET_ENVERS_TIERS"/>
+			<field name="idDonneeFinanciereHeader" column="BTIDFH" type="NUMERIC" mandatory="true" comment="ID_DONNEE_FINANCIERE_HEADER"/>
+			<field name="csTypePropriete" column="BTTTPO" type="NUMERIC" mandatory="true" comment="CS_TYPE_PROPRIETE"/>
+			<field name="partProprieteNumerateur" column="BTNPPN" type="NUMERIC" mandatory="true" comment="PART_PROPRIETE_NUMERATEUR"/>
+			<field name="partProprieteDenominateur" column="BTNPPD" type="NUMERIC" mandatory="true" comment="PART_PROPRIETE_DENOMINATEUR"/>
+			<field name="typePret" column="BTLTPR" type="STRING" mandatory="true" comment="TYPE_PRET"/>
+			<field name="montantPret" column="BTMONT" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT_PRET"/>
+			<field name="nomPrenomBeneficiaire" column="BTLNPB" type="STRING" mandatory="true" comment="NOM_PRENOM_BENEFICIAIRE"/>
+			<field name="dateEcheance" column="BTDECH" type="DATE" mandatory="true" comment="DATE_ECHEANCE"/>
+			<field name="isSansInteret" column="BTBSIN" type="BOOLEAN" mandatory="true" comment="IS_SANS_INTERET"/>
+			<field name="montantInteret" column="BTNMIN" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_INTERET"/>
+			
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

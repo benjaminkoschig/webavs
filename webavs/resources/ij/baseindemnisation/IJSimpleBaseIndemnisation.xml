@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.ij.business.models.IJSimpleBaseIndemnisation">
+		<description>
+			Modèle des base d'indemnisation des indémnités journalières
+		</description>
+		<table name="IJBASIND" hasSpy="false" hasCreationSpy="false" alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="idBaseIndemnisation" column="XKIBIN" type="NUMERIC" 	mandatory="true" dataType="NUMERIC(15,0)" 	comment="Identifiant unique de la base d'indemnisation"/>
+			<field name="dateDeDebut" 				column="XKDDEB" type="DATE" 	mandatory="true" dataType="NUMERIC(8)" 		comment="Date de début de la base d'indemnisation"/>
+			<field name="dateDeFin" 				column="XKDFIN" type="DATE" 	mandatory="true" dataType="NUMERIC(8)" 		comment="Date de fin de la base d'indemnisation"/>
+			<field name="joursInternes" 			column="XKNJIN" type="NUMERIC"  mandatory="true" dataType="NUMERIC(9)" 		comment="Jours internes de la base d'indemnisation"/>
+			<field name="joursExternes" 			column="XKNJEX" type="NUMERIC"  mandatory="true" dataType="NUMERIC(9)" 		comment="Jours externes de la base d'indemnisation"/>
+			<field name="joursInterruption" 		column="XKNJOI" type="NUMERIC"  mandatory="true" dataType="NUMERIC(9)" 		comment="Jours d'interruption de l'indemnisation"/>
+			<field name="motifInterruption" 		column="XKTMOI" type="NUMERIC"  mandatory="true" dataType="NUMERIC(8)" 		comment="Motif d'interruption de la base d'indemnisation"/>
+			<field name="etatCS" 					column="XKTETA" type="NUMERIC" 	mandatory="true" dataType="NUMERIC(8)"		comment="Etat de la base d'indémnisation (Code system)" />
+			<field name="idParent" 					column="XKIPAR" type="NUMERIC" 	mandatory="true" dataType="NUMERIC(15)"		comment="Id du parent. Signifie que la base d'indemnisation à une correction si présent" />
+			<field name="csCantonImposition" 		column="XKTCIS"	type="NUMERIC"	mandatory="true" dataType="NUMERIC(8)"		comment="Code système du canton d'imposition à la source"/>
+			<field name="tauxImposition" 			column="XKMTIS"	type="NUMERIC"	mandatory="true" dataType="NUMERIC(15)"		comment="Canton d'imposition à la source"/>
+			<field name="remarque" 					column="XKLREM"	type="STRING"   mandatory="true" dataType="VARCHAR(255)"	comment="Canton d'imposition à la source"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field  name="forIdBaseIndemnisation" 	field-ref="idBaseIndemnisation" operation="EQUALS"/>
+				<search-field  name="forDateDeDebut" 			field-ref="dateDeDebut" 		operation="EQUALS"/>
+				<search-field  name="forDateDeFin" 				field-ref="dateDeFin" 			operation="EQUALS"/>
+				<search-field  name="forJoursInternes" 			field-ref="joursInternes" 		operation="EQUALS"/>
+				<search-field  name="forJoursExternes" 			field-ref="joursExternes" 		operation="EQUALS"/>
+				<search-field  name="forJoursInterruption" 		field-ref="joursInterruption" 	operation="EQUALS"/>
+				<search-field  name="forMotifInterruption" 		field-ref="motifInterruption" 	operation="EQUALS"/>
+				<search-field  name="forIdParent" 				field-ref="idParent" 			operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

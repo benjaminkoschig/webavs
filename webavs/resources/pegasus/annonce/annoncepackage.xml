@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<!-- modeles simple -->
+	<model-mapping import="pegasus/annonce/simplecommunicationocc.xml" />
+	<model-mapping import="pegasus/annonce/simpleannoncelaprams.xml" />
+	<model-mapping import="pegasus/annonce/simpleannoncelapramsdonneefinanciereheader.xml" />
+	<model-mapping import="pegasus/annonce/simplesequence.xml" />
+	
+	<!-- modeles complexes -->
+	<model-mapping import="pegasus/annonce/communicationocc.xml" />
+	<model-mapping import="pegasus/annonce/recherchehomesash.xml" />
+	<model-mapping import="pegasus/annonce/annoncelaprams.xml" />
+	<model-mapping import="pegasus/annonce/annoncelapramsmediatordonneefinanciere.xml" />
+	<model-mapping import="pegasus/annonce/droitmembresituationfamille.xml" />
+	<model-mapping import="pegasus/annonce/donneeperssiutationfamilliale.xml" />
+</model-mapping>

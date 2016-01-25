@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'un dossier déclaration versement -->
+
+
+<model-mapping>
+
+	<complexe-model className="ch.globaz.al.business.models.dossier.DossierDeclarationVersementComplexModel">
+	<select-fields distinct="true">
+		<select-field name="idDossier" field-ref="dossierModel.idDossier"/>
+		<select-field name="retenueImpot" field-ref="dossierModel.retenueImpot"/>
+		<!--<select-field name="bonification" field-ref="entetePrestationModel.bonification"/>-->
+		<select-field name="activiteAllocataire" field-ref="dossierModel.activiteAllocataire"/>
+		<select-field name="permisAllocataire" field-ref="allocataireModel.permis"/>
+		<select-field name="numeroAffilie" field-ref="dossierModel.numeroAffilie"/>
+		<select-field name="idTiersAllocataire" field-ref="allocataireModel.idTiersAllocataire"/>
+		<select-field name="idTiersBeneficiaire" field-ref="dossierModel.idTiersBeneficiaire"/>
+		
+		<select-field name="nomAllocataire" field-ref="personneEtendueComplexModel.tiers.designation1"/>
+		<select-field name="prenomAllocataire" field-ref="personneEtendueComplexModel.tiers.designation2"/>
+		
+	</select-fields>
+	
+		<root-model name="dossierModel" model-ref="ch.globaz.al.business.models.dossier.DossierModel" select-fields="false"/>
+		
+
+	
+		<linked-model name="entetePrestationModel" model-ref="ch.globaz.al.business.models.prestation.EntetePrestationModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDossier" field-ref="dossierModel.idDossier"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="allocataireModel" model-ref="ch.globaz.al.business.models.allocataire.AllocataireModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idAllocataire" field-ref="dossierModel.idAllocataire"/>
+			</join-group>
+		</linked-model>
+		
+	<linked-model name="personneEtendueComplexModel" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" field-ref="allocataireModel.idTiersAllocataire"/>
+			</join-group>
+		</linked-model>
+
+	
+	<search-definition>
+			<search-group operator="AND">
+			
+				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>
+				<search-field name="forPermis" field-ref="allocataireModel.permis" operation="EQUALS"/>
+				<search-field name="forImpotSource" field-ref="dossierModel.retenueImpot" operation="EQUALS"/>
+				<search-field name="forNumAffilie" field-ref="dossierModel.numeroAffilie" operation="EQUALS"/>
+				<search-field name="forActiviteAlloc" field-ref="dossierModel.activiteAllocataire" operation="EQUALS"/>
+				<search-field name="forNotIdTiersBeneficiaire" field-ref="dossierModel.idTiersBeneficiaire" operation="NOT_EQUALS"/>
+				<search-field name="forIdTiersBeneficaire" field-ref="dossierModel.idTiersBeneficiaire" operation="EQUALS"/>
+				<search-field name="forDateFin" field-ref="entetePrestationModel.dateVersComp" operation="LESS_OR_EQUALS"/>
+				<search-field name="forDateDebut" field-ref="entetePrestationModel.dateVersComp" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forEtatPrestation" field-ref="entetePrestationModel.etatPrestation" operation="EQUALS"/>
+				<search-field name="forTypeBonification" field-ref="entetePrestationModel.bonification" operation="EQUALS"/>
+			</search-group>
+	</search-definition>
+	
+	<search-definition name="declarationPonctuelle">
+				<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>
+				<search-field name="forNumAffilie" field-ref="dossierModel.numeroAffilie" operation="EQUALS"/>
+				<search-field name="forDateFin" field-ref="entetePrestationModel.dateVersComp" operation="LESS_OR_EQUALS"/>
+				<search-field name="forDateDebut" field-ref="entetePrestationModel.dateVersComp" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forEtatPrestation" field-ref="entetePrestationModel.etatPrestation" operation="EQUALS"/>
+					<search-group operator="OR">
+						<search-group operator="AND">
+							<search-field name="forNotIdTiersBeneficiaire" field-ref="dossierModel.idTiersBeneficiaire" operation="NOT_EQUALS"/>
+							<search-field name="forImpotSourceTrue" field-ref="dossierModel.retenueImpot" operation="EQUALS"/>
+							<search-field name="forTypeBonificationDir" field-ref="entetePrestationModel.bonification" operation="EQUALS"/>
+						</search-group>
+						<search-group operator="AND">	
+							<search-field name="forNotIdTiersBeneficiaire" field-ref="dossierModel.idTiersBeneficiaire" operation="NOT_EQUALS"/>
+							<search-field name="forImpotSourceFalse" field-ref="dossierModel.retenueImpot" operation="EQUALS"/>
+							<search-field name="forTypeBonificationDir" field-ref="entetePrestationModel.bonification" operation="EQUALS"/>
+						</search-group>
+						<search-group operator="AND">
+						<search-field name="forActiviteAlloc" field-ref="dossierModel.activiteAllocataire" operation="EQUALS"/>
+							<search-field name="forIdTiersBeneficaire" field-ref="dossierModel.idTiersBeneficiaire" operation="EQUALS"/>
+							<search-field name="forTypeBonificationInd" field-ref="entetePrestationModel.bonification" operation="EQUALS"/>
+						</search-group>
+							<search-group operator="AND">
+							<search-field name="forPermis" field-ref="allocataireModel.permis" operation="EQUALS"/>
+							<search-field name="forIdTiersBeneficaire" field-ref="dossierModel.idTiersBeneficiaire" operation="EQUALS"/>
+							<search-field name="forTypeBonificationInd" field-ref="entetePrestationModel.bonification" operation="EQUALS"/>
+						</search-group>
+					</search-group>
+				</search-group>
+	</search-definition>
+					
+	
+	<order-by name="default">
+			<order-field field-ref="numeroAffilie" order="ASC"/>
+			<order-field field-ref="idDossier" order="ASC"/>
+			<!--<order-field field-ref="periodeValiditeDetailPrestation" order="ASC"/>-->
+			<!--<order-field field-ref="dateVersement" order="ASC"/>-->
+	</order-by>
+	
+	<order-by name="affilieAlloc" >
+			<order-field field-ref="numeroAffilie" order="ASC"/>
+			<order-field field-ref="nomAllocataire" order="ASC"/>
+			<order-field field-ref="prenomAllocataire" order="ASC"/>
+			
+	</order-by>
+		
+	</complexe-model>
+</model-mapping>
+

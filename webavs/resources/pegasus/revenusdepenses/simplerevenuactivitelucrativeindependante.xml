@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.revenusdepenses.SimpleRevenuActiviteLucrativeIndependante">
+		<description>REVENU_ACTIVITE_LUCRATIVE_INDEPENDANTE</description>
+		<table name="PCRALIN" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idRevenuActiviteLucrativeIndependante" column="BXIALI" comment="ID_REVENU_ACTIVITE_LUCRATIVE_INDEPENDANTE"/>			
+			<field name="idDonneeFinanciereHeader" mandatory="true" column="BXIDFH" type="NUMERIC" comment="DONNEE_FINANCIERE_HEADER"/>
+			<field name="csDeterminationRevenu" mandatory="true" column="BXTDRE" type="NUMERIC" comment="CS_DETERMINATION_REVENU"/>			
+			<field name="csGenreRevenu" mandatory="true" column="BXTGRE" type="NUMERIC" comment="CS_GENRE_REVENU"/>
+			<field name="montantRevenu" mandatory="true" column="BXNMRE" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_REVENU"/>
+			<field name="idTiersAffilie" column="BXLNAF" type="NUMERIC" comment="ID_TIERS_AFFILIE"/>
+			<field name="idCaisseCompensation" column="BXICCO" type="NUMERIC" comment="ID_CAISSE_COMPENSATION"/>						
+			<field name="idAffiliation" column="BXIDAF" type="NUMERIC" mandatory="false" comment="ID_AFFILIATION"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

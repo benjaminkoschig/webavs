@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.lot.Prestation">
+	
+		<root-model name="simplePrestation" model-ref="ch.globaz.pegasus.business.models.lot.SimplePrestation"/>
+		
+		<!-- 
+		<linked-model name="simpleDecisionHeader" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="simplePrestation.idDecisionHeader"/>
+			</join-group>
+		</linked-model> 
+	-->
+		
+		<linked-model name="tiersBeneficiaire" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simplePrestation.idTiersBeneficiaire"/>
+			</join-group>
+		</linked-model>
+		
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdLot" operation="EQUALS" field-ref="simplePrestation.idLot"/>
+				<search-field name="likeNss" operation="LIKE" field-ref="tiersBeneficiaire.personneEtendue.numAvsActuel"/>
+				<search-field name="likeNom" operation="LIKE" field-ref="tiersBeneficiaire.tiers.designationUpper1"/>
+				<search-field name="likePrenom" operation="LIKE" field-ref="tiersBeneficiaire.tiers.designationUpper2"/>
+				<search-field name="forSexe" operation="EQUALS" field-ref="tiersBeneficiaire.personne.sexe"/>
+				<search-field name="forDateNaissance" operation="EQUALS" field-ref="tiersBeneficiaire.personne.dateNaissance"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="tiersBeneficiaire.tiers.designationUpper1"/>
+			<order-field field-ref="tiersBeneficiaire.tiers.designationUpper2"/>
+			<order-field field-ref="simplePrestation.idPrestation"/>
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="PHENIX_OPPOSITION_DE"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="28"
+		 rightMargin="14"
+		 topMargin="10"
+		 bottomMargin="5"
+		 whenNoDataType="AllSectionsNoDetail"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="2" />
+	<reportFont name="ARIAL" isDefault="true" fontName="Arial" size="11" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="ARIAL.TTF" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="ARIAL_BOLD" isDefault="false" fontName="arialbd.ttf" size="11" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="ARIALBD.TTF" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<parameter name="P_ADRESSE_RECOURS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="MODEL_PATH" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_DEFAULT_MODEL_PATH" isForPrompting="false" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["C:/Documents and Settings/Administrator/My Documents/consultran/projet/globaz/iText/Default_workspace/iText model/defaultModel"]]></defaultValueExpression>
+	</parameter>
+		<background>
+			<band height="701"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="68"
+						width="545"
+						height="94"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-1"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" pdfFontName="Helvetica" size="10"/>
+					</textElement>
+				<text><![CDATA[Auf der ersten Seite geben wir Ihnen den Betrag Ihrer persönlichen AHV/IV/EO-Beiträge an, sowie deren Basen.
+Diese Beiträge müssen innert 30 Tagen ab Rechnungsdatum beglichen werden.
+
+Wenn die massgebenden Basen zufolge Beginn einer selbständigen Erwerbstätigkeit, einer beruflichen Aenderung oder beruflichen Niederlassung, eines andauernden Ausscheidens oder Erscheinens einer bedeutenden Einkommensquelle, einer neuen Aufteilung des Betriebskapitals eine wahrnehmbare Aenderung erfahren haben,  muss die Kasse das neue Einkommen bestimmen und die entsprechenden Akontobeiträge festlegen. Jede Aktivitätsänderung muss unverzüglich angegeben werden.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="4"
+						width="545"
+						height="23"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-2"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[ERLAEUTERUNGEN]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="6"
+						y="53"
+						width="545"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-3"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[MITGLIEDSPFLICHT]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="178"
+						width="545"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-4"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[RECHTSMITTELBELEHRUNG]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="193"
+						width="545"
+						height="38"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-5"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" pdfFontName="Helvetica" size="10"/>
+					</textElement>
+				<text><![CDATA[Gegen die vorliegende Verfügung kann, wenn Sie diese für unrichtig halten, innert 30 Tagen Beschwerde erhoben werden. Diese muss eine gedrängte Darstellung des Sachverhaltes, ein Rechtsbegehren und eine kurze Begründung enthalten. Sie muss mit Einschreiben an folgendes Verwaltungsgericht gesandt werden :]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="72"
+						y="238"
+						width="355"
+						height="64"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-1"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="ARIAL.TTF" size="10" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_ADRESSE_RECOURS}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="374"
+						width="545"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-6"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[VERZUGSZINSE (gemäss Art. 41 bis AHVV)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="389"
+						width="545"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-7"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" pdfFontName="Helvetica" size="10"/>
+					</textElement>
+				<text><![CDATA[Verzugszinse sind zu entrichten wenn:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="497"
+						width="545"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-8"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[VERGÜTUNGSZINS (gemäss Art. 41 ter AHVV))]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="512"
+						width="545"
+						height="26"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-9"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" pdfFontName="Helvetica" size="10"/>
+					</textElement>
+				<text><![CDATA[Vergütungszinse werden ausgerichtet auf zuviel bezahlten Beiträgen, die von der Ausgleichskasse zurückerstattet werden und deren Rückzahlung nicht innert 30 Tagen erfolgt.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="559"
+						width="545"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-10"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[HERABSETZUNG UND ERLASS VON BEITRÄGEN]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="574"
+						width="545"
+						height="118"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-11"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" pdfFontName="Helvetica" size="10"/>
+					</textElement>
+				<text><![CDATA[Eine Herabsetzung kann nur dann gewährt werden, wenn die vollständige Beitragszahlung für Sie eine zu grosse Belastung ist. Dies stellt eine aussergewöhnliche Massnahme dar und kommt nur in Frage, wenn Sie sich in einer finanziellen Bedrängnis befinden, welche auf ausserordentlichen Familienbelastungen, hohe, nicht von der Versicherung gedeckte ärztliche Kosten,  sowie auf Kosten, hervorgehend aus einer natürlichen Notlage, zurückzuführen sind. Eine  einfache Verringerung des laufenden Einkommens im Vergleich zu demjenigen, das zur Basis der Beitragsberechnung gedient hat, ist kein Motiv zur Herabsetzung. Die Anfrage zur Herabsetzung muss schriftlich bei unserer Kasse eingereicht werden. Sie muss eine Begründung sowie die erforderlichen Beweisstücke enthalten. 
+Im Fall, wo die Zahlung des Mindestbetrages Sie in eine Notlage bringen würde, können Sie mittels einer begründeten Anfrage einen  Erlass der Beiträge  erhalten.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="14"
+						y="403"
+						width="536"
+						height="71"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-12"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[der Beitragspflichtige betrieben wird oder in Konkurs fällt;
+die bundesrechtlichen Beiträge von der Ausgleichskasse nicht innert 30 Tagen ab Zahlungsperiode einkassiert wurden (z.B. Beiträge August am 1. Oktober oder später von der Ausgleichskasse einkassiert werden);
+die Teilzahlungen der Beiträge weniger als 25 % ausmachen, als die effektiv geschuldeten Beiträge und diese Beiträge von der Ausgleichskasse bis zum 31. Dezember des Jahres, das dem Beitragsjahr folgt, nicht vollständig einkassiert wurden.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="6"
+						y="403"
+						width="8"
+						height="71"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-13"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[-
+-
+
+-
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="7"
+						y="308"
+						width="545"
+						height="49"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-14"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" pdfFontName="Helvetica" size="10"/>
+					</textElement>
+				<text><![CDATA[Wir raten Ihnen, bevor Sie sich an das Verwaltungsgericht wenden, bei unserer Kasse  Erklärungen zu verlangen. Eine Beschwerde rechtfertigt sich nur dann, wenn Sie beweisen können, dass die Beiträge, die zur Basis der Beitragsberechnung dienten, ungenau sind. Bei leichtsinniger oder mutwilliger Beschwerdeführung können dem Beschwerdeführer jedoch eine Spruchgebühr und die Verfahrenskosten auferlegt werden.]]></text>
+				</staticText>
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

@@ -1,0 +1,29 @@
+@import url("../theme/master2.css");
+
+TABLE#subtable {
+	width: 100%;
+	border: 0;
+}
+
+.PRlibelleExtraLongDisabled{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 9cm;
+    font-weight : bold;
+}
+
+.IJAfficheText{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 7cm;
+    font-size : x-small;
+    font-weight : bold;
+}
+
+.red{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+	width : 20cm;
+	color : red;
+    font-size : x-small;
+}

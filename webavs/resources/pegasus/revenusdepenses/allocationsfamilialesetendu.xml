@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.revenusdepenses.AllocationsFamilialesEtendu">
+			
+		<root-model name="allocationsFamiliales" model-ref="ch.globaz.pegasus.business.models.revenusdepenses.AllocationsFamiliales"/>
+		
+		<linked-model name="droitMembreFamille" model-ref="ch.globaz.pegasus.business.models.droit.DroitMembreFamille" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleDroitMembreFamille.idDroitMembreFamille" operation="EQUALS" field-ref="allocationsFamiliales.simpleDonneeFinanciereHeader.idDroitMembreFamille"/>
+			</join-group>		
+		</linked-model>
+
+		<linked-model name="droitMembreFamilleRequerant" model-ref="ch.globaz.pegasus.business.models.droit.DroitMembreFamille" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="simpleDroitMembreFamille.idDroit" operation="EQUALS" field-ref="droitMembreFamille.simpleDroitMembreFamille.idDroit"/>
+				<join-field name="simpleDroitMembreFamille.csRoleFamillePC" operation="EQUALS" value="64004001"/>
+			</join-group>		
+		</linked-model>
+	
+		<linked-model name="simpleDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroit" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="droitMembreFamille.simpleDroitMembreFamille.idDroit"/>
+			</join-group>		
+		</linked-model>					
+						
+		<linked-model name="simpleDemande" model-ref="ch.globaz.pegasus.business.models.demande.SimpleDemande" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDemande" operation="EQUALS" field-ref="simpleDroit.idDemandePC"/>
+				<join-field name="dateFin" operation="NULL" field-ref="simpleDemande.dateFin"/>
+			</join-group>		
+		</linked-model>		
+	
+		<search-definition name="forVersionedListeAF">
+			<search-group operator="AND">
+				<search-field name="forDateFinOuvert" operation="NULL" field-ref="allocationsFamiliales.simpleDonneeFinanciereHeader.dateFin" />
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="donneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+					<![CDATA[ 
+					 	#{allocationsFamiliales.simpleDonneeFinanciereHeader.isSupprime} = 2 and
+						#{allocationsFamiliales.simpleDonneeFinanciereHeader.idVersionDroit} =
+							(
+								select MAX( #{versionDroit.idVersionDroit} ) from @{versionDroit} 
+									inner join  @{donneeFinanciereHeader} on ( #{versionDroit.idVersionDroit} = #{donneeFinanciereHeader.idVersionDroit} )
+									where #{allocationsFamiliales.simpleDonneeFinanciereHeader.idEntity} = #{donneeFinanciereHeader.idEntity}
+										and #{allocationsFamiliales.simpleDonneeFinanciereHeader.dateDebut} <= ${forDateMax:allocationsFamiliales.simpleDonneeFinanciereHeader.dateDebut}
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>		
+		
+		<order-by>
+			<order-field field-ref="droitMembreFamille.membreFamille.personneEtendue.tiers.designation1" />
+			<order-field field-ref="droitMembreFamille.membreFamille.personneEtendue.tiers.designation2" />
+		</order-by>
+			
+	</complexe-model>
+</model-mapping>

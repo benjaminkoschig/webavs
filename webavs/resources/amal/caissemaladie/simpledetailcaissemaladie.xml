@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.caissemaladie.SimpleDetailCaisseMaladie">
+		<description>Detail de la caisse maladie</description>
+		<table name="MADETCM" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDetailCaisseMaladie" column="IDDECM" comment="Clef primaire"/>
+			<field name="idTiers" column="HTITIE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="Id tiers"/>
+			<field name="sedexYear" column="SXYEAR" type="STRING" dataType="NUMERIC(4,0)" mandatory="fale" comment="Année pour l'envoi SEDEX"/>
+		</fields>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDetailCaisseMaladie" field-ref="idDetailCaisseMaladie" operation="EQUALS"/>
+				<search-field name="forIdTiers" field-ref="idTiers" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>
+

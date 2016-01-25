@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.decision.DecisionForTypeDocument">
+		<root-model name="simpleDecision" model-ref="ch.globaz.perseus.business.models.decision.SimpleDecision"/>
+		
+		<linked-model name="simpleDemande" model-ref="ch.globaz.perseus.business.models.demande.SimpleDemande" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDemande" operation="EQUALS" field-ref="simpleDecision.idDemande"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdDecision" operation="EQUALS" field-ref="simpleDecision.idDecision"/>
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

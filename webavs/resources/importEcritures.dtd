@@ -1,0 +1,66 @@
+<!-- D:\workspaces\1.14.00-BMS\ch.globaz.mercato\src\main>xjc -dtd -d java -p ch.globaz.mercato.importer.xmlobject resources/importEcritures.dtd -->
+<!ELEMENT importEcritures (double*,collective*)>
+
+<!ELEMENT double (date?,libelle,piece?,(idexternecomptedebite|idcomptedebite),idcentrechargedebite?,(idexternecomptecredite|idcomptecredite),idcentrechargecredite?,(montant|(montant,montantetranger)|(montant,cours)|(montantetranger,cours)|(montant,montantetranger,cours)),remarque?)>
+<!ATTLIST double id CDATA #REQUIRED>
+
+<!ELEMENT collective (ecriture+,dateentete?,libelleentete,pieceentete?)>
+<!ATTLIST collective id CDATA #REQUIRED>
+
+<!ELEMENT ecriture (date?,libelle,piece?,(idexternecompte|idcompte),idcentrecharge?,codedebitcredit,(montant|(montant,montantetranger)|(montant,cours)|(montantetranger,cours)|(montant,montantetranger,cours)),remarque?)>
+
+<!ELEMENT dateentete 					EMPTY>
+<!ATTLIST dateentete value CDATA #REQUIRED>
+
+<!ELEMENT libelleentete				EMPTY>
+<!ATTLIST libelleentete value CDATA #REQUIRED>
+
+<!ELEMENT pieceentete		EMPTY>
+<!ATTLIST pieceentete value CDATA #REQUIRED>
+
+<!ELEMENT date 					EMPTY>
+<!ATTLIST date value CDATA #REQUIRED>
+
+<!ELEMENT libelle				EMPTY>
+<!ATTLIST libelle value CDATA #REQUIRED>
+
+<!ELEMENT piece		EMPTY>
+<!ATTLIST piece value CDATA #REQUIRED>
+
+<!ELEMENT idexternecompte			   EMPTY>
+<!ATTLIST idexternecompte value CDATA #REQUIRED>
+<!ELEMENT idcompte 				EMPTY>
+<!ATTLIST idcompte value CDATA #REQUIRED>
+
+<!ELEMENT idcentrecharge 				EMPTY>
+<!ATTLIST idcentrecharge value CDATA #REQUIRED>
+
+<!ELEMENT codedebitcredit		EMPTY>
+<!ATTLIST codedebitcredit value (debit|credit|extournedebit|extournecredit) "debit">
+
+<!ELEMENT idexternecomptedebite			EMPTY>
+<!ATTLIST idexternecomptedebite value CDATA #REQUIRED>
+<!ELEMENT idcomptedebite 				EMPTY>
+<!ATTLIST idcomptedebite value CDATA #REQUIRED>
+
+<!ELEMENT idcentrechargedebite 				EMPTY>
+<!ATTLIST idcentrechargedebite value CDATA #REQUIRED>
+
+<!ELEMENT idexternecomptecredite			EMPTY>
+<!ATTLIST idexternecomptecredite value CDATA #REQUIRED>
+<!ELEMENT idcomptecredite 				EMPTY>
+<!ATTLIST idcomptecredite value CDATA #REQUIRED>
+
+<!ELEMENT idcentrechargecredite				EMPTY>
+<!ATTLIST idcentrechargecredite value CDATA #REQUIRED>
+
+<!ELEMENT montant		EMPTY>
+<!ATTLIST montant value CDATA #REQUIRED>
+
+<!ELEMENT montantetranger		EMPTY>
+<!ATTLIST montantetranger value CDATA #REQUIRED>
+<!ELEMENT cours		EMPTY>
+<!ATTLIST cours value CDATA #REQUIRED>
+
+<!ELEMENT remarque				EMPTY>
+<!ATTLIST remarque value CDATA #REQUIRED>

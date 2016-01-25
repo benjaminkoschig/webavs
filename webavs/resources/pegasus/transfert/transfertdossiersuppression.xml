@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.transfert.TransfertDossierSuppression">
+		
+		<root-model name="simpleTransfertDossierSuppression" model-ref="ch.globaz.pegasus.business.models.transfert.SimpleTransfertDossierSuppression"/>
+		
+		<search-definition>
+			<search-group operator="AND"> 
+			    <search-field name="forIdDecisionHeader" operation="EQUALS" field-ref="simpleTransfertDossierSuppression.idDecisionHeader"/>
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

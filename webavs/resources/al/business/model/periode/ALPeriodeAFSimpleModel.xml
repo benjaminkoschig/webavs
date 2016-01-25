@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.periodeAF.PeriodeAFModel">
+		<description>Période de traitement AF</description>
+		<table name="ALPERIOD" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key comment="ID de la période" column="OID" name="idPeriodeAF"/>
+			<field name="etat" column="CSETAT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Etat de la période"/>
+			<field name="datePeriode" column="ODATE" type="MONTH_YEAR" mandatory="true" comment="date effective de la période"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forEtat" field-ref="etat" operation="EQUALS"/>
+				<search-field name="forDatePeriode" field-ref="datePeriode" operation="EQUALS"/>
+				<search-field name="forIdPeriode" field-ref="idPeriodeAF" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		<order-by name="default">
+			<order-field field-ref="datePeriode" order="DESC"/>
+		</order-by> 	
+	</simple-model>
+</model-mapping>

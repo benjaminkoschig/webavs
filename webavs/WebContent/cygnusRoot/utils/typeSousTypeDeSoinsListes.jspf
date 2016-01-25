@@ -1,0 +1,120 @@
+<SCRIPT language="JavaScript">
+
+	<%=viewBean.getSousTypeDeSoinParTypeInnerJavascript()%>
+
+	function onChangeCodeTypeDeSoin(){
+		document.getElementsByName("imgCodeTypeDeSoin")[0].src=<%="'"+request.getContextPath()+viewBean.getImageError()+"'"%>
+		document.getElementsByName("codeTypeDeSoinList")[0].selectedIndex=document.getElementsByName("codeTypeDeSoin")[0].value;
+		
+		if (document.getElementsByName("codeTypeDeSoinList")[0].selectedIndex!=-1 && document.getElementsByName("codeTypeDeSoinList")[0].selectedIndex!=""){
+			document.getElementsByName("imgCodeTypeDeSoin")[0].src=<%="'"+request.getContextPath()+viewBean.getImageSuccess()+"'"%>;
+			updCodeSousTypeDeSoinList();
+		}else{
+			document.getElementsByName("imgCodeTypeDeSoin")[0].src=<%="'"+request.getContextPath()+viewBean.getImageError()+"'"%>;
+			document.getElementsByName("imgCodeSousTypeDeSoin")[0].src=<%="'"+request.getContextPath()+viewBean.getImageError()+"'"%>;
+			document.getElementsByName("codeSousTypeDeSoin")[0].value="";
+			document.getElementsByName("codeSousTypeDeSoinList")[0].options.length=0;
+			document.getElementsByName("codeSousTypeDeSoinList")[0].options[document.getElementsByName("codeSousTypeDeSoinList")[0].options.length]=new Option("","");
+		}
+	}
+
+	function onChangeCodeSousTypeDeSoin(){
+		document.getElementsByName("imgCodeSousTypeDeSoin")[0].src=<%="'"+request.getContextPath()+viewBean.getImageError()+"'"%>
+		document.getElementsByName("codeSousTypeDeSoinList")[0].selectedIndex=document.getElementsByName("codeSousTypeDeSoin")[0].value;
+		
+		if (document.getElementsByName("codeSousTypeDeSoinList")[0].selectedIndex!=-1 && document.getElementsByName("codeSousTypeDeSoinList")[0].selectedIndex!=""){
+			document.getElementsByName("imgCodeSousTypeDeSoin")[0].src=<%="'"+request.getContextPath()+viewBean.getImageSuccess()+"'"%>;
+			if(document.getElementsByName("isSaisieDemande")[0].value=="true"){
+				document.forms[0].elements('userAction').value = "<%=IRFActions.ACTION_SAISIE_DEMANDE_PIED_DE_PAGE%>"+".afficher";
+				document.forms[0].elements('_method').value ="add";
+		  		document.forms[0].submit();
+			}else if(document.getElementsByName("isEditSoins")[0].value=="true"){
+				document.forms[0].elements('_method').value = "add";					
+				document.forms[0].elements('userAction').value = "<%=IRFActions.ACTION_PARAMETRAGE_SOINS_RECHERCHE_PERIODE%>"+".chercher";
+		  		document.forms[0].submit();		
+			}else if(document.getElementsByName("isSaisieQd")[0].value=="true"){					
+				document.forms[0].elements('userAction').value = "<%=IRFActions.ACTION_SAISIE_QD_PIED_DE_PAGE%>"+".afficher";
+		  		document.forms[0].submit();		
+			}
+		}else{
+			document.getElementsByName("imgCodeSousTypeDeSoin")[0].src=<%="'"+request.getContextPath()+viewBean.getImageError()+"'"%>;
+		}
+	}
+	
+	function onChangeCodeTypeDeSoinList(){
+		document.getElementsByName("codeTypeDeSoin")[0].value=document.getElementsByName("codeTypeDeSoinList")[0].value;
+		if(document.getElementsByName("codeTypeDeSoinList")[0].value!=""){
+			document.getElementsByName("imgCodeTypeDeSoin")[0].src=<%="'"+request.getContextPath()+viewBean.getImageSuccess()+"'"%>;
+			updCodeSousTypeDeSoinList();
+		}else{	
+			document.getElementsByName("imgCodeTypeDeSoin")[0].src=<%="'"+request.getContextPath()+viewBean.getImageError()+"'"%>;
+			document.getElementsByName("imgCodeSousTypeDeSoin")[0].src=<%="'"+request.getContextPath()+viewBean.getImageError()+"'"%>;
+			document.getElementsByName("codeSousTypeDeSoin")[0].value="";
+			document.getElementsByName("codeSousTypeDeSoinList")[0].options.length=0;
+			document.getElementsByName("codeSousTypeDeSoinList")[0].options[document.getElementsByName("codeSousTypeDeSoinList")[0].options.length]=new Option("","");
+		}
+	}
+
+	function onChangeCodeSousTypeDeSoinList(){
+		document.getElementsByName("codeSousTypeDeSoin")[0].value=document.getElementsByName("codeSousTypeDeSoinList")[0].value;
+		if(document.getElementsByName("codeSousTypeDeSoinList")[0].value!=""){
+			document.getElementsByName("imgCodeSousTypeDeSoin")[0].src=<%="'"+request.getContextPath()+viewBean.getImageSuccess()+"'"%>;
+			if(document.getElementsByName("isSaisieDemande")[0].value=="true"){
+				document.forms[0].elements('userAction').value = "<%=IRFActions.ACTION_SAISIE_DEMANDE_PIED_DE_PAGE%>"+".afficher";
+				document.forms[0].elements('_method').value ="add";
+		  		document.forms[0].submit();
+			}else if(document.getElementsByName("isEditSoins")[0].value=="true"){
+				document.forms[0].elements('_method').value = "add";					
+				document.forms[0].elements('userAction').value = "<%=IRFActions.ACTION_PARAMETRAGE_SOINS_RECHERCHE_PERIODE%>"+".chercher";
+		  		document.forms[0].submit();		
+			}else if(document.getElementsByName("isSaisieQd")[0].value=="true"){					
+				document.forms[0].elements('userAction').value = "<%=IRFActions.ACTION_SAISIE_QD_PIED_DE_PAGE%>"+".afficher";
+		  		document.forms[0].submit();		
+			}
+		}else{
+			document.getElementsByName("codeSousTypeDeSoin")[0].value="";
+			document.getElementsByName("imgCodeSousTypeDeSoin")[0].src=<%="'"+request.getContextPath()+viewBean.getImageError()+"'"%>;
+		}
+	}
+
+	function updCodeSousTypeDeSoinList(){
+		document.getElementsByName("codeSousTypeDeSoin")[0].value="";
+		document.getElementsByName("imgCodeSousTypeDeSoin")[0].src=<%="'"+request.getContextPath()+viewBean.getImageError()+"'"%>;
+		
+		currentSousTypeDeSoinTab=sousTypeDeSoinTab[parseInt(document.getElementsByName("codeTypeDeSoin")[0].value,10)-1];
+		currentCodeSousTypeList=currentSousTypeDeSoinTab[0];
+		currentLibelleSousTypeList=currentSousTypeDeSoinTab[1];
+		codeSousTypeDeSoinList=document.getElementsByName("codeSousTypeDeSoinList")[0];
+		codeSousTypeDeSoinList.options.length=0;
+		codeSousTypeDeSoinList.options[codeSousTypeDeSoinList.options.length]=new Option("","");
+				
+		for (i=0; i<currentCodeSousTypeList.length; i++){
+			codeSousTypeDeSoinList.options[codeSousTypeDeSoinList.options.length]=new Option(currentLibelleSousTypeList[i],currentCodeSousTypeList[i]);
+		}
+	}
+	
+</SCRIPT>
+	
+<TR>
+	<TD><LABEL for="codeTypeDeSoin"><ct:FWLabel key="JSP_RF_DEM_R_CODE_TYPE_DE_SOIN"/></LABEL>&nbsp;</TD>
+	<TD colspan="5">
+		<INPUT type="text" name="codeTypeDeSoin" value="<%=viewBean.getCodeTypeDeSoin()%>" onchange="onChangeCodeTypeDeSoin();" style="width: 50px">
+		<IMG src="<%=request.getContextPath()+viewBean.getImageError()%>" alt="" name="imgCodeTypeDeSoin">
+		<SELECT name="codeTypeDeSoinList" tabindex="" onchange="onChangeCodeTypeDeSoinList();" style="width: 500px">
+			<%Iterator codeTypeDeSoinDataIte = viewBean.getTypeDeSoinData().iterator();while(codeTypeDeSoinDataIte.hasNext()){
+			String[] currentOption = (String[]) codeTypeDeSoinDataIte.next();%>
+			<OPTION value="<%=currentOption[0]%>"><%=currentOption[1]%></OPTION> 
+			<%}%>
+		</SELECT>
+	</TD>
+</TR>
+<TR>
+	<TD><LABEL for="forIdDecision"><ct:FWLabel key="JSP_RF_DEM_R_CODE_SOUS_TYPE_DE_SOIN"/></LABEL>&nbsp;</TD>
+	<TD colspan="5">
+		<INPUT type="text" name="codeSousTypeDeSoin" value="<%=viewBean.getCodeSousTypeDeSoin()%>" onchange="onChangeCodeSousTypeDeSoin();" style="width: 50px">
+		<IMG src="<%=request.getContextPath()+viewBean.getImageError()%>" alt="" name="imgCodeSousTypeDeSoin">
+		<SELECT name="codeSousTypeDeSoinList" tabindex="" onchange="onChangeCodeSousTypeDeSoinList();" style="width: 500px">
+				<OPTION value=""></OPTION> 
+		</SELECT>
+	</TD>	
+</TR>

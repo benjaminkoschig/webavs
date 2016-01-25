@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.echeance.SimpleEcheanceLibre">
+		<description>Demande PC Familles</description>
+		<table name="PFECHEAN" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idSimpleEcheanceLibre" column="JCIDEC" comment=""/>
+			<field name="idDossier" column="JCIDDO" type="NUMERIC" mandatory="true" comment="identifiant du dossier lié"/>
+			<field name="dateButoire" column="JCDATE" type="MONTH_YEAR" mandatory="true" comment="date où l'échéance a lieu"/>
+			<field name="description" column="JCDESC" type="STRING" mandatory="true" comment="description de l'échéance"/>
+			<field name="motif" column="JCMOTI" type="STRING" mandatory="true" comment="motif de l'échéance, texte court"/>
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="idDemande" />
+			</search-group>
+		</search-definition>
+	</simple-model>	
+</model-mapping>

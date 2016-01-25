@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.comptabilite.RubriqueSimpleModel">
+		<table name="CARUBRP" hasCreationSpy="false" hasSpy="false"
+			alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="idRubrique" column="IDRUBRIQUE"
+				comment="Id de la rubrique" />
+			<field name="idExterne" column="IDEXTERNE" type="STRING" comment="id organe exécution" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="idRubrique" operation="EQUALS" />
+				<search-field name="forIdExterne" field-ref="idExterne" operation="EQUALS" />
+				<search-field name="likeIdExterne" field-ref="idExterne" operation="LIKE" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

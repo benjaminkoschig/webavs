@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="perseus/lot/simpleLot.xml"/>
+	<model-mapping import="perseus/lot/lot.xml"/>
+	<model-mapping import="perseus/lot/simplePrestation.xml"/>
+	<model-mapping import="perseus/lot/prestation.xml"/>
+	<model-mapping import="perseus/lot/prestationRP.xml"/>
+	<model-mapping import="perseus/lot/prestationFacture.xml"/>
+	<model-mapping import="perseus/lot/prestationDecision.xml"/>
+	<model-mapping import="perseus/lot/simpleOrdreVersement.xml"/>
+	<model-mapping import="perseus/lot/ordreVersement.xml"/>
+</model-mapping>

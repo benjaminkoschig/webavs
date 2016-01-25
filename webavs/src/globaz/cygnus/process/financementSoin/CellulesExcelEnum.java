@@ -1,0 +1,34 @@
+package globaz.cygnus.process.financementSoin;
+
+public enum CellulesExcelEnum {
+    CHEVAUCHEMENT_PERIODES(null, "JSP_RF_IMPORT_FINANCEMENT_SOIN_ERREUR_PERIODE"),
+    DATE_DEBUT(5, "INFO_RF_IMPORT_FINANCEMENT_SOIN_ERREUR_DATE_DEBUT"),
+    DATE_DECOMPTE(9, "INFO_RF_IMPORT_FINANCEMENT_SOIN_ERREUR_DATE_DECOMPTE"),
+    DATE_FIN(6, "INFO_RF_IMPORT_FINANCEMENT_SOIN_ERREUR_DATE_FIN"),
+    DOUBLON_LIGNE(null, "INFO_RF_IMPORT_FINANCEMENT_SOIN_ERREUR_LIGNE_A_DOUBLE"),
+    FRAIS_JOURNALIER(4, "INFO_RF_IMPORT_FINANCEMENT_SOIN_ERREUR_FRAIS_JOURNALIER"),
+    LIGNE_INCOMPLETE(null, "JSP_RF_IMPORT_FINANCEMENT_SOIN_LIGNE_INCOMPLETE"),
+    MONTANT_TOTAL(8, "INFO_RF_IMPORT_FINANCEMENT_SOIN_ERREUR_MONTANT_TOTAL"),
+    NB_JOURS(7, "JSP_RF_IMPORT_FINANCEMENT_SOIN_ERREUR_CALCUL"),
+    NOM_HOME(1, "INFO_RF_IMPORT_FINANCEMENT_SOIN_ERREUR_NOM_HOME"),
+    NOM_PRENOM(3, "INFO_RF_IMPORT_FINANCEMENT_SOIN_ERREUR_NOM_PRENOM_TIERS"),
+    NUM_HOME(0, "INFO_RF_IMPORT_FINANCEMENT_SOIN_ERREUR_NUMERO_HOME"),
+    NUM_NSS(2, "JSP_RF_IMPORT_FINANCEMENT_SOIN_ERREUR_NUM_AVS");
+
+    private Integer indexCellule;
+    private String keyLabel;
+
+    private CellulesExcelEnum(Integer indexCellule, String keyLabel) {
+        this.indexCellule = indexCellule;
+        this.keyLabel = keyLabel;
+    }
+
+    public Integer getIndexCellule() {
+        return indexCellule;
+    }
+
+    public String getKeyLabel() {
+        return keyLabel;
+    }
+
+}

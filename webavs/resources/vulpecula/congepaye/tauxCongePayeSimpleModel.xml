@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.congepaye.TauxCongePayeSimpleModel">
+		<table name="PT_TAUX_CONGES_PAYES" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID" comment="id du taux congé payé" />				
+			<field name="idCongePaye" column="ID_PT_CONGES_PAYES" type="NUMERIC" comment="id du congé payé" />
+			<field name="idAssurance" column="ID_AFASSUP" type="NUMERIC" comment="id de l'assurance" />			
+			<field name="taux" column="TAUX" type="NUMERIC" comment="taux du congé payé" />	
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forIdCongePaye" field-ref="idCongePaye" operation="EQUALS" />
+				<search-field name="forIdCotisation" field-ref="idCotisation" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="id" />
+		</order-by>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+	</simple-model>
+</model-mapping>

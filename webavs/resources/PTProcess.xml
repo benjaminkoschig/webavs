@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<!-- C'est le nom du process , la clé -->
+	<bean id="vulpecula.decompte"
+		class="ch.globaz.jade.process.business.conf.JadeProcessDefinitionBean">
+		<!-- Classe de la création de la population -->
+		<property name="classNamePopulation" value="ch.globaz.vulpecula.process.decompte.population.PTProcessDecomptePopulation" />
+		<property name="description">
+			<map>
+				<entry key="FR">
+					<value>
+						<![CDATA[
+							<h1>Gestion des décomptes</h1>
+						  		 <div>
+						  		 	Ce processus permet de gérer les décomptes salaires.
+						  		 </div>
+						   ]]>
+					</value>
+				</entry>
+			</map>
+		</property>
+		<!-- Url pour afficher une entité dans l'application -->
+		<property name="urlEntite" value="vulpecula?userAction=vulpecula.postetravail.posteTravail.afficher" />
+		<!--  jsp pour passer param -->
+		<property name="urlProperties" value="vulpecula?vulpecula.process.decompte.afficher" />
+		<!--  On décrit les différentes étapes du process -->
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.vulpecula.process.decompte.step1.PTProcessDecompteGenererVides" />
+						<!-- Définit si on peut relancer une étape -->
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="8" />
+						<property name="order" value="1" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Génération des décomptes" />
+								<entry key="DE" value="[de]" />
+								<entry key="IT" value="[it]" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="2">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.vulpecula.process.decompte.step2.PTProcessDecomptePublier" />
+						<!-- Définit si on peut relancer une étape -->
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="4" />
+						<property name="order" value="2" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Impression des décomptes sans montant" />
+								<entry key="DE" value="[de]" />
+								<entry key="IT" value="[it]" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+</beans>

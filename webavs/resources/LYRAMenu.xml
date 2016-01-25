@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="menuHtml.xslt"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+
+	<!-- 	Menu principal HLyra
+
+			Regroupant :	- Echéances
+							- Historique
+	-->
+	<menu id="ly-menuprincipal">
+		<label refId="MENU_PRINCIPAL"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_ECHEANCES"/>
+				<action command="/lyra" responseTarget="fr_main">
+					<parameter name="userAction" value="lyra.echeances.apercuEcheances.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_HISTORIQUE"/>
+				<action command="/lyra" responseTarget="fr_main">
+					<parameter name="userAction" value="lyra.historique.apercuHistorique.chercher"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option pour les échéances -->
+	<menu id="ly-optionsecheances">
+		<label refId="MENU_OPTION_TITRE"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_DEFINITION_PARAMETRES"/>
+				<action command="/lyra" responseTarget="fr_main">
+					<parameter name="userAction" value="lyra.parametres.apercuParametres.chercher"/>
+					<parameter name="selectedId" value="idEcheances"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_PREPARER_ECHEANCE"/>
+				<action command="/lyra" responseTarget="fr_main">
+					<parameter name="userAction" value="lyra.echeances.preparation.afficher"/>
+					<parameter name="selectedId" value="idEcheances"/>
+				</action>
+
+			</node>
+		</nodes>
+	</menu>
+
+
+	<!-- Menu Option only detail    -->
+	<menu id="ly-optionsempty">
+		<label refId="OPTIONS" />
+	</menu>
+
+</menus>

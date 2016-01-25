@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.situationfamille.SimpleEnfantFamille">
+		<description>Tables associatives des enfants dans une situation familiale</description>
+		<table name="PFENFFAM" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idEnfantFamille" column="IJIDEF" comment="Clé primaire de la table des enfants famille"/>
+			<field name="idSituationFamiliale" column="IJIDSF" type="NUMERIC" mandatory="true" comment="Identifiant de la situation familiale"/>
+			<field name="idEnfant" column="IJIDEN" type="NUMERIC" mandatory="true" comment="Identifiant de l'enfant"/>
+			<field name="csGarde" column="IJCSGA" type="NUMERIC" mandatory="true" comment="Code système correspondant au type de garde"/>
+			<field name="csFormation" column="IJCSFO" type="NUMERIC" comment="Code système correspondant au type de formation de l'enfant"/>
+			<field name="csSource" column="IJCSSO" type="NUMERIC" comment="Code système correspondant à la source du mariage d'où vient l'enfant"/>
+			<field name="csEtatCivil" column="IJECEN" type="NUMERIC" mandatory="false" comment="Etat civil de l'enfant"/>
+		</fields>
+	
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdSituationFamiliale" operation="EQUALS" field-ref="idSituationFamiliale"/>
+				<search-field name="forIdEnfant" operation="EQUALS" field-ref="idEnfant"/>
+			</search-group>
+		</search-definition>
+		
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.osiris.business.model.OrdreVersementComplexModel">
+		<root-model name="ordre"
+			model-ref="ch.globaz.osiris.business.model.OrdreSimpleModel" />
+		<linked-model name="operation"
+			model-ref="ch.globaz.osiris.business.model.OperationSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idOrdre" field-ref="ordre.idOrdre" />
+			</join-group>
+		</linked-model>
+	</complexe-model>
+</model-mapping>

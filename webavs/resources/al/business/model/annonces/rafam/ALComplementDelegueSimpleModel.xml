@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.rafam.ComplementDelegueModel">
+		<description>Modèle représentant les informations complémentaires d'une annonce nécessaire dans le format délégué</description>
+		<table name="ALCOMPDE" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idComplement" column="CDID" comment="ID du complément"/>
+			<field name="recordNumber" column="CDRCNU" type="NUMERIC" dataType="NUMERIC(16,0)" mandatory="true" comment="recordNumber de l'annonce"/>	
+			<field name="beneficiaryStartDate" column="CDATED" type="DATE" mandatory="false" comment="Date du début d'embauche du bénéficiaire"/>
+			<field name="beneficiaryEndDate" column="CDATEF" type="DATE" mandatory="false" comment="Date de fin d'embauche du bénéficiaire"/>
+			<field name="allowanceAmount" column="CDMONT" type="NUMERIC" dataType="NUMERIC(8,2)" mandatory="true" comment="Montant de l'allocation"/>
+			<field name="messageDate" column="CDATEM" type="DATE" mandatory="true" comment="Date du dernier message contenant l'annonce"/>
+			<field name="eventDate" column="CDATEE" type="DATE" mandatory="true" comment="Date du dernier message contenant l'annonce"/>
+			<field name="messageId" column="CDMEID" type="NUMERIC" dataType="NUMERIC(12,0)" mandatory="true" comment="identifiant du message"/>
+			<field name="businessId" column="CDBUID" type="STRING" dataType="VARCHAR(100)" mandatory="true" comment="identifiant métier"/>
+			<field name="messageCompanyName" column="CDCONA" type="STRING" dataType="VARCHAR(200)" mandatory="true" comment="Nom de l'entreprise"/>
+			<field name="messageFakId" column="CDFAID" type="STRING" dataType="VARCHAR(6)" mandatory="true" comment="Numéro de la CAF utilisé par la Centrale"/>
+			<field name="messageFakName" column="CDFANA" type="STRING" dataType="VARCHAR(200)" mandatory="true" comment="Nom de la CAF"/>
+			<field name="messageNameResponsiblePerson" column="CDRESN" type="STRING" dataType="VARCHAR(50)" mandatory="false" comment="Nom du reponsable des annonces pour l'entreprise"/>
+			<field name="messageTelResponsiblePerson" column="CDREST" type="STRING" dataType="VARCHAR(13)" mandatory="false" comment="Tel du reponsable des annonces pour l'entreprise"/>
+			<field name="messageMailResponsiblePerson" column="CDRESM" type="STRING" dataType="VARCHAR(50)" mandatory="false" comment="Mail du reponsable des annonces pour l'entreprise"/>	
+		</fields>
+		
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forRecordNumber" field-ref="recordNumber" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="default">
+			<order-field field-ref="idComplement" order="DESC"/>
+		</order-by>
+	</simple-model>
+</model-mapping>

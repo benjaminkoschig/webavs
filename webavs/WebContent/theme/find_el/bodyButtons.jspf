@@ -1,0 +1,24 @@
+						<tr>
+							<td height="20">
+								<input type="hidden" name="userAction" value="">
+								<input type="hidden" name="_sl" value="">
+								<input type="hidden" name="_method" value="">
+								<input type="hidden" name="_valid" value="">
+								<input type="hidden" name="colonneSelection" value="${colonneSelection}">
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#FFFFFF" colspan="2" align="right">
+				<c:if test="${bShowExportButton}">
+					<input type="button" name="btnExport" value="${btnExportLabel}" onClick="onExport();">
+				</c:if>
+				<c:if test="${bButtonFind}">
+					<input type="submit" name="btnFind" value="${btnFindLabel}">
+				</c:if>
+				<c:if test="${bButtonNew}">
+					<input type="button" name="btnNew" value="${btnNewLabel}" onClick="onClickNew();btnNew.onclick='';document.location.href='${actionNew}'">
+				</c:if>

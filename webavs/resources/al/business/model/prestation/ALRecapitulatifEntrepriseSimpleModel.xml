@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping >
+	<simple-model className="ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseModel">
+		<description>représente la table RecapitulatifEntreprise </description>
+		<table name="ALRECAP" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idRecap" column="LID" comment="ID de la table RecapitulatifEntreprise "/>
+			<field name="numeroAffilie" column="MALNAF" type="STRING" mandatory="true" comment="numéro de l'affilié à laquelle est lié la récap"/>
+			<field name="periodeDe" column="LPERD" type="MONTH_YEAR" dataType="NUMERIC(6,0)" mandatory="true" comment="Début de la période pendant laquelle les prestations sont versées"/>
+			<field name="periodeA" column="LPERA" type="MONTH_YEAR" dataType="NUMERIC(6,0)"  mandatory="true" comment="Fin de la période pendant laquelle les prestations sont versées"/>
+			<field name="etatRecap" column="CSETAT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Etat de la récap (SA, CO, ...), code système"/>
+			<field name="numeroFacture" column="LNOFA" type="NUMERIC" dataType="NUMERIC(9,0)" mandatory="true" comment="Numéro de la facture"/>
+			<field name="bonification" column="CSBONI" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Type de bonification de la prestation (code système)"/>
+			<field name="genreAssurance" column="CSGEAS" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Genre d'affiliation (code système provenant de NAOS)"/>
+			<field name="idProcessusPeriodique" column="QPID" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="Processus métier de paiements"/>
+			
+		</fields>
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdRecap" field-ref="idRecap" operation="EQUALS"/>
+				<search-field name="forBonification" field-ref="bonification" operation="EQUALS"/>
+				<search-field name="forEtatRecap" field-ref="etatRecap" operation="EQUALS"/>
+				<search-field name="forPeriodeDe" field-ref="periodeDe" operation="EQUALS"/>
+				<search-field name="forPeriodeA" field-ref="periodeA" operation="EQUALS"/>
+				<search-field name="forNumeroAffilie" field-ref="numeroAffilie" operation="EQUALS"/>
+				<search-field name="forNumeroFacture" field-ref="numeroFacture" operation="EQUALS"/>
+				<search-field name="forGenreAssurance" field-ref="genreAssurance" operation="EQUALS"/>
+				<search-field name="forNumProcessusLie" field-ref="idProcessusPeriodique" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		<search-definition name="numFactureNotAvailable">
+			<search-group operator="AND">
+				<search-field name="forNumeroFacture" field-ref="numeroFacture" operation="EQUALS" />
+				<search-field name="forEtatRecap" field-ref="etatRecap" operation="NOT_EQUALS" />
+				<search-field name="forNumeroAffilie" field-ref="numeroAffilie" operation="EQUALS" />
+				<search-field name ="forBonification" field-ref="bonification" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		<search-definition name="numFactureSelectable">
+			<search-group operator="AND">
+				<search-field name="forEtatRecap" field-ref="etatRecap" operation="EQUALS" value="61170003"/>
+				<search-field name="forNumeroAffilie" field-ref="numeroAffilie" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="compensationFactu">
+			<search-group operator="AND">
+				<search-field name="forEtatRecap" field-ref="etatRecap" operation="EQUALS" value="61170001"/>
+				<!--<search-field name="forBonification" field-ref="bonification" operation="EQUALS" value="61240002"/>-->
+			</search-group>
+		</search-definition>
+		
+		<order-by name="default">
+			<order-field field-ref="periodeA" order="DESC"/>
+			<order-field field-ref="numeroAffilie" order="DESC"/>
+		</order-by>
+		<order-by name="lastNumFacture">
+			<order-field field-ref="numeroFacture" order="DESC" />
+			<order-field field-ref="periodeA" order="DESC"/>
+		</order-by>
+		<order-by name="numAffilie">
+			<order-field field-ref="numeroAffilie" order="DESC"/>
+		</order-by>
+		<order-by name="lastChange">
+			<order-field field-ref="spy" order="DESC"/>
+		</order-by>
+	</simple-model>
+</model-mapping>

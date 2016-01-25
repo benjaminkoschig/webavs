@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+
+	<complexe-model className="ch.globaz.pegasus.business.models.process.adaptation.RenteAdapationDemande">
+	
+		<root-model name="simpleRenteAdaptation" model-ref="ch.globaz.pegasus.business.models.process.adaptation.SimpleRenteAdaptation"/>
+		
+		<linked-model name="simpleDemandeCentrale" model-ref="ch.globaz.pegasus.business.models.process.adaptation.SimpleDemandeCentrale" join-type="INNER" select-fields="true">
+			<join-group operator="AND">
+				<join-field name="idDemandeCentral" operation="EQUALS" field-ref="simpleRenteAdaptation.idDemandeCentral"/>
+			</join-group>		
+		</linked-model>
+		
+		<search-definition>
+			<search-field name="forCsEtatVersionDroit" operation="EQUALS" field-ref="simpleDemandeCentrale.idProcess"/>
+		</search-definition>
+
+		<order-by name="idDroit">
+			<order-field field-ref="simpleDemandeCentrale.idProcess" />
+			<order-field field-ref="simpleDemandeCentrale.idDemandeCentral" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

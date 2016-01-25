@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.importation.CorrespondanceIdentifiantsModel">
+		<description>Modèle représentant la correspondance d'id entre ALFA-Gest et WebAF</description>
+		<table name="ALCORESP" hasCreationSpy="false" hasSpy="false" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idCorrespondance" column="CIID" comment="ID de la correspondance"/>
+			<field name="idAlfagest" column="CIIDAG" type="NUMERIC" mandatory="true" comment="ID dans Alfa-Gest"/>
+			<field name="idWebaf" column="CIIDWA" type="NUMERIC" mandatory="true" comment="ID dans WebAF"/>
+			<field name="tableAlfagest" column="CITAAG" type="STRING" mandatory="true" comment="Nom de la table WebAF"/>
+			<field name="tableWebaf" column="CITAWA" type="STRING" mandatory="true" comment="Nom de la table WebAF"/>
+		</fields>
+	</simple-model>
+</model-mapping>

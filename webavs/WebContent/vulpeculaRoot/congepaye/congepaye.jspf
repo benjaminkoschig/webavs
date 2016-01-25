@@ -1,0 +1,100 @@
+<div style="clear: both;">
+<div style="float: left;">	
+		<table>
+		<tr>
+			<td>
+				<ct:FWLabel key="JSP_POSTE_TRAVAIL"/>
+			</td>
+			<td>
+				<c:choose>
+					<c:when test="${viewBean.nouveau}">
+						<select id="idPosteTravail" name="idPosteTravail">
+							<c:forEach var="posteTravail" items="${viewBean.posteTravailsPossibles}">
+								<option value="${posteTravail.id}">${posteTravail.id} - ${posteTravail.raisonSocialeEmployeur} (${posteTravail.affilieNumero})</option>				
+							</c:forEach>
+						</select>
+					</c:when>
+					<c:otherwise>
+						<input id="idPosteTravail" type="hidden" value="${congePaye.posteTravail.id}">
+						${congePaye.posteTravail.id} - ${congePaye.raisonSocialeEmployeur}
+					</c:otherwise>				
+				</c:choose>
+			</td>
+		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_COMPTE_BANCAIRE"/></td>
+			<td><span id="adressePaiementEmployeur"/></td>
+		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_PERIODE_ANNEE"/></td>
+			<td><input class="smallextended"  type="text" id="anneeDebut" name="anneeDebut" data-g-integer="" value="${viewBean.anneeDebut}"/>
+			&nbsp;<ct:FWLabel key="JSP_PERIODE_ANNEE_AU"/>&nbsp;
+			<input class="smallextended"  type="text" id="anneeFin" name="anneeFin" data-g-integer="" value="${viewBean.anneeFin}"/></td>
+		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_BENEFICIAIRE"/></td>
+			<td colspan="2">
+				<select name="beneficiaire" id="beneficiaire">
+					<c:forEach var="codeSysteme" items="${viewBean.beneficiaires}">
+						<c:choose>
+							<c:when test="${codeSysteme.id == congePaye.beneficiaire.value}">
+								<option value="${codeSysteme.id}" selected="selected">${codeSysteme.code} - ${codeSysteme.libelle}</option>
+							</c:when>
+							<c:otherwise>
+								<option value="${codeSysteme.id}">${codeSysteme.code} - ${codeSysteme.libelle}</option>
+							</c:otherwise>
+						</c:choose>
+					</c:forEach>
+				</select>
+			</td>
+		</tr>		
+		<tr>
+			<td><ct:FWLabel key="JSP_LOT"/></td>
+			<td colspan="2">
+				<span>
+					<input name="idPassageFacturation" type="hidden" value="${congePaye.passage.id}"/>
+					${congePaye.passage.id} - ${congePaye.passage.libelle}  
+				</span>
+			</td>
+		</tr>
+		<c:if test="${not empty congePaye.etat}">
+			<tr>
+				<td><ct:FWLabel key="JSP_ETAT"/></td>
+				<td readonly="readonly"><ct:FWCodeLibelle csCode="${congePaye.etat.value}"/></td>
+			</tr>
+		</c:if>		
+		<tr><td colspan="2"><hr/></td></tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_TOTAL_SALAIRE_DECLARE"/></td>
+			<td>
+				<input id="salaireDeclare" name="salaireDeclare" class="readOnly smallextended"  type="text" value="${congePaye.salaireDeclare}" data-g-amount=" " readonly="readonly" tabindex="-1" />
+				&nbsp;<a id="lienCompteurs" href="vulpecula?userAction=${userActionCompteur}.afficher&amp;selectedId=${congePaye.posteTravail.id}"><ct:FWLabel key="JSP_COMPTEUR"/></a></td>
+		</tr>
+		<tr>
+			<td>+ <ct:FWLabel key="JSP_SALAIRE_NON_DECLARE"/></td>
+			<td><input id="salaireNonDeclare" name="salaireNonDeclare" class="smallextended"  type="text" value="${congePaye.salaireNonDeclare}" data-g-amount=" " />
+			&nbsp;<ct:FWLabel key="JSP_LE"/>&nbsp;
+			<input id="dateSalaireNonDeclare" name="dateSalaireNonDeclare" value="${congePaye.dateSalaireNonDeclare}" data-g-calendar=" " /></td>
+		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_TOTAL_SALAIRE"/></td>
+			<td><input id="totalSalaire" name="totalSalaire" class="readOnly smallextended"  type="text" value="${viewBean.totalSalaire}"  data-g-amount="" readonly="readonly" tabindex="-1" />
+			X&nbsp;<input type="text" id="tauxCP" name="tauxCP" class="readOnly smallextended" value="${congePaye.tauxCPValueScale2}" data-g-rate="nbMaxDecimal:2" readonly="readonly" tabindex="-1">%&nbsp;<ct:FWLabel key="JSP_TAUX_CP"/></td>
+		</tr>
+		<tr id="rowMontantBrut">
+			<td><span class="montantBrutLibelle"><ct:FWLabel key="JSP_MONTANT_BRUT"/></span></td>
+			<td><input type="text" id="montantBrut" value="" class="readOnly smallextended" data-g-amount=" " readonly="readonly" tabindex="-1"> 
+			X&nbsp;<input type="text" id="totalTaux" value="${congePaye.sommeTauxCongePaye}" name="totalTaux" class="readOnly smallextended" data-g-rate="nbMaxDecimal:2" readonly="readonly" tabindex="-1" />%		
+			<ct:FWLabel key="JSP_TOTAL_TX_COTI"/></td>
+		</tr>
+		<tr>
+			<td><span id="ajoutSuppressionCotisations">+</span></td>
+			<td><input type="text" id="montantCotisations" name="montantCotisations" class="readOnly smallextended" value="${congePaye.montantNet}" data-g-amount=" " readonly="readonly" tabindex="-1" /></td>		
+		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_MONTANT_NET"/></td>
+			<td><input type="text" id="montantNet" name="montantNet" class="readOnly smallextended" value="${congePaye.montantNet}" data-g-amount=" " readonly="readonly" tabindex="-1" /></td>		
+		</tr>		
+	</table>
+</div>
+</div>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.congepaye.LigneCompteurSimpleModel">
+		<table name="PT_LIGNES_COMPTEURS" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="Id du compteur" />	
+			<field name="idCompteur" column="ID_PT_COMPTEURS" type="NUMERIC"
+				comment="id compteur" />	
+			<field name="idCongePaye" column="ID_PT_CONGES_PAYES" type="NUMERIC"
+				comment="id congé payé" />
+			<field name="montant" column="MONTANT" type="NUMERIC"
+				comment="montant de la ligne compteur" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forIdCompteur" field-ref="idCompteur" operation="EQUALS" />
+				<search-field name="forIdCongePaye" field-ref="idCongePaye" operation="EQUALS" />
+				<search-field name="forIdCompteurIn" field-ref="idCompteur" operation="IN" />
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="id" />
+		</order-by>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+	</simple-model>
+</model-mapping>

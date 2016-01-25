@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.impotsource.SimpleTaux">
+		<description>Table des taux</description>
+		<table name="PFTAUX" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idTaux" column="JFIDTA" comment="Clé primaire de la table"/>
+			<field name="valeurTaux" type="NUMERIC" dataType="NUMERIC(5,2)" column="JFVATA" mandatory="true" comment="Valeur du taux" />
+			<field name="anneeTaux" column="JFANNE" type="STRING" mandatory="true" comment="Année de la valeur du taux"/>
+			<field name="idTrancheSalaire" column="JFIDSA" type="NUMERIC" mandatory="true" comment="Identifiant de la table liée TrancheSalaire"/>
+			<field name="idBareme" column="JFIDBR" type="NUMERIC" mandatory="true" comment="Identifiant de la table liée Bareme"/>
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forAnnee" operation="EQUALS" field-ref="anneeTaux"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

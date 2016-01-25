@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.musca.business.models.PlanFacturationPassageComplexModel">
+
+		<root-model name="passageModel"
+			model-ref="ch.globaz.musca.business.models.PassageModel" />		
+			
+		<linked-model name="planFacturationSimpleModel"
+			model-ref="ch.globaz.musca.business.models.PlanFacturationSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPlanFacturation"
+					operation="EQUALS" field-ref="passageModel.idPlanFacturation" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="moduleFacturationSimpleModel"
+			model-ref="ch.globaz.musca.business.models.ModuleFacturationSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idModFac"
+					operation="EQUALS" field-ref="planFacturationSimpleModel.idModFac" />
+			</join-group>
+		</linked-model>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPassage" field-ref="passageModel.idPassage"
+					operation="EQUALS" />
+				<search-field name="forNotIdPassage" field-ref="passageModel.idPassage"
+					operation="NOT_EQUALS" />
+				<search-field name="likeLibellePassage" field-ref="passageModel.libellePassage"
+					operation="LIKE" />	
+				<search-field name="forTypeFacturation" field-ref="moduleFacturationSimpleModel.idTypeModule"
+					operation="EQUALS" />
+				<search-field name="forEtat" field-ref="passageModel.status"
+					operation="EQUALS" />	
+				<search-field name="forEtats" field-ref="passageModel.status" operation="IN" />	
+				<search-field name="forTypesFacturation" field-ref="moduleFacturationSimpleModel.idTypeModule" operation="IN" />	
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

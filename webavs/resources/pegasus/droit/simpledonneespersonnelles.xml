@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.droit.SimpleDonneesPersonnelles">
+		<description>Donnees personnelles d un membre de famille</description>
+		<table name="PCDONPERS" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idDonneesPersonnelles" column="BFIDOP" comment="ID_DONNEES_PERSONELLES"/>
+			<field name="idDernierDomicileLegale" column="BFIDDL" type="NUMERIC" mandatory="false" comment="ID_DERNIER_DOMICILE_LEGALE"/>
+			<field name="idTiersRepondant" column="BFITIR" type="NUMERIC" mandatory="false" comment="ID_TIERS_REPONDANT"/>	
+			<field name="idLocaliteOrigine" column="BFICOM" type="NUMERIC" mandatory="false" comment="ID_COMMUNE_ORIGINE"/>
+			<field name="csStatusRefugieApatride" column="BFTSTA" type="NUMERIC" mandatory="false" comment="CS_STATUS_REFUGIE_APATRIDE"/>
+			<field name="csLienRepondant" column="BFTLIR" type="NUMERIC" mandatory="false" comment="CS_LIEN_REPONDANT"/>
+			<field name="csPermis" column="BFTPER" type="NUMERIC" mandatory="false" comment="CS_PERMIS_SEJOUR"/>
+			
+			<field name="noCaisseAvs" column="BFNCAV" type="STRING" mandatory="false" comment="NO_CAISSE_AVS"/>
+			<field name="noOCC" column="BFNOCC" type="STRING" mandatory="false" comment="NO_OCC"/>
+			<field name="noOfficeAi" column="BFNOAI" type="STRING" mandatory="false" comment="NO_OFFICE_AI"/>
+			<field name="isEnfant" column="BFBISE" type="BOOLEAN" mandatory="FALSE" comment="IS_REQUERANT_ENFANT"/>
+			<field name="isRepresentantLegal" column="BFBIRL" type="BOOLEAN" mandatory="FALSE" comment="IS_REPRESENTANT_LEGAL"/>
+			<field name="communeOrigine" column="BFLCOR" type="STRING" mandatory="FALSE" comment="COMMUNE_ORIGINE"/>
+			<field name="communeOrigineCodeOfs" column="BFCCOC" type="NUMERIC" mandatory="FALSE" comment="COMMUNE_ORIGINE_CODE_OFS"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDonneesPersonnelles" operation="EQUALS" field-ref="idDonneesPersonnelles" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

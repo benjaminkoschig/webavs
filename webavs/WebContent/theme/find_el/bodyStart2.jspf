@@ -1,0 +1,14 @@
+				</div>
+			</th>
+		</tr>
+		<tr>
+			<td bgcolor="gray" colspan="2" height="0"></td>
+		</tr>
+		<tr>
+			<td width="5">&nbsp;</td>
+			<td>
+				<table id="subtable" style="height:${subTableHeight}" cellspacing="0" cellpadding="0">
+					<tbody>
+						<tr>
+							<td height="20">&nbsp;</td>
+						</tr>

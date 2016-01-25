@@ -1,0 +1,1127 @@
+<?xml version="1.0"?>
+<parametrage_prestation version="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="./prestations.xsd">
+	<profession description="Menuisiers poseurs de sols (Menuisiers-charpentiers, vitriers, poseurs de sols)">
+		<caisses_metiers>
+			<caisse_metier>10</caisse_metier>
+			<caisse_metier>11</caisse_metier>
+			<caisse_metier>13</caisse_metier>
+		</caisses_metiers>
+		<mariage>
+			<standard>1</standard>
+		</mariage>
+		<deces>
+			<parente lien="68002001">3</parente>
+			<parente lien="68002003">3</parente>
+			<parente lien="68002002">2</parente>
+			<parente lien="68002004">2</parente>
+			<parente lien="68002005">2</parente>
+			<parente lien="68002006">2</parente>
+			<parente lien="68002007">1</parente>
+			<parente lien="autres">0</parente>
+		</deces>
+		<naissances>
+			<naissance>
+				<nbjours>3</nbjours>
+			</naissance>
+		</naissances>
+		<recrutement_info>1</recrutement_info>
+		<liber>0.5</liber>
+		<demenagement paye="non">1</demenagement>
+		<vacances>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="greaterOrEquals">50</predicat>
+				</predicats>
+				<nbjours>30</nbjours>
+				<taux>16.04</taux>
+			</vacance>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="less">50</predicat>
+				</predicats>
+				<nbjours>25</nbjours>
+				<taux>13.64</taux>
+			</vacance>
+		</vacances>
+		<jours_feries>0</jours_feries>
+		<horaire>
+			<jour>8.20</jour>
+			<semaine>41.00</semaine>
+			<mois>177.70</mois>
+		</horaire>
+		<formation_prof>0</formation_prof>
+		<hasCotisationsCongesPayes>false</hasCotisationsCongesPayes>	
+		<gratification>8.33</gratification>
+		<serviceMilitaire>
+			<genre codeSysteme="68008001">
+				<minJours>10</minJours>
+				<maxJours>24</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>10</code>
+			</genre>
+			<genre codeSysteme="68008002">
+				<couvertureAPG>50</couvertureAPG>
+				<code>11</code>
+			</genre>
+			<genre codeSysteme="68008003">
+				<couvertureAPG>50</couvertureAPG>
+				<code>12</code>
+			</genre>
+			<genre codeSysteme="68008004">
+				<couvertureAPG>50</couvertureAPG>
+				<code>13</code>
+			</genre>
+			<genre codeSysteme="68008005">
+				<couvertureAPG>75</couvertureAPG>
+				<code>14</code>
+			</genre>
+			<genre codeSysteme="68008006">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>20</code>
+			</genre>
+			<genre codeSysteme="68008007">
+				<couvertureAPG>50</couvertureAPG>
+				<code>21</code>
+			</genre>
+			<genre codeSysteme="68008008">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>22</code>
+			</genre>
+			<genre codeSysteme="68008009">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>30</code>
+			</genre>
+			<genre codeSysteme="68008010">
+				<couvertureAPG>50</couvertureAPG>
+				<code>40</code>
+			</genre>
+			<genre codeSysteme="68008011">
+				<couvertureAPG>50</couvertureAPG>
+				<code>41</code>
+			</genre>
+			<genre codeSysteme="68008012">
+				<maxJours>15</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+			</genre>
+		</serviceMilitaire>
+		<hasDroitAJ>
+			<typeAssurance>68904001</typeAssurance>
+		</hasDroitAJ>
+		<hasDroitCP>
+			<typeAssurance>68904003</typeAssurance>
+		</hasDroitCP>
+		<hasDroitSM>
+			<typeAssurance>68904001</typeAssurance>
+		</hasDroitSM>
+	</profession>
+	
+	<profession description="Scieurs">
+		<caisses_metiers>
+			<caisse_metier>12</caisse_metier>
+		</caisses_metiers>
+		<mariage>
+			<standard>1</standard>
+		</mariage>
+		<deces>
+			<parente lien="68002001">3</parente>
+			<parente lien="68002003">3</parente>
+			<parente lien="68002002">2</parente>
+			<parente lien="68002004">2</parente>
+			<parente lien="68002005">2</parente>
+			<parente lien="68002006">2</parente>
+			<parente lien="68002007">1</parente>
+			<parente lien="autres">0</parente>
+		</deces>
+		<naissances>
+			<naissance>
+				<nbjours>3</nbjours>
+			</naissance>
+		</naissances>
+		<recrutement_info>1</recrutement_info>
+		<liber>0.5</liber>
+		<demenagement paye="non">1</demenagement>
+		<vacances>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="greaterOrEquals">50</predicat>
+				</predicats>
+				<nbjours>30</nbjours>
+				<taux>16.04</taux>
+			</vacance>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="less">50</predicat>
+				</predicats>
+				<nbjours>25</nbjours>
+				<taux>13.64</taux>
+			</vacance>
+		</vacances>
+		<jours_feries>0</jours_feries>
+		<horaire>
+			<jour>8.20</jour>
+			<semaine>41.00</semaine>
+			<mois>177.70</mois>
+		</horaire>
+		<formation_prof>0</formation_prof>
+		<hasCotisationsCongesPayes>false</hasCotisationsCongesPayes>	
+		<gratification>8.33</gratification>
+		<serviceMilitaire>
+			<genre codeSysteme="68008001">
+				<minJours>10</minJours>
+				<maxJours>24</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>10</code>
+			</genre>
+			<genre codeSysteme="68008002">
+				<couvertureAPG>50</couvertureAPG>
+				<code>11</code>
+			</genre>
+			<genre codeSysteme="68008003">
+				<couvertureAPG>50</couvertureAPG>
+				<code>12</code>
+			</genre>
+			<genre codeSysteme="68008004">
+				<couvertureAPG>50</couvertureAPG>
+				<code>13</code>
+			</genre>
+			<genre codeSysteme="68008005">
+				<couvertureAPG>75</couvertureAPG>
+				<code>14</code>
+			</genre>
+			<genre codeSysteme="68008006">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>20</code>
+			</genre>
+			<genre codeSysteme="68008007">
+				<couvertureAPG>50</couvertureAPG>
+				<code>21</code>
+			</genre>
+			<genre codeSysteme="68008008">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>22</code>
+			</genre>
+			<genre codeSysteme="68008009">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>30</code>
+			</genre>
+			<genre codeSysteme="68008010">
+				<couvertureAPG>50</couvertureAPG>
+				<code>40</code>
+			</genre>
+			<genre codeSysteme="68008011">
+				<couvertureAPG>50</couvertureAPG>
+				<code>41</code>
+			</genre>
+			<genre codeSysteme="68008012">
+				<maxJours>15</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+			</genre>
+		</serviceMilitaire>
+		<hasDroitAJ>
+			<typeAssurance>68904001</typeAssurance>
+		</hasDroitAJ>
+		<hasDroitCP>
+			<typeAssurance>68904003</typeAssurance>
+		</hasDroitCP>
+		<hasDroitSM>
+			<typeAssurance>68904001</typeAssurance>
+		</hasDroitSM>
+	</profession>
+		
+	<profession description="Peintres, Peintres en publicité" >
+		<caisses_metiers>
+			<caisse_metier>20</caisse_metier>
+			<caisse_metier>21</caisse_metier>
+		</caisses_metiers>	
+		<mariage>
+			<standard>1</standard>
+		</mariage>
+		<deces>
+			<parente lien="68002001">3</parente>
+			<parente lien="68002003">3</parente>
+			<parente lien="68002002">2</parente>
+			<parente lien="68002004">2</parente>
+			<parente lien="68002005">2</parente>
+			<parente lien="68002006">2</parente>
+			<parente lien="68002007">1</parente>
+			<parente lien="autres">0</parente>
+		</deces>
+		<naissances>
+			<naissance>
+				<nbjours>3</nbjours>
+			</naissance>
+		</naissances>
+		<recrutement_info>1</recrutement_info>
+		<liber>0.5</liber>
+		<demenagement paye="non">1</demenagement>
+		<vacances>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="greaterOrEquals">50</predicat>
+				</predicats>
+				<nbjours>30</nbjours>
+				<taux>16.04</taux>
+			</vacance>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="less">50</predicat>
+				</predicats>
+				<nbjours>25</nbjours>
+				<taux>13.64</taux>
+			</vacance>
+		</vacances>
+		<jours_feries>0</jours_feries>
+		<horaire>
+			<jour>8.20</jour>
+			<semaine>41.00</semaine>
+			<mois>177.70</mois>
+		</horaire>
+		<formation_prof>0</formation_prof>		
+		<hasCotisationsCongesPayes>false</hasCotisationsCongesPayes>	
+		<gratification>8.33</gratification>
+		<serviceMilitaire>
+			<genre codeSysteme="68008001">
+				<minJours>10</minJours>
+				<maxJours>24</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>10</code>
+			</genre>
+			<genre codeSysteme="68008002">
+				<couvertureAPG>50</couvertureAPG>
+				<code>11</code>
+			</genre>
+			<genre codeSysteme="68008003">
+				<couvertureAPG>50</couvertureAPG>
+				<code>12</code>
+			</genre>
+			<genre codeSysteme="68008004">
+				<minJours>1</minJours>
+				<maxJours>1</maxJours>
+				<couvertureAPG>50</couvertureAPG>
+				<code>13</code>
+			</genre>
+			<genre codeSysteme="68008005">
+				<couvertureAPG>75</couvertureAPG>
+				<code>14</code>
+			</genre>
+			<genre codeSysteme="68008006">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>20</code>
+			</genre>
+			<genre codeSysteme="68008007">
+				<couvertureAPG>50</couvertureAPG>
+				<code>21</code>
+			</genre>
+			<genre codeSysteme="68008008">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>22</code>
+			</genre>
+			<genre codeSysteme="68008009">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>30</code>
+			</genre>
+			<genre codeSysteme="68008010">
+				<couvertureAPG>50</couvertureAPG>
+				<code>40</code>
+			</genre>
+			<genre codeSysteme="68008011">
+				<couvertureAPG>50</couvertureAPG>
+				<code>41</code>
+			</genre>
+			<genre codeSysteme="68008012">
+				<maxJours>15</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+			</genre>
+		</serviceMilitaire>
+		<hasDroitAJ>
+			<typeAssurance>68904001</typeAssurance>
+		</hasDroitAJ>
+		<hasDroitCP>
+			<typeAssurance>68904003</typeAssurance>
+		</hasDroitCP>
+		<hasDroitSM>
+			<typeAssurance>68904001</typeAssurance>
+		</hasDroitSM>
+	</profession>
+	
+	<profession description="Technique du batîment">
+		<caisses_metiers>
+			<caisse_metier>30</caisse_metier>
+			<caisse_metier>31</caisse_metier>
+			<caisse_metier>32</caisse_metier>
+		</caisses_metiers>	
+		<mariage>
+			<standard>2</standard>
+		</mariage>
+		<deces>
+			<parente lien="68002001">3</parente>
+			<parente lien="68002003">3</parente>
+			<parente lien="68002002">3</parente>
+			<parente lien="68002004">3</parente>
+			<parente lien="68002005">3</parente>
+			<parente lien="68002006">3</parente>
+			<parente lien="68002007">1</parente>
+			<parente lien="autres">0</parente>
+		</deces>
+		<naissances>
+			<naissance>
+				<nbjours>3</nbjours>
+			</naissance>
+		</naissances>
+		<recrutement_info>0</recrutement_info>
+		<liber>1</liber>
+		<demenagement paye="employeur">1</demenagement>
+		<vacances>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="greaterOrEquals">57</predicat>
+				</predicats>
+				<nbjours>30</nbjours>
+				<taux>16.50</taux>
+			</vacance>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="lessOrEquals">56</predicat>
+				</predicats>
+				<nbjours>25</nbjours>
+				<taux>14.00</taux>
+			</vacance>
+		</vacances>
+		<jours_feries>0</jours_feries>
+		<horaire>
+			<jour>8.25</jour>
+			<semaine>41.25</semaine>
+			<mois>178.80</mois>
+		</horaire>
+		<formation_prof>0</formation_prof>
+		<hasCotisationsCongesPayes>false</hasCotisationsCongesPayes>
+		<gratification>8.33</gratification>
+		<serviceMilitaire>
+			<genre codeSysteme="68008001">
+				<minJours>10</minJours>
+				<maxJours>24</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>10</code>
+			</genre>
+			<genre codeSysteme="68008002">
+				<couvertureAPG>50</couvertureAPG>
+				<code>11</code>
+			</genre>
+			<genre codeSysteme="68008003">
+				<couvertureAPG>50</couvertureAPG>
+				<code>12</code>
+			</genre>
+			<genre codeSysteme="68008004">
+				<couvertureAPG>100</couvertureAPG>
+				<code>13</code>
+			</genre>
+			<genre codeSysteme="68008005">
+				<couvertureAPG>50</couvertureAPG>
+				<code>14</code>
+			</genre>
+			<genre codeSysteme="68008006">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>20</code>
+			</genre>
+			<genre codeSysteme="68008007">
+				<couvertureAPG>50</couvertureAPG>
+				<code>21</code>
+			</genre>
+			<genre codeSysteme="68008008">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>22</code>
+			</genre>
+			<genre codeSysteme="68008009">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>30</code>
+			</genre>
+			<genre codeSysteme="68008010">
+				<couvertureAPG>50</couvertureAPG>
+				<code>40</code>
+			</genre>
+			<genre codeSysteme="68008011">
+				<couvertureAPG>50</couvertureAPG>
+				<code>41</code>
+			</genre>
+			<genre codeSysteme="68008012">
+				<maxJours>15</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+			</genre>
+		</serviceMilitaire>
+		
+		<hasDroitAJ>
+			<typeAssurance>68904001</typeAssurance>
+		</hasDroitAJ>
+		<hasDroitCP>
+			<typeAssurance>68904003</typeAssurance>
+		</hasDroitCP>
+		<hasDroitSM>
+			<typeAssurance>68904001</typeAssurance>
+		</hasDroitSM>
+	</profession>
+	
+	<profession description="Construction métallique">
+		<caisses_metiers>
+			<caisse_metier>40</caisse_metier>
+		</caisses_metiers>	
+		<mariage>
+			<standard>2</standard>
+			<enfants>1</enfants>
+		</mariage>
+		<deces>
+			<parente lien="68002001">3</parente>
+			<parente lien="68002003">3</parente>
+			<parente lien="68002002">3</parente>
+			<parente lien="68002004">3</parente>
+			<parente lien="68002005">3</parente>
+			<parente lien="68002006">3</parente>
+			<parente lien="68002007">1</parente>
+			<parente lien="autres">0</parente>
+		</deces>
+		<naissances>
+			<naissance>
+				<nbjours>5</nbjours>
+			</naissance>
+		</naissances>
+		<recrutement_info>0</recrutement_info>
+		<liber>1</liber>
+		<demenagement paye="employeur">1</demenagement>
+		<vacances>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="greaterOrEquals">57</predicat>
+				</predicats>
+				<nbjours>30</nbjours>
+				<taux>13.50</taux>
+			</vacance>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="lessOrEquals">56</predicat>
+				</predicats>
+				<nbjours>25</nbjours>
+				<taux>11.00</taux>
+			</vacance>
+		</vacances>
+		<jours_feries>0</jours_feries>
+		<horaire>
+			<jour>8.40</jour>
+			<semaine>42.00</semaine>
+			<mois>182.00</mois>
+		</horaire>
+		<formation_prof>0</formation_prof>
+		<hasCotisationsCongesPayes>false</hasCotisationsCongesPayes>		
+		<gratification>0</gratification>
+		<serviceMilitaire  tauxCP0="true">
+			<genre codeSysteme="68008001">
+				<minJours>10</minJours>
+				<maxJours>24</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>10</code>
+			</genre>
+			<genre codeSysteme="68008002">
+				<couvertureAPG>50</couvertureAPG>
+				<code>11</code>
+			</genre>
+			<genre codeSysteme="68008003">
+				<couvertureAPG>50</couvertureAPG>
+				<code>12</code>
+			</genre>
+			<genre codeSysteme="68008004">
+				<couvertureAPG>100</couvertureAPG>
+				<code>13</code>
+			</genre>
+			<genre codeSysteme="68008005">
+				<couvertureAPG>100</couvertureAPG>
+				<code>14</code>
+			</genre>
+			<genre codeSysteme="68008006">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>20</code>
+			</genre>
+			<genre codeSysteme="68008007">
+				<couvertureAPG>50</couvertureAPG>
+				<code>21</code>
+			</genre>
+			<genre codeSysteme="68008008">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>22</code>
+			</genre>
+			<genre codeSysteme="68008009">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>30</code>
+			</genre>
+			<genre codeSysteme="68008010">
+				<couvertureAPG>50</couvertureAPG>
+				<code>40</code>
+			</genre>
+			<genre codeSysteme="68008011">
+				<couvertureAPG>50</couvertureAPG>
+				<code>41</code>
+			</genre>
+			<genre codeSysteme="68008012">
+				<maxJours>15</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+			</genre>
+		</serviceMilitaire>
+		
+		<hasDroitAJ>
+			<typeAssurance>812002</typeAssurance>
+		</hasDroitAJ>
+		<hasDroitCP>
+			<typeAssurance>68904003</typeAssurance>
+		</hasDroitCP>
+		<hasDroitSM>
+			<typeAssurance>68904001</typeAssurance>
+		</hasDroitSM>
+	</profession>
+	
+	<profession description="Tuyauteurs">
+		<caisses_metiers>
+			<caisse_metier>41</caisse_metier>
+		</caisses_metiers>	
+		<mariage>
+			<standard>3</standard>
+			<enfants>1</enfants>
+		</mariage>
+		<deces>
+			<parente lien="68002001">3</parente>
+			<parente lien="68002003">3</parente>
+			<parente lien="68002002">3</parente>
+			<parente lien="68002004">3</parente>
+			<parente lien="68002005">3</parente>
+			<parente lien="68002006">3</parente>
+			<parente lien="68002007">1</parente>
+			<parente lien="68002008">1</parente>
+			<parente lien="68002009">1</parente>
+			<parente lien="68002010">1</parente>
+			<parente lien="68002011">1</parente>
+			<parente lien="68002012">1</parente>
+			<parente lien="68002013">1</parente>
+			<parente lien="autres">0</parente>
+		</deces>
+		<naissances>
+			<naissance>
+				<nbjours>2</nbjours>
+			</naissance>
+		</naissances>
+		<recrutement_info>1</recrutement_info>
+		<liber>1</liber>
+		<demenagement paye="employeur">1</demenagement>
+		<vacances>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="greaterOrEquals">57</predicat>
+				</predicats>
+				<nbjours>30</nbjours>
+				<taux>13.50</taux>
+			</vacance>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="lessOrEquals">56</predicat>
+					<predicat field="age" type="greaterOrEquals">50</predicat>
+				</predicats>
+				<nbjours>27</nbjours>
+				<taux>12.00</taux>
+			</vacance>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="lessOrEquals">49</predicat>
+				</predicats>
+				<nbjours>25</nbjours>
+				<taux>11.00</taux>
+			</vacance>
+		</vacances>
+		<jours_feries>10</jours_feries>
+		<horaire>
+			<jour>8.40</jour>
+			<semaine>42.00</semaine>
+			<mois>168.00</mois>
+		</horaire>
+		<formation_prof>0</formation_prof>
+		<hasCotisationsCongesPayes>false</hasCotisationsCongesPayes>		
+		<gratification>0</gratification>
+		<serviceMilitaire  tauxCP0="true">
+			<genre codeSysteme="68008001">
+				<minJours>10</minJours>
+				<maxJours>24</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>10</code>
+			</genre>
+			<genre codeSysteme="68008002">
+				<couvertureAPG>50</couvertureAPG>
+				<code>11</code>
+			</genre>
+			<genre codeSysteme="68008003">
+				<couvertureAPG>50</couvertureAPG>
+				<code>12</code>
+			</genre>
+			<genre codeSysteme="68008004">
+				<couvertureAPG>100</couvertureAPG>
+				<code>13</code>
+			</genre>
+			<genre codeSysteme="68008005">
+				<couvertureAPG>100</couvertureAPG>
+				<code>14</code>
+			</genre>
+			<genre codeSysteme="68008006">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>20</code>
+			</genre>
+			<genre codeSysteme="68008007">
+				<couvertureAPG>50</couvertureAPG>
+				<code>21</code>
+			</genre>
+			<genre codeSysteme="68008008">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>22</code>
+			</genre>
+			<genre codeSysteme="68008009">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>30</code>
+			</genre>
+			<genre codeSysteme="68008010">
+				<couvertureAPG>50</couvertureAPG>
+				<code>40</code>
+			</genre>
+			<genre codeSysteme="68008011">
+				<couvertureAPG>50</couvertureAPG>
+				<code>41</code>
+			</genre>
+			<genre codeSysteme="68008012">
+				<maxJours>15</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+			</genre>
+		</serviceMilitaire>
+		
+		<hasDroitAJ>
+			<typeAssurance>812002</typeAssurance>
+		</hasDroitAJ>
+		<hasDroitCP>
+			<typeAssurance>68904003</typeAssurance>
+		</hasDroitCP>
+		<hasDroitSM>
+			<typeAssurance>68904001</typeAssurance>
+		</hasDroitSM>
+	</profession>
+	
+	<profession description="Electricité">
+		<caisses_metiers>
+			<caisse_metier>50</caisse_metier>
+		</caisses_metiers>	
+		<mariage>
+			<standard>2</standard>
+		</mariage>
+		<deces>
+			<parente lien="68002001">3</parente>
+			<parente lien="68002003">3</parente>
+			<parente lien="68002002">3</parente>
+			<parente lien="68002004">3</parente>
+			<parente lien="68002005">3</parente>
+			<parente lien="68002006">3</parente>
+			<parente lien="68002007">1</parente>
+			<parente lien="68002008">1</parente>
+			<parente lien="68002009">1</parente>
+			<parente lien="autres">0</parente>
+		</deces>
+		<naissances>
+			<naissance>
+				<nbjours>3</nbjours>
+			</naissance>
+		</naissances>
+		<recrutement_info>1</recrutement_info>
+		<liber>0</liber>
+		<inspection>0.5</inspection>
+		<demenagement paye="employeur">1</demenagement>
+		<vacances>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="greaterOrEquals">57</predicat>
+				</predicats>
+				<nbjours>30</nbjours>
+				<taux>16.85</taux>
+			</vacance>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="lessOrEquals">56</predicat>
+				</predicats>
+				<nbjours>25</nbjours>
+				<taux>14.30</taux>
+			</vacance>
+		</vacances>
+		<jours_feries>0</jours_feries>
+		<horaire>
+			<jour>8.30</jour>
+			<semaine>41.50</semaine>
+			<mois>180.00</mois>
+		</horaire>
+		<formation_prof>0</formation_prof>	
+		<hasCotisationsCongesPayes>true</hasCotisationsCongesPayes>
+		<gratification>8.33</gratification>
+		<serviceMilitaire>
+			<genre codeSysteme="68008001">
+				<minJours>10</minJours>
+				<maxJours>24</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>10</code>
+			</genre>
+			<genre codeSysteme="68008002">
+				<couvertureAPG>50</couvertureAPG>
+				<code>11</code>
+			</genre>
+			<genre codeSysteme="68008003">
+				<couvertureAPG>50</couvertureAPG>
+				<code>12</code>
+			</genre>
+			<genre codeSysteme="68008004">
+				<couvertureAPG>100</couvertureAPG>
+				<code>13</code>
+			</genre>
+			<genre codeSysteme="68008005">
+				<couvertureAPG>50</couvertureAPG>
+				<code>14</code>
+			</genre>
+			<genre codeSysteme="68008006">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>20</code>
+			</genre>
+			<genre codeSysteme="68008007">
+				<couvertureAPG>50</couvertureAPG>
+				<code>21</code>
+			</genre>
+			<genre codeSysteme="68008008">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>22</code>
+			</genre>
+			<genre codeSysteme="68008009">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>30</code>
+			</genre>
+			<genre codeSysteme="68008010">
+				<couvertureAPG>50</couvertureAPG>
+				<code>40</code>
+			</genre>
+			<genre codeSysteme="68008011">
+				<couvertureAPG>50</couvertureAPG>
+				<code>41</code>
+			</genre>
+			<genre codeSysteme="68008012">
+				<maxJours>15</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+			</genre>
+		</serviceMilitaire>
+		<hasDroitAJ>
+			<typeAssurance>68904002</typeAssurance>
+			<typeAssurance>68904006</typeAssurance>
+		</hasDroitAJ>
+		<hasDroitCP>
+			<typeAssurance>68904002</typeAssurance>
+		</hasDroitCP>
+		<hasDroitSM>
+			<typeAssurance>68904002</typeAssurance>
+			<typeAssurance>68904006</typeAssurance>
+		</hasDroitSM>
+	</profession>
+	
+	<profession description="Nettoyeurs">
+		<caisses_metiers>
+			<caisse_metier>130</caisse_metier>
+		</caisses_metiers>	
+		<mariage>
+			<standard>2</standard>
+		</mariage>
+		<deces>
+			<parente lien="68002001">3</parente>
+			<parente lien="68002002">3</parente>
+			<parente lien="68002003">3</parente>
+			<parente lien="68002004">1</parente>
+			<parente lien="68002005">1</parente>
+			<parente lien="68002006">1</parente>
+			<parente lien="autres">0</parente>
+		</deces>
+		<naissances>
+			<naissance>
+				<predicats>
+					<predicat field="anneeService" type="greaterOrEquals">2</predicat>
+				</predicats>
+				<nbjours>2</nbjours>
+			</naissance>
+			<naissance>
+				<nbjours>1</nbjours>
+			</naissance>
+		</naissances>
+		<recrutement_info>0</recrutement_info>
+		<liber>1</liber>
+		<demenagement paye="employeur">1</demenagement>
+		<vacances>
+			<vacance>
+				<predicats>
+					<predicat field="anneeService" type="greaterOrEquals">20</predicat>
+				</predicats>
+				<nbjours>25</nbjours>
+				<taux>10.64</taux>
+			</vacance>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="greaterOrEquals">50</predicat>
+					<predicat field="anneeService" type="greaterOrEquals">5</predicat>
+				</predicats>
+				<nbjours>22</nbjours>
+				<taux>9.25</taux>
+			</vacance>
+			<vacance>
+				<predicats>
+					<predicat field="anneeService" type="greaterOrEquals">6</predicat>
+				</predicats>
+				<nbjours>21</nbjours>
+				<taux>8.79</taux>
+			</vacance>
+			<vacance>
+				<nbjours>20</nbjours>
+				<taux>8.33</taux>
+			</vacance>
+		</vacances>
+		<jours_feries>9</jours_feries>
+		<horaire>
+			<jour>8.60</jour>
+			<semaine>43.00</semaine>
+			<mois>172.00</mois>
+		</horaire>
+		<formation_prof>0</formation_prof>	
+		<hasCotisationsCongesPayes>false</hasCotisationsCongesPayes>
+		<gratification>8.33</gratification>
+		<serviceMilitaire>
+			<genre codeSysteme="68008001">
+				<minJours>10</minJours>
+				<maxJours>24</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>10</code>
+			</genre>
+			<genre codeSysteme="68008002">
+				<couvertureAPG>50</couvertureAPG>
+				<code>11</code>
+			</genre>
+			<genre codeSysteme="68008003">
+				<couvertureAPG>50</couvertureAPG>
+				<code>12</code>
+			</genre>
+			<genre codeSysteme="68008004">
+				<couvertureAPG>100</couvertureAPG>
+				<code>13</code>
+			</genre>
+			<genre codeSysteme="68008005">
+				<couvertureAPG>50</couvertureAPG>
+				<code>14</code>
+			</genre>
+			<genre codeSysteme="68008006">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>20</code>
+			</genre>
+			<genre codeSysteme="68008007">
+				<couvertureAPG>50</couvertureAPG>
+				<code>21</code>
+			</genre>
+			<genre codeSysteme="68008008">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>22</code>
+			</genre>
+			<genre codeSysteme="68008009">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>30</code>
+			</genre>
+			<genre codeSysteme="68008010">
+				<couvertureAPG>50</couvertureAPG>
+				<code>40</code>
+			</genre>
+			<genre codeSysteme="68008011">
+				<couvertureAPG>50</couvertureAPG>
+				<code>41</code>
+			</genre>
+			<genre codeSysteme="68008012">
+				<maxJours>15</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+			</genre>
+		</serviceMilitaire>
+		<hasDroitAJ>
+			<typeAssurance>68904001</typeAssurance>
+		</hasDroitAJ>
+		<hasDroitCP>
+			<typeAssurance>68904003</typeAssurance>
+		</hasDroitCP>
+		<hasDroitSM>
+			<typeAssurance>68904001</typeAssurance>
+		</hasDroitSM>
+	</profession>
+	
+	<profession description="Paysagistes">
+		<caisses_metiers>
+			<caisse_metier>120</caisse_metier>
+		</caisses_metiers>	
+		<mariage>
+			<standard>3</standard>
+		</mariage>
+		<deces>
+			<parente lien="68002001">3</parente>
+			<parente lien="68002002">3</parente>
+			<parente lien="68002003">3</parente>
+			<parente lien="68002004">2</parente>
+			<parente lien="68002005">2</parente>
+			<parente lien="68002006">2</parente>
+			<parente lien="68002007">2</parente>
+			<parente lien="autres">0</parente>
+		</deces>
+		<naissances>
+			<naissance>
+				<nbjours>1</nbjours>
+			</naissance>
+		</naissances>
+		<recrutement_info>1</recrutement_info>
+		<liber>1</liber>
+		<demenagement paye="employeur">1</demenagement>
+		<vacances>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="lessOrEquals">20</predicat>
+				</predicats>
+				<nbjours>30</nbjours>
+				<taux>13.25</taux>
+			</vacance>
+			<vacance>
+				<predicats>
+					<predicat field="age" type="greaterOrEquals">50</predicat>
+				</predicats>
+				<nbjours>30</nbjours>
+				<taux>13.25</taux>
+			</vacance>
+			<vacance>
+				<nbjours>25</nbjours>
+				<taux>10.80</taux>
+			</vacance>
+		</vacances>
+		<jours_feries>9</jours_feries>
+		<horaire>
+			<jour>9.00</jour>
+			<semaine>45.00</semaine>
+			<mois>180.00</mois>
+		</horaire>
+		<formation_prof>1</formation_prof>	
+		<hasCotisationsCongesPayes>false</hasCotisationsCongesPayes>
+		<gratification>8.33</gratification>
+		<serviceMilitaire>
+			<genre codeSysteme="68008001">
+				<minJours>10</minJours>
+				<maxJours>24</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>10</code>
+			</genre>
+			<genre codeSysteme="68008002">
+				<couvertureAPG>50</couvertureAPG>
+				<code>11</code>
+			</genre>
+			<genre codeSysteme="68008003">
+				<couvertureAPG>50</couvertureAPG>
+				<code>12</code>
+			</genre>
+			<genre codeSysteme="68008004">
+				<couvertureAPG>100</couvertureAPG>
+				<code>13</code>
+			</genre>
+			<genre codeSysteme="68008005">
+				<couvertureAPG>50</couvertureAPG>
+				<code>14</code>
+			</genre>
+			<genre codeSysteme="68008006">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>20</code>
+			</genre>
+			<genre codeSysteme="68008007">
+				<couvertureAPG>50</couvertureAPG>
+				<code>21</code>
+			</genre>
+			<genre codeSysteme="68008008">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>22</code>
+			</genre>
+			<genre codeSysteme="68008009">
+				<minJours>1</minJours>
+				<maxJours>6</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+				<code>30</code>
+			</genre>
+			<genre codeSysteme="68008010">
+				<couvertureAPG>50</couvertureAPG>
+				<code>40</code>
+			</genre>
+			<genre codeSysteme="68008011">
+				<couvertureAPG>50</couvertureAPG>
+				<code>41</code>
+			</genre>
+			<genre codeSysteme="68008012">
+				<maxJours>15</maxJours>
+				<couvertureAPG>100</couvertureAPG>
+			</genre>
+		</serviceMilitaire>
+		<hasDroitAJ>
+			<typeAssurance>68904001</typeAssurance>
+		</hasDroitAJ>
+		<hasDroitCP>
+			<typeAssurance>68904003</typeAssurance>
+		</hasDroitCP>
+		<hasDroitSM>
+			<typeAssurance>68904001</typeAssurance>
+		</hasDroitSM>
+	</profession>
+	
+</parametrage_prestation>

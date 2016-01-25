@@ -1,0 +1,5 @@
+<title><%=idEcran%></title>
+</head>
+<body onload="doInitThings()" onKeyDown="keyDown();actionKeyDown();" onKeyUp="keyUp();actionKeyUp();">
+<div class="detail">
+<div class="title"><span class="idEcran"><%=(null==idEcran)?"":idEcran%></span>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="al/business/model/envoi/ALEnvoiItemSimpleModel.xml"/>
+	<model-mapping import="al/business/model/envoi/ALEnvoiJobSimpleModel.xml"/>
+	<model-mapping import="al/business/model/envoi/ALEnvoiTemplateSimpleModel.xml"/>
+	<model-mapping import="al/business/model/envoi/ALEnvoiParametresSimpleModel.xml"/>
+	<model-mapping import="al/business/model/envoi/ALEnvoiComplexModel.xml"/>
+	<model-mapping import="al/business/model/envoi/ALEnvoiTemplateComplexModel.xml"/>
+</model-mapping>

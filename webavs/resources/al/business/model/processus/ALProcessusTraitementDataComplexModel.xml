@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'un enfant. Il regroupe le contenu de la table enfant et les informations du tiers qui y est lié -->
+<model-mapping>
+	<complexe-model className="ch.globaz.al.business.models.processus.ProcessusTraitementDataComplexModel">
+		<root-model name="dossierModel" model-ref="ch.globaz.al.business.models.dossier.DossierModel"/>
+		<linked-model name="droitModel" model-ref="ch.globaz.al.business.models.droit.DroitModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idDroit" field-ref="dossierModel.idDossier"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="prestationModel" model-ref="ch.globaz.al.business.models.prestation.EntetePrestationModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idDossier" field-ref="dossierModel.idDossier"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="recapModel" model-ref="ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idRecap" field-ref="prestationModel.idRecap"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition name="default">	
+			<search-group operator="AND">
+				<search-field name="forEtatDossier" field-ref="dossierModel.etatDossier" operation="EQUALS"/>
+				<search-field name="forStatutDossier" field-ref="dossierModel.statut" operation="EQUALS"/>
+				<search-field name="forActiviteDossier" field-ref="dossierModel.activiteAllocataire" operation="EQUALS"/>
+				<search-field name="forBonifDirectDossier" field-ref="dossierModel.idTiersBeneficiaire" operation="GREATER"/>
+				<search-field name="forBonifIndirectDossier" field-ref="dossierModel.idTiersBeneficiaire" operation="EQUALS"/>
+				<search-field name="forEtatRecap" field-ref="recapModel.etatRecap" operation="EQUALS"/>
+				<search-field name="forBonifRecap" field-ref="recapModel.bonification" operation="EQUALS"/>
+				<search-field name="forPeriodeDeRecap" field-ref="recapModel.periodeDe" operation="EQUALS"/>
+				<search-field name="forPeriodeARecap" field-ref="recapModel.periodeA" operation="EQUALS"/>
+				<search-field name="forNumAffRecap" field-ref="recapModel.numeroAffilie" operation="EQUALS"/>
+				<search-field name="forNumLotRecap" field-ref="recapModel.numeroLot" operation="EQUALS"/>
+				<search-field name="forNumFactureRecap" field-ref="recapModel.numeroFacture" operation="EQUALS"/>
+				
+				<search-field name="forStatutPrestation" field-ref="prestationModel.statut" operation="EQUALS"/>
+				<search-field name="forBonifPrestation" field-ref="prestationModel.bonification" operation="EQUALS"/>
+				<search-field name="forEtatPrestation" field-ref="prestationModel.etatPrestation" operation="EQUALS"/>
+				<search-field name="forIdJournalPrestation" field-ref="prestationModel.idJournal" operation="EQUALS"/>
+				<search-field name="forIdPassagePrestation" field-ref="prestationModel.idPassage" operation="EQUALS"/>
+				<search-field name="forNumGenerationPrestation" field-ref="prestationModel.numPsgGeneration" operation="EQUALS"/>
+				<search-field name="forPeriodeAPrestation" field-ref="prestationModel.periodeA" operation="EQUALS"/>
+				<search-field name="forPeriodeDePrestation" field-ref="prestationModel.periodeDe" operation="EQUALS"/>		
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

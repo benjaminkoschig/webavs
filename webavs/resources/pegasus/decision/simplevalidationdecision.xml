@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.decision.SimpleValidationDecision">
+		<description>Validation de décision</description>
+		<table name="PCVALDEC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idValidationDecision" column="VDIDEN" comment="ID_VALIDATION_DECISION"/>
+			<field name="idDecisionHeader" column="VDIDHE" type="NUMERIC" mandatory="false" comment="ID_DECISION_HEADER"/>
+			<field name="idPCAccordee" column="VDIPCA" type="NUMERIC" mandatory="false" comment="ID_PC_ACCORDEE"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdValidationDecision" operation="EQUALS" field-ref="idValidationDecision" />
+				<search-field name="forIdDecisionHeader" operation="EQUALS" field-ref="idDecisionHeader"/>
+				<search-field name="forInIdDecisionHeader" operation="IN" field-ref="idDecisionHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<model-mapping import="amal/contribuable/simplecontribuable.xml"/>
+	<model-mapping import="amal/contribuable/simplecontribuableinfos.xml"/>
+	<model-mapping import="amal/contribuable/contribuable.xml"/>
+	<model-mapping import="amal/contribuable/contribuableRCListe.xml"/>
+	<!-- <model-mapping import="amal/contribuable/contribuableFamilleRCListe.xml"/>-->
+	<model-mapping import="amal/contribuable/contribuableHistoriqueRCListe.xml"/> 
+</model-mapping>

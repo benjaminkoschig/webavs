@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.externalmodule.SimpleExternalModule">
+		<description>Module Externe PC</description>
+		<table name="PC_EXTERNAL_JOB" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idJob" column="ID" comment="Identifiant unique du job (PK)"/>
+			<field name="etat" column="ETAT" type="ENUM" mandatory="true" comment="Etat du traitement"/>
+			<field name="sourceAction" column="SOURCE_ACTION" type="ENUM" mandatory="true" comment="Source de lancement du traitement"/>
+			<field name="parameters" column="PARAMETERS" type="STRING" dataType="VARCHAR(4095)"  mandatory="true" comment="Source de lancement du traitement"/>
+		</fields>
+	</simple-model>
+</model-mapping>

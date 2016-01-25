@@ -1,0 +1,601 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>Julien TSCHAPPAT</Author>
+  <LastAuthor>Julien TSCHAPPAT</LastAuthor>
+  <LastPrinted>2012-03-13T11:41:51Z</LastPrinted>
+  <Created>2012-03-12T07:17:12Z</Created>
+  <LastSaved>2012-10-04T11:36:43Z</LastSaved>
+  <Company>Globaz</Company>
+  <Version>14.00</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <AllowPNG/>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>11820</WindowHeight>
+  <WindowWidth>18915</WindowWidth>
+  <WindowTopX>120</WindowTopX>
+  <WindowTopY>75</WindowTopY>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s62">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+  </Style>
+  <Style ss:ID="s63">
+   <Alignment ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="2"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="2"/>
+   </Borders>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+   <Interior ss:Color="#B8CCE4" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s64">
+   <Alignment ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="2"/>
+   </Borders>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+   <Interior ss:Color="#B8CCE4" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s65">
+   <Alignment ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="2"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="2"/>
+   </Borders>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+   <Interior ss:Color="#B8CCE4" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s66">
+   <Alignment ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="2"/>
+   </Borders>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+   <Interior ss:Color="#B8CCE4" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s68">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="2"/>
+   </Borders>
+  </Style>
+  <Style ss:ID="s69">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="2"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="2"/>
+   </Borders>
+  </Style>
+  <Style ss:ID="s71">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="2"/>
+   </Borders>
+  </Style>
+  <Style ss:ID="s72">
+   <Borders/>
+  </Style>
+  <Style ss:ID="s73">
+   <Alignment ss:Vertical="Top" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="2"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="2"/>
+   </Borders>
+  </Style>
+  <Style ss:ID="s74">
+   <Alignment ss:Vertical="Top" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="2"/>
+   </Borders>
+  </Style>
+  <Style ss:ID="s75">
+   <Alignment ss:Vertical="Top" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="2"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="2"/>
+   </Borders>
+  </Style>
+  <Style ss:ID="s76">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Top" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="2"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="2"/>
+   </Borders>
+  </Style>
+ </Styles>
+ <Names>
+  <NamedRange ss:Name="HEADER_E_CODE_ERREUR" ss:RefersTo="=Erreurs!R1C10"/>
+  <NamedRange ss:Name="HEADER_E_ERREUR" ss:RefersTo="=Erreurs!R1C11"/>
+  <NamedRange ss:Name="HEADER_E_NAISSANCE_ENF" ss:RefersTo="=Erreurs!R1C4"/>
+  <NamedRange ss:Name="HEADER_E_NO_ANNONCE" ss:RefersTo="=Erreurs!R1C7"/>
+  <NamedRange ss:Name="HEADER_E_NO_DOSSIER" ss:RefersTo="=Erreurs!R1C5"/>
+  <NamedRange ss:Name="HEADER_E_NOM_ALLOC" ss:RefersTo="=Erreurs!R1C8"/>
+  <NamedRange ss:Name="HEADER_E_NOM_ENF" ss:RefersTo="=Erreurs!R1C2"/>
+  <NamedRange ss:Name="HEADER_E_NSS_ENF" ss:RefersTo="=Erreurs!R1C1"/>
+  <NamedRange ss:Name="HEADER_E_OFFICE" ss:RefersTo="=Erreurs!R1C13"/>
+  <NamedRange ss:Name="HEADER_E_PERIODE_ERREUR" ss:RefersTo="=Erreurs!R1C12"/>
+  <NamedRange ss:Name="HEADER_E_PRENOM_ALLOC" ss:RefersTo="=Erreurs!R1C9"/>
+  <NamedRange ss:Name="HEADER_E_PRENOM_ENF" ss:RefersTo="=Erreurs!R1C3"/>
+  <NamedRange ss:Name="HEADER_E_RECORD_NUMBER" ss:RefersTo="=Erreurs!R1C6"/>
+  <NamedRange ss:Name="HEADER_R_CODE_ERREUR" ss:RefersTo="=Rappels!R1C10"/>
+  <NamedRange ss:Name="HEADER_R_ERREUR" ss:RefersTo="=Rappels!R1C11"/>
+  <NamedRange ss:Name="HEADER_R_NAISSANCE_ENF" ss:RefersTo="=Rappels!R1C4"/>
+  <NamedRange ss:Name="HEADER_R_NO_ANNONCE" ss:RefersTo="=Rappels!R1C7"/>
+  <NamedRange ss:Name="HEADER_R_NO_DOSSIER" ss:RefersTo="=Rappels!R1C5"/>
+  <NamedRange ss:Name="HEADER_R_NOM_ALLOC" ss:RefersTo="=Rappels!R1C8"/>
+  <NamedRange ss:Name="HEADER_R_NOM_ENF" ss:RefersTo="=Rappels!R1C2"/>
+  <NamedRange ss:Name="HEADER_R_NSS_ENF" ss:RefersTo="=Rappels!R1C1"/>
+  <NamedRange ss:Name="HEADER_R_OFFICE" ss:RefersTo="=Rappels!R1C13"/>
+  <NamedRange ss:Name="HEADER_R_PERIODE_ERREUR" ss:RefersTo="=Rappels!R1C12"/>
+  <NamedRange ss:Name="HEADER_R_PRENOM_ALLOC" ss:RefersTo="=Rappels!R1C9"/>
+  <NamedRange ss:Name="HEADER_R_PRENOM_ENF" ss:RefersTo="=Rappels!R1C3"/>
+  <NamedRange ss:Name="HEADER_R_RECORD_NUMBER" ss:RefersTo="=Rappels!R1C6"/>
+  <NamedRange ss:Name="HEADER_S_CODE_ERREUR"
+   ss:RefersTo="='Annonces suspendues'!R1C10"/>
+  <NamedRange ss:Name="HEADER_S_ERREUR" ss:RefersTo="='Annonces suspendues'!R1C11"/>
+  <NamedRange ss:Name="HEADER_S_NAISSANCE_ENF"
+   ss:RefersTo="='Annonces suspendues'!R1C4"/>
+  <NamedRange ss:Name="HEADER_S_NO_ANNONCE"
+   ss:RefersTo="='Annonces suspendues'!R1C7"/>
+  <NamedRange ss:Name="HEADER_S_NO_DOSSIER"
+   ss:RefersTo="='Annonces suspendues'!R1C5"/>
+  <NamedRange ss:Name="HEADER_S_NOM_ALLOC"
+   ss:RefersTo="='Annonces suspendues'!R1C8"/>
+  <NamedRange ss:Name="HEADER_S_NOM_ENF" ss:RefersTo="='Annonces suspendues'!R1C2"/>
+  <NamedRange ss:Name="HEADER_S_NSS_ENF" ss:RefersTo="='Annonces suspendues'!R1C1"/>
+  <NamedRange ss:Name="HEADER_S_OFFICE" ss:RefersTo="='Annonces suspendues'!R1C13"/>
+  <NamedRange ss:Name="HEADER_S_PERIODE_ERREUR"
+   ss:RefersTo="='Annonces suspendues'!R1C12"/>
+  <NamedRange ss:Name="HEADER_S_PRENOM_ALLOC"
+   ss:RefersTo="='Annonces suspendues'!R1C9"/>
+  <NamedRange ss:Name="HEADER_S_PRENOM_ENF"
+   ss:RefersTo="='Annonces suspendues'!R1C3"/>
+  <NamedRange ss:Name="HEADER_S_RECORD_NUMBER"
+   ss:RefersTo="='Annonces suspendues'!R1C6"/>
+  <NamedRange ss:Name="HEADER_U_CODE_ERREUR"
+   ss:RefersTo="='Modifications UPI'!R1C10"/>
+  <NamedRange ss:Name="HEADER_U_ERREUR" ss:RefersTo="='Modifications UPI'!R1C11"/>
+  <NamedRange ss:Name="HEADER_U_NAISSANCE_ENF"
+   ss:RefersTo="='Modifications UPI'!R1C4"/>
+  <NamedRange ss:Name="HEADER_U_NO_ANNONCE" ss:RefersTo="='Modifications UPI'!R1C7"/>
+  <NamedRange ss:Name="HEADER_U_NO_DOSSIER" ss:RefersTo="='Modifications UPI'!R1C5"/>
+  <NamedRange ss:Name="HEADER_U_NOM_ALLOC" ss:RefersTo="='Modifications UPI'!R1C8"/>
+  <NamedRange ss:Name="HEADER_U_NOM_ENF" ss:RefersTo="='Modifications UPI'!R1C2"/>
+  <NamedRange ss:Name="HEADER_U_NSS_ENF" ss:RefersTo="='Modifications UPI'!R1C1"/>
+  <NamedRange ss:Name="HEADER_U_OFFICE" ss:RefersTo="='Modifications UPI'!R1C13"/>
+  <NamedRange ss:Name="HEADER_U_PERIODE_ERREUR"
+   ss:RefersTo="='Modifications UPI'!R1C12"/>
+  <NamedRange ss:Name="HEADER_U_PRENOM_ALLOC"
+   ss:RefersTo="='Modifications UPI'!R1C9"/>
+  <NamedRange ss:Name="HEADER_U_PRENOM_ENF" ss:RefersTo="='Modifications UPI'!R1C3"/>
+  <NamedRange ss:Name="HEADER_U_RECORD_NUMBER"
+   ss:RefersTo="='Modifications UPI'!R1C6"/>
+  <NamedRange ss:Name="VALUE_E_CODE_ERREUR" ss:RefersTo="=Erreurs!R2C10"/>
+  <NamedRange ss:Name="VALUE_E_ERREUR" ss:RefersTo="=Erreurs!R2C11"/>
+  <NamedRange ss:Name="VALUE_E_NAISSANCE_ENF" ss:RefersTo="=Erreurs!R2C4"/>
+  <NamedRange ss:Name="VALUE_E_NO_ANNONCE" ss:RefersTo="=Erreurs!R2C7"/>
+  <NamedRange ss:Name="VALUE_E_NO_DOSSIER" ss:RefersTo="=Erreurs!R2C5"/>
+  <NamedRange ss:Name="VALUE_E_NOM_ALLOC" ss:RefersTo="=Erreurs!R2C8"/>
+  <NamedRange ss:Name="VALUE_E_NOM_ENF" ss:RefersTo="=Erreurs!R2C2"/>
+  <NamedRange ss:Name="VALUE_E_NSS_ENF" ss:RefersTo="=Erreurs!R2C1"/>
+  <NamedRange ss:Name="VALUE_E_OFFICE" ss:RefersTo="=Erreurs!R2C13"/>
+  <NamedRange ss:Name="VALUE_E_PERIODE_ERREUR" ss:RefersTo="=Erreurs!R2C12"/>
+  <NamedRange ss:Name="VALUE_E_PRENOM_ALLOC" ss:RefersTo="=Erreurs!R2C9"/>
+  <NamedRange ss:Name="VALUE_E_PRENOM_ENF" ss:RefersTo="=Erreurs!R2C3"/>
+  <NamedRange ss:Name="VALUE_E_RECORD_NUMBER" ss:RefersTo="=Erreurs!R2C6"/>
+  <NamedRange ss:Name="VALUE_R_CODE_ERREUR" ss:RefersTo="=Rappels!R2C10"/>
+  <NamedRange ss:Name="VALUE_R_ERREUR" ss:RefersTo="=Rappels!R2C11"/>
+  <NamedRange ss:Name="VALUE_R_NAISSANCE_ENF" ss:RefersTo="=Rappels!R2C4"/>
+  <NamedRange ss:Name="VALUE_R_NO_ANNONCE" ss:RefersTo="=Rappels!R2C7"/>
+  <NamedRange ss:Name="VALUE_R_NO_DOSSIER" ss:RefersTo="=Rappels!R2C5"/>
+  <NamedRange ss:Name="VALUE_R_NOM_ALLOC" ss:RefersTo="=Rappels!R2C8"/>
+  <NamedRange ss:Name="VALUE_R_NOM_ENF" ss:RefersTo="=Rappels!R2C2"/>
+  <NamedRange ss:Name="VALUE_R_NSS_ENF" ss:RefersTo="=Rappels!R2C1"/>
+  <NamedRange ss:Name="VALUE_R_OFFICE" ss:RefersTo="=Rappels!R2C13"/>
+  <NamedRange ss:Name="VALUE_R_PERIODE_ERREUR" ss:RefersTo="=Rappels!R2C12"/>
+  <NamedRange ss:Name="VALUE_R_PRENOM_ALLOC" ss:RefersTo="=Rappels!R2C9"/>
+  <NamedRange ss:Name="VALUE_R_PRENOM_ENF" ss:RefersTo="=Rappels!R2C3"/>
+  <NamedRange ss:Name="VALUE_R_RECORD_NUMBER" ss:RefersTo="=Rappels!R2C6"/>
+  <NamedRange ss:Name="VALUE_S_CODE_ERREUR"
+   ss:RefersTo="='Annonces suspendues'!R2C10"/>
+  <NamedRange ss:Name="VALUE_S_ERREUR" ss:RefersTo="='Annonces suspendues'!R2C11"/>
+  <NamedRange ss:Name="VALUE_S_NAISSANCE_ENF"
+   ss:RefersTo="='Annonces suspendues'!R2C4"/>
+  <NamedRange ss:Name="VALUE_S_NO_ANNONCE"
+   ss:RefersTo="='Annonces suspendues'!R2C7"/>
+  <NamedRange ss:Name="VALUE_S_NO_DOSSIER"
+   ss:RefersTo="='Annonces suspendues'!R2C5"/>
+  <NamedRange ss:Name="VALUE_S_NOM_ALLOC" ss:RefersTo="='Annonces suspendues'!R2C8"/>
+  <NamedRange ss:Name="VALUE_S_NOM_ENF" ss:RefersTo="='Annonces suspendues'!R2C2"/>
+  <NamedRange ss:Name="VALUE_S_NSS_ENF" ss:RefersTo="='Annonces suspendues'!R2C1"/>
+  <NamedRange ss:Name="VALUE_S_OFFICE" ss:RefersTo="='Annonces suspendues'!R2C13"/>
+  <NamedRange ss:Name="VALUE_S_PERIODE_ERREUR"
+   ss:RefersTo="='Annonces suspendues'!R2C12"/>
+  <NamedRange ss:Name="VALUE_S_PRENOM_ALLOC"
+   ss:RefersTo="='Annonces suspendues'!R2C9"/>
+  <NamedRange ss:Name="VALUE_S_PRENOM_ENF"
+   ss:RefersTo="='Annonces suspendues'!R2C3"/>
+  <NamedRange ss:Name="VALUE_S_RECORD_NUMBER"
+   ss:RefersTo="='Annonces suspendues'!R2C6"/>
+  <NamedRange ss:Name="VALUE_U_CODE_ERREUR"
+   ss:RefersTo="='Modifications UPI'!R2C10"/>
+  <NamedRange ss:Name="VALUE_U_ERREUR" ss:RefersTo="='Modifications UPI'!R2C11"/>
+  <NamedRange ss:Name="VALUE_U_NAISSANCE_ENF"
+   ss:RefersTo="='Modifications UPI'!R2C4"/>
+  <NamedRange ss:Name="VALUE_U_NO_ANNONCE" ss:RefersTo="='Modifications UPI'!R2C7"/>
+  <NamedRange ss:Name="VALUE_U_NO_DOSSIER" ss:RefersTo="='Modifications UPI'!R2C5"/>
+  <NamedRange ss:Name="VALUE_U_NOM_ALLOC" ss:RefersTo="='Modifications UPI'!R2C8"/>
+  <NamedRange ss:Name="VALUE_U_NOM_ENF" ss:RefersTo="='Modifications UPI'!R2C2"/>
+  <NamedRange ss:Name="VALUE_U_NSS_ENF" ss:RefersTo="='Modifications UPI'!R2C1"/>
+  <NamedRange ss:Name="VALUE_U_OFFICE" ss:RefersTo="='Modifications UPI'!R2C13"/>
+  <NamedRange ss:Name="VALUE_U_PERIODE_ERREUR"
+   ss:RefersTo="='Modifications UPI'!R2C12"/>
+  <NamedRange ss:Name="VALUE_U_PRENOM_ALLOC"
+   ss:RefersTo="='Modifications UPI'!R2C9"/>
+  <NamedRange ss:Name="VALUE_U_PRENOM_ENF" ss:RefersTo="='Modifications UPI'!R2C3"/>
+  <NamedRange ss:Name="VALUE_U_RECORD_NUMBER"
+   ss:RefersTo="='Modifications UPI'!R2C6"/>
+ </Names>
+ <Worksheet ss:Name="Erreurs">
+  <Table ss:ExpandedColumnCount="13" ss:ExpandedRowCount="3" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60" ss:DefaultRowHeight="15">
+   <Column ss:AutoFitWidth="0" ss:Width="86.25"/>
+   <Column ss:Width="60.75"/>
+   <Column ss:Width="75"/>
+   <Column ss:Width="89.25"/>
+   <Column ss:StyleID="s62" ss:Width="52.5"/>
+   <Column ss:Width="76.5"/>
+   <Column ss:Width="58.5"/>
+   <Column ss:Width="78.75"/>
+   <Column ss:Width="93.75"/>
+   <Column ss:Index="11" ss:AutoFitWidth="0" ss:Width="375"/>
+   <Column ss:AutoFitWidth="0" ss:Width="112.5"/>
+   <Column ss:Width="80.25"/>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s63"><Data ss:Type="String">NSS Enfant</Data><NamedCell
+      ss:Name="HEADER_E_NSS_ENF"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Nom enfant</Data><NamedCell
+      ss:Name="HEADER_E_NOM_ENF"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Prénom enfant</Data><NamedCell
+      ss:Name="HEADER_E_PRENOM_ENF"/></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Date de naissance</Data><NamedCell
+      ss:Name="HEADER_E_NAISSANCE_ENF"/></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">N° dossier</Data><NamedCell
+      ss:Name="HEADER_E_NO_DOSSIER"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Record number</Data><NamedCell
+      ss:Name="HEADER_E_RECORD_NUMBER"/></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">N° annonce</Data><NamedCell
+      ss:Name="HEADER_E_NO_ANNONCE"/></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Nom allocataire</Data><NamedCell
+      ss:Name="HEADER_E_NOM_ALLOC"/></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Prénom allocataire</Data><NamedCell
+      ss:Name="HEADER_E_PRENOM_ALLOC"/></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Code Erreur</Data><NamedCell
+      ss:Name="HEADER_E_CODE_ERREUR"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Erreur</Data><NamedCell
+      ss:Name="HEADER_E_ERREUR"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Période en erreur</Data><NamedCell
+      ss:Name="HEADER_E_PERIODE_ERREUR"/></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Office en conflit</Data><NamedCell
+      ss:Name="HEADER_E_OFFICE"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s73"><NamedCell ss:Name="VALUE_E_NSS_ENF"/></Cell>
+    <Cell ss:StyleID="s74"><NamedCell ss:Name="VALUE_E_NOM_ENF"/></Cell>
+    <Cell ss:StyleID="s74"><NamedCell ss:Name="VALUE_E_PRENOM_ENF"/></Cell>
+    <Cell ss:StyleID="s75"><NamedCell ss:Name="VALUE_E_NAISSANCE_ENF"/></Cell>
+    <Cell ss:StyleID="s76"><NamedCell ss:Name="VALUE_E_NO_DOSSIER"/></Cell>
+    <Cell ss:StyleID="s74"><NamedCell ss:Name="VALUE_E_RECORD_NUMBER"/></Cell>
+    <Cell ss:StyleID="s75"><NamedCell ss:Name="VALUE_E_NO_ANNONCE"/></Cell>
+    <Cell ss:StyleID="s73"><NamedCell ss:Name="VALUE_E_NOM_ALLOC"/></Cell>
+    <Cell ss:StyleID="s75"><NamedCell ss:Name="VALUE_E_PRENOM_ALLOC"/></Cell>
+    <Cell ss:StyleID="s71"><NamedCell ss:Name="VALUE_E_CODE_ERREUR"/></Cell>
+    <Cell ss:StyleID="s68"><NamedCell ss:Name="VALUE_E_ERREUR"/></Cell>
+    <Cell ss:StyleID="s68"><NamedCell ss:Name="VALUE_E_PERIODE_ERREUR"/></Cell>
+    <Cell ss:StyleID="s69"><NamedCell ss:Name="VALUE_E_OFFICE"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s72"/>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Unsynced/>
+   <Print>
+    <ValidPrinterInfo/>
+    <PaperSizeIndex>9</PaperSizeIndex>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>1</ActiveRow>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Rappels">
+  <Table ss:ExpandedColumnCount="13" ss:ExpandedRowCount="2" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60" ss:DefaultRowHeight="15">
+   <Column ss:AutoFitWidth="0" ss:Width="86.25"/>
+   <Column ss:Width="60.75"/>
+   <Column ss:Width="75"/>
+   <Column ss:Width="89.25"/>
+   <Column ss:Width="52.5"/>
+   <Column ss:Width="76.5"/>
+   <Column ss:Width="58.5"/>
+   <Column ss:Width="78.75"/>
+   <Column ss:Width="93.75"/>
+   <Column ss:Index="11" ss:AutoFitWidth="0" ss:Width="375"/>
+   <Column ss:AutoFitWidth="0" ss:Width="112.5"/>
+   <Column ss:Width="80.25"/>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s63"><Data ss:Type="String">NSS Enfant</Data><NamedCell
+      ss:Name="HEADER_R_NSS_ENF"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Nom enfant</Data><NamedCell
+      ss:Name="HEADER_R_NOM_ENF"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Prénom enfant</Data><NamedCell
+      ss:Name="HEADER_R_PRENOM_ENF"/></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Date de naissance</Data><NamedCell
+      ss:Name="HEADER_R_NAISSANCE_ENF"/></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">N° dossier</Data><NamedCell
+      ss:Name="HEADER_R_NO_DOSSIER"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Record number</Data><NamedCell
+      ss:Name="HEADER_R_RECORD_NUMBER"/></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">N° annonce</Data><NamedCell
+      ss:Name="HEADER_R_NO_ANNONCE"/></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Nom allocataire</Data><NamedCell
+      ss:Name="HEADER_R_NOM_ALLOC"/></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Prénom allocataire</Data><NamedCell
+      ss:Name="HEADER_R_PRENOM_ALLOC"/></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Code Erreur</Data><NamedCell
+      ss:Name="HEADER_R_CODE_ERREUR"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Erreur</Data><NamedCell
+      ss:Name="HEADER_R_ERREUR"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Période en erreur</Data><NamedCell
+      ss:Name="HEADER_R_PERIODE_ERREUR"/></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Office en conflit</Data><NamedCell
+      ss:Name="HEADER_R_OFFICE"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s73"><NamedCell ss:Name="VALUE_R_NSS_ENF"/></Cell>
+    <Cell ss:StyleID="s74"><NamedCell ss:Name="VALUE_R_NOM_ENF"/></Cell>
+    <Cell ss:StyleID="s74"><NamedCell ss:Name="VALUE_R_PRENOM_ENF"/></Cell>
+    <Cell ss:StyleID="s75"><NamedCell ss:Name="VALUE_R_NAISSANCE_ENF"/></Cell>
+    <Cell ss:StyleID="s76"><NamedCell ss:Name="VALUE_R_NO_DOSSIER"/></Cell>
+    <Cell ss:StyleID="s74"><NamedCell ss:Name="VALUE_R_RECORD_NUMBER"/></Cell>
+    <Cell ss:StyleID="s75"><NamedCell ss:Name="VALUE_R_NO_ANNONCE"/></Cell>
+    <Cell ss:StyleID="s73"><NamedCell ss:Name="VALUE_R_NOM_ALLOC"/></Cell>
+    <Cell ss:StyleID="s75"><NamedCell ss:Name="VALUE_R_PRENOM_ALLOC"/></Cell>
+    <Cell ss:StyleID="s71"><NamedCell ss:Name="VALUE_R_CODE_ERREUR"/></Cell>
+    <Cell ss:StyleID="s68"><NamedCell ss:Name="VALUE_R_ERREUR"/></Cell>
+    <Cell ss:StyleID="s68"><NamedCell ss:Name="VALUE_R_PERIODE_ERREUR"/></Cell>
+    <Cell ss:StyleID="s69"><NamedCell ss:Name="VALUE_R_OFFICE"/></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Unsynced/>
+   <TabColorIndex>10</TabColorIndex>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>1</ActiveRow>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Annonces suspendues">
+  <Table ss:ExpandedColumnCount="13" ss:ExpandedRowCount="2" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60" ss:DefaultRowHeight="15">
+   <Column ss:AutoFitWidth="0" ss:Width="86.25"/>
+   <Column ss:Width="60.75"/>
+   <Column ss:Width="75"/>
+   <Column ss:Width="89.25"/>
+   <Column ss:Width="52.5"/>
+   <Column ss:Width="76.5"/>
+   <Column ss:Width="58.5"/>
+   <Column ss:Width="78.75"/>
+   <Column ss:Width="93.75"/>
+   <Column ss:Index="11" ss:AutoFitWidth="0" ss:Width="375"/>
+   <Column ss:AutoFitWidth="0" ss:Width="112.5"/>
+   <Column ss:Width="80.25"/>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s63"><Data ss:Type="String">NSS Enfant</Data><NamedCell
+      ss:Name="HEADER_S_NSS_ENF"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Nom enfant</Data><NamedCell
+      ss:Name="HEADER_S_NOM_ENF"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Prénom enfant</Data><NamedCell
+      ss:Name="HEADER_S_PRENOM_ENF"/></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Date de naissance</Data><NamedCell
+      ss:Name="HEADER_S_NAISSANCE_ENF"/></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">N° dossier</Data><NamedCell
+      ss:Name="HEADER_S_NO_DOSSIER"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Record number</Data><NamedCell
+      ss:Name="HEADER_S_RECORD_NUMBER"/></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">N° annonce</Data><NamedCell
+      ss:Name="HEADER_S_NO_ANNONCE"/></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Nom allocataire</Data><NamedCell
+      ss:Name="HEADER_S_NOM_ALLOC"/></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Prénom allocataire</Data><NamedCell
+      ss:Name="HEADER_S_PRENOM_ALLOC"/></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Code Erreur</Data><NamedCell
+      ss:Name="HEADER_S_CODE_ERREUR"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Erreur</Data><NamedCell
+      ss:Name="HEADER_S_ERREUR"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Période en erreur</Data><NamedCell
+      ss:Name="HEADER_S_PERIODE_ERREUR"/></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Office en conflit</Data><NamedCell
+      ss:Name="HEADER_S_OFFICE"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s73"><NamedCell ss:Name="VALUE_S_NSS_ENF"/></Cell>
+    <Cell ss:StyleID="s74"><NamedCell ss:Name="VALUE_S_NOM_ENF"/></Cell>
+    <Cell ss:StyleID="s74"><NamedCell ss:Name="VALUE_S_PRENOM_ENF"/></Cell>
+    <Cell ss:StyleID="s75"><NamedCell ss:Name="VALUE_S_NAISSANCE_ENF"/></Cell>
+    <Cell ss:StyleID="s76"><NamedCell ss:Name="VALUE_S_NO_DOSSIER"/></Cell>
+    <Cell ss:StyleID="s74"><NamedCell ss:Name="VALUE_S_RECORD_NUMBER"/></Cell>
+    <Cell ss:StyleID="s75"><NamedCell ss:Name="VALUE_S_NO_ANNONCE"/></Cell>
+    <Cell ss:StyleID="s73"><NamedCell ss:Name="VALUE_S_NOM_ALLOC"/></Cell>
+    <Cell ss:StyleID="s75"><NamedCell ss:Name="VALUE_S_PRENOM_ALLOC"/></Cell>
+    <Cell ss:StyleID="s71"><NamedCell ss:Name="VALUE_S_CODE_ERREUR"/></Cell>
+    <Cell ss:StyleID="s68"><NamedCell ss:Name="VALUE_S_ERREUR"/></Cell>
+    <Cell ss:StyleID="s68"><NamedCell ss:Name="VALUE_S_PERIODE_ERREUR"/></Cell>
+    <Cell ss:StyleID="s69"><NamedCell ss:Name="VALUE_S_OFFICE"/></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Unsynced/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>1</ActiveRow>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Modifications UPI">
+  <Table ss:ExpandedColumnCount="13" ss:ExpandedRowCount="2" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60" ss:DefaultRowHeight="15">
+   <Column ss:AutoFitWidth="0" ss:Width="86.25"/>
+   <Column ss:Width="60.75"/>
+   <Column ss:Width="75"/>
+   <Column ss:Width="89.25"/>
+   <Column ss:Width="52.5"/>
+   <Column ss:Width="76.5"/>
+   <Column ss:Width="58.5"/>
+   <Column ss:Width="78.75"/>
+   <Column ss:Width="93.75"/>
+   <Column ss:Index="11" ss:AutoFitWidth="0" ss:Width="375"/>
+   <Column ss:AutoFitWidth="0" ss:Width="112.5"/>
+   <Column ss:Width="80.25"/>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s63"><Data ss:Type="String">NSS Enfant</Data><NamedCell
+      ss:Name="HEADER_U_NSS_ENF"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Nom enfant</Data><NamedCell
+      ss:Name="HEADER_U_NOM_ENF"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Prénom enfant</Data><NamedCell
+      ss:Name="HEADER_U_PRENOM_ENF"/></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Date de naissance</Data><NamedCell
+      ss:Name="HEADER_U_NAISSANCE_ENF"/></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">N° dossier</Data><NamedCell
+      ss:Name="HEADER_U_NO_DOSSIER"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Record number</Data><NamedCell
+      ss:Name="HEADER_U_RECORD_NUMBER"/></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">N° annonce</Data><NamedCell
+      ss:Name="HEADER_U_NO_ANNONCE"/></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Nom allocataire</Data><NamedCell
+      ss:Name="HEADER_U_NOM_ALLOC"/></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Prénom allocataire</Data><NamedCell
+      ss:Name="HEADER_U_PRENOM_ALLOC"/></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Code Erreur</Data><NamedCell
+      ss:Name="HEADER_U_CODE_ERREUR"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Erreur</Data><NamedCell
+      ss:Name="HEADER_U_ERREUR"/></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Période en erreur</Data><NamedCell
+      ss:Name="HEADER_U_PERIODE_ERREUR"/></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Office en conflit</Data><NamedCell
+      ss:Name="HEADER_U_OFFICE"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s73"><NamedCell ss:Name="VALUE_U_NSS_ENF"/></Cell>
+    <Cell ss:StyleID="s74"><NamedCell ss:Name="VALUE_U_NOM_ENF"/></Cell>
+    <Cell ss:StyleID="s74"><NamedCell ss:Name="VALUE_U_PRENOM_ENF"/></Cell>
+    <Cell ss:StyleID="s75"><NamedCell ss:Name="VALUE_U_NAISSANCE_ENF"/></Cell>
+    <Cell ss:StyleID="s76"><NamedCell ss:Name="VALUE_U_NO_DOSSIER"/></Cell>
+    <Cell ss:StyleID="s74"><NamedCell ss:Name="VALUE_U_RECORD_NUMBER"/></Cell>
+    <Cell ss:StyleID="s75"><NamedCell ss:Name="VALUE_U_NO_ANNONCE"/></Cell>
+    <Cell ss:StyleID="s73"><NamedCell ss:Name="VALUE_U_NOM_ALLOC"/></Cell>
+    <Cell ss:StyleID="s75"><NamedCell ss:Name="VALUE_U_PRENOM_ALLOC"/></Cell>
+    <Cell ss:StyleID="s71"><NamedCell ss:Name="VALUE_U_CODE_ERREUR"/></Cell>
+    <Cell ss:StyleID="s68"><NamedCell ss:Name="VALUE_U_ERREUR"/></Cell>
+    <Cell ss:StyleID="s68"><NamedCell ss:Name="VALUE_U_PERIODE_ERREUR"/></Cell>
+    <Cell ss:StyleID="s69"><NamedCell ss:Name="VALUE_U_OFFICE"/></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Unsynced/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>1</ActiveRow>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>

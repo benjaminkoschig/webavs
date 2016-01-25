@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.prestation.business.models.echance.SimpleEcheance">
+		<description>Table des échéance</description>
+		<table name="PRECHEA" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		
+		<fields>
+			<primary-key name="id" column="ID" comment="ID"/>
+			<field name="idExterne" type="NUMERIC" column="ID_EXTERNE" mandatory="true" comment="Peut-être un id d'un dossier, d'une demande, etc."/>	
+			<field name="idTiers" type="NUMERIC" column="ID_TIERS" comment="ID_TIERS"/>		
+			<field name="csDomaine" type="NUMERIC" column="CS_DOMAINE" mandatory="true" comment="CS_DOMAINE" />		
+			<field name="csEtat" type="NUMERIC" column="CS_ETAT" mandatory="true" comment="CS_ETAT"/>
+			<field name="csTypeEcheance" type="NUMERIC" column="CS_ECHEANCE" mandatory="true" comment="CS_TYPE_ECHEANCE"/>		
+			<field name="dateEcheance" type="DATE" column="DATE_ECHEANCE" mandatory="true" comment="date où l''échéance a lieu"/>		
+			<field name="dateDeTraitement" type="DATE" column="DATE_TRAIEMENT" comment="DATE_DE_TRAIEMENT"/>		
+			<field name="libelle" type="STRING" dataType="VARCHAR(255)" column="LIBELLE" comment="description courte de l'échéance"/>		
+			<field name="remarque" type="STRING" dataType="VARCHAR(4000)" column="REMQRQUE" comment="description de l'échéance"/>				
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdExterne" operation="EQUALS" field-ref="idExterne"/>
+				<search-field name="forIdTiers" operation="EQUALS" field-ref="idTiers"/>
+				<search-field name="forCsDomaine" operation="EQUALS" field-ref="csDomaine"/>
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="csEtat"/>
+				<search-field name="forCsTypeEcheance" operation="EQUALS" field-ref="csTypeEcheance"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="idExterne" />
+			<order-field field-ref="idTiers" />
+			<order-field field-ref="dateEcheance" order="DESC"/>
+		</order-by>
+
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,157 @@
+@import url("../theme/master2.css");
+
+TABLE#subtable {
+	width: 100%;
+	border: 0;
+}
+
+.RElibelleExtraLongDisabled{
+    font-family : Verdana,Arial;
+    width : 14cm;
+    font-weight : bold;
+}
+
+.PRlibelleLongDisabled{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 7cm;
+    font-weight : bold;
+}
+
+.IJAfficheText{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 7cm;
+    font-size : x-small;
+    font-weight : bold;
+}
+
+.red{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+	width : 20cm;
+	color : red;
+    font-size : x-small;
+}
+
+.montantCourt{
+    width : 3cm;
+; text-align: right
+}
+
+.montantMini{
+    width : 1.5cm;
+; text-align: right
+}
+
+.montantCourtDisabled{
+    width : 3cm;
+    font-family : Verdana,Arial;
+    font-weight : bold;
+    background-color : #b3c4db;
+  text-align : right;
+}
+.shortNumber{
+    width : 0.5cm;
+    text-align: right;
+}
+
+.libelleExtraLongDisabled{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 14cm;
+    font-weight : bold; 
+}
+
+@import url("../theme/master2.css");
+
+TABLE#subtable {
+	width: 100%;
+	border: 0;
+}
+
+.PRlibelleExtraLongDisabled{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 9cm;
+    font-weight : bold;
+}
+
+.PRlibelleLongDisabled{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 7cm;
+    font-weight : bold;
+}
+
+.IJAfficheText{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 7cm;
+    font-size : x-small;
+    font-weight : bold;
+}
+
+.red{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+	width : 20cm;
+	color : red;
+    font-size : x-small;
+}
+
+.ongletLightBlue {
+	color :black; 
+	text-decoration: none; 
+	font-weight: bold; 
+	border-style: solid; 
+	border-color: grey20;  
+	border-width: 1px; 
+	border-bottom-width: 0px; 
+	background-color: #E8EEF4;
+}
+
+.areaLightBlue {
+	border-style: outset; 
+	border-color: grey20;  
+	border-width: 1px; 
+	border-top-width: 1px; 
+	background-color: #E8EEF4;
+}
+
+.ongletGlobazBlue {
+	color :black; 
+	text-decoration: none; 
+	font-weight: bold; 
+	border-style: solid; 
+	border-color: grey20;  
+	border-width: 1px; 
+	border-bottom-width: 0px; 
+	background-color: #B3C4DB;
+}
+
+.areaGlobazBlue {
+	border-style: outset; 
+	border-color: grey20;  
+	border-width: 1px; 
+	border-top-width: 1px; 
+	background-color: #B3C4DB;
+}
+
+.readOnlyTextGlobazBlue {
+	border-style: groove; 
+	border-color: grey20;  
+	border-width: 1px;
+	font-weight: bold; 
+	border-top-width: 1px; 
+	background-color: #B3C4DB;
+}
+
+.readOnlyTextLightBlue {
+	border-style: groove; 
+	border-color: grey20;  
+	border-width: 1px;
+	font-weight: bold; 
+	border-top-width: 1px; 
+	background-color: #E8EEF4;
+}

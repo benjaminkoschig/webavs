@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.revenu.RevenuContribuableComplex">
+		<root-model name="simpleRevenu" model-ref="ch.globaz.amal.business.models.revenu.SimpleRevenu" select-fields="false"/>
+		
+		<linked-model name="simplerevenucontribuable" model-ref="ch.globaz.amal.business.models.revenu.SimpleRevenuContribuable" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idRevenuContribuable" operation="EQUALS" field-ref="simpleRevenu.idRevenu"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdContribuable" field-ref="simpleRevenu.idContribuable" operation="EQUALS" />		
+				<search-field name="forAnneeTaxation" field-ref="simpleRevenu.anneeTaxation" operation="EQUALS" />		
+				<search-field name="forIdRevenu" field-ref="simpleRevenu.idRevenu" operation="EQUALS" />		
+			</search-group>
+		</search-definition>		
+
+	</complexe-model>
+</model-mapping>

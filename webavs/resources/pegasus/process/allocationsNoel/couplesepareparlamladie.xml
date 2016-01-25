@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.process.allocationsNoel.CoupleSepareParLaMaladie">
+		<root-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" select-fields="false"/>
+		
+		<select-fields distinct="true">
+			<select-field name="idVersionDroit" field-ref="simplePCAccordee.idVersionDroit" />
+			<select-field name="idPCAccordee" field-ref="simplePCAccordee.idPCAccordee" />
+			<select-field name="idDemande" field-ref="simpleDroit.idDemandePC" />
+			<select-field name="idDroit" field-ref="simpleDroit.idDroit" />			
+		</select-fields> 	
+		
+		<linked-model name="simpleVersionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroit" join-type="INNER"  select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="inIdVersionDroit" operation="IN" field-ref="simplePCAccordee.idVersionDroit"/>
+				<search-field name="forDateFin" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
+				
+				<search-group operator="OR">
+					<search-field name="forDateFin" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
+					<search-field name="forDateFin" operation="EQUALS" field-ref="simplePCAccordee.dateFin"/>
+				</search-group>
+				<search-literal>
+					<declare-model name="pca" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee"/>
+					<![CDATA[ 
+							(
+						    2 = (select count( #{pca.idVersionDroit} ) 
+						          from @{pca} 
+								 where #{pca.idVersionDroit} = #{simplePCAccordee.idVersionDroit}
+								   and #{pca.dateDebut} = #{simplePCAccordee.dateDebut}
+								   and #{pca.dateFin} = #{simplePCAccordee.dateFin})
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+			
+	</complexe-model>
+</model-mapping>

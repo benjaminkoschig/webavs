@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.attribut.AttributEntiteModel">
+		<description>Attributs entité de l'application</description>
+		<table name="ALATTRIB" hasCreationSpy="false" hasSpy="true"  alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAttributEntite" column="AEID"  type="NUMERIC" comment="ID du paramètre"/>
+			<field name="cleEntite" column="AEIDEN" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="clé (id) de l'entité bénéficiant de l'attribut"/>		
+			<field name="cleEntiteAlpha" column="AEIDAL" type="STRING" dataType="VARCHAR(20)" mandatory="false" comment="clé alphanumérique de l'entité bénéficiant de l'attribut"/>
+			<field name="typeEntite" column="AETYEN" type="STRING" dataType="VARCHAR(100)" mandatory="true" comment="Type (nom du modèle) de l'entité bénéficiant de l'attribut"/>
+			<field name="nomAttribut" column="AENOMA" type="STRING" dataType="VARCHAR(20)" mandatory="true" comment="Nom de l'attribut"/>
+			<field name="valeurAlpha" column="AEVALA" type="STRING" dataType="VARCHAR(20)"  mandatory="true" comment="Valeur alphanumérique de l'attribut"/>
+			<field name="valeurNum" column="AEVALN" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="Valeur numérique de l'attribut"/>	
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forCleEntite" field-ref="cleEntite" operation="EQUALS"/>
+				<search-field name="forCleEntiteAlpha" field-ref="cleEntiteAlpha" operation="EQUALS"/>
+				<search-field name="forTypeEntite" field-ref="typeEntite" operation="EQUALS"/>
+				<search-field name="forNomAttribut" field-ref="nomAttribut" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

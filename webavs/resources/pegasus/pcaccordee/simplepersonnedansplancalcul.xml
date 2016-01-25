@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.pcaccordee.SimplePersonneDansPlanCalcul">
+		<description>Enfant dans calcul</description>
+		<table name="PCPERPCA" hasSpy="false" hasCreationSpy="false" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idPersonneDansPlanCalcul" column="CXIPDC" comment="ID_PERSONNE_DANS_PLAN_CALCUL"/>
+			<field name="idPlanDeCalcul" column="CXIPLC" type="NUMERIC" mandatory="true" comment="ID_PLAN_DE_CALCUL"/>
+			<field name="idDroitMembreFamille" column="CXIDMF" type="NUMERIC" mandatory="true" comment="ID_DROIT_MEMBRE_FAMILLE"/>
+			<field name="isComprisDansCalcul" column="CXBCDC" type="BOOLEAN" mandatory="true" comment="IS_COMPRIS_DANS_CALCUL"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPersonneDansPlanCalcul" operation="EQUALS" field-ref="idPersonneDansPlanCalcul"/>
+				<search-field name="forIdPlanDeCalcul" operation="EQUALS" field-ref="idPlanDeCalcul"/>
+				<search-field name="inIdPlanDeCalcul" operation="IN" field-ref="idPlanDeCalcul"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

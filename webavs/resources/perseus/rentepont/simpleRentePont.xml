@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.rentepont.SimpleRentePont">
+		<description>Rente-pont</description>
+		<table name="PFREPONT" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idRentePont" column="JBIDRP" comment=""/>
+			<field name="idDossier" column="JBIDOS" type="NUMERIC" mandatory="true" comment="ID_DOSSIER"/>
+			<field name="idGestionnaire" column="JBIGES" type="STRING" mandatory="false" comment="ID_GESTIONNAIRE"/>
+			<field name="idSituationFamiliale" column="JBIDSF" type="NUMERIC" mandatory="true" comment="ID_SITUATION_FAMILIALE"/>
+			<field name="csEtat" column="JBCSET" type="NUMERIC" mandatory="false" comment="CS_ETAT"/>
+			<field name="dateDepot" column="JBDDEP" type="DATE" mandatory="false" comment="DATE_DEPOT"/>
+			<field name="dateDebut" column="JBDDEB" type="DATE" mandatory="false" comment="DATE_DEBUT"/>
+			<field name="dateFin" column="JBDFIN" type="DATE" mandatory="false" comment="DATE_FIN"/>
+			<field name="csCaisse" column="JBCSCA" type="NUMERIC" mandatory="true" comment="Code système de la caisse qui traite la demande"/>
+			<field name="idTiersAdressePaiement" type="NUMERIC" column="JBAPTI" mandatory="false" comment="Id du tiers pour l'adresse de paiement" />
+			<field name="idDomaineApplicatifAdressePaiement" type="NUMERIC" column="JBAPDA" mandatory="false" comment="Id du domaine applicatif du tiers pour l'adresse de paiement" />
+			<field name="remarques" column="JBREMA" type="STRING" mandatory="false" comment="Remarques éventuelles"/>
+			<field name="montant" column="JBMONT" type="NUMERIC" mandatory="false" comment="Montant de la rente pont" />
+			<field name="montantRetroactif" column="JBRETR" type="NUMERIC" mandatory="false" comment="Montant retroactif de la rente pont" />
+			<field name="excedantRevenu" column="JBEXRE" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Excedant de revenu"/>
+			<field name="onError" column="JBERRO" type="BOOLEAN" mandatory="true" comment="Controle des erreurs"/>
+			<field name="montantImpotSource" column="JBIMPO" type="NUMERIC" mandatory="false" comment="Montant de l'impot à la source mensuel" />
+			<field name="dateDecision" column="JBDADE" type="MONTH_YEAR" mandatory="false" comment="Date de prise de la décision (Mois du premier paiement mensuel)" />
+		</fields>
+		
+	</simple-model>
+	
+</model-mapping>

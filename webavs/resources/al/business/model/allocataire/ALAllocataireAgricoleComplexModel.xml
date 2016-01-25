@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'un allocataire Agricole PTA -->
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.allocataire.AllocataireAgricoleComplexModel" extend="ch.globaz.al.business.models.allocataire.AllocataireComplexModel">
+		<linked-model name="agricoleModel" model-ref="ch.globaz.al.business.models.allocataire.AgricoleModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idAllocataire" field-ref="allocataireModel.idAllocataire"/>
+			</join-group>
+		</linked-model>
+	</complexe-model>
+</model-mapping>

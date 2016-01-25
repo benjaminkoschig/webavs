@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<model-mapping import="amal/caissemaladie/simpledetailcaissemaladie.xml"/>
+	<model-mapping import="amal/caissemaladie/caissemaladie.xml"/>
+	<model-mapping import="amal/caissemaladie/caissemaladiegroupeRCListe.xml"/>
+</model-mapping>

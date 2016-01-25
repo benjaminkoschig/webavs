@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.decomptes.HistoriqueDecompteComplexModel">
+
+		<root-model name="historiqueDecompteSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.decomptes.HistoriqueDecompteSimpleModel" />
+
+		<linked-model name="decompteComplexModel"
+			model-ref="ch.globaz.vulpecula.business.models.decomptes.DecompteComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="decompteSimpleModel.id"
+					operation="EQUALS" field-ref="historiqueDecompteSimpleModel.idDecompte" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="historiqueDecompteSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdDecompte"
+					field-ref="historiqueDecompteSimpleModel.idDecompte" operation="EQUALS" />
+				<search-field name="forIdDecompteIn"
+					field-ref="historiqueDecompteSimpleModel.idDecompte" operation="IN" />
+				<search-field name="forEtat"
+					field-ref="historiqueDecompteSimpleModel.etat" operation="EQUALS" />
+				<search-field name="forEtatsIn"
+					field-ref="historiqueDecompteSimpleModel.etat" operation="IN" />
+			</search-group>
+		</search-definition>
+		
+		<order-by name="orderByDateDesc">
+			<order-field field-ref="historiqueDecompteSimpleModel.date" order="DESC"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

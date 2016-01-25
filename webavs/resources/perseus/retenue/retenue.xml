@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.retenue.Retenue">
+		<root-model name="simpleRetenue" model-ref="ch.globaz.perseus.business.models.retenue.SimpleRetenue"/>
+		<linked-model name="pcfAccordee" model-ref="ch.globaz.perseus.business.models.pcfaccordee.PCFAccordee" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simplePCFAccordee.idPCFAccordee" operation="EQUALS" field-ref="simpleRetenue.idPcfAccordee"/>
+			</join-group>		
+		</linked-model>
+	
+	</complexe-model>
+</model-mapping>

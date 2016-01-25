@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.fortuneusuelle.SimpleAutresDettesProuvees">
+		<description>AUTRES DETTES PROUVEES</description>
+		<table name="PCADEPR" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAutresDettesProuvees" column="CFIADP" comment="ID_AUTRES_DETTES_PROUVEES"/>		
+			<field name="idDonneeFinanciereHeader" mandatory="true" column="CFIDFH" type="NUMERIC" comment="DONNEE_FINANCIERE_HEADER"/>
+			<field name="montantDette" mandatory="true" column="CFNMDE" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_DETTE"/>
+			<field name="nomPrenomCreancier" column="CFLNPC" type="STRING" comment="NOM_PRENOM_CREANCIER"/>			
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

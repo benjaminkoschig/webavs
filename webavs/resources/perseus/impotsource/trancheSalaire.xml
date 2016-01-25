@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.impotsource.TrancheSalaire">
+		<root-model name="simpleTrancheSalaire" model-ref="ch.globaz.perseus.business.models.impotsource.SimpleTrancheSalaire"/>
+		
+	    <search-definition name="default">
+	    	<search-group operator="AND">
+			<search-field name="forAnnee" operation="LESS_OR_EQUALS" field-ref="simpleTrancheSalaire.anneeDebut"/>
+				<search-group operator="OR">
+					<search-field name="forAnnee" operation="GREATER_OR_EQUALS" field-ref="simpleTrancheSalaire.anneeFin"/>
+					<search-field name="forAnnee" operation="NULL" field-ref="simpleTrancheSalaire.anneeFin"/>
+				</search-group>
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

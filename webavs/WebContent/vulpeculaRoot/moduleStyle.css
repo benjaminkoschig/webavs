@@ -1,0 +1,332 @@
+@import url("../theme/master2.css");
+
+.numeriqueParametre {
+	 text-align: right;
+}
+
+.numeriqueParametre input {
+	 text-align: right;
+}
+
+.mainContainerAjax .spyFormatted {
+    bottom: 0;
+    color: grey;
+    font-size: 10px;
+    right: 0;
+}
+
+.areaTable {
+	width: 100%;
+}
+
+.detail {
+	margin-left: 5px;
+	margin-bottom: 15px;
+}
+
+.mainContainerAjax P.line {
+	margin-bottom: 10px;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-top: 0px;
+}
+
+.detail input {
+	padding:1px;
+	margin-top:2px;
+}
+
+.bouton {
+	cursor: pointer;	
+}
+
+.buttons input {
+	margin-top: 30px;
+	margin-left: 3px;
+	margin-bottom:20px;
+}
+
+.areaLiaisonNotTab {
+	display: inline-block;
+	margin-top: 20px;
+	padding: 5px;
+
+	color: #222222;
+	border-color: #a6c9e2;
+	border-width: 1px;
+	border-style: solid;
+	background-color: rgb(252, 253, 253);
+}
+
+#tabLiaisons {
+	margin-top: 20px;
+	padding: 5px;
+}
+
+
+#tabs {
+	font-style: italic;
+}
+
+#tabs table td {
+	text-align: center;
+}
+
+#tabs td a {
+	text-decoration: none;
+	border-style: none;
+}
+
+#tabs td a:link, #tabs td a:hover, #tabs td a:visited {
+	text-decoration: none;
+	border-style: none;
+}
+
+img, a {
+	border : none;
+}
+
+
+.softHeader {
+	background : #E8EEF4;
+}
+
+/******************************* FORMULAIRES ***************************/
+input.small, select.small{
+	width:60px;
+}
+
+input.smallextended, select.smallextended{
+	width:80px;
+}
+
+input.medium, select.medium{
+	width:100px;
+}
+
+input.normal, select.normal{
+	width:160px;
+}
+
+input.long, select.long{
+	width:200px;
+}
+
+input.extra, select.extra{
+	width:400px;
+}
+
+input.max, select.max{
+	width:100%;
+}
+
+input.readOnly, select.readOnly {
+	/*background-color: #D7E4FF;
+	background-color:#eeeeee;*/
+	color: #808080;
+	padding: 1px;
+/* 	border: 1px solid #4B4B4B; */ /* Pourquoi cette bordure ? Ca rend moche sur les chackbox*/
+}
+
+/******************************** BLOC CONTENANT LES INFORMATIONS  ****************************/
+.bloc {
+	border: 1px solid black; 
+	background-color: #D7E4FF;
+	padding: 5px;
+	text-align: justify;
+}
+
+.blocRight {
+	display: inline-block;
+	text-align:right;
+	position : absolute;
+	right: 0px;
+	
+	*display : inline;
+	*zoom : 1;
+}
+
+.blocLeft {
+	vertical-align: top;
+	display: inline-block;
+	
+	*display : inline;
+	*zoom : 1;
+}
+
+.blocInline {
+	display: inline-block;
+	*display : inline;
+	*zoom : 1;
+}
+
+.bottom {
+	vertical-align: bottom;
+}
+
+.blocMedium {
+	vertical-align: top;
+	width : 320px;
+}
+
+.blocLarge {
+	vertical-align: top;
+	width : 500px;
+}
+
+.bloc400 {
+	width: 400px;
+}
+
+.bloc600 {
+	width: 600px;
+}
+
+.content {
+	position: relative;
+}
+
+.bloc .header {
+	font-weight : bold;
+	font-size : 11px;
+	display : inline;
+
+    /* ie 7*/ 
+    *display: inline;
+    *zoom: 1;
+    *text-align: left; 
+}
+
+.bloc table {
+	width: 100%;
+	border: 1px solid #B3C4DB;
+	border-collapse:collapse;
+	background-color:#F1F9FF;	
+}
+
+.bloc .wrapContent {
+	width: 0;
+}
+
+.bloc table .value {
+	text-align: left;
+	vertical-align:top;
+	background-color: #FFFFFF;
+	font-size: 11;
+}
+
+.bloc table .label {
+	font-size: 11;
+	width: 40%;
+}
+
+/******************************** LIGNES DU TABLEAU ****************************/
+.bmsRowOdd{
+	font-family : Verdana,Arial;
+    font-size : x-small;
+    height:18px !important;
+    background : #E8EEF4;
+}
+
+.bmsRowEven{
+	font-family : Verdana,Arial;
+    font-size : x-small;
+    height:18px !important;
+	background: #FFFFFF;	
+}
+
+.bmsRowHighlighted {
+    font-family : Verdana,Arial;
+    font-size : x-small;
+    color : #ffffe8;
+    height: 18px !important;
+    background : #638fbc !important;
+    cursor: pointer;
+}
+
+.none {
+	height: 18px !important;
+}
+
+/********************** EMPLOYEUR VUE GENERALE ********************/
+#tabs tr {
+	height: 24px;
+}
+
+#tabs #postes tr{
+	font-size: 11px;
+}
+
+#tabs #decomptessalaires tr{
+	font-size: 11px;
+}
+
+#tabs #congespayes tr{
+	font-size: 11px;
+}
+
+#tabs #absencesjustifiees tr{
+	font-size: 11px;
+}
+
+#tabs #servicesmilitaires tr{
+	font-size: 11px;
+}
+
+#tabs #decomptes tr {
+	font-size: 11px;
+}
+
+#tabs #decomptes {
+	font-size:  11px;
+}
+
+#tabs #prestations th {
+	font-size: 12px;
+}
+
+#tabs #prestations tr {
+	font-size:  11px;
+}
+
+#tabs #associations th {
+	font-size: 12px;
+}
+
+#tabs #associations tr {
+	font-size:  11px;
+}
+
+#tabs #caissesmaladies th {
+	font-size: 12px;
+}
+
+#tabs #caissesmaladies tr {
+	font-size:  11px;
+}
+
+#tabs #syndicats th {
+	font-size: 12px;
+}
+
+#tabs #syndicats tr {
+	font-size:  11px;
+}
+
+#tabs #af th {
+	font-size: 12px;
+}
+
+#tabs #af tr {
+	font-size:  11px;
+}
+/********************** TRAVAILLEUR VUE GENERALE ******************/
+#adhesionsCaissesSociales {
+	width:400px;	
+}
+
+.employeurEntry {
+	display : inline-block;
+	*display : inline;
+}
+

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.revenusdepenses.TypeFraisObtentionRevenu">
+	
+		<root-model name="simpleRevenuActiviteLucrativeDependante" model-ref="ch.globaz.pegasus.business.models.revenusdepenses.SimpleRevenuActiviteLucrativeDependante"/>
+		
+		<linked-model name="simpleTypeFraisObtentionRevenu" model-ref="ch.globaz.pegasus.business.models.revenusdepenses.SimpleTypeFraisObtentionRevenu" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idRevenuActiviteLucrativeDependante" operation="EQUALS" field-ref="simpleRevenuActiviteLucrativeDependante.idRevenuActiviteLucrativeDependante"/>
+			</join-group>		
+		</linked-model>
+						
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdRevenuActiviteLucrativeDependante" operation="EQUALS" field-ref="simpleRevenuActiviteLucrativeDependante.idRevenuActiviteLucrativeDependante"/>
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

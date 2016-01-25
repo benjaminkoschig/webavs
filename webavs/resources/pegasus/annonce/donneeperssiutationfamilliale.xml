@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.annonce.DonneePersSiutationFamilliale">
+	
+		<root-model name="simpleDroitMembreFamille" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille"  select-fields="false" />
+
+		<select-fields>
+			<select-field name="idTiers" field-ref="simpleMembreFamille.idTiers"/>
+			<select-field name="idTiersRepondant" field-ref="simpleDonneesPersonnelles.idTiersRepondant"/>	
+			<select-field name="csLienRepondant" field-ref="simpleDonneesPersonnelles.csLienRepondant"/>	
+			<select-field name="codeCommuneOFS" field-ref="simpleDonneesPersonnelles.communeOrigineCodeOfs"/>	
+			<select-field name="communeOrigine" field-ref="simpleDonneesPersonnelles.communeOrigine"/>		
+			<select-field name="csPermis" field-ref="simpleDonneesPersonnelles.csPermis"/>
+			<select-field name="idDroitMembreFamille" field-ref="simpleDroitMembreFamille.idDroitMembreFamille"/>								
+		</select-fields>
+		
+		<linked-model name="simpleMembreFamille" model-ref="ch.globaz.hera.business.models.famille.SimpleMembreFamille" join-type="INNER"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idMembreFamille" operation="EQUALS" field-ref="simpleDroitMembreFamille.idMembreFamilleSF"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleDonneesPersonnelles" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneesPersonnelles" join-type="INNER"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneesPersonnelles" operation="EQUALS" field-ref="simpleDroitMembreFamille.idDonneesPersonnelles"/>
+			</join-group>		
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="foridDroitMbrFam" operation="EQUALS" field-ref="simpleDroitMembreFamille.idDroitMembreFamille"/>
+				<search-field name="inIdDroitMbrFam" operation="IN" field-ref="simpleDroitMembreFamille.idDroitMembreFamille"/>
+			</search-group>
+		</search-definition>
+
+	</complexe-model>
+</model-mapping>
+
+

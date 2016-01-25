@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.donneesfinancieres.Dette" extend="ch.globaz.perseus.business.models.donneesfinancieres.DonneeFinanciere">
+		<linked-model name="simpleDonneeFinanciereSpecialisation" model-ref="ch.globaz.perseus.business.models.donneesfinancieres.SimpleDonneeFinanciereSpecialisation" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciere" operation="EQUALS" field-ref="simpleDonneeFinanciere.idDonneeFinanciere"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDonneeFinanciere.idDemande"/>
+				<search-field name="forIdMembreFamille" operation="EQUALS" field-ref="simpleDonneeFinanciere.idMembreFamille"/>
+				<search-field name="inType" operation="IN" field-ref="simpleDonneeFinanciere.type"/>
+			</search-group>
+		</search-definition>
+	
+	</complexe-model>
+</model-mapping>

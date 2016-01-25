@@ -1,0 +1,22 @@
+<tr class="tfoot <%=rowStyle%>">
+    <td>
+         <%if(!viewBean.getDossierComplexModel().isNew()){ %>
+            <ct:ifhasright element="al.droit.droit.afficher" crud="c">
+               <a class="addLink" href="<%=servletContext + mainServletPath + "?userAction=al.droit.droit.afficher&_method=add&idDossier="+viewBean.getDossierComplexModel().getDossierModel().getIdDossier() %>" title='<%=objSession.getLabel("LINK_NEW_DROIT_DESC") %>'/>
+            </ct:ifhasright>
+         <%} %>
+	</td>
+                   
+ 	<td <%=ALCSDossier.STATUT_CS.equals(viewBean.getDossierComplexModel().getDossierModel().getStatut())?"colspan='9'":"colspan='7'" %> ></td>	
+    <td class="<%=viewBean.isCalculError()?"":"total"%>"><%=viewBean.isCalculError()?"<a href='#' class='warningLink info_bulle'><span>"+objSession.getLabel("CALCUL_ERROR_MSG")+"</span></a>":objSession.getLabel("MONTANT_TOTAL") %></td>
+    <td class="number" id="result_calcul">
+        <%=viewBean.getMontantTotal()==null?" - ":JANumberFormatter.fmt(viewBean.getMontantTotal(), true, true, false, 2)%>
+        <%=JadeNumericUtil.isNumericPositif(viewBean.getDossierComplexModel().getDossierModel().getMontantForce()) ? "<br /><span class=\"montantForce\">"+viewBean.getDossierComplexModel().getDossierModel().getMontantForce()+"</span>":"" %>
+                    		
+    </td>
+    <%if(!ALCSDossier.STATUT_CS.equals(viewBean.getDossierComplexModel().getDossierModel().getStatut())){ %>
+    <td colspan="2"></td>
+    <%} else{%>
+    <td></td>
+    <%} %>
+</tr>

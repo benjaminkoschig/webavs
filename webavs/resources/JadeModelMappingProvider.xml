@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Configuration du mapping des entités -->
+<globaz.jade.persistence.mapping.JadeModelMappingProvider>
+
+	<!-- Framework (Jade) -->
+	<model-mapping import="JadeModelMapping.xml" />
+	<model-mapping import="JadeProcessModelMapping.xml" />
+
+	<!-- Tiers (PYXIS) -->
+	<model-mapping import="pyxismodels.xml" />
+	
+	<!-- COMPTA Gén -->	
+	<model-mapping import="heliosmodels.xml"/>
+
+	<!-- Compta aux -->
+	<model-mapping import="osirismodels.xml" />
+
+	<!-- Communs aux prestations -->
+	<model-mapping import="PrestationCommonModelMapping.xml" />
+
+	<!-- Prestations complémentaires (PEGASUS) -->
+	<model-mapping import="PCModelMapping.xml" />
+
+	<!-- Rentes (CORVUS) -->
+	<model-mapping import="REModelMapping.xml" />
+
+	<!-- IJ -->
+	<model-mapping import="IJModelMapping.xml" />
+	
+	<!-- Situation familiale (HERA) -->
+	<model-mapping import="SFModelMapping.xml" />
+
+	<!-- PC Famille (PERSEUS) -->
+	<model-mapping import="perseus/PFModelMapping.xml" />
+
+	<!-- Echéancier (LYRA) -->
+	<model-mapping import="LYModelMapping.xml" />
+
+	<!-- AMAL -->
+	<model-mapping import="AMModelMapping.xml" />
+	<model-mapping import="EnvoiModelMapping.xml" />
+
+	<!-- Allocation Familiale (AF) -->
+	<model-mapping import="ALModelMapping.xml" />
+	<model-mapping import="ParameterModel.xml" />
+
+	<!-- Facturation (MUSCA) -->
+	<model-mapping import="FAModelMapping.xml" />
+
+	<!-- Affiliation (NAOS) -->
+	<model-mapping import="AssuranceModelMapping.xml" />
+	<model-mapping import="AffiliationModelMapping.xml" />
+	<model-mapping import="AffiliationComplexModelMapping.xml" />
+	<model-mapping import="AssuranceCouverteComplexModelMapping.xml" />
+	<model-mapping import="AffiliationAssuranceComplexModelMapping.xml" />
+	<model-mapping import="PlanAffiliationCotisationComplexModelMapping.xml" />
+	<model-mapping import="PlanAffiliationModelMapping.xml" />
+	<model-mapping import="CotisationModelMapping.xml" />
+	<model-mapping import="AdhesionModelMapping.xml" />
+	<model-mapping import="PlanCaisseModelMapping.xml" />
+	<model-mapping import="ParametreAssuranceModelMapping.xml" />
+	<model-mapping import="LienAffiliationComplexModelMapping.xml" />
+	<model-mapping import="LienAffiliationModelMapping.xml" />
+	<model-mapping import="AffiliationTiersComplexModelMapping.xml" />
+	<model-mapping import="AdhesionCotisationAssuranceComplexModelMapping.xml" />
+	<model-mapping import="ParticulariteSimpleModel.xml" />
+	<model-mapping import="TauxModelMapping.xml" />
+
+	<!-- Comptes individuels (PAVO) -->
+	<model-mapping import="CompteIndividuelModel.xml" />
+	
+	<!-- CAP (AURIGA) -->
+	<model-mapping import="AUModelMapping.xml" />
+	
+	<!-- CGAS (ARIES) -->
+	<model-mapping import="ARModelMapping.xml" />
+	
+	<!-- BMS - VULPECULA - POSTE DE TRAVAIL -->
+	<model-mapping import="PTModelMapping.xml"/>
+</globaz.jade.persistence.mapping.JadeModelMappingProvider>

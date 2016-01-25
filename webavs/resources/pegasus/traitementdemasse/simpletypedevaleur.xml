@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.traitementdemasse.SimpleTypeDeValeur">
+		<description>Définit le type de valeur pour les valeur a traiter</description>
+		<table name="PCCENVI" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idTypeDeValeur" column="ALITYV" comment="ID_TYPE_DE_VALEUR"/>			
+			<field name="columnName" mandatory="true" column="ALCOLN" type="NUMERIC" comment="COLUMN_NAME"/>
+			<field name="tableName"  mandatory="true"  column="ALTANA" type="NUMERIC" comment="TABLE_NAME"/>
+			<field name="label"  mandatory="true"  column="ALLABE" type="NUMERIC" comment="LABEL"/>
+			<field name="description" mandatory="true" column="ALDESC" type="NUMERIC" comment="DESCRIPTION"/>
+		</fields>
+	</simple-model>
+</model-mapping> 

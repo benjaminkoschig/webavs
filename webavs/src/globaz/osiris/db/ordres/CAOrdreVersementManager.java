@@ -1,0 +1,58 @@
+package globaz.osiris.db.ordres;
+
+/**
+ * Insérez la description du type ici. Date de création : (13.12.2001 13:56:37)
+ * 
+ * @author: Administrator
+ */
+public class CAOrdreVersementManager extends globaz.globall.db.BManager implements java.io.Serializable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private java.lang.String forIdOrdreGroupe = new String();
+
+    /**
+     * retourne la clause FROM de la requete SQL (la table)
+     */
+    @Override
+    protected String _getFrom(globaz.globall.db.BStatement statement) {
+        return _getCollection() + "CAOPOVP";
+    }
+
+    /**
+     * retourne la clause ORDER BY de la requete SQL (la table)
+     */
+    @Override
+    protected String _getOrder(globaz.globall.db.BStatement statement) {
+        return "NUMTRANSACTION";
+    }
+
+    /**
+     * new entity
+     */
+    @Override
+    protected globaz.globall.db.BEntity _newEntity() throws Exception {
+        return new CAOrdreVersement();
+    }
+
+    /**
+     * Insérez la description de la méthode ici. Date de création : (21.03.2002 15:35:03)
+     * 
+     * @return java.lang.String
+     */
+    public java.lang.String getForIdOrdreGroupe() {
+        return forIdOrdreGroupe;
+    }
+
+    /**
+     * Insérez la description de la méthode ici. Date de création : (21.03.2002 15:35:03)
+     * 
+     * @param newForIdOdreGroupe
+     *            java.lang.String
+     */
+    public void setForIdOrdreGroupe(java.lang.String newForIdOrdreGroupe) {
+        forIdOrdreGroupe = newForIdOrdreGroupe;
+    }
+}

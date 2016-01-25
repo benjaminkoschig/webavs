@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.revenu.SimpleRevenuSourcier">
+		<description>Revenu sourcier</description>
+		<table name="MAREVSOU" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idRevenuSourcier" column="IDRESO" comment="Clef primaire Revenu Sourcier"/>
+			<field name="idRevenu" column="IDREGE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="Id revenu"/>
+			<field name="revenuEpouxAnnuel" column="RVEPX" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="REVENU_ANNUEL_EPOUX"/>
+			<field name="revenuEpouxMensuel" column="RVEPXM" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="REVENU_MENSUEL_EPOUX"/>
+			<field name="revenuEpouseAnnuel" column="RVEPS" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="REVENU_ANNUEL_EPOUSE"/>
+			<field name="revenuEpouseMensuel" column="RVEPSM" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="REVENU_MENSUEL_EPOUSE"/>
+			<field name="nombreMois" column="NBMOIS" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="NOMBRE_MOIS"/>
+			<field name="revenuPrisEnCompte" column="REVCOM" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Revenu pris en compte"/>				
+			<field name="cotisationAvsAiApg" column="COTAAA" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Cotisations AVS/AI/APG"/>
+			<field name="cotisationAc" column="COTIAC" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Cotisations AC"/>
+			<field name="cotisationAcSupplementaires" column="COTACS" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Cotisations AC supplémentaires"/>
+			<field name="primesAANP" column="PRAANP" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Primes AANP"/>
+			<field name="primesLPP" column="PRILPP" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Primes LPP"/>
+			<field name="deductionAssurances" column="DEASSU" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Déductions assurances"/>
+			<field name="deductionAssurancesEnfant" column="DEASEN" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Déductions assurances enfants"/>
+			<field name="deductionAssurancesJeunes" column="DEASJE" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Déductions assurances jeunes (16) "/>
+			<field name="deductionEnfants" column="DEENFA" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Déductions enfants"/>
+			<field name="deductionFraisObtention" column="DEFROB" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Déductions frais d'obtention"/>
+			<field name="deductionDoubleGain" column="DEDOUG" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Déductions double gain"/>
+			<field name="revenuImposable" column="REIMPO" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Revenu imposable"/>
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdRevenuSourcier" field-ref="idRevenuSourcier" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

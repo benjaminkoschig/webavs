@@ -1,0 +1,210 @@
+@import url("../theme/master2.css");
+
+TABLE#subtable {
+	width: 100%;
+	border: 0;
+}
+
+.RElibelleExtraLongDisabled{
+    font-family : Verdana,Arial;
+    width : 14cm;
+    font-weight : bold;
+}
+
+.PRlibelleLongDisabled{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 7cm;
+    font-weight : bold;
+}
+
+.IJAfficheText{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 7cm;
+    font-size : x-small;
+    font-weight : bold;
+}
+
+.red{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+	width : 20cm;
+	color : red;
+    font-size : x-small;
+}
+
+.montantCourt{
+    width : 3cm;
+; text-align: right
+}
+
+.montantCourtDisabled{
+    width : 3cm;
+    font-family : Verdana,Arial;
+    font-weight : bold;
+    background-color : #b3c4db;
+  text-align : right;
+}
+.shortNumber{
+    width : 0.5cm;
+    text-align: right;
+}
+
+.libelleExtraLongDisabled{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 14cm;
+    font-weight : bold; 
+}
+
+TABLE#subtable {
+	width: 100%;
+	border: 0;
+}
+
+.PRlibelleExtraLongDisabled{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 9cm;
+    font-weight : bold;
+}
+
+.PRlibelleLongDisabled{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 7cm;
+    font-weight : bold;
+}
+
+.IJAfficheText{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 7cm;
+    font-size : x-small;
+    font-weight : bold;
+}
+
+.red{
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+	width : 20cm;
+	color : red;
+    font-size : x-small;
+}
+
+.ongletLightBlue {
+	color :black; 
+	text-decoration: none; 
+	font-weight: bold; 
+	border-style: solid; 
+	border-color: grey20;  
+	border-width: 1px; 
+	border-bottom-width: 0px; 
+	background-color: #E8EEF4;
+}
+
+.areaLightBlue {
+	border-style: outset; 
+	border-color: grey20;  
+	border-width: 1px; 
+	border-top-width: 1px; 
+	background-color: #E8EEF4;
+}
+
+.ongletGlobazBlue {
+	color :black; 
+	text-decoration: none; 
+	font-weight: bold; 
+	border-style: solid; 
+	border-color: grey20;  
+	border-width: 1px; 
+	border-bottom-width: 0px; 
+	background-color: #B3C4DB;
+}
+
+.areaGlobazBlue {
+	border-style: outset; 
+	border-color: grey20;  
+	border-width: 1px; 
+	border-top-width: 1px; 
+	background-color: #B3C4DB;
+}
+
+.readOnlyTextGlobazBlue {
+	border-style: groove; 
+	border-color: grey20;  
+	border-width: 1px;
+	font-weight: bold; 
+	border-top-width: 1px; 
+	background-color: #B3C4DB;
+}
+
+.readOnlyTextLightBlue {
+	border-style: groove; 
+	border-color: grey20;  
+	border-width: 1px;
+	font-weight: bold; 
+	border-top-width: 1px; 
+	background-color: #E8EEF4;
+}
+
+.selectedMember {
+	border-style: solid; 
+	border-color: grey;
+	border-style: groove; 
+	border-width: 2px;
+}
+
+.unselectedMember {
+	border-style: solid; 
+	border-color: #CCCCCC;  
+	border-width: 1px;
+}
+
+.areaMemberDescriptionSelected{
+	background-color: #D7E4FF;
+}
+
+.areaMemberDescriptionUnselected{
+	background-color: #CCCCCC;
+}
+
+.imgHide {
+	display: none;
+}
+
+.imgShow {
+	display: block;
+}
+
+.dataDetailHide {
+	display: none;
+}
+
+.dataDetailShow {
+	display: block;
+}
+
+.areaMemberFooterShow {
+	background-color: #D7E4FF;
+	height: 15px;
+}
+
+.areaMemberFooterHide {
+	display: none;
+}
+
+.oddRow{
+    font-size : x-small;
+    font-family : Verdana,Arial;
+    background : #ffffff;
+}
+
+.evenRow{
+    font-size : x-small;
+    font-family : Verdana, Arial;
+    background : #E8EEF4;
+}
+
+

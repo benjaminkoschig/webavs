@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.creancier.SimpleCreancier">
+		<description>Gestion des creanciers</description>
+		<table name="PCCREANC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idCreancier" column="DDIDCR" comment="ID_CREANCIER"/>
+			<field name="idDemande" column="DDIDDE" type="NUMERIC" mandatory="true" comment="ID_DEMANDE"/>
+			<field name="idTiersAdressePaiement" column="DDIDTA" type="NUMERIC" mandatory="false" comment="ID_TIERS_ADRESSE_PAIAMENT"/>
+			<field name="idAffilieAdressePaiment" column="DDIDAA" type="NUMERIC" mandatory="false" comment="ID_AFFILIE_ADRESSE_PAIEMENT"/>
+			<field name="idDomaineApplicatif" column="DDIDDA" type="NUMERIC" mandatory="false" comment="ID_DOMAINE_APPLICATIF"/>
+			<field name="idTiers" column="DDIDTI" type="NUMERIC" mandatory="false" comment="ID_TIER"/>
+			<field name="idTiersRegroupement" column="DDIDTR" type="NUMERIC" mandatory="false" comment="ID_TIERS_REGROUPEMENT"/>	
+			<field name="csEtat" column="DDCSET" type="NUMERIC" mandatory="true" comment="CS_ETAT"/>	
+			<field name="csTypeCreance" column="DDCSTC" type="NUMERIC" mandatory="false" comment="CS_TYPE_CREANCE"/>
+			<field name="montant" column="DDMMON" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT"/>
+			<field name="referencePaiement" column="DDLREP" type="STRING" dataType="VARCHAR(40)" mandatory="false" comment="REFERANCE_PAIEMENT"/>	
+			<field name="isBloque" column="DDBBLO" type="BOOLEAN" mandatory="false" comment="ID_TIER"/>				
+		</fields>
+	</simple-model>
+</model-mapping>

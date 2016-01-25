@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<model-mapping import="amal/famille/simplefamille.xml"/>
+	<model-mapping import="amal/famille/famillecontribuable.xml"/>
+	<model-mapping import="amal/famille/famillecontribuableview.xml"/>
+</model-mapping>

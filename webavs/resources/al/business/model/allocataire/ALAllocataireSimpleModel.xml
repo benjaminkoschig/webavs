@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.allocataire.AllocataireModel">
+		<description>Allocataire lié à un dossier, contient les information qui ne se trouvent pas dans le tiers</description>
+		<table name="ALALLOC" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key comment="ID de l'allocataire" column="BID" name="idAllocataire"/>
+			<field name="idTiersAllocataire" column="HTITIE" type="NUMERIC" mandatory="true" comment="ID du tiers allocataire"/>
+			<field comment="ID (FK) du pays de résidence" column="HNIPAY"  type="NUMERIC" name="idPaysResidence" mandatory="true" />
+			<field comment="Permis de travail" column="CSPERM" type="NUMERIC" dataType="NUMERIC(8,0)" name="permis" mandatory="false"/>
+			<field comment="Canton de résidence" column="CSCANT" type="NUMERIC" dataType="NUMERIC(8,0)" name="cantonResidence" mandatory="false"/>
+			 <field name="langueAffilie" column="BLANGA" type="BOOLEAN" mandatory="true" comment="Indique si la langue identique à celle de l'affilié"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdAllocataire" field-ref="idAllocataire" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

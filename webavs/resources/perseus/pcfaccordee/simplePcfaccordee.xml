@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.pcfaccordee.SimplePCFAccordee">
+		<description>Table des PCF accordées</description>
+		<table name="PFPCFACC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idPCFAccordee" column="IRIDPA" comment="Clé primaire de la table des PCFAccordees"/>
+			<field name="idDemande" column="IRIDDE" type="NUMERIC" mandatory="true" comment="référence sur la demande" />
+			<field name="csEtat" column="IRETAT" type="NUMERIC" mandatory="false" comment="code système pour l'état de la demande" />
+			<field name="montant" column="IRMONT" type="NUMERIC" mandatory="true" comment="montant accordée pour la PCF après calcul" />
+			<field name="excedantRevenu" column="IREXRE" type="NUMERIC" mandatory="true" comment="excendent de revenu après calcul" />
+			<field name="dateCalcul" column="IRDACA" type="DATE" mandatory="true" comment="date d'éxecution du calcul" />
+			<field name="calcul" column="IRCALC" type="BLOB" mandatory="false" comment="blob contenant l'objet OutputCalcul sérialisé" />
+			<field name="dateDecision" column="IRDADE" type="MONTH_YEAR" mandatory="false" comment="Date de prise de la décision (Mois du premier paiement mensuel)" />
+			<field name="dateDiminution" column="IRDADI" type="MONTH_YEAR" mandatory="false" comment="Date de diminution de la prestation (Mois du dernier paiement mensuel)" />
+			<field name="dateDecisionValidation" column="IRDATEDV" type="NUMERIC" mandatory="false" comment="Date exact de la validation de la décision" />
+			<field name="timeDecisionValidation" column="IRTIMEDV" type="NUMERIC" mandatory="false" comment="Temps exact de la validation de la décision" />
+			<field name="onError" column="IRERRO" type="BOOLEAN" mandatory="false" comment="La pcfaccordée n'a pas été versée au dernier paiement mensuel" /> 
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="idDemande"/>
+				<search-field name="forOnError" operation="EQUALS" field-ref="onError"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

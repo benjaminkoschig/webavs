@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.lot.ComptabiliserLot">
+		<root-model name="simpleLot" model-ref="ch.globaz.corvus.business.models.lots.SimpleLot"/>
+		
+		<linked-model name="simplePrestation" model-ref="ch.globaz.pegasus.business.models.lot.SimplePrestation" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idLot" operation="EQUALS" field-ref="simpleLot.idLot"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleOrdreVersement" model-ref="ch.globaz.pegasus.business.models.lot.SimpleOrdreVersement" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPrestation" operation="EQUALS" field-ref="simplePrestation.idPrestation"/>
+			</join-group>
+		</linked-model>
+			
+		<linked-model name="simpleCreanceAccordee" model-ref="ch.globaz.pegasus.business.models.creancier.SimpleCreanceAccordee" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idOrdreVersement" operation="EQUALS" field-ref="simpleOrdreVersement.idOrdreVersement"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDecisionHeader" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPrestation" operation="EQUALS" field-ref="simplePrestation.idPrestation"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleValidationDecision" model-ref="ch.globaz.pegasus.business.models.decision.SimpleValidationDecision" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="simpleDecisionHeader.idDecisionHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="pcAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.PCAccordee" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simplePCAccordee.idPCAccordee" operation="EQUALS" field-ref="simpleValidationDecision.idPCAccordee"/>
+			</join-group>
+		</linked-model>
+		
+	    <search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdLot" operation="EQUALS" field-ref="simpleLot.idLot"/>
+				<search-field name="forEtatCs" operation="EQUALS" field-ref="simpleLot.etatCs"/>
+				<search-field name="forTypeLot" operation="EQUALS" field-ref="simpleLot.typeLot"/>
+				<search-field name="forCsProprietaire" operation="EQUALS" field-ref="simpleLot.csProprietaire"/>
+			</search-group>
+		</search-definition>
+				
+		<order-by>
+			<order-field field-ref="simpleLot.idLot" />
+			<order-field field-ref="simplePrestation.idPrestation" />
+			<order-field field-ref="simpleOrdreVersement.idOrdreVersement" />
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

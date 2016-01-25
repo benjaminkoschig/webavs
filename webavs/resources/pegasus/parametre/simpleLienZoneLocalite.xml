@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.parametre.SimpleLienZoneLocalite">
+	<description>Contien les liens entres les zone de forfait et les localites</description>
+	<table name="PCLIZOLO" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="idLienZoneLocalite" column="DBIDZL" comment="ID_ZONE" />
+			<field name="idZoneForfait" column="DBIDZF" type="NUMERIC" mandatory="true" comment="ID_ZONE_LOCALITE" />
+			<field name="idLocalite" column="DBIDLO" type="NUMERIC"  mandatory="true" comment="ID_LOCALITE" />
+			<field name="dateDebut" column="DBDDE1" type="DATE"  mandatory="true" comment="DATE_DEBUT" />
+			<field name="dateFin" column="DBDFI1" type="DATE" mandatory="false" comment="DATE_FIN" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forDateDebut"  operation="EQUALS" field-ref="dateDebut"/>
+				<search-field name="forIdZoneForfait"  operation="EQUALS" field-ref="idZoneForfait"/>
+				<search-field name="forIdLocalite"  operation="EQUALS" field-ref="idLocalite"/>
+			</search-group>
+		</search-definition>
+	   <search-definition name="withDateValable">
+			<search-group operator="AND">
+				<search-field name="forIdZoneForfait"  operation="EQUALS" field-ref="idZoneForfait"/>
+				<search-field name="forIdLocalite"  operation="EQUALS" field-ref="idLocalite"/>
+				<search-group operator="AND">
+					<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+						<search-field name="forDateValable" operation="NULL" field-ref="dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping> 

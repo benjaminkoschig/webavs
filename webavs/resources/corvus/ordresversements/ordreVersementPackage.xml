@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="corvus/ordresversements/simpleCompensationInterDecision.xml" />
+	<model-mapping import="corvus/ordresversements/simpleOrdreVersement.xml" />
+	<model-mapping import="corvus/ordresversements/simpleSoldePourRestitution.xml" />
+	<model-mapping import="corvus/ordresversements/ordreVersementComplexModel.xml" />
+</model-mapping>

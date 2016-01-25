@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.qd.QDAnnuelle">
+		<root-model name="simpleQDAnnuelle" model-ref="ch.globaz.perseus.business.models.qd.SimpleQDAnnuelle"/>
+		
+		<linked-model name="dossier" model-ref="ch.globaz.perseus.business.models.dossier.Dossier" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="dossier.idDossier" operation="EQUALS" field-ref="simpleQDAnnuelle.idDossier" />
+			</join-group>
+		</linked-model>
+		
+   		<search-definition>
+   			<search-group operator="AND">
+   				<search-field name="forIdDossier" operation="EQUALS" field-ref="dossier.dossier.idDossier" />
+   				<search-field name="forAnnee" operation="EQUALS" field-ref="simpleQDAnnuelle.annee" />
+   			</search-group>
+   		</search-definition>
+   		
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.hera.business.models.famille.RelationConjoint">
+		<root-model name="simpleRelationConjoint" model-ref="ch.globaz.hera.business.models.famille.SimpleRelationConjoint"/>
+		<linked-model name="simpleConjoint" model-ref="ch.globaz.hera.business.models.famille.SimpleConjoint" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idConjoints" operation="EQUALS" field-ref="simpleRelationConjoint.idConjoints"/>
+			</join-group>
+		</linked-model>
+		<search-definition>
+			<search-group operator="AND">
+				<search-group operator="OR">
+					<search-field name="forIdConjoint1" field-ref="simpleConjoint.idConjoint1" operation="EQUALS" />
+					<search-field name="forIdConjoint1" field-ref="simpleConjoint.idConjoint2" operation="EQUALS" />
+				</search-group>
+				<search-group operator="OR">
+					<search-field name="forIdConjoint2" field-ref="simpleConjoint.idConjoint1" operation="EQUALS" />
+					<search-field name="forIdConjoint2" field-ref="simpleConjoint.idConjoint2" operation="EQUALS" />
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		
+	    <search-definition name="withDateValable">
+			<search-group operator="AND">
+				<search-group operator="OR">
+					<search-field name="forIdConjoint1" field-ref="simpleConjoint.idConjoint1" operation="EQUALS" />
+					<search-field name="forIdConjoint1" field-ref="simpleConjoint.idConjoint2" operation="EQUALS" />
+				</search-group>
+				<search-group operator="OR">
+					<search-field name="forIdConjoint2" field-ref="simpleConjoint.idConjoint1" operation="EQUALS" />
+					<search-field name="forIdConjoint2" field-ref="simpleConjoint.idConjoint2" operation="EQUALS" />
+				</search-group>
+				<search-group operator="AND">
+					<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="simpleRelationConjoint.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="simpleRelationConjoint.dateFin"/>
+						<search-field name="forDateValable" operation="NULL" field-ref="simpleRelationConjoint.dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

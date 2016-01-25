@@ -1,0 +1,21 @@
+<%-- L'utilisation de ce bloc nécessite qu'une variable employeur soit présente
+dans le pageContext ! --%>
+<div class="bloc blocLarge">
+	<div class="header">
+		<ct:FWLabel key="JSP_ADHESIONS_ASSOCIATIONS_PROFESSIONNELLES"/>
+	</div>
+	<table>
+		<tr>
+			<td style="width: 10%"  class="label"><ct:FWLabel key="JSP_NO" /></td>
+			<td style="width: 70%"  class="label"><ct:FWLabel key="JSP_DESIGNATION" /></td>
+			<td style="width: 20%"  class="label"><ct:FWLabel key="JSP_ENTREE" /></td>
+		</tr>
+		<c:forEach var="adhesionAssociationProfessionnelle" items="${employeur.adhesionsAssociationsProfessionnelles}">
+		<tr>
+			<td class="value">${adhesionAssociationProfessionnelle.section.associationProfessionnelle.id}</td> 
+			<td class="value">${adhesionAssociationProfessionnelle.section.designation}</td>
+			<td class="value">${adhesionAssociationProfessionnelle.dateDebut}</td> 
+		</tr>
+		</c:forEach>
+	</table>
+</div>

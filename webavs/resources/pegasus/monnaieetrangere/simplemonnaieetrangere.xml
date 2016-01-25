@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--  fichier de mapping du modele simple monnaieEtrangere -->
+<!--  SCE, 6.2010 -->
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.monnaieetrangere.SimpleMonnaieEtrangere">
+		<description>Modele de la table des monnaies etrangeres</description>
+		<table name="PCMONETR" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idMonnaieEtrangere" column="BJITMO" comment="ID_TAUX_MONNAIES_ETRANGERES"/>
+			<field name="csTypeMonnaie" column="BJTMON" type="NUMERIC" mandatory="true" comment="CS_MONNAIE"/>
+			<field name="taux" column="BJMTAC" type="NUMERIC"  dataType="NUMERIC(15,5)"  mandatory="true" comment="TAUX_CONVERSION"/>
+			<field name="dateDebut" column="BJDDEB" type="MONTH_YEAR"  mandatory="true" comment="DATE_DEBUT"/>
+			<field name="dateFin" column="BJDFIN" type="MONTH_YEAR"  mandatory="false" comment="DATE_FIN"/>
+		</fields>
+		
+		
+		<!--Recherche la monnaieetrangere ouverte-->
+		<search-definition name="withPeriodeOpen">
+			<search-group operator="AND">
+				<search-field name="forCsTypeMonnaie" operation="EQUALS" field-ref="csTypeMonnaie"/>
+				<search-field name="forDateFin" operation="NULL" field-ref="dateFin"/>
+			</search-group>
+		</search-definition>
+
+		<!-- recherche si periode superieur -->
+		<search-definition name="withPeriodeSuperior">
+			<search-group operator="AND">
+				<search-field name="forDateDebutCheckPeriode" operation="GREATER" field-ref="dateDebut"/>
+				<search-field name="forCsTypeMonnaie" operation="EQUALS" field-ref="csTypeMonnaie"/>
+			</search-group>
+		</search-definition>
+		
+		<!--Test qu il n y a pas de superpostion de dates -->
+		<search-definition name="checkSuperpositionPeriodes">
+			<search-group operator="AND">
+					<search-field name="forCsTypeMonnaie" operation="EQUALS" field-ref="csTypeMonnaie"/>
+					<search-field name="forIdMonnaieEtrangere" operation="NOT_EQUALS" field-ref="idMonnaieEtrangere"/>
+					
+				<search-group operator="OR">					
+					<search-group operator="AND">					
+						<search-field name="forDateDebutCheckPeriode" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateDebutCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+							<search-field name="forDateDebutCheckPeriode" operation="NULL" field-ref="dateFin"/>
+						</search-group>
+					</search-group>
+					
+					<search-group operator="AND">
+						<search-field name="forDateFinCheckPeriode" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateFinCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+							<search-field name="forDateFinCheckPeriode" operation="NULL" field-ref="dateFin"/>
+						</search-group>				
+					</search-group>
+					
+					<search-group operator="AND">					
+						<search-field name="forDateDebutCheckPeriode" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateFinCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+							<search-field name="forDateFinCheckPeriode" operation="NULL" field-ref="dateFin"/>
+						</search-group>
+					</search-group>
+					
+					<search-group operator="AND">					
+						<search-field name="forDateDebutCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="dateDebut"/>
+						<search-field name="forDateFinCheckPeriode" operation="LESS_OR_EQUALS" field-ref="dateFin"/>
+						<search-field name="forDateFinCheckPeriode" operation="NOT_NULL" field-ref="dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.corvus.business.models.recapinfo.SimpleInfoRecap">
+		<description>Info recap</description>
+		<table name="REINFREC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		
+		<fields>
+			<primary-key name="id" column="ZQIIFR" comment="ID"/>
+			<field name="code" type="NUMERIC" column="ZQNCOD" comment="CS_CODE" />
+			<field name="montant" type="NUMERIC" column="ZQMMON" comment="MONTANT" />
+			<field name="date" type="MONTH_YEAR" column="ZQDDAT" comment="DATE_ENVOI" />
+			<field name="idTiers" type="NUMERIC" column="ZQITIE" comment="ID_TIERS" />
+			<field name="idLot" type="NUMERIC" column="ZQIRST" comment="ID_LOT" />
+		</fields> 
+		
+		<search-definition>
+			<search-group operator="AND">
+			    <search-field name="forDate" operation="EQUALS" field-ref="date" />
+				<search-field name="forIdLot" operation="EQUALS" field-ref="idLot" />
+				<search-field name="inCode" operation="IN" field-ref="csTypeLot" />
+			</search-group>
+		</search-definition>
+	
+		<order-by>
+			<order-field field-ref="date"/>
+			<order-field field-ref="idLot"/>
+		</order-by>
+	</simple-model>
+</model-mapping>

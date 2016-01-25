@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle permettant de récupérer les affiliés -->
+<model-mapping>
+	<complexe-model className="ch.globaz.al.business.models.dossier.AffilieListComplexModel">
+		<select-fields distinct="true">
+			<select-field name="numeroAffilie" field-ref="dossierModel.numeroAffilie"/>
+			<select-field name="periodicite" field-ref="affiliationSimpleModel.periodicite"/>
+		</select-fields>
+		<root-model name="dossierModel" model-ref="ch.globaz.al.business.models.dossier.DossierModel" select-fields="false"/>	
+		<linked-model name="affiliationSimpleModel" model-ref="ch.globaz.naos.business.model.AffiliationSimpleModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="affilieNumero" field-ref="dossierModel.numeroAffilie"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forNumeroAffilie" field-ref="dossierModel.numeroAffilie" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="listForGenerationPaiementDirect">
+			<search-group operator="AND">
+				<search-field name="constanteBeneficiaire" field-ref="dossierModel.idTiersBeneficiaire" operation="GREATER" value="0"/>
+				<!-- TODO cette condition devrait être supprimée -->
+				<search-field name="inPeriodicites" field-ref="affiliationSimpleModel.periodicite" operation="IN"/>
+				
+				<search-group operator="OR">
+					<search-field name="forDate" field-ref="affiliationSimpleModel.dateFin" operation="NULL"/>
+					<search-group operator="AND">
+						<search-field name="forDate" field-ref="affiliationSimpleModel.dateDebut" operation="LESS_OR_EQUALS"/>
+						<search-field name="forDate" field-ref="affiliationSimpleModel.dateFin" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="listForGenerationCotPers">
+			<search-group operator="AND">
+				<search-field name="inPeriodicites" field-ref="affiliationSimpleModel.periodicite" operation="IN"/>
+				<search-field name="inActivites" field-ref="dossierModel.activiteAllocataire" operation="IN"/>
+				
+				<search-group operator="OR">
+					<search-field name="forDate" field-ref="affiliationSimpleModel.dateFin" operation="NULL"/>
+					<search-group operator="AND">
+						<search-field name="periodiciteMensuelle" field-ref="affiliationSimpleModel.periodicite" operation="EQUALS" value="802001"/>
+						<search-field name="forDate" field-ref="affiliationSimpleModel.dateDebut" operation="LESS_OR_EQUALS"/>
+						<search-field name="forDate" field-ref="affiliationSimpleModel.dateFin" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+					<search-group operator="AND">
+						<search-field name="periodiciteTrimestrielle" field-ref="affiliationSimpleModel.periodicite" operation="EQUALS" value="802002"/>
+						<search-field name="forDate" field-ref="affiliationSimpleModel.dateDebut" operation="LESS_OR_EQUALS"/>
+						<search-field name="forDateDebutTrimestre" field-ref="affiliationSimpleModel.dateFin" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+					<search-group operator="AND">
+						<search-field name="periodiciteAnnuelle" field-ref="affiliationSimpleModel.periodicite" operation="EQUALS" value="802004"/>
+						<search-field name="forDate" field-ref="affiliationSimpleModel.dateDebut" operation="LESS_OR_EQUALS"/>
+						<search-field name="forDateDebutAnnee" field-ref="affiliationSimpleModel.dateFin" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="listForGenerationCotPar">
+			<search-group operator="AND">
+				<search-field name="inPeriodicites" field-ref="affiliationSimpleModel.periodicite" operation="IN"/>
+				<search-field name="inActivites" field-ref="dossierModel.activiteAllocataire" operation="NOT_IN"/>
+				
+				<search-group operator="OR">
+					<search-field name="forDate" field-ref="affiliationSimpleModel.dateFin" operation="NULL"/>
+					<search-group operator="AND">
+						<search-field name="periodiciteMensuelle" field-ref="affiliationSimpleModel.periodicite" operation="EQUALS" value="802001"/>
+						<search-field name="forDate" field-ref="affiliationSimpleModel.dateDebut" operation="LESS_OR_EQUALS"/>
+						<search-field name="forDate" field-ref="affiliationSimpleModel.dateFin" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+					<search-group operator="AND">
+						<search-field name="periodiciteTrimestrielle" field-ref="affiliationSimpleModel.periodicite" operation="EQUALS" value="802002"/>
+						<search-field name="forDate" field-ref="affiliationSimpleModel.dateDebut" operation="LESS_OR_EQUALS"/>
+						<search-field name="forDateDebutTrimestre" field-ref="affiliationSimpleModel.dateFin" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+					<search-group operator="AND">
+						<search-field name="periodiciteAnnuelle" field-ref="affiliationSimpleModel.periodicite" operation="EQUALS" value="802004"/>
+						<search-field name="forDate" field-ref="affiliationSimpleModel.dateDebut" operation="LESS_OR_EQUALS"/>
+						<search-field name="forDateDebutAnnee" field-ref="affiliationSimpleModel.dateFin" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="listForGeneration">
+			<search-group operator="AND">
+				<search-field name="inPeriodicites" field-ref="affiliationSimpleModel.periodicite" operation="IN"/>
+				
+				<search-group operator="OR">
+					<search-field name="forDate" field-ref="affiliationSimpleModel.dateFin" operation="NULL"/>
+					<search-group operator="AND">
+						<search-field name="periodiciteMensuelle" field-ref="affiliationSimpleModel.periodicite" operation="EQUALS" value="802001"/>
+						<search-field name="forDate" field-ref="affiliationSimpleModel.dateDebut" operation="LESS_OR_EQUALS"/>
+						<search-field name="forDate" field-ref="affiliationSimpleModel.dateFin" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+					<search-group operator="AND">
+						<search-field name="periodiciteTrimestrielle" field-ref="affiliationSimpleModel.periodicite" operation="EQUALS" value="802002"/>
+						<search-field name="forDate" field-ref="affiliationSimpleModel.dateDebut" operation="LESS_OR_EQUALS"/>
+						<search-field name="forDateDebutTrimestre" field-ref="affiliationSimpleModel.dateFin" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+					<search-group operator="AND">
+						<search-field name="periodiciteAnnuelle" field-ref="affiliationSimpleModel.periodicite" operation="EQUALS" value="802004"/>
+						<search-field name="forDate" field-ref="affiliationSimpleModel.dateDebut" operation="LESS_OR_EQUALS"/>
+						<search-field name="forDateDebutAnnee" field-ref="affiliationSimpleModel.dateFin" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

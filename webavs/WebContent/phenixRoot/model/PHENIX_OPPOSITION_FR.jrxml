@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="PHENIX_OPPOSITION_FR"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="28"
+		 rightMargin="14"
+		 topMargin="10"
+		 bottomMargin="5"
+		 whenNoDataType="AllSectionsNoDetail"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="2" />
+	<reportFont name="ARIAL" isDefault="true" fontName="Arial" size="11" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="ARIAL.TTF" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="ARIAL_BOLD" isDefault="false" fontName="arialbd.ttf" size="11" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="ARIALBD.TTF" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<parameter name="P_ADRESSE_RECOURS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="MODEL_PATH" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_DEFAULT_MODEL_PATH" isForPrompting="false" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["C:/Documents and Settings/Administrator/My Documents/consultran/projet/globaz/iText/Default_workspace/iText model/defaultModel"]]></defaultValueExpression>
+	</parameter>
+		<background>
+			<band height="701"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="66"
+						width="545"
+						height="84"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-1"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" pdfFontName="Helvetica" size="10"/>
+					</textElement>
+				<text><![CDATA[Nous vous indiquons, au recto, le montant de vos cotisations personnelles AVS/AI/APG ainsi qu e leurs bases. Ces cotisations doivent être acquittées dans les 30 jours à compter de la date de la facturation.
+Si les bases du revenu déterminant ont subi une modification sensible par suite d'un début d'activité indépendante, d'un changement de profession ou d'établissement professionnel, de la disparition ou de l'apparition durable d'une source importante de revenu, d'une répartition nouvelle du revenu de l'exploitation, la caisse de compensation doit déterminer le nouveau revenu et fixer les acomptes de cotisations correspondants. Tout changement d'activité doit donc être annoncé immédiatement.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="4"
+						width="545"
+						height="23"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-2"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[EXPLICATIONS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="6"
+						y="51"
+						width="545"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-3"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[OBLIGATION DE L'AFFILIE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="170"
+						width="545"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-4"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[MOYENS DE DROIT]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="185"
+						width="545"
+						height="25"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-5"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" pdfFontName="Helvetica" size="10"/>
+					</textElement>
+				<text><![CDATA[Si vous contestez l’exactitude de notre décision sur opposition, vous pouvez recourir, au plus tard dans les 30 jours dès la notification de la décision, à l’adresse suivante :]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="72"
+						y="214"
+						width="355"
+						height="64"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-1"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="ARIAL.TTF" size="10" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_ADRESSE_RECOURS}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="374"
+						width="545"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-6"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[INTERETS MORATOIRES (selon l'art. 41 bis du RAVS)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="389"
+						width="545"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-7"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" pdfFontName="Helvetica" size="10"/>
+					</textElement>
+				<text><![CDATA[Des intérêts moratoires sont dus lorsque :  ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="497"
+						width="545"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-8"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[INTERETS REMUNERATOIRES (selon l'art. 41 ter du RAVS)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="512"
+						width="545"
+						height="26"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-9"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" pdfFontName="Helvetica" size="10"/>
+					</textElement>
+				<text><![CDATA[Des intérêts rémunératoires sont dus lorsque des cotisations versées en trop doivent être restituées par la caisse de compensation et que le remboursement n'intervient pas dans les 30 jours.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="559"
+						width="545"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-10"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[REDUCTION ET REMISE DE COTISATIONS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="574"
+						width="545"
+						height="118"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-11"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" pdfFontName="Helvetica" size="10"/>
+					</textElement>
+				<text><![CDATA[Une réduction ne peut être accordée que si le paiement de la cotisaton entière constitue, pour vous, une charge trop lourde. Il s'agit là d'une mesure exceptionnelle et, pour bénéficier, vous devez vous trouvez dans un véritable état de gêne résultant de charges de famille extraordinaires, de frais médicaux élevés non couverts par une assurance, de frais dus à une force naturelle, etc. Une simple diminution du revenu courant par rapport à celui qui à servi de base au calcul de la cotisation n'est pas, en  soi, un motif de réduction. La demande de réduction devra être présentée, par écrit, à notre Caisse. Elle sera dûment motivée et accompagnée de toutes les pièces justificatives nécessaires.
+
+Dans le cas où le paiement de la cotisation minimale vous mettrait dans une situation intolérable, vous pouvez obtenir, sur demande motivée, la remise des cotisations.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="14"
+						y="403"
+						width="536"
+						height="71"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-12"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[le débiteur des cotisations est mis en poursuites ou tombe en faillite;
+les cotisations selon le droit fédéral n'ont pas été encaissées par la caisse de compensation dans les 30 jours à
+compter de la date de la facturation;
+les acomptes de cotisations s'avèrent inférieurs d'au moins 25% aux cotisations effectivement dues et que ces
+cotisations n'ont pas été entièrement encaissées par la caisse de compensation jusqu'au 31 décembre de l'année civile qui suit l'année de cotisation.
+
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="6"
+						y="403"
+						width="8"
+						height="71"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-13"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[-
+-
+
+-
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="7"
+						y="280"
+						width="545"
+						height="73"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-14"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" pdfFontName="Helvetica" size="10"/>
+					</textElement>
+				<text><![CDATA[Le recours doit, si possible, être écrit en deux exemplaires et envoyé sous pli recommandé. La décision attaquée, ainsi que l’enveloppe la contenant doivent être jointes à l’acte de recours. Celui-ci doit contenir un exposé détaillé et précis :
+   a) résumant les faits ;
+   b) indiquant les raisons pour lesquelles le recours est déposé ;
+   c) apportant ou offrant d’apporter les preuves nécessaires :
+   d) se terminant par des conclusions précises.
+]]></text>
+				</staticText>
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

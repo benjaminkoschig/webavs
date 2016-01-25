@@ -1,0 +1,47 @@
+.label{
+	width:120px;
+	height:22px;
+	padding-top:2px;
+	display:inline-block;
+	text-align:left;
+	float:left;
+	font-weight:bold;
+}
+/* ****ligne requerant**** */
+#ligneRequerant{
+	/*border:1px solid red;*/
+	height:32px;
+	padding-bottom:5px;
+	width:90%;
+	border-bottom:2px solid #226194;
+	
+}
+.tdChkChild{
+	text-align:center;
+}
+/* label valeur requerant */
+#valRequerant{
+	font-weight:normal;
+	float:left;
+	width:550px;
+	text-align:left;
+	font-style:italic;
+}
+#isChild{
+	color:red;
+	font-weight:bold;
+}
+.noChildFound{
+	color:red;
+	font-weight:bold;
+}
+/*************************/
+#fratrieTable{
+	width: 90%;
+}
+#thChkBox{
+	width:30px;
+}
+.thChkChild{
+	text-align:center;
+}

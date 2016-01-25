@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+   <simple-model className="ch.globaz.aries.business.models.SimpleDetailDecisionCGAS">
+      <description>Détail d'une décision CGAS</description>
+      <table name="ARDETDEC" hasCreationSpy="true" hasSpy="true"
+             alwaysIncrementPrimaryKey="true"/>
+      <fields>
+         <primary-key name="idDetailDecision" column="IDDDID" type="NUMERIC" dataType="NUMERIC(15,0)"
+                      mandatory="true"
+                      comment="Identifiant"/>
+         <field name="idDecision" column="DEIDDE" type="NUMERIC" dataType="NUMERIC(15,0)"
+                mandatory="true"
+                comment="Identifiant de la taxation liée"/>
+         <field name="type" column="DDTYPE" type="NUMERIC" dataType="NUMERIC(8,0)"
+                mandatory="true"
+                comment="Type du détail"/>
+         <field name="nombre" column="DDNBRE" type="AMOUNT" dataType="NUMERIC(15,2)" 
+         		mandatory="true"
+                comment="Nombre d'éléments du détail"/>
+         <field name="montant" column="DDMONT" type="AMOUNT" dataType="NUMERIC(15,2)"
+                mandatory="true"
+                comment="Montant par éléments du détail"/>
+         <field name="total" column="DDTOT" type="AMOUNT" dataType="NUMERIC(15,2)"
+                mandatory="true"
+                comment="Total du détail"/>
+      </fields>
+      
+      <search-definition>
+         <search-group operator="AND">
+            <search-field name="forIdDecision" operation="EQUALS" field-ref="idDecision" />
+         </search-group>
+      </search-definition>
+      
+   </simple-model>
+</model-mapping>

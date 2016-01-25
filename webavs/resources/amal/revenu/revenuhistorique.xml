@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.revenu.RevenuHistorique">
+
+		<select-fields>
+			<select-field name="idRevenuHistorique" field-ref="simpleRevenuHistorique.idRevenuHistorique" />
+			<select-field name="idRevenuDeterminant" field-ref="simpleRevenuHistorique.idRevenuDeterminant" />
+			<select-field name="idRevenu" field-ref="simpleRevenuHistorique.idRevenu" />
+			<select-field name="idContribuable" field-ref="simpleRevenuHistorique.idContribuable" />
+			<select-field name="anneeHistorique" field-ref="simpleRevenuHistorique.anneeHistorique"/>
+			<select-field name="revenuDeterminantCalcul" field-ref="simpleRevenuDeterminant.revenuDeterminantCalcul"/>
+			<select-field name="anneeTaxation" field-ref="simpleRevenu.anneeTaxation" />
+			<select-field name="typeSource" field-ref="simpleRevenu.typeSource" />
+			<select-field name="typeTaxation" field-ref="simpleRevenu.typeTaxation" />
+			<select-field name="dateAvisTaxation" field-ref="simpleRevenu.dateAvisTaxation" />
+			<select-field name="revenuImposable" field-ref="simpleRevenuDeterminant.revenuImposableCalcul" />
+			<select-field name="revenuImposableSourcier" field-ref="simpleRevenuDeterminant.revenuImposableCalcul" />
+			<!--<select-field name="revenuImposable" field-ref="simpleRevenuContribuable.revenuImposable" />
+			<select-field name="revenuImposableSourcier" field-ref="simpleRevenuSourcier.revenuImposable" /> -->
+			<select-field name="etatCivil" field-ref="simpleRevenu.etatCivil" />
+			<select-field name="nbEnfants" field-ref="simpleRevenu.nbEnfants" />
+			<select-field name="nbEnfantSuspens" field-ref="simpleRevenu.nbEnfantSuspens" />
+			<select-field name="isSourcier" field-ref="simpleRevenu.isSourcier" />
+			<select-field name="typeRevenu" field-ref="simpleRevenu.typeRevenu" />
+			<select-field name="idTaxation" field-ref="simpleRevenu.idRevenu" />
+			<select-field name="isRecalcul" field-ref="simpleRevenuHistorique.isRecalcul" />
+		</select-fields>
+
+		<root-model name="simpleRevenuHistorique" model-ref="ch.globaz.amal.business.models.revenu.SimpleRevenuHistorique" select-fields="false"/>
+
+		<linked-model name="simpleRevenuDeterminant" model-ref="ch.globaz.amal.business.models.revenu.SimpleRevenuDeterminant" select-fields="false" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idRevenuDeterminant" operation="EQUALS" field-ref="idRevenuDeterminant" />
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleRevenu" model-ref="ch.globaz.amal.business.models.revenu.SimpleRevenu" select-fields="false" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idRevenu" operation="EQUALS" field-ref="idRevenu" />
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleRevenuContribuable" model-ref="ch.globaz.amal.business.models.revenu.SimpleRevenuContribuable" select-fields="false" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idRevenu" operation="EQUALS" field-ref="idRevenu" />
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleRevenuSourcier" model-ref="ch.globaz.amal.business.models.revenu.SimpleRevenuSourcier" select-fields="false" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idRevenu" operation="EQUALS" field-ref="idRevenu" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdRevenu" field-ref="simpleRevenuHistorique.idRevenu" operation="EQUALS" />		
+				<search-field name="forIdRevenuHistorique" field-ref="simpleRevenuHistorique.idRevenuHistorique" operation="EQUALS" />		
+				<search-field name="forIdRevenuDeterminant" field-ref="simpleRevenuHistorique.idRevenuDeterminant" operation="EQUALS" />		
+				<search-field name="forIdContribuable" field-ref="simpleRevenuHistorique.idContribuable" operation="EQUALS" />		
+				<search-field name="forAnneeHistorique" field-ref="simpleRevenuHistorique.anneeHistorique" operation="EQUALS" />		
+				<search-field name="forAnneeTaxation" field-ref="simpleRevenu.anneeTaxation" operation="EQUALS" />
+				<search-field name="forRevenuActif" field-ref="simpleRevenuHistorique.codeActif" operation="EQUALS" />		
+				<search-field name="forIsRecalcul" field-ref="simpleRevenuHistorique.isRecalcul" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+
+		<order-by name="default">
+			<order-field field-ref="anneeHistorique" order="DESC"/>
+		</order-by>
+
+
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.prestation.EntetePrestationModel">
+		<description>représente une en-tête de prestation </description>
+		<table name="ALENTPRE" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idEntete" column="MID" comment="ID de EntetePrestation "/>
+			<field name="idDossier" column="EID" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID (FK) de la table Dossier"/>
+			<field name="idRecap" column="LID" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID (FK) de la table Recapitulatif entreprise"/>
+			<field name="idJournal" column="AFID" type="NUMERIC" comment="ID (FK) du journal dans la comptabilité auxiliaire"/>
+			<field name="idPassage" column="EBIPAS" type="NUMERIC" comment="ID (FK) du journal dans la facturation"/>
+			<field name="idTiersCaisseAF" column="IDTICA" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID (FK) de la caisse de l'allocataire dans les tiers"/>
+			<field name="idCotisation" column="MEICOT" type="NUMERIC" comment="Id de la cotisation lié à l'affilié pour la période de la prestation" mandatory="false" />
+			<field name="cantonAffilie" column="CSCANT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Canton de l'affilié au moment de la génération (code système)"/>
+			<field name="etatPrestation" column="CSETAT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Etat de la prestation (ex. SA, CO, ...), code système"/>
+			<field name="periodeDe" column="MPERD" type="MONTH_YEAR" mandatory="true" comment="Début de la période pour laquelle la prestation est versée"/>
+			<field name="periodeA" column="MPERA" type="MONTH_YEAR" mandatory="true" comment="Fin de la période pour laquelle la prestation est versée"/>
+			<field name="jourDebutMut" column="MDMUTJ" type="NUMERIC" dataType="NUMERIC(2,0)" mandatory="false" comment="Jour de début de mutation"/>
+			<field name="moisDebutMut" column="MDMUTM" type="NUMERIC" dataType="NUMERIC(2,0)" mandatory="false" comment="Mois de début de mutation"/>
+			<field name="jourFinMut" column="MFMUTJ" type="NUMERIC" dataType="NUMERIC(2,0)" mandatory="false" comment="Jour de fin de mutation"/>
+			<field name="moisFinMut" column="MFMUTM" type="NUMERIC" dataType="NUMERIC(2,0)" mandatory="false" comment="Mois de fin de mutation"/>
+			<field name="unite" column="CSUNIT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Unité de temps en rapport au nombre (Heure/Jour/Mois), code système"/>
+			<field name="nombreUnite" column="MNBR" type="NUMERIC" dataType="NUMERIC(5,0)" mandatory="true" comment="Nombre d'unités"/>
+			<field name="tauxVersement" column="MTAUX" type="NUMERIC" dataType="NUMERIC(9,5)" mandatory="true" comment="Taux de versement de l'allocation"/>
+			<field name="nombreEnfants" column="MNBENF" type="NUMERIC" dataType="NUMERIC(3,0)" mandatory="false" comment="Nombre d'enfants pris en compte au niveau détails"/>
+			<field name="dateVersComp" column="MDVC" type="DATE" dataType="NUMERIC(8,0)" mandatory="false" comment="Date vers./compens."/>
+			<field name="numPsgGeneration" column="MPSGGN" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="Numéro de passage de la génération globale"/>
+			<field name="montantTotal" column="MMONT" type="NUMERIC" dataType="NUMERIC(8,2)" mandatory="true" comment="Montant total de la prestation"/>
+			<field name="typeGeneration" column="CSTYGE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Type de génération (versement, restitution, ...), code système"/>
+			<field name="bonification" column="CSBONI" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Indique si le type de bonification de la prestation (code système)"/>
+			<field name="statut" column="CSTATU" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Statut de la prestation (ADI, ADC, Suisse), code système"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdEntete" field-ref="idEntete" operation="EQUALS"/>
+				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+				<search-field name="forIdRecap" field-ref="idRecap" operation="EQUALS"/>
+				<search-field name="forIdPassage" field-ref="idPassage" operation="EQUALS"/>
+				<search-field name="forIdJournal" field-ref="idJournal" operation="EQUALS"/>
+				<search-field name="forEtat" field-ref="etatPrestation" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="prestationPositiveExistantePeriodeExacte">
+			<search-group operator="AND">
+				<search-field name="forPeriodeDe" field-ref="periodeDe" operation="EQUALS"/>
+				<search-field name="forPeriodeA" field-ref="periodeA" operation="EQUALS"/>
+				<search-field name="forEtat" field-ref="etatPrestation" operation="EQUALS"/>
+				<search-field name="forStatut" field-ref="statut" operation="EQUALS"/>
+				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+				<search-field name="forIdRecap" field-ref="idRecap" operation="EQUALS" />
+				<search-field name="forMontantTotal" field-ref="montantTotal" operation="GREATER"/>
+			</search-group>
+		</search-definition>
+		<search-definition name="prestationZeroExistante">
+			<search-group operator="AND">
+				<search-field name="forMontantTotal" field-ref="montantTotal" operation="EQUALS"/>
+				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+				<search-group operator="AND">
+		     		<search-field name="forPeriode" field-ref="periodeDe" operation="LESS_OR_EQUALS"/>
+			    	<search-field name="forPeriode" field-ref="periodeA" operation="GREATER_OR_EQUALS"/>
+			    </search-group>	
+			</search-group>
+		</search-definition>
+		<search-definition name="prestationZeroInRecap">
+			<search-group operator="AND">
+				<search-field name="forMontantTotal" field-ref="montantTotal" operation="EQUALS"/>
+				<search-field name="forIdRecap" field-ref="idRecap" operation="EQUALS"/>		
+			</search-group>
+		</search-definition>
+		<search-definition name="prestationTravailPlagePeriode">
+			<search-group operator="AND">
+				<search-field name="forPeriodeDe" field-ref="periodeDe" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forPeriodeA" field-ref="periodeA" operation="LESS_OR_EQUALS"/>
+				<search-field name="forEtat" field-ref="etatPrestation" operation="EQUALS"/>
+				<search-field name="forStatut" field-ref="statut" operation="EQUALS"/>
+				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+				<search-field name="forMontantTotal" field-ref="montantTotal" operation="GREATER_OR_EQUALS"/>
+				
+			</search-group>	
+		</search-definition>
+		<search-definition name="prestationExistante">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+				<search-group operator="AND">
+		     		<search-field name="forPeriode" field-ref="periodeDe" operation="LESS_OR_EQUALS"/>
+			    	<search-field name="forPeriode" field-ref="periodeA" operation="GREATER_OR_EQUALS"/>
+			    </search-group>	
+			</search-group>
+		</search-definition>
+		<search-definition name="prestationExistantePositive">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+				<search-group operator="AND">
+		     		<search-field name="forPeriode" field-ref="periodeDe" operation="EQUALS"/>
+			    	<search-field name="forPeriode" field-ref="periodeA" operation="EQUALS"/>
+			    </search-group>
+			    <search-field name="forMontantTotal" field-ref="montantTotal" operation="GREATER_OR_EQUALS"/>
+			</search-group>
+		</search-definition>
+		<order-by name="numGeneration">
+			<order-field field-ref="numPsgGeneration" order="DESC"/>
+		</order-by>
+		<order-by name="periode">
+			<order-field field-ref="periodeA" order="DESC"/>
+			<order-field field-ref="periodeDe" order="DESC"/>
+			<order-field field-ref="montantTotal" order="DESC"/>
+		</order-by>
+		<order-by name="prestDernGen">
+			<order-field field-ref="idEntete" order="DESC"/>
+		</order-by>
+	</simple-model>
+</model-mapping>

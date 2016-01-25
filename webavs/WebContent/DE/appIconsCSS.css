@@ -1,0 +1,58 @@
+body {
+	border:solid 1;
+	background-color:black;
+	overflow:hidden;
+	margin-top:2px;
+	margin-right:2px;
+	margin-left: 2px;
+	margin-bottom:2px;
+}
+table {
+    font-family : Verdana,Arial;
+    font-size : 11px;
+    empty-cells : show;
+}
+.style1 {
+  border : solid 1 #B3C4DB;
+  padding : 2 2 2 2;
+  cursor : hand;
+
+}
+
+.style2 {
+border : solid 1 #B3C4DB;
+}
+
+.child{
+  margin-left : 7;
+  padding-left :10;
+
+  border-left : dotted 2 gray;
+  background-color : #B3C4DB;
+}
+
+a:link    { 
+	text-decoration: none; 
+	color:black;
+}
+
+a:visited { 
+	text-decoration: none; 
+	color:black ;
+}
+a:active { 
+	text-decoration: none; 
+	color:black ;
+}
+a:hover { 
+	text-decoration: none; 
+	color:black ;
+}
+
+.title{
+    font-size : x-small;
+    font-family : "Lucida Sans Unicode",Verdana,Arial;
+    color : white;
+    background-color : #226194;
+    font-weight : bold;
+}

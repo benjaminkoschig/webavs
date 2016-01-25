@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'un décompte Adi -->
+
+<model-mapping>
+	<complexe-model className="ch.globaz.al.business.models.adi.AdiDecompteComplexModel" >
+
+	<root-model name="decompteAdiModel" model-ref="ch.globaz.al.business.models.adi.DecompteAdiModel"/>
+	
+	<linked-model name="dossierComplexModel" model-ref="ch.globaz.al.business.models.dossier.DossierComplexModel" join-type="LEFT_OUTER" >
+			<join-group operator="AND">
+				<join-field name="dossierModel.idDossier" field-ref="decompteAdiModel.idDossier"/>
+			</join-group>
+	</linked-model>
+
+	
+	<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDecompteAdi" field-ref="idDecompteAdi" operation="EQUALS"/>
+				<search-field name="forIdDossier" field-ref="decompteAdiModel.idDossier" operation="EQUALS"/>
+				<search-field name="forAnnnee" field-ref="decompteAdiModel.anneeDecompte" operation="EQUALS"/>
+			
+				<!--<search-field name="forStatut" field-ref="dossierModel.statut" operation="EQUALS"/>-->
+ 			</search-group>
+	</search-definition>
+	
+	</complexe-model>
+
+</model-mapping>
+

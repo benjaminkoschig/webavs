@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modéle complexe d'un dossier -->
+<model-mapping >
+<complexe-model className="ch.globaz.al.business.models.dossier.DossierAgricoleComplexModel">
+	<root-model name="dossierModel" model-ref="ch.globaz.al.business.models.dossier.DossierModel"/>
+	<linked-model name="allocataireAgricoleComplexModel" model-ref="ch.globaz.al.business.models.allocataire.AllocataireAgricoleComplexModel" join-type="INNER">
+		<join-group operator="AND">
+			<join-field name="allocataireModel.idAllocataire" field-ref="dossierModel.idAllocataire"/>
+		</join-group>
+	</linked-model>
+	<linked-model name="tiersBeneficiaireModel" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER">
+		<join-group operator="AND">
+			<join-field name="idTiers" field-ref="dossierModel.idTiersBeneficiaire"/>
+		</join-group>
+	</linked-model>
+	<linked-model name="caisseAFComplexModel" model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel" join-type="LEFT_OUTER">
+		<join-group operator="AND">
+			<join-field name="admin.idTiersAdministration" field-ref="dossierModel.idTiersCaisseConjoint"/>
+		</join-group>
+	</linked-model>
+</complexe-model>
+</model-mapping>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'un dossier -->
+<model-mapping>
+<complexe-model className="ch.globaz.al.business.models.dossier.DossierListComplexModel">
+	<select-fields distinct="true">
+		<select-field name="activiteDossier" field-ref="dossierModel.activiteAllocataire"/>
+		<select-field name="etatDossier" field-ref="dossierModel.etatDossier"/>
+		<select-field name="finValidite" field-ref="dossierModel.finValidite"/>
+		<select-field name="idDossier" field-ref="dossierModel.idDossier"/>
+		<select-field name="nomAllocataire" field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation1"/>
+		<select-field name="nss" field-ref="allocataireComplexModel.personneEtendueComplexModel.personneEtendue.numAvsActuel"/>
+		<select-field name="numeroAffilie" field-ref="dossierModel.numeroAffilie"/>
+		<select-field name="prenomAllocataire" field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation2"/>
+		<select-field name="raisonSocialeAffilie" field-ref="affiliationModel.raisonSociale"/>
+		<select-field name="spy" field-ref="dossierModel.spy"/>
+		<select-field name="statutDossier" field-ref="dossierModel.statut"/>
+	</select-fields>
+	<root-model name="dossierModel" model-ref="ch.globaz.al.business.models.dossier.DossierModel" select-fields="false"/>
+	<linked-model name="allocataireComplexModel" model-ref="ch.globaz.al.business.models.allocataire.AllocataireComplexModel" join-type="INNER" select-fields="false">
+		<join-group operator="AND">
+			<join-field name="allocataireModel.idAllocataire" field-ref="dossierModel.idAllocataire"/>
+		</join-group>
+	</linked-model>
+ 
+	<linked-model name="affiliationModel" model-ref="ch.globaz.naos.business.model.AffiliationSimpleModel" join-type="INNER" select-fields="false">
+		<join-group operator="AND">
+			<join-field name="affilieNumero" field-ref="dossierModel.numeroAffilie"/>
+		</join-group>
+	</linked-model>
+	
+	<linked-model name="droitComplexModel"  model-ref="ch.globaz.al.business.models.droit.DroitComplexModel" join-type="LEFT_OUTER" select-fields="false">
+		<join-group operator="AND">
+			<join-field name="droitModel.idDossier" field-ref="dossierModel.idDossier"/>
+		</join-group>
+	</linked-model>
+	<!-- Attention, la requête générée n'est pas optimale car si affilié a changé de nom (cas dossier 29725) 2 lignes => 2 dossiers affichés avec le même n° -->
+	<search-definition name="AL0002">
+		<search-group operator="AND">
+		
+				<search-field name="forIdTiersEnfant" field-ref="droitComplexModel.enfantComplexModel.enfantModel.idTiersEnfant" operation="EQUALS"/>
+				<!-- uniquement pour l'option de l'écran enfant (dossiers de l'enfant) -->
+				<search-field name="forIdEnfant" field-ref="droitComplexModel.enfantComplexModel.enfantModel.idEnfant" operation="EQUALS"/>
+				<search-field name="likeNssEnfant" field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.personneEtendue.numAvsActuel" operation="LIKE"/>
+				<search-field name="likePrenomEnfant" field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.tiers.designationUpper2" operation="LIKE"/>
+				<search-field name="likeNomEnfant" field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.tiers.designationUpper1" operation="LIKE"/>
+				<search-field name="forDateEnfant" field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.personne.dateNaissance" operation="EQUALS"/>
+				
+				<!-- uniquement pour l'option de l'écran allocataire (dossiers de l'allocataire) -->
+				<search-field name="forIdAllocataire" field-ref="dossierModel.idAllocataire" operation="EQUALS"/>
+				<search-field name="forIdTiersAllocataire" field-ref="allocataireComplexModel.allocataireModel.idTiersAllocataire" operation="EQUALS"/>
+				<search-field name="likeNssAllocataire" field-ref="allocataireComplexModel.personneEtendueComplexModel.personneEtendue.numAvsActuel" operation="LIKE"/>
+				<search-field name="likePrenomAllocataire" field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designationUpper2" operation="LIKE"/>
+				<search-field name="likeNomAllocataire" field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designationUpper1" operation="LIKE"/>		
+				
+				<search-field name="forNumAffilie" field-ref="dossierModel.numeroAffilie" operation="EQUALS"/>
+				<search-field name="likeNomAffilie" field-ref="affiliationModel.raisonSocialeUpper" operation="LIKE"/>
+				<search-field name="forIdDossier" field-ref="dossierModel.idDossier" operation="EQUALS"/>
+				<search-field name="forNumeroDossier" field-ref="dossierModel.numeroDossier" operation="EQUALS"/>
+				<!--  uniquement pour les filtres de l'écran de recherche AL0004 -->
+				<search-field name="inEtatsDossier" field-ref="dossierModel.etatDossier" operation="IN"/>
+				<search-field name="inStatutsDossier" field-ref="dossierModel.statut" operation="IN"/>
+				<search-field name="inActivitesDossier" field-ref="dossierModel.activiteAllocataire" operation="IN"/>				
+		</search-group>
+	</search-definition>
+	<order-by name="numDossier"  >
+		<order-field field-ref="idDossier" order="ASC"/>
+	</order-by> 
+	<order-by name="AL0002"  >
+		<order-field field-ref="nomAllocataire" order="ASC"/>
+		<order-field field-ref="prenomAllocataire" order="ASC"/>
+		<order-field field-ref="etatDossier" order="ASC"/>
+		<order-field field-ref="finValidite" order="DESC"/>
+		<order-field field-ref="idDossier" order="DESC"/>
+	</order-by> 	
+</complexe-model>
+</model-mapping>

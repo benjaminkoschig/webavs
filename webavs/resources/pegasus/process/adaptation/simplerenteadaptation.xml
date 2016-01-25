@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--  DMA, 03.2012 -->
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.process.adaptation.SimpleRenteAdaptation">
+		<description>Table qui contient des info des rentes qui proviennent de la centrale</description>
+		<table name="PCREADAP" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		
+		<fields>
+			<primary-key name="idRenteAdaptation" 		column="CGIIDR" comment="ID_RENTE_ADAPTATION" />
+			<field name="idDemandeCentral" 				column="CGIDDC" type="NUMERIC" 	mandatory="false" comment="ID_DEMANDE_CENTRAL"/>
+			<field name="idDonneeFinanciereHeaderOld"  	column="CGIDFH" type="NUMERIC" 	mandatory="false" comment="ID_DONNEE_FINANCIERE_HEADER_OLD"/>	
+			<field name="csTypdDonneeFinacire" 			column="CGCSDF" type="NUMERIC"  mandatory="false" comment="TYPE_DE_DONNEE_FINANCIERE"/>
+			<field name="etat"  		      	        column="CGEETA" type="ENUM"     mandatory="false" comment="ETAT_DE_LA_DEMANDE"/>
+			<field name="ancienMontant" 				column="CGMANC" type="NUMERIC" 	dataType="NUMERIC(15,2)"  comment="ANCIEN_MONTANT" />
+			<field name="nouveauMontant"  				column="CGMNOU" type="NUMERIC" 	dataType="NUMERIC(15,2)"  comment="NOUVEAU_MONTANT" />
+			<field name="degreInvalidite"				column="CGDRIN" type="STRING"  	mandatory="false" comment="DEGRE_INVALIDITE"/>
+			<field name="genre" 						column="CGGENR" type="NUMERIC" 	mandatory="false" comment="GENRE"/>
+			<field name="codeRetour" 					column="CGCORT" type="STRING"  	mandatory="false" comment="CODE_RETOUR"/>
+			<field name="codeInfirmite" 			    column="CGCOIN" type="STRING"  	mandatory="false" comment="CODE_INFIRMITE"/>
+			<field name="codeSurvivantInvalide"			column="CGCOSI" type="STRING"  	mandatory="false" comment="CODE_SURVIVANT_INVALIDE"/>
+			<field name="fraction"              		column="CGFRAC" type="STRING"  	mandatory="false" comment="FRACTION_DE_LA_RENTE"/>
+			<field name="debutDroit"              		column="CGDDDD" type="DATE"  	mandatory="false" comment="DATE_DE_DEBUT_DU_DROIT"/>
+			<field name="dateRapport"              		column="CGDRAP" type="DATE"  	mandatory="false" comment="DATE_DE_RAPPORT"/>
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdGroupe" operation="IN" field-ref="idGroupe" />
+				<search-field name="forIdProcess" operation="IN" field-ref="idProcess" />
+			</search-group>
+		</search-definition>
+	</simple-model> 
+	
+	<order-by name="processGroupe">
+		<order-field field-ref="idProcess" />
+		<order-field field-ref="idGroupe" />
+	</order-by>
+</model-mapping>

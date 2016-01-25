@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.caissemaladie.CaisseMaladie">
+
+		<root-model name="administrationComplexModel" model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel" select-fields="false"/>
+
+		<select-fields>
+			<select-field name="idTiersCaisse" field-ref="administrationComplexModel.tiers.idTiers" />
+			<select-field name="numCaisse" field-ref="administrationComplexModel.admin.codeAdministration" />
+			<select-field name="nomCaisse" field-ref="administrationComplexModel.tiers.designation1" />
+			<select-field name="dateFinCaisse" field-ref="compositionTiersSimpleModel.finRelation" />
+			<select-field name="idTiersGroupe" field-ref="administrationComplexModelGroupes.tiers.idTiers" />
+			<select-field name="numGroupe" field-ref="administrationComplexModelGroupes.admin.codeAdministration" />
+			<select-field name="nomGroupe" field-ref="administrationComplexModelGroupes.tiers.designation1" />
+			<select-field name="typeLien" field-ref="compositionTiersSimpleModel.typeLien" />
+			<select-field name="typeAdmin" field-ref="administrationComplexModel.admin.genreAdministration" />
+			<select-field name="sedexYear" field-ref="simpleDetailCaisseMaladie.sedexYear" />
+			<select-field name="inactif" field-ref="administrationComplexModel.tiers._inactif" />
+		</select-fields>
+
+
+		<linked-model name="compositionTiersSimpleModel" model-ref="ch.globaz.pyxis.business.model.CompositionTiersSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiersEnfant" operation="EQUALS" field-ref="administrationComplexModel.admin.idTiersAdministration"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="administrationComplexModelGroupes" model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS" field-ref="compositionTiersSimpleModel.idTiersParent"/>
+			</join-group>
+		</linked-model>			
+		
+		<linked-model name="simpleDetailCaisseMaladie" model-ref="ch.globaz.amal.business.models.caissemaladie.SimpleDetailCaisseMaladie" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="administrationComplexModel.tiers.idTiers"/>
+			</join-group>
+		</linked-model>
+			
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdTiersGroupe" field-ref="administrationComplexModelGroupes.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forIdTiersCaisse" field-ref="administrationComplexModel.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forNumCaisse" field-ref="administrationComplexModel.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="forNumGroupe" field-ref="administrationComplexModelGroupes.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="forTypeAdmin" field-ref="administrationComplexModel.admin.genreAdministration" operation="EQUALS" value="509008" />
+				<search-field name="likeNomCaisse" field-ref="administrationComplexModel.tiers.designationUpper1" operation="LIKE" />
+				<search-field name="forActifs" field-ref="administrationComplexModel.tiers._inactif" operation="EQUALS" value="2" />
+				<search-group operator="OR">
+					<search-field name="forActifs" field-ref="compositionTiersSimpleModel.finRelation" operation="EQUALS" value="0"/>
+					<search-field name="forActifs" field-ref="compositionTiersSimpleModel.finRelation" operation="NULL" />					
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="rcListeOnlyActifs">
+			<search-group operator="AND">
+				<search-field name="forIdTiersGroupe" field-ref="administrationComplexModelGroupes.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forIdTiersCaisse" field-ref="administrationComplexModel.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forNumCaisse" field-ref="administrationComplexModel.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="forNumGroupe" field-ref="administrationComplexModelGroupe.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="forTypeAdmin" field-ref="administrationComplexModel.admin.genreAdministration" operation="EQUALS" value="509008" />
+				<search-field name="likeNomCaisse" field-ref="administrationComplexModel.tiers.designationUpper1" operation="LIKE" />
+				<search-field name="forActifs" field-ref="administrationComplexModel.tiers._inactif" operation="EQUALS" value="2" />
+				<search-group operator="OR">
+					<search-field name="forActifs" field-ref="compositionTiersSimpleModel.finRelation" operation="EQUALS" value="0"/>
+					<search-field name="forActifs" field-ref="compositionTiersSimpleModel.finRelation" operation="NULL" />					
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="rcListeSansGroupeOnlyActifs">
+			<search-group operator="AND">
+				<search-group operator="OR">
+					<search-field name="forIdTiersGroupe" field-ref="administrationComplexModelGroupes.tiers.idTiers" operation="NULL" />
+					<search-field name="forIdTiersGroupe" field-ref="administrationComplexModelGroupes.tiers.idTiers" operation="EQUALS" value="0" />
+				</search-group>
+				<search-field name="forIdTiersCaisse" field-ref="administrationComplexModel.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forNumCaisse" field-ref="administrationComplexModel.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="forNumGroupe" field-ref="administrationComplexModelGroupe.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="forTypeAdmin" field-ref="administrationComplexModel.admin.genreAdministration" operation="EQUALS" value="509008" />
+				<search-field name="likeNomCaisse" field-ref="administrationComplexModel.tiers.designationUpper1" operation="LIKE" />
+				<search-field name="forActifs" field-ref="administrationComplexModel.tiers._inactif" operation="EQUALS" value="2" />
+				<search-group operator="OR">
+					<search-field name="forActifs" field-ref="compositionTiersSimpleModel.finRelation" operation="EQUALS" value="0"/>
+					<search-field name="forActifs" field-ref="compositionTiersSimpleModel.finRelation" operation="NULL" />					
+				</search-group>
+			</search-group>
+		</search-definition>
+
+		<search-definition name="rcListe">
+			<search-group operator="AND">
+				<search-field name="forIdTiersGroupe" field-ref="administrationComplexModelGroupes.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forIdTiersCaisse" field-ref="administrationComplexModel.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forNumCaisse" field-ref="administrationComplexModel.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="forNumGroupe" field-ref="administrationComplexModelGroupe.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="forTypeAdmin" field-ref="administrationComplexModel.admin.genreAdministration" operation="EQUALS" value="509008" />
+				<search-field name="likeNomCaisse" field-ref="administrationComplexModel.tiers.designationUpper1" operation="LIKE" />
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="rcListeSansGroupe">
+			<search-group operator="AND">
+				<search-group operator="OR">
+					<search-field name="forIdTiersGroupe" field-ref="administrationComplexModelGroupes.tiers.idTiers" operation="NULL" />
+					<search-field name="forIdTiersGroupe" field-ref="administrationComplexModelGroupes.tiers.idTiers" operation="EQUALS" value="0" />
+				</search-group>
+				<search-field name="forIdTiersCaisse" field-ref="administrationComplexModel.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forNumCaisse" field-ref="administrationComplexModel.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="forNumGroupe" field-ref="administrationComplexModelGroupe.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="forTypeAdmin" field-ref="administrationComplexModel.admin.genreAdministration" operation="EQUALS" value="509008" />
+				<search-field name="likeNomCaisse" field-ref="administrationComplexModel.tiers.designationUpper1" operation="LIKE" />
+			</search-group>
+		</search-definition>
+		
+	
+	</complexe-model>
+</model-mapping>

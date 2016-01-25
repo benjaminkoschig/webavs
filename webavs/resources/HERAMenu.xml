@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="menuHtml.xslt"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+	<!-- 	Menu principal Hera
+
+			Regroupant :	- Membres des familles
+							- Situation du requérant
+							- Périodes du requérant
+							- Listes :
+								- Echéances
+	-->
+	<menu id="sf-menuprincipal">
+		<label refId="MENU_PRINCIPAL"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_GLOBAL_VIEW"/>
+				<action command="/hera" responseTarget="fr_main">
+					<parameter name="userAction" value="hera.famille.vueGlobale.afficherFamilleRequerant"/>
+					<parameter name="selectedId"/>
+					<parameter name="csDomaine"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_PERIODES_REQUERANT"/>
+				<action command="/hera" responseTarget="fr_main">
+					<parameter name="userAction" value="hera.famille.periode.chercher"/>
+				</action>
+			</node>
+
+			<node/>							
+			<node/>
+			<node/>
+				
+				
+			<node>
+				<label refId="MENU_OPTION_AJOUTER_CONJOINT"/>
+				<action command="/hera" responseTarget="fr_main">
+					<parameter name="userAction" value="hera.famille.apercuRelationConjoint.afficher"/>
+					<parameter name="_method" value="add"/>
+					<parameter name="idRelationConjoint" value=""/>					
+				</action>
+			</node>
+
+			<node>
+				<label refId="MENU_OPTION_NOUVEAU_REQUERANT"/>
+				<action command="/hera" responseTarget="fr_main">
+					<parameter name="userAction" value="hera.famille.apercuRelationFamilialeRequerant.afficher"/>
+					<parameter name="_method" value="add"/>
+				</action>
+			</node>
+
+			<node/>							
+			<node/>
+			<node/>
+
+			
+			<node>
+				<label refId="MENU_OPTION_MEMBRES_FAMILLES"/>
+				<action command="/hera" responseTarget="fr_main">
+					<parameter name="userAction" value="hera.famille.apercuRelationFamilialeRequerant.chercher"/>
+				</action>
+			</node>			
+		</nodes>
+	</menu>
+	<!-- Menu des options pour un membre de la famille -->
+	<menu id="sf-optionmembre">
+		<label refId="MENU_OPTION_TITLE"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_SELECTIONNER_REQUERANT"/>
+				<action command="/hera" responseTarget="fr_main">
+					<parameter name="userAction" value="hera.famille.apercuRelationFamilialeRequerant.selectionnerRequerant"/>
+					<parameter name="selectedId"/>
+					<parameter name="csDomaine"/>
+				</action>
+			</node>
+			
+			<node>
+				<label refId="MENU_OPTION_AFFICHER_SITUATION"/>
+				<action command="/hera" responseTarget="fr_main">
+					<parameter name="userAction" value="hera.famille.vueGlobale.afficherFamilleMembre"/>
+					<parameter name="idMembreFamille"/>
+					<parameter name="csDomaine"/>
+				</action>
+			</node>
+															
+			<node>
+				<label refId="MENU_OPTION_PERIODES_MEMBRE"/>
+				<action command="/hera" responseTarget="fr_main">
+					<parameter name="userAction" value="hera.famille.periode.chercher"/>
+					<parameter name="idMembreFamille"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_AJOUTER_CONJOINT_REQUERANT"/>
+				<action command="/hera" responseTarget="fr_main">
+					<parameter name="userAction" value="hera.famille.apercuRelationFamilialeRequerant.ajouterConjointRequerant"/>
+					<parameter name="idMembreFamille"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- Menu des options des conjoints du membre -->
+	<menu id="sf-optionconjoint">
+		<label refId="MENU_OPTION_TITLE"/>
+		<nodes>
+			<node>
+				<label refId="MENU_DETAIL_MEMBRE"/>
+				<action command="/hera" responseTarget="fr_main">
+					<parameter name="userAction" value="hera.famille.apercuRelationFamilialeRequerant.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_CONJOINT"/>
+				<action command="/hera" responseTarget="fr_main">
+					<parameter name="userAction" value="hera.famille.apercuEnfants.chercher"/>
+					<parameter name="idRelationConjoint"/>
+					<parameter name="idConjoint"/>
+				</action>
+			</node>
+			
+			
+			<node>
+				<label refId="MENU_OPTION_SELECTIONNER_REQUERANT"/>
+				<action command="/hera" responseTarget="fr_main">
+					<parameter name="userAction" value="hera.famille.apercuRelationFamilialeRequerant.selectionnerRequerant"/>
+					<parameter name="selectedId"/>
+					<parameter name="csDomaine"/>
+				</action>
+			</node>
+			
+			<node>
+				<label refId="MENU_OPTION_PERIODES_MEMBRE"/>
+				<action command="/hera" responseTarget="fr_main">
+					<parameter name="userAction" value="hera.famille.periode.chercher"/>
+					<parameter name="idMembreFamille"/>
+				</action>
+			</node>
+			
+		</nodes>
+	</menu>
+	
+	
+	<menu id="sf-optionenfant">
+		<label refId="MENU_OPTION_TITLE"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_PERIODES_MEMBRE"/>
+				<action command="/hera" responseTarget="fr_main">
+					<parameter name="userAction" value="hera.famille.periode.chercher"/>
+					<parameter name="idMembreFamille"/>
+				</action>
+			</node>			
+		</nodes>
+	</menu>
+	
+	
+	<!-- Menu Option only detail    -->
+	<menu id="sf-optionsempty">
+		<label refId="OPTIONS" />
+	</menu>
+
+
+
+</menus>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.pcaccordee.PCAWithCalculMembreFamilleAndPrestation">
+	
+		<root-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee"/>
+		
+		<select-fields> 
+			<select-field name="idDossier" field-ref="simpleDemande.idDossier" />
+		</select-fields>
+		
+		<linked-model name="simplePrestationsAccordees" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPrestationAccordee"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleVersionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroit" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDemande" model-ref="ch.globaz.pegasus.business.models.demande.SimpleDemande" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDemande" operation="EQUALS" field-ref="simpleDroit.idDemandePC"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="planDeCalculWitMembreFamille" model-ref="ch.globaz.pegasus.business.models.pcaccordee.PlanDeCalculWitMembreFamille" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="simplePlanDeCalcul.idPCAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPCAccordee"/>
+			</join-group>
+		</linked-model>
+		
+	    <search-definition name="withPCAValidePlanClaculeRetenuAndDateValable">
+
+			<search-group operator="AND"> 
+			    <search-field name="isPlanRetenu" operation="EQUALS" field-ref="planDeCalculWitMembreFamille.simplePlanDeCalcul.isPlanRetenu"/>
+				<search-field name="forCsEtatPcAccordee" operation="EQUALS" field-ref="simplePCAccordee.csEtatPC"/>
+				<search-group operator="AND">
+					<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="simplePCAccordee.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="simplePCAccordee.dateFin"/>
+						<search-field name="forDateValable" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
+					</search-group>
+				</search-group>
+				<search-literal>
+						<declare-model name="simpleMembreFamille1" model-ref="ch.globaz.hera.business.models.famille.SimpleMembreFamille"/>
+						<declare-model name="simpleDroitMembreFamille1" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille"/>
+						<declare-model name="simplePersonneDansCal1" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePersonneDansPlanCalcul"/>
+						<![CDATA[ 
+							EXISTS  (
+									select * from @{simpleMembreFamille1} 
+									   inner join @{simpleDroitMembreFamille1} 
+									         on  #{simpleDroitMembreFamille1.idMembreFamilleSF} =  #{simpleMembreFamille1.idMembreFamille}
+									   inner join @{simplePersonneDansCal1} 
+									         on  #{simplePersonneDansCal1.idDroitMembreFamille} =  #{simpleDroitMembreFamille1.idDroitMembreFamille}
+									   where #{simpleMembreFamille1.idTiers} =  ${forIdTiersMembreFamille:simpleMembreFamille1.idTiers}
+										 and #{simplePersonneDansCal1.idPlanDeCalcul} = #{planDeCalculWitMembreFamille.simplePlanDeCalcul.idPlanDeCalcul}
+								)
+						 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPca" operation="EQUALS" field-ref="simplePCAccordee.idPCAccordee"/>
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+				<search-field name="forIdTiersMembreFamille" operation="EQUALS" field-ref="planDeCalculWitMembreFamille.droitMembreFamille.membreFamille.simpleMembreFamille.idTiers"/>
+				<search-field name="isPlanRetenu" operation="EQUALS" field-ref="planDeCalculWitMembreFamille.simplePlanDeCalcul.isPlanRetenu"/>
+			</search-group>
+		</search-definition> 
+		
+		<search-definition name="withDateDeFinIsNull">
+			<search-group operator="AND">
+				<search-field name="forDateValable" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+				<search-field name="isPlanRetenu" operation="EQUALS" field-ref="planDeCalculWitMembreFamille.simplePlanDeCalcul.isPlanRetenu"/>
+			</search-group>
+		</search-definition> 
+		<order-by>
+			<order-field order="DESC" field-ref="simplePCAccordee.idPCAccordee" />
+  			<order-field order="DESC" field-ref="simplePCAccordee.idVersionDroit" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

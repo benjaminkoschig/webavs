@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.decision.SimpleDecision">
+		<description>Table des decisions</description>
+		<table name="PFDECPCF" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDecision" column="ISIDDE" comment="Clé primaire de la table"/>
+			<field name="numeroDecision" type="STRING" column="ISNUMD" mandatory="false" comment="Numero de la decision YYYY-XXXXXX" />
+			<field name="idDemande" column="ISIDDM" type="NUMERIC" mandatory="false" comment="Identifiant de la table Demande"/>
+			<field name="csEtat" type="NUMERIC" column="ISETAT" mandatory="true" comment="Code sytème de l'état" />
+			<field name="montantToucheAuRI" type="NUMERIC" column="ISMORI" mandatory="false" comment="Montant touché au RI par le requérant" />
+			<field name="csChoix" type="NUMERIC" column="ISCHOI" mandatory="false" comment="Code sytème du choix" />
+			<field name="utilisateurPreparation" type="STRING" column="ISUPRE" mandatory="true" comment="Utilisateur de la preparation" />
+			<field name="utilisateurValidation" type="STRING" column="ISUVAL" mandatory="false" comment="Utilisateur de la validation" />
+			<field name="datePreparation" type="DATE" column="ISDAPR" mandatory="true" comment="Date de la preparation" />
+			<field name="dateValidation" type="DATE" column="ISDAVA" mandatory="false" comment="Date de la validation" />			
+			<field name="dateDocument" type="DATE" column="ISDADO" mandatory="true" comment="Date affichée sur le document de la décision" />			
+			<field name="dateChoix" type="DATE" column="ISDACH" mandatory="false" comment="Date du choix" />
+			<field name="dateSuppression" type="DATE" column="ISDASU" mandatory="false" comment="Date de la suppression (volontaire)" />
+			<field name="remarquesGenerales" column="ISREMG" type="STRING" dataType="VARCHAR(1024)" mandatory="false" comment="Remarques générales"/>
+			<field name="csTypeDecision" type="NUMERIC" column="ISCSTD" mandatory="true" comment="Code systeme du type de décision" />
+			<field name="idTiersAdressePaiement" type="NUMERIC" column="ISTIAP" mandatory="false" comment="Id du tiers pour l'adresse de paiement" />
+			<field name="idDomaineApplicatifAdressePaiement" type="NUMERIC" column="ISDAAP" mandatory="false" comment="Id du domaine applicatif du tiers pour l'adresse de paiement" />
+			<field name="idTiersAdresseCourrier" type="NUMERIC" column="ISTIAC" mandatory="true" comment="Id du tiers pour l'adresse de courrier" />
+			<field name="idDomaineApplicatifAdresseCourrier" type="NUMERIC" column="ISDAAC" mandatory="true" comment="Id du domaine applicatif du tiers pour l'adresse de courrier" />
+			<field name="remarqueUtilisateur" type="STRING" dataType="VARCHAR(1024)" column="ISREMA" mandatory="false" comment="Remarque de l'utilisateur pour l'insertion de texte dans la décision généré" />
+			<field name="pensionAlimentaire" type="BOOLEAN" column="ISPEAL" mandatory="false" comment="Champ permettant de définir si une pension alimentaire à été versée" />
+			<field name="aideAuLogement" type="BOOLEAN" column="ISAILO" mandatory="false" comment="Champ permettant de définir si une aide au logement à été faite" />
+			<field name="aideAuxEtudes" type="BOOLEAN" column="ISAIET" mandatory="false" comment="Champ permettant de définir si une une aide aux études à été faite" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="idDemande"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

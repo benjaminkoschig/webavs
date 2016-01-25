@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+
+	<!-- ************** -->
+	<!-- Menu Principal -->
+	<!-- ************** -->
+	<menu id="LX-MenuPrincipal">
+		<label defaultValue="Menu">
+			<language iso="de">Hauptmenü</language>
+		</label>
+		<nodes>
+			<node open="yes">
+				<label defaultValue="Principal">
+					<language iso="de">Haupt</language>
+				</label>
+				<nodes>				
+					<node>
+						<label defaultValue="Journaux">
+							<language iso="de">Journale</language>
+						</label>
+						<action command="/lynx" responseTarget="fr_main">
+							<parameter name="userAction" value="lynx.journal.journal.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Ordres groupés">
+							<language iso="de">Sammelaufträge</language>
+						</label>
+						<action command="/lynx" responseTarget="fr_main">
+							<parameter name="userAction" value="lynx.ordregroupe.ordreGroupe.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Fournisseurs">
+							<language iso="de">Lieferanten</language>
+						</label>
+						<action command="/lynx" responseTarget="fr_main">
+							<parameter name="userAction" value="lynx.fournisseur.fournisseur.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Sociétés débitrices">
+							<language iso="de">Schuldnerfirmen</language>
+						</label>
+						<action command="/lynx" responseTarget="fr_main">
+							<parameter name="userAction" value="lynx.societesdebitrice.societeDebitrice.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Recherche">
+							<language iso="de">Suche</language>
+						</label>
+						<action command="/lynx" responseTarget="fr_main">
+							<parameter name="userAction" value="lynx.recherche.rechercheGenerale.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Canevas">
+							<language iso="de">Kanevas</language>
+						</label>
+						<action command="/lynx" responseTarget="fr_main">
+							<parameter name="userAction" value="lynx.canevas.canevas.chercher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="yes">
+				<label defaultValue="Imprimer">
+					<language iso="de">Ausdrucken</language>
+				</label>
+				<nodes>				
+					<node>
+						<label defaultValue="Balance">
+							<language iso="de">Bilanz</language>
+						</label>
+						<action command="/lynx" responseTarget="fr_main">
+							<parameter name="userAction" value="lynx.impression.impression.imprimerBalance" />
+							<parameter name="selectedId"/>
+						</action>
+					</node>		
+					<node>
+						<label defaultValue="Balance âgée">
+							<language iso="de">Alte Bilanz</language>
+						</label>
+						<action command="/lynx" responseTarget="fr_main">
+							<parameter name="userAction" value="lynx.impression.impression.imprimerBalanceAgee" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Grand livre">
+							<language iso="de">Hauptbuch</language>
+						</label>
+						<action command="/lynx" responseTarget="fr_main">
+							<parameter name="userAction" value="lynx.impression.impression.imprimerGrandLivre" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node open="yes">
+				<label defaultValue="Paramètres">
+					<language iso="de">Parameter</language>
+				</label>
+				<nodes>				
+					<node>
+						<label defaultValue="Code TVA">
+							<language iso="de">MWST Code</language>
+						</label>
+						<action command="/lynx" responseTarget="fr_main">
+							<parameter name="userAction" value="lynx.codetva.codeTva.chercher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- ***************************************** -->
+	<!-- Menu Option opérations journal -->
+	<!-- ***************************************** -->
+	<menu id="LX-Journal">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Journal" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.journal.journal.afficher" />
+					<parameter name="selectedId"/>
+					<parameter name="idJournal"/>
+					<parameter name="idSociete"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Factures" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.facture.facture.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="idJournal"/>
+					<parameter name="idSociete"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Notes de crédit" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.notedecredit.noteDeCredit.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="idJournal"/>
+					<parameter name="idSociete"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Paiements" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.paiement.paiement.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="idJournal"/>
+					<parameter name="idSociete"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Escomptes" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.escompte.escompte.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="idJournal"/>
+					<parameter name="idSociete"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Extournes" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.extourne.extourne.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="idJournal"/>
+					<parameter name="idSociete"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Comptabiliser" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.journal.journal.comptabiliser" />
+					<parameter name="selectedId"/>
+					<parameter name="idJournal"/>
+					<parameter name="idSociete"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Annuler" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.journal.journal.annuler" />
+					<parameter name="selectedId"/>
+					<parameter name="idJournal"/>
+					<parameter name="idSociete"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Canevas" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.journal.choixCanevas.afficher" />
+					<parameter name="selectedId"/>
+					<parameter name="idJournal"/>
+					<parameter name="idSociete"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Imprimer" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.journal.journal.imprimer" />
+					<parameter name="selectedId"/>
+					<parameter name="idJournal"/>
+					<parameter name="idSociete"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- ***************************************** -->
+	<!-- Menu Option Odres Groupes -->
+	<!-- ***************************************** -->
+	<menu id="LX-OrdreGroupe">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Ordre groupé" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.ordregroupe.ordreGroupe.afficher" />
+					<parameter name="selectedId"/>
+					<parameter name="idOrdreGroupe"/>
+					<parameter name="idSociete"/>
+					<parameter name="idOrganeExecution"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Préparation" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.ordregroupe.ordreGroupe.preparation" />
+					<parameter name="selectedId"/>
+					<parameter name="idOrdreGroupe"/>
+					<parameter name="idSociete"/>
+					<parameter name="idOrganeExecution"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Paiements" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.paiement.paiement.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="idOrdreGroupe"/>
+					<parameter name="idSociete"/>
+					<parameter name="idOrganeExecution"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Escomptes" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.escompte.escompte.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="idOrdreGroupe"/>
+					<parameter name="idSociete"/>
+					<parameter name="idOrganeExecution"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Execution" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.ordregroupe.ordreGroupe.execution" />
+					<parameter name="selectedId"/>
+					<parameter name="idOrdreGroupe"/>
+					<parameter name="idSociete"/>
+					<parameter name="idOrganeExecution"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Annuler" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.ordregroupe.ordreGroupe.annuler" />
+					<parameter name="selectedId"/>
+					<parameter name="idOrdreGroupe"/>
+					<parameter name="idSociete"/>
+					<parameter name="idOrganeExecution"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Imprimer" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.ordregroupe.ordreGroupe.imprimer" />
+					<parameter name="selectedId"/>
+					<parameter name="idOrdreGroupe"/>
+					<parameter name="idSociete"/>
+					<parameter name="idOrganeExecution"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ***************************************** -->
+	<!-- Menu Option fournisseur -->
+	<!-- ***************************************** -->
+	<menu id="LX-Fournisseur">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Fournisseur" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.fournisseur.fournisseur.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Informations comptables" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.informationcomptable.informationComptable.chercher" />
+					<parameter name="idFournisseur"/>
+					<parameter name="idExterne"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Recherche" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.recherche.rechercheGenerale.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="idFournisseur"/>
+					<parameter name="idExterne"/>
+				</action>
+			</node>
+			<!--node id="lynx_ged" active="no"-->
+			<node id="lynx_ged">
+				<label defaultValue="Ged" />
+				<action command="/naos" responseTarget="_blank">
+					<parameter name="userAction" value="naos.affiliation.affiliation.gedafficherdossier" />
+					<parameter name="serviceNameId"/>
+					<parameter name="gedFolderType"/>
+					<parameter name="idRole"/>
+					<parameter name="lynx.fournisseur.idExterne"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- ***************************************** -->
+	<!-- Menu Option Sociétés débitrices -->
+	<!-- ***************************************** -->
+	<menu id="LX-Societe">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Sociétés débitrices" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.societesdebitrice.societeDebitrice.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Organes exécution" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.organeexecution.organeExecution.chercher" />
+					<parameter name="idSociete"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Recherche" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.recherche.rechercheGenerale.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="idSociete"/>
+					<parameter name="idExterneSociete"/>
+					<parameter name="idOperationCanevas"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>	
+	<!-- ***************************************** -->
+	<!-- Menu Option Canevas -->
+	<!-- ***************************************** -->
+	<menu id="LX-Canevas">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Détails" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.canevas.canevas.afficher" />
+					<parameter name="selectedId"/>
+					<parameter name="idOperationCanevas"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>			
+	<!-- ***************************************** -->
+	<!-- Menu Option Code Tva -->
+	<!-- ***************************************** -->
+	<menu id="LX-CodeTVA">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Détails" />
+				<action command="/lynx" responseTarget="fr_main">
+					<parameter name="userAction" value="lynx.codetva.codeTva.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>		
+	<!-- ************************** -->
+	<!-- Menu Option only detail    -->
+	<!-- ************************** -->
+	<menu id="LX-OnlyDetail">
+		<label refId="OPTIONS" />
+	</menu>
+</menus>

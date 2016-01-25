@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.convention.ConventionComplexModel">
+
+		<root-model name="conventionSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.convention.ConventionSimpleModel" />
+
+		<linked-model name="OrganeExecutionSimpleModel"
+			model-ref="ch.globaz.osiris.business.model.OrganeExecutionSimpleModel"
+			join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idOrganeExecution" operation="EQUALS"
+					field-ref="simpleConvention.idOrganeExecution" />
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdConvention" field-ref="simpleConvention.idConvention"
+					operation="EQUALS" />
+				<search-field name="forDesignation" field-ref="simpleConvention.designationSearch"
+					operation="EQUALS" />
+				<search-field name="likeDesignation" field-ref="simpleConvention.designationSearch"
+					operation="LIKE" />
+			</search-group>
+		</search-definition>
+
+		<order-by name="idDesc">
+			<order-field field-ref="simpleConvention.idConvention"
+				order="DESC" />
+		</order-by>
+
+		<order-by name="idAsc">
+			<order-field field-ref="simpleConvention.idConvention" />
+		</order-by>
+		<order-by name="designationDesc">
+			<order-field field-ref="simpleConvention.designation"
+				order="DESC" />
+		</order-by>
+
+		<order-by name="designationAsc">
+			<order-field field-ref="simpleConvention.designation" />
+		</order-by>
+
+	</complexe-model>
+</model-mapping>

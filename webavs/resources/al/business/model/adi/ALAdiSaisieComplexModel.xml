@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'un décompte Adi -->
+<model-mapping>
+	<complexe-model className="ch.globaz.al.business.models.adi.AdiSaisieComplexModel" >
+	<root-model name="adiSaisieModel" model-ref="ch.globaz.al.business.models.adi.AdiSaisieModel"/>
+	<linked-model name="enfantComplexModel" model-ref="ch.globaz.al.business.models.droit.EnfantComplexModel" join-type="LEFT_OUTER" >
+			<join-group operator="AND">
+				<join-field name="enfantModel.idEnfant" field-ref="adiSaisieModel.idEnfant"/>
+			</join-group>
+	</linked-model>
+	
+	<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDecompteAdi" field-ref="adiSaisieModel.idDecompteAdi" operation="EQUALS"/>
+
+ 			</search-group>
+	</search-definition>
+	
+	</complexe-model>
+
+</model-mapping>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.annonce.SimpleSequence">
+		<description>Communication OCC</description>
+		<table name="PCSEQUE" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="id" column="ID" comment="ID_SEQUENCE"/>
+			<field name="businessKey" column="KEY" type="STRING" mandatory="true" comment="BUSINESS_KEY"/>
+			<field name="sequence" column="SEQU" type="NUMERIC" mandatory="true" comment="ID_TIERS"/>
+			<field name="domaine" column="DOMAIN" type="STRING" mandatory="true" comment="DOMAINE"/>
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forBusinessKey" operation="EQUALS" field-ref="businessKey"/>
+				<search-field name="forDomaine" operation="EQUALS" field-ref="domaine"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

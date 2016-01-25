@@ -1,0 +1,1 @@
+JADE runtime persistence directory

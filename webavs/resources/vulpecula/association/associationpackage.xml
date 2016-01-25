@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="vulpecula/association/associationCotisationSimpleModel.xml"/>
+	<model-mapping import="vulpecula/association/associationCotisationComplexModel.xml"/>
+	<model-mapping import="vulpecula/association/cotisationAssociationProfessionnelleSimpleModel.xml"/>
+	<model-mapping import="vulpecula/association/cotisationAssociationProfessionnelleComplexModel.xml"/>
+</model-mapping>

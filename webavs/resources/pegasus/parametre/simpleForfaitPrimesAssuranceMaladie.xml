@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.parametre.SimpleForfaitPrimesAssuranceMaladie">
+	<description>Contient les liens entres les zone de forfait et les localites</description>
+	<table name="PCFOPRAM" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="idForfaitPrimesAssuranceMaladie" column="DCIDFP" comment="ID_FORFAIT_PRIMES_ASSURANCE_MALADIE" />
+			<field name="idZoneForfait" column="DCIDZF" type="NUMERIC" mandatory="true" comment="ID_ZONE_FORFAIT" />
+			<field name="csTypePrime" column="DCTPRI" type="NUMERIC"  mandatory="true" comment="CS_TYPE_PRIME" />
+			<field name="montant" column="DCMMON" type="NUMERIC" dataType="NUMERIC(15,2)"  mandatory="true" comment="MONTANT" />
+			<field name="dateDebut" column="DCDDEB" type="DATE"  mandatory="true" comment="DATE_DEBUT" />
+			<field name="dateFin" column="DCDFIN" type="DATE"  mandatory="true" comment="DATE_FIN" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forAnneeValidite" operation="EQUALS"   field-ref="dateDebut"/>
+				<search-field name="forCsTypePrime"  operation="EQUALS"    field-ref="csTypePrime"/>
+				<search-field name="forIdZoneForfaits"  operation="EQUALS" field-ref="idZoneForfait"/>
+			</search-group>
+		</search-definition>
+	</simple-model> 
+</model-mapping> 

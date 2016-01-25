@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Sample of use 																						-->
+<!--		IPRFileParser fileParser = null;															-->
+<!--		try { 																						-->
+<!--			fileParser = PRFileParserFactory.newInstance("fileParser.xml", "MADRID");			-->
+<!--			fileParser.setSource("D:\\byPassSourceFileDefinedInThisXmlFile");		//not compulsory-->
+<!--			while (fileParser.hasNext()) {															-->
+<!--				fileParser.goToNextRecord();														-->
+<!--				System.out.print("record : ");														-->
+<!--				System.out.print(" date = " + fileParser.getField("DATE"));							-->
+<!--				System.out.print(" noAvs = " + fileParser.getField("NO_AVS"));						-->
+<!--				System.out.println(" montant = " + fileParser.getField("MONTANT"));					-->
+<!--			}																						-->
+<!--		} catch (Exception e) {																		-->
+<!--			e.printStackTrace();																	-->
+<!--			fileParser.close();																		-->
+<!--		}	 																						-->
+
+<!--<file-parser>
+	<file id="MADRID" codeIsoMonnaie="EUR" type="TEXT" source="d:\\test\\test.txt">
+		<class name="globaz.prestation.file.parser.CATextFileParser"/>
+		<text-field id="RECORD_TYPE" beginPos="0" endPos="4"/>
+		<text-field id="DATE" beginPos="30" endPos="36"/>
+		<text-field id="NO_AVS" beginPos="77" endPos="88"/>
+		<text-field id="MONTANT" beginPos="36" endPos="48"/>
+	</file>
+	<file id="POSTE_FRANCAISE" codeIsoMonnaie="EUR" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.CATextFileParser"/>
+		<text-field id="RECORD_TYPE" beginPos="0" endPos="4"/>
+		<text-field id="DATE" beginPos="24" endPos="30"/>
+		<text-field id="NO_AVS" beginPos="138" endPos="149"/>
+		<text-field id="MONTANT" beginPos="102" endPos="118"/>
+		<text-field id="CODE_DEBIT_CREDIT" beginPos="228" endPos="230"/>
+	</file>
+</file-parser> -->
+
+<file-parser>
+
+	<file id="APG99" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_APPLICATION" beginPos="0" endPos="2"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="2" endPos="4"/>
+		<text-field id="NUMERO_CAISSE" beginPos="4" endPos="7"/>
+		<text-field id="NUMERO_AGENCE" beginPos="7" endPos="10"/>
+		<text-field id="MOIS_ANNEE_COMPTABLE" beginPos="10" endPos="14"/>
+		<text-field id="GENRE_CARTE" beginPos="14" endPos="15"/>
+		<text-field id="GENRE_SERVICE" beginPos="15" endPos="16"/>
+		<text-field id="NUMERO_COMPTE" beginPos="16" endPos="23"/>
+		<text-field id="NUMERO_ASSURE" beginPos="23" endPos="34"/>
+		<text-field id="NUMERO_CONTROLE" beginPos="34" endPos="37"/>
+		<text-field id="RECRUE" beginPos="37" endPos="38"/>
+		<text-field id="PERIODE_SERVICE_DE" beginPos="38" endPos="42"/>
+		<text-field id="PERIODE_SERVICE_A" beginPos="42" endPos="48"/>
+		<text-field id="NOMBRE_JOURS_SERVICE" beginPos="48" endPos="51"/>
+		<text-field id="GENRE_ACTIVITE_AVANT_ENTREE_SERVICE" beginPos="51" endPos="52"/>
+		<text-field id="REVENU_JOURNALIER_MOYEN" beginPos="52" endPos="57"/>
+		<text-field id="ALLOCATION_PERSONNE_SEULE" beginPos="57" endPos="58"/>
+		<text-field id="ALLOCATION_MENAGE" beginPos="58" endPos="59"/>
+		<text-field id="NOMBRE_ENFANTS" beginPos="59" endPos="61"/>
+		<text-field id="ALLOCATION_EXPLOITATION" beginPos="61" endPos="62"/>
+		<text-field id="ALLOCATION_ASSISTANCE_JOUR" beginPos="62" endPos="67"/>
+		<text-field id="TAUX_JOURNALIER" beginPos="67" endPos="72"/>
+		<text-field id="TOTAL_APG" beginPos="72" endPos="79"/>
+		<text-field id="CODE_VALEUR_CHAMP_23" beginPos="79" endPos="80"/>
+		<text-field id="ALLOCATION_BASE" beginPos="80" endPos="81"/>
+		<text-field id="TAUX_JOURNALIER_ALLOCATION_BASE" beginPos="81" endPos="86"/>
+		<text-field id="ALLOCATION_FRAIS_GARDE" beginPos="86" endPos="87"/>
+		<text-field id="MONTANT_ALLOCATION_FRAIS_GARDE" beginPos="87" endPos="93"/>
+		<text-field id="CODE_VALEUR_CHAMP_28" beginPos="93" endPos="94"/>
+		<text-field id="ALLOCATION_ISOLEE_FRAIS_GARDE" beginPos="94" endPos="95"/>
+	</file>
+
+	<file id="APG05" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_APPLICATION" beginPos="0" endPos="2"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="2" endPos="4"/>
+		<text-field id="NUMERO_CAISSE" beginPos="4" endPos="7"/>
+		<text-field id="NUMERO_AGENCE" beginPos="7" endPos="10"/>
+		<text-field id="MOIS_ANNEE_COMPTABLE" beginPos="10" endPos="14"/>
+		<text-field id="CONTENU_ANNONCE" beginPos="14" endPos="15"/>
+		<text-field id="GENRE_SERVICE" beginPos="15" endPos="17"/>
+		<text-field id="NUMERO_COMPTE" beginPos="17" endPos="24"/>
+		<text-field id="NUMERO_ASSURE_PERSONNE_REQUERANTE" beginPos="24" endPos="35"/>
+		<text-field id="NUMERO_CONTROLE" beginPos="35" endPos="38"/>
+		<text-field id="CANTON_ETAT_DOMICILE" beginPos="38" endPos="41"/>
+		<text-field id="ETAT_CIVIL_AYANT_DROIT" beginPos="41" endPos="42"/>
+		<text-field id="GENRE_ACTIVITE_AVANT_ENTREE_SERVICE" beginPos="42" endPos="43"/>
+		<text-field id="REVENU_JOURNALIER_MOYEN" beginPos="43" endPos="49"/>
+		<text-field id="NOMBRE_ENFANTS" beginPos="49" endPos="51"/>
+		<text-field id="PERIODE_SERVICE_DE" beginPos="51" endPos="57"/>
+		<text-field id="PERIODE_SERVICE_A" beginPos="57" endPos="63"/>
+		<text-field id="NOMBRE_JOURS_SERVICE" beginPos="63" endPos="66"/>
+		<text-field id="TAUX_JOURNALIER_ALLOCATION_BASE" beginPos="66" endPos="71"/>
+		<text-field id="GARANTIE_INDEMNITE_JOURNALIERE_AI" beginPos="71" endPos="72"/>
+		<text-field id="ALLOCATION_EXPLOITATION" beginPos="72" endPos="73"/>
+		<text-field id="ALLOCATION_FRAIS_GARDE" beginPos="73" endPos="74"/>
+		<text-field id="MONTANT_ALLOCATION_FRAIS_GARDE" beginPos="74" endPos="80"/>
+		<text-field id="TOTAL_ALLOCATION_PERTE_GAIN" beginPos="80" endPos="87"/>
+		<text-field id="MODE_PAIEMENT" beginPos="87" endPos="88"/>
+		<text-field id="NUMERO_ASSURE_PERE_ENFANT" beginPos="88" endPos="99"/>
+		<text-field id="DEBUT_DROIT_ALLOCATION" beginPos="99" endPos="105"/>
+		<text-field id="FIN_DROIT_ALLOCATION" beginPos="105" endPos="111"/>
+	</file>
+
+	<file id="ANNONCEPAY_CARTE_APG_NAVS" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="0" endPos="2"/>
+		<text-field id="NUMERO_AVS_ASSURE" beginPos="2" endPos="13"/>
+		<text-field id="NOMBRE_TOTAL_JOURS_SERVICE" beginPos="13" endPos="16"/>
+		<text-field id="DEBUT_PREMIERE_PERIODE" beginPos="16" endPos="24"/>
+		<text-field id="FIN_DERNIERE_PERIODE" beginPos="24" endPos="32"/>
+		<text-field id="MONTANT_TOTAL_CARTE_APG" beginPos="32" endPos="41"/>
+		<text-field id="MONTANT_MAX_JOURNALIER_FRAIS_GARDE" beginPos="41" endPos="48"/>
+		<text-field id="MONTANT_FRAIS_GARDE" beginPos="48" endPos="56"/>
+		<text-field id="NOMBRE_JOURS_INDEMNITE_EXPLOITATION" beginPos="56" endPos="59"/>
+		<text-field id="INDEMNITE_EXPLOITATION" beginPos="59" endPos="67"/>
+		<text-field id="GENRE_CARTE" beginPos="67" endPos="68"/>
+	</file>
+
+	<file id="ANNONCEPAY_CARTE_APG_NNSS" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="0" endPos="2"/>
+		<text-field id="NUMERO_AVS_ASSURE" beginPos="2" endPos="15"/>
+		<text-field id="NOMBRE_TOTAL_JOURS_SERVICE" beginPos="15" endPos="18"/>
+		<text-field id="DEBUT_PREMIERE_PERIODE" beginPos="18" endPos="26"/>
+		<text-field id="FIN_DERNIERE_PERIODE" beginPos="26" endPos="34"/>
+		<text-field id="MONTANT_TOTAL_CARTE_APG" beginPos="34" endPos="43"/>
+		<text-field id="MONTANT_MAX_JOURNALIER_FRAIS_GARDE" beginPos="43" endPos="50"/>
+		<text-field id="MONTANT_FRAIS_GARDE" beginPos="50" endPos="58"/>
+		<text-field id="NOMBRE_JOURS_INDEMNITE_EXPLOITATION" beginPos="58" endPos="61"/>
+		<text-field id="INDEMNITE_EXPLOITATION" beginPos="61" endPos="69"/>
+		<text-field id="GENRE_CARTE" beginPos="69" endPos="70"/>
+	</file>
+
+	<file id="ANNONCEPAY_EMPLOYEURS" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="0" endPos="2"/>
+		<text-field id="NUMERO_AFFILIE_EMPLOYEUR" beginPos="2" endPos="14"/>
+		<text-field id="TYPE_SALAIRE" beginPos="14" endPos="15"/>
+		<text-field id="DEBUT_PERIODE_EMPLOI" beginPos="15" endPos="23"/>
+		<text-field id="FIN_PERIODE_EMPLOI" beginPos="23" endPos="31"/>
+		<text-field id="MONTANT_TOTAL_VERSE" beginPos="31" endPos="40"/>
+		<text-field id="CANTON_IMPOT" beginPos="40" endPos="42"/>
+		<text-field id="TAUX_IMPOTS_CANTON" beginPos="42" endPos="48"/>
+		<text-field id="MONTANT_IMPOTS_A_VERSER" beginPos="48" endPos="57"/>
+		<text-field id="TYPE_COTISATIONS" beginPos="57" endPos="58"/>
+		<text-field id="TAUX_COTISATIONS" beginPos="58" endPos="64"/>
+		<text-field id="COTISATIONS" beginPos="64" endPos="72"/>
+		<text-field id="TAUX_COTISATIONS_AC" beginPos="72" endPos="78"/>
+		<text-field id="COTISATIONS_AC" beginPos="78" endPos="86"/>
+		<text-field id="STATUT" beginPos="86" endPos="87"/>
+		<text-field id="NOM_EMPLOYEUR" beginPos="87" endPos="119"/>
+		<text-field id="TAUX_COTISATIONS_LFA" beginPos="119" endPos="125"/>
+		<text-field id="COTISATIONS_LFA" beginPos="125" endPos="133"/>
+	</file>
+
+	<file id="ANNONCEPAY_ASSURE_NAVS" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="0" endPos="2"/>
+		<text-field id="NUMERO_AVS_ASSURE" beginPos="2" endPos="13"/>
+		<text-field id="TOTAL_FRAIS_GARDE" beginPos="13" endPos="21"/>
+		<text-field id="MONTANT_TOTAL_VERSE" beginPos="21" endPos="30"/>
+		<text-field id="CANTON_IMPOTS" beginPos="30" endPos="32"/>
+		<text-field id="TAUX_IMPOTS_CANTON" beginPos="32" endPos="38"/>
+		<text-field id="MONTANT_IMPOTS_A_VERSER" beginPos="38" endPos="47"/>
+		<text-field id="TYPE_COTISATIONS" beginPos="47" endPos="48"/>
+		<text-field id="TAUX_COTISATIONS" beginPos="48" endPos="54"/>
+		<text-field id="COTISATIONS" beginPos="54" endPos="62"/>
+		<text-field id="TAUX_COTISATIONS_AC" beginPos="62" endPos="68"/>
+		<text-field id="COSTISATIONS_AC" beginPos="68" endPos="76"/>
+		<text-field id="ETAT_CIVIL" beginPos="76" endPos="77"/>
+	</file>
+
+	<file id="ANNONCEPAY_ASSURE_NNSS" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="0" endPos="2"/>
+		<text-field id="NUMERO_AVS_ASSURE" beginPos="2" endPos="15"/>
+		<text-field id="TOTAL_FRAIS_GARDE" beginPos="15" endPos="23"/>
+		<text-field id="MONTANT_TOTAL_VERSE" beginPos="23" endPos="32"/>
+		<text-field id="CANTON_IMPOTS" beginPos="32" endPos="34"/>
+		<text-field id="TAUX_IMPOTS_CANTON" beginPos="34" endPos="40"/>
+		<text-field id="MONTANT_IMPOTS_A_VERSER" beginPos="40" endPos="49"/>
+		<text-field id="TYPE_COTISATIONS" beginPos="49" endPos="50"/>
+		<text-field id="TAUX_COTISATIONS" beginPos="50" endPos="56"/>
+		<text-field id="COTISATIONS" beginPos="56" endPos="64"/>
+		<text-field id="TAUX_COTISATIONS_AC" beginPos="64" endPos="70"/>
+		<text-field id="COSTISATIONS_AC" beginPos="70" endPos="78"/>
+		<text-field id="ETAT_CIVIL" beginPos="78" endPos="79"/>
+	</file>
+
+	<file id="ANNONCEPAY_PERIODE" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="0" endPos="2"/>
+		<text-field id="NUMERO_COMPTE" beginPos="2" endPos="12"/>
+		<text-field id="GENRE_SERVICE" beginPos="12" endPos="14"/>
+		<text-field id="DEBUT_PERIODE_SERVICE" beginPos="14" endPos="22"/>
+		<text-field id="FIN_PERIODE_SERVICE" beginPos="22" endPos="30"/>
+		<text-field id="NOMBRE_JOURS" beginPos="30" endPos="33"/>
+		<text-field id="STATUT" beginPos="33" endPos="34"/>
+		<text-field id="MONTANT_BASE" beginPos="34" endPos="41"/>
+		<text-field id="MONTANT_INDEMNITE_ENFANTS_JOUR" beginPos="41" endPos="47"/>
+		<text-field id="NOMBRE_ENFANTS_CONTRIBUANT_INDEMNITE" beginPos="47" endPos="49"/>
+		<text-field id="ALLOC_BASE_PLUS_ENFANTS_JOURN" beginPos="49" endPos="57"/>
+		<text-field id="ALLOC_BASE_PLUS_ENFANTS_JOURN_FOIS_NOMBRE_JOURS" beginPos="57" endPos="66"/>
+		<text-field id="MONTANT_ALLOCATION_EXPLOITATION_JOUR" beginPos="66" endPos="74"/>
+		<text-field id="PART_MONTANT_PERIODE" beginPos="74" endPos="83"/>
+		<text-field id="REVENU_JOURNALIER_MOYEN" beginPos="83" endPos="90"/>
+	</file>
+
+	<file id="ANNONCEPAY_EMPLOYEUR_PERIODE" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_ENREGISTRMENT" beginPos="0" endPos="2"/>
+		<text-field id="NUMERO_AFFILIE_EMPLOYEUR" beginPos="2" endPos="14"/>
+		<text-field id="PART_MONTANT_PERIODE" beginPos="14" endPos="23"/>
+		<text-field id="NOM_EMPLOYEUR" beginPos="23" endPos="55"/>
+	</file>
+
+	<file id="ANNONCEPAY_EMPLOYEUR_RJM" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_ENREGISTRMENT" beginPos="0" endPos="2"/>
+		<text-field id="NUMERO_AFFILIE_EMPLOYEUR" beginPos="2" endPos="14"/>
+		<text-field id="TAUX_APPORT_RJM" beginPos="14" endPos="23"/>
+		<text-field id="SALAIRE" beginPos="23" endPos="32"/>
+		<text-field id="TYPE_SALAIRE" beginPos="32" endPos="33"/>
+		<text-field id="NB_HEURES_SEMAINES" beginPos="33" endPos="42"/>
+		<text-field id="PRESTATION_NATURE" beginPos="42" endPos="51"/>
+		<text-field id="TYPE_PRESTATION_NATURE" beginPos="51" endPos="52"/>
+		<text-field id="SALAIRE_AUTRE" beginPos="52" endPos="61"/>
+		<text-field id="TYPE_SALAIRE_AUTRE" beginPos="61" endPos="62"/>
+		<text-field id="STATUT" beginPos="62" endPos="63"/>
+		<text-field id="NOM_EMPLOYEUR" beginPos="63" endPos="95"/>
+		<text-field id="SOMME_REVENUS" beginPos="95" endPos="104"/>
+	</file>
+
+</file-parser>

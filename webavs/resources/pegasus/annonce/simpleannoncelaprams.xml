@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.annonce.SimpleAnnonceLaprams">
+		<description>Annonce LAPRAMS</description>
+		<table name="PCLAPRAM" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAnnonceLAPRAMS" column="DIICLA" comment="ID_COMMUNICATION_LAPRAMS"/>
+			<field name="idDecisionHeader" column="DIIDEN" type="NUMERIC" mandatory="true" comment="ID_DECISION_HEADER"/>
+			<field name="idDroitMbrFamRequerant" column="DIIMFR" type="NUMERIC" mandatory="true" comment="ID_TIERS_REQUERANT"/>
+			<field name="idDroitMbrFamConjoint" column="DIIMFC" type="NUMERIC" mandatory="false" comment="ID_TIERS_CONJOINT"/>
+			<field name="idPcAccordee" column="DIIPCA" type="NUMERIC" comment="NOM_COMMUNE"/>
+			<field name="idTaxeJournaliereHome" column="DIITJO" type="NUMERIC" comment="MOTIF"/>
+			<field name="csTypeHome" column="DILTHO" type="NUMERIC" mandatory="true" comment="CS_TYPE_HOME"/>
+			<field name="csMotifSuppression" column="DITMSU" type="NUMERIC" mandatory="false" comment="CS_MOTIF_SUPPRESSION"/>
+			<field name="codeDestinationSortie" column="DILCDS" type="STRING" mandatory="true" comment="NO_SERIE"/>
+			<field name="codeEnfant" column="DILCEN" type="NUMERIC" mandatory="true" comment="ID_DECISION_HEADER"/>
+			<field name="dateEnvoi" column="DIDENV" type="DATE" mandatory="true" comment="DATE_EFFET"/>
+			<field name="dateRapport" column="DIDRAP" type="DATE" mandatory="true" comment="DATE_RAPPORT"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="inIdsDecision" operation="IN" field-ref="idDecisionHeader"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

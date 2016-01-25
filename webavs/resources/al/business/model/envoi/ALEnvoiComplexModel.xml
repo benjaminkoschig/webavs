@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.al.business.models.envoi.EnvoiComplexModel">
+
+		<root-model name="envoiJobSimpleModel" model-ref="ch.globaz.al.business.models.envoi.EnvoiJobSimpleModel"/>
+				
+		<linked-model name="envoiItemSimpleModel" model-ref="ch.globaz.al.business.models.envoi.EnvoiItemSimpleModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idJob" operation="EQUALS" field-ref="envoiJobSimpleModel.idJob"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="dossierModel" model-ref="ch.globaz.al.business.models.dossier.DossierModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDossier" operation="EQUALS" field-ref="envoiItemSimpleModel.idExternalLink"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="allocataireComplexModel" model-ref="ch.globaz.al.business.models.allocataire.AllocataireComplexModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="allocataireModel.idAllocataire" field-ref="dossierModel.idAllocataire"/>
+			</join-group>
+		</linked-model>
+
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdJob" field-ref="envoiJobSimpleModel.idJob" operation="EQUALS" />
+				<search-field name="forJobDate" field-ref="envoiJobSimpleModel.jobDate" operation="EQUALS"/>
+				<search-field name="forJobDateMin" field-ref="envoiJobSimpleModel.jobDate" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forJobDateMax" field-ref="envoiJobSimpleModel.jobDate" operation="LESS_OR_EQUALS"/>
+				<search-field name="forJobStatus" field-ref="envoiJobSimpleModel.jobStatus" operation="EQUALS"/>
+				<search-field name="forNotJobStatusEnvoi" field-ref="envoiJobSimpleModel.jobStatus" operation="NOT_EQUALS"/>
+				<search-field name="forJobUser" field-ref="envoiJobSimpleModel.jobUser" operation="EQUALS" />				
+				<search-field name="forIdEnvoi" field-ref="envoiItemSimpleModel.idEnvoi" operation="EQUALS"/>
+				<search-field name="forEnvoiStatus" field-ref="envoiItemSimpleModel.envoiStatus" operation="EQUALS"/>
+				<search-field name="forNotStatusEnvoi" field-ref="envoiItemSimpleModel.envoiStatus" operation="NOT_EQUALS"/>
+				<search-field name="forIdDossier" field-ref="dossierModel.idDossier" operation="EQUALS" />				
+			</search-group>
+		</search-definition>
+ 
+		<order-by name="default">
+			<order-field field-ref="envoiJobSimpleModel.jobDate" order="DESC"/>
+			<order-field field-ref="envoiJobSimpleModel.idJob" order="DESC"/>
+			<order-field field-ref="envoiItemSimpleModel.idEnvoi" order="DESC"/>
+		</order-by>
+
+	</complexe-model>
+	
+</model-mapping>

@@ -1,0 +1,836 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<DeclareSalary>
+  <RequestContext>
+    <UserAgent>
+      <Producer>CCJU</Producer>
+      <Name>DSA</Name>
+      <Version>0.1</Version>
+      <Certificate>None</Certificate>
+    </UserAgent>
+    <CompanyName>
+      <HR-RC-Name>Caisse compensation du Jura</HR-RC-Name>
+    </CompanyName>
+    <TransmissionDate>2014-01-17T11:09:41.0Z</TransmissionDate>
+    <RequestID>1011001</RequestID>
+    <LanguageCode>FR</LanguageCode>
+    <MonitoringID>Xpert.Capture</MonitoringID>
+  </RequestContext>
+  <Job>
+    <Addressees>
+      <AHV-AVS institutionIDRef="#003.000">
+        <ProcessByDistributor>true</ProcessByDistributor>
+      </AHV-AVS>
+      <UVG-LAA institutionIDRef="#Suva">
+        <ProcessByDistributor>false</ProcessByDistributor>
+      </UVG-LAA>
+      <UVGZ-LAAC institutionIDRef="#Backwork">
+        <ProcessByDistributor>false</ProcessByDistributor>
+      </UVGZ-LAAC>
+      <KTG-AMC institutionIDRef="#Backwork">
+        <ProcessByDistributor>false</ProcessByDistributor>
+        <CCAddressee>
+          <Name>
+          </Name>
+          <Street>
+          </Street>
+          <ZIP-Code>
+          </ZIP-Code>
+          <City>
+          </City>
+        </CCAddressee>
+      </KTG-AMC>
+      <BVG-LPP institutionIDRef="#Oldsoft">
+        <ProcessByDistributor>
+        </ProcessByDistributor>
+      </BVG-LPP>
+      <FAK-CAF institutionIDRef="#005.000">
+        <ProcessByDistributor>
+        </ProcessByDistributor>
+      </FAK-CAF>
+      <CantonalTaxAdministration>
+        <ProcessByDistributor>
+        </ProcessByDistributor>
+      </CantonalTaxAdministration>
+      <SwissFederalStatisticalOffice>
+        <ProcessByDistributor>
+        </ProcessByDistributor>
+      </SwissFederalStatisticalOffice>
+    </Addressees>
+  </Job>
+  <SalaryDeclaration>
+    <Company>
+      <CompanyDescription>
+        <Name>
+          <HR-RC-Name>
+          </HR-RC-Name>
+        </Name>
+        <Address>
+          <Street>
+          </Street>
+          <Postbox>
+          </Postbox>
+          <ZIP-Code>
+          </ZIP-Code>
+          <City>
+          </City>
+        </Address>
+        <UID-EHRA>
+        </UID-EHRA>
+        <BUR-REE-Number>
+        </BUR-REE-Number>
+      </CompanyDescription>
+      <Staff>
+        <Person>
+          <Particulars>
+            <Social-InsuranceIdentification>
+              <SV-AS-Number>756.6228.4340.18</SV-AS-Number>
+            </Social-InsuranceIdentification>
+            <EmployeeNumber />
+            <Lastname>
+            </Lastname>
+            <Firstname> </Firstname>
+            <Sex />
+            <DateOfBirth />
+            <Nationality />
+            <CivilStatus />
+            <!-- new tax -->
+            <Address>
+              <Street />
+              <Postbox />
+              <ZIP-Code />
+              <City />
+            </Address>
+            <ResidenceCanton />
+          </Particulars>
+          <Work>
+            <WorkingTime>
+              <WeeklyHours />
+            </WorkingTime>
+            <ActivityRate />
+            <YearsOfService />
+            <WithdrawalDate />
+            <WorkplaceCanton>JU</WorkplaceCanton>
+            <WorkCategorie>
+            </WorkCategorie>
+          </Work>
+          <AHV-AVS-Salaries>
+            <AHV-AVS-Salary institutionIDRef="#003.000">
+              <AccountingTime>
+                <from>2013-01-01</from>
+                <until>2013-12-31</until>
+              </AccountingTime>
+              <AHV-AVS-Income>69469</AHV-AVS-Income>
+              <ALV-AC-Income>
+              </ALV-AC-Income>
+            </AHV-AVS-Salary>
+          </AHV-AVS-Salaries>
+          <UVG-LAA-Salaries>
+            <UVG-LAA-Salary institutionIDRef="#Suva">
+              <AccountingTime>
+                <from />
+                <until />
+              </AccountingTime>
+              <UVG-LAA-Code />
+              <UVG-LAA-GrossSalary />
+              <UVG-LAA-BaseSalary />
+              <UVG-LAA-ContributorySalary />
+            </UVG-LAA-Salary>
+          </UVG-LAA-Salaries>
+          <UVGZ-LAAC-Salaries>
+            <UVGZ-LAAC-Salary institutionIDRef="#Backwork">
+              <AccountingTime>
+                <from />
+                <until />
+              </AccountingTime>
+              <UVGZ-LAAC-Code />
+              <UVGZ-LAAC-BaseSalary />
+              <UVGZ-LAAC-ContributorySalary />
+            </UVGZ-LAAC-Salary>
+          </UVGZ-LAAC-Salaries>
+          <KTG-AMC-Salaries>
+            <KTG-AMC-Salary institutionIDRef="#Backwork">
+              <AccountingTime>
+                <from />
+                <until />
+              </AccountingTime>
+              <KTG-AMC-Code />
+              <Reference-AHV-AVS-Salary />
+              <KTG-AMC-ContributorySalary />
+            </KTG-AMC-Salary>
+          </KTG-AMC-Salaries>
+          <BVG-LPP-Salaries>
+            <BVG-LPP-Salary institutionIDRef="#Oldsoft">
+              <AccountingTime>
+                <from />
+                <until />
+              </AccountingTime>
+              <BVG-LPP-Code />
+              <BVG-LPP-AHV-AVS-Salary />
+            </BVG-LPP-Salary>
+          </BVG-LPP-Salaries>
+          <FAK-CAF-Salaries>
+            <FAK-CAF-Salary>
+              <FAK-CAF-Period>
+                <from />
+                <until />
+              </FAK-CAF-Period>
+              <FAK-CAF-ContributorySalary />
+              <FAK-CAF-FamilyIncomeSupplement />
+              <FAK-CAF-WorkplaceCanton />
+            </FAK-CAF-Salary>
+          </FAK-CAF-Salaries>
+          <TaxSalaries>
+            <TaxSalary>
+              <Period>
+                <from />
+                <until />
+              </Period>
+              <FreeTransport />
+              <CanteenLunchCheck />
+              <Income />
+              <FringeBenefits>
+                <FoodLodging />
+                <CompanyCar />
+                <Other>
+                  <Text />
+                  <Sum />
+                </Other>
+              </FringeBenefits>
+              <SporadicBenefits>
+                <Text />
+                <Sum />
+              </SporadicBenefits>
+              <CapitalPayment>
+                <Text />
+                <Sum />
+              </CapitalPayment>
+              <OwnershipRight />
+              <BoardOfDirectorsRemuneration />
+              <OtherBenefits>
+                <Text />
+                <Sum />
+              </OtherBenefits>
+              <GrossIncome />
+              <AHV-ALV-NBUV-AVS-AC-AANP-Contribution />
+              <BVG-LPP-Contribution>
+                <Regular />
+                <Purchase />
+              </BVG-LPP-Contribution>
+              <NetIncome />
+              <DeductionAtSource />
+              <ChargesRule>
+                <WithRegulation>
+                  <Allowed />
+                  <Canton />
+                </WithRegulation>
+              </ChargesRule>
+              <Charges>
+                <Effective>
+                  <Other />
+                </Effective>
+                <LumpSum>
+                  <Representation />
+                  <Car />
+                  <Other>
+                    <Text />
+                    <Sum />
+                  </Other>
+                </LumpSum>
+                <Education />
+              </Charges>
+              <OtherFringeBenefits />
+              <StandardRemark>
+                <StaffShareThirdCompany />
+                <ChildAllowancePerAHV-AVS />
+                <RelocationCosts />
+                <StaffShareMarketValue>
+                  <Allowed />
+                  <Canton />
+                </StaffShareMarketValue>
+                <StaffShareWithoutTaxableIncome />
+              </StandardRemark>
+              <Remark />
+            </TaxSalary>
+          </TaxSalaries>
+          <StatisticSalaries>
+            <StatisticSalary>
+              <Period>
+                <from />
+                <until />
+              </Period>
+              <TotalHoursOfWork />
+              <GrossEarnings />
+              <SocialContributions />
+              <Allowances />
+              <Overtime />
+              <Earnings13th />
+              <SpecialPayments />
+              <PaymentsByThird />
+              <LaborCost />
+              <ExtendedBenefits />
+              <Education />
+              <Skill />
+              <Position />
+              <Activity />
+              <WageForm />
+            </StatisticSalary>
+          </StatisticSalaries>
+        </Person>
+        <Person>
+          <Particulars>
+            <Social-InsuranceIdentification>
+              <SV-AS-Number>756.9964.3793.84</SV-AS-Number>
+            </Social-InsuranceIdentification>
+            <EmployeeNumber />
+            <Lastname>
+            </Lastname>
+            <Firstname> </Firstname>
+            <Sex />
+            <DateOfBirth />
+            <Nationality />
+            <CivilStatus />
+            <!-- new tax -->
+            <Address>
+              <Street />
+              <Postbox />
+              <ZIP-Code />
+              <City />
+            </Address>
+            <ResidenceCanton />
+          </Particulars>
+          <Work>
+            <WorkingTime>
+              <WeeklyHours />
+            </WorkingTime>
+            <ActivityRate />
+            <YearsOfService />
+            <WithdrawalDate />
+            <WorkplaceCanton>JU</WorkplaceCanton>
+            <WorkCategorie>
+            </WorkCategorie>
+          </Work>
+          <AHV-AVS-Salaries>
+            <AHV-AVS-Salary institutionIDRef="#003.000">
+              <AccountingTime>
+                <from>2013-01-01</from>
+                <until>2013-12-31</until>
+              </AccountingTime>
+              <AHV-AVS-Income>50132</AHV-AVS-Income>
+              <ALV-AC-Income>
+              </ALV-AC-Income>
+            </AHV-AVS-Salary>
+          </AHV-AVS-Salaries>
+          <UVG-LAA-Salaries>
+            <UVG-LAA-Salary institutionIDRef="#Suva">
+              <AccountingTime>
+                <from />
+                <until />
+              </AccountingTime>
+              <UVG-LAA-Code />
+              <UVG-LAA-GrossSalary />
+              <UVG-LAA-BaseSalary />
+              <UVG-LAA-ContributorySalary />
+            </UVG-LAA-Salary>
+          </UVG-LAA-Salaries>
+          <UVGZ-LAAC-Salaries>
+            <UVGZ-LAAC-Salary institutionIDRef="#Backwork">
+              <AccountingTime>
+                <from />
+                <until />
+              </AccountingTime>
+              <UVGZ-LAAC-Code />
+              <UVGZ-LAAC-BaseSalary />
+              <UVGZ-LAAC-ContributorySalary />
+            </UVGZ-LAAC-Salary>
+          </UVGZ-LAAC-Salaries>
+          <KTG-AMC-Salaries>
+            <KTG-AMC-Salary institutionIDRef="#Backwork">
+              <AccountingTime>
+                <from />
+                <until />
+              </AccountingTime>
+              <KTG-AMC-Code />
+              <Reference-AHV-AVS-Salary />
+              <KTG-AMC-ContributorySalary />
+            </KTG-AMC-Salary>
+          </KTG-AMC-Salaries>
+          <BVG-LPP-Salaries>
+            <BVG-LPP-Salary institutionIDRef="#Oldsoft">
+              <AccountingTime>
+                <from />
+                <until />
+              </AccountingTime>
+              <BVG-LPP-Code />
+              <BVG-LPP-AHV-AVS-Salary />
+            </BVG-LPP-Salary>
+          </BVG-LPP-Salaries>
+          <FAK-CAF-Salaries>
+            <FAK-CAF-Salary>
+              <FAK-CAF-Period>
+                <from />
+                <until />
+              </FAK-CAF-Period>
+              <FAK-CAF-ContributorySalary />
+              <FAK-CAF-FamilyIncomeSupplement />
+              <FAK-CAF-WorkplaceCanton />
+            </FAK-CAF-Salary>
+          </FAK-CAF-Salaries>
+          <TaxSalaries>
+            <TaxSalary>
+              <Period>
+                <from />
+                <until />
+              </Period>
+              <FreeTransport />
+              <CanteenLunchCheck />
+              <Income />
+              <FringeBenefits>
+                <FoodLodging />
+                <CompanyCar />
+                <Other>
+                  <Text />
+                  <Sum />
+                </Other>
+              </FringeBenefits>
+              <SporadicBenefits>
+                <Text />
+                <Sum />
+              </SporadicBenefits>
+              <CapitalPayment>
+                <Text />
+                <Sum />
+              </CapitalPayment>
+              <OwnershipRight />
+              <BoardOfDirectorsRemuneration />
+              <OtherBenefits>
+                <Text />
+                <Sum />
+              </OtherBenefits>
+              <GrossIncome />
+              <AHV-ALV-NBUV-AVS-AC-AANP-Contribution />
+              <BVG-LPP-Contribution>
+                <Regular />
+                <Purchase />
+              </BVG-LPP-Contribution>
+              <NetIncome />
+              <DeductionAtSource />
+              <ChargesRule>
+                <WithRegulation>
+                  <Allowed />
+                  <Canton />
+                </WithRegulation>
+              </ChargesRule>
+              <Charges>
+                <Effective>
+                  <Other />
+                </Effective>
+                <LumpSum>
+                  <Representation />
+                  <Car />
+                  <Other>
+                    <Text />
+                    <Sum />
+                  </Other>
+                </LumpSum>
+                <Education />
+              </Charges>
+              <OtherFringeBenefits />
+              <StandardRemark>
+                <StaffShareThirdCompany />
+                <ChildAllowancePerAHV-AVS />
+                <RelocationCosts />
+                <StaffShareMarketValue>
+                  <Allowed />
+                  <Canton />
+                </StaffShareMarketValue>
+                <StaffShareWithoutTaxableIncome />
+              </StandardRemark>
+              <Remark />
+            </TaxSalary>
+          </TaxSalaries>
+          <StatisticSalaries>
+            <StatisticSalary>
+              <Period>
+                <from />
+                <until />
+              </Period>
+              <TotalHoursOfWork />
+              <GrossEarnings />
+              <SocialContributions />
+              <Allowances />
+              <Overtime />
+              <Earnings13th />
+              <SpecialPayments />
+              <PaymentsByThird />
+              <LaborCost />
+              <ExtendedBenefits />
+              <Education />
+              <Skill />
+              <Position />
+              <Activity />
+              <WageForm />
+            </StatisticSalary>
+          </StatisticSalaries>
+        </Person>
+        <Person>
+          <Particulars>
+            <Social-InsuranceIdentification>
+              <SV-AS-Number>756.3167.6962.62</SV-AS-Number>
+            </Social-InsuranceIdentification>
+            <EmployeeNumber />
+            <Lastname>
+            </Lastname>
+            <Firstname> </Firstname>
+            <Sex />
+            <DateOfBirth />
+            <Nationality />
+            <CivilStatus />
+            <!-- new tax -->
+            <Address>
+              <Street />
+              <Postbox />
+              <ZIP-Code />
+              <City />
+            </Address>
+            <ResidenceCanton />
+          </Particulars>
+          <Work>
+            <WorkingTime>
+              <WeeklyHours />
+            </WorkingTime>
+            <ActivityRate />
+            <YearsOfService />
+            <WithdrawalDate />
+            <WorkplaceCanton>JU</WorkplaceCanton>
+            <WorkCategorie>
+            </WorkCategorie>
+          </Work>
+          <AHV-AVS-Salaries>
+            <AHV-AVS-Salary institutionIDRef="#003.000">
+              <AccountingTime>
+                <from>2013-01-01</from>
+                <until>2013-12-31</until>
+              </AccountingTime>
+              <AHV-AVS-Income>61548</AHV-AVS-Income>
+              <ALV-AC-Income>
+              </ALV-AC-Income>
+            </AHV-AVS-Salary>
+          </AHV-AVS-Salaries>
+          <UVG-LAA-Salaries>
+            <UVG-LAA-Salary institutionIDRef="#Suva">
+              <AccountingTime>
+                <from />
+                <until />
+              </AccountingTime>
+              <UVG-LAA-Code />
+              <UVG-LAA-GrossSalary />
+              <UVG-LAA-BaseSalary />
+              <UVG-LAA-ContributorySalary />
+            </UVG-LAA-Salary>
+          </UVG-LAA-Salaries>
+          <UVGZ-LAAC-Salaries>
+            <UVGZ-LAAC-Salary institutionIDRef="#Backwork">
+              <AccountingTime>
+                <from />
+                <until />
+              </AccountingTime>
+              <UVGZ-LAAC-Code />
+              <UVGZ-LAAC-BaseSalary />
+              <UVGZ-LAAC-ContributorySalary />
+            </UVGZ-LAAC-Salary>
+          </UVGZ-LAAC-Salaries>
+          <KTG-AMC-Salaries>
+            <KTG-AMC-Salary institutionIDRef="#Backwork">
+              <AccountingTime>
+                <from />
+                <until />
+              </AccountingTime>
+              <KTG-AMC-Code />
+              <Reference-AHV-AVS-Salary />
+              <KTG-AMC-ContributorySalary />
+            </KTG-AMC-Salary>
+          </KTG-AMC-Salaries>
+          <BVG-LPP-Salaries>
+            <BVG-LPP-Salary institutionIDRef="#Oldsoft">
+              <AccountingTime>
+                <from />
+                <until />
+              </AccountingTime>
+              <BVG-LPP-Code />
+              <BVG-LPP-AHV-AVS-Salary />
+            </BVG-LPP-Salary>
+          </BVG-LPP-Salaries>
+          <FAK-CAF-Salaries>
+            <FAK-CAF-Salary>
+              <FAK-CAF-Period>
+                <from />
+                <until />
+              </FAK-CAF-Period>
+              <FAK-CAF-ContributorySalary />
+              <FAK-CAF-FamilyIncomeSupplement />
+              <FAK-CAF-WorkplaceCanton />
+            </FAK-CAF-Salary>
+          </FAK-CAF-Salaries>
+          <TaxSalaries>
+            <TaxSalary>
+              <Period>
+                <from />
+                <until />
+              </Period>
+              <FreeTransport />
+              <CanteenLunchCheck />
+              <Income />
+              <FringeBenefits>
+                <FoodLodging />
+                <CompanyCar />
+                <Other>
+                  <Text />
+                  <Sum />
+                </Other>
+              </FringeBenefits>
+              <SporadicBenefits>
+                <Text />
+                <Sum />
+              </SporadicBenefits>
+              <CapitalPayment>
+                <Text />
+                <Sum />
+              </CapitalPayment>
+              <OwnershipRight />
+              <BoardOfDirectorsRemuneration />
+              <OtherBenefits>
+                <Text />
+                <Sum />
+              </OtherBenefits>
+              <GrossIncome />
+              <AHV-ALV-NBUV-AVS-AC-AANP-Contribution />
+              <BVG-LPP-Contribution>
+                <Regular />
+                <Purchase />
+              </BVG-LPP-Contribution>
+              <NetIncome />
+              <DeductionAtSource />
+              <ChargesRule>
+                <WithRegulation>
+                  <Allowed />
+                  <Canton />
+                </WithRegulation>
+              </ChargesRule>
+              <Charges>
+                <Effective>
+                  <Other />
+                </Effective>
+                <LumpSum>
+                  <Representation />
+                  <Car />
+                  <Other>
+                    <Text />
+                    <Sum />
+                  </Other>
+                </LumpSum>
+                <Education />
+              </Charges>
+              <OtherFringeBenefits />
+              <StandardRemark>
+                <StaffShareThirdCompany />
+                <ChildAllowancePerAHV-AVS />
+                <RelocationCosts />
+                <StaffShareMarketValue>
+                  <Allowed />
+                  <Canton />
+                </StaffShareMarketValue>
+                <StaffShareWithoutTaxableIncome />
+              </StandardRemark>
+              <Remark />
+            </TaxSalary>
+          </TaxSalaries>
+          <StatisticSalaries>
+            <StatisticSalary>
+              <Period>
+                <from />
+                <until />
+              </Period>
+              <TotalHoursOfWork />
+              <GrossEarnings />
+              <SocialContributions />
+              <Allowances />
+              <Overtime />
+              <Earnings13th />
+              <SpecialPayments />
+              <PaymentsByThird />
+              <LaborCost />
+              <ExtendedBenefits />
+              <Education />
+              <Skill />
+              <Position />
+              <Activity />
+              <WageForm />
+            </StatisticSalary>
+          </StatisticSalaries>
+        </Person>
+      </Staff>
+      <Insurances>
+        <AHV-AVS institutionID="#003.000">
+          <AK-CC-BranchNumber>003.000</AK-CC-BranchNumber>
+          <AK-CC-CustomerNumber>101.1001</AK-CC-CustomerNumber>
+          <AK-CC-ReceptionDate>
+          </AK-CC-ReceptionDate>
+          <AK-CC-ReturnCode>3</AK-CC-ReturnCode>
+        </AHV-AVS>
+        <UVG-LAA>
+          <Suva institutionID="#Suva">
+            <SuvaCustomerNumber>
+            </SuvaCustomerNumber>
+            <SuvaSubNumber>
+            </SuvaSubNumber>
+            <Note>
+              <IncompleteSalaryDeclaration />
+              <Comments>
+              </Comments>
+            </Note>
+          </Suva>
+        </UVG-LAA>
+        <UVGZ-LAAC institutionID="#Backwork">
+          <InsuranceID>
+          </InsuranceID>
+          <InsuranceCompanyName>
+          </InsuranceCompanyName>
+          <CustomerIdentity>
+          </CustomerIdentity>
+          <ContractIdentity>
+          </ContractIdentity>
+        </UVGZ-LAAC>
+        <KTG-AMC institutionID="#Backwork">
+          <InsuranceID>
+          </InsuranceID>
+          <InsuranceCompanyName>
+          </InsuranceCompanyName>
+          <CustomerIdentity>
+          </CustomerIdentity>
+          <ContractIdentity>
+          </ContractIdentity>
+        </KTG-AMC>
+        <BVG-LPP institutionID="#Oldsoft">
+          <InsuranceID>
+          </InsuranceID>
+          <InsuranceCompanyName>
+          </InsuranceCompanyName>
+          <CustomerIdentity>
+          </CustomerIdentity>
+          <ContractIdentity>
+          </ContractIdentity>
+        </BVG-LPP>
+        <FAK-CAF institutionID="#005.000">
+          <FAK-CAF-BranchNumber>
+          </FAK-CAF-BranchNumber>
+          <FAK-CAF-CustomerNumber>
+          </FAK-CAF-CustomerNumber>
+        </FAK-CAF>
+      </Insurances>
+      <!-- ===================================== -->
+      <!-- SalaryTotals -->
+      <!-- ===================================== -->
+      <SalaryTotals>
+        <AHV-AVS-Totals institutionIDRef="#003.000">
+          <Total-AHV-AVS-Incomes>181149</Total-AHV-AVS-Incomes>
+          <Total-AHV-AVS-Open>0.00</Total-AHV-AVS-Open>
+          <Total-ALV-AC-Incomes>0.00</Total-ALV-AC-Incomes>
+          <Total-ALVZ-ACS-Incomes>0.00</Total-ALVZ-ACS-Incomes>
+          <Total-ALV-AC-Open>0.00</Total-ALV-AC-Open>
+        </AHV-AVS-Totals>
+        <UVG-LAA-Totals institutionIDRef="#Suva">
+          <UVG-LAA-BranchTotals>
+            <UVG-LAA-BranchTotal>
+              <BranchIdentifier>
+              </BranchIdentifier>
+              <NBU-BU-ANP-AP-Total>
+              </NBU-BU-ANP-AP-Total>
+              <BU-AP-Total>
+              </BU-AP-Total>
+            </UVG-LAA-BranchTotal>
+          </UVG-LAA-BranchTotals>
+          <UVG-LAA-MasterTotal>
+          </UVG-LAA-MasterTotal>
+          <NumberOfFemalePersons>
+          </NumberOfFemalePersons>
+          <NumberOfMalePersons>
+          </NumberOfMalePersons>
+        </UVG-LAA-Totals>
+        <UVGZ-LAAC-Totals institutionIDRef="#Backwork">
+          <UVGZ-LAAC-CategoryTotals>
+            <UVGZ-LAAC-CategoryTotal>
+              <CategoryCode>
+              </CategoryCode>
+              <Female-Total>
+              </Female-Total>
+              <Male-Total>
+              </Male-Total>
+            </UVGZ-LAAC-CategoryTotal>
+          </UVGZ-LAAC-CategoryTotals>
+          <UVGZ-LAAC-MasterTotal>
+          </UVGZ-LAAC-MasterTotal>
+        </UVGZ-LAAC-Totals>
+        <KTG-AMC-Totals institutionIDRef="#Backwork">
+          <KTG-AMC-CategoryTotals>
+            <KTG-AMC-CategoryTotal>
+              <CategoryCode>
+              </CategoryCode>
+              <Female-Total>
+              </Female-Total>
+              <Male-Total>
+              </Male-Total>
+            </KTG-AMC-CategoryTotal>
+          </KTG-AMC-CategoryTotals>
+          <KTG-AMC-MasterTotal>
+          </KTG-AMC-MasterTotal>
+        </KTG-AMC-Totals>
+        <FAK-CAF-FLG-LFA-Totals>
+          <Total-FAK-CAF-IncomesPerCanton>
+            <Total-FAK-CAF-Incomes>
+            </Total-FAK-CAF-Incomes>
+            <Canton>
+            </Canton>
+          </Total-FAK-CAF-IncomesPerCanton>
+        </FAK-CAF-FLG-LFA-Totals>
+      </SalaryTotals>
+      <SalaryCounters>
+        <NumberOf-AHV-AVS-Salary-Tags>3</NumberOf-AHV-AVS-Salary-Tags>
+        <NumberOf-UVG-LAA-Salary-Tags>
+        </NumberOf-UVG-LAA-Salary-Tags>
+        <NumberOf-UVGZ-LAAC-Salary-Tags>
+        </NumberOf-UVGZ-LAAC-Salary-Tags>
+        <NumberOf-KTG-AMC-Salary-Tags>
+        </NumberOf-KTG-AMC-Salary-Tags>
+        <NumberOf-BVG-LPP-Salary-Tags>
+        </NumberOf-BVG-LPP-Salary-Tags>
+        <NumberOf-FAK-CAF-Salary-Tags>
+        </NumberOf-FAK-CAF-Salary-Tags>
+        <NumberOf-TaxAnnuity-Tags>
+        </NumberOf-TaxAnnuity-Tags>
+        <NumberOf-TaxSalary-Tags>
+        </NumberOf-TaxSalary-Tags>
+        <NumberOf-StatisticSalaries-Tags>
+        </NumberOf-StatisticSalaries-Tags>
+      </SalaryCounters>
+      <Statistic>
+        <CompanyWorkingTime>
+          <WeeklyHours>
+          </WeeklyHours>
+        </CompanyWorkingTime>
+        <PayAgreement>
+        </PayAgreement>
+      </Statistic>
+    </Company>
+    <GeneralSalaryDeclarationDescription>
+      <CreationDate>2014-01-20T11:09:41.0Z</CreationDate>
+      <AccountingPeriod>2013</AccountingPeriod>
+      <ContactPerson>
+        <Name>Jérome Gindrat</Name>
+        <EmailAddress>jerome.gindrat@ccju.ch</EmailAddress>
+        <PhoneNumber>032 9521111</PhoneNumber>
+      </ContactPerson>
+      <Comments>
+      </Comments>
+    </GeneralSalaryDeclarationDescription>
+  </SalaryDeclaration>
+</DeclareSalary>

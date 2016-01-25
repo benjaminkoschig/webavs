@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.prestation.business.models.echance.EcheanceModel">
+		<root-model name="simpleEcheance" model-ref="ch.globaz.prestation.business.models.echance.SimpleEcheance"/>
+		
+		<linked-model name="simpleTiers" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="simpleEcheance.idTiers"/>
+			</join-group>		
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdExterne" operation="EQUALS" field-ref="simpleEcheance.idExterne"/>
+				<search-field name="forIdTiers" operation="EQUALS" field-ref="simpleEcheance.idTiers"/>
+				<search-field name="forCsDomaine" operation="EQUALS" field-ref="simpleEcheance.csDomaine"/>
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simpleEcheance.csEtat"/>
+				<search-field name="forCsTypeEcheance" operation="EQUALS" field-ref="simpleEcheance.csTypeEcheance"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="forATraiter">
+			<search-group operator="AND">
+				<search-field name="forIdExterne" operation="EQUALS" field-ref="simpleEcheance.idExterne"/>
+				<search-field name="forIdTiers" operation="EQUALS" field-ref="simpleEcheance.idTiers"/>
+				<search-field name="forCsDomaine" operation="EQUALS" field-ref="simpleEcheance.csDomaine"/>
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simpleEcheance.csEtat"/>
+				<search-field name="forCsTypeEcheance" operation="EQUALS" field-ref="simpleEcheance.csTypeEcheance"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="forNearestTerm">
+			<search-group operator="AND">
+				<search-field name="forIdExterne" operation="EQUALS" field-ref="simpleEcheance.idExterne"/>
+				<search-field name="forIdTiers" operation="EQUALS" field-ref="simpleEcheance.idTiers"/>
+				<search-field name="forCsDomaine" operation="EQUALS" field-ref="simpleEcheance.csDomaine"/>
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simpleEcheance.csEtat"/>
+				<search-field name="forCsTypeEcheance" operation="EQUALS" field-ref="simpleEcheance.csTypeEcheance"/>
+				<search-literal>
+					<declare-model name="echeance" model-ref="ch.globaz.prestation.business.models.echance.SimpleEcheance"/>
+					<![CDATA[ 
+						#{simpleEcheance.dateEcheance} = (
+								select MIN( #{echeance.dateEcheance} ) 
+								  from @{echeance}
+								 where #{echeance.idExterne} =  ${forIdExterne:echeance.idExterne} 
+								   and #{echeance.idTiers} =  ${forIdTiers:echeance.idTiers}
+								   and #{echeance.csEtat} =  ${forCsEtat:echeance.csEtat}
+								   and #{echeance.csTypeEcheance} =  ${forCsTypeEcheance:echeance.csTypeEcheance}
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+
+		<order-by>
+			<order-field field-ref="simpleEcheance.idExterne" />
+			<order-field field-ref="simpleEcheance.idTiers" />
+			<order-field field-ref="simpleEcheance.dateEcheance" order="ASC"/>
+		</order-by>
+			
+	</complexe-model>
+</model-mapping>

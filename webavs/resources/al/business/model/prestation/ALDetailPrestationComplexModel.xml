@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'une liste de droit -->
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.prestation.DetailPrestationComplexModel">
+		<root-model name="detailPrestationModel" model-ref="ch.globaz.al.business.models.prestation.DetailPrestationModel"/>
+		<linked-model name="droitComplexModel" model-ref="ch.globaz.al.business.models.droit.DroitComplexModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="droitModel.idDroit" field-ref="detailPrestationModel.idDroit"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="entetePrestationModel" model-ref="ch.globaz.al.business.models.prestation.EntetePrestationModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idEntete" field-ref="detailPrestationModel.idEntete"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="tiersBeneficiaireModel" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="detailPrestationModel.idTiersBeneficiaire"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>
+				<search-field name="forIdDroit" field-ref="droitComplexModel.droitModel.idDroit" operation="EQUALS"/>	
+				<search-field name="forIdEnfant" field-ref="droitComplexModel.droitModel.idEnfant" operation="EQUALS"/>	
+				<search-field name="forIdEntete" field-ref="entetePrestationModel.idEntete" operation="EQUALS"/>
+				<search-field name="forEtat" field-ref="entetePrestationModel.etatPrestation" operation="EQUALS"/>	
+			</search-group>
+		</search-definition>	
+		<search-definition name="prestationExistantePeriodeExacte">
+			<search-group operator="AND">
+				<search-field name="forPeriodeDe" field-ref="entetePrestationModel.periodeDe" operation="EQUALS"/>
+				<search-field name="forPeriodeA" field-ref="entetePrestationModel.periodeA" operation="EQUALS"/>
+				<search-field name="forEtat" field-ref="entetePrestationModel.etatPrestation" operation="EQUALS"/>
+				<search-field name="forStatut" field-ref="entetePrestationModel.statut" operation="EQUALS"/>
+				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		<search-definition name="prestationTravailPlagePeriode">
+			<search-group operator="AND">
+				<search-field name="forPeriodeDe" field-ref="entetePrestationModel.periodeDe" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forPeriodeA" field-ref="entetePrestationModel.periodeA" operation="LESS_OR_EQUALS"/>
+				<search-field name="forEtat" field-ref="entetePrestationModel.etatPrestation" operation="EQUALS"/>
+				<search-field name="forStatut" field-ref="entetePrestationModel.statut" operation="EQUALS"/>
+				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>
+				<search-field name="notForTarif" field-ref="detailPrestationModel.categorieTarif" operation="NOT_EQUALS"/>
+			</search-group>
+		</search-definition>
+				<search-definition name="prestationTravailPlagePeriodeAdiDef">
+			<search-group operator="AND">
+				<search-field name="forPeriodeDe" field-ref="entetePrestationModel.periodeDe" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forPeriodeA" field-ref="entetePrestationModel.periodeA" operation="LESS_OR_EQUALS"/>
+				<search-field name="forEtat" field-ref="entetePrestationModel.etatPrestation" operation="EQUALS"/>
+				<search-group operator="AND">
+					<search-field name="forStatut" field-ref="entetePrestationModel.statut" operation="EQUALS"/>
+					<search-field name="forTarif" field-ref="entetePrestationModel.categorieTarif" operation="EQUALS"/>
+				</search-group>
+				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>
+				<search-field name="notForTarif" field-ref="detailPrestationModel.categorieTarif" operation="NOT_EQUALS"/>
+			</search-group>
+		</search-definition>
+		<search-definition name="prestationSuppHorlo">
+				<search-group operator="AND">
+					<search-field name="forIdEntete" field-ref="entetePrestationModel.idEntete" operation="EQUALS"/>
+					<search-field name="forTarif" field-ref="detailPrestationModel.categorieTarif" operation="EQUALS"/>
+				</search-group>
+		</search-definition>
+		<search-definition name="prestaDateVersement">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>
+				<search-field name="forIdDroit" field-ref="droitComplexModel.droitModel.idDroit" operation="EQUALS"/>	
+				<search-field name="forIdEnfant" field-ref="droitComplexModel.droitModel.idEnfant" operation="EQUALS"/>	
+				<search-field name="forIdEntete" field-ref="entetePrestationModel.idEntete" operation="EQUALS"/>	
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="radiationDossier">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>
+				<search-field name="inIdDroit" field-ref="droitComplexModel.droitModel.idDroit" operation="IN"/>
+				<search-field name="forPeriodeA" field-ref="entetePrestationModel.periodeA" operation="GREATER"/>	
+			</search-group>
+		</search-definition>
+
+		
+		<order-by name="default">
+			<order-field field-ref="droitComplexModel.droitModel.idEnfant" order="DESC"/>
+		</order-by> 
+		<order-by name="periodeOrder">
+			<order-field field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.personne.dateNaissance" order="ASC"/>
+			<!-- pour eviter le bug jumeaux -->
+			<order-field field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.personne.idTiers" order="ASC"/>
+			<order-field field-ref="detailPrestationModel.periodeValidite" order="ASC"/>
+		</order-by>
+		<order-by name="nomPrestaDroit">
+			<order-field field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.tiers.designation1" order="ASC"/>
+			<order-field field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.tiers.designation2" order="ASC"/>
+		</order-by>	
+	</complexe-model>
+</model-mapping>

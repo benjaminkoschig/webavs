@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="vulpecula/af/afpackage.xml"/>
+	<model-mapping import="vulpecula/registres/registrespackage.xml"/>
+	<model-mapping import="vulpecula/postetravail/postetravailpackage.xml"/>
+	<model-mapping import="vulpecula/common/commonpackage.xml"/>
+	<model-mapping import="vulpecula/decomptes/decomptespackage.xml"/>
+	<model-mapping import="vulpecula/taxationoffice/taxationofficepackage.xml" />
+	<model-mapping import="vulpecula/absencejustifiee/absencejustifieepackage.xml" />
+	<model-mapping import="vulpecula/congepaye/congepayepackage.xml" />
+	<model-mapping import="vulpecula/servicemilitaire/servicemilitairepackage.xml" />
+	<model-mapping import="vulpecula/association/associationpackage.xml" />
+	<model-mapping import="vulpecula/caissemaladie/caissemaladiepackage.xml" />
+	<model-mapping import="vulpecula/syndicat/syndicatpackage.xml" />
+	<model-mapping import="vulpecula/is/ispackage.xml" />
+	<model-mapping import="vulpecula/notification/notificationpackage.xml" />
+</model-mapping>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.tarif.PrestationTarifBaseModel">
+		<description>Prestations selon les tarifs</description>
+		<table name="ALPRETAR" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idPrestationTarif" column="P3ID" comment="ID (PK) de la prestation du tarif"/>
+			<field comment="ID (FK) de critère RNG" column="IDRNG" type="NUMERIC" dataType="NUMERIC(15,0)" name="idCritereRang" mandatory="true"/>
+			<field comment="ID (FK) de critère NBR" column="IDNBR" type="NUMERIC" dataType="NUMERIC(15,0)" name="idCritereNombre" mandatory="true"/>
+			<field comment="ID (FK) de critère AGE" column="IDAGE" type="NUMERIC" dataType="NUMERIC(15,0)" name="idCritereAge" mandatory="true"/>
+			<field comment="ID (FK) de critère REV (indépendant)" column="IDREVI" type="NUMERIC" dataType="NUMERIC(15,0)" name="idCritereRevenuIndependant" mandatory="true"/>
+			<field comment="ID (FK) de critère REV (non-actif)" column="IDREVN" type="NUMERIC" dataType="NUMERIC(15,0)" name="idCritereRevenuNonActif" mandatory="true"/>
+			<field comment="ID (FK) de catégorie tarif" column="P2ID" type="NUMERIC" dataType="NUMERIC(15,0)" name="idCategorieTarif" mandatory="true"/>
+			<field comment="Montant de la prestation" column="P3MONT" type="NUMERIC" dataType="NUMERIC (8,2)" name="montant" mandatory="true"/>
+		</fields>
+	</simple-model>
+	<simple-model className="ch.globaz.al.business.models.tarif.PrestationTarifModel" extend="ch.globaz.al.business.models.tarif.PrestationTarifBaseModel">
+		<description>Prestations selon les tarifs</description>
+		<fields>
+			<primary-key name="idPrestationTarif" column="P3ID" comment="ID (PK) de la prestation du tarif"/>
+			<field comment="Booléen détermine capacité d'exercer" column="P3CAP" type="BOOLEAN"  name="capableExercer" mandatory="true"/>
+			<field comment="date de début validité" column="P3DVAL" type="DATE" dataType="NUMERIC(8,0)" name="debutValidite" mandatory="true"/>
+			<field comment="date de fin de validité" column="P3FVAL" type="DATE" dataType="NUMERIC(8,0)" name="finValidite" mandatory="false"/>
+			<field comment="Catégorie de résident, Code Système" column="CSCRES" type="NUMERIC" dataType="NUMERIC(8,0)" name="categorieResident" mandatory="true"/>
+			<field comment="donne le mois de séparation" column="P3SEPA" type="NUMERIC" dataType="NUMERIC(2,0)" name="moisSeparation" mandatory="false"/>
+			<field comment="Type de prestation, Code Système" column="CSPRES" type="NUMERIC" dataType="NUMERIC (8,0)" name="typePrestation" mandatory="true"/>	
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field operation="EQUALS" name="forIdCritereRang" field-ref="idCritereRang"/>
+				<search-field operation="EQUALS" name="forIdCritereNombre" field-ref="idCritereNombre"/>
+				<search-field operation="EQUALS" name="forIdCritereAge" field-ref="idCritereAge"/>
+				<search-field operation="EQUALS" name="forIdCritereRevenuIndependant" field-ref="idCritereRevenuIndependant"/>
+				<search-field operation="EQUALS" name="forIdCritereRevenuNonActif" field-ref="idCritereRevenuNonActif"/>
+				<search-field operation="EQUALS" name="forIdCategorieTarif" field-ref="idCategorieTarif"/>
+				<search-field operation="EQUALS" name="forCapableExercer" field-ref="capableExercer"/>
+				<search-field operation="EQUALS" name="forDebutValidite" field-ref="debutValidite"/>
+				<search-field operation="EQUALS" name="forFinValidite" field-ref="finValidite"/>
+				<search-field operation="EQUALS" name="forCategorieResident" field-ref="categorieResident"/> 
+				<search-field operation="EQUALS" name="forTypePrestation" field-ref="typePrestation"/> 
+				<search-field operation="EQUALS" name="forMoisSeparation" field-ref="moisSeparation"/> 
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="forDeleteAll">
+			<search-field name="forIdPrestationTarif" field-ref="idPrestationTarif" operation="GREATER"/>
+		</search-definition>
+	</simple-model>
+</model-mapping>

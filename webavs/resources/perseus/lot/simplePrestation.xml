@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.lot.SimplePrestation">
+		<description>Table des prestations</description>
+		<table name="PFPRESTA" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idPrestation" column="ITIDPR" comment="Clé primaire de la table"/>
+			<field name="idDecisionPcf" column="ITIDDE" type="NUMERIC" mandatory="false" comment="Identifiant de la decision"/>
+			<field name="idFacture" column="ITIDFA" type="NUMERIC" mandatory="false" comment="Identifiant de la facture"/>
+			<field name="idLot" column="ITIDLO" type="NUMERIC" mandatory="false" comment="Identifiant du lot"/>
+			<field name="etatPrestation" column="ITETAT" type="NUMERIC" mandatory="false" comment="Etat de la prestation"/>
+			<field name="montantTotal" column="ITMOTO" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Montant total de la prestation"/>
+			<field name="datePrestation" column="ITDATE" type="DATE" mandatory="false" comment="Date de la prestation (traitement)"/>
+			<field name="dateDebut" column="ITDADE" type="DATE" mandatory="true" comment="Date de début de la période de prestation"/>
+			<field name="dateFin" column="ITDAFI" type="DATE" mandatory="true" comment="Date de fin de la période de prestation"/>
+			<field name="montantMesureCoaching" column="ITMOMC" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Montant de la mesure de coaching"/>
+			
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdLot" operation="EQUALS" field-ref="idLot"/>
+				
+			</search-group>
+		</search-definition>
+		
+	</simple-model>
+</model-mapping>

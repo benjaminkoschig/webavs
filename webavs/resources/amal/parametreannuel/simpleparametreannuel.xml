@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.parametreannuel.SimpleParametreAnnuel">
+		<description>Paramètres annuels</description>
+		<table name="MAPARAM" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idParametreAnnuel" column="IDPARAM" comment="Id paramètre annuel"/>
+			<field name="codeTypeParametre" column="COTYAN" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Code type paramètre annuel"/>
+			<field name="anneeParametre" column="ANPARAM" type="NUMERIC" dataType="NUMERIC(4,0)" mandatory="true" comment="Année"/>
+			<field name="valeurParametre" column="PAVALUE" type="NUMERIC" dataType="NUMERIC(12,2)" mandatory="false" comment="Valeur paramètre"/>					
+			<field name="valeurParametreString" column="VALSTR" type="STRING" dataType="VARCHAR(35)" mandatory="false" comment="Valeur paramètre string"/>
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field operation="EQUALS" name="forAnneeParametre" field-ref="anneeParametre"/>
+				<search-field operation="GREATER_OR_EQUALS" name="fromAnneeParametre" field-ref="anneeParametre"/>
+				<search-field operation="LESS_OR_EQUALS" name="untilAnneeParametre" field-ref="anneeParametre"/>
+				<search-field operation="EQUALS" name="forCodeTypeParametre" field-ref="codeTypeParametre"/>
+				<search-field operation="IN" name="inCodeTypeParametre" field-ref="codeTypeParametre"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="anneeParametre" order="DESC"/>
+			<order-field field-ref="valeurParametre" />
+		</order-by>
+		
+		<order-by name="anneeDesc">
+			<order-field field-ref="anneeParametre" order="DESC"/>
+		</order-by>
+		
+		<order-by name="anneeAsc">
+			<order-field field-ref="anneeParametre" order="ASC"/>
+		</order-by>
+		
+		<order-by name="valeurParametreDesc">
+			<order-field field-ref="valeurParametre" order="DESC"/>
+		</order-by>
+		
+		<order-by name="valeurParametreAsc">
+			<order-field field-ref="valeurParametre" order="ASC"/>
+		</order-by>
+		
+		<order-by name="valeurParametreStringDesc">
+			<order-field field-ref="valeurParametreString" order="DESC"/>
+		</order-by>
+		
+		<order-by name="valeurParametreStringAsc">
+			<order-field field-ref="valeurParametreString" order="ASC"/>
+		</order-by>
+	</simple-model>
+</model-mapping>

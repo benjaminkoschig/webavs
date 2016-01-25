@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.dettecomptatcompense.DetteCompenseCompteAnnexe">
+	
+		<root-model name="simpleDetteComptatCompense" model-ref="ch.globaz.pegasus.business.models.dettecomptatcompense.SimpleDetteComptatCompense"/>
+		
+		<select-fields>
+			<select-field name="idCompteAnnexe" field-ref="simpleCompteAnnexe.idCompteAnnexe" />
+			<select-field name="idTiers" field-ref="simpleCompteAnnexe.idTiers" />
+		</select-fields>
+		
+		<linked-model name="simpleSection" model-ref="ch.globaz.osiris.business.model.SectionSimpleModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idSection" operation="EQUALS" field-ref="simpleDetteComptatCompense.idSectionDetteEnCompta"/>
+			</join-group>
+		</linked-model>	
+		
+		<linked-model name="simpleCompteAnnexe" model-ref="ch.globaz.osiris.business.model.CompteAnnexeSimpleModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idCompteAnnexe" operation="EQUALS" field-ref="simpleSection.idCompteAnnexe"/>
+			</join-group>
+		</linked-model>	
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simpleDetteComptatCompense.idVersionDroit"/>
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<%--  *********************************************** Déclaration des taglibs et paramétrage JSTL/EL ********************************************************* --%>
+<%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
+<%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ page trimDirectiveWhitespaces="true" %>
+<%@ page isELIgnored ="false" %>
+
+<ct:setAppColor/>
+<ct:setApplicationId/>
+<ct:setLanguePage/>
+<ct:setErrorMessageFormatte/>
+<ct:setCreationSpy/>
+
+<%-- HTML --%>
+<html lang="${languePage}">
+		
+<%--  ********************************************************** Paramétrage de la page ****************************************************************** --%>
+<%-- Gestion de la userAction --%>
+<c:set var="requestUserAction" value="${param['userAction']}" scope="page" />	
+<c:set var="tabDotAction" value="${fn:split(requestUserAction,'.')}" scope="page" />
+<c:set var="partialUserAction" value="${fn:replace(requestUserAction,tabDotAction[fn:length(tabDotAction)-1],'')}" scope="page" />
+<c:set var="mainPath" value="${pageContext.request.contextPath}${requestScope.mainServletPath}" scope="page" />
+<c:set var="rootPath" value="${mainPath}Root" scope="page" />
+
+<%-- gestion des actions standards --%>
+<c:set var="userActionNew" value="${partialUserAction}ajouter" scope="page" />
+<c:set var="userActionUpd" value="${partialUserAction}modifier" scope="page" />
+<c:set var="userActionDel" value="${partialUserAction}supprimer" scope="page" />
+
+<%-- variables standards --%>
+<c:set var="rootPath" value="${pageContext.request.contextPath}${requestScope.mainServletPath}Root" scope="page" />
+<c:set var="tableHeight" value="243" scope="page" />
+<c:set var="subTableWidth" value="100%" scope="page" />
+<c:set var="autoShowErrorPopup" value="true" scope="page" />					
+<c:set var="vBeanHasErrors" value="false" scope="page" />
+<c:set var="formAction" value="${pageContext.request.contextPath}${requestScope.mainServletPath}" scope="page" />
+<c:set var="key" value="none" scope="page" />
+<c:set var="actionNew" value="${mainPath}?userAction=${partialUserAction}afficher&_method=add" scope="page" />
+
+<%-- labels des boutons en fonction de la langue --%>
+<c:set var="btnUpdLabel" value="${languePage == 'DE' ? '&Auml;ndern' : 'Modifier'}" scope="page" />
+<c:set var="btnDelLabel" value="${languePage == 'DE' ? 'L&ouml;schen' : 'Supprimer'}" scope="page" />
+<c:set var="btnValLabel" value="${languePage == 'DE' ? 'Best&auml;tigen' : 'Valider'}" scope="page" />
+<c:set var="btnCanLabel" value="${languePage == 'DE' ? 'Annullieren' : 'Annuler'}" scope="page" />
+<c:set var="btnNewLabel" value="${languePage == 'DE' ? 'Neu' : 'Nouveau'}" scope="page" />
+
+<%-- process --%>
+<c:set var="processLaunched" value="${param['process']=='launched'}" />
+
+<%-- visibiltés des boutons --%>
+<ct:checkRight var="bButtonNew" element="${partialUserAction}" crud="c" />
+<ct:checkRight var="bButtonDelete" element="${partialUserAction}" crud="d" />
+<ct:checkRight var="bButtonUpdate" element="${partialUserAction}" crud="u" />
+<ct:checkRight var="bButtonValidate" element="${partialUserAction}" crud="u" />
+<c:set var="bButtonCancel" value="true" scope="page" />
+
+<%-- paramétrage post-it icone --%>
+<c:set var="postItIcon" value="false" scope="page" />
+<c:set var="postItIconIdExterne" value="" scope="page" />
+<c:set var="postItIconTableSource" value="" scope="page" />
+
+<%--  *************************************************************** header html ************************************************************************ --%>
+<head>
+
+	<script type="text/javascript">
+		var langue = "'${languePage}'"; 
+	</script>		

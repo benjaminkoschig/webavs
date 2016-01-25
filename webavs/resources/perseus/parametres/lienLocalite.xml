@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.parametres.LienLocalite">
+		<root-model name="simpleLienLocalite" model-ref="ch.globaz.perseus.business.models.parametres.SimpleLienLocalite"/>
+		<linked-model name="simpleZone" model-ref="ch.globaz.perseus.business.models.parametres.SimpleZone" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idZone" operation="EQUALS" field-ref="simpleLienLocalite.idZone"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="localiteSimpleModel" model-ref="ch.globaz.pyxis.business.model.LocaliteSimpleModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idLocalite" operation="EQUALS" field-ref="simpleLienLocalite.idLocalite"/>
+			</join-group>
+		</linked-model>		
+		
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdZone" operation="EQUALS" field-ref="simpleLienLocalite.idZone"/>
+				<search-field name="forIdLocalite" operation="EQUALS" field-ref="simpleLienLocalite.idLocalite"/>
+				<search-field name="likeNpa" operation="LIKE" field-ref="localiteSimpleModel.numPostal" />
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withDateValable">
+			<search-group operator="AND">
+				<search-field name="forIdZone" operation="EQUALS" field-ref="simpleLienLocalite.idZone"/>
+				<search-field name="forIdLocalite" operation="EQUALS" field-ref="simpleLienLocalite.idLocalite"/>
+				<search-field name="likeNpa" operation="LIKE" field-ref="localiteSimpleModel.numPostal" />
+				<search-group operator="AND">			
+					<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="simpleLienLocalite.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="simpleLienLocalite.dateFin"/>
+						<search-field name="forDateValable" operation="NULL" field-ref="simpleLienLocalite.dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="localiteSimpleModel.localite"/>
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.qd.Facture">
+		<root-model name="simpleFacture" model-ref="ch.globaz.perseus.business.models.qd.SimpleFacture"/>
+		
+		<linked-model name="qd" model-ref="ch.globaz.perseus.business.models.qd.QD" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleQD.idQD" operation="EQUALS" field-ref="simpleFacture.idQD" />
+			</join-group>
+		</linked-model>
+	   		
+   		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forAnnee" operation="EQUALS" field-ref="qd.qdAnnuelle.simpleQDAnnuelle.annee" /> 
+   				<search-field name="forCSTypeQD" operation="EQUALS" field-ref="qd.simpleQD.csType" /> 
+   				<search-field name="forIdDossier" operation="EQUALS" field-ref="qd.qdAnnuelle.simpleQDAnnuelle.idDossier" /> 
+   				<search-field name="likeNom" operation="LIKE" field-ref="qd.membreFamille.personneEtendue.tiers.designationUpper1"/>  
+				<search-field name="likePrenom" operation="LIKE" field-ref="qd.membreFamille.personneEtendue.tiers.designationUpper2"/>  
+				<search-field name="likeNss" operation="LIKE" field-ref="qd.membreFamille.personneEtendue.personneEtendue.numAvsActuel"/>  
+				<search-field name="forIdQd" operation="EQUALS" field-ref="simpleFacture.idQD"/>  
+				<search-field name="forCsEtatFacture" operation="EQUALS" field-ref="simpleFacture.csEtat"/>  
+				<search-field name="forIdGestionnaire" operation="EQUALS" field-ref="simpleFacture.idGestionnaire"/>  
+				<search-field name="forNumDecision" operation="EQUALS" field-ref="simpleFacture.numDecision"/>  
+				<search-field name="forIdMembreFamille" operation="EQUALS" field-ref="qd.membreFamille.simpleMembreFamille.idMembreFamille" />
+				<search-field name="inCsEtatFacture" operation="IN" field-ref="simpleFacture.csEtat" />
+				<search-field name="forIsHygienisteDentaire" operation="EQUALS" field-ref="simpleFacture.hygienisteDentaire" />
+			</search-group>
+		</search-definition>
+	   		
+   		<order-by>
+			<order-field field-ref="qd.membreFamille.personneEtendue.tiers.designationUpper1"/>
+			<order-field field-ref="qd.membreFamille.personneEtendue.tiers.designationUpper2"/>
+		</order-by>
+	   		
+	</complexe-model>
+</model-mapping>

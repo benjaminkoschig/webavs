@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="ij/periodecontroleabsence/IJSimplePeriodeControleAbsence.xml" />
+	<model-mapping import="ij/periodecontroleabsence/IJPeriodeControleAbsences.xml" />
+</model-mapping>
+

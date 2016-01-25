@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="pegasus/fortuneparticuliere/simpleassurancerenteviagere.xml"/>
+	<model-mapping import="pegasus/fortuneparticuliere/simpleautrefortunemobiliaire.xml"/>
+	<model-mapping import="pegasus/fortuneparticuliere/simplebetail.xml"/>
+	<model-mapping import="pegasus/fortuneparticuliere/simplemarchandisesstock.xml"/>
+	<model-mapping import="pegasus/fortuneparticuliere/simplenumeraire.xml"/>
+	<model-mapping import="pegasus/fortuneparticuliere/simplepretenverstiers.xml"/>
+	<model-mapping import="pegasus/fortuneparticuliere/simplevehicule.xml"/>
+	
+	<model-mapping import="pegasus/fortuneparticuliere/assurancerenteviagere.xml"/>
+	<model-mapping import="pegasus/fortuneparticuliere/autrefortunemobiliaire.xml"/>
+	<model-mapping import="pegasus/fortuneparticuliere/betail.xml"/>
+	<model-mapping import="pegasus/fortuneparticuliere/marchandisesstock.xml"/>
+	<model-mapping import="pegasus/fortuneparticuliere/numeraire.xml"/>
+	<model-mapping import="pegasus/fortuneparticuliere/pretenverstiers.xml"/>
+	<model-mapping import="pegasus/fortuneparticuliere/vehicule.xml"/>
+	
+	<model-mapping import="pegasus/fortuneparticuliere/fortuneparticuliere.xml"/>
+
+</model-mapping>

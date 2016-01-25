@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.decision.AnnexeDecision">
+		<root-model name="simpleAnnexeDecision" model-ref="ch.globaz.perseus.business.models.decision.SimpleAnnexeDecision"/>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdAnnexeDecision" operation="EQUALS" field-ref="simpleAnnexeDecision.idAnnexeDecision" />
+				<search-field name="forIdDecision" operation="EQUALS" field-ref="simpleAnnexeDecision.idDecision" />
+			</search-group>
+		</search-definition>
+			
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="ij/prononce/IJPrononcePackage.xml"/>
+	<model-mapping import="ij/baseindemnisation/IJBaseIndemnisationPackage.xml"/>
+	<model-mapping import="ij/dossiercontroleabsence/IJDossierControleAbsencePackage.xml"/>
+	<model-mapping import="ij/periodecontroleabsence/IJPeriodeControleAbsencePackage.xml" />
+	<model-mapping import="ij/absences/IJAbsencePackage.xml"/>
+</model-mapping> 

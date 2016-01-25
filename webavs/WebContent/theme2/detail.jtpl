@@ -1,0 +1,19 @@
+<%@ page language="java" contentType="text/html;charset=ISO-8859-1" %>
+<%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
+<%@ include file="/theme2/detail/header.jspf" %>
+<%-- tpl:insert attribute="zoneInit" --%>
+<%-- /tpl:insert --%>
+<%@ include file="/theme2/detail/javascripts.jspf" %>
+<%-- tpl:insert attribute="zoneScripts" --%>
+<%-- /tpl:insert --%>
+<%@ include file="/theme2/detail/bodyStart.jspf" %>
+			<%-- tpl:insert attribute="zoneTitle" --%><%-- /tpl:insert --%>
+<%@ include file="/theme2/detail/bodyStart2.jspf" %>
+						<%-- tpl:insert attribute="zoneMain" --%>
+						<%-- /tpl:insert --%>
+<%@ include file="/theme2/detail/bodyButtons.jspf" %>
+				<%-- tpl:insert attribute="zoneButtons" --%>
+				<%-- /tpl:insert --%>
+<%@ include file="/theme2/detail/bodyErrors.jspf" %>
+<%-- tpl:insert attribute="zoneEndPage" --%><%-- /tpl:insert --%>
+<%@ include file="/theme/detail/footer.jspf" %>

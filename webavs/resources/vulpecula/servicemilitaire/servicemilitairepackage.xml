@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="vulpecula/servicemilitaire/serviceMilitaireSimpleModel.xml"/>
+	<model-mapping import="vulpecula/servicemilitaire/serviceMilitaireComplexModel.xml"/>
+	<model-mapping import="vulpecula/servicemilitaire/tauxServiceMilitaireSimpleModel.xml"/>
+	<model-mapping import="vulpecula/servicemilitaire/tauxServiceMilitaireComplexModel.xml"/>
+</model-mapping>

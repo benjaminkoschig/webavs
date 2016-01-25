@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.aries.business.models.ComplexSortieCGASDecisionCGASAffiliation">
+		<root-model name="sortieCgas" model-ref="ch.globaz.aries.business.models.SimpleSortieCGAS" />
+				
+		<linked-model name="decisionCgas" model-ref="ch.globaz.aries.business.models.SimpleDecisionCGAS"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDecision" field-ref="sortieCgas.idDecision" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="affiliation"
+			model-ref="ch.globaz.naos.business.model.AffiliationSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="affiliationId" field-ref="decisionCgas.idAffiliation" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="decisionCgasRectifiee" model-ref="ch.globaz.aries.business.models.SimpleDecisionCGAS"
+			join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idDecision" field-ref="decisionCgas.idDecisionRectifiee" />
+			</join-group>
+		</linked-model>
+				
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPassageFacturation" field-ref="sortieCgas.idPassageFacturation" operation="EQUALS" />
+				<search-field name="forEtat" field-ref="sortieCgas.etat" operation="EQUALS" />
+				<search-field name="forIdDecision" field-ref="sortieCgas.idDecision" operation="EQUALS" />
+				<search-field name="likeNumeroAffilie" field-ref="affiliation.affilieNumero" operation="LIKE" />
+				<search-field name="forIdAffiliation" field-ref="decisionCgas.idAffiliation" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

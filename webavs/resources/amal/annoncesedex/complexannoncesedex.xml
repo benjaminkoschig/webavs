@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.annoncesedex.ComplexAnnonceSedex">
+
+		<root-model name="simpleAnnonceSedex" model-ref="ch.globaz.amal.business.models.annoncesedex.SimpleAnnonceSedex"/>
+				
+		<linked-model name="contribuable" model-ref="ch.globaz.amal.business.models.contribuable.Contribuable" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="contribuable.idContribuable" operation="EQUALS" field-ref="simpleAnnonceSedex.idContribuable"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="caisseMaladie" model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS" field-ref="simpleAnnonceSedex.idTiersCM"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="compositionTiersSimpleModel" model-ref="ch.globaz.pyxis.business.model.CompositionTiersSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idTiersEnfant" operation="EQUALS" field-ref="caisseMaladie.admin.idTiersAdministration"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="administrationComplexModelGroupes" model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS" field-ref="compositionTiersSimpleModel.idTiersParent"/>
+			</join-group>
+		</linked-model>			
+
+		<linked-model name="simpleDetailFamille" model-ref="ch.globaz.amal.business.models.detailfamille.SimpleDetailFamille" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idDetailFamille" operation="EQUALS" field-ref="simpleAnnonceSedex.idDetailFamille"/>
+			</join-group>
+		</linked-model>
+ 
+		<linked-model name="simpleFamille" model-ref="ch.globaz.amal.business.models.famille.SimpleFamille" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idFamille" operation="EQUALS" field-ref="simpleDetailFamille.idFamille"/>
+			</join-group>
+		</linked-model>
+		
+
+		<search-definition name="rcListeSansGroupe">
+			<search-group operator="AND">
+				<!-- CAISSE MALADIE -->
+				<search-group operator="OR">
+					<search-field name="forCMIdTiersGroupe" field-ref="administrationComplexModelGroupes.tiers.idTiers" operation="NULL" />
+					<search-field name="forCMIdTiersGroupe" field-ref="administrationComplexModelGroupes.tiers.idTiers" operation="EQUALS" value="0" />
+				</search-group>
+				<search-field name="forCMIdTiersCaisse" field-ref="caisseMaladie.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forCMNumCaisse" field-ref="caisseMaladie.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="forCMNumGroupe" field-ref="administrationComplexModelGroupes.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="likeCMNomCaisse" field-ref="caisseMaladie.tiers.designationUpper1" operation="LIKE" />
+				<!--
+				<search-group operator="OR">
+					<search-field name="forCMActifs" field-ref="compositionTiersSimpleModel.finRelation" operation="EQUALS" value="0"/>
+					<search-field name="forCMActifs" field-ref="compositionTiersSimpleModel.finRelation" operation="NULL" />					
+				</search-group>
+				-->
+				<!-- MESSAGE -->
+				<search-field name="forSDXDateMessage" field-ref="simpleAnnonceSedex.dateMessage" operation="EQUALS"/>
+				<search-field name="forSDXDateMessageGOE" field-ref="simpleAnnonceSedex.dateMessage" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forSDXDateMessageLOE" field-ref="simpleAnnonceSedex.dateMessage" operation="LESS_OR_EQUALS"/>
+				<search-field name="forSDXMessageType" field-ref="simpleAnnonceSedex.messageType" operation="EQUALS"/>
+				<search-field name="forSDXMessageSubType" field-ref="simpleAnnonceSedex.messageSubType" operation="EQUALS"/>
+				<search-field name="forSDXMessageEmetteur" field-ref="simpleAnnonceSedex.messageEmetteur" operation="EQUALS"/>
+				<search-field name="forSDXMessageRecepteur" field-ref="simpleAnnonceSedex.messageRecepteur" operation="EQUALS"/>
+				<search-field name="forSDXNoDecision" field-ref="simpleAnnonceSedex.numeroDecision" operation="EQUALS"/>
+				<search-field name="inSDXMessageEmetteur" field-ref="simpleAnnonceSedex.messageEmetteur" operation="IN"/>
+				<search-field name="inSDXMessageRecepteur" field-ref="simpleAnnonceSedex.messageRecepteur" operation="IN"/>
+				<search-field name="inSDXMessageSubType" field-ref="simpleAnnonceSedex.messageSubType" operation="IN"/>
+				<search-field name="inSDXStatus" field-ref="simpleAnnonceSedex.status" operation="IN"/>
+				<search-field name="inSDXTraitement" field-ref="simpleAnnonceSedex.traitement" operation="IN"/>
+				<!-- CONTRIBUABLE -->
+				<search-field name="forCONTContribuableActif" field-ref="contribuable.isContribuableActif" operation="EQUALS"/>
+				<!-- FAMILLE -->
+				<search-field name="forFAMNoPersonne" operation="EQUALS" field-ref="simpleFamille.noPersonne"/>
+				<search-group operator="OR">
+					<search-field name="forFAMIsContribuable" operation="EQUALS" field-ref="contribuable.famille.isContribuable" value="true"/>
+					<search-literal>
+						<![CDATA[ 
+							#{contribuable.famille.isContribuable} IS NULL								
+						 ]]>
+					</search-literal>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="rcListe">
+			<search-group operator="AND">
+				<!-- CAISSE MALADIE -->
+				<search-field name="forCMIdTiersGroupe" field-ref="administrationComplexModelGroupes.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forCMIdTiersCaisse" field-ref="caisseMaladie.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forCMNumCaisse" field-ref="caisseMaladie.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="forCMNumGroupe" field-ref="administrationComplexModelGroupes.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="likeCMNomCaisse" field-ref="caisseMaladie.tiers.designationUpper1" operation="LIKE" />
+				<!--
+				<search-group operator="OR">
+					<search-field name="forCMActifs" field-ref="compositionTiersSimpleModel.finRelation" operation="EQUALS" value="0"/>
+					<search-field name="forCMActifs" field-ref="compositionTiersSimpleModel.finRelation" operation="NULL" />					
+				</search-group>
+				-->
+				<!-- MESSAGE -->
+				<search-field name="forSDXDateMessage" field-ref="simpleAnnonceSedex.dateMessage" operation="EQUALS"/>
+				<search-field name="forSDXDateMessageGOE" field-ref="simpleAnnonceSedex.dateMessage" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forSDXDateMessageLOE" field-ref="simpleAnnonceSedex.dateMessage" operation="LESS_OR_EQUALS"/>
+				<search-field name="forSDXMessageType" field-ref="simpleAnnonceSedex.messageType" operation="EQUALS"/>
+				<search-field name="forSDXMessageSubType" field-ref="simpleAnnonceSedex.messageSubType" operation="EQUALS"/>
+				<search-field name="forSDXMessageEmetteur" field-ref="simpleAnnonceSedex.messageEmetteur" operation="EQUALS"/>
+				<search-field name="forSDXMessageRecepteur" field-ref="simpleAnnonceSedex.messageRecepteur" operation="EQUALS"/>
+				<search-field name="forSDXNoDecision" field-ref="simpleAnnonceSedex.numeroDecision" operation="EQUALS"/>
+				<search-field name="inSDXMessageEmetteur" field-ref="simpleAnnonceSedex.messageEmetteur" operation="IN"/>
+				<search-field name="inSDXMessageRecepteur" field-ref="simpleAnnonceSedex.messageRecepteur" operation="IN"/>
+				<search-field name="inSDXMessageSubType" field-ref="simpleAnnonceSedex.messageSubType" operation="IN"/>
+				<search-field name="inSDXStatus" field-ref="simpleAnnonceSedex.status" operation="IN"/>
+				<search-field name="inSDXTraitement" field-ref="simpleAnnonceSedex.traitement" operation="IN"/>
+				<!-- CONTRIBUABLE -->
+				<search-field name="forCONTContribuableActif" field-ref="contribuable.isContribuableActif" operation="EQUALS"/>
+				<!-- FAMILLE -->
+				<search-field name="forFAMNoPersonne" operation="EQUALS" field-ref="simpleFamille.noPersonne"/>
+				<search-group operator="OR">
+					<search-field name="forFAMIsContribuable" operation="EQUALS" field-ref="contribuable.famille.isContribuable" value="true"/>
+					<search-literal>
+						<![CDATA[ 
+							#{contribuable.famille.isContribuable} IS NULL								
+						 ]]>
+					</search-literal>
+				</search-group>
+			</search-group>
+		</search-definition>
+
+		
+		<search-definition>
+			<search-group operator="AND">
+				<!-- CAISSE MALADIE -->
+				<search-field name="forCMIdTiersGroupe" field-ref="administrationComplexModelGroupes.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forCMIdTiersCaisse" field-ref="caisseMaladie.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forCMNumCaisse" field-ref="caisseMaladie.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="forCMNumGroupe" field-ref="administrationComplexModelGroupes.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="inCMIdTiersCaisse" field-ref="caisseMaladie.tiers.idTiers" operation="IN" />
+				<!--<search-field name="forCMTypeAdmin" field-ref="caisseMaladie.admin.genreAdministration" operation="EQUALS" value="509008" />
+				-->
+				<search-field name="likeCMNomCaisse" field-ref="caisseMaladie.tiers.designationUpper1" operation="LIKE" />
+				<!--
+				<search-field name="forCMActifs" field-ref="caisseMaladie.tiers._inactif" operation="EQUALS" value="2" />
+				<search-group operator="OR">
+					<search-field name="forCMActifs" field-ref="compositionTiersSimpleModel.finRelation" operation="EQUALS" value="0"/>
+					<search-field name="forCMActifs" field-ref="compositionTiersSimpleModel.finRelation" operation="NULL" />					
+				</search-group>
+				-->
+				<!-- MESSAGE -->
+				<search-field name="forSDXIdAnnonceSedex" field-ref="simpleAnnonceSedex.idAnnonceSedex" operation="EQUALS"/>
+				<search-field name="forSDXIdAnnonceSedexLT" field-ref="simpleAnnonceSedex.idAnnonceSedex" operation="LESS"/>
+				<search-field name="forSDXIdContribuable" field-ref="simpleAnnonceSedex.idContribuable" operation="EQUALS"/>
+				<search-field name="forSDXIdDetailFamille" field-ref="simpleAnnonceSedex.idDetailFamille" operation="EQUALS"/>
+				<search-field name="forSDXIdTiersCM" field-ref="simpleAnnonceSedex.idTiersCM" operation="EQUALS"/>
+				<search-field name="forSDXDateMessage" field-ref="simpleAnnonceSedex.dateMessage" operation="EQUALS"/>
+				<search-field name="forSDXDateMessageGOE" field-ref="simpleAnnonceSedex.dateMessage" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forSDXDateMessageLOE" field-ref="simpleAnnonceSedex.dateMessage" operation="LESS_OR_EQUALS"/>
+				<search-field name="forSDXMessageType" field-ref="simpleAnnonceSedex.messageType" operation="EQUALS"/>
+				<search-field name="forSDXMessageSubType" field-ref="simpleAnnonceSedex.messageSubType" operation="EQUALS"/>
+				<search-field name="forSDXMessageEmetteur" field-ref="simpleAnnonceSedex.messageEmetteur" operation="EQUALS"/>
+				<search-field name="forSDXMessageRecepteur" field-ref="simpleAnnonceSedex.messageRecepteur" operation="EQUALS"/>
+				<search-field name="inSDXMessageSubType" field-ref="simpleAnnonceSedex.messageSubType" operation="IN"/>
+				<search-field name="inSDXMessageEmetteur" field-ref="simpleAnnonceSedex.messageEmetteur" operation="IN"/>
+				<search-field name="inSDXMessageRecepteur" field-ref="simpleAnnonceSedex.messageRecepteur" operation="IN"/>
+				<search-field name="inSDXStatus" field-ref="simpleAnnonceSedex.status" operation="IN"/>
+				<search-field name="inSDXTraitement" field-ref="simpleAnnonceSedex.traitement" operation="IN"/>
+				<search-field name="forNoDecisionGT" field-ref="simpleAnnonceSedex.numeroDecision" operation="GREATER"/>
+				<search-field name="forSDXNoDecision" field-ref="simpleAnnonceSedex.numeroDecision" operation="EQUALS"/>
+				<search-field name="inSDXIdContribuable" field-ref="simpleAnnonceSedex.idContribuable" operation="IN"/>
+				<!-- CONTRIBUABLE -->
+				<search-field name="forCONTIdContribuable" field-ref="contribuable.idContribuable" operation="EQUALS" />
+				<search-field name="forCONTContribuableActif" field-ref="contribuable.isContribuableActif" operation="EQUALS"/>
+				<!-- FAMILLE -->
+				<search-field name="forFAMNoPersonne" operation="EQUALS" field-ref="simpleFamille.noPersonne"/>
+				<search-group operator="OR">
+					<search-field name="forFAMIsContribuable" operation="EQUALS" field-ref="contribuable.famille.isContribuable" value="true"/>
+					<search-literal>
+						<![CDATA[ 
+							#{contribuable.famille.isContribuable} IS NULL								
+						 ]]>
+					</search-literal>
+				</search-group>
+				<!-- DETAIL FAMILLE -->
+				<search-field name="forSUBAnneeHistorique" operation="EQUALS" field-ref="simpleDetailFamille.anneeHistorique"/>								
+			</search-group>
+		</search-definition>
+
+		<order-by>
+			<order-field field-ref="simpleAnnonceSedex.dateMessage" order="DESC"/>
+			<order-field field-ref="caisseMaladie.admin.codeAdministration"/> 
+			<order-field field-ref="simpleAnnonceSedex.messageSubType" order="DESC"/>
+		</order-by>
+		
+		<order-by name="rcListDateMsgAsc">
+			<order-field field-ref="simpleAnnonceSedex.dateMessage" order="ASC"/>
+			<order-field field-ref="caisseMaladie.admin.codeAdministration"/> 
+			<order-field field-ref="simpleAnnonceSedex.messageSubType" order="DESC"/>
+		</order-by>
+		
+		<order-by name="orderByIdDetFamDESC_numDecisionDESC_msgSubTypeASc">
+			<order-field field-ref="simpleDetailFamille.idDetailFamille" order="DESC"/>
+			<order-field field-ref="simpleAnnonceSedex.numeroDecision" order="DESC"/>
+			<order-field field-ref="simpleAnnonceSedex.messageSubType" order="ASC"/>
+		</order-by>
+		
+		<order-by name="orderByIdSedexMsg">
+			<order-field field-ref="simpleAnnonceSedex.idContribuable"/>
+			<order-field field-ref="simpleAnnonceSedex.idAnnonceSedex" order="DESC"/>
+		</order-by>
+		
+		<order-by name="orderByNumeroCourant">
+			<order-field field-ref="simpleAnnonceSedex.numeroCourant" order="DESC"/>
+		</order-by>
+
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.al.business.models.prestation.DetailPrestationGenComplexModel">
+		<description>Modèle complexe d'un détail de prestation composé du détail et de son en-tête</description>
+		<select-fields distinct="true">
+			<select-field name="idDroit" field-ref="detailPrestationModel.idDroit"/>
+			<select-field name="idTiersBeneficiaire" field-ref="detailPrestationModel.idTiersBeneficiaire"/>
+			<select-field name="typePrestation" field-ref="detailPrestationModel.typePrestation"/>
+			<select-field name="montant" field-ref="detailPrestationModel.montant"/>
+			<select-field name="montantCaisse" field-ref="detailPrestationModel.montantCaisse"/>
+			<select-field name="montantCanton" field-ref="detailPrestationModel.montantCanton"/>
+			<select-field name="categorieTarif" field-ref="detailPrestationModel.categorieTarif"/>
+			<select-field name="categorieTarifCaisse" field-ref="detailPrestationModel.categorieTarifCaisse"/>
+			<select-field name="categorieTarifCanton" field-ref="detailPrestationModel.categorieTarifCanton"/>
+			<select-field name="periodeValidite" field-ref="detailPrestationModel.periodeValidite"/>
+			<select-field name="numeroCompte" field-ref="detailPrestationModel.numeroCompte"/>
+			<select-field name="ageEnfant" field-ref="detailPrestationModel.ageEnfant"/>
+			<select-field name="rang" field-ref="detailPrestationModel.rang"/>
+			<select-field name="etatPrestation" field-ref="entetePrestationModel.etatPrestation"/>
+			<select-field name="idEntete" field-ref="entetePrestationModel.idEntete"/>
+			<select-field name="dateVersement" field-ref="entetePrestationModel.dateVersComp"/>
+			<select-field name="tarifForce" field-ref="detailPrestationModel.tarifForce"/>
+			<select-field name="idRecap" field-ref="entetePrestationModel.idRecap"/>
+		</select-fields>
+		<root-model name="detailPrestationModel" model-ref="ch.globaz.al.business.models.prestation.DetailPrestationModel" select-fields="false"/>	
+		<linked-model name="entetePrestationModel" model-ref="ch.globaz.al.business.models.prestation.EntetePrestationModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idEntete" field-ref="detailPrestationModel.idEntete"/>
+			</join-group>
+		</linked-model>
+		<!-- Recherche utilisée pendant une génération pour vérifier si une prestation existe déjà pour un dossier et une période donnée -->
+		<search-definition name="PrestationExistante">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>
+				<search-field name="forPeriodeDebut" field-ref="detailPrestationModel.periodeValidite" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forPeriodeFin" field-ref="detailPrestationModel.periodeValidite" operation="LESS_OR_EQUALS"/>
+				<search-field name="forMontant" field-ref="detailPrestationModel.montant" operation="GREATER"/>
+				<search-field name="forEtatPrestation" field-ref="entetePrestationModel.etatPrestation" operation="NOT_EQUALS"/>
+				<search-field name="forIdDroit" field-ref="idDroit" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="PrestationDeclaration">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>
+				<search-field name="forEtat" field-ref="entetePrestationModel.etatPrestation" operation="EQUALS"/>
+				<search-field name="forBonification" field-ref="entetePrestationModel.bonification" operation="EQUALS"/>
+				<search-field name="forDateDebut" field-ref="entetePrestationModel.dateVersComp" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forDateFin" field-ref="entetePrestationModel.dateVersComp" operation="LESS_OR_EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="TotalPrestatationsPeriode">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>
+				<search-field name="forIdRecap" field-ref="entetePrestationModel.idRecap" operation="EQUALS"/>
+				<search-field name="forPeriodeDebut" field-ref="detailPrestationModel.periodeValidite" operation="GREATER"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="PrestationExistante">
+			<order-field field-ref="periodeValidite" order="ASC"/>
+			<order-field field-ref="dateVersement" order="DESC"/>
+		</order-by> 
+		
+		<order-by name="PrestationDeclaration">
+			<order-field field-ref="idDroit" order="ASC"/>
+		</order-by>
+		
+	
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.traitementdemasse.SimpleEtatAction">
+		<description>Contrat les état lié aux actions</description>
+		<table name="PCETAACT" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idEtatAction" column="AFIETA" comment="ID_ETAT_ACTION"/>			
+			<field name="idExecutionTraitement" mandatory="true" column="AFIEXE" type="NUMERIC" comment="DONNEE_FINANCIERE_HEADER"/>
+			<field name="csEtat" mandatory="true" column="AFCSET" type="NUMERIC" comment="CS_ETAT"/>
+		</fields>
+	</simple-model>
+</model-mapping> 

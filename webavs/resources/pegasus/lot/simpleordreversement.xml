@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.lot.SimpleOrdreVersement">
+		<description>Ordre versement</description>
+		<table name="PCORDVER" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idOrdreVersement" column="CZIOVE" comment="ID_ORDRE_VERSEMENT"/>
+			
+			<field name="idPrestation" column="CZIPRE" type="NUMERIC" mandatory="true" comment="ID_PRESTATION"/>			
+			<field name="idTiers" column="CZITIE" type="NUMERIC" mandatory="true" comment="ID_TIERS"/>
+			<field name="idTiersConjoint" column="CZITIC" type="NUMERIC" mandatory="false" comment="ID_TIERS_CONJOINT"/>
+			
+			<field name="idTiersAdressePaiement" column="CZITAP" type="NUMERIC" mandatory="false" comment="ID_TIERS_ADRESSE_PAIEMENT"/>
+		    <field name="idTiersAdressePaiementConjoint" column="CZITAC" type="NUMERIC" mandatory="false" comment="ID_TIERS_ADRESSE_PAIEMENT_CONJOINT"/>
+			<field name="idTiersOwnerDetteCreance" column="CZITDE" type="NUMERIC" mandatory="false" comment="ID_TIERS_OWNER_DETTE_CREANCIER"/>
+			<field name="idDetteComptatCompense" column="CZIDCC" type="NUMERIC"  mandatory="false" comment="ID_DETTE_COMPTAT"/>
+	
+			<field name="idDomaineApplication" column="CZIDOA" type="NUMERIC" mandatory="false" comment="ID_DOMAINE_APPLICATION"/>
+			<field name="idDomaineApplicationConjoint" column="CZIDOC" type="NUMERIC" mandatory="false" comment="ID_DOMAINE_APPLICATION_CONJOINT"/>
+			<field name="idPca" column="CZIPCA" type="NUMERIC" mandatory="false" comment="ID_PC_ACCORDEE"/>
+			
+			<field name="idSection" column="CZISEC" type="NUMERIC"  mandatory="false" comment="ID_SECTION"/>
+			<field name="idSectionDetteEnCompta" column="CZISDC" type="NUMERIC"  mandatory="false" comment="ID_SECTION_DETTE_EN_COMPTA"/>
+			
+			<field name="csType" column="CZTTYP" type="NUMERIC" mandatory="true" comment="CS_TYPE"/>
+			<field name="csTypeDomaine" column="CZTPCA" type="NUMERIC" mandatory="true" comment="CS_TYPE_DOMAINE"/>
+			<field name="isCompense" column="CZBCOM" type="BOOLEAN"  mandatory="false" comment="IS_RETENUE"/>
+			
+			<field name="montant" column="CZMMON" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT"/>
+			<field name="montantDetteModifier"  column="CZMMMO" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT_DETTE_MODIFIER"/>
+			<field name="noGroupePeriode"  column="CZNOGR" type="NUMERIC" mandatory="true" comment="NO_GROUPE_PERIODE"/>
+			
+			<field name="sousTypeGenrePrestation" column="CZNSTG" type="NUMERIC" mandatory="true" comment="SOUS_TYPE_GENRE_PRESTATION"/>
+			
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdOrdreVersement" operation="EQUALS" field-ref="idOrdreVersement" />
+			</search-group>
+		</search-definition>
+		<search-definition name="suppressionOrdresVersement">
+			<search-group operator="AND">
+				<search-field name="forInIdPrestation" operation="IN" field-ref="idPrestation" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

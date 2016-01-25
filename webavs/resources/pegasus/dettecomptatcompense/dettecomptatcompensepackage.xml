@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<!-- modeles simple -->
+	<model-mapping import="pegasus/dettecomptatcompense/simpledettecomptatcompense.xml"/>
+	<model-mapping import="pegasus/dettecomptatcompense/dettecompenseordreversement.xml"/>
+	<model-mapping import="pegasus/dettecomptatcompense/dettecompensecompteannexe.xml"/>
+</model-mapping>

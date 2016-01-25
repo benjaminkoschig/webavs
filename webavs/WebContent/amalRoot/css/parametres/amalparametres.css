@@ -1,0 +1,124 @@
+@CHARSET "ISO-8859-1";
+
+.onglets li {
+	border: #226194 1px solid; 
+	border-bottom: black 1px solid; 
+	background-color: #a0b0c4;
+	color:#d5dfed;
+	DISPLAY: inline; 
+	margin-RIGHT: 3px; 
+	padding:3px 5px;
+}
+.onglets li A {
+	TEXT-DECORATION: none;
+	color:#d5dfed;
+}
+.onglets li A:visited {
+	color:#d5dfed;
+}
+.onglets li A:hover {
+	color:white;
+}
+.onglets li.selected {
+	border-top: black 1px solid; 
+	border-right: black 1px solid; 
+	border-left: black 1px solid; 
+	border-bottom: #ffeccc 1px solid; ; 
+	background-color: #ffeccc; 
+	color:black;
+	padding-bottom:4px;
+}
+.onglets {
+	margin: 0px;
+	padding-bottom:3px;
+}
+
+
+.conteneurMembres {
+	background-color: #ffeccc;
+}
+
+.areaTitreAVS {
+	position:absolute;
+	right:25px;
+	width: 180px;
+}
+
+
+/*
+.areaTitre{
+	display:block;
+}
+
+.areaTitre h1{
+	display:block;
+	float:left;
+	margin:0;
+	padding: 0;
+	width :80px;
+	font-size: 1em;
+} */
+
+
+	
+.areaAssure{
+	height: 30px;
+}
+
+.areaAssure tr{
+	vertical-align: top; 
+}
+
+.labelRequerant,#infoDroit span{
+	font-weight: bold;
+}
+
+#requerant, .labelRequerant{
+   float :left;
+   margin-right:30px; 
+   vertical-align: top;
+}
+
+
+
+#infoDroit{
+	float:right;
+}
+#infoDroit span{
+    display: inline-block;
+ 	width:9em;
+}
+
+.labelNoAvs{
+  font-weight: bold;
+}
+
+.libelleHome{
+ width:300px !important;
+}
+
+#titreOnglet{
+ font-style: italic;
+ font-weight: lighter;
+}
+.totalAnne{
+ font-weight: bold;
+}
+.titre{
+display: inline-block;
+width:70px;
+}
+
+
+.multiWidgetsDiv{
+	border:1px solid blue;
+}
+
+.amalCurrency {
+	text-align: right !important;
+}
+
+
+#dataTabResize {
+
+}

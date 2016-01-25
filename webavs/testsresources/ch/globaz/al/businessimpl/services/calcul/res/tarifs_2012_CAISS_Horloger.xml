@@ -1,0 +1,42 @@
+<tarifs xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="tarifsTests.xsd">
+	<periode date="01.01.2012">
+		<legislation cs="CAISSE">
+			<categorie cs="SUP_HORLO">
+				<test montant="30" testId="5.1.1.1" type="ENF" age="16" residence="CH" capableExercer="true"/>
+				<test montant="30" testId="5.1.1.2" type="ENF" age="20" residence="CH" capableExercer="true"/>
+				<test montant="30" testId="5.1.1.3" type="FORM" age="25" residence="CH" capableExercer="true"/>
+				<test montant="30" testId="5.1.1.1" type="ENF" age="16" residence="ETR" capableExercer="true"/>
+				<test montant="30" testId="5.1.1.2" type="ENF" age="20" residence="ETR" capableExercer="true"/>
+				<test montant="30" testId="5.1.1.3" type="FORM" age="25" residence="ETR" capableExercer="true"/>
+			</categorie>
+		</legislation>
+	</periode>
+	<periode date="01.01.2011">
+		<legislation cs="CAISSE">
+			<categorie cs="SUP_HORLO">
+				<test montant="0" testId="6.1.1.1" type="ENF" age="16" residence="CH" capableExercer="true"/>
+				<test montant="0" testId="6.1.1.2" type="ENF" age="20" residence="CH" capableExercer="true"/>
+				<test montant="0" testId="6.1.1.3" type="FORM" age="25" residence="CH" capableExercer="true"/>
+				<test montant="0" testId="6.1.1.1" type="ENF" age="16" residence="ETR" capableExercer="true"/>
+				<test montant="0" testId="6.1.1.2" type="ENF" age="20" residence="ETR" capableExercer="true"/>
+				<test montant="0" testId="6.1.1.3" type="FORM" age="25" residence="ETR" capableExercer="true"/>
+			</categorie>
+		</legislation>
+	</periode>
+	
+	<periode date="31.12.2011">
+		<legislation cs="CAISSE">
+			<categorie cs="H51X">
+				<test montant="60" testId="7.1.6.1" type="MEN" age="0" residence="CH" capableExercer="false"/>
+			</categorie>
+		</legislation>
+	</periode>
+	
+	<periode date="01.01.2012">
+		<legislation cs="CAISSE">
+			<categorie cs="H51X">
+				<test montant="0" testId="8.1.6.1" type="MEN" age="0" residence="CH" capableExercer="true"/>
+			</categorie>
+		</legislation>
+	</periode>
+</tarifs>

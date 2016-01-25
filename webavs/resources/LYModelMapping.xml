@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="lyra/echeances/LYSimpleEcheance.xml" />
+	<model-mapping import="lyra/historique/LYSimpleHistorique.xml" />
+</model-mapping>

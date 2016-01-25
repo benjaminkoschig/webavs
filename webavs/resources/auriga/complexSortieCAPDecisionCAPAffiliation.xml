@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.auriga.business.models.ComplexSortieCAPDecisionCAPAffiliation">
+		<root-model name="sortieCap" model-ref="ch.globaz.auriga.business.models.SimpleSortieCAP" />
+				
+		<linked-model name="decisionCap" model-ref="ch.globaz.auriga.business.models.SimpleDecisionCAP"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDecision" field-ref="sortieCap.idDecision" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="affiliation"
+			model-ref="ch.globaz.naos.business.model.AffiliationSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="affiliationId" field-ref="decisionCap.idAffiliation" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="decisionCapRectifiee" model-ref="ch.globaz.auriga.business.models.SimpleDecisionCAP"
+			join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idDecision" field-ref="decisionCap.idDecisionRectifiee" />
+			</join-group>
+		</linked-model>
+				
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPassageFacturation" field-ref="sortieCap.idPassageFacturation" operation="EQUALS" />
+				<search-field name="forEtat" field-ref="sortieCap.etat" operation="EQUALS" />
+				<search-field name="forIdDecision" field-ref="sortieCap.idDecision" operation="EQUALS" />
+				<search-field name="likeNumeroAffilie" field-ref="affiliation.affilieNumero" operation="LIKE" />
+				<search-field name="forIdAffiliation" field-ref="decisionCap.idAffiliation" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

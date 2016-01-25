@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.external.models.AdhesionComplexModel">
+
+		<root-model name="adhesionSimpleModel"
+			model-ref="ch.globaz.naos.business.model.AdhesionSimpleModel" />
+
+		<linked-model name="planCaisseSimpleModel"
+			model-ref="ch.globaz.naos.business.model.PlanCaisseSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="planCaisseId"
+					operation="EQUALS" field-ref="adhesionSimpleModel.planCaisseId" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="administrationForPlanCaisseComplexModel"
+			model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration"
+					operation="EQUALS" field-ref="planCaisseSimpleModel.idTiers" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="administrationForAdhesionComplexModel"
+			model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel"
+			join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration"
+					operation="EQUALS" field-ref="adhesionSimpleModel.idTiers" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+			<search-field name="forIdPlanCaisse" field-ref="adhesionSimpleModel.planCaisseId"
+					operation="EQUALS" />
+			<search-field name="forTypeCaisse" field-ref="adhesionSimpleModel.typeAdhesion"
+					operation="EQUALS" />
+			<search-field name="forIdAffilie" field-ref="adhesionSimpleModel.affiliationId" operation="EQUALS" />
+			<search-field name="forDateDebut" field-ref="adhesionSimpleModel.dateDebut" operation="LESS_OR_EQUALS"/>
+			<search-field name="forDateFin" field-ref="adhesionSimpleModel.dateFin" operation="GREATER_OR_EQUALS"/>
+			</search-group>	
+		</search-definition>
+		
+		<order-by name="idDesc">
+			<order-field
+				field-ref="adhesionSimpleModel.adhesionId"
+				order="DESC" />
+		</order-by>
+
+		<order-by name="idAsc">
+			<order-field
+				field-ref="adhesionSimpleModel.adhesionId" />
+		</order-by>
+
+	</complexe-model>
+</model-mapping>

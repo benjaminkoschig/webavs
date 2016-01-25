@@ -1,0 +1,15 @@
+					</tbody>
+				</table>
+			</form>
+			</td>
+			<td width="5">&nbsp;</td>
+		</tr>
+		<tr>
+			<td colspan="3" height="13">
+				<c:if test="${!autoShowErrorPopup and vBeanHasErrors}">
+					[ <a id=\"showErrorLink\" href=\"javascript:showErrors();\">visualiser les erreurs</a> ]
+				</c:if>
+			</td>
+		</tr>
+
+			

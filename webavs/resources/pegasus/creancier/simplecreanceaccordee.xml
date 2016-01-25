@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.creancier.SimpleCreanceAccordee">
+		<description>Gestion des creance saccordees</description>
+			<table name="PCCREACC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idCreanceAccordee" column="DEIDCA" comment="ID_CREANCE_ACCORDEE"/>
+			<field name="idCreancier" column="DEIDCR" type="NUMERIC" mandatory="true" comment="ID_CREANCIER"/>
+			<field name="idPCAccordee" column="DEIDPA" type="NUMERIC" mandatory="true" comment="ID_PC_ACCORDEE"/>
+			<field name="montant" column="DEMMNT" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT"/>
+			<field name="idOrdreVersement" column="DEIDOV" type="NUMERIC" mandatory="false" comment="ID_ORDRE_VERSEMENT"/>
+		</fields>
+	<search-definition>
+   		<search-group operator="AND">
+			<search-field name="forIdPcAccordee" operation="EQUALS" field-ref="idPCAccordee"/>
+			<search-field name="forIdCreancier" operation="EQUALS" field-ref="idCreancier"/>
+			<search-field name="forIdCreaanceAccordee" operation="EQUALS" field-ref="idCreanceAccordee"/>
+		</search-group>
+	</search-definition>
+	</simple-model>
+</model-mapping>
+
+

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="vulpecula/congepaye/tauxCongePayeSimpleModel.xml"/>
+	<model-mapping import="vulpecula/congepaye/tauxCongePayeComplexModel.xml"/>
+	<model-mapping import="vulpecula/congepaye/congePayeSimpleModel.xml"/>
+	<model-mapping import="vulpecula/congepaye/congePayeComplexModel.xml"/>
+	<model-mapping import="vulpecula/congepaye/compteurSimpleModel.xml"/>
+	<model-mapping import="vulpecula/congepaye/compteurComplexModel.xml"/>
+	<model-mapping import="vulpecula/congepaye/ligneCompteurSimpleModel.xml"/>
+</model-mapping>

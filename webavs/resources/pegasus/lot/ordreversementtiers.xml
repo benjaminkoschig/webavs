@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.lot.OrdreversementTiers">
+	
+		<root-model name="tiers" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" select-fields="false"/>
+		
+		<select-fields>
+		    <select-field name="idTiers" field-ref="tiers.idTiers" />
+		    <select-field name="idPays" field-ref="tiers.idPays" />
+		    <select-field name="designation1" field-ref="tiers.designation1" />
+			<select-field name="designation2" field-ref="tiers.designation2" />
+		    <select-field name="sexe" field-ref="personne.sexe" />
+			<select-field name="dateNaissance" field-ref="personne.dateNaissance" />
+			<select-field name="numAvs" field-ref="personneEtendue.numAvsActuel" />
+		</select-fields> 
+		
+		<linked-model name="personne" model-ref="ch.globaz.pyxis.business.model.PersonneSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="tiers.idTiers" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="personneEtendue" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="tiers.idTiers" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="inIdsTiers" field-ref="tiers.idTiers" operation="IN" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

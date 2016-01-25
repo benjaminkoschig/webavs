@@ -1,0 +1,32 @@
+@import url("../theme/master.css");
+
+.textareaShowingErrors {
+	font-size: 10px;
+	color: red;
+	background-color: white;
+	border-width: 1px;
+	border-color: #000000;
+	border-style: solid;
+}
+
+
+.libelleSectionLongDisabled {
+    font-family : Verdana,Arial;
+    background-color : #b3c4db;
+    width : 15cm;
+    font-weight : bold;
+}
+
+.montantDisabledNoBorder {
+	width : 4cm;
+	text-align: right;
+	border:solid 0px;
+	background-color:Transparent;
+}
+
+td.total {
+	border-width:3px opx opx opx;
+	padding:0px 0px 0px 0px;
+	border-style: double none none none;
+	border-color: gray gray gray gray;
+}

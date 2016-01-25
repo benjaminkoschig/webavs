@@ -1,0 +1,37 @@
+					</TBODY>
+				</TABLE>
+				<INPUT type="hidden" name="selectedId" value="<%=selectedIdValue%>">
+				<INPUT type="hidden" name="userAction" value="<%=userActionValue%>">
+				<INPUT type="hidden" name="_method" value='<%=request.getParameter("_method")%>'>
+				<INPUT type="hidden" name="_valid" value='<%=request.getParameter("_valid")%>'>
+				<INPUT type="hidden" name="_sl" value="">
+			</FORM>
+			</TD>
+			<TD width="5"><%=(autoShowErrorPopup || !vBeanHasErrors) ? "&nbsp;" : "[ <a id=\"showErrorLink\" href=\"javascript:showErrors();\">visualiser les erreurs</a> ]"%></TD>
+		</TR>
+		<% if (processLaunched) {%>
+		<tr>
+			<td colspan="3" style="height: 2em; color: white; font-weight: bold; text-align: center;background-color: green"><ct:FWLabel key="FW_PROCESS_STARTED"/></td>
+		</tr>
+		<% } 
+			if (showProcessButton) { %>
+		<tr>
+			<td bgcolor="#FFFFFF" colspan="3" align="center"><input id="btnOk" type="button" value="<%=okButtonLabel%>" style="padding-left: 1em; padding-right: 1em" onClick="doOkAction();"></td>
+		</tr>
+		<% } %>
+		<TR>
+			<TD bgcolor="#FFFFFF"></TD>
+			<TD bgcolor="#FFFFFF" colspan="2" align="left"><FONT  color="#FF0000">
+				<% if (globaz.framework.bean.FWViewBeanInterface.ERROR.equals(viewBean.getMsgType())) {%>
+					<script>
+						errorObj.text = "<%=globaz.framework.util.FWTextFormatter.slash(globaz.framework.util.FWTextFormatter.newLineToBr(viewBean.getMessage()), '\"')%>";
+						<%
+							viewBean.setMessage("");
+							viewBean.setMsgType(globaz.framework.bean.FWViewBeanInterface.OK);
+						%>
+					</script>
+				<% } %>
+			</FONT></TD>
+		</TR>
+	</TBODY>
+</TABLE>

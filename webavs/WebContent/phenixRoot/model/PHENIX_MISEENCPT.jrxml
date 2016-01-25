@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="PHENIX_MISEENCPT_FR"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="28"
+		 rightMargin="14"
+		 topMargin="15"
+		 bottomMargin="5"
+		 whenNoDataType="AllSectionsNoDetail"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="2" />
+	<reportFont name="ARIAL_NORMAL" isDefault="true" fontName="ARIAL.TTF" size="11" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="ARIAL.TTF" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="ARIAL_BOLD" isDefault="false" fontName="arialbd.ttf" size="11" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="ARIALBD.TTF" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<parameter name="P_LIEU_DATE" isForPrompting="true" class="java.lang.String">
+		<parameterDescription><![CDATA[Lieu et date]]></parameterDescription>
+		<defaultValueExpression ><![CDATA["P_LIEU_DATE_P_LIEU_DATE"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_NUM_AFFILIE" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["P_NUM_AFFILIE"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_ADRESSE" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["P_ADRESSE\nP_ADRESSE\nP_ADRESSE"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_NUM_AVS" isForPrompting="true" class="java.lang.String">
+		<parameterDescription><![CDATA[No AVS]]></parameterDescription>
+		<defaultValueExpression ><![CDATA["P_NUM_AVS"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_COLLABORATEUR" isForPrompting="true" class="java.lang.String">
+		<parameterDescription><![CDATA[nom et téléphone du collaborateur]]></parameterDescription>
+		<defaultValueExpression ><![CDATA["P_COLLABORATEUR\nP_COLLABORATEUR"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_MONTANT" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["P_MONTANT"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_ANNEE_DECISION" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["P_ANNEE_DECISION"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_ADR_CAISSE" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["P_ADR_CAISSE"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_LETTRE_SIGNATURE" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_DEFAULT_MODEL_PATH" isForPrompting="false" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["../defaultModel"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_SUBREPORT_HEADER" isForPrompting="false" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["Header_Caisse_Federale_Compensation.jasper"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_HEADER_DATE" isForPrompting="false" class="java.lang.String">
+		<parameterDescription><![CDATA[date de generation du document]]></parameterDescription>
+		<defaultValueExpression ><![CDATA["DD.MM.YYYY"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_SUBREPORT_SIGNATURE" isForPrompting="false" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["CP_Signature_1.jasper"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_ADRESSE_CAISSE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_CONCERNE" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_TEXTE2" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_TEXTE1" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_DUPLICATA_FR" isForPrompting="false" class="java.lang.Boolean"/>
+	<parameter name="P_DUPLICATA_DE" isForPrompting="false" class="java.lang.Boolean"/>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="472"  isSplitAllowed="true" >
+				<image  scaleImage="FillFrame" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
+						mode="Opaque"
+						x="41"
+						y="237"
+						width="462"
+						height="227"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="image-1"
+						stretchType="RelativeToBandHeight"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[$P{P_DUPLICATA_FR}]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="RelativeToBandHeight" pen="None" fill="Solid" />
+					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/duplicata.jpg"]]></imageExpression>				</image>
+				<image  scaleImage="FillFrame" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
+						mode="Opaque"
+						x="41"
+						y="237"
+						width="462"
+						height="227"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="image-2"
+						stretchType="RelativeToBandHeight"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[$P{P_DUPLICATA_DE}]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="RelativeToBandHeight" pen="None" fill="Solid" />
+					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/duplicataDE.jpg"]]></imageExpression>				</image>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="5"
+						y="165"
+						width="540"
+						height="95"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-2"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+						<font reportFont="ARIAL_NORMAL" isPdfEmbedded ="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TEXTE1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="5"
+						y="299"
+						width="541"
+						height="172"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-3"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+						<font reportFont="ARIAL_NORMAL" isPdfEmbedded ="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TEXTE2}]]></textFieldExpression>
+				</textField>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="5"
+						width="551"
+						height="76"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="subreport-4"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<parametersMapExpression><![CDATA[new java.util.HashMap($P{REPORT_PARAMETERS_MAP})]]></parametersMapExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{P_SUBREPORT_HEADER}]]></subreportExpression>
+				</subreport>
+				<rectangle radius="0" >
+					<reportElement
+						mode="Transparent"
+						x="201"
+						y="267"
+						width="116"
+						height="24"
+						forecolor="#000000"
+						backcolor="#C0C0C0"
+						key="rectangle-2"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="206"
+						y="271"
+						width="26"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-4"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_NORMAL"/>
+					</textElement>
+				<text><![CDATA[CHF]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="228"
+						y="271"
+						width="83"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-3"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+						<font reportFont="ARIAL_NORMAL"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="5"
+						y="141"
+						width="539"
+						height="18"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-4"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" isBold="false" isPdfEmbedded ="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_CONCERNE}]]></textFieldExpression>
+				</textField>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="167"  isSplitAllowed="true" >
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="3"
+						width="552"
+						height="162"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="subreport-2"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<parametersMapExpression><![CDATA[new java.util.HashMap($P{REPORT_PARAMETERS_MAP})]]></parametersMapExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{P_SUBREPORT_SIGNATURE}]]></subreportExpression>
+				</subreport>
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

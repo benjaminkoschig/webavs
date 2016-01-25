@@ -1,0 +1,16 @@
+	</form>
+	</div><!-- innerWrapper -->
+</div><!-- mainWrapper -->
+	
+<c:if test="${not empty creationSpy or not empty lastModification}">
+	<div class="lastModification">
+			<c:out value="${creationSpy}" /> Update: <c:out value="${lastModification}" />
+	</div>	
+</c:if>
+<c:choose>
+	<c:when test="${autoShowErrorPopup || !vBeanHasErrors}">
+	</c:when>
+	<c:otherwise>
+	[ <a id=\"showErrorLink\" href=\"javascript:showErrors();\">visualiser les erreurs</a> ]
+	</c:otherwise>
+</c:choose>

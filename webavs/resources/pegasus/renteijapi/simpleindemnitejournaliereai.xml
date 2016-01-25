@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--  fichier de mapping du modele simple indemniteJournaliereAi -->
+<!--  SCE, 6.2010 -->
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.renteijapi.SimpleIndemniteJournaliereAi">
+		<description>Modele de la table indemnites journalieres AI</description>
+		<table name="PCINJOAI" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idIndemniteJournaliereAi" column="CMIDEN" comment="ID_IJAI"/>
+			<field name="idDonneeFinanciereHeader" column="CMIDFE" type="NUMERIC" mandatory="true"  comment="ID_DONNEE_FINANCIERE_HEADER"/>
+			<field name="nbreJours" column="CMNJOU" type="NUMERIC" mandatory="true" comment="NB_JOURS"/>
+			<field name="montant" column="CMMIJA" type="NUMERIC"  dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT_IJAI"/>
+			<field name="dateDecision" column="CMDDEC" type="DATE" mandatory="true" comment="DATE_DECISION"/>
+			<field name="dateDepot" column="CMDDEP" type="DATE"  mandatory="true" comment="DATE_DEPOT"/>
+			<field name="dateEcheance" column="CMDECH" type="DATE"  mandatory="true" comment="DATE_ECHEANCE"/>
+			<field name="csTypeIjai" column="CMTIJA" type="NUMERIC"  mandatory="true" comment="CS_TYPE_IJAI"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

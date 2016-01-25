@@ -1,0 +1,48 @@
+
+				<input type="hidden" name="selectedId" value="${selectedIdValue}">
+				<input type="hidden" name="userAction" value="${userActionValue}">
+				<input type="hidden" name="_method" value="${param['_method']}">
+				<input type="hidden" name="_valid" value="${param['_valid']}">
+				<input type="hidden" name="_sl" value="">
+				<input type="hidden" name="selectorName" value="">
+			</form>
+			<!-- </td>
+			<td width="5">&nbsp;</td>
+		</tr>
+		<tr> -->
+			<div>
+				${autoShowErrorPopup || !vBeanHasErrors ? "&nbsp;" : "[ <a id=\"showErrorLink\" href=\"javascript:showErrors();\">visualiser les erreurs</a> ]"}
+			</div>
+	 	
+		<div class="lastModification" style="font-family:verdana;font-size:9;">
+			<c:if test="${not empty creationSpy}">
+				<c:out value="${creationSpy}" /> Update: <c:out value="${lastModification}" />
+			</c:if>
+			
+		</div>	
+		
+			</div>
+			<div style="background-color=#FFFFFF;float:right;height:18" id="btnCtrlJade">
+			
+			
+				<ct:ifhasright element="${partialUserAction}" crud="c">
+					<input class="btnCtrl" type="button" id="btnNew" value="${btnNewLabel}" onclick="onClickNew();btnNew.onclick='';hideAllButtons();document.location.href=${actionNew}">
+				</ct:ifhasright>
+				
+				<ct:ifhasright element="${partialUserAction}" crud="u">
+					<input class="btnCtrl" id="btnUpd" type="button" value="${btnUpdLabel}" onclick="action(UPDATE);upd();">
+				</ct:ifhasright>
+				
+				
+				<ct:ifhasright element="${partialUserAction}" crud="d">
+					<input class="btnCtrl" id="btnDel" type="button" value="${btnDelLabel}" onclick="del();">
+				</ct:ifhasright>
+				
+				<c:if test="${bButtonValidate}">
+					<input class="btnCtrl inactive" id="btnVal" type="button" value="${btnValLabel}" onclick="if(validate()) action(COMMIT);">
+				</c:if>
+				
+				<c:if test="${bButtonCancel}">
+					<input class="btnCtrl inactive" id="btnCan" type="button" value="${btnCanLabel}" onclick="cancel(); action(ROLLBACK);">
+				</c:if>
+			</div>

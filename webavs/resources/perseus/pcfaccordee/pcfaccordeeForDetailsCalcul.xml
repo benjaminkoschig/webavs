@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.pcfaccordee.PCFAccordeeForDetailsCalcul">
+		<root-model name="simplePCFAccordee" model-ref="ch.globaz.perseus.business.models.pcfaccordee.SimplePCFAccordee" />
+	</complexe-model>
+</model-mapping>

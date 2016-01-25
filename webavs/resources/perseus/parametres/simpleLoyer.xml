@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.parametres.SimpleLoyer">
+		<description>Table des loyers</description>
+		<table name="PFLOYER" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idLoyer" column="INIDLO" comment="Clé primaire de la table"/>
+			<field name="idZone" column="INIDZO" type="NUMERIC" mandatory="true" comment="Identifiant de la zone"/>
+			<field name="csTypeLoyer" type="NUMERIC" column="INCSLO" mandatory="true" comment="Code sytème zone loyer" />
+			<field name="montant" type="NUMERIC" column="INMOLO" mandatory="true" comment="Montant loyer" />
+			<field name="dateDebut" type="DATE" column="INDADE" mandatory="true" comment="Date de début du loyer" />
+			<field name="dateFin" type="DATE" column="INDAFI" comment="Date de fin du loyer" />
+		</fields>
+	</simple-model>
+</model-mapping>

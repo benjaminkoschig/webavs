@@ -1,0 +1,70 @@
+TD.label {
+	padding-bottom		: 5px;
+	padding-right		: 5px;
+}
+
+TD.control {
+	padding-bottom		: 5px;
+	padding-right		: 15px;
+}
+
+TEXTAREA {
+	width				: 100%;
+}
+
+INPUT.tablesort_order_none {
+	background-color	: #226194;
+	border-style		: none;
+	color				: #FFFFFF;
+	cursor				: hand;
+	text-decoration 	: underline;
+}
+
+INPUT.tablesort_order_asc {
+	background-image	: url("../../images/downsimple.png");
+	background-repeat	: no-repeat;
+	background-position	: right;
+	padding-right		: 10px;
+	background-color	: #226194;
+	border-style		: none;
+	color				: #FFFFFF;
+	cursor				: hand;
+	text-decoration 	: underline;
+}
+
+INPUT.tablesort_order_desc {
+	background-image	: url("../../images/upsimple.png");
+	background-repeat	: no-repeat;
+	background-position	: right;
+	padding-right		: 10px;
+	background-color	: #226194;
+	border-style		: none;
+	color				: #FFFFFF;
+	cursor				: hand;
+	text-decoration 	: underline;
+}
+
+SELECT.tablefilter {
+    font-size			: xx-small;
+    font-weight			: normal;
+}
+
+TABLE.pseudoRcList {
+	background: white;
+	border: 1px solid black;
+	width: 100%;
+	border-spacing: 0px;
+}
+
+TABLE.pseudoRcList TD {
+	padding: 3px;
+	margin: 0px;
+}
+
+.alignLeft {
+	text-align: left;
+}
+
+.alignRight {
+	text-align: right;
+}

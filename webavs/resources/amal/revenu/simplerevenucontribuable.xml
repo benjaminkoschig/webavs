@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.revenu.SimpleRevenuContribuable">
+		<description>Revenu contribuable</description>
+		<table name="MAREVSTD" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idRevenuContribuable" column="IDRECO" comment="Clef primaire RevenuContribuable"/>
+			<field name="idRevenu" column="IDREGE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="Id revenu"/>
+			<field name="allocationFamiliale" column="ALLOFA" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Allocation de famille (190 190c)"/>
+			<field name="revenuNetEmploi" column="RENEEM" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Revenu net provenant d'un emploi (100)"/>
+			<field name="revenuNetEpouse" column="RENEEP" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Revenu net pour l'épouse (100c)"/>
+			<field name="indemniteImposable" column="INDIMP" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Indemnité imposable (230 230c)"/>
+			<field name="rendFortImmobPrive" column="REFIMP" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Rend. de la fortune immob. privée (300)"/>
+			<field name="rendFortImmobComm" column="REFIMC" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Rend. de la fortune immob. comm. (320 320c)"/>
+			<field name="totalRevenusNets" column="TORENE" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Totaux des revenus nets (490)"/>
+			<field name="interetsPassifsPrive" column="INTPAP" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Intérêts passifs privés (530)"/>
+			<field name="interetsPassifsComm" column="INTPAC" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Intérêts passifs commerciaux (535)"/>
+			<field name="excedDepPropImmoPriv" column="EXDPIP" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Excéd. de dép. prop. immob. privée (310)"/>
+			<field name="excedDepPropImmoComm" column="EXDPIC" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Excéd. de dép. prop. immob. comm. (330 330c)"/>
+			<field name="perteExercicesComm" column="PEXCOM" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Pertes exercices commerciaux"/> 			
+			<field name="perteActIndep" column="PEACIN" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Perte de l'activité indépendante (140 140c)"/>					
+			<field name="perteActAgricole" column="PEACAG" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Perte de l'activité agricole (150 150c)"/>
+			<field name="perteSociete" column="PERSOC" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Perte de société (160 160c)"/>
+			<field name="perteActAccInd" column="PEACAI" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Perte de l'activité accessoire indépendante (170 170c)"/>
+			<field name="excDepSuccNp" column="EXDSNP" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Excédent dép. succession non partagées (390)"/>			
+			<field name="perteCommercial" column="PERCOM" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Perte commerciale (180)"/>
+			<field name="perteLiquidation" column="PERLIQ" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Perte de liquidation (188)"/>			
+			<field name="persChargeEnf" column="PECHEN" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Personnes à charge ou enfants (620)"/>
+			<field name="deducAppEtu" column="DAPETU" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Déd. pour les apprentis et étudiants (660)"/>
+			<field name="revenuImposable" column="REIMPO" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Revenu imposable (690)"/>
+			<field name="revenuTaux" column="RETAUX" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Revenu taux (695)"/>
+			<field name="fortuneImposable" column="FOIMPO" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Fortune imposable (890)"/>
+			<field name="fortuneTaux" column="FOTAUX" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Fortune taux (895)"/>
+			<field name="deductionCouplesMaries" column="COUPMA" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Déduction couples mariés (680)"/>			
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdRevenuContribuable" field-ref="idRevenuContribuable" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="pegasus/pcaccordee/simplepcaccordee.xml"/>
+	<model-mapping import="pegasus/pcaccordee/pcaccordee.xml"/>
+	<model-mapping import="pegasus/pcaccordee/pcaccordeeadaptationimpression.xml"/>
+	<model-mapping import="pegasus/pcaccordee/simplejoursappoint.xml"/>
+	<model-mapping import="pegasus/pcaccordee/simpleplandecalcul.xml"/>
+	<model-mapping import="pegasus/pcaccordee/simplepersonnedansplancalcul.xml"/>
+	<model-mapping import="pegasus/pcaccordee/personnedansplancalcul.xml"/>
+	<model-mapping import="pegasus/pcaccordee/listpcaccordee.xml"/>
+	<model-mapping import="pegasus/pcaccordee/pcaccordeeplancalcul.xml"/>
+	<model-mapping import="pegasus/pcaccordee/personnedansplancalcul.xml"/>
+	<model-mapping import="pegasus/pcaccordee/plandecalculwitmembrefamille.xml"/>
+	<model-mapping import="pegasus/pcaccordee/pcawithcalculmembrefamilleandprestation.xml"/>
+	<model-mapping import="pegasus/pcaccordee/pcaidmembrefamilleretenu.xml"/>
+	<model-mapping import="pegasus/pcaccordee/versiondroitpcaplandecacule.xml"/>
+	<model-mapping import="pegasus/pcaccordee/simpleallocationnoel.xml"/>
+	<model-mapping import="pegasus/pcaccordee/pcaccordeeidmembresretenus.xml"/>
+	<model-mapping import="pegasus/pcaccordee/claculeretro.xml"/>
+	<model-mapping import="pegasus/pcaccordee/pcaccordeeadaptationimpressionancienne.xml"/>
+	<model-mapping import="pegasus/pcaccordee/demandepcapersonnedanscal.xml"/>
+	<model-mapping import="pegasus/pcaccordee/pcaprestation.xml"/>
+	<model-mapping import="pegasus/pcaccordee/pcafordecompte.xml"/>
+	<model-mapping import="pegasus/pcaccordee/pcaretenue.xml"/>
+	<model-mapping import="pegasus/pcaccordee/allocationnoeldemande.xml"/>
+	<model-mapping import="pegasus/pcaccordee/allocationnoel.xml"/>
+	<model-mapping import="pegasus/pcaccordee/nouvelleetanciennepcacourante.xml"/>
+</model-mapping>

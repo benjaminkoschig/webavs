@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.revenusdepenses.SimpleRevenuActiviteLucrativeDependante">
+		<description>REVENU_ACTIVITE_LUCRATIVE_DEPENDANTE</description>
+		<table name="PCRALDE" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idRevenuActiviteLucrativeDependante" column="BYIALD" comment="ID_REVENU_ACTIVITE_LUCRATIVE_DEPENDANTE"/>			
+			<field name="idDonneeFinanciereHeader" mandatory="true" column="BYIDFH" type="NUMERIC" comment="DONNEE_FINANCIERE_HEADER"/>
+			<field name="csGenreRevenu"  mandatory="true" column="BYTGRE" type="NUMERIC" comment="CS_GENRE_REVENU"/>			
+			<field name="typeRevenu" column="BYLREV" type="STRING" comment="TYPE_REVENU"/>
+			<field name="idEmployeur" mandatory="true" column="BYIEMP" type="NUMERIC" comment="ID_EMPLOYEUR"/>
+			<field name="montantActiviteLucrative" mandatory="true" column="BYNMAL" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_ACTIVITE_LUCRATIVE"/>
+			<field name="deductionsSociales" column="BYNDSO" type="NUMERIC" dataType="NUMERIC(15,2)" comment="DEDUCTIONS_SOCIALES"/>
+			<field name="deductionsLpp" column="BYNLPP" type="NUMERIC" dataType="NUMERIC(15,2)" comment="DEDUCTIONS_LPP"/>
+			<field name="csFraisObtentionRevenu" column="BYTFOR" type="NUMERIC" comment="CS_FRAIS_OBTENTION_REVENU"/>
+			<field name="autreFraisObtentionRevenu" column="BYLFOR" type="STRING" comment="AUTRE_FRAIS_OBTENTION_REVENU"/>
+			<field name="montantFrais" column="BYNMFR" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_FRAIS"/>						
+			<field name="idAffiliation" column="BYIDAF" type="NUMERIC" mandatory="false" comment="ID_AFFILIATION"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

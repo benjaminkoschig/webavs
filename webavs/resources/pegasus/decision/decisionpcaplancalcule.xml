@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.decision.DecisionPCAPlanCalcule">
+
+		<root-model name="simplePlanDeCalcul" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul" select-fields="true"/>
+		
+		<linked-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="simplePlanDeCalcul.idPCAccordee"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleValidationDecision" model-ref="ch.globaz.pegasus.business.models.decision.SimpleValidationDecision" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPCAccordee"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDecisionHeader" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="simpleValidationDecision.idDecisionHeader"/>
+			</join-group>
+		</linked-model>
+
+		<select-fields>
+			<select-field name="idDecisionHeader" field-ref="simpleDecisionHeader.idDecisionHeader" />
+		</select-fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIsPlanRetenu" field-ref="simplePlanDeCalcul.isPlanRetenu" operation="EQUALS" />
+				<search-field name="forIdDecisionHeader" field-ref="simpleDecisionHeader.idDecisionHeader" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.variablemetier.SimpleVariableMetier">
+		<description>Table des variables metier</description>
+		<table name="PCVARMET" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idVariableMetier" column="BKIVME" comment="ID_VARIABLES_METIER" />
+			<field name="csTypeVariableMetier" column="BKNTVM" type="NUMERIC" mandatory="true" comment="CS_TYPE_VARIABLE_METIER"/>
+			<field name="dateDebut" column="BKDDEB" type="MONTH_YEAR" mandatory="true"  comment="DATE_DEBUT"/>
+			<field name="dateFin"   column="BKDFIN" type="MONTH_YEAR" mandatory="false" comment="DATE_FIN"/>
+			<field name="montant" column="BKMMON" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="MONTANT"/>
+			<field name="taux" column="BKMTAU" type="NUMERIC" mandatory="false" dataType="NUMERIC(15,5)" comment="TAUX"/>
+			<field name="fractionNumerateur" column="BKNFNU" type="NUMERIC" mandatory="false" comment="FRACTION_NUMERATEUR"/>
+			<field name="fractionDenominateur" column="BKNFDE" type="NUMERIC" mandatory="false" comment="FRACTION_DENOMINATEUR"/>
+			<field name="typeDeDonnee" column="BKNTYD" type="NUMERIC" dataType="NUMERIC(1,0)" mandatory="true" comment="TYPE_DE_DONNEE"/>
+		</fields>
+		
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forCsTypeVariableMetier"  operation="EQUALS" field-ref="csTypeVariableMetier"/>
+			</search-group>
+		</search-definition>
+		
+		<!--Recherche la varibleMetier ouverte(valable)-->
+		<search-definition name="withPeriodeOpen">
+			<search-group operator="AND">
+				<search-field name="forCsTypeVariableMetier" operation="EQUALS" field-ref="csTypeVariableMetier"/>
+				<search-field name="forDateFinCheckPeriode" operation="NULL" field-ref="dateFin"/>
+				<search-field name="forIdVariableMetier" operation="NOT_EQUALS" field-ref="idVariableMetier"/>
+			</search-group>
+		</search-definition>
+		
+		<!-- Recherche les variableMetier valable pour la date donnee en parametre-->
+	    <search-definition name="withDateValable">
+			<search-group operator="AND">
+				<search-group operator="AND">
+					<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+						<search-field name="forDateValable" operation="NULL" field-ref="dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="checkDateDebutValabe">
+			<search-group operator="AND">
+			    <search-field name="forCsTypeVariableMetier" operation="EQUALS" field-ref="csTypeVariableMetier"/>	
+                <search-field name="forDateDebutCheckPeriode" operation="GREATER" field-ref="dateDebut"/>
+                <search-field name="forIdVariableMetier" operation="NOT_EQUALS" field-ref="idVariableMetier"/>
+			</search-group>
+		</search-definition>
+		
+	  <!--Test qu il n y a pas de superpostion de dates -->
+		<search-definition name="checkSuperpositionDates">
+			<search-group operator="AND">
+			        <search-field name="forCsTypeVariableMetier" operation="EQUALS" field-ref="csTypeVariableMetier"/>		
+			        <search-field name="forIdVariableMetier" operation="NOT_EQUALS" field-ref="idVariableMetier"/>
+			   		
+				<search-group operator="OR">					
+					<search-group operator="AND">					
+						<search-field name="forDateDebutCheckPeriode" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateDebutCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+							<search-field name="forDateDebutCheckPeriode" operation="NULL" field-ref="dateFin"/>
+						</search-group>
+					</search-group>
+					
+					<search-group operator="AND">
+						<search-field name="forDateFinCheckPeriode" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateFinCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+							<search-field name="forDateFinCheckPeriode" operation="NULL" field-ref="dateFin"/>
+						</search-group>				
+					</search-group>
+					
+					<search-group operator="AND">					
+						<search-field name="forDateDebutCheckPeriode" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateFinCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+							<search-field name="forDateFinCheckPeriode" operation="NULL" field-ref="dateFin"/>
+						</search-group>
+					</search-group>
+					
+					<search-group operator="AND">					
+						<search-field name="forDateDebutCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="dateDebut"/>
+						<search-field name="forDateFinCheckPeriode" operation="LESS_OR_EQUALS" field-ref="dateFin"/>
+						<search-field name="forDateFinCheckPeriode" operation="NOT_NULL" field-ref="dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		<order-by>
+			<order-field field-ref="csTypeVariableMetier" />
+			<order-field field-ref="dateDebut"/>
+		</order-by>
+	</simple-model>
+</model-mapping>

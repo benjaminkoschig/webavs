@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.fortuneusuelle.SimpleBienImmobilierHabitationNonPrincipale">
+		<description>BIEN IMMOBILIER NON PRINCIPALE</description>
+		<table name="PCBISPH" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idBienImmobilierHabitationNonPrincipale" column="CHIBIP" comment="ID_BIEN_IMMOBILIER_HABITATION_NON_PRINCIPALE"/>		
+			<field name="idDonneeFinanciereHeader" mandatory="true" column="CHIDFH" type="NUMERIC" comment="DONNEE_FINANCIERE_HEADER"/>
+			<field name="csTypePropriete" mandatory="true" column="CHTPPT" type="NUMERIC" comment="CS_TYPE_PROPRIETE"/>
+			<field name="PartProprieteNumerateur" column="CHNPPN" type="NUMERIC" comment="PART_PROPRIETE"/>
+			<field name="PartProprieteDenominateur" column="CHNPPD" type="NUMERIC" comment="PART_PROPRIETE"/>
+			<field name="valeurVenale" column="CHNVVE" type="NUMERIC" dataType="NUMERIC(15,2)" comment="VALEUR_VENALE"/>
+			<field name="csTypeBien" mandatory="true" column="CHTBIE" type="NUMERIC" comment="CS_TYPE_BIEN"/>
+			<field name="autresTypeBien" column="CHLABI" type="STRING" comment="AUTRES_TYPE_BIEN"/>
+			<field name="noFeuillet" column="CHLNFE" type="STRING" comment="NO_FEUILLET"/>
+			<field name="idCommuneDuBien" mandatory="true" column="CHICBI" type="NUMERIC" comment="ID_COMMUNE_DU_BIEN"/>
+			<field name="idPays" column="CHIDPA" type="NUMERIC"  mandatory="false"  comment="ID_PAYS"/>
+			<field name="montantDetteHypothecaire" column="CHNMDH" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_DETTE_HYPOTHECAIRE"/>
+			<field name="noHypotheque" column="CHLNHY" type="STRING" comment="NO_HYPOTHEQUE"/>
+			<field name="nomCompagnie" column="CHLNCO" type="NUMERIC" comment="NOM_COMPAGNIE"/>
+			<field name="montantInteretHypothecaire" column="CHNMIH" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_INTERET_HYPOTHECAIRE"/>
+			<field name="montantValeurLocative" mandatory="true" column="CHNMVL" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_VALEUR_LOCATIVE"/>														
+			<field name="montantLoyesEncaisses" column="CHNMLE" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_LOYES_ENCAISSES"/>
+			<field name="montantSousLocation" column="CHNMSL" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_SOUS_LOCATION"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

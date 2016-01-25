@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.documents.SimpleDocument">
+		<description>Detail envoi document</description>
+		<table name="MAENVDOC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDetailEnvoiDocument" column="IDENVD" comment=""/>
+			<field name="idDetailFamille" column="IDDEFA" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="ID_DETAIL_FAMILLE"/>
+			<field name="dateEnvoi" column="DAENVO" type="DATE" mandatory="false" comment="DATE_ENVOI"/>
+			<field name="numModele" column="CSMODE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="NUMERO_MODELE"/>		
+			<field name="libelleEnvoi" column="LIBENV" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="LIBELLE_ENVOI"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDocument" field-ref="idDetailEnvoiDocument" operation="EQUALS"/>
+				<search-field name="forIdDetailFamille" field-ref="idDetailFamille" operation="EQUALS"/>
+				<search-field name="inIdDetailFamille" field-ref="idDetailFamille" operation="IN"/>
+				<search-field name="inNumModele" field-ref="numModele" operation="IN"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="dateEnvoi" order="DESC"/>
+		</order-by>
+		
+		<order-by name="orderByDateEnvoiDesc_idDetailEnvoiDocumentDesc">
+			<order-field field-ref="dateEnvoi" order="DESC"/>
+			<order-field field-ref="idDetailEnvoiDocument" order="DESC"/>
+		</order-by>
+		
+	</simple-model>
+</model-mapping>

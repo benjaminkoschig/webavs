@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'un dossier décision -->
+
+<model-mapping>
+	<complexe-model className="ch.globaz.al.business.models.dossier.DossierDecisionComplexModel">
+	
+		<root-model name="dossierModel" model-ref="ch.globaz.al.business.models.dossier.DossierModel"/>
+				
+		<linked-model name="allocataireComplexModel" model-ref="ch.globaz.al.business.models.allocataire.AllocataireComplexModel" join-type="INNER">
+		<join-group operator="AND">
+			<join-field name="allocataireModel.idAllocataire" field-ref="dossierModel.idAllocataire"/>
+		</join-group>
+	</linked-model>
+	<linked-model name="tiersBeneficiaireModel" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER">
+		<join-group operator="AND">
+			<join-field name="idTiers" field-ref="dossierModel.idTiersBeneficiaire"/>
+		</join-group>
+	</linked-model>
+	<linked-model name="caisseAFComplexModel" model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel" join-type="LEFT_OUTER">
+		<join-group operator="AND">
+			<join-field name="admin.idTiersAdministration" field-ref="dossierModel.idTiersCaisseConjoint"/>
+		</join-group>
+	</linked-model>
+		
+		<linked-model name="affiliationSimpleModel" model-ref="ch.globaz.naos.business.model.AffiliationSimpleModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="affilieNumero" field-ref="dossierModel.numeroAffilie"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="tiersLiaisonComplexModel" model-ref="ch.globaz.pyxis.business.model.TiersLiaisonComplexModel" join-type="LEFT_OUTER" select-fields="true">
+			<join-group operator="AND">
+				<join-field name="tiersReference.idTiers" field-ref="affiliationSimpleModel.idTiers"/>
+			</join-group>
+		</linked-model>	
+	</complexe-model>
+</model-mapping>

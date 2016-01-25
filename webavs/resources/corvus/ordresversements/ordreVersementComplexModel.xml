@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.corvus.business.models.ordresversements.OrdreVersementComplexModel">
+
+		<select-fields distinct="true">
+			<select-field name="idOrdreVersement" field-ref="ordreVersement.idOrdreVersement" />
+			<select-field name="csType" field-ref="ordreVersement.csType" />
+			<select-field name="montant" field-ref="ordreVersement.montant" />
+			<select-field name="montantDette" field-ref="ordreVersement.montantDette" />
+			<select-field name="noFacture" field-ref="ordreVersement.noFacture" />
+			<select-field name="_isCompensationInterDecision" field-ref="ordreVersement._isCompensationInterDecision" />
+			<select-field name="_isCompense" field-ref="ordreVersement._isCompense" />
+			<select-field name="_isValide" field-ref="ordreVersement._isValide" />
+
+			<select-field name="idTiersOrdreVersement" field-ref="tiersOrdreVersement.idTiers" />
+			<select-field name="nomTiersOrdreVersement" field-ref="tiersOrdreVersement.designation1" />
+			<select-field name="prenomTiersOrdreVersement" field-ref="tiersOrdreVersement.designation2" />
+
+			<select-field name="idPrestationAccordeeDiminuee" field-ref="prestationAccordeeDiminuee.idPrestationAccordee" />
+			<select-field name="codePrestationDiminuee" field-ref="prestationAccordeeDiminuee.codePrestation" />
+			<select-field name="dateDebutDroitDiminuee" field-ref="prestationAccordeeDiminuee.dateDebutDroit" />
+			<select-field name="dateFinDroitDiminuee" field-ref="prestationAccordeeDiminuee.dateFinDroit" />
+
+			<select-field name="idPrestationAccordeeCompensee" field-ref="prestationAccordeeCompensee.idPrestationAccordee" />
+			<select-field name="codePrestationCompensee" field-ref="prestationAccordeeCompensee.codePrestation" />
+			<select-field name="dateDebutDroitCompensee" field-ref="prestationAccordeeCompensee.dateDebutDroit" />
+			<select-field name="dateFinDroitCompensee" field-ref="prestationAccordeeCompensee.dateFinDroit" />
+
+			<select-field name="idRenteVerseeATort" field-ref="renteVerseeATort.idRenteVerseeATort" />
+			<select-field name="dateDebutRenteVerseeATort" field-ref="renteVerseeATort.dateDebut" />
+			<select-field name="dateFinRenteVerseeATort" field-ref="renteVerseeATort.dateFin" />
+			<select-field name="csTypeRenteVerseeATort" field-ref="renteVerseeATort.csTypeRenteVerseeATort" />
+			<select-field name="descriptionSaisieManuelleRenteVerseeATort" field-ref="renteVerseeATort.descriptionSaisieManuelle" />
+			<select-field name="idRenteAccordeeAncienDroitRenteVerseeATort" field-ref="renteVerseeATort.idRenteAccordeeAncienDroit" />
+			<select-field name="renteVerseeATort_saisieManuelle" field-ref="renteVerseeATort._saisieManuelle" />
+
+			<select-field name="codePrestationRenteAccordeeAncienDroitRenteVerseeATort" field-ref="renteAccordeeAncienDroitRenteVerseeATort.codePrestation" />
+			<select-field name="dateDebutDroitRenteAccordeeAncienDroitRenteVerseeATort" field-ref="renteAccordeeAncienDroitRenteVerseeATort.dateDebutDroit" />
+			<select-field name="dateFinDroitRenteAccordeeAncienDroitRenteVerseeATort" field-ref="renteAccordeeAncienDroitRenteVerseeATort.dateFinDroit" />
+
+			<select-field name="idCompensationInterDecisionNegative" field-ref="compensationInterDecisionNegative.idCompensationInterDecision" />
+			<select-field name="montantCompensationInterDecisionNegative" field-ref="compensationInterDecisionNegative.montant" />
+
+			<select-field name="idTiersCIDPositive" field-ref="tiersCompensationInterDecisionPositive.idTiers" />
+			<select-field name="nomTiersCIDPositive" field-ref="tiersCompensationInterDecisionPositive.designation1" />
+			<select-field name="prenomTiersCIDPositive" field-ref="tiersCompensationInterDecisionPositive.designation2" />
+	
+			<select-field name="idCompensationInterDecisionPositive" field-ref="compensationInterDecisionPositive.idCompensationInterDecision" />
+			<select-field name="montantCompensationInterDecisionPositive" field-ref="compensationInterDecisionPositive.montant" />
+
+			<select-field name="idTiersCIDNegative" field-ref="tiersCompensationInterDecisionNegative.idTiers" />
+			<select-field name="nomTiersCIDNegative" field-ref="tiersCompensationInterDecisionNegative.designation1" />
+			<select-field name="prenomTiersCIDNegative" field-ref="tiersCompensationInterDecisionNegative.designation2" />
+
+			<select-field name="idSoldePourRestitution" field-ref="soldePourRestitution.idSoldePourRestitution" />
+			<select-field name="csTypeSoldeRestitution" field-ref="soldePourRestitution.csTypeRestitution" />
+			<select-field name="montantSoldePourRestitution" field-ref="soldePourRestitution.montant" />
+			<select-field name="montantRetenueMensuelleSoldePourRestitution" field-ref="soldePourRestitution.montantMensuelARetenir" />
+		</select-fields>
+
+		<root-model name="ordreVersement" model-ref="ch.globaz.corvus.business.models.ordresversements.SimpleOrdreVersement" select-fields="false" />
+
+		<linked-model join-type="LEFT_OUTER" name="tiersOrdreVersement" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="ordreVersement.idTiers" />
+			</join-group>
+		</linked-model>
+
+		<linked-model join-type="LEFT_OUTER" name="prestationAccordeeDiminuee" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="ordreVersement.idRenteAccordeeDiminuee" />
+			</join-group>
+		</linked-model>
+
+		<linked-model join-type="LEFT_OUTER" name="prestationAccordeeCompensee" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="ordreVersement.idRenteAccordeeCompensee" />
+			</join-group>
+		</linked-model>
+
+		<linked-model join-type="LEFT_OUTER" name="renteVerseeATort" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimpleRenteVerseeATort"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idRenteVerseeATort" operation="EQUALS" field-ref="ordreVersement.idRenteVerseeATort" />
+			</join-group>
+		</linked-model>
+
+		<linked-model join-type="LEFT_OUTER" name="compensationInterDecisionPositive" model-ref="ch.globaz.corvus.business.models.ordresversements.SimpleCompensationInterDecision"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idOrdreVersementCompense" operation="EQUALS" field-ref="ordreVersement.idOrdreVersement" />
+			</join-group>
+		</linked-model>
+
+		<linked-model join-type="LEFT_OUTER" name="tiersCompensationInterDecisionPositive" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="compensationInterDecisionPositive.idTiersDecisionPonctionnee" />
+			</join-group>
+		</linked-model>
+
+		<linked-model join-type="LEFT_OUTER" name="compensationInterDecisionNegative" model-ref="ch.globaz.corvus.business.models.ordresversements.SimpleCompensationInterDecision"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idOrdreVersementPonctionne" operation="EQUALS" field-ref="ordreVersement.idOrdreVersement" />
+			</join-group>
+		</linked-model>
+
+		<linked-model join-type="LEFT_OUTER" name="ordreVersementCompensationInterDecisionNegative" model-ref="ch.globaz.corvus.business.models.ordresversements.SimpleOrdreVersement"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idOrdreVersement" operation="EQUALS" field-ref="compensationInterDecisionNegative.idOrdreVersementCompense" />
+			</join-group>
+		</linked-model>
+
+		<linked-model join-type="LEFT_OUTER" name="tiersCompensationInterDecisionNegative" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="ordreVersementCompensationInterDecisionNegative.idTiers" />
+			</join-group>
+		</linked-model>
+
+		<linked-model join-type="LEFT_OUTER" name="soldePourRestitution" model-ref="ch.globaz.corvus.business.models.ordresversements.SimpleSoldePourRestitution"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPrestation" operation="EQUALS" field-ref="ordreVersement.idPrestation" />
+			</join-group>
+		</linked-model>
+
+		<linked-model join-type="LEFT_OUTER" name="renteAccordeeAncienDroitRenteVerseeATort" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="renteVerseeATort.idRenteAccordeeAncienDroit" />
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field operation="EQUALS" name="forIdPrestation" field-ref="ordreVersement.idPrestation" />
+			</search-group>
+		</search-definition>
+
+	</complexe-model>
+</model-mapping>

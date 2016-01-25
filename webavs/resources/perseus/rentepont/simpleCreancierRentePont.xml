@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.rentepont.SimpleCreancierRentePont">
+		<description>Gestion des Créanciers</description>
+		<table name="PFCREARP" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idCreancier" column="JFIDCR" comment="Identifiant du créancier"/>
+			<field name="idRentePont" column="JFIDRP" type="NUMERIC" mandatory="true" comment="Identifiant de la demande de rente pont"/>
+			<field name="idTiers" column="JFIDTI" type="NUMERIC" mandatory="true" comment="Identifiant du tiers"/>
+			<field name="idDomaineApplicatif" column="JFIDDA" type="NUMERIC" mandatory="true" comment="Identifiant du domaine applicatif"/>
+			<field name="montantRevendique" column="JFMONT" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="Montant revendiqué par le créancier"/>	
+			<field name="montantAccorde" column="JFMOAC" type="NUMERIC" dataType="NUMERIC (15,2)" mandatory="false" comment="Montant de la créance accordé"/>
+			<field name="csTypeCreance" column="JFTYPE" type="NUMERIC" mandatory="false" comment="Code systeme du type de créance"/>
+			<field name="referencePaiement" column="JFREFP" type="STRING" mandatory="false" comment="Reference de paiement"/>	
+			<field name="idOrdreVersement" column="JFIDOV" type="NUMERIC" mandatory="false" comment="Identifiant de l'ordre de versement"/>
+		
+		</fields>
+	</simple-model>
+</model-mapping>

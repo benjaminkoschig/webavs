@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.transfert.SimpleTransfertDossierSuppression">
+		<description>Transfert Dossier de Suppression</description>
+		<table name="PCTRANSU" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idTransfertDossierSuppression" column="DKITDS" comment="ID_TRANSFERT_DOSSIER_SUPPRESSION"/>
+			<field name="idDecisionHeader" column="DKIDHE" type="NUMERIC" mandatory="false" comment="ID_DECISION_HEADER"/>
+			<field name="idNouveauDomicile" column="DKINOD" type="NUMERIC" mandatory="false" comment="ID_NOUVEAU_DOMICILE"/> <!-- obsolete. A supprimer -->
+			<field name="textMotifTransfert" column="DKLMOT" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="MOTIF_TRANSFERT"/>
+			<field name="idNouvelleCaisse" column="DKINOC" type="NUMERIC" mandatory="false" comment="ID_NOUVELLE_CAISSE"/>
+			<field name="textMotifContact" column="DKLMOC" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="MOTIF_CONTACT"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDecisionHeader" operation="EQUALS" field-ref="idDecisionHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

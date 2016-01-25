@@ -1,0 +1,10 @@
+</head>
+
+<body style="margin-left:0px; margin-right:0px;"  bgcolor="#F0F0F0">
+<table width="100%" border="0" cellspacing="0">
+	<tbody>
+		<tr align="center" >
+		<c:if test="${isSelection}">
+			<th width="15px">&nbsp;</th>
+		</c:if>
+	    </tr>

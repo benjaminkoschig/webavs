@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.osiris.business.model.SectionSimpleModel">
+		<table name="CASECTP" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="idSection" column="IDSECTION" comment="Id de la section unique" />
+			<field name="solde" column="SOLDE" type="NUMERIC"  comment="Solde de la section"/>
+			<field name="idCompteAnnexe" column="IDCOMPTEANNEXE" type="NUMERIC"  comment="Identifiant du compte annexe"/>
+			<field name="idTypeSection" column="IDTYPESECTION" type="NUMERIC"  comment="Identifiant du type de section"/>
+			<field name="idExterne" column="IDEXTERNE" type="NUMERIC"  comment="Identifiant externe"/>
+			<field name="_nonImprimable" column="NONIMPRIMABLE" type="STRING"  comment="Est-il imprimable ?"/>
+		</fields>
+	</simple-model>
+</model-mapping>

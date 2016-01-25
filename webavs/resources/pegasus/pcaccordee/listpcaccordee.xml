@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.pcaccordee.ListPCAccordee">
+		<select-fields>
+			<select-field name="idPrestationAccordee" field-ref="simplePrestationsAccordees.idPrestationAccordee" />
+			<select-field name="idTiersBeneficiaire" field-ref="simplePrestationsAccordees.idTiersBeneficiaire" />
+			<select-field name="idPrestationAccordeeConjoint" field-ref="simplePrestationsAccordeesConjoint.idPrestationAccordee" />
+			<select-field name="_isPrestationBloqueeConjoint" field-ref="simplePrestationsAccordeesConjoint._isPrestationBloquee" />
+			<select-field name="_isRetenuesConjoint" field-ref="simplePrestationsAccordeesConjoint._isRetenues" />
+			<select-field name="idCompteAnnexe" field-ref="simpleInfoComptable.idCompteAnnexe" />
+		</select-fields>
+		
+		<root-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee"/>
+		
+		<linked-model name="simpleVersionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroit" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDemande" model-ref="ch.globaz.pegasus.business.models.demande.SimpleDemande" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDemande" operation="EQUALS" field-ref="simpleDroit.idDemandePC"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDossier" model-ref="ch.globaz.pegasus.business.models.dossier.SimpleDossier" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDossier" operation="EQUALS" field-ref="simpleDemande.idDossier"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simplePlanDeCalcul" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPCAccordee"/>
+				<join-field name="isPlanRetenu" operation="EQUALS" value="TRUE"/>
+			</join-group>
+		</linked-model>
+		
+		
+		<linked-model name="simplePrestationsAccordees" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPrestationAccordee"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simplePrestationsAccordeesConjoint" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPrestationAccordeeConjoint"/>
+				<join-field field-ref="simplePCAccordee.idPrestationAccordeeConjoint" operation="NOT_NULL"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="personneEtendue" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simplePrestationsAccordees.idTiersBeneficiaire"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleInfoComptable" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimpleInformationsComptabilite" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idInfoCompta" operation="EQUALS" field-ref="simplePrestationsAccordees.idInfoCompta" />
+			</join-group>
+		</linked-model>
+		
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPCAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPCAccordee"/>	
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/> 
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="simpleDossier.idDossier"/> 
+				<search-field name="likeNom" operation="LIKE" field-ref="personneEtendue.tiers.designationUpper1"/>  
+				<search-field name="likePrenom" operation="LIKE" field-ref="personneEtendue.tiers.designationUpper2"/>  
+				<search-field name="likeNss" operation="LIKE" field-ref="personneEtendue.personneEtendue.numAvsActuel"/>  
+				<search-field name="forCsSexe" operation="EQUALS" field-ref="personneEtendue.personne.sexe"/>  
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simplePCAccordee.csEtatPC"/>
+				<search-field name="forDateNaissance" operation="EQUALS" field-ref="personneEtendue.personne.dateNaissance"/>		
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>		
+				<search-field name="forNoVersion" operation="EQUALS" field-ref="simpleVersionDroit.noVersion"/>
+				<search-field name="forDateNaissance" operation="EQUALS" field-ref="personneEtendue.personne.dateNaissance"/>		
+				<search-field name="forIsSupprime" operation="EQUALS" field-ref="simplePCAccordee.isSupprime" value="2"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="forVersionnedPca">
+			<search-group operator="AND">
+				<search-field name="forCsSexe" operation="EQUALS" field-ref="personneEtendue.personne.sexe"/>  
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simplePCAccordee.csEtatPC"/>
+				<search-field name="likeNom" operation="LIKE" field-ref="personneEtendue.tiers.designationUpper1"/>  
+				<search-field name="likePrenom" operation="LIKE" field-ref="personneEtendue.tiers.designationUpper2"/>  
+				<search-field name="likeNss" operation="LIKE" field-ref="personneEtendue.personneEtendue.numAvsActuel"/>  
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/> 
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="simpleDossier.idDossier"/> 
+				<search-field name="forNoVersion" operation="EQUALS" field-ref="simpleVersionDroit.noVersion"/>
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>		
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/> 
+				<search-field name="forDateNaissance" operation="EQUALS" field-ref="personneEtendue.personne.dateNaissance"/>		
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="pcAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee"/>
+					<![CDATA[ 
+						#{simpleVersionDroit.idVersionDroit} IN (
+							(
+								select #{versionDroit.idVersionDroit} from @{versionDroit}
+								inner join @{pcAccordee} on ( #{versionDroit.idVersionDroit} = #{pcAccordee.idVersionDroit})
+								where #{simplePCAccordee.idEntity} = #{pcAccordee.idEntity} 
+								and #{pcAccordee.isSupprime} = 2 
+								and #{pcAccordee.csEtatPC} <> 64029004 or ${forCacherHistorique:personneEtendue.tiers.designationUpper1} = 'false')
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+		<order-by>
+			<order-field field-ref="simplePCAccordee.csEtatPC"/>
+			<order-field field-ref="simplePCAccordee.dateDebut" order="DESC" />
+			<order-field field-ref="personneEtendue.tiers.designationUpper2"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,259 @@
+<clones>
+	<!-- 
+		Correction d'une grande IJ:
+		
+		- On ne copie pas les IJCalculees (elles seront recalculees)
+		- On ne copie pas les bases d'indemnisations (celles qui doivent être
+		copiées le seront lors du calcul des nouvelles IJCalculees
+	-->
+	<clone id="IJGrandeIJ-correction"
+		class="globaz.ij.db.prononces.IJGrandeIJ">
+
+		<linkedClass class="globaz.ij.db.prononces.IJRevenu"
+			relationType="1_TO_1" idParent="idRevenuReadaptation" manager="na"
+			forIdParent="na" />
+
+		<linkedClass class="globaz.ij.db.prononces.IJMesure"
+			relationType="1_TO_N" idParent="idPrononce"
+			manager="globaz.ij.db.prononces.IJMesureManager"
+			forIdParent="forIdPrononce">
+
+			<linkedClass class="globaz.ij.db.prononces.IJAgentExecution"
+				relationType="1_TO_1" idParent="idAgentExecution" manager="na"
+				forIdParent="na" />
+		</linkedClass>
+
+		<linkedClass
+			class="globaz.ij.db.prononces.IJSituationProfessionnelle"
+			relationType="1_TO_N" idParent="idPrononce"
+			manager="globaz.ij.db.prononces.IJSituationProfessionnelleManager"
+			forIdParent="forIdPrononce">
+
+			<linkedClass class="globaz.ij.db.prononces.IJEmployeur"
+				relationType="1_TO_1" idParent="idEmployeur" forIdParent="na"
+				manager="na" />
+		</linkedClass>
+	</clone>
+
+
+	<!-- 
+		Copie d'une grande IJ:
+		
+		identique à une correction
+		
+		- On ne copie pas les IJCalculees (elles seront recalculees)
+		- On ne copie pas les bases d'indemnisations (celles qui doivent être
+		copiées le seront lors du calcul des nouvelles IJCalculees
+	-->
+	<clone id="IJGrandeIJ-copie"
+		class="globaz.ij.db.prononces.IJGrandeIJ">
+
+		<linkedClass class="globaz.ij.db.prononces.IJRevenu"
+			relationType="1_TO_1" idParent="idRevenuReadaptation" manager="na"
+			forIdParent="na" />
+
+		<linkedClass class="globaz.ij.db.prononces.IJMesure"
+			relationType="1_TO_N" idParent="idPrononce"
+			manager="globaz.ij.db.prononces.IJMesureManager"
+			forIdParent="forIdPrononce">
+
+			<linkedClass class="globaz.ij.db.prononces.IJAgentExecution"
+				relationType="1_TO_1" idParent="idAgentExecution" manager="na"
+				forIdParent="na" />
+		</linkedClass>
+
+		<linkedClass
+			class="globaz.ij.db.prononces.IJSituationProfessionnelle"
+			relationType="1_TO_N" idParent="idPrononce"
+			manager="globaz.ij.db.prononces.IJSituationProfessionnelleManager"
+			forIdParent="forIdPrononce">
+
+			<linkedClass class="globaz.ij.db.prononces.IJEmployeur"
+				relationType="1_TO_1" idParent="idEmployeur" forIdParent="na"
+				manager="na" />
+		</linkedClass>
+	</clone>
+
+
+	<!-- 
+		Correction d'une petite IJ:
+		
+		- On ne copie pas les IJCalculees (elles seront recalculees)
+		- On ne copie pas les bases d'indemnisations (celles qui doivent être
+		copiées le seront lors du calcul des nouvelles IJCalculees
+	-->
+	<clone id="IJPetiteIJ-correction"
+		class="globaz.ij.db.prononces.IJPetiteIJ">
+
+		<linkedClass class="globaz.ij.db.prononces.IJRevenu"
+			relationType="1_TO_1" idParent="idRevenuReadaptation" manager="na"
+			forIdParent="na" />
+
+		<linkedClass class="globaz.ij.db.prononces.IJMesure"
+			relationType="1_TO_N" idParent="idPrononce"
+			manager="globaz.ij.db.prononces.IJMesureManager"
+			forIdParent="forIdPrononce">
+
+			<linkedClass class="globaz.ij.db.prononces.IJAgentExecution"
+				relationType="1_TO_1" idParent="idAgentExecution" manager="na"
+				forIdParent="na" />
+		</linkedClass>
+
+		<linkedClass class="globaz.ij.db.prononces.IJRevenu"
+			relationType="1_TO_1" idParent="idDernierRevenuOuManqueAGagner"
+			manager="na" forIdParent="na" />
+	</clone>
+
+
+
+	<!-- 
+		Copie d'une petite IJ:
+		
+		identique à une correction
+		- On ne copie pas les IJCalculees (elles seront recalculees)
+		- On ne copie pas les bases d'indemnisations (celles qui doivent être
+		copiées le seront lors du calcul des nouvelles IJCalculees
+	-->
+	<clone id="IJPetiteIJ-copie"
+		class="globaz.ij.db.prononces.IJPetiteIJ">
+
+		<linkedClass class="globaz.ij.db.prononces.IJRevenu"
+			relationType="1_TO_1" idParent="idRevenuReadaptation" manager="na"
+			forIdParent="na" />
+
+		<linkedClass class="globaz.ij.db.prononces.IJMesure"
+			relationType="1_TO_N" idParent="idPrononce"
+			manager="globaz.ij.db.prononces.IJMesureManager"
+			forIdParent="forIdPrononce">
+
+			<linkedClass class="globaz.ij.db.prononces.IJAgentExecution"
+				relationType="1_TO_1" idParent="idAgentExecution" manager="na"
+				forIdParent="na" />
+		</linkedClass>
+
+		<linkedClass class="globaz.ij.db.prononces.IJRevenu"
+			relationType="1_TO_1" idParent="idDernierRevenuOuManqueAGagner"
+			manager="na" forIdParent="na" />
+	</clone>
+
+
+	<!-- 
+		Correction d'une base d'indemnisation:
+		
+		- On ne copie pas les prestations (elles seront recalculées).
+	-->
+	<clone id="IJBaseIndemnisation-correction"
+		class="globaz.ij.db.basesindemnisation.IJBaseIndemnisation" />
+
+	<!-- 
+		Copie d'une prestation
+	-->
+	<clone id="IJPrestation-copie"
+		class="globaz.ij.db.prestations.IJPrestation">
+
+		<linkedClass
+			class="globaz.ij.db.prestations.IJRepartitionPaiements"
+			relationType="1_TO_N" idParent="idPrestation"
+			manager="globaz.ij.db.prestations.IJRepartitionPaiementsManager"
+			forIdParent="forIdPrestation">
+
+			<linkedClass class="globaz.ij.db.prestations.IJCotisation"
+				relationType="1_TO_N" idParent="idRepartitionPaiement"
+				manager="globaz.ij.db.prestations.IJCotisationManager"
+				forIdParent="forIdRepartitionPaiements" />
+		</linkedClass>
+
+	</clone>
+
+	<!-- 
+		Correction d'une IJ AIT:
+		
+		- On ne copie pas les IJCalculees (elles seront recalculees)
+		- On ne copie pas les bases d'indemnisations (celles qui doivent être
+		copiées le seront lors du calcul des nouvelles IJCalculees
+	-->
+	<clone id="IJAitIJ-correction"
+		class="globaz.ij.db.prononces.IJPrononceAit">
+
+		<linkedClass class="globaz.ij.db.prononces.IJMesure"
+			relationType="1_TO_N" idParent="idPrononce"
+			manager="globaz.ij.db.prononces.IJMesureManager"
+			forIdParent="forIdPrononce">
+
+			<linkedClass class="globaz.ij.db.prononces.IJAgentExecution"
+				relationType="1_TO_1" idParent="idAgentExecution" manager="na"
+				forIdParent="na" />
+		</linkedClass>
+
+		<linkedClass
+			class="globaz.ij.db.prononces.IJSituationProfessionnelle"
+			relationType="1_TO_N" idParent="idPrononce"
+			manager="globaz.ij.db.prononces.IJSituationProfessionnelleManager"
+			forIdParent="forIdPrononce">
+
+			<linkedClass class="globaz.ij.db.prononces.IJEmployeur"
+				relationType="1_TO_1" idParent="idEmployeur" forIdParent="na"
+				manager="na" />
+		</linkedClass>
+	</clone>
+
+	<!-- 
+		Copie d'une IJ AIT:
+		
+		identique à une correction
+		
+		- On ne copie pas les IJCalculees (elles seront recalculees)
+		- On ne copie pas les bases d'indemnisations (celles qui doivent être
+		copiées le seront lors du calcul des nouvelles IJCalculees
+	-->
+	<clone id="IJAitIJ-copie"
+		class="globaz.ij.db.prononces.IJPrononceAit">
+
+		<linkedClass class="globaz.ij.db.prononces.IJMesure"
+			relationType="1_TO_N" idParent="idPrononce"
+			manager="globaz.ij.db.prononces.IJMesureManager"
+			forIdParent="forIdPrononce">
+
+			<linkedClass class="globaz.ij.db.prononces.IJAgentExecution"
+				relationType="1_TO_1" idParent="idAgentExecution" manager="na"
+				forIdParent="na" />
+		</linkedClass>
+
+		<linkedClass
+			class="globaz.ij.db.prononces.IJSituationProfessionnelle"
+			relationType="1_TO_N" idParent="idPrononce"
+			manager="globaz.ij.db.prononces.IJSituationProfessionnelleManager"
+			forIdParent="forIdPrononce">
+
+			<linkedClass class="globaz.ij.db.prononces.IJEmployeur"
+				relationType="1_TO_1" idParent="idEmployeur" forIdParent="na"
+				manager="na" />
+		</linkedClass>
+	</clone>
+
+	<!-- 
+		Correction d'une IJ AA:
+		
+		- On ne copie pas les IJCalculees (elles seront recalculees)
+		- On ne copie pas les bases d'indemnisations (celles qui doivent être
+		copiées le seront lors du calcul des nouvelles IJCalculees
+	-->
+	<clone id="IJAaIJ-correction"
+		class="globaz.ij.db.prononces.IJPrononceAllocAssistance">
+	</clone>
+
+	<!-- 
+		Copie d'une IJ AA:
+		
+		identique à une correction
+		
+		- On ne copie pas les IJCalculees (elles seront recalculees)
+		- On ne copie pas les bases d'indemnisations (celles qui doivent être
+		copiées le seront lors du calcul des nouvelles IJCalculees
+	-->
+	<clone id="IJAaIJ-copie"
+		class="globaz.ij.db.prononces.IJPrononceAllocAssistance">
+
+	</clone>
+
+</clones>

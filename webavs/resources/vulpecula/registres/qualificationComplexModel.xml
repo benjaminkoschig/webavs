@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.qualification.QualificationComplexModel">
+
+		<root-model name="conventionQualificationSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.qualification.ConventionQualificationSimpleModel" />
+
+		<linked-model name="administrationComplexModel"
+			model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS"
+					field-ref="conventionQualificationSimpleModel.idConvention" />
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdConvention"
+					field-ref="conventionQualificationSimpleModel.idConvention" operation="EQUALS" />
+				<search-field name="forIdConventionQualification"
+					field-ref="conventionQualificationSimpleModel.id"
+					operation="EQUALS" />
+			</search-group>
+		</search-definition>
+
+		<order-by name="idDesc">
+			<order-field field-ref="conventionQualificationSimpleModel.idConvention"
+				order="DESC" />
+		</order-by>
+
+		<order-by name="idAsc">
+			<order-field field-ref="conventionQualificationSimpleModel.idConvention" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

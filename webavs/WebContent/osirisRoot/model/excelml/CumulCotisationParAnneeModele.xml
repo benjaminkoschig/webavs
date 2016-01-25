@@ -1,0 +1,268 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>Jean SIGNORI</Author>
+  <LastAuthor>Sullivan CORNEILLE</LastAuthor>
+  <LastPrinted>2011-11-24T14:15:19Z</LastPrinted>
+  <Created>2010-10-25T15:10:20Z</Created>
+  <LastSaved>2011-11-24T13:17:23Z</LastSaved>
+  <Company>GLOBAZ</Company>
+  <Version>14.00</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <AllowPNG/>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>13035</WindowHeight>
+  <WindowWidth>18795</WindowWidth>
+  <WindowTopX>120</WindowTopX>
+  <WindowTopY>60</WindowTopY>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Arial"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s62">
+   <Font ss:FontName="Sans Sherif" ss:Size="8"/>
+  </Style>
+  <Style ss:ID="s63">
+   <Font ss:FontName="Sans Sherif" ss:Size="8"/>
+   <NumberFormat ss:Format="Short Date"/>
+  </Style>
+  <Style ss:ID="s64">
+   <Font ss:FontName="Sans Sherif" ss:Size="8" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s65">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Sans Sherif" ss:Size="8" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s66">
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Sans Sherif" ss:Size="8" ss:Bold="1"/>
+   <Interior ss:Color="#D9D9D9" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s67">
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Sans Sherif" ss:Size="8"/>
+  </Style>
+  <Style ss:ID="s68">
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Sans Sherif" ss:Size="8"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s69">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Sans Sherif" ss:Size="8" ss:Bold="1"/>
+   <Interior ss:Color="#D9D9D9" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s70">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Sans Sherif" ss:Size="8" ss:Bold="1"/>
+   <Interior ss:Color="#D9D9D9" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s71">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Sans Sherif" ss:Size="8" ss:Bold="1"/>
+   <Interior ss:Color="#D9D9D9" ss:Pattern="Solid"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s72">
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Sans Sherif" ss:Size="8" ss:Bold="1"/>
+   <Interior ss:Color="#D9D9D9" ss:Pattern="Solid"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+ </Styles>
+ <Names>
+  <NamedRange ss:Name="ANNEE_COTISATION" ss:RefersTo="=Feuil1!R8C2"/>
+  <NamedRange ss:Name="COMPANYNAME" ss:RefersTo="=Feuil1!R3C1"/>
+  <NamedRange ss:Name="DATE_DOC" ss:RefersTo="=Feuil1!R1C4"/>
+  <NamedRange ss:Name="DATE_VALEUR" ss:RefersTo="=Feuil1!R5C2"/>
+  <NamedRange ss:Name="LABEL_ANNEE_COTISATION" ss:RefersTo="=Feuil1!R7C2"/>
+  <NamedRange ss:Name="LABEL_DATE_VALEUR" ss:RefersTo="=Feuil1!R5C1"/>
+  <NamedRange ss:Name="LABEL_MASSE" ss:RefersTo="=Feuil1!R7C4"/>
+  <NamedRange ss:Name="LABEL_MONTANT" ss:RefersTo="=Feuil1!R7C3"/>
+  <NamedRange ss:Name="LABEL_RUBRIQUE" ss:RefersTo="=Feuil1!R7C1"/>
+  <NamedRange ss:Name="LABEL_RUBRIQUE_VALEUR" ss:RefersTo="=Feuil1!R4C1"/>
+  <NamedRange ss:Name="LABEL_TOTAL" ss:RefersTo="=Feuil1!R9C1"/>
+  <NamedRange ss:Name="MASSE" ss:RefersTo="=Feuil1!R8C4"/>
+  <NamedRange ss:Name="MONTANT" ss:RefersTo="=Feuil1!R8C3"/>
+  <NamedRange ss:Name="NUMERO_INFOROM" ss:RefersTo="=Feuil1!R1C1"/>
+  <NamedRange ss:Name="RUB_VALEUR" ss:RefersTo="=Feuil1!R4C2"/>
+  <NamedRange ss:Name="RUBRIQUE" ss:RefersTo="=Feuil1!R8C1"/>
+  <NamedRange ss:Name="TITLE" ss:RefersTo="=Feuil1!R2C2"/>
+  <NamedRange ss:Name="TOTAL_MASSE" ss:RefersTo="=Feuil1!R9C4"/>
+  <NamedRange ss:Name="TOTAL_MONTANT" ss:RefersTo="=Feuil1!R9C3"/>
+ </Names>
+ <Worksheet ss:Name="Feuil1">
+  <Table ss:ExpandedColumnCount="4" ss:ExpandedRowCount="9" x:FullColumns="1"
+   x:FullRows="1" ss:StyleID="s62" ss:DefaultColumnWidth="60"
+   ss:DefaultRowHeight="11.25">
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="187.5"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="153.75"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="123.75" ss:Span="1"/>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">numeroInforom</Data><NamedCell
+      ss:Name="NUMERO_INFOROM"/></Cell>
+    <Cell ss:Index="4" ss:StyleID="s63"><Data ss:Type="DateTime">2010-10-10T00:00:00.000</Data><NamedCell
+      ss:Name="DATE_DOC"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s64"><Data ss:Type="String">dfg</Data><NamedCell
+      ss:Name="TITLE"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s64"><Data ss:Type="String">COMPANYNAME</Data><NamedCell
+      ss:Name="COMPANYNAME"/></Cell>
+    <Cell ss:Index="3" ss:StyleID="s65"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Rubrique.</Data><NamedCell
+      ss:Name="LABEL_RUBRIQUE_VALEUR"/></Cell>
+    <Cell><Data ss:Type="String">P_COMPTABILITE_VAL</Data><NamedCell
+      ss:Name="RUB_VALEUR"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Date valeur</Data><NamedCell
+      ss:Name="LABEL_DATE_VALEUR"/></Cell>
+    <Cell><Data ss:Type="String">10.10.2010 - 20.20.2010</Data><NamedCell
+      ss:Name="DATE_VALEUR"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">   </Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Rubrique.</Data><NamedCell
+      ss:Name="LABEL_RUBRIQUE"/></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Année Cotisation.</Data><NamedCell
+      ss:Name="LABEL_ANNEE_COTISATION"/></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Montant.</Data><NamedCell
+      ss:Name="LABEL_MONTANT"/></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Masse.</Data><NamedCell
+      ss:Name="LABEL_MASSE"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s67"><Data ss:Type="String">3213.21212.1212.2122</Data><NamedCell
+      ss:Name="RUBRIQUE"/></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="Number">2005</Data><NamedCell
+      ss:Name="ANNEE_COTISATION"/></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="Number">1324153432.21</Data><NamedCell
+      ss:Name="MONTANT"/></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="Number">2315431231.21</Data><NamedCell
+      ss:Name="MASSE"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Total final</Data><NamedCell
+      ss:Name="LABEL_TOTAL"/></Cell>
+    <Cell ss:StyleID="s70"/>
+    <Cell ss:StyleID="s71"><Data ss:Type="Number">64654646464654.203</Data><NamedCell
+      ss:Name="TOTAL_MONTANT"/></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="Number">50123654789.209999</Data><NamedCell
+      ss:Name="TOTAL_MASSE"/></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Layout x:Orientation="Landscape"/>
+    <Header x:Margin="0.31496062992125984"/>
+    <Footer x:Margin="0.31496062992125984" x:Data="&amp;C&amp;D - &amp;T - &amp;P / &amp;N"/>
+    <PageMargins x:Bottom="0.74803149606299213" x:Left="0.23622047244094491"
+     x:Right="0.23622047244094491" x:Top="0.74803149606299213"/>
+   </PageSetup>
+   <Unsynced/>
+   <FitToPage/>
+   <Print>
+    <FitHeight>0</FitHeight>
+    <ValidPrinterInfo/>
+    <PaperSizeIndex>9</PaperSizeIndex>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>7</ActiveRow>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Feuil2">
+  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="1" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60">
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.4921259845"/>
+    <Footer x:Margin="0.4921259845"/>
+    <PageMargins x:Bottom="0.984251969" x:Left="0.78740157499999996"
+     x:Right="0.78740157499999996" x:Top="0.984251969"/>
+   </PageSetup>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Feuil3">
+  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="1" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60">
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.4921259845"/>
+    <Footer x:Margin="0.4921259845"/>
+    <PageMargins x:Bottom="0.984251969" x:Left="0.78740157499999996"
+     x:Right="0.78740157499999996" x:Top="0.984251969"/>
+   </PageSetup>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>

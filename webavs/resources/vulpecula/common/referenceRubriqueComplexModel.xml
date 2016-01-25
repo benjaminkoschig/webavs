@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.comptabilite.ReferenceRubriqueComplexModel">
+
+		<root-model name="codeSystemSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.utils.CodeSystemSimpleModel" />
+
+		<linked-model name="codeSystemLibelleSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.utils.CodeSystemLibelleSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idCodeSystem"
+					operation="EQUALS" field-ref="codeSystemSimpleModel.idCodeSystem" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="referenceRubriqueSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.comptabilite.ReferenceRubriqueSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idCodeReference"
+					operation="EQUALS" field-ref="codeSystemSimpleModel.idCodeSystem" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="rubriqueSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.comptabilite.RubriqueSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idRubrique"
+					operation="EQUALS" field-ref="referenceRubriqueSimpleModel.idRubrique" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="codeSystemSimpleModel.idCodeSystem"
+					operation="EQUALS" />
+				<search-field name="forLangue" field-ref="codeSystemLibelleSimpleModel.langue" operation="EQUALS" />
+				<search-field name="likeIdExterne" field-ref="rubriqueSimpleModel.idExterne" operation="LIKE" />
+				<search-field name="likeLibelle" field-ref="codeSystemLibelleSimpleModel.libelle" operation="LIKE" />
+				<search-field name="forIdRubrique" field-ref="rubriqueSimpleModel.idRubrique" operation="EQUALS" />
+				<search-field name="forReferenceRubrique" field-ref="referenceRubriqueSimpleModel.idCodeReference" operation="EQUALS" />
+				<search-field name="forPlageInferieure" field-ref="codeSystemSimpleModel.idCodeSystem" operation="GREATER_OR_EQUALS" />
+				<search-field name="forPlageSuperieure" field-ref="codeSystemSimpleModel.idCodeSystem" operation="LESS_OR_EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field
+				field-ref="rubriqueSimpleModel.idExterne"
+				order="ASC" />
+		</order-by>
+
+	</complexe-model>
+</model-mapping>

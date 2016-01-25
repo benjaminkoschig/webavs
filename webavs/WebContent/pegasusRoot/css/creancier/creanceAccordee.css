@@ -1,0 +1,74 @@
+body {
+	
+}
+
+.strong{
+	 font-weight:bold;
+}
+
+.libelle ,.libelleRight {
+	width:350px;
+}
+.libellTabCreance,.libelleTabDifference{
+	width:343px;
+}
+.libelleCreance{
+	width:210px;
+}
+.tailleMontant, .libelleRight{
+	text-align:right;
+}
+
+.red{
+	color:#D01F3C !important;
+	font-weight:bold;
+	font-size:14px;
+}
+.tailleMontant{
+	width:140px;
+}
+.tailleMontantCreance{
+	width:70px;
+}
+
+.tailleMontant input{
+	width: 80px;
+}
+
+.somme{
+	font-weight: bold;
+	border-top: 4px double black;
+}
+
+
+.separation{
+    height: 15px;
+    border-bottom:1px solid #356AA0;	
+}
+
+.creanceACC table{
+	/*border-spacing: 10px;*/
+}
+
+.creanceACC1  td{
+	padding:0px 0 10px 0;
+}
+
+#repartition tr, #repartition tbody {
+	margin:0;
+	padding:0;
+}
+#tableCreance tr, #tableCreance tbody {
+	margin:0;
+	padding:0;
+}
+#tableCreance td{
+	 padding:10px 0 0 0;
+}
+.hauteur td{
+	padding:10px 0 0 0;
+}
+
+#repartition td{
+    padding:10px 0 0 0;
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--# set echo="url" -->
+<%
+globaz.framework.controller.FWController controller = (globaz.framework.controller.FWController) session.getAttribute("objController");
+globaz.globall.db.BSession objSession = (globaz.globall.db.BSession)controller.getSession();
+String languePage = globaz.framework.controller.FWDefaultServletAction.getIdLangueIso(session);
+String servletContext = request.getContextPath();
+String mainServletPath = (String)request.getAttribute("mainServletPath");
+String menuName = "";
+String menuDetailLabel = "Détail";
+int size = 0;
+String detailLink = "";
+String detailLinkId = "";
+String target = "parent";
+String targetLocation = target + ".location.href";
+String actionDetail = "";
+String optionsPopupLabel = "Options";
+if ("DE".equalsIgnoreCase(languePage)) {
+	optionsPopupLabel = "Optionen";
+	menuDetailLabel = "Detail";
+}
+if (mainServletPath == null) {
+	mainServletPath = "";
+}
+// pour sélection
+boolean isSelection = "yes".equals(request.getParameter("colonneSelection"));
+String selectionStr = isSelection ? "&colonneSelection=yes" : "";
+// pour pagination
+boolean wantPagination = true;
+boolean wantPaginationPosition = false;
+String baseLink = mainServletPath+"?userAction="+request.getParameter("userAction");
+baseLink = baseLink.substring(1,baseLink.lastIndexOf(".")+1);
+String findPreviousLink = baseLink + "precedant" + selectionStr;
+String findNextLink = baseLink + "suivant" + selectionStr;
+boolean autoShowErrorPopup = session.getAttribute(globaz.framework.servlets.FWServlet.OBJ_NO_JSP_POPUP) == null;
+boolean vBeanHasErrors = false;
+%>
+<HEAD>
+<script type="text/javascript">
+var langue = "<%=languePage%>"; 
+</script>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<meta http-equiv="Cache-Control" content="no-cache" />
+<meta name="User-Lang" content="<%=languePage%>"/> 
+<meta name="Context_URL" content="<%=servletContext%>"/>  
+<meta name="formAction" content="<%=servletContext + mainServletPath%>"/>  
+<link rel="stylesheet" type="text/css" href="<%=servletContext%><%=(mainServletPath+"Root")%>/moduleStyle.css"/>
+<TITLE></TITLE>
+<link type="text/css" href="<%=servletContext%>/theme/jquery/jquery-ui.css" rel="stylesheet" />
+<script type="text/javascript" src="<%=servletContext%>/scripts/dates.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jquery.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jquery-ui.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/params.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/calendar/AnchorPosition.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/calendar/PopupWindow.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/autocomplete.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/selectionPopup.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/utils.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/menu.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/menuPopup.js"></script>
+<%@ include file="/jade/notation/notationLibJs.jspf" %> 
+
+<!--
+ raccourcis claviers pour listes
+-->
+<script>
+var selection = <%=isSelection ? "true" : "false" %>;
+</script>
+
+<script type="text/javascript" src="<%=servletContext%>/scripts/rcListKeyAccelerator.js"></script>
+<!--
+ fin raccourcis claviers pour listes
+-->
+<!-- Pour insérer des scripts ou des déclarations/utilisations de beans -->

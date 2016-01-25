@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<!-- Modèle simple taux monnaies etrangères PTA 08.10.2010 -->
+	
+	<simple-model className="ch.globaz.al.business.models.tauxMonnaieEtrangere.TauxMonnaieEtrangereModel">
+	<description>Taux monnaie étrangère</description>
+		<table name="ALTXMETR" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+			<fields>
+					<primary-key name="idTauxMonnaieEtrangere" column="TXID" comment="ID du taux de la monnaie"/>
+					<field name="tauxMonnaie" column="TXTAUX" type="NUMERIC" dataType="NUMERIC(15,6)"  mandatory="true" comment="Taux de versement du droit"/>
+					<field name="typeMonnaie" column="CSTYPM" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="code système pour le type de valeur du taux" />
+					<field name="debutTaux" column="TXVADE" type="MONTH_YEAR"  mandatory="true" comment="Début de validité pour le taux en mois année" />
+					<field name="finTaux" column="TXVAFI" type="MONTH_YEAR"  mandatory="false" comment="Fin de validité pour le taux en mois année" />
+			</fields>
+			<search-definition>
+				<search-group operator="AND">
+					<search-field name="forDebutValiditeTaux" field-ref="debutTaux" operation="EQUALS"/>
+					<search-field name="forTypeMonnaie" field-ref="typeMonnaie" operation="EQUALS"/>
+					<search-field name="forFinValiditeTaux" field-ref="finTaux" operation="EQUALS"/>
+						<!--<search-literal> <![CDATA[ (#{finTaux} ==0) ]]></search-literal>-->
+						<!--<search-field name="forFinValiditeTaux" field-ref="finTaux" operation="EQUALS"/>-->
+				</search-group>
+			</search-definition>
+			<search-definition name="rechercheDecompteAdi">
+				<search-group operator="AND">
+					<search-field name="forDebutValiditeTaux" field-ref="debutTaux" operation="GREATER_OR_EQUALS"/>
+					<search-field name="forTypeMonnaie" field-ref="typeMonnaie" operation="EQUALS"/>
+					<search-field name="forFinValiditeTaux" field-ref="finTaux" operation="LESS_OR_EQUALS"/>
+				</search-group>
+			</search-definition>
+			
+			<order-by>
+				<order-field field-ref="typeMonnaie" order="ASC"/>
+				<order-field field-ref="debutTaux" order="ASC"/>
+			</order-by>
+	</simple-model>
+</model-mapping>

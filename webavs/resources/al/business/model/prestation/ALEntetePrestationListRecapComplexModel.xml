@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'une liste de droit -->
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.prestation.EntetePrestationListRecapComplexModel">
+		<root-model name="entetePrestationModel" model-ref="ch.globaz.al.business.models.prestation.EntetePrestationModel"/>
+		<linked-model name="dossierModel" model-ref="ch.globaz.al.business.models.dossier.DossierModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDossier" field-ref="entetePrestationModel.idDossier"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="allocataireComplexModel" model-ref="ch.globaz.al.business.models.allocataire.AllocataireComplexModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="allocataireModel.idAllocataire" field-ref="dossierModel.idAllocataire"/>
+			</join-group>
+		</linked-model>
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdRecap" field-ref="entetePrestationModel.idRecap" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		<order-by name="default"  >
+			<order-field field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation1" order="ASC"/>
+			<order-field field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation2" order="ASC"/>
+		</order-by> 	
+			
+	</complexe-model>
+</model-mapping>

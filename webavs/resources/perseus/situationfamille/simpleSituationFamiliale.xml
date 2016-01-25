@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.situationfamille.SimpleSituationFamiliale">
+		<description>Tables des situations familiales pour une demande de PC Famille</description>
+		<table name="PFSITFAM" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idSituationFamilliale" column="IDIDSF" comment="Clé primaire de la table des situations familiales"/>
+			<field name="idConjoint" column="IDIDCO" type="NUMERIC" comment="Identifiant du conjoin"/>
+			<field name="idRequerant" column="IDIDRE" type="NUMERIC" mandatory="true" comment="Identifiant du requerant"/>
+			<field name="csTypeConjoint" column="IDCSTC" type="NUMERIC" mandatory="false" comment="Type de conjoint (cs)"/>
+			<field name="csNiveauFormationConjoint" column="IDNFCO" type="NUMERIC" mandatory="false" comment="Niveau de formation du conjoint (cs)" />
+			<field name="csNiveauFormationRequerant" column="IDNFRE" type="NUMERIC" mandatory="false" comment="Niveau de formation du requérant (cs)" />
+			<field name="csEtatCivilRequerant" column="IDECRE" type="NUMERIC" mandatory="false" comment="Etat civil du requérant"/>
+			<field name="csEtatCivilConjoint" column="IDECCO" type="NUMERIC" mandatory="false" comment="Etat civil du conjoint"/>
+			<field name="csSituationActiviteRequerant" column="IDSARE" type="NUMERIC" mandatory="false" comment="Situation d'activité du requérant"/>
+		</fields>
+	</simple-model>
+</model-mapping>

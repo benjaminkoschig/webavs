@@ -1,0 +1,252 @@
+<%@page import="globaz.jade.client.util.JadeDateUtil"%>
+<%@page import="ch.globaz.al.business.models.droit.CalculBusinessModel"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="java.util.ArrayList" %>
+<%@page import="globaz.jade.client.util.JadeStringUtil"%>
+<script type="text/javascript">
+
+</script>
+
+<%
+
+Map<String, Map<String, ArrayList<CalculBusinessModel>>> droitsListe = viewBean.getDroitsListExtended();
+%>
+	<thead>
+	<tr>
+                  <th scope="col"></th>
+                  <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_NOM"/></th>
+                  <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_PAYS"/></th>
+                  <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_DATENAISSANCE"/></th>
+                  <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_DATEDEBUT"/></th>
+                  <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_DATEFIN"/></th>
+                  <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_MOTIF"/></th>
+                  <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_TYPE"/></th>
+                  <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_INFO"/></th>
+                  
+                  <%
+                  //Les colonnes de la liste des droits diffèrent dans le cas d'un dossier CS
+                  if(ALCSDossier.STATUT_CS.equals(viewBean.getDossierComplexModel().getDossierModel().getStatut())){ %>
+                 	<th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_CSLOI1"/>&nbsp;<%=(viewBean.getDroitsList().size()>0 && !JadeStringUtil.isEmpty(((CalculBusinessModel)viewBean.getDroitsList().get(0)).getTarif()))?objSession.getCode(((CalculBusinessModel)viewBean.getDroitsList().get(0)).getTarif()):objSession.getCode(viewBean.getAffiliation().getCanton()) %></th>
+                  	<th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_CSLOI2"/>&nbsp;<%=objSession.getCode(viewBean.getDossierComplexModel().getDossierModel().getLoiConjoint()) %></th>
+                  	<th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_CSDIFF"/></th>
+                  	<th scope="col"></th>
+                 
+                  <%}else{%>
+                  	<th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_MONTANT"/></th>
+                  	<th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_TARIF"/></th>
+                  	<th scope="col" ><%if (droitsListe.size()>0){ %><a title="Montrer tous les droits" class="showAllDetails" href="#"></a><a title="Cacher tous les droits inactifs" class="hideAllDetails" href="#"></a><%} %></th>
+                  <%} %>         
+     </tr>
+     </thead>
+    <tbody>
+<%
+
+//affichage des enfants ayant au moins un droits actifs 
+//1er for : droits actifs (get("1"))
+//2e for : droits inactifs (get("0"))
+for (Map<String, ArrayList<CalculBusinessModel>> listeParAllocEnfant :droitsListe.values()) {
+	if(listeParAllocEnfant.get("1").size()>0){
+		
+		//affichage d'abord de/s droit/s actif/s 
+		//normalement un seul ! sinon cas bizarre et les droits inactifs cachés seront sous le 2e seulement...
+		for(int i=0;i<listeParAllocEnfant.get("1").size();i++){
+			
+			CalculBusinessModel line = listeParAllocEnfant.get("1").get(i);
+			if(!ALCSDroit.TYPE_ACCE.equals(line.getType()) && !ALCSDroit.TYPE_NAIS.equals(line.getType())){
+					condition = (lineDisplayCpt % 2 == 0);
+	            	if(!condition)
+	            		rowStyle="odd";
+	            	else
+	            		rowStyle="nonodd";
+	            	
+	            	//le droit est considéré comme parent si il y a des inactifs pour l'enfant 
+	            	if(listeParAllocEnfant.get("0").size()>0 && (ALCSDroit.TYPE_ENF.equals(line.getType()) || ALCSDroit.TYPE_FORM.equals(line.getType()) ) ) {
+	            		rowStyle = rowStyle.concat(" parent");
+	            	}
+	            	
+	            	lineDisplayCpt++;
+				if(line.getDroit()!=null){
+					String actionDetail = detailLink.concat(line.getDroit().getId())+"&montantCalcule="+montantCalcule+"'";
+					String inactiveStyle = "active";	
+					%>
+					<%@ include file="/alRoot/dossier/part_html_droits_list/part_normal_droit.jspf" %>
+					<% 	
+				}
+				else{%>
+					<%@ include file="/alRoot/dossier/part_html_droits_list/part_supplement_droit.jspf" %>
+					<%
+				}
+			}
+			
+		}
+		//affichage ensuite de/s droit/s inactif/s 
+		
+		for(int i=0;i<listeParAllocEnfant.get("0").size();i++){
+			
+			CalculBusinessModel line = listeParAllocEnfant.get("0").get(i);
+			if(!ALCSDroit.TYPE_ACCE.equals(line.getType()) && !ALCSDroit.TYPE_NAIS.equals(line.getType())){
+				//pas besoin de définir le style en fonction de displayCpt car aura le même style (odd/nonodd) que son parent
+				// on remplace parent par child
+				if(rowStyle.indexOf("parent")>-1){
+					rowStyle = rowStyle.substring(0, rowStyle.indexOf("parent")).concat("child");
+				}
+				if(line.getDroit()!=null){
+					String actionDetail = detailLink.concat(line.getDroit().getId())+"&montantCalcule="+montantCalcule+"'";
+					String inactiveStyle = "inactive";	
+					
+					%>
+					<%@ include file="/alRoot/dossier/part_html_droits_list/part_normal_droit.jspf" %>
+					<% 	
+				}
+				else{%>
+					<%@ include file="/alRoot/dossier/part_html_droits_list/part_supplement_droit.jspf" %>
+					<%
+				}
+			}	
+		}		
+	}
+}
+
+//affichage des enfants sans aucun droit actif, uniquement droit/s inactif/s
+for (Map<String, ArrayList<CalculBusinessModel>> listeParAllocEnfant :droitsListe.values()) {
+	if(listeParAllocEnfant.get("1").size()==0 && listeParAllocEnfant.get("0").size()>0){
+		
+		int mostRecentDateIndex=-1;
+		String mostRecentDate="0";
+		//boucle servant uniquement a choper le droit le plus récent...pas super optimal, il aurait fallu trier la liste avant...
+		//mais bon, pas énormément d'objet
+		for(int i=0;i<listeParAllocEnfant.get("0").size();i++){
+			CalculBusinessModel currentLine = listeParAllocEnfant.get("0").get(i);
+			if(!ALCSDroit.TYPE_ACCE.equals(currentLine.getType()) && !ALCSDroit.TYPE_NAIS.equals(currentLine.getType())){
+				if(currentLine.getDroit()!=null){
+					//si la date du droit itéré est plus récente que celle mémorisé jusqu'ici, on remplace
+					if("0".equals(mostRecentDate) || JadeDateUtil.isDateBefore( mostRecentDate,currentLine.getDroit().getDroitModel().getFinDroitForcee())){			
+						mostRecentDateIndex=i;
+					}
+				}
+			}
+		}
+		//mostRecentDroit
+		CalculBusinessModel line = listeParAllocEnfant.get("0").remove(mostRecentDateIndex);	
+		condition = (lineDisplayCpt % 2 == 0);
+    	if(!condition)
+    		rowStyle="odd";
+    	else
+    		rowStyle="nonodd";
+    	lineDisplayCpt++;
+    	//si il reste des droits inactifs dans la liste après le traitement isole de mostRecentDroit, alors il est parent
+    	if(listeParAllocEnfant.get("0").size()>0 && (ALCSDroit.TYPE_ENF.equals(line.getType()) || ALCSDroit.TYPE_FORM.equals(line.getType()) ) ) {
+    	  	rowStyle = rowStyle.concat(" parent");
+    	}
+		
+    	if(line.getDroit()!=null){
+			
+			String actionDetail = detailLink.concat(line.getDroit().getId())+"&montantCalcule="+montantCalcule+"'";
+			String inactiveStyle = "inactive";	
+			%>
+			<%@ include file="/alRoot/dossier/part_html_droits_list/part_normal_droit.jspf" %>
+			<% 	
+		}
+		else{%>
+			<%@ include file="/alRoot/dossier/part_html_droits_list/part_supplement_droit.jspf" %>
+			<%
+		}
+ 	
+		//puis on traite les autres droits inactifs comme enfants de celui isolé (mostRecentDroit)
+		for(int i=0;i<listeParAllocEnfant.get("0").size();i++){
+			
+			line = listeParAllocEnfant.get("0").get(i);
+			if(!ALCSDroit.TYPE_ACCE.equals(line.getType()) && !ALCSDroit.TYPE_NAIS.equals(line.getType())){
+	
+				if(rowStyle.indexOf("parent")>-1){
+					rowStyle = rowStyle.substring(0, rowStyle.indexOf("parent")).concat("child");
+				}
+				
+				if(line.getDroit()!=null){
+					
+					String actionDetail = detailLink.concat(line.getDroit().getId())+"&montantCalcule="+montantCalcule+"'";
+					String inactiveStyle = "inactive";	
+					
+					%>
+					<%@ include file="/alRoot/dossier/part_html_droits_list/part_normal_droit.jspf" %>
+					<% 	
+				}
+				else{%>
+					<%@ include file="/alRoot/dossier/part_html_droits_list/part_supplement_droit.jspf" %>
+					<%
+				}
+			}
+		 	
+		}
+		
+	}
+}       
+
+
+condition = (lineDisplayCpt % 2 == 0);
+if(!condition)
+  rowStyle="odd";
+else
+  rowStyle="nonodd";           	
+lineDisplayCpt++;
+            	
+//Affichage de la ligne du total
+%>
+</tbody>
+<tfoot>
+<%@ include file="/alRoot/dossier/part_html_droits_list/part_total_droits.jspf" %>			
+<%
+
+//Affichage des droits naissance
+for (Map<String, ArrayList<CalculBusinessModel>> listeParAllocEnfant :droitsListe.values()) {
+	
+		//affichage d'abord de/s droit/s actif/s
+		for(int i=0;i<listeParAllocEnfant.get("1").size();i++){
+			
+			CalculBusinessModel line = listeParAllocEnfant.get("1").get(i);
+     		
+         	//les droits naissance et accueil sont affichés en dessous du total
+         	if((line.getDroit()!= null) && (ALCSDroit.TYPE_ACCE.equals(line.getType()) || ALCSDroit.TYPE_NAIS.equals(line.getType()))){
+         		
+         		String inactiveStyle = "active";
+             	
+         		condition = (lineDisplayCpt % 2 == 0);
+            	if(!condition)
+            		rowStyle="odd";
+            	else
+            		rowStyle="nonodd";
+            	
+            	lineDisplayCpt++;
+            	%>
+            	<%@ include file="/alRoot/dossier/part_html_droits_list/part_nais_droit.jspf" %>
+            	<%	
+         	}
+		}
+		
+		//affichage des droits inactifs
+		for(int i=0;i<listeParAllocEnfant.get("0").size();i++){
+			CalculBusinessModel line = listeParAllocEnfant.get("0").get(i);
+         	//les droits naissance et accueil sont affichés en dessous du total
+         	if((line.getDroit()!= null) && (ALCSDroit.TYPE_ACCE.equals(line.getType()) || ALCSDroit.TYPE_NAIS.equals(line.getType()))){
+         		String inactiveStyle = "inactive";
+         		
+         		condition = (lineDisplayCpt % 2 == 0);
+            	if(!condition)
+            		rowStyle="odd";
+            	else
+            		rowStyle="nonodd";
+            	
+            	lineDisplayCpt++;
+            	%>
+            	<%@ include file="/alRoot/dossier/part_html_droits_list/part_nais_droit.jspf" %>
+            	<%	
+         	}
+		}
+	
+}
+
+if(Integer.parseInt(modeAffichageDroits)>1){ %>
+	<tr><td colspan="12" style="background-color:green;">NOUVELLE VERSION</td></tr>
+<%} %>
+</tfoot>

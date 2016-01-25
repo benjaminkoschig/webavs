@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.revenusdepenses.RevenuActiviteLucrativeIndependante">
+	
+		<root-model name="simpleRevenuActiviteLucrativeIndependante" model-ref="ch.globaz.pegasus.business.models.revenusdepenses.SimpleRevenuActiviteLucrativeIndependante"/>
+		
+		<linked-model name="simpleDonneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleRevenuActiviteLucrativeIndependante.idDonneeFinanciereHeader"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="caisse" model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS" field-ref="simpleRevenuActiviteLucrativeIndependante.idCaisseCompensation"/>
+			</join-group>	
+		</linked-model>				
+		
+		<linked-model name="tiersAffilie" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="simpleRevenuActiviteLucrativeIndependante.idTiersAffilie"/>
+			</join-group>
+		</linked-model>
+		
+		
+		<linked-model name="simpleAffiliation" model-ref="ch.globaz.naos.business.model.AffiliationSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="tiersAffilie.idTiers"/>
+				<join-field name="affiliationId" operation="EQUALS" field-ref="simpleRevenuActiviteLucrativeIndependante.idAffiliation"/>
+			</join-group>		
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdRevenuActiviteLucrativeIndependante" operation="EQUALS" field-ref="simpleRevenuActiviteLucrativeIndependante.idRevenuActiviteLucrativeIndependante"/>
+				<search-field name="forIdEntity" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idEntity"/>
+				<search-field name="idDroitMembreFamille" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDroitMembreFamille"/>
+				<search-field name="forIdDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="forVersionedRALI">
+			<search-group operator="AND">
+				<search-field name="forIdEntity" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idEntity"/>
+				<search-field name="idDroitMembreFamille" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDroitMembreFamille"/>
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="donneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+					<![CDATA[ 
+						#{simpleDonneeFinanciereHeader.isSupprime} = 2 and
+						#{simpleDonneeFinanciereHeader.idVersionDroit} =
+							(
+								select MAX( #{versionDroit.idVersionDroit} ) from @{versionDroit} 
+									inner join  @{donneeFinanciereHeader} on ( #{versionDroit.idVersionDroit} = #{donneeFinanciereHeader.idVersionDroit} )
+									where #{simpleDonneeFinanciereHeader.idEntity} = #{donneeFinanciereHeader.idEntity}
+										and #{versionDroit.noVersion} <= ${forNumeroVersion:versionDroit.noVersion}										
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="simpleDonneeFinanciereHeader.idEntityGroup" />
+			<order-field field-ref="simpleDonneeFinanciereHeader.dateDebut" order="DESC" />
+		</order-by>			
+				
+	</complexe-model>
+</model-mapping>

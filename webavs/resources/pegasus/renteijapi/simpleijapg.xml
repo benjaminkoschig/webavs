@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--  DMA, 6.2010 -->
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.renteijapi.SimpleIjApg">
+		<description>Table des variables metier</description>
+		<table name="PCIJAPG" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idIjApg" column="CQIDIA" comment="ID_IJ_APG" />
+			<field name="idDonneeFinanciereHeader" column="CQIDDF" type="NUMERIC"  mandatory="true"  comment="ID_DONNEE_FINANCIERE_HEADER"/>
+			<field name="idFournisseurPrestation" column="CQIDFO" type="NUMERIC" mandatory="true" comment="ID_FOURNISSEUR_PRESTATION"/>
+			<field name="csGenrePrestation" column="CQTGEP" type="NUMERIC" mandatory="false"  comment="CS_GENRE_PRESTATION"/>
+			<field name="montant"   column="CQMMON" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="MONTANT_IJ"/>
+			<field name="autreGenrePresation"   column="CQLAGP" type="STRING" mandatory="false" comment="AUTRE_GENRE_PRESTATION"/>
+			<field name="montantBrutAC"   column="CQMBAC" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="MONTANT_BRUT_AC"/>
+			<field name="nbJours"   column="CQNNBJ" type="NUMERIC" mandatory="false" comment="NB_JOURS"/>
+			<field name="tauxAVS"   column="CQNTAV" type="NUMERIC" dataType="NUMERIC(15,5)" mandatory="false" comment="TAUX_AVS"/>
+			<field name="tauxAA"    column="CQTAA" type="NUMERIC"  dataType="NUMERIC(15,5)" mandatory="false" comment="TAUX_AA"/>
+			<field name="cotisationLPPMens"   column="CQNCLP" type="NUMERIC" mandatory="false" comment="COTISATION_LPP_MENSUELLE"/>
+			<field name="gainIntAnnuel"   column="CQNGA" type="NUMERIC"  mandatory="false" comment="GAIN_INT_ANNUEL"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

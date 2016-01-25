@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.tarif.LegislationTarifFkModel">
+		<description>Législations des des tarif utilisées pour déterminer les prestations</description>
+		<table name="ALLEGTAR" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idLegislationTarif" column="P1ID" comment="ID de la législation de tarif"/>
+		</fields>
+	</simple-model>
+	<simple-model className="ch.globaz.al.business.models.tarif.LegislationTarifModel" extend="ch.globaz.al.business.models.tarif.LegislationTarifFkModel">
+		<description>Législations des des tarif utilisées pour déterminer les prestations</description>
+		<fields>
+			<field comment="Type de législation, Code Système" column="CSTLEG" type="NUMERIC" dataType="NUMERIC (8,0)" name="typeLegislation" mandatory="true"/>
+			<field comment="Ordre de priorité" column="P1PRIO" type="NUMERIC" dataType="NUMERIC(2,0)" name="priorite" mandatory="true" />
+		</fields>
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdLegislationTarif" field-ref="idLegislationTarif" operation="EQUALS"/>
+				<search-field name="forTypeLegislation" field-ref="typeLegislation" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="forDeleteAll">
+			<search-field name="forIdLegislationTarif" field-ref="idLegislationTarif" operation="GREATER"/>
+		</search-definition>
+	</simple-model>
+</model-mapping>

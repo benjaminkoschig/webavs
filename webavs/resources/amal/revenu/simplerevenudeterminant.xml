@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.revenu.SimpleRevenuDeterminant">
+		<description>Revenu Déterminant, table utilisée pour stocker le revenu déterminant</description>
+		<table name="MAREVDET" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idRevenuDeterminant" column="IDREDE" comment="Clef primaire Revenu Déterminant"/>
+			<field name="idRevenuHistorique" column="IDREVE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_REVENU_HISTORIQUE"/>
+			<field name="idContribuable" column="IDCONT" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_CONTRIBUABLE"/>
+			<field name="nbEnfants" column="NBENFA" type="NUMERIC" dataType="NUMERIC(4,2)" mandatory="false" comment="NOMBRE_ENFANTS"/>
+			<!--  Champs pour le calcul du revenu déterminant -->
+			<field name="revenuImposableCalcul" column="CREIMP" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Revenu imposable selon chiffre 690"/>
+			<field name="rendementFortuneImmoCalcul" column="CFORIM" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Rendement de la fortune immobilière selon chiffres 300, 320 et 320c"/>
+			<field name="excedentDepensesPropImmoCalcul" column="CEXPIM" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Excéd. de dépenses concernant la prop. immob. chiffres 310, 330 et 330c"/>
+			<field name="excedentDepensesSuccNonPartageesCalcul" column="CEXSUC" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Excédents de dépenses concernant la succ. non part. selon chiffre 390"/>
+			<field name="interetsPassifsCalcul" column="CINPAS" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Intérêts passifs selon chiffres 530, 535"/>
+			<field name="perteExercicesCommerciauxCalcul" column="CPEXCO" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Perte des exercices commerciaux selon chiffres 140*, 150*, 160*, 170*"/>
+			<field name="perteReporteeExercicesCommerciauxCalcul" column="CPECOM" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Perte reportée des exercices commerciaux selon chiffre 180, 180C"/>
+			<field name="perteLiquidationCalcul" column="CPERLI" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Perte de liquidation 188, 188C"/>
+			<field name="partRendementImmobExedantIntPassifsCalcul" column="PRIEIP" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Part du rendement immobilier excédant les intérêts passifs (chiffres 300, 320, 320c - 530, 535, 310, 330,330c, 390)"/>
+			<field name="deductionContribNonCelibSansEnfantChargeCalcul" column="CDEDSE" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Contribuable non célibataire sans enfant à charge"/>
+			<field name="deductionContribAvecEnfantChargeCalcul" column="DEENCH" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Contribuable avec enfant à charge"/>
+			<field name="deductionCouplesMaries" column="DECOMA" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Déduction couples mariés"/>			
+			<field name="deductionSelonNbreEnfantCalcul" column="DEDNBE" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Déduction selon nombre d'enfants"/>		
+			<field name="fortuneImposableCalcul" column="FOIMPC" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Fortune imposable"/>
+			<field name="fortuneImposablePercentCalcul" column="FOIMPP" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Fortune imposable pourcentage"/>
+			<field name="revenuDeterminantCalcul" column="REVDET" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Revenu déterminant"/> 
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdRevenuDeterminant" field-ref="idRevenuDeterminant" operation="EQUALS"/>
+				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS"/>
+				<search-field name="forIdRevenuHistorique" field-ref="idRevenuHistorique" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+	</simple-model>
+</model-mapping>

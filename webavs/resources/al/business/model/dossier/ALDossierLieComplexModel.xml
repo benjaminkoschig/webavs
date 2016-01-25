@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.al.business.models.dossier.DossierLieComplexModel">
+		<select-fields distinct="true">
+			<select-field name="idLien" field-ref="lienDossierModel.idLien"/>
+			<select-field name="idDossierLie" field-ref="dossierComplexModel.dossierModel.idDossier"/>
+			<select-field name="nomAllocataire" field-ref="dossierComplexModel.allocataireComplexModel.personneEtendueComplexModel.tiers.designation1"/>
+			<select-field name="prenomAllocataire" field-ref="dossierComplexModel.allocataireComplexModel.personneEtendueComplexModel.tiers.designation2"/>
+			<select-field name="nssAllocataire" field-ref="dossierComplexModel.allocataireComplexModel.personneEtendueComplexModel.personneEtendue.numAvsActuel"/>
+			<select-field name="numAffilie" field-ref="dossierComplexModel.dossierModel.numeroAffilie"/>
+			<select-field name="dossierActivite" field-ref="dossierComplexModel.dossierModel.activiteAllocataire"/>
+			<select-field name="dossierStatut" field-ref="dossierComplexModel.dossierModel.statut"/>
+			<select-field name="dossierEtat" field-ref="dossierComplexModel.dossierModel.etatDossier"/>
+			<select-field name="dossierRadiation" field-ref="dossierComplexModel.dossierModel.finValidite"/>
+			<select-field name="droitDebut" field-ref="droitModel.debutDroit"/>
+			<select-field name="typeLien" field-ref="lienDossierModel.typeLien"/>
+		</select-fields>
+		<root-model name="lienDossierModel" model-ref="ch.globaz.al.business.models.dossier.LienDossierModel" select-fields="false"/>
+		<linked-model name="dossierComplexModel" model-ref="ch.globaz.al.business.models.dossier.DossierComplexModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="dossierModel.idDossier" field-ref="lienDossierModel.idDossierFils"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="droitModel" model-ref="ch.globaz.al.business.models.droit.DroitModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDossier" field-ref="dossierComplexModel.dossierModel.idDossier"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition name="dossiersFils">
+			<search-group operator="AND">
+				<search-field name="forIdDossierPere" operation="EQUALS" field-ref="lienDossierModel.idDossierPere"/>
+				<search-field name="forTypeLien" operation="EQUALS" field-ref="lienDossierModel.typeLien"/>
+				<search-literal>
+					<declare-model name="droitDossier" model-ref="ch.globaz.al.business.models.droit.DroitModel"/>
+					<![CDATA[ 			
+						#{droitModel.debutDroit} =
+							(
+								select MIN( #{droitDossier.debutDroit} ) from @{droitDossier} 
+									where #{droitDossier.idDossier} = #{dossierComplexModel.dossierModel.idDossier}
+	
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

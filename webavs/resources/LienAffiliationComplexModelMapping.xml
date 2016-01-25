@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.naos.business.model.LienAffiliationComplexModel">
+		
+		<root-model name="lien"
+			model-ref="ch.globaz.naos.business.model.LienAffiliationSimpleModel" />
+		
+		<linked-model name="child"
+			model-ref="ch.globaz.naos.business.model.AffiliationSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="affiliationId" field-ref="lien.affiliationId" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="parent"
+			model-ref="ch.globaz.naos.business.model.AffiliationSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="affiliationId" field-ref="lien.aff_AffiliationId" />
+			</join-group>
+		</linked-model>
+		
+		
+		<!-- 
+		
+			SEARCH DEFINITIONS
+		 -->
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forChildNumeroAffilie" field-ref="child.affilieNumero" operation="EQUALS" />
+				<search-field name="forParentNumeroAffilie" field-ref="parent.affilieNumero" operation="EQUALS" />
+				
+				<search-field name="forTypeLien" field-ref="lien.typeLien" operation="EQUALS" />
+				<search-group operator="AND">
+					<search-field  field-ref="lien.dateDebut" operation="LESS_OR_EQUALS" name="forDateLien"/>
+					<search-group operator="OR">
+						<search-field  field-ref="lien.dateFin" operation="GREATER_OR_EQUALS" name="forDateLien" />
+						<search-field  field-ref="lien.dateFin" operation="NULL"  name="forDateLien"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		
+		
+	</complexe-model>
+</model-mapping>

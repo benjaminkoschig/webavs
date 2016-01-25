@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.servicemilitaire.ServiceMilitaireSimpleModel">
+		<table name="PT_SERVICES_MILITAIRES" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="Id du service militaire" />
+			<field name="idPosteTravail" column="ID_PT_POSTES_TRAVAILS" type="NUMERIC"
+				comment="id posteTravail" />
+			<field name="idPassageFacturation" column="ID_FAPASSP" type="NUMERIC"
+				comment="id du passage" />
+			<field name="dateDebut" column="DATE_DEBUT" type="DATE"
+				comment="date de début" />
+			<field name="dateFin" column="DATE_FIN" type="DATE"
+				comment="date de fin" />	
+			<field name="beneficiaire" column="CS_BENEFICIAIRE" type="NUMERIC"
+				comment="beneféciaire (employeur, travailleur)" />	
+			<field name="etat" column="CS_ETAT" type="NUMERIC"
+				comment="etat du service militaire" />	
+			<field name="nbJours" column="NB_JOURS" type="NUMERIC"
+				comment="nombre de jours du service militaire" />	
+			<field name="nbHeuresJour" column="NB_HEURES_JOUR" type="NUMERIC"
+				comment="nombre d'heures par jour relatif à la caisse métier" />	
+			<field name="salaireHoraire" column="SALAIRE_HORAIRE" type="NUMERIC"
+				comment="salaire horaire du précédent décompte comptabilisé" />
+			<field name="couvertureAPG" column="COUVERTURE_APG" type="NUMERIC"
+				comment="taux de la couverture APG relatif à la caisse métier" />
+			<field name="versementAPG" column="VERSEMENT_APG" type="NUMERIC"
+				comment="montant du versement APG" />
+			<field name="compensationAPG" column="COMPENSATION_APG" type="NUMERIC"
+				comment="montant de la compensation APG" />
+			<field name="montantBrut" column="MONTANT_BRUT" type="NUMERIC"
+				comment="montant brut du service militaire" />
+			<field name="montantAVerser" column="MONTANT_A_VERSER" type="NUMERIC"
+				comment="montant à verser du service militaire" />
+			<field name="genre" column="CS_GENRE" type="NUMERIC"
+				comment="genre de service militaire" />
+			<field name="baseSalaire" column="BASE_SALAIRE" type="NUMERIC"
+				comment="Salaire de base" />
+			<field name="tauxCP" column="TAUX_CP" type="NUMERIC"
+				comment="Taux de congé payés" />
+			<field name="tauxGratification" column="TAUX_GRATIFICATION" type="NUMERIC"
+				comment="Taux de gratification" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forIdPosteTravail" field-ref="idPosteTravail" operation="EQUALS" />
+				<search-field name="forIdPassage" field-ref="idPassage" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<order-by name="idAsc">
+			<order-field field-ref="id" />
+		</order-by>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="perseus/situationfamille/simpleConjoint.xml"/>
+	<model-mapping import="perseus/situationfamille/simpleEnfant.xml"/>
+	<model-mapping import="perseus/situationfamille/simpleMembreFamille.xml"/>
+	<model-mapping import="perseus/situationfamille/simpleRequerant.xml"/>
+	<model-mapping import="perseus/situationfamille/simpleSituationFamiliale.xml"/>
+	<model-mapping import="perseus/situationfamille/conjoint.xml"/>
+	<model-mapping import="perseus/situationfamille/enfant.xml"/>
+	<model-mapping import="perseus/situationfamille/membreFamille.xml"/>
+	<model-mapping import="perseus/situationfamille/requerant.xml"/>
+	<model-mapping import="perseus/situationfamille/situationFamiliale.xml"/>
+	<model-mapping import="perseus/situationfamille/simpleEnfantFamille.xml"/>
+	<model-mapping import="perseus/situationfamille/enfantFamille.xml"/>
+	
+</model-mapping>

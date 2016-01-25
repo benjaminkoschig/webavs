@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="perseus/impotsource/simpleTaux.xml"/>
+	<model-mapping import="perseus/impotsource/simpleTrancheSalaire.xml"/>
+	<model-mapping import="perseus/impotsource/simpleBareme.xml"/>
+	<model-mapping import="perseus/impotsource/taux.xml"/>
+	<model-mapping import="perseus/impotsource/trancheSalaire.xml"/>
+	<model-mapping import="perseus/impotsource/simplePeriodeImpotSource.xml"/>
+	<model-mapping import="perseus/impotsource/periodeImpotSource.xml"/>
+</model-mapping>

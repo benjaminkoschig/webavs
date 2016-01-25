@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<!-- modeles simples -->
+	<model-mapping import="pegasus/renteijapi/simplerenteavsai.xml"/>	
+	<model-mapping import="pegasus/renteijapi/simpleindemnitejournaliereai.xml"/>
+	<model-mapping import="pegasus/renteijapi/simpleallocationimpotent.xml"/>
+	<model-mapping import="pegasus/renteijapi/simpleautreapi.xml"/>
+    <model-mapping import="pegasus/renteijapi/simpleijapg.xml"/>	
+	<model-mapping import="pegasus/renteijapi/simpleautrerente.xml"/>
+	
+
+	
+	
+	<!-- modeles complexes -->
+	<model-mapping import="pegasus/renteijapi/renteavsai.xml"/>
+	<model-mapping import="pegasus/renteijapi/indemnitejournaliereai.xml"/>
+	<model-mapping import="pegasus/renteijapi/allocationimpotent.xml"/>
+	<model-mapping import="pegasus/renteijapi/autreapi.xml"/>
+	<model-mapping import="pegasus/renteijapi/autrerente.xml"/>
+	<model-mapping import="pegasus/renteijapi/ijapg.xml"/>
+	<model-mapping import="pegasus/renteijapi/renteijapi.xml"/>
+	<model-mapping import="pegasus/renteijapi/membrefamilleallocationimpotent.xml"/>
+
+
+
+
+</model-mapping>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.decision.Decision">
+		<!-- model root decsion apres calcul -->
+		<root-model name="decisionHeader" model-ref="ch.globaz.pegasus.business.models.decision.DecisionHeader" select-fields="true"/>
+		
+		<!-- decision de refus -->
+		<linked-model name="simpleDecisionRefus" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionRefus" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="decisionHeader.simpleDecisionHeader.idDecisionHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<!-- decision de suppression -->
+		<linked-model name="simpleDecisionSuppression" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionSuppression" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="decisionHeader.simpleDecisionHeader.idDecisionHeader"/>
+			</join-group>
+		</linked-model>
+		
+		
+		<!-- decision apres calcul -->
+		<linked-model name="simpleDecisionApresCalcul" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionApresCalcul" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="decisionHeader.simpleDecisionHeader.idDecisionHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<!-- version droit pour apc-->
+		<linked-model name="simpleVersionDroit1" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simpleDecisionApresCalcul.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<!-- version droit pour suppression-->
+		<linked-model name="simpleVersionDroit2" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simpleDecisionSuppression.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<select-fields>
+			<select-field name="idDecisionRefus" field-ref="simpleDecisionRefus.idDecisionRefus" />
+			<select-field name="idDemandePc" field-ref="simpleDecisionRefus.idDemandePc" />
+			<select-field name="idDecisionSuppression" field-ref="simpleDecisionSuppression.idDecisionSuppression" />
+			<select-field name="idVersionDroitSup" field-ref="simpleDecisionSuppression.idVersionDroit"/>
+			<select-field name="noVersionDroitSup" field-ref="simpleVersionDroit2.noVersion"/>
+			<select-field name="idDroitSup" field-ref="simpleVersionDroit2.idDroit"/>
+			<select-field name="idDecisionApresCalcul" field-ref="simpleDecisionApresCalcul.idDecisionApresCalcul" />
+			<select-field name="idVersionDroitApc" field-ref="simpleDecisionApresCalcul.idVersionDroit"/>
+			<select-field name="noVersionDroitApc" field-ref="simpleVersionDroit1.noVersion"/>
+			<select-field name="idDroitApc" field-ref="simpleVersionDroit1.idDroit"/>
+		</select-fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdTiers" field-ref="decisionHeader.simpleDecisionHeader.idTiersBeneficiaire" operation="EQUALS" />
+				<search-field name="likeNom" field-ref="decisionHeader.personneEtendue.tiers.designationUpper1" operation="LIKE"/>
+				<search-field name="likePrenom" field-ref="decisionHeader.personneEtendue.tiers.designationUpper2" operation="LIKE"/>
+				<search-field name="likeNss" field-ref="decisionHeader.personneEtendue.personneEtendue.numAvsActuel" operation="LIKE"/>
+				<search-field name="forDateNaissance" field-ref="decisionHeader.personneEtendue.personne.dateNaissance" operation="EQUALS"/>
+				<search-field name="forCsSexe" field-ref="decisionHeader.personneEtendue.personne.sexe" operation="EQUALS"/>
+				<search-field name="forCsEtat" field-ref="decisionHeader.simpleDecisionHeader.csEtatDecision" operation="EQUALS"/>
+				<search-field name="forDepuisValidation" field-ref="decisionHeader.simpleDecisionHeader.dateValidation" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forNoDecision" field-ref="decisionHeader.simpleDecisionHeader.noDecision" operation="LIKE"/>
+				<search-field name="forIdDecision" field-ref="decisionHeader.simpleDecisionHeader.idDecisionHeader" operation="EQUALS"/>
+				<search-field name="forPreparePar" field-ref="decisionHeader.simpleDecisionHeader.preparationPar" operation="EQUALS"/>
+				<search-field name="forValidePar" field-ref="decisionHeader.simpleDecisionHeader.preparationPar" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

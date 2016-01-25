@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.qd.ComplexQD">
+		<root-model name="simpleQD" model-ref="ch.globaz.perseus.business.models.qd.SimpleQD"/>
+	   		
+   		<linked-model name="membreFamille" model-ref="ch.globaz.perseus.business.models.situationfamille.MembreFamille" join-type="INNER">
+   			<join-group operator="AND">
+   				<join-field name="simpleMembreFamille.idMembreFamille" operation="EQUALS" field-ref="simpleQD.idMembreFamille" />
+   			</join-group>
+   		</linked-model>
+   		
+   		<linked-model name="qdAnnuelle" model-ref="ch.globaz.perseus.business.models.qd.QDAnnuelle" join-type="INNER">
+   			<join-group operator="AND">
+   				<join-field name="simpleQDAnnuelle.idQDAnnuelle" operation="EQUALS" field-ref="simpleQD.idQDAnnuelle" />
+   			</join-group>
+   		</linked-model>
+   		
+		<order-by>
+			<order-field field-ref="membreFamille.personneEtendue.tiers.designationUpper1"/>
+			<order-field field-ref="membreFamille.personneEtendue.tiers.designationUpper2"/>
+		</order-by>
+   		
+	</complexe-model>
+</model-mapping>

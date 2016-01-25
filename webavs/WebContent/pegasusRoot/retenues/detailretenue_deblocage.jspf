@@ -1,0 +1,320 @@
+<!-- #dialog is the id of a DIV defined in the code below -->
+<div id="boxes">
+    <!-- #customize your modal window here -->
+    <div id="dialog" class="window">
+    <div id="conteneurRevenus">
+		<table class="tdSubsides" width="100%">
+			<tr >
+				<th>&nbsp;</th>
+				<th style='font-family:"Consolas";font-size:16px' colspan="2"><b>CREATION DE DOCUMENT AMAL</b></td>
+		        <!-- close button is defined as close class -->
+				<th>
+					<a href="#" class="close">
+						<img id="imageClose"
+						src="<%=request.getContextPath()%>/images/amal/fileclose.png" 
+						title="Fermer la fenêtre" 
+						border="0"
+						width="18px"
+						height="18px"
+						>
+					</a>
+				</th>
+			</tr>
+			<tr class="zoneTiers" ><td colspan="4">&nbsp;</td></tr>
+			<tr class="zoneTiers" >
+				<td>&nbsp;</td>
+				<td>Numéro du modèle : </td>
+				<td align="right">
+					<input id="noModele" type="text" onKeyUp="combo_request(this.value)"/>
+				</td>
+				<td></td>
+			</tr>
+			<tr class="zoneTiers" >
+				<td></td>
+				<td colspan="2" align="right"> 
+					<select style='font-family:"Consolas";font-size:16px;width=780px' id="listeModele" onclick="vignette_request(this.value)">
+						<%
+						int iIndex=0;
+						String csFirstDocumentCode="";
+						for (Iterator it = viewBean.getListeDocuments().iterator(); it.hasNext();) {
+							FWParametersCode code = (FWParametersCode) it.next();
+							
+							// Récupération des documents présents en base
+							Boolean bImplemented = false;
+							String directBatch = "";
+							String directBatchValue ="";
+							String traitementDossierValue = "";
+							String traitementDossier = "";
+							for(int iFormule=0;iFormule<viewBean.getFormuleListSearch().getSize();iFormule++){
+								FormuleList formule = (FormuleList) viewBean.getFormuleListSearch().getSearchResults()[iFormule];
+								if(formule.getCsDocument().equals(code.getIdCode())){
+									bImplemented=true;
+									directBatchValue = formule.getFormule().getCsSequenceImpression();
+									directBatch = objSession.getCodeLibelle(directBatchValue);
+									for(int iTraitement=0;iTraitement<viewBean.getParametreModelComplexSearch().getSize();iTraitement++){
+										ParametreModelComplex parametres = (ParametreModelComplex) viewBean.getParametreModelComplexSearch().getSearchResults()[iTraitement];
+										if(parametres==null){
+											continue;
+										}
+										FormuleList relatedFormule = parametres.getFormuleList();
+										if(relatedFormule!=null && relatedFormule.getId()!=null && relatedFormule.getId().equals(formule.getId())){
+											if(parametres.getSimpleParametreModel()!=null){
+												traitementDossierValue = parametres.getSimpleParametreModel().getCodeTraitementDossier();
+												traitementDossier = objSession.getCodeLibelle(traitementDossierValue);
+											}
+										}
+									}
+									break;
+								}
+							}
+							if(!bImplemented){
+								continue;
+							}
+							// Création de la string visible dans la combobox
+							
+							String documentValeur = code.getIdCode();
+							//String documentCodeUtilisateur = code.getCurrentCodeUtilisateur().getCodeUtilisateur();
+							String documentCodeUtilisateur = code.getCodeUtilisateur(objSession.getIdLangue()).getCodeUtilisateur();
+							String csCodeLibelle=code.getLibelle().trim();
+							if(iIndex==0){
+								csFirstDocumentCode=csCodeLibelle.trim();
+							}
+							iIndex++;
+							String documentListeLibelle = documentCodeUtilisateur.trim();
+							int iCompteur = 6-documentListeLibelle.length();
+							for(int iChar=0; iChar<iCompteur;iChar++){
+								documentListeLibelle="&nbsp;"+documentListeLibelle;
+							}
+							documentListeLibelle+="  ";
+							iCompteur=10-csCodeLibelle.length();
+							for(int iChar=0; iChar<iCompteur;iChar++){
+								csCodeLibelle="&nbsp;"+csCodeLibelle;
+							}
+							for(int iChar = 0; iChar < 4; iChar++){
+								csCodeLibelle+="&nbsp;";
+							}
+							documentListeLibelle+=csCodeLibelle;
+							documentListeLibelle+="  ";
+							iCompteur=8-directBatch.length();
+							for(int iChar=0; iChar<iCompteur;iChar++){
+								directBatch+="&nbsp;";
+							}
+							//documentListeLibelle+=directBatch;
+							//documentListeLibelle+=" | ";
+							iCompteur=16-traitementDossier.length();
+							for(int iChar = 0;iChar<iCompteur;iChar++){
+								traitementDossier+="&nbsp;";
+							}
+							//documentListeLibelle+=traitementDossier;
+							documentListeLibelle+="  ";
+							//documentListeLibelle+=code.getCurrentCodeUtilisateur().getLibelle();
+							String libelleClair = code.getCodeUtilisateur(objSession.getIdLangue()).getLibelle().trim();
+							iCompteur = 54 - libelleClair.length();
+							for(int iChar = 0;iChar<iCompteur;iChar++){
+								libelleClair += "&nbsp";
+							}
+							documentListeLibelle+=libelleClair;
+						%>
+						<option style='background-color:black;color:lime'<%=(iIndex==0?"selected=\"selected\"":"")%> value='<%=csCodeLibelle+","+documentValeur+","+documentCodeUtilisateur+","+directBatchValue+","+traitementDossierValue%>'><%=documentListeLibelle %></option>
+						<% // End for
+						}
+						%>
+					</select>
+				</td>
+				<td></td>
+			</tr>
+			<tr class="zoneTiers" >
+				<td colspan="4" >&nbsp;</td>
+			</tr>
+			<tr class="zoneTiers" id="previewLigne">
+				<td></td>
+				<td id="previewColonne" align="left" >
+					<img id="modeleSpecimen" class="42000001"
+						src="<%=request.getContextPath()%>/images/amal/<%=csFirstDocumentCode%>.jpg" 
+						title="Aperçu du modèle [specimen]" 
+						border="1 px solid black"
+						width="400px"
+						height="520px"
+						>
+				</td>
+				<td id="donneesCalculColonne" align="right" valign="top">
+						<div id="donneesCalculGlobal" style='width: 360px;height: 120px;'>	
+							<table id="donneesCalculGlobalTable" width="100%" style="border: 1px solid #B3C4DB ;border-collapse:collapse; background-color:#FFFFFF" >
+								<col align="left"><col>
+								<col align="left"><col>
+								<col align="center"><col>
+								<col align="right"><col>
+								<col align="right"><col>
+								<tr style="font-weight: bold; background-color:#eeeeee">
+									<td style="border-bottom: 1px solid black" ></td>
+									<td style="border-bottom: 1px solid black" colspan="4">Calcul du subside</td>
+								</tr>
+								<tr><td colspan="4">&nbsp;</td></tr>
+								<tr>
+									<td></td>
+									<td><b>Type de demande</b></td>
+									<td></td>
+									<td><%=objSession.getCodeLibelle(viewBean.getDetailFamille().getTypeDemande())%></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td><b>Année historique</b></td>
+									<td></td>
+									<td><%=viewBean.getDetailFamille().getAnneeHistorique()%></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td><b>Début droit</b></td>
+									<td></td>
+									<td><%=viewBean.getDetailFamille().getDebutDroit()%></td>
+								</tr>
+								<tr><td style="border-bottom: 1px solid #B3C4DB " colspan="4">&nbsp;</td></tr>
+							</table>
+						</div>
+						<div id="donneesCalcul" style='width: 360px;height: 400px;overflow-y: scroll'>	
+							<table id="donneesCalculTable" width="100%" style="border: 1px solid #B3C4DB ;border-collapse:collapse; background-color:#FFFFFF" >
+								<col align="left"><col>
+								<col align="left"><col>
+								<col align="center"><col>
+								<col align="right"><col>
+								<col align="right"><col>
+								<%
+								Set<String> myKeys = viewBean.getSubsidesSimulation().keySet();
+								ArrayList<String> myKeysList = new ArrayList<String>(myKeys);
+								Collections.sort(myKeysList);
+								//Collections.reverse(myKeysList);
+								String amalRowStyle ="";
+								for (int iKey = 0; iKey < myKeysList.size(); iKey++) {
+									String currentKey = myKeysList.get(iKey);
+									ArrayList<AmalSubsideContainer> subsidesYear = viewBean.getSubsidesSimulation().get(currentKey);
+									for (int iSubside = 0; iSubside < subsidesYear.size(); iSubside++) {
+										AmalSubsideContainer currentSubside = subsidesYear.get(iSubside);
+										String titleSubside = "";
+										String revenuImposable = "";
+										if(currentSubside.getIdRevenuPrisEnCompte() == null || currentSubside.getIdRevenuPrisEnCompte().indexOf("-")>0){
+											titleSubside = currentKey+" - Sans revenu - Assisté";
+										}else{
+											String revenuPrisEnCompte = currentSubside.getRevenuPrisEnCompte();
+											FWCurrency currentRevenu = new FWCurrency();
+											currentRevenu.add(revenuPrisEnCompte);
+											if(currentSubside.getRevenuPriseEnCompteIsRDU()){
+												titleSubside = currentKey+" - Revenu dét. unique   : &nbsp;&nbsp;";
+											}else{
+												titleSubside = currentKey+" - Revenu déterminant   : &nbsp;&nbsp;";
+											}
+											titleSubside += currentRevenu.toStringFormat();
+											currentRevenu = new FWCurrency();
+											currentRevenu.add(currentSubside.getSelectedRevenu().getSimpleRevenuDeterminant().getRevenuImposableCalcul());
+											revenuImposable = "Revenu imposable : "+currentRevenu.toStringFormat();
+										}
+										if((iKey+iSubside)%2==0){
+											amalRowStyle = "amalRowOdd";
+										}else{
+											amalRowStyle = "amalRow";
+										}
+								%>
+								<tr class="<%=amalRowStyle%>" id="calcul_<%=iKey%>_<%=iSubside%>_title_" style="font-weight: bold;" title="<%=revenuImposable%>">
+									<td style="border-bottom: 1px solid #B3C4DB;border-top: 1px solid #B3C4DB" ></td>
+									<td style="border-bottom: 1px solid #B3C4DB;border-top: 1px solid #B3C4DB" colspan="3"><%=titleSubside%></td>
+								</tr>
+								<tr class="<%=amalRowStyle%>" id="calcul_<%=iKey%>_<%=iSubside%>_empty_" value="<%=currentKey%>,<%=currentSubside.getIdRevenuPrisEnCompte()%>,<%=currentSubside.getRevenuPriseEnCompteIsRDU()%>"><td colspan="4">&nbsp;</td></tr>
+								<%
+										LinkedHashMap<String, SimpleDetailFamille> currentFamily = currentSubside.getMapSimpleDetailFamille();
+										Set<String> myKeysFamily = currentFamily.keySet();
+										for (int iKeyFamily = 0; iKeyFamily < myKeysFamily.size(); iKeyFamily++) {
+											String currentKeyFamily = (String) myKeysFamily.toArray()[iKeyFamily];
+											SimpleDetailFamille familyMember = currentFamily.get(currentKeyFamily);
+								%>
+										<tr class="<%=amalRowStyle%>" id="calcul_<%=iKey%>_<%=iSubside%>_<%=iKeyFamily%>_">
+											<td></td>
+											<td><b><%=currentKeyFamily%></b></td>
+											<td></td>
+											<%
+											// potentiellement les informations assistées sont à l'index 0
+											FWCurrency montantSubside = new FWCurrency();
+											double currentContribution = 0.0;
+											try{
+												currentContribution = Double.parseDouble(familyMember.getMontantContribution());
+											}catch(Exception ex){
+												//JadeLogger.info("Error : "+ex.toString());
+											}
+											if(iSubside==0 && currentContribution<0.1){
+												montantSubside.add(familyMember.getMontantContributionAssiste());
+											}else{
+												montantSubside.add(familyMember.getMontantContribution());
+											}
+											%>
+											<td><%=montantSubside%></td>
+										<%
+										if(iKeyFamily==myKeysFamily.size()-1){
+										 %>
+										<tr class="<%=amalRowStyle%>" id="calcul_<%=iKey%>_<%=iSubside%>_<%=iKeyFamily%>_empty"><td style="border-bottom: 1px solid #B3C4DB " colspan="4">&nbsp;</td></tr>
+										<%
+										}
+										%>
+
+								<%
+										// Fin de la boucle sur les membres de familles
+										}
+									// Fin de la boucle sur les revenus de simulation
+									}
+									if(iKey!=myKeysList.size()-1){
+									%>
+										<tr style="background-color:#D7E4FF"><td colspan="4">&nbsp;</td></tr>
+									<%
+									}//fin if
+								// fin de la boucle sur les clés (années simulation)
+								}
+								%>
+								
+							</table>
+						</div>
+				</td>
+				<td></td>
+			</tr>
+			<tr class="zoneTiers" ><td colspan="4">&nbsp;</td></tr>
+			<tr class="zoneTiers" >
+				<td></td>
+				<td colspan="2" align="center">
+					<input class="btnCtrl" id="btnGenerateDocument" onclick="onClickGenerate()" type="button" value="Générer le document">
+				</td>
+				<td></td>
+			</tr>
+			<tr class="zoneTiers" ><td colspan="4">&nbsp;</td></tr>
+		</table>
+	</div>
+    </div>
+ 
+     
+    <!-- Do not remove div#mask, because you'll need it to fill the whole screen --> 
+    <div id="mask"></div>
+</div>
+
+
+<style>
+ 
+/* Z-index of #mask must lower than #boxes .window */
+#mask {
+  position:absolute;
+  z-index:9000;
+  background-color:#000;
+  display:none;
+}
+   
+#boxes .window {
+  position:absolute;
+  width:440px;
+  height:200px;
+  display:none;
+  z-index:9999;
+}
+ 
+ 
+/* Customize your modal window here, you can add background image too */
+#boxes #dialog {
+  width:460px; 
+  height:680px;
+  background-color:#D7E4FF;
+}
+</style>
+

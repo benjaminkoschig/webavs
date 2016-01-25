@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.fortuneusuelle.SimpleAssuranceVie">
+		<description>ASSURANCE VIE</description>
+		<table name="PCASVIE" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAssuranceVie" column="CEIASV" comment="ID_ASSURANCE_VIE"/>		
+			<field name="idDonneeFinanciereHeader" mandatory="true" column="CEIDFH" type="NUMERIC" comment="DONNEE_FINANCIERE_HEADER"/>
+			<field name="montantValeurRachat"  mandatory="true" column="CENMVR" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_VALEUR_RACHAT"/>
+			<field name="numeroPolice" mandatory="true" column="CELNPO" type="STRING" comment="NUMERO_POLICE"/>
+			<field name="nomCompagnie" mandatory="true" column="CELNCO" type="NUMERIC" comment="NOM_COMPAGNIE"/>
+			<field name="dateEcheance" mandatory="true" column="CEDECH" type="DATE" comment="DATE_ECHEANCE"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,22 @@
+						<TR>
+							<TD height="20">
+								<INPUT type="hidden" name="userAction" value="">
+								<INPUT type="hidden" name="_type" value='<%=request.getParameter("_type")%>'>
+								<INPUT type="hidden" name="_section" value='<%=request.getParameter("_section")%>'>
+								<INPUT type="hidden" name="_dest" value='<%=request.getParameter("_dest")%>'>
+								<INPUT type="hidden" name="_sl" value="">
+								<INPUT type="hidden" name="_method" value="">
+								<INPUT type="hidden" name="_valid" value="">
+							</TD>
+						</TR>
+					</TBODY>
+				</TABLE>
+      			</TD>
+		</TR>
+		<TR>
+			<TD bgcolor="#FFFFFF" id="btnArea" colspan="2" align="right">
+				<%if (bButtonFind) {%>
+					<INPUT type="submit" name="btnFind" value="<%=btnFindLabel%>"> <!-- onClick="onClickFind();showWaitingPopup()"> -->
+				<%} if (bButtonNew) {%>
+					<INPUT type="button" name="btnNew" value="<%=btnNewLabel%>" onClick="fr_detail.location.href='<%=actionNew%>'">
+				<%}%>

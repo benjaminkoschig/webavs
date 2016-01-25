@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.pcfaccordee.PCFAccordee">
+		<root-model name="simplePCFAccordee" model-ref="ch.globaz.perseus.business.models.pcfaccordee.SimplePCFAccordee" />
+		<linked-model name="demande" model-ref="ch.globaz.perseus.business.models.demande.Demande" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleDemande.idDemande" operation="EQUALS" field-ref="simplePCFAccordee.idDemande" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forCsEtatPCFAccordee" operation="EQUALS" field-ref="simplePCFAccordee.csEtat" />
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simplePCFAccordee.idDemande" />
+				<search-field name="forIdGestionnaire" operation="EQUALS" field-ref="demande.simpleDemande.idGestionnaire" />
+				<search-field name="likeNom" operation="LIKE" field-ref="demande.dossier.demandePrestation.personneEtendue.tiers.designationUpper1"/>  
+				<search-field name="likePrenom" operation="LIKE" field-ref="demande.dossier.demandePrestation.personneEtendue.tiers.designationUpper2"/>  
+				<search-field name="likeNss" operation="LIKE" field-ref="demande.dossier.demandePrestation.personneEtendue.personneEtendue.numAvsActuel"/>  
+				<search-field name="forCsSexe" operation="EQUALS" field-ref="demande.dossier.demandePrestation.personneEtendue.personne.sexe"/>
+				<search-field name="forDateNaissance" operation="EQUALS" field-ref="demande.dossier.demandePrestation.personneEtendue.personne.dateNaissance"/>
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="demande.simpleDemande.idDossier" />
+				<search-field name="forDateDecision" operation="EQUALS" field-ref="simplePCFAccordee.dateDecision" />
+				<search-field name="forDateDiminution" operation="EQUALS" field-ref="simplePCFAccordee.dateDiminution" />
+				<search-field name="forOnError" operation="EQUALS" field-ref="simplePCFAccordee.onError" />
+				
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withDecision">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="demande.simpleDemande.idDossier" />
+				<search-field name="forDateDecision" operation="NOT_NULL" field-ref="simplePCFAccordee.dateDecision" />
+			</search-group>		
+		</search-definition>
+		
+		<search-definition name="enCours">
+			<search-group operator="AND">
+				<search-field name="forCsEtatPCFAccordee" operation="EQUALS" field-ref="simplePCFAccordee.csEtat" />
+				<search-field name="forMoisEnCours" operation="LESS_OR_EQUALS" field-ref="simplePCFAccordee.dateDecision" />
+				<search-field name="forOnError" operation="EQUALS" field-ref="simplePCFAccordee.onError" />
+				<search-group operator="OR">
+					<search-field name="forMoisEnCours" operation="GREATER_OR_EQUALS" field-ref="simplePCFAccordee.dateDiminution" />
+					<search-field name="forMoisEnCours" operation="NULL" field-ref="simplePCFAccordee.dateDiminution" />
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withDate">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="demande.simpleDemande.idDossier" />
+				<search-group operator="OR">
+					
+					<search-group operator="AND">
+						<search-field name="forMoisDebut" operation="GREATER_OR_EQUALS" field-ref="simplePCFAccordee.dateDecision"/>
+						<search-field name="forMoisFin" operation="LESS_OR_EQUALS" field-ref="simplePCFAccordee.dateDecision"/>
+					</search-group>
+					
+					<search-group operator="AND">
+						<search-field name="forMoisDebut" operation="GREATER_OR_EQUALS" field-ref="simplePCFAccordee.dateDiminution"/>
+						<search-field name="forMoisFin" operation="LESS_OR_EQUALS" field-ref="simplePCFAccordee.dateDiminution"/>
+					</search-group>
+					
+					<search-group operator="AND">
+						<search-field name="forMoisDebut" operation="LESS_OR_EQUALS" field-ref="simplePCFAccordee.dateDecision"/>
+						<search-group operator="OR">
+							<search-field name="forMoisFin" operation="GREATER_OR_EQUALS" field-ref="simplePCFAccordee.dateDiminution"/>
+							<search-field name="forMoisFin" operation="NULL" field-ref="simplePCFAccordee.dateDiminution"/>
+						</search-group>
+					</search-group>
+				
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="demande.dossier.demandePrestation.personneEtendue.tiers.designationUpper1"/>
+			<order-field field-ref="demande.dossier.demandePrestation.personneEtendue.tiers.designationUpper2"/>
+			<order-field field-ref="demande.simpleDemande.csEtatDemande"/>
+			<order-field field-ref="demande.simpleDemande.dateDecisionValidation" order="DESC"/>
+			<order-field field-ref="demande.simpleDemande.timeDecisionValidation" order="DESC"/>
+		</order-by>
+		
+		<order-by name="dateDecision">
+			<order-field field-ref="simplePCFAccordee.dateDecisionValidation"/>
+			<order-field field-ref="simplePCFAccordee.timeDecisionValidation"/>
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

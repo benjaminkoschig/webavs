@@ -1,0 +1,21 @@
+<tr class="<%=rowStyle%>" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'highlighted')" onMouseOut="jscss('swap', this, 'highlighted', '<%=rowStyle%>')">
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td><%=objSession.getCode(line.getType())%></td>
+	<td></td>
+	<% 
+		//Les colonnes de la liste des droits diffèrent dans le cas d'un dossier CS
+		if(ALCSDossier.STATUT_CS.equals(viewBean.getDossierComplexModel().getDossierModel().getStatut())){ %>
+		      <td class="number"><%=line.getCalculResultMontantBase()==null?" - ":JANumberFormatter.fmt(line.getCalculResultMontantBase(), true, true, false, 2)%></td>
+			  <td class="number" ><%=line.getMontantAutreParent()==null?" - ":JANumberFormatter.fmt(line.getMontantAutreParent(), true, true, false, 2)%></td>
+			  <td class="number" colspan="2" ><%=line.getCalculResultMontantEffectif()==null?" - ":JANumberFormatter.fmt(line.getCalculResultMontantEffectif(), true, true, false, 2)%></td>
+		<%}else{ %>
+			  <td class="number" colspan="2"><%=line.getCalculResultMontantEffectif()==null?" - ":JANumberFormatter.fmt(line.getCalculResultMontantEffectif(), true, true, false, 2)%></td>
+			  <td></td>
+	<%} %>            
+</tr>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.demande.SimpleDemande">
+		<description>Demande PC Familles</description>
+		<table name="PFDEMPCF" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDemande" column="IBIDPF" comment=""/>
+			<field name="idDossier" column="IBIDOS" type="NUMERIC" mandatory="true" comment="ID_DOSSIER_PC"/>
+			<field name="idGestionnaire" column="IBIGES" type="STRING" mandatory="false" comment="ID_GESTIONNAIRE"/>
+			<field name="idSituationFamiliale" column="IBIDSF" type="NUMERIC" mandatory="true" comment="ID_SITUATION_FAMILIALE"/>
+			<field name="idAgenceCommunale" column="IBIDAC" type="NUMERIC" mandatory="true" comment="Id de l'agence communale"/>
+			<field name="idAgenceRi" column="IBIDRI" type="NUMERIC" mandatory="false" comment="Id de l'agence du RI"/>
+			<field name="typeDemande" column="IBTTYD" type="NUMERIC" mandatory="false" comment="TYPE_DEMANDE"/>
+			<field name="csEtatDemande" column="IBTETD" type="NUMERIC" mandatory="false" comment="CS_ETAT_DEMANDE"/>
+			<field name="dateDepot" column="IBDDEP" type="DATE" mandatory="false" comment="DATE_DEPOT"/>
+			<field name="dateArrivee" column="IBDACC" type="DATE" mandatory="false" comment="DATE_ARRIVEE_CC"/>
+			<field name="dateDebut" column="IBDDEB" type="DATE" mandatory="false" comment="DATE_DEBUT"/>
+			<field name="dateFin" column="IBDFIN" type="DATE" mandatory="false" comment="DATE_FIN"/>
+			<field name="fromRI" column="IBFRRI" type="BOOLEAN" mandatory="true" comment="Est-ce que la personne vient du RI"/>
+			<field name="refusForce" column="IBREFO" type="BOOLEAN" mandatory="false" comment="Est-ce que l'on force one décision de refus"/>
+			<field name="calculable" column="IBISCA" type="BOOLEAN" mandatory="true" comment="Est-ce que la demande remplit les conditions pour être calculée" />
+			<field name="listCsAutresDemandes" column="IBLIAD" type="STRING" mandatory="false" comment="Liste de codes systèmes - Autres demandes en cours" />
+			<field name="listCsAutresPrestations" column="IBLIAP" type="STRING" mandatory="false" comment="Liste de codes systèmes - Autres préstations recues" />
+			<field name="csCaisse" column="IBCSCA" type="NUMERIC" mandatory="true" comment="Code système de la caisse qui traite la demande"/>
+			<field name="calculParticulier" column="IBCARI" type="BOOLEAN" mandatory="false" comment="est-ce un calcul particulier ?"/>
+			<field name="remarques" column="IBREMA" type="STRING" mandatory="false" comment="Remarques éventuelles"/>
+			<field name="dateDecisionValidation" column="IBDATEDV" type="NUMERIC" mandatory="false" comment="Date exact de la validation de la décision" />
+			<field name="timeDecisionValidation" column="IBTIMEDV" type="NUMERIC" mandatory="false" comment="Temps exact de la validation de la décision" />
+			<field name="permisB" column="IBPERB" type="BOOLEAN" mandatory="false" comment="Est-ce un permis B ?"/>
+			<field name="dateDepart" column="IBDDCC" type="DATE" mandatory="false" comment="Date de départ du canton"/>
+			<field name="casRigueur" column="IBCRIG" type="BOOLEAN" mandatory="false" comment="est-ce un cas de rigueur  ?"/>
+			<field name="coaching" column="IBCOAH" type ="BOOLEAN" mandatory="false" comment="est-ce un cas de mesure de coaching ?"/>
+			<field name="numeroOFS" column="IBNOFS" type="STRING" mandatory="false" comment="Numéro de dossier pour l'OFS"/>
+			<field name="statutSejour" column="IBSTSEJ" type="NUMERIC" mandatory="false" comment="Statut de séjour du requérant"/>
+			<field name="NonEntreeEnMatiere" column="IBNENM" type ="BOOLEAN" mandatory="false" comment="est-ce un cas de non entrée en matière ?"/>
+			<field name="dateListeNonEntreeEnMatiere" column="IBLNEM" type="STRING" mandatory="false" comment="liste de date séparés par des points virgules pour la liste de non entrée en matière"/>
+			<field name="timeDemandeSaisie" column="IBTDES" type="TIME" mandatory="true" comment="Time auquel cette demande a été saisie. Ne se modifie plus après" />
+			<field name="dateDemandeSaisie" column="IBDDES" type="DATE" mandatory="true" comment="Date auquel cette demande a été saisie. Ne se modifie plus après" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="idDossier" />
+				<search-field name="forNotIdDemande" operation="NOT_EQUALS" field-ref="idDemande" />
+				<search-group operator="OR">
+					<search-group operator="AND">
+						<search-field name="forDateDebutCheck" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateDebutCheck" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+							<search-field name="forDateDebutCheck" operation="NULL" field-ref="dateFin"/>
+						</search-group>
+					</search-group>
+					<search-group operator="AND">
+						<search-field name="forDateFinCheck" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateFinCheck" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+							<search-field name="forDateFinCheck" operation="NULL" field-ref="dateFin"/>
+						</search-group>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name = "WithOutWhere">
+		</search-definition>
+		
+		<search-definition name="withSituationFamiliale">
+			<search-group operator="AND">
+				<search-field name="inIdSituationFamiliale" operation="IN" field-ref="idSituationFamiliale" />
+				<search-field name="forNotIdDossier" operation="NOT_EQUALS" field-ref="idDossier" />
+			</search-group>
+		</search-definition>
+		
+		<order-by name="dateDebutDateValidation">
+			<order-field field-ref="dateDebut" order="ASC"/>
+			<order-field field-ref="dateDecisionValidation" order="ASC"/>
+			<order-field field-ref="timeDecisionValidation" order="ASC"/>
+		</order-by>
+		
+	</simple-model>
+	
+</model-mapping>

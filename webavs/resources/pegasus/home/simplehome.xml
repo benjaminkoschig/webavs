@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.home.SimpleHome">
+		<description>Modele de la table des homes</description>
+		<table name="PCHOME" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idHome" column="BLIHOM" comment=""/>
+			<field name="idTiersHome" column="BLITIE" type="NUMERIC" mandatory="true"/>
+			<field name="nomBatiment" column="BLLBAT" type="STRING"  mandatory="false"/>
+			<field name="numeroIdentification" column="BLLID" type="STRING" mandatory="false"/>
+			<field name="isHorsCanton" column="BLBHOC" type="BOOLEAN" mandatory="false"/>
+			
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdHome" field-ref="idHome" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

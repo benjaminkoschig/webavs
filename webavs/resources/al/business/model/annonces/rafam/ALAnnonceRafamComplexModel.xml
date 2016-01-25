@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.rafam.AnnonceRafamComplexModel">
+		<root-model name="annonceRafamModel" model-ref="ch.globaz.al.business.models.rafam.AnnonceRafamModel"/>
+		
+		<linked-model name="allocataireComplexModel" model-ref="ch.globaz.al.business.models.allocataire.AllocataireComplexModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="allocataireModel.idAllocataire" field-ref="annonceRafamModel.idAllocataire"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="droitComplexModel" model-ref="ch.globaz.al.business.models.droit.DroitComplexModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="droitModel.idDroit" field-ref="annonceRafamModel.idDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="dossierModel" model-ref="ch.globaz.al.business.models.dossier.DossierModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDossier" field-ref="droitComplexModel.droitModel.idDossier"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forEtat" field-ref="annonceRafamModel.etat" operation="EQUALS"/>
+				<search-field name="forIdAnnonce" field-ref="annonceRafamModel.idAnnonce" operation="EQUALS"/>
+				<search-field name="forRecordNumber" field-ref="annonceRafamModel.recordNumber" operation="EQUALS"/>
+				<search-field name="forIdDossier" field-ref="droitComplexModel.droitModel.idDossier" operation="EQUALS"/>
+				<search-field name="forIdDroit" field-ref="annonceRafamModel.idDroit" operation="EQUALS"/>
+				<search-field name="likeNssEnfant" field-ref="annonceRafamModel.nssEnfant" operation="LIKE"/>
+				<search-field name="forCodeRetour" field-ref="annonceRafamModel.codeRetour" operation="EQUALS"/>
+				<search-literal><![CDATA[ (#{annonceRafamModel.delegated} = 2) ]]></search-literal>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="annoncesToSend">
+			<search-group operator="AND">
+				<search-field name="forEtat" field-ref="annonceRafamModel.etat" operation="EQUALS"/>
+				<search-field name="forDebutDroit" field-ref="annonceRafamModel.debutDroit" operation="LESS"/>
+				<search-literal><![CDATA[ (#{annonceRafamModel.delegated} = 2) ]]></search-literal>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="protocole">
+			<search-group operator="AND">
+				<search-field name="forEtat" field-ref="annonceRafamModel.etat" operation="EQUALS"/>
+				<search-field name="inCodeRetour" field-ref="annonceRafamModel.codeRetour" operation="IN" />
+				<search-field name="inTypeAnnonce" field-ref="annonceRafamModel.typeAnnonce" operation="IN" />	
+				<search-field name="forTypeAnnonce" field-ref="annonceRafamModel.typeAnnonce" operation="EQUALS" />
+				<search-literal><![CDATA[ (#{annonceRafamModel.delegated} = 2) ]]></search-literal>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="protocoleErreurs">
+			<order-field field-ref="annonceRafamModel.nssEnfant"/>
+		</order-by>
+
+		<order-by name="idDroit">
+			<order-field field-ref="annonceRafamModel.idDroit"/>
+		</order-by>
+		
+		<order-by name="idAnnonce">
+			<order-field field-ref="annonceRafamModel.idAnnonce" order="DESC"/>
+		</order-by>
+		
+		<order-by name="dateCreation">
+			<order-field field-ref="annonceRafamModel.dateCreation" order="DESC"/>
+			<order-field field-ref="annonceRafamModel.idAnnonce" order="DESC"/>
+		</order-by>
+		
+		<order-by name="AL0030">
+			<order-field field-ref="annonceRafamModel.recordNumber" order="DESC"/>
+			<order-field field-ref="annonceRafamModel.idAnnonce" order="DESC"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

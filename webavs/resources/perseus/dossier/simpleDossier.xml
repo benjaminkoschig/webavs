@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.dossier.SimpleDossier">
+		<description>Table identifiant un dossier de prestations complémentaires pour les familles</description>
+		<table name="PFDOSSI" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDossier" column="IAIDOS" comment="Clé primaire de la table des dossiers PC familles"/>
+			<field name="idDemandePrestation" column="IAIDEM" type="NUMERIC" mandatory="true" comment="Identifiant de la demande de prestation"/>
+			<field name="gestionnaire" column="IAIGES" type="STRING" dataType="VARCHAR(16)" comment="Identifiant de l'utilisateur gestionnaire"/>
+			<field name="dateRevision" column="IADREV" type="DATE" mandatory="true" comment="Date de révision du dossier"/>
+			<field name="annoncesChangements" column="IAANCH" type="STRING" mandatory="false" comment="Annonces de changements"/>
+		</fields>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.annonce.AnnoncesCaisse">
+
+		<select-fields distinct="true">
+			<select-field name="dateAvisRip" field-ref="simpleAnnonce.dateAvisRIP" />
+			<select-field name="noCaisseMaladie" field-ref="simpleAnnonce.noCaisseMaladie" />
+		</select-fields>
+
+		<root-model name="simpleAnnonce" model-ref="ch.globaz.amal.business.models.annonce.SimpleAnnonce" select-fields="false"/>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forNoCaisseMaladie" field-ref="noCaisseMaladie" operation="EQUALS" />
+				<search-field name="forDateAvisRip" field-ref="dateAvisRip" operation="EQUALS" />
+			</search-group>
+		</search-definition>	
+
+		<order-by>
+			<order-field field-ref="dateAvisRip" order="DESC"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>
+

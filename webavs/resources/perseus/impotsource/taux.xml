@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.impotsource.Taux">
+		<root-model name="simpleTaux" model-ref="ch.globaz.perseus.business.models.impotsource.SimpleTaux"/>
+		
+		<linked-model name="trancheSalaire" model-ref="ch.globaz.perseus.business.models.impotsource.TrancheSalaire" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleTrancheSalaire.idTrancheSalaire" operation="EQUALS" field-ref="simpleTaux.idTrancheSalaire"/>
+			</join-group>
+		</linked-model>	
+		
+		<linked-model name="simpleBareme" model-ref="ch.globaz.perseus.business.models.impotsource.SimpleBareme" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idBareme" operation="EQUALS" field-ref="simpleTaux.idBareme"/>
+			</join-group>
+		</linked-model>	
+		
+	    <search-definition name="default">
+	    	<search-group operator="AND">
+				<search-field name="forIdTaux" operation="EQUALS" field-ref="simpleTaux.idTaux" />
+				<search-field name="forAnnee" operation="EQUALS" field-ref="simpleTaux.anneeTaux" />
+				<search-field name="forCsTypeBareme" operation="EQUALS" field-ref="simpleBareme.csTypeBareme" />
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withTauxValable">
+			<search-group operator="AND">
+				<search-field name="forSalaireBrut" operation="LESS_OR_EQUALS" field-ref="trancheSalaire.simpleTrancheSalaire.salaireBrutInferieur"/>
+				<search-field name="forSalaireBrut" operation="GREATER_OR_EQUALS" field-ref="trancheSalaire.simpleTrancheSalaire.salaireBrutSuperieur"/>
+				<search-field name="forAnnee" operation="LESS_OR_EQUALS" field-ref="trancheSalaire.simpleTrancheSalaire.anneeDebut"/>
+				<search-group operator="OR">
+					<search-field name="forAnnee" operation="GREATER_OR_EQUALS" field-ref="trancheSalaire.simpleTrancheSalaire.anneeFin"/>
+					<search-field name="forAnnee" operation="NULL" field-ref="trancheSalaire.simpleTrancheSalaire.anneeFin"/>
+				</search-group>
+				<search-field name="forNombrePersonne" operation="EQUALS" field-ref="simpleBareme.nombrePersonne"/>
+				<search-field name="forAnnee" operation="LESS_OR_EQUALS" field-ref="simpleBareme.anneeDebut"/>
+				<search-group operator="OR">
+					<search-field name="forAnnee" operation="GREATER_OR_EQUALS" field-ref="simpleBareme.anneeFin"/>
+					<search-field name="forAnnee" operation="NULL" field-ref="simpleBareme.anneeFin"/>
+				</search-group>
+				<search-field name="forAnnee" operation="EQUALS" field-ref="simpleTaux.anneeTaux"/>
+				<search-field name="forCsTypeBareme" operation="EQUALS" field-ref="simpleBareme.csTypeBareme"/>
+			</search-group>
+		</search-definition>
+				
+		<order-by>
+			<order-field field-ref="simpleTaux.anneeTaux" order="DESC"/>
+		</order-by>		
+			
+	</complexe-model>
+</model-mapping>

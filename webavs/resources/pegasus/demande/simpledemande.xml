@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.demande.SimpleDemande">
+		<description>Demande PC</description>
+		<table name="PCDEMPC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDemande" column="BBIDPC" comment="ID_DEMANDE"/>
+			<field name="idDossier" column="BBIDOS" type="NUMERIC" mandatory="true" comment="ID_DOSSIER_PC"/>
+			<field name="idGestionnaire" column="BBIGES" type="STRING" mandatory="false" comment="ID_GESTIONNAIRE"/>
+			<field name="idInfoComplementaire" column="BBIINF" type="NUMERIC" mandatory="false" comment="ID_INFO_COMPLEMENTAIRE"/>
+			<field name="typeDemande" column="BBTTYD" type="NUMERIC" mandatory="false" comment="CS_TYPE_DEMANDE"/>
+			<field name="csEtatDemande" column="BBTETD" type="NUMERIC" mandatory="false" comment="CS_ETAT_DEMANDE"/>
+			<field name="dateDepot" column="BBDDEP" type="DATE" mandatory="false" comment="DATE_DEPOT"/>
+			<field name="dateArrivee" column="BBDACC" type="DATE" mandatory="false" comment="DATE_ARRIVEE_CC"/>
+			<field name="dateDebut" column="BBDDEB" type="MONTH_YEAR" mandatory="false" comment="DATE_DEBUT"/>
+			<field name="dateFin" column="BBDFIN" type="MONTH_YEAR" mandatory="false" comment="DATE_FIN"/>
+			<field name="isFratrie" column="BBBISF" type="BOOLEAN" mandatory="FALSE" comment="IS_FRATRIE"/>
+			<field name="isPurRetro" column="BCBRET" type="BOOLEAN" mandatory="FALSE" comment="IS_PUR_RETRO"/>
+			<field name="dateProchaineRevision" column="BBDPRV" type="MONTH_YEAR" mandatory="false" comment="DATE_PROCHAINE_REVISION"/>
+			<field name="motifProchaineRevision" column="BBLMPR" type="STRING" dataType="VARCHAR(512)" mandatory="false" comment="MOTIF_PROCHAINE_REVISION"/>
+		</fields>
+		<search-definition name="demandeInCsEtat">
+			<search-group operator="AND">
+				<search-field name="forCsEtatDemandeIN" field-ref="csEtatDemande" operation="IN"/>
+				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		
+		<search-definition name="WithDateFinNull">
+			<search-group operator="AND">
+				<search-field name="forCsEtatDemandeIN" field-ref="dateFin" operation="NULL"/>
+				<search-field name="forDateFin" field-ref="idDossier" operation="EQUALS"/>
+				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		
+		<!--Test qu il n y a pas de superpostion de dates -->
+		<search-definition name="checkSuperpositionDates">
+			<search-group operator="AND"> 
+			
+				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+			    <search-field name="forNotIdDemande" field-ref="idDemande" operation="NOT_EQUALS"/>
+			    <search-field name="forDateDebut" operation="NOT_NULL" field-ref="dateDebut"/>
+			    
+				<search-group operator="OR">					
+					<search-group operator="AND">					
+						<search-field name="forDateDebut" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+							<search-field name="forDateDebut" operation="NULL" field-ref="dateFin"/>
+						</search-group>
+					</search-group>
+					
+					<search-group operator="AND">
+						<search-field name="forDateFin" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateFin" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+							<search-field name="forDateFin" operation="NULL" field-ref="dateFin"/>
+						</search-group>				
+					</search-group>
+					
+					<search-group operator="AND">					
+						<search-field name="forDateDebut" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateFin" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+							<search-field name="forDateFin" operation="NULL" field-ref="dateFin"/>
+						</search-group>
+					</search-group>
+					
+					<search-group operator="AND">					
+						<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="dateDebut"/>
+						<search-field name="forDateFin" operation="LESS_OR_EQUALS" field-ref="dateFin"/>
+						<search-field name="forDateFin" operation="NOT_NULL" field-ref="dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+				<search-field name="forDateFin" field-ref="dateFin" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

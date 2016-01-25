@@ -1,0 +1,10 @@
+Ce fichier recense les différents metadata à renseigner et leur description
+
+type
+	type du message
+
+subType
+	sous-type du message
+
+messageId
+	id du message

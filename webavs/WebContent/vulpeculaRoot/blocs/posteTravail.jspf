@@ -1,0 +1,101 @@
+<%-- L'utilisation de ce bloc nécessite qu'une variable posteTravail soit présente
+dans le pageContext ! --%>
+<div id="employeur${status.index}" class="employeurEntry">
+	<div class="bloc bloc400 blocInline bottom" style="border-right: none; width: 350px;">
+		<div class="header">
+			<ct:FWLabel key="JSP_ADHESION_COTISATION"/>
+		</div>
+		<table class="adhesionsCaissesSociales" style="table-layout: fixed;">
+			<thead>
+				<tr>
+					<td class="label" style="width: 20%"><ct:FWLabel key="JSP_NUMERO"/></td>
+					<td class="label" style="width: 60%"><ct:FWLabel key="JSP_CAISSE_SOCIALE"/></td>
+					<td class="label" style="width: 20%"><ct:FWLabel key="JSP_ENTREE"/></td>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach var="adhesionCotisation" items="${posteTravail.adhesionsCotisations}" varStatus="status">
+					<c:if test="${adhesionCotisation.actif}">
+						<tr>
+							<td class="value">${adhesionCotisation.cotisation.id}</td>
+							<td class="value" style="white-space:nowrap">${adhesionCotisation.cotisation.designation}</td>
+							<td class="value">${adhesionCotisation.dateEntree}</td>
+						</tr>
+					</c:if>
+				</c:forEach>
+			</tbody>
+		</table>
+	</div>
+<div class="bloc blocInline blocMedium">
+	<div id="employeurDetails">
+				<span style="float: right;">
+					<img src="images/fleche_gauche.gif" class="bouton boutonPrecedent" />
+					&nbsp;
+					<span class="compteur" style="text-align: center;">
+					</span>
+					&nbsp;
+					<img src="images/fleche_droite.gif" class="bouton boutonSuivant" />
+				</span>
+		<div>
+			<div class="header">
+				<a href="${pageContext.request.contextPath}\vulpecula?userAction=vulpecula.postetravailvueglobale.employeurvueglobale.afficher&selectedId=${posteTravail.employeur.id}"><ct:FWLabel key="JSP_EMPLOYEUR"/> (${posteTravail.employeur.id})</a>		
+				- <a href="${pageContext.request.contextPath}\naos?userAction=naos.affiliation.afficher&selectedId=${posteTravail.employeur.id}"><ct:FWLabel key="JSP_AFFILIATION"/></a>
+				- <a href="${pageContext.request.contextPath}\pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=${posteTravail.employeur.idTiers}"><ct:FWLabel key="JSP_TIERS"/></a>
+			</div>
+			<table>
+				<tr>
+					<td class="label"><ct:FWLabel key="JSP_EMPLOYEUR_NO_AFFILIATION"/></td>
+					<td class="value">${posteTravail.employeur.affilieNumero}</td>
+				</tr>
+				<tr>
+					<td class="label"><ct:FWLabel key="JSP_EMPLOYEUR_RAISON_SOCIALE"/></td>
+					<td class="value">
+						<span style="margin-right: 4px;">${posteTravail.employeur.raisonSociale}</span>
+						<span title='<ct:FWCodeLibelle csCode="${posteTravail.employeur.personnaliteJuridique}" />'><ct:FWCode csCode="${posteTravail.employeur.personnaliteJuridique}" /></span>
+					</td>
+				</tr>
+				<tr>
+					<td class="label"><ct:FWLabel key="JSP_PERIODE_ACTIVITE"/></td>
+					<td class="value">${posteTravail.employeur.dateDebut} - ${posteTravail.employeur.dateFin}</td>
+				</tr>
+				<tr>
+					<td class="label"><ct:FWLabel key="JSP_PERIODICITE"/></td>
+					<td class="value"><ct:FWCodeLibelle csCode="${posteTravail.employeur.periodicite}"/></td>
+				</tr>
+				<tr>
+					<td class="label"><ct:FWLabel key="JSP_CONVENTION"/></td>
+					<td class="value">${posteTravail.employeur.convention.designation}</td>
+			</table>
+			<div class="header">
+				<a href="${pageContext.request.contextPath}\vulpecula?userAction=vulpecula.postetravail.posteTravail.afficher&selectedId=${posteTravail.id}"><ct:FWLabel key="JSP_POSTE_TRAVAIL"/></a>
+			</div>
+			<table>
+					<tr>
+						<td class="label"><ct:FWLabel key="JSP_NUMERO"/> <ct:FWLabel key="JSP_POSTE_TRAVAIL"/></td>
+						<td class="value">${posteTravail.id}</td>
+					</tr>	
+					<tr>
+						<td class="label"><ct:FWLabel key="JSP_QUALIFICATION"/></td>
+						<td class="value"><ct:FWCode csCode="${posteTravail.qualification.value}" />-<ct:FWCodeLibelle csCode="${posteTravail.qualification.value}" /></td>
+					</tr>					
+					<tr>
+						<td class="label"><ct:FWLabel key="JSP_DEBUT_ACTIVITE"/></td>
+						<td class="value">${posteTravail.periodeActivite.dateDebut.swissValue}</td>
+					</tr>					
+					<tr>
+						<td class="label"><ct:FWLabel key="JSP_FIN_ACTIVITE"/></td>
+						<td class="value">${posteTravail.periodeActivite.dateFin.swissValue}</td>
+					</tr>	
+					<tr>
+						<td class="label"><ct:FWLabel key="JSP_GENRE_SALAIRE"/></td>
+						<td class="value"><ct:FWCode csCode="${posteTravail.typeSalaire.value}" />-<ct:FWCodeLibelle csCode="${posteTravail.typeSalaire.value}" /></td>
+					</tr>									
+					<tr>
+						<td class="label"><ct:FWLabel key="JSP_TAUX"/></td>
+						<td class="value">${posteTravail.occupationActuel.taux.value}</td>
+					</tr>								
+				</table>
+			</div>
+		</div>
+	</div>
+</div>	

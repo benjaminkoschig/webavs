@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.traitementdemasse.DefinitionTraitement">
+			
+		<root-model name="simpleDefinitionTraitement" model-ref="ch.globaz.pegasus.business.models.traitementdemasse.SimpleDefinitionTraitement"/>
+		
+		<linked-model name="simpleEchantillon" model-ref="ch.globaz.pegasus.business.models.traitementdemasse.SimpleEchantillon" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idEchantillon" operation="EQUALS" field-ref="simpleDefinitionTraitement.idEchantillon"/>
+			</join-group>		
+		</linked-model>
+	
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdEchantillon" operation="EQUALS" field-ref="simpleEchantillon.idEchantillon"/>
+			</search-group>
+		</search-definition>	
+			
+	</complexe-model>
+</model-mapping>

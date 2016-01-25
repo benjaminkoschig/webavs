@@ -1,0 +1,7 @@
+		<div align="right"  style="padding-right:8px;padding-bottom:10px;background-color: white;">
+			<input id="btnRechercher" type="button" name="" value="Rechercher">
+			<c:if test="${bButtonNew}">
+				<input type="button" name="" value="Nouveau" onclick="doAction('${pageContext.request.contextPath}${requestScope.mainServletPath}?userAction=${userActionNew}&_method=add', 'fr_main');">
+			</c:if>
+		</div>
+			

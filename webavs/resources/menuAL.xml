@@ -1,0 +1,1032 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+	<menu id="menuWEBAF">
+		<label defaultValue="Principal" refId="PRINCIPAL" />
+		<nodes>
+			
+			<node id="Recherche">
+				<label defaultValue="RECHERCHE" refId="MENU_RECHERCHE" /> 
+				<nodes>
+					<node id="rechercheDossier">
+	  					<label defaultValue="Textes" refId="MENU_RECHERCHE_DOSSIER" /> 
+						<action command="/al" responseTarget="fr_main">
+		  					<parameter name="userAction" value="al.dossier.dossier.chercher" /> 
+		  				</action>
+	  				</node>
+	  				<node id="recherchePersonne">
+	  					<label defaultValue="Textes" refId="MENU_RECHERCHE_PERSONNE" /> 
+						<action command="/al" responseTarget="fr_main">
+		  					<parameter name="userAction" value="al.personne.personneAF.chercher" /> 
+		  				</action>
+	  				</node>
+	  				<node id="rechercheRecaps">
+	  					<label defaultValue="Textes" refId="MENU_RECHERCHE_RECAPS" /> 
+						<action command="/al" responseTarget="fr_main">
+		  					<parameter name="userAction" value="al.prestation.recap.chercher" /> 
+		  				</action>
+	  				</node>
+	  				<node id="rechercheAnnonceRafam">
+	  					<label defaultValue="Textes" refId="MENU_RECHERCHE_ANNONCES_RAFAM" /> 
+						<action command="/al" responseTarget="fr_main">
+		  					<parameter name="userAction" value="al.rafam.annonceRafam.chercher" />
+		  					<!-- <parameter name="customSearch" value="1"/>-->
+		  				</action>
+	  				</node>
+	  				
+	  				
+	  			</nodes>
+  			</node>
+  			
+  			<node id="Nouveau">
+  				<label defaultValue="NOUVEAU" refId="MENU_NOUVEAU"/>
+  				<nodes>
+  					<node id="nouveauDossier">	
+  						<label defaultValue="dossier" refId="MENU_NOUVEAU_DOSSIER"/>
+  						<action command="/al" responseTarget="fr_main">
+		  					<parameter name="userAction" value="al.dossier.dossierMain.afficher" /> 
+		  					<parameter name="_method" value="add"/>
+		  				</action>
+  					</node>
+  					<node id="nouveauAllocataire">	
+  						<label defaultValue="allocataire" refId="MENU_NOUVEAU_ALLOCATAIRE"/>
+  						<action command="/al" responseTarget="fr_main">
+		  					<parameter name="userAction" value="al.allocataire.allocataire.afficher" />
+		  					<parameter name="_method" value="add"/>
+		  					<parameter name="dossierIsNew" value="true"/>
+		  				</action>
+  					</node>
+  				
+  				</nodes>
+  			</node>	
+
+  			<node id="Traitement" open="yes">
+  				<label defaultValue="TRAITEMENT" refId="MENU_TRAITEMENT"/>
+  				<nodes>
+	  				<node open="yes">
+  						<label defaultValue="PROCESSUS" refId="MENU_TRAITEMENT_PROCESSUS"/>
+  						<nodes>
+  							<node>
+  								<label defaultValue="GESTION" refId="MENU_TRAITEMENT_PROCESSUS_GESTION"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al.traitement.processusGestion.afficher"/>
+  								</action>
+  							</node>
+  							<node>
+  								<label defaultValue="LISTE_DECISION_EDITEE" refId="MENU_TRAITEMENT_LISTE_DECISION"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al.decision.decisionList.afficher"/>
+  									<parameter name="_method" value="add"/>
+  										
+  								</action>
+  							</node>
+  							<node>
+  								<label defaultValue="AFFILIE RADIATION" refId="MENU_TRAITEMENT_AFFILIE_RADIATION"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al.radiationaffilie.radiationAffilie.afficher"/>
+  									<parameter name="_method" value="add"/>
+  								</action>
+  							</node>
+  							<node>
+  								<label defaultValue="RADIATION 20-25" refId="MENU_TRAITEMENT_DOSSIERS_RADIATIONS_AUTO"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al.radiationauto.radiationAutomatiqueDossiers.afficher"/>
+  									<parameter name="_method" value="add"/>
+  								</action>
+  							</node>
+  						</nodes>
+  					</node>
+	  		
+  					
+  					<node open="yes">
+  						<label defaultValue="DOCUMENTS" refId="MENU_TRAITEMENT_DOCUMENT"/>
+  						<nodes>
+  							<!-- <node>
+  								<label defaultValue="DECISIONS" refId="MENU_TRAITEMENT_DOCUMENT_DECISION"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al."/>
+  								</action>
+  							</node>
+  							<node>
+  								<label defaultValue="RECAPS" refId="MENU_TRAITEMENT_DOCUMENT_RECAP"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al.traitement.recapImpression.afficher"/>
+  									<parameter name="_method" value="add"/>
+  								</action>
+  							</node>-->
+  							<node>
+  								<label defaultValue="Statistique OFAS" refId="MENU_TRAITEMENT_DOCUMENT_STATS_OFAS"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al.traitement.statsOfas.afficher"/>
+  									<parameter name="_method" value="add"/>
+  								</action>
+  							</node>
+  							<node>
+  								<label defaultValue="AVIS ECHEANCES" refId="MENU_TRAITEMENT_DOCUMENT_AVISECH"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al.echeances.echeances.afficher"/>
+  									<parameter name="_method" value="add"/>
+  								</action>
+  							</node>
+  							<!-- 
+  							<node>
+  								<label defaultValue="CONTROLE ECHEANCES" refId="MENU_TRAITEMENT_DOCUMENT_CTRLECH"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al."/>
+  								</action>
+  							</node>-->
+  							<node>
+  								<label defaultValue="DECLARATION VERSEMENT" refId="MENU_TRAITEMENT_DECLARATION_VERSEMENT"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al.prestation.declarationVersement.afficher"/>
+  									<parameter name="_method" value="add"/>
+  										
+  								</action>
+  							</node>
+  							<node>
+  								<label defaultValue="PRESTATION_VERSEES_EDITION" refId="MENU_TRAITEMENT_EDITION_PRESTATION"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al.prestation.attestationVersement.afficher"/>
+  									<parameter name="_method" value="add"/>
+  										
+  								</action>
+  							</node>
+  							<node>
+  								<label defaultValue="DECISIONS_PAR_LOT" refId="MENU_TRAITEMENT_DECISIONS_PAR_LOT"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al.decision.decisionsmasse.afficher"/>
+  									<parameter name="_method" value="add"/>
+  								</action>
+  							</node>
+  							<node id="MENU_TRAITEMENT_DOCUMENT_CORRESPONDANCE">
+  								<label defaultValue="GESTION CORRESPONDANCE" refId="MENU_TRAITEMENT_DOCUMENT_CORRESPONDANCE"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al.envois.envois.chercher"/>
+  								</action>
+  							</node>
+  							
+  						</nodes>
+  					</node>
+  					<node open="yes">
+  						<label defaultValue="PRESTATIONS" refId="MENU_TRAITEMENT_PRESTATION"/>
+  						<nodes>
+  							<node>
+  								<label defaultValue="GENERATION AFFILIE" refId="MENU_TRAITEMENT_AFFILIE_GENERATION"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al.prestation.generationAffilie.afficher"/>
+  									<parameter name="_method" value="add"/>
+  								</action>
+  							</node>
+  							<!-- 
+  							<node>
+  								<label defaultValue="GENERATION GLOBALE" refId="MENU_TRAITEMENT_PRESTATION_GENERATION"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al.prestation.generationGlobale.afficher"/>
+  									<parameter name="_method" value="add"/>
+  								</action>
+  							</node>-->
+  						</nodes>
+  					</node> 
+  					
+  					<!--  
+  					<node open="yes">
+  						<label defaultValue="COMPENSATION" refId="MENU_TRAITEMENT_COMPENSATION"/>
+  						<nodes>
+  							<node>
+  								<label defaultValue="COMPENSER" refId="MENU_TRAITEMENT_COMPENSATION_COMPENSER"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al."/>
+  								</action>
+  							</node>
+  						</nodes>
+  					</node> 
+  					<node open="yes">
+  						<label defaultValue="PAIEMENTS DIRECTS" refId="MENU_TRAITEMENT_DIRECTS">
+  							<language iso="de">Direkte Zahlung</language>
+  						</label>
+  						<nodes>
+  							<node>
+  								<label defaultValue="VERSEMENTS" refId="MENU_TRAITEMENT_DIRECTS_VERSEMENT"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al."/>
+  								</action>
+  							</node>
+  							<node>
+  								<label defaultValue="DECLARATIONS" refId="MENU_TRAITEMENT_DIRECTS_DECLARATION"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al."/>
+  								</action>
+  							</node>
+  						</nodes>
+  					</node> --> 
+  				</nodes>	
+  			</node>
+  			
+  			<node id="Parametres">
+				<label defaultValue="PARAMETRES" refId="MENU_PARAMETRES" /> 
+				<nodes>
+					<node id="rechercheTauxMonnaieEtrangere">
+	  					<label defaultValue="Textes" refId="MENU_RECHERCHE_PARAMETRES_TAUX_MONNAIES_ETANGERES" /> 
+						<action command="/al" responseTarget="fr_main">
+		  					<parameter name="userAction" value="al.parametres.tauxMonnaieEtrangere.chercher" /> 
+		  				</action>							
+	  				</node>
+					<node id="MENU_RECHERCHE_PARAMETRES_FORMULES">
+	  					<label defaultValue="Formules" refId="MENU_RECHERCHE_PARAMETRES_FORMULES" /> 
+						<action command="/al" responseTarget="fr_main">
+		  					<parameter name="userAction" value="al.parametres.formules.chercher" /> 
+		  				</action>							
+	  				</node>				
+	  			</nodes>
+				
+  			</node>
+  			
+  		</nodes>	
+	</menu>
+	
+	<menu id="optionsWEBAF">
+		<label defaultValue="Options spécifiques" refId="OPTIONS_SPECIFIQUES" />
+	</menu>
+	
+	<!-- ******************************************** -->
+	<!-- Menus options par ligne pour les rc_Liste -->
+	<!-- ******************************************** -->
+	<menu id="dossier-recherchePopup">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_DETAIL"/>
+				<action command="/al" responseTarget="fr_main">
+					<parameter name="userAction" value="al.dossier.dossierMain.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node id="RADIER">
+				<label refId="OPTIONS_RADIER" />
+				<action command="/al" responseTarget="fr_main">
+					<parameter name="userAction" value="al.dossier.radiation.afficher" />
+					<parameter name="selectedId"/>
+					<parameter name="_method" value="upd"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_COPIER" />
+				<action command="/al" responseTarget="fr_main">
+					<parameter name="userAction" value="al.dossier.dossierMain.copier" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			
+		</nodes>
+	</menu>
+	
+	<menu id="allocataire-recherchePopup">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_DETAIL"/>
+				<action command="/al" responseTarget="fr_main">
+					<parameter name="userAction" value="al.allocataire.allocataire.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<menu id="enfant-recherchePopup">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_DETAIL"/>
+				<action command="/al" responseTarget="fr_main">
+					<parameter name="userAction" value="al.droit.enfant.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	
+	<menu id="recap-recherchePopup">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_DETAIL"/>
+				<action command="/al" responseTarget="fr_main">
+					<parameter name="userAction" value="al.prestation.recap.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			
+		</nodes>
+	</menu>
+	
+	<menu id="recap-detailPopup">
+		<label refId="OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_SELECTION_DOSSIER"/>
+				<action command="/al" responseTarget="fr_main">
+					<parameter name="userAction" value="al.dossier.dossierMain.afficher"/>
+					<parameter name="idDossier"/>		
+				</action>
+			</node>	
+			<node>
+				<label refId="MENU_OPTIONS_SELECTION_GENERER"/>
+				<action command="/al" responseTarget="fr_main">
+					<parameter name="userAction" value="al.prestation.genererDossier.afficher"/>
+					<parameter name="idDossier"/>		
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTIONS_RECAP_COMPLETER"/>
+				<action command="/al" responseTarget="fr_main">
+					<parameter name="userAction" value="al.recap.saisieJourHeure.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<menu id="rafam-recherchePopup">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_DETAIL"/>
+				<action command="/al" responseTarget="fr_main">
+					<parameter name="userAction" value="al.rafam.annonceRafam.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_DOSSIER"/>
+				<action command="/al" responseTarget="fr_main">
+					<parameter name="userAction" value="al.dossier.dossierMain.afficher" />
+					<parameter name="idDossier"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_DROIT"/>
+				<action command="/al" responseTarget="fr_main">
+					<parameter name="userAction" value="al.droit.droit.afficher" />
+					<parameter name="idDroit"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_68C"/>
+				<action command="/al" responseTarget="fr_main">
+					<parameter name="userAction" value="al.rafam.annonceRafam.creer68c" />
+					<parameter name="recordNumber"/>
+					<parameter name="id"/>
+				</action>
+			</node>
+			
+		</nodes>
+	</menu>
+	
+	<menu id="rafamED-recherchePopup">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_DETAIL"/>
+				<action command="/al" responseTarget="fr_main">
+					<parameter name="userAction" value="al.rafam.annonceRafamED.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		
+			
+		</nodes>
+	</menu>
+	
+	<menu id="tauxMonnaieEtrangere-recherchePopup">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_DETAIL"/>
+				<action command="/al" responseTarget="fr_main">
+					<parameter name="userAction" value="al.parametres.tauxMonnaieEtrangere.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+<!-- ******************************************** -->
+	<!-- Menu Option des pages détail-->	
+<!-- ******************************************** -->	
+	<menu id="droit-detail-enfant">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_DOSSIER"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_DOSSIER_BACK"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierMain.afficher"/>
+							<parameter name="idDossier"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			
+			<node>
+				<label refId="MENU_OPTIONS_DROIT"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_DROIT_TOFORMATION"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.droit.droit.toformation"/>
+							<parameter name="id"/>
+						</action>
+					</node>
+					
+					<node>
+						<label refId="MENU_OPTIONS_DROIT_ANNONCES_RAFAM"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.rafam.annonceRafam.chercher"/>
+							<parameter name="searchModel.forIdDroit"/>
+						</action>
+					</node>
+				
+					<node>
+						<label refId="MENU_OPTIONS_DROIT_GENERER_PRESTATION"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.droit.droit.generer"/>
+							<parameter name="selectedId"/>
+						</action>
+					</node>		
+				</nodes>		
+			</node> 
+		
+		</nodes>	
+	</menu>
+	
+	<menu id="droit-detail">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_DOSSIER"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_DOSSIER_BACK"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierMain.afficher"/>
+							<parameter name="idDossier"/>
+						</action>
+					</node>
+		
+					<node>
+						<label refId="MENU_OPTIONS_DROIT_ANNONCES_RAFAM"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.rafam.annonceRafam.chercher"/>
+							<parameter name="searchModel.forIdDroit"/>
+						</action>
+					</node>
+					
+				</nodes>
+			</node>
+		</nodes>	
+	</menu>		
+	
+	<menu id="dossier-detail">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_DOSSIER"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_DOSSIER_BACK"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierMain.afficher"/>
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+					
+				</nodes>			
+			</node>
+			<node>
+				<label refId="MENU_OPTIONS_DOSSIER_JOURNALISATION"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_JOURNALISATION_LIER"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossier.lierDossierLibra"/>
+							<parameter name="id"/>
+						</action>
+					</node>			
+				</nodes>			
+			</node>
+		</nodes>	
+	</menu>
+	
+	<menu id="dossier-adi-detail">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_DOSSIER"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_DOSSIER_BACK"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierMain.afficher"/>
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTIONS_DOSSIER_ADI_DECOMPTES"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierAdi.afficher"/>
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTIONS_ADI_DECOMPTE"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.adi.decompteAdi.afficher"/>
+							<parameter name="idDecompte"/>
+						</action>
+			</node>
+				</nodes>			
+			</node>
+			<node>
+				<label refId="MENU_OPTIONS_DOSSIER_JOURNALISATION"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_JOURNALISATION_LIER"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossier.lierDossierLibra"/>
+							<parameter name="id"/>
+						</action>
+					</node>			
+				</nodes>			
+			</node>
+			
+		</nodes>	
+	</menu>
+	
+	
+	
+	
+	
+	<menu id="dossier-droit-detail">
+			<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_DOSSIER"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_DOSSIER_BACK"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierMain.afficher"/>
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+					
+				</nodes>			
+			</node>
+			<node>
+				<label refId="MENU_OPTIONS_DROIT"/>
+				<nodes>
+					<node>
+						<label refId="OPTIONS_DROIT"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.droit.droit.afficher"/>
+							<parameter name="idDroit"/>
+						</action>
+					</node>			
+				</nodes>			
+			</node>
+		</nodes>	
+	</menu>
+	<menu id="dossier-main">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_DOSSIER"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_DOSSIER_JOURNALISATION"/>
+						<action command="/libra" responseTarget="fr_main">
+							<parameter name="userAction" value="libra.dossiers.afficher"/>
+							<parameter name="idExterne"/>
+							<!-- dossier.chercher&searchModel.forLien=2321 -->
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTIONS_DOSSIER_ANNONCES_RAFAM"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.rafam.annonceRafam.chercher"/>
+							<parameter name="searchModel.forIdDossier"/>
+						</action>
+					</node>
+					<node id="RADIER">
+						<label refId="OPTIONS_RADIER" />
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.radiation.afficher" />
+							<parameter name="selectedId"/>
+							<parameter name="_method" value="upd"/>
+						</action>
+					</node>						
+					<node id="MENU_OPTIONS_DOSSIER_ENVOI">
+						<label refId="MENU_OPTIONS_DOSSIER_ENVOI" />
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierEnvoi.chercher" />
+							<parameter name="searchModel.forIdDossier"/>
+						</action>
+					</node>						
+					
+				</nodes>			
+			</node>
+		</nodes>	
+	</menu>
+	
+	<menu id="dossier-main-adi">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_DOSSIER"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_DOSSIER_JOURNALISATION"/>
+						<action command="/libra" responseTarget="fr_main">
+							<parameter name="userAction" value="libra.dossiers.afficher"/>
+							<parameter name="selectedId"/>
+							<!-- dossier.chercher&searchModel.forLien=2321 -->
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTIONS_DOSSIER_ADI_DECOMPTES"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierAdi.afficher"/>
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+					
+					
+					<node>
+						<label refId="MENU_OPTIONS_DOSSIER_ANNONCES_RAFAM"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.rafam.annonceRafam.chercher"/>
+							<parameter name="searchModel.forIdDossier"/>
+						
+						</action>
+					</node>
+					<node id="RADIER_ADI">
+						<label refId="OPTIONS_RADIER" />
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.radiation.afficher" />
+							<parameter name="selectedId"/>
+							<parameter name="_method" value="upd"/>
+						</action>
+					</node>
+					<node id="MENU_OPTIONS_DOSSIER_ENVOI">
+						<label refId="MENU_OPTIONS_DOSSIER_ENVOI" />
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierEnvoi.chercher" />
+							<parameter name="searchModel.forIdDossier"/>
+						</action>
+					</node>						
+										
+				</nodes>			
+			</node>
+		</nodes>	
+	</menu>
+	
+	<menu id="allocataire-detail">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_DOSSIER"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_DOSSIER_BACK"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierMain.afficher"/>
+							<parameter name="idDossier"/>
+							<parameter name="idAllocataire"/>
+							<parameter name="_method"/>
+							<parameter name="typeActivite"/>
+							<parameter name="domaineMontagne"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node>
+				<label refId="MENU_OPTIONS_ALLOCATAIRE"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_ALLOCATAIRE_DOSSIERS"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossier.chercher"/>
+							<parameter name="idAllocataire"/>
+							<parameter name="nomAllocataire"/>
+							<parameter name="prenomAllocataire"/>
+						</action>
+					</node>
+				</nodes>				
+			</node>
+		</nodes>	
+	</menu>
+	
+	<menu id="allocataire-detail2">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_ALLOCATAIRE"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_ALLOCATAIRE_DOSSIERS"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossier.chercher"/>
+							<parameter name="idAllocataire"/>
+							<parameter name="nomAllocataire"/>
+							<parameter name="prenomAllocataire"/>
+						</action>
+					</node>
+					<node id="NOUVEAU_DOSSIER">
+						<label refId="MENU_OPTIONS_ALLOCATAIRE_UTILISER"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierMain.afficher"/>
+							<parameter name="_method" value="add"/>
+							<parameter name="idAllocataire"/>
+						</action>
+					</node>
+					
+				</nodes>				
+			</node>
+		</nodes>	
+	</menu>
+	
+	<menu id="enfant-detail">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_ALLOCATAIRE"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_ENFANT_DOSSIERS"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossier.chercher"/>
+							<parameter name="idEnfant"/>
+							<parameter name="nomEnfant"/>
+							<parameter name="prenomEnfant"/>
+						</action>
+					</node>
+				</nodes>				
+			</node>
+		</nodes>	
+	</menu>
+	
+	<menu id="revenu-detail">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_DOSSIER"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_DOSSIER_BACK"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierMain.afficher"/>
+							<parameter name="idDossier"/>
+						
+						</action>
+					</node>
+				</nodes>			
+			</node>
+			<node>
+				<label refId="MENU_OPTIONS_ALLOCATAIRE"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_ALLOCATAIRE_DETAIL"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.allocataire.allocataire.afficher"/>
+							<parameter name="idAllocataire"/>
+							<parameter name="idDossier"/>
+						</action>
+					</node>
+				</nodes>			
+			</node>
+		</nodes>	
+	</menu>
+	
+	<menu id="decision-detail">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_DOSSIER"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_DOSSIER_BACK"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierMain.afficher"/>
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+				</nodes>			
+			</node>
+			<node>
+				<label refId="MENU_OPTIONS_DECISION"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_DECISION_CATALOGUE"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.decision.decision.afficher"/>
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTIONS_DECISION_GED"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.decision.decision.afficher"/>
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+				</nodes>			
+			</node>
+		</nodes>	
+	</menu>
+	
+	<menu id="recap-detail">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_RECAP"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_RECAP_SAISIE"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.prestation.generationDossier.afficher"/>
+							<parameter name="_method" value="add"/>
+							<parameter name="idRecap"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>	
+	</menu>	
+	
+	<menu id="generationDossier-detail">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_DOSSIER"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_DOSSIER_BACK"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierMain.afficher"/>
+							<parameter name="idDossier"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node>
+				<label refId="MENU_OPTIONS_RECAP"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_RECAP_BACK"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.prestation.recap.afficher"/>
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			
+		</nodes>	
+	</menu>	
+	<menu id="decompte-detail">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_DECOMPTE"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_DECOMPTE_LISTE"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierAdi.afficher"/>
+							<parameter name="idDossier"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTIONS_DECOMPTE_CALCUL"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.adi.decompteAdi.calculer"/>
+							<parameter name="id"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTIONS_DECOMPTE_GENERER"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.adi.generationDecompte.afficher"/>
+							<parameter name="selectedId"/>
+							<parameter name="_method" value="add"/>
+						
+						
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTIONS_DECOMPTE_IMPRIMER"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.decision.decision.afficher"/><!--"al.adi.imprimerDecompte.afficher"/>-->
+							<parameter name="selectedId"/>
+							<parameter name="_method" value="upd"/>
+							<parameter name="fromDecompte" value="1"/>¨
+							<parameter name="idDossier"/>
+						</action>
+					</node>
+				</nodes>				
+			</node>
+		</nodes>	
+	</menu>	
+	<menu id="saisieAdi-detail">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_DOSSIER"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_DOSSIER_BACK"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierMain.afficher"/>
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTIONS_DECOMPTE_LISTE"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierAdi.afficher"/>
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>
+	</menu>			
+	<menu id="default-detail">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_DOSSIER"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_DOSSIER_BACK"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.dossier.dossierMain.afficher"/>
+							<parameter name="idDossier"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>
+	</menu>	
+	<menu id="processus-detail">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_PROCESSUS"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_PROCESSUS_RECAPS"/>
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.prestation.recap.chercher"/>
+							<parameter name="recapSearchModel.forNumProcessusLie"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>
+	</menu>			
+			
+	<menu id="empty-detail">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		
+	</menu>
+	
+	<menu id="formule-detail">
+		<label refId="OPTIONS_SPECIFIQUES"/>
+		<nodes>
+			<node>
+				<label refId="MENU_OPTIONS_FORMULES"/>
+				<nodes>
+					<node>
+						<label refId="MENU_OPTIONS_FORMULES_SIGNETS" />
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.parametres.signets.chercher" />
+							<parameter name="searchModel.forIdFormule"/>
+						</action>
+					</node>						
+					<node>
+						<label refId="MENU_OPTIONS_FORMULES_LIST" />
+						<action command="/al" responseTarget="fr_main">
+							<parameter name="userAction" value="al.parametres.formules.chercher" />
+						</action>
+					</node>						
+				</nodes>			
+			</node>
+		</nodes>	
+	</menu>
+
+					
+</menus>

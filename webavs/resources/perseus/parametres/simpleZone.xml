@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.parametres.SimpleZone">
+		<description>Table des Zones de localités pour les plafonds des loyers</description>
+		<table name="PFZONE" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idZone" column="IMIDZO" comment="Clé primaire de la table"/>
+			<field name="designation" type="STRING" column="IMDESI" mandatory="true" comment="Désignation de la zone" />
+			
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				 <search-field name="likeDesignation" operation="LIKE" field-ref="designation" />
+			</search-group>
+		</search-definition>	 
+		
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,45 @@
+	</tbody>
+</table>
+<c:if test="${!autoShowErrorPopup and vBeanHasErrors}">
+	[ <a id=\"showErrorLink\" href=\"javascript:showErrors();\">visualiser les erreurs</a> ]
+</c:if>
+<table width="100%" cellspacing="0">
+<tr><td bgcolor="#444444"></td></tr>
+<tr><td bgcolor="#888888"></td></tr>
+<tr><td bgcolor="#aaaaaa"></td></tr>
+<tr><td bgcolor="#cccccc"></td></tr>
+<tr><td bgcolor="#dddddd"></td></tr>
+<tr><td bgcolor="#eeeeee"></td></tr>
+</table>
+<c:if test="${wantPagination}">
+	<c:choose>
+		<c:when test="${viewBean.canDoPrev}">
+			<input  style=" font-size :7pt;" type="button" value="&lt;&lt;" accesskey="," onclick="this.disabled=true;location.href='${findPreviousLink}'"  >
+		</c:when>
+		<c:otherwise>
+			<input  style=" font-size :7pt;" type="button" value="&lt;&lt;" disabled >
+		</c:otherwise>
+	</c:choose>
+	<c:choose>
+		<c:when test="${viewBean.canDoNext}">
+			<input style=" font-size :7pt;" type="button" value="&gt;&gt;" accesskey="." onclick="this.disabled=true;location.href='${findNextLink}'"  >
+		</c:when>
+		<c:otherwise>
+			<input style=" font-size :7pt;" type="button" value="&gt;&gt;" disabled >
+		</c:otherwise>
+	</c:choose>
+</c:if>
+
+<c:if test="${wantPaginationPosition}">
+	${viewBean.offset} - ${viewBean.offset} ${viewBean.size -1} / ${viewBean.count}
+</c:if>
+<form>
+	<input type="hidden" id="selectedId" name="selectedId" value="" />
+</form>
+	<c:if test="${vBeanHasErrors}">
+		<script>
+			errorObj.text = '<c:out value="${viewBean.message}" />'';
+		</script>
+	</c:if>
+</body>
+</html>

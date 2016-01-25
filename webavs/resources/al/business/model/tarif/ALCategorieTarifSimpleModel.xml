@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.tarif.CategorieTarifFkModel">
+		<description>Catégorie de tarif utilisée pour déterminer les prestations</description>
+		<table name="ALCATTAR" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idCategorieTarif" column="P2ID" comment="ID de la catégorie de tarif"/>
+			<field comment="ID (Fk) de legislation tarif " column="P1ID" type="NUMERIC" dataType="NUMERIC(15,0)" name="idLegislation" mandatory="true"/>
+		</fields>
+	</simple-model>
+	<simple-model className="ch.globaz.al.business.models.tarif.CategorieTarifModel" extend="ch.globaz.al.business.models.tarif.CategorieTarifFkModel">
+		<description>Catégorie de tarif utilisée pour déterminer les prestations</description>
+		<fields>
+			<field comment="Spécifie la catégorie de tarif, Code Système" column="CSTARI" type="NUMERIC" dataType="NUMERIC(8,0)" name="categorieTarif" mandatory="true"/>
+		</fields>
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdCategorieTarif" field-ref="idCategorieTarif" operation="EQUALS"/>
+				<search-field name="forIdLegislation" field-ref="idLegislation" operation="EQUALS"/>
+				<search-field name="forCategorieTarif" field-ref="categorieTarif" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="forDeleteAll">
+			<search-field name="forIdCategorieTarif" field-ref="idCategorieTarif" operation="GREATER"/>
+		</search-definition>
+	</simple-model>
+</model-mapping>

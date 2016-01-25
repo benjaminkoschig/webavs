@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.osiris.business.model.JournalSimpleModel">
+		<table name="CAJOURP" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="idJournal" column="IDJOURNAL" comment="Id du journal unique" />
+			<field name="libelle" column="LIBELLE" type="STRING" comment="Libelle du journal"/>
+			<field name="date" column="DATE" type="DATE" comment="date du journal"/>
+			<field name="etat" column="ETAT" type="STRING" comment="Etat du journal"/>
+			<field name="proprietaire" column="PROPRIETAIRE" type="STRING" comment="Propriétaire du journal"/>
+			<field name="typeJournal" column="TYPEJOURNAL" type="NUMERIC"  comment="Type de journal"/>
+			<field name="noJournalCG" column="NOJOURNALCG" type="NUMERIC"  comment="Numero du journal en comptabilité générale"/>
+			<field name="dateValeurCG" column="DATEVALEURCG" type="DATE" comment="Date de valeur du journal en comptabilité générale"/>		
+		</fields>
+		</simple-model>
+</model-mapping>

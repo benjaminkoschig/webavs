@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.lot.PrestationDecision">
+		<root-model name="simplePrestation" model-ref="ch.globaz.perseus.business.models.lot.SimplePrestation"/>
+	
+		<linked-model name="decision" model-ref="ch.globaz.perseus.business.models.decision.Decision" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="simpleDecision.idDecision" operation="EQUALS" field-ref="simplePrestation.idDecisionPcf" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="lot" model-ref="ch.globaz.perseus.business.models.lot.Lot" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleLot.idLot" operation="EQUALS" field-ref="simplePrestation.idLot" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdLot" operation="EQUALS" field-ref="simplePrestation.idLot"/>
+				<search-field name="inTypeLot" operation="IN" field-ref="lot.simpleLot.typeLot"/>
+				<search-field name="forIdFacture" operation="EQUALS" field-ref="simplePrestation.idFacture" />
+				<search-field name="likeNss" operation="LIKE" field-ref="decision.demande.dossier.demandePrestation.personneEtendue.personneEtendue.numAvsActuel"/>
+				<search-field name="likeNom" operation="LIKE" field-ref="decision.demande.dossier.demandePrestation.personneEtendue.tiers.designationUpper1"/>
+				<search-field name="likePrenom" operation="LIKE" field-ref="decision.demande.dossier.demandePrestation.personneEtendue.tiers.designationUpper2"/>
+				<search-field name="forSexe" operation="EQUALS" field-ref="decision.demande.dossier.demandePrestation.personneEtendue.personne.sexe"/>
+				<search-field name="forDateNaissance" operation="EQUALS" field-ref="decision.demande.dossier.demandePrestation.personneEtendue.personne.dateNaissance"/>
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="decision.demande.dossier.dossier.idDossier"/>
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="decision.demande.simpleDemande.idDemande"/>
+				<search-field name="forEtatLot" operation="EQUALS" field-ref="lot.simpleLot.etatCs"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withDate">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="decision.demande.dossier.dossier.idDossier"/>
+				<search-field name="inTypeLot" operation="IN" field-ref="lot.simpleLot.typeLot"/>
+				<search-field name="forEtatLot" operation="EQUALS" field-ref="lot.simpleLot.etatCs"/>
+				
+				<search-group operator="OR">
+					
+					<search-group operator="AND">
+						<search-field name="forDateDebut" operation="LESS_OR_EQUALS" field-ref="simplePrestation.dateDebut"/>
+						<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="simplePrestation.dateFin"/>
+					</search-group>
+					
+					<search-group operator="AND">
+						<search-field name="forDateFin" operation="LESS_OR_EQUALS" field-ref="simplePrestation.dateDebut"/>
+						<search-field name="forDateFin" operation="GREATER_OR_EQUALS" field-ref="simplePrestation.dateFin"/>
+					</search-group>
+					
+					<search-group operator="AND">
+						<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="simplePrestation.dateDebut"/>
+						<search-field name="forDateFin" operation="LESS_OR_EQUALS" field-ref="simplePrestation.dateFin"/>
+					</search-group>
+				
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="decision.demande.dossier.demandePrestation.personneEtendue.tiers.designationUpper1"/>
+			<order-field field-ref="decision.demande.dossier.demandePrestation.personneEtendue.tiers.designationUpper2"/>
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="auriga/simpleDecisionCAP.xml"/>
+	<model-mapping import="auriga/simpleEnfantDecisionCAP.xml"/>
+	<model-mapping import="auriga/simpleSortieCAP.xml"/>
+	<model-mapping import="auriga/complexEnfantDecisionCAPTiers.xml"/>
+	<model-mapping import="auriga/ComplexDecisionCAPAffiliationCotisation.xml"/>
+	<model-mapping import="auriga/complexSortieCAPDecisionCAPAffiliation.xml"/>
+	<model-mapping import="auriga/ComplexEnfantDecisionCapWidget.xml"/>
+</model-mapping>

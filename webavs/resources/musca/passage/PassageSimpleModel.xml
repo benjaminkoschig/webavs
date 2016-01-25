@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.musca.business.models.PassageModel">
+		<table name="FAPASSP" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="idPassage" column="IDPASSAGE" comment="Id du passage" />
+			<field name="libellePassage" column="LIBELLEPASSAGE" type="STRING" comment="Libelle de passage"/>
+			<field name="typeFacturation" column="IDTYPEFACTURATION" type="NUMERIC" dataType="NUMERIC(8,0)" comment="Type de facturation"/>
+			<field name="datePeriode" column="DATEPERIODE" type="DATE" comment="Période de facturation"/>
+			<field name="dateFacturation" column="DATEFACTURATION" type="DATE" comment="Date de la facturation"/>
+			<field name="status" column="STATUS" type="NUMERIC" dataType="NUMERIC(8,0)" comment="Etat du passage"/>
+			<field name="idPlanFacturation" column="IDPLANFACTURATION" type="NUMERIC" dataType="NUMERIC(8,0)" comment="Id du plan de facturation"/>
+			<field name="idJournal" column="IDJOURNAL" type="NUMERIC" dataType="NUMERIC(8,0)" comment="Id du journal de comptabilité auxiliaire" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forStatus" field-ref="status" operation="EQUALS"/>
+				<search-field name="forNotTypeFacturation" field-ref="typeFacturation" operation="NOT_EQUALS"/>
+				<search-field name="forTypeFacturation" field-ref="typeFacturation" operation="EQUALS"/>
+				<search-field name="likeLibellePassage" field-ref="libellePassage" operation="LIKE"/>
+				<search-field name="forIdPassage" field-ref="idPassage" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+			<search-definition name="derniereFacturation">
+			<search-group operator="AND">
+				<search-field name="forStatus" field-ref="status" operation="EQUALS"/>
+				<search-field name="forNotTypeFacturation" field-ref="typeFacturation" operation="NOT_EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+	
+</model-mapping>

@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0" />
+<meta http-equiv="Cache-Control" content="no-cache" /> 
+<link rel="stylesheet" type="text/css" href="ados.css"/>
+<TITLE>Test ActiveX</TITLE>
+</HEAD>
+<script language="JavaScript">
+function jscss(a,o,c1,c2)
+{
+  switch (a){
+    case 'swap':
+      o.className=!jscss('check',o,c1)?o.className.replace(c2,c1):o.className.replace(c1,c2);
+    break;
+    case 'add':
+      if(!jscss('check',o,c1)) {
+      	o.className += o.className ? ' ' + c1 : c1;
+      }
+    break;
+    case 'remove':
+      var rep=o.className.match(' '+c1)?' '+c1:c1;
+      o.className=o.className.replace(rep,'');
+    break;
+    case 'check':
+      return new RegExp('\\b'+c1+'\\b').test(o.className)
+    break;
+  }
+}
+function loadTiers(idTiers) {
+	try {
+		var objServer = new ActiveXObject("TWADOSObjects.ADOSServer");
+		objServer.Connect(1);
+		var contents = queryTiers(objServer, idTiers);
+		objServer.Disconnect();
+		document.write(contents);
+	} catch (e) {
+		document.write(e.name + " - " + e.message);
+	}
+}
+function getNumberOfFields(objServer) {
+	var objCategory = new ActiveXObject("TWADOSObjects.ADOSCategory");
+	objCategory.Load(10, objServer);
+	return objCategory.GetFieldCount();
+}
+function queryTiers(objServer, idTiers) {
+	var contents = "";
+	var objQuery = new ActiveXObject("TWADOSObjects.ADOSQuery");
+	objQuery.SetMaxRows(500);
+	objQuery.SetQueryMode(0);
+	objQuery.SetRowBlockSize(500);
+	contents += "<table>";
+	contents += "<tr><td><img src='./ados.jpg'/>&nbsp;</td><td>&nbsp;</td><td colspan='" + getNumberOfFields(objServer) + "'><h1>Liste des documents du tiers numéro: " + idTiers + "</h1></td></tr>";
+	//
+	// Ajout des entêtes de colonnes
+	//
+	contents += addHeader(objServer);
+	//
+	// Ajout des documents de toutes les catégories
+	//
+	for (category = 10; category <= 16; category++) {
+		addCategory(objServer, objQuery, category, idTiers);
+	} 
+	//
+	objQuery.ExecuteQuery(objServer);
+	var nbSections = objQuery.GetResultSectionsCount();
+	var rowIdx = 0;
+	for (section = 0; section < nbSections; section++) {
+		var objSection = objQuery.GetResultSectionAt(section);
+		var objCategory = new ActiveXObject("TWADOSObjects.ADOSCategory");
+		objCategory.Load(objSection.CtgryNo, objServer);
+		var nbRows = objSection.GetResultRowsCount();
+		for (row = 0; row < nbRows; row++) {
+			var objRow = objSection.GetResultRow(row);
+			var nDocNo = objRow.DocNo;
+			var nbColumns = objRow.GetColumnCount();
+			var rowStyle = ((rowIdx % 2) == 0 ? "rowOdd" : "rowEven");
+			var link = "'javascript:viewDocument(" + objRow.DocNo + ");'";
+			contents += "<tr class='" + rowStyle + "' onMouseOver=\"jscss('swap', this, '" + rowStyle + "', 'rowHighligthed')\" onMouseOut=\"jscss('swap', this, 'rowHighligthed', '" + rowStyle + "')\">";
+			contents += "<td>" + objCategory.Name + "</td>";
+			for (column = 0; column < nbColumns; column++) {
+				contents += "<td onClick=" + link + ">" + objRow.GetColStringVal(column) + "</td>";
+			}
+			//contents += "<td><a href='javascript:void(0)' OnClick='coucou();'>" + objRow.DocNo + "</a></td>";
+			contents += "<td onClick=" + link + ">" + objRow.DocNo + "</td>";
+			contents += "<td onClick=" + link + ">" + objRow.Size + "</td>";
+			contents += "</tr>";
+			rowIdx++;
+		}
+	}
+	contents += "</table>";
+	return contents;
+}
+function addHeader(objServer) {
+	var contents = "";
+	var objCategory = new ActiveXObject("TWADOSObjects.ADOSCategory");
+	objCategory.Load(10, objServer);
+	var nColCount = objCategory.GetFieldCount();
+	contents += "<tr>";
+	contents += "<th>Catégorie</th>";
+	for (i = 0; i < nColCount; i++) {
+		var objField = objCategory.GetFieldByIndex(i);
+		if ((objField.TabOrderPos > 0)) {
+			if (objField.ColName != "NTIER") {
+				contents += "<th>" + objField.Caption + "</th>";
+			}
+		}
+	}
+	contents += "<th>Numéro du document</th>";
+	contents += "<th>Taille du document</th>";
+	contents += "</tr>";
+	return contents;
+}
+function addCategory(objServer, objQuery, category, idTiers) {
+	var objCtgryQuery = new ActiveXObject("TWADOSObjects.ADOSCtgryQuery");
+	var objCategory = new ActiveXObject("TWADOSObjects.ADOSCategory");
+	objCategory.Load(category, objServer);
+	objCtgryQuery.SetCategory(objCategory);
+	var objField = objCategory.GetFieldByColName("NCOM");
+	objCtgryQuery.AddSelectField(objField.FieldNo);
+	objField = objCategory.GetFieldByColName("NRUE");
+	objCtgryQuery.AddSelectField(objField.FieldNo);
+	objField = objCategory.GetFieldByColName("No_Batiment");
+	objCtgryQuery.AddSelectField(objField.FieldNo);
+	objField = objCategory.GetFieldByColName("No_dossier");
+	objCtgryQuery.AddSelectField(objField.FieldNo);
+	objField = objCategory.GetFieldByColName("Groupe");
+	objCtgryQuery.AddSelectField(objField.FieldNo);
+	objField = objCategory.GetFieldByColName("Type_documents");
+	objCtgryQuery.AddSelectField(objField.FieldNo);
+//	objField = objCategory.GetFieldByColName("NTIER");
+//	objCtgryQuery.AddSelectField(objField.FieldNo);
+	objField = objCategory.GetFieldByColName("CREDATE");
+	objCtgryQuery.AddSelectField(objField.FieldNo);
+	objField = objCategory.GetFieldByColName("ARCDATE");
+	objCtgryQuery.AddSelectField(objField.FieldNo);
+	objField = objCategory.GetFieldByColName("Archiv_par");
+	objCtgryQuery.AddSelectField(objField.FieldNo);
+	objField = objCategory.GetFieldByColName("Groupe_document_reprise");
+	objCtgryQuery.AddSelectField(objField.FieldNo);
+	objField = objCategory.GetFieldByColName("Type_document_reprise");
+	objCtgryQuery.AddSelectField(objField.FieldNo);
+	objField = objCategory.GetFieldByColName("NTIER");
+	objCtgryQuery.AddQueryCondition(objField.FieldNo, idTiers);
+	var objOrderByField = objCategory.GetFieldByColName("ARCDATE");
+	objCtgryQuery.AddOrderByField(objOrderByField.FieldNo);
+	objQuery.AddCtgryQuery(objCtgryQuery);
+}
+function viewDocument(docNo) {
+	try {
+		var objServer = new ActiveXObject("TWADOSObjects.ADOSServer");
+		objServer.Connect(2);
+		var objDoc = new ActiveXObject("TWADOSObjects.ADOSDocument");
+		var filename = objDoc.Retrieve(docNo, "", objServer);
+		objDoc.View();
+		objServer.Disconnect();
+	} catch (e) {
+		document.write(e.name + " - " + e.message);
+	}
+}
+function getUrlParameter(name) {
+	name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+	var regexS = "[\\?&]" + name + "=([^&#]*)";
+	var regex = new RegExp(regexS);
+	var results = regex.exec(window.location.href);
+	if (results == null) {
+		return "";
+	} else {
+		return results[1];
+	}
+}</script>
+<BODY>
+<script language="JavaScript">
+var idTiers = getUrlParameter("idTiers");
+loadTiers(idTiers);
+</script>
+
+</BODY>
+</HTML>

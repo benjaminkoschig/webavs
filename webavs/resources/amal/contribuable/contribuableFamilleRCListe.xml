@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>	
+	<complexe-model className="ch.globaz.amal.business.models.contribuable.ContribuableFamilleRCListe" extend="ch.globaz.amal.business.models.contribuable.ContribuableRCListe">
+		<select-fields distinct="true">
+			<select-field name="idContribuableFamille" field-ref="famille.idContribuable" />
+		</select-fields>
+		
+		<linked-model select-fields="false" name="famille" model-ref="ch.globaz.amal.business.models.famille.SimpleFamille" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idContribuable" operation="EQUALS" field-ref="dateNaissance"/>
+			</join-group>
+		</linked-model>
+					
+		<order-by>
+			<order-field field-ref="designationUpper1"/>
+			<order-field field-ref="designationUpper2"/>
+		</order-by>
+
+	</complexe-model>	
+</model-mapping>

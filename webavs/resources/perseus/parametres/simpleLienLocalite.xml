@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.parametres.SimpleLienLocalite">
+		<description>Table de lien des localites</description>
+		<table name="PFLIELOC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idLienLocalite" column="IOIDLI" comment="Clé primaire de la table"/>
+			<field name="idZone" column="IOIDZO" type="NUMERIC" mandatory="true" comment="Identifiant de la zone"/>
+			<field name="idLocalite" column="IOIDLO" type="NUMERIC" mandatory="true" comment="Identifiant de la localite" />
+			<field name="dateDebut" column="IODADE" type="DATE"  mandatory="true" comment="Date de debut du lien" />
+			<field name="dateFin" column="IODAFI" type="DATE" comment="Date de fin du lien" />
+		</fields>
+	</simple-model>
+</model-mapping>

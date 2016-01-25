@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.process.adaptation.DemandePcaPrestation">
+		<root-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee"  />
+		
+		<select-fields>
+			<select-field name="idTierAdressePaiement" field-ref="simpleInformationsComptabilite.idTiersAdressePmt" />
+			<select-field name="idTierAdressePaiementConjoint" field-ref="simpleInformationsComptabiliteConjoint.idTiersAdressePmt" />	
+			<select-field name="idTiersBeneficiaire" field-ref="simplePrestationsAccordees.idTiersBeneficiaire" />
+			<select-field name="nss" field-ref="personneEtendue.personneEtendue.numAvsActuel" />	
+		</select-fields>
+
+
+		<linked-model name="simpleVersionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER" >
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroit" join-type="INNER" select-fields="false"  >
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>
+			</join-group>
+		</linked-model> 
+				
+		<linked-model name="simpleDemande" model-ref="ch.globaz.pegasus.business.models.demande.SimpleDemande" join-type="INNER"  >
+			<join-group operator="AND">
+				<join-field name="idDemande" operation="EQUALS" field-ref="simpleDroit.idDemandePC"/>
+			</join-group>
+		</linked-model>		
+				
+		<linked-model name="simplePrestationsAccordees" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="INNER"  >
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPrestationAccordee"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="personneEtendue" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simplePrestationsAccordees.idTiersBeneficiaire"/>
+			</join-group>
+		</linked-model>
+		
+		
+		<linked-model name="simpleInformationsComptabilite" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimpleInformationsComptabilite" join-type="INNER" select-fields="true">
+			<join-group operator="AND">
+				<join-field name="idInfoCompta" operation="EQUALS" field-ref="simplePrestationsAccordees.idInfoCompta"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simplePrestationsAccordeesConjoint" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="LEFT_OUTER" >
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPrestationAccordeeConjoint"/>
+				<join-field field-ref="simplePCAccordee.idPrestationAccordeeConjoint" operation="NOT_NULL"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleInformationsComptabiliteConjoint" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimpleInformationsComptabilite" join-type="LEFT_OUTER" select-fields="true">
+			<join-group operator="AND">
+				<join-field name="idInfoCompta" operation="EQUALS" field-ref="simplePrestationsAccordeesConjoint.idInfoCompta"/>
+			</join-group>
+		</linked-model>
+		
+		
+		<search-definition>
+			<search-group operator="AND">	
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDroit.idDemandePC"/>		
+				<search-field name="forCsEtatPCA" operation="EQUALS" field-ref="simplePCAccordee.csEtatPC"/>
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>		
+				<search-field name="forNoVersion" operation="EQUALS" field-ref="simpleVersionDroit.noVersion"/>
+				<search-field name="forDateValable" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withCopiePca" >
+			<search-group operator="AND">	
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDroit.idDemandePC"/>		
+				<search-field name="forCsEtatPCA" operation="EQUALS" field-ref="simplePCAccordee.csEtatPC"/>
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>		
+				<search-field name="forNoVersion" operation="EQUALS" field-ref="simpleVersionDroit.noVersion"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="forPcaCouranteValide" >
+			<search-group operator="AND">	
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDroit.idDemandePC"/>		
+				<search-field name="forCsEtatPCA" operation="EQUALS" field-ref="simplePCAccordee.csEtatPC"/>
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>		
+				<search-field name="forLessNoVersion" operation="LESS" field-ref="simpleVersionDroit.noVersion"/>
+				<search-field name="forLessNoVersion" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
+			</search-group>
+		</search-definition>
+
+		<order-by>
+			<order-field field-ref="simplePCAccordee.dateDebut" order="DESC"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

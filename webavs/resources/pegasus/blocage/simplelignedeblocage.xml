@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.blocage.SimpleLigneDeblocage">
+		<description>Deblocage de pca bloque</description>
+		<table name="PCDEBLOC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDeblocage" column="DBIDBL" comment="ID_DEBLOCAGE"/>
+						
+			<field name="idPca" column="DBIPCA" type="NUMERIC" mandatory="true" comment="ID_PCA"/>
+			<field name="idTiersCreancier" column="DBITIE" type="NUMERIC" mandatory="false" comment="ID_TIERS_CREANCIER"/>
+			<field name="idRoleDetteEnCompta" column="DBIROL" type="NUMERIC" mandatory="false" comment="ID_ROLE_DETTE_EN_COMPTA"/>
+			<field name="idTiersAdressePaiement" column="DBITIA" type="NUMERIC" mandatory="false" comment="ID_TIERS_ADRESSE_PAIEMENT"/>
+			<field name="idApplicationAdressePaiement" column="DBIAPP" type="NUMERIC" mandatory="false" comment="ID_APPLICATION_ADRESSE_PAIEMENT"/>
+			<field name="idSectionDetteEnCompta" column="DBISEC" type="NUMERIC"  mandatory="false" comment="ID_SECTION_DETTE_EN_COMPTA"/>
+			<field name="idPrestation" column="DBIPRE" type="NUMERIC"  mandatory="false" comment="ID_PRESTATION"/>
+			<field name="csTypeDeblocage" column="DBTDBL" type="NUMERIC"  mandatory="false" comment="CS_TYPE_DEBLOCAGE"/>
+			<field name="csEtat" column="DBTETA" type="NUMERIC"  mandatory="true" comment="CS_ETAT"/>
+			<field name="montant" column="DBMON" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT"/>
+			<field name="refPaiement" column="DBLREP" type="STRING"  mandatory="false" comment="REFERENCE_PAIEMENT"/>
+
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="csEtat" />
+				<search-field name="forCsTypeDeblocage" operation="EQUALS" field-ref="csTypeDeblocage" />
+				<search-field name="forIdPca" operation="EQUALS" field-ref="idPca" />
+				<search-field name="forInIdPrestation" operation="IN" field-ref="idPrestation" />
+				
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withIdPcaNotEqual">
+			<search-group operator="AND">
+				<search-field name="forIdPca" operation="NOT_EQUALS" field-ref="idPca" />
+				<search-field name="forIdSectionDetteEnCompta" operation="EQUALS" field-ref="idSectionDetteEnCompta" />
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="csEtat" />
+				<search-field name="forCsTypeDeblocage" operation="EQUALS" field-ref="csTypeDeblocage" />
+			</search-group>
+		</search-definition>
+		
+	</simple-model>
+</model-mapping>

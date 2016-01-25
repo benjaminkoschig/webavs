@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--  DMA, 6.2010 -->
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.renteijapi.SimpleAutreRente">
+		<description>Table des autres rentes</description>
+		<table name="PCAUTREN" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAutreRente" column="CPIDAR" comment="ID_AUTRE_RENTE" />
+			<field name="idDonneeFinanciereHeader" column="CPIDDF" type="NUMERIC"  mandatory="true"  comment="ID_DONNEE_FINANCIERE_HEADER"/>
+			<field name="idPays" column="CPIDPA" type="NUMERIC"  mandatory="false"  comment="ID_PAYS"/>
+			<field name="fournisseurPrestation" column="CPLPR" type="STRING" comment="FOURNISSEUR_PRESTATION"/>
+			<field name="csType" column="CPTREN" type="NUMERIC" mandatory="true"  comment="CS_TYPE_RENTE"/>
+			<field name="csGenre" column="CPTGEN" type="NUMERIC" mandatory="true"  comment="CS_GENRE_RENTE"/>
+			<field name="csMonnaie" column="CPTMON" type="NUMERIC" mandatory="true"  comment="CS_TYPE_DE_MONNAIE"/>
+			<field name="montant"   column="CPMMON" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT_RENTE"/>
+			<field name="autreGenre"  column="CPLAGR" type="STRING" mandatory="false" comment="AUTRE_GENRE_RENTE"/>
+			<field name="dateEcheance" column="CPDECH" type="DATE" mandatory="false" comment="DATE_ECHEANCE"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,595 @@
+package ch.globaz.al.businessimpl.services.rafam;
+
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.log.business.JadeBusinessMessageLevels;
+import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.AllowanceType;
+import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.BeneficiaryType;
+import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.ChildAllowanceType;
+import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.ChildType;
+import ch.globaz.al.business.constantes.ALCSDossier;
+import ch.globaz.al.business.constantes.ALCSDroit;
+import ch.globaz.al.business.constantes.ALConstRafam;
+import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
+import ch.globaz.al.business.constantes.enumerations.RafamEvDeclencheur;
+import ch.globaz.al.business.constantes.enumerations.RafamFamilyAllowanceType;
+import ch.globaz.al.business.exceptions.model.annonces.rafam.ALAnnonceRafamException;
+import ch.globaz.al.business.models.dossier.DossierComplexModel;
+import ch.globaz.al.business.models.dossier.DossierComplexSearchModel;
+import ch.globaz.al.business.models.dossier.DossierModel;
+import ch.globaz.al.business.models.droit.DroitComplexModel;
+import ch.globaz.al.business.models.droit.DroitComplexSearchModel;
+import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
+import ch.globaz.al.business.models.rafam.AnnonceRafamSearchModel;
+import ch.globaz.al.business.services.ALServiceLocator;
+import ch.globaz.al.business.services.models.droit.DroitBusinessService;
+import ch.globaz.al.business.services.rafam.AnnonceRafamCreationService;
+import ch.globaz.al.business.services.rafam.AnnoncesRafamSearchService;
+import ch.globaz.al.businessimpl.checker.model.rafam.AnnonceRafamModelChecker;
+import ch.globaz.al.businessimpl.rafam.ContextAnnonceRafam;
+import ch.globaz.al.businessimpl.rafam.ContextAnnonceRafamDelegue;
+import ch.globaz.al.businessimpl.rafam.handlers.AnnonceHandlerAbstract;
+import ch.globaz.al.businessimpl.rafam.handlers.AnnonceHandlerFactory;
+import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
+import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.al.utils.ALRafamUtils;
+
+/**
+ * Implémentation du service de création d'annonces RAFAM
+ * 
+ * @author jts
+ * 
+ */
+public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceImpl implements
+        AnnonceRafamCreationService {
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * ch.globaz.al.business.services.rafam.AnnonceRafamCreationService#create68cForAnnonce(ch.globaz.al.business.models
+     * .rafam.AnnonceRafamModel)
+     */
+    @Override
+    public AnnonceRafamModel create68cForAnnonce(AnnonceRafamModel annonce) throws JadeApplicationException,
+            JadePersistenceException {
+
+        if ((annonce == null) || annonce.isNew()) {
+            throw new ALAnnonceRafamException(
+                    "AnnonceRafamBusinessServiceImpl#create68cForAnnonce : dossier is null or new");
+        }
+
+        // si l'annonce n'est pas l'annonce d'origine, on recharge. Permet d'éviter des erreurs si le NSS à changé
+        if (!annonce.getRecordNumber().equals(annonce.getIdAnnonce())) {
+            annonce = ALServiceLocator.getAnnonceRafamModelService().read(annonce.getRecordNumber());
+        }
+
+        if (RafamEtatAnnonce.A_TRANSMETTRE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(annonce.getEtat()))) {
+            JadeThread.logError(AnnonceRafamModelChecker.class.getName(), "al.rafam.annulation.annonce.a_transmettre");
+            return null;
+        } else {
+
+            ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSentForRecordNumber(
+                    annonce.getRecordNumber());
+
+            return ALServiceLocator.getAnnonceRafamModelService().create(
+                    ALImplServiceLocator.getInitAnnoncesRafamService().initAnnonce68c(annonce));
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * ch.globaz.al.business.services.rafam.AnnonceRafamCreationService#creerAnnonceModificationsTiers(java.lang.String)
+     */
+    @Override
+    public void creerAnnonceModificationsTiers(String idTiers) throws JadePersistenceException,
+            JadeApplicationException {
+
+        if (JadeNumericUtil.isEmptyOrZero(idTiers)) {
+            throw new ALAnnonceRafamException(
+                    "AnnonceRafamBusinessServiceImpl#creerAnnonceModificationsTiers : idTiers is empty or zero");
+        }
+
+        /*
+         * Gestion des cas "Enfants"
+         */
+        DroitComplexSearchModel searchDroits = new DroitComplexSearchModel();
+        searchDroits.setForIdTiersEnfant(idTiers);
+        searchDroits.setWhereKey("droitsForIdTiers");
+        searchDroits.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+        searchDroits = (DroitComplexSearchModel) JadePersistenceManager.search(searchDroits);
+
+        for (int i = 0; i < searchDroits.getSize(); i++) {
+            this.creerAnnonces(RafamEvDeclencheur.MODIF_ENFANT, (DroitComplexModel) searchDroits.getSearchResults()[i]);
+        }
+
+        /*
+         * Gestion des cas "Allocataires"
+         */
+        DossierComplexSearchModel searchDossiers = new DossierComplexSearchModel();
+        searchDossiers.setForIdTiersAllocataire(idTiers);
+        searchDossiers.setWhereKey("dossiersForIdTiers");
+        searchDossiers.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+        searchDossiers = (DossierComplexSearchModel) JadePersistenceManager.search(searchDossiers);
+
+        for (int i = 0; i < searchDossiers.getSize(); i++) {
+            this.creerAnnonces(RafamEvDeclencheur.MODIF_ALLOCATAIRE,
+                    (DossierComplexModel) searchDossiers.getSearchResults()[i]);
+        }
+    }
+
+    @Override
+    public void creerAnnonceModificationAffilie(String numeroAffilie) throws JadeApplicationException,
+            JadePersistenceException {
+
+        if (JadeStringUtil.isBlank(numeroAffilie)) {
+            throw new ALAnnonceRafamException(
+                    "AnnonceRafamBusinessServiceImpl#creerAnnonceModificationAffilie : numeroAffilie is null or empty");
+        }
+
+        DossierComplexSearchModel searchDossiers = new DossierComplexSearchModel();
+        searchDossiers.setForNumeroAffilie(numeroAffilie);
+        searchDossiers.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+        searchDossiers = (DossierComplexSearchModel) JadePersistenceManager.search(searchDossiers);
+
+        for (int i = 0; i < searchDossiers.getSize(); i++) {
+            this.creerAnnonces(RafamEvDeclencheur.MODIF_DOSSIER,
+                    (DossierComplexModel) searchDossiers.getSearchResults()[i]);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * ch.globaz.al.business.services.rafam.AnnonceRafamCreationService#creerAnnonces(ch.globaz.al.business.constantes
+     * .enumerations.RafamEvDeclencheur, ch.globaz.al.business.models.dossier.DossierComplexModel)
+     */
+    @Override
+    public void creerAnnonces(RafamEvDeclencheur evDecl, DossierComplexModel dossier) throws JadeApplicationException,
+            JadePersistenceException {
+
+        if (evDecl == null) {
+            throw new ALAnnonceRafamException("AnnonceRafamBusinessServiceImpl#creerAnnonces : evDecl is null");
+        }
+
+        if ((dossier == null) || dossier.isNew()) {
+            throw new ALAnnonceRafamException("AnnonceRafamBusinessServiceImpl#creerAnnonces : dossier is null or new");
+        }
+
+        DroitComplexSearchModel search = new DroitComplexSearchModel();
+        search.setForIdDossier(dossier.getId());
+
+        List<String> types = new ArrayList<String>();
+        types.add(ALCSDroit.TYPE_ENF);
+        types.add(ALCSDroit.TYPE_FORM);
+        search.setInTypeDroit(types);
+
+        search = ALServiceLocator.getDroitComplexModelService().search(search);
+
+        for (int i = 0; i < search.getSize(); i++) {
+            this.creerAnnonces(evDecl, dossier, (DroitComplexModel) search.getSearchResults()[i]);
+        }
+    }
+
+    public void creerAnnonces(RafamEvDeclencheur evDecl, DossierComplexModel dossier, DroitComplexModel droit)
+            throws JadeApplicationException, JadePersistenceException {
+        this.creerAnnonces(evDecl, RafamEtatAnnonce.A_TRANSMETTRE, dossier, droit);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * ch.globaz.al.business.services.rafam.AnnonceRafamCreationService#creerAnnonces(ch.globaz.al.business.constantes
+     * .enumerations.RafamEvDeclencheur, ch.globaz.al.business.models.droit.DroitComplexModel)
+     */
+    @Override
+    public void creerAnnonces(RafamEvDeclencheur evDecl, DroitComplexModel droit) throws JadeApplicationException,
+            JadePersistenceException {
+
+        if (evDecl == null) {
+            throw new ALAnnonceRafamException("AnnonceRafamBusinessServiceImpl#creerAnnonces : evDecl is null");
+        }
+
+        if ((droit == null) || droit.isNew()) {
+            throw new ALAnnonceRafamException("AnnonceRafamBusinessServiceImpl#creerAnnonces : droit is null or new");
+        }
+
+        this.creerAnnonces(evDecl,
+                ALServiceLocator.getDossierComplexModelService().read(droit.getDroitModel().getIdDossier()), droit);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * ch.globaz.al.business.services.rafam.AnnonceRafamCreationService#creerAnnonces(ch.globaz.al.business.constantes
+     * .enumerations.RafamEvDeclencheur, ch.globaz.al.business.models.dossier.DossierComplexModel,
+     * ch.globaz.al.business.models.droit.DroitComplexModel)
+     */
+    @Override
+    public void creerAnnonces(RafamEvDeclencheur evDecl, RafamEtatAnnonce etat, DossierComplexModel dossier,
+            DroitComplexModel droit) throws JadeApplicationException, JadePersistenceException {
+
+        if (evDecl == null) {
+            throw new ALAnnonceRafamException("AnnonceRafamBusinessServiceImpl#creerAnnonces : evDecl is null");
+        }
+
+        if ((dossier == null) || dossier.isNew()) {
+            throw new ALAnnonceRafamException("AnnonceRafamBusinessServiceImpl#creerAnnonces : dossier is null or new");
+        }
+
+        if ((droit == null) || droit.isNew()) {
+            throw new ALAnnonceRafamException("AnnonceRafamBusinessServiceImpl#creerAnnonces : droit is null or new");
+        }
+
+        if (isAnnoncesRequired(dossier, droit)) {
+
+            ALImplServiceLocator.getAnnonceRafamBusinessService().deleteForEtat(droit.getId(), etat);
+
+            List<RafamFamilyAllowanceType> types = getTypesAllocation(dossier.getDossierModel(), droit);
+
+            for (RafamFamilyAllowanceType type : types) {
+                if (JadeThread.logMessagesFromLevel(JadeBusinessMessageLevels.ERROR) == null) {
+                    ContextAnnonceRafam context = ContextAnnonceRafam.getContext(evDecl, etat, dossier, droit, type);
+                    AnnonceHandlerAbstract handler = (AnnonceHandlerFactory.getHandler(context));
+                    handler.creerAnnonce();
+                }
+            }
+        } else {
+            ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
+            ALImplServiceLocator.getAnnonceRafamBusinessService().deleteRefuseesForDroit(droit.getId());
+        }
+    }
+
+    @Override
+    public void creerAnnonces(RafamEvDeclencheur evDecl, RafamEtatAnnonce etat, DroitComplexModel droit)
+            throws JadeApplicationException, JadePersistenceException {
+
+        if (evDecl == null) {
+            throw new ALAnnonceRafamException("AnnonceRafamBusinessServiceImpl#creerAnnonces : evDecl is null");
+        }
+
+        if ((droit == null) || droit.isNew()) {
+            throw new ALAnnonceRafamException("AnnonceRafamBusinessServiceImpl#creerAnnonces : droit is null or new");
+        }
+
+        this.creerAnnonces(evDecl, etat,
+                ALServiceLocator.getDossierComplexModelService().read(droit.getDroitModel().getIdDossier()), droit);
+    }
+
+    @Override
+    public void creerAnnoncesDelegue(String idEmployeur, ChildAllowanceType currentAnnonces) throws Exception {
+
+        StringBuffer errors = new StringBuffer();
+
+        for (BeneficiaryType beneficiary : currentAnnonces.getBeneficiary()) {
+            for (ChildType child : beneficiary.getChild()) {
+                for (AllowanceType allowance : child.getAllowance()) {
+                    try {
+
+                        ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSentForRecordNumber(
+                                idEmployeur.concat(allowance.getAllowanceRefNumber().substring(2)));
+
+                        if ("01".equals(allowance.getAllowanceCompleteStorno())) {
+                            (AnnonceHandlerFactory.getHandler(ContextAnnonceRafamDelegue.getContext(
+                                    RafamEvDeclencheur.ANNULATION, RafamEtatAnnonce.ENREGISTRE, idEmployeur,
+                                    currentAnnonces, beneficiary, child, allowance))).creerAnnonce();
+                        } else {
+                            (AnnonceHandlerFactory.getHandler(ContextAnnonceRafamDelegue.getContext(
+                                    RafamEvDeclencheur.MODIF_DROIT, RafamEtatAnnonce.ENREGISTRE, idEmployeur,
+                                    currentAnnonces, beneficiary, child, allowance))).creerAnnonce();
+                        }
+
+                        if (JadeThread.logMessages() != null) {
+                            errors.append(
+                                    "Impossible de traiter l'annonce n°" + allowance.getAllowanceRefNumber()
+                                            + ",erreur:+" + JadeThread.logMessages()[0].getMessageId()).append(")\n");
+                            JadeLogger.error(this, allowance.getAllowanceRefNumber() + " non transmis à la CAF");
+                            JadeThread.rollbackSession();
+                            JadeThread.logClear();
+                        } else {
+                            JadeThread.commitSession();
+
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+
+                        JadeThread.rollbackSession();
+
+                        JadeLogger.error(this, "Impossible de traiter l'annonce n°" + allowance.getAllowanceRefNumber()
+                                + ":" + e.getMessage());
+
+                        errors.append("Impossible de traiter l'annonce n°" + allowance.getAllowanceRefNumber())
+                                .append(e.getMessage()).append(")\n");
+
+                        JadeThread.logClear();
+
+                    }
+
+                }
+
+            }
+        }
+        if (errors.length() > 0) {
+
+            ALRafamUtils.sendMail(new StringBuffer("Erreurs lors du chargement des annonces de l'employeur n° "
+                    + idEmployeur), errors, new String[0]);
+
+        }
+
+    }
+
+    /**
+     * Recherche les types d'annonces qu'il est possible d'avoir en fonction d'un dossier et d'un droit
+     * 
+     * @return Liste des types d'annonces identifiés
+     * 
+     * @throws JadePersistenceException
+     *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
+     *             faire
+     * @throws JadeApplicationException
+     *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     */
+    private List<RafamFamilyAllowanceType> getTypesAllocation(DossierModel dossier, DroitComplexModel droit)
+            throws JadeApplicationException, JadePersistenceException {
+
+        AnnoncesRafamSearchService annonceSearchService = ALImplServiceLocator.getAnnoncesRafamSearchService();
+
+        if ((dossier == null) || dossier.isNew()) {
+            throw new ALAnnonceRafamException(
+                    "AnnonceRafamIdentificationServiceImpl#getTypesAllocation : dossier is null or is new");
+        }
+
+        if ((droit == null) || droit.isNew()) {
+            throw new ALAnnonceRafamException(
+                    "AnnonceRafamIdentificationServiceImpl#getTypesAllocation : droit is null or is new");
+        }
+
+        DroitBusinessService dbs = ALServiceLocator.getDroitBusinessService();
+        List<RafamFamilyAllowanceType> list = new ArrayList<RafamFamilyAllowanceType>();
+
+        if (!dbs.isMontantForceZero(droit.getDroitModel())) {
+
+            // ADC (code 30)
+            if (ALCSDossier.STATUT_CS.equals(dossier.getStatut())
+                    || annonceSearchService.hasAnnonceOfType(droit.getId(), RafamFamilyAllowanceType.ADC)) {
+                list.add(RafamFamilyAllowanceType.ADC);
+            }
+
+            // ADI (code 31)
+            if (ALCSDossier.STATUT_IS.equals(dossier.getStatut())
+                    || annonceSearchService.hasAnnonceOfType(droit.getId(), RafamFamilyAllowanceType.ADI)) {
+                list.add(RafamFamilyAllowanceType.ADI);
+            }
+        }
+
+        // Différentielle naissance (code 03)
+        if ((ALCSDossier.STATUT_CS.equals(dossier.getStatut())
+                && ALCSDroit.TYPE_ENF.equals(droit.getDroitModel().getTypeDroit()) && ALCSDroit.NAISSANCE_TYPE_NAIS
+                    .equals(droit.getEnfantComplexModel().getEnfantModel().getTypeAllocationNaissance()))
+                || annonceSearchService.hasAnnonceOfType(droit.getId(), RafamFamilyAllowanceType.DIFFERENCE_NAISSANCE)) {
+
+            list.add(RafamFamilyAllowanceType.DIFFERENCE_NAISSANCE);
+        }
+
+        // Différentielle accueil (code 04)
+        if ((ALCSDossier.STATUT_CS.equals(dossier.getStatut())
+                && ALCSDroit.TYPE_ENF.equals(droit.getDroitModel().getTypeDroit()) && ALCSDroit.NAISSANCE_TYPE_ACCE
+                    .equals(droit.getEnfantComplexModel().getEnfantModel().getTypeAllocationNaissance()))
+                || annonceSearchService.hasAnnonceOfType(droit.getId(), RafamFamilyAllowanceType.DIFFERENCE_ADOPTION)) {
+
+            list.add(RafamFamilyAllowanceType.DIFFERENCE_ADOPTION);
+        }
+
+        // ///////////////////////////////////////////////////////////////////////////////////////////////////
+        // Cas non Différentiel
+        // ///////////////////////////////////////////////////////////////////////////////////////////////////
+        if ((!ALCSDossier.STATUT_CS.equals(dossier.getStatut()) && !ALCSDossier.STATUT_IS.equals(dossier.getStatut()))) {
+
+            // Naissance (code 01)
+            if ((ALCSDroit.TYPE_ENF.equals(droit.getDroitModel().getTypeDroit())
+                    && ALCSDroit.NAISSANCE_TYPE_NAIS.equals(droit.getEnfantComplexModel().getEnfantModel()
+                            .getTypeAllocationNaissance()) && !ALImplServiceLocator.getDossierBusinessService()
+                    .isAgricole(dossier.getActiviteAllocataire()))
+                    || annonceSearchService.hasAnnonceOfType(droit.getId(), RafamFamilyAllowanceType.NAISSANCE)) {
+
+                list.add(RafamFamilyAllowanceType.NAISSANCE);
+            }
+
+            // accueil (code 02)
+            if ((ALCSDroit.TYPE_ENF.equals(droit.getDroitModel().getTypeDroit())
+                    && ALCSDroit.NAISSANCE_TYPE_ACCE.equals(droit.getEnfantComplexModel().getEnfantModel()
+                            .getTypeAllocationNaissance()) && !ALImplServiceLocator.getDossierBusinessService()
+                    .isAgricole(dossier.getActiviteAllocataire()))
+                    || annonceSearchService.hasAnnonceOfType(droit.getId(), RafamFamilyAllowanceType.ADOPTION)) {
+
+                list.add(RafamFamilyAllowanceType.ADOPTION);
+            }
+
+            if (!dbs.isMontantForceZero(droit.getDroitModel())) {
+
+                // Enfant (code 10)
+                if ((ALCSDroit.TYPE_ENF.equals(droit.getDroitModel().getTypeDroit())
+                        && droit.getEnfantComplexModel().getEnfantModel().getCapableExercer() && !droit.getDroitModel()
+                        .getSupplementFnb())
+                        || annonceSearchService.hasAnnonceOfType(droit.getId(), RafamFamilyAllowanceType.ENFANT)) {
+
+                    list.add(RafamFamilyAllowanceType.ENFANT);
+                }
+
+                // Enfant incapable d'exercer (code 12)
+                if ((ALCSDroit.TYPE_ENF.equals(droit.getDroitModel().getTypeDroit())
+                        && !droit.getEnfantComplexModel().getEnfantModel().getCapableExercer() && !droit
+                        .getDroitModel().getSupplementFnb())
+                        || annonceSearchService.hasAnnonceOfType(droit.getId(),
+                                RafamFamilyAllowanceType.ENFANT_EN_INCAPACITE)) {
+
+                    list.add(RafamFamilyAllowanceType.ENFANT_EN_INCAPACITE);
+                    list.add(RafamFamilyAllowanceType.ENFANT);
+                }
+
+                // Formation et formation anticipée (codes 20, 22)
+                if ((ALCSDroit.TYPE_FORM.equals(droit.getDroitModel().getTypeDroit()) && !droit.getDroitModel()
+                        .getSupplementFnb())
+                        || annonceSearchService.hasAnnonceOfType(droit.getId(), RafamFamilyAllowanceType.FORMATION)
+                        || annonceSearchService.hasAnnonceOfType(droit.getId(),
+                                RafamFamilyAllowanceType.FORMATION_ANTICIPEE)) {
+
+                    list.add(RafamFamilyAllowanceType.FORMATION);
+                    list.add(RafamFamilyAllowanceType.FORMATION_ANTICIPEE);
+                }
+
+                // Enfant (code 11) (FNB)
+                if ((ALCSDroit.TYPE_ENF.equals(droit.getDroitModel().getTypeDroit())
+                        && droit.getEnfantComplexModel().getEnfantModel().getCapableExercer() && droit.getDroitModel()
+                        .getSupplementFnb())
+                        || annonceSearchService.hasAnnonceOfType(droit.getId(),
+                                RafamFamilyAllowanceType.ENFANT_AVEC_SUPPLEMENT)) {
+
+                    list.add(RafamFamilyAllowanceType.ENFANT_AVEC_SUPPLEMENT);
+                }
+
+                // Enfant incapable d'exercer (FNB) (code 13)
+                if ((ALCSDroit.TYPE_ENF.equals(droit.getDroitModel().getTypeDroit())
+                        && !droit.getEnfantComplexModel().getEnfantModel().getCapableExercer() && droit.getDroitModel()
+                        .getSupplementFnb())
+                        || annonceSearchService.hasAnnonceOfType(droit.getId(),
+                                RafamFamilyAllowanceType.ENFANT_EN_INCAPACITE_AVEC_SUPPLEMENT)) {
+
+                    list.add(RafamFamilyAllowanceType.ENFANT_EN_INCAPACITE_AVEC_SUPPLEMENT);
+                }
+
+                // Formation et formation anticipée (FNB) (codes 21, 23)
+                if ((ALCSDroit.TYPE_FORM.equals(droit.getDroitModel().getTypeDroit()) && droit.getDroitModel()
+                        .getSupplementFnb())
+                        || annonceSearchService.hasAnnonceOfType(droit.getId(),
+                                RafamFamilyAllowanceType.FORMATION_AVEC_SUPPLEMENT)
+                        || annonceSearchService.hasAnnonceOfType(droit.getId(),
+                                RafamFamilyAllowanceType.FORMATION_ANTICIPEE_AVEC_SUPPLEMENT)) {
+
+                    list.add(RafamFamilyAllowanceType.FORMATION_AVEC_SUPPLEMENT);
+                    list.add(RafamFamilyAllowanceType.FORMATION_ANTICIPEE_AVEC_SUPPLEMENT);
+                }
+            }
+        }
+
+        return list;
+    }
+
+    /**
+     * Indique si une annonce doit être générée en fonction de l'état (général et pas la valeur du champ état) du
+     * dossier et du droit
+     * 
+     * @param dossier
+     * @param droit
+     * @return
+     * @throws JadePersistenceException
+     * @throws JadeApplicationException
+     * @throws JadeApplicationServiceNotAvailableException
+     */
+    private boolean isAnnoncesRequired(DossierComplexModel dossier, DroitComplexModel droit)
+            throws JadeApplicationException, JadePersistenceException {
+
+        // Le traitement est effectué si :
+        // - le droit a l'état actif
+        // - le dossier à un état qui engendre une annonce Rafam
+        // - le droit débute après le 31.12.1979
+        // - le droit est de type enfant ou formation
+        // - le droit se termine après le 31.12.2010
+
+        HashSet<String> collectionEtatOkRafam = (HashSet<String>) ALServiceLocator.getDossierBusinessService()
+                .listerEtatsOkRafam();
+
+        if ((ALCSDroit.ETAT_A.equals(droit.getDroitModel().getEtatDroit()) && collectionEtatOkRafam.contains(dossier
+                .getDossierModel().getEtatDossier()))
+                && (ALCSDroit.TYPE_ENF.equals(droit.getDroitModel().getTypeDroit()) || ALCSDroit.TYPE_FORM.equals(droit
+                        .getDroitModel().getTypeDroit()))
+                && !JadeDateUtil.isDateBefore(droit.getDroitModel().getDebutDroit(), ALConstRafam.DATE_DEBUT_MINIMUM)
+                && JadeDateUtil.isDateBefore(ALConstRafam.DATE_FIN_MINIMUM, droit.getDroitModel().getFinDroitForcee())) {
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * ch.globaz.al.business.services.rafam.AnnonceRafamCreationService#suspendreAnnonce(ch.globaz.al.business.models
+     * .rafam.AnnonceRafamModel)
+     */
+    @Override
+    public AnnonceRafamModel suspendreAnnonce(AnnonceRafamModel annonce) throws JadeApplicationException,
+            JadePersistenceException {
+        if ((annonce == null) || annonce.isNew()) {
+            throw new ALAnnonceRafamException("AnnonceRafamBusinessServiceImpl#validerAnnonce : annonce is null or new");
+        }
+
+        return ALImplServiceLocator.getAnnonceRafamBusinessService().setEtat(annonce, RafamEtatAnnonce.SUSPENDU);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * ch.globaz.al.business.services.rafam.AnnonceRafamCreationService#transmettreAnnoncesTemporaires(java.lang.String)
+     */
+    @Override
+    public void transmettreAnnoncesTemporaires(String idDroit) throws JadePersistenceException,
+            JadeApplicationException {
+
+        ALImplServiceLocator.getAnnonceRafamBusinessService().deleteForEtat(idDroit, RafamEtatAnnonce.A_TRANSMETTRE);
+
+        AnnonceRafamSearchModel search = new AnnonceRafamSearchModel();
+        ArrayList<String> etats = new ArrayList<String>();
+        etats.add(RafamEtatAnnonce.ENREGISTRE.getCS());
+        search.setInEtatAnnonce(etats);
+        search.setForIdDroit(idDroit);
+        search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+
+        search = ALServiceLocator.getAnnonceRafamModelService().search(search);
+
+        for (int i = 0; i < search.getSize(); i++) {
+            AnnonceRafamModel currentAnnonce = (AnnonceRafamModel) (search.getSearchResults()[i]);
+            ALImplServiceLocator.getAnnonceRafamBusinessService().setEtat(currentAnnonce,
+                    RafamEtatAnnonce.A_TRANSMETTRE);
+        }
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * ch.globaz.al.business.services.rafam.AnnonceRafamCreationService#validerAnnonce(ch.globaz.al.business.models.
+     * rafam.AnnonceRafamModel)
+     */
+    @Override
+    public AnnonceRafamModel validerAnnonce(AnnonceRafamModel annonce) throws JadeApplicationException,
+            JadePersistenceException {
+
+        if ((annonce == null) || annonce.isNew()) {
+            throw new ALAnnonceRafamException("AnnonceRafamBusinessServiceImpl#validerAnnonce : annonce is null or new");
+        }
+
+        return ALImplServiceLocator.getAnnonceRafamBusinessService().setEtat(annonce, RafamEtatAnnonce.VALIDE);
+    }
+}

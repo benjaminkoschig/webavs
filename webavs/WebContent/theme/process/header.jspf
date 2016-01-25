@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<!--# set echo="url" -->
+<HEAD>
+<%
+String languePage = globaz.framework.controller.FWDefaultServletAction.getIdLangueIso(session);
+String selectedIdValue = "";
+String userActionValue = "";
+String servletContext = request.getContextPath();
+String mainServletPath = (String)request.getAttribute("mainServletPath");
+if (mainServletPath == null) {
+	mainServletPath = "";
+}
+String formAction = servletContext + mainServletPath;
+int tableHeight = 243;
+String subTableWidth = "100%";
+String idEcran = null;
+String formEncType = null; //Le type d'encodage du formulaire. Null par défaut.
+
+String processStarted = request.getParameter("process");
+boolean processLaunched = "launched".equalsIgnoreCase(processStarted);
+boolean showProcessButton = !processLaunched;
+String okButtonLabel = "Ok";
+boolean autoShowErrorPopup = session.getAttribute(globaz.framework.servlets.FWServlet.OBJ_NO_JSP_POPUP) == null;
+boolean vBeanHasErrors = false;
+%>

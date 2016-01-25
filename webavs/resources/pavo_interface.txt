@@ -1,0 +1,2 @@
+Répertoire java source du projet PAVO INTERFACE
+- Reprise de VAJ : dgi 1.003

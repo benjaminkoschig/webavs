@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+	<soap:Header>
+		<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+			<xenc:EncryptedKey Id="EK-81BF9A8BC2AE65031B142236914013411635" xmlns:xenc="http://www.w3.org/2001/04/xmlenc#">
+				<xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p"/>
+				<ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+					<wsse:SecurityTokenReference>
+						<ds:X509Data>
+							<ds:X509IssuerSerial>
+								<ds:X509IssuerName>C=CH,O=Swissdec,OU=Swissdec Consumer Certificate Authority</ds:X509IssuerName>
+								<ds:X509SerialNumber>3253031911319125590</ds:X509SerialNumber>
+							</ds:X509IssuerSerial>
+						</ds:X509Data>
+					</wsse:SecurityTokenReference>
+				</ds:KeyInfo>
+				<xenc:CipherData>
+					<xenc:CipherValue>IMRIpnbZ8PAKSCBCKIzgjmxf9QT1alpHYqbSp6D3ZR+9PA6JhllwRZd1HTJ3PyfyDV/t09mkHuVv1U5QsC1tRDwJ2xMupVF6ad3XPuI1C4sN+MLzF+tqkhGotmvlESkb1qVQ0KEDadk2EvPSCZK37OizhJHq1AixzTfH69+cSd0=</xenc:CipherValue>
+				</xenc:CipherData>
+				<xenc:ReferenceList>
+					<xenc:DataReference URI="#ED-13253"/>
+					<xenc:DataReference URI="#ED-13254"/>
+				</xenc:ReferenceList>
+			</xenc:EncryptedKey>
+			<wsse:BinarySecurityToken EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary" ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" wsu:Id="X509-81BF9A8BC2AE65031B142236914013111632">MIICJTCCAY6gAwIBAgIIMD/7Kmnj9rkwDQYJKoZIhvcNAQEFBQAwVTEzMDEGA1UECxMqU3dpc3NkZWMgVHJhbnNtaXR0ZXIgQ2VydGlmaWNhdGUgQXV0aG9yaXR5MREwDwYDVQQKEwhTd2lzc2RlYzELMAkGA1UEBhMCQ0gwHhcNMDYxMTA5MTcwNDE3WhcNMjYxMTA0MTY1MjAxWjA2MRQwEgYDVQQDEwtEaXN0cmlidXRvcjERMA8GA1UEChMIU3dpc3NkZWMxCzAJBgNVBAYTAkNIMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCIjoxxCWioc86dgeepscii8KDGlO3bKHyAfh8nESJkj8TeGZ1Q4SgD3TXkWNgHIqjbROFXaIbHdXhF099VrZ2WWuxwsieIrtcQrSfLTbRMDLYsTDzstS078ObnyLSdURQVdyEbqKJM+/Mp+7h3+gKZdiUjn+bQ9SGJiFI1bG4jZwIDAQABox0wGzAMBgNVHRMBAf8EAjAAMAsGA1UdDwQEAwIEkDANBgkqhkiG9w0BAQUFAAOBgQAGVt8au16mE2zALHfdWmVftxKgdvLjSF5z3p2uSjJo2VwTMXQsRVIFK297xuPJABryNmf2txatMnKpNtnm2CWvfFxDV4hCipxNpJWVQouIQyrj4mrUcFiVnXjy7364cJyr5uxp96GAWen8dx749riPK2XztGl0dMIzzPqJ2aRQ8A==</wsse:BinarySecurityToken>
+			<ds:Signature Id="SIG-13252" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+				<ds:SignedInfo>
+					<ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">
+						<ec:InclusiveNamespaces PrefixList="soap" xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+					</ds:CanonicalizationMethod>
+					<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+					<ds:Reference URI="#TS-13250">
+						<ds:Transforms>
+							<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">
+								<ec:InclusiveNamespaces PrefixList="wsse soap" xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+							</ds:Transform>
+						</ds:Transforms>
+						<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+						<ds:DigestValue>llPbTHysc+j71Hnz05JbTBdr4+4=</ds:DigestValue>
+					</ds:Reference>
+					<ds:Reference URI="#id-13251">
+						<ds:Transforms>
+							<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">
+								<ec:InclusiveNamespaces PrefixList="" xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+							</ds:Transform>
+						</ds:Transforms>
+						<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+						<ds:DigestValue>HMxjU93p4UNAj2smFioCwIwUu5c=</ds:DigestValue>
+					</ds:Reference>
+				</ds:SignedInfo>
+				<ds:SignatureValue>RgegxNDJkDzXpnaYO+r1QiyNvKTPZoEWYVJUpg+lI4AMqyESLf7n41Yc4aN69I2OEwcpEbc4boDh
+niGodBfhFBJRtIY1IMGt+jLvnvumOXBhd4rJfQ0rnLgPNNA1PTe5uOm9LtIlkBIRUR3hBGg7jxsc
+RIm99WzLZLCVgErBzB4=</ds:SignatureValue>
+				<ds:KeyInfo Id="KI-81BF9A8BC2AE65031B142236914013111633">
+					<wsse:SecurityTokenReference wsu:Id="STR-81BF9A8BC2AE65031B142236914013111634">
+						<wsse:Reference URI="#X509-81BF9A8BC2AE65031B142236914013111632" ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3"/>
+					</wsse:SecurityTokenReference>
+				</ds:KeyInfo>
+			</ds:Signature>
+			<wsu:Timestamp wsu:Id="TS-13250">
+				<wsu:Created>2015-01-27T14:32:20.130Z</wsu:Created>
+				<wsu:Expires>2015-01-27T14:47:20.130Z</wsu:Expires>
+			</wsu:Timestamp>
+		</wsse:Security>
+	</soap:Header>
+	<soap:Body wsu:Id="id-13251" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+		<ns4:DeclareSalaryConsumer xmlns="http://www.swissdec.ch/schema/sd/20130514/SalaryDeclarationConsumerContainer" xmlns:ns2="http://www.swissdec.ch/schema/sd/20130514/SalaryDeclaration" xmlns:ns3="http://www.swissdec.ch/schema/sd/20130514/SalaryDeclarationContainer" xmlns:ns4="http://www.swissdec.ch/schema/sd/20130514/SalaryDeclarationConsumerServiceTypes">
+			<DistributorRequestContext>
+				<UserAgent>
+					<Producer>swissdec</Producer>
+					<Name>swissdec distributor</Name>
+					<Version>3.3.11 (19965) 15.12.2014 17:27:23</Version>
+				</UserAgent>
+				<TransmissionDate>2015-01-27T15:32:20.031+01:00</TransmissionDate>
+				<DeclarationID>14b2bceac9499</DeclarationID>
+				<DistributorRequestID>D14b2bcead3f233</DistributorRequestID>
+				<VersionMappingFrom>
+					<WSDLNamespace>http://www.swissdec.ch/schema/sd/20051002/SalaryDeclarationService</WSDLNamespace>
+					<ServiceTypesNamespace>http://www.swissdec.ch/schema/sd/20051002/SalaryDeclarationServiceTypes</ServiceTypesNamespace>
+					<SalaryDeclarationMinorVersion>0.0</SalaryDeclarationMinorVersion>
+				</VersionMappingFrom>
+				<ProducerSecurityTokens>
+					<Timestamp>2015-01-27T15:32:19.000+01:00</Timestamp>
+					<X509Certificate>
+						<Usage>Signature</Usage>
+						<DistinguishedNameOwner>C=CH, L=Lausanne, O=OFISA Informatique SA, CN=Ofisal-W, UID=2.2</DistinguishedNameOwner>
+						<DistinguishedNameIssuer>C=CH, O=Swissdec, OU=Swissdec Transmitter Certificate Authority</DistinguishedNameIssuer>
+						<SecuredElement>{http://schemas.xmlsoap.org/ws/2004/08/addressing}Action</SecuredElement>
+						<SecuredElement>{http://schemas.xmlsoap.org/ws/2004/08/addressing}MessageID</SecuredElement>
+						<SecuredElement>{http://schemas.xmlsoap.org/ws/2004/08/addressing}ReplyTo</SecuredElement>
+						<SecuredElement>{http://schemas.xmlsoap.org/ws/2004/08/addressing}To</SecuredElement>
+						<SecuredElement>{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd}Timestamp</SecuredElement>
+						<SecuredElement>{http://schemas.xmlsoap.org/soap/envelope/}Body</SecuredElement>
+					</X509Certificate>
+					<X509Certificate>
+						<Usage>Encryption</Usage>
+						<DistinguishedNameOwner>C=CH, O=Swissdec, CN=Distributor</DistinguishedNameOwner>
+						<DistinguishedNameIssuer>C=CH, O=Swissdec, OU=Swissdec Transmitter Certificate Authority</DistinguishedNameIssuer>
+						<SecuredElement>{http://schemas.xmlsoap.org/soap/envelope/}Body</SecuredElement>
+					</X509Certificate>
+				</ProducerSecurityTokens>
+				<ProducerResponseNotifications>
+					<Warning>
+						<Notification>
+							<QualityLevel>Plausibility</QualityLevel>
+							<DescriptionCode>2024</DescriptionCode>
+							<Description>Numéro BUR-REE invalide: </Description>
+						</Notification>
+					</Warning>
+				</ProducerResponseNotifications>
+				<ConsumerNotifications>
+					<Warning>
+						<Notification>
+							<DescriptionCode>5020</DescriptionCode>
+							<Description>Schema-Mapping: Element "CompanyWorkingTime" inserted</Description>
+						</Notification>
+					</Warning>
+				</ConsumerNotifications>
+				<Institutions>
+					<ns2:AHV-AVS institutionID="#022.000">
+						<ns2:AK-CC-BranchNumber>022.000</ns2:AK-CC-BranchNumber>
+						<ns2:AK-CC-CustomerNumber>1078865-10</ns2:AK-CC-CustomerNumber>
+					</ns2:AHV-AVS>
+				</Institutions>
+			</DistributorRequestContext>
+			<DeclareSalary>
+				<ns3:RequestContext>
+					<ns3:UserAgent>
+						<ns3:Producer>OFISA Informatique SA</ns3:Producer>
+						<ns3:Name>Ofisal-W + SwissDecTX/1.23</ns3:Name>
+						<ns3:Version>v. 2.2.1</ns3:Version>
+						<ns3:Certificate>1060.10</ns3:Certificate>
+						<ns3:ELM-SalaryStandardVersion>2.2</ns3:ELM-SalaryStandardVersion>
+					</ns3:UserAgent>
+					<ns3:CompanyName>
+						<ns2:HR-RC-Name>Service accueil petite enfance</ns2:HR-RC-Name>
+					</ns3:CompanyName>
+					<ns3:TransmissionDate>2015-01-27T14:32:19.5718053Z</ns3:TransmissionDate>
+					<ns3:RequestID>620511E9668D4A3EA0A6</ns3:RequestID>
+					<ns3:LanguageCode>fr</ns3:LanguageCode>
+					<ns3:MonitoringID>ofisa</ns3:MonitoringID>
+				</ns3:RequestContext>
+				<ns3:Job>
+					<ns3:Addressees>
+						<ns3:AHV-AVS institutionIDRef="#022.000">
+							<ns3:ProcessByDistributor>true</ns3:ProcessByDistributor>
+						</ns3:AHV-AVS>
+					</ns3:Addressees>
+					<ns3:EndUserNotification>
+						<ns3:Name>Lavanchy Pierre-André</ns3:Name>
+						<ns3:EmailAddress>pay@prilly.ch</ns3:EmailAddress>
+						<ns3:PhoneNumber>0216227222</ns3:PhoneNumber>
+					</ns3:EndUserNotification>
+				</ns3:Job>
+				<ns3:SalaryDeclaration schemaVersion="0.0">
+					<ns2:Company>
+						<ns2:CompanyDescription>
+							<ns2:Name>
+								<ns2:HR-RC-Name>Service accueil petite enfance</ns2:HR-RC-Name>
+							</ns2:Name>
+							<ns2:Address>
+								<ns2:Street>Route de Cossonay 40</ns2:Street>
+								<ns2:ZIP-Code>1008</ns2:ZIP-Code>
+								<ns2:City>Prilly</ns2:City>
+								<ns2:Country>CH</ns2:Country>
+							</ns2:Address>
+							<ns2:Workplace workplaceID="#DistributorGenerated-1">
+								<ns2:AddressExtended>
+									<ns2:ZIP-Code>1008</ns2:ZIP-Code>
+									<ns2:City>Prilly</ns2:City>
+								</ns2:AddressExtended>
+								<ns2:CompanyWorkingTime>
+									<ns2:WeeklyHoursAndLessons>
+										<ns2:WeeklyHours>99.00</ns2:WeeklyHours>
+										<ns2:WeeklyLessons>99</ns2:WeeklyLessons>
+									</ns2:WeeklyHoursAndLessons>
+								</ns2:CompanyWorkingTime>
+							</ns2:Workplace>
+						</ns2:CompanyDescription>
+						<ns2:Staff>
+							<ns2:Person>
+								<ns2:Particulars>
+									<ns2:Social-InsuranceIdentification>
+										<ns2:SV-AS-Number>756.7780.2233.55</ns2:SV-AS-Number>
+									</ns2:Social-InsuranceIdentification>
+									<ns2:EmployeeNumber>11055</ns2:EmployeeNumber>
+									<ns2:Lastname>Suddachcharige Fernando</ns2:Lastname>
+									<ns2:Firstname>Thushan Layanwitha</ns2:Firstname>
+									<ns2:Sex>F</ns2:Sex>
+									<ns2:DateOfBirth>1979-07-28</ns2:DateOfBirth>
+									<ns2:Nationality>LK</ns2:Nationality>
+									<ns2:CivilStatus>
+										<ns2:Status>married</ns2:Status>
+									</ns2:CivilStatus>
+									<ns2:Address>
+										<ns2:Street>Av. de la Vallombreuse 93</ns2:Street>
+										<ns2:ZIP-Code>1008</ns2:ZIP-Code>
+										<ns2:City>Prilly</ns2:City>
+										<ns2:Country>CH</ns2:Country>
+									</ns2:Address>
+									<ns2:ResidenceCanton>VD</ns2:ResidenceCanton>
+									<ns2:ResidenceCategory>annual-B</ns2:ResidenceCategory>
+								</ns2:Particulars>
+								<ns2:Work>
+									<ns2:ActivityRate>100</ns2:ActivityRate>
+									<ns2:EntryDate>1000-01-01</ns2:EntryDate>
+								</ns2:Work>
+								<ns2:AHV-AVS-Salaries>
+									<ns2:AHV-AVS-Salary institutionIDRef="#022.000">
+										<ns2:AccountingTime>
+											<ns2:from>2014-01-01</ns2:from>
+											<ns2:until>2014-12-31</ns2:until>
+										</ns2:AccountingTime>
+										<ns2:AHV-AVS-Income>5643.60</ns2:AHV-AVS-Income>
+										<ns2:ALV-AC-Income>5643.60</ns2:ALV-AC-Income>
+									</ns2:AHV-AVS-Salary>
+								</ns2:AHV-AVS-Salaries>
+							</ns2:Person>
+							<ns2:Person>
+								<ns2:Particulars>
+									<ns2:Social-InsuranceIdentification>
+										<ns2:SV-AS-Number>756.7535.4405.25</ns2:SV-AS-Number>
+									</ns2:Social-InsuranceIdentification>
+									<ns2:EmployeeNumber>11034</ns2:EmployeeNumber>
+									<ns2:Lastname>Tuberoso</ns2:Lastname>
+									<ns2:Firstname>Franca</ns2:Firstname>
+									<ns2:Sex>F</ns2:Sex>
+									<ns2:DateOfBirth>1967-06-26</ns2:DateOfBirth>
+									<ns2:Nationality>IT</ns2:Nationality>
+									<ns2:CivilStatus>
+										<ns2:Status>married</ns2:Status>
+									</ns2:CivilStatus>
+									<ns2:Address>
+										<ns2:Street>Rte de Cossonay 30</ns2:Street>
+										<ns2:ZIP-Code>1008</ns2:ZIP-Code>
+										<ns2:City>Prilly</ns2:City>
+										<ns2:Country>CH</ns2:Country>
+									</ns2:Address>
+									<ns2:ResidenceCanton>VD</ns2:ResidenceCanton>
+								</ns2:Particulars>
+								<ns2:Work>
+									<ns2:WorkingTime>
+										<ns2:WeeklyHours>40.00</ns2:WeeklyHours>
+									</ns2:WorkingTime>
+									<ns2:ActivityRate>100</ns2:ActivityRate>
+									<ns2:EntryDate>1000-01-01</ns2:EntryDate>
+								</ns2:Work>
+								<ns2:AHV-AVS-Salaries>
+									<ns2:AHV-AVS-Salary institutionIDRef="#022.000">
+										<ns2:AccountingTime>
+											<ns2:from>2014-01-01</ns2:from>
+											<ns2:until>2014-12-31</ns2:until>
+										</ns2:AccountingTime>
+										<ns2:AHV-AVS-Income>9082.90</ns2:AHV-AVS-Income>
+										<ns2:ALV-AC-Income>9082.90</ns2:ALV-AC-Income>
+									</ns2:AHV-AVS-Salary>
+								</ns2:AHV-AVS-Salaries>
+							</ns2:Person>
+						</ns2:Staff>
+						<ns2:Institutions>
+							<ns2:AHV-AVS institutionID="#022.000">
+								<ns2:AK-CC-BranchNumber>022.000</ns2:AK-CC-BranchNumber>
+								<ns2:AK-CC-CustomerNumber>1078865-10</ns2:AK-CC-CustomerNumber>
+							</ns2:AHV-AVS>
+						</ns2:Institutions>
+						<ns2:SalaryTotals>
+							<ns2:AHV-AVS-Totals institutionIDRef="#022.000">
+								<ns2:Total-AHV-AVS-Incomes>14726.5</ns2:Total-AHV-AVS-Incomes>
+								<ns2:Total-AHV-AVS-Open>25578.00</ns2:Total-AHV-AVS-Open>
+								<ns2:Total-ALV-AC-Incomes>617142.00</ns2:Total-ALV-AC-Incomes>
+								<ns2:Total-ALVZ-ACS-Incomes>0.00</ns2:Total-ALVZ-ACS-Incomes>
+								<ns2:Total-ALV-AC-Open>54862.95</ns2:Total-ALV-AC-Open>
+							</ns2:AHV-AVS-Totals>
+						</ns2:SalaryTotals>
+						<ns2:SalaryCounters>
+							<ns2:NumberOf-AHV-AVS-Salary-Tags>2</ns2:NumberOf-AHV-AVS-Salary-Tags>
+						</ns2:SalaryCounters>
+					</ns2:Company>
+					<ns2:GeneralSalaryDeclarationDescription>
+						<ns2:CreationDate>2015-01-27T15:32:18</ns2:CreationDate>
+						<ns2:AccountingPeriod>2014</ns2:AccountingPeriod>
+					</ns2:GeneralSalaryDeclarationDescription>
+				</ns3:SalaryDeclaration>
+			</DeclareSalary>
+		</ns4:DeclareSalaryConsumer>
+	</soap:Body>
+</soap:Envelope>

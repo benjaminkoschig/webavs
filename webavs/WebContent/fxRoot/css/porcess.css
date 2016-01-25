@@ -1,0 +1,126 @@
+.progressStep, .progressEntity {
+	margin: 10px;
+}
+
+.areaDetail span {
+	display: inline-block;
+	vertical-align: top;
+	margin: 0px 5px 0px 0px; 
+	padding: 0px;
+}
+#properties{
+	display: block;
+	margin: 0px 10px 0px 0px; 
+	padding:0px;
+}
+#tableDetailEntity {
+	margin:0px;
+	padding:0px;
+	width: 500px;
+}
+
+
+#tableDetailEntity .detailEntity .propertiesValues{
+	max-width: 400px;
+	width: 200px;
+}
+
+#tableDetailEntity  td{
+	white-space:normal; 
+	word-wrap: break-word;
+}
+
+.btnAjax, .formTableLess label {
+	margin-left: 10px;
+	padding-left: 0;
+}
+
+.btnAjax {
+	margin-top: 5px;
+}
+	
+
+ fieldset { 
+	border-bottom: 0px solid #356AA0;
+	border-top: 0px;
+	border-left: 0px;
+	border-right: 0px;
+	margin-bottom: 10px;
+	padding: 5px 0;
+}
+
+legend, .legend {
+	text-align: center;
+	color: #356AA0;
+	padding: 2px 10px;
+	font-size: 1em;
+}
+
+.formTableLess label { /*width: 100px;*/
+	color: gray;
+	font-weight: bold;
+	vertical-align: top;
+    border-left: 1px #D2D2EF dashed;
+    padding: 10px 0px 10px 10px;
+		
+}
+.formTableLess label:FIRST-CHILD {
+	border:0;
+}
+.formTableLess span {
+	clear: both;
+	font-style: italic;
+	display: inline-bloc;
+}
+
+.formTableLess  .content span {
+	padding: 0px 0px 0px 0px;
+}
+
+.content {
+	padding: 10px 0px;
+}
+
+.entiteError {
+	background-color: #f07a8a !important;
+}
+
+.entiteWarning{
+	background-color: #FEFDA2  !important;
+}
+
+.getWithUserAction {
+	margin: 10px 20px 10px 0px;
+}
+
+.currentStep, .mainContainerAjax {
+	background-color: transparent;
+	margin-bottom: 5px;
+	border: 0px;
+}
+
+.ordreStep {
+	color: gray;
+	font-size: 8px;
+}
+
+.infosTimeTrForProcess td{
+	margin:0px;
+	padding:0px;
+	height:5px !important;
+	font-size: 11px;
+	vertical-align: top;
+}
+.infosTimeTrForProcess label { 
+	color: gray;
+	vertical-align: top;
+	margin:0;
+	padding:0 0 0 0;
+}
+
+.infosTimeTrForProcess span {
+	clear: both;
+	font-style: italic;
+	display: inline-bloc;
+	padding:0 10px 0 0;
+}

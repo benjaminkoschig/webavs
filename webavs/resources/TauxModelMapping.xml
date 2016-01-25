@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.naos.business.model.TauxAssuranceSimpleModel">
+		<table name="AFTAUXP" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="tauxAssuranceId" column="MCITAU" />
+			<field name="assuranceId" column="MBIASS" type="NUMERIC" />
+			<field name="dateDebut" column="MCDDEB" type="DATE" />
+			<field name="dateFin" column="MCDFIN" type="DATE" />
+			<field name="codeSexe" column="MCTSEX" type="NUMERIC" />
+			<field name="genreValeur" column="MCTGEN" type="NUMERIC" />
+			<field name="valeurEmployeur" column="MCMVER" type="NUMERIC" />
+			<field name="valeurEmploye" column="MCMVEE" type="NUMERIC" />
+			<field name="fraction" column="MCNFRA" type="NUMERIC" />
+			<field name="periodiciteMontant" column="MCTPER" type="NUMERIC" />
+			<field name="rang" column="MCNRAN" type="NUMERIC" />
+			<field name="tranche" column="MCMTRA" type="NUMERIC" />
+			<field name="typeTaux" column="MCTTYP" type="NUMERIC" />
+			<field name="categorieTaux" column="MCTCAT" type="NUMERIC" />
+		</fields>
+	</simple-model>
+</model-mapping>

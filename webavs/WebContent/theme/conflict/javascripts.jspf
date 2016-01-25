@@ -1,0 +1,52 @@
+<%@page import="globaz.jade.common.Jade"%><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Style-Type" content="text/css"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0" />
+<meta http-equiv="Cache-Control" content="no-cache" /> 
+<meta name="User-Lang" content="<%=languePage%>"/> 
+<meta name="Context_URL" content="<%=servletContext%>"/> 
+<meta name="formAction" content="<%=formAction%>"/>   
+<link rel="stylesheet" type="text/css" href="<%=servletContext%><%=(mainServletPath+"Root")%>/moduleStyle.css"/>
+<link type="text/css" href="<%=servletContext%>/theme/jquery/jquery-ui.css" rel="stylesheet" />
+<script type="text/javascript" src="<%=servletContext%>/scripts/dates.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jquery.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jquery-ui.js"></script>
+<SCRIPT language="JavaScript" src="<%=request.getContextPath()%>/scripts/params.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="<%=request.getContextPath()%>/scripts/actionsForButtons.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="<%=request.getContextPath()%>/scripts/shortKeys.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="<%=request.getContextPath()%>/scripts/utils.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="<%=request.getContextPath()%>/scripts/ValidationGroups.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="<%=request.getContextPath()%>/scripts/calendar/AnchorPosition.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="<%=request.getContextPath()%>/scripts/calendar/PopupWindow.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="<%=request.getContextPath()%>/scripts/calendar/date.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="<%=request.getContextPath()%>/scripts/calendar/CalendarPopup.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="<%=request.getContextPath()%>/scripts/autocomplete.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="<%=request.getContextPath()%>/scripts/selectionPopup.js"></SCRIPT>
+<%@ include file="/jade/notation/notationLibJs.jspf" %> 
+
+<style type="text/css">
+body {
+	background-color: <%=Jade.getInstance().getWebappBackgroundColor()%>;
+}
+</style>
+<SCRIPT language="javascript"> 
+<!--
+vBeanHasErrors = viewBean.getMsgType().equals (globaz.framework.bean.FWViewBeanInterface.ERROR);
+var errorObj = new Object();
+errorObj.text = "";
+
+function showErrors() {
+	if (errorObj.text != "") {
+		showModalDialog('<%=servletContext%>/errorModalDlg.jsp',errorObj,'dialogHeight:20;dialogWidth:25;status:no;resizable:no');	
+	}
+}
+-->
+</SCRIPT>
+<!--
+ ************************
+ * Fonctions js à faire *
+ * - init()             *
+ * - onOk()             *
+ * - onCancel()         *
+ ************************
+ -->

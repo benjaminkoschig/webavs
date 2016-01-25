@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.dossier.Dossier">
+		<root-model name="dossier" model-ref="ch.globaz.pegasus.business.models.dossier.SimpleDossier"/>
+		<linked-model name="demandePrestation" model-ref="ch.globaz.prestation.business.models.demande.DemandePrestation" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="demandePrestation.idDemande" operation="EQUALS" field-ref="dossier.idDemandePrestation"/>
+			</join-group>		
+		</linked-model>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="likeNom" operation="LIKE" field-ref="demandePrestation.personneEtendue.tiers.designationUpper1"/>  
+				<search-field name="likePrenom" operation="LIKE" field-ref="demandePrestation.personneEtendue.tiers.designationUpper2"/>  
+				<search-field name="likeNss" operation="LIKE" field-ref="demandePrestation.personneEtendue.personneEtendue.numAvsActuel"/>  
+				<search-field name="forCsSexe" operation="EQUALS" field-ref="demandePrestation.personneEtendue.personne.sexe"/>  
+				<search-field name="forDateNaissance" operation="EQUALS" field-ref="demandePrestation.personneEtendue.personne.dateNaissance"/>
+				<search-field name="forIdTiers" operation="EQUALS" field-ref="demandePrestation.demandePrestation.idTiers"/>
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="dossier.idDossier"/>
+				  
+<!--				<search-field name="forEnCours" operation="EQUALS" field-ref="demandePrestation.personneEtendue.personne.sexe"/>-->  
+				<search-field name="forIdGestionnaire" operation="EQUALS" field-ref="dossier.idGestionnaire"/>  
+<!--				<search-field name="forRevision" operation="EQUALS" field-ref="demandePrestation.personneEtendue.personne.sexe"/>-->  
+			</search-group>
+		</search-definition>
+		<order-by name="nomPrenom">
+			<order-field field-ref="demandePrestation.personneEtendue.tiers.designationUpper1"/>
+			<order-field field-ref="demandePrestation.personneEtendue.tiers.designationUpper2"/>
+		</order-by>		
+	</complexe-model>
+</model-mapping>

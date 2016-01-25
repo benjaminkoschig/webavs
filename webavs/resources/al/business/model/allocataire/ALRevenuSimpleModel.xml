@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.allocataire.RevenuModel">
+		<description>Revenu d'un allocataire</description>
+		<table name="ALREV" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key comment="ID du revenu" column="RIDE" name="idRevenu"/>
+			<field comment="ID (FK) de l'allocataire" column="BID" type="NUMERIC" name="idAllocataire" mandatory="true"/>
+			<field comment="Indique si le revenu est celui du conjoint" column="RRCONJ" type="BOOLEAN" name="revenuConjoint" mandatory="true" />
+			<field comment="Montant du revenu" column="RMONT" type="NUMERIC" dataType="NUMERIC(10,2)" name="montant" mandatory="true"/>
+			<field comment="Date de saisie du revenu" column="RDATE" type="DATE" name="date" mandatory="true"/>
+			<field comment="Indique s'il s'agit d'un revenu IFD" column="RIFD" type="BOOLEAN" name="revenuIFD" mandatory="true"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdRevenu" field-ref="idRevenu" operation="EQUALS"/>
+				<search-field name="forIdAllocataire" field-ref="idAllocataire" operation="EQUALS"/>
+				<search-field name="forIsConjoint" field-ref="revenuConjoint" operation="EQUALS"/>
+				<search-field name="forMontant" field-ref="montant" operation="EQUALS"/>
+				<search-field name="forDate" field-ref="date" operation="EQUALS"/>
+				<search-field name="forIsIfd" field-ref="revenuIFD" operation="EQUALS"/>
+			</search-group>
+		</search-definition>	
+		<search-definition name="dateBefore">
+			<search-group operator="AND">
+				<search-field name="forBeforeDate" field-ref="date" operation="LESS_OR_EQUALS"/>
+				<search-field name="forIdAllocataire" field-ref="idAllocataire" operation="EQUALS"/>
+				<search-field name="forIsConjoint" field-ref="revenuConjoint" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		<order-by name="dateDesc">
+			<order-field field-ref="date" order="DESC"/>
+		</order-by>
+		<order-by name="dateAsc">
+			<order-field field-ref="date" order="ASC"/>
+		</order-by>
+	</simple-model>
+</model-mapping>

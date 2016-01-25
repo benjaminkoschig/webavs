@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="perseus/dossier/dossierPackage.xml"/>
+	<model-mapping import="perseus/demande/demandePackage.xml"/>
+	<model-mapping import="perseus/variablemetier/variablemetierPackage.xml"/>
+	<model-mapping import="perseus/donneesfinancieres/donneesfinancieresPackage.xml"/>
+	<model-mapping import="perseus/situationfamille/situationfamillePackage.xml"/>
+	<model-mapping import="perseus/parametres/parametresPackage.xml"/>
+	<model-mapping import="perseus/pcfaccordee/pcfaccordeePackage.xml"/>
+	<model-mapping import="perseus/decision/decisionPackage.xml"/>
+	<model-mapping import="perseus/lot/lotPackage.xml"/>
+	<model-mapping import="perseus/qd/qdPackage.xml"/>
+	<model-mapping import="perseus/creancier/creancierPackage.xml"/>
+	<model-mapping import="perseus/rentepont/rentepontPackage.xml"/>
+	<model-mapping import="perseus/echeance/echeanceLibrePackage.xml"/>
+	<model-mapping import="perseus/impotsource/impotSourcePackage.xml"/>
+	<model-mapping import="perseus/retenue/retenuePackage.xml"/>
+	<model-mapping import="perseus/statistique/statistiquepackage.xml"/>
+	<model-mapping import="perseus/informationfacture/InformationFacturePackage.xml"/>
+</model-mapping>

@@ -1,0 +1,7 @@
+<SCRIPT>
+if(top.fr_error!=null) {
+	top.fr_error.location.replace(top.fr_error.location.href);
+}	
+</SCRIPT>
+</BODY>
+</HTML>

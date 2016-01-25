@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.calcul.CalculDonneesHome">
+		<root-model name="simpleTypeChambre" model-ref="ch.globaz.pegasus.business.models.home.SimpleTypeChambre" select-fields="false"/>
+		
+		<linked-model  name="simplePrixChambre" model-ref="ch.globaz.pegasus.business.models.home.SimplePrixChambre" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTypeChambre" operation="EQUALS" field-ref="simpleTypeChambre.idTypeChambre"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleHome" model-ref="ch.globaz.pegasus.business.models.home.SimpleHome" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idHome" operation="EQUALS" field-ref="simpleTypeChambre.idHome"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simplePeriodeServiceEtat" model-ref="ch.globaz.pegasus.business.models.home.SimplePeriodeServiceEtat" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idHome" operation="EQUALS" field-ref="simpleHome.idHome"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleTaxesJournaliereHome" model-ref="ch.globaz.pegasus.business.models.habitat.SimpleTaxeJournaliereHome" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTypeChambre" operation="EQUALS" field-ref="simpleTypeChambre.idTypeChambre"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDonneesFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleTaxesJournaliereHome.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleVersionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simpleDonneesFinanciereHeader.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<select-fields>
+			<select-field name="idDDF" field-ref="simpleDonneesFinanciereHeader.idDonneeFinanciereHeader"/>
+			<select-field name="dateDebutDFH" field-ref="simpleDonneesFinanciereHeader.dateDebut"/>
+			<select-field name="dateFinDFH" field-ref="simpleDonneesFinanciereHeader.dateFin"/>
+			<select-field name="dateEntreeHome" field-ref="simpleTaxesJournaliereHome.dateEntreeHome"/>
+			<select-field name="idTaxesJournaliere" field-ref="simpleTaxesJournaliereHome.idTaxeJournaliereHome"/>
+			<select-field name="idVersionDroit" field-ref="simpleDonneesFinanciereHeader.idVersionDroit" />
+			<select-field name="idMembreFamille" field-ref="simpleDonneesFinanciereHeader.idDroitMembreFamille"/>
+			<select-field name="isReconnu" field-ref="simplePeriodeServiceEtat.isReconnu"/>
+			<select-field name="dateDebutPeriode" field-ref="simplePeriodeServiceEtat.dateDebut"/>
+			<select-field name="dateFinPeriode" field-ref="simplePeriodeServiceEtat.dateFin"/>
+			<select-field name="csServiceEtatPeriode" field-ref="simplePeriodeServiceEtat.csServiceEtat"/>
+			<select-field name="idHome" field-ref="simpleHome.idHome"/>
+			<select-field name="isHorsCanton" field-ref="simpleHome.isHorsCanton"/>
+			<select-field name="numeroIdentification" field-ref="simpleHome.numeroIdentification"/>
+			<select-field name="idTypeChambre" field-ref="simpleTypeChambre.idTypeChambre"/>
+			<select-field name="csTypeChambre" field-ref="simpleTypeChambre.csCategorie"/>
+			<select-field name="csCategorieArgentPoche" field-ref="simpleTypeChambre.csCategorieArgentPoche"/>
+			<select-field name="isApiFactureParHome" field-ref="simpleTypeChambre.isApiFacturee"/>
+			<select-field name="prixJournalier" field-ref="simplePrixChambre.prixJournalier"/>
+			<select-field name="dateDebutPrixChambre" field-ref="simplePrixChambre.dateDebut"/>
+			<select-field name="dateFinPrixChambre" field-ref="simplePrixChambre.dateFin"/>
+		</select-fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdHome" operation="EQUALS" field-ref="simpleHome.idHome" />
+				<search-field name="forIdTypeChambre" operation="EQUALS" field-ref="simpleTypeChambre.idTypeChambre" />
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simpleDonneesFinanciereHeader.idVersionDroit" />
+				<search-field name="inIdTypeChambre" operation="IN" field-ref="simpleTypeChambre.idTypeChambre" />
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit" />
+				
+			
+				<search-group operator="AND">
+					<search-group operator="OR">
+						<search-field name="forDateFin" operation="GREATER_OR_EQUALS" field-ref="simplePrixChambre.dateFin" />
+						<search-field name="forDateFin" operation="NULL" field-ref="simplePrixChambre.dateFin" />
+					</search-group>
+					<search-group operator="OR">
+						<search-field name="forDateFin" operation="GREATER_OR_EQUALS" field-ref="simplePeriodeServiceEtat.dateFin" />
+						<search-field name="forDateFin" operation="NULL" field-ref="simplePeriodeServiceEtat.dateFin" />
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		
+		<search-definition name="searchHomeForLAPRAMS">
+			<search-group operator="AND">
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit" />
+				<search-field name="inIdTypeChambre" operation="IN" field-ref="simpleTypeChambre.idTypeChambre" />
+				<search-group operator="AND">
+					<search-field name="forDateDebut" operation="LESS_OR_EQUALS" field-ref="simplePrixChambre.dateDebut" />
+					<search-field name="forDateDebut" operation="LESS_OR_EQUALS" field-ref="simplePeriodeServiceEtat.dateDebut" />
+				</search-group>
+				<search-group operator="AND">
+					<search-group operator="OR">
+						<search-field name="forDateFin" operation="GREATER_OR_EQUALS" field-ref="simplePrixChambre.dateFin" />
+						<search-field name="forDateFin" operation="NULL" field-ref="simplePrixChambre.dateFin" />
+					</search-group>
+					<search-group operator="OR">
+						<search-field name="forDateFin" operation="GREATER_OR_EQUALS" field-ref="simplePeriodeServiceEtat.dateFin" />
+						<search-field name="forDateFin" operation="NULL" field-ref="simplePeriodeServiceEtat.dateFin" />
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

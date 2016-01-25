@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+	<!-- 	Menu principal Campus  	-->
+	<menu id="GEMenuPrincipal">
+		<label refId="MENU_PRINCIPAL"/>
+		<nodes>
+			<node>
+				<label refId="MENU_LOTS"/>
+				<action command="/campus" responseTarget="fr_main">
+					<parameter name="userAction" value="campus.lots.lots.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_ANNONCES"/>
+				<action command="/campus" responseTarget="fr_main">
+					<parameter name="userAction" value="campus.annonces.annonces.chercher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_ETUDIANTS"/>
+				<action command="/campus" responseTarget="fr_main">
+					<parameter name="userAction" value="campus.etudiants.etudiants.chercher"/>
+				</action>
+			</node>				
+			<node open="yes">
+				<label defaultValue="Traitements"/>
+				<nodes>
+					<node>
+						<label refId="MENU_CHARGEMENT_LOTS"/>
+						<action command="/campus" responseTarget="fr_main">
+							<parameter name="userAction" value="campus.process.processChargementLot.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_VALIDATION_ANNONCES"/>
+						<action command="/campus" responseTarget="fr_main">
+							<parameter name="userAction" value="campus.process.processValidationAnnonces.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_MISE_AUX_CI"/>
+						<action command="/campus" responseTarget="fr_main">
+							<parameter name="userAction" value="campus.process.processComptabilisationCI.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_TRAITEMENT_IMPAYES"/>
+						<action command="/campus" responseTarget="fr_main">
+							<parameter name="userAction" value="campus.process.processTraitementImpayes.afficher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>
+	</menu>
+	<!-- Options sur un lot -->
+	<menu id="GEOptionsLot">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="OPTION_ANNONCES"/>
+				<action command="/campus" responseTarget="fr_main">
+						<parameter name="userAction" value="campus.annonces.annonces.chercher"/>
+						<parameter name="idLot" value=""/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTION_VALIDATION"/>
+				<action command="/campus" responseTarget="fr_main">
+						<parameter name="userAction" value="campus.process.processValidationAnnonces.afficher"/>
+						<parameter name="idLot" value=""/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTION_MISE_AUX_CI"/>
+				<action command="/campus" responseTarget="fr_main">
+						<parameter name="userAction" value="campus.process.processComptabilisationCI.afficher"/>
+						<parameter name="idLot" value=""/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!--  Options sur une annonces -->
+	<menu id="GEOptionsAnnonce">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="OPTION_IMPUTATIONS"/>
+				<action command="/campus" responseTarget="fr_main">
+						<parameter name="userAction" value="campus.annonces.imputations.chercher"/>
+						<parameter name="idAnnonceParent" value=""/>
+						<parameter name="idLot" value=""/>
+						<parameter name="numImmatriculationTransmis" value=""/>
+						<parameter name="numAvs" value=""/>
+						<parameter name="nom" value=""/>
+						<parameter name="prenom" value=""/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option vide -->
+	<menu id="GEMenuVide">
+		<label refId="MENU_OPTIONS"/>
+	</menu>
+</menus>

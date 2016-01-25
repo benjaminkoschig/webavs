@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.process.adaptation.RenteToUpdate" >
+
+		<root-model name="simpleDonneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+		
+		<select-fields> 
+			<select-field name="nss" field-ref="droitMembreFamille.membreFamille.personneEtendue.personneEtendue.numAvsActuel" />
+		</select-fields>
+		
+		<linked-model name="droitMembreFamille" model-ref="ch.globaz.pegasus.business.models.droit.DroitMembreFamille" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="simpleDroitMembreFamille.idDroitMembreFamille" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDroitMembreFamille"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model  name="simpleRenteAvsAi" model-ref="ch.globaz.pegasus.business.models.renteijapi.SimpleRenteAvsAi" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model  name="simpleAllocationImpotent" model-ref="ch.globaz.pegasus.business.models.renteijapi.SimpleAllocationImpotent" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>		
+		</linked-model>
+
+		<search-definition>	
+			<search-group operator="AND">
+				<search-field name="inIdDonneeFinanciere" operation="IN" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</search-group>
+		</search-definition>
+
+	</complexe-model>
+</model-mapping>

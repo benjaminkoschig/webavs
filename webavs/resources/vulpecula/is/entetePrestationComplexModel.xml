@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.is.EntetePrestationComplexModel">
+		
+		<select-fields>
+			<select-field name="idEntete" field-ref="entetePrestationModel.idEntete" />
+			<select-field name="idTiers" field-ref="allocataireModel.idTiersAllocataire" />
+			<select-field name="idTiersAffilie" field-ref="affiliationSimpleModel.idTiers" />
+			<select-field name="idDossier" field-ref="dossierModel.idDossier" />
+			<select-field name="numeroAffilie" field-ref="affiliationSimpleModel.affilieNumero" />
+			<select-field name="numAvsActuel" field-ref="personneEtendueSimpleModel.numAvsActuel" />
+			<select-field name="titre" field-ref="tiersSimpleModel.titreTiers" />
+			<select-field name="nom" field-ref="tiersSimpleModel.designation1" />
+			<select-field name="prenom" field-ref="tiersSimpleModel.designation2" />
+			<select-field name="npa" field-ref="tiersSimpleModel.npa" />
+			<select-field name="dateNaissance" field-ref="personneSimpleModel.dateNaissance" />
+			<select-field name="montantTotal" field-ref="entetePrestationModel.montantTotal" />
+			<select-field name="activiteAllocataire" field-ref="dossierModel.activiteAllocataire" />
+			<select-field name="retenueImpot" field-ref="dossierModel.retenueImpot" />
+			<select-field name="periodeDe" field-ref="entetePrestationModel.periodeDe" />
+			<select-field name="periodeA" field-ref="entetePrestationModel.periodeA" />
+			<select-field name="typeFacturation" field-ref="employeurSimpleModel.typeFacturation" />
+			<select-field name="referencePermis" field-ref="travailleurSimpleModel.referencePermis" />
+			<select-field name="raisonSociale" field-ref="affiliationSimpleModel.raisonSociale" />
+			<select-field name="langue" field-ref="tiersSimpleModel.langue" />
+			<select-field name="idJournal" field-ref="entetePrestationModel.idJournal" />
+			<select-field name="spy" field-ref="entetePrestationModel.pspy" />
+		</select-fields>
+		
+		<root-model name="entetePrestationModel"
+			model-ref="ch.globaz.al.business.models.prestation.EntetePrestationModel" select-fields="false"/>
+			
+		<linked-model name="dossierModel"
+			model-ref="ch.globaz.al.business.models.dossier.DossierModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field
+					name="idDossier"
+					operation="EQUALS"
+					field-ref="entetePrestationModel.idDossier" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="allocataireModel"
+			model-ref="ch.globaz.al.business.models.allocataire.AllocataireModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field
+					name="idAllocataire"
+					operation="EQUALS"
+					field-ref="dossierModel.idAllocataire" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="personneEtendueSimpleModel"
+			model-ref="ch.globaz.pyxis.business.model.PersonneEtendueSimpleModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field
+					name="idTiers"
+					operation="EQUALS"
+					field-ref="allocataireModel.idTiersAllocataire" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="affiliationSimpleModel"
+			model-ref="ch.globaz.naos.business.model.AffiliationSimpleModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field
+					name="affilieNumero"
+					operation="EQUALS"
+					field-ref="dossierModel.numeroAffilie" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="employeurSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.employeur.EmployeurSimpleModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field
+					name="idEmployeur"
+					operation="EQUALS"
+					field-ref="affiliationSimpleModel.affiliationId" />
+			</join-group>
+		</linked-model>
+			
+		<linked-model name="recapitulatifEntrepriseModel"
+			model-ref="ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field
+					name="idRecap"
+					operation="EQUALS"
+					field-ref="entetePrestationModel.idRecap" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="tiersSimpleModel"
+			model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field
+					name="idTiers"
+					operation="EQUALS"
+					field-ref="allocataireModel.idTiersAllocataire" />
+			</join-group>			
+		</linked-model>
+		
+		<linked-model name="personneSimpleModel"
+			model-ref="ch.globaz.pyxis.business.model.PersonneSimpleModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field
+					name="idTiers"
+					operation="EQUALS"
+					field-ref="allocataireModel.idTiersAllocataire" />
+			</join-group>			
+		</linked-model>
+		
+		<linked-model name="travailleurSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.travailleur.TravailleurSimpleModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field
+					name="idTiers"
+					operation="EQUALS"
+					field-ref="allocataireModel.idTiersAllocataire" />
+			</join-group>			
+		</linked-model>
+		
+		<search-definition>
+				<search-group operator="AND">
+					<search-field name="forId" field-ref="entetePrestationModel.idEntete" operation="EQUALS"/>
+					<search-field name="forIdProcessus" field-ref="recapitulatifEntrepriseModel.idProcessusPeriodique" operation="EQUALS"/>
+					<search-field name="forIdAllocataire" field-ref="allocataireModel.idAllocataire" operation="EQUALS" />
+					<search-field name="forDateComptabilisationBeforeOrEquals" field-ref="entetePrestationModel.dateVersComp" operation="LESS_OR_EQUALS" />
+					<search-field name="forDateComptabilisationAfterOrEquals" field-ref="entetePrestationModel.dateVersComp" operation="GREATER_OR_EQUALS" />
+					<search-field name="forCantonResidence" field-ref="allocataireModel.cantonResidence" operation="EQUALS" />
+					<search-field name="forPeriodeDeAfterOrEquals" field-ref="entetePrestationModel.periodeDe" operation="GREATER_OR_EQUALS" />
+					<search-field name="forPeriodeABeforeOrEquals" field-ref="entetePrestationModel.periodeA" operation="LESS_OR_EQUALS" />
+					<search-field name="forIsRetenueImpot" field-ref="dossierModel.retenueImpot" operation="EQUALS" />
+					<search-field name="forEtat" field-ref="entetePrestationModel.etatPrestation" operation="EQUALS" />
+					<search-field name="forBonification" field-ref="entetePrestationModel.bonification" operation="EQUALS" />
+					<search-field name="forPeriodeDeBeforeOrEquals" field-ref="entetePrestationModel.periodeDe" operation="LESS_OR_EQUALS" />
+					<search-field name="forPeriodeDeAfterOrEquals" field-ref="entetePrestationModel.periodeDe" operation="GREATER_OR_EQUALS" />
+ 				</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.pcaccordee.PCAccordeeAdaptationImpressionAncienne">
+		<root-model name="simpleVersionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" select-fields="false"/>
+		
+		<select-fields>
+			<select-field name="nomAyantDroit" field-ref="personneEtendue.tiers.designation1" />
+			<select-field name="prenomAyantDroit" field-ref="personneEtendue.tiers.designation2" />
+			<select-field name="nssAyantDroit" field-ref="personneEtendue.personneEtendue.numAvsActuel" />
+			<select-field name="montantPrestationAyantDroit" field-ref="simplePrestationsAccordees.montantPrestation" />
+			<select-field name="nomConjoint" field-ref="personneEtendueConjoint.tiers.designation1" />
+			<select-field name="prenomConjoint" field-ref="personneEtendueConjoint.tiers.designation2" />
+			<select-field name="nssConjoint" field-ref="personneEtendueConjoint.personneEtendue.numAvsActuel" />
+			<select-field name="montantPrestationConjoint" field-ref="simplePrestationsAccordeesConjoint.montantPrestation" />
+			<select-field name="idPCAccordee" field-ref="simplePCAccordee.idPCAccordee" />
+			<select-field name="idDroit" field-ref="simpleDroit.idDroit" />
+			<select-field name="csGenrePC" field-ref="simplePCAccordee.csGenrePC" />
+			<select-field name="idVersionDroit" field-ref="simpleVersionDroit.idVersionDroit" />
+		</select-fields>
+				
+				
+		<linked-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simpleVersionDroit.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+				
+				
+		<linked-model name="simplePrestationsAccordees" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPrestationAccordee"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simplePrestationsAccordeesConjoint" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPrestationAccordeeConjoint"/>
+				<join-field field-ref="simplePCAccordee.idPrestationAccordeeConjoint" operation="NOT_NULL"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="personneEtendue" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simplePrestationsAccordees.idTiersBeneficiaire"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="personneEtendueConjoint" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simplePrestationsAccordeesConjoint.idTiersBeneficiaire"/>
+				<join-field field-ref="simplePCAccordee.idPrestationAccordeeConjoint" operation="NOT_NULL"/>
+			</join-group>
+		</linked-model>
+				
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDroit.idDemandePC"/>	
+				<search-field name="forIdDecisionHeader" operation="EQUALS" field-ref="simpleDecisionHeader.idDecisionHeader"/>	
+				<search-field name="forDateValidite" operation="EQUALS" field-ref="simplePCAccordee.dateFin"/>	
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="anciennesPCA">
+			<search-group operator="AND">
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simpleVersionDroit.idVersionDroit" />	
+				<search-field name="forDateValidite" operation="EQUALS" field-ref="simplePCAccordee.dateFin"/>	
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

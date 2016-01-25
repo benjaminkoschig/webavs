@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+ <!-- Allocataire modèle complexe -->
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.processus.TemplateTraitementListComplexModel">
+		<root-model name="configProcessusModel" model-ref="ch.globaz.al.business.models.processus.ConfigProcessusModel"/>
+		<linked-model name="processusPeriodiqueModel" model-ref="ch.globaz.al.business.models.processus.ProcessusPeriodiqueModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idConfig" field-ref="configProcessusModel.idConfig"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="traitementPeriodiqueModel" model-ref="ch.globaz.al.business.models.processus.TraitementPeriodiqueModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idProcessusPeriodique" field-ref="processusPeriodiqueModel.idProcessusPeriodique"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="periodeAFModel" model-ref="ch.globaz.al.business.models.periodeAF.PeriodeAFModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPeriodeAF" field-ref="processusPeriodiqueModel.idPeriode"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forCSBusinessProcessus" field-ref="configProcessusModel.businessProcessus" operation="EQUALS"/>
+				<search-field name="forDatePeriode" field-ref="periodeAFModel.datePeriode" operation="EQUALS"/>
+				<search-field name="forTemplate" field-ref="configProcessusModel.template" operation="EQUALS"/>
+				<search-field name="forIdTraitementPeriodique" field-ref="traitementPeriodiqueModel.idTraitementPeriodique" operation="EQUALS"/>
+				<search-field name="forIdProcessusPeriodique" field-ref="processusPeriodiqueModel.idProcessusPeriodique" operation="EQUALS"/>
+				<search-field name="forEtatProcessusPeriodique" field-ref="processusPeriodiqueModel.etat" operation="EQUALS"/>
+				<search-field name="forDateDebut" field-ref="periodeAFModel.datePeriode" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forDateFin" field-ref="periodeAFModel.datePeriode" operation="LESS_OR_EQUALS"/>
+				<search-field name="inCSTraitement" field-ref="traitementPeriodiqueModel.traitementLibelle" operation="IN"/>
+				
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="enCours">
+			<search-group operator="AND">	
+				<search-field name="forDatePeriode" field-ref="periodeAFModel.datePeriode" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forEtatProcessusPeriodique" field-ref="processusPeriodiqueModel.etat" operation="EQUALS" />
+				<search-field name="inCSTraitement" field-ref="traitementPeriodiqueModel.traitementLibelle" operation="IN"/>
+				<search-field name="notInCSProcessus" field-ref="configProcessusModel.businessProcessus" operation="NOT_IN"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="default">
+			<order-field field-ref="periodeAFModel.datePeriode" order="DESC"/>
+			<order-field field-ref="configProcessusModel.businessProcessus" order="ASC"/>
+			<order-field field-ref="processusPeriodiqueModel.isPartiel" order="DESC"/>
+			<order-field field-ref="traitementPeriodiqueModel.idTraitementPeriodique" order="ASC"/>		
+		</order-by>
+		 		
+	</complexe-model>
+</model-mapping>

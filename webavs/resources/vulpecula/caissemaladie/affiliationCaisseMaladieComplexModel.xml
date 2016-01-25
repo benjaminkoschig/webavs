@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.caissemaladie.AffiliationCaisseMaladieComplexModel">
+		
+		<root-model name="affiliationCaisseMaladieSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.caissemaladie.AffiliationCaisseMaladieSimpleModel" />
+
+		<linked-model name="travailleurComplexModel"
+			model-ref="ch.globaz.vulpecula.business.models.travailleur.TravailleurComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="travailleurSimpleModel.id"
+					operation="EQUALS" field-ref="affiliationCaisseMaladieSimpleModel.idTravailleur" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="administrationComplexModel"
+			model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS"
+					field-ref="affiliationCaisseMaladieSimpleModel.idCaisseMaladie" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="affiliationCaisseMaladieSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdTravailleur"
+					field-ref="travailleurComplexModel.travailleurSimpleModel.id" operation="EQUALS" />
+				<search-field name="forIdPosteTravail"
+					field-ref="affiliationCaisseMaladieSimpleModel.idPosteTravail" operation="EQUALS" />
+				<search-field name="forMoisDebutBefore" field-ref="affiliationCaisseMaladieSimpleModel.moisDebut" operation="LESS_OR_EQUALS" />
+				<search-field name="forIdCaisseMaladie" field-ref="affiliationCaisseMaladieSimpleModel.idCaisseMaladie" operation="EQUALS" />
+				<search-field name="forDateDebutAnnonceIsZero" field-ref="affiliationCaisseMaladieSimpleModel.dateDebutAnnonce" operation="EQUALS" />
+				<search-field name="forMoisFinBefore" field-ref="affiliationCaisseMaladieSimpleModel.moisFin" operation="LESS_OR_EQUALS" />
+				<search-field name="forDateFinAnnonceIsZero" field-ref="affiliationCaisseMaladieSimpleModel.dateFinAnnonce" operation="EQUALS" />
+				<search-field name="forMoisFinIsNotZero" field-ref="affiliationCaisseMaladieSimpleModel.moisFin" operation="NOT_EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<order-by name="moisDebutDesc">
+			<order-field field-ref="affiliationCaisseMaladieSimpleModel.moisDebut" order="DESC" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

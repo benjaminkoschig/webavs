@@ -1,0 +1,65 @@
+<%@page import="globaz.jade.common.Jade"%><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Style-Type" content="text/css"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0" />
+<meta http-equiv="Cache-Control" content="no-cache" /> 
+<meta name="User-Lang" content="<%=languePage%>"/> 
+<meta name="Context_URL" content="<%=servletContext%>"/>  
+<meta name="formAction" content="<%=servletContext + mainServletPath%>"/>  
+<link rel="stylesheet" type="text/css" href="<%=servletContext%><%=(mainServletPath+"Root")%>/moduleStyle.css"/>
+<link type="text/css" href="<%=servletContext%>/theme/jquery/jquery-ui.css" rel="stylesheet" />
+<script type="text/javascript" src="<%=servletContext%>/scripts/dates.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jquery.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jquery-ui.js"></script>
+<SCRIPT language="JavaScript" src="<%=servletContext%>/scripts/formUtil.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="<%=servletContext%>/scripts/shortKeys.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="<%=servletContext%>/scripts/params.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="<%=servletContext%>/scripts/actions.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="<%=servletContext%>/scripts/actionsForButtons.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="<%=servletContext%>/scripts/autocomplete.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="<%=servletContext%>/scripts/selectionPopup.js"></SCRIPT>
+<script language="JavaScript" src="<%=servletContext%>/scripts/menu.js"></script>
+<%@ include file="/jade/notation/notationLibJs.jspf" %> 
+
+<style type="text/css">
+body {
+	background-color: <%=Jade.getInstance().getWebappBackgroundColor()%>;
+}
+</style>
+<SCRIPT language="JavaScript">
+<!--hide this script from non-javascript-enabled browsers
+if ("FR" == langue) {
+	shortKeys[82] = 'btnFind';//  R (Rechercher)
+	shortKeys[78] = 'btnNew';//   N (Nouveau)
+} else if ("DE" == langue) {
+	shortKeys[83] = 'btnFind';//  S (Suchen)
+	shortKeys[78] = 'btnNew';//   N (Neu)
+}
+function loadFrames() {
+	if(bFind) {
+		document.forms[0].submit();
+		document.fr_detail.location.href = detailLink;
+	}
+}
+
+if(parent.fr_detail!=null) {
+	top.fr_main.location.reload();
+}
+
+var timeWaiting = 1;
+var timeWaitingId = -1;
+var bFind = true;
+var usrAction = "";
+var servlet = "<%=(servletContext + mainServletPath)%>";
+var detailLink = "";
+
+function bodyOnLoad() {
+	this.focus();
+	setFocus();
+	setFormAction(servlet);
+	setUserAction(usrAction);
+	document.getElementById('fr_list').onreadystatechange=fnStartInit;
+	loadFrames();
+}
+// stop hiding -->
+</SCRIPT>

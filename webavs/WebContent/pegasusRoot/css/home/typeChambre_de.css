@@ -1,0 +1,56 @@
+@CHARSET "ISO-8859-1";
+
+
+.head {
+	border : 1px solid #356AA0;
+	margin-bottom: 10px;
+	padding:5px 0; 
+}
+ 
+fieldset {
+	border : 0px solid #356AA0;
+	margin-bottom: 10px;
+	padding:5px 0; 
+}
+
+legend{
+	text-align:center;
+	color: #356AA0;
+
+}
+
+fieldset legend{
+	padding: 0px 5px;
+	font-size: 1em;
+	color: #356AA0;
+}
+input{
+	margin : 0;
+	padding: 0;
+}
+
+label, input, select {
+	display: inline-block;
+	
+	margin: 2px;
+}
+
+input[type="checkbox"],input.checkbox{
+	width : 14;
+}
+
+.widthAuto{
+	width: auto;
+}
+
+label
+{
+	width: 85px;
+	padding-right: 0.5%;
+	margin-left :30px;
+}
+	
+	
+br{
+clear: right;
+}

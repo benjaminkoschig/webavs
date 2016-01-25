@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<!-- modeles simple -->
+	<model-mapping import="perseus/creancier/simpleCreancier.xml"/>
+	<!-- modeles complexes -->
+	<model-mapping import="perseus/creancier/creancier.xml"/>
+</model-mapping>

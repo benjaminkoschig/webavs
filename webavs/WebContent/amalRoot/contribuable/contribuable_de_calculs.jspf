@@ -1,0 +1,210 @@
+<%@page import="globaz.framework.secure.FWSecureConstants"%>
+<%@page import="ch.globaz.amal.business.constantes.IAMCodeSysteme"%>
+<%@page import="java.util.Calendar"%>
+<%@page import="globaz.jade.client.util.JadeStringUtil"%>
+<style>
+	.disableSpan {
+		color:grey;
+	}
+</style>
+
+<script>
+var ID_TYPE_SUBSIDE_PC = '<%=IAMCodeSysteme.AMTypeDemandeSubside.PC.getValue()%>';
+var ID_TYPE_SUBSIDE_ASSISTE = '<%=IAMCodeSysteme.AMTypeDemandeSubside.ASSISTE.getValue()%>';
+var ID_TYPE_SUBSIDE_DEMANDE = '<%=IAMCodeSysteme.AMTypeDemandeSubside.DEMANDE.getValue()%>';
+var ID_TYPE_SUBSIDE_SOURCE = '<%=IAMCodeSysteme.AMTypeDemandeSubside.SOURCE.getValue()%>';
+var ID_TYPE_SUBSIDE_REPRISE = '<%=IAMCodeSysteme.AMTypeDemandeSubside.REPRISE.getValue()%>';
+
+<%
+boolean hasUpdateRight = objSession.hasRight(userActionUpd,FWSecureConstants.ADD);
+
+String idContribuableCalcul = "";
+try {
+	if (session.getAttribute("viewBean") instanceof AMDetailfamilleViewBean) {
+		AMDetailfamilleViewBean detailFamilleViewBean = (AMDetailfamilleViewBean) session.getAttribute("viewBean");
+		idContribuableCalcul = detailFamilleViewBean.getContribuable().getContribuable().getIdContribuable();
+	} else if (session.getAttribute("viewBean") instanceof AMContribuableViewBean) {
+		AMContribuableViewBean contribuableViewBean = (AMContribuableViewBean) session.getAttribute("viewBean");
+		idContribuableCalcul = contribuableViewBean.getContribuable().getContribuable().getIdContribuable();
+	}
+} catch (Exception e) {
+	e.printStackTrace();
+}
+%>
+
+var idContribuable = <%=idContribuableCalcul%>;
+
+$(function() {
+	
+});
+</script>
+<script type="text/javascript" src="<%=servletContext%><%=(mainServletPath + "Root")%>/scripts/subsides/amalSubsides.js"/></script>
+
+<table width="100%" border="1" style="background-color: #B3C4DB">
+	<tr>
+		<td>
+			<div style="background-color: #D7E4FF;border:1px solid black;padding:5px;margin:5px;width:100%" id="divCalculWizard_1">
+				<table width="100%" border="0" style="border:0px solid #F2F5F7;padding:5px" >	
+					<tr>
+						<td style="font-weight: bold;" colspan="4">1° Données de base :</td>
+					</tr>	
+					<tr><td colspan="4">&nbsp;</td></tr>				
+					<tr>
+						<td width="50%">
+							Année du subside [n]&nbsp;
+							<select id="s_annee_subside">
+								<option></option>
+							</select>					
+						</td>
+						<td>&nbsp;</td>
+						<td colspan="2" width="50%">Type de demande&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	
+												<select id="s_type_demande">
+													<option></option>
+												</select>
+						</td>		
+					</tr>
+					<tr><td colspan="4">&nbsp;</td></tr>
+				</table>
+			</div>
+			<br>
+			<div style="background-color: #D7E4FF;border:1px solid black;padding:5px;margin:5px;width:100%;display:none" id="divCalculWizard_2">
+				<table width="100%" border="0" style="border:0px solid #F2F5F7;padding:5px" >	
+					<tr>
+						<td style="font-weight: bold;" colspan="10" align="left">2° Données fiscales :</td>
+					</tr>	
+					<tr><td colspan="10">&nbsp;</td></tr>	
+				</table>
+				<table width="100%" border="0" style="border:1px solid #226194" id="tableCalculWizard2">
+					<col width="10px" align="center"></col>
+					<col width="64px" align="center"></col>
+					<col width="80px" align="right"></col>
+					<col width="64px" align="center"></col>
+					<col width="110px" align="center"></col>
+					<col width="110px" align="center"></col>
+					<col width="60px" align="center"></col>
+					<col width="120px" align="right"></col>
+					<col width="80px" align="center"></col>
+					<col width="46px" align="center"></col>
+					<tr  style="font-weight: bold;">
+						<th>&nbsp;</th>
+						<th>Année historique</th>
+						<th>Revenu déterminant</th>
+						<th>Année taxation</th>
+						<th>Source taxation</th>
+						<th>Type taxation</th>
+						<th>Décision taxation</th>
+						<th>Revenu imposable</th>
+						<th>Etat civil</th>
+						<th>Nbre enfants</th>
+					</tr>
+					<tr><td colspan="10">&nbsp;</td></tr>									
+					<tr style="font-weight: bold;" id="trRevenusCalculWizard2">
+						<td style="border-bottom: 1px solid #226194">&nbsp;</td>
+						<td colspan="2" align="left" style="border-bottom: 1px solid #226194;background-color:#226194;color:#ffffff">Revenu [n]</td>
+						<td colspan="7" style="border-bottom: 1px solid #226194"></td>
+					</tr>
+					<tr id="div_loading_Revenus">
+						<td align="center" colspan="10">
+						<img id='ajaxLoaderImg'
+											width="16px"
+											height="16px"
+											src="<%=request.getContextPath()%>/images/amal/ajax-loader-1.gif" title="Chargement" border="0"
+											/>
+						</td>
+					</tr>
+					<tr><td colspan="10">&nbsp;</td></tr>									
+					<tr style="font-weight: bold;" id="trTaxationsCalculWizard2">
+						<td style="border-bottom: 1px solid #226194">&nbsp;</td>
+						<td colspan="2" align="left" style="border-bottom: 1px solid #226194;background-color:#226194;color:#ffffff">Taxations [n-2 à n]</td>
+						<td colspan="7" style="border-bottom: 1px solid #226194">&nbsp;</td>
+					</tr>
+					<tr id="div_loading_Taxations">
+						<td align="center" colspan="10">
+						<img id='ajaxLoaderImg'
+											width="16px"
+											height="16px"
+											src="<%=request.getContextPath()%>/images/amal/ajax-loader-1.gif" title="Chargement" border="0"
+											/>
+						</td>
+					</tr>
+					<tr><td colspan="10">&nbsp;</td></tr>
+					<tr style="font-weight: bold;" id="trTypeCalculWizard2">
+						<td style="border-bottom: 1px solid #226194">&nbsp;</td>
+						<td colspan="2" align="left" style="border-bottom: 1px solid #226194;background-color:#226194;color:#ffffff">Prime moyenne</td>
+						<td colspan="7" style="border-bottom: 1px solid #226194">&nbsp;</td>						
+					</tr>
+					<tr class="amalRow" onMouseOver="jscss('swap', this, 'amalRow', 'amalRowHighligthed')"
+										onMouseOut="jscss('swap', this, 'amalRowHighligthed', 'amalRow')">
+						<td align="center"><input type="radio" name="donnees_fiscales" id="primeMoyenne_A" title="primeMoyenne_A"></td>
+						<td><span id="selectedYearAssiste"></span></td>
+						<td align="center">A</td>
+						<td colspan="7" align="left">Assisté</td>
+					</tr>						
+					<tr class="amalRowOdd" onMouseOver="jscss('swap', this, 'amalRowOdd', 'amalRowHighligthed')"
+										onMouseOut="jscss('swap', this, 'amalRowHighligthed', 'amalRowOdd')">
+						<td align="center"><input type="radio" name="donnees_fiscales" id="primeMoyenne_P" title="primeMoyenne_P"></td>
+						<td><span id="selectedYearPC"></span></td>
+						<td align="center">P</td>
+						<td colspan="7" align="left">PC, Prestations complémentaires</td>
+					</tr>	
+				</table>
+			</div>
+			
+			<div style="background-color: #D7E4FF;border:1px solid black;padding:5px;width:100%;margin:20px 5px 10px 5px;display:none" id="divCalculWizard_3">
+				<table width="100%" border="0" style="border:0px solid #F2F5F7" cellpadding="0" cellspacing="0">
+					<tr>
+						<td style="font-weight: bold;" colspan="5"><a id="anchor_div3">3° Résultat du calcul :</a></td>
+					</tr>	
+					<tr><td>&nbsp;</td></tr>
+				</table>
+				<table width="100%" border="0" style="border:1px solid #226194" id="tableCalculWizard3">
+					<col width="10px" align="center"></col>
+					<col width="10px" align="center"></col>
+					<col align="left"></col>
+					<col align="center"></col>
+					<col align="right"></col>
+					<col align="center"></col>
+					<col align="center"></col>
+					<col align="center"></col>
+					<col align="center"></col>
+					<col align="center"></col>
+					<col align="center"></col>
+					<tr style="font-weight: bold;" id="trCalculWizard3">
+						<th></th>
+						<th colspan="2" align="left">Nom, Prénom</th>
+						<th>Type</th>
+						<th>Montant</th>
+						<th>Début</th>
+						<th>Fin</th>
+						<th>Réc. Dem.</th>
+						<th>Document</th>
+						<th>Caisse</th>
+						<th>No assuré</th>
+						<th></th>
+					</tr>
+					<tr id="div_loading_Result">
+						<td align="center" colspan="9">
+						<img id='ajaxLoaderImg'
+											width="16px"
+											height="16px"
+											src="<%=request.getContextPath()%>/images/amal/ajax-loader-1.gif" title="Chargement" border="0"
+											/>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div align="right" style="background-color: #B3C4DB;border:0;padding:5px;width:100%;margin:20px 5px 10px 5px;display:none" id="divCalculWizard_4">
+			 	<INPUT type="hidden" id="calculs.anneeHistorique" name="calculs.anneeHistorique" value="">
+			 	<INPUT type="hidden" id="calculs.typeDemande" name="calculs.typeDemande" value="">
+			 	<INPUT type="hidden" id="calculs.idContribuable" name="calculs.idContribuable" value="">
+			 	<INPUT type="hidden" id="calculs.idRevenu" name="calculs.idRevenu" value="">
+			 	<INPUT type="hidden" id="calculs.revenuIsTaxation" name="calculs.revenuIsTaxation" value="">
+			 	<INPUT type="hidden" id="calculs.allSubsidesAsString" name="calculs.allSubsidesAsString" value="">
+				<%if(hasUpdateRight) { %>
+					<input id="generateSubsides" type="button" style="width:220px;height:30px" value="Appliquer le droit"/>
+				<%} %>
+			</div>
+		</td>
+	</tr>
+</table>
+

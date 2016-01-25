@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.contribuable.SimpleContribuable">
+		<description>Contribuable</description>
+		<table name="MACONTRI" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idContribuable" column="IDCONT" comment="Id Contribuable"/>
+			<field name="idTier" column="IDTIER" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="Id tier"/>
+			<field name="noContribuable" column="NUMCON" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="NUMERO_CONTRIBUABLE"/>
+			<field name="zoneCommuneContribuable" column="ZOCOCO" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="ZONE_COMMUNE_CONTRIBUABLE"/>
+			<field name="zoneCommuneDateNaissance" column="ZOCODN" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="ZONE_COMMUNE_DATE_NAISSANCE"/>
+			<field name="zoneCommuneNoContrFormate" column="ZOCONF" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="ZONE_COMMUNE_NO_CONTRIBUABLE_FORMATE"/>
+			<field name="typeNoPersonne" column="CSTNPE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="TYPE_NUMERO_PERSONNE"/>
+			<field name="numeroInternePersonnel" column="NUMIPE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Numero interne personnel"/>
+			<field name="isContribuableActif" column="CACTIF" type="BOOLEAN" mandatory="false" comment="CODE_ACTIF"/>
+			<field name="idContribuableFusion" column="NEWIDC"  type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="Nouveau id contribuable"/>			
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS"/>
+				<search-field name="forNoContribuable" field-ref="noContribuable" operation="EQUALS"/>
+				<search-field name="forIdTier" field-ref="idTier" operation="EQUALS"/>
+				<search-field name="forContribuableActif" field-ref="isContribuableActif" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

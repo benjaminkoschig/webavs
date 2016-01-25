@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<!-- Model utilisé uniquement par les RFM -->
+	<complexe-model className="ch.globaz.pegasus.business.models.home.MembreFamilleHome">
+	
+		<root-model name="simpleVersionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+		
+		<select-fields>
+			<select-field name="csServiceEtat" field-ref="simplePeriodeServiceEtat.csServiceEtat"/>		
+		</select-fields>
+		
+		<linked-model name="simpleDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroit" join-type="INNER"  select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleDroitMembreFamille" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleMembreFamille" model-ref="ch.globaz.hera.business.models.famille.SimpleMembreFamille" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idMembreFamille" operation="EQUALS" field-ref="simpleDroitMembreFamille.idMembreFamilleSF"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleVersionDroitDFH" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDonneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDroitMembreFamille" operation="EQUALS" field-ref="simpleDroitMembreFamille.idDroitMembreFamille"/>
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simpleVersionDroitDFH.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+
+
+		<linked-model name="simpleTaxeJournaliereHome" model-ref="ch.globaz.pegasus.business.models.habitat.SimpleTaxeJournaliereHome" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDonneeFinanciereHeader" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleHome" model-ref="ch.globaz.pegasus.business.models.home.SimpleHome" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idHome" operation="EQUALS" field-ref="simpleTaxeJournaliereHome.idHome"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simplePeriodeServiceEtat" model-ref="ch.globaz.pegasus.business.models.home.SimplePeriodeServiceEtat" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idHome" operation="EQUALS" field-ref="simpleHome.idHome"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdTiers" operation="EQUALS" field-ref="simpleMembreFamille.idTiers"/>
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simpleVersionDroit.idVersionDroit"/> 
+				<search-group operator="AND">
+					<search-field name="forDate" operation="LESS_OR_EQUALS" field-ref="simplePeriodeServiceEtat.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDate" operation="GREATER_OR_EQUALS" field-ref="simplePeriodeServiceEtat.dateFin"/>
+						<search-field name="forDate" operation="NULL" field-ref="simplePeriodeServiceEtat.dateFin"/>
+					</search-group>				
+				</search-group>
+				
+			<search-group operator="AND">
+					<search-field name="forDate" operation="LESS_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDate" operation="GREATER_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+						<search-field name="forDate" operation="NULL" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+					</search-group>				
+				</search-group>
+				
+					<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="donneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+					<![CDATA[ 
+					    #{simpleDonneeFinanciereHeader.isSupprime} = 2 AND
+						#{simpleDonneeFinanciereHeader.idVersionDroit} =
+							(
+								select MAX( #{versionDroit.idVersionDroit} ) from @{versionDroit} 
+									inner join  @{donneeFinanciereHeader} on ( #{versionDroit.idVersionDroit} = #{donneeFinanciereHeader.idVersionDroit} )
+									where #{donneeFinanciereHeader.idEntity} = #{simpleDonneeFinanciereHeader.idEntity}
+										and #{versionDroit.noVersion} <= #{simpleVersionDroit.noVersion}	 
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

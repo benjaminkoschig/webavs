@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.traitementdemasse.SimpleAction">
+		<description>Permet de définir des actions pour les traitements</description>
+		<table name="PCACTI" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAction" column="AAIACT" comment="ID_ACTION"/>			
+			<field name="csAction" mandatory="true" column="AACSAC" type="NUMERIC" comment="TYPE_ACTION"/>
+			<field name="description" mandatory="true" column="AADESC" type="STRING" dataType="VARCHAR(255)" comment="DESCRIPTION_DE_L_ACTION"/>
+			<field name="className" mandatory="true" column="AACLNA" type="STRING" dataType="VARCHAR(255)" comment="CLASS_NAME"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forDescriptionLike" operation="LIKE" field-ref="description" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping> 

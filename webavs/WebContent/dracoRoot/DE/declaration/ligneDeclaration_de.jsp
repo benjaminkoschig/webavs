@@ -1,0 +1,177 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
+<%@ include file="/theme/detail/header.jspf" %>
+<%-- tpl:put name="zoneInit" --%>
+<!-- Creer l'enregitrement s'il n'existe pas -->
+<%@ page import="globaz.draco.db.declaration.*"%>
+<%@ page import="globaz.draco.translation.*"%>
+<%@ page import="globaz.globall.util.*"%>
+<%@ page import="java.math.*"%>
+<%
+	idEcran = "CDS0008";
+
+	DSLigneDeclarationViewBean viewBean = (DSLigneDeclarationViewBean)session.getAttribute ("viewBean");
+	
+
+	selectedIdValue = viewBean.getIdLigneDeclaration();
+	userActionValue = "draco.declaration.ligneDeclaration.afficher";
+	bButtonValidate = objSession.hasRight("draco.declaration.ligneDeclaration.afficher","ADD");
+	bButtonCancel = objSession.hasRight("draco.declaration.ligneDeclaration.afficher","ADD");
+%>
+<%@page import="globaz.naos.translation.CodeSystem"%>
+<%@page import="globaz.naos.db.tauxAssurance.AFTauxAssurance"%>
+<SCRIPT language="JavaScript">
+</SCRIPT> <%-- /tpl:put --%>
+<%-- tpl:put name="zoneBusiness" --%>
+<%-- /tpl:put --%>
+<%@ include file="/theme/detail/javascripts.jspf" %>
+<%-- tpl:put name="zoneScripts" --%><SCRIPT language="JavaScript">
+<!--hide this script from non-javascript-enabled browsers
+
+function add() {
+	updatePage();
+	document.forms[0].elements('userAction').value="draco.declaration.ligneDeclaration.ajouter"
+	document.forms[0].elements('cumulCotisation').value='';
+	document.forms[0].elements('tauxAssuranceDeclaration').value='';
+	document.forms[0].elements('fractionAssuranceDeclaration').value='';
+	document.forms[0].elements('acompte').value='';
+	document.forms[0].elements('soldeCot').value='';
+}
+function upd() {
+//	 On met à jour les infos du compte
+	document.forms[0].target = "fr_main";
+	document.forms[0].elements('selectedId').value = document.forms[0].elements('idDeclaration').value;
+	updatePage();
+}
+function validate() {
+    state = validateFields();
+    if (document.forms[0].elements('_method').value == "add")
+        document.forms[0].elements('userAction').value="draco.declaration.ligneDeclaration.ajouter";
+    else {
+        document.forms[0].elements('userAction').value="draco.declaration.ligneDeclaration.modifier";
+    }
+    return state;
+
+}
+function cancel() {
+	if (document.forms[0].elements('_method').value == "add") {
+		document.forms[0].elements('userAction').value="draco.declaration.ligneDeclaration.afficher";
+	} else {
+		document.forms[0].elements('userAction').value="draco.declaration.ligneDeclaration.chercher";
+	}
+}
+function del() {
+    if (window.confirm("Sie sind dabei, das ausgewählte Objekt zu löschen! Wollen Sie fortfahren?")){
+        document.forms[0].elements('userAction').value="draco.declaration.ligneDeclaration.supprimer";
+        document.forms[0].elements('selectedId').value = document.forms[0].elements('idDeclaration').value;
+        document.forms[0].submit();
+    }
+}
+
+function init(){
+//	 On met à jour les infos
+	updatePage();
+//	 On raffraichit le _rcListe du parent (CAPage)
+<%if ("new".equalsIgnoreCase(request.getParameter("_valid"))) {%>
+	if (parent.document.forms[0])
+		parent.document.forms[0].submit();
+<%}%>
+}
+function updatePage() {
+}
+// stop hiding -->
+</SCRIPT> <%-- /tpl:put --%>
+<%@ include file="/theme/detail/bodyStart.jspf" %>
+			<%-- tpl:put name="zoneTitle" --%>Zeile der Lohnbescheinigung<%-- /tpl:put --%>
+<%@ include file="/theme/detail/bodyStart2.jspf" %>
+						<%-- tpl:put name="zoneMain" --%>
+		<tr><td>
+		<table>
+		  <tr> 
+            <td>Versicherung</td>
+            <td nowrap><ct:FWListSelectTag name="assuranceId" defaut="<%=viewBean.getAssuranceId()%>" data="<%=viewBean.getCotisations()%>"/></TD>
+          </tr>
+          <tr> 
+            <td>Lohnbescheinigungsjahr</td>
+            <TD> 
+              <input name="anneCotisation" value="<%if (viewBean.getDeclaration() != null) {%><%=viewBean.getAnneCotisation()%><%}%>"  size="4" >
+            </TD>
+            <TD>
+			  <input name="idDeclaration" type="hidden" value="<%=viewBean.getIdDeclaration()%>">
+            </TD>
+          </tr>
+          <tr> 
+            <td nowrap>Effektive Lohnsumme</td>
+            <td>
+              <% if (viewBean.getDeclaration().getEtat().equalsIgnoreCase(DSDeclarationViewBean.CS_COMPTABILISE)) {%>
+                            <input name='montantDeclarationComp'  value="<%=viewBean.getMontantDeclaration()%>" class="montant">
+              <% } else {%>
+              <input name='montantDeclaration'  value="<%if (!globaz.globall.util.JAUtil.isStringEmpty(viewBean.getMontantDeclaration())) {%><%=viewBean.getMontantDeclaration()%><%} else {%><%=viewBean.getDeclaration().getMasseSalTotal()%><%}%>" class="montant">
+              <%}%>
+            </td>
+          </tr>
+          <tr> 
+            <td>Geschuldeter Beitrag</td>
+            <td> 
+              <input name='acompte'  readonly value="<%=globaz.globall.util.JANumberFormatter.formatNoRound(viewBean.getCotisationDue())%>" class="montantDisabled">
+            </td>
+          </tr>
+          <tr> 
+            <td>Anzahlung</td>
+            <% if (viewBean.getDeclaration().getEtat().equalsIgnoreCase(DSDeclarationViewBean.CS_COMPTABILISE)) {%>
+            <td><input name='cumulCotisation' readonly value="<%=globaz.globall.util.JANumberFormatter.formatNoRound(viewBean.getMontantFactureACEJour())%>" class="montantDisabled"></td>
+            <%} else {%>
+            <td><input name='cumulCotisation' readonly value="<%if (viewBean.getCompteur() != null) {%><%=globaz.globall.util.JANumberFormatter.formatNoRound(viewBean.getCompteur().getCumulCotisation())%><%}else{%><%="0.00"%><%}%>" class="montantDisabled"></td>
+            <%}%>           
+          </tr>
+          <tr>
+          <td>Saldo Beiträge</td>
+            <td>
+	            <input name='soldeCot'  readonly value="<%=JANumberFormatter.formatNoRound(viewBean.getSoldeCotisation())%>" class="montantDisabled">
+            </td>
+          </tr>
+          <tr>
+          <td>Beitragsatz</td>
+            <% 
+            AFTauxAssurance tauxLigne = viewBean.getAssurance().getTaux("31.12."+viewBean.getDeclaration().getAnnee());
+            if(tauxLigne!=null && CodeSystem.GEN_VALEUR_ASS_TAUX_VARIABLE.equals(tauxLigne.getGenreValeur())) {
+            	if (!JAUtil.isStringEmpty(viewBean.getTauxAssuranceDeclaration())) {%>
+                <td><INPUT name="tauxAssuranceDeclaration" size="10" value="<%=viewBean.getTauxAssuranceDeclaration()%>"  >
+                / <INPUT name="fractionAssuranceDeclaration" size="8" value="<%=viewBean.getFractionAssuranceDeclaration()%>"  readonly></td>
+                <%} else {%>
+                <td><INPUT name="tauxAssuranceDeclaration" size="10" value="<%=JANumberFormatter.fmt(viewBean.getTauxAssurance(),true,true,true,5)%>" >
+                / <INPUT name="fractionAssuranceDeclaration" size="8" value="<%=viewBean.getFractionAssurance()%>" class="disabled" readonly></td>
+                <%}
+            } else {
+            	if (!JAUtil.isStringEmpty(viewBean.getTauxAssuranceDeclaration())) {%>
+	            <td><INPUT name="tauxAssuranceDeclaration" size="10" value="<%=viewBean.getTauxAssuranceDeclaration()%>" class="libelle">
+	            / <INPUT name="fractionAssuranceDeclaration" size="8" value="<%=viewBean.getFractionAssuranceDeclaration()%>" class="libelle"></td>
+	            <%} else {%>
+	            <td><INPUT name="tauxAssuranceDeclaration" size="10" value="<%=JANumberFormatter.fmt(viewBean.getTauxAssurance(),true,true,true,5)%>" class="libelle">
+	            / <INPUT name="fractionAssuranceDeclaration" size="8" value="<%=viewBean.getFractionAssurance()%>" class="libelle"></td>
+	            <%}
+	        } %>
+          </tr>
+          </table></td>
+		</tr> 
+        
+          <%-- /tpl:put --%>
+<%@ include file="/theme/detail/bodyButtons.jspf" %>
+				<%-- tpl:put name="zoneButtons" --%>
+				<%-- /tpl:put --%>
+<%@ include file="/theme/detail/bodyErrors.jspf" %>
+<%-- tpl:put name="zoneEndPage" --%>
+<%  if (request.getParameter("_back") != null && request.getParameter("_back").equals("sl")) { %>
+<SCRIPT>
+</SCRIPT> 
+<%  }  %>
+<ct:menuChange displayId="options" menuId="DS-OptionsDeclaration" showTab="options" checkAdd="no">
+	<ct:menuSetAllParams key="idDeclaration" checkAdd="no" value="<%=viewBean.getDeclaration().getIdDeclaration()%>"/>
+	<ct:menuSetAllParams key="selectedId" checkAdd="no" value="<%=viewBean.getIdDeclaration()%>"/>
+</ct:menuChange>
+<%-- /tpl:put --%>
+<%@ include file="/theme/detail/footer.jspf" %>
+<%-- /tpl:insert --%>

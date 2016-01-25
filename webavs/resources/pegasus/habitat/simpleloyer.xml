@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--  fichier de mapping du modele simple SimpleLoyer -->
+<!--  DMA, 7.2010 -->
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.habitat.SimpleLoyer">
+		<description>Modele de la table loyer</description>
+		<table name="PCLOYER" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idLoyer" column="CRIDLO" comment="ID_LOYER"/>
+			<field name="idDonneeFinanciereHeader" column="CRIDDF" type="NUMERIC"  mandatory="true"  comment="ID_DONNEE_FINANCIERE_HEADER"/>
+			<field name="csTypeLoyer" column="CRTLOY" type="NUMERIC"  mandatory="true"  comment="CS_TYPE_LOYER"/>
+			<field name="montantLoyerNet" column="CRMMLN" type="NUMERIC"   dataType="NUMERIC(15,2)" mandatory="false"  comment="MONTANT_LOYER_NET"/>
+			<field name="montantCharges" column="CRMMCH" type="NUMERIC"  dataType="NUMERIC(15,2)" mandatory="false"  comment="MONTANT_CHARGES"/>
+		<!-- <field name="nbPieces" column="CRNNBP" type="NUMERIC"  mandatory="false"  comment="NB_PIECES"/> -->
+			<field name="nbPersonnes" column="CRNNPE" type="NUMERIC"  mandatory="false"  comment="NB_PERSONES"/>
+			<field name="idBailleurRegie" column="CRIDBR" type="NUMERIC"  mandatory="false"  comment="ID_BAILLEUR_REGIE"/>
+			<field name="csMotifChangementLoyer" column="CRTMCL" type="NUMERIC"  mandatory="false"  comment="CS_MOTIF_CHANGEMENT"/>
+			<field name="revenuSousLocation" column="CRMRSL" type="NUMERIC"   dataType="NUMERIC(15,2)" mandatory="false"  comment="REVENU_SOUS_LOCATION"/>
+			<field name="fraisPlacementEnfant" column="CRMFPE" type="NUMERIC" dataType="NUMERIC(15,2)"  mandatory="false"  comment="FRAIS_PLACEMENT_ENFANT"/>
+			<field name="isFauteuilRoulant" column="CRBFAR" type="BOOLEAN"  mandatory="false"  comment="IS_FAUTEUIL_ROULANT"/>
+			<field name="isTenueMenage" column="CRBTEM" type="BOOLEAN"  mandatory="false"  comment="IS_TENUE_MENAGE"/>
+			<field name="pensionNonReconnue" column="CRLPNR" type="STRING"  mandatory="false"  comment="PENSION_NON_RECONNUE"/>
+			<field name="taxeJournalierePensionNonReconnue" column="CRMTPN" type="NUMERIC"  mandatory="false"  comment="TAXE_JOURNALIERE_PENSION_NON_RECONNUE"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.externalmodule.ExternalModule">
+		
+		<root-model name="simpleExternalModule" model-ref="ch.globaz.pegasus.business.models.externalmodule.SimpleExternalModule"/>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdJob" operation="EQUALS" field-ref="simpleExternalModule.idJob"/>
+				<search-field name="forEtatJob" operation="EQUALS" field-ref="simpleExternalModule.etatJob"/>
+				<search-field name="forSourceActionJob" operation="EQUALS" field-ref="simpleExternalModule.sourceActionJob"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="simpleExternalModule.creationSpy" order="DESC"/>	
+		</order-by>			
+	</complexe-model>
+</model-mapping>

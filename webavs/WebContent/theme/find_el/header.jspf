@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<%--  *********************************************** Déclaration des taglibs et paramétrage JSTL/EL ********************************************************* --%>
+<%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
+<%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ page trimDirectiveWhitespaces="true" %>
+<%@ page isELIgnored ="false" %>
+
+<%-- Définition des variables "d'environnement" --%> 
+<ct:setAppColor/>
+<ct:setLanguePage/>
+<ct:setApplicationId/>
+
+<%-- HTML --%>
+<html>
+
+<%--  ********************************************************** Paramétrage de la page ****************************************************************** --%>
+<%-- Gestion de la userAction --%>
+<c:set var="requestUserAction" value="${param['userAction']}" scope="page" />	
+<c:set var="tabDotAction" value="${fn:split(requestUserAction,'.')}" scope="page" />
+<c:set var="partialUserAction" value="${fn:replace(requestUserAction,tabDotAction[fn:length(tabDotAction)-1],'')}" scope="page" />
+<c:set var="mainPath" value="${pageContext.request.contextPath}${requestScope.mainServletPath}" scope="page" />
+<c:set var="actionNew" value="${mainPath}?userAction=${partialUserAction}afficher&_method=add" scope="page" />
+<c:set var="actionLister" value="${partialUserAction}lister" scope="page" />
+<%-- <c:set var="actionLister" value="${mainPath}?userAction=${partialUserAction}lister" scope="page" /> --%>
+<c:set var="rootPath" value="${mainPath}Root" scope="page" />
+
+<%-- Visibilité des boutons --%>
+<ct:checkRight var="bButtonNew" element="${partialUserAction}" crud="crud" />
+<c:set var="bButtonFind" value="true" scope="page" /> 
+<c:set var="bShowExportButton" value="false" scope="page" />
+
+<!-- A modifier pour forcer une action d'exportation spécifique -->
+<c:set var="userActionExport" value="" scope="page" />
+
+<!-- Affichage de la page -->
+<c:set var="subTableHeight" value="100" scope="page" />
+<c:set var="IFrameHeight" value="350" scope="page" />
+<c:set var="idEcran" value="YYXXXX" scope="page" />
+
+<!-- Labels des boutons en fonction de la langue -->
+<c:set var="btnNewLabel" value="${languePage == 'DE' ? 'Neu' : 'Nouveau'}" scope="page" />
+<c:set var="btnFindLabel" value="${languePage == 'DE' ? 'Suchen' : 'Rechercher'}" scope="page" />
+<c:set var="btnExportLabel" value="Export" scope="page" />
+
+<!-- Configuration spécifique à la recherche -->
+<c:set var="rememberSearchCriterias" value="false" scope="page" />
+
+<!--  A quoi peut bien servir fromSL?! -->
+<c:if test="${selectedIndex!=null}">
+	<c:set var="fromSL" value="true" scope="page" />
+</c:if>
+
+<head>
+<script type="text/javascript">
+	var langue = "${languePage}";
+	usrAction = '${actionLister}';
+</script>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.musca.business.models.PlanFacturationSimpleModel">
+		<table name="FAMOPLP" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="idPlanFacturation" column="IDPLANFACTURATION" comment="Id du plan de facturation" />
+			<field name="idModFac" column="IDMODFAC" type="STRING" comment="Id du mode de facturation"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPlanFacturation" field-ref="idPlanFacturation" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

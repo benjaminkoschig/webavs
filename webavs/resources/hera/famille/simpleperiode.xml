@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.hera.business.models.famille.SimplePeriode">
+		<description>Periode</description>
+		<table name="SFPERIOD" hasSpy="true" hasCreationSpy="false" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idPeriode" column="WHIPER" comment="ID_PERIODE"/>
+
+			<field name="type" type="NUMERIC" column="WHTTYP" comment="TYPE_PERIODE" />
+			<field name="dateDebut" type="DATE" column="WHDDEB" comment="DATE_DEBUT"/>
+			<field name="dateFin" type="DATE" column="WHDFIN" comment="DATE_FIN"/>
+			<field name="pays" type="NUMERIC" column="WHTPAY" comment="PAYS"/>
+			<field name="idMembreFamille" type="NUMERIC" column="WHIDMF" comment="ID_MEMBRE_FAMILLE" />
+			<field name="idDetenteurBTE" type="NUMERIC" column="WHIDBT" comment="ID_DETENTEUR_BTE"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdMembreFamille" field-ref="idMembreFamille" operation="EQUALS" />
+				<search-field name="forIdMembreFamilleIn" field-ref="idMembreFamille" operation="IN" />
+				<search-field name="forType" field-ref="type" operation="EQUALS" />
+				<search-field name="forTypeIn" field-ref="type" operation="IN" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

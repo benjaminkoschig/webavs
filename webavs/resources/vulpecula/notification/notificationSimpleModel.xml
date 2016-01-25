@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.notification.NotificationSimpleModel">
+		<table name="PT_NOTIFICATIONS" hasCreationSpy="true" hasSpy="true" />
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="Id de la notification" />
+			<field name="infoType" column="INFOTYPE" type="STRING"
+				comment="Type de notification" />
+			<field name="idCible" column="TARGETID" type="NUMERIC"
+				comment="Id de la cible représentant cette information" />
+			<field name="extra" column="EXTRA" type="STRING"
+				comment="Champ libre" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+		<order-by name="idAsc">
+			<order-field field-ref="id" />
+		</order-by>
+	</simple-model>
+</model-mapping>

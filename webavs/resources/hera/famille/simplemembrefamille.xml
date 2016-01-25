@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.hera.business.models.famille.SimpleMembreFamille">
+		<description>Membre de famille</description>
+		<table name="SFMBRFAM" hasSpy="true" hasCreationSpy="false" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idMembreFamille" column="WGIMEF" comment="ID_MEMBRE_FAMILLE"/>
+
+			<field name="idTiers" type="NUMERIC" column="WGITIE" comment="ID_TIERS" />
+			<field name="nom" type="STRING" column="WGLNOM" comment="NOM"/>
+			<field name="prenom" type="STRING" column="WGLPRE" comment="PRENOM"/>
+			<field name="dateNaissance" type="DATE" column="WGDNAI" comment="DATE_NAISSANCE"/>
+			<field name="dateDeces" type="DATE" column="WGDDEC" comment="DATE_DECES" />
+			<field name="csSexe" type="NUMERIC" column="WGTSEX" comment="SEXE"/>
+			<field name="csNationalite" type="NUMERIC" column="WGTNAT" comment="NATIONALITE"/>
+			<field name="csCanton" type="NUMERIC" column="WGTCDO" comment="CANTON"/>
+			<field name="nomForSearch" type="STRING" column="WGLNOU" comment="NOM_FOR_SEARCH"/>
+			<field name="prenomForSearch" type="STRING" column="WGLPRU" comment="PRENOM_FOR_SEARCH"/>
+		</fields>
+	</simple-model>
+</model-mapping>

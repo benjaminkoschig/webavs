@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.hera.business.models.famille.SimpleConjoint">
+		<description>Conjoint</description>
+		<table name="SFCONJOI" hasSpy="true" hasCreationSpy="false" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idConjoints" column="WJICON" comment="ID_CONJOINTS"/>
+
+			<field name="idConjoint1" type="NUMERIC" column="WJICO1" comment="ID_MEMBRE_FAMILLE_CONJOINT_1" />
+			<field name="idConjoint2" type="NUMERIC" column="WJICO2" comment="ID_MEMBRE_FAMILLE_CONJOINT_2"/>
+		</fields>
+	</simple-model>
+</model-mapping>

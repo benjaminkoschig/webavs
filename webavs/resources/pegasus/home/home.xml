@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.home.Home">
+		<root-model name="simpleHome" model-ref="ch.globaz.pegasus.business.models.home.SimpleHome"/>
+		
+		<linked-model name="adresse" model-ref="ch.globaz.pyxis.business.model.Adresse" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="avoirAdresse.idTiers" operation="EQUALS" field-ref="simpleHome.idTiersHome"/>
+				<join-field name="avoirAdresse.typeAdresse" operation="EQUALS" value="508008"/>
+
+				<join-group operator="AND">
+					<join-group operator="OR">
+						<join-field name="avoirAdresse.dateDebutRelation" operation="LESS_OR_EQUALS" variable="today"/>
+						<join-field name="avoirAdresse.dateDebutRelation" operation="NULL"/> 
+					</join-group>
+					<join-group operator="OR">
+						<join-field name="avoirAdresse.dateFinRelation" operation="GREATER_OR_EQUALS" variable="today"/>
+						<join-field name="avoirAdresse.dateFinRelation" operation="NULL"/> 
+					</join-group>
+				</join-group>
+
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="likeDesignation" operation="LIKE" field-ref="adresse.tiers.designationUpper1"/>
+				<search-field name="forNomBatiment" operation="EQUALS" field-ref="simpleHome.nomBatiment"/>
+				<search-field name="forNumeroIdentification" operation="EQUALS" field-ref="simpleHome.numeroIdentification"/>
+				<search-field name="likeNumeroIdentification" operation="LIKE" field-ref="simpleHome.numeroIdentification"/>
+				<search-field name="forCanton" operation="EQUALS" field-ref="adresse.localite.idCanton"/>
+				<search-field name="likeNpa" operation="LIKE" field-ref="adresse.localite.numPostal" />
+				<search-field name="likeLocalite" operation="LIKE" field-ref="adresse.localite.localite"/>
+				<search-field name="forIdTiersHome" operation="EQUALS" field-ref="simpleHome.idTiersHome"/>
+				<search-field name="forIdHome" operation="EQUALS" field-ref="simpleHome.idHome"/>
+				<search-field name="notForIdHome" operation="NOT_EQUALS" field-ref="simpleHome.idHome"/>
+				<search-field name="forTypeAdresse" operation="EQUALS" field-ref="adresse.avoirAdresse.typeAdresse"/>
+			</search-group>
+		</search-definition>
+		<order-by>
+			<order-field field-ref="adresse.tiers.designationUpper1"/>
+			<!-- <order-field field-ref="tiersHome.tiers.designationUpper2"/> -->
+			<order-field field-ref="simpleHome.nomBatiment"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

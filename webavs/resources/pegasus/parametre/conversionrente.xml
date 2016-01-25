@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.parametre.ConversionRente">
+		<root-model name="simpleConversionRente" model-ref="ch.globaz.pegasus.business.models.parametre.SimpleConversionRente"/>
+	   	<search-definition>
+			<search-group operator="AND">
+				<search-field name="forAge"       operation="EQUALS" field-ref="simpleConversionRente.age"/>
+				<search-field name="forDateDebut"  operation="EQUALS" field-ref="simpleConversionRente.dateDebut"/>
+			</search-group>
+		</search-definition>
+	
+		
+		<!-- Recherche les denière valeurs valables -->
+	    <search-definition name="withPeriodeOpen">
+			<search-group operator="AND">
+				<search-field name="forAge"  operation="EQUALS" field-ref="simpleConversionRente.age"/>
+				<search-field name="forDateFin"  operation="NULL" field-ref="simpleConversionRente.dateFin"/>
+				<search-field name="forDateDebut"  operation="LESS" field-ref="simpleConversionRente.dateDebut"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="oldLastValue">
+			<search-group operator="AND">
+				<search-field name="forIdConversionRente"  operation="NOT_EQUALS" field-ref="simpleConversionRente.idConversionRente"/>
+				<search-field name="forAge"  operation="EQUALS" field-ref="simpleConversionRente.age"/>
+				<search-group operator="OR">
+					<search-field name="forDateFin"  operation="EQUALS" field-ref="simpleConversionRente.dateFin"/>
+					<search-field name="forDateFin"  operation="NULL" field-ref="simpleConversionRente.dateFin"/>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="lastValues">
+			<search-group operator="AND">
+				<search-field name="forAge"  operation="EQUALS" field-ref="simpleConversionRente.age"/>
+				<search-field name="forIdConversionRente"  operation="NOT_EQUALS" field-ref="simpleConversionRente.idConversionRente"/>
+				<search-field name="forDateDebut"  operation="LESS" field-ref="simpleConversionRente.dateFin"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withValueYunger">
+			<search-group operator="AND">
+				<search-field name="forAge"  operation="EQUALS" field-ref="simpleConversionRente.age"/>
+				<search-field name="forIdConversionRente"  operation="NOT_EQUALS" field-ref="simpleConversionRente.idConversionRente"/>
+				<search-field name="forDateDebut"  operation="GREATER" field-ref="simpleConversionRente.dateDebut"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withDateValable">
+			<search-group operator="AND">
+				<search-field name="forAge"  operation="EQUALS" field-ref="simpleConversionRente.age"/>
+				<search-group operator="AND">
+					<search-field name="forDateDebut" operation="LESS_OR_EQUALS" field-ref="simpleConversionRente.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleConversionRente.dateFin"/>
+						<search-field name="forDateDebut" operation="NULL" field-ref="simpleConversionRente.dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withValueInPeriode">
+			<search-group operator="AND">
+				<search-field name="forAge" operation="EQUALS" field-ref="simpleConversionRente.age"/>
+				<search-literal>
+					<declare-model name="conversionRente" model-ref="ch.globaz.pegasus.business.models.parametre.SimpleConversionRente"/>
+					<![CDATA[
+						#{simpleConversionRente.dateDebut} = ( select MAX( #{conversionRente.dateDebut} )
+								  from @{conversionRente}
+								 where #{conversionRente.age} = ${forAge:conversionRente.age}
+								   and ( #{conversionRente.dateFin} > ${forDateDebut:conversionRente.dateDebut} 
+								          or #{conversionRente.dateFin} = 0 )
+								   and ((  
+								           (#{conversionRente.dateFin} >= ${forDateFin:conversionRente.dateFin} 
+								   			or #{conversionRente.dateFin}= 0
+								   			)
+								 	      and #{conversionRente.dateDebut} <= ${forDateFin:conversionRente.dateFin} )
+								 	    )
+								   )
+					 ]]>
+			  	</search-literal>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="simpleConversionRente.dateDebut" order="DESC"/>
+			<order-field field-ref="simpleConversionRente.age" />
+		</order-by>	
+	</complexe-model>
+</model-mapping>

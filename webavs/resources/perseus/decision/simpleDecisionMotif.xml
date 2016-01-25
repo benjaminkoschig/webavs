@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.decision.SimpleDecisionMotif">
+		<description>Table associative des motifs de decisions</description>
+		<table name="PFDEMO" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDecisionMotif" column="IKIDDM" comment="Clé primaire de la table"/>
+			<field name="idDecision" column="IKIDDE" type="NUMERIC" mandatory="true" comment="Identifiant de la table Decision"/>
+			<field name="idMotif" column="IKIDMO" type="NUMERIC" mandatory="true" comment="Identifiant de la table Motif" />
+			<field name="commentaire" column="IKTEXT" type="STRING" mandatory="false" comment="Commentaire sur le motif de la decision" />			
+		</fields>
+	</simple-model>
+</model-mapping>

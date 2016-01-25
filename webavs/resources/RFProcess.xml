@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<!--  Processus de traitement du financements des soins -->
+	<bean id="Cygnus.import.financement.soin"
+		class="ch.globaz.jade.process.business.conf.JadeProcessDefinitionBean">
+		<property name="classNamePopulation" value="globaz.cygnus.process.financementSoin.step1.RFImportFinancementSoinPopulation" />	
+		<property name="description">
+			<map>
+				<entry key="FR">
+					<value>
+						<![CDATA[<h1>Import des financement soins</h1>
+	
+						   ]]>
+					</value>
+				</entry>
+			</map>
+		</property>
+		
+		<property name="displayValue">	
+			<map>
+				<entry key="1">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayValue">
+						<property name="libelle" value="Ma valeur" />
+						<property name="keyValue" value="value1" />
+						<property name="displayInCSV" value="true" />
+						<property name="displayInHtml" value="true" />
+						<property name="width" value="140px" />
+						<property name="search" value="true" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+		
+		<!--  lien pour entites dans applis -->
+		<property name="urlEntite" value="" />	
+		
+		<!--  jsp pour passer param -->
+		<property name="urlProperties" value="pegasus?pegasus.process.import.afficher" />	
+			
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="globaz.cygnus.process.financementSoin.step1.RFImportFinancementSoinStep1" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="1" />
+						<property name="isOptional" value="true" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Définition du montant de l'allocation" />
+								<entry key="DE" value="Définition du montant de l'allocation" />
+								<entry key="IT" value="Définition du montant de l'allocation" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	<!--  FIN Processus de traitement du financements des soins -->
+	
+	<!--  Processus de traitement des adaptations annuelle-->
+	<bean id="Cygnus.adaptationAnnuelle"
+		class="ch.globaz.jade.process.business.conf.JadeProcessDefinitionBean">
+		<property name="classNamePopulation" value="globaz.cygnus.process.adaptationAnnuelle.octroi.RFAdaptationAnnuellePopulation" />	
+		<property name="description">
+			<map>
+				<entry key="FR">
+					<value>
+						<![CDATA[<h1>Adaptation Annuelle</h1>
+	
+						   ]]>
+					</value>
+				</entry>
+			</map>
+		</property>
+		
+		<property name="displayValue">	
+			<map>
+				<entry key="1">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayValue">
+						<property name="libelle" value="Ma valeur" />
+						<property name="keyValue" value="value1" />
+						<property name="displayInCSV" value="false" />
+						<property name="displayInHtml" value="false" />
+						<property name="width" value="140px" />
+						<property name="search" value="true" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+		
+		<!--  lien pour entites dans applis -->
+		<property name="urlEntite" value="" />	
+		
+		<!--  jsp pour passer param -->
+		<property name="urlProperties" value="" />	
+			
+		<property name="steps">
+			<map>
+				<entry key="octroi">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="globaz.cygnus.process.adaptationAnnuelle.octroi.RFProcessAdaptationAnnuelleOctroiStep" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="1" />
+						<property name="isOptional" value="false" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Octroi" />
+								<entry key="DE" value="[de]Octroi" />
+								<entry key="IT" value="[it]Octroi" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="regime">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="globaz.cygnus.process.adaptationAnnuelle.regime.RFProcessAdaptationAnnuelleRegimeStep" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="2" />
+						<property name="isOptional" value="false" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Régime" />
+								<entry key="DE" value="[de]Régime" />
+								<entry key="IT" value="[it]Régime" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="frqppp">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="globaz.cygnus.process.adaptationAnnuelle.frqppp.RFProcessAdaptationAnnuelleFrqpppStep" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="3" />
+						<property name="isOptional" value="false" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Frqp pp" />
+								<entry key="DE" value="[de]Frqp pp" />
+								<entry key="IT" value="[it]Frqp pp" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	<!--  Fin du processus de traitement des adaptations annuelle-->
+	
+	<!--  Processus de traitement des importations AVASAD (demandes CMS)-->
+	<bean id="Cygnus.import.avasad"
+		class="ch.globaz.jade.process.business.conf.JadeProcessDefinitionBean">
+		<property name="classNamePopulation" value="globaz.cygnus.process.importationAvasad.RFImportDemandesCmsPopulation" />	
+		<property name="description">
+			<map>
+				<entry key="FR">
+					<value>
+						<![CDATA[<h1>Importation AVASAD</h1>
+	
+						   ]]>
+					</value>
+				</entry>
+			</map>
+		</property>
+		
+		
+		<property name="displayValue">	
+			<map>
+				<entry key="1">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayValue">
+						<property name="libelle" value="Ma valeur" />
+						<property name="keyValue" value="value1" />
+						<property name="displayInCSV" value="false" />
+						<property name="displayInHtml" value="false" />
+						<property name="width" value="140px" />
+						<property name="search" value="true" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+		
+		
+				
+		<property name="displayTable">	
+			<map>
+				<entry key="DESIGNATION">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayColumn">
+						<property name="libelle" value="RF_IMPORT_AVASAD_PROCESS_DESCRIPTION" />
+						<property name="width" value="140px" />
+						<property name="display" value="true" />						
+						<property name="search" value="true" />
+					</bean>
+				</entry>
+				<entry key="DATE_DEBUT_EXECUTION">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayColumn">
+						<property name="display" value="true" />						
+					</bean>
+				</entry>
+				<entry key="DATE_FIN_EXECUTION">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayColumn">
+						<property name="display" value="true" />						
+					</bean>
+				</entry>
+				<entry key="NB_ENTITE_ETAPE_COURANTE">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayColumn">
+						<property name="display" value="false" />						
+					</bean>
+				</entry>
+				<entry key="ETAPE_XY">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayColumn">
+						<property name="display" value="false" />						
+					</bean>
+				</entry>
+				<entry key="ETAT">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayColumn">
+						<property name="display" value="true" />						
+					</bean>
+				</entry>
+				<entry key="DELETE">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayColumn">
+						<property name="display" value="true" />						
+					</bean>
+				</entry>
+			</map>
+		</property>
+		
+		<!--  lien pour entites dans applis -->
+		<property name="urlEntite" value="" />	
+		
+		<!--  jsp pour passer param -->
+		<property name="urlProperties" value="cygnus?cygnus.process.importationAvasad.afficher" />
+
+		<property name="steps">
+			<map>
+				<entry key="creationDemandesStep1">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="globaz.cygnus.process.importationAvasad.creationDemandesStep1.RFImportDemandesCmsCreation" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="1" />
+						<property name="isOptional" value="true" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Importation des demandes CMS" />
+								<entry key="DE" value="[de]Importation des demandes CMS" />
+								<entry key="IT" value="[it]Importation des demandes CMS" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="preparationDecisionStep2">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="globaz.cygnus.process.importationAvasad.preparationDecisionStep2.RFImportDemandesCmsPreparerDecision" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="2" />
+						<property name="isOptional" value="true" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Préparation des décisions" />
+								<entry key="DE" value="[de]Préparation des décisions" />
+								<entry key="IT" value="[it]Préparation des décisions" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="validationDecisionStep3">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="globaz.cygnus.process.importationAvasad.validationDecisionStep3.RFImportDemandesCmsValiderDecision" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="3" />
+						<property name="isOptional" value="true" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Validation des décisions" />
+								<entry key="DE" value="[de]Validation des décisions" />
+								<entry key="IT" value="[it]Validationdes décisions" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="miseAJourFichierSourceStep4">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="globaz.cygnus.process.importationAvasad.miseAJourFichierSourceStep4.RFImportDemandesCmsMajFichierSource" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="4" />
+						<property name="isOptional" value="true" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Mise à jour du fichier source" />
+								<entry key="DE" value="[de]Mise à jour du fichier source" />
+								<entry key="IT" value="[it]Mise à jour du fichier source" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	<!--  Fin du processus de traitement des importations AVASAD (demandes CMS)-->
+	
+</beans>

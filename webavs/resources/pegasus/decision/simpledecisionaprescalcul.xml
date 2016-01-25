@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.decision.SimpleDecisionApresCalcul">
+		<description>Decision apres calcul</description>
+		<table name="PCDECACA" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDecisionApresCalcul" column="DCIDEN" comment="ID_DECISION_APRES_CALCUL"/>
+			<field name="idDecisionHeader" column="DCIDHE" type="NUMERIC" mandatory="false" comment="ID_DECISION_HEADER"/>
+			<field name="idVersionDroit" column="DCIVDR" type="NUMERIC" mandatory="false" comment="ID_VERSION_DROIT"/>
+			<field name="csTypePreparation" column="DCTPRE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="CS_TYPE_PREPARATION"/>
+			<field name="introduction" column="DCLINT" type="STRING" dataType="VARCHAR(1024)" mandatory="false" comment="INTRODUCTION"/>
+			<field name="remarqueGenerale" column="DCLREM" type="STRING" dataType="VARCHAR(1024)" mandatory="false" comment="REMARQUE_GENERALE"/>
+			<field name="annuleEtRemplacePrec" column="DCLARP" type="BOOLEAN" mandatory="false" comment="TEXTE_ANNULE_ET_REMPLACE"/>
+			<field name="diminutionPc" column="DCLDPC" type="BOOLEAN" mandatory="false" comment="DIMINUTION_PC"/>
+			<field name="allocNonActif" column="DCLANA" type="BOOLEAN" mandatory="false" comment="ALLOC_FAMILLIALE_NONACTIF"/>
+			<field name="dateProchainPaiement" column="DCDPMT" type="MONTH_YEAR" mandatory="TRUE" comment="DATE_PROCHAIN_PAIMENT"/>
+			<field name="isMostRecent" column="DCLMRE" type="BOOLEAN" mandatory="FALSE" comment="IS_MOST_RECENT"/>
+			<field name="dateDecisionAmal" column="DCDAMA" type="DATE" mandatory="FALSE" comment="DATE_DECISION_AMAL"/>
+			<field name="codeAmal" column="DCLCAM" type="STRING" dataType="VARCHAR(10)" mandatory="FALSE" comment="CODE_AMAL"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDecisionApresCalcul" operation="EQUALS" field-ref="idDecisionApresCalcul" />
+				<search-field name="forIdDecisionHeader" operation="EQUALS" field-ref="idDecisionHeader" />
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="idVersionDroit" />
+				<search-field name="forInIdDecisionHeader" operation="IN" field-ref="idDecisionHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

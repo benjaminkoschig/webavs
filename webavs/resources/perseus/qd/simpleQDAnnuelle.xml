@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.qd.SimpleQDAnnuelle">
+		<description>Table des QD Annuelles</description>
+		<table name="PFQDANNU" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idQDAnnuelle" column="IQIDQM" comment="Id de la QD Annuelle" />
+			<field name="idDossier" column="IQIDDO" type="NUMERIC" mandatory="true" comment="Référence sur le dossier"/>
+			<field name="annee" column="IQANNE" type="NUMERIC" mandatory="true" comment="Année de la QD"/>
+			<field name="excedantRevenu" column="IQEXRE" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="Excedant de revenu"/>
+			<field name="excedantRevenuCompense" column="IQEXRC" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="Excedant de revenu compensé"/>
+		</fields>
+		
+	</simple-model>
+</model-mapping>

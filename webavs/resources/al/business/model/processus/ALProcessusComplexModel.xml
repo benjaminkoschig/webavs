@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'une liste de droit -->
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.processus.ProcessusComplexModel">
+		<root-model name="processusPeriodiqueModel" model-ref="ch.globaz.al.business.models.processus.ProcessusPeriodiqueModel"/>
+		<linked-model name="configProcessusModel" model-ref="ch.globaz.al.business.models.processus.ConfigProcessusModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idConfig" field-ref="processusPeriodiqueModel.idConfig"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="periodeModel" model-ref="ch.globaz.al.business.models.periodeAF.PeriodeAFModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPeriodeAF" field-ref="processusPeriodiqueModel.idPeriode"/>
+			</join-group>
+		</linked-model>		
+	</complexe-model>
+</model-mapping>

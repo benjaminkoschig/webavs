@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.pcfaccordee.SimpleDetailsCalcul">
+		<description>Table du détails du calcul PC Familles</description>
+		<table name="PFDETCAL" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDetailsCalcul" column="JLIDDC" comment="Clé primaire de la table du détails du calcul PC Familles"/>
+			<field name="idPCFAccordee" column="JLIDPA" type="NUMERIC" mandatory="true" comment="référence sur la PCF Accordée" />
+			<field name="typeData" column="JLTYDA" type="STRING" mandatory="true" comment="type de la donnée du calcul" />
+			<field name="montant" column="JLMONT" type="NUMERIC" mandatory="true" comment="montant de la donnée du calcul" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdPCFAccordee" operation="EQUALS" field-ref="idPCFAccordee"/>
+				<search-field name="forTypeData" operation="EQUALS" field-ref="typeData"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

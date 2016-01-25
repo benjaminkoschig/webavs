@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="pegasus/process/allocationsNoel/pcaccordeepopulation.xml"/>
+	<model-mapping import="pegasus/process/allocationsNoel/allocationnoelentity.xml"/>
+	<model-mapping import="pegasus/process/allocationsNoel/couplesepareparlamladie.xml"/>
+</model-mapping> 

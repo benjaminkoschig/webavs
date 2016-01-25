@@ -1,0 +1,19 @@
+<%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" %>
+<%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
+<%@ include file="/theme/conflict/header.jspf" %>
+<%-- tpl:insert attribute="zoneInit" --%>
+<%-- /tpl:insert --%>
+<%-- tpl:insert attribute="zoneBusiness" --%> <%-- /tpl:insert --%>
+<%@ include file="/theme/conflict/javascripts.jspf" %>
+<%-- tpl:insert attribute="zoneScripts" --%>
+<%-- /tpl:insert --%>
+<%@ include file="/theme/conflict/bodyStart.jspf" %>
+				<%-- tpl:insert attribute="zoneTitle" --%>
+      			<%-- /tpl:insert --%>
+<%@ include file="/theme/conflict/bodyStart2.jspf" %>
+			  <%-- tpl:insert attribute="zoneMain" --%>
+			  <%-- /tpl:insert --%>
+<%@ include file="/theme/conflict/footer.jspf" %>
+<%-- tpl:insert attribute="zoneEndPage" --%>
+<%-- /tpl:insert --%>
+<%@ include file="/theme/conflict/bodyClose.jspf" %>

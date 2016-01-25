@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'un dossier -->
+<model-mapping >
+<complexe-model className="ch.globaz.al.business.models.dossier.DossierComplexModel">
+	<root-model name="dossierModel" model-ref="ch.globaz.al.business.models.dossier.DossierModel"/>
+	<linked-model name="allocataireComplexModel" model-ref="ch.globaz.al.business.models.allocataire.AllocataireComplexModel" join-type="INNER">
+		<join-group operator="AND">
+			<join-field name="allocataireModel.idAllocataire" field-ref="dossierModel.idAllocataire"/>
+		</join-group>
+	</linked-model>
+	<linked-model name="tiersBeneficiaireModel" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER">
+		<join-group operator="AND">
+			<join-field name="idTiers" field-ref="dossierModel.idTiersBeneficiaire"/>
+		</join-group>
+	</linked-model>
+	<linked-model name="caisseAFComplexModel" model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel" join-type="LEFT_OUTER">
+		<join-group operator="AND">
+			<join-field name="admin.idTiersAdministration" field-ref="dossierModel.idTiersCaisseConjoint"/>
+		</join-group>
+	</linked-model>
+	<search-definition>
+		<search-group operator="AND">
+			<search-field name="forNumeroAffilie" field-ref="dossierModel.numeroAffilie" operation="EQUALS"/>
+			<search-field name="forIdDossier" field-ref="dossierModel.idDossier" operation="EQUALS"/>
+		</search-group>
+	</search-definition>
+	<search-definition name="lienDossier">
+		<search-group operator="AND">
+			<search-field name="likeNumeroAffilie" field-ref="dossierModel.numeroAffilie" operation="LIKE"/>
+			<search-field name="forIdDossier" field-ref="dossierModel.idDossier" operation="EQUALS"/>
+		</search-group>
+	</search-definition>
+	
+	<search-definition>
+		<search-group operator="AND">
+			<search-field name="forIdTiersAllocataire" field-ref="allocataireComplexModel.allocataireModel.idTiersAllocataire" operation="EQUALS"/>
+			<search-field name="forNumeroAffilie" field-ref="dossierModel.numeroAffilie" operation="EQUALS"/>
+		</search-group>
+	</search-definition>
+	
+	
+	<search-definition name="generationDirect">
+		<search-group operator="AND">
+				<search-field name="forNumeroAffilie" field-ref="dossierModel.numeroAffilie" operation="EQUALS"/>
+				<search-field name="inStatut" field-ref="dossierModel.statut" operation="NOT_IN"/>
+				<search-field name="constanteBeneficiaire" field-ref="dossierModel.idTiersBeneficiaire" operation="GREATER" value="0"/> 
+				<search-group operator="OR">
+					<search-group operator="AND">
+						<search-field name="forEtat" field-ref="dossierModel.etatDossier" operation="EQUALS"/>
+						<search-field name="forFinValidite" field-ref="dossierModel.finValidite" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+					<search-field name="inEtat" field-ref="dossierModel.etatDossier" operation="IN"/>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="generationIndirectPar">
+			<search-group operator="AND">
+				<search-field name="forNumeroAffilie" field-ref="dossierModel.numeroAffilie" operation="EQUALS"/>
+				<search-field name="inStatut" field-ref="dossierModel.statut" operation="NOT_IN"/>
+				<search-field name="inActivites" field-ref="dossierModel.activiteAllocataire" operation="NOT_IN"/>
+				<search-field name="constanteBeneficiaire" field-ref="dossierModel.idTiersBeneficiaire" operation="EQUALS" value="0"/>
+				<search-group operator="OR">
+					<search-group operator="AND">
+						<search-field name="forEtat" field-ref="dossierModel.etatDossier" operation="EQUALS"/>
+						<search-field name="forFinValidite" field-ref="dossierModel.finValidite" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+					<search-field name="inEtat" field-ref="dossierModel.etatDossier" operation="IN"/>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="generationIndirectPers">
+			<search-group operator="AND">
+				<search-field name="forNumeroAffilie" field-ref="dossierModel.numeroAffilie" operation="EQUALS"/>
+				<search-field name="inStatut" field-ref="dossierModel.statut" operation="NOT_IN"/>
+				<search-field name="inActivites" field-ref="dossierModel.activiteAllocataire" operation="IN"/>
+				<search-field name="constanteBeneficiaire" field-ref="dossierModel.idTiersBeneficiaire" operation="EQUALS" value="0"/>
+				<search-group operator="OR">
+					<search-group operator="AND">
+						<search-field name="forEtat" field-ref="dossierModel.etatDossier" operation="EQUALS"/>
+						<search-field name="forFinValidite" field-ref="dossierModel.finValidite" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+					<search-field name="inEtat" field-ref="dossierModel.etatDossier" operation="IN"/>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		
+		<search-definition name="generationIndirect">
+			<search-group operator="AND">
+				<search-field name="forNumeroAffilie" field-ref="dossierModel.numeroAffilie" operation="EQUALS"/>
+				<search-field name="inStatut" field-ref="dossierModel.statut" operation="NOT_IN"/>
+				<search-field name="constanteBeneficiaire" field-ref="dossierModel.idTiersBeneficiaire" operation="EQUALS" value="0"/>
+				<search-group operator="OR">
+					<search-group operator="AND">
+						<search-field name="forEtat" field-ref="dossierModel.etatDossier" operation="EQUALS"/>
+						<search-field name="forFinValidite" field-ref="dossierModel.finValidite" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+					<search-field name="inEtat" field-ref="dossierModel.etatDossier" operation="IN"/>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="generation">
+			<search-group operator="AND">
+				<search-field name="forNumeroAffilie" field-ref="dossierModel.numeroAffilie" operation="EQUALS"/>
+				<search-field name="inStatut" field-ref="dossierModel.statut" operation="NOT_IN"/>
+				<search-group operator="OR">
+					<search-group operator="AND">
+						<search-field name="forEtat" field-ref="dossierModel.etatDossier" operation="EQUALS"/>
+						<search-field name="forFinValidite" field-ref="dossierModel.finValidite" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+					<search-field name="inEtat" field-ref="dossierModel.etatDossier" operation="IN"/>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="dossiersForIdTiers">
+			<search-group operator="AND">
+				<search-field name="forIdTiersAllocataire" field-ref="allocataireComplexModel.allocataireModel.idTiersAllocataire" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="listDossier">
+			<search-group operator="AND">
+				<search-field name="inIdDossier" field-ref="dossierModel.idDossier" operation="IN"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="listDossierRadie">
+			<search-group operator="AND">
+				<search-field name="inNumeroAffilie" field-ref="dossierModel.numeroAffilie" operation="IN"/>
+				<search-field name="inActivites" field-ref="dossierModel.activiteAllocataire" operation="IN"/>
+				<search-field name="inStatut" field-ref="dossierModel.statut" operation="IN"/>
+				<!-- tarif, champ calculé -->
+				<!-- type de droit, agrégat de tiers bénéficiaire, age, type, incapacité -->
+				<search-literal><![CDATA[ (#{dossierModel.etatDossier} = 61050002) ]]></search-literal><!-- dossiers radiés -->
+				<search-field name="forFinValiditeSmaller" field-ref="dossierModel.finValidite" operation="LESS_OR_EQUALS"/>
+				<search-field name="forFinValiditeGreater" field-ref="dossierModel.finValidite" operation="GREATER_OR_EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="listDossierActif">
+			<search-group operator="AND">
+				<search-field name="inNumeroAffilie" field-ref="dossierModel.numeroAffilie" operation="IN"/>
+				<search-field name="inActivites" field-ref="dossierModel.activiteAllocataire" operation="IN"/>
+				<search-field name="inStatut" field-ref="dossierModel.statut" operation="IN"/>
+				<!-- tarif, champ calcullé -->
+				<!-- type de droit, agrégat de tiers bénéficiaire, age, type, incapacité -->
+				<search-literal><![CDATA[ (#{dossierModel.etatDossier} = 61050001) ]]></search-literal><!-- dossiers actif -->
+				<search-field name="forValiditeSmaller" field-ref="dossierModel.debutValidite" operation="LESS_OR_EQUALS"/>
+				<search-field name="forValiditeGreater" field-ref="dossierModel.debutValidite" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forFinValiditeSmaller" field-ref="dossierModel.finValidite" operation="LESS_OR_EQUALS"/>
+				<search-field name="forFinValiditeGreater" field-ref="dossierModel.finValidite" operation="GREATER_OR_EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="RadiationAffilie">
+			<search-group operator="AND">
+				<search-field name="forNumeroAffilie" field-ref="dossierModel.numeroAffilie" operation="EQUALS"/>
+				<search-group operator="OR">
+					<search-group operator="AND">
+						<search-literal><![CDATA[ (#{dossierModel.etatDossier} = 61050002) ]]></search-literal><!-- dossiers radiés -->
+						<search-field name="forFinValidite" field-ref="dossierModel.finValidite" operation="GREATER"/>
+					</search-group>
+					<search-literal><![CDATA[ (#{dossierModel.etatDossier} = 61050001) ]]></search-literal><!-- dossiers actif -->
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="dossiersActifs">
+			<search-group operator="AND">
+				<search-field name="forIdTiersAllocataire" field-ref="allocataireComplexModel.allocataireModel.idTiersAllocataire" operation="EQUALS"/>
+				<search-group operator="OR">
+					<search-group operator="AND">
+						<search-literal><![CDATA[ (#{dossierModel.etatDossier} = 61050002) ]]></search-literal><!-- dossiers radiés -->
+						<search-field name="forFinValidite" field-ref="dossierModel.finValidite" operation="GREATER_OR_EQUALS"/>
+					</search-group>
+					<search-group operator="AND">
+						<search-literal><![CDATA[ (#{dossierModel.etatDossier} = 61050001) ]]></search-literal><!-- dossiers actif -->
+						<search-field name="forDebutValidite" field-ref="dossierModel.debutValidite" operation="LESS_OR_EQUALS"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="OrderAlloc">
+			<order-field field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation1" order="ASC"/>
+			<order-field field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation2" order="ASC"/>
+			<order-field field-ref="dossierModel.numeroAffilie" order="ASC"/>
+		</order-by>
+		<!-- identique à numAffilieAlloc, le tri direct indirect ne peut être fait sur le modèle -->
+		<order-by name="OrderDirectAffilie">
+			<order-field field-ref="dossierModel.numeroAffilie" order="ASC"/>
+			<order-field field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation1" order="ASC"/>
+			<order-field field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation2" order="ASC"/>
+		</order-by>
+		<!-- identique à OrderAlloc, le tri direct indirect ne peut être fait sur le modèle -->
+		<order-by name="OrderDirectAlloc">
+			<order-field field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation1" order="ASC"/>
+			<order-field field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation2" order="ASC"/>
+			<order-field field-ref="dossierModel.numeroAffilie" order="ASC"/>
+		</order-by>
+		
+		<order-by name="numAffilieAlloc">
+			<order-field field-ref="dossierModel.numeroAffilie" order="ASC"/>
+			<order-field field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation1" order="ASC"/>
+			<order-field field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation2" order="ASC"/>
+		</order-by>
+		
+		<order-by name="generationFictive">
+			<order-field field-ref="dossierModel.numeroAffilie" order="ASC"/>		
+			<order-field field-ref="dossierModel.activiteAllocataire" order="ASC"/>
+			<order-field field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation1" order="ASC"/>
+			<order-field field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation2" order="ASC"/>
+			<order-field field-ref="allocataireComplexModel.personneEtendueComplexModel.personneEtendue.numAvsActuel" order="ASC"/>
+		</order-by> 
+	</complexe-model>
+</model-mapping>

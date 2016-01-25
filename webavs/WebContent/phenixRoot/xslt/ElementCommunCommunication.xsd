@@ -1,0 +1,2073 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by zcipca (Etat de Vaud) -->
+<!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by UID (Etat de Vaud) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.3">
+	<xs:include schemaLocation="TypeCommunCommunication.xsd"/>
+	<!--v2005.1.0 - 16.06.05 : adaptation pour DI2005, ajout du sexCnj. On garde tous les éléments antérieurs pour une compatibilité décendante-->
+	<!--v2005.1.1 - 06.09.05 : ajout des m et f pour sexCtb et sexCnj-->
+	<!--v2005.1.1 - 28.11.05 : ajout des éléments permettant la communication du taxateur et de l'OID responsable-->
+	<!--v2005.1.2 - 15.12.05 : ajout des éléments dépense-->
+	<!--v2005.1.3 - 05.01.06 : ajout du commentaire sur les communications AVS PSA dépense-->
+	<!--v2005.1.4 - 28.02.06 : ajout d'un code dans codRetTtt en cas de communication dépense-->
+	<!--v2005.1.5 - 21.03.06 : correction ID2012 remplacée par ID2011 (numéro fax OID), ID556 remplacée par ID558-->
+	<!--v2005.1.6 - 12.06.06 : modification du format des ID303, ID304, ID294 et ID295-->
+	<!--v2005.1.7 - 30.06.09 : frmRstCom: Suppression de ELE, PEL et HTM, restriction de nomPrfTie-->
+	<!--Version 1.8 - 27.07.09 : Changement des valleurs de frmRstCom-->
+	<xs:group name="adrGrp">
+		<xs:annotation>
+			<xs:documentation>Groupe adresse. Six lignes d'adresse, dont une ligne obligatoire</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="adrLgn1"/>
+			<xs:element ref="adrLgn2" minOccurs="0"/>
+			<xs:element ref="adrLgn3" minOccurs="0"/>
+			<xs:element ref="adrLgn4" minOccurs="0"/>
+			<xs:element ref="adrLgn5" minOccurs="0"/>
+			<xs:element ref="adrLgn6" minOccurs="0"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:element name="adrLgn1" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Ligne d'adresse 1 </xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="adrLgn2" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Ligne d'adresse 2</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="adrLgn3" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Ligne d'adresse 3</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="adrLgn4" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Ligne d'adresse 4</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="adrLgn5" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Ligne d'adresse 5</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="adrLgn6" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Ligne d'adresse 6</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="demUrg">
+		<xs:annotation>
+			<xs:documentation>Demande urgente :OUI ou NON : information n'ayant encore aucune incidence sur le traitement</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="3"/>
+				<xs:enumeration value="OUI"/>
+				<xs:enumeration value="NON"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de IdentificationCommunication</xs:documentation>
+	</xs:annotation>
+	<xs:element name="numRps" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Numéro de la réponse</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datRpsFrt" type="typDatFrt">
+		<xs:annotation>
+			<xs:documentation>Date de la réponse avec le mois complet</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datRps" type="typDate">
+		<xs:annotation>
+			<xs:documentation>Date de la réponse</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="nomCtcCom">
+		<xs:annotation>
+			<xs:documentation>Nom de la personne de contact pour la réponse : Titre - Prénom - Nom de l'utilisateur</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="50"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="eMaiCtcCom">
+		<xs:annotation>
+			<xs:documentation>Adresse Email de la personne de contact pour la réponse</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="50"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="telCtcCom">
+		<xs:annotation>
+			<xs:documentation>Numéro de téléphone de la personne de contact pour la réponse</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="50"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="tttPar" type="xs:token">
+		<xs:annotation>
+			<xs:documentation>Titre, initiales du prénom et nom de l'utilisateur</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="locExp" type="xs:token">
+		<xs:annotation>
+			<xs:documentation>Localité de l'utilisateur</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ntrRef" type="xs:token">
+		<xs:annotation>
+			<xs:documentation>UpperCase(Initiale de l'utilisateur)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de identificationExpediteur</xs:documentation>
+	</xs:annotation>
+	<xs:element name="idExp">
+		<xs:annotation>
+			<xs:documentation>Id de l'utilisateur (zcixxx)</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="50"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="nomExp">
+		<xs:annotation>
+			<xs:documentation>Nom de l'utilisateur</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="50"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de identificationDestinataire</xs:documentation>
+	</xs:annotation>
+	<xs:element name="nomTie">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="50"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="numTie">
+		<xs:annotation>
+			<xs:documentation>Sigle de la collectivité administrative : numéro d'identification du tiers</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="20"/>
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="eMaiDst" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>EMail du destinataire</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de tttCom</xs:documentation>
+	</xs:annotation>
+	<xs:element name="nomFic" type="xs:string"/>
+	<xs:element name="nomPrfTie">
+		<xs:annotation>
+			<xs:documentation>nom ou numéro du profil du tiers à qui la communication est destinée. </xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token">
+				<xs:enumeration value="1"/>
+				<xs:enumeration value="2"/>
+				<xs:enumeration value="5"/>
+				<xs:enumeration value="6"/>
+				<xs:enumeration value="8"/>
+				<xs:enumeration value="10"/>
+				<xs:enumeration value="20"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="typDosFol">
+		<xs:annotation>
+			<xs:documentation>Type dossier FOLDERS</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token">
+				<xs:length value="3"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="nomDosFol" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Nom du dossier FOLDERS</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="typDocFol">
+		<xs:annotation>
+			<xs:documentation>Type de document FOLDERS</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token">
+				<xs:length value="3"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="nomDocFol">
+		<xs:annotation>
+			<xs:documentation>Nom du document FOLDERS</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token">
+				<xs:length value="40"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="datTrvFol">
+		<xs:annotation>
+			<xs:documentation>Date de travail FOLDERS</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token">
+				<xs:length value="8"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="nbrPgePiv" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Pivot pour envoi dans carton ou dans une enveloppe</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="outCom">
+		<xs:annotation>
+			<xs:documentation>output de la communication : PFEX : plateforme d'échange  (EAI), CTA : client tao (impression locale), IMPM : impression masse (CADEV)</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="PFEX"/>
+				<xs:enumeration value="CTAO"/>
+				<xs:enumeration value="IMPM"/>
+				<xs:enumeration value="CTA"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="frmRstCom">
+		<xs:annotation>
+			<xs:documentation>Format de restitution (rendition) de la communication (PAP, ELE. EML, ...) </xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token">
+				<xs:enumeration value="PAP"/>
+				<xs:enumeration value="OCC"/>
+				<xs:enumeration value="ACI"/>
+				<xs:enumeration value="CHM"/>
+				<xs:enumeration value="PDF"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="codRetTtt" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>1 si (ICCD et (nomPrfTie == 1 ou nomPrfTie == 2)) ~ 
+Code de retour du traitement de la demande, en cas de non réussite ou impossibilité de communiquer.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="lllRetTtt" type="xs:token">
+		<xs:annotation>
+			<xs:documentation>Message / raison de l'échec du traitement pour cet individu</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de identificationResponsableTaxation</xs:documentation>
+	</xs:annotation>
+	<xs:element name="ideResTax">
+		<xs:annotation>
+			<xs:documentation>Id de la personne ayant validé la taxation, zzt si la taxation a été validée automatiquement - ID2005</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token">
+				<xs:maxLength value="10"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="eMaiResTax" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>eMail de la personne ayant validé la taxation</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="telResTax">
+		<xs:annotation>
+			<xs:documentation>Téléphone professionnel de la personne ayant validé la taxation - ID2010</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="59"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="faxResTax">
+		<xs:annotation>
+			<xs:documentation>Fax professionnel de la personne ayant validé la taxation - ID2011</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="50"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="tttParResTax" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Titre, initiales et nom de la personne ayant validé la taxation - ID2004 +' ' +ID2015+' '+ ID2002</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ntrRefResTax" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>ID306+'/'+ UpperCase(ID2005)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de identificationOIDResponsable</xs:documentation>
+	</xs:annotation>
+	<xs:element name="numOID" type="xs:integer">
+		<xs:annotation>
+			<xs:documentation>Numéro de l'OID</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="locOID" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Localité postale de l'OID du for de gestion pour la période d'imposition communiquée - ID2013</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="adrOID">
+		<xs:annotation>
+			<xs:documentation>Adresse de l'OID du for de gestion pour la période d'imposition communiquée:
+UpperCase(ID2016)
+UpperCase(ID2006)
+ID2007
+ID2008
+ID2009
+</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:group ref="adrGrp"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de identificationDemande</xs:documentation>
+	</xs:annotation>
+	<xs:element name="numDem" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Numéro de la demande</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datDem" type="typDate">
+		<xs:annotation>
+			<xs:documentation>Date de la demande</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="codTypCom" default="NA">
+		<xs:annotation>
+			<xs:documentation>Code du type de communication. Par défaut : NA. Par exemple pour l'AVS, catégorie de l'assuré.
+L'une des 4 valeurs :
+"PCI" = Indépendants ou exploitants
+"PSA" = Sans activité lucrative
+"SAL" = Salariés affiliés indépendants
+"AGR" = Collaborateurs agricoles; AVS = ID1456</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="IAF"/>
+				<xs:enumeration value="PCI"/>
+				<xs:enumeration value="PSA"/>
+				<xs:enumeration value="AGR"/>
+				<xs:enumeration value="SAL"/>
+				<xs:enumeration value="NA"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="codNatCom" type="xs:token">
+		<xs:annotation>
+			<xs:documentation>Nature de la communication Par défaut = NA, par exemple pour l'AVS = "SP", "R 1", "R 2", "R N" - AVS = ID1446 ou ID1466
+</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="numAffAvs" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Numéro affilié AVS</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="numAvsIdv" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Numéro AVS de l'individu pour lequel la demande a été faite</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="prdFisCcn" type="typAnnee">
+		<xs:annotation>
+			<xs:documentation>ID301 Période fiscale concernée par la demande. Si renseigné dans informationDemande, ne doit pas être renseigné au niveau de l'individuConcerne et réciproquement</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="debPrdCcn" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Date</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="finPrdCcn" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Date</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de identificationCtb</xs:documentation>
+	</xs:annotation>
+	<xs:element name="numCtb" type="xs:token">
+		<xs:annotation>
+			<xs:documentation>Numéro de contribuable de l'individu pour lequel est fait la demande - ID306</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="nomCtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Nom du contribuable tel que défini dans le registre - ID308</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de coordonneeCtb</xs:documentation>
+	</xs:annotation>
+	<xs:element name="numTelCtc" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Numéro de téléphone de contact du contribuable - ID320</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de identificationTiers</xs:documentation>
+	</xs:annotation>
+	<xs:element name="nomCtcTie">
+		<xs:annotation>
+			<xs:documentation>Nom de la personne de contact pour la demande</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="50"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="eMaiCtcTie">
+		<xs:annotation>
+			<xs:documentation>Adresse Email de la personne de contact pour la demande</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="50"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de identificationDemande</xs:documentation>
+	</xs:annotation>
+	<xs:element name="telCtcTie">
+		<xs:annotation>
+			<xs:documentation>Numéro de téléphone de la personne de contact pour la demande</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="50"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de queueDemande</xs:documentation>
+	</xs:annotation>
+	<xs:element name="nbrIdvDem" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Nombre d'individus pour lesquels une demande a été faite dans le fichier courant</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de individuConcerne</xs:documentation>
+	</xs:annotation>
+	<xs:element name="nomIdv" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Nom de famille de l'individu</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="preIdv" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Prénom de l'individu</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datNaiIdv" type="typDate">
+		<xs:annotation>
+			<xs:documentation>Date de naissance de l'individu</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="numAffTie" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Numéro d'affilié de l'individu dans le système du tiers</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="numAvs" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Numéro Avs de l'individu pour lequel est fait la demande</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de donneeTaxation</xs:documentation>
+	</xs:annotation>
+	<xs:element name="typImp" default="o">
+		<xs:annotation>
+			<xs:documentation>Type imposition o (ordinaire) d (dépense) p (distincte) a (autres) (une lettre)</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:pattern value="[a-z]"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="numACICmnForGes" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Numéro ACI de la commune de for de gestion - ID300</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="numCmnForGes" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Numéro OFS de la commune de for de gestion - ID300</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="cmnForGes" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Nom de la commune de for de gestion - ID300</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="typAsj" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Type d'assujetissement : "illimité","hors canton","hors suisse" - ID2103</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="typTax" type="xs:string" default="Taxation originelle">
+		<xs:annotation>
+			<xs:documentation>"Taxation définitive" dans tous les cas, sauf "Taxation d'office" pour les taxations d'office</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="typTaxExa" type="xs:token">
+		<xs:annotation>
+			<xs:documentation>Type exact de la taxation, tel que défini dans TAO</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="etaTax" type="xs:token">
+		<xs:annotation>
+			<xs:documentation>Etat de la taxation envoyée.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="etaPrd" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Etat de la période d'imposition correspondant à cette taxation.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="NumOrdDi" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>numéro ordinal de la DI - ID2102</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="numPrdImp" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Numéro technique interne de période d'imposition TAO</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datExpPreDT" type="typDate">
+		<xs:annotation>
+			<xs:documentation>Date d'expédition de la dernière décision de taxation : annulée et remplacée par celle-ci - ID2101</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datExpDT" type="typDate">
+		<xs:annotation>
+			<xs:documentation>Date d'expédition de la DT = date de la taxation = COR_DAT_EXP (ex ID2028)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de emolument</xs:documentation>
+	</xs:annotation>
+	<xs:annotation>
+		<xs:documentation>éléments de individuKO</xs:documentation>
+	</xs:annotation>
+	<xs:element name="criRchTtt" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Critères utilisés pour la recherche du contribuable</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>élément de queueCommunication</xs:documentation>
+	</xs:annotation>
+	<xs:element name="nbrIdvOKCom" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Nombre d'individus OK contenus dans la réponse</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="nbrIdvKOCom" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Nombre d'individus KO contenus dans la réponse</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de adresseCourrier</xs:documentation>
+	</xs:annotation>
+	<xs:element name="formulePolitesse" type="xs:string" default="Mme, M., M. et Mme,">
+		<xs:annotation>
+			<xs:documentation>Actuellement : ID2093, mais  idéalement : Si (ID2038=1) {"Madame, Monsieur,"} 
+Sinon Si (ID2093= "M. ET MME,") {"Madame, Monsieur,"}
+Sinon SI (ID2093= "MME,") {"Madame,"}
+Sinon SI (ID2093= "M,") {"Monsieur,"}
+Sinon {"Mme, M., M. et Mme,"} ~ Faute de mieux, on utilise la mêmem formule que dans l'adresse, en minuscules, dans le cas où on n'arrive pas à déterminer le sexe et l'état civil du ctb.
+</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="adrCtbNom1" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Adresse courrier CTB nom1  - ID2094</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="adrCtbNom2" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Adresse courrier CTB nom2  - ID371</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="adrCtbChez" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Adresse courrier CTB chez  - ID372</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="adrCtbRue" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Adresse courrier CTB rue  - ID373</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="adrCtbLieu" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Adresse courrier CTB NPA Localité / lieu pays  - ID381</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de Situation suprimé en 2005</xs:documentation>
+	</xs:annotation>
+	<xs:element name="nomPrmEpo" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Nom et prénom de l'épouse  inchangé pour les taxation 2003/2004, vide ou absent pour 2005 - ID63</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="PrfCtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Profession du CTB  - ID314</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="EmpCtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Employeur du CTB  - ID315</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="PrfEpo" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Profession de l'Epouse  - ID327</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="EmpEpo" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Employeur de l'Epouse  - ID328</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de Situation</xs:documentation>
+	</xs:annotation>
+	<xs:element name="sexCtb">
+		<xs:annotation>
+			<xs:documentation>Sexe du contribuable -  ID307</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="M"/>
+				<xs:enumeration value="F"/>
+				<xs:enumeration value="m"/>
+				<xs:enumeration value="f"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="noAVSCtb" type="typNumAvs">
+		<xs:annotation>
+			<xs:documentation>No AVS du CTB  - ID313</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="sitPrfCtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Situation professionnelle CTB - ID4004</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="txActCtb" type="typPourcent">
+		<xs:annotation>
+			<xs:documentation>Taux activité du CTB  - ID4006</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="lieuActCtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Lieu d'activité du CTB  - ID316</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datNaiCtb" type="typDate">
+		<xs:annotation>
+			<xs:documentation>Date de naissance du CTB  - ID319</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="filCtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Filiation du CTB  - ID324</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="sexCnj">
+		<xs:annotation>
+			<xs:documentation>Sexe du conjoint - ID323</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token">
+				<xs:enumeration value="M"/>
+				<xs:enumeration value="F"/>
+				<xs:enumeration value="m"/>
+				<xs:enumeration value="f"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="nomCnj" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Nom conjoint 2 vide ou absent pour 2003, présent pour 2005  - ID63</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="preCnj" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>vide ou absent pour 2003, présent 2005  - ID4003</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="noAVSEpo" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>No AVS de l'Epouse  - ID330</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="sitPrfCnj" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Situation professionnelleCnj - ID4005</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="txActCnj" type="typPourcent">
+		<xs:annotation>
+			<xs:documentation>Taux activité du CNJ  - ID4007</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="lieuActEpo" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Lieu d'activité de l'Epouse  - ID329</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datNaiEpo" type="typDate">
+		<xs:annotation>
+			<xs:documentation>Date de naissance de l'Epouse  - ID326</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="filEpo" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Filiation de l'Epouse  - ID325</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de assujettissementCtb</xs:documentation>
+	</xs:annotation>
+	<xs:element name="durAsj" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Durée d'assujettissement - ID287</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="motNouAsj" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Motif nouvel assujettissement  - ID355</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="motFinAsj" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Motif fin assujettissement  - ID357</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datDebAsj" type="typDat">
+		<xs:annotation>
+			<xs:documentation>Date de début de l'assujettissement - ID285</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datFinAsj" type="typDat">
+		<xs:annotation>
+			<xs:documentation>Date de fin d'assujettissement - ID286</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>élments de assujettissementActiviteCtb</xs:documentation>
+	</xs:annotation>
+	<xs:element name="durTotActCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Durée totale d'activité durant période CTB  - ID298</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datDebAsjCtb" type="typDatJouMoiNob">
+		<xs:annotation>
+			<xs:documentation>Date début assujettissement CTB  - ID303</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datFinAsjCtb" type="typDatJouMoiNob">
+		<xs:annotation>
+			<xs:documentation>Date fin assujettissement CTB  - ID304</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="durAsjCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Durée assujettissement CTB  - ID305</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de assujettissementActiviteEpo</xs:documentation>
+	</xs:annotation>
+	<xs:element name="durTotActEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Durée totale d'activité durant période de l'Epouse - ID299</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datDebAsjEpo" type="typDatJouMoiNob">
+		<xs:annotation>
+			<xs:documentation>Date début assujettissement de l'Epouse - ID294</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datFinAsjEpo" type="typDatJouMoiNob">
+		<xs:annotation>
+			<xs:documentation>Date fin assujettissement de l'Epouse - ID295</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="durAsjEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Durée assujettissement de l'Epouse - ID297</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de synFamille</xs:documentation>
+	</xs:annotation>
+	<xs:element name="etaCivCtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Etat-Civil du CTB  - ID312</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="quoFam" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Quotient familial  - ID322</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="etaCivFis" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Etat-Civil Fiscal  - ID338</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fisMonPar" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Fiscalement Monoparental  - ID339</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="barIFD" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Barème IFD  - ID350</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="pacICC" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Nombre de personnes à charges admises pour l'ICC - ID418</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="enfQuo" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Nombre d'enfants entrant dans le calcul du quotient  - ID413</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="enfCha" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Enfants à charge - ID424</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="enfMenCmt" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Enfants vivants à charge en ménage commun - ID412</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="enfChaIfd" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Enfants à charge admis pour l'IFD - ID417</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="enfChaIfdMenCmt" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Enfants à charge vivant en ménage commun admis pour IFD - ID423</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- éléments de la rubrique Revenus Contribuable -->
+	<xs:element name="fraTraCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Frais de transport ctb  - ID5</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fraRepSejTraParEquCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Frais de repas - séjour - travail par équipe ctb  - ID6</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revActSalPriCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu activité salariée principale CTB  - ID1</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revActSalAccCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu activité salariée accessoire CTB  - ID2</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="allNonVerParEmpCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Allocations non versées par l'employeur CTB  - ID3</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revAdmPerMorCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu administrateur de personnes morales CTB  - ID4</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="autFraPrfCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Autres frais professionnels CTB  - ID7</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fraActAccSalCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Frais pour activités accessoire salariée CTB  - ID8</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revActIndPriCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenus activité indépendante principale CTB  - ID9</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revActIndAccCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenus activité indépendante accessoire CTB  - ID10</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="prtComNonComCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Perte commerciale non compensée CTB  - ID11</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="raiSocSNCCtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Raison sociale SNC / SC CTB  - ID12</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revBenSNCCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu-Bénéfice SNC / SC CTB  - ID13</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="cotAVSActIndCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Cotisations AVS activité indépendante CTB  - ID14</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revAutCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Autres revenus de toutes natures vide ou absent pour 2003, présent pour 2005 - ID66</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="totRevActCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Total des revenus de l'activité CTB  - ID16</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="indACAPGCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Indemnités AC et APG CTB  - ID18</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="indMalAccCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Indemnités maladie accident CTB  - ID19</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="indAICtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Indemnités AI CTB  - ID20</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ren1erPilCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Rentes 1er pilier (AVS) CTB  - ID21</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ren2emPilCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Rentes 2eme pilier CTB  - ID22</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ren3emPilACtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Rentes 3ème pilier a ctb  - ID23</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ren3emPilBCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Rentes 3ème pilier b ctb  - ID24</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="penAliCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Pension alimentaire ctb  - ID25</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="priMalAccVieCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Prime maladie-accident-vie  - ID26</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="pri3emPilACtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Primes 3ème pilier a ctb  - ID27</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="rahAnnAssCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Rachats années d'assurances ctb  - ID28</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="cotIndCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Cotisations indépendants ctb  - ID29</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="autCotConSalCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Autres cotisations contractuelles des salariés ctb  - ID30</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="totRevDedCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Total Revenus - Déductions ctb  - ID31</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="totRevDedEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Total revenus - Déductions conj  - ID60</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="cumRevDedCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Cumul revenus - déductions ctb conj  - ID61</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="totCod100a400" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Total des codes 100 à 400  - ID637</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="preCapRemVerPer" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Prestations en capital remplaçant des vers. Périodiques  - ID639</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- éléments de la rubrique Revenus Epouse-->
+	<xs:element name="fraTraEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Frais de transport conj  - ID36</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fraRepSejTraParEquEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Frais de repas - séjour - travail par équipe conj  - ID37</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="indAIEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Indemnités AI conj  - ID49</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="cotAVSActIndMme" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Cotisations AVS activité indépendante Mme  - ID15</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revActSalPriEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu activité salariée principale conj  - ID32</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revActSalAccEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu activité salariée accessoire conj  - ID33</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="allNonVerParEmpEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Allocations non versées par l'employeur conj  - ID34</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revAdmPerMorEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu administrateur de personnes morales conj  - ID35</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="autFraPrfEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Autres frais professionnels conj  - ID38</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fraActAccSalEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Frais pour activité accessoire salariée conj  - ID39</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revActIndPriEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu activité indépendante principale conj  - ID40</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revActIndAccEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu activité indépendante accessoire conj  - ID41</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="prtComNonComEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Perte commerciale non compensée conj  - ID42</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="raiSocSNCSCEpo" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Raison sociale SNC / SC conj  - ID43</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revBenSNCSCEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu-Bénéfice SNC / SC conj  - ID44</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revAutCnj" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Autres revenus de toutes natures vide ou absent pour 2003, présent pour 2005 - ID67</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="totRevActEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Total revenus de l'activité conj  - ID45</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="dedDblActConEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Déduction pour double activité des conjoints conj  - ID46</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="indACAPGEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Indemnité AC et APG conj  - ID47</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="indMalAccEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Indemnités maladie accident conj  - ID48</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ren1erPilAVSEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Rentes 1er pilier (AVS) conj  - ID50</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ren2emPilEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Rentes 2ème pilier conj  - ID51</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ren3emPilAEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Rentes 3ème pilier a conj  - ID52</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ren3emPilBEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Rentes 3ème pilier b conj  - ID53</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="penAliEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Pension alimentaire conj  - ID54</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="pri3emPilAEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Primes 3ème pilier a conj  - ID56</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="rahAnnAssEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Rachats années d'assurances conj  - ID57</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="cotIndEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Cotisations indépendants conj  - ID58</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="autCotConSalEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Autres cotisations contractuelles des salariés conj  - ID59</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="parConj">
+		<xs:annotation>
+			<xs:documentation>Participation du conjoint  - ID64</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token"/>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="dedAdmIFD" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Déduction admise pour IFD  - ID590</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- élément de la rubrique Revenus Revenus-->
+	<xs:element name="revPla" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenus placements  - ID102</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="sucNonPar" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Successions non partagées (revenu)  - ID111</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revAutFtn" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenus autres fortunes  - ID112</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="dedIntEpa" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Déduction intérêts épargne  - ID116</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fraMisLot" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Mise dans loteries en cas de gain vide ou absent pour 2003, présent pour 2005  - ID117</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fraAdmTitMis" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Frais administration titres et mises  inchangé pour les taxation 2003/2004, vide ou absent pour 2005 - ID117</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revImmPri" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu immeubles privés  - ID118</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fraAdmTit" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Frais administration titres vide ou absent pour 2003, présent pour 2005  - ID122</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="drtHabRev" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Droit d'habitation - sous-location : revenus  - ID124</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fraEntImmPri" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Frais entretien immeubles privés  - ID126</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="intDetPri" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Intérêts dettes privées  - ID129</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="dedRenChaDur" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Déduction rentes et charges durables  - ID132</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="dedSpePenAli" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Déduction spéciale pension alimentaire  - ID133</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="dedSpeCotAVSAIAPG" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Déduction spéciale cotisations AVS/AI/APG  - ID134</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revNet" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu net  - Tx(ID135)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="dedSocLog" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Déduction sociale pour le logement  - ID136</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="loyAnnNetOuVLLogPri" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Loyer annuel net ou VL logement principal / loyer plafond  - ID137</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="dedPouFraGar" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Déduction pour frais de garde  - ID138</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="dedPouPerACha" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Déduction pour personne à charge  - ID139</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="dif650et660a680" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Différence (650) et (660 à 680)  - ID140</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="dedCtbModICC" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Déduction pour contribuable modeste ICC  - ID142</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revInt" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu intermédiaire  - ID143</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fraMedEtDnt" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Frais médicaux et dentaires  - ID145</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="verInsPurUtiPub" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Versements à des institutions de pure utilité publique  - ID146</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="souTot" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Sous-total  - ID147</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revTotSuiEtEtr" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu total en Suisse et à l'Etranger  - Tx(ID148)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- élément de la rubrique Revenus Fortune-->
+	<xs:element name="numBilOrMetPre" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Numéraire, billets de banques, or et autre métaux précieux  - ID103</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="sucNonParFrt" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Successions non partagées (fortune)  - ID104</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="autMotEtc" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Autos - motos - etc  - ID105</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="assVieEtRen" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Assurances vie et rente  - ID106</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="valAssMobMen" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Valeur d'assurance mobilier de ménage  - ID107</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="objMob" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Objets mobiliers  - ID108</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="autFrt" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Autres fortune  - ID109</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="plaGaiLot" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Placements et gains de loterie  - ID110</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="expDuSolTot" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Exploitant du sol : total  - ID113</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="frtSNCSC" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Fortune dans SNC/SC  - ID114</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="autActExp" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Autres actifs d'exploitation  - ID115</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="immPri" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Immeubles privés  - ID119</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="gooAcqATitOne" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Goodwill acquis à titre onéreux  - ID120</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="immCom" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Immeubles commerciaux  - ID121</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="detPri" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Dettes privées  - ID128</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="detCom" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Dettes commerciales  - ID130</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ftnInt" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Fortune intermédiaire  - Tx(ID144)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="totCrtFtn" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Total des correctifs fortune - ID1726</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="expDuSolAni" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Exploitants du sol, animaux  - ID171</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="expDuSolMatExp" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Exploitants du sol, matériel d'exploitation  - ID172</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- élément de la rubrique Amendes et majorations-->
+	<xs:element name="majRevICC" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Majoration revenus ICC  - ID174</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="majFtnICC" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Majoration fortune ICC   - ID175</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="majRevIFD" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Majoration Revenu IFD   - ID176</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- élément de la rubrique Synthèse AVS independant ctb-->
+	<xs:element name="datDebAsjAVSCtb" type="typDate">
+		<xs:annotation>
+			<xs:documentation>Date début assujettissement AVS ctb   - ID375</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datFinAsjAVSCtb" type="typDate">
+		<xs:annotation>
+			<xs:documentation>Date fin assujettissement AVS ctb   - ID376</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datDetCapInvAVSCtb" type="typDate">
+		<xs:annotation>
+			<xs:documentation>Date détermination capital investi AVS ctb   - ID1440</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="numCaiAvsPCICtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Numéro de la caisse de compensation AVS du ctb PCI - ID374</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="salVerConAVSCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Salaire versé au conjoint AVS ctb  - ID1444</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revActIdpAvsCtb" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu activité indépendante AVS - ID1368</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="giPrfOccCtb" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>GI professionnel occasionnel - ID1442</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="excLiqPrfOccCtb" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Excédant liquidité professionnel occasionnel - ID1443</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revActIndAVSCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu activité indépendante AVS ctb  - ID1368</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="totCapInvAVSCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Total Capital investi AVS ctb  - ID1369</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="natComAvsPCICtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Nature de la communication - ID1446</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="rmqAvsPCICtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Commentaire éventuel - ID1448</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- élément de la rubrique Synthèse AVS independant epouse-->
+	<xs:element name="dateDebAssAVSEpo" type="typDate">
+		<xs:annotation>
+			<xs:documentation>A supprimer</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datDebAssAVSEpo" type="typDate">
+		<xs:annotation>
+			<xs:documentation>Devra être changé en -datDebAssAVSEpo- Date début assujettissement AVS épouse   - ID378</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datFinAssAVSEpo" type="typDate">
+		<xs:annotation>
+			<xs:documentation>Date fin assujettissement AVS épouse   - ID379</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datDetCapInvAVSEpo" type="typDate">
+		<xs:annotation>
+			<xs:documentation>Date détermination capital investi AVS épouse   - ID1470</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="numCaiAvsPCIEpo" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Numéro de la caisse de compensation AVS epo PCI - ID377</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datDeterminanteEpo" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Date déterminante pour le capital investi Conjoint - ID1470</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revActIdpAvsEpo" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu activité indépendante AVS - ID1388</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="giPrfOccEpo" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>GI professionnel occasionnel Conjoint - ID1462</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="excLiqPrfOccEpo" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Excédant liquidité professionnel occasionnel Conjoint - ID1463</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="salVerseEpoCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>A supprimer</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="salVerConAVSEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Devra être changé en -salVerConAVSEpo- Salaire versé au conjoint AVS épouse  - ID1464</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revActIndAVSEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu activité indépendante AVS épouse   - ID1388</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="capitalInvestiAvsEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>A suprimer</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="totCapInvAVSEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Devra être changé en -totCapInvAVSEpo- Total Capital investi AVS épouse   - ID1389</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="natComAvsPciEpo" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Nature de la communication - ID1466</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="rmqAvsPCIEpo" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Commentaire éventuel - ID1468</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- élément de la rubrique Synthèse AVS PSA-->
+	<xs:element name="numCaiAvsPSACtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Numéro de la caisse de compensation AVS PSA du contribuable - ID387</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="numCaiAvsPSAEpo" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Numéro de la caisse de compensation AVS PSA de l'épouse - ID370</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="natRntPSAAVS" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Nature de la rente PSA AVS , par exemple : 2e pilier : rentes prévoyance prof.; 3e pilier a : rentes prévoyance liée; 3e pilier b : autres rentes et pensions   - ID1447</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="depPSAAVS" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Dépense PSA AVS  - ID1453</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revSuiPSAAVS" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenus suisses PSA AVS - ID1473</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="frtPSAAVS" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Fortune PSA AVS cumul ctb epo  - ID1450</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="rntPSAAVS" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Rente PSA AVS cumul ctb + epo   - ID1452</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="natComAvsPSA" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Nature de la communication PSA - ID1482</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="rmqAvsPSA" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Commentaire éventuel - ID1472 + si (typImp=="d") {" - soumis à l'art. 14 IFD, fortune inconnue")</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revActLucPSAAVS" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenus d'activités lucratives PSA AVS   - ID1471</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="datDetForPSAAVS" type="typDate">
+		<xs:annotation>
+			<xs:documentation>Date détermination fortune PSA   - ID1451</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de avsCtb</xs:documentation>
+	</xs:annotation>
+	<xs:element name="typTaxAVS" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Type de taxation pour AVS ctb   - ID1445</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="drtHabGraRoyAVSCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Droit d'habitation gratuit, royautés AVS ctb  - ID1455</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="penAliObtAVSCtb" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Pension alimentaire obtenue AVS ctb  - ID1454</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de avsAgrCtb</xs:documentation>
+	</xs:annotation>
+	<xs:element name="numCaiAvsAgrCtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Numéro de la caisse de compensation AVS du ctb AGR - ID385</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="natComAvsAgrCtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>NAture de la communication - ID1480</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="rmqAvsAgrCtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Remarque - ID1485</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de avsSalCtb</xs:documentation>
+	</xs:annotation>
+	<xs:element name="numCaiAvsSalCtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Numéro de la caisse de compensation AVS du ctb SAL - ID388</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="rmqAvsSalCtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Remarque - ID1486</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="natComAvsSalCtb" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>NAture de la communication - ID1481</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="salCotAvsCtb" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Salaire cotisant - ID390</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de avsEpo</xs:documentation>
+	</xs:annotation>
+	<xs:element name="drtHabGraRoyAVSEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Droit d'habitation gratuit, royautés AVS épouse  - ID1475</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="penAliObtAVSEpo" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Pension alimentaire obtenue AVS épouse  - ID1474</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de avsAgrEpo</xs:documentation>
+	</xs:annotation>
+	<xs:element name="numCaiAvsAgrEpo" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Numéro de la caisse de compensation AVS epo AGR - ID389</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="natComAvsAgrEpo" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Nature de la communication - ID1483</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="rmqAvsAgrEpo" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Remarque - ID1488</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>éléments de avsSalEpo</xs:documentation>
+	</xs:annotation>
+	<xs:element name="numCaiAvsSalEpo" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Numéro de la caisse de compensation AVS epo SAL - ID386</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="salCotAvsEpo" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Salaire cotisant - ID391</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="natComAvsSalEpo" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Nature de la communication - ID1484</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="rmqAvsSalEpo" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Remarque - ID1489</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- élément de la rubrique Decision taxation (DT)-->
+	<xs:element name="ftnNetImpRpt" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Fortune nette imposable   - ID1190</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revImpRpt" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu imposable   - ID1230</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ftnImpCtn" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Fortune imposable dans le canton   - ID1125</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revDtmTx" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu déterminant pour le taux - ID151</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ftnMdl" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Fortune totale en Suisse et à l'Etranger - ID1725</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revImpCtn" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu imposable dans le canton  - ID1160</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="perFis" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Période fiscale  - ID301</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="coe" type="typPourcent">
+		<xs:annotation>
+			<xs:documentation>Coefficient  - ID399</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="impCanRev" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Impôt cantonal revenu  - ID400</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="impCanFtn" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Impôt cantonal fortune  - ID401</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="impComRev" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Impôt communal revenu  - ID404</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="impComFtn" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Impôt communal fortune   - ID405</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="durAsjCom" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Durée assujettissement communal   - ID406</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revImpCom" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu imposable communal   - ID1230</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ftnImpCom" type="typEntier">
+		<xs:annotation>
+			<xs:documentation>Fortune imposable communale   - ID1190</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="forImpCom" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>For d'imposition communal  - ID1170</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="coeCom" type="typPourcent">
+		<xs:annotation>
+			<xs:documentation>Coefficient communal  - ID411</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="impCanEtComTot" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Impôt cantonal et communal total  - ID420</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="impCanEtComTotPerParEta" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Impôt cantonal et communal total perçu par l'Etat  - ID421</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revImpIfdSui" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu imposable IFD - Imp(ID623)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revImpIFD" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu IFD pour le taux - Tx(ID623)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="impFedDir" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Impôt fédéral direct  - ID450</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="impFedAntOrd" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Impot fédéral anticipé ordinaire   - ID451</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="impFedAntExt" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Impot fédéral anticipé extraordinaire   - ID452</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="impSpeUSA" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Impôt spécial USA   - ID453</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="impForImp" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Imputation forfaitaire d'impôt   - ID454</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="totMntAImp" type="typDecimal">
+		<xs:annotation>
+			<xs:documentation>Total montants à imputer   - ID455</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!--synheseIFD-->
+	<xs:element name="exc38lIFD" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Exclusion montants soumis art 38 LIFD - Tx(ID560)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revNetCalIFD" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu net de départ pour le calcul IFD - Tx(ID561)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="valLocCalIFD" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Valeur locative - diff. entre la valeur IFD et la valeur cantonale - Tx(ID563)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="rdmAssCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Rendements des assurances de capitaux - Tx(ID565)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="dedDblCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Déduction pour double activité des conjoints - Tx(ID568)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fraEttImmCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Total réduction frais d'entretien forfaitaires d'immeubles -10 ans- -Tx(ID569)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="agmCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Augmentation par rapport à l'impôt cantonal - Tx(ID570)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="pctCalIfd" type="typPourcent">
+		<xs:annotation>
+			<xs:documentation>Rapport en % - ID571</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="penAliCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Pension alimentaire payée - Tx(ID572)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="avsCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Cotisations AVS personnes sans activité - Tx(ID575)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="totRedRenCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Total des réductions de 20 et/ou 40% sur les rentes - Tx(ID576)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="affLppCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Contribuable affilié LPP ou OPP3A - Tx(ID577)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="supNonAffLppCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Supplément pour enfant et/ou personne à charge - Tx(ID578)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="supEacPacCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Supplément pour contribuable non affilié LPP ou OPP3A - Tx(ID579)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="DifFraEttImmCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Total différences IFD frais d'entretien d'immeubles - Tx(ID580)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="dedRevCnjCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Déduction spéciale IFD - Tx(ID581)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fraMedCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Frais médicaux importants - Tx(ID582)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="dimCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Total intermédiaire des diminutions - Tx(ID583)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revNetIntCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu net intermédiaire - Tx(ID584)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="donCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Don à des oeuvres d'utilité publique - Tx(ID585)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revNetIntSecCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu net Après déduction des dons - Tx(ID586)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fchFraMedCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Franchise pour frais médicaux - Tx(ID587)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="revNetIFD" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Revenu net IFD - Tx(ID588)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="dedSciCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Déductions sociales - Tx(ID589)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="crtAgmCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Complément à la hausse - ID558</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="crtDimCalIfd" type="typMonetaireEntier">
+		<xs:annotation>
+			<xs:documentation>Complément à la baisse - ID557</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

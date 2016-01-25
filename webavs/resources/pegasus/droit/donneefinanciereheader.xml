@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.droit.DonneeFinanciereHeader">
+		<root-model name="simpleDonneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idVersionDroit"/>
+				<search-field name="forIsCopieFromPreviousVersion" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.isCopieFromPreviousVersion"/>
+			</search-group>
+		</search-definition>
+		
+		<!--  recherche des df pour modification de la date -->
+		<search-definition name="dfForModificationDateCMS">
+			<search-group operator="AND">
+					<search-field name="forIdEntityGroupIn" operation="IN" field-ref="simpleDonneeFinanciereHeader.idEntityGroup"/>
+					<search-literal>
+						<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+						<declare-model name="donneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+						<![CDATA[ 
+							#{simpleDonneeFinanciereHeader.isSupprime} = 2 AND
+							#{simpleDonneeFinanciereHeader.idVersionDroit} =
+								(
+									select MAX( #{versionDroit.idVersionDroit} ) from @{versionDroit} 
+										inner join  @{donneeFinanciereHeader} on ( #{versionDroit.idVersionDroit} = #{donneeFinanciereHeader.idVersionDroit} )
+										where #{simpleDonneeFinanciereHeader.idEntity} = #{donneeFinanciereHeader.idEntity}
+											and #{versionDroit.noVersion} <= ${forNumeroVersion:versionDroit.noVersion}
+								)
+						 ]]>
+					</search-literal>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="checkSuperpositionPeriodes">
+			<search-group operator="AND">
+					<search-field name="forIdEntityGroup" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idEntityGroup"/>
+					<search-field name="forIdEntity" operation="NOT_EQUALS" field-ref="simpleDonneeFinanciereHeader.idEntity"/>
+					<search-field name="forIdDonneeFinanciereHeader" operation="NOT_EQUALS" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
+					<search-literal>
+						<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+						<declare-model name="donneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+						<![CDATA[ 
+							#{simpleDonneeFinanciereHeader.isSupprime} = 2 AND
+							#{simpleDonneeFinanciereHeader.idVersionDroit} =
+								(
+									select MAX( #{versionDroit.idVersionDroit} ) from @{versionDroit} 
+										inner join  @{donneeFinanciereHeader} on ( #{versionDroit.idVersionDroit} = #{donneeFinanciereHeader.idVersionDroit} )
+										where #{simpleDonneeFinanciereHeader.idEntity} = #{donneeFinanciereHeader.idEntity}
+											and #{versionDroit.noVersion} <= ${forNumeroVersion:versionDroit.noVersion}
+								)
+						 ]]>
+					</search-literal>
+				
+				<search-group operator="OR">					
+					<search-group operator="AND">					
+						<search-field name="forDateDebutCheckPeriode" operation="LESS_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateDebutCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+							<search-field name="forDateDebutCheckPeriode" operation="NULL" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+						</search-group>
+					</search-group>
+					
+					<search-group operator="AND">
+						<search-field name="forDateFinCheckPeriode" operation="LESS_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateFinCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+							<search-field name="forDateFinCheckPeriode" operation="NULL" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+						</search-group>				
+					</search-group>
+					
+					<search-group operator="AND">					
+						<search-field name="forDateDebutCheckPeriode" operation="LESS_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateFinCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+							<search-field name="forDateFinCheckPeriode" operation="NULL" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+						</search-group>
+					</search-group>
+					
+					<search-group operator="AND">					
+						<search-field name="forDateDebutCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateDebut"/>
+						<search-field name="forDateFinCheckPeriode" operation="LESS_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+						<search-field name="forDateFinCheckPeriode" operation="NOT_NULL" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="forLaprams">
+			<search-group operator="AND">
+				<search-group operator="OR">					
+					<search-group operator="AND">					
+						<search-field name="forDateDebutCheckPeriode" operation="LESS_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateDebutCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+							<search-field name="forDateDebutCheckPeriode" operation="NULL" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+						</search-group>
+					</search-group>
+					
+					<search-group operator="AND">
+						<search-field name="forDateFinCheckPeriode" operation="LESS_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateFinCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+							<search-field name="forDateFinCheckPeriode" operation="NULL" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+						</search-group>				
+					</search-group>
+					
+					<search-group operator="AND">					
+						<search-field name="forDateDebutCheckPeriode" operation="LESS_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateFinCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+							<search-field name="forDateFinCheckPeriode" operation="NULL" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+						</search-group>
+					</search-group>
+					
+					<search-group operator="AND">					
+						<search-field name="forDateDebutCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateDebut"/>
+						<search-field name="forDateFinCheckPeriode" operation="LESS_OR_EQUALS" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+						<search-field name="forDateFinCheckPeriode" operation="NOT_NULL" field-ref="simpleDonneeFinanciereHeader.dateFin"/>
+					</search-group>
+				</search-group>
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="donneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+					<![CDATA[ 
+					    #{simpleDonneeFinanciereHeader.isSupprime} = 2 AND
+						#{simpleDonneeFinanciereHeader.idVersionDroit} =
+							(
+								select MAX( #{versionDroit.idVersionDroit} ) from @{versionDroit} 
+									inner join  @{donneeFinanciereHeader} on ( #{versionDroit.idVersionDroit} = #{donneeFinanciereHeader.idVersionDroit} )
+									where #{simpleDonneeFinanciereHeader.idEntity} = #{donneeFinanciereHeader.idEntity}
+										and #{versionDroit.noVersion} <= ${forNumeroVersion:versionDroit.noVersion}
+					    				and #{versionDroit.idDroit} = ${forIdDroit:versionDroit.idDroit}
+										
+										 
+							)
+					 ]]>
+				</search-literal>				
+			</search-group>
+		</search-definition>		
+		
+		<order-by name="byDateDebut">
+			<order-field field-ref="simpleDonneeFinanciereHeader.dateDebut" order="DESC"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

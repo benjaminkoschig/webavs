@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.caissemaladie.AffiliationCaisseMaladieSimpleModel">
+		<table name="PT_CAISSES_MALADIES" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="Id de la caisse maladie" />
+			<field name="idTravailleur" column="ID_PT_TRAVAILLEURS" type="NUMERIC"
+				comment="id du travailleur" />
+			<field name="idPosteTravail" column="ID_PT_POSTES_TRAVAILS" type="NUMERIC"
+				comment="id du poste travail" />	
+			<field name="idCaisseMaladie" column="ID_TIADMIP" type="NUMERIC"
+				comment="id de l'administration correspondant à la caisse maladie" />
+			<field name="moisDebut" column="MOIS_DEBUT" type="NUMERIC"
+				comment="mois de début d'affiliation" />
+			<field name="moisFin" column="MOIS_FIN" type="NUMERIC"
+				comment="mois de fin d'affiliation" />
+			<field name="dateDebutAnnonce" column="DATE_DEBUT_ANNONCE" type="DATE"
+				comment="date à laquelle le début de l'affiliation a été annoncée" />
+			<field name="dateFinAnnonce" column="DATE_FIN_ANNONCE" type="DATE"
+				comment="date à laquelle la fin de l'affiliation a été annoncée" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forIdTravailleur" field-ref="idTravailleur" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="id" />
+		</order-by>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+	</simple-model>
+</model-mapping>

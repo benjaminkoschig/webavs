@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<model-mapping import="amal/revenu/simplerevenu.xml"/>
+	<model-mapping import="amal/revenu/simplerevenucontribuable.xml"/>	
+	<model-mapping import="amal/revenu/simplerevenusourcier.xml"/>
+	<model-mapping import="amal/revenu/simplerevenuhistorique.xml"/>
+	<model-mapping import="amal/revenu/simplerevenudeterminant.xml"/>
+	<model-mapping import="amal/revenu/revenucontribuablecomplex.xml"/>
+	<model-mapping import="amal/revenu/revenusourciercomplex.xml"/>
+	<model-mapping import="amal/revenu/revenu.xml"/>
+	<model-mapping import="amal/revenu/revenuhistorique.xml"/>
+	<model-mapping import="amal/revenu/revenufullcomplex.xml"/>
+	<model-mapping import="amal/revenu/revenuhistoriquecomplex.xml"/>
+</model-mapping>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.demande.Demande">
+		<root-model name="simpleDemande" model-ref="ch.globaz.perseus.business.models.demande.SimpleDemande"/>
+		<linked-model name="dossier" model-ref="ch.globaz.perseus.business.models.dossier.Dossier" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="dossier.idDossier" operation="EQUALS" field-ref="simpleDemande.idDossier"/>
+			</join-group>		
+		</linked-model>
+		<linked-model name="situationFamiliale" model-ref="ch.globaz.perseus.business.models.situationfamille.SituationFamiliale" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleSituationFamiliale.idSituationFamilliale" operation="EQUALS" field-ref="simpleDemande.idSituationFamiliale"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="likeNom" operation="LIKE" field-ref="dossier.demandePrestation.personneEtendue.tiers.designationUpper1"/>  
+				<search-field name="likePrenom" operation="LIKE" field-ref="dossier.demandePrestation.personneEtendue.tiers.designationUpper2"/>  
+				<search-field name="likeNss" operation="LIKE" field-ref="dossier.demandePrestation.personneEtendue.personneEtendue.numAvsActuel"/>  
+				<search-field name="forCsSexe" operation="EQUALS" field-ref="dossier.demandePrestation.personneEtendue.personne.sexe"/>
+				<search-field name="forCsCaisse" operation="EQUALS" field-ref="simpleDemande.csCaisse"/>
+				<search-field name="forCsEtatDemande" operation="EQUALS" field-ref="simpleDemande.csEtatDemande"/>
+				<search-field name="notCsEtatDemande" operation="NOT_EQUALS" field-ref="simpleDemande.csEtatDemande"/>
+				<search-field name="forCsTypeDemande" operation="EQUALS" field-ref="simpleDemande.typeDemande"/>
+				<search-field name="forDateNaissance" operation="EQUALS" field-ref="dossier.demandePrestation.personneEtendue.personne.dateNaissance"/>
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="simpleDemande.idDossier"/>
+				<search-field name="forIdGestionnaire" operation="EQUALS" field-ref="simpleDemande.idGestionnaire"/>
+				<search-field name="forIdSituationFamiliale" operation="EQUALS" field-ref="simpleDemande.idSituationFamiliale"/>
+				<search-field name="betweenDateRevisionDebut" operation="GREATER_OR_EQUALS" field-ref="dossier.dossier.dateRevision"/>
+				<search-field name="betweenDateRevisionFin" operation="LESS" field-ref="dossier.dossier.dateRevision"/>
+				<search-field name="betweenDateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleDemande.dateDebut"/>
+				<search-field name="betweenDateFin" operation="LESS" field-ref="simpleDemande.dateFin"/>
+				<search-field name="betweenDateDepotDebut" operation="GREATER_OR_EQUALS" field-ref="simpleDemande.dateDepot"/>
+				<search-field name="betweenDateDepotFin" operation="LESS" field-ref="simpleDemande.dateDepot"/>
+				<search-field name="forNotIdDemande" operation="NOT_EQUALS" field-ref="simpleDemande.idDemande" />
+				<search-field name="forIsDemandeIp" operation="EQUALS" field-ref="simpleDemande.permisB"/>
+				<search-field name="forNumeroOFS" operation="EQUALS" field-ref="simpleDemande.numeroOFS"/>
+					
+				<search-group operator="OR">
+					<search-group operator="AND">
+						<search-field name="betweenAgeRetraiteRequerantDebut" operation="GREATER_OR_EQUALS" field-ref="situationFamiliale.requerant.membreFamille.personneEtendue.personne.dateNaissance"/>
+						<search-field name="betweenAgeRetraiteRequerantFin" operation="LESS" field-ref="situationFamiliale.requerant.membreFamille.personneEtendue.personne.dateNaissance"/>
+						<search-field name="forCsSexeRequerant" operation="EQUALS" field-ref="situationFamiliale.requerant.membreFamille.personneEtendue.personne.sexe"/>
+					</search-group>
+					<search-group operator="AND">
+						<search-field name="betweenAgeRetraiteConjointDebut" operation="GREATER_OR_EQUALS" field-ref="situationFamiliale.conjoint.membreFamille.personneEtendue.personne.dateNaissance"/>
+						<search-field name="betweenAgeRetraiteConjointFin" operation="LESS" field-ref="situationFamiliale.conjoint.membreFamille.personneEtendue.personne.dateNaissance"/>
+						<search-field name="forCsSexeConjoint" operation="EQUALS" field-ref="situationFamiliale.conjoint.membreFamille.personneEtendue.personne.sexe"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withDateValableForIdDossier">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="simpleDemande.idDossier" />
+				<search-field name="forNotIdDemande" operation="NOT_EQUALS" field-ref="simpleDemande.idDemande" />
+				<search-field name="forCsEtatDemande" operation="EQUALS" field-ref="simpleDemande.csEtatDemande"/>
+				<search-group operator="AND">
+					<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="simpleDemande.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="simpleDemande.dateFin"/>
+						<search-field name="forDateValable" operation="NULL" field-ref="simpleDemande.dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		
+		<!--Date fin à null 
+			ou date fin plus petite ou égale au 31.12.2011 
+			et plus grande ou égale au 01.01.2011 
+			
+			ou date début plus grande ou égale au 01.01.2011 
+			et plus petite ou égale au 31.12.2011-->
+			
+		  <search-definition name="withAnneeValable">
+			<search-group operator="AND">
+				<search-field name="forCsEtatDemande" operation="EQUALS" field-ref="simpleDemande.csEtatDemande"/>
+				<search-field name="forCsCaisse" operation="EQUALS" field-ref="simpleDemande.csCaisse"/>
+				<search-field name="forIsDemandeIp" operation="EQUALS" field-ref="simpleDemande.permisB"/>
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="simpleDemande.idDossier"/>
+				<search-group operator="OR">
+					<search-field name="forDateFin" operation="NULL" field-ref="simpleDemande.dateFin" />
+					<search-group operator="AND">
+						<search-field name="forDateFin" operation="LESS_OR_EQUALS" field-ref="simpleDemande.dateFin"/>
+						<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleDemande.dateFin"/>
+					</search-group>
+				</search-group>
+				
+				<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleDemande.dateDebut"/>
+				<search-field name="forDateFin" operation="LESS_OR_EQUALS" field-ref="simpleDemande.dateDebut"/>
+			</search-group>
+		</search-definition>
+		
+		
+		<search-definition name="withAnneeValableForIdDossier">
+			<search-group operator="AND">
+				<search-field name="forCsEtatDemande" operation="EQUALS" field-ref="simpleDemande.csEtatDemande"/>
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="simpleDemande.idDossier" />
+				<search-field name="forCsTypeDemande" operation="EQUALS" field-ref="simpleDemande.typeDemande"/>
+				<search-field name="forDateFin" operation="LESS_OR_EQUALS" field-ref="simpleDemande.dateDebut"/>
+				<search-group operator="OR">
+					<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleDemande.dateFin"/>
+					<search-field name="forDateFin" operation="NULL" field-ref="simpleDemande.dateFin" />
+				</search-group>		
+			</search-group>
+		</search-definition>
+		
+		
+		<search-definition name="withoutDateFin">
+			<search-group operator="AND">
+				<search-field name="forCsEtatDemande" operation="EQUALS" field-ref="simpleDemande.csEtatDemande"/>
+				<search-field name="forDateFin" operation="NULL" field-ref="simpleDemande.dateFin" />
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withOnlyDateFin">
+			<search-group operator="AND">
+				<search-field name="forCsEtatDemande" operation="EQUALS" field-ref="simpleDemande.csEtatDemande"/>
+				<search-field name="forDateFin" operation="EQUALS" field-ref="simpleDemande.dateFin" />
+			</search-group>
+		</search-definition>
+		
+		<order-by name="nomPrenom">
+			<order-field field-ref="dossier.demandePrestation.personneEtendue.tiers.designationUpper1"/>
+			<order-field field-ref="dossier.demandePrestation.personneEtendue.tiers.designationUpper2"/>
+			<order-field field-ref="simpleDemande.csEtatDemande"/>
+			<order-field field-ref="simpleDemande.dateDecisionValidation" order="DESC"/>
+			<order-field field-ref="simpleDemande.timeDecisionValidation" order="DESC"/>
+		</order-by>
+		
+		<order-by name="dateTimeDecisionDesc">
+			<order-field field-ref="simpleDemande.dateDecisionValidation" order="DESC"/>
+			<order-field field-ref="simpleDemande.timeDecisionValidation" order="DESC"/>
+		</order-by>
+		
+		<order-by name="dateFinAndDateTimeDecisionDesc">
+			<order-field field-ref="simpleDemande.dateFin" order ="DESC"/>
+			<order-field field-ref="simpleDemande.dateDecisionValidation" order="DESC"/>
+			<order-field field-ref="simpleDemande.timeDecisionValidation" order="DESC"/>
+		</order-by>
+		
+		<order-by name="dateDebutAsc">
+			<order-field field-ref="simpleDemande.dateDebut" order="ASC"/>
+		</order-by>
+		
+		<order-by name="ordreAlphabetiqueNom">
+			<order-field field-ref="dossier.demandePrestation.personneEtendue.tiers.designation1" order="ASC"/>
+		</order-by>
+		
+		<order-by name="dateDebutAscNomAsc">
+			<order-field field-ref="dossier.demandePrestation.personneEtendue.tiers.designation1" order="ASC"/>
+			<order-field field-ref="simpleDemande.dateDebut" order="ASC"/>
+		</order-by>
+		
+		<order-by name="ordreByDateFinAndIdDossierDesc">
+			<order-field field-ref="simpleDemande.dateFin" order="DESC"/>
+			<order-field field-ref="dossier.dossier.idDossier" order="DESC"/>
+		</order-by>
+		
+		<order-by name="dateDebutDesc">
+			<order-field field-ref="simpleDemande.dateDebut" order="DESC"/>
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+	<!-- 	Menu principal Orion  	-->
+	<menu id="EBMenuPrincipal">
+		<label refId="MENU_PRINCIPAL"/>
+		<nodes>
+			<node>
+				<label refId="MENU_VALIDATION_SWISSDEC"/>
+				<action command="/orion" responseTarget="fr_main">
+					<parameter name="userAction" value="orion.swissdec.pucsValidationList.afficher"/>
+				</action>
+			</node>
+			<node>
+				<label refId="LIST_PUCS_FILE"/>
+				<action command="/orion" responseTarget="fr_main">
+					<parameter name="userAction" value="orion.pucs.pucsFile.chercher"/>
+				</action>
+			</node>
+			<node open="yes">
+				<label refId="MENU_DAN" />
+				<nodes>
+					<node>
+						<label refId="DAN_PRE_REMPLISSAGE"/>
+						<action command="/orion" responseTarget="fr_main">
+							<parameter name="userAction" value="orion.dan.danPreRemplissage.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="DAN_PRE_REMPLISSAGE_MASSE"/>
+						<action command="/orion" responseTarget="fr_main">
+							<parameter name="userAction" value="orion.dan.danPreRemplissageMasse.afficher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			
+			<node>
+				<label refId="MENU_LISTE_DES_CONTACTS"/>
+				<action command="/orion" responseTarget="fr_main">
+						<parameter name="userAction" value="orion.partnerWeb.listeDesContacts.afficher" />
+				</action>
+			</node>
+			<node>
+			    <label refId="MENU_LISTE_DES_SALAIRES"/>
+				<action command="/orion" responseTarget="fr_main">
+						<parameter name="userAction" value="orion.partnerWeb.listeDesSalaires.afficher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_ACOMPTES_PREVISION"/>
+				<action command="/orion" responseTarget="fr_main">
+						<parameter name="userAction" value="orion.acompte.previsionAcompte.afficher" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Menu Option vide -->
+	<menu id="EBMenuVide">
+		<label refId="MENU_OPTIONS"/>
+	</menu>
+</menus>

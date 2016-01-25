@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.impotsource.SimpleTrancheSalaire">
+		<description>Table des tranches salaires</description>
+		<table name="PFTRASAL" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idTrancheSalaire" column="JHIDSA" comment="Clé primaire de la table"/>
+			<field name="salaireBrutInferieur" type="NUMERIC" column="JHSAIN" mandatory="true" comment="Salaire brut inférieur" />
+			<field name="salaireBrutSuperieur" type="NUMERIC" column="JHSASU" mandatory="true" comment="Salaire brut supérieur"/>
+			<field name="anneeDebut" type="STRING" column="JHANDE" mandatory="true" comment="Année de début de la tranche de salaire"/>
+			<field name="anneeFin" type="STRING" column="JHANFI" mandatory="false" comment="Année de fin de la tranche de salaire"/>
+		</fields>
+		
+		<search-definition name="default">
+	    	<search-group operator="AND">
+			<search-field name="forAnnee" operation="LESS_OR_EQUALS" field-ref="anneeDebut"/>
+				<search-group operator="OR">
+					<search-field name="forAnnee" operation="GREATER_OR_EQUALS" field-ref="anneeFin"/>
+					<search-field name="forAnnee" operation="NULL" field-ref="anneeFin"/>
+				</search-group>
+			</search-group>
+		</search-definition>
+		<order-by>
+			<order-field field-ref="salaireBrutInferieur" order="ASC" />
+		</order-by>
+	</simple-model>
+</model-mapping>

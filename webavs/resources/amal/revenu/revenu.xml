@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.revenu.Revenu">
+
+		<select-fields>
+			<select-field name="idRevenu" field-ref="simpleRevenu.idRevenu" />
+			<select-field name="idRevenuHistorique" field-ref="simpleRevenu.idRevenuHistorique" />
+			<select-field name="idContribuable" field-ref="simpleRevenu.idContribuable" />
+			<select-field name="anneeTaxation" field-ref="simpleRevenu.anneeTaxation"/>
+			<select-field name="typeSource" field-ref="simpleRevenu.typeSource"/>
+			<select-field name="typeTaxation" field-ref="simpleRevenu.typeTaxation" />
+			<select-field name="dateAvisTaxation" field-ref="simpleRevenu.dateAvisTaxation" />
+			<select-field name="revenuImposable" field-ref="simpleRevenuContribuable.revenuImposable" />
+			<select-field name="revenuImposableSourcier" field-ref="simpleRevenuSourcier.revenuImposable" />
+			<select-field name="fortuneImposable" field-ref="simpleRevenuContribuable.fortuneImposable" />
+			<select-field name="etatCivil" field-ref="simpleRevenu.etatCivil" />
+			<select-field name="nbEnfants" field-ref="simpleRevenu.nbEnfants" />
+			<select-field name="nbEnfantSuspens" field-ref="simpleRevenu.nbEnfantSuspens" />
+			<select-field name="persChargeEnf" field-ref="simpleRevenuContribuable.persChargeEnf" />
+			<select-field name="isSourcier" field-ref="simpleRevenu.isSourcier" />
+			<select-field name="typeRevenu" field-ref="simpleRevenu.typeRevenu" />
+			<select-field name="revDetUnique" field-ref="simpleRevenu.revDetUnique" />
+			<select-field name="revDetUniqueOuiNon" field-ref="simpleRevenu.revDetUniqueOuiNon" />
+		</select-fields>
+
+		<root-model name="simpleRevenu" model-ref="ch.globaz.amal.business.models.revenu.SimpleRevenu" select-fields="false"/>
+
+		<linked-model name="simpleRevenuContribuable" model-ref="ch.globaz.amal.business.models.revenu.SimpleRevenuContribuable" select-fields="false" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idRevenu" operation="EQUALS" field-ref="idRevenu" />
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleRevenuSourcier" model-ref="ch.globaz.amal.business.models.revenu.SimpleRevenuSourcier" select-fields="false" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idRevenu" operation="EQUALS" field-ref="idRevenu" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdContribuable" field-ref="simpleRevenu.idContribuable" operation="EQUALS" />		
+				<search-field name="forIdRevenu" field-ref="simpleRevenu.idRevenu" operation="EQUALS" />		
+				<search-field name="forAnneeTaxation" field-ref="simpleRevenu.anneeTaxation" operation="EQUALS" />		
+				<search-field name="forTypeTaxation" field-ref="simpleRevenu.typeTaxation" operation="EQUALS" />
+				<search-field name="inTypeTaxation" field-ref="simpleRevenu.typeTaxation" operation="IN" />
+				<search-field name="forTypeRevenu" field-ref="simpleRevenu.typeRevenu" operation="IN" />
+				<search-field name="forDateAvisTaxation" field-ref="simpleRevenu.dateAvisTaxation" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="repriseRecalculs">
+			<search-group operator="AND">
+				<search-field name="forIdContribuable" field-ref="simpleRevenu.idContribuable" operation="EQUALS" />		
+				<search-field name="forIdRevenu" field-ref="simpleRevenu.idRevenu" operation="NOT_EQUALS" />		
+				<search-field name="forAnneeTaxation" field-ref="simpleRevenu.anneeTaxation" operation="EQUALS" />
+				<search-field name="forTypeTaxation" field-ref="simpleRevenu.typeTaxation" operation="EQUALS" />
+				<search-field name="inTypeTaxation" field-ref="simpleRevenu.typeTaxation" operation="IN" />
+				<search-field name="forTypeRevenu" field-ref="simpleRevenu.typeRevenu" operation="IN" />
+				<search-field name="forDateAvisTaxation" field-ref="simpleRevenu.dateAvisTaxation" operation="EQUALS" />		
+			</search-group>
+		</search-definition>
+
+		<order-by name="default">
+			<order-field field-ref="anneeTaxation" order="DESC"/>
+			<order-field field-ref="idRevenu" order="DESC"/>
+		</order-by>
+		
+		<order-by name="orderByAnneeTaxationIdRevenu">
+			<order-field field-ref="anneeTaxation" order="DESC"/>
+			<order-field field-ref="idRevenu" order="DESC"/>
+		</order-by>
+
+
+	</complexe-model>
+</model-mapping>

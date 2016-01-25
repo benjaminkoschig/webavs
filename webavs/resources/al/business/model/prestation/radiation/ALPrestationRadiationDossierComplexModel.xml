@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.al.business.models.prestation.radiation.PrestationRadiationDossierComplexModel">
+		<root-model name="dossierComplexModel" model-ref="ch.globaz.al.business.models.dossier.DossierComplexModel" select-fields="true"/>
+		
+		<linked-model name="entetePrestationModel" model-ref="ch.globaz.al.business.models.prestation.EntetePrestationModel" join-type="INNER" select-fields="true">
+			<join-group operator="AND">
+				<join-field name="idDossier" field-ref="dossierComplexModel.dossierModel.idDossier"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition name="dernierePrestation">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="dossierComplexModel.dossierModel.idDossier"/>
+				<search-field name="forEtatDossier" operation="EQUALS" field-ref="dossierComplexModel.dossierModel.etatDossier"/>
+				<search-field name="forPeriodeA" operation="LESS_OR_EQUALS" field-ref="entetePrestationModel.periodeA"/>
+				<search-literal>
+					<declare-model name="prestation" model-ref="ch.globaz.al.business.models.prestation.EntetePrestationModel"/>
+					<![CDATA[ 
+						#{entetePrestationModel.periodeA} =
+							(
+								select MAX( #{prestation.periodeA} ) from @{prestation} 
+									where #{prestation.idDossier} = #{dossierComplexModel.dossierModel.idDossier}
+	
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.syndicat.AffiliationSyndicatComplexModel">
+		
+		<root-model name="affiliationSyndicatSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.syndicat.AffiliationSyndicatSimpleModel" />
+
+		<linked-model name="travailleurComplexModel"
+			model-ref="ch.globaz.vulpecula.business.models.travailleur.TravailleurComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="travailleurSimpleModel.id"
+					operation="EQUALS" field-ref="affiliationSyndicatSimpleModel.idTravailleur" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="administrationComplexModel"
+			model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS"
+					field-ref="affiliationSyndicatSimpleModel.idSyndicat" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="affiliationSyndicatSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdTravailleur"
+					field-ref="affiliationSyndicatSimpleModel.idTravailleur" operation="EQUALS" />
+				<search-field name="forIdSyndicat" field-ref="affiliationSyndicatSimpleModel.idSyndicat" operation="EQUALS" />
+				<search-field name="forDateDebutBeforeOrEquals" field-ref="affiliationSyndicatSimpleModel.dateDebut" operation="LESS_OR_EQUALS" />
+				<search-field name="forDateDebutAfterOrEquals" field-ref="affiliationSyndicatSimpleModel.dateDebut" operation="GREATER_OR_EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="searchForDateFinIsNull">
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="affiliationSyndicatSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdTravailleur"
+					field-ref="affiliationSyndicatSimpleModel.idTravailleur" operation="EQUALS" />
+				<search-field name="forIdSyndicat" field-ref="affiliationSyndicatSimpleModel.idSyndicat" operation="EQUALS" />
+				<search-field name="forDateDebutBeforeOrEquals" field-ref="affiliationSyndicatSimpleModel.dateDebut" operation="LESS_OR_EQUALS" />
+				<search-field name="forDateDebutAfterOrEquals" field-ref="affiliationSyndicatSimpleModel.dateDebut" operation="GREATER_OR_EQUALS" />
+				<search-group operator="AND">
+					<search-group operator="OR">
+						<search-field name="forDateFinAfterOrEquals" field-ref="affiliationSyndicatSimpleModel.dateFin" operation="GREATER_OR_EQUALS" />
+						<search-field name="forDateFinIsNull" field-ref="affiliationSyndicatSimpleModel.dateFin" operation="NULL" />
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="dateDebutDesc">
+			<order-field field-ref="affiliationSyndicatSimpleModel.dateDebut" order="DESC" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

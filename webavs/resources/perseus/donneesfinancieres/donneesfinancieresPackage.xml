@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="perseus/donneesfinancieres/simpleDonneeFinanciere.xml"/>
+	<model-mapping import="perseus/donneesfinancieres/donneeFinanciere.xml"/>
+	<model-mapping import="perseus/donneesfinancieres/revenu.xml"/>
+	<model-mapping import="perseus/donneesfinancieres/fortune.xml"/>
+	<model-mapping import="perseus/donneesfinancieres/dette.xml"/>
+	<model-mapping import="perseus/donneesfinancieres/depenseReconnue.xml"/>
+	<model-mapping import="perseus/donneesfinancieres/simpleDonneeFinanciereSpecialisation.xml"/>
+</model-mapping>

@@ -1,0 +1,1779 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+
+	<!-- ************** -->
+	<!-- Menu Principal -->
+	<!-- ************** -->
+	<menu id="CA-MenuPrincipal">
+		<label defaultValue="Menu">
+			<language iso="de">Hauptmenü</language>
+		</label>
+		<nodes>
+			<node>
+				<label defaultValue="Aperçu des comptes">
+					<language iso="de">Anzeige der Konti</language>
+				</label>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuComptes.chercher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Aperçu des journaux">
+					<language iso="de">Anzeige der Journale</language>
+				</label>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuJournal.chercher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Comptes courants">
+					<language iso="de">Kontokorrenten</language>
+				</label>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuListeComptesCourants.chercher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Intérêts moratoires">
+					<language iso="de">Verzugszinsen</language>
+				</label>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.interets.gestionInterets.chercher" />
+				</action>
+			</node>
+
+			<node open="yes">
+				<label defaultValue="Traitements">
+					<language iso="de">Verarbeitungen</language>
+				</label>
+				<nodes>
+					<node>
+						<label defaultValue="Ordres groupés">
+							<language iso="de">Sammelaufträge</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.ordres.ordresGroupes.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="BVR">
+							<language iso="de">ESR</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.process.bvr.afficher" />
+						</action>
+					</node>
+					<node id="paiement_etranger" active="no">
+						<label defaultValue="Paiement étranger">
+							<language iso="de">Ausländische Zahlung</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.process.paiementEtranger.afficher" />
+						</action>
+					</node>
+					<node id="contentieux">
+						<label defaultValue="Contentieux">
+							<language iso="de">Rechtspflege</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.process.contentieux.afficher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Annuler soldes minimes">
+							<language iso="de">Annullierung geringfügige Saldi</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.process.annulerSoldeSection.afficher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Avances" refId="MENU_AVANCES"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.process.processAvance.afficher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Importation d'opérations">
+							<language iso="de">Importierung von Operationen</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.process.processImportOperations.afficher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Générer qualité débiteur">
+							<language iso="de">Schuldnerqualität generieren</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.process.genererQualiteDebiteur.afficher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Remboursement automatique">
+							<language iso="de">Automatische Rückerstattung</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.process.remboursementAutomatique.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+
+			<node open="yes">
+				<label defaultValue="Lettrage de masse">
+					<language iso="de">Massenbeschriftung</language>
+				</label>
+				<nodes>
+					<node>
+						<label defaultValue="Plages de lettrage">
+							<language iso="de">Beschriftungsbereich</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.lettrage.plages.definirPlages"/>
+						</action>
+					</node>
+
+
+					<node>
+						<label defaultValue="Lettrage des comptes">
+							<language iso="de">Beschriftung der Konten</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+								<parameter name="userAction" value="osiris.lettrage.main.display"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+
+			<node open="no">
+				<label refId="RECOUVREMENTS_MENU_RECOUVREMENT"/>
+				<nodes>
+					<node>
+						<label refId="LISTE_PLANS"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.recouvrement.planRecouvrement.chercher" />
+						</action>
+					</node>
+					<node>
+						<label refId="LISTE_PLANS_NON_RESPECTES"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.recouvrement.planRecouvrementNonRespectes.chercher" />
+						</action>
+					</node>
+					<node>
+						<label refId="IMPRIMER_LISTE_PLANS_NON_RESPECTES"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.process.planRecouvrementNonRespectes.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+
+			<node open="no" id="retours">
+				<label refId="MENU_RETOURS"/>
+				<nodes>
+					<node>
+						<label refId="MENU_RETOURS_LOTS"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.retours.lotsRetours.chercher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_RETOURS" />
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.retours.retours.chercher" />
+						</action>
+					</node>
+					<node id="retours_comptabilisation">
+						<label refId="MENU_RETOURS_COMPTABILISATION"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.process.comptabiliserRetours.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+
+
+			<node open="yes">
+				<label defaultValue="Listes">
+					<language iso="de">Listen</language>
+				</label>
+				<nodes>
+					<node open="no">
+					<label defaultValue="Compte annexe">
+						<language iso="de">Abrechnungs-konto</language>
+					</label>
+						<nodes>
+							<node>
+								<label defaultValue="Soldes par compte annexe">
+									<language iso="de">Saldi nach Abrechnungskonto</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listSoldeCompteAnnexe.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Soldes par compte annexe (Excel)">
+									<language iso="de">Saldi nach Abrechnungskonto (Excel)</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listExportSoldeCACC.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Extraits des comptes annexes">
+									<language iso="de">Auszüge der Abrechnungskonti</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listResumeCompteAnnexe.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Comptes annexes à lettrer">
+									<language iso="de">Interne Ausgleichsliste</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listComptesALettrer.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Comptes annexes verrouillés (Excel)">
+									<language iso="de">Gesperrten Abrechnungskonti (Excel)</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listComptesAnnexesVerrouilles.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Comptes annexes avec motif de blocage du contentieux">
+									<language iso="de">Abrechnungskont0 mit Blockierungsgrung der Ausstände</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listComptesAnnexesMotifBlocageContentieux.afficher" />
+								</action>
+							</node>
+						</nodes>
+					</node>
+					<node open="no">
+						<label refId="SECTION"/>
+						<nodes>
+							<node>
+								<label defaultValue="Bulletins de soldes">
+									<language iso="de">Saldo ESR</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listBulletinSolde.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Soldes par section">
+									<language iso="de">Saldi nach Sektion</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listSoldeSection.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Sections ouvertes (Excel)">
+									<language iso="de">Offene Sektionen (Excel)</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listSectionsOuvertes.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Sections ouvertes après radiation (Excel)">
+									<language iso="de">Offene Sektionen (Excel)</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listSectionsOuvertesApresRadiation.afficher" />
+								</action>
+							</node>
+						</nodes>
+					</node>
+					<node open="no">
+						<label refId="CONTENTIEUX"/>
+						<nodes>
+							<node>
+								<label defaultValue="Sections bloquées du contentieux">
+									<language iso="de">Sektionen mit blockierten Ausständen</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listSectionsBloqueesContentieux.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Taxes de sommation en suspens (Excel)">
+									<language iso="de">Ausstehende Mahngebühren (Excel)</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listTaxesSommationEnSuspens.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Rentiers et irrécouvrables (Excel)">
+									<language iso="de">Rentner und Abschreibungen (Excel)</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listIrrecouvrable.afficher" />
+								</action>
+							</node>
+							<node id="dossiers_etape">
+								<label defaultValue="Dossiers pour l'étape">
+									<language iso="de">Dossier für die Etappe</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listDossiersEtape.afficher"/>
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Faillites (Excel)">
+									<language iso="de">Konkurse (Excel)</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listFailliteExcel.afficher" />
+								</action>
+							</node>
+						</nodes>
+					</node>
+					<node open="no">
+						<label defaultValue="Autres">
+							<language iso="de">Andere</language>
+						</label>
+						<nodes>
+							<node>
+								<label defaultValue="Intérêts moratoires">
+									<language iso="de">Verzugszinsen</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listInteretMoratoire.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Récapitulative par rubrique">
+									<language iso="de">Zusammenfassung nach Rubrik</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listRecapParRubriques.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Récapitulative par rubrique (Excel)">
+									<language iso="de">Zusammenfassung nach Rubrik (Excel)</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listRecapParRubriquesExcel.afficher" />
+								</action>
+							</node>
+							<node>
+								<label refId="SUIVI_PAIEMENTS_AUTRES_TACHES"/>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listSuiviPaiementsAutresTaches.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Soldes par compte courant (Excel)">
+									<language iso="de">Saldi per Kontokorrent (Excel)</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listSoldesParCompteCourant.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Cotisations arriérées (Excel)">
+									<language iso="de">Rückständige Beiträge (Excel)</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listCotisationsImpayees.afficher" />
+								</action>
+							</node>
+							<node>
+								<label refId="LIST_NOMINATIVE_FSFP"/>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listNominativeFsfp.afficher" />
+								</action>
+							</node>
+							<node>
+								<label refId="LIST_DECOMPTE_ANNUEL_FONDS"/>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listDecompteAnnuelFonds.afficher" />
+								</action>
+							</node>
+							<node>
+								<label refId="LIST_CUMUL_COTISATIONS_PAR_ANNEE"/>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listCumulCotisationsParAnnee.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Analytiques des intérêts (Excel)">
+									<language iso="de">Analyse der Zinsen (Excel)</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listInteretAnalytique.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Liste de concordance des soldes (Excel)">
+									<language iso="de">Liste Versöhnung der Salden (Excel)</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listControleConcordanceSoldesExcel.afficher" />
+								</action>
+							</node>
+						</nodes>
+					</node>
+					<node open="no">
+						<label defaultValue="Stat. OFAS">
+							<language iso="de">BSV Statistik</language>
+						</label>
+						<nodes>
+							<node>
+								<label defaultValue="Stat. OFAS (Excel)">
+									<language iso="de">BSV Statistik (Excel)</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listStatOfas.afficher" />
+								</action>
+							</node>
+						</nodes>
+					</node>
+				</nodes>
+			</node>
+			<node open="no">
+				<label defaultValue="Services">
+					<language iso="de">Dienste</language>
+				</label>
+				<nodes>
+					<node>
+						<label defaultValue="Download"/>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.services.listDirectory.chercher" />
+							<parameter name="dir" value="work"/>
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Rechercher un solde dans les sections">
+							<language iso="de">Suche eines Saldo in den Sektionen</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.services.rechercheMontantSection.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Rechercher un montant dans les opérations">
+							<language iso="de">Suche eines Betrags in den Operationen</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.services.rechercheMontantOperation.chercher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+
+			<node open="no">
+				<label defaultValue="Paramètres">
+					<language iso="de">Einstellungen</language>
+				</label>
+				<nodes>
+					<node>
+						<label defaultValue="Rubriques">
+							<language iso="de">Rubriken</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.comptes.rubrique.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Secteur">
+							<language iso="de">Sektor</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.comptes.secteur.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Types section">
+							<language iso="de">Sektionstypen</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.comptes.typeSection.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Types opération">
+							<language iso="de">Operationstypen</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.comptes.typeOperation.chercher" />
+						</action>
+					</node>
+					<node id="contentieux_etapes">
+						<label defaultValue="Etapes">
+							<language iso="de">Etappen</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.contentieux.etape.chercher" />
+						</action>
+					</node>
+					<node id="contentieux_sequences">
+						<label defaultValue="Séquences contentieux">
+							<language iso="de">Rechtspflege Sequenzen</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.contentieux.sequenceContentieux.chercher" />
+						</action>
+					</node>
+					<node id="catalogue_texte">
+						<label defaultValue="Catalogue de textes">
+							<language iso="de">Textkatalog</language>
+						</label>
+						<action command="/babel" responseTarget="fr_main">
+							<parameter name="userAction" value="babel.cat.document.chercher" />
+							<parameter name="csGroupeDomaines" value="OSIGRPDMCT"/>
+							<parameter name="csGroupeTypesDocuments" value="OSIGRPTDCT"/>
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Taux">
+							<language iso="de">Beitragsatz</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.ventilation.tauxRubriques.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Ventilation">
+							<language iso="de">Gliederung</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.ventilation.vPTypeDeProcedureOrdre.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Roles">
+							<language iso="de">Kontoart</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.comptes.role.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Organes d'exécution">
+							<language iso="de">Ausführungsorgane</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.ordres.organeExecution.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Plan d'intérêt moratoire">
+							<language iso="de">Plan Verzugszinsen</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.interets.planCalculInteret.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Mapping journal des débits">
+							<language iso="de">Mapping Solljournal</language>
+						</label>
+						<action command="/osiris" responseTarget="fr_main">
+							<parameter name="userAction" value="osiris.mapping.journalDebit.chercher" />
+						</action>
+					</node>
+					<node open="no">
+						<label defaultValue="Listes">
+							<language iso="de">Listen</language>
+						</label>
+						<nodes>
+							<node>
+								<label defaultValue="Rubrique">
+									<language iso="de">Rubrik</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listRubrique.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Type section">
+									<language iso="de">Sektionstyp</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listTypeSection.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Type opération">
+									<language iso="de">Operationstyp</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listTypeOperation.afficher" />
+								</action>
+							</node>
+							<node>
+								<label defaultValue="Role">
+									<language iso="de">Kontoart</language>
+								</label>
+								<action command="/osiris" responseTarget="fr_main">
+									<parameter name="userAction" value="osiris.print.listRole.afficher" />
+								</action>
+							</node>
+						</nodes>
+					</node>
+				</nodes>
+			</node>
+
+		</nodes>
+	</menu>
+
+	<!-- ****************************** -->
+	<!-- Menu Option apercu par section -->
+	<!-- ****************************** -->
+	<menu id="CA-ApercuParSectionDossier">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node open="yes">
+				<label refId="OPTIONS_COMPTE_ANNEXE"/>
+				<nodes>
+						<node>
+							<label refId="OPTIONS_COMPTE_ANNEXE" />
+							<action command="/osiris" responseTarget="fr_main">
+								<parameter name="userAction" value="osiris.comptes.apercuComptes.afficher" />
+								<parameter name="id"/>
+								<parameter name="idContentieuxSrc"/>
+								<parameter name="libSequence"/>
+								<parameter name="idAdministrateurSrc"/>
+							</action>
+						</node>
+						<node>
+							<label refId="OPTIONS_SECTION" />
+							<action command="/osiris" responseTarget="fr_main">
+								<parameter name="userAction" value="osiris.comptes.apercuParSection.chercher" />
+								<parameter name="selectedId"/>
+								<parameter name="idContentieuxSrc"/>
+								<parameter name="libSequence"/>
+								<parameter name="idAdministrateurSrc"/>
+							</action>
+						</node>
+						<node>
+							<label refId="OPTIONS_EXTRAIT_DE_COMPTE" />
+							<action command="/osiris" responseTarget="fr_main">
+								<parameter name="userAction" value="osiris.comptes.apercuCompteResume.chercher" />
+								<parameter name="id"/>
+								<parameter name="_sectionEtat" value="1000"/>
+								<parameter name="_triType" value="1000"/>
+								<parameter name="idContentieuxSrc"/>
+								<parameter name="libSequence"/>
+								<parameter name="idAdministrateurSrc"/>
+							</action>
+						</node>
+						<node>
+							<label refId="OPTIONS_IMPR_EXTRAIT_CPT_ANNEXE" />
+							<action command="/osiris" responseTarget="fr_main">
+								<parameter name="userAction" value="osiris.print.listExtraitCompteAnnexe.afficherExtraitCA" />
+								<parameter name="id"/>
+								<parameter name="idContentieuxSrc"/>
+								<parameter name="libSequence"/>
+								<parameter name="idAdministrateurSrc"/>
+							</action>
+						</node>
+						<node>
+							<label refId="OPTIONS_COMPTES_COURANTS" />
+							<action command="/osiris" responseTarget="fr_main">
+								<parameter name="userAction" value="osiris.comptes.apercuComptesCourants.chercher" />
+								<parameter name="id"/>
+								<parameter name="idContentieuxSrc"/>
+								<parameter name="libSequence"/>
+								<parameter name="idAdministrateurSrc"/>
+							</action>
+						</node>
+						<node>
+							<label refId="OPTIONS_COMPTEURS" />
+							<action command="/osiris" responseTarget="fr_main">
+								<parameter name="userAction" value="osiris.comptes.apercuCompteur.chercher" />
+								<parameter name="id"/>
+								<parameter name="idContentieuxSrc"/>
+								<parameter name="libSequence"/>
+								<parameter name="idAdministrateurSrc"/>
+							</action>
+						</node>
+						<node>
+							<label refId="OPTIONS_TRANSFERT_SOLDES" />
+							<action command="/osiris" responseTarget="fr_main">
+								<parameter name="userAction" value="osiris.comptes.transfertSoldes.afficherTransfertSoldes" />
+								<parameter name="id"/>
+								<parameter name="idContentieuxSrc"/>
+								<parameter name="libSequence"/>
+								<parameter name="idAdministrateurSrc"/>
+							</action>
+						</node>
+						<node>
+							<label refId="OPTIONS_VENTILATION" />
+							<action command="/osiris" responseTarget="fr_main">
+								<parameter name="userAction" value="osiris.ventilation.vPImprimerVentilation.chercher" />
+								<parameter name="selectedId"/>
+								<parameter name="idContentieuxSrc"/>
+								<parameter name="libSequence"/>
+								<parameter name="idAdministrateurSrc"/>
+								<parameter name="idExterneRole"/>
+								<parameter name="description"/>
+								<parameter name="idCompteAnnexe"/>
+							</action>
+						</node>
+						<node>
+							<label refId="OPTIONS_ORDRES_ATTENTE" />
+							<action command="/osiris" responseTarget="fr_main">
+								<parameter name="userAction" value="osiris.comptes.odresVersement.chercher" />
+								<parameter name="idCompteAnnexe"/>
+							</action>
+						</node>
+						<node>
+							<label refId="OPTIONS_HISTORIQUE_COMPTE_ANNEXE" />
+							<action command="/osiris" responseTarget="fr_main">
+								<parameter name="userAction" value="osiris.comptes.historiqueCompteAnnexe.chercher" />
+								<parameter name="idCompteAnnexe"/>
+								<parameter name="idContentieuxSrc"/>
+								<parameter name="libSequence"/>
+								<parameter name="idAdministrateurSrc"/>
+							</action>
+						</node>
+						<node>
+							<label refId="OPTIONS_INTERETS_MORATOIRES" />
+							<action command="/osiris" responseTarget="fr_main">
+								<parameter name="userAction" value="osiris.interets.gestionInterets.chercher" />
+								<parameter name="idCompteAnnexe"/>
+								<parameter name="idContentieuxSrc"/>
+								<parameter name="libSequence"/>
+								<parameter name="idAdministrateurSrc"/>
+							</action>
+						</node>
+
+						<node id="OPTIONS_FAILLITES">
+							<label refId="OPTIONS_FAILLITES"/>
+							<action command="/osiris" responseTarget="fr_main">
+								<parameter name="userAction" value="osiris.suiviprocedure.faillite.chercher"/>
+								<parameter name="selectedId"/>
+								<parameter name="refresh"/>
+								<parameter name="idCompteAnnexe"/>
+							</action>
+						</node>
+						<node id="OPTIONS_SURSIS_CONCORDATAIRE">
+							<label refId="OPTIONS_SURSIS_CONCORDATAIRE"/>
+							<action command="/osiris" responseTarget="fr_main">
+								<parameter name="userAction" value="osiris.suiviprocedure.sursisConcordataire.chercher"/>
+								<parameter name="selectedId"/>
+								<parameter name="libSequence"/>
+								<parameter name="refresh"/>
+								<parameter name="idCompteAnnexe"/>
+							</action>
+						</node>
+
+						<node>
+							<label refId="LISTE_PLANS"/>
+							<action command="/osiris" responseTarget="fr_main">
+								<parameter name="userAction" value="osiris.recouvrement.planRecouvrement.chercher" />
+								<parameter name="forIdExterneRoleLike"/>
+								<parameter name="forIdRole"/>
+							</action>
+						</node>
+					</nodes>
+				</node>
+				<node open="yes">
+					<label refId="OPTIONS_RACCOURCIS"/>
+					<nodes>
+						<node id="TIERS">
+							<label refId="TIERS"/>
+							<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.tiers.tiers.afficher"/>
+								<parameter name="idTiers"/>
+							</action>
+						</node>
+					</nodes>
+				</node>
+		</nodes>
+	</menu>
+
+	<!-- ****************************** -->
+	<!-- Menu Option apercu par section -->
+	<!-- ****************************** -->
+	<menu id="CA-RechercheDesComptesAnnexes">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_COMPTE_ANNEXE" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuComptes.afficher" />
+					<parameter name="id"/>
+					<parameter name="idContentieuxSrc"/>
+					<parameter name="libSequence"/>
+					<parameter name="idAdministrateurSrc"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_SECTION" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuParSection.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="idContentieuxSrc"/>
+					<parameter name="libSequence"/>
+					<parameter name="idAdministrateurSrc"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_EXTRAIT_DE_COMPTE" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuCompteResume.chercher" />
+					<parameter name="id"/>
+					<parameter name="_sectionEtat" value="1000"/>
+					<parameter name="_triType" value="1000"/>
+					<parameter name="idContentieuxSrc"/>
+					<parameter name="libSequence"/>
+					<parameter name="idAdministrateurSrc"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_IMPR_EXTRAIT_CPT_ANNEXE" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.print.listExtraitCompteAnnexe.afficherExtraitCA" />
+					<parameter name="id"/>
+					<parameter name="idContentieuxSrc"/>
+					<parameter name="libSequence"/>
+					<parameter name="idAdministrateurSrc"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_COMPTES_COURANTS" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuComptesCourants.chercher" />
+					<parameter name="id"/>
+					<parameter name="idContentieuxSrc"/>
+					<parameter name="libSequence"/>
+					<parameter name="idAdministrateurSrc"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_COMPTEURS" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuCompteur.chercher" />
+					<parameter name="id"/>
+					<parameter name="idContentieuxSrc"/>
+					<parameter name="libSequence"/>
+					<parameter name="idAdministrateurSrc"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_TRANSFERT_SOLDES" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.transfertSoldes.afficherTransfertSoldes" />
+					<parameter name="id"/>
+					<parameter name="idContentieuxSrc"/>
+					<parameter name="libSequence"/>
+					<parameter name="idAdministrateurSrc"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_VENTILATION" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.ventilation.vPImprimerVentilation.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="idContentieuxSrc"/>
+					<parameter name="libSequence"/>
+					<parameter name="idAdministrateurSrc"/>
+					<parameter name="idExterneRole"/>
+					<parameter name="description"/>
+					<parameter name="idCompteAnnexe"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_ORDRES_ATTENTE" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.odresVersement.chercher" />
+					<parameter name="idCompteAnnexe"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_HISTORIQUE_COMPTE_ANNEXE" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.historiqueCompteAnnexe.chercher" />
+					<parameter name="idCompteAnnexe"/>
+					<parameter name="idContentieuxSrc"/>
+					<parameter name="libSequence"/>
+					<parameter name="idAdministrateurSrc"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_INTERETS_MORATOIRES" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.interets.gestionInterets.chercher" />
+					<parameter name="idCompteAnnexe"/>
+					<parameter name="idContentieuxSrc"/>
+					<parameter name="libSequence"/>
+					<parameter name="idAdministrateurSrc"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+
+			<node id="OPTIONS_FAILLITES">
+				<label refId="OPTIONS_FAILLITES"/>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.suiviprocedure.faillite.chercher"/>
+					<parameter name="idCompteAnnexe"/>
+					<parameter name="selectedId"/>
+					<parameter name="refresh"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+
+			<node id="OPTIONS_SURSIS_CONCORDATAIRE">
+				<label refId="OPTIONS_SURSIS_CONCORDATAIRE"/>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.suiviprocedure.sursisConcordataire.chercher"/>
+					<parameter name="idCompteAnnexe"/>
+					<parameter name="forIdExterneRoleLike"/>
+					<parameter name="selectedId"/>
+					<parameter name="id"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+
+			<node>
+				<label refId="LISTE_PLANS"/>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.recouvrement.planRecouvrement.chercher" />
+					<parameter name="forIdExterneRoleLike"/>
+					<parameter name="forIdRole"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="TIERS"/>
+				<action command="/pyxis" responseTarget="fr_main">
+					<parameter name="userAction" value="pyxis.tiers.tiers.afficher"/>
+					<parameter name="idTiers"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ****************************** -->
+	<!-- Menu Option detail section -->
+	<!-- ****************************** -->
+	<menu id="CA-DetailSection">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_APERCU_COMPTABLE" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuSectionDetaille.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_EXTRAIT_DE_COMPTE" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuCompteResume.chercher" />
+					<parameter name="forIdSection"/>
+				</action>
+			</node>
+			<node id="detail_section_contentieux_osiris">
+				<label refId="OPTIONS_CONTENTIEUX" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.contentieux.operationContentieux.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node id="detail_section_contentieux_aquila" active="no">
+				<label refId="OPTIONS_CONTENTIEUX" />
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.poursuite.historique.chercher" />
+					<parameter name="idSection"/>
+				</action>
+			</node>
+			<node id="detail_section_creer_ard" active="no">
+				<label refId="OPTIONS_CREER_ARD" />
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.process.processCreerARD.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_EXTOURNER_SECTION" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.extournerSection.afficherSection" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_BULLETINS_SOLDES" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.print.bulletinsSoldes.afficher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_REMBOURSER" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.journalOperationOrdreVersement.rembourser" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_LETTRER" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.journalOperationLettrer.afficherLettrage" />
+					<parameter name="id"/>
+					<parameter name="idCompteAnnexe"/>
+				</action>
+			</node>
+			<node>
+				<label refId="IM_MANUEL_OPTIONS_MENU" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.process.interetMoratoireManuel.afficher" />
+					<parameter name="idSection"/>
+				</action>
+			</node>
+			<!--<node>
+				<label refId="IM_MANUEL_25_OPTIONS_MENU" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.process.interetMoratoireManuel25.afficher" />
+					<parameter name="idSection"/>
+				</action>
+			</node>-->
+			<node id="echeances_plan">
+				<label refId="OPTIONS_ECHEANCES_DU_PLAN" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.recouvrement.echeancePlan.chercher" />
+					<parameter name="idPlanRecouvrement"/>
+				</action>
+			</node>
+			<!--<node id="detail_section_ged" active="no">
+				<label defaultValue="Ged" />
+				<action command="/naos" responseTarget="_blank">
+					<parameter name="userAction" value="naos?userAction=naos.affiliation.affiliation.gedafficherdossier" />
+					<parameter name="id"/>
+					<parameter name="noAffiliationId"/>
+					<parameter name="serviceNameId"/>
+					<parameter name="gedFolderType"/>
+				</action>
+			</node> -->
+			<node>
+			<label refId="HISTORIQUE_BULLETIN_SOLDE_OPTIONS_MENU" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.historique.historiqueBulletinSolde.chercher" />
+					<parameter name="forIdSection"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ********************************* -->
+	<!-- Menu Option detail section gauche -->
+	<!-- ********************************* -->
+	<menu id="CA-DetailSectionGauche">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_SECTION_SING" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuParSection.afficher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_APERCU_COMPTABLE" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuSectionDetaille.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_BULLETINS_SOLDES" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.print.bulletinsSoldes.afficher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="IM_MANUEL_OPTIONS_MENU" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.process.interetMoratoireManuel.afficher" />
+					<parameter name="idSection"/>
+				</action>
+			</node>
+			<!--
+			<node>
+				<label refId="IM_MANUEL_25_OPTIONS_MENU" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.process.interetMoratoireManuel25.afficher" />
+					<parameter name="idSection"/>
+				</action>
+			</node>
+			 -->
+			<node id="echeances_plan">
+				<label refId="OPTIONS_ECHEANCES_DU_PLAN" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.recouvrement.echeancePlan.chercher" />
+					<parameter name="idPlanRecouvrement"/>
+				</action>
+			</node>
+			<node id="detail_section_gauche_contentieux_osiris">
+				<label refId="OPTIONS_CONTENTIEUX" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.contentieux.operationContentieux.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node id="detail_section_gauche_contentieux_aquila" active="no">
+				<label refId="OPTIONS_CONTENTIEUX" />
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.poursuite.historique.chercher" />
+					<parameter name="idSection"/>
+				</action>
+			</node>
+			<node id="detail_section_gauche_creer_ard" active="no">
+				<label refId="OPTIONS_CREER_ARD" />
+				<action command="/aquila" responseTarget="fr_main">
+					<parameter name="userAction" value="aquila.process.processCreerARD.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_EXTOURNER_SECTION" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.extournerSection.afficherSection" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+			<label refId="HISTORIQUE_BULLETIN_SOLDE_OPTIONS_MENU" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.historique.historiqueBulletinSolde.chercher" />
+					<parameter name="forIdSection"/>
+				</action>
+			</node>
+			<node id="detail_section_gauche_ged" active="no">
+				<label defaultValue="Ged">
+					<language iso="de">DMS</language>
+				</label>
+				<action command="/naos" responseTarget="_blank">
+					<parameter name="userAction" value="naos.affiliation.affiliation.gedafficherdossier" />
+					<parameter name="id"/>
+					<parameter name="noAffiliationId"/>
+					<parameter name="serviceNameId"/>
+					<parameter name="gedFolderType"/>
+					<parameter name="osiris.section.idExterne"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ***************************************** -->
+	<!-- Menu Option detail opérations contentieux -->
+	<!-- ***************************************** -->
+	<menu id="CA-DetailOperationContentieux">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_JOURNALISATION" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.message.apercuJournalisation.chercher" />
+					<parameter name="idParametreEtape"/>
+					<parameter name="idSection"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_ANNULER_ETAPE" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.contentieux.annulerEtapeContentieux.afficher" />
+					<parameter name="idParametreEtape"/>
+					<parameter name="idSection"/>
+					<parameter name="_method"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ***************************************** -->
+	<!-- Menu Option detail séquence contentieux -->
+	<!-- ***************************************** -->
+	<menu id="CA-SequenceContentieux">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_GESTION_ETAPES" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.contentieux.gestionEtape.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ***************************************** -->
+	<!-- Menu Option ordres groupés -->
+	<!-- ***************************************** -->
+	<menu id="CA-OrdresGroupes">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_ORDRE_GROUPE" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.ordres.ordresGroupes.afficher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_APERCU_ORDRES" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.ordres.apercuOrdres.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_APERCU_MESSAGES" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.message.apercuMessage.chercherOG" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node id="CA-OrdresGroupesPreparation">
+				<label refId="OPTIONS_PREPARATION" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.process.preparerOrdre.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node id="CA-OrdresGroupesExecution">
+				<label refId="OPTIONS_EXECUTION" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.process.transmettreOrdreGroupe.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node id="CA-OrdresGroupesAnnuler">
+				<label refId="OPTIONS_ANNULER" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.process.annulerOrdre.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_JOURNAL_IMPRIMER" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.print.imprimerOrdreGroupe.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ***************************************** -->
+	<!-- Menu Option opérations journal -->
+	<!-- ***************************************** -->
+	<menu id="CA-JournalOperation">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Journal" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.apercuJournal.afficher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_ECRITURES_COMPTABLE" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.journalOperationEcriture.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_ORDRES_VERSEMENT" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.journalOperationOrdreVersement.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_ORDRES_RECOUVREMENT" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.journalOperationOrdreRecouvrement.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_PAIEMENTS" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.journalOperationPaiement.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_PAIEMENT_BVR" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.journalOperationPaiementBVR.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_RECOUVREMENT_DIRECT" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.journalOperationRecouvrement.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node id="journal_paiement_etranger" active="no">
+				<label refId="OPTIONS_PAIEMENTS_ETRANGER" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.journalOperationPaiementEtranger.chercherPaiements" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_SUSPENS" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.journalOperationSuspens.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_VERSEMENTS" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.journalOperationVersement.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_AUXILIAIRE" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.journalOperationAuxiliaire.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_INTERETS_MORATOIRES" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.interets.interetMoratoire.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_APERCU_MESSAGES" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.message.apercuMessage.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_VUE_GLOBALE" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.journalOperation.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_COMPTABILISER" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.process.comptabiliserJournal.afficher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_ANNULER" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.process.annulerJournal.afficher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_EXTOURNER" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.process.extournerJournal.afficher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node id="journal_rouvrir">
+				<label defaultValue="Rouvrir">
+					<language iso="de">Wieder eröffnen</language>
+				</label>
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.process.rouvrirJournal.afficher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_JOURNAL_IMPRIMER" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.print.listImpressionsJournal.afficher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ******************************* -->
+	<!-- Menu Option extourner opération -->
+	<!-- ******************************* -->
+	<menu id="CA-ExtournerOperation">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_EXTOURNER_OPERATION" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.extournerOperation.afficherOperation" />
+					<parameter name="id"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ************************************** -->
+	<!-- Menu Option calcul interets moratoires -->
+	<!-- ************************************** -->
+	<menu id="CA-CalculInteretsMoratoires">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_INTERETS_MORATOIRES_DETAIL_CALCUL" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.interets.detailInteretMoratoire.chercher" />
+					<parameter name="id"/>
+					<parameter name="domaine" value="CA"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node id="imprimerDecisionInteret">
+				<label refId="OPTIONS_INTERETS_MORATOIRES_IMPRIMER_DECISION" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.print.decisionInteret.afficher" />
+					<parameter name="idInteretMoratoire"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ************************************** -->
+	<!-- Menu Option décision interets moratoires -->
+	<!-- ************************************** -->
+	<menu id="CA-DecisionInteretsMoratoires">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_INTERETS_MORATOIRES_DECISION" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.interets.interetMoratoire.afficher" />
+					<parameter name="id"/>
+					<parameter name="domaine" value="CA"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ************************** -->
+	<!-- Menu Option plan paiements -->
+	<!-- ************************** -->
+	<menu id="CA-PlanRecouvrement">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="LISTE_PLANS" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.recouvrement.planRecouvrement.chercher" />
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="PLAN" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.recouvrement.planRecouvrement.afficher" />
+					<parameter name="id"/>
+					<parameter name="selectedId"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_SECTIONS_COUVERTES" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.recouvrement.couvertureSection.chercher" />
+					<parameter name="id"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_ECHEANCES" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.recouvrement.echeancePlan.chercher" />
+					<parameter name="id"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="IMPRESSION_PLAN" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.print.impressionPlan.afficher" />
+					<parameter name="id"/>
+					<parameter name="selectedId"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="IMPRESSION_ECHEANCIER" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.print.impressionEcheancier.afficher" />
+					<parameter name="id"/>
+					<parameter name="selectedId"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node id="IMPRESSION_RAPPEL">
+				<label refId="IMPRESSION_RAPPEL" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.print.rappelPlan.afficher" />
+					<parameter name="id"/>
+					<parameter name="selectedId"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node id="SUSPENDRE_PLAN">
+				<label refId="SUSPENDRE_PLAN" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.recouvrement.processSuspendrePlanRecouvrement.afficher"/>
+					<parameter name="id"/>
+					<parameter name="selectedId"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ************************** -->
+	<!-- Menu Option BVR -->
+	<!-- ************************** -->
+	<menu id="CA-BVR">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="LECTURE_FICHIER_BVR" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.process.bvr.afficher" />
+				</action>
+			</node>
+			<node id="connection_postfinance">
+				<label refId="CONNECTION_POSTFINANCE" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.bvrftp.bvrFtp.chercher" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ************************** -->
+	<!-- Menu Option BVR Lecture    -->
+	<!-- ************************** -->
+	<menu id="CA-BVR-Lecture">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="LECTURE_FICHIER" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.bvrftp.bvrFtp.executer" />
+					<parameter name="selectedId"></parameter>
+					<parameter name="typeBvrFtp"></parameter>
+					<parameter name="distantDirectoryName"></parameter>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ************************** -->
+	<!-- Menu Option Avance         -->
+	<!-- ************************** -->
+	<menu id="CA-Avance">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="MENU_EXECUTER_AVANCES" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.process.processAvance.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_APERCU_AVANCES" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.avance.chercher" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ************************** -->
+	<!-- Menu Option Avance         -->
+	<!-- ************************** -->
+	<menu id="CA-Reference-Rubrique">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_REFERENCE_RUBRIQUE" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.comptes.referenceRubrique.chercher" />
+					<parameter name="idRubrique"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ************************** -->
+	<!-- Menu Option Lots retours   -->
+	<!-- ************************** -->
+	<menu id="CA-Lots-Retours">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_RETOURS_DU_LOT" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.retours.retours.chercher" />
+					<parameter name="idLot"/>
+					<parameter name="libelleLot"/>
+					<parameter name="montantTotal"/>
+					<parameter name="csEtatLot"/>
+				</action>
+			</node>
+			<node id="ajoutretour">
+				<label refId="OPTIONS_AJOUTER_RETOUR" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.retours.retours.afficher" />
+					<parameter name="idLot"/>
+					<parameter name="_method" value="add"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ************************** -->
+	<!-- Menu Option retours   -->
+	<!-- ************************** -->
+	<menu id="CA-Retours">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node id="annulerretour">
+				<label refId="OPTIONS_ANNULER_RETOUR" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.process.annulerRetours.afficher" />
+					<parameter name="idRetour"/>
+					<parameter name="_method" value="add"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ************************** -->
+	<!-- Menu Option Compte courant -->
+	<!-- ************************** -->
+	<menu id="CA-CompteCourant">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node id="COMPTECOURANT_LISTE_CONCORDANCE_CACG">
+				<label refId="COMPTECOURANT_LISTE_CONCORDANCE_CACG" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.print.listConcordanceCACG.afficher" />
+					<parameter name="forIdExterne"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ************************** -->
+	<!-- Menu Option only detail    -->
+	<!-- ************************** -->
+	<menu id="CA-OnlyDetail">
+		<label refId="OPTIONS" />
+	</menu>
+
+	<!-- ************************** -->
+	<!-- Menu Plan calcul intérêt   -->
+	<!-- ************************** -->
+	<menu id="CA-PlanCalculInteret">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_CALCUL_PLAN_INTERET" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.interets.planCalculInteret.chercher" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- ******************************** -->
+	<!-- Menu Plan calcul intérêt Suite   -->
+	<!-- ******************************** -->
+	<menu id="CA-PlanCalculInteretSuite">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_GENRE_INTERET" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.interets.genreInteret.chercher" />
+					<parameter name="idPlanCalculInteret"/>
+					<parameter name="libelleFR"/>
+					<parameter name="libelleDE"/>
+					<parameter name="libelleIT"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_RUBRIQUE_SOUMISE_INTERET" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.interets.rubriqueSoumiseInteret.chercher" />
+					<parameter name="idPlanCalculInteret"/>
+					<parameter name="libelleFR"/>
+					<parameter name="libelleDE"/>
+					<parameter name="libelleIT"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<menu id="CA-GenreInteret">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_GENRE_INTERET" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.interets.genreInteret.chercher" />
+					<parameter name="idPlanCalculInteret"/>
+					<parameter name="libelleFR"/>
+					<parameter name="libelleDE"/>
+					<parameter name="libelleIT"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<menu id="CA-RubriqueSoumise">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_RUBRIQUE_SOUMISE_INTERET" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.interets.rubriqueSoumiseInteret.chercher" />
+					<parameter name="idPlanCalculInteret"/>
+					<parameter name="libelleFR"/>
+					<parameter name="libelleDE"/>
+					<parameter name="libelleIT"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+</menus>

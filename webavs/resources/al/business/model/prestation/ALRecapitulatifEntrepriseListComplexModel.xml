@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'un dossier -->
+<model-mapping>
+<complexe-model className="ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseListComplexModel">
+	<select-fields distinct="true">
+		<select-field name="numeroAffilie" field-ref="recapModel.numeroAffilie"/>
+		<select-field name="periodeDe" field-ref="recapModel.periodeDe"/>
+		<select-field name="periodeA" field-ref="recapModel.periodeA"/>
+		<select-field name="numeroFacture" field-ref="recapModel.numeroFacture"/>
+		<select-field name="etat" field-ref="recapModel.etatRecap"/>
+		<select-field name="bonification" field-ref="recapModel.bonification"/>
+		<select-field name="numeroRecap" field-ref="recapModel.idRecap"/>
+		<select-field name="periodeProcessus" field-ref="processusComplexModel.periodeModel.datePeriode"/>
+		<select-field name="numeroProcessus" field-ref="processusComplexModel.processusPeriodiqueModel.idProcessusPeriodique"/>
+		<select-field name="nomProcessus" field-ref="processusComplexModel.configProcessusModel.businessProcessus"/>	
+	</select-fields>
+	
+	<root-model name="recapModel" model-ref="ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseModel" select-fields="false"/>
+	
+	<linked-model name="affiliationComplexModel" model-ref="ch.globaz.naos.business.model.AffiliationComplexModel" join-type="INNER" select-fields="false">
+		<join-group operator="AND">
+			<join-field name="affiliationSimpleModel.affilieNumero" field-ref="recapModel.numeroAffilie"/>
+		</join-group>
+	</linked-model>
+	
+	<linked-model name="processusComplexModel" model-ref="ch.globaz.al.business.models.processus.ProcessusComplexModel" join-type="LEFT_OUTER" select-fields="false">
+		<join-group operator="AND">
+			<join-field name="processusPeriodiqueModel.idProcessusPeriodique" field-ref="recapModel.idProcessusPeriodique"/>
+		</join-group>
+	</linked-model>
+	
+	<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdRecap" field-ref="recapModel.idRecap" operation="EQUALS"/>
+				<search-field name="forNumeroAffilie" field-ref="recapModel.numeroAffilie" operation="EQUALS"/>
+				<search-field name="forNumProcessusLie" field-ref="recapModel.idProcessusPeriodique" operation="EQUALS"/>
+			</search-group>
+	</search-definition>
+
+	<order-by name="default">
+			<order-field field-ref="periodeA" order="DESC"/>
+			<order-field field-ref="numeroAffilie" order="DESC"/>
+	</order-by>
+		
+</complexe-model>
+</model-mapping>

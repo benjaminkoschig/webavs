@@ -1,0 +1,248 @@
+<%@page import="globaz.framework.secure.FWSecureConstants"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="globaz.amal.utils.AMContribuableHelper"%>
+<%@page import="globaz.amal.utils.AMContribuableHistoriqueHelper"%>
+<%@page import="globaz.jade.client.util.JadeStringUtil"%>
+<script type="text/javascript">
+var ACTION_GED_LECTURE="amal?userAction=";
+ACTION_GED_LECTURE+="<%=IAMActions.ACTION_GED%>";
+ACTION_GED_LECTURE+=".lectureGedContribuable";
+
+function transformToNumericOnly(inputparms){
+	var s_Return = '';
+	for(var iChar = 0; iChar < inputparms.length;iChar++){
+		var cChar = inputparms.charAt(iChar);
+		if(cChar == '0' || cChar == '1' || cChar == '2' || cChar=='3' || cChar =='4'
+				|| cChar == '5' || cChar == '6' || cChar == '7' || cChar == '8' || cChar=='9'){
+			s_Return+=cChar;
+		}
+	}
+	return s_Return;
+}
+
+function tranformGedParameterNumericOnly(inputparms){
+	var s_params = '';
+	var a_params = inputparms.split('@');
+	if(a_params.length > 3){
+		s_params += a_params[0]+'@';
+		s_params += transformToNumericOnly(a_params[1]);
+		s_params += a_params[2]+'@';
+		s_params += transformToNumericOnly(a_params[3]);
+	}else if(a_params.length > 1){
+		s_params += a_params[0]+'@';
+		s_params += transformToNumericOnly(a_params[1]);
+	}
+	return s_params;
+}
+
+
+
+
+
+function executeConsultNssClean(inputparms){
+	$('#GEDMenuDivId').toggle();
+	var s_params = '';
+	s_params+= transformToNumericOnly(inputparms);
+	s_params = ACTION_GED_LECTURE+'&nNSS='+s_params;
+	window.open(s_params);
+}
+function executeConsultContribuableClean(inputparms){
+	$('#GEDMenuDivId').toggle();
+	var s_params = '';
+	s_params+= transformToNumericOnly(inputparms);
+	s_params = ACTION_GED_LECTURE+'&noContribuable='+s_params;
+	window.open(s_params);
+}
+
+$(document).ready(function() {
+	$('#GEDMenuId').click(function(){
+		var positionGEDMenuId=$(this).offset();
+		var leftPosition=positionGEDMenuId.left;
+		leftPosition+=$(this).width();
+		var topPosition = positionGEDMenuId.top;
+		$('#GEDMenuDivId').css({ "left": leftPosition, "top":topPosition });
+		$('#GEDMenuDivId').toggle();
+	});
+	
+	$('#GEDMenuDivId').mouseleave(function(){
+		$(this).toggle();	
+	});
+	
+});
+
+</script>
+
+
+<div class="subtitle"><ct:FWLabel key="JSP_AM_CON_D_TITLE"/><%=!contribReprise?" ("+viewBean.getContribuable().getContribuable().getIdContribuable()+")":""%></div>
+<div class="relLink">	
+	<%if (!JadeStringUtil.isEmpty(linkRetourContribuable)) { %>
+		<a href="<%=linkRetourContribuable%>"><%=linkRetourContribuableLibelle%></a>
+	<% } %>
+</div>
+							
+<div class="infosContribuable">
+	<table>
+		<col width="122px" align="left"></col>
+		<col width="*" align="left"></col>
+		<col width="50px" align="right"></col>
+		<tr style="height:20px">
+			<td><ct:FWLabel key="JSP_AM_CON_D_CONTRIBUABLE"/></td>
+			<td style="background-color:#FFFFFF">
+				<%=!contribReprise?viewBean.getContribuable().getPersonneEtendue().getPersonneEtendue().getNumContribuableActuel():AMContribuableHistoriqueHelper.getContribuableInfos().getNumeroContribuableActuelFormate()%>
+			</td>
+			<td style="background-color:#FFFFFF">
+			<%				
+			if(!contribReprise && !JadeStringUtil.isBlankOrZero(viewBean.getContribuable().getFamille().getIdTier())){ 
+			%>
+			<%if(objSession.hasRight(userActionNew, FWSecureConstants.ADD)) { %>
+				<span data-g-note="idExterne:<%=viewBean.getContribuable().getId()%>,tableSource:¦globaz.amal.vb.contribuable.AMContribuableViewBean¦" >
+			<%} %>
+			</span>
+				<a href="<%=servletContext + "/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId="+viewBean.getContribuable().getFamille().getIdTier()%>">
+				<img
+					width="18px"
+					height="18px"
+					src="<%=request.getContextPath()%>/images/amal/link.png" title="Tiers <%=viewBean.getContribuable().getFamille().getIdTier() %>" border="0">
+				</a>
+				
+			<%
+			}
+			%>
+			</td>
+		</tr>
+		<tr style="height:20px">
+			<td><ct:FWLabel key="JSP_AM_CON_D_NSS"/></td>
+			<td style="background-color:#FFFFFF" colspan="2">										
+				<%=!contribReprise?viewBean.getContribuable().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel():AMContribuableHistoriqueHelper.getContribuableInfos().getNnss()%>										 
+			</td>
+		</tr>
+		<tr style="height:20px">
+			<td><ct:FWLabel key="JSP_AM_CON_D_NOM_PRENOM"/></td>
+			<td style="background-color:#FFFFFF" colspan="2" id="nomPrenomContrib">
+				<%if (JadeStringUtil.isBlankOrZero(viewBean.getContribuable().getPersonneEtendue().getPersonne().getDateDeces())) { %>
+					<%=!contribReprise?viewBean.getContribuable().getPersonneEtendue().getTiers().getDesignation1():AMContribuableHistoriqueHelper.getContribuableInfos().getNom()%> 
+					<%=!contribReprise?viewBean.getContribuable().getPersonneEtendue().getTiers().getDesignation2():AMContribuableHistoriqueHelper.getContribuableInfos().getPrenom()%>
+				<% } else { %>
+					<span  style="color:red">(</span>
+					<%=!contribReprise?viewBean.getContribuable().getPersonneEtendue().getTiers().getDesignation1():AMContribuableHistoriqueHelper.getContribuableInfos().getNom()%> 
+					<%=!contribReprise?viewBean.getContribuable().getPersonneEtendue().getTiers().getDesignation2():AMContribuableHistoriqueHelper.getContribuableInfos().getPrenom()%>
+					<span  style="color:red">)</span>
+					<span style="font-family:wingdings">U</span>
+				<% } %>
+			</td>
+		</tr>
+		<% 
+			String numTelPrive = "";
+			String numMobile = "";
+			try {
+				Map mapMoyensContact = AMContribuableHelper.getMoyensContact(viewBean.getContribuable().getFamille().getIdTier());			
+				if (mapMoyensContact != null) {
+					numTelPrive = String.valueOf(mapMoyensContact.get("511001"));
+					numMobile = String.valueOf(mapMoyensContact.get("511003"));
+				}
+			} catch (Exception e) {
+				//On laisse les no de tel vide
+			}
+		%>
+		<tr style="height:20px">
+			<td <%=JadeStringUtil.isNull(numMobile) && JadeStringUtil.isNull(numTelPrive)?"style='border-bottom: 1px solid #B3C4DB'":""%>></td>
+			<td colspan="2" style="background-color:#FFFFFF;<%=(JadeStringUtil.isNull(numMobile) && JadeStringUtil.isNull(numTelPrive))?"border-bottom: 1px solid #B3C4DB":""%>">
+				<%if (!contribReprise) { %>
+					<%=viewBean.getContribuable().getPersonneEtendue().getPersonne().getDateNaissance()%> - <%=AMContribuableHelper.getSexe(viewBean.getContribuable().getPersonneEtendue().getPersonne().getSexe())%> - <%=AMContribuableHelper.getPays(viewBean.getContribuable().getPersonneEtendue().getTiers().getIdPays())%>
+				<% } %>
+			</td>			
+		</tr>
+		<% if (!JadeStringUtil.isNull(numTelPrive) && !contribReprise) { %>
+			<tr style="height:20px">
+				<td <%=JadeStringUtil.isNull(numMobile)?"style='border-bottom: 1px solid #B3C4DB'":""%>>Téléphone</td>
+				<td colspan="2" style="background-color:#FFFFFF;<%=JadeStringUtil.isNull(numMobile)?"border-bottom: 1px solid #B3C4DB":""%>">						
+					<%=numTelPrive%>						
+				</td>				
+			</tr>
+		<% } %>
+		<% if (!JadeStringUtil.isNull(numMobile) && !contribReprise) { %>	
+		<tr style="height:20px">
+			<td style="border-bottom: 1px solid #B3C4DB">Mobile</td>
+			<td colspan="2" style="background-color:#FFFFFF;border-bottom: 1px solid #B3C4DB">
+					<%=numMobile%>
+			</td>			
+		</tr>
+		<% } %>
+		<tr style="background-color:#D7E4FF">
+			<td colspan="3" style="height:22px;border-bottom: 1px solid #B3C4DB" align="right">
+			<%				
+			if(!contribReprise && !JadeStringUtil.isBlankOrZero(viewBean.getContribuable().getFamille().getIdTier()) ){ 
+			%>
+				<a href='#' id="GEDMenuId">GED
+					<div id="GEDMenuDivId" style="display:none;position:absolute;top:0px;left:0px">
+						<table style="width:140px">
+							<tr><td align="center">
+								<a href='javascript:executeConsultNssClean("<%=viewBean.getContribuable().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel() %>")'><%=viewBean.getContribuable().getPersonneEtendue().getPersonneEtendue().getNumAvsActuel() %></a>
+							</td></tr>
+							<%
+							for (int iHisto = 0; iHisto < viewBean.getContribuable().getHistoNumeroContribuable().size(); iHisto++) {
+								String histoNumero = viewBean.getContribuable().getHistoNumeroContribuable().get(iHisto);
+							%>
+								<tr><td align="center">
+									<a href='javascript:executeConsultContribuableClean("<%=histoNumero %>")'><%=histoNumero%></a>
+								</tr></td>
+							<%	
+							}
+							%>
+						</table>
+					</div>
+				</a>
+			<%
+			}
+			%>	
+			</td>
+		</tr>
+		<tr >
+			<td style="vertical-align:top;">Adresse AMAL</td>
+			<td style="background-color:#FFFFFF; font-size:11px;" colspan="2">
+				<%
+				String adresse = "";
+				if(viewBean.getContribuable().getAdresseComplexModel()!=null &&
+					viewBean.getContribuable().getAdresseComplexModel().getAdresse()!=null){
+					
+					String adTitre = viewBean.getContribuable().getAdresseComplexModel().getAdresse().getTitreAdresse();
+					String adLigne1 = viewBean.getContribuable().getAdresseComplexModel().getAdresse().getLigneAdresse1();
+					String adLigne2 = viewBean.getContribuable().getAdresseComplexModel().getAdresse().getLigneAdresse2();
+					String adLigne3 = viewBean.getContribuable().getAdresseComplexModel().getAdresse().getLigneAdresse3();
+					String adLigne4 = viewBean.getContribuable().getAdresseComplexModel().getAdresse().getLigneAdresse4();
+					String adAttention = viewBean.getContribuable().getAdresseComplexModel().getAdresse().getAttention();
+					String adRue = viewBean.getContribuable().getAdresseComplexModel().getAdresse().getRue();
+					String adNo = viewBean.getContribuable().getAdresseComplexModel().getAdresse().getNumeroRue();
+					String adCase = viewBean.getContribuable().getAdresseComplexModel().getAdresse().getCasePostale();
+					String adNPA = viewBean.getContribuable().getAdresseComplexModel().getLocalite().getNumPostal();
+					adNPA = (JadeStringUtil.isBlankOrZero(adNPA)?null:adNPA.substring(0,4));
+					String adLocalite = viewBean.getContribuable().getAdresseComplexModel().getLocalite().getLocalite();
+					
+					//adresse += (JadeStringUtil.isBlankOrZero(adTitre)?"":adTitre+"<br>");
+					adresse += (JadeStringUtil.isBlankOrZero(adLigne1)?"":adLigne1);
+					adresse += (JadeStringUtil.isBlankOrZero(adLigne2)?"":"<br>"+adLigne2);
+					adresse += (JadeStringUtil.isBlankOrZero(adLigne3)?"":"<br>"+adLigne3);
+					adresse += (JadeStringUtil.isBlankOrZero(adLigne4)?"":"<br>"+adLigne4);
+					adresse += (JadeStringUtil.isBlankOrZero(adAttention)?"":"<br>"+adAttention);
+					adresse += (JadeStringUtil.isBlankOrZero(adRue)?"":"<br>"+adRue);
+					adresse += (JadeStringUtil.isBlankOrZero(adNo)?"":" "+adNo);
+					adresse += (JadeStringUtil.isBlankOrZero(adCase)?"":"<br>"+"Case postale "+adCase);
+					adresse += (JadeStringUtil.isBlankOrZero(adNPA)?"":"<br>"+adNPA);
+					adresse += (JadeStringUtil.isBlankOrZero(adLocalite)?"":" "+adLocalite);
+				}
+				if(!JadeStringUtil.isBlankOrZero(adresse)){
+				%>
+				<%=adresse%>
+				<%}else{%>
+				N/A
+				<%
+				}
+				%>
+			</td>
+		</tr>
+	</table>
+</div>
+
+
+

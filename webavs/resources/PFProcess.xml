@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="Perseus.traitementAdaptation"
+		class="ch.globaz.jade.process.business.conf.JadeProcessDefinitionBean">
+		<property name="classNamePopulation" value="ch.globaz.perseus.process.traitementAdaptation.PFProcessTraitementAdaptationPopulation" />	
+		<property name="description">
+			<map>
+				<entry key="FR">
+					<value>
+						<![CDATA[<h1>Traitement adaptation</h1>
+						 		<p>Paramètres d'entrée du processus:</p>
+							   <ul>
+							   	<li>Adresse e-mail CCVD : Adresse e-mail pour l'envoi des décisions CCVD (si un serveur FTP est paramétré, les décisions sont déposées sur ce serveur)</li>
+							   	<li>Adresse e-mail AGLau : Adresse e-mail pour l'envoi des décisions AGLA (si un serveur FTP est paramétré, les décisions sont déposées sur ce serveur)</li>
+							   	<li>Mois : Date du prochain paiement mensuel (champ non éditable)</li>
+							   	<li>Texte sur la décision : Texte qui sera inséré dans les décisions</li>
+							   </ul>
+							   <ol>
+								   <p>
+										La population du processus contient des décisions suivantes :  <br />
+											- Décisions de type « Octroi » ou « Partiel », en état « Validé », sans date de fin <br />
+											- Décisions de type « Partiel», en état « Validé », dont la date de fin est au 31.12 de l'année précédente<br />
+										Les étapes suivantes sont exécutées : 
+								   </p>
+								   <br/><br/>
+								   
+									<li>Analyse des décisions</li>
+							   
+								   <p>
+										Détermine les demandes avec retenue ainsi que les décisions « Partiel » avec une date de fin au 31.12 en provenance du RI
+										<br/><br/>
+								   </p>
+								   
+									<li>Fermeture des décisions</li>
+							   
+								  	<p>
+										Détermine les demandes dont le conjoint a un dossier, clôture les demandes<br/><br/>
+								  	</p>
+								   
+									<li>Calcule des décisions</li>
+							   
+								  	<p>
+										Etape de calcul.<br/>
+										Détermine les demandes non calculables, effectue les copies et les calculs 
+										<br/><br/>
+								  	</p>
+							   
+									<li>Validation des décisions</li>
+							   
+								  	<p>
+										Etape de validation.<br/>
+										Valide les décisions 
+										<br/><br/>
+								  	</p>
+							   
+									<li>Impression des décisions</li>
+									<p>
+										Etape d'impression des décisions.<br/>
+										Génère les décisions qui sont envoyées par e-mail ou déposées sur un serveur FTP<br/>
+										
+										<br/>
+								    </p>
+							   </ol>
+						   ]]>
+					</value>
+				</entry>
+			</map>
+		</property>
+		<!--  lien pour entites dans applis -->
+		<property name="urlEntite" value="perseus?userAction=perseus.decision.decision.chercher" />
+			
+<!-- 		 jsp pour passer param -->
+		<property name="urlProperties" value="perseus?perseus.process.traitementAdaptation.afficher" />	
+		<property name="steps">
+			<map>
+				<entry key="analyseDesDecisions">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.perseus.process.traitementAdaptation.analyseDesDecisions.PFProcessTraitementAdaptationAnalyseDesDecisionsStep" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="5" />
+						<property name="order" value="1" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Analyse des décisions" />
+								<entry key="DE" value="Analyse des décisions" />
+								<entry key="IT" value="Analyse des décisions" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				
+				<entry key="fermetureDesDecisions">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property  name="classNameStep" value="ch.globaz.perseus.process.traitementAdaptation.fermetureDesDecisions.PFProcessTraitementAdaptationFermetureStep" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="5" />
+						<property name="isOptional" value="true" />
+						<property name="order" value="2" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Fermeture des décisions" />
+								<entry key="DE" value="[de]Fermeture des décisions" />
+								<entry key="IT" value="[it]Fermeture des décisions" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				
+				<entry key="calculDesDecisions">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property  name="classNameStep" value="ch.globaz.perseus.process.traitementAdaptation.calculDesDecisions.PFProcessTraitementAdaptationCalculStep" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="5" />
+						<property name="isOptional" value="true" />
+						<property name="order" value="3" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Calcul des décisions" />
+								<entry key="DE" value="[de]Calcul des décisions" />
+								<entry key="IT" value="[it]Calcul des décisions" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+
+				<entry key="validationDesDecisions">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property  name="classNameStep" value="ch.globaz.perseus.process.traitementAdaptation.validationDesDecisions.PFProcessTraitementAdaptationValidationStep" />
+						<property name="hasRollback" value="false" />
+						<property name="nbThread" value="5" />
+						<property name="isOptional" value="true" />
+						<property name="order" value="4" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Validation des décisions" />
+								<entry key="DE" value="[de]Validation des décisions" />
+								<entry key="IT" value="[it]Validation des décisions" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="impressionDesDecisions">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property  name="classNameStep" value="ch.globaz.perseus.process.traitementAdaptation.impressionDesDecisions.PFProcessTraitementAdaptationImpressionStep" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="5" />
+						<property name="isOptional" value="true" />
+						<property name="order" value="5" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Impression des décisions" />
+								<entry key="DE" value="[de]Impression des décisions" />
+								<entry key="IT" value="[it]Impression des décisions" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+	
+	<bean id="Perseus.traitementAnnuel"
+		class="ch.globaz.jade.process.business.conf.JadeProcessDefinitionBean">
+		<property name="classNamePopulation" value="ch.globaz.perseus.process.traitementAnnuel.PFProcessTraitementAnnuelPopulation" />	
+		<property name="description">
+			<map>
+				<entry key="FR">
+					<value>
+						<![CDATA[<h1>Traitement Annuel</h1>
+						 		<p>Paramètres d'entrée du processus:</p>
+							   <ul>
+							   	<li>Adresse e-mail CCVD : Adresse e-mail pour l'envoi des décisions CCVD (si un serveur FTP est paramétré, les décisions sont déposées sur ce serveur)</li>
+							   	<li>Adresse e-mail AGLau : Adresse e-mail pour l'envoi des décisions AGLA (si un serveur FTP est paramétré, les décisions sont déposées sur ce serveur)</li>
+							   	<li>Mois : Date du prochain paiement mensuel (champ non éditable)</li>
+							   	<li>Texte sur la décision : Texte qui sera inséré dans les décisions</li>
+							   </ul>
+							   <ol>
+								   <p>
+										La population du processus contient des décisions suivantes : <br />
+											- Décisions de type « Octroi » ou « Partiel », en état « Validé », sans date de fin <br /><br/>
+											
+										Les étapes suivantes sont à exécuter :
+								   </p>
+								   <br/>
+								   
+									<li>Analyse des décisions</li>
+							   
+								   <p>
+										Détermine les demandes avec retenue 
+										<br/><br/>
+								   </p>
+								   
+									<li>Fermeture des décisions</li>
+							   
+								  	<p>
+										Détermine les demandes dont le conjoint a un dossier, clôture les demandes<br/><br/>
+								  	</p>
+								   
+									<li>Calcule des décisions</li>
+							   
+								  	<p>
+										Détermine les demandes non calculables, effectue les copies et les calculs
+										<br/><br/>
+								  	</p>
+							   
+									<li>Validation des décisions</li>
+							   
+								  	<p>
+										Valide les décisions
+										<br/><br/>
+								  	</p>
+							   
+									<li>Impression des décisions</li>
+									<p>
+										Génère les décisions qui sont envoyées par e-mail ou déposées sur un serveur FTP<br/>
+										
+										<br/>
+								    </p>
+							   </ol>
+						   ]]>
+					</value>
+				</entry>
+			</map>
+		</property>
+		<!--  lien pour entites dans applis -->
+		<property name="urlEntite" value="perseus?userAction=perseus.decision.decision.chercher" />
+			
+<!-- 		 jsp pour passer param -->
+		<property name="urlProperties" value="perseus?perseus.process.traitementAnnuel.afficher" />	
+		<property name="steps">
+			<map>
+				<entry key="analyseDesDecisions">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="ch.globaz.perseus.process.traitementAnnuel.analyseDesDecisions.PFProcessTraitementAnnuelAnalyseDesDecisionsStep" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="5" />
+						<property name="order" value="1" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Analyse des décisions" />
+								<entry key="DE" value="Analyse des décisions" />
+								<entry key="IT" value="Analyse des décisions" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				
+				<entry key="fermetureDesDecisions">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property  name="classNameStep" value="ch.globaz.perseus.process.traitementAnnuel.fermetureDesDecisions.PFProcessTraitementAnnuelFermetureStep" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="5" />
+						<property name="isOptional" value="true" />
+						<property name="order" value="2" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Fermeture des décisions" />
+								<entry key="DE" value="[de]Fermeture des décisions" />
+								<entry key="IT" value="[it]Fermeture des décisions" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				
+				<entry key="calculDesDecisions">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property  name="classNameStep" value="ch.globaz.perseus.process.traitementAnnuel.calculDesDecisions.PFProcessTraitementAnnuelCalculStep" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="5" />
+						<property name="isOptional" value="true" />
+						<property name="order" value="3" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Calcul des décisions" />
+								<entry key="DE" value="[de]Calcul des décisions" />
+								<entry key="IT" value="[it]Calcul des décisions" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+
+				<entry key="validationDesDecisions">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property  name="classNameStep" value="ch.globaz.perseus.process.traitementAnnuel.validationDesDecisions.PFProcessTraitementAnnuelValidationStep" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="5" />
+						<property name="isOptional" value="true" />
+						<property name="order" value="4" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Validation des décisions" />
+								<entry key="DE" value="[de]Validation des décisions" />
+								<entry key="IT" value="[it]Validation des décisions" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="impressionDesDecisions">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property  name="classNameStep" value="ch.globaz.perseus.process.traitementAnnuel.impressionDesDecisions.PFProcessTraitementAnnuelImpressionStep" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="5" />
+						<property name="isOptional" value="true" />
+						<property name="order" value="5" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Impression des décisions" />
+								<entry key="DE" value="[de]Impression des décisions" />
+								<entry key="IT" value="[it]Impression des décisions" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+</beans>

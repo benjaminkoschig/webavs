@@ -1,0 +1,57 @@
+@CHARSET "ISO-8859-1";
+
+.sansRente,
+.sansEcheance {
+	background: none repeat scroll 0 0 #FA5858;
+	height: 22px;
+}
+
+.sansRente strong,
+.sansEcheance strong {
+	position: relative;
+	top: 4px;
+}
+
+.forcerHauteurTR,
+.rente,
+.echeance {
+	height: 22px;
+}
+
+.preparationCommon tbody tr {
+	height: 22px;	
+}
+
+.divExecuterProcess {
+	display: block;
+}
+
+#executerProcess {
+	display: inline-block;
+	position: relative;
+	left: 40%;
+}
+
+#imageOK {
+	display: inline-block;
+	position: relative;
+	vertical-align: middle;
+	left: 40%;
+	width: 10%;
+}
+
+.mainContainerAjax .areaDataTable td.textAlignLeft, 
+.area .areaDataTable td.textAlignLeft {
+	text-align: left;
+	padding-left: 5px;
+}
+
+.mainContainerAjax .areaDataTable td.textAlignRight, 
+.area .areaDataTable td.textAlignRight {
+	text-align: right;
+	padding-right: 5px;
+}
+
+.divBoutonsTableauAjax {
+	padding-top: 5px;
+}

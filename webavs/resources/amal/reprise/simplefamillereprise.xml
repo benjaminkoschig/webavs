@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.reprise.SimpleFamilleReprise">
+		<description>Famille Contribuable Reprise RP_AMAL_MAFAMILL</description>
+		<table name="RP_AMAL_MAFAMILL" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idFamille" column="ID_FAMILLE" comment=""/>
+			<field name="idContribuable" column="ID_CONTRIBUABLE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_CONTRIBUABLE"/>
+			<field name="idTiers" column="ID_TIERS" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="IdTier"/>
+			<field name="noAVS" column="NUMERO_AVS" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="NUMERO_AVS"/>
+			<field name="pereMereEnfant" column="PERE_MERE_ENFANT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="PERE_MERE_ENFANT"/>
+			<field name="nomPrenom" column="NOM_PRENOM" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="NOM_PRENOM"/>
+			<field name="dateNaissance" column="DATE_NAISSANCE" type="DATE" mandatory="false" comment="DATE_NAISSANCE"/>
+			<field name="sexe" column="SEXE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="SEXE"/>											 
+			<field name="finDefinitive" column="FIN_DEFINITIVE" type="MONTH_YEAR" dataType="NUMERIC(6,0)" mandatory="false" comment="FIN_DEFINITIVE"/>
+			<field name="codeTraitementDossier" column="CODE_TRAITEMENT_DOSSIER" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="CODE_TRAITEMENT_DOSSIER"/>
+			<field name="nnssContribuable" column="NNSS_CONTRIBUABLE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="NNSS_CONTRIBUABLE"/>
+			<field name="typeNoPersonne" column="TYPE_NUMERO_PERSONNE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="TYPE_NUMERO_PERSONNE"/>
+			<field name="noPersonne" column="NUMERO_PERSONNE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="NUMERO_PERSONNE"/>
+			<field name="typeAvisRIP" column="TYPE_AVIS_RIP" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="TYPE_AVIS_RIP"/>
+			<field name="dateAvisRIP" column="DATE_AVIS_RIP" type="DATE" mandatory="false" comment="DATE_AVIS_RIP"/>
+			<field name="isActive" column="IS_ACTIVE" type="BOOLEAN" mandatory="false" comment="Is active"/>
+			<field name="isContribuable" column="IS_CONTRIBUABLE" type="BOOLEAN" mandatory="false" comment="Is contribuable"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdFamille" field-ref="idFamille" operation="EQUALS"/>
+				<search-field name="isContribuable" field-ref="isContribuable" operation="EQUALS"/>
+				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS"/>		
+				<search-field name="forPereMereEnfant" field-ref="pereMereEnfant" operation="EQUALS"/>		
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="isContribuable" />			
+			<order-field field-ref="pereMereEnfant" />			
+			<order-field field-ref="nomPrenom" />
+		</order-by>
+		
+		<!-- INDEX CREATION : CREATE INDEX MAFAMIL1 on MAFAMILL (IDCONT); -->
+		
+	</simple-model>
+</model-mapping>

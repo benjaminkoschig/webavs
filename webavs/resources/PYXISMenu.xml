@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?> 
+<?xml-stylesheet type="text/xsl" href="menuHtml.xslt"?>
+
+<menus>
+	
+	<!-- Menu principal -->
+	
+	<menu id="TIMenuPrincipal">
+		<label refId="MENU_PRINCIPAL"/>
+		<nodes>
+			<node>
+				<!-- Menu tiers -->
+				<label refId="MENU_TIERS"/>
+				<nodes>
+				<node>
+				<label refId="VG_VUE_GLOBALE"/>
+				<action command="/pyxis" responseTarget="fr_main">
+					<parameter name="userAction" value="pyxis.tiers.summary.afficher"/>
+				</action>	
+			</node>
+					<node>
+						<label refId="MENU_RECHERCHE"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.tiers.tiers.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_BANQUE"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.tiers.banque.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_ADMINISTRATION"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.tiers.administration.chercher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node>
+				<!-- Menu adresse courrier -->
+				<label refId="MENU_ADRESSES_DE_COURRIER"/>
+				<nodes>
+					<node>
+						<label refId="MENU_RECHERCHE"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.adressecourrier.adresse.chercher"/>
+								<parameter name="colonneSelection" value="no"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PAYS"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.adressecourrier.pays.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LOCALITE"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.adressecourrier.localite.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_GROUPE_LOCALITE"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.adressecourrier.theGroupeLocalite.chercher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node>
+				<!-- Menu adresse de paiement -->
+				<label refId="MENU_ADRESSES_DE_PAIEMENT"/>
+				<nodes>
+					<node>
+						<label refId="MENU_RECHERCHE"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.adressepaiement.adressePaiement.chercher"/>
+								<parameter name="colonneSelection" value="no"/>
+						</action>
+					</node>
+					<node>
+						<label refId="LIST_ADRPMT_PAR_BANQUE"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.adressepaiement.adressePaiementParBanque.afficher"/>
+								<parameter name="colonneSelection" value="no"/>
+						</action>
+					</node>
+					
+					
+				</nodes>
+			</node>
+			
+			<node>
+				<!-- Menu principal IBAN -->
+				<label refId="MENU_IBAN"/>
+				<nodes>
+					<node>
+						<label refId="MENU_ADRPMT_EXPORT"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.iban.adressePaiementExport.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_CONVERSION_IBAN"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.iban.convert.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_ADRPMT_IMPORT"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.iban.adressePaiementImport.afficher"/>
+						</action>
+					</node>
+					<!-- 
+					<node>
+						<label refId="MENU_ADRPMT_SUMMARY"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.adressepaiement.summary.afficher"/>
+						</action>
+					</node>
+					 -->
+				</nodes>
+			</node>	
+			
+			<node>
+				<!-- Menu divers -->
+				<label refId="MENU_DIVERS"/>
+				<nodes>
+					<node>
+						<label refId="MENU_CONTACT"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.tiers.contact.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_ANNONCES"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.divers.annonce.imprimer" /> 
+						</action>
+					</node>
+					<!--
+					<node>
+						<label refId="MENU_LISTE_DE_NUMEROS_D_AFFILIE"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.divers.listeNumerosAffilie.imprimer"/>
+						</action>
+					</node>
+					-->
+					<node>
+						<label refId="MENU_LISTE_DES_RENTIERS"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.divers.listeRentiers.imprimer"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_LISTE_DES_PERSONNES_DECEDEES"/>
+						<action command="/naos" responseTarget="fr_main">
+								<parameter name="userAction" value="naos.listeDeces.listeDeces.afficher"/>
+						</action>
+					</node>
+					<!--
+					<node>
+						<label refId="MENU_FUSION_BANQUE"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.tiers.fusionBanque.afficher"/>
+						</action>
+					</node>
+					-->
+					<node>
+						<label refId="MENU_MAINTENANCE"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.maintenance.maintenance.importer"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_FUSION_LOCALITE"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.maintenance.fusionLocalite.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="FUSION_TIERS"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.fusiontiers.fusionTiers.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_CASCADE_DOMAINE"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.divers.cascadeDomaineByDomaine.chercher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_GROUPE_DOMAINE"/>
+						<action command="/pyxis" responseTarget="fr_main">
+								<parameter name="userAction" value="pyxis.divers.groupeDomaine.chercher"/>
+						</action>
+					</node>					
+				</nodes>
+			</node>	
+		</nodes>
+	</menu>
+	
+	
+	<!-- Menus Options -->
+
+	<!-- Options des  administrations -->
+	<menu id="tiers-administration">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="MENU_ADRESSES_DE_COURRIER"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.adressecourrier.avoirAdresse.afficher" />
+						<parameter name="_method" value="add"/>
+						<parameter name="back" value="_sl"/>
+						<parameter name="idTiers"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_ADRESSES_DE_PAIEMENT"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.adressepaiement.avoirPaiement.afficher" />
+						<parameter name="_method" value="add"/>
+						<parameter name="back" value="_sl"/>
+						<parameter name="idTiers"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_CONTACTS"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.tiers.avoirContact.afficher" />
+						<parameter name="_method" value="add"/>
+						<parameter name="idTiers"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_LIENS_ENTRE_TIERS"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.tiers.compositionTiers.chercher" />
+						<parameter name="idTiers" value=""/> 
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_LIENS_SUR_LOCALITE"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.adressecourrier.theAvoirGroupeLocalite.chercher"/>
+						<parameter name="idTiers"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+		
+	<!-- Options des banques -->
+
+	<menu id="tiers-banque">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="MENU_ADRESSES_DE_COURRIER"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.adressecourrier.avoirAdresse.afficher" />
+						<parameter name="_method" value="add"/>
+						<parameter name="back" value="_sl"/>
+						<parameter name="idTiers"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_ADRESSES_DE_PAIEMENT"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.adressepaiement.avoirPaiement.afficher" />
+						<parameter name="_method" value="add" />
+						<parameter name="back" value="_sl"/>
+						<parameter name="idTiers"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_CONTACTS"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.tiers.avoirContact.afficher" />
+						<parameter name="_method" value="add" />
+						<parameter name="idTiers" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_LIENS_ENTRE_TIERS"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.tiers.compositionTiers.chercher" />
+						<parameter name="idTiers" value="" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_TIERS_UTILISANT_CETTE_BANQUE"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.adressepaiement.adressePaiementLieBanque.imprimer" />
+						<parameter name="idTiers" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Options des tiers -->
+
+	<menu id="tiers-detail">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="VG_VUE_GLOBALE"/>
+				<action command="/pyxis" responseTarget="fr_main">
+					<parameter name="userAction" value="pyxis.tiers.summary.afficher"/>
+					<parameter name="idTiers"/>
+				</action>	
+			</node>
+			<node>
+				<label refId="MENU_ADRESSES_DE_COURRIER"/>
+				<action command="/pyxis" responseTarget="fr_main">
+					<parameter name="userAction" value="pyxis.adressecourrier.avoirAdresse.afficher"/>
+					<parameter name="_method" value="add" />
+					<parameter name="back" value="_sl"/>
+					<parameter name="idTiers"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_ADRESSES_DE_PAIEMENT"/>
+				<action command="/pyxis" responseTarget="fr_main">
+					<parameter name="userAction" value="pyxis.adressepaiement.avoirPaiement.afficher"/>
+					<parameter name="_method" value="add" />
+					<parameter name="back" value="_sl"/>
+					<parameter name="idTiers"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_MAISON_MERE_SUCCURSALES"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.tiers.compositionTiers.dirigerMaisonMere"/>
+						<parameter name="idTiers"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_ROLE"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.tiers.role.chercher"/>
+						<parameter name="idTiers"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_ADMINISTRE_PAR"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.tiers.administrerPar.chercher"/>
+						<parameter name="idTiers"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_CONTACTS"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.tiers.avoirContact.afficher"/>
+						<parameter name="_method" value="add"/>
+						<parameter name="idTiers"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_ALIAS"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.tiers.alias.chercher"/>
+						<parameter name="idTiers"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_LIENS_ENTRE_TIERS"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.tiers.compositionTiers.chercher"/>
+						<parameter name="idTiers"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_CONJOINT"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.tiers.compositionTiers.dirigerConjoint"/>
+						<parameter name="selectedId"/>
+						<parameter name="idTiers"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_LIENS_SUR_LOCALITE"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.adressecourrier.theAvoirGroupeLocalite.chercher"/>
+						<parameter name="idTiers"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_HISTORIQUE_AVS"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.tiers.histoNumAvs.chercher"/>
+						<parameter name="idTiers"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_HISTORIQUE_CONTRIBUABLE"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.tiers.histoNumContribuable.chercher"/>
+						<parameter name="idTiers"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_HISTORIQUE_TIERS"/>
+				<action command="/pyxis" responseTarget="fr_main">
+						<parameter name="userAction" value="pyxis.tiers.histoTiers.chercher"/>
+						<parameter name="idTiers"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>	
+
+
+	<!-- Options des adresses de courriers -->
+	<menu id="adresseCourrier-detail">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="MENU_ADRESSE_UTILISEE_PAR"/>
+				<action command="/pyxis" responseTarget="fr_main">
+					<parameter name="userAction" value="pyxis.adressecourrier.adresseUtilisee.chercher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Options des adresses de paiements -->	
+	<menu id="adressePaiement-detail">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="MENU_ADRESSE_UTILISEE_PAR"/>
+				<action command="/pyxis" responseTarget="fr_main">
+					<parameter name="userAction" value="pyxis.adressepaiement.adressePaiementUtilisee.chercher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Options des moyens de communications -->	
+	<menu id="moyenCommunication-detail">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="MENU_MOYENS_DE_COMMUNICATION"/>
+				<action command="/pyxis" responseTarget="fr_main">
+					<parameter name="userAction" value="pyxis.tiers.moyenCommunication.chercher"/>
+					<parameter name="idContact"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Options avoir contact -->	
+	<menu id="avoirContact-detail">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="MENU_MOYENS_DE_COMMUNICATION"/>
+				<action command="/pyxis" responseTarget="fr_main">
+					<parameter name="userAction" value="pyxis.tiers.moyenCommunication.chercher"/>
+					<parameter name="idContact"/>
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_CONTACT"/>
+				<action command="/pyxis" responseTarget="fr_main">
+					<parameter name="userAction" value="pyxis.tiers.contact.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>			
+		</nodes>
+	</menu>
+
+	<!-- Options des groupes de localités -->	
+	<menu id="groupeLocalite">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label defaultValue="Localités"/>
+				<action command="/pyxis" responseTarget="fr_main">
+					<parameter name="userAction" value="pyxis.adressecourrier.theLocaliteLieeGroupe.chercher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- Options fusion des tiers -->
+	<menu id="fusionTiers">
+		<label refId="MENU_OPTIONS"/>
+		<nodes>
+			<node>
+				<label refId="FUSION_TIERS_ETAT"/>
+				<action command="/pyxis" responseTarget="fr_main">
+					<parameter name="userAction" value="pyxis.fusiontiers.historiqueFusionTiersEtat.chercher"/>
+					<parameter name="idFusionsTiers"/>
+					<parameter name="dateFusion"/>
+					<parameter name="masterNSS"/>
+					<parameter name="masterNom"/>
+					<parameter name="slaveNSS"/>
+					<parameter name="slaveNom"/>
+					<parameter name="statutFusion"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+			
+	<menu id="TIMenuLienTiers">
+		<label refId="MENU_OPTIONS"/>
+		
+	</menu>
+	
+	<menu id="TIMenuVide">
+		<label refId="MENU_OPTIONS"/>
+		
+	</menu>
+	
+</menus>

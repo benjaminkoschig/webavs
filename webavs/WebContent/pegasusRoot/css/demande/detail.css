@@ -1,0 +1,11 @@
+.standardLabel{
+	font-weight: bold;
+}
+
+.separator{
+	height: 2px;
+	color: #226194;
+	background-color: #226194;
+	width: 100%;
+	border: none;
+}

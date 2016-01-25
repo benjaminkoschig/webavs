@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.envoi.EnvoiItemSimpleModel">
+		<description>Données envois (status) et link avec dossier</description>
+		<table name="ALCTLENV" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idEnvoi" column="IDENV" comment="Clef primaire Envoi"/>
+			<field name="idJob" column="IDJOB" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_JOB_EN_RELATION"/>
+			<field name="idExternalLink" column="IDEXT" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_DOSSIER_EN_RELATION"/>
+			<field name="idFormule" column="IDFOR" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_FORMULE_EN_RELATION"/>
+			<field name="envoiStatus" column="CSENVS" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="STATUS_ENVOI"/>
+			<field name="envoiType" column="CSENVT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="TYPE_ENVOI"/>
+			<field name="envoiNoGroupe" column="ENVGRO" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="NUMERO_DE_GROUPE_ENVOI"/>
+			<field name="envoiError" column="ENVERR" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="DESCRIPTION ERREUR "/>
+			<field name="envoiFileName" column="ENVFIL" type="STRING" dataType="VARCHAR(50)" mandatory="false" comment="Nom du fichier sans path"/>
+		</fields>
+
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdEnvoi" field-ref="idEnvoi" operation="EQUALS"/>
+				<search-field name="forIdJob" field-ref="idJob" operation="EQUALS"/>
+				<search-field name="forIdExternalLink" field-ref="idExternalLink" operation="EQUALS"/>
+				<search-field name="forIdFormule" field-ref="idFormule" operation="EQUALS"/>
+				<search-field name="forEnvoiStatus" field-ref="envoiStatus" operation="EQUALS"/>
+				<search-field name="forNotStatusEnvoi" field-ref="envoiStatus" operation="NOT_EQUALS"/>
+				<search-field name="forEnvoiType" field-ref="envoiType" operation="EQUALS"/>
+				<search-field name="forEnvoiNoGroupe" field-ref="envoiNoGroupe" operation="EQUALS"/>
+				<search-field name="forEnvoiFileName" field-ref="envoiFileName" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by name="default">
+			<order-field field-ref="idEnvoi" order="DESC"/>
+		</order-by>
+		
+	</simple-model>
+</model-mapping>

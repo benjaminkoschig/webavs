@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.donneesfinancieres.SimpleDonneeFinanciereSpecialisation">
+		<description>Tables de spécialisation des données financières pour les membres de la famille dans PC Familles</description>
+		<table name="PFDONSPE" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idDonneeFinanciereSpecialisation" column="ILIDDS" comment="Clé primaire de la table des spécialisation de données financières"/>
+			<field name="idDonneeFinanciere" column="ILIDDF" type="NUMERIC" mandatory="true" comment="Identifiant de la donnée financière"/>
+			<field name="tauxOccupation" column="ILTAOC" type="NUMERIC" dataType="NUMERIC(3)" comment="taux d'occupations pour les activités lucratives"/>
+			<field name="nbPersonnesLogement" column="ILNPLO" type="NUMERIC" dataType="NUMERIC(2)" comment="nombre de personnes dans un logement pour un loyer"/>
+			<field name="tailleUniteAssistance" column="ILUNAS" type="NUMERIC" comment="taille de l'unité d'assistance pour un loyer"/>
+			<field name="nomHoirie" column="ILHOIR" type="STRING" comment="Nom d'une hoirie"/>
+			<field name="dateCession" column="ILDCESS" type="DATE" comment="Date de cession de capitaux"/>
+			<field name="dateDebut" column="ILDDEB" type="DATE" comment="Date de début"/>
+			<field name="dateFin" column="ILDFIN" type="DATE" comment="Date de fin"/>
+			<field name="penurieLogement" column="ILPENU" type="BOOLEAN" comment="Indique si il y'a pénurie de logement pour la localité du loyer"/>
+			<field name="listCsTypeRentes" column="ILTYRE" type="STRING" comment="Liste des codes systèmes des types de rentes" />
+			<field name="avec13eme" column="ILA13E" type="BOOLEAN" comment="Avec 13ème salaire ?" />
+			<field name="plusieursEmployeurs" column="ILPLEM" type="BOOLEAN" comment="Employé a plusieurs employeurs ?" />
+		</fields>
+	
+		<!--
+		<search-definition>
+			<search-group operator="AND">
+				<search-literal>
+					<declare-model name="simpleDonneeFinanciere" model-ref="ch.globaz.perseus.business.models.donneesfinancieres.SimpleDonneeFinanciere" />
+					<![CDATA[
+						#(idDonneeFinanciere) IN (
+							SELECT #(simpleDonneeFinanciere.idDonneeFinanciere) FROM @(simpleDonneeFinanciere)
+							WHERE #(simpleDonneeFinanciere.idDemande) = $(forIdDemande:simpleDonneeFinanciere.idDemande)
+						)	 
+					]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+
+		<search-definition name="withMembreFamille">
+			<search-group operator="AND">
+				<search-literal>
+					<declare-model name="simpleDonneeFinanciere" model-ref="ch.globaz.perseus.business.models.donneesfinancieres.SimpleDonneeFinanciere" />
+					<![CDATA[
+						#(idDonneeFinanciere) IN (
+							SELECT #(simpleDonneeFinanciere.idDonneeFinanciere) FROM @(simpleDonneeFinanciere)
+							WHERE #(simpleDonneeFinanciere.idDemande) = $(forIdDemande:simpleDonneeFinanciere.idDemande)
+							AND #(simpleDonneeFinanciere.idMembreFamille) = $(forIdMembreFamille:simpleDonneeFinanciere.idMembreFamille)
+						)	 
+					]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+		-->
+		
+	</simple-model>
+</model-mapping>

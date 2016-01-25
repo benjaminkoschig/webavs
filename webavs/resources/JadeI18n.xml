@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--globaz.jade.i18n.JadeI18n: service d'internationalisation-->
+<!--  import: nom du fichier a partir duquel importer les proprietes-->
+<!--  verbose: indique si le service doit fonctionner en mode verbose (true, false), false par defaut-->
+<globaz.jade.i18n.JadeI18n>
+	<!--providers: liste des providers a utiliser-->
+	<providers>
+		<!--provider: declaration d'un provider-->
+		<!--- name [REQUIRED]: nom du provider -->
+		<!--- class [REQUIRED]: classe implementant le provider: -->
+		<!--    globaz.jade.i18n.JadeI18nProviderGlobazI18NFile-->
+		<!--      -> pour charger les chaines contenues dans le fichier globazI18N.txt-->
+		<!--    globaz.jade.i18n.JadeI18nProviderPropertiesFile-->
+		<!--      -> pour charger les chaines contenues dans un fichier propriétés-->
+
+		<!-- COMMON -->
+		<provider name="commonimplprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>commonbusinessmessages.properties</filename>
+		</provider>
+		
+		<!-- PC -->
+		<provider name="pegasusimplprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<!--filename: nom du fichier propriete a charger -->
+			<filename>pegasusbusinessimpl.properties</filename>
+		</provider>
+
+		<!-- PC Famille -->
+		<provider name="perseusimplprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>perseusbusinessmessages.properties</filename>
+		</provider>
+
+		<!-- APG -->
+		<provider name="APGBusinessTexts" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>apgbusines.properties</filename>
+		</provider>
+
+		<!-- AMAL -->
+		<provider name="amalimplprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>amalbusinessimpl.properties</filename>
+		</provider>
+		
+		<!-- ARIES -->
+		<provider name="ariesimplprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>ariesbusinessmessages.properties</filename>
+		</provider>
+		
+		<provider name="ariesprintingprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<!--filename: nom du fichier propriete a charger -->
+			<filename>ariesprinting.properties</filename>
+		</provider>
+		
+		<!-- AURIGA -->
+		<provider name="aurigaimplprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>aurigabusinessmessages.properties</filename>
+		</provider>
+		
+		<provider name="aurigaprintingprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<!--filename: nom du fichier propriete a charger -->
+			<filename>aurigaprinting.properties</filename>
+		</provider>
+
+		<!-- NAOS -->
+		<provider name="NaosBusinessProperties" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>naosbusiness.properties</filename>
+		</provider>
+
+		<!-- AF -->
+		<provider name="ALBusinessProperties" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>albusiness.properties</filename>
+		</provider>
+		<provider name="ALDecisionsTextes" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>aldecisiontextes.properties</filename>
+		</provider>
+		<provider name="ALGeneration" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>algeneration.properties</filename>
+		</provider>
+		<provider name="ALProtocoles" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>alprotocoles.properties</filename>
+		</provider>
+		<provider name="ALEcheances" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>alecheances.properties</filename>
+		</provider>
+		<provider name="ALLettreAccompagnement" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>allettreaccompagnement.properties</filename>
+		</provider>
+		<provider name="ALRecapitulatifEntreprise" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>alrecapitulatifentreprise.properties</filename>
+		</provider>
+		<provider name="ALProcessus" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>alprocessus.properties</filename>
+		</provider>
+		<provider name="ALDeclarationVersement" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>aldeclarationversement.properties</filename>
+		</provider>
+		<provider name="ALDocumentCommun" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>aldocumentcommun.properties</filename>
+		</provider>
+		<provider name="ALAdiDecomptes" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>aladidecomptes.properties</filename>
+		</provider>
+		<provider name="ALRAFAM" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>alrafam.properties</filename>
+		</provider>
+		<provider name="ALJournalisation" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>aljournalisation.properties</filename>
+		</provider>
+		<provider name="ALCalcul" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>alcalcul.properties</filename>
+		</provider>
+		<provider name="ALCheckParam" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>alcheckparam.properties</filename>
+		</provider>
+		<provider name="ALProcess" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>alprocess.properties</filename>
+		</provider>
+		<provider name="ALAttesVers" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>alattestationsversement.properties</filename>
+		</provider>
+		<!-- BMS -->
+		<provider name="vulpeculaimplprovider" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<!--filename: nom du fichier propriete a charger -->
+			<filename>vulpeculabusinessimpl.properties</filename>
+		</provider>
+	
+		<!--PARAM-->
+		<provider name="ParamBusinessProperties" class="globaz.jade.i18n.JadeI18nProviderPropertiesFile">
+			<filename>parambusiness.properties</filename>
+		</provider>
+
+	</providers>
+</globaz.jade.i18n.JadeI18n>

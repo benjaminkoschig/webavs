@@ -1,0 +1,14 @@
+Ce package est censé remplacer le contenu du package globaz.module.calcul du projet AVS.
+
+La volonté est d'avoir :
+- des calculateurs testable via tests unitaire donc découplé de la persistance via (au mieux) des interfaces ou des entités de domain
+- chacun de ces calculateur dot implémenter l'interface IAPCalculateur qui possède 3 méthodes :
+-- calculerPrestation
+-- persistanceToDomain : conversion des objets remontés depuis la DB vers des objets de domaines afin de réaliser le calcul
+-- domainToPersistence : conversion des objets de domaine vers des objects capable de se persister
+
+
+Le but est également de respecter une structure de package :
+- un package par calculateur qui contient l'implémentation du calculateur ainsi que les objects spécifiques au calculateur (objet de domaine, etc)
+- une subdivision peut-être envisagée dans certain cas ex les prestations ACM sont divisées en 2 sous-types 
+ 

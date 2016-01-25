@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<model-mapping import="amal/controleurenvoi/simplecontroleurjob.xml"/>
+	<model-mapping import="amal/controleurenvoi/simplecontroleurenvoistatus.xml"/>
+	<model-mapping import="amal/controleurenvoi/complexcontroleurenvoi.xml"/>
+	<model-mapping import="amal/controleurenvoi/complexcontroleurenvoidetail.xml"/>
+	<model-mapping import="amal/controleurenvoi/complexcontroleurannoncedetail.xml"/>
+</model-mapping>

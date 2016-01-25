@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.decision.ForDeleteDecision">
+			
+		<select-fields>
+		    <select-field name="idDecisionHeader" field-ref="simpleDecisionHeader.idDecisionHeader" />
+			<select-field name="csTypeDecision" field-ref="simpleDecisionHeader.csTypeDecision" />
+		</select-fields>
+		
+		<root-model name="simpleDecisionHeader" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader" select-fields="false"/>
+		
+		<linked-model name="simpleValidationDecision" model-ref="ch.globaz.pegasus.business.models.decision.SimpleValidationDecision" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="simpleDecisionHeader.idDecisionHeader"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="simpleValidationDecision.idPCAccordee"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND"> 
+			    <search-field name="forIdPcAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPCAccordee"/>
+			    <search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+			    <search-field name="inCsTypeDecsion" operation="IN" field-ref="simpleDecisionHeader.csTypeDecision"/>
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

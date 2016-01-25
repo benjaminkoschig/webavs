@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.traitementdemasse.SimpleEchantillon">
+		<description>Contient la source qui permetre de définir un echantillon (population)</description>
+		<table name="PCECHANT" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idEchantillon" column="ADIECH" comment="ID_ECHANTILON"/>
+			<field name="csType" mandatory="true" column="ADCSTY" type="NUMERIC" comment="TYPE_ECHANTILLON"/>
+			<field name="columnNameIdRef" mandatory="true" column="ADCNID" type="STRING" dataType="VARCHAR(255)" comment="COLUM_NAME_ID_REF"/>
+			<field name="tableNameId" mandatory="true" column="ADTAID" type="STRING" dataType="VARCHAR(255)" comment="NAME_TALBE_ID"/>	
+			<field name="description" column="ACDESC" type="STRING" dataType="VARCHAR(255)" comment="DESCRIPTION"/>
+			<field name="className" mandatory="true" column="ADCLNA" type="STRING" dataType="VARCHAR(255)" comment="CLASS_NAME"/>	
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forDescriptionLike" operation="LIKE" field-ref="description" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping> 

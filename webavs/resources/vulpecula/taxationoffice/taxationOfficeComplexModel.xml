@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.taxationoffice.TaxationOfficeComplexModel">
+
+		<root-model name="taxationOfficeSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.taxationoffice.TaxationOfficeSimpleModel" />
+
+		<linked-model name="decompteComplexModel"
+			model-ref="ch.globaz.vulpecula.business.models.decomptes.DecompteComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="decompteSimpleModel.id"
+					operation="EQUALS" field-ref="taxationOfficeSimpleModel.idDecompte" />
+			</join-group>
+		</linked-model>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="taxationOfficeSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIds" field-ref="taxationOfficeSimpleModel.id"
+					operation="IN" />
+				<search-field name="forIdDecompte"
+					field-ref="taxationOfficeSimpleModel.idDecompte" operation="EQUALS" />
+				<search-field name="forIdEmployeur"
+					field-ref="decompteComplexModel.decompteSimpleModel.idEmployeur" operation="EQUALS" />
+				<search-field name="forIdPassageFacturation"
+					field-ref="taxationOfficeSimpleModel.idPassageFacturation" operation="EQUALS" />
+				<search-field name="forEtatIn"  field-ref="taxationOfficeSimpleModel.etat" operation="IN" />
+				<search-field name="forEtatNotIn"  field-ref="taxationOfficeSimpleModel.etat" operation="NOT_IN" />
+				<search-field name="forDateDe"
+					field-ref="decompteComplexModel.decompteSimpleModel.periodeDebut" operation="GREATER_OR_EQUALS" />
+				<search-field name="forDateAu"
+					field-ref="decompteComplexModel.decompteSimpleModel.periodeDebut" operation="LESS_OR_EQUALS" />	
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

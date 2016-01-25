@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.contribuable.SimpleContribuableInfos">
+		<description>Infos Contribuable</description>
+		<table name="MACTBINF" hasSpy="true" hasCreationSpy="false" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idContribuableInfo" column="IDCTBI" comment="Id Contribuable info"/>
+			<field name="idContribuable" column="IDCONT" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="Id contribuable"/>
+			<field name="civilite" column="CIVILI" type="STRING" dataType="VARCHAR(24)" comment="civilite"/>
+			<field name="nom" column="NOMFAM" type="STRING" dataType="VARCHAR(40)" comment="Nom"/>
+			<field name="prenom" column="PRENOM" type="STRING" dataType="VARCHAR(40)" comment="prenom"/>
+			<field name="adresse1" column="ADRES1" type="STRING" dataType="VARCHAR(24)" comment="adresse1"/>			
+			<field name="adresse2" column="ADRES2" type="STRING" dataType="VARCHAR(24)" comment="adresse2"/>			
+			<field name="adresse3" column="ADRES3" type="STRING" dataType="VARCHAR(24)" comment="adresse3"/>
+			<field name="rue" column="RUE" type="STRING" dataType="VARCHAR(24)" comment="rue"/>
+			<field name="numero" column="NUMERO" type="STRING" dataType="VARCHAR(24)" comment="numero"/>			
+			<field name="casepostale" column="CASEPO" type="STRING" dataType="VARCHAR(24)" comment="case postale"/>			
+			<field name="npa" column="NPA" type="STRING" dataType="VARCHAR(8)" comment="numero postal"/>			
+			<field name="commune" column="COMMUNE" type="STRING" dataType="VARCHAR(24)" comment="commune"/>
+			<field name="dateNaissance" column="DNAISS" type="DATE" comment="date de naissance"/>
+			<field name="pDateNaissance" column="PDNAIS" type="DATE" comment="??"/>
+			<field name="cDateNaissance" column="CDNAIS" type="DATE" comment="??"/>
+			<field name="numeroContribuableActuel" column="NCACT" type="NUMERIC" dataType="NUMERIC(11,0)" comment="numero contribuable"/>
+			<field name="numeroContribuableActuelFormate" column="NCACTF" type="STRING" dataType="VARCHAR(15)" comment="numero contribuable formate"/>
+			<field name="numeroContribuableNouveauFormatNouvelleValeur" column="NCNFNV" type="STRING" dataType="VARCHAR(15)" comment="numero contribuable nouveau"/>
+			<field name="numeroContribuableNouveauFormatAncienneValeur" column="NCNFAV" type="STRING" dataType="VARCHAR(15)" comment="numero contribuable nouveau precedent"/>
+			<field name="numeroContribuableAncienFormatNouvelleValeur" column="NCAFNV" type="STRING" dataType="VARCHAR(15)" comment="numero contribuable ancien"/>
+			<field name="numeroContribuableAncienFormatAncienneValeur" column="NCAFAV" type="STRING" dataType="VARCHAR(15)" comment="numero contribuable ancien precedent"/>
+			<field name="nnss" column="NNSS" type="STRING" dataType="VARCHAR(20)" comment="NNSS"/>
+			<field name="nomUpper" column="NOMUPP" type="STRING" dataType="VARCHAR(40)" comment="Nom Upper"/>
+			<field name="prenomUpper" column="PREUPP" type="STRING" dataType="VARCHAR(40)" comment="Prenom Upper"/>
+			<field name="isTransfered" column="ISTRAN" type="BOOLEAN" comment="Champ transfere"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

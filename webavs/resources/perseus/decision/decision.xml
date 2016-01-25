@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.decision.Decision">
+		<root-model name="simpleDecision" model-ref="ch.globaz.perseus.business.models.decision.SimpleDecision"/>
+		<linked-model name="demande" model-ref="ch.globaz.perseus.business.models.demande.Demande" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleDemande.idDemande" operation="EQUALS" field-ref="simpleDecision.idDemande"/>
+			</join-group>
+		</linked-model>	
+			
+
+	    <search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="betweenDateValidationDebut" operation="GREATER_OR_EQUALS" field-ref="simpleDecision.dateValidation"/>
+				<search-field name="betweenDateValidationFin" operation="LESS_OR_EQUALS" field-ref="simpleDecision.dateValidation"/>
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simpleDecision.csEtat"/>
+				<search-field name="forUtilisateurPreparation" operation="EQUALS" field-ref="simpleDecision.utilisateurPreparation"/>
+				<search-field name="forUtilisateurValidation" operation="EQUALS" field-ref="simpleDecision.utilisateurValidation"/>
+				<search-field name="forDatePreparation" operation="EQUALS" field-ref="simpleDecision.datePreparation"/>
+				<search-field name="forDateValidation" operation="EQUALS" field-ref="simpleDecision.dateValidation"/>
+				<search-field name="forNumeroDecision" operation="EQUALS" field-ref="simpleDecision.numeroDecision"/>
+				<search-field name="forDateDebutValidation" operation="GREATER_OR_EQUALS" field-ref="simpleDecision.dateValidation"/>
+				<search-field name="forDateDebutDroit" operation="GREATER_OR_EQUALS" field-ref="demande.simpleDemande.dateDebut"/>
+				<search-field name="forCsTypeDecision" operation="EQUALS" field-ref="simpleDecision.csTypeDecision"/>				
+				<search-field name="forNotCsTypeDecision" operation="NOT_EQUALS" field-ref="simpleDecision.csTypeDecision"/>				
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDecision.idDemande"/>				
+				<search-field name="forIdDecision" operation="EQUALS" field-ref="simpleDecision.idDecision"/>				
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="demande.dossier.dossier.idDossier"/>				
+				<search-field name="forIdTiers" operation="EQUALS" field-ref="demande.dossier.demandePrestation.personneEtendue.tiers.idTiers"/>				
+				<search-field name="likeNom" operation="LIKE" field-ref="demande.dossier.demandePrestation.personneEtendue.tiers.designationUpper1"/>				
+				<search-field name="likePrenom" operation="LIKE" field-ref="demande.dossier.demandePrestation.personneEtendue.tiers.designationUpper2"/>				
+				<search-field name="likeNss" operation="LIKE" field-ref="demande.dossier.demandePrestation.personneEtendue.personneEtendue.numAvsActuel"/>  
+				<search-field name="forCsSexe" operation="EQUALS" field-ref="demande.dossier.demandePrestation.personneEtendue.personne.sexe"/>
+				<search-field name="forDateNaissance" operation="EQUALS" field-ref="demande.dossier.demandePrestation.personneEtendue.personne.dateNaissance"/>
+				<search-field name="forListIdDemande" operation="IN" field-ref="demande.simpleDemande.idDemande" />
+				<search-field name="forCsChoix" operation="EQUALS" field-ref="simpleDecision.csChoix" />
+				<search-field name="forCsCaisse" operation="EQUALS" field-ref="demande.simpleDemande.csCaisse" />
+				<search-field name="forDateFin" operation="EQUALS" field-ref="demande.simpleDemande.dateFin" />
+				<search-field name="forDateDebut" operation="EQUALS" field-ref="demande.simpleDemande.dateDebut" />
+				<search-field name="forNotIdDemande" operation="NOT_EQUALS" field-ref="demande.simpleDemande.idDemande" />
+				<search-field name="betweenDateDebut" operation="GREATER_OR_EQUALS" field-ref="demande.simpleDemande.dateDebut"/>
+				<search-field name="betweenDateFin" operation="LESS_OR_EQUALS" field-ref="demande.simpleDemande.dateFin"/>
+				<search-field name="forNumOFS" operation="EQUALS" field-ref="demande.simpleDemande.numeroOFS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withAnneeValable">
+			<search-group operator="AND">
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simpleDecision.csEtat"/>
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="demande.simpleDemande.idDossier" />
+				<search-field name="forCsTypeDecision" operation="EQUALS" field-ref="simpleDecision.csTypeDecision"/>
+				<search-field name="forDateFin" operation="LESS_OR_EQUALS" field-ref="demande.simpleDemande.dateDebut"/>
+				<search-group operator="OR">
+					<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="demande.simpleDemande.dateFin"/>
+					<search-field name="forDateFin" operation="NULL" field-ref="demande.simpleDemande.dateFin" />
+				</search-group>		
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withDateValableForIdDossier">
+			<search-group operator="AND">
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="demande.simpleDemande.idDossier" />
+				<search-field name="forNotIdDemande" operation="NOT_EQUALS" field-ref="demande.simpleDemande.idDemande" />
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simpleDecision.csEtat"/>
+				<search-field name="forCsTypeDecision" operation="EQUALS" field-ref="simpleDecision.csTypeDecision"/>
+				<search-field name="forListCsTypes" operation="IN" field-ref="simpleDecision.csTypeDecision" />
+				<search-group operator="AND">
+					<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="demande.simpleDemande.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="demande.simpleDemande.dateFin"/>
+						<search-field name="forDateValable" operation="NULL" field-ref="demande.simpleDemande.dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withoutDateFin">
+			<search-group operator="AND">
+				<search-field name="forListCsTypes" operation="IN" field-ref="simpleDecision.csTypeDecision" />
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simpleDecision.csEtat"/>
+				<search-field name="forDateFin" operation="NULL" field-ref="demande.simpleDemande.dateFin" />
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="demande.dossier.dossier.idDossier"/>				
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="demande.dossier.demandePrestation.personneEtendue.tiers.designationUpper1"/>
+			<order-field field-ref="demande.dossier.demandePrestation.personneEtendue.tiers.designationUpper2"/>
+			<order-field field-ref="demande.simpleDemande.csEtatDemande"/>
+			<order-field field-ref="demande.simpleDemande.dateDecisionValidation" order="DESC"/>
+			<order-field field-ref="demande.simpleDemande.timeDecisionValidation" order="DESC"/>
+		</order-by>	
+		
+		<order-by name="dateFinDesc">
+			<order-field field-ref="demande.simpleDemande.dateFin" order="DESC"/>
+		</order-by>
+		
+		<order-by name="dateDebutAsc">
+			<order-field field-ref="demande.simpleDemande.dateArrivee" order="ASC"/>
+		</order-by>
+		
+		<order-by name="typeDemandetAsc">
+			<order-field field-ref="demande.simpleDemande.typeDemande" order="ASC"/>
+		</order-by>
+		
+		<order-by name="dateDebutAndDateValidationAndNumDecisionDesc">
+			<order-field field-ref="demande.simpleDemande.dateDebut" order="DESC"/>
+			<order-field field-ref="simpleDecision.dateValidation" order="DESC"/>
+			<order-field field-ref="simpleDecision.numeroDecision" order="DESC"/>
+		</order-by>
+		
+		<order-by name="dateValidationAndNumeroDecisionDesc">
+			<order-field field-ref="simpleDecision.dateValidation" order="DESC"/>
+			<order-field field-ref="simpleDecision.numeroDecision" order="DESC"/>
+		</order-by>
+		
+		<order-by name="dateValidationAndNumeroDecisionAndIdDecisionDesc">
+			<order-field field-ref="simpleDecision.dateValidation" order="DESC"/>
+			<order-field field-ref="simpleDecision.numeroDecision" order="DESC"/>
+			<order-field field-ref="simpleDecision.idDecision" order ="DESC"/>
+		</order-by>
+				
+		<order-by name="dateTimeDecisionDesc">
+			<order-field field-ref="demande.simpleDemande.dateDecisionValidation" order="DESC"/>
+			<order-field field-ref="demande.simpleDemande.timeDecisionValidation" order="DESC"/>
+		</order-by>
+		
+		<order-by name="dateFinAndDateTimeDecisionDesc">
+			<order-field field-ref="demande.simpleDemande.dateFin" order ="DESC"/>
+			<order-field field-ref="demande.simpleDemande.dateDecisionValidation" order="DESC"/>
+			<order-field field-ref="demande.simpleDemande.timeDecisionValidation" order="DESC"/>
+		</order-by>
+		
+		<order-by name="idDossier">
+			<order-field field-ref="demande.dossier.dossier.idDossier"/>
+		</order-by>
+			
+	</complexe-model>
+</model-mapping>

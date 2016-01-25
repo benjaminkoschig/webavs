@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<holidays xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<year value="2013">
+		<month value="1">
+			<day value="1" name="Nouvel-An" fr="Nouvel-An" en="New year's day"/>
+		</month>
+		<month value="3">
+			<day value="19" name="Saint Joseph"/>
+		</month>
+		<month value="4">
+			<day value="23" name="Jour de la Saint-Georges"/>
+		</month>
+		<month value="5">
+			<day value="9" name="Ascension"/>
+			<day value="30" name="Fête-Dieu"/>
+		</month>
+		<month value="6">
+			<day value="13" name="Saint Antoine"/>
+		</month>
+		<month value="8">
+			<day value="1" name="Fête national"/>
+			<day value="15" name="Assomption"/>
+		</month>
+		<month value="11">
+			<day value="1" name="La Toussaint"/>
+		</month>
+		<month value="12">
+			<day value="8" name="Immaculée Conception"/>
+			<day value="25" name="Noël"/>
+		</month>
+	</year>
+	<year value="2014">
+		<month value="1">
+			<day value="1" name="Nouvel-An" fr="Nouvel-An" en="New year's day"/>
+		</month>
+		<month value="3">
+			<day value="19" name="Saint Joseph"/>
+		</month>
+		<month value="4">
+			<day value="23" name="Jour de la Saint-Georges"/>
+		</month>
+		<month value="5">
+			<day value="29" name="Ascension"/>			
+		</month>
+		<month value="6">
+			<day value="13" name="Saint Antoine"/>
+			<day value="19" name="Fête-Dieu"/>
+		</month>
+		<month value="8">
+			<day value="1" name="Fête national"/>
+			<day value="15" name="Assomption"/>
+		</month>
+		<month value="11">
+			<day value="1" name="La Toussaint"/>
+		</month>
+		<month value="12">
+			<day value="8" name="Immaculée Conception"/>
+			<day value="25" name="Noël"/>
+		</month>
+	</year>
+	<year value="2015">
+		<month value="1">
+			<day value="1" name="Nouvel-An" fr="Nouvel-An" en="New year's day"/>
+		</month>
+		<month value="3">
+			<day value="19" name="Saint Joseph"/>
+		</month>
+		<month value="4">
+			<day value="23" name="Jour de la Saint-Georges"/>
+		</month>
+		<month value="5">
+			<day value="14" name="Ascension"/>			
+		</month>
+		<month value="6">
+			<day value="4" name="Fête-Dieu"/>
+			<day value="13" name="Saint Antoine"/>			
+		</month>
+		<month value="8">
+			<day value="1" name="Fête national"/>
+			<day value="15" name="Assomption"/>
+		</month>
+		<month value="11">
+			<day value="1" name="La Toussaint"/>
+		</month>
+		<month value="12">
+			<day value="8" name="Immaculée Conception"/>
+			<day value="25" name="Noël"/>
+		</month>
+	</year>
+	<year value="2016">
+		<month value="1">
+			<day value="1" name="Nouvel-An" fr="Nouvel-An" en="New year's day"/>
+		</month>
+		<month value="3">
+			<day value="19" name="Saint Joseph"/>
+		</month>
+		<month value="4">
+			<day value="23" name="Jour de la Saint-Georges"/>
+		</month>
+		<month value="5">
+			<day value="5" name="Ascension"/>
+			<day value="26" name="Fête-Dieu"/>			
+		</month>
+		<month value="6">
+			<day value="13" name="Saint Antoine"/>			
+		</month>
+		<month value="8">
+			<day value="1" name="Fête national"/>
+			<day value="15" name="Assomption"/>
+		</month>
+		<month value="11">
+			<day value="1" name="La Toussaint"/>
+		</month>
+		<month value="12">
+			<day value="8" name="Immaculée Conception"/>
+			<day value="25" name="Noël"/>
+		</month>
+	</year>
+</holidays>

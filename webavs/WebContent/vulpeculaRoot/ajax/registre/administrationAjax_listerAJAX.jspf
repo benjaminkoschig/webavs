@@ -1,0 +1,10 @@
+<liste>
+	<c:forEach var="entity" items="${viewBean.searchModel.searchResults}">
+		<tr idEntity="${entity.id}">
+			<td><c:out value="${entity.admin.codeAdministration}" /></td>
+			<td>
+				<c:out value="${entity.tiers.designation1} ${entity.tiers.designation2}"/>
+			</td>
+		</tr>			
+	</c:forEach>
+</liste>

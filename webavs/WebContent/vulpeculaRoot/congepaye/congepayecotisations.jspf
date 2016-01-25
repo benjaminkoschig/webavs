@@ -1,0 +1,26 @@
+<input type="hidden" id="listeCotisations" name="listeCotisations"> 
+
+<input type="hidden" id="listeCotisations" name="listeCotisations"> 
+
+<div class="blocRight" style="margin: 0px 5px 5px 5px">
+<div id="cotisations" class="bloc blocMedium" style="font-size:x-small;text-align:left;">
+	<table id="cotisationsTable">
+	<tr>
+	
+	<th><ct:FWLabel key="JSP_COTISATIONS"/></th>
+	<th>%</th>
+	</tr>
+	<c:forEach var="taux" items="${congePaye.tauxCongePayes}">
+		<tr>
+			<td>${taux.getAssuranceLibelle(viewBean.locale)}</td>
+			<td style="text-align: right;">${taux.taux.value}</td>
+		</tr>
+	</c:forEach>
+	<tr id="total" class="total">
+		<td style="font-weight: bold;"><ct:FWLabel key="JSP_TOTAL"/></td>
+		<td id="tauxTotal" style="font-weight: bold;text-align: right;">${congePaye.sommeTauxCongePaye.value}</td>
+	</tr>
+	</table>
+</div>
+</div>
+

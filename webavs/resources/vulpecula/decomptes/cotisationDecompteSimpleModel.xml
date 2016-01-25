@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.vulpecula.business.models.decomptes.CotisationDecompteSimpleModel">
+		<table name="PT_COTISATION_DECOMPTES" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="id" column="ID" comment="Id de la cotisation propre à une ligne de décompte" />
+			<field name="idLigneDecompte" column="ID_PT_DECOMPTE_LIGNES" type="NUMERIC" comment="lien sur la ligne du decompte" />
+			<field name="idCotisation" column="ID_AFCOTIP" type="NUMERIC" />
+			<field name="taux" column="TAUX" type="NUMERIC" />
+			<field name="masse" column="MASSE" type="NUMERIC" />
+			<field name="masseForcee" column="MASSE_FORCEE" type="BOOLEAN" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		
+		<order-by>
+			<order-field field-ref="id" />
+		</order-by>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+	</simple-model>
+</model-mapping>

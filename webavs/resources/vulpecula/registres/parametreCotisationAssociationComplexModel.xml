@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.registres.ParametreCotisationAssociationComplexModel">
+
+		<root-model name="parametreCotisationAssociationSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.registres.ParametreCotisationAssociationSimpleModel" />
+			
+		<linked-model name="cotisationAssociationProfessionnelleSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.association.CotisationAssociationProfessionnelleSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="id"
+					operation="EQUALS"
+					field-ref="parametreCotisationAssociationSimpleModel.idCotisationAssociationProfessionnelle" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="administrationComplexModel"
+			model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration"
+					operation="EQUALS"
+					field-ref="cotisationAssociationProfessionnelleSimpleModel.idAssociationProfessionnelle" />
+			</join-group>
+		</linked-model>
+			
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="parametreCotisationAssociationSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdCotisationAssociationProfessionnelle" field-ref="parametreCotisationAssociationSimpleModel.idCotisationAssociationProfessionnelle"
+					operation="EQUALS" />
+				<search-field name="forLibelleLike" field-ref="cotisationAssociationProfessionnelleSimpleModel.libelle" operation="LIKE" />
+				<search-field name="forGenre" field-ref="cotisationAssociationProfessionnelleSimpleModel.genre"
+					operation="EQUALS" />
+				<search-field name="forGenreNot" field-ref="cotisationAssociationProfessionnelleSimpleModel.genre" operation="NOT_EQUALS" />
+ 			</search-group>
+		</search-definition>
+		
+		<order-by name="idDesc">
+			<order-field
+				field-ref="parametreCotisationAssociationSimpleModel.id"
+				order="DESC" />
+		</order-by>
+
+		<order-by name="idAsc">
+			<order-field
+				field-ref="parametreCotisationAssociationSimpleModel.id" />
+		</order-by>
+
+
+	</complexe-model>
+</model-mapping>

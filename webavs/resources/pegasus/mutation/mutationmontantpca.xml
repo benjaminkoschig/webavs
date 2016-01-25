@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.mutation.MutationMontantPCA">
+
+		<root-model name="simpleDecisionHeader" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader"/>
+	    
+	    <linked-model name="personneEtendueComplexModel" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simpleDecisionHeader.idTiersBeneficiaire"/>
+			</join-group>		
+		</linked-model>
+	    
+	    <linked-model name="simpleValidationDecision" model-ref="ch.globaz.pegasus.business.models.decision.SimpleValidationDecision" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="simpleDecisionHeader.idDecisionHeader"/>
+			</join-group>		
+		</linked-model>
+	    
+	    <linked-model name="pcaCourant" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="simpleValidationDecision.idPCAccordee"/>
+			</join-group>		
+		</linked-model>
+	    
+	    <linked-model name="planClaculeCourant" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="pcaCourant.idPCAccordee"/>
+			</join-group>		
+		</linked-model>
+	    
+	    <linked-model name="droitCourant" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="pcaCourant.idVersionDroit"/>
+			</join-group>		
+		</linked-model>
+	
+		<linked-model name="droitPrcedant" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="droitCourant.idDroit"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="pcaPrecedante" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="droitPrcedant.idVersionDroit"/>
+			</join-group>		
+		</linked-model>
+		
+	    <linked-model name="planClaculePrecedant" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="pcaPrecedante.idPCAccordee"/>
+			</join-group>		
+		</linked-model>
+		
+	   	<search-definition>
+			<search-group operator="AND">
+				<search-field name="forDateDecisionMin" operation="GREATER_OR_EQUALS" field-ref="simpleDecisionHeader.dateDecision"/>
+				<search-field name="forDateDecisionMin" operation="NULL" field-ref="pcaCourant.dateFin"/>
+				<search-field name="forDateDecisionMin" operation="NULL" field-ref="pcaPrecedante.dateFin"/>
+				<search-group operator="OR">
+					<search-field name="forDateDecisionMax" operation="LESS_OR_EQUALS"  field-ref="simpleDecisionHeader.dateDecision"/>
+					<search-field name="forDateDecisionMax" operation="NULL"  field-ref="simpleDecisionHeader.dateDecision"/>
+				</search-group>
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simpleDecisionHeader.csEtatDecision" value="64028003" />
+				<search-field name="forCsType" operation="NOT_EQUALS" field-ref="simpleDecisionHeader.csTypeDecision" value="64042004" />
+				<search-literal>
+						<![CDATA[ 
+							#{droitPrcedant.noVersion} = (#{droitCourant.noVersion} )
+						 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+
+		<order-by>
+			<order-field field-ref="personneEtendueComplexModel.tiers.designation1" order="ASC"/>
+		<order-field field-ref="personneEtendueComplexModel.tiers.designation2" order="ASC"/>
+		</order-by>	
+	</complexe-model>
+</model-mapping>

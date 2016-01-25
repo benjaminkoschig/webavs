@@ -1,0 +1,26 @@
+<tarifs xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="tarifsTests.xsd">
+	<periode date="01.01.2009">
+		<legislation cs="CAISSE">
+			<categorie cs="FPV_VISANA_AG">
+				
+				<test testId="1" type="ENF" capableExercer="true" montant="200" age="12" residence="CH"/>
+				<test testId="2" type="ENF" capableExercer="true" montant="250" age="16" residence="CH"/>
+				<test testId="3" type="ENF" capableExercer="true" montant="0" age="17" residence="CH"/>
+				<test testId="3" type="ENF" capableExercer="false" montant="250" age="17" residence="CH"/>
+				<test testId="3" type="ENF" capableExercer="false" montant="0" age="21" residence="CH"/>
+				
+				<test testId="3" type="FORM" capableExercer="true" montant="250" age="17" residence="CH"/>
+				<test testId="4" type="FORM" capableExercer="true" montant="0" age="26" residence="CH"/>
+				
+				<test testId="1" type="ENF" capableExercer="true" montant="200" age="12" residence="ETR"/>
+				<test testId="2" type="ENF" capableExercer="true" montant="250" age="16" residence="ETR"/>
+				<test testId="3" type="ENF" capableExercer="true" montant="0" age="17" residence="ETR"/>
+				<test testId="3" type="ENF" capableExercer="false" montant="250" age="17" residence="ETR"/>
+				<test testId="3" type="ENF" capableExercer="false" montant="0" age="21" residence="ETR"/>
+				
+				<test testId="3" type="FORM" capableExercer="true" montant="250" age="17" residence="ETR"/>
+				<test testId="4" type="FORM" capableExercer="true" montant="0" age="26" residence="ETR"/>
+			</categorie>
+		</legislation>
+	</periode>
+</tarifs>

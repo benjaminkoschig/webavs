@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.osiris.business.model.CompteAnnexeSimpleModel">
+		<table name="CACPTAP" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="idCompteAnnexe" column="IDCOMPTEANNEXE" comment="Id du compte annexe" />
+			<field name="idTiers" column="IDTIERS" type="NUMERIC"  comment="Id du tiers"/>
+			<field name="idRole" column="IDROLE" type="NUMERIC"  comment="Id du rôle"/>
+			<field name="idExterneRole" column="IDEXTERNEROLE" type="NUMERIC"  comment="Id du rôle externe"/>
+			<field name="description" column="DESCRIPTION" type="STRING"  comment="Libelle du compte annexe"/>
+		</fields>
+		</simple-model>
+</model-mapping>

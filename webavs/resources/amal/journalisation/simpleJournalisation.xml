@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.journalisation.SimpleJournalisation">
+		<description>Simple journalisation</description>
+		<table name="JOJPJOU" hasSpy="true" hasCreationSpy="false" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idJournalisation" column="JJOUID" comment="Id journalisation"/>
+			<field name="libelle" column="JJOULI" type="STRING" dataType="VARCHAR(255)" mandatory="true" comment="Libelle"/>
+			<field name="user" column="JJOUUT" type="STRING" dataType="VARCHAR(16)" mandatory="true" comment="user"/>
+		</fields>
+	</simple-model>
+</model-mapping>

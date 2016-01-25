@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.uploadfichierreprise.SimpleUploadFichierReprise">
+		<description>Upload fichier reprise</description>
+		<table name="MAUPLOFR" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idUploadFichierReprise" column="IDUPLO" comment="Clef primaire Upload fichier reprise"/>
+			<field name="noContribuable" column="NOCONT" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="Numéro contribuable"/>
+			<field name="nomPrenom" column="NOMCON" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="Nom, prénom contribuable"/>
+			<field name="xmlLignes" column="XMLLIN" type="STRING" dataType="VARCHAR(3000)" mandatory="false" comment="Lignes xml"/>
+			<field name="typeReprise" column="TYPREP" type="STRING" dataType="VARCHAR(15)" mandatory="false" comment="Type de reprise"/>
+			<field name="isValid" column="ISVALI" type="BOOLEAN" mandatory="false" comment="Fichier de reprise est valide"/>
+			<field name="msgNoValid" column="MSGVAL" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="Message si non valide"/>
+			<field name="customValue" column="CUSVAL" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="Custom value"/>
+			<field name="idJob" column="IDJOB" type="NUMERIC" dataType="NUMERIC(5,0)" mandatory="false" comment="Id Job"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdUploadFichierReprise" field-ref="idUploadFichierReprise" operation="EQUALS"/>	
+				<search-field name="likeTypeReprise" field-ref="typeReprise" operation="LIKE"/>							
+				<search-field name="forNoContribuable" field-ref="noContribuable" operation="EQUALS"/>
+				<search-field name="forCustomValue" field-ref="customValue" operation="EQUALS"/>
+				<search-field name="forIdJob" field-ref="idJob" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		<search-definition name="delete">
+			<search-group operator="AND">
+				<search-field name="forIdJob" field-ref="idJob" operation="EQUALS"/>			
+				<search-group operator="OR">
+					<search-field name="likeTypeRepriseContribuable" field-ref="typeReprise" operation="LIKE"/>
+					<search-field name="likeTypeReprisePersonneCharge" field-ref="typeReprise" operation="LIKE"/>				 
+				</search-group>
+			</search-group>
+		</search-definition>
+		<order-by name="nomPrenom">
+			<order-field field-ref="nomPrenom"/>
+		</order-by>
+		<order-by name="noContribuable">
+			<order-field field-ref="noContribuable"/>
+		</order-by>
+	</simple-model>
+</model-mapping>

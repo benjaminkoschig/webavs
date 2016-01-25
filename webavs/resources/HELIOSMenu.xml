@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+
+	<!-- ************** -->
+	<!-- Menu Principal -->
+	<!-- ************** -->
+	<menu id="CG-MenuPrincipal">
+		<label defaultValue="Menu">
+			<language iso="de">Hauptmenü</language>
+		</label>
+		<nodes>
+			<node>
+				<label defaultValue="Journaux">
+					<language iso="de">Journale</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.journal.chercher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Bilan">
+					<language iso="de">Bilanz</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.bilan.chercher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Compte de Pertes et Profits">
+					<language iso="de">Gewinn- und Verlustrechnungskonto</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.comptePertesProfits.chercher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Soldes">
+					<language iso="de">Saldi</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.soldesDesComptes.chercher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Plan comptable">
+					<language iso="de">Kontoplan</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.planComptable.chercher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Recherche d'écritures">
+					<language iso="de">Buchungen suchen</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.ecritureSeeker.chercher" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node id="consolidation">
+				<label defaultValue="Consolidation">
+					<language iso="de">Konsolidierung</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.consolidation.processExportConsolidation.afficher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Période comptable">
+					<language iso="de">Rechnungsperiode</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.periodeComptable.chercher" />
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Exercices">
+					<language iso="de">Rechnungsjahre</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.exerciceComptable.chercher" />
+				</action>
+			</node>
+
+			<node open="no">
+				<label defaultValue="Traitements">
+					<language iso="de">Verarbeitungen</language>
+				</label>
+				<nodes>
+					<node>
+						<label defaultValue="Ecritures Modèles">
+							<language iso="de">Buchungsmodelle</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.comptes.ecritureModele.afficher" />
+							<parameter name="_method" value="add"/>
+							<parameter name="idJournal"/>
+							<parameter name="interMandat" value="true"/>
+							<parameter name="libelleJournal"/>
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Importation d`écritures">
+							<language iso="de">Importierung von Buchungen</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.process.processImportEcritures.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="EXPORTATION_ECRITURES"/>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.process.processExportEcritures.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="RECTIFICATIF_SOLDE_TITLE"/>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.process.processSoldeRectificatif.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+
+			<node open="yes">
+				<label defaultValue="Imprimer Listes">
+					<language iso="de">Listen ausdrucken</language>
+				</label>
+				<nodes>
+					<node>
+						<label defaultValue="Balance des comptes">
+							<language iso="de">Zahlungsbilanz</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.print.imprimer.balanceComptes" />
+							<parameter name="selectedId" value="-id-"/>
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Bilan">
+							<language iso="de">Bilanz</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.print.imprimer.bilan" />
+							<parameter name="selectedId" value="-id-"/>
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Pertes et Profits">
+							<language iso="de">Gewinn- und Verlustrechnung</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.print.imprimer.pertesProfits" />
+							<parameter name="selectedId" value="-id-"/>
+						</action>
+					</node>
+					<node id="imprimer_compte_annuel">
+						<label defaultValue="Compte annuel">
+							<language iso="de">Jährliches Konto</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.print.compteAnnuel.afficher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Plan comptable">
+							<language iso="de">Kontoplan</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.print.imprimer.planComptable" />
+							<parameter name="selectedId" value="-id-"/>
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Grand livre">
+							<language iso="de">Kontokorrentbuch</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.print.imprimer.grandLivre" />
+							<parameter name="selectedId" value="-id-"/>
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Analyse budgétaire">
+							<language iso="de">Budgetanalyse</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.print.imprimer.analyseBudgetaire" />
+							<parameter name="selectedId" value="-id-"/>
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Balance des mvt par journal">
+							<language iso="de">Umsätzebestand per Journal</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.print.imprimer.balMvtJournal" />
+							<parameter name="selectedId" value="-id-"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+
+			<node open="no">
+				<label defaultValue="Rentes">
+					<language iso="de">Renten</language>
+				</label>
+				<nodes>
+					<node>
+						<label defaultValue="Récapitulation des rentes">
+							<language iso="de">Zusammenfassung der Renten</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.rente.recapitulation" />
+							<parameter name="selectedId" value="-id-"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+
+			<node open="no" id="parameters">
+				<label defaultValue="Paramètres">
+					<language iso="de">Parameter</language>
+				</label>
+				<nodes>
+					<node>
+						<label defaultValue="Mandats">
+							<language iso="de">Aufträge</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.comptes.mandat.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Classification">
+							<language iso="de">Klassifikation</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.classifications.classification.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Classes compte">
+							<language iso="de">Kontoklasse</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.classifications.classeCompte.afficher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Définition des listes">
+							<language iso="de">Definition der Listen</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.classifications.definitionListe.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Libellé standard">
+							<language iso="de">Standard Bezeichnung</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.comptes.libelleStandard.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Centre charges">
+							<language iso="de">Kostenstellen</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.comptes.centreCharge.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Succursales">
+							<language iso="de">Filialen</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.consolidation.succursale.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Modèles d`écritures">
+							<language iso="de">Buchungsmodelle</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.modeles.modeleEcriture.chercher" />
+						</action>
+					</node>
+					<node>
+						<label defaultValue="Mapping comptabilisation">
+							<language iso="de">Verbuchung Mapping</language>
+						</label>
+						<action command="/helios" responseTarget="fr_main">
+							<parameter name="userAction" value="helios.mapping.mappingComptabiliser.chercher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+
+		</nodes>
+	</menu>
+
+	<!-- ****************************** -->
+	<!-- Menu Option exercice comptable -->
+	<!-- ****************************** -->
+	<menu id="CG-exerciceComptable">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Travailler avec cet exercice">
+					<language iso="de">Mit diesem Rechnungsjahr arbeiten</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.exerciceComptable.choisirExercice" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ****************************** -->
+	<!-- Menu Option journaux -->
+	<!-- ****************************** -->
+	<menu id="CG-journaux">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Journal">
+					<language iso="de">Journal</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.journal.afficher" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Ecritures">
+					<language iso="de">Buchungen</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.ecriture.chercher" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Comptabiliser">
+					<language iso="de">Verbuchung</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.journal.comptabiliser" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="ExComptabiliser">
+					<language iso="de">Ausbuchen</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.journal.exComptabiliser" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Annuler">
+					<language iso="de">Annullieren</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.journal.annuler" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Extourner">
+					<language iso="de">Stornieren</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.journal.extourner" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Imprimer Ecritures">
+					<language iso="de">Buchungen ausdrucken</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.journal.imprimer" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ****************************** -->
+	<!-- Menu Option période comptable  -->
+	<!-- ****************************** -->
+	<menu id="CG-periodeComptable">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Période comptable">
+					<language iso="de">Rechnungsperiode</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.periodeComptable.afficher" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node id="periode_boucler">
+				<label defaultValue="Boucler">
+					<language iso="de">Abschliessen</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.periodeComptable.boucler" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Imprimer le relevé AVS">
+					<language iso="de">AHV-Auszug ausdrucken</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.periodeComptable.imprimerReleveAVS" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node id="periode_envoyer_annonces_zas">
+				<label defaultValue="Envoyer annonces ZAS">
+					<language iso="de">ZAS Meldungen senden</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.periodeComptable.envoyerAnnonces" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node id="periode_envoyer_annonces_ofas">
+				<label defaultValue="Envoyer annonces OFAS">
+					<language iso="de">BSV Meldungen senden</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.periodeComptable.envoyerAnnoncesOFAS" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node id="import_journal_debit">
+				<label defaultValue="Importer le journal des débits">
+					<language iso="de">Solljournal importieren</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.periodeComptable.importerJournalDebit" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ****************************** -->
+	<!-- Menu Option mandat  -->
+	<!-- ****************************** -->
+	<menu id="CG-mandat">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Mandat">
+					<language iso="de">Auftrag</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.mandat.afficher" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Secteurs AVS">
+					<language iso="de">AHV Bereiche</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.avs.secteurAVS.chercher" />
+					<parameter name="selectedId" value="-id-"/>
+					<parameter name="forIdMandat" value="-id-"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ****************************** -->
+	<!-- Menu Option modèles d'écritures  -->
+	<!-- ****************************** -->
+	<menu id="CG-modele">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Modèle d`écritures">
+					<language iso="de">Buchungsmodelle</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.modeles.modeleEcriture.afficher" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+			<node>
+				<label defaultValue="Ecritures">
+					<language iso="de">Buchungen</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.modeles.ligneModeleEcriture.chercher" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ****************************** -->
+	<!-- Menu Option plan comptable  -->
+	<!-- ****************************** -->
+	<menu id="CG-planComptable">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label defaultValue="Ecritures du compte">
+					<language iso="de">Konto Buchungen</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.comptes.mouvementCompte.chercher" />
+					<parameter name="selectedId" value="-id-"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ****************************** -->
+	<!-- Menu Option consolidation -->
+	<!-- ****************************** -->
+	<menu id="CG-consolidation">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node id="consolidation_exportation">
+				<label defaultValue="Exportation pour la consolidation">
+					<language iso="de">Konsolidierung Export</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.consolidation.processExportConsolidation.afficher" />
+				</action>
+			</node>
+			<node id="consolidation_importation">
+				<label defaultValue="Importation pour la consolidation">
+					<language iso="de">Konsolidierung Import</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.consolidation.processImportConsolidation.afficher" />
+				</action>
+			</node>
+			<node id="consolidation_reset_importation">
+				<label defaultValue="Annulation consolidation">
+					<language iso="de">Konsolidierung Annulierung</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.consolidation.processResetConsolidation.afficher" />
+				</action>
+			</node>
+			<node id="consolidation_imprimer_mois">
+				<label defaultValue="Imprimer annuel par mois">
+					<language iso="de">Jährlich pro Monat ausdrucken</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.consolidation.processImprimerConsolidationParMois.afficher" />
+				</action>
+			</node>
+			<node id="consolidation_imprimer_agence">
+				<label defaultValue="Imprimer annuel par agence">
+					<language iso="de">Jährlich pro Agentur ausdrucken</language>
+				</label>
+				<action command="/helios" responseTarget="fr_main">
+					<parameter name="userAction" value="helios.consolidation.processImprimerConsolidationParAgence.afficher" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- ************************** -->
+	<!-- Menu Option only detail    -->
+	<!-- ************************** -->
+	<menu id="CG-OnlyDetail">
+		<label refId="OPTIONS" />
+	</menu>
+
+</menus>

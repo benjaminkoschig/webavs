@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.congepaye.CompteurComplexModel">
+		
+		<root-model name="compteurSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.congepaye.CompteurSimpleModel" />
+
+		<linked-model name="posteTravailComplexModel"
+			model-ref="ch.globaz.vulpecula.business.models.postetravail.PosteTravailComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="posteTravailSimpleModel.id" operation="EQUALS" field-ref="compteurSimpleModel.idPosteTravail" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="compteurSimpleModel.id" operation="EQUALS" />
+				<search-field name="forAnnee" field-ref="compteurSimpleModel.annee" operation="EQUALS" />
+				<search-field name="forIdPosteTravail" field-ref="compteurSimpleModel.idPosteTravail" operation="EQUALS" />
+				<search-field name="forIdConvention" field-ref="posteTravailComplexModel.employeurComplexModel.administrationComplexModel.admin.idTiersAdministration" operation="EQUALS" />
+				<search-field name="montantRestantNotZero" field-ref="compteurSimpleModel.montantRestant" operation="NOT_EQUALS" />
+				<search-group operator="AND">
+					<search-field name="forAnneeDebut" field-ref="compteurSimpleModel.annee" operation="GREATER_OR_EQUALS" />
+					<search-field name="forAnneeFin" field-ref="compteurSimpleModel.annee" operation="LESS_OR_EQUALS" />
+				</search-group>	
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="compteurSimpleModel.annee" order="DESC" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

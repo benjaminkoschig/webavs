@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.echeance.EcheanceLibre">
+		<root-model name="simpleEcheanceLibre" model-ref="ch.globaz.perseus.business.models.echeance.SimpleEcheanceLibre"/>
+		<linked-model name="dossier" model-ref="ch.globaz.perseus.business.models.dossier.Dossier" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="dossier.idDossier" operation="EQUALS" field-ref="simpleEcheanceLibre.idDossier"/>
+			</join-group>		
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="dossier.dossier.idDossier"/>
+				<search-field name="forDateButoire" operation="EQUALS" field-ref="simpleEcheanceLibre.dateButoire"/>
+				<search-field name="betweenDateButoireDebut" operation="GREATER_OR_EQUALS" field-ref="simpleEcheanceLibre.dateButoire"/>
+				<search-field name="betweenDateButoireFin" operation="LESS" field-ref="simpleEcheanceLibre.dateButoire"/>
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

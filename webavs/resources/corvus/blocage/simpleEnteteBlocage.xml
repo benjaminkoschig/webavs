@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.corvus.business.models.blocage.SimpleEnteteBlocage">
+		<description>Entête de blocage</description>
+		<table name="REENTBLK" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idEnteBlocage" column="ZZIEBK" comment="ID_ENTETE_BLOCAGE"/>
+			<field name="montantBloque" type="NUMERIC" dataType="NUMERIC(15,2)" column="ZZMBLK" comment="MONTANT_BLOQUE" />
+			<field name="montantDebloque" type="NUMERIC" dataType="NUMERIC(15,2)" column="ZZMDBK" comment="MONTANT_DEBLOQUE" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forCsType" field-ref="csTypeLot" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

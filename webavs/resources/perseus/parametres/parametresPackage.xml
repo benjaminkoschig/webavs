@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="perseus/parametres/simpleZone.xml"/>
+	<model-mapping import="perseus/parametres/simpleLoyer.xml"/>
+	<model-mapping import="perseus/parametres/loyer.xml"/>
+	<model-mapping import="perseus/parametres/simpleLienLocalite.xml"/>
+	<model-mapping import="perseus/parametres/lienLocalite.xml"/>
+</model-mapping>

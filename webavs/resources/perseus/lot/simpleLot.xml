@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.lot.SimpleLot">
+		<description>Table des lots</description>
+		<table name="PFLOT" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idLot" column="IUIDLO" comment="Clé primaire de la table"/>
+			<field name="idJournal" column="IUIDJO" type="NUMERIC" mandatory="false" comment="Identifiant du journal"/>
+			<field name="typeLot" column="IUTYLO" type="NUMERIC" mandatory="true" comment="Type de lot"/>
+			<field name="dateCreation" column="IUDACR" type="DATE" mandatory="true" comment="Date de création"/>
+			<field name="dateEnvoi" column="IUDAEN" type="DATE" mandatory="false" comment="Date d'envoi"/>
+			<field name="etatCs" column="IUETCS" type="NUMERIC" mandatory="true" comment="Etat du code systeme"/>
+			<field name="description" column="IUDESC" type="STRING"  mandatory="false" comment="Description"/>
+			<field name="proprietaireLot" column="IUPRLO" type="STRING" mandatory="false" comment="Propriétaire du lot"/>
+		</fields>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.home.SimplePeriodeServiceEtat">
+		<description>Modele de la table des periodes de service de l etat</description>
+		<table name="PCPERSET" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idSimplePeriodeServiceEtat" column="BPIPSE" comment=""/>
+			<field name="idHome" column="BPIHOM" type="NUMERIC" mandatory="true"/>
+			<field name="csServiceEtat" column="BPTSET" type="NUMERIC" mandatory="false"/>
+			<field name="dateDebut" column="BPDDEB" type="MONTH_YEAR" mandatory="true"/>
+			<field name="dateFin" column="BPDFIN" type="MONTH_YEAR" mandatory="false"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdHome" field-ref="idHome" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="checkForAnterieurPeriods">
+			<search-group operator="AND">
+				<search-field name="forIdPeriodeServiceEtat" field-ref="idSimplePeriodeServiceEtat" operation="NOT_EQUALS"/>
+				<search-field name="forIdHome" field-ref="idHome" operation="EQUALS"/> 
+				<search-field name="forDateDebutBefore" field-ref="dateFin" operation="NULL" />
+				<search-field name="forDateDebutBefore" field-ref="dateDebut" operation="LESS_OR_EQUALS" />	
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="checkSuperpositionPeriode">
+			<search-group operator="AND">
+				<search-field name="forIdHome" field-ref="idHome" operation="EQUALS"/>		
+				<search-field name="forIdPeriodeServiceEtat" field-ref="idSimplePeriodeServiceEtat" operation="NOT_EQUALS"/>
+					<search-group operator="OR">
+						<search-group operator="AND">					
+							<search-field name="forDateDebutCheckPeriode" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+							<search-group operator="OR">
+								<search-field name="forDateDebutCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+								<search-field name="forDateDebutCheckPeriode" operation="NULL" field-ref="dateFin"/>
+							</search-group>
+						</search-group>
+						<search-group operator="AND">
+							<search-field name="forDateFinCheckPeriode" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+							<search-group operator="OR">
+								<search-field name="forDateFinCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+								<search-field name="forDateFinCheckPeriode" operation="NULL" field-ref="dateFin"/>
+							</search-group>				
+						</search-group>
+						<search-group operator="AND">					
+							<search-field name="forDateDebutCheckPeriode" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+							<search-group operator="OR">
+								<search-field name="forDateFinCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+								<search-field name="forDateFinCheckPeriode" operation="NULL" field-ref="dateFin"/> 
+							</search-group>
+						</search-group>
+						
+							<!-- rajouté pour test -->
+							<search-group operator="AND">					
+								<search-field name="forDateDebutCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="dateDebut"/>
+								<search-field name="forDateFinCheckPeriode" operation="LESS_OR_EQUALS" field-ref="dateFin"/>
+								<search-field name="forDateFinCheckPeriode" operation="NOT_NULL" field-ref="dateFin"/>
+							</search-group>
+						</search-group>	
+					
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

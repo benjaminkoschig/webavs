@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="pegasus/habitat/habitat.xml"/>		
+	<model-mapping import="pegasus/habitat/simpletaxejournalierehome.xml"/>
+	<model-mapping import="pegasus/habitat/taxejournalierehome.xml"/>
+	<model-mapping import="pegasus/habitat/taxejournalierehomeetendu.xml"/>
+	<model-mapping import="pegasus/habitat/simpleloyer.xml"/>
+	<model-mapping import="pegasus/habitat/loyer.xml"/>
+	<model-mapping import="pegasus/habitat/taxejournalierehomedroit.xml"/>
+</model-mapping>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.naos.business.model.PlanAffiliationCotisationComplexModel">
+		<root-model name="planAffiliation" model-ref="ch.globaz.naos.business.model.PlanAffiliationSimpleModel"/>
+	   
+		<linked-model name="cotisation" model-ref="ch.globaz.naos.business.model.CotisationSimpleModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="planAffiliationId" operation="EQUALS" field-ref="planAffiliation.planAffiliationId"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="assurance"
+			model-ref="ch.globaz.naos.business.model.AssuranceSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="assuranceId" field-ref="cotisation.assuranceId" />
+			</join-group>
+		</linked-model>
+		
+	   	<search-definition>
+			<search-group operator="AND">
+				<search-field name="forAffiliationId"  operation="EQUALS" field-ref="planAffiliation.affiliationId"/>
+				<search-field name="forTypeAssurance"  operation="EQUALS" field-ref="assurance.typeAssurance"/>
+				<search-group operator="AND">
+					<search-field  field-ref="cotisation.dateDebut" operation="LESS_OR_EQUALS" name="forDateCotisation"/>
+					<search-group operator="OR">
+						<search-field  field-ref="cotisation.dateFin" operation="GREATER_OR_EQUALS" name="forDateCotisation" />
+						<search-field  field-ref="cotisation.dateFin" operation="NULL"  name="forDateCotisation"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

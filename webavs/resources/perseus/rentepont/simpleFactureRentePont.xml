@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.rentepont.SimpleFactureRentePont">
+		<description>Table des factures</description>
+		<table name="PFFARP" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idFactureRentePont" column="JEIDFA" comment="Id de la facture" />
+			<field name="idQDRentePont" column="JEIDQD" type="NUMERIC" mandatory="true"  comment="Référence sur la QD"/>
+			<field name="idTiersAdressePaiement" column="JEIDTP" type="NUMERIC" mandatory="true" comment="Référence sur le tiers pour le versement"/>
+			<field name="idApplicationAdressePaiement" column="JEIDAP" type="NUMERIC" mandatory="true" comment="Référence sur l'application pour le versement"/>
+			<field name="idTiersAdresseCourrier" column="JETIAC" type="NUMERIC" mandatory="true" comment="Référence sur le tiers pour le courrier"/>
+			<field name="idApplicationAdresseCourrier" column="JEDAAC" type="NUMERIC" mandatory="true" comment="Référence sur l'application pour le courrier"/>
+			<field name="idTiersMembreFamille" column="JEITMF" type="NUMERIC" mandatory="true" comment="Id Tiers du membre de famille sélectionné"/>
+			<field name="montant" column="JEMONT" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="Montant"/>
+			<field name="montantRembourse" column="JEMREM" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="Montant remboursé"/>
+			<field name="montantDepassant" column="JEMDEP" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Montant dépassant la QD"/>
+			<field name="dateFacture" column="JEDAFA" type="DATE" mandatory="true" comment="Date de la facture" />
+			<field name="datePriseEnCharge" column="JEDPEC" type="DATE" mandatory="false" comment="Date de la facture" />
+			<field name="libelle" column="JELIBE" type="STRING" mandatory="true" comment="Libellé"/>
+			<field name="csMotif" column="JECSMO" type="NUMERIC" mandatory="false" comment="Code système pour le motif"/>
+			<field name="csTypeSoinRentePont" column="JETYSO" type="NUMERIC" mandatory="true" comment="Code système pour le type de soin"/>
+			<field name="csSousTypeSoinRentePont" column="JESTSO" type="NUMERIC" mandatory="true" comment="Code système pour le type de soin"/>
+			<field name="acceptationForcee" column="JEACCF" type="BOOLEAN" mandatory="false" comment="Acceptation forcée ou non"/>
+			<field name="numRefFacture" column="JENREF" type="STRING" mandatory="false" comment="Numéro de référence de la facture si payement directe au prestataire"/>
+			<field name="excedantRevenuCompense" column="JEEXCO" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Excedant de revenu compensé sur le montant remboursé de la facture"/>
+			<field name="csEtat" column="JECSET" type="NUMERIC" mandatory="true" comment="Code système pour l'état de la facture" />
+			<field name="motifLibre" column="JEMOLI" type="STRING" mandatory="false" comment="Motif libre" />
+			<field name="idGestionnaire" column="JEIDGE" type="STRING" mandatory="true" comment="Id gestionnaire" /> 			
+			<field name="dateReception" column="JEDARE" type="DATE" mandatory="true" comment="Date de réception de la facture" />
+			<field name="dateDecision" column="JEDADE" type="DATE" mandatory="false" comment="Date de prise de la décision" />
+			<field name="numDecision" column="JENUDE" type="STRING" mandatory="false" comment="Numéro de décision" />
+			<field name="dateDebutTraitement" column="JEDDET" type="DATE" mandatory="false" comment="Début de la période de traitement" />
+			<field name="dateFinTraitement" column="JEDFIT" type="DATE" mandatory="false" comment="Fin de la période de traitement" />
+			<field name="fournisseur" column="JEFOUR" type="STRING" mandatory="false" comment="Fournisseur/Milieu d'accueil du service" />
+			<field name="hygienisteDentaire" column="JEHYDE" type="BOOLEAN" mandatory="false" comment="Facture de type hygiéniste dentaire" />
+			<field name="casDeRigueur" column="JECRIG" type="BOOLEAN" mandatory="false" comment="Cas de rigueur" />
+			<field name="dateValidation" column="DATE_VALIDATION" type="DATE" mandatory="false" comment="Date de validation de la facture"/>
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forMontant" field-ref="montant" operation="EQUALS"/>
+				<search-field name="forDateFacture" field-ref="dateFacture" operation="EQUALS"/>
+				<search-field name="forSousTypeSoin" field-ref="csSousTypeSoinRentePont" operation="EQUALS"/>
+				<search-field name="forIdQD" field-ref="idQDRentePont" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

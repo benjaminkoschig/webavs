@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.impotsource.SimplePeriodeImpotSource">
+		<description>Table des periodes impot a la source</description>
+		<table name="PFPERIP" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idPeriode" column="JIIDPI" comment="Clé primaire de la table"/>
+			<field name="dateDebut" column="JIDDEB" type="MONTH_YEAR" mandatory="false" comment="DATE_DEBUT"/>
+			<field name="dateFin" column="JIDFIN" type="MONTH_YEAR" mandatory="false" comment="DATE_FIN"/>
+			<field name="periodeGeneree" column="JIISGE" type="BOOLEAN" mandatory="false" comment="Est-ce que la période a été générée ?"/>
+		</fields>
+		
+		 <!--Test qu'il n'y a pas de superpostion de dates -->
+		<search-definition name="checkSuperpositionDates">
+			<search-group operator="AND">		
+			        <search-field name="forIdPeriodeImpotSource" operation="NOT_EQUALS" field-ref="idPeriode"/>
+			   		
+				<search-group operator="OR">					
+					<search-group operator="AND">					
+						<search-field name="forDateDebutCheckPeriode" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateDebutCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+							<search-field name="forDateDebutCheckPeriode" operation="NULL" field-ref="dateFin"/>
+						</search-group>
+					</search-group>
+					
+					<search-group operator="AND">
+						<search-field name="forDateFinCheckPeriode" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateFinCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+							<search-field name="forDateFinCheckPeriode" operation="NULL" field-ref="dateFin"/>
+						</search-group>				
+					</search-group>
+					
+					<search-group operator="AND">					
+						<search-field name="forDateDebutCheckPeriode" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+						<search-group operator="OR">
+							<search-field name="forDateFinCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+							<search-field name="forDateFinCheckPeriode" operation="NULL" field-ref="dateFin"/>
+						</search-group>
+					</search-group>
+					
+					<search-group operator="AND">					
+						<search-field name="forDateDebutCheckPeriode" operation="GREATER_OR_EQUALS" field-ref="dateDebut"/>
+						<search-field name="forDateFinCheckPeriode" operation="LESS_OR_EQUALS" field-ref="dateFin"/>
+						<search-field name="forDateFinCheckPeriode" operation="NOT_NULL" field-ref="dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

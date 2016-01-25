@@ -1,0 +1,265 @@
+.mainContainerAjax, .likeMainContainerAjax {
+	padding:0px 5px 5px 5px; 
+	margin-bottom: 20px;
+	border:1px solid #4197DD;
+	/*background-color: #b3c4db;*/
+	background-color: #F8F9F9;
+	-webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+  	border-radius: 5px;
+  	/* box-shadow */
+  	-webkit-box-shadow: rgba(49, 85, 244, 0.2) 0px 1px 3px;
+    -moz-box-shadow:rgba(49, 85, 244, 0.2) 0px 1px 3px;
+    box-shadow:rgba(49, 85, 244, 0.2) 0px 1px 3px;
+    background-image: url('fonds.png')
+}
+
+.areaSelected {
+	/*border: black 1px solid;*/
+}
+
+
+.mainContainerAjax h1 {
+	margin: 10px 0px 0px 2px; 
+	FONT-SIZE: 10pt;
+}
+.mainContainerAjax P {
+	margin: 2px;
+} 
+.mainContainerAjax .areaDataTable, .area .areaDataTable{
+	border-COLLAPSE: collapse;
+	border:1px solid #226194;
+}
+.mainContainerAjax .areaDataTable td,.area .areaDataTable td {
+	border: #b3c4db 1px solid; 
+	text-align: center;
+}
+.mainContainerAjax .areaDataTable THEAD TD,.area .areaDataTable  THEAD TD{
+	TEXT-ALIGN: center; 
+	background-color: #226194; 
+	COLOR: white;
+}
+.mainContainerAjax .areaDataTable TR ,.area THEAD TR {
+	background-color:white;
+}
+
+.mainContainerAjax .areaDataTable tbody TR.odd {
+	background-color:#e8eef4 ;
+}
+
+.mainContainerAjax .areaDataTable tbody TR.nonodd {
+	background-color:white;
+}
+
+.conteneurDF .conteneurMembres {
+	border:1px solid black;
+	padding:5px;
+}
+ 
+.areaDFModified {
+	border: 3px outset #999999;
+	/*padding: 10px;
+	margin: 5px;*/
+	background-color:#CDDAED;
+}
+
+.mainContainerAjax .areaDataTable tr.hover TD,.area .areaDataTable tr.hover TD {
+    background-color : #638FBC !important;
+    color : #FFFFE8 ; /*#8E97A4*/
+	cursor : hand;
+}
+
+.mainContainerAjax .areaDataTable tr.highlight TD,  area .areaDataTable tr.hover TD {
+    background-color : #FFECCC;
+}
+
+.mainContainerAjax .areaDetail {
+	padding: 5px 3px;
+ 	background-color: #FEFCFF;
+    border: 1px solid #9E9EC9;
+    margin: 15px 0 10px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+  	border-radius: 5px;
+  	/* box-shadow */
+  	-webkit-box-shadow: rgba(49, 85, 244, 0.2) 0px 1px 3px;
+    -moz-box-shadow:rgba(49, 85, 244, 0.2) 0px 1px 3px;
+    box-shadow:rgba(49, 85, 244, 0.2) 0px 1px 3px;
+}
+
+.mainContainerAjax .masterAreaTable{
+	margin: 0;
+	padding:0;
+	border: #cccccc 1px solid
+}
+
+.paginationButton {
+	text-align: right;
+	display:block;
+	font-size: 10px;	
+	margin:0;
+	padding:2px 0;
+}
+
+.paginationButton .refresh{
+	margin-left:8px;
+	float:left;
+}
+
+.paginationButton input[type="text"], .paginationButton select {
+	height: inherit;
+}
+
+.paginationButton .right{
+	margin-right: 8px;	
+}
+.paginationButton .left {
+	margin-left: 8px;	
+}
+
+.paginationButton .last{
+	margin-right: 10px;	
+}
+
+.paginationButton .sizeSelector{
+	margin-left: 10px;	
+}
+.paginationButton .nbResult{
+	margin-right: 25px;	
+	font-size: 12px;	
+}
+
+.paginationButton .choixPage {
+ width: 30px;
+}
+
+.imgLoading{
+ height :24px;
+ display: inline-bloc;
+ text-align: center;
+}
+
+.loading_horizonzal{
+margin:0px;
+padding:0px;
+}
+.areaTitre {
+	margin-top: 0;
+	margin-bottom:10px;
+	margin-left:0;
+	margin-right:0;
+	BACKGROUND-COLOR: #8E97A4; 
+	WIDTH: 100%;
+	cursor : hand;
+	border: 1px solid #8E97A4;
+}
+
+.areaMembreSelected .areaTitre {
+	BACKGROUND-COLOR: #D5DFED; 
+}
+
+.areaTitre p{
+	display:inline;
+}
+.areaTitre h1{
+	display:inline;
+	padding-right:20px;
+}
+
+.mainContainerAjax .areaDataTable th{
+	border-left:#88AAFF solid 1px;
+	border-right:#88AAFF solid 1px;
+	border-top: #226194 solid 1px;
+	border-bottom: #88AAFF solid 1px;
+}
+
+.mainContainerAjax .areaDataTable td.small {
+	width:30px;
+}
+
+.mainContainerAjax .areaDataTable td.medium, .mainContainerAjax .areaDataTable th.medium{
+	width:200px;
+}
+
+.mainContainerAjax .areaDataTable td.large {
+	width:500px;
+}
+
+.mainContainerAjax .areaDataTable td.left {
+	text-align: left;
+}
+
+.mainContainerAjax .areaDataTable td.center {
+	text-align: center;
+}
+
+.mainContainerAjax .areaDataTable td.right {
+	text-align: right;
+}
+
+.areaSearch {
+	border: 1px solid grey;
+	margin: 0 10px 0 0px;
+	padding: 10px;
+}
+
+
+.formTableLess label, .formTableLess .lable, .labelColor {
+	color: gray;
+	font-weight: bold;
+}
+.formTableLess label, .formTableLess .lable{
+	 /*width: 100px;*/
+	vertical-align: top;
+    border-left: 0px #D2D2EF dashed;
+    padding: 6px 10px 6px 10px;
+}
+
+.formTableLess label:FIRST-CHILD {
+	border:0;
+}
+
+.formTableLess .data{
+	clear: both;
+	font-style: italic;
+	padding-right: 10px; 
+	display: inline-bloc;
+}
+
+.formTableLess  .content .data {
+	padding: 6px 0px 6px 0px;
+}
+
+.content {
+	padding: 6px 0px;
+	margin:0;
+}
+
+.zoneAjaxWithoutBorder {
+	border: 0 !important;
+	box-shadow: 0 0 !important;
+}
+
+.zoneAjaxWithoutBackgroundImage {
+	background-image: none !important;
+}
+
+.zoneAjaxWithoutBackground {
+	background: none !important;
+}
+
+.mainContainerAjax .spyFormatted {
+	color:grey; 
+	font-size: 10px; 
+	float:right; 
+	margin: -10px 5px 0px 0;
+}
+
+.mainContainerAjax .spyFormatted .label{
+	font-weight: bold;
+	 color: #A2A1A1;
+}
+
+.mainContainerAjax .spyCreated {
+	display: none;
+}

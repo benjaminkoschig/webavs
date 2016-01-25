@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+   <simple-model className="ch.globaz.auriga.business.models.SimpleEnfantDecisionCAP">
+      <description>Table de liaison pour les enfants d'une décision CAP</description>
+      <table name="AUENDEC" hasCreationSpy="true" hasSpy="true"
+             alwaysIncrementPrimaryKey="true"/>
+      <fields>
+         <primary-key name="idEnfantDecision" column="EDIDED" type="NUMERIC" dataType="NUMERIC(15,0)"
+                      mandatory="true"
+                      comment="Identifant"/>
+         <field name="idDecision" column="DEIDDE" type="NUMERIC" dataType="NUMERIC(15,0)"
+                mandatory="true"
+                comment="Identifiant de la décision"/>
+         <field name="idTiers" column="HTITIE" type="NUMERIC" dataType="NUMERIC(15,0)"
+                mandatory="true"
+                comment="Identifiant du tiers"/>
+         <field name="dateNaissance" column="EDDNAI" type="DATE"
+		        dataType="NUMERIC(8,0)"
+		        mandatory="false"
+		        comment="Date de naissance"/>
+         <field name="dateRadiation" column="EDDRAD" type="DATE"
+                dataType="NUMERIC(8,0)"
+                mandatory="false"
+                comment="Date de radiation"/>
+         <field name="montant" column="EDMONT" type="AMOUNT" dataType="NUMERIC(15,2)"
+                mandatory="true"
+                comment="Montant retenu pour l'enfant"/>
+      </fields>
+      
+      <search-definition>
+         <search-group operator="AND">
+            <search-field name="forIdDecision" operation="EQUALS" field-ref="idDecision" />
+         </search-group>
+      </search-definition>
+      
+      <order-by>
+		<order-field field-ref="idEnfantDecision" order="ASC" />
+	  </order-by>
+   </simple-model>
+</model-mapping>

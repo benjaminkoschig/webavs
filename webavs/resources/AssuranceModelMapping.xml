@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.naos.business.model.AssuranceSimpleModel">
+		<table name="AFASSUP" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="assuranceId" column="MBIASS"  />
+			<field name="assuranceId" column="MBIASS" type="NUMERIC"  />
+			<field name="assuranceLibelleFr" column="MBLLIF" type="STRING"  />
+			<field name="assuranceLibelleAl" column="MBLLID" type="STRING"  />
+			<field name="assuranceLibelleIt" column="MBLLII" type="STRING"  />
+			<field name="assuranceLibelleCourtFr" column="MBLLCF" type="STRING"  />
+			<field name="assuranceLibelleCourtAl" column="MBLLCD" type="STRING"  />
+			<field name="assuranceLibelleCourtIt" column="MBLLCI" type="STRING"  />
+			<field name="rubriqueId" column="MBIRUB" type="NUMERIC"  />
+			<field name="assuranceCanton" column="MBTCAN" type="NUMERIC"  />
+			<field name="assuranceGenre" column="MBTGEN" type="NUMERIC"  />
+			<field name="typeAssurance" column="MBTTYP" type="NUMERIC"  />
+			<field name="idAssuranceReference" column="MBIREA" type="NUMERIC"  />
+			<field name="typeCalcul" column="MBTTCA" type="NUMERIC"  />
+			<field name="assurance13" column="MBBTRE" type="NUMERIC"  />
+			<field name="tauxParCaisse" column="MBBCAI" type="NUMERIC"  />
+			<field name="surDocAcompte" column="MBBSDA" type="NUMERIC"  />
+		</fields>
+		</simple-model>
+</model-mapping>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.impotsource.SimpleBareme">
+		<description>Table des baremes impôt source</description>
+		<table name="PFBAREME" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idBareme" column="JKIDBR" comment="Clé primaire de la table"/>
+			<field name="csTypeBareme" column="JKCSTB" type="NUMERIC" mandatory="false" comment="Code sytème du type de bareme"/>
+			<field name="nomCategorie" column="JKNMCA" type="STRING"  mandatory="false" comment="Nom de categorie"/>
+			<field name="nombrePersonne" column="JKNBPE" type="NUMERIC"  mandatory="true" comment="Nombre de personne" />
+			<field name="anneeDebut" column="JKANDE" type="STRING" mandatory="true" comment="Année de début du nombre de personne"/>
+			<field name="anneeFin" column="JKANFI" type="STRING"  mandatory="false" comment="Année de fin du nombre de personne"/>
+		</fields>
+		
+		<search-definition name="default">
+	    	<search-group operator="AND">
+				<search-field name="forCsTypeBareme" operation="EQUALS" field-ref="csTypeBareme"/>
+				<search-field name="forNombrePersonne" operation="EQUALS" field-ref="nombrePersonne"/>
+				<search-field name="forAnnee" operation="LESS_OR_EQUALS" field-ref="anneeDebut"/>
+					<search-group operator="OR">
+						<search-field name="forAnnee" operation="GREATER_OR_EQUALS" field-ref="anneeFin"/>
+						<search-field name="forAnnee" operation="NULL" field-ref="anneeFin"/>
+					</search-group>
+			</search-group>
+		</search-definition>
+		
+	</simple-model>
+</model-mapping>

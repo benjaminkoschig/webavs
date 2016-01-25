@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- edited with XMLSpy v2008 rel. 2 sp2 (http://www.altova.com) by zcipca (Etat de Vaud - CADEV) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.3">
+	<xs:include schemaLocation="ElementCommunCommunication.xsd"/>
+	<!--Description du schéma pour la "Demande de communication d'information fiscale par un tiers", version 1.0 - 03.08.2004, version 1.1 - 06.08.04, version 1.2 01.09.2004 Type de demande AVS, version 1.3 20.10.04 : ajout de contrôle sur certains champs-->
+	<!--version 1.4 14.03.06 : modification du Pattern de numéro de ctb et de numéro AVS, suppression des séparateurs qui ne sont plus supportés par l'application TAO-COM-->
+	<!--version 1.5 06.09.06 : numAvs ne doit pas êre obligatoire-->
+	<!--Version 1.6 - 27.07.09 : Changement des valleurs de frmRstCom-->
+	<!--Version 2.0 - 14.09.09 : Ajout du nouveau numéro AVS: numAVS13 et mise en optionnel du numéro de contribuable-->
+	<!--Version 2.0.1 - 7.12.09 : Contrôle sur NumAVS ne permettant pas la saisie de 00000000000-->
+	<xs:element name="demandeCommunicationInformationFiscaleTiers">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="enteteDemande">
+					<xs:annotation>
+						<xs:documentation>Entête de la demande</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="identificationTiers">
+								<xs:annotation>
+									<xs:documentation>Identification du tiers demandeur</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="nomTie"/>
+										<xs:element ref="numTie"/>
+										<xs:element name="adrTie">
+											<xs:annotation>
+												<xs:documentation>Adresse postale pour expédition de l'information au tiers</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:group ref="adrGrp"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="identificationDemande">
+								<xs:annotation>
+									<xs:documentation>Identification de la demande</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="numDem"/>
+										<xs:element ref="datDem"/>
+										<xs:element ref="nomCtcTie"/>
+										<xs:element ref="eMaiCtcTie" minOccurs="0"/>
+										<xs:element ref="telCtcTie" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="informationDemande">
+								<xs:annotation>
+									<xs:documentation>Information sur la demande</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="prdFisCcn" minOccurs="0"/>
+										<xs:element ref="demUrg" minOccurs="0"/>
+										<xs:element ref="frmRstCom" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="individuConcerne" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Informations permettant d'identifier les individus concernés par la demande d'information</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="nomIdv" minOccurs="0"/>
+							<xs:element ref="preIdv" minOccurs="0"/>
+							<xs:element ref="datNaiIdv" minOccurs="0"/>
+							<xs:element name="numCtb" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Numéro de contribuable de l'individu pour lequel est fait la demande, sans séparateurs ~ ID306</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:pattern value="\d{8,9}"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="numAVS13" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>nouveau numéro Avs sur 13 position de l'individu pour lequel est fait la demande, sans séparateurs</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:integer">
+										<xs:totalDigits value="13"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="numAvs" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Numéro Avs de l'individu pour lequel est fait la demande, sans séparateurs</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:integer">
+										<xs:minExclusive value="10000000000"/>
+										<xs:maxExclusive value="99999999999"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element ref="numAffTie" minOccurs="0"/>
+							<xs:element ref="codTypCom"/>
+							<xs:element ref="prdFisCcn" minOccurs="0"/>
+							<xs:element ref="debPrdCcn" minOccurs="0"/>
+							<xs:element ref="finPrdCcn" minOccurs="0"/>
+							<xs:element name="adrIdv">
+								<xs:annotation>
+									<xs:documentation>Adresse de l'individu, permettant l'identification de ce dernier, s'il n'a pû être retrouvé automatiquement</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:group ref="adrGrp"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="queueDemande">
+					<xs:annotation>
+						<xs:documentation>Fin de la demande</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="nbrIdvDem"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

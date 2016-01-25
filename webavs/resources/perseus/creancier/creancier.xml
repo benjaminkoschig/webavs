@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.creancier.Creancier">
+	
+		<root-model name="simpleCreancier" model-ref="ch.globaz.perseus.business.models.creancier.SimpleCreancier"/>
+	    
+	    <linked-model name="simpleTiers" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="simpleCreancier.idTiers"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleDemande" model-ref="ch.globaz.perseus.business.models.demande.SimpleDemande" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDemande" operation="EQUALS" field-ref="simpleCreancier.idDemande" />
+			</join-group>
+		</linked-model>
+
+	   	<search-definition>
+	   		<search-group operator="AND">
+		   		<search-field name="forIdCreancier" operation="EQUALS" field-ref="simpleCreancier.idCreancier"/>
+		   		<search-field name="forNotIdCreancier" operation="NOT_EQUALS" field-ref="simpleCreancier.idCreancier"/>
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleCreancier.idDemande"/>
+				<search-field name="forIdTiers" operation="EQUALS" field-ref="simpleCreancier.idTiers"/>
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

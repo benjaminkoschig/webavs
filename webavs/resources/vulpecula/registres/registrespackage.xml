@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="vulpecula/registres/conventionSimpleModel.xml" />
+
+	<model-mapping import="vulpecula/registres/qualificationComplexModel.xml" />
+	<model-mapping import="vulpecula/registres/conventionQualificationSimpleModel.xml" />
+	
+	<model-mapping import="vulpecula/registres/codeSystemSimpleModel.xml" />
+	<model-mapping import="vulpecula/registres/codeSystemLibelleSimpleModel.xml" />
+	<model-mapping import="vulpecula/registres/codeSystemComplexModel.xml" />
+	
+	<model-mapping import="vulpecula/registres/parametreAdministrationSimpleModel.xml" />
+	<model-mapping import="vulpecula/registres/parametreCotisationAssociationSimpleModel.xml" />
+	<model-mapping import="vulpecula/registres/parametreCotisationAssociationComplexModel.xml" />
+	
+</model-mapping>

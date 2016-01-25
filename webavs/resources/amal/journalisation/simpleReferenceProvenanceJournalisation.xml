@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.journalisation.SimpleReferenceProvenanceJournalisation">
+		<description>Simple reference journalisation</description>
+		<table name="JOJPREP" hasSpy="true" hasCreationSpy="false" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idReferenceJournalisation" column="JREPID" comment="Id reference journalisation"/>
+			<field name="idJournalisation" column="JJOUID" type="NUMERIC" dataType="NUMERIC(9,0)" mandatory="true" comment="Id journalisation"/>
+			<field name="type" column="JREPTY" type="STRING" dataType="VARCHAR(250)" mandatory="true" comment="type"/>
+			<field name="idReferenceProvenance" column="JREPIP" type="STRING" dataType="VARCHAR(250)" mandatory="true" comment="id reference provenance"/>
+		</fields>
+	</simple-model>
+</model-mapping>

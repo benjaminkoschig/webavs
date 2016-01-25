@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.allocataire.AgricoleModel">
+		<description>Contient les informations complémentaires nécessaires à la gestion du dossier d'un agriculteur, travailleur agricole, ...</description>
+		<table name="ALAGRICO" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key comment="ID" column="SID" name="idAgricole"/>
+			<field comment="ID (FK) de l'allocataire" column="BID" type="NUMERIC" name="idAllocataire" mandatory="true"/>
+			<field comment="Indique si le domaine est en montagne ou en plaine" column="SDOMON" type="BOOLEAN" name="domaineMontagne" mandatory="true"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdAllocataire" field-ref="idAllocataire" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

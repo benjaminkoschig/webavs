@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.statistique.StatistiquesMensuellesEnfantDemande">
+		
+		<select-fields>
+			<select-field name="dateNaissance" field-ref="personne.dateNaissance" />
+		</select-fields>
+		
+		<root-model name="demande" model-ref="ch.globaz.perseus.business.models.demande.SimpleDemande" />
+		
+		<linked-model name="enfantsfamille" model-ref="ch.globaz.perseus.business.models.situationfamille.SimpleEnfantFamille" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idSituationFamiliale" operation="EQUALS" field-ref="demande.idSituationFamiliale"/>
+			</join-group>
+		</linked-model>
+	
+		<linked-model name="enfants" model-ref="ch.globaz.perseus.business.models.situationfamille.SimpleEnfant" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idEnfant" operation="EQUALS" field-ref="enfantsfamille.idEnfant"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="membrefamille" model-ref="ch.globaz.perseus.business.models.situationfamille.SimpleMembreFamille" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idMembreFamille" operation="EQUALS" field-ref="enfants.idMembreFamille"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="personne" model-ref="ch.globaz.pyxis.business.model.PersonneSimpleModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="membrefamille.idTiers"/>
+			</join-group>
+		</linked-model>
+			
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDemande" operation="IN" field-ref="demande.idDemande" />
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="dateNaissance" order="DESC" />
+		</order-by>	
+		
+	</complexe-model>
+</model-mapping>	

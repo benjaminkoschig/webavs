@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="corvus/rentesaccordees/rentesaccordeespackage.xml" />
+	<model-mapping import="corvus/lots/lotspackage.xml" />
+	<model-mapping import="corvus/pcaccordee/retenuepackage.xml" />
+	<model-mapping import="corvus/recapinfo/recapinfopackage.xml" />
+	<model-mapping import="corvus/blocage/blocagepackage.xml" />
+	<model-mapping import="corvus/ordresversements/ordreVersementPackage.xml" />
+</model-mapping>

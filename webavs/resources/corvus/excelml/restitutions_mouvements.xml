@@ -1,0 +1,326 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>Pascal BARTH</Author>
+  <LastAuthor>Sébastien LAMMERS</LastAuthor>
+  <LastPrinted>2012-06-28T14:36:36Z</LastPrinted>
+  <Created>2012-03-16T14:01:47Z</Created>
+  <LastSaved>2012-10-25T07:57:56Z</LastSaved>
+  <Company>Globaz</Company>
+  <Version>14.00</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <AllowPNG/>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>12075</WindowHeight>
+  <WindowWidth>18915</WindowWidth>
+  <WindowTopX>120</WindowTopX>
+  <WindowTopY>30</WindowTopY>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s62">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+  </Style>
+  <Style ss:ID="s63">
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s64">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+  </Style>
+  <Style ss:ID="s65">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s67">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="14" ss:Color="#000000"
+    ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s68">
+   <Alignment ss:Vertical="Center"/>
+  </Style>
+  <Style ss:ID="s69">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+  </Style>
+  <Style ss:ID="s70">
+   <Alignment ss:Vertical="Center"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s71">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+  </Style>
+  <Style ss:ID="s72">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s73">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Italic="1"/>
+  </Style>
+  <Style ss:ID="s76">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+   <Interior ss:Color="#A6A6A6" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s77">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+   <Interior ss:Color="#A6A6A6" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s78">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+   <Interior ss:Color="#A6A6A6" ss:Pattern="Solid"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s79">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+   <Interior ss:Color="#A6A6A6" ss:Pattern="Solid"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s80">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s81">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s82">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s83">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s84">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s85">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s86">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s87">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s88">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s89">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s90">
+   <Alignment ss:Vertical="Center"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Italic="1"/>
+  </Style>
+  <Style ss:ID="s91">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Italic="1"/>
+  </Style>
+  <Style ss:ID="s92">
+   <Alignment ss:Vertical="Center"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Italic="1"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s93">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Italic="1"/>
+  </Style>
+  <Style ss:ID="s94">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Italic="1"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+ </Styles>
+ <Names>
+  <NamedRange ss:Name="critere_role" ss:RefersTo="=Restitutions!R4C2"/>
+  <NamedRange ss:Name="critere_rubrique" ss:RefersTo="=Restitutions!R5C2"/>
+  <NamedRange ss:Name="ecriture_date" ss:RefersTo="=Restitutions!R8C7"/>
+  <NamedRange ss:Name="ecriture_libelle" ss:RefersTo="=Restitutions!R8C8"/>
+  <NamedRange ss:Name="ecriture_montant" ss:RefersTo="=Restitutions!R8C9"/>
+  <NamedRange ss:Name="label_ecriture_date" ss:RefersTo="=Restitutions!R7C7"/>
+  <NamedRange ss:Name="label_ecriture_libelle" ss:RefersTo="=Restitutions!R7C8"/>
+  <NamedRange ss:Name="label_ecriture_montant" ss:RefersTo="=Restitutions!R7C9"/>
+  <NamedRange ss:Name="label_nomprenom" ss:RefersTo="=Restitutions!R7C3"/>
+  <NamedRange ss:Name="label_nss" ss:RefersTo="=Restitutions!R7C2"/>
+  <NamedRange ss:Name="label_num_section" ss:RefersTo="=Restitutions!R7C4"/>
+  <NamedRange ss:Name="label_rubrique" ss:RefersTo="=Restitutions!R7C5"/>
+  <NamedRange ss:Name="label_rubrique_libelle" ss:RefersTo="=Restitutions!R7C6"/>
+  <NamedRange ss:Name="label_titre" ss:RefersTo="=Restitutions!R2C2"/>
+  <NamedRange ss:Name="label_total" ss:RefersTo="=Restitutions!R9C3"/>
+  <NamedRange ss:Name="nomprenom" ss:RefersTo="=Restitutions!R8C3"/>
+  <NamedRange ss:Name="nss" ss:RefersTo="=Restitutions!R8C2"/>
+  <NamedRange ss:Name="num_section" ss:RefersTo="=Restitutions!R8C4"/>
+  <NamedRange ss:Name="rubrique" ss:RefersTo="=Restitutions!R8C5"/>
+  <NamedRange ss:Name="rubrique_libelle" ss:RefersTo="=Restitutions!R8C6"/>
+  <NamedRange ss:Name="total" ss:RefersTo="=Restitutions!R9C9"/>
+ </Names>
+ <Worksheet ss:Name="Restitutions">
+  <Table ss:ExpandedColumnCount="10" ss:ExpandedRowCount="9" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="60" ss:DefaultRowHeight="15">
+   <Column ss:AutoFitWidth="0" ss:Width="7.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="85.5"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="131.25"/>
+   <Column ss:StyleID="s63" ss:AutoFitWidth="0" ss:Width="69.75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="81.75"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="143.25"/>
+   <Column ss:StyleID="s64" ss:AutoFitWidth="0" ss:Width="69"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="158.25"/>
+   <Column ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="78"/>
+   <Column ss:AutoFitWidth="0" ss:Width="7.5"/>
+   <Row ss:AutoFitHeight="0" ss:Height="7.5">
+    <Cell><Data ss:Type="String"> </Data></Cell>
+    <Cell><Data ss:Type="String"> </Data></Cell>
+    <Cell><Data ss:Type="String"> </Data></Cell>
+    <Cell><Data ss:Type="String"> </Data></Cell>
+    <Cell><Data ss:Type="String"> </Data></Cell>
+    <Cell ss:Index="7"><Data ss:Type="String"> </Data></Cell>
+    <Cell ss:Index="9"><Data ss:Type="String"> </Data></Cell>
+    <Cell><Data ss:Type="String"> </Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="20.25">
+    <Cell ss:Index="2" ss:MergeAcross="7" ss:StyleID="s67"><Data ss:Type="String">label_titre</Data><NamedCell
+      ss:Name="label_titre"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="9.75">
+    <Cell ss:Index="2" ss:StyleID="s68"/>
+    <Cell ss:StyleID="s69"/>
+    <Cell ss:StyleID="s70"/>
+    <Cell ss:StyleID="s68"/>
+    <Cell ss:StyleID="s69"/>
+    <Cell ss:StyleID="s71"/>
+    <Cell ss:StyleID="s69"/>
+    <Cell ss:StyleID="s72"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:StyleID="s73">
+    <Cell ss:Index="2" ss:StyleID="s90"><Data ss:Type="String">critere_role</Data><NamedCell
+      ss:Name="critere_role"/></Cell>
+    <Cell ss:StyleID="s91"/>
+    <Cell ss:StyleID="s92"/>
+    <Cell ss:StyleID="s90"/>
+    <Cell ss:StyleID="s91"/>
+    <Cell ss:StyleID="s93"/>
+    <Cell ss:StyleID="s91"/>
+    <Cell ss:StyleID="s94"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s73"><Data ss:Type="String">critere_rubrique</Data><NamedCell
+      ss:Name="critere_rubrique"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="7.5"/>
+   <Row ss:AutoFitHeight="0" ss:Height="30" ss:StyleID="s64">
+    <Cell ss:Index="2" ss:StyleID="s76"><Data ss:Type="String">label_nss</Data><NamedCell
+      ss:Name="label_nss"/></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">label_nomprenom</Data><NamedCell
+      ss:Name="label_nomprenom"/></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="String">label_num_section</Data><NamedCell
+      ss:Name="label_num_section"/></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">label_rubrique</Data><NamedCell
+      ss:Name="label_rubrique"/></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">label_rubrique_libelle</Data><NamedCell
+      ss:Name="label_rubrique_libelle"/></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">label_ecriture_date</Data><NamedCell
+      ss:Name="label_ecriture_date"/></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">label_ecriture_libelle</Data><NamedCell
+      ss:Name="label_ecriture_libelle"/></Cell>
+    <Cell ss:StyleID="s79"><Data ss:Type="String">label_ecriture_montant</Data><NamedCell
+      ss:Name="label_ecriture_montant"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s80"><Data ss:Type="String">nss</Data><NamedCell
+      ss:Name="nss"/></Cell>
+    <Cell ss:StyleID="s80"><Data ss:Type="String">nomprenom</Data><NamedCell
+      ss:Name="nomprenom"/></Cell>
+    <Cell ss:StyleID="s81"><Data ss:Type="String">num_section</Data><NamedCell
+      ss:Name="num_section"/></Cell>
+    <Cell ss:StyleID="s82"><Data ss:Type="String">rubrique</Data><NamedCell
+      ss:Name="rubrique"/></Cell>
+    <Cell ss:StyleID="s83"><Data ss:Type="String">rubrique_libelle</Data><NamedCell
+      ss:Name="rubrique_libelle"/></Cell>
+    <Cell ss:StyleID="s82"><Data ss:Type="String">ecriture_date</Data><NamedCell
+      ss:Name="ecriture_date"/></Cell>
+    <Cell ss:StyleID="s83"><Data ss:Type="String">ecriture_libelle</Data><NamedCell
+      ss:Name="ecriture_libelle"/></Cell>
+    <Cell ss:StyleID="s84"><Data ss:Type="String">ecriture_montant</Data><NamedCell
+      ss:Name="ecriture_montant"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:StyleID="s85">
+    <Cell><Data ss:Type="String"> </Data></Cell>
+    <Cell><Data ss:Type="String"> </Data></Cell>
+    <Cell ss:StyleID="s86"><Data ss:Type="String">label_total</Data><NamedCell
+      ss:Name="label_total"/></Cell>
+    <Cell ss:StyleID="s87"/>
+    <Cell ss:Index="6" ss:StyleID="s86"/>
+    <Cell ss:StyleID="s88"><Data ss:Type="String"> </Data></Cell>
+    <Cell ss:StyleID="s86"/>
+    <Cell ss:StyleID="s89"><Data ss:Type="String">total</Data><NamedCell
+      ss:Name="total"/></Cell>
+    <Cell><Data ss:Type="String"> </Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Layout x:Orientation="Landscape"/>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Unsynced/>
+   <Print>
+    <ValidPrinterInfo/>
+    <PaperSizeIndex>9</PaperSizeIndex>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <Selected/>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>

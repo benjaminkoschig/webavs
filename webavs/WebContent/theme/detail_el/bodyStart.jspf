@@ -1,0 +1,52 @@
+<title><c:out value="${idEcran}"/></title>
+
+<style type="text/css">
+	body {
+		overflow : auto;
+	}
+	.pageDetail {
+    	background-color : #226194;;
+    	border: solid 1px;
+    	border-color :  #88aaff #88aaff black black;
+    	color : white;
+    	padding : 3px 10px;
+    	font-size : x-small;
+    	font-family : "Lucida Sans Unicode",Verdana,Arial;
+    	font-weight : bold;
+    	margin-bottom : 0px;
+    	text-align:center;
+    	border-bottom: 1px solid gray;
+    }	
+    #mainWrapper {
+    	background-color: #B3C4DB;
+    	width: 100%;
+    	height: ${tableHeight};
+    }
+    #title {
+    	height: 10px;
+    }
+    #innerWrapper {
+    	*margin-left:5px;
+    	*margin-right:5px;
+    	width: ${subTableWidth};
+    }
+    #mainForm {
+    	margin-top:20px;
+    }
+    .lastModification {
+    	margin:0 auto;
+    	font-size : 9;
+    	width : auto;
+    }
+
+</style>
+
+</head>
+<body onload="doInitThings()" onKeyDown="keyDown();actionKeyDown();" onKeyUp="keyUp();actionKeyUp();">
+<div id="mainWrapper">
+	<div id="title" class="pageDetail">
+		<c:if test="${postItIcon}">
+			<span class="postItIcon" data-g-note="idExterne:${postItIconIdExterne}, 
+					tableSource: ${postItIconTableSource}"></span>
+		</c:if>
+		<span class="idEcran"><c:out value="${idEcran}"/></span>

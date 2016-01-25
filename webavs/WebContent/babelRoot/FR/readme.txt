@@ -1,0 +1,1 @@
+HACK: pour permettre l'affichage correct du label meme dans un frameset de type FR/DE

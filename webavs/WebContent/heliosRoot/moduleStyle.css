@@ -1,0 +1,105 @@
+@import url("../theme/master.css");
+
+.mtdBold {
+    font-family : Verdana,Arial;
+    border-right: solid 1px silver;
+    padding : 3 10;
+    font-weight: bold;
+}
+
+TH.special {
+    background-color : #158df3;
+    border: solid 1px;
+    border-color :  #88aaff #88aaff black black;
+    font-size : 12;
+    font-family : Verdana,Arial;
+    color : white;
+    padding : 3 10;
+}
+
+.mtdMontant {
+    font-family : Verdana,Arial;
+    border-right: solid 1px silver;
+    padding : 5 3;
+    width : 100;
+	text-align: right;
+}
+
+.somme{
+    font-size : x-small;
+    font-family : Verdana, Arial;
+    color : white;
+    background-color : #226194;
+    /*font-weight : bold;*/
+}
+
+.balance{
+    font-size : x-small;
+    font-family : Verdana, Arial;
+    color : black;
+    background-color : #cfcfcf;
+}
+
+.borderBlack {
+    border: solid 1px black;
+}
+
+.compte {
+    width : 3.3cm;
+}
+
+.montantShort {
+    width : 3.2cm;
+	text-align: right;
+}
+
+.montantShortDisabled {
+    width : 3.2cm;
+    font-family : Verdana,Arial;
+    font-weight : bold;
+    background-color : #cccccc;
+  	text-align : right;
+}
+
+
+.cours {
+    width : 2.2cm;
+	text-align: right;
+}
+.coursDisabled {
+	width : 2.2cm;
+    font-family : Verdana,Arial;
+    font-weight : bold;
+    background-color : #cccccc;
+  	text-align : right;
+}
+#colCoursTh {
+	width : 2.0cm;
+}
+
+.mtdShortPadding {
+    font-family : Verdana,Arial;
+    border-right: solid 1px silver;
+    padding : 5 3;
+}
+
+.selectDisabled {
+    font-family : Verdana,Arial;
+    background-color : #cccccc;
+    width : 4.2cm;
+}
+
+.selectEnabled {
+    font-family : Verdana,Arial;
+    width : 4.2cm;
+}
+
+.libelle2 {
+	width:100%;
+    min-width:150px;
+    max-width:500px;
+}
+
+.min_width {
+	width:190px;
+}

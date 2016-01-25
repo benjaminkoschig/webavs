@@ -1,0 +1,49 @@
+
+				<input type="hidden" name="selectedId" value="${selectedIdValue}">
+				<input type="hidden" name="userAction" value="${userActionValue}">
+				<input type="hidden" name="_method" value="${param['_method']}">
+				<input type="hidden" name="_valid" value="${param['_valid']}">
+				<input type="hidden" name="_sl" value="">
+				<input type="hidden" name="selectorName" value="">
+			</form>
+	 	</div>
+		
+			</div>
+			<c:if test="${not empty creationSpy or not empty lastModification}">
+				<div class="lastModification">
+						<c:out value="${creationSpy}" /> Update: <c:out value="${lastModification}" />
+				</div>	
+			</c:if>
+			<c:choose>
+				<c:when test="${autoShowErrorPopup || !vBeanHasErrors}">
+				</c:when>
+				<c:otherwise>
+				[ <a id=\"showErrorLink\" href=\"javascript:showErrors();\">visualiser les erreurs</a> ]
+				</c:otherwise>
+			</c:choose>
+			<c:if test="${bButtonNew || bButtonUpdate || bButtonDelete || bButtonValidate || bButtonCancel }">
+				<div style="background-color=#FFFFFF;height:18;text-align: right;" id="btnCtrlJade">
+				
+				
+					<c:if test="${bButtonNew}">
+						<input class="btnCtrl" type="button" id="btnNew" value="${btnNewLabel}" onclick="onClickNew();btnNew.onclick='';hideAllButtons();document.location.href='${actionNew}'" />
+					</c:if>
+					
+					<c:if test="${bButtonUpdate}">
+						<input class="btnCtrl" id="btnUpd" type="button" value="${btnUpdLabel}" onclick="action(UPDATE);upd();"/>
+					</c:if>
+					
+					<c:if test="${bButtonDelete}">
+						<input class="btnCtrl" id="btnDel" type="button" value="${btnDelLabel}" onclick="del();"/>
+					</c:if>
+					
+					
+					<c:if test="${bButtonValidate}">
+						<input class="btnCtrl" id="btnVal" type="button" value="${btnValLabel}" onclick="if(validate()) action(COMMIT);"/>
+					</c:if>
+					
+					<c:if test="${bButtonCancel}">
+						<input class="btnCtrl" id="btnCan" type="button" value="${btnCanLabel}" onclick="cancel(); action(ROLLBACK);"/>
+					</c:if>
+				</div>
+			</c:if>

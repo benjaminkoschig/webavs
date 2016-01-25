@@ -1,0 +1,52 @@
+<%
+// Récupération du contrôleur et de la session
+globaz.framework.controller.FWController controller = (globaz.framework.controller.FWController) session.getAttribute("objController");
+globaz.globall.db.BSession objSession = (globaz.globall.db.BSession)controller.getSession();
+// Ici on calcule des userActions par défaut
+String requestUserAction = request.getParameter("userAction");
+int userActionLastDotIndex = requestUserAction.lastIndexOf('.');
+String partialUserActionAction = requestUserAction.substring(0, userActionLastDotIndex);
+String userActionNew = partialUserActionAction + ".afficher";
+String userActionUpd = partialUserActionAction + ".modifier";
+String userActionDel = partialUserActionAction + ".supprimer";
+// Quelques variables standard
+String lastModification = "";
+String creationSpy = null;
+String languePage = globaz.framework.controller.FWDefaultServletAction.getIdLangueIso(session);
+String servletContext = request.getContextPath();
+String mainServletPath = (String)request.getAttribute("mainServletPath");
+String selectedIdValue = "";
+String userActionValue = "";
+String actionNew =  servletContext + mainServletPath + "?userAction=" + request.getParameter("userAction").substring(0,request.getParameter("userAction").lastIndexOf('.')) + ".afficher&_method=add";
+int tableHeight = 243;
+String subTableWidth = "100%";
+String applicationId = ((globaz.globall.db.BSession)session.getAttribute(globaz.framework.servlets.FWServlet.OBJ_SESSION)).getApplicationId();
+
+if (mainServletPath == null) {
+	mainServletPath = "";
+}
+String formAction =  servletContext + mainServletPath;
+String key = "none";
+
+String btnUpdLabel = "Modifier";
+String btnDelLabel = "Supprimer";
+String btnValLabel = "Valider";
+String btnCanLabel = "Annuler";
+String btnNewLabel = "Nouveau";
+//boolean bButtonNew = objSession.hasRight(userActionNew, "ADD");
+boolean bButtonNew = false;
+boolean bButtonUpdate = objSession.hasRight(userActionUpd, "UPDATE");
+boolean bButtonDelete = objSession.hasRight(userActionDel, "REMOVE");
+boolean bButtonValidate = true;
+boolean bButtonCancel = true;
+if("DE".equals(languePage)) {
+	btnUpdLabel = "&Auml;ndern";
+	btnDelLabel = "L&ouml;schen";
+	btnValLabel = "Best&auml;tigen";
+	btnCanLabel = "Annullieren";
+	btnNewLabel = "Neu";
+}
+String idEcran = null;
+boolean autoShowErrorPopup = session.getAttribute(globaz.framework.servlets.FWServlet.OBJ_NO_JSP_POPUP) == null;
+boolean vBeanHasErrors = false;
+%>

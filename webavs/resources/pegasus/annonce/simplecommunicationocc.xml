@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.annonce.SimpleCommunicationOCC">
+		<description>Communication OCC</description>
+		<table name="PCCOMOCC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idCommunicationOCC" column="DGICOCC" comment="ID_COMMUNICATION_OCC"/>
+			<field name="idDonneesPersonnelles" column="DGIDPE" type="NUMERIC" mandatory="true" comment="ID_DONNEES_PERSONNELLES"/>
+			<field name="idDonneesPersonnellesRequerant" column="DGIDPR" type="NUMERIC" mandatory="true" comment="ID_DONNEES_PERSONNELLES_REQUERANT"/>
+		   	<field name="idLocalite" column="DGICOM" type="NUMERIC" comment="ID_LOCALITE"/>
+			<field name="idTiers" column="DGITIE" type="NUMERIC" mandatory="true" comment="ID_TIERS"/>
+			<field name="idTiersRequerant" column="DGITRE" type="NUMERIC" mandatory="false" comment="ID_TIERS_REQUERANT"/>
+			<field name="idVersionDroit" column="DGIVDR" type="NUMERIC" comment="ID_VERSION_DROIT"/>
+			<field name="etatPC" column="DGTEPC" type="NUMERIC" mandatory="true" comment="ETAT_PC"/>
+			<field name="dateEffet" column="DGDEFF" type="MONTH_YEAR" mandatory="true" comment="DATE_EFFET"/>
+			<field name="dateFinEffet" column="DGDFEF" type="MONTH_YEAR" mandatory="false" comment="DATE_FIN_EFFET"/>
+			<!--<field name="nomCommune" column="DGLCOM" type="STRING" comment="NOM_COMMUNE"/>
+				<field name="idDecisionHeader" column="DGIDEN" type="NUMERIC" mandatory="true" comment="ID_DECISION_HEADER"/>
+			 -->
+			<field name="motif" column="DGLMOT" type="STRING" dataType="VARCHAR(1024)" comment="MOTIF"/>
+			<field name="noSerie" column="DGINSE" type="NUMERIC" mandatory="true" comment="NO_SERIE"/>
+			<field name="dateRapport" column="DGDRAP" type="DATE" mandatory="true" comment="DATE_RAPPORT"/>
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="idVersionDroit"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="prestationcommon/demande/demandepackage.xml"/>
+	<model-mapping import="prestationcommon/echeance/echeancePackage.xml"/>
+	<model-mapping import="prestationcommon/recap/recapitulationPackage.xml"/>
+</model-mapping>

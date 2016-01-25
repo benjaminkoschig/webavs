@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.qd.SimpleFacture">
+		<description>Table des factures</description>
+		<table name="PFFACT" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idFacture" column="IWIDFA" comment="Id de la facture" />
+			<field name="idQD" column="IWIDQD" type="NUMERIC" mandatory="true"  comment="Référence sur la QD"/>
+			<field name="idTiersAdressePaiement" column="IWIDTP" type="NUMERIC" mandatory="true" comment="Référence sur le tiers pour le versement"/>
+			<field name="idApplicationAdressePaiement" column="IWIDAP" type="NUMERIC" mandatory="true" comment="Référence sur l'application pour le versement"/>
+			<field name="idTiersAdresseCourrier" column="IWTIAC" type="NUMERIC" mandatory="true" comment="Référence sur le tiers pour le courrier"/>
+			<field name="idApplicationAdresseCourrier" column="IWDAAC" type="NUMERIC" mandatory="true" comment="Référence sur l'application pour le courrier"/>
+			<field name="montant" column="IWMONT" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="Montant"/>
+			<field name="montantRembourse" column="IWMREM" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="Montant remboursé"/>
+			<field name="montantDepassant" column="IWMDEP" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Montant dépassant la QD"/>
+			<field name="dateFacture" column="IWDAFA" type="DATE" mandatory="true" comment="Date de la facture" />
+			<field name="datePriseEnCharge" column="IWDPEC" type="DATE" mandatory="false" comment="Date de la prise en charge" />
+			<field name="libelle" column="IWLIBE" type="STRING" mandatory="true" comment="Libellé"/>
+			<field name="csMotif" column="IWCSMO" type="NUMERIC" mandatory="false" comment="Code système pour le motif"/>
+			<field name="acceptationForcee" column="IWACCF" type="BOOLEAN" mandatory="false" comment="Acceptation forcée ou non"/>
+			<field name="numRefFacture" column="IWNREF" type="STRING" mandatory="false" comment="Numéro de référence de la facture si payement directe au prestataire"/>
+			<field name="excedantRevenuCompense" column="IWEXCO" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Excedant de revenu compensé sur le montant remboursé de la facture"/>
+			<field name="csEtat" column="IWCSET" type="NUMERIC" mandatory="true" comment="Code système pour l'état de la facture" />
+			<field name="motifLibre" column="IWMOLI" type="STRING" mandatory="false" comment="Motif libre" />
+			<field name="idGestionnaire" column="IWIDGE" type="STRING" mandatory="true" comment="Id gestionnaire" />  
+			<field name="dateReception" column="IWDARE" type="DATE" mandatory="true" comment="Date de réception de la facture" />
+			<field name="dateDecision" column="IWDADE" type="DATE" mandatory="false" comment="Date de prise de la décision" />
+			<field name="numDecision" column="IWNUDE" type="STRING" mandatory="false" comment="Numéro de décision" />
+			<field name="dateDebutTraitement" column="IWDDET" type="DATE" mandatory="false" comment="Début de la période de traitement" />
+			<field name="dateFinTraitement" column="IWDFIT" type="DATE" mandatory="false" comment="Fin de la période de traitement" />
+			<field name="fournisseur" column="IWFOUR" type="STRING" mandatory="false" comment="Fournisseur/Milieu d'accueil du service" />
+			<field name="dateValidation" column="DATE_VALIDATION" type="DATE" mandatory="false" comment="Date de validation de la facture" />
+			<field name="hygienisteDentaire" column="IWHYDE" type="BOOLEAN" mandatory="false" comment="Facture de type hygiéniste dentaire" />
+			<field name="minutesHygieniste" column="IWHDMI" type="NUMERIC" dataType="NUMERIC(5,0)" mandatory="false" comment="Minutes passées chez hygiéniste" />
+			<field name="casDeRigueur" column="IWCRIG" type="BOOLEAN" mandatory="false" comment="Cas de rigueur" />
+		</fields>
+		
+ 		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forDateFacture" field-ref="dateFacture" operation="EQUALS"/>
+				<search-field name="forEtat" field-ref="csEtat" operation="EQUALS"/>
+				<search-field name="forIdQD" field-ref="idQD" operation="EQUALS"/>
+				<search-field name="forLibelle" field-ref="libelle" operation="EQUALS"/>
+				<search-field name="forMontant" field-ref="montant" operation="EQUALS"/>
+				<search-field name="forMontantRembourse" field-ref="montantRembourse" operation="EQUALS"/>
+				<search-field name="forMotif" field-ref="csMotif" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

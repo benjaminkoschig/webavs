@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="pegasus/blocage/pcabloque.xml"/>
+	<model-mapping import="pegasus/blocage/pcabloqueConjoint.xml"/>
+	<model-mapping import="pegasus/blocage/simplelignedeblocage.xml"/>
+</model-mapping>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.caissemaladie.SuiviCaisseMaladieComplexModel">
+		
+		<root-model name="suiviCaisseMaladieSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.caissemaladie.SuiviCaisseMaladieSimpleModel" />
+
+		<linked-model name="travailleurComplexModel"
+			model-ref="ch.globaz.vulpecula.business.models.travailleur.TravailleurComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="travailleurSimpleModel.id"
+					operation="EQUALS" field-ref="suiviCaisseMaladieSimpleModel.idTravailleur" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="administrationComplexModel"
+			model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS"
+					field-ref="suiviCaisseMaladieSimpleModel.idCaisseMaladie" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="suiviCaisseMaladieSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdTravailleur"
+					field-ref="travailleurComplexModel.travailleurSimpleModel.id" operation="EQUALS" />
+				<search-field name="forIdCaisseMaladie"
+					field-ref="administrationComplexModel.admin.idTiersAdministration" operation="EQUALS" />	
+				<search-field name="forIsEnvoye"
+					field-ref="suiviCaisseMaladieSimpleModel.isEnvoye" operation="EQUALS" />
+				<search-field name="forTypeDocument"
+					field-ref="suiviCaisseMaladieSimpleModel.typeDocument" operation="IN" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

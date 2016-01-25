@@ -1,0 +1,80 @@
+
+.container {
+	PADDING: 0px 10px;
+}
+.labelAssure {
+	VERTICAL-ALIGN: top; 
+	FONT-WEIGHT: bold;
+}
+.areaMember {
+	BORDER: #CCCCCC 1px solid; 
+	PADDING: 5px; 
+	MARGIN: 10px 0px; 
+	width:100%;
+}
+
+.areaMemberSelected {
+	BORDER: grey 2px groove; 		
+	background-color: #B3C4DB;	
+}
+
+.areaMemberDescription {
+	BACKGROUND-COLOR: #CCCCCC; 
+	WIDTH: 100%;
+	cursor : hand;
+}
+
+.areaMemberSelected .areaMemberDescription {
+	BACKGROUND-COLOR: #D7E4FF; 
+}
+
+.areaMemberDetail {
+	WIDTH: 100%;
+	display:none;
+}
+.areaMemberButtons {
+	TEXT-ALIGN: right;
+}
+
+.areaMemberButtons input {
+	display:none;
+}
+
+.areaMemberFooter {
+	BACKGROUND-COLOR: #D7E4FF; MARGIN-TOP: 5px;
+}
+
+.areaMemberDataTable {
+	border:1px solid black;
+	margin:5px 0px;
+	width:100%;
+	overflow:scroll;
+	height:expression(this.scrollHeight > 80 ? "80px" : "auto");
+}
+
+.areaMemberDataTable tr{
+	background-color:#eee;
+}
+
+.areaMemberDataTable tr.odd{
+	background-color: #ddd;	
+}
+
+.areaMemberDataTable tr.hover {
+    background-color : #638fbc;
+    color : #ffffe8;
+	cursor : hand;
+}
+
+.areaMemberDataTable tr.highlight {
+    background-color : #aaaa55;
+}
+
+.insecable {
+	white-space: nowrap;
+}
+
+.hasFocus{
+	/*ecf3f9*/
+	background-color:#dffde6;
+}

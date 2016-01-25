@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.parametre.SimpleZoneForfaits">
+	<description>Contien les differents zone de forfait</description>
+	<table name="PCZONFOR" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="idZoneForfait" column="DAIDZF" comment="ID_ZONE_DE_FORFAITS" />
+			<field name="csCanton" column="DATCAN" type="NUMERIC"  mandatory="true" comment="CS_CANTON" />
+			<field name="designation" column="DALDES" type="STRING" mandatory="true" comment="DESIGNATION" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forCsCanton"  operation="EQUALS" field-ref="csCanton"/>
+				<search-field name="forIdZoneForfait"  operation="EQUALS" field-ref="idZoneForfait"/>
+				<search-field name="forDesignation"  operation="EQUALS" field-ref="designation"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping> 

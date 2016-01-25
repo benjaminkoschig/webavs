@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.fortuneparticuliere.SimpleBetail">
+		<description>Bétail</description>
+		<table name="PCBETAIL" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idBetail" column="BQIBET" comment="ID_BETAIL"/>
+			<field name="idDonneeFinanciereHeader" column="BQIDFH" type="NUMERIC" mandatory="true" comment="ID_DONNEE_FINANCIERE_HEADER"/>
+			<field name="csTypePropriete" column="BQTTPO" type="NUMERIC" mandatory="true" comment="CS_TYPE_PROPRIETE"/>
+			<field name="partProprieteNumerateur" column="BQNPPN" type="NUMERIC" mandatory="true" comment="PART_PROPRIETE_NUMERATEUR"/>
+			<field name="partProprieteDenominateur" column="BQNPPD" type="NUMERIC" mandatory="true" comment="PART_PROPRIETE_DENOMINATEUR"/>
+			<field name="designation" column="BQLDES" type="STRING" mandatory="true" comment="DESIGNATION"/>
+			<field name="montant" column="BQMONT" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

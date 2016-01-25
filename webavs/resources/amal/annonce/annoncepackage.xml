@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<model-mapping import="amal/annonce/simpleannonce.xml"/>
+	<model-mapping import="amal/annonce/annoncescaisse.xml"/>
+</model-mapping>

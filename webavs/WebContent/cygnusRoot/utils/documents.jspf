@@ -1,0 +1,101 @@
+<%@page import="globaz.cygnus.api.codesystem.IRFCatalogueTexte"%>
+<SCRIPT language="JavaScript">
+
+	<%=viewBean.getDocumentsInnerJavascript()%>
+
+	
+	
+	function onChangeTypeDocumentsList(){	
+		if(document.getElementsByName("typeDocumentsList")[0].value!=""){					
+			updDocumentsList();
+		}else{	
+			document.getElementsByName("documentsList")[0].options.length=0;
+			document.getElementsByName("documentsList")[0].options[document.getElementsByName("documentsList")[0].options.length]=new Option("","");
+		}						
+	}
+	
+	function onChangeDocumentsList(){		
+		
+		//option selectionné
+		var $optionChoisi = $('#listeDocs :selected');
+		//booleean si ged
+		var b_afficherCheckBox = ($optionChoisi.prop('data-ged')=='true') ;
+		
+		if(b_afficherCheckBox){
+			$divMiseEnGed.show();
+			$cacMiseEnGed.attr('checked','checked');
+		}else{
+			$divMiseEnGed.hide();
+		}
+		
+		
+		document.getElementsByName('idDocument')[0].value = document.getElementsByName('documentsList')[0].options[document.getElementsByName('documentsList')[0].selectedIndex].value;				
+		document.getElementsByName('typeDocument')[0].value = document.getElementsByName('typeDocumentsList')[0].options[document.getElementsByName('typeDocumentsList')[0].selectedIndex].value;
+		
+		// on cache tous les tBody
+		$("TBODY[id*='tBody']").hide();
+				
+		// on affiche le tBody du doc sélectionné
+		var currentTBody = "tBody"+"_"+document.getElementsByName("typeDocumentsList")[0].value+"_"+document.getElementsByName('idDocument')[0].value;				
+		$('#'+currentTBody).show();	
+		
+		if(document.getElementsByName("documentsList")[0].value!=""){
+			if(document.getElementsByName("isSaisieDocument")[0].value=="true"){								
+				document.forms[0].elements('userAction').value = "<%=IRFActions.ACTION_DOCUMENTS%>"+".afficher";
+		  		document.forms[0].submit();
+			}
+		}		
+	}
+
+	function updDocumentsList(){	
+					
+		currentDocumentTab=documentsTab[document.getElementsByName('typeDocumentsList')[0].options[document.getElementsByName('typeDocumentsList')[0].selectedIndex].value];//mettre l'indice de typeDocumentsList
+		currentCodeDocumentList=currentDocumentTab[0];
+		currentLibelleDocumentList=currentDocumentTab[1];	
+		currentGedList=currentDocumentTab[2];
+		
+		//objet select liste des documents
+		documentsList=document.getElementsByName("documentsList")[0];//${'[name=documentsList]'}
+		documentsList.options.length=0;
+		documentsList.options[documentsList.options.length]=new Option("","");					
+		
+		
+		//for (i=0; i<currentLibelleDocumentList.length; i++){
+		//	
+		//	documentsList.options[documentsList.options.length]=new Option(currentLibelleDocumentList[i],currentCodeDocumentList[i],currentGedList[i]);
+		//}
+		for (i=0; i<currentLibelleDocumentList.length; i++){
+			$docListSelect.append('<option value="'+currentCodeDocumentList[i]+'" data-ged="'+currentGedList[i]+'">'+currentLibelleDocumentList[i]+'</option>');
+		}
+		
+	}
+	
+</SCRIPT>
+	
+<TR>
+	<TD><LABEL for="typeDocuments"><ct:FWLabel key="JSP_RF_DOCS_R_TYPE_DOCUMENTS"/></LABEL>&nbsp;</TD>
+	<TD colspan="5">				
+		<SELECT name="typeDocumentsList" tabindex="" onchange="onChangeTypeDocumentsList()" style="">
+			<%Iterator typeDocsDataIte = viewBean.getTypeDocuments().iterator();
+			Integer i=-1;
+			
+			while(typeDocsDataIte.hasNext()){
+				String[] currentOption = (String[]) typeDocsDataIte.next();%>
+			<OPTION 
+			 value="<%=i%>"><%=currentOption[0]%></OPTION> 
+			<% i++; }%>
+		</SELECT>
+	</TD>
+</TR>
+<TR>
+	<TD><LABEL for="forIdDecision"><ct:FWLabel key="JSP_RF_DOCS_R_DOCUMENTS"/></LABEL>&nbsp;</TD>
+	<TD colspan="5">				
+		<SELECT id="listeDocs" name="documentsList" tabindex="" onchange="onChangeDocumentsList()" style="">
+				<OPTION value=""></OPTION> 
+		</SELECT>		
+	</TD>	
+	<INPUT type="hidden" name="idDocument" value="<%=viewBean.getIdDocument()%>"  />
+	<INPUT type="hidden" name="typeDocument" value="<%=viewBean.getTypeDocument()%>"  />
+</TR>
+
+

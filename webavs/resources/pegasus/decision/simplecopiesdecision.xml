@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.decision.SimpleCopiesDecision">
+		<description>Copies des decisions</description>
+		<table name="PCCOPDEC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idCopiesDecision" column="CDIDEN" comment="ID_COPIE_DECISION"/>
+			<field name="idDecisionHeader" column="CDIDEC" type="NUMERIC" mandatory="false" comment="ID_DECISION"/>
+			<field name="idTiersCopie" column="CDITIE" type="NUMERIC" mandatory="false" comment="ID_TIERS_COPIE"/>
+			<field name="idAffilieCopie" column="CDIAFF" type="NUMERIC" mandatory="false" comment="ID_AFFILIE_COPIE"/>
+			<field name="lettreBase" column="CDCLBA" type="BOOLEAN" mandatory="false" comment="LETTRE_DE_BASE"/>
+			<field name="pageDeGarde" column="CDCPGG" type="BOOLEAN" mandatory="false" comment="PAGE_DE_GARDE"/>
+			<field name="versementA" column="CDCVER" type="BOOLEAN" mandatory="false" comment="VERSEMENT_A"/>
+			<field name="plandeCalcul" column="CDCPLC" type="BOOLEAN" mandatory="false" comment="PLAN_DE_CALCUL"/>
+			<field name="recapitulatif" column="CDCDEC" type="BOOLEAN" mandatory="false" comment="RECAPITULATIF"/>
+			<field name="remarque" column="CDCREM" type="BOOLEAN" mandatory="false" comment="REMARQUE"/>
+			<field name="moyensDeDroit" column="CDCMDR" type="BOOLEAN" mandatory="false" comment="MOYENS_DE_DROIT"/>
+			<field name="signature" column="CDCSIG" type="BOOLEAN" mandatory="false" comment="SIGNATURE"/>
+			<field name="annexes" column="CDCANN" type="BOOLEAN" mandatory="false" comment="ANNEXES"/>
+			<field name="copies" column="CDCCOP" type="BOOLEAN" mandatory="false" comment="COPIES"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdCopiesDecision" operation="EQUALS" field-ref="idCopiesDecision" />
+				<search-field name="forIdDecisionHeader" operation="EQUALS" field-ref="idDecisionHeader" />
+				<search-field name="forInIdDecisionHeader" operation="IN" field-ref="idDecisionHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

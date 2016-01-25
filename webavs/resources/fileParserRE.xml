@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Sample of use 																						-->
+<!--		IPRFileParser fileParser = null;															-->
+<!--		try { 																						-->
+<!--			fileParser = PRFileParserFactory.newInstance("fileParser.xml", "MADRID");			-->
+<!--			fileParser.setSource("D:\\byPassSourceFileDefinedInThisXmlFile");		//not compulsory-->
+<!--			while (fileParser.hasNext()) {															-->
+<!--				fileParser.goToNextRecord();														-->
+<!--				System.out.print("record : ");														-->
+<!--				System.out.print(" date = " + fileParser.getField("DATE"));							-->
+<!--				System.out.print(" noAvs = " + fileParser.getField("NO_AVS"));						-->
+<!--				System.out.println(" montant = " + fileParser.getField("MONTANT"));					-->
+<!--			}																						-->
+<!--		} catch (Exception e) {																		-->
+<!--			e.printStackTrace();																	-->
+<!--			fileParser.close();																		-->
+<!--		}	 																						-->
+
+<!--<file-parser>
+	<file id="MADRID" codeIsoMonnaie="EUR" type="TEXT" source="d:\\test\\test.txt">
+		<class name="globaz.prestation.file.parser.CATextFileParser"/>
+		<text-field id="RECORD_TYPE" beginPos="0" endPos="4"/>
+		<text-field id="DATE" beginPos="30" endPos="36"/>
+		<text-field id="NO_AVS" beginPos="77" endPos="88"/>
+		<text-field id="MONTANT" beginPos="36" endPos="48"/>
+	</file>
+	<file id="POSTE_FRANCAISE" codeIsoMonnaie="EUR" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.CATextFileParser"/>
+		<text-field id="RECORD_TYPE" beginPos="0" endPos="4"/>		
+		<text-field id="DATE" beginPos="24" endPos="30"/>
+		<text-field id="NO_AVS" beginPos="138" endPos="149"/>
+		<text-field id="MONTANT" beginPos="102" endPos="118"/>
+		<text-field id="CODE_DEBIT_CREDIT" beginPos="228" endPos="230"/>
+	</file>
+</file-parser> -->
+
+<file-parser>
+
+	<file id="BASE_CALCUL_NAVS" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="0" endPos="2"/>
+		<text-field id="NSS" beginPos="2" endPos="13"/>
+		<text-field id="CODE_SPECIFIQUE_CSC" beginPos="13" endPos="22"/>
+		<text-field id="REVENU_PRIS_COMPTE" beginPos="22" endPos="23"/>
+		<text-field id="RAM" beginPos="23" endPos="31"/>
+		<text-field id="DUREE_COTI_AV_73" beginPos="31" endPos="35"/>
+		<text-field id="DUREE_COTI_DES_73" beginPos="35" endPos="39"/>
+		<text-field id="DUREE_COTI_RAM" beginPos="39" endPos="43"/>
+		<text-field id="ANNEE_COTI_CLASSE_AGE" beginPos="43" endPos="45"/>
+		<text-field id="ANNEE_NIVEAU" beginPos="45" endPos="47"/>
+		<text-field id="ECHELLE_RENTE" beginPos="47" endPos="49"/>
+		<text-field id="SPEC_CSC_1" beginPos="49" endPos="50"/>
+		<text-field id="MOIS_APPOINT_AV_73" beginPos="50" endPos="52"/>
+		<text-field id="MOIS_APPOINT_DES_73" beginPos="52" endPos="54"/>
+		<text-field id="NON_UTILISE_1" beginPos="54" endPos="60"/>
+		<text-field id="LIMITE_REVENU" beginPos="60" endPos="61"/>
+		<text-field id="MINIMUM_GARANTI" beginPos="61" endPos="62"/>
+		<text-field id="BONIF_TACHE_EDUCATIVE" beginPos="62" endPos="68"/>
+		<text-field id="NOMBRE_ANNEE_EDUCATION" beginPos="68" endPos="70"/>
+		<text-field id="OFFICE_AI_COMPETANT_AYANT_DROIT" beginPos="70" endPos="73"/>
+		<text-field id="DEGRE_INVALIDITE_AYANT_DROIT" beginPos="73" endPos="76"/>
+		<text-field id="CLE_INFIRM_AYANT_DROIT" beginPos="76" endPos="81"/>
+		<text-field id="SURVENANCE_EVEN_ASSURE_AYANT_DROIT" beginPos="81" endPos="85"/>
+		<text-field id="INVALIDITE_PRECOCE_AYANT_DROIT" beginPos="85" endPos="86"/>
+		<text-field id="NON_UTILISE_2" beginPos="86" endPos="87"/>
+		<text-field id="NON_UTILISE_3" beginPos="87" endPos="90"/>
+		<text-field id="OFFICE_AI_COMPETANT_EPOUSE" beginPos="90" endPos="93"/>
+		<text-field id="DEGRE_INVALIDITE_EPOUSE" beginPos="93" endPos="96"/>	
+		<text-field id="CLE_INFIRM_EPOUSE" beginPos="96" endPos="101"/>	
+		<text-field id="SURVENANCE_EVEN_ASSURE_EPOUSE" beginPos="101" endPos="105"/>	
+		<text-field id="INVALIDITE_PRECOCE_EPOUSE" beginPos="105" endPos="106"/>	
+		<text-field id="PERIODE_JEUNESSE" beginPos="106" endPos="110"/>	
+		<text-field id="REVENU_JEUNESSE" beginPos="110" endPos="118"/>	
+		<text-field id="PERIODE_MARIAGE" beginPos="118" endPos="122"/>	
+		<text-field id="PERIODE_ASS_ETR_AV_73" beginPos="122" endPos="126"/>	
+		<text-field id="MOIS_COTI_ANNEE_OUVERTURE" beginPos="126" endPos="128"/>	
+		<text-field id="DROIT_APPLIQUE" beginPos="128" endPos="130"/>	
+		<text-field id="REVENU_SPLITTE" beginPos="130" endPos="131"/>	
+		<text-field id="ANNEE_BONIF_TACHE_EDUC" beginPos="131" endPos="136"/>	
+		<text-field id="ANNEE_BONIF_TACHE_ASSIST" beginPos="136" endPos="141"/>	
+		<text-field id="ANNEE_BONIF_TRANSITOIRE" beginPos="141" endPos="144"/>	
+		<text-field id="SPEC_CSC_2" beginPos="144" endPos="145"/>	
+		<text-field id="POURCENT_SUPP_CARRIERE" beginPos="145" endPos="148"/>	
+		<text-field id="PARTAGE_REVENU" beginPos="148" endPos="149"/>	
+		<text-field id="TYPE_CALCUL_COMPARATIF" beginPos="149" endPos="151"/>	
+		<text-field id="RESULTAT_COMPARAISON" beginPos="151" endPos="153"/>	
+		<text-field id="MONTANT_MAX_R10_E44" beginPos="153" endPos="157"/>	
+		<text-field id="ANNEE_TRAITEMENT" beginPos="157" endPos="161"/>	
+		<text-field id="PERIODE_ASS_ETR_DES73" beginPos="161" endPos="165"/>	
+		<text-field id="FACTEUR_REVALORISATION" beginPos="165" endPos="170"/>																			
+	</file>
+
+	<file id="BASE_CALCUL_NSS" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="0" endPos="2"/>
+		<text-field id="NSS" beginPos="2" endPos="15"/>
+		<text-field id="CODE_SPECIFIQUE_CSC" beginPos="15" endPos="24"/>
+		<text-field id="REVENU_PRIS_COMPTE" beginPos="24" endPos="25"/>
+		<text-field id="RAM" beginPos="25" endPos="33"/>
+		<text-field id="DUREE_COTI_AV_73" beginPos="33" endPos="37"/>
+		<text-field id="DUREE_COTI_DES_73" beginPos="37" endPos="41"/>
+		<text-field id="DUREE_COTI_RAM" beginPos="41" endPos="45"/>
+		<text-field id="ANNEE_COTI_CLASSE_AGE" beginPos="45" endPos="47"/>
+		<text-field id="ANNEE_NIVEAU" beginPos="47" endPos="49"/>
+		<text-field id="ECHELLE_RENTE" beginPos="49" endPos="51"/>
+		<text-field id="SPEC_CSC_1" beginPos="51" endPos="52"/>
+		<text-field id="MOIS_APPOINT_AV_73" beginPos="52" endPos="54"/>
+		<text-field id="MOIS_APPOINT_DES_73" beginPos="54" endPos="56"/>
+		<text-field id="NON_UTILISE_1" beginPos="56" endPos="62"/>
+		<text-field id="LIMITE_REVENU" beginPos="62" endPos="63"/>
+		<text-field id="MINIMUM_GARANTI" beginPos="63" endPos="64"/>
+		<text-field id="BONIF_TACHE_EDUCATIVE" beginPos="64" endPos="70"/>
+		<text-field id="NOMBRE_ANNEE_EDUCATION" beginPos="70" endPos="72"/>
+		<text-field id="OFFICE_AI_COMPETANT_AYANT_DROIT" beginPos="72" endPos="75"/>
+		<text-field id="DEGRE_INVALIDITE_AYANT_DROIT" beginPos="75" endPos="78"/>
+		<text-field id="CLE_INFIRM_AYANT_DROIT" beginPos="78" endPos="83"/>
+		<text-field id="SURVENANCE_EVEN_ASSURE_AYANT_DROIT" beginPos="83" endPos="87"/>
+		<text-field id="INVALIDITE_PRECOCE_AYANT_DROIT" beginPos="87" endPos="88"/>
+		<text-field id="NON_UTILISE_2" beginPos="88" endPos="89"/>
+		<text-field id="NON_UTILISE_3" beginPos="89" endPos="92"/>
+		<text-field id="OFFICE_AI_COMPETANT_EPOUSE" beginPos="92" endPos="95"/>
+		<text-field id="DEGRE_INVALIDITE_EPOUSE" beginPos="95" endPos="98"/>	
+		<text-field id="CLE_INFIRM_EPOUSE" beginPos="98" endPos="103"/>	
+		<text-field id="SURVENANCE_EVEN_ASSURE_EPOUSE" beginPos="103" endPos="107"/>	
+		<text-field id="INVALIDITE_PRECOCE_EPOUSE" beginPos="107" endPos="108"/>	
+		<text-field id="PERIODE_JEUNESSE" beginPos="108" endPos="112"/>	
+		<text-field id="REVENU_JEUNESSE" beginPos="112" endPos="120"/>	
+		<text-field id="PERIODE_MARIAGE" beginPos="120" endPos="124"/>	
+		<text-field id="PERIODE_ASS_ETR_AV_73" beginPos="124" endPos="128"/>	
+		<text-field id="MOIS_COTI_ANNEE_OUVERTURE" beginPos="128" endPos="130"/>	
+		<text-field id="DROIT_APPLIQUE" beginPos="130" endPos="132"/>	
+		<text-field id="REVENU_SPLITTE" beginPos="132" endPos="133"/>	
+		<text-field id="ANNEE_BONIF_TACHE_EDUC" beginPos="133" endPos="138"/>	
+		<text-field id="ANNEE_BONIF_TACHE_ASSIST" beginPos="138" endPos="143"/>	
+		<text-field id="ANNEE_BONIF_TRANSITOIRE" beginPos="143" endPos="146"/>	
+		<text-field id="SPEC_CSC_2" beginPos="146" endPos="147"/>	
+		<text-field id="POURCENT_SUPP_CARRIERE" beginPos="147" endPos="150"/>	
+		<text-field id="PARTAGE_REVENU" beginPos="150" endPos="151"/>	
+		<text-field id="TYPE_CALCUL_COMPARATIF" beginPos="151" endPos="153"/>	
+		<text-field id="RESULTAT_COMPARAISON" beginPos="153" endPos="155"/>	
+		<text-field id="MONTANT_MAX_R10_E44" beginPos="155" endPos="159"/>	
+		<text-field id="ANNEE_TRAITEMENT" beginPos="159" endPos="163"/>	
+		<text-field id="PERIODE_ASS_ETR_DES73" beginPos="163" endPos="167"/>	
+		<text-field id="FACTEUR_REVALORISATION" beginPos="167" endPos="172"/>																			
+	</file>
+	
+	<file id="RENTE_ACCORDEE_NAVS" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="0" endPos="2"/>
+		<text-field id="NSS_BASE_CALCUL" beginPos="2" endPos="13"/>
+		<text-field id="CODE_SPECIFIQUE_CSC" beginPos="13" endPos="22"/>		
+		<text-field id="NSS_BENEFICIAIRE" beginPos="22" endPos="33"/>
+		<text-field id="CODE_PRESTATION" beginPos="33" endPos="35"/>				
+		<text-field id="CODE_AUXILIAIRE" beginPos="35" endPos="36"/>				
+		<text-field id="FRACTION_RENTE_AI" beginPos="36" endPos="37"/>				
+		<text-field id="CODE_ETAT_CIVIL" beginPos="37" endPos="38"/>				
+		<text-field id="CODE_REFUGIE" beginPos="38" endPos="39"/>								
+		<text-field id="PREMIER_NSS_COMPLEMENTAIRE" beginPos="39" endPos="50"/>				
+		<text-field id="SECOND_NSS_COMPLEMENTAIRE" beginPos="50" endPos="61"/>				
+		<text-field id="MONTANT_PRESTATION" beginPos="61" endPos="68"/>				
+		<text-field id="MONTANT_RENTE_ORDINAIRE_REMPL" beginPos="68" endPos="73"/>								
+		<text-field id="CODE_CAS_SPECIAUX" beginPos="73" endPos="83"/>				
+		<text-field id="REDUCTION_FAUTE_GRAVE" beginPos="83" endPos="86"/>				
+		<text-field id="INDEMNITE_FORFAITAIRE" beginPos="86" endPos="92"/>				
+		<text-field id="DEBUT_DROIT" beginPos="92" endPos="96"/>								
+		<text-field id="FIN_DROIT" beginPos="96" endPos="100"/>				
+		<text-field id="CODE_MUTATION" beginPos="100" endPos="102"/>				
+		<text-field id="DUREE_AJOURNEMENT" beginPos="102" endPos="105"/>				
+		<text-field id="SUPPLEMENT_AJOURNEMENT" beginPos="105" endPos="110"/>								
+		<text-field id="DATE_REVOCATION_AJOURNEMENT" beginPos="110" endPos="114"/>				
+		<text-field id="ANNEE_ANTICIPATION" beginPos="114" endPos="115"/>				
+		<text-field id="MONTANT_REDUCT_ANTICIPATION" beginPos="115" endPos="120"/>				
+		<text-field id="DATE_DEBUT_ANTICIPATION" beginPos="120" endPos="124"/>								
+		<text-field id="CODE_SURVIVANT" beginPos="124" endPos="125"/>				
+		<text-field id="SPEC_CSC_1" beginPos="125" endPos="132"/>				
+		<text-field id="FIN_DROIT_ECHEANCE" beginPos="132" endPos="136"/>				
+		<text-field id="SUPPL_VEUVAGE" beginPos="136" endPos="137"/>								
+		<text-field id="PRESCRIPTION_APPLIQUEE" beginPos="137" endPos="138"/>				
+	</file>
+
+	<file id="RENTE_ACCORDEE_NSS" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="0" endPos="2"/>
+		<text-field id="NSS_BASE_CALCUL" beginPos="2" endPos="15"/>
+		<text-field id="CODE_SPECIFIQUE_CSC" beginPos="15" endPos="24"/>		
+		<text-field id="NSS_BENEFICIAIRE" beginPos="24" endPos="37"/>
+		<text-field id="CODE_PRESTATION" beginPos="37" endPos="39"/>				
+		<text-field id="CODE_AUXILIAIRE" beginPos="39" endPos="40"/>				
+		<text-field id="FRACTION_RENTE_AI" beginPos="40" endPos="41"/>				
+		<text-field id="CODE_ETAT_CIVIL" beginPos="41" endPos="42"/>				
+		<text-field id="CODE_REFUGIE" beginPos="42" endPos="43"/>								
+		<text-field id="PREMIER_NSS_COMPLEMENTAIRE" beginPos="43" endPos="56"/>				
+		<text-field id="SECOND_NSS_COMPLEMENTAIRE" beginPos="56" endPos="69"/>				
+		<text-field id="MONTANT_PRESTATION" beginPos="69" endPos="76"/>				
+		<text-field id="MONTANT_RENTE_ORDINAIRE_REMPL" beginPos="76" endPos="81"/>								
+		<text-field id="CODE_CAS_SPECIAUX" beginPos="81" endPos="91"/>				
+		<text-field id="REDUCTION_FAUTE_GRAVE" beginPos="91" endPos="94"/>				
+		<text-field id="INDEMNITE_FORFAITAIRE" beginPos="94" endPos="100"/>				
+		<text-field id="DEBUT_DROIT" beginPos="100" endPos="104"/>								
+		<text-field id="FIN_DROIT" beginPos="104" endPos="108"/>				
+		<text-field id="CODE_MUTATION" beginPos="108" endPos="110"/>				
+		<text-field id="DUREE_AJOURNEMENT" beginPos="110" endPos="113"/>				
+		<text-field id="SUPPLEMENT_AJOURNEMENT" beginPos="113" endPos="118"/>								
+		<text-field id="DATE_REVOCATION_AJOURNEMENT" beginPos="118" endPos="122"/>				
+		<text-field id="ANNEE_ANTICIPATION" beginPos="122" endPos="123"/>				
+		<text-field id="MONTANT_REDUCT_ANTICIPATION" beginPos="123" endPos="128"/>				
+		<text-field id="DATE_DEBUT_ANTICIPATION" beginPos="128" endPos="132"/>								
+		<text-field id="CODE_SURVIVANT" beginPos="132" endPos="133"/>				
+		<text-field id="SPEC_CSC_1" beginPos="133" endPos="140"/>				
+		<text-field id="FIN_DROIT_ECHEANCE" beginPos="140" endPos="144"/>				
+		<text-field id="SUPPL_VEUVAGE" beginPos="144" endPos="145"/>								
+		<text-field id="PRESCRIPTION_APPLIQUEE" beginPos="145" endPos="146"/>				
+	</file>
+
+	<file id="MONTANT_VERSE_NAVS" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="0" endPos="2"/>
+		<text-field id="NSS_BASE_CALCUL" beginPos="2" endPos="13"/>
+		<text-field id="CODE_SPECIFIQUE_CSC" beginPos="13" endPos="22"/>				
+		<text-field id="NSS_BENEFICIAIRE" beginPos="22" endPos="33"/>				
+		<text-field id="DEBUT_PAIEMENT" beginPos="33" endPos="39"/>								
+		<text-field id="MONTANT" beginPos="39" endPos="45"/>				
+		<text-field id="RAM" beginPos="45" endPos="53"/>				
+	</file>
+
+	<file id="MONTANT_VERSE_NSS" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="0" endPos="2"/>
+		<text-field id="NSS_BASE_CALCUL" beginPos="2" endPos="15"/>
+		<text-field id="CODE_SPECIFIQUE_CSC" beginPos="15" endPos="24"/>				
+		<text-field id="NSS_BENEFICIAIRE" beginPos="24" endPos="37"/>				
+		<text-field id="DEBUT_PAIEMENT" beginPos="37" endPos="43"/>								
+		<text-field id="MONTANT" beginPos="43" endPos="49"/>				
+		<text-field id="RAM" beginPos="49" endPos="57"/>				
+	</file>
+	
+	<file id="ANNONCE_41_42_43_01" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_APPLICATION" beginPos="0" endPos="2"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="2" endPos="4"/>
+		<text-field id="NO_CAISSE" beginPos="4" endPos="7"/>
+		<text-field id="NO_AGENCE" beginPos="7" endPos="10"/>
+		<text-field id="NO_ANNONCE" beginPos="10" endPos="16"/>
+		<text-field id="REF_INTERNE_CAISSE" beginPos="16" endPos="36"/>
+		<text-field id="NO_ASS_AYANT_DROIT_PRESTATION" beginPos="36" endPos="47"/>
+		<text-field id="PREMIER_NO_ASSURE_COMP" beginPos="47" endPos="58"/>
+		<text-field id="SECOND_NO_ASSURE_COMP" beginPos="58" endPos="69"/>
+		<text-field id="NOUVEAU_NO_ASS_AYANT_DROIT" beginPos="69" endPos="80"/>
+		<text-field id="ETAT_CIVIL" beginPos="80" endPos="81"/>
+		<text-field id="REFUGIE" beginPos="81" endPos="82"/>
+		<text-field id="CANTON_ETAT_DOMICILE" beginPos="82" endPos="85"/>
+		<text-field id="GENRE_PRESTATIONS" beginPos="85" endPos="87"/>
+		<text-field id="DEBUT_DROIT" beginPos="87" endPos="91"/>
+		<text-field id="MENSUALITE_PRESTATIONS_FRANCS" beginPos="91" endPos="96"/>
+		<text-field id="MENSUALITE_RENTE_ORDINAIRE" beginPos="96" endPos="101"/>
+		<text-field id="FIN_DROIT" beginPos="101" endPos="105"/>
+		<text-field id="MOIS_RAPPORT" beginPos="105" endPos="109"/>
+		<text-field id="CODE_MUTATION" beginPos="109" endPos="111"/>
+		<text-field id="RESERVE" beginPos="111" endPos="120"/>
+	</file>
+		
+	<file id="ANNONCE_41_43_02" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_APPLICATION" beginPos="0" endPos="2"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="2" endPos="4"/>
+		<text-field id="RAM_DETERMINANT" beginPos="4" endPos="12"/>
+		<text-field id="DUREE_COT_POUR_DET_RAM" beginPos="12" endPos="16"/>
+		<text-field id="ANNEE_NIVEAU" beginPos="16" endPos="18"/>
+		<text-field id="REVENU_PRIS_EM_COMPTE" beginPos="18" endPos="19"/>
+		<text-field id="ECHELLE_RENTE" beginPos="19" endPos="21"/>
+		<text-field id="RESERVE_1" beginPos="21" endPos="22"/>
+		<text-field id="DUREE_COT_PRISE_EN_COMPTE_AVANT_1973" beginPos="22" endPos="26"/>
+		<text-field id="DUREE_COT_PRISE_EN_COMPTE_DES_1973" beginPos="26" endPos="30"/>
+		<text-field id="PRISE_EN_COMPTE_COT_MANQUANTE_48_72" beginPos="30" endPos="32"/>
+		<text-field id="ANNEE_COT_CLASSE_AGE" beginPos="32" endPos="34"/>
+		<text-field id="DUREE_AJOURNEMENT" beginPos="34" endPos="37"/>
+		<text-field id="SUPPLEMENT_AJOURNEMENT" beginPos="37" endPos="42"/>
+		<text-field id="DATE_REVOCATION_AJOURNEMENT" beginPos="42" endPos="46"/>
+		<text-field id="LIMITE_REVENU" beginPos="46" endPos="47"/>
+		<text-field id="MINIMUM_GARANTI" beginPos="47" endPos="48"/>
+		<text-field id="OFFICE_AI_AYANT_DROIT" beginPos="48" endPos="50"/>
+		<text-field id="OFFICE_AI_EPOUSE" beginPos="50" endPos="52"/>
+		<text-field id="DEGRE_INVALIDITE_AYANT_DROIT" beginPos="52" endPos="55"/>
+		<text-field id="DEGRE_INVALIDITE_EPOUSE" beginPos="55" endPos="58"/>
+		<text-field id="CODE_INFIRMITE_AYANT_DROIT" beginPos="58" endPos="63"/>
+		<text-field id="CODE_INFIRMITE_EPOUSE" beginPos="63" endPos="68"/>
+		<text-field id="SURVENANCE_EVT_ASS_AYANT_DROIT" beginPos="68" endPos="72"/>
+		<text-field id="SURVENANCE_EVT_ASS_EPOUSE" beginPos="72" endPos="76"/>
+		<text-field id="AGE_DEBUT_INVALIDITE_AYANT_DROIT" beginPos="76" endPos="77"/>
+		<text-field id="AGE_DEBUT_INVALIDITE_EPOUSE" beginPos="77" endPos="78"/>
+		<text-field id="GENRE_DROIT_API" beginPos="78" endPos="79"/>
+		<text-field id="REDUCTION" beginPos="79" endPos="81"/>
+		<text-field id="CAS_SPECIAL_1" beginPos="81" endPos="83"/>
+		<text-field id="CAS_SPECIAL_2" beginPos="83" endPos="85"/>
+		<text-field id="CAS_SPECIAL_3" beginPos="85" endPos="87"/>
+		<text-field id="CAS_SPECIAL_4" beginPos="87" endPos="89"/>
+		<text-field id="CAS_SPECIAL_5" beginPos="89" endPos="91"/>
+		<text-field id="PRISE_EN_COMPTE_DUREES_COT_MANQUANTES_73_78" beginPos="91" endPos="93"/>
+		<text-field id="RAM_SANS_BTE" beginPos="93" endPos="101"/>
+		<text-field id="BTE_MOYENNES" beginPos="101" endPos="107"/>
+		<text-field id="NBRE_ANNEE_BTE" beginPos="107" endPos="109"/>
+		<text-field id="RESERVE_2" beginPos="109" endPos="120"/>
+	</file>
+
+	<file id="ANNONCE_44_45_46_01" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_APPLICATION" beginPos="0" endPos="2"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="2" endPos="4"/>
+		<text-field id="NO_CAISSE" beginPos="4" endPos="7"/>
+		<text-field id="NO_AGENCE" beginPos="7" endPos="10"/>
+		<text-field id="NO_ANNONCE" beginPos="10" endPos="16"/>
+		<text-field id="REF_INTERNE_CAISSE" beginPos="16" endPos="36"/>
+		<text-field id="NO_ASS_AYANT_DROIT" beginPos="36" endPos="47"/>
+		<text-field id="PREMIER_NO_ASS_COMP" beginPos="47" endPos="58"/>
+		<text-field id="SECOND_NO_ASS_COMP" beginPos="58" endPos="69"/>
+		<text-field id="NOUVEAU_NO_ASS_AYANT_DROIT" beginPos="69" endPos="80"/>
+		<text-field id="ETAT_CIVIL" beginPos="80" endPos="81"/>
+		<text-field id="REFUGIE" beginPos="81" endPos="82"/>
+		<text-field id="CANTON_ETAT_DOMICILE" beginPos="82" endPos="85"/>
+		<text-field id="GENRE_PRESTATION" beginPos="85" endPos="87"/>
+		<text-field id="DEBUT_DROIT" beginPos="87" endPos="91"/>
+		<text-field id="MENSUALITE_PRESTATION_FRANCS" beginPos="91" endPos="96"/>
+		<text-field id="FIN_DROIT" beginPos="96" endPos="100"/>
+		<text-field id="MOIS_RAPPORT" beginPos="100" endPos="104"/>
+		<text-field id="CODE_MUTATION" beginPos="104" endPos="106"/>
+		<text-field id="RESERVE" beginPos="106" endPos="120"/>
+	</file>
+		
+	<file id="ANNONCE_44_46_02" type="TEXT" source="n/a">
+		<class name="globaz.prestation.file.parser.PRTextFileParser"/>
+		<text-field id="CODE_APPLICATION" beginPos="0" endPos="2"/>
+		<text-field id="CODE_ENREGISTREMENT" beginPos="2" endPos="4"/>
+		<text-field id="ECHELLE_RENTE" beginPos="4" endPos="6"/>
+		<text-field id="DUREE_COT_PRISE_EN_COMPTE_AVANT_1973" beginPos="6" endPos="10"/>
+		<text-field id="DUREE_COT_PRISE_EN_COMPTE_DES_1973" beginPos="10" endPos="14"/>
+		<text-field id="PRISE_EN_COMPTE_COT_MANQUANTES_48_72" beginPos="14" endPos="16"/>
+		<text-field id="PRISE_EN_COMPTE_COT_MANQUANTES_73_78" beginPos="16" endPos="18"/>
+		<text-field id="ANNEE_COT_CLASSE_AGE" beginPos="18" endPos="20"/>
+		<text-field id="RAM_DETERMINANT" beginPos="20" endPos="28"/>
+		<text-field id="CODE_REVENUS_SPLITTES" beginPos="28" endPos="29"/>
+		<text-field id="DUREE_COT_POUR_DET_RAM" beginPos="29" endPos="33"/>
+		<text-field id="ANNEE_NIVEAU" beginPos="33" endPos="35"/>
+		<text-field id="NBRE_ANNEE_BTE" beginPos="35" endPos="39"/>
+		<text-field id="NBRE_ANNEE_BTA" beginPos="39" endPos="43"/>
+		<text-field id="NBRE_ANNEE_BONIF_TRANSITOIRES" beginPos="43" endPos="45"/>
+		<text-field id="OFFICE_AI" beginPos="45" endPos="48"/>
+		<text-field id="DEGRE_INVALIDITE" beginPos="48" endPos="51"/>
+		<text-field id="CODE_INFIRMITE" beginPos="51" endPos="56"/>
+		<text-field id="SURVENANCE_EVT_ASSURE" beginPos="56" endPos="60"/>
+		<text-field id="AGE_DEBUT_INVALIDITE" beginPos="60" endPos="61"/>
+		<text-field id="GENRE_DROIT_API" beginPos="61" endPos="62"/>
+		<text-field id="REDUCTION" beginPos="62" endPos="64"/>
+		<text-field id="CAS_SPECIAL_1" beginPos="64" endPos="66"/>
+		<text-field id="CAS_SPECIAL_2" beginPos="66" endPos="68"/>
+		<text-field id="CAS_SPECIAL_3" beginPos="68" endPos="70"/>
+		<text-field id="CAS_SPECIAL_4" beginPos="70" endPos="72"/>
+		<text-field id="CAS_SPECIAL_5" beginPos="72" endPos="74"/>
+		<text-field id="NBRE_ANNEES_ANTICIPATION" beginPos="74" endPos="75"/>
+		<text-field id="REDUCTION_ANTICIPATION" beginPos="75" endPos="80"/>
+		<text-field id="DATE_DEBUT_ANTICIPATION" beginPos="80" endPos="84"/>
+		<text-field id="DUREE_AJOURNEMENT" beginPos="84" endPos="87"/>
+		<text-field id="SUPPLEMENT_AJOURNEMENT" beginPos="87" endPos="92"/>
+		<text-field id="DATE_REVOCATION_AJOURNEMENT" beginPos="92" endPos="96"/>
+		<text-field id="CODE_SURVIVANT_INVALIDE" beginPos="96" endPos="97"/>
+		<text-field id="RESERVE" beginPos="97" endPos="120"/>
+	</file>
+
+</file-parser>

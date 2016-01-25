@@ -1,0 +1,203 @@
+<div style="clear: both;">
+<div style="float: left">
+	<table>
+		<tr>
+			<td>
+				<ct:FWLabel key="JSP_POSTE_TRAVAIL"/>
+			</td>
+			<td>
+				<c:choose>
+					<c:when test="${viewBean.nouveau}">
+						<select id="idPosteTravail" name="idPosteTravail">
+							<c:forEach var="posteTravail" items="${viewBean.posteTravailsPossibles}">
+								<option value="${posteTravail.id}">${posteTravail.id} - ${posteTravail.raisonSocialeEmployeur} (${posteTravail.affilieNumero})</option>				
+							</c:forEach>
+						</select>
+					</c:when>
+					<c:otherwise>
+						${servicemilitaire.posteTravail.id} - ${servicemilitaire.raisonSocialeEmployeur}
+					</c:otherwise>				
+				</c:choose>
+			</td>
+		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_COMPTE_BANCAIRE"/></td>
+			<td><span id="adressePaiementEmployeur"/></td>
+		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_GENRE_PRESTATIONS"/></td>
+			<td colspan="2">
+				<select id="genrePrestations" name="genrePrestations">
+					<c:forEach var="codeSysteme" items="${viewBean.genrePrestations}">
+						<c:choose>
+							<c:when test="${codeSysteme.id == servicemilitaire.genre.value}">
+								<option value="${codeSysteme.id}" selected="selected">${codeSysteme.code} - ${codeSysteme.libelle}</option>
+							</c:when>
+							<c:otherwise>
+								<option value="${codeSysteme.id}">${codeSysteme.code} - ${codeSysteme.libelle}</option>
+							</c:otherwise>
+						</c:choose>
+					</c:forEach>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_DEBUT_ABSENCE"/></td>
+			<td><input id="debutAbsence" name="debutAbsence" value="${servicemilitaire.dateDebutAsString}" data-g-calendar="mandatory:true" />
+			<ct:FWLabel key="JSP_FIN_ABSENCE"/>&nbsp;<input id="finAbsence" name="finAbsence" value="${servicemilitaire.dateFinAsString}" data-g-calendar="mandatory:true" /></td>
+		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_BENEFICIAIRE"/></td>
+			<td colspan="2">
+				<select id="beneficiaire" name="beneficiaire">
+					<c:choose>
+						<c:when test="${viewBean.nouveau}">
+							<c:forEach var="codeSysteme" items="${viewBean.beneficiaires}">
+								<c:choose>
+									<c:when test="${codeSysteme.id == servicemilitaire.beneficiaire.value}">
+										<option value="${codeSysteme.id}" selected="selected">${codeSysteme.code} - ${codeSysteme.libelle}</option>
+									</c:when>
+									<c:otherwise>
+										<option value="${codeSysteme.id}">${codeSysteme.code} - ${codeSysteme.libelle}</option>
+									</c:otherwise>
+								</c:choose>
+							</c:forEach>
+						</c:when>
+						<c:otherwise>
+							<option value="${servicemilitaire.beneficiaire.value}" selected="selected"><ct:FWCode csCode="${servicemilitaire.beneficiaire.value}"/> - <ct:FWCodeLibelle csCode="${servicemilitaire.beneficiaire.value}" /></option>
+						</c:otherwise>
+					</c:choose>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_LOT"/></td>
+			<td colspan="2">
+				<span>
+					<input name="idPassageFacturation" type="hidden" value="${servicemilitaire.passage.id}" />
+					${servicemilitaire.passage.id} - ${servicemilitaire.passage.libelle} 
+				</span>
+			</td>
+		</tr>
+		<c:if test="${not empty servicemilitaire.etat}">
+			<tr>
+				<td><ct:FWLabel key="JSP_ETAT"/></td>
+				<td><ct:FWCodeLibelle csCode="${servicemilitaire.etat.value}"/></td>
+			</tr>
+		</c:if>
+	</table>
+</div>
+<div style="float: right">
+	<table style="border-collapse: collapse;">
+		<tr>
+			<td></td>
+			<td><ct:FWLabel key="JSP_NOMBRE_JOURS"/></td>
+			<td>X</td>
+			<td><ct:FWLabel key="JSP_NOMBRE_HEURES_JOUR"/></td>
+			<td align="center">=</td>
+			<td></td>
+			<td></td>
+			<td></td>			
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<input name="nombreDeJours" id="nombreDeJours" class="smallextended" type="text" value="${viewBean.nombreDeJours}" data-g-amount="mandatory:true"  />
+				<input name="nombreDeJourMinimum" id="nombreDeJourMinimum" class="smallextended" type="hidden" />
+				<input name="nombreDeJourMaximum" id="nombreDeJourMaximum" class="smallextended" type="hidden" />
+				<input name="taux" id="taux" type="hidden" />
+			</td>
+			<td width="12px;">X</td>
+			<td><input name="nombreHeuresParJour" id="nombreHeuresParJour" class="readOnly smallextended" value="${viewBean.nombreHeuresParJour}" type="text" data-g-amount="" readonly="readonly"  tabindex="-1"/></td>
+			<td align="center">=</td>
+			<td><input id="totalUnites" class="readOnly smallextended" type="text" value="0.00" data-g-amount="" readonly="readonly" disabled="disabled" tabindex="-1"/></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>		
+		<tr>
+			<td colspan="5"><ct:FWLabel key="JSP_SALAIRE_HORAIRE"/></td>
+			<td><input name="salaireHoraire" id="salaireHoraire" class="smallextended" type="text" value="${servicemilitaire.salaireHoraire.toStringValue()}" data-g-amount="" /></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr class="border_top">
+			<td class="border_left" colspan="5"><ct:FWLabel key="JSP_BASE_SALAIRE"/></td>
+			<td><input type="text" name="baseSalaire" id="baseSalaire" readonly="readonly" class="readOnly smallextended" value="${servicemilitaire.baseSalaire.toStringValue()}" data-g-amount="" tabindex="-1"></td>
+			<td></td>							
+			<td class="border_right"></td>
+		</tr>
+		<tr>
+			<td class="border_left indentLeft" colspan="5">+ <ct:FWLabel key="JSP_CONGE_PAYES"/></td>
+			<td><input type="text" name="montantCongesPayes" id="montantCongesPayes" readonly="readonly" class="readOnly smallextended" data-g-amount="" tabindex="-1"></td>
+			<td>taux</td>
+			<td class="border_right"><input type="text" readonly="readonly" name="tauxCP" id="tauxCP" class="readOnly smallextended" value="${servicemilitaire.tauxCP.getValueWith(3)}" data-g-amount="" tabindex="-1"></td>
+		</tr>
+		<tr>
+			<td class="border_left indentLeft" colspan="5">+ <ct:FWLabel key="JSP_GRATIFICATIONS"/></td>
+			<td><input type="text" name="montantGratification" id="montantGratification" readonly="readonly" class="readOnly smallextended" data-g-amount="" tabindex="-1"></td>
+			<td>taux</td>
+			<td class="border_right"><input type="text" readonly="readonly" name="tauxGratification" id="tauxGratification" class="readOnly smallextended" value="${servicemilitaire.tauxGratification.getValueWith(3)}" data-g-amount="" tabindex="-1"></td>
+		</tr>
+		<tr>
+			<td class="border_left" colspan="5"><ct:FWLabel key="JSP_TOTAL_SALAIRE_SM"/></td>
+			<td><input type="text" name="totalSalaire" id="totalSalaire" readonly="readonly"  class="readOnly smallextended" data-g-amount="" tabindex="-1"></td>
+			<td></td>
+			<td class="border_right"></td>
+		</tr>
+		<tr class="border_top">
+			<td class="border_left" colspan="5"><ct:FWLabel key="JSP_COUVERTURE_APG"/></td>
+			<td><input type="text" name="montantCouvertureAPG" readonly="readonly"  id="montantCouvertureAPG" class="readOnly smallextended" data-g-amount="" tabindex="-1"></td>
+			<td>taux</td>
+			<td class="border_right"><input type="text" name="tauxCouvertureAPG" id="tauxCouvertureAPG" value="${servicemilitaire.couvertureAPG.getValueWith(3)}" class="smallextended" data-g-amount=""></td>
+		</tr>
+		<tr>
+			<td class="border_left indentLeft" colspan="3">- <ct:FWLabel key="JSP_VERSEMENT_APG"/></td>
+			<td><input type="text" name="versementAPG" id="versementAPG" value="${servicemilitaire.versementAPG.toStringValue()}" class="smallextended" data-g-amount="mandatory:true"></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td class="border_right"></td>
+		</tr>
+		<tr class="border_bottom">
+			<td class="border_left indentLeft" colspan="3">- <ct:FWLabel key="JSP_COMPENSATION"/></td>
+			<td><input type="text" name="compensationAPG" id="compensationAPG" value="${servicemilitaire.compensationAPG.toStringValue()}" class="smallextended" data-g-amount=""></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td class="border_right"></td>
+		</tr>
+		<tr id="beforeCotisations" class="border_top">
+			<td class="border_left" colspan="5"><ct:FWLabel key="JSP_MONTANT_BRUT"/></td>
+			<td><input type="text" name="montantBrut" id="montantBrut" class="smallextended" value="${servicemilitaire.montantBrut.toStringValue()}" data-g-amount=""></td>
+			<td></td>
+			<td class="border_right"></td>
+		</tr>
+		<c:choose>
+			<c:when test="${!viewBean.nouveau}">
+				<c:forEach var="taux" items="${viewBean.tauxServiceMilitaire}">
+					<tr class="cotisation" data-idAssurance="${taux.assurance.id}">
+						<td class="border_left indentLeft" colspan="5">
+							<input name="tauxAVS" class="tauxAssurance" value="${taux.taux.value}" type="hidden" />
+							+ ${taux.getLibelleAssurance(viewBean.locale)}&nbsp;<c:out value="${taux.taux.value}%"></c:out>
+						</td>
+						<td style="text-align: right;">
+							<input class="montantCotisation smallextended readOnly"  type="text" data-g-amount="" readonly="readonly" disabled="disabled" tabindex="-1"/>
+						</td>
+						<td></td>
+						<td class="border_right"></td>
+					</tr>					
+				</c:forEach>
+			</c:when>
+		</c:choose>
+		<tr id="montantAVerser" class="border_top">
+			<td colspan="5"><strong><ct:FWLabel key="JSP_MONTANT_A_VERSER"/></strong></td>
+			<td style="text-align: right;">
+				<input id="montantVerse" name="montantVerse" readonly="readonly"  class="readOnly smallextended" value="${servicemilitaire.montantAVerser.toStringValue()}" data-g-amount="" tabindex="-1"/>
+			</td>
+			<td></td>
+			<td></td>
+		</tr>
+	</table>
+</div>
+</div>

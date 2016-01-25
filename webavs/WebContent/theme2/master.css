@@ -1,0 +1,149 @@
+@import "appliSpecifique.css";
+@import "menu.css";
+@import "widget.css";
+
+a:link{color:blue;}
+a:visited{color:blue;}
+a:hover{color:blue;}
+a:active{color:blue;}
+
+BODY{ font-family : Verdana,sans-serif;
+    font-weight : normal; font-size : x-small;
+    margin-top : 0px;
+    margin-left : 5px;
+    margin-right : 0px;
+    margin-bottom : 5px;
+    border-width : 0px;
+}
+
+.idEcran {
+	float:right;
+	width:100px;
+	font-weight: normal;
+	text-align:right;
+	font-size:xx-small;
+	padding-bottom:3px;
+	padding-right: 0.5em;
+}
+
+.find {
+	background-color:#CDDAED;
+	width: 100%;
+}
+
+.detail {
+	background-color:#CDDAED;
+	width: 100%;
+}
+
+.hidden {
+	display: none;
+}
+
+input.inactive {
+	display: none;
+}
+
+input {
+    font-size : x-small;
+    font-family : Verdana,Arial;
+    font-weight : bold;
+}
+
+.title {
+	font-size : x-small;
+	font-family : "Lucida Sans Unicode",Verdana,Arial;
+	color : white;
+	background-color : #3A5E8E;
+	font-weight : bold;
+	text-align: center;
+	padding-top: 0.7ex;
+	padding-bottom: 0.7ex;
+	border: solid 1px;
+	border-color :  #88aaff #88aaff black black;
+	margin-bottom: 1ex;
+}
+
+.buttonsZone {
+	background-color: white;
+	margin-top: 1ex;
+	text-align: right;
+	padding-top: 1ex;
+}
+*dshjk {
+	border: 1px solid red;
+}
+
+.floating {
+	float: left;
+	margin: 0.5ex;
+}
+
+.framed {
+    border: 1px solid #3A5E8E;
+    padding: 0.5ex;
+}
+
+.resetFloat {
+	clear: both;
+}
+
+legend {
+	color: #3A5E8E;
+	font-weight: bold;
+}
+
+fieldset {
+	border-color: #3A5E8E;
+	border-width: 1px;
+	padding: 0ex 1ex 0.5ex 1ex;
+	/*background-color: #D7E4FF;*/
+}
+.lastModification {
+	font-family: verdana;
+	font-size: xx-small;
+	padding-left: 1ex;
+}
+
+.row{
+    font-size : x-small;
+    font-family : Verdana,Arial;
+    background : #ffffff;
+    cursor : hand;
+}
+
+.rowHighligthed{
+    font-size : x-small;
+    font-family : Verdana,Arial;
+    background : #638fbc;
+    color : #ffffe8;
+	cursor : hand;
+}
+
+.rowOdd{
+    font-size : x-small;
+    font-family : Verdana, Arial;
+    background : #E8EEF4;
+    cursor : hand;
+}
+
+
+dd {
+	margin-bottom: 0.6ex;
+}
+
+table {
+    font-family : Verdana,Arial;
+    font-size : x-small;
+    empty-cells : show;
+}
+
+th {
+    background-color : #226194;;
+     border: solid 1px;
+    border-color :  #88aaff #88aaff black black;
+    font-size : x-small;
+    font-family : Verdana,Arial;
+    color : white;
+    padding : 3 10;
+}

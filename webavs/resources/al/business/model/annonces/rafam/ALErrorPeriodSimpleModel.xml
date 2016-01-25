@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.rafam.ErrorPeriodModel">
+		<description>Modèle représentant une erreur liée à une annonce RAFam</description>
+		<table name="ALEPANNO" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idErrorPeriod" column="EPIDAN" comment="ID de l'erreur"/>
+			<field name="idErreurAnnonce" column="ERIDAN" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID de l'erreur à laquelle est liée la période"/>
+			
+			<field name="errorPeriodStart" column="EPPSTA" type="DATE" mandatory="false" comment="Date indiquant le début d'une période d'erreur"/>
+			<field name="errorPeriodEnd" column="EPPEND" type="DATE" mandatory="false" comment="Date indiquant la fin d'une période d'erreur"/>
+		</fields>
+		
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forIdErreurAnnonce" field-ref="idErreurAnnonce" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.home.PrixChambre">
+		<root-model name="simplePrixChambre" model-ref="ch.globaz.pegasus.business.models.home.SimplePrixChambre"/>
+		<linked-model name="typeChambre" model-ref="ch.globaz.pegasus.business.models.home.TypeChambre" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="simpleTypeChambre.idTypeChambre" operation="EQUALS" field-ref="simplePrixChambre.idTypeChambre"/>
+			</join-group>		
+		</linked-model>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdHome" operation="EQUALS" field-ref="typeChambre.simpleTypeChambre.idHome"/>
+				<search-field name="forIdTypeChambre" operation="EQUALS" field-ref="simplePrixChambre.idTypeChambre"/>
+				<search-field name="forHomeTypeAdresse" operation="EQUALS" field-ref="typeChambre.home.tiersHome.avoirAdresse.typeAdresse"/>
+			</search-group>
+		</search-definition>
+		<search-definition name="withDateValable">
+			<search-group operator="AND">
+				<search-field name="forIdHome" operation="EQUALS" field-ref="typeChambre.simpleTypeChambre.idHome"/>
+				<search-field name="forIdTypeChambre" operation="EQUALS" field-ref="simplePrixChambre.idTypeChambre"/>
+				<search-field name="forHomeTypeAdresse" operation="EQUALS" field-ref="typeChambre.home.tiersHome.avoirAdresse.typeAdresse"/>
+				<search-group operator="AND">
+					<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="simplePrixChambre.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="simplePrixChambre.dateFin"/>
+						<search-field name="forDateValable" operation="NULL" field-ref="simplePrixChambre.dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		<search-definition name="withPrixInPeriode">
+			<search-group operator="AND">
+				<search-field name="forIdTypeChambre" operation="EQUALS" field-ref="simplePrixChambre.idTypeChambre"/>
+				<search-field name="forIdHome" operation="EQUALS" field-ref="typeChambre.simpleTypeChambre.idHome"/>
+				<search-literal>
+					<declare-model name="prixChambre" model-ref="ch.globaz.pegasus.business.models.home.SimplePrixChambre"/>
+					<![CDATA[
+						#{simplePrixChambre.dateDebut} = ( select MAX( #{prixChambre.dateDebut} )
+								  from @{prixChambre}
+								 where #{prixChambre.idTypeChambre} = ${forIdTypeChambre:prixChambre.idTypeChambre}
+								   and ( #{prixChambre.dateFin} > ${forDateDebut:prixChambre.dateDebut} or #{prixChambre.dateFin}=0 )
+								   and (( #{prixChambre.dateFin} >= ${forDateFin:prixChambre.dateFin}
+								 	      and #{prixChambre.dateDebut} <= ${forDateFin:prixChambre.dateFin} )
+								 	    or ${forDateFin:prixChambre.dateFin}= 0)
+								   )
+					 ]]>
+			  	</search-literal>
+			</search-group>
+		</search-definition>
+		<order-by>
+			<order-field field-ref="simplePrixChambre.dateDebut" order="DESC"/>
+			<order-field field-ref="typeChambre.simpleTypeChambre.idTypeChambre"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.processus.traitementHistoriqueModel">
+		<description>Historique des traitements périodiques</description>
+		<table name="ALTRAHIS" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idHistorique" column="QHID"  type="NUMERIC" comment="ID de la ligne historique"/>
+			<field name="idTraitementPeriodique" column="QHIDTRA" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="id du traitement historisé"/>		
+			<field name="typeEntite" column="QHTYEN" type="STRING" dataType="VARCHAR(100)" mandatory="true" comment="Type (nom du modèle) de l'entité modifiée"/>
+			<field name="cleEntite" column="QHIDEN" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="clé (id) de l'entité modifiée"/>		
+			<field name="status" column="CSSTATU" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="statut de la ligne historisée"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdTraitementPeriodique" field-ref="idTraitementPeriodique" operation="EQUALS"/>
+				<search-field name="forIdEntite" field-ref="idEntite" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

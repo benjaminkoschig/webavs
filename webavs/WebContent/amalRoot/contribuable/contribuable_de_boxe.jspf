@@ -1,0 +1,80 @@
+<div id="boxes">
+    <!-- #customize your modal window here -->
+ 
+    <div id="dialog" class="window">
+    	<table width="100%" border="0" class="tdSubsides" style="padding:0 2px 0 2px">
+	    			<tr>
+	    				<th colspan="3" align="center""><ct:FWLabel key="JSP_AM_RE_D_CALCUL_BOXE_TITLE"/> <span id="anneeSubsideToGen"></span></th>
+	    				<th align="right"><a href="#" class="close">
+							<img id="imageClose"
+							src="<%=request.getContextPath()%>/images/amal/fileclose.png" 
+							title="<ct:FWLabel key="JSP_AM_RE_D_CALCUL_BOXE_CLOSE_WINDOW"/>" 
+							border="0"
+							width="18px"
+							height="18px"
+							>
+							</a>
+						</th>
+	    			</tr>
+	    </table>
+    	<div style="border: 4px solid #226194;height:100%;padding:0 5px 0 5px">
+	    <div align="center">	
+	    		<table width="100%" border="0" style="padding:0 2px 0 2px">
+	    			<tr>
+	    				<td colspan="4">&nbsp;</td>
+	    			</tr>
+	    			<tr>
+	    				<td width="120px" style="font-weight: bold;"><ct:FWLabel key="JSP_AM_RE_D_CALCUL_BOXE_CONTRIBUABLE"/></td>
+	    				<td width="40px">:</td>
+	    				<td id="contribuableNameToGen">&nbsp;</td>
+	    				<td width="20px">&nbsp;</td>
+	    			</tr>
+	    			<tr>
+	    				<td style="font-weight: bold;"><ct:FWLabel key="JSP_AM_RE_D_CALCUL_BOXE_REVENU"/></td>
+	    				<td>:</td>
+	    				<td id="revenuPrisEnCompteToGen">&nbsp;</td>
+	    				<td>&nbsp;</td>
+	    			</tr>
+	    			<tr>
+	    				<td style="font-weight: bold;"><ct:FWLabel key="JSP_AM_RE_D_CALCUL_BOXE_ANNEE_REVENU"/></td>
+	    				<td>:</td>
+	    				<td id="anneeRevenuToGen">&nbsp;</td>
+	    				<td>&nbsp;</td>
+	    			</tr>
+	    			<tr>
+	    				<td style="font-weight: bold;"><ct:FWLabel key="JSP_AM_RE_D_CALCUL_BOXE_RDU"/></td>
+	    				<td>:</td>
+	    				<td id="isRDUToGen">&nbsp;</td>
+	    				<td>&nbsp;</td>
+	    			</tr>
+	    		</table>
+	    		<br/>
+	    		<table width="90%" border="0" id="tableMembres">
+		    		<tr id="headRow">
+		    			<td width="180px"><strong><ct:FWLabel key="JSP_AM_RE_D_CALCUL_BOXE_MEMBRE"/></strong></td>
+		    			<td width="100px" class='align_right'><strong><ct:FWLabel key="JSP_AM_RE_D_CALCUL_BOXE_CONTRIBUTION"/></strong></td>
+		    			<td class='align_right'><strong><ct:FWLabel key="JSP_AM_RE_D_CALCUL_BOXE_DEBUT"/></strong></td>
+		    		</tr>  
+		    		<tr id="totalSeparator">
+		    			<td colspan="3"><hr size="2"></td>		    		
+		    		</tr>	  
+		    		<tr id="summary">
+		    			<td style="font-weight: bold;"><ct:FWLabel key="JSP_AM_RE_D_CALCUL_BOXE_TOTAL"/></td>
+		    			<td style="font-weight: bold;" class="align_right" id="total"></td>
+		    			<td>&nbsp;</td>
+		    		</tr>		
+				</table>
+			</div>
+			<br>
+			<table width="100%" id="table_generate_subside">
+				<tr>
+					<td><ct:FWLabel key="JSP_AM_RE_D_CALCUL_BOXE_CONFIRM"/></td>
+					<td align="right"><input type="button" value="<ct:FWLabel key="JSP_AM_RE_D_CALCUL_BOXE_BOUTON_GENERER"/>" id="generate_subside" onclick="generate()"/></td>
+				</tr>
+			</table>
+		</div>
+    </div>
+      
+    <!-- Do not remove div#mask, because you'll need it to fill the whole screen --> 
+    <div id="mask"></div>
+</div>

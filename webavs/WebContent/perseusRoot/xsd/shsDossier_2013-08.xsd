@@ -1,0 +1,668 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Modifikation 8.2013
+- antragsteller/ zuzug_kant_kanton_id eingefügt 
+- antragsteller/ tagmonat eingefügt
+- b_neubezuegerrecord wird als shsNullEins definiert anstelle von xs:boolean (nicht alle Systeme verstehen unter Boolean dasselbe
+-->
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" >
+	<xs:simpleType name="spezialCode">
+		<xs:union>
+			<xs:simpleType>
+				<xs:restriction base="xs:negativeInteger">
+					<xs:enumeration value="-1"/>
+					<xs:enumeration value="-6"/>
+					<xs:enumeration value="-9"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:length value="0" fixed="true"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:union>
+	</xs:simpleType>
+	<xs:simpleType name="shsCode">
+		<xs:union memberTypes="xs:positiveInteger spezialCode">
+			<xs:simpleType>
+				<xs:restriction base="xs:nonNegativeInteger">
+					<xs:minInclusive value="0"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:union>
+	</xs:simpleType>
+	<xs:simpleType name="shsAHV">
+		<xs:union memberTypes="shsCode">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="[1-9]\d{2}\.\d{2}\.[1-8]\d{2}(\.\d{3})?"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:union>
+	</xs:simpleType>
+	<xs:simpleType name="shsVersichertennummer">
+		<xs:union memberTypes="shsCode">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="\d{3}\.\d{4}\.\d{4}\.\d{2}"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:union>
+	</xs:simpleType>
+	<xs:simpleType name="shsBeruf">
+		<xs:union memberTypes="shsCode">
+			<xs:simpleType>
+				<xs:restriction base="xs:nonNegativeInteger">
+					<xs:minInclusive value="0"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:union>
+	</xs:simpleType>
+	<xs:simpleType name="shsNationalitaet">
+		<xs:union>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:length value="3" fixed="1"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:length value="0" fixed="1"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="-1"/>
+					<xs:enumeration value="-6"/>
+					<xs:enumeration value="-9"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:union>
+	</xs:simpleType>
+	<xs:simpleType name="shsDate">
+		<xs:union memberTypes="xs:date xs:dateTime">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:length value="0" fixed="1"/>
+				</xs:restriction><!-- Leerstring -->
+			</xs:simpleType>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="([0-3][0-9]\.[0-1][0-9]\.(([1-9][0-9]{3})|([0-9]{2})))"/>
+				</xs:restriction><!-- tt.mm.{jj}jj -->
+			</xs:simpleType>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="([0-3][0-9][0-1][0-9](([1-9][0-9]{3})|([0-9]{2})))"/>
+				</xs:restriction><!-- ttmm{jj}jj -->
+			</xs:simpleType>
+		</xs:union>
+	</xs:simpleType>
+	<xs:simpleType name="shsMonatJahr">
+		<xs:union memberTypes="xs:gYearMonth shsDate">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:length value="0" fixed="1"/>
+				</xs:restriction><!-- Leerstring -->
+			</xs:simpleType>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="([0-1][0-9]\.(([1-9][0-9]{3})|([0-9]{2})))"/>
+				</xs:restriction><!-- mm.{jj}jj -->
+			</xs:simpleType>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="([0-1][0-9](([1-9][0-9]{3})|([0-9]{2})))"/>
+				</xs:restriction><!-- mm{jj}jj -->
+			</xs:simpleType>
+
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="([0-3][0-9][0-1][0-9](([1-9][0-9]{3})|([0-9]{2})))"/>
+				</xs:restriction><!-- ttmm{jj}jj -->
+			</xs:simpleType>
+		</xs:union>
+	</xs:simpleType>
+	<xs:simpleType name="shsTagMonat">
+		<xs:union memberTypes="xs:gMonthDay xs:date xs:dateTime">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:length value="0" fixed="1"/>
+				</xs:restriction><!-- Leerstring -->
+			</xs:simpleType>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="[0-3][0-9]\.[0-1][0-9]"/>
+				</xs:restriction><!-- tt.mm -->
+			</xs:simpleType>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="[0-3][0-9][0-1][0-9]"/>
+				</xs:restriction><!-- ttmm -->
+			</xs:simpleType>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="([0-3][0-9]\.[0-1][0-9]\.(([1-9][0-9]{3})|([0-9]{2})))"/>
+				</xs:restriction><!-- tt.mm.{jj}jj -->
+			</xs:simpleType>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="([0-3][0-9][0-1][0-9](([1-9][0-9]{3})|([0-9]{2})))"/>
+				</xs:restriction><!-- ttmm{jj}jj -->
+			</xs:simpleType>
+		</xs:union>
+	</xs:simpleType>
+	<xs:simpleType name="shsBetrag">
+		<xs:union memberTypes="xs:decimal">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:length value="0" fixed="1"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:union>
+	</xs:simpleType>
+	<!-- ACHTUNG Boolean ist in SOSTAT 1(ja) oder 2 (nein)-->
+	<xs:simpleType name="shsNullEins">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="0"/>
+			<xs:enumeration value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="shsBoolean">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+			<xs:enumeration value=""/>
+			<xs:enumeration value="-1"/>
+			<xs:enumeration value="-6"/>
+			<xs:enumeration value="-9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="shsBooleanUnbekannt">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+			<xs:enumeration value="3"/>
+			<xs:enumeration value=""/>
+			<xs:enumeration value="-1"/>
+			<xs:enumeration value="-6"/>
+			<xs:enumeration value="-9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="shsEinkommen">
+		<xs:attribute name="einkommensart_id" type="shsCode"  use="required"/>
+		<xs:attribute name="betrag" type="shsBetrag" use="required"/>
+		<xs:attribute name="b_in_abklaerung" type="shsBooleanUnbekannt" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="shsErwerbsit">
+		<xs:attribute name="erwerbsituation_id" type="shsCode"/>
+		<xs:attribute name="indx">
+			<xs:simpleType>
+				<xs:restriction base="xs:positiveInteger">
+					<xs:minInclusive value="1"/>
+					<xs:maxInclusive value="4"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="shsSkos">
+		<xs:attribute name="bedarfsart_id">
+			<xs:simpleType>
+				<xs:restriction base="xs:positiveInteger">
+					<xs:minInclusive value="21"/>
+					<xs:maxInclusive value="23"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="massnahme_grund_id" type="shsCode"/>
+		<xs:attribute name="betrag" type="shsBetrag"/>
+		<xs:attribute name="b_in_abklaerung" type="shsBooleanUnbekannt"/>
+	</xs:complexType>
+	<xs:complexType name="shsAlbvLeistung">
+		<xs:attribute name="antragsart_id" type="shsCode" use="required"/>
+		<xs:attribute name="betrag_zugesprochen" type="shsBetrag" use="required"/>
+		<xs:attribute name="dat_erste_auszahlung" type="shsMonatJahr" use="required"/>
+		<xs:attribute name="betrag_tot_auszahlungen" type="shsBetrag" use="required"/>
+		<xs:attribute name="b_bezug_stichtag" type="shsBoolean" use="required"/>
+		<xs:attribute name="dat_letzte_zahlung" type="shsMonatJahr" use="required"/>
+	</xs:complexType>
+	<xs:attributeGroup name="dossierAttributes">
+		<xs:attribute name="jahr" type="xs:positiveInteger" use="required"/>
+		<xs:attribute name="gemeinde_id" type="xs:positiveInteger" use="required"/>
+		<xs:attribute name="sozialleistungstraeger_id" type="xs:positiveInteger" use="required"/>
+		<xs:attribute name="dossiernummer" type="xs:positiveInteger" use="required"/>
+		<xs:attribute name="sh_leistungsart_id" type="xs:positiveInteger" use="required"/>
+		<xs:attribute name="sh_leistungstyp_id" type="xs:positiveInteger"/>
+		<xs:attribute name="dat_aufnahme" type="shsDate"/>
+		<xs:attribute name="dat_beginn_anspruch" type="shsDate"/>
+		<xs:attribute name="anz_personen_hh" type="xs:positiveInteger"/>
+		<xs:attribute name="anz_personen_ue" type="xs:positiveInteger"/>
+		<xs:attribute name="antragsart_id" type="shsCode"/> <!--  use="required" für alle ausgenommen ALBV -->
+		<xs:attribute name="b_frueher_unterstuetzt" type="shsBoolean"/>
+		<xs:attribute name="dauer_unterstuetzung_mt" type="shsCode"/>
+		<xs:attribute name="betrag_zugesprochen" type="shsBetrag"/>
+		<xs:attribute name="dat_erste_auszahlung" type="shsMonatJahr"/>
+		<xs:attribute name="betrag_tot_auszahlungen" type="shsBetrag"/>
+		<xs:attribute name="betrag_tot_ausz_krankheit" type="shsBetrag"/>
+		<xs:attribute name="b_zuschuss_gemeinde" type="shsBoolean"/>
+		<xs:attribute name="betrag_zugesprochen_zuschuss_gemeinde" type="shsBetrag"/>
+		<xs:attribute name="betrag_ausbezahlt_zuschuss_gemeinde" type="shsBetrag"/>
+		<xs:attribute name="b_beihilfe_kanton" type="shsBoolean"/>
+		<xs:attribute name="betrag_zugesprochen_beihilfe_kanton" type="shsBetrag"/>
+		<xs:attribute name="betrag_ausbezahlt_beihilfe_kanton" type="shsBetrag"/>
+		<xs:attribute name="b_ergaenzung_bund" type="shsBoolean"/>
+		<xs:attribute name="betrag_zugesprochen_el_bund" type="shsBetrag"/>
+		<xs:attribute name="betrag_ausbezahlt_el_bund" type="shsBetrag"/>
+		<xs:attribute name="b_bezug_stichtag" type="shsBoolean"/>
+		<xs:attribute name="dat_letzte_zahlung" type="shsMonatJahr"/>
+		<xs:attribute name="b_ueberbrueckung" type="shsBoolean"/>
+		<xs:attribute name="dat_abgeschlossen" type="shsMonatJahr"/>
+		<xs:attribute name="beendigungsgrund_id" type="shsCode"/>
+		<xs:attribute name="wohnungsgroesse_id" type="shsCode"/>
+		<xs:attribute name="sh_wohnsituation_id" type="shsCode"/>
+		<xs:attribute name="wohnkosten_inkl_nk" type="shsBetrag"/>
+		<xs:attribute name="pfleger_id" type="shsCode"/>
+		<xs:attribute name="anz_pflegefaelle_hh" type="shsCode"/>
+		<xs:attribute name="b_weitere_ue_einkommen" type="shsBoolean"/>
+		<xs:attribute name="b_vermoegensfreibetrag" type="shsBoolean"/>
+		<xs:attribute name="b_guthaben_pensionskasse" type="shsBooleanUnbekannt"/>
+		<xs:attribute name="b_wohneigentum" type="shsBoolean"/>
+		<xs:attribute name="betrag_bruttobedarf" type="shsBetrag"/>
+		<xs:attribute name="betrag_nettobedarf_skos" type="shsBetrag"/>
+		<xs:attribute name="einkommen_detail_id" type="shsCode"/>
+		<xs:attribute name="ue_monatseinkommen" type="shsBetrag"/>
+		<xs:attribute name="ue_monats_zusatzeinkommen" type="shsBetrag"/>
+		<xs:attribute name="ue_monatsleistungen_bedarf" type="shsBetrag"/>
+		<xs:attribute name="ue_monatssozialversleistungen" type="shsBetrag"/>
+		<xs:attribute name="ue_monatserwerbseinkommen" type="shsBetrag"/>
+		<xs:attribute name="b_ber_skos_2005" type="shsBoolean"/>
+	</xs:attributeGroup>
+	<xs:attributeGroup name="antragstellerAttribute">
+		<xs:attribute name="vorname" type="xs:string"/>
+		<xs:attribute name="nachname" type="xs:string"/>
+		<xs:attribute name="frueherer_name" type="xs:string"/>
+		<xs:attribute name="ahv_nr" type="shsAHV"/>
+		<xs:attribute name="versichertennummer" type="shsVersichertennummer" use="required"/>
+		<xs:attribute name="zvr_gemeinde_id" type="shsCode"/>
+		<xs:attribute name="ust_gemeinde_id" type="shsCode"/>
+		<xs:attribute name="auf_gemeinde_id" type="shsCode"/>
+		<xs:attribute name="zvr_plz" type="shsCode"/>
+		<xs:attribute name="ust_plz" type="shsCode"/>
+		<xs:attribute name="auf_plz" type="shsCode"/>
+		<xs:attribute name="zvr_strasse" type="xs:string"/>
+		<xs:attribute name="zvr_haus_nr" type="xs:string"/>
+		<xs:attribute name="zvr_ort" type="xs:string"/>
+		<xs:attribute name="ust_ort" type="xs:string"/>
+		<xs:attribute name="auf_ort" type="xs:string"/>
+		<xs:attribute name="dat_geburt" type="shsDate"/>
+		<xs:attribute name="geschlecht_id" type="shsCode"/>
+		<xs:attribute name="zivilstand_id" type="shsCode"/>
+		<xs:attribute name="nationalitaet_land_id" type="shsNationalitaet"/>
+		<xs:attribute name="aufenthaltsstatus_id" type="shsCode"/>
+		<xs:attribute name="buerger_gemeinde_id" type="shsCode"/>
+		<xs:attribute name="dat_in_gemeinde_seit" type="shsDate"/>
+		<xs:attribute name="dat_im_kanton_seit" type="shsDate"/>
+		<xs:attribute name="dat_in_gemeinde_seit_jahr" type="shsCode"/>
+		<xs:attribute name="dat_im_kanton_seit_jahr" type="shsCode"/>
+		<xs:attribute name="dat_in_gemeinde_seit_tag_monat" type="shsTagMonat"/>
+		<xs:attribute name="dat_im_kanton_seit_tag_monat" type="shsTagMonat"/>
+		<xs:attribute name="zuzug_gem_gemeinde_id" type="shsCode"/>
+		<xs:attribute name="zuzug_gem_land_id" type="shsNationalitaet"/>
+		<xs:attribute name="zuzug_kant_kanton_id" type="shsCode"/>
+		<xs:attribute name="zuzug_kant_land_id">
+			<xs:simpleType>
+				<xs:union memberTypes="shsNationalitaet">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:length value="2" fixed="1"/>
+						</xs:restriction><!-- Kanton -->
+					</xs:simpleType>
+				</xs:union>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="in_ch_seit_jahr" type="shsCode"/>
+		<xs:attribute name="ausbildung_id" type="shsCode"/>
+		<xs:attribute name="b_ausb_abgebrochen" type="shsBoolean"/>
+		<xs:attribute name="abgebr_ausbildung_id" type="shsCode"/>
+		<xs:attribute name="erlernter_beruf_id" type="shsBeruf"/>
+		<xs:attribute name="aktueller_beruf_id" type="shsBeruf"/>
+		<xs:attribute name="branche_id" type="shsCode"/>
+		<xs:attribute name="branche_alpha_code" type="xs:string"/>
+		<xs:attribute name="branche_alpha_code_2008" type="xs:string"/>
+		<xs:attribute name="b_arbeit_unregelmaessig" type="shsBoolean"/>
+		<xs:attribute name="beschaeftigungsgrad_id" type="shsCode"/>
+		<xs:attribute name="teilzeit_grund1_id" type="shsCode"/>
+		<xs:attribute name="teilzeit_grund2_id" type="shsCode"/>
+		<xs:attribute name="arbeitszeit_woche" type="shsCode"/>
+		<xs:attribute name="anz_arbeitslos_3j" type="shsCode"/>
+		<xs:attribute name="dat_stempelbeginn" type="shsDate"/>
+		<xs:attribute name="b_ausgesteuert" type="shsBooleanUnbekannt"/>
+		<xs:attribute name="dat_ausgesteuert" type="shsDate"/>
+		<xs:attribute name="b_iv_eingliederung" type="shsBooleanUnbekannt"/>
+		<xs:attribute name="invaliditaetsgrad_id" type="shsCode"/>
+		<xs:attribute name="hilflosigkeitsgrad_id" type="shsCode"/>
+		<xs:attribute name="b_kk_grundversicherung" type="shsBoolean"/>
+		<xs:attribute name="b_kk_zusatzversicherung" type="shsBoolean"/>
+		<xs:attribute name="kk_praemie_mt" type="shsBetrag"/>
+		<xs:attribute name="b_kk_praemienzuschuss" type="shsBooleanUnbekannt"/>
+		<xs:attribute name="kk_zuschuss_betrag" type="shsBetrag"/>
+		<xs:attribute name="kk_name" type="xs:string"/>
+		<xs:attribute name="betrag_mietanteil" type="shsBetrag"/>
+		<xs:attribute name="b_allein_im_hh" type="shsBoolean"/>
+	</xs:attributeGroup>
+	<xs:simpleType name="non_empty_string">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType><!-- Element-Deklarationen 
+ ____________________________________________________________________________
+  -->
+	<xs:element name="dossier">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="row" minOccurs="0">
+					<xs:complexType>
+						<xs:attributeGroup ref="dossierAttributes"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element ref="antragsteller"/>
+				<xs:element ref="auszahlung" minOccurs="0"/>
+				<xs:element ref="ausgabe" minOccurs="0"/>
+				<xs:element ref="bedarf" minOccurs="0"/>
+				<xs:element ref="zusatz" minOccurs="0"/>
+				<xs:element ref="massnahme" minOccurs="0"/>
+				<xs:element ref="merkmal" minOccurs="0"/>
+				<xs:element ref="wbsl_einkommensart" minOccurs="0"/>
+				<xs:element ref="ue" minOccurs="0"/>
+				<xs:element ref="hh" minOccurs="0"/>
+			</xs:all>
+			<xs:attribute name="sh_fremd_id" type="non_empty_string" use="required"/>
+			<xs:attribute name="b_neubezuegerrecord" type="shsNullEins" use="required"/>
+			<xs:anyAttribute/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="antragsteller">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="row">
+					<xs:complexType>
+						<xs:attributeGroup ref="antragstellerAttribute"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="einkommen" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="row" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="shsEinkommen"/>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="erwerbsit" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="row" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="shsErwerbsit"/>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="skos" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="row" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="shsSkos"/>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="albv_leistung" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="row" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="shsAlbvLeistung"/>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="auszahlung">
+		<xs:complexType>
+			<xs:sequence minOccurs="0" maxOccurs="12">
+				<xs:element name="row">
+					<xs:complexType>
+						<xs:attribute name="monat_id">
+							<xs:simpleType>
+								<xs:restriction base="xs:positiveInteger">
+									<xs:minInclusive value="1"/>
+									<xs:maxInclusive value="12"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="betrag" type="shsBetrag"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ausgabe">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="row" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="ausgabeart_id" type="shsCode"/>
+						<xs:attribute name="betrag" type="shsBetrag"/>
+						<xs:attribute name="b_in_abklaerung" type="shsBoolean"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="bedarf">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="row" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="bedarfsart_id" type="shsCode"/>
+						<xs:attribute name="betrag" type="shsBetrag"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="zusatz">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="row" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="sh_einkommensart_id" type="shsCode"/>
+						<xs:attribute name="betrag" type="shsBetrag"/>
+						<xs:attribute name="b_in_abklaerung" type="shsBooleanUnbekannt"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="massnahme">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="row" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="massnahme_id" type="shsCode"/>
+						<xs:attribute name="wert" type="xs:string"/>
+						<xs:attribute name="kommentar" type="xs:string"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="merkmal">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:anyAttribute/>
+		</xs:complexType>
+
+	</xs:element>
+	<xs:element name="wbsl_einkommensart">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="row" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="sh_einkommensart_id" type="shsCode"/>
+						<xs:attribute name="b_in_abklaerung" type="shsBoolean"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ue"><!-- Die ue_person_id kann nicht als Schlüssel im Sinne des Schemas verwendet werden, 
+    weil Schlüssel völlig einzigartig sein müssen innerhalb des Dokuments 
+    und nicht mit einem Buchstaben beginnen dürfen.
+    
+    Ob ue/einkommen mit einem ue_person_id identifiziert werden, für welchen es keine ue/person gibt, kann daher im Schema nicht geprüft werden
+    -->
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="person" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="row" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="ue_person_id" type="xs:positiveInteger"/>
+									<xs:attribute name="ausbildung_id" type="shsCode"/>
+									<xs:attribute name="geschlecht_id" type="shsCode"/>
+									<xs:attribute name="zivilstand_id" type="shsCode"/>
+									<xs:attribute name="verwandtschaftsgrad_id" type="shsCode"/>
+									<xs:attribute name="nationalitaet_land_id" type="shsNationalitaet"/>
+									<xs:attribute name="aufenthaltsstatus_id" type="shsCode"/>
+									<xs:attribute name="beschaeftigungsgrad_id" type="shsCode"/>
+									<xs:attribute name="invaliditaetsgrad_id" type="shsCode"/>
+									<xs:attribute name="hilflosigkeitsgrad_id" type="shsCode"/>
+									<xs:attribute name="geburtsjahr" type="shsCode"/>
+									<xs:attribute name="tagmonat" type="shsTagMonat"/>
+									<xs:attribute name="in_ch_seit_jahr" type="shsCode"/>
+									<xs:attribute name="versichertennummer" type="shsVersichertennummer" use="required"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="einkommen" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="row" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="shsEinkommen">
+											<xs:attribute name="ue_person_id" type="xs:positiveInteger"/>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="erwerbsit" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="row" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="shsErwerbsit">
+											<xs:attribute name="ue_person_id" type="xs:positiveInteger" use="required"/>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="skos" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="row" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="shsSkos">
+											<xs:attribute name="ue_person_id" type="xs:positiveInteger" use="required"/>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="albv_leistung" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="row" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="shsAlbvLeistung">
+											<xs:attribute name="ue_person_id" type="xs:positiveInteger" use="required"/>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="hh">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="person" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="row" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="hh_person_id" type="xs:positiveInteger" use="required"/>
+									<xs:attribute name="verwandtschaftsgrad_id" type="shsCode"/>
+									<xs:attribute name="b_separate_unterstuetzung" type="shsBoolean"/>
+									<xs:attribute name="ahv_nr" type="shsAHV"/>
+									<xs:attribute name="versichertennummer" type="shsVersichertennummer"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+			<xs:anyAttribute/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="dossiers">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="dossier" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="xml">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="dossiers"/><!--<xs:element ref="dossier" minOccurs="0" maxOccurs="unbounded"/>-->
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

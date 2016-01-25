@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.situationfamille.SimpleRequerant">
+		<description>Tables des requerants pour une demande de PC Famille</description>
+		<table name="PFREQUER" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idRequerant" column="IHIDRE" comment="Clé primaire de la table des requerants"/>
+			<field name="idMembreFamille" column="IHIDMF" type="NUMERIC" mandatory="true" comment="Identifiant du membre famille"/>
+			
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdMembreFamille" operation="EQUALS" field-ref="idMembreFamille"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+	
+
+</model-mapping>

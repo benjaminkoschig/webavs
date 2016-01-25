@@ -1,0 +1,114 @@
+<clones>
+	<!-- authors : SCR
+	
+		Correction d'une demande de rente, à partir d'une demande source.:		
+		- On ne copie pas les Bases de calculs, (elles seront recalculees)
+	-->
+	<clone id="REDemandeVieillesse-correction"
+		class="globaz.corvus.db.demandes.REDemandeRenteVieillesse">
+		
+		<linkedClass class="globaz.prestation.db.infos.PRInfoCompl"           			   
+			          			   relationType="1_TO_1"
+			          			   idParent="idInfoComplementaire"            			   
+			          			   forIdParent="na"
+			          			   manager="na">			          			   
+		</linkedClass>			          			   
+		
+	</clone>
+
+	<clone id="REDemandeSurvivant-correction"
+		class="globaz.corvus.db.demandes.REDemandeRenteSurvivant">
+		
+		<linkedClass class="globaz.prestation.db.infos.PRInfoCompl"           			   
+			          			   relationType="1_TO_1"
+			          			   idParent="idInfoComplementaire"            			   
+			          			   forIdParent="na"
+			          			   manager="na">			          			   
+		</linkedClass>			          			   		
+	</clone>
+	
+	<clone id="REDemandeAPI-correction"
+		class="globaz.corvus.db.demandes.REDemandeRenteAPI">
+
+		<linkedClass
+			class="globaz.corvus.db.demandes.REPeriodeAPI"
+			relationType="1_TO_N" idParent="idDemandeRente"
+			manager="globaz.corvus.db.demandes.REPeriodeAPIManager"
+			forIdParent="forIdDemandeRente">
+		</linkedClass>			
+
+		
+		<linkedClass class="globaz.prestation.db.infos.PRInfoCompl"           			   
+			          			   relationType="1_TO_1"
+			          			   idParent="idInfoComplementaire"            			   
+			          			   forIdParent="na"
+			          			   manager="na">			          			   
+		</linkedClass>			          			   		
+	</clone>
+
+
+	<clone id="REDemandeInvalidite-correction"
+		class="globaz.corvus.db.demandes.REDemandeRenteInvalidite">
+
+		<linkedClass
+			class="globaz.corvus.db.demandes.REPeriodeInvalidite"
+			relationType="1_TO_N" idParent="idDemandeRente"
+			manager="globaz.corvus.db.demandes.REPeriodeInvaliditeManager"
+			forIdParent="forIdDemandeRente">
+		</linkedClass>
+		
+		<linkedClass class="globaz.prestation.db.infos.PRInfoCompl"           			   
+			          			   relationType="1_TO_1"
+			          			   idParent="idInfoComplementaire"            			   
+			          			   forIdParent="na"
+			          			   manager="na">			          			   
+		</linkedClass>			          			   		
+		
+	</clone>
+	
+	
+	<clone id="REDemandeAPI-copie"
+		class="globaz.corvus.db.demandes.REDemandeRenteAPI">
+		
+		<linkedClass class="globaz.prestation.db.infos.PRInfoCompl"           			   
+			          			   relationType="1_TO_1"
+			          			   idParent="idInfoComplementaire"            			   
+			          			   forIdParent="na"
+			          			   manager="na">			          			   
+		</linkedClass>			          			   		
+	</clone>
+	
+	
+		<clone id="REDemandeInvalidite-copie"
+		class="globaz.corvus.db.demandes.REDemandeRenteInvalidite">		
+		
+		<linkedClass class="globaz.prestation.db.infos.PRInfoCompl"           			   
+			          			   relationType="1_TO_1"
+			          			   idParent="idInfoComplementaire"            			   
+			          			   forIdParent="na"
+			          			   manager="na">			          			   
+		</linkedClass>			          			   		
+		
+	</clone>
+	
+	<clone id="REDemandeSurvivant-copie"
+		class="globaz.corvus.db.demandes.REDemandeRenteSurvivant">		
+		<linkedClass class="globaz.prestation.db.infos.PRInfoCompl"           			   
+			          			   relationType="1_TO_1"
+			          			   idParent="idInfoComplementaire"            			   
+			          			   forIdParent="na"
+			          			   manager="na">			          			   
+		</linkedClass>			          			   		
+	</clone>
+		
+	<clone id="REDemandeVieillesse-copie"
+		class="globaz.corvus.db.demandes.REDemandeRenteVieillesse">
+		
+		<linkedClass class="globaz.prestation.db.infos.PRInfoCompl"           			   
+			          			   relationType="1_TO_1"
+			          			   idParent="idInfoComplementaire"            			   
+			          			   forIdParent="na"
+			          			   manager="na">			          			   
+		</linkedClass>			          			   	
+	</clone>		
+</clones>

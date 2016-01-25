@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--  fichier de mapping du modele simple SimpleLoyer -->
+<!--  DMA, 7.2010 -->
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.habitat.SimpleTaxeJournaliereHome">
+		<description>Modele de la table taxe journaliere home</description>
+		<table name="PCTAJOHO" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idTaxeJournaliereHome" column="CSIDTJ" comment="ID_TAXE_JOURNALIER_HOME"/>
+			<field name="idDonneeFinanciereHeader" column="CSIDDF" type="NUMERIC"  mandatory="true"  comment="ID_DONNEE_FINANCIERE_HEADER"/>
+			<field name="idHome" column="CSIDHO" type="NUMERIC"  mandatory="true"  comment="ID_HOME"/>
+			<field name="idAssureurMaladie" column="CSIDAS" type="NUMERIC"  mandatory="true"  comment="ID_ASSUREUR_MALADIE"/>
+			<field name="idTypeChambre" column="CSIDTC" type="NUMERIC"  mandatory="true"  comment="CS_TYPE_CHAMBRE"/>
+			<field name="csDestinationSortie" column="CSTDSO" type="NUMERIC"  mandatory="false"  comment="DESTINATION_DE_SORTIE_HOME"/>
+			<field name="montantJournalierLCA" column="CSMMJO" type="NUMERIC"   dataType="NUMERIC(15,2)" mandatory="false"  comment="MONTANT_JOURNALIER_LCA"/>
+			<field name="primeAPayer" column="CSMPAP" type="NUMERIC"  dataType="NUMERIC(15,2)" mandatory="false"  comment="PRIME_A_PAYER"/>
+			<field name="dateEcheance" column="CSDECH" type="DATE"  mandatory="false"  comment="DATE_ECHANCE"/>
+			<field name="isParticipationLCA" column="CSBPLC" type="BOOLEAN"  mandatory="false"  comment="IS_PARTICIPATION_LCA"/>
+			<field name="dateEntreeHome" column="CSDENH" type="DATE"  mandatory="false"  comment="DATE_ENTREE_HOME"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+				<search-field name="forIdDonneeFinanciere" operation="EQUALS" field-ref="idDonneeFinanciereHeader" />
+				<search-field name="forIdTypeChambre" operation="EQUALS" field-ref="idTypeChambre"/>
+			</search-group>
+		</search-definition>
+	
+	</simple-model>
+</model-mapping>

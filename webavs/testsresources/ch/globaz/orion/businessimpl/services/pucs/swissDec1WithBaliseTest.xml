@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+	<soap:Header>
+		<wsse:Security
+			xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+			xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+			<xenc:EncryptedKey Id="EK-C065E46B37F43EE6A614207123900534708"
+				xmlns:xenc="http://www.w3.org/2001/04/xmlenc#">
+				<xenc:EncryptionMethod
+					Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p" />
+				<ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+					<wsse:SecurityTokenReference>
+						<ds:X509Data>
+							<ds:X509IssuerSerial>
+								<ds:X509IssuerName>C=CH,O=Swissdec,OU=Swissdec Consumer
+									Certificate Authority</ds:X509IssuerName>
+								<ds:X509SerialNumber>3253031911319125590</ds:X509SerialNumber>
+							</ds:X509IssuerSerial>
+						</ds:X509Data>
+					</wsse:SecurityTokenReference>
+				</ds:KeyInfo>
+				<xenc:CipherData>
+					<xenc:CipherValue>L40dsp4NruCEZrFqOYJts5s4fLD8DkCI9ggZYJwK/T3KxwEMUiMp6yXzld9RZT2r0QwRm5ouJEUaR2VzGHLt+3lzsEA/xpsS7v/w6RZzS+gg7cirkSeScMaPHH9/x6VJQKLyrteGLPKovj7vIUTJBcR+234xSNJ8l7rI0DzcHU0=
+					</xenc:CipherValue>
+				</xenc:CipherData>
+				<xenc:ReferenceList>
+					<xenc:DataReference URI="#ED-5315" />
+					<xenc:DataReference URI="#ED-5316" />
+					<xenc:DataReference URI="#ED-5317" />
+				</xenc:ReferenceList>
+			</xenc:EncryptedKey>
+			<wsse:BinarySecurityToken
+				EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary"
+				ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3"
+				wsu:Id="X509-C065E46B37F43EE6A614207123900514705">MIICJTCCAY6gAwIBAgIIMD/7Kmnj9rkwDQYJKoZIhvcNAQEFBQAwVTEzMDEGA1UECxMqU3dpc3NkZWMgVHJhbnNtaXR0ZXIgQ2VydGlmaWNhdGUgQXV0aG9yaXR5MREwDwYDVQQKEwhTd2lzc2RlYzELMAkGA1UEBhMCQ0gwHhcNMDYxMTA5MTcwNDE3WhcNMjYxMTA0MTY1MjAxWjA2MRQwEgYDVQQDEwtEaXN0cmlidXRvcjERMA8GA1UEChMIU3dpc3NkZWMxCzAJBgNVBAYTAkNIMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCIjoxxCWioc86dgeepscii8KDGlO3bKHyAfh8nESJkj8TeGZ1Q4SgD3TXkWNgHIqjbROFXaIbHdXhF099VrZ2WWuxwsieIrtcQrSfLTbRMDLYsTDzstS078ObnyLSdURQVdyEbqKJM+/Mp+7h3+gKZdiUjn+bQ9SGJiFI1bG4jZwIDAQABox0wGzAMBgNVHRMBAf8EAjAAMAsGA1UdDwQEAwIEkDANBgkqhkiG9w0BAQUFAAOBgQAGVt8au16mE2zALHfdWmVftxKgdvLjSF5z3p2uSjJo2VwTMXQsRVIFK297xuPJABryNmf2txatMnKpNtnm2CWvfFxDV4hCipxNpJWVQouIQyrj4mrUcFiVnXjy7364cJyr5uxp96GAWen8dx749riPK2XztGl0dMIzzPqJ2aRQ8A==
+			</wsse:BinarySecurityToken>
+			<ds:Signature Id="SIG-5314" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+				<ds:SignedInfo>
+					<ds:CanonicalizationMethod
+						Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">
+						<ec:InclusiveNamespaces PrefixList="soap"
+							xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" />
+					</ds:CanonicalizationMethod>
+					<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" />
+					<ds:Reference URI="#TS-5312">
+						<ds:Transforms>
+							<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">
+								<ec:InclusiveNamespaces PrefixList="wsse soap"
+									xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" />
+							</ds:Transform>
+						</ds:Transforms>
+						<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+						<ds:DigestValue>lLPTRLtsfU5wytVcAZrKx49miJs=</ds:DigestValue>
+					</ds:Reference>
+					<ds:Reference URI="#id-5313">
+						<ds:Transforms>
+							<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">
+								<ec:InclusiveNamespaces PrefixList=""
+									xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" />
+							</ds:Transform>
+						</ds:Transforms>
+						<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+						<ds:DigestValue>lMOMKnFN7ENtCr8eEDPfrAMDj9w=</ds:DigestValue>
+					</ds:Reference>
+				</ds:SignedInfo>
+				<ds:SignatureValue>UfSO59XmBOyS56IxkDqQFx5Ecg6hAY6vQ9kyNo8ZcpoCju5Inphh+cGgb7fL1Jg4eYVcxDHjI0uS
+					LQhiNh6AAbjQI2y+WA7kLRN/ow8FpukL5TK/EKWkcBDxv8piWsjyeGN5Szy/sqmCCvniteE85PkZ
+					uuiD8mWcnzYRzmEa3Fw=
+				</ds:SignatureValue>
+				<ds:KeyInfo Id="KI-C065E46B37F43EE6A614207123900514706">
+					<wsse:SecurityTokenReference
+						wsu:Id="STR-C065E46B37F43EE6A614207123900514707">
+						<wsse:Reference URI="#X509-C065E46B37F43EE6A614207123900514705"
+							ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" />
+					</wsse:SecurityTokenReference>
+				</ds:KeyInfo>
+			</ds:Signature>
+			<wsu:Timestamp wsu:Id="TS-5312">
+				<wsu:Created>2015-01-08T10:19:50.050Z</wsu:Created>
+				<wsu:Expires>2015-01-08T10:34:50.050Z</wsu:Expires>
+			</wsu:Timestamp>
+		</wsse:Security>
+	</soap:Header>
+	<soap:Body wsu:Id="id-5313"
+		xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+		<ns4:DeclareSalaryConsumer
+			xmlns="http://www.swissdec.ch/schema/sd/20130514/SalaryDeclarationConsumerContainer"
+			xmlns:ns2="http://www.swissdec.ch/schema/sd/20130514/SalaryDeclaration"
+			xmlns:ns3="http://www.swissdec.ch/schema/sd/20130514/SalaryDeclarationContainer"
+			xmlns:ns4="http://www.swissdec.ch/schema/sd/20130514/SalaryDeclarationConsumerServiceTypes">
+			<DistributorRequestContext>
+				<UserAgent>
+					<Producer>swissdec</Producer>
+					<Name>swissdec distributor</Name>
+					<Version>3.3.11 (19965) 15.12.2014 17:27:23</Version>
+				</UserAgent>
+				<TransmissionDate>2015-01-08T11:19:49.966+01:00</TransmissionDate>
+				<DeclarationID>14ac90eacd016f</DeclarationID>
+				<DistributorRequestID>D14ac90ead4e15b</DistributorRequestID>
+				<VersionMappingFrom>
+					<WSDLNamespace>http://www.swissdec.ch/schema/sd/20090803/SalaryDeclarationService
+					</WSDLNamespace>
+					<ServiceTypesNamespace>http://www.swissdec.ch/schema/sd/20090803/SalaryDeclarationServiceTypes
+					</ServiceTypesNamespace>
+					<SalaryDeclarationMinorVersion>0.0</SalaryDeclarationMinorVersion>
+				</VersionMappingFrom>
+				<ProducerSecurityTokens>
+					<Timestamp>2015-01-08T11:18:52.000+01:00</Timestamp>
+					<X509Certificate>
+						<Usage>Signature</Usage>
+						<DistinguishedNameOwner>C=CH, L=Cugy, O=Global Office Software SA,
+							CN=WinTop3000 Salaires, UID=3.0</DistinguishedNameOwner>
+						<DistinguishedNameIssuer>C=CH, O=Swissdec, OU=Swissdec Transmitter
+							Certificate Authority</DistinguishedNameIssuer>
+						<SecuredElement>{http://schemas.xmlsoap.org/ws/2004/08/addressing}MessageID
+						</SecuredElement>
+						<SecuredElement>{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd}Timestamp
+						</SecuredElement>
+						<SecuredElement>{http://schemas.xmlsoap.org/soap/envelope/}Body
+						</SecuredElement>
+					</X509Certificate>
+				</ProducerSecurityTokens>
+				<ProducerResponseNotifications>
+					<Warning>
+						<Notification>
+							<QualityLevel>Plausibility</QualityLevel>
+							<DescriptionCode>2017</DescriptionCode>
+							<Description>Le code postal F-74100 dans l´adresse de la personne
+								Laurent (VD) MALLECOURT n´est pas valide (fait référence à la
+								règle de
+								plausibilité 001)
+							</Description>
+						</Notification>
+					</Warning>
+				</ProducerResponseNotifications>
+				<Institutions>
+					<ns2:AHV-AVS institutionID="#AVS110.000">
+						<ns2:AK-CC-BranchNumber>110.000</ns2:AK-CC-BranchNumber>
+						<ns2:AK-CC-CustomerNumber>056015</ns2:AK-CC-CustomerNumber>
+					</ns2:AHV-AVS>
+				</Institutions>
+			</DistributorRequestContext>
+			<DeclareSalary>
+				<ns3:RequestContext>
+					<ns3:UserAgent>
+						<ns3:Producer>Global Office SA</ns3:Producer>
+						<ns3:Name>WinWage + SwissDecTX/3.07-EIV</ns3:Name>
+						<ns3:Version>Draft</ns3:Version>
+						<ns3:Certificate>None</ns3:Certificate>
+						<ns3:ELM-SalaryStandardVersion>3.0</ns3:ELM-SalaryStandardVersion>
+					</ns3:UserAgent>
+					<ns3:CompanyName>
+						<ns2:HR-RC-Name>METTRAUX RADIATECH SA</ns2:HR-RC-Name>
+					</ns3:CompanyName>
+					<ns3:TransmissionDate>2015-01-08T11:18:43</ns3:TransmissionDate>
+					<ns3:RequestID>AC7473BA84313E690D7F</ns3:RequestID>
+					<ns3:LanguageCode>fr</ns3:LanguageCode>
+					<ns3:MonitoringID>Global Office SA</ns3:MonitoringID>
+				</ns3:RequestContext>
+				<ns3:Job>
+					<ns3:Addressees>
+						<ns3:AHV-AVS institutionIDRef="#AVS110.000">
+							<ns3:ProcessByDistributor>true</ns3:ProcessByDistributor>
+						</ns3:AHV-AVS>
+					</ns3:Addressees>
+				</ns3:Job>
+				<ns3:SalaryDeclaration schemaVersion="0.0">
+					<ns2:Company>
+						<ns2:CompanyDescription>
+							<ns2:Name>
+								<ns2:HR-RC-Name>METTRAUX RADIATECH SA</ns2:HR-RC-Name>
+							</ns2:Name>
+							<ns2:Address>
+								<ns2:Street>Ch. du Chêne 2b</ns2:Street>
+								<ns2:ZIP-Code>1020</ns2:ZIP-Code>
+								<ns2:City>Renens</ns2:City>
+							</ns2:Address>
+							<ns2:Workplace workplaceID="#40662458">
+								<ns2:BUR-REE-Number>40662458</ns2:BUR-REE-Number>
+								<ns2:AddressExtended>
+									<ns2:ComplementaryLine>Siège principale</ns2:ComplementaryLine>
+									<ns2:Street>Ch. du Chêne 2B</ns2:Street>
+									<ns2:Postbox>Case postale</ns2:Postbox>
+									<ns2:ZIP-Code>1020</ns2:ZIP-Code>
+									<ns2:City>Renens VD 1</ns2:City>
+								</ns2:AddressExtended>
+								<ns2:CompanyWorkingTime>
+									<ns2:WeeklyHours>43.25</ns2:WeeklyHours>
+								</ns2:CompanyWorkingTime>
+							</ns2:Workplace>
+							<ns2:Workplace workplaceID="#50114338">
+								<ns2:BUR-REE-Number>50114338</ns2:BUR-REE-Number>
+								<ns2:AddressExtended>
+									<ns2:ComplementaryLine>Succursale FR</ns2:ComplementaryLine>
+									<ns2:Street>Rte des Mueses 1</ns2:Street>
+									<ns2:ZIP-Code>1753</ns2:ZIP-Code>
+									<ns2:City>Matran</ns2:City>
+								</ns2:AddressExtended>
+								<ns2:CompanyWorkingTime>
+									<ns2:WeeklyHours>43.25</ns2:WeeklyHours>
+								</ns2:CompanyWorkingTime>
+							</ns2:Workplace>
+							<ns2:Workplace workplaceID="#51826613">
+								<ns2:BUR-REE-Number>51826613</ns2:BUR-REE-Number>
+								<ns2:AddressExtended>
+									<ns2:ComplementaryLine>Succursale GE</ns2:ComplementaryLine>
+									<ns2:Street>Rue du Pré-Bouvier 8</ns2:Street>
+									<ns2:ZIP-Code>1217</ns2:ZIP-Code>
+									<ns2:City>Meyrin</ns2:City>
+								</ns2:AddressExtended>
+								<ns2:CompanyWorkingTime>
+									<ns2:WeeklyHours>43.25</ns2:WeeklyHours>
+								</ns2:CompanyWorkingTime>
+							</ns2:Workplace>
+							<ns2:Workplace workplaceID="#51294358">
+								<ns2:BUR-REE-Number>51294358</ns2:BUR-REE-Number>
+								<ns2:AddressExtended>
+									<ns2:ComplementaryLine>Succursale NE</ns2:ComplementaryLine>
+									<ns2:Street>Rue des Draizes 78</ns2:Street>
+									<ns2:ZIP-Code>2000</ns2:ZIP-Code>
+									<ns2:City>Neuchâtel</ns2:City>
+								</ns2:AddressExtended>
+								<ns2:CompanyWorkingTime>
+									<ns2:WeeklyHours>43.25</ns2:WeeklyHours>
+								</ns2:CompanyWorkingTime>
+							</ns2:Workplace>
+						</ns2:CompanyDescription>
+						<ns2:Staff>
+							<ns2:Person>
+								<ns2:Particulars>
+									<ns2:Social-InsuranceIdentification>
+										<ns2:SV-AS-Number>756.9973.4237.40</ns2:SV-AS-Number>
+									</ns2:Social-InsuranceIdentification>
+									<ns2:EmployeeNumber>VA</ns2:EmployeeNumber>
+									<ns2:Lastname>AEBY</ns2:Lastname>
+									<ns2:Firstname>Victor (FR)</ns2:Firstname>
+									<ns2:Sex>M</ns2:Sex>
+									<ns2:DateOfBirth>1943-06-02</ns2:DateOfBirth>
+									<ns2:Nationality>CH</ns2:Nationality>
+									<ns2:CivilStatus>
+										<ns2:Status>married</ns2:Status>
+									</ns2:CivilStatus>
+									<ns2:Address>
+										<ns2:Street>Rte de Moncor 25</ns2:Street>
+										<ns2:ZIP-Code>1752</ns2:ZIP-Code>
+										<ns2:City>Villars-sur-Glâne</ns2:City>
+									</ns2:Address>
+									<ns2:ResidenceCanton>FR</ns2:ResidenceCanton>
+								</ns2:Particulars>
+								<ns2:Work>
+									<ns2:WorkingTime>
+										<ns2:WeeklyHours>20.00</ns2:WeeklyHours>
+									</ns2:WorkingTime>
+									<ns2:ActivityRate>50</ns2:ActivityRate>
+									<ns2:EntryDate>1000-01-01</ns2:EntryDate>
+								</ns2:Work>
+								<ns2:AHV-AVS-Salaries>
+									<ns2:AHV-AVS-Salary institutionIDRef="#AVS110.000">
+										<ns2:AccountingTime>
+											<ns2:from>2014-01-01</ns2:from>
+											<ns2:until>2014-12-31</ns2:until>
+										</ns2:AccountingTime>
+										<ns2:AHV-AVS-Income>6000.00</ns2:AHV-AVS-Income>
+										<ns2:AHV-AVS-Open>16800.00</ns2:AHV-AVS-Open>
+										<ns2:ALV-AC-Income>0.00</ns2:ALV-AC-Income>
+										<ns2:ALV-AC-Open>22800.00</ns2:ALV-AC-Open>
+									</ns2:AHV-AVS-Salary>
+								</ns2:AHV-AVS-Salaries>
+							</ns2:Person>
+						</ns2:Staff>
+						<ns2:Institutions>
+							<ns2:AHV-AVS institutionID="#AVS110.000">
+								<ns2:AK-CC-BranchNumber>110.000</ns2:AK-CC-BranchNumber>
+								<ns2:AK-CC-CustomerNumber>056015</ns2:AK-CC-CustomerNumber>
+							</ns2:AHV-AVS>
+						</ns2:Institutions>
+						<ns2:SalaryTotals>
+							<ns2:AHV-AVS-Totals institutionIDRef="#AVS110.000">
+								<ns2:Total-AHV-AVS-Incomes>6000</ns2:Total-AHV-AVS-Incomes>
+								<ns2:Total-AHV-AVS-Open>16800.00</ns2:Total-AHV-AVS-Open>
+								<ns2:Total-ALV-AC-Incomes>0</ns2:Total-ALV-AC-Incomes>
+								<ns2:Total-ALVZ-ACS-Incomes>0</ns2:Total-ALVZ-ACS-Incomes>
+								<ns2:Total-ALV-AC-Open>22800.00</ns2:Total-ALV-AC-Open>
+							</ns2:AHV-AVS-Totals>
+						</ns2:SalaryTotals>
+						<ns2:SalaryCounters>
+							<ns2:NumberOf-AHV-AVS-Salary-Tags>1</ns2:NumberOf-AHV-AVS-Salary-Tags>
+						</ns2:SalaryCounters>
+					</ns2:Company>
+					<ns2:GeneralSalaryDeclarationDescription>
+						<ns2:CreationDate>2015-01-08T11:18:43</ns2:CreationDate>
+						<ns2:AccountingPeriod>2014</ns2:AccountingPeriod>
+						<ns2:ContactPerson>
+							<ns2:Name>Mettraux Corinne</ns2:Name>
+							<ns2:EmailAddress>c.mettraux@rmettraux-radiatech.ch
+							</ns2:EmailAddress>
+							<ns2:PhoneNumber>021 634.55.66</ns2:PhoneNumber>
+							<ns2:MobilePhoneNumber />
+						</ns2:ContactPerson>
+						<ns2:Comment>
+							<ns2:Notification>
+								<ns2:QualityLevel>Comment</ns2:QualityLevel>
+								<ns2:DescriptionCode>9999</ns2:DescriptionCode>
+								<ns2:Description />
+							</ns2:Notification>
+						</ns2:Comment>
+					</ns2:GeneralSalaryDeclarationDescription>
+				</ns3:SalaryDeclaration>
+			</DeclareSalary>
+			<ns3:TestCase/>
+		</ns4:DeclareSalaryConsumer>
+	</soap:Body>
+</soap:Envelope>

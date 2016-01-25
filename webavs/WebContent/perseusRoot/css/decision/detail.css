@@ -1,0 +1,45 @@
+@CHARSET "ISO-8859-1";
+/* ************* bloc 1 , infos generales ***************** */
+
+*{
+	margin:0;padding:0;	
+}
+
+#tableCopies{
+	margin-top: 5px;
+	margin-right: 20px;
+}
+#radioZone{
+	padding: 5px;
+	padding-right: 10px;
+	/*border:1px solid blue;*/
+	float:left;
+	text-align:left;
+}
+#btnCopies{
+	margin-left:5px;
+	margin-right:5px;
+	width:26px;
+}
+#widgetZone{
+	/*border:1px solid red;*/
+	float:left;
+	margin-top:5px;
+	margin-right:5px;
+}
+#widgetCopiesZone{
+	margin-top:5px;
+	border: 1px solid black;
+	float:left;
+}
+#widgetAdmin, #widgetTiers{
+	/*margin-left:10px;*/
+	/*margin-right:10px;*/
+	/*margin-top:5px;*/
+	width:400px;
+}
+
+#addBtn{
+	margin-right:5px;
+	margin-top:3px;
+}

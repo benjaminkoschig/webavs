@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.prestation.business.models.demande.DemandePrestation">
+		<root-model name="demandePrestation" model-ref="ch.globaz.prestation.business.models.demande.SimpleDemandePrestation"/>
+		<linked-model name="personneEtendue" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="demandePrestation.idTiers"/>
+			</join-group>
+		</linked-model>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdTiers" field-ref="demandePrestation.idTiers" operation="EQUALS" />
+				<search-field name="forTypeDemande" field-ref="demandePrestation.typeDemande" operation="EQUALS" />
+				<search-field name="forIdDemandePrestation" field-ref="demandePrestation.idDemande" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<secteurs>
+
+  <secteur id="1000" desc="Disponibilités" compteBilan = "true" typeTache="TACHE_FEDERALE">
+    <compte id="1000.1011.0000" desc="CCP"/>
+    <compte id="1000.9200.0000" desc="Bilan d'ouverture"/>
+    <compte id="1000.9210.0000" desc="Bilan de clôture"/>
+  </secteur>
+
+  <secteur id="1990" desc="Compensation" compteBilan="true" idSecteurBilan="1000" typeTache="TACHE_FEDERALE">
+  </secteur>
+
+  <secteur id="2000" desc="Compte de bilan AVS" compteBilan="true" typeTache="TACHE_FEDERALE">
+    <compte id="1990.1202.0000" desc="Avoir envers le secteur comptable 2"/>
+    <compte id="1990.2202.0000" desc="Dette envers le secteur comptable 2"/>
+    <compte id="2000.1101.0000" desc="c/c affiliés AVS"/>
+    <compte id="2000.1102.0000" desc="c/c affiliés (non ventilé)"/>
+    <compte id="2000.1105.0000" desc="c/c affiliés prestations à restituer"/>
+    <compte id="2000.1106.0000" desc="c/c affiliés créances en réparation de dommages"/>
+    <compte id="2000.1201.0000" desc="Avoir envers le secteur comptable 1"/>
+    <compte id="2000.1790.0000" desc="Carnets de timbre"/>
+    <compte id="2000.2100.0000" desc="c/c centrale de compensation"/>
+    <compte id="2000.2111.0000" desc="bénéficiaire de prestations de la caisse"/>
+    <compte id="2000.2201.0000" desc="Dette envers le secteur comptable 2"/>
+    <compte id="2000.2740.0000" desc="Indemnités en réparation de dommages"/>
+    <compte id="2000.2790.0000" desc="Carnets de timbre"/>
+    <compte id="2000.9200.0000" desc="Bilan d'ouverture"/>
+    <compte id="2000.9210.0000" desc="Bilan de clôture"/>
+  </secteur>
+
+  <secteur id="2110" desc="Compte d'exploitation cotisations AVS/AI/APG" compteExploitation="true" idSecteurBilan="2000" idSecteurResultat="2990" typeTache="TACHE_FEDERALE">
+    <compte id="2110.3300.0000" desc="amortissement de cotisations personnelles"/>
+    <compte id="2110.3310.0000" desc="amortissement de cotisations paritaires"/>
+    <compte id="2110.3350.0000" desc="réduction de cotisations"/>
+    <compte id="2110.3361.0000" desc="remise de cotisations personnelles arriérées"/>
+    <compte id="2110.3362.0000" desc="remise de cotisations paritiaires arriérées"/>
+    <compte id="2110.3380.0000" desc="abandon d'intérêts moratoires"/>
+    <compte id="2110.3600.0000" desc="intérêts rémunératoires sur les cotisations"/>
+    <compte id="2110.4000.0000" desc="cotisations personnelles AVS"/>
+    <compte id="2110.4010.0000" desc="cotisations paritaires AVS"/>
+    <compte id="2110.4050.0000" desc="indemnité en réparation de dommages"/>
+    <compte id="2110.4060.0000" desc="recouvrement de cotisations personnelles amorties"/>
+    <compte id="2110.4070.0000" desc="recouvrement de cotisations paritaires amorties"/>
+    <compte id="2110.4300.0000" desc="intérêts moratoires sur les cotisations"/>
+  </secteur>
+
+  <secteur id="2120" desc="Compte d'exploitation AVS" compteExploitation="true" idSecteurBilan="2000" idSecteurResultat="2990" typeTache="TACHE_FEDERALE">
+    <compte id="2120.3000.0000" desc="rentes ordinaires AVS"/>
+    <compte id="2120.3010.0000" desc="rentes extraordinaires AVS"/>
+    <compte id="2120.3030.0000" desc="allocations pour impotents AVS"/>
+    <compte id="2120.3330.0000" desc="amortissement de prestations à restituer"/>
+    <compte id="2120.3370.0000" desc="remise de prestations à restituer"/>
+    <compte id="2120.4601.0000" desc="rentes à restituer"/>
+    <compte id="2120.4602.0000" desc="allocations pour impotents à restituer"/>
+    <compte id="2120.4609.0000" desc="autres prestations à restituer"/>
+    <compte id="2120.4650.0000" desc="recouvrement de prestations à restituer amorties"/>
+  </secteur>
+
+  <secteur id="2130" desc="Compte d'exploitation AI" compteExploitation="true" idSecteurBilan="2000" idSecteurResultat="2990" typeTache="TACHE_FEDERALE">
+    <compte id="2130.3000.0000" desc="rentes ordinaires AI"/>
+    <compte id="2130.3010.0000" desc="rentes extraordinaires AI"/>
+    <compte id="2130.3030.0000" desc="allocations pour impotents AI"/>
+    <compte id="2130.3040.0000" desc="indemnités journalières AI"/>
+    <compte id="2130.3330.0000" desc="amortissement de prestations à restituer"/>
+    <compte id="2130.3370.0000" desc="remise de prestations à restituer"/>
+    <compte id="2130.3400.0000" desc="participation aux cotisations"/>
+    <compte id="2130.4601.0000" desc="rentes à restituer"/>
+    <compte id="2130.4602.0000" desc="allocations pour impotents à restituer"/>
+    <compte id="2130.4609.0000" desc="autres prestations à restituer"/>
+    <compte id="2130.4650.0000" desc="recouvrement de prestations à restituer amorties"/>
+  </secteur>
+
+  <secteur id="2140" desc="Compte d'exploitation APG" compteExploitation="true" idSecteurBilan="2000" idSecteurResultat="2990" typeTache="TACHE_FEDERALE">
+    <compte id="2140.3060.0000" desc="allocations APG"/>
+    <compte id="2140.3330.0000" desc="amortissement de prestations à restituer"/>
+    <compte id="2140.3370.0000" desc="remise de prestations à restituer"/>
+    <compte id="2140.3400.0000" desc="participation aux cotisations"/>
+    <compte id="2140.4609.0000" desc="autres prestations à restituer"/>
+    <compte id="2140.4650.0000" desc="recouvrement de prestations à restituer amorties"/>
+  </secteur>
+
+  <secteur id="2150" desc="Compte d'exploitation AFA" compteExploitation="true" idSecteurBilan="2000" idSecteurResultat="2990" typeTache="TACHE_FEDERALE">
+    <compte id="2150.3071.0000" desc="allocations familiales aux salariés"/>
+    <compte id="2150.3072.0000" desc="allocations familiales aux petits paysans"/>
+    <compte id="2150.3320.0000" desc="amortissement d'autres cotisations"/>
+    <compte id="2150.3330.0000" desc="amortissement de prestations à restituer"/>
+    <compte id="2150.3369.0000" desc="remise d'autres cotisations"/>
+    <compte id="2150.3370.0000" desc="remise de prestations à restituer"/>
+    <compte id="2150.3400.0000" desc="particicpation aux cotisations"/>
+    <compte id="2150.4030.0000" desc="cotisations AFA"/>
+    <compte id="2150.4050.0000" desc="indemnités en réparation du dommage"/>
+    <compte id="2150.4090.0000" desc="recouvrement d'autres cotisations amorties"/>
+    <compte id="2150.4609.0000" desc="Autres prestations à restituer"/>
+    <compte id="2150.4650.0000" desc="Recouvrement de prestations à restituer amorties"/>
+  </secteur>
+
+  <secteur id="2160" desc="Compte d'exploitation AC" compteExploitation="true" idSecteurBilan="2000" idSecteurResultat="2990" typeTache="TACHE_FEDERALE">
+    <compte id="2160.3320.0000" desc="amortissement d'autres cotisations"/>
+    <compte id="2160.3369.0000" desc="remise d'autres cotisations"/>
+    <compte id="2160.4030.0000" desc="cotisations AC"/>
+    <compte id="2160.4050.0000" desc="indemnité en réparation du dommage"/>
+    <compte id="2160.4090.0000" desc="recouvrement de cotisations AC amorties"/>
+  </secteur>
+
+  <secteur id="2990" desc="Compensation" compteExploitation="true" idSecteurBilan="2000" typeTache="TACHE_FEDERALE">
+    <compte id="2990.3900.0000" desc="report en faveur de la centrale"/>
+    <compte id="2990.4900.0000" desc="report à charge de la central"/>
+  </secteur>
+
+  <secteur id="3000" desc="Compte de bilan AI" compteBilan="true" typeTache="TACHE_FEDERALE">
+    <compte id="1990.1203.0000" desc="Avoir envers le secteur 3"/>
+    <compte id="1990.2203.0000" desc="Dette envers le secteur 3"/>
+    <compte id="2130.3200.0000" desc="Office AI"/>
+    <compte id="3000.1201.0000" desc="Avoir envers le secteur 1"/>
+    <compte id="3000.2201.0000" desc="Dette evers le secteur 1"/>
+    <compte id="3000.9200.0000" desc="Bilan d'ouverture AI"/>
+    <compte id="3000.9210.0000" desc="Bilan de clôture AI"/>
+  </secteur>
+
+  <secteur id="3800" desc="Compte d'administration OAI" compteAdministration="true" idSecteurBilan = "3000" idSecteurResultat="3990" typeTache="TACHE_FEDERALE">
+    <compte id="2130.3200.0000" desc="Office AI"/>	
+  </secteur>
+
+  <secteur id="3810" desc="Compte d'administration COMOAI" compteAdministration="true" idSecteurBilan = "3000" idSecteurResultat="3990" typeTache="TACHE_FEDERALE">
+    <compte id="2130.3225.0000" desc="Centre d'Observation médicale (COMAI)"/>	
+  </secteur>
+
+  <secteur id="3820" desc="Compte d'administration SMR" compteAdministration="true" idSecteurBilan = "3000" idSecteurResultat="3990" typeTache="TACHE_FEDERALE">
+    <compte id="2130.3227.0000" desc="Service médicaux régionaux (SMR)"/>	
+  </secteur>
+  
+
+  <secteur id="3990" desc="Compensation" compteResultat="true" idSecteurBilan="3000" typeTache="TACHE_FEDERALE">
+    <compte id="3990.5900.0000" desc="report en faveur du compte d'exploitation AI"/>
+    <compte id="3990.6900.0000" desc="report à charge du compte d'exploitation AI"/>
+  </secteur>
+
+  <secteur id="4000" desc="Compte de bilan PC" compteBilan="true" typeTache="AUTRE_TACHE_PROPRE" >
+    <compte id="1990.1204.0000" desc="Avoir envers le secteur 3"/>
+    <compte id="1990.2204.0000" desc="Dette envers le secteur 3"/>
+    <compte id="4000.1201.0000" desc="Avoir envers le secteur 1"/>
+    <compte id="4000.2140.0000" desc="c/c avec d'autres offices"/>
+    <compte id="4000.2201.0000" desc="Dette evers le secteur 1"/>
+    <compte id="4000.9200.0000" desc="Bilan d'ouverture AI"/>
+    <compte id="4000.9210.0000" desc="Bilan de clôture AI"/>
+  </secteur>
+
+  <secteur id="4110" desc="Compte d'exploitation PC AVS" idSecteurBilan="4000" typeTache="AUTRE_TACHE_PROPRE" compteExploitation="true" idSecteurResultat="4990">
+    <compte id="4110.3081.0000" desc="Prestations complémentaires ordinaires"/>
+    <compte id="4110.3085.0000" desc="Prestations complémentaires : frais de maladie"/>
+    <compte id="4110.3330.0000" desc="amortissement de prestations à restituer"/>
+    <compte id="4110.3370.0000" desc="remise de prestations à restituer"/>
+    <compte id="4110.4609.0000" desc="prestations à restituer"/>
+    <compte id="4110.4650.0000" desc="recouvrement de prestations à restituer amorties"/>
+  </secteur>
+
+
+  <secteur id="4120" desc="Compte d'exploitation PC AI" compteExploitation="true" idSecteurBilan = "4000" typeTache = "AUTRE_TACHE_PROPRE" idSecteurResultat="4990">
+    <compte id="4120.3081.0000" desc="Prestations complémentaires ordinaires"/>
+    <compte id="4120.3085.0000" desc="Prestations complémentaires : frais de maladie"/>
+    <compte id="4120.3330.0000" desc="amortissement de prestations à restituer"/>
+    <compte id="4120.3370.0000" desc="remise de prestations à restituer"/>
+    <compte id="4120.4609.0000" desc="prestations à restituer"/>
+    <compte id="4120.4650.0000" desc="recouvrement de prestations à restituer amorties"/>
+  </secteur>
+
+
+
+  <secteur id="4800" desc="Compte d'administration OAI" compteAdministration="true" typeTache = "AUTRE_TACHE_PROPRE" idSecteurBilan="4000" idSecteurResultat="4990">
+  </secteur>
+
+
+  <secteur id="4990" desc="Compensation"  typeTache = "AUTRE_TACHE_PROPRE" idSecteurBilan = "4000" compteResultat="true">
+    <compte id="4990.9000.0000" desc="clôture du compte d'exploitation PC"/>
+    <compte id="4990.9110.0000" desc="clôture du compte d'administration PC"/>
+  </secteur>
+
+
+  <secteur id="900X" desc="Compte de bilan FA" compteBilan="true" typeTache="TACHE_FEDERALE">
+    <compte id="1990.1209.0000" desc="Avoir envers le secteur 9"/>
+    <compte id="1990.2209.0000" desc="Dette envers le secteur 9"/>
+    <compte id="9000.1101.0000" desc="c/c affiliés FA"/>
+    <compte id="9000.1106.0000" desc="c/c affiliés FA en réparation du dommage"/>
+    <compte id="9000.1201.0000" desc="Avoir envers le secteur 1"/>
+    <compte id="9000.2201.0000" desc="Dette envers le secteur 1"/>
+    <compte id="9000.2740.0000" desc="indemnité en réparation de dommages"/>
+    <compte id="9000.2902.0000" desc="report à compte nouveau"/>
+    <compte id="9000.9200.0000" desc="bilan d'ouverture"/>
+    <compte id="9000.9210.0000" desc="bilan de clôture"/>
+  </secteur>
+
+  <secteur id="910X" desc="Compte d'administration"  idSecteurBilan="9000" compteAdministration="true" typeTache="TACHE_FEDERALE">
+  </secteur>
+
+  <secteur id="920X" desc="Compte d'administration"  idSecteurBilan="9000" compteAdministration="true" idSecteurResultat="999X" typeTache="TACHE_FEDERALE">
+  </secteur>
+  
+  <secteur id="930X" desc="Compte d'administration"  idSecteurBilan="9000" compteAdministration="true" idSecteurResultat="999X" typeTache="TACHE_FEDERALE">
+  </secteur>
+
+  <secteur id="940X" desc="Compte d'administration"  idSecteurBilan="9000" compteAdministration="true" idSecteurResultat="999X" typeTache="TACHE_FEDERALE">
+  </secteur>
+
+  <secteur id="950X" desc="Compte d'investissement" idSecteurBilan="9000" compteInvestissement="true" idSecteurResultat="999X" typeTache="TACHE_FEDERALE">
+    <compte id="9500.7900.0000" desc="report des recettes d'investissements"/>
+    <compte id="9500.8900.0000" desc="report des dépenses d'investissements"/>
+  </secteur>
+
+  <secteur id="999X" desc="Bouclement" compteResultat="true" idSecteurBilan="9000" typeTache="TACHE_FEDERALE">
+    <compte id="9990.9110.0000" desc="Résultat du compte d'administration général"/>
+    <compte id="9990.9120.0000" desc="Résultat du compte d'administration des capitaux"/>
+    <compte id="9990.9130.0000" desc="Résultat du compte d'administration des immeubles"/>
+    <compte id="9990.9140.0000" desc="Résultat du compte d'administration du service informatique"/>
+  </secteur>
+</secteurs>

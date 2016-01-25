@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="menuHtml.xslt"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+<!-- 
+	Menu principal IJ
+
+	Regroupant :	- Prononcés
+					- Prestations
+					- Lots
+					- Annonces
+					Traitements
+						- Générer compensations
+						- Envoyer annonces
+						- Inscription CI
+					Listes
+						- Générer attestations
+						- Attestations non reçues
+						- Récapitulation annonces
+						- Attestations fiscales
+					Paramètres
+						- Echéances
+						- Catalogues de textes
+						- Taux d'imposition
+-->
+	<menu id="ij-menuprincipal">
+		<label refId="MENU_PRINCIPAL" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_PRONONCE" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prononces.prononceJointDemande.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_PRESTATION" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prestations.prestationJointLotPrononce.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_LOTS" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.lots.lot.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_ANNONCES" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.annonces.annonce.chercher" />
+				</action>
+			</node>
+			<!-- Menu Traitements -->
+			<node>
+				<label refId="MENU_TRAITEMENTS_TITRE" />
+				<nodes>
+					<node>
+						<label refId="MENU_OPTION_GENERER_COMPENSATIONS" />
+						<action command="/ij" responseTarget="fr_main">
+							<parameter name="userAction" value="ij.process.genererCompensations.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_ENVOYER_ANNONCES" />
+						<action command="/ij" responseTarget="fr_main">
+							<parameter name="userAction" value="ij.process.envoyerAnnonces.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_INSCRIPTION_CI" />
+						<action command="/ij" responseTarget="fr_main">
+							<parameter name="userAction" value="ij.process.envoyerCI.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<!-- Menu Listes -->
+			<node>
+				<label refId="MENU_LISTES" />
+				<nodes>
+					<node>
+						<label refId="MENU_OPTION_GENERER_FORMULAIRES" />
+						<action command="/ij" responseTarget="fr_main">
+							<parameter name="userAction" value="ij.process.genererFormulaires.afficher" />
+							<parameter name="idPrononce" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_LISTE_FORMULAIRES_NON_RECUS" />
+						<action command="/ij" responseTarget="fr_main">
+							<parameter name="userAction" value="ij.process.listeFormulairesNonRecus.afficher" />
+							<parameter name="idPronce" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_RECAP_ANNONCES" />
+						<action command="/ij" responseTarget="fr_main">
+							<parameter name="userAction" value="ij.process.recapitulationAnnonce.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_ATTESTATIONS_FISCALES" />
+						<action command="/ij" responseTarget="fr_main">
+							<parameter name="userAction" value="ij.process.genererAttestations.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<!-- Menu Paramètres-->
+			<node>
+				<label refId="MENU_PARAMETRES" />
+				<nodes>
+					<node>
+						<label refId="MENU_ECHEANCES_18_25" />
+						<action command="/lyra" responseTarget="fr_main">
+							<parameter name="userAction" value="lyra.echeances.echeance.chercher" />
+							<parameter name="forDomaineApplicatif" value ="52500002" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_CATALOGUES_TEXTES" />
+						<action command="/babel" responseTarget="fr_main">
+							<parameter name="userAction" value="babel.cat.document.chercher" />
+							<parameter name="csGroupeDomaines" value="IJDOMAINES" />
+							<parameter name="csGroupeTypesDocuments" value="IJTYPES" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_TAUX_IMPOSITIONS" />
+						<action command="/cepheus" responseTarget="fr_main">
+							<parameter name="userAction" value="cepheus.tauxImposition.tauxImposition.chercher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>
+	</menu>
+	<!-- Menu des options pour les bases d'indemnisations -->
+	<menu id="ij-basesindemnisations">
+		<label refId="MENU_OPTION_TITLE" />
+		<nodes>
+			<node id="calculergp">
+				<label refId="MENU_OPTION_CALCULER" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.acor.calculACORDecompte.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="forNoBaseIndemnisation" />
+					<parameter name="csTypeIJ" />
+					<parameter name="_method" value="upd" />
+				</action>
+			</node>
+			<node id="calculerait">
+				<label refId="MENU_OPTION_CALCULER" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prestations.calculDecompteAitAa.calculerAit" />
+					<parameter name="selectedId" />
+					<parameter name="forNoBaseIndemnisation" />
+					<parameter name="csTypeIJ" />
+					<parameter name="_method" value="upd" />
+				</action>
+			</node>
+			<node id="calculeraa">
+				<label refId="MENU_OPTION_CALCULER" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prestations.calculDecompteAitAa.calculerAa" />
+					<parameter name="selectedId" />
+					<parameter name="forNoBaseIndemnisation" />
+					<parameter name="csTypeIJ" />
+					<parameter name="_method" value="upd" />
+				</action>
+			</node>
+			<node id="showPrestBase">
+				<label refId="MENU_OPTION_PRESTATIONS_POUR_BASE" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prestations.prestationJointLotPrononce.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="forNoBaseIndemnisation" />
+				</action>
+			</node>
+			<node id="corrigerbi">
+				<label refId="MENU_OPTION_CORRIGER" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.basesindemnisation.baseIndemnisation.creerCorrection" />
+					<parameter name="selectedId" />
+					<parameter name="forNoBaseIndemnisation" />
+				</action>
+			</node>			
+			<node id="showFormIndemn">
+				<label refId="MENU_OPTION_FORMULAIRES" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.basesindemnisation.formulaireIndemnisation.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="forNoBaseIndemnisation" />
+				</action>
+			</node>
+			<node id="supprimerbi">
+				<label refId="MENU_OPTION_SUPPRIMER_BI" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.basesindemnisation.baseIndemnisation.supprimer" />
+					<parameter name="selectedId" />
+					<parameter name="idPrononce" />
+					<parameter name="forNoBaseIndemnisation" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- Menu des options pour les formulaires -->
+	<menu id="ij-formulaires">
+		<label refId="MENU_OPTION_TITLE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_GENERER_FORMULAIRE" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.process.genererFormulaire.afficher" />
+					<parameter name="idFormulaire" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_INDEMNISATION_FORM" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.basesindemnisation.baseIndemnisation.chercher" />
+					<parameter name="idPrononce" />
+					<parameter name="csTypeIJ" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- Menu des options pour les lots -->
+	<menu id="ij-optionlot">
+		<label refId="MENU_OPTION_TITLE" />
+		<nodes>
+			 <node>
+				<label refId="MENU_OPTION_PRESTATION_POUR_LOT" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prestations.prestationJointLotPrononce.chercher" />
+					<parameter name="forIdLot" />
+					<parameter name="forCsEtat" value="tous" />
+					<parameter name="etatLot" />
+				</action>
+			</node>
+			<node id="generercompensations">
+				<label refId="MENU_OPTION_GENERER_COMPENSATIONS" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.process.genererCompensations.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="etatLot" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_COMPENSATION_POUR_LOT" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.lots.factureJointCompensation.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="etatLot" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_GENERER_DECOMPTES" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.process.genererDecomptes.afficher" />
+					<parameter name="idLot" />
+					<parameter name="etatLot" />
+				</action>
+			</node>
+			<node id="imprimerlistecontrole">
+				<label refId="MENU_OPTION_IMPRIMER_LISTE_CONTROLE"/>
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.process.listeControle.afficher" />
+					<parameter name="idLot" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- Menu des options pour les prestations -->
+	<menu id="ij-optionmenuprestation">
+		<label refId="MENU_OPTION_TITLE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_REPARTITION_PAIEMENTS" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prestations.repartitionJointPrestation.chercher" />
+					<parameter name="idPrestation" />
+					<parameter name="noAVS" />
+					<parameter name="datePrononce" />
+					<parameter name="dateDebutPrestations" />
+					<parameter name="dateFinPrestations" />
+					<parameter name="montantBrutTotal" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_ANNONCE" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.annonces.annonce.afficher" />
+					<parameter name="forIdPrestation" />
+					<parameter name="noAVS" />
+					<parameter name="datePrononce" />
+					<parameter name="dateDebutPrestations" />
+					<parameter name="dateFinPrestations" />
+					<parameter name="montantBrutTotal" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_METTRE_EN_LOT" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prestations.prestationJointLotPrononce.actionAjouterDansLot" />
+					<parameter name="selectedId" />
+					<parameter name="noAVS" />
+					<parameter name="datePrononce" />
+					<parameter name="dateDebutPrestations" />
+					<parameter name="dateFinPrestations" />
+					<parameter name="montantBrutTotal" />
+					<parameter name="_method" value="add" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- Menu des options pour les prononcés -->
+	<menu id="ij-optionmenuprononce">
+		<label refId="MENU_OPTION_TITLE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_RECAPITULATIF_PRONONCE" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prononces.recapitulatifPrononce.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="csTypeIJ" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_INDEMNISATION" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.basesindemnisation.baseIndemnisation.chercher" />
+					<parameter name="idPrononce" />
+					<parameter name="csTypeIJ" />
+					<parameter name="idTiersVueGlobale" />
+					<parameter name="idTiers" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_IJ_CALCULEES" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prestations.iJCalculeeJointIndemnite.chercher" />
+					<parameter name="idPrononce" />
+					<parameter name="csTypeIJ" />
+				</action>
+			</node>
+			<node id="calculerijgp">
+				<label refId="MENU_OPTION_CALCULER_IJ" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.acor.calculACORIJ.afficher" />
+					<parameter name="idPrononce" />
+					<parameter name="csTypeIJ" />
+				</action>
+			</node>
+			<node id="calculerait">
+				<label refId="MENU_OPTION_CALCULER_IJ" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.acor.calculACORIJ.calculerAit" />
+					<parameter name="idPrononce" />
+					<parameter name="csTypeIJ" />
+				</action>
+			</node>
+			<node id="calculeraa">
+				<label refId="MENU_OPTION_CALCULER_IJ" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prononces.saisiePrononceAllocAssistance.calculer" />
+					<parameter name="idPrononce" />
+					<parameter name="csTypeIJ" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_COPIER" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prononces.prononceJointDemande.actionCreerCopie" />
+					<parameter name="idPrononce" />
+					<parameter name="csTypeIJ" />
+					<parameter name="noAVS" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="corrigerprononce">
+				<label refId="MENU_OPTION_CORRIGER" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prononces.prononceJointDemande.actionCreerCorrection" />
+					<parameter name="idPrononce" />
+					<parameter name="csTypeIJ" />
+					<parameter name="noAVS" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="corrigerdepuis">
+				<label refId="MENU_OPTION_CORRIGER_DEPUIS" ></label>
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prononces.corrigerDepuisPrononce.afficher" />
+					<parameter name="idPrononce" />
+					<parameter name="selectedId" />
+					<parameter name="csTypeIJ" />
+					<parameter name="noAVS" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node> 
+			<node id="annulerdepuis">
+				<label refId="MENU_OPTION_ANNULER_CORRIGER_DEPUIS" ></label>
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prononces.annulerCorrigerDepuisPrononce.afficher" />
+					<parameter name="idPrononce" />
+					<parameter name="selectedId" />
+					<parameter name="csTypeIJ" />
+					<parameter name="noAVS" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>			
+			<node id="annulerprononce">
+				<label refId="MENU_OPTION_ANNULER" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prononces.prononceJointDemande.actionAnnuler" />
+					<parameter name="idPrononce" />
+					<parameter name="csTypeIJ" />
+					<parameter name="noAVS" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="initinfocompl">
+				<label refId="MENU_OPTION_INFO_COMPL" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prononces.infoCompl.actionAfficherInfoCompl" />
+					<parameter name="idPrononce" />
+					<parameter name="noAVS" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="saisirecheance">
+				<label refId="MENU_OPTION_SAISIR_ECHEANCE" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prononces.saisirEcheance.saisirEcheance" />
+					<parameter name="idPrononce" />
+					<parameter name="noAVS" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="saisirTauxIS">
+				<label refId="MENU_OPTION_SAISIR_TAUX_IS" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prononces.saisirTauxIS.saisirTauxIS" />
+					<parameter name="idPrononce" />
+					<parameter name="noAVS" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="terminerprononce">
+				<label refId="MENU_OPTION_TERMINER" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prononces.terminerPrononce.afficherDateFin" />
+					<parameter name="idPrononce" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_GENERER_FORMULAIRES" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.process.genererFormulaires.afficher" />
+					<parameter name="idPrononce" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="genererDecision">
+				<label refId="MENU_OPTION_GENERER_DECISION" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.process.genererDecision.afficher" />
+					<parameter name="idPrononce" />
+					<parameter name="noAVS" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="validerDecision">
+				<label refId="MENU_OPTION_VALIDER_DECISION" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.process.validerDecision.afficher" />
+					<parameter name="idPrononce" />
+					<parameter name="noAVS" />
+					<parameter name="idDecision" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+			<node id="saisirnodecision">
+				<label refId="MENU_OPTION_SAISIR_NO_DECISION" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prononces.saisirNoDecision.saisirNoDecision" />
+					<parameter name="idPrononce" />
+					<parameter name="nomPrenom" />
+					<parameter name="noAVS" />
+					<parameter name="idTiersVueGlobale" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- Menu des options pour les répartitions -->
+	<menu id="ij-repartitions">
+		<label refId="MENU_OPTION_TITLE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_COTISATIONS" />
+				<action command="/ij" responseTarget="fr_main">
+					<parameter name="userAction" value="ij.prestations.cotisation.chercher" />
+					<parameter name="idRepartitionPaiement" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- Menu Option only detail  -->
+	<menu id="ij-optionsempty">
+		<label refId="OPTIONS" />
+	</menu>
+</menus>

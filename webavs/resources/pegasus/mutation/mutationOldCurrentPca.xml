@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.mutation.MutationPcaOld">
+	
+		<root-model name="simpleDecisionHeader" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader" select-fields="false" />
+		<!--On met le distinct pour les couples à domicile avec 2 rentes principal (DOM2R)-->
+		<select-fields distinct="true">
+			<select-field name="noVersion" field-ref="simpleVersionDroitOld.noVersion" />
+			<select-field name="idDroit" field-ref="simpleVersionDroitNew.idDroit" />
+			<select-field name="idVersionDroit" field-ref="pcaOld.idVersionDroit" />
+			<select-field name="idPcaActuel" field-ref="pcaOld.idPCAccordee" />
+			<select-field name="csTypePreparationDecision" field-ref="simpleDecisionApresCalcul.csTypePreparation" />
+			<select-field name="csTypePca" field-ref="pcaOld.csTypePC" />
+			<select-field name="csTypeDecision" field-ref="simpleDecisionHeader.csTypeDecision" />
+			<select-field name="nss"    field-ref="personneEtendueComplexModel.personneEtendue.numAvsActuel" />
+			<select-field name="nom"    field-ref="personneEtendueComplexModel.tiers.designation1" />
+			<select-field name="prenom" field-ref="personneEtendueComplexModel.tiers.designation2" />
+			<select-field name="montant" field-ref="planClacule.montantPCMensuelle" />
+			<select-field name="dateDebutPca" field-ref="pcaOld.dateDebut" />		
+			<select-field name="csRoleMembreFamille" field-ref="simpleDroitMembreFamille.csRoleFamillePC" />		
+		</select-fields> 			
+	    
+	    <linked-model name="simpleValidationDecision" model-ref="ch.globaz.pegasus.business.models.decision.SimpleValidationDecision" join-type="INNER" select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="simpleDecisionHeader.idDecisionHeader"/>
+			</join-group>		
+		</linked-model>
+
+	    <linked-model name="pcaNew" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" join-type="INNER" select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="simpleValidationDecision.idPCAccordee"/>
+			</join-group>		
+		</linked-model>
+		
+	    <linked-model name="simpleVersionDroitNew" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER" select-fields="false" >
+			<join-group operator="OR">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="pcaNew.idVersionDroit"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroit" join-type="INNER" select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleVersionDroitNew.idDroit"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleVersionDroitOld" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER" select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>
+			</join-group>		
+		</linked-model>
+		
+	    <linked-model name="pcaOld" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" join-type="INNER" select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simpleVersionDroitOld.idVersionDroit"/>
+			</join-group>		
+		</linked-model>
+	    
+	    <linked-model name="simplePrestationsAccordees" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="pcaOld.idPrestationAccordee"/>
+			</join-group>
+		</linked-model>
+		
+	    <linked-model name="personneEtendueComplexModel" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="INNER" select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simplePrestationsAccordees.idTiersBeneficiaire"/>
+			</join-group>		
+		</linked-model>
+	    
+	    <linked-model name="planClacule" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul" join-type="INNER" select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="pcaOld.idPCAccordee"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleDroitMembreFamille" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>
+				<join-field name="csRoleFamillePC" operation="IN" value="64004001, 64004002"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleMembreFamille" model-ref="ch.globaz.hera.business.models.famille.SimpleMembreFamille" join-type="INNER" select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="idMembreFamille" operation="EQUALS" field-ref="simpleDroitMembreFamille.idMembreFamilleSF"/>
+			</join-group>		
+		</linked-model>
+
+	    			
+		<search-definition name="forOldCurentVersioned">
+			<search-group operator="AND">
+				<search-field name="inTypeDecision" operation="IN" field-ref="simpleDecisionHeader.csTypeDecision" value="64042006, 64042003, 64042005, 64042004, 64042002" /> <!--CS_TYPE_ADAPTATION_AC, CS_TYPE_OCTROI_AC, CS_TYPE_PARTIEL_AC, CS_TYPE_REFUS_AC, CS_TYPE_SUPPRESSION_SC -->
+
+				<!-- <search-field name="forIdPcaParent" operation="NULL" field-ref="pcaPrecedante.idPcaParent"/> -->
+				
+				<search-field name="forDateDecisionMin" operation="GREATER_OR_EQUALS" field-ref="simpleDecisionHeader.dateDecision"/>
+				<search-group operator="OR"> 
+					<search-field name="forDateDecisionMax" operation="LESS_OR_EQUALS"  field-ref="simpleDecisionHeader.dateDecision"/>
+				</search-group>
+				
+				<search-field name="forIsPlanRetenu" operation="EQUALS" field-ref="planClacule.isPlanRetenu"/>
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simpleDecisionHeader.csEtatDecision" value="64028003" />
+				<search-field name="forIsSupprime" operation="EQUALS" field-ref="pcaOld.isSupprime" />	 
+				<search-group operator="OR"> 	
+					<search-field name="forIsSupprime" operation="EQUALS"  field-ref="pcaOld.isDateFinForce" value="true" />
+					<search-field name="forDateDebutPca" operation="NULL"  field-ref="pcaOld.dateFin" />
+				</search-group>
+				<!-- Le couple séparé par la maladie on une seule décision pour les décisions de supression -->
+				<search-literal>
+					<![CDATA[ 
+						(
+						 #{simplePrestationsAccordees.idTiersBeneficiaire} = #{simpleMembreFamille.idTiers}
+						and (
+							#{simpleDecisionHeader.idTiersBeneficiaire}  = #{simplePrestationsAccordees.idTiersBeneficiaire}  
+								or ( #{simpleDecisionHeader.csTypeDecision} = 64042002 
+									and (#{pcaOld.idPrestationAccordeeConjoint} = 0 or #{pcaOld.idPrestationAccordeeConjoint} is null)
+								)
+							)
+						and (
+							 (#{simpleDroitMembreFamille.csRoleFamillePC} = 64004001 and ( #{pcaOld.idPrestationAccordeeConjoint} <> 0  and #{pcaOld.idPrestationAccordeeConjoint} is not null))
+							 or (#{pcaOld.idPrestationAccordeeConjoint} = 0  or #{pcaOld.idPrestationAccordeeConjoint} is null)
+							)
+						)
+						and  ( (#{pcaNew.dateFin} is null or #{pcaNew.dateFin} = 0 or #{pcaNew.isDateFinForce} = 1) or #{simpleDecisionHeader.csTypeDecision} = 64042002)
+					 ]]>
+				</search-literal>
+				
+				<search-literal>
+					<declare-model name="versionDroitMax" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="pcaPrecedanteMax" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee"/>
+					<![CDATA[ 
+						#{simpleVersionDroitOld.noVersion} = (select max(#{versionDroitMax.noVersion})
+															 from @{versionDroitMax} 
+														    inner join @{pcaPrecedanteMax} 
+															   on (#{versionDroitMax.idVersionDroit} = #{pcaPrecedanteMax.idVersionDroit}) 
+														    where #{versionDroitMax.idDroit} = #{simpleDroit.idDroit}
+														      and #{versionDroitMax.noVersion} < #{simpleVersionDroitNew.noVersion} 
+															  and #{versionDroitMax.csEtatDroit} IN ( 64003005 ) 
+															  and (#{pcaPrecedanteMax.dateFin} = 0  or #{pcaPrecedanteMax.dateFin} is null
+															  	or #{pcaPrecedanteMax.isDateFinForce} = 1
+															  )
+															  and #{pcaPrecedanteMax.isSupprime} = 2  
+															  
+											  )
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>
+
+		<order-by>
+			<order-field field-ref="csTypePca" order="ASC"/>
+			<order-field field-ref="nom" order="ASC"/>
+			<order-field field-ref="prenom" order="ASC"/>
+			<order-field field-ref="dateDebutPca" order="DESC"/>
+		</order-by>	
+	</complexe-model>
+</model-mapping>

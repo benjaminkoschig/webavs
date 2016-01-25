@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.reprise.SimpleContribuableReprise">
+		<description>Simple Contribuable Reprise RP_AMAL_MACONTRI</description>
+		<table name="RP_AMAL_MACONTRI" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idContribuable" column="ID_CONTRIBUABLE" comment="Id Contribuable"/>
+			<field name="idTiers" column="ID_TIERS" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="Id tiers"/>
+			<field name="noContribuable" column="NUMERO_CONTRIBUABLE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="NUMERO_CONTRIBUABLE"/>
+			<field name="zoneCommuneNoContribuableFormate" column="ZONE_COMMUNE_NO_CONTRIBUABLE_FORMATE" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="ZONE_COMMUNE_NO_CONTRIBUABLE_FORMATE"/>
+			<field name="zoneCommuneNoContribuable" column="ZONE_COMMUNE_CONTRIBUABLE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="ZONE_COMMUNE_CONTRIBUABLE"/>
+			<field name="zoneCommuneDateNaissance" column="ZONE_COMMUNE_DATE_NAISSANCE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="ZONE_COMMUNE_DATE_NAISSANCE"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

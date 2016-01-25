@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.parametres.Loyer">
+		<root-model name="simpleLoyer" model-ref="ch.globaz.perseus.business.models.parametres.SimpleLoyer"/>
+		<linked-model name="simpleZone" model-ref="ch.globaz.perseus.business.models.parametres.SimpleZone" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idZone" operation="EQUALS" field-ref="simpleLoyer.idZone"/>
+			</join-group>
+		</linked-model>	
+			
+
+	    <search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="forCsTypeLoyer"  operation="EQUALS" field-ref="simpleLoyer.csTypeLoyer"/>
+				<search-field name="forIdZone"  operation="EQUALS" field-ref="simpleLoyer.idZone"/>
+			</search-group>
+		</search-definition>
+
+	    <search-definition name="withDateValable">
+			<search-group operator="AND">
+				<search-field name="forCsTypeLoyer"  operation="EQUALS" field-ref="simpleLoyer.csTypeLoyer"/>
+				<search-field name="forIdZone"  operation="EQUALS" field-ref="simpleLoyer.idZone"/>
+				<search-group operator="AND">
+					<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="simpleLoyer.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="simpleLoyer.dateFin"/>
+						<search-field name="forDateValable" operation="NULL" field-ref="simpleLoyer.dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+
+		<order-by>
+			<order-field field-ref="simpleLoyer.dateDebut" order="DESC"/>
+			<order-field field-ref="simpleLoyer.idZone" order="DESC"/>
+			<order-field field-ref="simpleLoyer.csTypeLoyer" order="DESC"/>
+		</order-by>	
+			
+	</complexe-model>
+</model-mapping>

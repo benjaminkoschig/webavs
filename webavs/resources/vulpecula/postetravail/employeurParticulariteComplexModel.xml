@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.employeur.EmployeurParticulariteComplexModel">
+
+		<root-model name="affiliationTiersComplexModel"
+			model-ref="ch.globaz.naos.business.model.AffiliationTiersComplexModel" />
+
+		<linked-model name="administrationComplexModel"
+			model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS"
+					field-ref="affiliationTiersComplexModel.affiliation.idConvention" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="employeurSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.employeur.EmployeurSimpleModel"
+			join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idEmployeur" operation="EQUALS"
+					field-ref="affiliationTiersComplexModel.affiliation.affiliationId" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="particulariteSimpleModel"
+			model-ref="ch.globaz.naos.business.model.ParticulariteSimpleModel"
+			join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="affiliationId" operation="EQUALS" 
+					field-ref="affiliationTiersComplexModel.affiliation.affiliationId" />
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="likeNumeroAffilie"
+					field-ref="affiliationTiersComplexModel.affiliation.affilieNumero" operation="LIKE" />
+				<search-field name="likeDesignationTiersUpper"
+					field-ref="affiliationTiersComplexModel.tiersAffiliation.designationUpper1"
+					operation="LIKE" />
+				<search-field name="forIdConvention" field-ref="administrationComplexModel.admin.idTiersAdministration"
+					operation="EQUALS" />
+				<search-field name="likeConventionDesignation"
+					field-ref="administrationComplexModel.tiers.designationUpper1" operation="LIKE" />
+				<search-field name="forAffiliationId" operation="EQUALS"
+					field-ref="affiliationTiersComplexModel.affiliation.affiliationId" />
+				<search-field name="forDateDebut" operation="LESS_OR_EQUALS"
+					field-ref="affiliationTiersComplexModel.affiliation.dateDebut" />
+				<search-field name="inPeriodicite"
+					field-ref="affiliationTiersComplexModel.affiliation.periodicite" operation="IN" />
+				<search-field name="isBvr"
+					field-ref="employeurSimpleModel.bvr" operation="EQUALS" />
+				<search-field name="forParticularite"
+					field-ref="particulariteSimpleModel.particularite" operation="EQUALS" />
+				<search-field name="forTypeAffiliation"
+					field-ref="affiliationTiersComplexModel.affiliation.typeAffiliation" operation="EQUALS" />
+				<search-group operator="OR">		
+					<search-field name="forDateFin" field-ref="affiliationTiersComplexModel.affiliation.dateFin" operation="NULL" />
+				</search-group>
+			</search-group>
+		</search-definition>
+
+		<order-by>
+			<order-field field-ref="affiliationTiersComplexModel.affiliation.affilieNumero" />
+		</order-by>
+		<order-by name="affilieNumeroDesc">
+			<order-field field-ref="affiliationTiersComplexModel.affiliation.affilieNumero"
+				order="DESC" />
+		</order-by>
+		<order-by name="designationUpper1Desc">
+			<order-field field-ref="affiliationTiersComplexModel.tiersAffiliation.designationUpper1"
+				order="DESC" />
+		</order-by>
+		<order-by name="designationUpper1Asc">
+			<order-field field-ref="affiliationTiersComplexModel.tiersAffiliation.designationUpper1" />
+		</order-by>
+		<order-by name="designationDesc">
+			<order-field field-ref="affiliationTiersComplexModel.tiersAffiliation.designation1"
+				order="DESC" />
+		</order-by>
+		<order-by name="designationAsc">
+			<order-field field-ref="affiliationTiersComplexModel.tiersAffiliation.designation1" />
+		</order-by>
+		<order-by name="actifDescAndDateDebutAsc">
+			<order-field field-ref="affiliationTiersComplexModel.affiliation.dateDebut" order="DESC" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+
+	<menu id="aries-menuprincipal">
+		<label refId="MENU_PRINCIPAL" />
+	</menu>
+
+	<!-- ************************** -->
+	<!-- Menu Option                -->
+	<!-- ************************** -->
+	<menu id="aries-optionsempty">
+		<label refId="MENU_OPTION_TITRE" />
+	</menu>
+	
+	<menu id="aries-optionDecision">
+		<label refId="MENU_OPTION_TITRE"/>
+		<nodes>
+			<node id="option_rectificative">
+				<label refId="MENU_OPTION_RECTIFICATIF" />
+				<action command="/aries" responseTarget="fr_main">
+					<parameter name="userAction" value="aries.decisioncgas.decisionCgas.afficher" />
+					<parameter name="idAffiliation"/>
+					<parameter name="idDecisionCgasRectifiee"/>
+					<parameter name="optionDefinitive" value="false" />
+				</action>
+			</node>
+			<node id="option_definitive">
+				<label refId="MENU_OPTION_DEFINITIF" />
+				<action command="/aries" responseTarget="fr_main">
+					<parameter name="userAction" value="aries.decisioncgas.decisionCgas.afficher" />
+					<parameter name="idAffiliation"/>
+					<parameter name="idDecisionCgasRectifiee"/>
+					<parameter name="optionDefinitive" value="true" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
+</menus>

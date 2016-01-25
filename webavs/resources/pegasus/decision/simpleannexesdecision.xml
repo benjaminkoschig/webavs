@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.decision.SimpleAnnexesDecision">
+		<description>Decision apres calcul</description>
+		<table name="PCANNDEC" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAnnexesDecision" column="ANIDEN" comment="ID_ANNEXE_DECISION"/>
+			<field name="idDecisionHeader" column="ANIDEC" type="NUMERIC" mandatory="false" comment="ID_DECISION"/>
+			<field name="valeur" column="ANLVAL" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="VALEUR"/>
+			<field name="csType" column="ANTYPE" type="NUMERIC" mandatory="false" comment="CS_TYPE"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdAnnexesDecision" operation="EQUALS" field-ref="idAnnexesDecision" />
+				<search-field name="forIdDecisionHeader" operation="EQUALS" field-ref="idDecisionHeader" />
+				<search-field name="forInIdDecisionHeader" operation="IN" field-ref="idDecisionHeader" />		
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

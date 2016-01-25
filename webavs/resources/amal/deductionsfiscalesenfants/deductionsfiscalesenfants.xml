@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.deductionsfiscalesenfants.SimpleDeductionsFiscalesEnfants">
+		<description>Déductions fiscales enfants</description>
+		<table name="MADFIENF" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idDeductionFiscaleEnfant" column="IDDFEN" comment="Id déduction fiscale enfant"/>
+			<field name="anneeTaxation" column="ANTAXA" type="NUMERIC" dataType="NUMERIC(4,0)" mandatory="false" comment="Année taxation"/>
+			<field name="nbEnfant" column="NBENFA" type="NUMERIC" dataType="NUMERIC(2,0)" mandatory="false" comment="Nombre d'enfants"/>
+			<field name="montantDeductionParEnfant" column="MTDENF" type="NUMERIC" dataType="NUMERIC(8,2)" mandatory="false" comment="Montant déduction par enfant"/>
+			<field name="montantDeductionTotal" column="MTDTOT" type="NUMERIC" dataType="NUMERIC(8,2)" mandatory="false" comment="Montant déduction total"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forAnneeTaxation" field-ref="anneeTaxation" operation="EQUALS"/>
+				<search-field name="forAnneeTaxationLOE" field-ref="anneeTaxation" operation="LESS_OR_EQUALS"/>
+				<search-field name="forAnneeTaxationGOE" field-ref="anneeTaxation" operation="GREATER_OR_EQUALS"/>				
+				<search-field name="forNbEnfant" field-ref="nbEnfant" operation="EQUALS"/>
+				<search-field name="forNbEnfantLOE" field-ref="nbEnfant" operation="LESS_OR_EQUALS"/>
+				<search-field name="forNbEnfantGOE" field-ref="nbEnfant" operation="GREATER_OR_EQUALS"/>
+			</search-group>
+		</search-definition>
+		<order-by>
+			<order-field field-ref="anneeTaxation" order="DESC"/>
+			<order-field field-ref="nbEnfant" order="DESC"/>
+		</order-by>	
+	</simple-model>
+</model-mapping>

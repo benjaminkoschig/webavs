@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="testsRafam.xsd">
+	<test id="1">
+		<description><![CDATA[Création d'un droit enfant / pas d'annonce]]></description>
+		<idDroit>42159</idDroit>
+		<actions>
+			<action>
+				<update/>
+			</action>
+		</actions>
+		<validations>
+			<validation id="1">
+				<load />
+				<check>
+					<debutDroit>01.01.2009</debutDroit>
+					<echeanceDroit>29.02.2016</echeanceDroit>
+					<typeAnnonce>68a</typeAnnonce>
+					<genrePrestation>ENFANT</genrePrestation>
+				</check>
+			</validation>
+		</validations>
+	</test>
+	
+	<test id="2">
+		<description><![CDATA[Modification d'un droit enfant / pas d'annonce existante avant la modification]]></description>
+		<idDroit>42159</idDroit>
+		<actions>
+			<action>
+				<update/>
+			</action>
+		</actions>
+		<validations>
+			<validation id="1">
+				<load />
+				<check>
+					<debutDroit>01.01.2009</debutDroit>
+					<echeanceDroit>29.02.2016</echeanceDroit>
+					<typeAnnonce>68a</typeAnnonce>
+					<genrePrestation>ENFANT</genrePrestation>
+				</check>
+			</validation>
+		</validations>
+	</test>
+	
+	<test id="3">
+		<description><![CDATA[Modification d'un droit enfant / annonce pas encore envoyée]]></description>
+		<idDroit>42159</idDroit>
+		<actions>
+			<action>
+				<update>
+					<data>
+						<!-- La 1e modification provoque la création d'une annonce -->
+						<debutDroit>01.01.2009</debutDroit>
+					</data>
+				</update>
+			</action>
+			<action>
+				<update>
+					<data>
+						<!-- La 2e modification provoque la suppression de la 1e annonce et la création d'une nouvelle -->
+						<debutDroit>01.02.2009</debutDroit>
+					</data>
+				</update>
+			</action>
+		</actions>
+		<validations>
+			<validation id="1">
+				<load />
+				<check>
+					<debutDroit>01.02.2009</debutDroit>
+					<echeanceDroit>29.02.2016</echeanceDroit>
+					<typeAnnonce>68a</typeAnnonce>
+					<genrePrestation>ENFANT</genrePrestation>
+				</check>
+			</validation>
+		</validations>
+	</test>
+	
+	<test id="4">
+		<description><![CDATA[Modification d'un droit enfant / annonce existante et retournée validée]]></description>
+		<idDroit>42159</idDroit>
+		<actions>
+			<!-- 1e action : création, envoi et réception en validé d'une annonce -->
+			<action>
+				<update />
+				<send>true</send>
+				<import>
+					<dataImport>
+						<genrePrestation>ENFANT</genrePrestation>
+						<codeErreur>_400_AUCUNE_ERREUR</codeErreur>
+						<codeRetour>TRAITE</codeRetour>
+						<etat>VALIDE</etat>
+					</dataImport>
+				</import>
+			</action>
+			<!-- 2e action : modification du droit. Doit provoquer la création d'une annonce 68b -->
+			<action>
+				<update>
+					<data>
+						<debutDroit>01.02.2009</debutDroit>
+					</data>
+				</update>
+			</action>
+		</actions>
+		<validations>
+			<validation id="1">
+				<load>
+					<genrePrestation>ENFANT</genrePrestation>
+					<etat>A_TRANSMETTRE</etat>
+				</load>
+				<check>
+					<debutDroit>01.02.2009</debutDroit>
+					<echeanceDroit>29.02.2016</echeanceDroit>
+					<typeAnnonce>68b</typeAnnonce>
+					<genrePrestation>ENFANT</genrePrestation>
+				</check>
+			</validation>
+		</validations>
+	</test>
+	
+	<test id="5">
+		<description><![CDATA[Modification d'un droit enfant / annonce existante et retournée erreur]]></description>
+		<idDroit>42159</idDroit>
+		<actions>
+			<!-- 1e action : création, envoi et réception en erreur -->
+			<action>
+				<update />
+				<send>true</send>
+				<import>
+					<dataImport>
+						<genrePrestation>ENFANT</genrePrestation>
+						<codeErreur>_211_ALLOCATION_ANNONCEE_SUR_PERIODE_CHEVAUCHANT_AUTRE_PERIODE</codeErreur>
+						<codeRetour>EN_ERREUR</codeRetour>
+						<etat>RECU</etat>
+					</dataImport>
+				</import>
+			</action>
+			<!-- 2e action : modification du droit. Doit provoquer la création d'une annonce 68b -->
+			<action>
+				<update>
+					<data>
+						<debutDroit>01.02.2009</debutDroit>
+					</data>
+				</update>
+			</action>
+		</actions>
+		<validations>
+			<validation id="1">
+				<load>
+					<genrePrestation>ENFANT</genrePrestation>
+					<etat>A_TRANSMETTRE</etat>
+				</load>
+				<check>
+					<debutDroit>01.02.2009</debutDroit>
+					<echeanceDroit>29.02.2016</echeanceDroit>
+					<typeAnnonce>68b</typeAnnonce>
+					<genrePrestation>ENFANT</genrePrestation>
+				</check>
+			</validation>
+		</validations>
+	</test>
+	
+	
+	<test id="6">
+		<description><![CDATA[Modification d'un droit enfant / annonce existante et retournée refusée]]></description>
+		<idDroit>42159</idDroit>
+		<actions>
+			<!-- 1e action : création, envoi et réception en refusé -->
+			<action>
+				<update />
+				<send>true</send>
+				<import>
+					<dataImport>
+						<genrePrestation>ENFANT</genrePrestation>
+						<codeErreur>_101_DATE_DEBUT_INCOHERENTE</codeErreur>
+						<codeRetour>REJETEE</codeRetour>
+						<etat>RECU</etat>
+					</dataImport>
+				</import>
+			</action>
+			<!-- 2e action : modification du droit. Doit provoquer la création d'une annonce 68b et la suppression de l'annonce refusée -->
+			<action>
+				<update />
+			</action>
+		</actions>
+		<validations>
+			<validation id="2">
+				<load>
+					<!--<genrePrestation>ENFANT</genrePrestation>
+					<etat>A_TRANSMETTRE</etat>-->
+				</load>
+				<check>
+					<debutDroit>01.01.2009</debutDroit>
+					<echeanceDroit>29.02.2016</echeanceDroit>
+					<typeAnnonce>68a</typeAnnonce>
+					<genrePrestation>ENFANT</genrePrestation>
+				</check>
+			</validation>
+		</validations>
+	</test>
+</tests>

@@ -1,0 +1,56 @@
+body {
+	
+}
+
+.strong{
+	 font-weight:bold;
+}
+
+.libelle ,.libelleRight {
+	width:350px;
+}
+
+.tailleMontant, .libelleRight{
+	text-align:right;
+}
+
+.tailleMontant{
+	width:140px;
+}
+
+.tailleMontant input{
+	width: 80px;
+}
+
+.somme{
+	font-weight: bold;
+	border-top: 4px double black;
+}
+
+
+.separation{
+    height: 15px;
+    border-bottom:1px solid #356AA0;	
+}
+
+.creanceACC table{
+	/*border-spacing: 10px;*/
+}
+
+.creanceACC1  td{
+	padding:0px 0 10px 0;
+}
+
+#repartition tr, #repartition tbody {
+	margin:0;
+	padding:0;
+}
+
+
+.hauteur td{
+	padding:10px 0 0 0;
+}
+
+#repartition td{
+    padding:10px 0 0 0;
+}

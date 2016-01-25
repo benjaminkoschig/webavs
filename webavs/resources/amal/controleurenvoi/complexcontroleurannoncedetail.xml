@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.controleurEnvoi.ComplexControleurAnnonceDetail">
+
+		<root-model name="simpleControleurJob" model-ref="ch.globaz.amal.business.models.controleurEnvoi.SimpleControleurJob"/>
+				
+		<linked-model name="simpleEnvoiStatus" model-ref="ch.globaz.amal.business.models.controleurEnvoi.SimpleControleurEnvoiStatus" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idJob" operation="EQUALS" field-ref="simpleControleurJob.idJob"/>
+			</join-group>
+		</linked-model>
+ 
+		<linked-model name="simpleAnnonce" model-ref="ch.globaz.amal.business.models.annonce.SimpleAnnonce" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDetailAnnonce" operation="EQUALS" field-ref="simpleEnvoiStatus.idAnnonce"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleDetailFamille" model-ref="ch.globaz.amal.business.models.detailfamille.SimpleDetailFamille" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDetailFamille" operation="EQUALS" field-ref="simpleAnnonce.idDetailFamille"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleFamille" model-ref="ch.globaz.amal.business.models.famille.SimpleFamille" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idFamille" operation="EQUALS" field-ref="simpleDetailFamille.idFamille"/>
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdJob" field-ref="simpleControleurJob.idJob" operation="EQUALS" />
+				<search-field name="forStatusEnvoi" field-ref="simpleEnvoiStatus.statusEnvoi" operation="EQUALS" />				
+				<search-field name="forIdDetailFamille" field-ref="simpleDetailFamille.idDetailFamille" operation="EQUALS" />				
+			</search-group>
+		</search-definition>
+
+		<order-by>
+			<order-field field-ref="simpleAnnonce.dateEnvoiAnnonce" order="DESC"/>
+		</order-by>
+
+	</complexe-model>
+</model-mapping>

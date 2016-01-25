@@ -1,0 +1,164 @@
+<%@page import="ch.globaz.utils.VueGlobaleTiersUtils"%>
+<%@page import="globaz.apg.api.droits.IAPDroitLAPG"%>
+<%@page import="globaz.prestation.api.IPRDemande"%>
+<%@page import="globaz.prestation.tools.PRSessionDataContainerHelper"%>
+<%@page import="globaz.apg.vb.droits.APDroitLAPGJointDemandeViewBean"%>
+<%@page import="globaz.prestation.tools.PRIterateurHierarchique"%>
+<%@page import="globaz.apg.vb.droits.APDroitLAPGJointDemandeListViewBean"%>
+<%@ page language="java" errorPage="/errorPage.jsp" %>
+<%@page import="globaz.apg.application.APApplication"%>
+
+<%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
+
+<%@ include file="/theme/list/header.jspf" %>
+<%
+	APDroitLAPGJointDemandeListViewBean viewBean = (APDroitLAPGJointDemandeListViewBean) request.getAttribute("viewBean");
+	PRIterateurHierarchique iterH = viewBean.iterateurHierarchique();
+
+	size = viewBean.getSize ();
+	detailLink = "apg?userAction=apg.droits.droitLAPGJointDemande.actionAfficherLAPG&selectedId=";
+
+	menuName = viewBean.getMenuName();
+
+	menuDetailLabel = viewBean.getSession().getLabel("MENU_OPTION_DETAIL");
+%>
+<script type="text/javascript">
+	function afficherCacher(id) {
+		if (document.all("groupe_" + id).style.display == "none") {
+			document.all("groupe_" + id).style.display = "block";
+			document.all("bouton_" + id).value = "-";
+		} else {
+			document.all("groupe_" + id).style.display = "none";
+			document.all("bouton_" + id).value = "+";
+		}
+	}
+</script>
+<%@ include file="/theme/list/javascripts.jspf" %>
+			<th>&nbsp;</th>
+			<th><ct:FWLabel key="JSP_NO_DROIT_COURT" /></th>
+			<th><ct:FWLabel key="JSP_DETAIL_REQUERANT" /></th>
+			<th><ct:FWLabel key="JSP_DATE_DEBUT" /></th>
+			<th><ct:FWLabel key="JSP_GESTIONNAIRE" /></th>
+			<th><ct:FWLabel key="JSP_TYPE_DROIT" /></th>
+			<th><ct:FWLabel key="JSP_ETAT_DROIT" /></th>
+<%@ include file="/theme/list/tableHeader.jspf" %>
+<%
+	APDroitLAPGJointDemandeViewBean courant = null;
+	try {
+		courant = (APDroitLAPGJointDemandeViewBean) iterH.next();
+	} catch (Exception e) {
+		break;
+	}
+
+	String detailMenu = detailLink + courant.getIdDroit() 
+						+ "&genreService=" + courant.getGenreService() 
+						+ "&" + VueGlobaleTiersUtils.PARAMETRE_REQUETE_ID_TIERS_VUE_GLOBALE + "=" + courant.getIdTiers();
+
+	actionDetail = "parent.location.href='" + detailMenu + "'";
+
+	if (iterH.isPositionPlusPetite()) {
+%>	</tbody>
+<%
+	} else if (iterH.isPositionPlusGrande()) {
+%>	<tbody id="groupe_<%=courant.getIdParent()%>" style="display: none;">
+<%
+	}
+%>
+<%@ include file="/theme/list/lineStyle.jspf" %>
+			<td class="mtd">
+<%
+	if (iterH.isOrphelin()) {
+%>				-&nbsp;&nbsp;
+<%	} else {
+		for (int idPosition = 1; idPosition < iterH.getPosition(); ++idPosition) {
+%>				&nbsp;&nbsp;
+<%
+		}
+	}
+	if (IPRDemande.CS_TYPE_APG.equals((String) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
+		// si APG -> plus de calcul séparé de prestations
+%>				<ct:menuPopup menu="ap-optionmenudroitapg" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailMenu%>">
+					<ct:menuParam key="selectedId" value="<%=courant.getIdDroit()%>" />
+					<ct:menuParam key="genreService" value="<%=courant.getGenreService()%>" />
+					<ct:menuParam key="forIdDroit" value="<%=courant.getIdDroit()%>" />
+					<ct:menuParam key="nomPrenom" value="<%=courant.getNomPrenom()%>" />
+					<ct:menuParam key="noAVS" value="<%=courant.getNoAVS()%>" />
+					<ct:menuParam key="detailsAssure" value="<%=courant.getDetailRequerant()%>" />
+					<ct:menuParam key="<%=VueGlobaleTiersUtils.PARAMETRE_REQUETE_ID_TIERS_VUE_GLOBALE%>" value="<%=courant.getIdTiers()%>" />
+<%
+	if (!IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(courant.getEtatDroit())) {
+		// pas de calculs de prestations si le droit est en attente
+%>					<ct:menuExcludeNode nodeId="calculertoutesprestations" />
+<%
+	}
+%>					<ct:menuExcludeNode nodeId="calculer" />
+					<ct:menuExcludeNode nodeId="calculeracor" />
+					<ct:menuExcludeNode nodeId="calculeracm" />
+				</ct:menuPopup>
+<%
+	} else if (IPRDemande.CS_TYPE_MATERNITE.equals((String) PRSessionDataContainerHelper.getData(session, PRSessionDataContainerHelper.KEY_CS_TYPE_PRESTATION))) {
+		// sinon, maternité
+%>				<ct:menuPopup menu="ap-optionmenudroitamat" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailMenu%>">
+					<ct:menuParam key="selectedId" value="<%=courant.getIdDroit()%>" />
+					<ct:menuParam key="genreService" value="<%=courant.getGenreService()%>" />
+					<ct:menuParam key="forIdDroit" value="<%=courant.getIdDroit()%>" />
+					<ct:menuParam key="nomPrenom" value="<%=courant.getNomPrenom()%>" />
+					<ct:menuParam key="noAVS" value="<%=courant.getNoAVS()%>" />
+					<ct:menuParam key="detailsAssure" value="<%=courant.getDetailRequerant()%>" />
+					<ct:menuParam key="<%=VueGlobaleTiersUtils.PARAMETRE_REQUETE_ID_TIERS_VUE_GLOBALE%>" value="<%=courant.getIdTiers()%>" />
+<%
+	if (!IAPDroitLAPG.CS_ETAT_DROIT_ATTENTE.equals(courant.getEtatDroit())) {
+		// pas de calculs de prestations si le droit est en attente
+%>					<ct:menuExcludeNode nodeId="calculertoutesprestations" />
+<%
+	}
+%>
+				</ct:menuPopup>
+<%
+	}
+	if (iterH.isPere()) {
+%>				<input	id="bouton_<%=courant.getIdDroit()%>" 
+						type="button" 
+						value="+" 
+						onclick="afficherCacher(<%=courant.getIdDroit()%>)" />
+<%
+	}
+%>			</td>
+			<td class="mtd" nowrap onClick="<%=actionDetail%>">
+				<%=courant.getIdDroit()%>&nbsp;
+			</td>
+<%
+	if (courant.hasPostit()) {
+%>			<td class="mtd" nowrap="nowrap">
+				<table width="100%">
+					<tr>
+						<td onClick="<%=actionDetail%>">
+							<%=courant.getDetailRequerant()%>&nbsp;
+						</td>
+						<td align="right">
+							<ct:FWNote sourceId="<%=courant.getIdDroit()%>" tableSource="<%=APApplication.KEY_POSTIT_DROIT_APG_MAT%>" />
+						</td>
+					</tr>
+				</table>
+			</td>
+<%
+	} else {
+%>			<td class="mtd" nowrap onClick="<%=actionDetail%>">
+				<%=courant.getDetailRequerant()%>&nbsp;
+			</td>
+<%
+	}
+%>			<td class="mtd" nowrap onClick="<%=actionDetail%>">
+				<%=courant.getDateDebutDroit()%>&nbsp;
+			</td>
+			<td class="mtd" nowrap onClick="<%=actionDetail%>">
+				<%=courant.getNomPrenomGestionnaire()%>&nbsp;
+			</td>
+			<td class="mtd" nowrap onClick="<%=actionDetail%>">
+				<%=courant.getGenreDroitLibelle()%>&nbsp;
+			</td>
+			<td class="mtd" nowrap onClick="<%=actionDetail%>">
+				<%=courant.getEtatDroitLibelle()%>&nbsp;
+			</td>
+<%@ include file="/theme/list/lineEnd.jspf" %>
+<%@ include file="/theme/list/tableEnd.jspf" %>

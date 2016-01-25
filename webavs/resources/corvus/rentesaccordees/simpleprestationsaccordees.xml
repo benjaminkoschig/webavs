@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees">
+		<description>Prestations accordees</description>
+		<table name="REPRACC" hasSpy="false" hasCreationSpy="false" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idPrestationAccordee" column="ZTIPRA" comment="ID_PRESTATION_ACCORDEE"/>
+			
+			<field name="csGenre" type="NUMERIC" column="ZTTGEN" comment="GENRE_PRESTATION_ACCORDEE" />
+			<field name="idTiersBeneficiaire" type="NUMERIC" column="ZTITBE" comment="ID_TIERS_BENEFICIAIRE" />
+			<field name="codePrestation" type="STRING" column="ZTLCPR" comment="CODE_PRESTATION" />
+			<field name="idInfoCompta" type="NUMERIC" column="ZTIICT" comment="ID_INFO_COMPTA" />
+			<field name="montantPrestation" type="NUMERIC" column="ZTMPRE" comment="MONTANT_PRESTATION" />
+			<field name="referencePmt" type="STRING" column="ZTLRFP" comment="REFERENCE_PAIEMENT" />
+			<field name="fractionRente" type="STRING" column="ZTLFRR" comment="FRACTION_RENTE" />
+			<field name="dateDebutDroit" type="MONTH_YEAR" column="ZTDDDR" comment="DATE_DEBUT_DROIT" />
+			<field name="dateFinDroit" type="MONTH_YEAR" column="ZTDFDR" comment="DATE_FIN_DROIT" />
+			<field name="csEtat" type="NUMERIC" column="ZTTETA" comment="CS_ETAT" />
+			<field name="idDemandePrincipaleAnnulante" type="NUMERIC" column="ZTIDPA" comment="ID_DEMANDE_PRINCIPALE_ANNULANTE" />
+			<field name="_isRetenues" type="STRING" column="ZTBRET" comment="IS_RETENUE" />
+			<field name="idCalculInteretMoratoire" type="NUMERIC" column="ZTICIM" comment="ID_CALCUL_INTERET_MORATOIRE" />
+			<field name="_isPrestationBloquee" type="STRING" column="ZTBPRB" comment="IS_PRESTATION_BLOQUEE" />
+			<field name="_isErreur" type="STRING" column="ZTBERR" comment="IS_ERREUR" />
+			<field name="dateEcheance" type="MONTH_YEAR" column="ZTDECH" comment="DATE_ECHEANCE" />
+			<field name="idEnteteBlocage" type="NUMERIC" column="ZTIEBK" comment="ID_ENTETE_BLOCAGE" />
+			<field name="_isAttenteMajBlocage" type="STRING" column="ZTBAMB" comment="IS_ATTENTE_MAJ_BLOCAGE" />
+			<field name="_isAttenteMajRetenue" type="STRING" column="ZTBAMR" comment="IS_ATTENTE_MAJ_RETENUE" />
+			<field name="typeDeMiseAJours" type="NUMERIC" column="ZTTTMA" comment="CS_TYPE_DE_MISE_A_JOURS" />
+			<field name="sousCodePrestation" type="STRING" dataType="VARCHAR(8)" column="ZTLSCP" comment="SOUS_CODE_PRESTATION" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field operation="EQUALS" name="forIdPrestation" field-ref="idPrestationAccordee" />
+				<search-field operation="EQUALS" name="forIdTiersBeneficiaire" field-ref="idTiersBeneficiaire" />
+				<search-field operation="IN" name="forCodePrestation" field-ref="codePrestation" />
+				<search-field operation="EQUALS" name="forDateDebutDroit" field-ref="dateDebutDroit" />
+				<search-field operation="EQUALS" name="forDateFinDroit" field-ref="dateFinDroit" />
+			</search-group>
+		</search-definition>
+		<search-definition name="groupe_id_prestation">
+			<search-group operator="AND">
+				<search-field operation="IN" name="forInIdPrestation" field-ref="idPrestationAccordee" />
+			</search-group>
+		</search-definition>
+		
+	</simple-model>
+</model-mapping>

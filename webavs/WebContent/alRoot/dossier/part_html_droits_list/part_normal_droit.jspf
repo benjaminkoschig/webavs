@@ -1,0 +1,68 @@
+<%@page import="ch.globaz.al.business.constantes.ALCSDroit"%>
+<%@page import="ch.globaz.al.business.constantes.ALCSTarif"%>
+<% 
+String hierarchyCSS = "";
+//on définit une classe CSS permettant d'identifier les droits inactifs liés aux droits actifs
+// actif : parent-typeDroit-idEnfant
+// inactif :child-typeDroit-idEnfant
+
+//on sait qu'on doit affecter ces classes seulement si parent est défini
+if(rowStyle.indexOf("parent")!=-1){
+	hierarchyCSS ="parent-"+line.getType()+"-"+line.getDroit().getEnfantComplexModel().getId();
+}else if(rowStyle.indexOf("child")!=-1){
+	hierarchyCSS ="child-"+line.getType()+"-"+(JadeStringUtil.isBlankOrZero(line.getDroit().getEnfantComplexModel().getId()) ? "0" :line.getDroit().getEnfantComplexModel().getId());
+}
+
+%>
+
+<tr class="<%=rowStyle%> <%=hierarchyCSS%> <%if(line.isHideDroit()) {%> hideDroitInfos<% } %>" onMouseOut="jscss('swap', this, '<%=rowStyle%> <%=hierarchyCSS%>', 'highlighted <%=hierarchyCSS%>');" onMouseOver="jscss('swap', this, 'highlighted <%=hierarchyCSS%>', '<%=rowStyle%> <%=hierarchyCSS%>')">
+ 	<td>
+		<span>
+				<ct:ifhasright element="al.droit.droit.supprimerDroit" crud="crud">
+				  <a title='<ct:FWLabel key="LINK_DEL_DROIT_DESC"/>' class="deleteLink" 
+				      href="<%=servletContext + mainServletPath + "?userAction=al.droit.droit.supprimerDroit&id="+line.getDroit().getId()%>"
+				      onclick="return confirm('<%=JavascriptEncoder.getInstance().encode(objSession.getLabel("MESSAGE_SUPPRESSION")) %>')"/>
+				</ct:ifhasright>
+				
+				<ct:ifhasright element="al.droit.droit" crud="u">
+				<%if(ALCSDroit.TYPE_ENF.equals(line.getDroit().getDroitModel().getTypeDroit())){ %>
+					<a title='<ct:FWLabel key="LINK_TO_FORMATION_DESC"/>' class="formationLink" 
+				       href="<%=servletContext + mainServletPath + "?userAction=al.droit.droit.toformation&id="+line.getDroit().getId()%>"/>
+				 <%} %>
+				 <%if(rowStyle.indexOf("child")==-1){ %>
+				 	<a class="copieLink" title="Copie Droit" href="#" data-iddroit="<%=line.getDroit().getId()%>" data-popup-title="<%=line.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel().getTiers().getDesignation1()+" "+line.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel().getTiers().getDesignation2()+" "+objSession.getCode(line.getType()) %>"/>
+				   <%} %>                		
+				 <%if(!viewBean.getDossierComplexModel().isNew() && ALCSDroit.ETAT_A.equals(line.getDroit().getDroitModel().getEtatDroit())){ 
+					String bonification = JadeNumericUtil.isEmptyOrZero(viewBean.getDossierComplexModel().getDossierModel().getIdTiersBeneficiaire())?ALCSPrestation.BONI_INDIRECT:ALCSPrestation.BONI_DIRECT;
+				%>
+				<a class="addLink" href="<%=servletContext + mainServletPath + "?userAction=al.prestation.generationDossier.afficher&_method=add&idDossier="+viewBean.getDossierComplexModel().getDossierModel().getIdDossier()+"&periodicite="+viewBean.getAffiliation().getPeriodicitieAffiliation()+"&bonification="+bonification+"&idDroit="+line.getDroit().getDroitModel().getIdDroit()%>" title='<%=objSession.getLabel("LINK_NEW_PRESTATION_DESC") %>'/>
+				 <%} %>
+				 </ct:ifhasright>
+		</span>
+	</td>
+	<td class="text" onclick="<%=actionDetail%>">
+		 <span><%=(line.getDroit().getEnfantComplexModel()!= null)?line.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel().getTiers().getDesignation1()+"&nbsp;":""%>
+			<%=(line.getDroit().getEnfantComplexModel()!= null)?line.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel().getTiers().getDesignation2()+"&nbsp;":""%> 
+		 </span>
+    </td>
+    <td onclick="<%=actionDetail%>"><span><%=(line.getDroit().getEnfantComplexModel()!= null)?line.getDroit().getEnfantComplexModel().getPaysModel().getCodeIso():""%></span></td>
+	<td onclick="<%=actionDetail%>"><span><%=(line.getDroit().getEnfantComplexModel()!= null)?line.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonne().getDateNaissance():"" %></span></td>
+	<td class="<%=inactiveStyle%>" onclick="<%=actionDetail%>"><span><%=line.getDroit().getDroitModel().getDebutDroit()%></span></td>
+	<td class="<%=inactiveStyle%>" onclick="<%=actionDetail%>"><span><%=line.getDroit().getDroitModel().getFinDroitForcee()%></span></td>
+	<td onclick="<%=actionDetail%>"><span><%=objSession.getCode(line.getDroit().getDroitModel().getMotifFin()) %></span></td>
+	<td onclick="<%=actionDetail%>"><span><%=objSession.getCode(line.getType())%></span></td>
+	<td onclick="<%=actionDetail%>" align="center"><%=(!JadeStringUtil.isEmpty(viewBean.getDroitHTMLWarnings(line.getDroit().getId()))) ?"<a href='#' class='warningLink info_bulle'>"+viewBean.getDroitHTMLWarnings(line.getDroit().getId())+"</a>":""%></td>
+<% 
+//Les colonnes de la liste des droits diffèrent dans le cas d'un dossier CS
+ if(ALCSDossier.STATUT_CS.equals(viewBean.getDossierComplexModel().getDossierModel().getStatut())){ %>
+	<td class="number" onclick="<%=actionDetail%>"><%=line.getMontantAllocataire()==null?" - ":JANumberFormatter.fmt(line.getMontantAllocataire(), true, true, false, 2)%></td>
+	<td class="number" onclick="<%=actionDetail%>"><%=line.getMontantAutreParent()==null?" - ":JANumberFormatter.fmt(line.getMontantAutreParent(), true, true, false, 2)%></td>
+	<td class="number" onclick="<%=actionDetail%>"><%=line.getCalculResultMontantEffectif()==null?" - ":JANumberFormatter.fmt(line.getCalculResultMontantEffectif(), true, true, false, 2)%></td>
+	<td><%=(rowStyle.indexOf("parent")!=-1 && !ALCSTarif.CATEGORIE_SUP_HORLO.equals(line.getTarif()))?"<a title='Montrer les droits inactifs de l&apos;enfant' class='showDetail' href='#'></a><a title='Cacher les droits inactifs de l&apos;enfant' class='hideDetail' href='#'></a>":"" %></td>
+<%}else{ %>
+	<td class="number" onclick="<%=actionDetail%>"><%=line.getCalculResultMontantEffectif()==null?" - ":JANumberFormatter.fmt(line.getCalculResultMontantEffectif(), true, true, false, 2)%></td>
+	<td><%=objSession.getCode(line.getTarif())%> </td>
+	<td><%=(rowStyle.indexOf("parent")!=-1 && !ALCSTarif.CATEGORIE_SUP_HORLO.equals(line.getTarif()))?"<a title='Montrer les droits inactifs de l&apos;enfant' class='showDetail' href='#'></a><a title='Cacher les droits inactifs de l&apos;enfant' class='hideDetail' href='#'></a>":"" %></td>
+<%} %>        
+ 
+</tr>

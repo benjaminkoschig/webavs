@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.osiris.business.model.OperationSimpleModel">
+		<table name="CAOPERP" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="idOperation" column="IDOPERATION" comment="Id de l'opération unique" />
+			<field name="idCompteAnnexe" column="IDCOMPTEANNEXE" type="NUMERIC"  comment="Identifiant du compte annexe"/>
+			<field name="idTypeOperation" column="IDTYPEOPERATION" type="STRING"  comment="Identifiant du type d'operation"/>
+			<field name="idJournal" column="IDJOURNAL" type="NUMERIC"  comment="Identifiant du journal"/>
+			<field name="idSection" column="IDSECTION" type="NUMERIC"  comment="Identifiant de la section"/>
+			<field name="date" column="DATE" type="DATE" comment="date de l'opération"/>
+			<field name="etat" column="ETAT" type="NUMERIC"  comment="Etat de l'opération"/>
+			<field name="idCompte" column="IDCOMPTE" type="NUMERIC"  comment="Identifiant du compte (rublrique)"/>
+			<field name="idCaisseProf" column="FANCAI" type="NUMERIC"  comment="Identifiant de la caisse prof, id tiers"/>
+			<field name="montant" column="MONTANT" type="NUMERIC"  comment="Montant de l'opération"/>
+			<field name="codeDebitCredit" column="CODEDEBITCREDIT" type="NUMERIC"  comment="Le code qui définit le débit ou le crédit"/>			
+			<field name="libelle" column="LIBELLE" type="STRING" comment="Libelle de l'écriture"/>					
+		</fields>
+		</simple-model>
+</model-mapping>

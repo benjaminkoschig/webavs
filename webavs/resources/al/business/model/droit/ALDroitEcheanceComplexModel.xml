@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- modèle complexe d'une liste d'échéance de droit -->
+
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.droit.DroitEcheanceComplexModel">
+		<select-fields>
+			<select-field name="dateNaissanceEnfant" field-ref="personneModel.dateNaissance"/>
+			<select-field name="nomAllocataire" field-ref="tiersAllocModel.designation1"/>
+			<select-field name="prenomAllocataire" field-ref="tiersAllocModel.designation2"/>
+			<select-field name="nomEnfant" field-ref="tiersEnfantModel.designation1"/>
+			<select-field name="prenomEnfant" field-ref="tiersEnfantModel.designation2"/>
+			<select-field name="numNss" field-ref="personneEtendueModel.numAvsActuel"/>
+			<select-field name="numAffilie" field-ref="dossierModel.numeroAffilie"/>
+			<select-field name="numNssEnfant" field-ref="personneEtendueModelenfant.numAvsActuel"/>
+			<select-field name="idTiersAllocataire" field-ref="allocataireModel.idTiersAllocataire"/>
+			<select-field name="titre" field-ref="tiersAllocModel.titreTiers"/>
+			<select-field name="idTiersBeneficiaire" field-ref="dossierModel.idTiersBeneficiaire"/>
+			<select-field name="activiteAllocataire" field-ref="dossierModel.activiteAllocataire"/>
+		</select-fields>
+		<root-model name="droitModel" model-ref="ch.globaz.al.business.models.droit.DroitModel"  select-fields="true"/>
+		
+
+			
+		<linked-model name="dossierModel" model-ref="ch.globaz.al.business.models.dossier.DossierModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDossier" field-ref="droitModel.idDossier"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="affiliationSimpleModel" model-ref="ch.globaz.naos.business.model.AffiliationSimpleModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="affilieNumero" field-ref="dossierModel.numeroAffilie"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="tiersLiaisonComplexModel" model-ref="ch.globaz.pyxis.business.model.TiersLiaisonComplexModel" join-type="LEFT_OUTER" select-fields="true">
+			<join-group operator="AND">
+				<join-field name="tiersReference.idTiers" field-ref="affiliationSimpleModel.idTiers"/>
+			</join-group>
+		</linked-model>
+							
+		<linked-model name="allocataireModel" model-ref="ch.globaz.al.business.models.allocataire.AllocataireModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idAllocataire" field-ref="dossierModel.idAllocataire"/>
+			</join-group>
+		</linked-model>
+				
+		<linked-model name="personneEtendueModel" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="allocataireModel.idTiersAllocataire"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="tiersAllocModel" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="allocataireModel.idTiersAllocataire"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="enfantModel" model-ref="ch.globaz.al.business.models.droit.EnfantModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idEnfant" field-ref="droitModel.idEnfant"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="personneEtendueModelenfant" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="enfantModel.idTiersEnfant"/>
+			</join-group>
+		</linked-model>
+		
+		
+		<linked-model name="personneModel" model-ref="ch.globaz.pyxis.business.model.PersonneSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="enfantModel.idTiersEnfant"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="tiersEnfantModel" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="enfantModel.idTiersEnfant"/>
+			</join-group>
+		</linked-model>
+	
+		<linked-model name="allocataireModel" model-ref="ch.globaz.al.business.models.allocataire.AllocataireModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idAllocataire" field-ref="dossierModel.idAllocataire"/>
+			</join-group>
+		</linked-model>
+			
+		<linked-model name="personneEtendueModel" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="allocataireModel.idTiersAllocataire"/>
+			</join-group>
+		</linked-model>
+					
+		<linked-model name="tiersAllocModel" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="allocataireModel.idTiersAllocataire"/>
+			</join-group>
+		</linked-model>
+			
+		<linked-model name="enfantModel" model-ref="ch.globaz.al.business.models.droit.EnfantModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idEnfant" field-ref="droitModel.idEnfant"/>
+			</join-group>
+		</linked-model>
+			
+		<linked-model name="personneEtendueModelenfant" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="enfantModel.idTiersEnfant"/>
+			</join-group>
+		</linked-model>
+			
+			
+		<linked-model name="personneModel" model-ref="ch.globaz.pyxis.business.model.PersonneSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" field-ref="enfantModel.idTiersEnfant"/>
+			</join-group>
+		</linked-model>
+			
+			<linked-model name="tiersEnfantModel" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER" select-fields="false">
+				<join-group operator="AND">
+					<join-field name="idTiers" field-ref="enfantModel.idTiersEnfant"/>
+				</join-group>
+			</linked-model>
+			
+			
+			
+			<search-definition name="listeAvisEcheances">
+				<search-group operator="AND">
+					<search-field name="forPaiementDirect" field-ref="dossierModel.idTiersBeneficiaire" operation="GREATER"/>
+					<search-field name="forPaiementIndirect" field-ref="dossierModel.idTiersBeneficiaire" operation="EQUALS"/>
+					<search-field name="forNotStatuDossier" field-ref="dossierModel.statut" operation="NOT_EQUALS"/>
+					<search-field name="forImprimerEcheance" field-ref="droitModel.imprimerEcheance" operation="EQUALS"/>
+					<search-field name="inEtatDroit" field-ref="droitModel.etatDroit" operation="NOT_IN"/>
+					<search-field name="inMotifFin" field-ref="droitModel.motifFin" operation="IN"/>
+					<search-field name="forEtatDossier" field-ref="dossierModel.etatDossier" operation="EQUALS"/>
+					<search-field name="forFinDroitForce" field-ref="droitModel.finDroitForcee" operation="LESS_OR_EQUALS"/>
+					<search-literal><![CDATA[ (#{droitModel.finDroitForcee} <>0) ]]></search-literal>
+					<search-field name="inTypeDroit" field-ref="droitModel.typeDroit" operation="IN"/>
+					<search-field name="forTypeLiaison" field-ref="tiersLiaisonComplexModel.composition.typeLien" operation="EQUALS"/>
+				</search-group>
+			</search-definition>
+						
+			<search-definition name="listeAutresEcheances">
+				<search-group operator="AND">
+					<search-field name="forImprimerEcheance" field-ref="droitModel.imprimerEcheance" operation="EQUALS"/>
+					<search-field name="inEtatDroit" field-ref="droitModel.etatDroit" operation="NOT_IN"/>
+					<search-field name="forEtatDossier" field-ref="dossierModel.etatDossier" operation="EQUALS"/>
+					<!--<search-field name="inTypeDroit" field-ref="droitModel.typeDroit" operation="IN"/>-->
+						<search-group operator="AND">
+							<search-field name="forFinDroitForce" field-ref="droitModel.finDroitForcee" operation="LESS_OR_EQUALS"/>
+							<search-field name="forFinDroitForce" field-ref="droitModel.finDroitForcee" operation="NOT_NULL"/>
+						</search-group>
+						<search-group operator="OR">
+							<search-group operator="AND">
+							<search-field name="forTypeDroitEnfant" field-ref="droitModel.typeDroit" operation="EQUALS"/>
+							<search-field name="forMotifFin" field-ref="droitModel.motifFin" operation="EQUALS"/>
+							</search-group>
+								<search-field name="forTypeDroitForm" field-ref="droitModel.typeDroit" operation="EQUALS"/>		
+							</search-group>
+						</search-group>
+			</search-definition>
+				
+		<order-by name="default">
+			<order-field field-ref="numAffilie" order="ASC"/>
+			<order-field field-ref="droitModel.idDossier" order="ASC"/>
+			<order-field field-ref="nomAllocataire" order="ASC"/>
+			<order-field field-ref="prenomAllocataire" order="ASC"/>
+			<order-field field-ref="nomEnfant" order="ASC"/>
+			<order-field field-ref="prenomEnfant" order="ASC"/>
+			<order-field field-ref="droitModel.typeDroit" order="ASC"/>
+		</order-by> 	
+	</complexe-model>
+</model-mapping>
+
+

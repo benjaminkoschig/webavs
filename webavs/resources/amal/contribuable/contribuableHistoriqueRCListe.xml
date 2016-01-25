@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>	
+	<complexe-model className="ch.globaz.amal.business.models.contribuable.ContribuableHistoriqueRCListe">
+		<select-fields distinct="true">
+			<select-field name="nomCtbInfoUpper" field-ref="contribuableInfos.nomUpper"/>
+			<select-field name="prenomCtbInfoUpper" field-ref="contribuableInfos.prenomUpper"/>
+			<select-field name="nomCtbInfo" field-ref="contribuableInfos.nom"/>
+			<select-field name="prenomCtbInfo" field-ref="contribuableInfos.prenom"/>
+			<select-field name="dateNaissanceCtbInfo" field-ref="contribuableInfos.dateNaissance"/>
+			<select-field name="nnssCtbInfo" field-ref="contribuableInfos.nnss"/>
+			<select-field name="idContribuableInfo" field-ref="contribuableInfos.idContribuable"/>
+			<select-field name="numContribuableCtbInfo" field-ref="contribuableInfos.numeroContribuableActuelFormate"/>
+			<select-field name="isTransfered" field-ref="contribuableInfos.isTransfered"/>
+		</select-fields>
+	
+		<root-model name="contribuableInfos" select-fields="false" model-ref="ch.globaz.amal.business.models.contribuable.SimpleContribuableInfos" />
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="likeNom" operation="LIKE" field-ref="nomCtbInfoUpper"/>
+				<search-field name="likePrenom" operation="LIKE" field-ref="prenomCtbInfoUpper"/>
+				<search-field name="likeNss" operation="LIKE" field-ref="nnssCtbInfo"/>
+				<search-field name="forDateNaissance" operation="EQUALS" field-ref="dateNaissanceCtbInfo"/>
+				<search-field name="forNoContribuable" operation="LIKE" field-ref="numContribuableCtbInfo"/>
+				<search-field name="forIdContribuableInfo" operation="EQUALS" field-ref="idContribuableInfo"/>
+				<search-field name="isTransfered" operation="EQUALS" field-ref="isTransfered" value="false"/>
+			</search-group>
+		</search-definition>
+	
+		
+		<order-by name="nomPrenom">
+			<order-field field-ref="nomCtbInfoUpper"/>
+			<order-field field-ref="prenomCtbInfoUpper"/>
+		</order-by>
+
+	</complexe-model>
+</model-mapping>

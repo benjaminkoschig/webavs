@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE statistiques [
+	<!ELEMENT statistiques (statistique+)>
+	<!ATTLIST statistique
+	id CDATA #REQUIRED
+	csLabel CDATA #REQUIRED
+>
+	<!ELEMENT statistique (categorieRubrique+)>
+	<!ATTLIST statistique
+	id CDATA #REQUIRED
+>
+	<!ELEMENT categorieRubrique (#PCDATA)>
+	<!ATTLIST categorieRubrique
+	id CDATA #REQUIRED
+		nom (debit | credit | indefini) "debit"
+		signe (positif | negatif | indefini) "positif"
+		affiche (true | false) "true"
+		order CDATA #REQUIRED
+>
+]>
+<statistiques>
+	<statistique id="F001_1" csLabel="false">
+		<categorieRubrique id="134" nom="debit" signe="positif" affiche="true" order="010" group="010"/>
+		<categorieRubrique id="135" nom="debit" signe="negatif" affiche="true" order="020" group="020"/>
+		<categorieRubrique id="136" nom="debit" signe="positif" affiche="false" order="030" group="030"/>
+		<categorieRubrique id="137" nom="debit" signe="positif" affiche="true" order="040" group="040"/>
+		<categorieRubrique id="160" nom="debit" signe="positif" affiche="true" group="041"/>
+		<categorieRubrique id="161" nom="debit" signe="positif" affiche="true" group="042"/>
+		<categorieRubrique id="262" nom="debit" signe="positif" affiche="true" order="043" group="043"/>
+		<categorieRubrique id="138" nom="debit" signe="negatif" affiche="true" order="050" group="050"/>
+		<categorieRubrique id="139" nom="indefini" signe="indefini" affiche="true" order="060" group="060"/>
+		<categorieRubrique id="140" nom="debit" signe="negatif" affiche="true" order="070" group="070"/>
+		<categorieRubrique id="141" nom="indefini" signe="indefini" affiche="false" order="080" group="080"/>
+		<categorieRubrique id="142" nom="debit" signe="positif" affiche="false" order="090" group="090"/>
+		<categorieRubrique id="143" nom="debit" signe="negatif" affiche="true" order="100" group="100"/>
+		<categorieRubrique id="144" nom="debit" signe="positif" affiche="true" order="110" group="110"/>
+		<categorieRubrique id="145" nom="debit" signe="positif" affiche="true" order="120" group="120"/>
+		<categorieRubrique id="146" nom="debit" signe="positif" affiche="false" order="130" group="130"/>
+		<categorieRubrique id="147" nom="debit" signe="positif" affiche="true" order="140" group="140"/>
+		<categorieRubrique id="148" nom="debit" signe="positif" affiche="true" order="150" group="150"/>
+		<categorieRubrique id="149" nom="debit" signe="negatif" affiche="true" order="160" group="160"/>
+		<categorieRubrique id="150" nom="debit" signe="negatif" affiche="true" order="170" group="170"/>
+		<categorieRubrique id="151" nom="debit" signe="negatif" affiche="true" order="180" group="180"/>
+		<categorieRubrique id="152" nom="debit" signe="negatif" affiche="false" order="190" group="190"/>
+		<categorieRubrique id="153" nom="debit" signe="negatif" affiche="true" order="200" group="200"/>
+		<categorieRubrique id="154" nom="debit" signe="negatif" affiche="true" order="210" group="210"/>		
+		<categorieRubrique id="260" nom="debit" signe="negatif" affiche="true" order="220" group="220"/>				
+		<categorieRubrique id="155" nom="debit" signe="negatif" affiche="true" order="240" group="240"/>		
+<!--  	<categorieRubrique id="156" nom="debit" signe="negatif" affiche="true" order="230" group="230"/>
+		<categorieRubrique id="157" nom="debit" signe="negatif" affiche="true" order="240" group="240"/>
+-->		
+		<categorieRubrique id="158" nom="debit" signe="positif" affiche="true" order="250" group="250"/>		
+	</statistique>
+	<statistique id="F001_2" csLabel="true">
+		<!-- CH-naissances -->
+		<categorieRubrique id="001" nom="indefini" signe="indefini" affiche="true" order="001" group="001"/>
+		<categorieRubrique id="002" nom="indefini" signe="indefini" affiche="true" order="002" group="001"/>
+		<categorieRubrique id="003" nom="indefini" signe="indefini" affiche="true" order="004" group="001"/>
+		<categorieRubrique id="213" nom="indefini" signe="indefini" affiche="true" order="003" group="001"/>
+		<!-- CH-accueils -->
+		<categorieRubrique id="004" nom="indefini" signe="indefini" affiche="true" order="020" group="020"/>
+		<categorieRubrique id="005" nom="indefini" signe="indefini" affiche="true" order="021" group="020"/>
+		<categorieRubrique id="006" nom="indefini" signe="indefini" affiche="true" order="023" group="020"/>
+		<categorieRubrique id="214" nom="indefini" signe="indefini" affiche="true" order="022" group="020"/>
+		<!-- CH-enfants -->
+		<categorieRubrique id="007" nom="indefini" signe="indefini" affiche="true" order="001" group="030"/>
+		<categorieRubrique id="008" nom="indefini" signe="indefini" affiche="true" order="002" group="030"/>
+		<categorieRubrique id="009" nom="indefini" signe="indefini" affiche="true" order="004" group="030"/>
+		<categorieRubrique id="215" nom="indefini" signe="indefini" affiche="true" order="003" group="030"/>
+		<!-- CH-invalides -->
+		<categorieRubrique id="010" nom="indefini" signe="indefini" affiche="true" order="001" group="040"/>
+		<categorieRubrique id="011" nom="indefini" signe="indefini" affiche="true" order="002" group="040"/>
+		<categorieRubrique id="012" nom="indefini" signe="indefini" affiche="true" order="004" group="040"/>
+		<categorieRubrique id="216" nom="indefini" signe="indefini" affiche="true" order="003" group="040"/>
+		<!-- CH-enfants + invalides -->
+		<categorieRubrique id="013" nom="indefini" signe="indefini" affiche="true" order="001" group="050"/>
+		<categorieRubrique id="014" nom="indefini" signe="indefini" affiche="true" order="002" group="050"/>
+		<categorieRubrique id="015" nom="indefini" signe="indefini" affiche="true" order="004" group="050"/>
+		<categorieRubrique id="217" nom="indefini" signe="indefini" affiche="true" order="003" group="050"/>
+		<!-- CH-etudiants -->
+		<categorieRubrique id="016" nom="indefini" signe="indefini" affiche="true" order="001" group="060"/>
+		<categorieRubrique id="017" nom="indefini" signe="indefini" affiche="true" order="002" group="060"/>
+		<categorieRubrique id="018" nom="indefini" signe="indefini" affiche="true" order="004" group="060"/>
+		<categorieRubrique id="218" nom="indefini" signe="indefini" affiche="true" order="003" group="060"/>
+		<!-- CH-apprentis -->
+		<categorieRubrique id="019" nom="indefini" signe="indefini" affiche="true" order="001" group="070"/>
+		<categorieRubrique id="020" nom="indefini" signe="indefini" affiche="true" order="002" group="070"/>
+		<categorieRubrique id="021" nom="indefini" signe="indefini" affiche="true" order="004" group="070"/>
+		<categorieRubrique id="219" nom="indefini" signe="indefini" affiche="true" order="003" group="070"/>
+		<!-- CH-autres formations -->
+		<categorieRubrique id="022" nom="indefini" signe="indefini" affiche="true" order="001" group="080"/>
+		<categorieRubrique id="023" nom="indefini" signe="indefini" affiche="true" order="002" group="080"/>
+		<categorieRubrique id="024" nom="indefini" signe="indefini" affiche="true" order="004" group="080"/>
+		<categorieRubrique id="220" nom="indefini" signe="indefini" affiche="true" order="003" group="080"/>
+		<!-- CH-etudiants + apprentis + autres formations -->
+		<categorieRubrique id="025" nom="indefini" signe="indefini" affiche="true" order="001" group="090"/>
+		<categorieRubrique id="026" nom="indefini" signe="indefini" affiche="true" order="002" group="090"/>
+		<categorieRubrique id="027" nom="indefini" signe="indefini" affiche="true" order="004" group="090"/>
+		<categorieRubrique id="221" nom="indefini" signe="indefini" affiche="true" order="003" group="090"/>
+		<!-- CH-enfants + invalides + etudiants + apprentis + autres formations -->
+		<categorieRubrique id="028" nom="indefini" signe="indefini" affiche="true" order="001" group="100"/>
+		<categorieRubrique id="029" nom="indefini" signe="indefini" affiche="true" order="002" group="100"/>
+		<categorieRubrique id="030" nom="indefini" signe="indefini" affiche="true" order="004" group="100"/>
+		<categorieRubrique id="222" nom="indefini" signe="indefini" affiche="true" order="003" group="100"/>
+		<!-- CH-menage -->
+		<categorieRubrique id="031" nom="indefini" signe="indefini" affiche="true" order="001" group="110"/>
+		<categorieRubrique id="032" nom="indefini" signe="indefini" affiche="true" order="002" group="110"/>
+		<categorieRubrique id="033" nom="indefini" signe="indefini" affiche="true" order="004" group="110"/>
+		<categorieRubrique id="223" nom="indefini" signe="indefini" affiche="true" order="003" group="110"/>
+		<!-- CH-famille nombreuse -->
+		<categorieRubrique id="034" nom="indefini" signe="indefini" affiche="true" order="001" group="120"/>
+		<categorieRubrique id="035" nom="indefini" signe="indefini" affiche="true" order="002" group="120"/>
+		<categorieRubrique id="036" nom="indefini" signe="indefini" affiche="true" order="004" group="120"/>
+		<categorieRubrique id="224" nom="indefini" signe="indefini" affiche="true" order="003" group="120"/>
+		<!-- ETR- naissances-->
+		<categorieRubrique id="037" nom="indefini" signe="indefini" affiche="true" order="001" group="130"/>
+		<categorieRubrique id="038" nom="indefini" signe="indefini" affiche="true" order="002" group="130"/>
+		<categorieRubrique id="039" nom="indefini" signe="indefini" affiche="true" order="004" group="130"/>
+		<categorieRubrique id="225" nom="indefini" signe="indefini" affiche="true" order="003" group="130"/>
+		<!-- ETR- accueils -->
+		<categorieRubrique id="040" nom="indefini" signe="indefini" affiche="true" order="001" group="140"/>
+		<categorieRubrique id="041" nom="indefini" signe="indefini" affiche="true" order="002" group="140"/>
+		<categorieRubrique id="042" nom="indefini" signe="indefini" affiche="true" order="004" group="140"/>
+		<categorieRubrique id="226" nom="indefini" signe="indefini" affiche="true" order="003" group="140"/>
+		<!-- ETR- enfants -->
+		<categorieRubrique id="043" nom="indefini" signe="indefini" affiche="true" order="001" group="150"/>
+		<categorieRubrique id="044" nom="indefini" signe="indefini" affiche="true" order="002" group="150"/>
+		<categorieRubrique id="045" nom="indefini" signe="indefini" affiche="true" order="004" group="150"/>
+		<categorieRubrique id="227" nom="indefini" signe="indefini" affiche="true" order="003" group="150"/>
+		<!-- ETR- invalides -->
+		<categorieRubrique id="046" nom="indefini" signe="indefini" affiche="true" order="001" group="160"/>
+		<categorieRubrique id="047" nom="indefini" signe="indefini" affiche="true" order="002" group="160"/>
+		<categorieRubrique id="048" nom="indefini" signe="indefini" affiche="true" order="004" group="160"/>
+		<categorieRubrique id="228" nom="indefini" signe="indefini" affiche="true" order="003" group="160"/>
+		<!-- ETR- enfants + invalides -->
+		<categorieRubrique id="049" nom="indefini" signe="indefini" affiche="true" order="001" group="170"/>
+		<categorieRubrique id="050" nom="indefini" signe="indefini" affiche="true" order="002" group="170"/>
+		<categorieRubrique id="051" nom="indefini" signe="indefini" affiche="true" order="004" group="170"/>
+		<categorieRubrique id="229" nom="indefini" signe="indefini" affiche="true" order="003" group="170"/>
+		<!-- ETR- etudiants -->
+		<categorieRubrique id="052" nom="indefini" signe="indefini" affiche="true" order="001" group="180"/>
+		<categorieRubrique id="053" nom="indefini" signe="indefini" affiche="true" order="002" group="180"/>
+		<categorieRubrique id="054" nom="indefini" signe="indefini" affiche="true" order="004" group="180"/>
+		<categorieRubrique id="230" nom="indefini" signe="indefini" affiche="true" order="003" group="180"/>
+		<!-- ETR- apprentis-->
+		<categorieRubrique id="055" nom="indefini" signe="indefini" affiche="true" order="001" group="190"/>
+		<categorieRubrique id="056" nom="indefini" signe="indefini" affiche="true" order="002" group="190"/>
+		<categorieRubrique id="057" nom="indefini" signe="indefini" affiche="true" order="004" group="190"/>
+		<categorieRubrique id="231" nom="indefini" signe="indefini" affiche="true" order="003" group="190"/>
+		<!-- ETR-  autres formations -->
+		<categorieRubrique id="058" nom="indefini" signe="indefini" affiche="true" order="001" group="200"/>
+		<categorieRubrique id="059" nom="indefini" signe="indefini" affiche="true" order="002" group="200"/>
+		<categorieRubrique id="060" nom="indefini" signe="indefini" affiche="true" order="004" group="200"/>
+		<categorieRubrique id="232" nom="indefini" signe="indefini" affiche="true" order="003" group="200"/>
+		<!-- ETR- etudiants + apprendtis + autres formations -->
+		<categorieRubrique id="061" nom="indefini" signe="indefini" affiche="true" order="001" group="210"/>
+		<categorieRubrique id="062" nom="indefini" signe="indefini" affiche="true" order="002" group="210"/>
+		<categorieRubrique id="063" nom="indefini" signe="indefini" affiche="true" order="004" group="210"/>
+		<categorieRubrique id="233" nom="indefini" signe="indefini" affiche="true" order="003" group="210"/>
+		<!-- ETR- enfants + invalides + apprentis + autres formations -->
+		<categorieRubrique id="064" nom="indefini" signe="indefini" affiche="true" order="001" group="220"/>
+		<categorieRubrique id="065" nom="indefini" signe="indefini" affiche="true" order="002" group="220"/>
+		<categorieRubrique id="066" nom="indefini" signe="indefini" affiche="true" order="004" group="220"/>
+		<categorieRubrique id="234" nom="indefini" signe="indefini" affiche="true" order="003" group="220"/>
+		<!-- ETR- menage -->
+		<categorieRubrique id="067" nom="indefini" signe="indefini" affiche="true" order="001" group="230"/>
+		<categorieRubrique id="068" nom="indefini" signe="indefini" affiche="true" order="002" group="230"/>
+		<categorieRubrique id="069" nom="indefini" signe="indefini" affiche="true" order="004" group="230"/>
+		<categorieRubrique id="235" nom="indefini" signe="indefini" affiche="true" order="003" group="230"/>
+		<!-- ETR- familles nombreuses -->
+		<categorieRubrique id="070" nom="indefini" signe="indefini" affiche="true" order="001" group="240"/>
+		<categorieRubrique id="071" nom="indefini" signe="indefini" affiche="true" order="002" group="240"/>
+		<categorieRubrique id="072" nom="indefini" signe="indefini" affiche="true" order="004" group="240"/>
+		<categorieRubrique id="236" nom="indefini" signe="indefini" affiche="true" order="003" group="240"/>
+		<!-- CH + ETR- naissances-->
+		<categorieRubrique id="073" nom="indefini" signe="indefini" affiche="true" order="001" group="250"/>
+		<categorieRubrique id="074" nom="indefini" signe="indefini" affiche="true" order="002" group="250"/>
+		<categorieRubrique id="075" nom="indefini" signe="indefini" affiche="true" order="004" group="250"/>
+		<categorieRubrique id="237" nom="indefini" signe="indefini" affiche="true" order="003" group="250"/>
+		<!-- CH + ETR- accueil -->
+		<categorieRubrique id="076" nom="indefini" signe="indefini" affiche="true" order="001" group="260"/>
+		<categorieRubrique id="077" nom="indefini" signe="indefini" affiche="true" order="002" group="260"/>
+		<categorieRubrique id="078" nom="indefini" signe="indefini" affiche="true" order="004" group="260"/>
+		<categorieRubrique id="238" nom="indefini" signe="indefini" affiche="true" order="003" group="260"/>
+		<!-- CH + ETR- enfants -->
+		<categorieRubrique id="079" nom="indefini" signe="indefini" affiche="true" order="001" group="270"/>
+		<categorieRubrique id="080" nom="indefini" signe="indefini" affiche="true" order="002" group="270"/>
+		<categorieRubrique id="081" nom="indefini" signe="indefini" affiche="true" order="004" group="270"/>
+		<categorieRubrique id="239" nom="indefini" signe="indefini" affiche="true" order="003" group="270"/>
+		<!-- CH + ETR- invalides -->
+		<categorieRubrique id="082" nom="indefini" signe="indefini" affiche="true" order="001" group="280"/>
+		<categorieRubrique id="083" nom="indefini" signe="indefini" affiche="true" order="002" group="280"/>
+		<categorieRubrique id="084" nom="indefini" signe="indefini" affiche="true" order="004" group="280"/>
+		<categorieRubrique id="240" nom="indefini" signe="indefini" affiche="true" order="003" group="280"/>
+		<!-- CH + ETR- enfants + invalides-->
+		<categorieRubrique id="085" nom="indefini" signe="indefini" affiche="true" order="001" group="290"/>
+		<categorieRubrique id="086" nom="indefini" signe="indefini" affiche="true" order="002" group="290"/>
+		<categorieRubrique id="087" nom="indefini" signe="indefini" affiche="true" order="004" group="290"/>
+		<categorieRubrique id="241" nom="indefini" signe="indefini" affiche="true" order="003" group="290"/>
+		<!-- CH + ETR- etudiants -->
+		<categorieRubrique id="088" nom="indefini" signe="indefini" affiche="true" order="001" group="300"/>
+		<categorieRubrique id="089" nom="indefini" signe="indefini" affiche="true" order="002" group="300"/>
+		<categorieRubrique id="090" nom="indefini" signe="indefini" affiche="true" order="004" group="300"/>
+		<categorieRubrique id="242" nom="indefini" signe="indefini" affiche="true" order="003" group="300"/>
+		<!-- CH + ETR- apprentis -->
+		<categorieRubrique id="091" nom="indefini" signe="indefini" affiche="true" order="001" group="310"/>
+		<categorieRubrique id="092" nom="indefini" signe="indefini" affiche="true" order="002" group="310"/>
+		<categorieRubrique id="093" nom="indefini" signe="indefini" affiche="true" order="004" group="310"/>
+		<categorieRubrique id="243" nom="indefini" signe="indefini" affiche="true" order="003" group="310"/>
+		<!-- CH + ETR- autres formations -->
+		<categorieRubrique id="094" nom="indefini" signe="indefini" affiche="true" order="001" group="320"/>
+		<categorieRubrique id="095" nom="indefini" signe="indefini" affiche="true" order="002" group="320"/>
+		<categorieRubrique id="096" nom="indefini" signe="indefini" affiche="true" order="004" group="320"/>
+		<categorieRubrique id="244" nom="indefini" signe="indefini" affiche="true" order="003" group="320"/>
+		<!-- CH + ETR- etudiants + apprentis + autrs formations-->
+		<categorieRubrique id="097" nom="indefini" signe="indefini" affiche="true" order="001" group="330"/>
+		<categorieRubrique id="098" nom="indefini" signe="indefini" affiche="true" order="002" group="330"/>
+		<categorieRubrique id="099" nom="indefini" signe="indefini" affiche="true" order="004" group="330"/>
+		<categorieRubrique id="245" nom="indefini" signe="indefini" affiche="true" order="003" group="330"/>
+		<!-- CH + ETR- enfants + invalides + etudiants + apprentis + autres formations -->
+		<categorieRubrique id="100" nom="indefini" signe="indefini" affiche="true" order="001" group="340"/>
+		<categorieRubrique id="101" nom="indefini" signe="indefini" affiche="true" order="002" group="340"/>
+		<categorieRubrique id="102" nom="indefini" signe="indefini" affiche="true" order="004" group="340"/>
+		<categorieRubrique id="246" nom="indefini" signe="indefini" affiche="true" order="003" group="340"/>
+		<!-- CH + ETR- menage -->
+		<categorieRubrique id="103" nom="indefini" signe="indefini" affiche="true" order="001" group="350"/>
+		<categorieRubrique id="104" nom="indefini" signe="indefini" affiche="true" order="002" group="350"/>
+		<categorieRubrique id="105" nom="indefini" signe="indefini" affiche="true" order="004" group="350"/>
+		<categorieRubrique id="247" nom="indefini" signe="indefini" affiche="true" order="003" group="350"/>
+		<!-- CH + ETR- familles nombreuses -->
+		<categorieRubrique id="106" nom="indefini" signe="indefini" affiche="true" order="001" group="360"/>
+		<categorieRubrique id="107" nom="indefini" signe="indefini" affiche="true" order="002" group="360"/>
+		<categorieRubrique id="108" nom="indefini" signe="indefini" affiche="true" order="004" group="360"/>
+		<categorieRubrique id="248" nom="indefini" signe="indefini" affiche="true" order="003" group="360"/>
+		<!-- Service de compensation pour allocations complémentaires aux militaires -->
+		<categorieRubrique id="109" nom="indefini" signe="indefini" affiche="true" order="001" group="370"/>
+		<categorieRubrique id="110" nom="indefini" signe="indefini" affiche="true" order="002" group="370"/>
+		<categorieRubrique id="111" nom="indefini" signe="indefini" affiche="true" order="003" group="370"/>
+		<!-- Service de compensation pour allocations complémentaires de maternité -->
+		<categorieRubrique id="112" nom="indefini" signe="indefini" affiche="true" order="001" group="380"/>
+		<categorieRubrique id="113" nom="indefini" signe="indefini" affiche="true" order="002" group="380"/>
+		<categorieRubrique id="114" nom="indefini" signe="indefini" affiche="true" order="003" group="380"/>
+		<!-- Allocation complémentaire AE / AFP -->
+		<categorieRubrique id="267" nom="indefini" signe="indefini" affiche="true" order="001" group="390"/>
+		<!-- Contributions -->
+		<categorieRubrique id="259" nom="indefini" signe="indefini" affiche="true" order="001" group="400"/>
+		<categorieRubrique id="115" nom="indefini" signe="indefini" affiche="true" order="003" group="400"/>
+		<categorieRubrique id="116" nom="indefini" signe="indefini" affiche="true" order="004" group="400"/>
+		<categorieRubrique id="159" nom="indefini" signe="indefini" affiche="true" order="005" group="400"/>
+		<!--<categorieRubrique id="249" nom="indefini" signe="indefini" affiche="true" order="006" group="390"/>-->
+		<!-- Contributions indépendants -->
+		<categorieRubrique id="210" nom="indefini" signe="indefini" affiche="true" order="001" group="410"/>
+		<categorieRubrique id="211" nom="indefini" signe="indefini" affiche="true" order="002" group="410"/>
+		<categorieRubrique id="212" nom="indefini" signe="indefini" affiche="true" order="004" group="410"/>
+		<categorieRubrique id="250" nom="indefini" signe="indefini" affiche="true" order="003" group="410"/>
+		
+	</statistique>
+	<statistique id="F002" csLabel="true">
+		<!-- contributions AF -->
+		<categorieRubrique id="162" nom="indefini" signe="indefini" affiche="true" order="002" group="010"/>
+		<categorieRubrique id="163" nom="indefini" signe="indefini" affiche="true" order="003" group="010"/>
+		<categorieRubrique id="164" nom="indefini" signe="indefini" affiche="true" order="004" group="010"/>
+		<categorieRubrique id="251" nom="indefini" signe="indefini" affiche="true" order="001" group="010"/>
+		<!-- Ménage -->
+		<categorieRubrique id="165" nom="indefini" signe="indefini" affiche="true" order="001" group="040"/>
+		<categorieRubrique id="166" nom="indefini" signe="indefini" affiche="true" order="002" group="040"/>
+		<categorieRubrique id="167" nom="indefini" signe="indefini" affiche="true" order="004" group="040"/>
+		<categorieRubrique id="252" nom="indefini" signe="indefini" affiche="true" order="003" group="040"/>
+		<!-- CH + ETR Naissance + Accueil -->
+		<categorieRubrique id="168" nom="indefini" signe="indefini" affiche="true" order="001" group="070"/>
+		<categorieRubrique id="169" nom="indefini" signe="indefini" affiche="true" order="002" group="070"/>
+		<categorieRubrique id="170" nom="indefini" signe="indefini" affiche="true" order="004" group="070"/>
+		<categorieRubrique id="253" nom="indefini" signe="indefini" affiche="true" order="003" group="070"/>
+		<!-- CH Enfants + invalides -->
+		<categorieRubrique id="171" nom="indefini" signe="indefini" affiche="true" order="001" group="100"/>
+		<categorieRubrique id="172" nom="indefini" signe="indefini" affiche="true" order="002" group="100"/>
+		<categorieRubrique id="173" nom="indefini" signe="indefini" affiche="true" order="004" group="100"/>
+		<categorieRubrique id="254" nom="indefini" signe="indefini" affiche="true" order="003" group="100"/>
+		<!-- ETR Enfants + invalides -->
+		<categorieRubrique id="174" nom="indefini" signe="indefini" affiche="true" order="001" group="130"/>
+		<categorieRubrique id="175" nom="indefini" signe="indefini" affiche="true" order="002" group="130"/>
+		<categorieRubrique id="176" nom="indefini" signe="indefini" affiche="true" order="004" group="130"/>
+		<categorieRubrique id="255" nom="indefini" signe="indefini" affiche="true" order="003" group="130"/>
+		<!-- CH + ETR -Etutidants + apprentis + autres formations -->
+		<categorieRubrique id="177" nom="indefini" signe="indefini" affiche="true" order="001" group="160"/>
+		<categorieRubrique id="178" nom="indefini" signe="indefini" affiche="true" order="002" group="160"/>
+		<categorieRubrique id="179" nom="indefini" signe="indefini" affiche="true" order="004" group="160"/>
+		<categorieRubrique id="256" nom="indefini" signe="indefini" affiche="true" order="003" group="160"/>
+		<!-- Famille nombreuse -->
+		<categorieRubrique id="180" nom="indefini" signe="indefini" affiche="true" order="001" group="190"/>
+		<categorieRubrique id="181" nom="indefini" signe="indefini" affiche="true" order="002" group="190"/>
+		<categorieRubrique id="182" nom="indefini" signe="indefini" affiche="true" order="004" group="190"/>
+		<categorieRubrique id="257" nom="indefini" signe="indefini" affiche="true" order="003" group="190"/>
+		<!-- Allocation complémentaire AE / AFP -->
+		<categorieRubrique id="269" nom="indefini" signe="indefini" affiche="true" order="200" group="200"/>
+		<!-- Total AF -->
+		<categorieRubrique id="183" nom="indefini" signe="indefini" affiche="true" order="001" group="220"/>
+		<categorieRubrique id="268" nom="indefini" signe="indefini" affiche="true" order="002" group="220"/>
+		<categorieRubrique id="184" nom="indefini" signe="indefini" affiche="true" order="003" group="220"/>
+		<categorieRubrique id="258" nom="indefini" signe="indefini" affiche="true" order="004" group="220"/>
+		<categorieRubrique id="185" nom="indefini" signe="indefini" affiche="true" order="005" group="220"/>
+		<!-- ACM Militaire -->
+		<categorieRubrique id="186" nom="indefini" signe="indefini" affiche="true" order="250" group="250"/>
+		<categorieRubrique id="187" nom="indefini" signe="indefini" affiche="true" order="250" group="250"/>
+		<categorieRubrique id="188" nom="indefini" signe="indefini" affiche="true" order="250" group="250"/>
+		<!-- Total AF + ACM -->
+		<categorieRubrique id="189" nom="indefini" signe="indefini" affiche="true" order="280" group="280"/>
+		<categorieRubrique id="190" nom="indefini" signe="indefini" affiche="true" order="280" group="280"/>
+		<categorieRubrique id="191" nom="indefini" signe="indefini" affiche="true" order="280" group="280"/>
+		<!-- Total AF + ACM - FFPP -->
+		<categorieRubrique id="192" nom="indefini" signe="indefini" affiche="true" order="310" group="310"/>
+		<!-- Solde sans ACM sans FFPP -->
+		<categorieRubrique id="193" nom="indefini" signe="indefini" affiche="true" order="320" group="320"/>
+		<!-- Solde avec ACM sans FFPP -->
+		<categorieRubrique id="194" nom="indefini" signe="indefini" affiche="true" order="330" group="330"/>
+		<!-- Solde avec ACM avec FFPP -->
+		<categorieRubrique id="195" nom="indefini" signe="indefini" affiche="true" order="330" group="330"/>
+		<!-- Frais ALFA -->
+		<categorieRubrique id="196" nom="indefini" signe="indefini" affiche="true" order="340" group="340"/>
+		<categorieRubrique id="197" nom="indefini" signe="indefini" affiche="true" order="340" group="340"/>
+		<categorieRubrique id="263" nom="indefini" signe="indefini" affiche="true" order="350" group="350"/><!-- CBU -->
+		<categorieRubrique id="264" nom="indefini" signe="indefini" affiche="true" order="350" group="350"/><!-- CBU -->
+		<!-- Frais ACM cumulés -->
+		<categorieRubrique id="198" nom="indefini" signe="indefini" affiche="true" order="370" group="370"/>
+		<!-- Frais ACM militaire -->
+		<categorieRubrique id="199" nom="indefini" signe="indefini" affiche="true" order="380" group="380"/>
+		<!-- Frais ACM maternité -->
+		<categorieRubrique id="200" nom="indefini" signe="indefini" affiche="true" order="390" group="390"/>
+		<!-- Versement siège agence -->
+		<categorieRubrique id="201" nom="indefini" signe="indefini" affiche="true" order="400" group="400"/>
+		<!-- Versement agence siège -->
+		<categorieRubrique id="202" nom="indefini" signe="indefini" affiche="true" order="410" group="410"/>		
+		<!--  -->
+		<categorieRubrique id="203" nom="indefini" signe="indefini" affiche="true" order="420" group="420"/>
+		<!--  -->
+		<categorieRubrique id="208" nom="indefini" signe="indefini" affiche="true" order="421" group="421"/>
+		<!--  -->
+		<categorieRubrique id="209" nom="indefini" signe="indefini" affiche="true" order="432" group="432"/>
+		<!--  -->
+		<categorieRubrique id="204" nom="indefini" signe="indefini" affiche="true" order="450" group="450"/>
+		<!--  -->
+		<categorieRubrique id="205" nom="indefini" signe="indefini" affiche="true" order="460" group="460"/>
+		<!--  -->
+		<categorieRubrique id="206" nom="indefini" signe="indefini" affiche="true" order="470" group="470"/>
+		<!--  -->
+		<categorieRubrique id="207" nom="indefini" signe="indefini" affiche="true" order="480" group="480"/>
+		<!--  -->
+		<categorieRubrique id="261" nom="indefini" signe="indefini" affiche="true" order="490" group="490"/>
+	</statistique>
+</statistiques>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.adi.DecompteAdiModel" >
+		<description>contient les données nécessaires aux décomptes des allocations différentielles internationales</description>
+		<table name="ALDECADI" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key comment="ID" column="VID" type="NUMERIC" name="idDecompteAdi" mandatory="true"/>
+			<field comment="Id (FK) de dossier" column="EID" type="NUMERIC" dataType="NUMERIC (15,0)" name="idDossier" mandatory="true"/>
+			<field comment="Id de l'organisme étranger (tiers)" column="HTITIE" type="NUMERIC" dataType="NUMERIC (15,0)" name="idTiersOrganismeEtranger"  mandatory="true"/>
+			<field comment="code de la monnaie du pays" column="CSMONN" type="NUMERIC" dataType="NUMERIC(8,0)" name="codeMonnaie" mandatory="true" />
+			<field comment="année du décompte" column="VANDEC" type="NUMERIC" dataType="NUMERIC(4,0)" name="anneeDecompte" mandatory="true"/>
+			<field comment="date de la réception" column="VDAREC" type="DATE" name="dateReception" mandatory="true"/>
+			<field comment="date de l'état" column="VDAETA" type="DATE" name="dateEtat" mandatory="true"/>
+			<field comment="Etat du décompte" column="CSETAT" type="NUMERIC" dataType="NUMERIC(8,0)" name="etatDecompte" mandatory="true"/>
+			<field comment="période du début du décompte" column="VPEDEB" type="MONTH_YEAR" name="periodeDebut" mandatory="true"/>
+			<field comment="période de la fin du décompte" column="VPEFIN" type="MONTH_YEAR" name="periodeFin" mandatory="true"/>
+			<field comment="Texte Libre" column="VTXTL" type="STRING" dataType="VARCHAR(900)" name="texteLibre" mandatory="false"/>
+			<field comment="id (FK) du décompte remplacé par celui-ci" column="VIDR" type="NUMERIC"  dataType="NUMERIC (15,0)" name="idDecompteRemplace" mandatory="false"/>
+			<field comment="id (FK) de la prestation ADI découlant du décompte" column="MID" type="NUMERIC"  dataType="NUMERIC (15,0)" name="idPrestationAdi" mandatory="true"/>
+		</fields>	
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDecompteAdi" field-ref="idDecompteAdi" operation="EQUALS"/>
+				<search-field name="forIdPrestationAdi" field-ref="idPrestationAdi" operation="EQUALS"/>
+				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+				<search-field name="forAnneeDecompte" field-ref="anneeDecompte" operation="EQUALS"/>
+				<search-group operator="AND">
+		     		<search-field name="forPeriodeDebut" field-ref="periodeDebut" operation="GREATER_OR_EQUALS"/>
+			    	<search-field name="forPeriodeFin" field-ref="periodeFin" operation="LESS_OR_EQUALS"/>
+			    </search-group>	
+			    <search-field name="forEtat" field-ref="etatDecompte" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		<order-by name="default">
+			<order-field field-ref="idDecompteAdi" order="DESC"/>
+		</order-by>
+	</simple-model>
+</model-mapping>

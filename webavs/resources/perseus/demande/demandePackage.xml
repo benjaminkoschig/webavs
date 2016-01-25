@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="perseus/demande/simpleDemande.xml"/>
+	<model-mapping import="perseus/demande/demande.xml"/>
+	<model-mapping import="perseus/demande/demandeEtendue.xml"/>
+	<model-mapping import="perseus/demande/demandeTraitementMasse.xml"/>
+	<model-mapping import="perseus/demande/demandeTraitementDeMasseComptage.xml"/>
+</model-mapping>

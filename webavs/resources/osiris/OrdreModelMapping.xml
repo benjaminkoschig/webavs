@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.osiris.business.model.OrdreSimpleModel">
+		<table name="CAOPOVP" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="idRubrique" column="IDRUBRIQUE" comment="Id unique de l'ordre" />		
+			<field name="natureOrdre" column="NATUREORDRE" type="STRING" comment="La nature de l'ordre"/>
+			<field name="typeOrdre" column="TYPEORDRE" type="STRING" comment="le type de l'ordre"/>
+			<field name="motif" column="MOTIF" type="STRING" comment="Le motif"/>
+			<field name="typeVirement" column="TYPEVIREMENT" type="" comment="Le type de virement"/>
+			<field name="idAdressePaiement" column="IDADRESSEPAIEMENT" type="" comment="L'adresse de paiement"/>
+			<field name="codeISOMonnaieDepot" column="CODEISOMONDEP" type="" comment="Le code iso monnaie de dépot"/>
+			<field name="codeISOMonnaieBonification" column="CODEISOMONBON" type="" comment="Le code iso monnaie de bonification"/>
+		</fields>
+		</simple-model>
+</model-mapping>

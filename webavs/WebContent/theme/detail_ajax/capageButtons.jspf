@@ -1,0 +1,13 @@
+						<div class="btnAjax">
+							<ct:ifhasright element="<%=partialUserActionAction%>" crud="u">
+								<input class="btnAjaxUpdate" type="button" value="<%=btnUpdLabel%>">
+							</ct:ifhasright>
+							<ct:ifhasright element="<%=partialUserActionAction%>" crud="d">
+								<input class="btnAjaxDelete" type="button" value="<%=btnDelLabel%>">
+							</ct:ifhasright>
+							<ct:ifhasright element="<%=partialUserActionAction%>" crud="c">
+								<input class="btnAjaxAdd" type="button" value="<%=btnNewLabel%>">
+							</ct:ifhasright>
+							<input class="btnAjaxValidate" type="button" value="<%=btnValLabel%>">
+							<input class="btnAjaxCancel" type="button" value="<%=btnCanLabel%>">
+						</div>

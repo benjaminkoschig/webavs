@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Erreur(s)</TITLE>
+<META name="Generator" content="IBM WebSphere Page Designer V3.5.3 for Windows">
+<META NAME="Author" CONTENT="VCH">
+<META NAME="Keywords" CONTENT="?">
+<META NAME="Description" CONTENT="Boîte de dialogue modale">
+<META http-equiv="Content-Style-Type" content="text/css">
+
+<SCRIPT>
+var errors = window.dialogArguments;
+var errorsStr = errors.text;
+function hitOk() {
+	window.close();
+}
+</SCRIPT>
+
+</HEAD>
+
+<BODY>
+<DIV style="text-align:center">
+	&nbsp;<BR>
+	Vous avez des erreurs!<BR>
+	<INPUT type="button" onclick="hitOk()" value="J'ai vu!">
+	<HR>
+	<SCRIPT>
+		document.write(errorsStr);
+	</SCRIPT>
+</DIV>
+</BODY>
+</HTML>

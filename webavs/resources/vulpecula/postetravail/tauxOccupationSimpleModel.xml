@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.postetravail.TauxOccupationSimpleModel">
+		<table name="PT_TAUX_OCCUPATIONS" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="Id du taux d'occupation" />
+			<field name="idPosteTravail" column="ID_PT_POSTES_TRAVAILS" type="NUMERIC"
+				comment="id du poste de travail" />
+			<field name="dateValidite" column="DATE_VALIDITE" type="DATE"
+				comment="date de validité" />
+			<field name="taux" column="TAUX" type="NUMERIC" comment="taux" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdTauxOccupation" field-ref="id"
+					operation="EQUALS" />
+				<search-field name="forIdPosteTravail" field-ref="idPosteTravail"
+					operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+		<order-by name="idAsc">
+			<order-field field-ref="id" />
+		</order-by>
+	</simple-model>
+</model-mapping>

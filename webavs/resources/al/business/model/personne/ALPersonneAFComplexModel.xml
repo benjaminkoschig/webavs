@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+ <!-- Allocataire modele complexe -->
+<model-mapping >
+	<complexe-model className="ch.globaz.al.business.models.personne.PersonneAFComplexModel">		
+		<root-model name="personneEtendueComplexModel" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel"/>
+		<linked-model name="allocataireModel" model-ref="ch.globaz.al.business.models.allocataire.AllocataireModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idTiersAllocataire" field-ref="personneEtendueComplexModel.tiers.idTiers"/>
+			</join-group>
+		</linked-model>
+		<linked-model name="enfantModel" model-ref="ch.globaz.al.business.models.droit.EnfantModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idTiersEnfant" field-ref="personneEtendueComplexModel.tiers.idTiers"/>
+			</join-group>
+		</linked-model>
+		<search-definition name="default">
+			<search-group operator="AND">	
+				<search-field name="likeNom" field-ref="personneEtendueComplexModel.tiers.designationUpper1" operation="LIKE"/>
+				<search-field name="likePrenom" field-ref="personneEtendueComplexModel.tiers.designationUpper2" operation="LIKE"/>
+				<search-field name="likeNss" field-ref="personneEtendueComplexModel.personneEtendue.numAvsActuel" operation="LIKE"/>
+				<search-field name="forDate" field-ref="personneEtendueComplexModel.personne.dateNaissance" operation="EQUALS"/>
+				<search-group operator="OR">
+					<search-field name="idAllocataire" field-ref="allocataireModel.idAllocataire" operation="NOT_NULL"/>
+					<search-field name="idEnfant" field-ref="enfantModel.idEnfant" operation="NOT_NULL"/>
+				</search-group>
+				
+			</search-group>
+		</search-definition>
+		<search-definition name="roleAlloc">
+			<search-group operator="AND">
+				<search-field name="likeNom" field-ref="personneEtendueComplexModel.tiers.designationUpper1" operation="LIKE"/>
+				<search-field name="likePrenom" field-ref="personneEtendueComplexModel.tiers.designationUpper2" operation="LIKE"/>
+				<search-field name="likeNss" field-ref="personneEtendueComplexModel.personneEtendue.numAvsActuel" operation="LIKE"/>
+				<search-field name="forDate" field-ref="personneEtendueComplexModel.personne.dateNaissance" operation="EQUALS"/>	
+				<search-field name="idAllocataire" field-ref="allocataireModel.idAllocataire" operation="NOT_NULL"/>
+				<search-field name="idEnfant" field-ref="enfantModel.idEnfant" operation="NULL"/>		
+			</search-group>
+		</search-definition>
+		<search-definition name="roleEnfant">
+			<search-group operator="AND">	
+				<search-field name="likeNom" field-ref="personneEtendueComplexModel.tiers.designationUpper1" operation="LIKE"/>
+				<search-field name="likePrenom" field-ref="personneEtendueComplexModel.tiers.designationUpper2" operation="LIKE"/>
+				<search-field name="likeNss" field-ref="personneEtendueComplexModel.personneEtendue.numAvsActuel" operation="LIKE"/>
+				<search-field name="forDate" field-ref="personneEtendueComplexModel.personne.dateNaissance" operation="EQUALS"/>
+				<search-field name="idAllocataire" field-ref="allocataireModel.idAllocataire" operation="NULL"/>
+				<search-field name="idEnfant" field-ref="enfantModel.idEnfant" operation="NOT_NULL"/>
+			</search-group>
+		</search-definition>
+		<order-by name="default">
+			<order-field field-ref="personneEtendueComplexModel.tiers.designation1" order="ASC"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

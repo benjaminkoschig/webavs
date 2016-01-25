@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+
+	<!-- ch.globaz.al.business.model.attribut -->
+    <model-mapping import="al/business/model/attribut/ALAttributEntiteSimpleModel.xml"/>
+    
+    <!-- ch.globaz.al.business.model.attribut -->
+    <model-mapping import="al/business/model/periode/ALPeriodeAFSimpleModel.xml"/>
+    
+    <!-- ch.globaz.al.business.model.adi -->
+    <model-mapping import="al/business/model/adi/ALAdiEnfantMoisSimpleModel.xml"/>
+    <model-mapping import="al/business/model/adi/ALAdiEnfantMoisComplexModel.xml"/>
+    <model-mapping import="al/business/model/adi/ALDecompteAdiSimpleModel.xml"/>
+    <model-mapping import="al/business/model/adi/ALAdiDecompteComplexModel.xml"/>
+	<model-mapping import="al/business/model/adi/ALAdiSaisieSimpleModel.xml"/>
+	<model-mapping import="al/business/model/adi/ALAdiSaisieComplexModel.xml"/>
+	
+	<!-- ch.globaz.al.business.model.allocataire -->
+	<model-mapping import="al/business/model/allocataire/ALAgricoleSimpleModel.xml"/>
+	<model-mapping import="al/business/model/allocataire/ALAllocataireSimpleModel.xml"/>
+	<model-mapping import="al/business/model/allocataire/ALRevenuSimpleModel.xml"/>
+	<model-mapping import="al/business/model/allocataire/ALAllocataireComplexModel.xml"/>
+	<model-mapping import="al/business/model/allocataire/ALAllocataireAgricoleComplexModel.xml"/>
+	
+	<!-- ch.globaz.al.business.model.personne -->
+	<model-mapping import="al/business/model/personne/ALPersonneAFComplexModel.xml"/>
+
+	<!-- ch.globaz.al.business.model.dossier -->
+	<model-mapping import="al/business/model/dossier/ALCopieSimpleModel.xml"/>
+	<model-mapping import="al/business/model/dossier/ALCopieComplexModel.xml"/>
+	<model-mapping import="al/business/model/dossier/ALCommentaireSimpleModel.xml"/>
+	<model-mapping import="al/business/model/dossier/ALCopieSimpleModel.xml"/>
+	<model-mapping import="al/business/model/dossier/ALDossierSimpleModel.xml"/>
+	<model-mapping import="al/business/model/dossier/ALDossierComplexModel.xml"/>
+	<model-mapping import="al/business/model/dossier/ALDossierListComplexModel.xml"/>
+	<model-mapping import="al/business/model/dossier/ALDossierAgricoleComplexModel.xml"/>
+	<model-mapping import="al/business/model/dossier/ALAffilieListComplexModel.xml"/>
+	<model-mapping import="al/business/model/dossier/ALDossierDecisionComplexModel.xml"/>
+	<model-mapping import="al/business/model/dossier/ALDossierDeclarationVersementComplexModel.xml"/>
+	<model-mapping import="al/business/model/dossier/ALDossierActifComplexModel.xml"/>
+	<model-mapping import="al/business/model/dossier/ALDossierAttestationVersementComplexModel.xml"/>
+	<model-mapping import="al/business/model/dossier/ALLienDossierSimpleModel.xml"/>
+	<model-mapping import="al/business/model/dossier/ALDossierLieComplexModel.xml"/>
+	
+
+	<!-- ch.globaz.al.business.model.droit -->
+	<model-mapping import="al/business/model/droit/ALDroitSimpleModel.xml"/>
+	<model-mapping import="al/business/model/droit/ALEnfantSimpleModel.xml"/>
+	<model-mapping import="al/business/model/droit/ALEnfantComplexModel.xml"/>
+	<model-mapping import="al/business/model/droit/ALDroitComplexModel.xml"/>
+	<model-mapping import="al/business/model/droit/ALDroitEcheanceComplexModel.xml"/>
+	<model-mapping import="al/business/model/droit/ALCalculDroitEditingModel.xml"/>
+	
+	
+	<!-- ch.globaz.al.business.model.prestation -->
+	<model-mapping import="al/business/model/prestation/ALDetailPrestationSimpleModel.xml"/>
+	<model-mapping import="al/business/model/prestation/ALEnTetePrestationSimpleModel.xml"/>
+	<model-mapping import="al/business/model/prestation/ALRecapitulatifEntrepriseSimpleModel.xml"/>
+	<model-mapping import="al/business/model/prestation/ALTransfertTucanaSimpleModel.xml"/>
+	<model-mapping import="al/business/model/prestation/ALTransfertTucanaComplexModel.xml"/>
+	<model-mapping import="al/business/model/prestation/ALDetailPrestationComplexModel.xml"/>
+	<model-mapping import="al/business/model/prestation/ALEnteteAndDetailPrestationComplexModel.xml"/>
+	<model-mapping import="al/business/model/prestation/ALDetailPrestationGenComplexModel.xml"/>
+	<model-mapping import="al/business/model/prestation/ALEntetePrestationListRecapComplexModel.xml"/>
+	<model-mapping import="al/business/model/prestation/ALRecapitulatifEntrepriseImpressionComplexModel.xml"/>
+	<model-mapping import="al/business/model/prestation/ALRecapitulatifEntrepriseListComplexModel.xml"/>
+    <model-mapping import="al/business/model/prestation/ALDeclarationVersementDetailleComplexModel.xml"/>
+    
+    <model-mapping import="al/business/model/prestation/radiation/ALPrestationRadiationDossierComplexModel.xml"/>
+
+	<!-- ch.globaz.al.business.model.prestation.paiement -->
+	<model-mapping import="al/business/model/prestation/paiement/ALCheckAffiliationComplexModel.xml"/>
+	<model-mapping import="al/business/model/prestation/paiement/ALCompensationPaiementPrestationComplexModel.xml"/>
+	<model-mapping import="al/business/model/prestation/paiement/ALCompensationPrestationComplexModel.xml"/>
+	<model-mapping import="al/business/model/prestation/paiement/ALCompensationPrestationFullComplexModel.xml"/>
+	<model-mapping import="al/business/model/prestation/paiement/ALPaiementPrestationComplexModel.xml"/>
+
+	
+	<!-- ch.globaz.al.business.model.tarif -->
+  	<model-mapping import="al/business/model/tarif/ALCategorieTarifSimpleModel.xml"/>
+	<model-mapping import="al/business/model/tarif/ALPrestationTarifSimpleModel.xml"/>
+	<model-mapping import="al/business/model/tarif/ALCritereTarifSimpleModel.xml"/>
+	<model-mapping import="al/business/model/tarif/ALLegislationTarifSimpleModel.xml"/>
+	<model-mapping import="al/business/model/tarif/ALTarifComplexModel.xml"/>
+	<model-mapping import="al/business/model/tarif/ALEcheanceComplexModel.xml"/>
+	<model-mapping import="al/business/model/tarif/ALCategorieTarifComplexModel.xml"/>
+	
+	<!-- ch.globaz.al.business.model.processus -->
+	<model-mapping import="al/business/model/processus/ALConfigProcessusSimpleModel.xml"/>
+	<model-mapping import="al/business/model/processus/ALProcessusPeriodiqueSimpleModel.xml"/>
+	<model-mapping import="al/business/model/processus/ALProcessusComplexModel.xml"/>
+	<model-mapping import="al/business/model/processus/ALTraitementPeriodiqueSimpleModel.xml"/>
+	<model-mapping import="al/business/model/processus/ALProcessusTraitementDataComplexModel.xml"/>
+	<model-mapping import="al/business/model/processus/ALTemplateTraitementListComplexModel.xml"/>
+	<model-mapping import="al/business/model/processus/ALTraitementHistoriqueSimpleModel.xml"/>
+	<!--
+	<model-mapping import="al/business/model/processus/ALLienProcessusJournalFactuSimpleModel.xml"/>-->
+	
+	<!-- ch.globaz.al.business.models.rafam -->
+	<model-mapping import="al/business/model/annonces/rafam/ALAnnonceRafamSimpleModel.xml"/>
+	<model-mapping import="al/business/model/annonces/rafam/ALErreurAnnonceRafamSimpleModel.xml"/>
+	<model-mapping import="al/business/model/annonces/rafam/ALErrorPeriodSimpleModel.xml"/>
+	<model-mapping import="al/business/model/annonces/rafam/ALOverlapInformationSimpleModel.xml"/>
+	<model-mapping import="al/business/model/annonces/rafam/ALAnnonceRafamEtatRegistreSimpleModel.xml"/>
+	<model-mapping import="al/business/model/annonces/rafam/ALAnnonceRafamComplexModel.xml"/>
+	<model-mapping import="al/business/model/annonces/rafam/ALAnnonceRafamErrorComplexModel.xml"/>
+	<model-mapping import="al/business/model/annonces/rafam/ALAnnonceRafamProtocoleComplexModel.xml"/>
+	<model-mapping import="al/business/model/annonces/rafam/ALAnnonceRafamDelegueProtocoleComplexModel.xml"/>
+	<model-mapping import="al/business/model/annonces/rafam/ALComplementDelegueSimpleModel.xml"/>
+	<model-mapping import="al/business/model/annonces/rafam/ALAnnonceRafamDelegueComplexModel.xml"/>
+	<!-- ch.globaz.al.business.models.tauxMonnaieEtrangere -->
+	 <model-mapping import="al/business/model/tauxMonnaieEtrangere/ALTauxMonnaieEtrangereModel.xml"/>
+	 
+	 <!-- ch.globaz.al.business.models.importation -->
+	 <model-mapping import="al/business/model/importation/ALCorrespondanceIdentifiantsModel.xml"/>
+	 
+	 <!-- ch.globaz.al.business.models.envoi -->
+	 <model-mapping import="al/business/model/envoi/ALEnvoiPackage.xml"/>
+	 
+	
+	 
+
+
+	 
+</model-mapping>

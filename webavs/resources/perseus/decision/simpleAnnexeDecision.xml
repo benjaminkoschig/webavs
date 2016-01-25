@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.perseus.business.models.decision.SimpleAnnexeDecision">
+		<description>Table des annexes de decisions</description>
+		<table name="PFANEX" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAnnexeDecision" column="IXIDAN" comment="Clé primaire de la table"/>
+			<field name="idDecision" column="IXIDDE" type="NUMERIC" mandatory="true" comment="Identifiant de la table Decision"/>
+			<field name="descriptionAnnexe" type="STRING" column="IXDESC" mandatory="false" comment="Description de l'annexe" />			
+		</fields>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdAnnexeDecision" operation="EQUALS" field-ref="idAnnexeDecision" /> 
+				<search-field name="forIdDecision"  operation="EQUALS" field-ref="idDecision" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

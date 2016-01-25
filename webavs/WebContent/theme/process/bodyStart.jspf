@@ -1,0 +1,9 @@
+<TITLE><%=idEcran%></TITLE>
+</HEAD>
+<BODY onload="this.focus();doInitThings()" onKeyDown="keyDown();actionKeyDown();" onKeyUp="keyUp();actionKeyUp();">
+<TABLE bgcolor="#B3C4DB" cellspacing="0" cellpadding="0" width="100%" height="<%=tableHeight%>">
+	<TBODY>
+		<TR>
+			<TH colspan="3" height="10" class="title">
+				<DIV style="width: 100%">
+					<SPAN class="idEcran"><%=(null==idEcran)?"":idEcran%></SPAN>

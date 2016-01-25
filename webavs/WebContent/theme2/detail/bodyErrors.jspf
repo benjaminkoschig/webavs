@@ -1,0 +1,10 @@
+</div></div>
+<% if (vBeanHasErrors) {%>
+	<script type="text/javascript">
+		errorObj.text = "<%=globaz.framework.util.FWTextFormatter.slash(globaz.framework.util.FWTextFormatter.newLineToBr(viewBean.getMessage()), '\"')%>";
+		<%
+			viewBean.setMessage("");
+			viewBean.setMsgType(globaz.framework.bean.FWViewBeanInterface.OK);
+		%>
+	</script>
+<% } %>

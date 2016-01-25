@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.processus.TraitementPeriodiqueModel">
+		<description>Traitements périodiques de l'application</description>
+		<table name="ALTRAPER" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idTraitementPeriodique" column="QTID"  type="NUMERIC" comment="ID du traitement périodique"/>
+			<field name="idProcessusPeriodique" column="QTIDPRO" type="NUMERIC" mandatory="true" comment="id du processus périodique lié au traitement périodique"/>		
+			<field name="traitementLibelle" column="CSAFTRAI" type="NUMERIC" mandatory="true" comment="Libellé du traitement"/>		
+		    <field name="readOnly" column="QTRDO" type="BOOLEAN" comment="Indique si le traitement effectue des modifications en DB ou non"  mandatory="true" />
+			<field name="etat" column="CSETAT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Etat du traitement périodique"/>
+			<field name="dateExecution" column="QTDATE" type="DATE"  comment="Date d'exécution"/>
+			<field name="heureExecution" column="QTHEURE" type="STRING" dataType="VARCHAR(5)" comment="Heure d'exécution"/>
+			<field name="userExecution" column="QTUSER" type="STRING" dataType="VARCHAR(20)" comment="Utilisateur d'exécution"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forCSTraitement" field-ref="traitementLibelle" operation="EQUALS"/>
+				<search-field name="forIdProcessusPeriodique" field-ref="idProcessusPeriodique" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

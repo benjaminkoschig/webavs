@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="musca/passage/PassageSimpleModel.xml"/>
+	<model-mapping import="musca/passage/PassageModuleComplexModel.xml"/>
+	<model-mapping import="musca/module/ModulePassageSimpleModel.xml"/>
+	<model-mapping import="musca/module/ModuleSimpleModel.xml"/>	
+	<model-mapping import="musca/passage/ModuleFacturationSimpleModel.xml"/>
+	<model-mapping import="musca/passage/PlanFacturationSimpleModel.xml"/>
+	<model-mapping import="musca/passage/PlanFacturationPassageComplexModel.xml"/>
+</model-mapping>

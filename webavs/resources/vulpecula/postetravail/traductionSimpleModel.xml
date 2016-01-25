@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.traduction.TraductionSimpleModel">
+		<table name="PT_TRADUCTIONS" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="Id de la traduction" />
+			<field name="codeIsoLangue" column="CODE_ISO_LANGUE" type="STRING"
+				comment="code iso de la langue" />
+			<field name="libelle" column="LIBELLE" type="STRING" comment="libelle de la traduction" />
+			<field name="libelleUpper" column="LIBELLE_UPPER" type="STRING" comment="libelle en majuscule de la traduction" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

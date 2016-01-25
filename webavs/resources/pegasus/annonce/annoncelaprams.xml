@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.annonce.AnnonceLaprams">
+	
+		<root-model name="simpleAnnonceLaprams" model-ref="ch.globaz.pegasus.business.models.annonce.SimpleAnnonceLaprams"/>
+		
+		<linked-model name="simpleDecisionHeader" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="simpleAnnonceLaprams.idDecisionHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDecisionSuppression" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionSuppression" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="simpleAnnonceLaprams.idDecisionHeader"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleVersionDroitForSuppression" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simpleDecisionSuppression.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="pcAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.PCAccordee" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="simplePCAccordee.idPCAccordee" operation="EQUALS" field-ref="simpleAnnonceLaprams.idPcAccordee"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdAnnonceLaprams" operation="EQUALS" field-ref="simpleAnnonceLaprams.idAnnonceLaprams"/>
+				<search-field name="forDateDebutRapport" operation="GREATER_OR_EQUALS" field-ref="simpleAnnonceLaprams.dateRapport" />
+				<search-field name="forDateFinRapport" operation="LESS_OR_EQUALS" field-ref="simpleAnnonceLaprams.dateRapport" />
+				<search-field name="inIdsDecision" operation="IN" field-ref="simpleAnnonceLaprams.idDecisionHeader" />
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

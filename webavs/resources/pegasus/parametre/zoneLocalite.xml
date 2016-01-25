@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.parametre.ZoneLocalite">
+	
+		<root-model name="simpleLienZoneLocalite" model-ref="ch.globaz.pegasus.business.models.parametre.SimpleLienZoneLocalite"/>
+	    
+	    <linked-model name="simpleZoneForfaits" model-ref="ch.globaz.pegasus.business.models.parametre.SimpleZoneForfaits" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idZoneForfait" operation="EQUALS" field-ref="simpleLienZoneLocalite.idZoneForfait"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="localiteSimpleModel" model-ref="ch.globaz.pyxis.business.model.LocaliteSimpleModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idLocalite" operation="EQUALS" field-ref="simpleLienZoneLocalite.idLocalite"/>
+			</join-group>		
+		</linked-model>
+
+	   	<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdZoneForfait" operation="EQUALS" field-ref="simpleZoneForfaits.idZoneForfait"/>
+				<search-field name="forIdLocalite" operation="EQUALS" field-ref="simpleLienZoneLocalite.idLocalite"/>
+				<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleLienZoneLocalite.dateDebut"/>
+				<search-field name="likeNumPostal" operation="LIKE" field-ref="localiteSimpleModel.numPostal"/>
+			</search-group>
+		</search-definition>
+		
+	    <search-definition name="withDateValable">
+			<search-group operator="AND">
+			<search-field name="likeNumPostal" operation="LIKE" field-ref="localiteSimpleModel.numPostal"/>
+				<search-field name="forIdZoneForfait" operation="EQUALS" field-ref="simpleZoneForfaits.idZoneForfait"/>
+				<search-field name="forIdLocalite" operation="EQUALS" field-ref="simpleLienZoneLocalite.idLocalite"/>
+				<search-group operator="AND">
+					<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="simpleLienZoneLocalite.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="simpleLienZoneLocalite.dateFin"/>
+						<search-field name="forDateValable" operation="NULL" field-ref="simpleLienZoneLocalite.dateFin"/>
+					</search-group>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<order-by> 
+			<order-field field-ref="simpleLienZoneLocalite.idZoneForfait" order="DESC"/>
+			<order-field field-ref="localiteSimpleModel.numPostal" order="ASC"/>
+			<order-field field-ref="simpleLienZoneLocalite.dateDebut" order="DESC"/>
+		</order-by>	
+	</complexe-model>
+</model-mapping>

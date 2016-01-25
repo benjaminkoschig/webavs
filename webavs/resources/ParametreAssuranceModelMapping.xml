@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.naos.business.model.ParametreAssuranceSimpleModel">
+		
+		<table name="AFPARAS" hasCreationSpy="false" hasSpy="true" alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="parametreAssuranceId" column="MXIPAR" comment="parametreAssuranceId" />
+			<field name="parametreAssuranceId" column="MXIPAR" type="STRING"  />
+			<field name="assuranceId" column="MBIASS" type="STRING"  />
+			<field name="dateDebut" column="MXDDEB" type="DATE"  />
+			<field name="dateFin" column="MXDFIN" type="DATE"  />
+			<field name="sexe" column="MXTSEX" type="STRING"  />
+			<field name="genre" column="MXTGEN" type="STRING"  />
+			<field name="valeurNum" column="MXNVAL" type="NUMERIC"  />
+			<field name="valeurAlpha" column="MXLVAL" type="STRING"  />
+		</fields>
+		</simple-model>
+</model-mapping>

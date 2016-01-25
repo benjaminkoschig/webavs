@@ -1,0 +1,111 @@
+<%@page import="globaz.jade.common.Jade"%>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<meta http-equiv="Cache-Control" content="no-cache" />
+<meta name="User-Lang" content="<%=languePage%>"/> 
+<meta name="Context_URL" content="<%=servletContext%>"/> 
+<meta name="formAction" content="<%=formAction%>"/>   
+<meta name="TypePage" content="AJAX"/> 
+<link rel="stylesheet" type="text/css" href="<%=servletContext%><%=(mainServletPath+"Root")%>/moduleStyle.css"/>
+<link type="text/css" href="<%=servletContext%>/theme/jquery/jquery-ui.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="<%=servletContext%>/theme/ajax/templateZoneAjax.css"/>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jquery.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/jquery-ui.js"></script>
+<SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/menu.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/ValidationGroups.js"></SCRIPT>
+<script type="text/javascript" src="<%=servletContext%>/scripts/ajax/ajaxUtils.js"/></script>
+
+<script type="text/javascript" src="<%=servletContext%>/scripts/ajax/AbstractScalableAJAXTableZone.js"/></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/ajax/AbstractSimpleAJAXDetailZone.js"/></script>
+
+<!--
+<SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/params.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/actionsForButtons.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/utils.js"></SCRIPT>
+
+<SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/formUtil.js"></SCRIPT>
+
+<SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/shortKeys.js"></SCRIPT>
+
+<SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/autocomplete.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/selectionPopup.js"></SCRIPT>
+ -->
+ <%@ include file="/jade/notation/notationLibJs.jspf" %> 
+<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/core/specificationMoteur/specific_ajax.js"/></script>
+
+<script type="text/javascript">
+	jsManager.addAfter(function () {
+		setTimeout(function () {globazNotation.growl.init(); }, 500);
+		//setTimeout(function () {$(':input').filter(':visible:enabled').not('.noFocus').first().focus();}, 10);
+	},"Init-growl, add focus on ");
+</script>
+<style type="text/css">
+body {
+	background-color: <%=Jade.getInstance().getWebappBackgroundColor()%>;
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+}
+
+table {
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+}
+
+input {
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 1em;
+	font-weight: bold;
+	vertical-align: middle;
+}
+
+input[type=text] {
+	height: 16px;
+}
+
+
+select {
+	font-weight: bold;
+	font-size: 1em;
+	display:inline-block;
+	vertical-align:middle;
+	height:24px; 
+}
+
+ 
+.jadeAutocompleteAjax{
+	height: 16px;
+}
+
+.thDetail, th {
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	padding-bottom: 4px;
+}
+
+
+</style>
+<%
+
+vBeanHasErrors = viewBean.getMsgType().equals (globaz.framework.bean.FWViewBeanInterface.ERROR);
+if ((viewBean != null) && (viewBean.getSpy() != null)) {
+	lastModification = "" + viewBean.getSpy().getDate() + ", " + viewBean.getSpy().getTime() + " - " + viewBean.getSpy().getUser();
+}
+if (viewBean != null) {
+	Class vbClass = viewBean.getClass();
+	java.lang.reflect.Method creationSpyMethod = null;
+	try {
+		creationSpyMethod = vbClass.getMethod("getCreationSpy", new Class[0]);
+		globaz.globall.db.BSpy creationSpyObject = (globaz.globall.db.BSpy)creationSpyMethod.invoke(viewBean, new Object[0]);
+		if (creationSpyObject != null) {
+			creationSpy = "Creation: " + creationSpyObject.getDate() + ", " + creationSpyObject.getTime() + " - " + creationSpyObject.getUser() + " / ";
+		}
+	} catch (NoSuchMethodException nsme) {
+		// Essayé pas pu, tant pis.
+	} catch (ClassCastException cce) {
+		// Essayé pas pu, tant pis.
+	}
+}
+%>
+

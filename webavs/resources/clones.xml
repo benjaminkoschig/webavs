@@ -1,0 +1,98 @@
+<clones>
+   <clone id="prestation-APG-correction-droit-APG" class="globaz.apg.db.droits.APDroitAPG">
+
+		<linkedClass class="globaz.apg.db.droits.APSituationFamilialeAPG"
+          			   relationType="1_TO_1"
+          			   idParent="idSituationFam"			          			   
+          			   manager="na"
+          			   forIdParent="na">
+
+			          <linkedClass class="globaz.apg.db.droits.APEnfantAPG"           			   
+			          			   relationType="1_TO_N"
+			          			   idParent="idSituationFamiliale"            			   
+			          			   forIdParent="forIdSituationFamiliale"
+			          			   manager="globaz.apg.db.droits.APEnfantAPGManager"/>
+		</linkedClass>
+
+
+        <linkedClass class="globaz.apg.db.droits.APPeriodeAPG"
+        			   relationType="1_TO_N"
+          			   idParent="idDroit"			          			   
+          			   manager="globaz.apg.db.droits.APPeriodeAPGManager"
+          			   forIdParent="forIdDroit"/>
+
+        <linkedClass class="globaz.apg.db.droits.APSituationProfessionnelle"
+        			   relationType="1_TO_N"
+          			   idParent="idDroit"
+          			   manager="globaz.apg.db.droits.APSituationProfessionnelleManager"
+          			   forIdParent="forIdDroit">
+
+			          <linkedClass class="globaz.apg.db.droits.APEmployeur"           			   
+			          			   relationType="1_TO_1"		
+			          			   idParent="idEmployeur"            			   
+			          			   forIdParent="na"
+			          			   manager="na"/>
+        </linkedClass> 			          
+   </clone>
+
+
+
+   <clone id="prestation-APG-copie-droit-APG" class="globaz.apg.db.droits.APDroitAPG">
+
+		<linkedClass class="globaz.apg.db.droits.APSituationFamilialeAPG"
+          			   relationType="1_TO_1"
+          			   idParent="idSituationFam"			          			   
+          			   manager="na"
+          			   forIdParent="na">
+
+			          <linkedClass class="globaz.apg.db.droits.APEnfantAPG"           			   
+			          			   relationType="1_TO_N"
+			          			   idParent="idSituationFamiliale"            			   
+			          			   forIdParent="forIdSituationFamiliale"
+			          			   manager="globaz.apg.db.droits.APEnfantAPGManager"/>
+		</linkedClass>      
+
+        <linkedClass class="globaz.apg.db.droits.APSituationProfessionnelle"
+        			   relationType="1_TO_N"
+          			   idParent="idDroit"
+          			   manager="globaz.apg.db.droits.APSituationProfessionnelleManager"
+          			   forIdParent="forIdDroit">
+
+			          <linkedClass class="globaz.apg.db.droits.APEmployeur"           			   
+			          			   relationType="1_TO_1"		
+			          			   idParent="idEmployeur"            			   
+			          			   forIdParent="na"
+			          			   manager="na"/>
+        </linkedClass> 			          
+   </clone>
+
+
+
+
+
+   <clone id="prestation-APG-copie-droit-MATERNITE" class="globaz.apg.db.droits.APDroitMaternite">
+
+		<linkedClass class="globaz.apg.db.droits.APSituationFamilialeMat"
+          			   relationType="1_TO_N"
+          			   idParent="idDroitMaternite"	
+          			   manager="globaz.apg.db.droits.APSituationFamilialeMatManager"
+          			   forIdParent="forIdDroitMaternite"/>
+
+
+        <linkedClass class="globaz.apg.db.droits.APSituationProfessionnelle"
+        			   relationType="1_TO_N"
+          			   idParent="idDroit"
+          			   manager="globaz.apg.db.droits.APSituationProfessionnelleManager"
+          			   forIdParent="forIdDroit">
+
+			          <linkedClass class="globaz.apg.db.droits.APEmployeur"           			   
+			          			   relationType="1_TO_1"
+			          			   idParent="idEmployeur"
+			          			   forIdParent="na"
+			          			   manager="na"/>
+        </linkedClass> 			          
+   </clone>
+
+
+
+</clones>

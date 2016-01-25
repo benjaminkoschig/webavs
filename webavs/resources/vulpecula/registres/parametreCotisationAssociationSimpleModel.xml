@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.registres.ParametreCotisationAssociationSimpleModel">
+		<table name="PT_PARAMETRES_COT_AP" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="Id de la table cotisation caisse métier" />
+			<field name="idCotisationAssociationProfessionnelle" column="ID_COTISATIONS_AP" type="NUMERIC" comment="id de la caisse métier" />
+			<field name="taux" column="TAUX" type="NUMERIC"
+				comment="taux de la cotisation" />
+			<field name="fourchetteDebut" column="FOURCHETTE_DEBUT"
+				type="NUMERIC" comment="fourchette de départ de la cotisation" />
+			<field name="fourchetteFin" column="FOURCHETTE_FIN"
+				type="NUMERIC" comment="fourchette de fin de la cotisation" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id"
+					operation="EQUALS" />
+				<search-field name="forIdCotisationAssociationProfessionnelle" field-ref="idCotisationAssociationProfessionnelle"
+					operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+		<order-by name="idAsc">
+			<order-field field-ref="id" />
+		</order-by>
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,267 @@
+<?xml version="1.0"?>
+<topaz-system>
+	<!-- 
+	Configuration d'OpenOffice et de la façon d'y accéder. 
+	 -->
+	<ooo>
+		<!--
+			connection-url L'url de connection au serveur OpenOffice. La valeur
+			spéciale "bootstrap" est autorisée pour utiliser OpenOffice sans
+			avoir à démarrer un serveur (utile pour le développement par
+			exemple). 
+			Exemple:			<connection-url>uno:socket,host=localhost,port=8100;urp;StarOffice.ServiceManager</connection-url>
+		-->
+		<connection-url>uno:socket,host=localhost,port=8100;urp;StarOffice.ServiceManager</connection-url>
+		<!-- <connection-url>uno:socket,host=localhost,port=8100;urp;StarOffice.ServiceManager</connection-url> -->
+		<!-- <connection-url>bootstrap</connection-url> -->
+		<!-- <connection-url>bootstrap</connection-url>  -->
+		<killScript>/db2/db2home/ccjuidbq/batch/killOOo.sh</killScript>
+		<startScript>/db2/db2home/ccjuidbq/batch/startOOo.sh</startScript>
+	</ooo>
+	<doc-selection id="*"> 
+		<!--***************** AMAL *******************-->
+		<when attribute="idProcess" operator="eq" value="ACREPC1">
+			<doc-id action="set">amal/ACREPC1</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="ACREPC3">
+			<doc-id action="set">amal/ACREPC3</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="ACREPC5">
+			<doc-id action="set">amal/ACREPC5</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="ACREPC6">
+			<doc-id action="set">amal/ACREPC6</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="ACREPC8">
+			<doc-id action="set">amal/ACREPC8</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="ACREP10">
+			<doc-id action="set">amal/ACREP10</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="ACREP11">
+			<doc-id action="set">amal/ACREP11</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="ACREP12">
+			<doc-id action="set">amal/ACREP12</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="ACREP13">
+			<doc-id action="set">amal/ACREP13</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="ATENF1">
+			<doc-id action="set">amal/ATENF1</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="ATENF8">
+			<doc-id action="set">amal/ATENF8</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="ATMIS1">
+			<doc-id action="set">amal/ATMIS1</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="ATSUBS1">
+			<doc-id action="set">amal/ATSUBS1</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="ATSUBS2">
+			<doc-id action="set">amal/ATSUBS2</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="ATSUBS3">
+			<doc-id action="set">amal/ATSUBS3</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="ATSUBS4">
+			<doc-id action="set">amal/ATSUBS4</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="ATSUBS5">
+			<doc-id action="set">amal/ATSUBS5</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="ATSUBS6">
+			<doc-id action="set">amal/ATSUBS6</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMAS7">
+			<doc-id action="set">amal/DECMAS7</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMASB">
+			<doc-id action="set">amal/DECMASB</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMASM">
+			<doc-id action="set">amal/DECMASM</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMISA">
+			<doc-id action="set">amal/DECMISA</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMISB">
+			<doc-id action="set">amal/DECMISB</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMISC">
+			<doc-id action="set">amal/DECMISC</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMPC7">
+			<doc-id action="set">amal/DECMPC7</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMPC7_2011">
+			<doc-id action="set">amal/DECMPC7_2011</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMPCC">
+			<doc-id action="set">amal/DECMPCC</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMPCE">
+			<doc-id action="set">amal/DECMPCE</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMPCD">
+			<doc-id action="set">amal/DECMPCD</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMPCM">
+			<doc-id action="set">amal/DECMPCM</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMPCM_2011">
+			<doc-id action="set">amal/DECMPCM_2011</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMST1">
+			<doc-id action="set">amal/DECMST1</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMST2">
+			<doc-id action="set">amal/DECMST2</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMST3">
+			<doc-id action="set">amal/DECMST3</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMST5">
+			<doc-id action="set">amal/DECMST5</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMST6">
+			<doc-id action="set">amal/DECMST6</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMST7">
+			<doc-id action="set">amal/DECMST7</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMST8">
+			<doc-id action="set">amal/DECMST8</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMST10">
+			<doc-id action="set">amal/DECMST10</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMST11">
+			<doc-id action="set">amal/DECMST11</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMST12">
+			<doc-id action="set">amal/DECMST12</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECMST13">
+			<doc-id action="set">amal/DECMST13</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="DECPRO1">
+			<doc-id action="set">amal/DECPRO1</doc-id>
+		</when>
+	</doc-selection>
+	
+	<doc-selection id="AM_HEADER">
+		<otherwise>
+			<doc-id action="set">amal/header/header</doc-id>
+		</otherwise>
+	</doc-selection>
+	
+	<doc-selection id="AM_HEADER_NOMINATIF">
+		<otherwise>
+			<doc-id action="set">amal/header/header_nominatif</doc-id>
+		</otherwise>
+	</doc-selection>
+
+	<doc-selection id="AM_HEADER_RAPPEL">
+		<otherwise>
+			<doc-id action="set">amal/header/header_rappel</doc-id>
+		</otherwise>
+	</doc-selection>
+
+	<doc-selection id="AM_INTRO">
+		<otherwise>
+			<doc-id action="set">amal/intro/intro</doc-id>
+		</otherwise>
+	</doc-selection>
+
+	<doc-selection id="AM_INFO">
+		<otherwise>
+			<doc-id action="set">amal/info/info</doc-id>
+		</otherwise>
+	</doc-selection>
+	<doc-selection id="AM_INFO2">
+		<otherwise>
+			<doc-id action="set">amal/info/info2</doc-id>
+		</otherwise>
+	</doc-selection>
+	<doc-selection id="AM_INFO3">
+		<otherwise>
+			<doc-id action="set">amal/info/info3</doc-id>
+		</otherwise>
+	</doc-selection>
+	<doc-selection id="AM_INFO4">
+		<otherwise>
+			<doc-id action="set">amal/info/info4</doc-id>
+		</otherwise>
+	</doc-selection>
+	<doc-selection id="AM_SUBSIDES">
+		<otherwise>
+			<doc-id action="set">amal/subsides/subsides</doc-id>
+		</otherwise>
+	</doc-selection>
+
+	<doc-selection id="AM_SUBSIDES2">
+		<otherwise>
+			<doc-id action="set">amal/subsides/subsides2</doc-id>
+		</otherwise>
+	</doc-selection>
+
+	<doc-selection id="AM_SUBSIDES3">
+		<otherwise>
+			<doc-id action="set">amal/subsides/subsides3</doc-id>
+		</otherwise>
+	</doc-selection>
+
+	<doc-selection id="AM_SUBSIDES4">
+		<otherwise>
+			<doc-id action="set">amal/subsides/subsides4</doc-id>
+		</otherwise>
+	</doc-selection>
+
+	<doc-selection id="AM_SUBSIDES5">
+		<otherwise>
+			<doc-id action="set">amal/subsides/subsides5</doc-id>
+		</otherwise>
+	</doc-selection>
+	<doc-selection id="AM_SUBSIDES5_2011">
+		<otherwise>
+			<doc-id action="set">amal/subsides/subsides5_2011</doc-id>
+		</otherwise>
+	</doc-selection>
+	<doc-selection id="AM_SUBSIDES6">
+		<otherwise>
+			<doc-id action="set">amal/subsides/subsides6</doc-id>
+		</otherwise>
+	</doc-selection>
+
+
+	<doc-selection id="AM_SIGNATURES">
+		<when attribute="signatures" operator="eq" value="pbo">
+			<doc-id action="set">amal/signatures/signatures_pbo</doc-id>
+		</when>
+		<otherwise>
+			<doc-id action="set">amal/signatures/signatures_mbo</doc-id>
+		</otherwise>
+	</doc-selection>
+	
+	<doc-selection id="AM_REVENU_STANDARD">
+		<otherwise>
+			<doc-id action="set">amal/revenu/revenu_standard</doc-id>
+		</otherwise>
+	</doc-selection>
+	
+	<doc-selection id="AM_REVENU_STANDARD_RECALCUL">
+		<otherwise>
+			<doc-id action="set">amal/revenu/revenu_standard_recalcul</doc-id>
+		</otherwise>
+	</doc-selection>
+	
+	<doc-selection id="AM_REVENU_SOURCIER">
+		<otherwise>
+			<doc-id action="set">amal/revenu/revenu_sourcier</doc-id>
+		</otherwise>
+	</doc-selection>
+	<!--***************** FIN AMAL *******************-->
+
+</topaz-system>

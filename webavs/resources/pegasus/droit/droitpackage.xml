@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="pegasus/droit/simpledroit.xml"/>
+	<model-mapping import="pegasus/droit/simpleversiondroit.xml"/>
+	<model-mapping import="pegasus/droit/droit.xml"/>
+	<model-mapping import="pegasus/droit/modificateurdroitdonneefinanciere.xml"/>
+	<model-mapping import="pegasus/droit/simpledroitmembrefamille.xml"/>
+	<model-mapping import="pegasus/droit/simpledonneespersonnelles.xml"/>
+	<model-mapping import="pegasus/droit/donneespersonnelles.xml"/>
+	<model-mapping import="pegasus/droit/droitmembrefamille.xml"/>
+	<model-mapping import="pegasus/droit/droitmembrefamilleetendu.xml"/>
+	<model-mapping import="pegasus/droit/membrefamilleetendu.xml"/>
+	<model-mapping import="pegasus/droit/simpledonneefinanciereheader.xml"/>
+	<model-mapping import="pegasus/droit/donneefinanciereheader.xml"/>
+	<model-mapping import="pegasus/droit/versiondroit.xml"/>
+	<model-mapping import="pegasus/droit/versiondroitmembrefamille.xml"/>
+</model-mapping>

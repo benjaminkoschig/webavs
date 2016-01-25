@@ -1,0 +1,36 @@
+Framework WebThings 1.1
+=========================
+Dépendance JADE Framework: framework_2_0_00
+
+
+******************************
+* --> Voir les release notes *
+******************************
+
+
+
+
+ Version webquartz 1-1M3 (07.09.2005)
+ - suppresion du fichier javascript swap.js
+ - conflict, detail et process: suppresion du lien vers swap.js
+ - suppresion des templates findWithoutZoneEditableButtons et selectFind, inutilisés dans AVS, AI et Prestations
+
+ Version webquartz 1-1M2 (12.08.2005)
+ - taglib.tld: ajouts de tags "HTML" en provenance de l'AI: inputText, inputHidden, select, option, optionsCodesSystems, excludeCode
+ - taglib.tld: ajout des tag menuPopup et menuParam
+ - ajout du fichier script menu.js
+ - master.css splitté -> création de menu.css pour styles menu
+ - master.css: suppression de TABLE.list inutilisé
+ - tous les templates: menuFinalHref est construit selon FWServlet.getLanguageTreeForApplication
+ - process.jtpl: paramétrage de l'enctype du formulaire
+
+ Version webquartz 1-1M1 (29.07.2005)
+ - ajout du tag FWMenuTag; 
+ - lien "appliSpecifique.css" déplacé de find.jtpl à master.css; 
+ - template list: le libellé du lien "Detail" du popup d'options est paramétrable
+ 
+ Version webquartz 1-0RC1 (01.06.2005)
+ *** premier candidat à la release 1.0
+ - pas de changements
+ 
+ 

@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="menuHtml.xslt"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+	<menu id="vulpecula-menuprincipal">	
+		<nodes>
+			<node open="yes">
+			<label refId="MENU_PT_POSTE_TRAVAIL"/>
+				<nodes>
+					<node>
+						<label refId="MENU_PT_TRAVAILLEUR"/>
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.postetravail.travailleur.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PT_EMPLOYEURS"/>
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.postetravail.employeur.afficher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>	
+		<nodes>
+			<node open="yes">
+			<label refId="MENU_PT_DECOMPTES"/>
+				<nodes>
+					<node>
+						<label refId="MENU_PT_DECOMPTE" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.decompte.decompte.afficher"/>
+						</action>
+					</node>
+					<node id="DECOMPTE_VIDE">
+						<label refId="MENU_PT_PROCESS_DECOMPTE"/>
+						<action command="/fx" responseTarget="fr_main">
+							<parameter name="userAction" value="fx.process.jadeProcessList.afficher" />
+							<parameter name="keyProcess" value="vulpecula.decompte" />
+						</action>
+					</node>
+					<node id="RECEPTION_DECOMPTE">
+						<label refId="MENU_PT_RECEPTION_DECOMPTE"/>
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.decomptereception.decomptereception.afficher&amp;_method=add" />
+						</action>
+					</node>			
+					<node>
+						<label refId="MENU_PT_IMPRESSION_DECOMPTES" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.decompte.imprimerDecomptes.afficher"/>
+						</action>
+					</node>		
+					<node>
+						<label refId="MENU_PT_IMPRESSION_TO" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.decompte.imprimerTO.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PT_ANNONCER_MYPRODIS" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.decomptesalaire.annoncerMyProdis.afficher" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+		</nodes>	
+		<nodes>
+			<node open="yes">
+			<label refId="MENU_PT_PRESTATIONS"/>
+				<nodes>
+					<node>
+						<label refId="MENU_PT_PRESTATIONS_SAISIE_RAPIDE" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.prestations.saisierapide.afficher"/>
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PT_BOUCLEMENT_CP" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.congepaye.bouclement.afficher"/>
+						</action>
+					</node>
+				</nodes>
+			</node>					
+		</nodes>
+		<nodes>
+			<node open="no">
+					<label open="no" refId="MENU_PT_ALLOCATION_FAMILIALE" />
+					<nodes>
+						<node>
+							<label refId="MENU_PT_PAIEMENTS_AF"/>
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.is.iSTraitement.afficher"/>
+							</action>
+						</node>
+						<node>
+							<label refId="MENU_PT_LISTES_IS"/>
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.is.listeIS.afficher"/>
+							</action>
+						</node>
+						<node>
+							<label refId="MENU_PT_ATTESTATIONS_AF" />
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.is.attestationsAF.afficher"/>
+							</action>
+						</node>
+						<node>
+							<label refId="MENU_PT_PRIME_NAISSANCE_AF" />
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.is.primeNaissanceAF.afficher"/>
+							</action>
+						</node>
+					</nodes>
+			</node>	
+		</nodes>
+		<nodes>
+			<node open="no">
+					<label open="no" refId="MENU_PT_COMPTA" />
+					<nodes>
+						<node>
+							<label refId="MENU_PT_IMPORT_CG"/>
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.comptabilite.importationcg.afficher"/>
+							</action>
+						</node>
+						<node>
+							<label refId="MENU_PT_IMPORT_CASHIN"/>
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.comptabilite.importationcashin.afficher"/>
+							</action>
+						</node>
+					</nodes>
+			</node>	
+		</nodes>		
+		<nodes>
+			<node open="no">
+				<label refId="MENU_PT_LISTES" />
+				<nodes>
+					<node>
+						<label refId="MENU_PT_PRESTATIONS" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.listes.prestations.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PT_LISTE_ENTREPRISES" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.listes.entreprises.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PT_ANNONCE_SALARIES" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.listes.annoncesalaries.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PT_COMMUNICATION_SALAIRES" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.listes.communicationsalaires.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PT_ANNONCE_CAISSES_MALADIES" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.listes.caissemaladie.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PT_SYNDICATS" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.listes.listeSyndicats.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PT_SUIVI_DOCUMENTS_CAISSES_MALADIES" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.listes.suiviDocumentsCaissesMaladies.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PT_MONTANT_RUBRIQUE" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.listes.montantRubrique.afficher" />
+						</action>
+					</node>					
+				</nodes>
+			</node>
+		</nodes>		
+		<nodes>
+			<node open="no">
+				<label refId="MENU_PT_STATISTIQUES" />
+				<nodes>
+ 					<node>
+ 						<label refId="MENU_PT_SALAIRE_SOCIO_ECONOMIQUE" />
+ 						<action command="/vulpecula" responseTarget="fr_main">
+ 							<parameter name="userAction" value="vulpecula.statistiques.salaireSocioEconomique.afficher" />
+ 						</action>
+ 					</node>
+ 					<node>
+ 						<label refId="MENU_PT_SALAIRE_QUALIFICATION" />
+ 						<action command="/vulpecula" responseTarget="fr_main">
+ 							<parameter name="userAction" value="vulpecula.statistiques.salaireQualification.afficher" />
+ 						</action>
+ 					</node>
+ 					<!-- 
+ 					<node>
+ 						<label refId="MENU_PT_PERTE_GAIN_FRAIS_MEDICAUX" />
+ 						<action command="/vulpecula" responseTarget="fr_main">
+ 							<parameter name="userAction" value="vulpecula.statistiques.perteGainFraisMedicaux.afficher" />
+ 						</action>
+ 					</node>
+ 					 -->
+ 				</nodes>
+ 			</node>
+		</nodes>			
+		<nodes>	
+			<node open="no">
+				<label refId="MENU_PARAMETRAGE" />
+				<nodes>
+					<node open="no">
+						<label refId="MENU_PARAMETRE_COMPTABILITE" />
+						<nodes>
+							<node>
+					
+							<label refId="MENU_PT_REFERENCES_RUBRIQUES" />
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.comptabilite.referencesRubriques.afficher" />
+							</action>
+							
+							</node>
+						</nodes>
+					</node>					
+					<node open="no">
+						<label refId="MENU_PT_REGISTRES"/>
+						<nodes>
+							<node>
+								<label refId="MENU_PT_SECTIONS"/>
+								<action command="/vulpecula" responseTarget="fr_main">
+									<parameter name="userAction" value="vulpecula.registre.section.afficher"/>
+								</action>
+							</node>
+							<node>
+								<label refId="MENU_PT_SYNDICATS"/>
+								<action command="/vulpecula" responseTarget="fr_main">
+									<parameter name="userAction" value="vulpecula.registre.syndicat.afficher"/>
+								</action>
+							</node>
+							<node>
+								<label refId="MENU_PT_QUALIFICATION"/>
+								<action command="/vulpecula" responseTarget="fr_main">
+									<parameter name="userAction" value="vulpecula.registre.qualification.afficher"/>
+								</action>
+							</node>
+							<node>
+								<label refId="MENU_PT_PARAMETRES_COTISATIONS_ASSOCIATIONS" />
+								<action command="/vulpecula" responseTarget="fr_main">
+									<parameter name="userAction" value="vulpecula.registre.parametresCotisationsAssociations.afficher"/>
+								</action>
+							</node>
+							<node>
+								<label refId="MENU_PT_COTISATIONS_AP" />
+								<action command="/vulpecula" responseTarget="fr_main">
+									<parameter name="userAction" value="vulpecula.registre.cotisationsAP.afficher"/>
+								</action>						
+							</node>
+							<node>
+								<label refId="MENU_PT_TAUX_IMPOSITION" />
+								<action command="/vulpecula" responseTarget="fr_main">
+									<parameter name="userAction" value="vulpecula.is.tauxImposition.afficher"/>
+								</action>						
+							</node>
+						</nodes>
+					</node>
+					<node id="catalogue_texte">
+						<label defaultValue="Catalogue de textes">
+							<language iso="de">?Catalogue de textes</language>
+						</label>
+						<action command="/babel" responseTarget="fr_main">
+							<parameter name="userAction" value="babel.cat.document.chercher" />
+							<parameter name="csGroupeDomaines" value="PTDOMAINES"/>
+							<parameter name="csGroupeTypesDocuments" value="PTTYPES"/>
+						</action>
+					</node>
+				</nodes>
+			</node>		
+		</nodes>		
+	</menu>	
+	<!-- Menu Option Dossier -->
+	<menu id="vulpecula-optionscaisse">
+		<label refId="MENU_PT_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_PT_OPTION_CAISSE"/>
+				<action command="/vulpecula" responseTarget="fr_main">
+					<parameter name="userAction" value="vulpecula.registre.caisseSociale.afficher"/>
+					<parameter name="idCaisse"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>	
+	<!-- Menu Option Dossier -->
+	<menu id="vulpecula-optionstravailleurs">
+		<label refId="MENU_PT_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_PT_OPTION_TRAVAILLEUR_MUTATION"/>
+				<action command="/vulpecula" responseTarget="fr_main">
+					<parameter name="userAction" value="vulpecula.postetravaildetail.travailleurdetail.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>	
+		<!-- Menu Option Dossier -->
+	<menu id="vulpecula-optionsemployeurs">
+		<label refId="MENU_PT_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_PT_OPTION_TIERS"/>
+				<action command="/pyxis" responseTarget="fr_main">
+					<parameter name="userAction" value="pyxis.tiers.tiers.afficher"/>
+					<parameter name="idTiers"/>
+				</action>
+			</node>
+			
+	  		<node>
+				<label refId="MENU_PT_OPTION_AFFILIATION"/>
+				<action command="/naos" responseTarget="fr_main">
+					<parameter name="userAction" value="naos.affiliation.affiliation.afficher"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+	  		<node>
+				<label refId="MENU_PT_OPTION_CAISSES_SOCIALES"/>
+				<action command="/naos" responseTarget="fr_main">
+					<parameter name="userAction" value="naos.adhesion.adhesion.chercher"/>
+					<parameter name="affiliationId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	<!-- ************************** -->
+	<!-- Menu Option empty		    -->
+	<!-- ************************** -->
+	<menu id="vulpecula-optionsempty">
+		<label refId="MENU_OPTION_TITRE"/>
+	</menu>
+</menus>

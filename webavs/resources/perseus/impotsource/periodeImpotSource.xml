@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.impotsource.PeriodeImpotSource">
+		<root-model name="simplePeriodeImpotSource" model-ref="ch.globaz.perseus.business.models.impotsource.SimplePeriodeImpotSource"/>
+		
+		<search-definition name="default">
+			<search-group operator="AND">
+				<search-field name="periodeGeneree" operation="EQUALS" field-ref="simplePeriodeImpotSource.periodeGeneree"/>
+			</search-group>
+		</search-definition>
+		
+		<!-- Recherche les périodes d'impôt à la source valable pour la période -->
+	    <search-definition name="withPeriode">
+			<search-group operator="AND">
+				<search-field name="forAuDateFin" operation="LESS_OR_EQUALS" field-ref="simplePeriodeImpotSource.dateFin"/>
+					<search-group operator="AND">
+						<search-field name="forDuDateDebut" operation="GREATER_OR_EQUALS" field-ref="simplePeriodeImpotSource.dateDebut"/>
+					</search-group>	
+			</search-group>
+		</search-definition>
+		
+		<!-- Recherche la periode d'impot à la source valable pour la date donnée en paramètre -->
+	    <search-definition name="withDateValable">
+			<search-group operator="AND">
+				<search-field name="forDateValable" operation="LESS_OR_EQUALS" field-ref="simplePeriodeImpotSource.dateDebut"/>
+				<search-group operator="OR">
+					<search-field name="forDateValable" operation="GREATER_OR_EQUALS" field-ref="simplePeriodeImpotSource.dateFin"/>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="simplePeriodeImpotSource.dateDebut" order="DESC" />
+		</order-by>
+		
+		<order-by name="dateDebutAsc">
+			<order-field field-ref="simplePeriodeImpotSource.dateDebut" order="ASC"/>
+		</order-by>
+	</complexe-model>
+</model-mapping>

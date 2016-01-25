@@ -1,0 +1,9 @@
+<%@page import="ch.globaz.pegasus.navigation.NavigatorLinkHandler"%>
+<script type="text/javascript" src="<%=rootPath %>/scripts/navBar.js"></script>
+
+<script type="text/javascript">
+  $(function () {
+	  var jadeNavigatorLink = <%=NavigatorLinkHandler.toJson(linkNavBar) %>;
+	 navBar.init(jadeNavigatorLink)
+  });
+</script>

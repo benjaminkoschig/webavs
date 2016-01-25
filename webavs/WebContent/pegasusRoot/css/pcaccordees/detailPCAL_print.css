@@ -1,0 +1,80 @@
+*{
+	margin:0;
+}
+/* Div englobante*/
+#wrapper{
+	width:100%;
+	height:auto;
+	/*border:1px solid black;*/
+	margin-left:auto;
+	margin-right:auto;
+	text-align:center;
+	margin-top:20px;
+}
+/* Div de chaque zone*/
+.zone{
+	border:1px solid black;
+	width:820px;
+	margin-bottom:10px;
+	text-align:left;
+	padding-left:5px;
+	padding-top:10px;
+	padding-right:5px;
+}
+/* Zone finale resume*/
+#zoneResume{
+	padding-bottom:10px;
+}
+/* Titre de la zone groupe*/
+.titreBloc{
+	font-weight:bold;
+	font-size:14px;
+	background-color:#CCCCCC;
+	width:100%;
+	border:1px solid black;
+}
+/* Colone libelle des lignes*/
+.libelle{
+	width:380px;
+}
+/* Colone libelle monnaie */
+.libelleMonnaie{
+	width:30px;
+	text-align:right;
+}
+/* Colone des montants */
+.montant{
+	width:100px;
+}
+/* incréemnst pour certaines valeurs*/
+.increment{
+	padding-left:10px;
+}
+/* Souligne pour totaux et sous totaux*/
+.souligne{
+	border-bottom:1px solid black;
+}
+/* Ligne des totaux */
+.total{
+	font-weight:bold;
+	font-size:14px;
+}
+/* Mise en gras de certaines valeurs et libelles , pour le bloc resume*/
+.gras{
+	font-weight:bold;
+}
+/* Tableau principal */
+table{
+border-collapse:collapse;
+
+}
+tr{
+	height:20px;
+}
+td{
+
+}
+/* Libelle descriptif de certaines valeurs */
+.slib{
+	font-size:9px;
+}

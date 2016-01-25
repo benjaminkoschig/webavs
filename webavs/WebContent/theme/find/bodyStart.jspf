@@ -1,0 +1,10 @@
+<TITLE><%=idEcran%></TITLE>
+</HEAD>
+<BODY onLoad="this.focus(); fwInitPage();" onKeyDown="keyDown()" onKeyUp="keyUp();">
+<FORM name="mainForm" action="<%=(servletContext + mainServletPath)%>" target="fr_list" onsubmit="onClickFind();showWaitingPopup()">
+<TABLE class="find" cellspacing="0">
+	<TBODY>
+		<TR>
+			<TH class="title" colspan="2">
+				<DIV style="width: 100%">
+					<SPAN class="idEcran"><%=(null==idEcran)?"":idEcran%></SPAN>

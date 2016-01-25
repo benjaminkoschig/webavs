@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.is.OperationComplexModel">
+
+		<select-fields>
+			<select-field name="idOperation" field-ref="operationSimpleModel.idOperation" />
+			<select-field name="idTiers" field-ref="allocataireModel.idTiersAllocataire" />
+			<select-field name="numAvsActuel" field-ref="personneEtendueSimpleModel.numAvsActuel" />
+			<select-field name="titre" field-ref="tiersSimpleModel.titreTiers" />
+			<select-field name="nom" field-ref="tiersSimpleModel.designation1" />
+			<select-field name="prenom" field-ref="tiersSimpleModel.designation2" />
+			<select-field name="npa" field-ref="tiersSimpleModel.npa" />
+			<select-field name="dateNaissance" field-ref="personneSimpleModel.dateNaissance" />
+			<select-field name="cantonResidence" field-ref="allocataireModel.cantonResidence" />
+			<select-field name="montant" field-ref="operationSimpleModel.montant" />
+			<select-field name="referencePermis" field-ref="travailleurSimpleModel.referencePermis" />
+			<select-field name="langue" field-ref="tiersSimpleModel.langue" />
+			<select-field name="idTypeOperation" field-ref="operationSimpleModel.idTypeOperation" />
+			<select-field name="date" field-ref="operationSimpleModel.date" />
+			<select-field name="idRubrique" field-ref="rubriqueSimpleModel.idExterne" />
+		</select-fields>
+		
+		<root-model name="operationSimpleModel"
+			model-ref="ch.globaz.osiris.business.model.OperationSimpleModel"
+			select-fields="false" />
+			
+		<linked-model name="rubriqueSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.comptabilite.RubriqueSimpleModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idRubrique"
+					operation="EQUALS" field-ref="operationSimpleModel.idCompte" />
+			</join-group>			
+		</linked-model>
+
+		<linked-model name="journalSimpleModel"
+			model-ref="ch.globaz.osiris.business.model.JournalSimpleModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idJournal"
+					operation="EQUALS" field-ref="operationSimpleModel.idJournal" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="compteAnnexeSimpleModel"
+			model-ref="ch.globaz.osiris.business.model.CompteAnnexeSimpleModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idCompteAnnexe"
+					operation="EQUALS" field-ref="operationSimpleModel.idCompteAnnexe" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="allocataireModel"
+			model-ref="ch.globaz.al.business.models.allocataire.AllocataireModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiersAllocataire"
+					operation="EQUALS" field-ref="compteAnnexeSimpleModel.idTiers" />
+			</join-group>			
+		</linked-model>
+		
+		<linked-model name="dossierModel"
+			model-ref="ch.globaz.al.business.models.dossier.DossierModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idAllocataire"
+					operation="EQUALS" field-ref="allocataireModel.idAllocataire" />
+			</join-group>			
+		</linked-model>
+		
+		<linked-model name="travailleurSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.travailleur.TravailleurSimpleModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers"
+					operation="EQUALS" field-ref="allocataireModel.idTiersAllocataire" />
+			</join-group>			
+		</linked-model>
+		
+		<linked-model name="tiersSimpleModel"
+			model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers"
+					operation="EQUALS" field-ref="allocataireModel.idTiersAllocataire" />
+			</join-group>			
+		</linked-model>
+		
+		<linked-model name="personneSimpleModel"
+			model-ref="ch.globaz.pyxis.business.model.PersonneSimpleModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field
+					name="idTiers"
+					operation="EQUALS"
+					field-ref="allocataireModel.idTiersAllocataire" />
+			</join-group>			
+		</linked-model>
+		
+		<linked-model name="personneEtendueSimpleModel"
+			model-ref="ch.globaz.pyxis.business.model.PersonneEtendueSimpleModel"
+			join-type="INNER"
+			select-fields="false">
+			<join-group operator="AND">
+				<join-field
+					name="idTiers"
+					operation="EQUALS"
+					field-ref="allocataireModel.idTiersAllocataire" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdCompte" field-ref="operationSimpleModel.idCompte"
+					operation="IN" />
+				<search-field name="forDateLessOrEquals" field-ref="operationSimpleModel.date" operation="LESS_OR_EQUALS" />
+				<search-field name="forDateAfterOrEquals" field-ref="operationSimpleModel.date" operation="GREATER_OR_EQUALS" />
+				<search-field name="forEtat" field-ref="operationSimpleModel.etat" operation="EQUALS" />
+				<search-field name="forIdTypeOperation" field-ref="operationSimpleModel.idTypeOperation" operation="EQUALS" />
+				<search-field name="forCantonResidence" field-ref="allocataireModel.cantonResidence" operation="EQUALS" />
+				<search-field name="forIdAllocataire" field-ref="allocataireModel.idAllocataire" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field
+				field-ref="operationSimpleModel.idOperation"
+				order="ASC" />
+		</order-by>
+
+	</complexe-model>
+</model-mapping>

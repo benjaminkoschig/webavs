@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<model-mapping import="pegasus/mutation/mutationmontantpca.xml"/>
+	<model-mapping import="pegasus/mutation/mutationmontantpcafield.xml"/>
+	<model-mapping import="pegasus/mutation/mutationpca.xml"/>
+	<model-mapping import="pegasus/mutation/mutationOldCurrentPca.xml"/>
+</model-mapping>

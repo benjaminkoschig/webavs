@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+	<bean id="customActionMap" class="java.util.HashMap">
+   	   <constructor-arg>
+   	   	  	 <map>
+   	   	  	 	<entry key="pyxis.divers.annonce.imprimer" value="READ" /> 
+   	   	  	 	<entry key="pyxis.divers.listeRentiers.imprimer" value="READ" /> 
+   	   	  	 	<entry key="pyxis.adressepaiement.adressePaiementLieBanque.imprimer" value="READ" /> 
+   	   	  	 	<entry key="pyxis.tiers.compositionTiers.dirigerMaisonMere" value="UPDATE" /> 
+   	   	  	 	<entry key="pyxis.tiers.compositionTiers.dirigerConjoint" value="UPDATE" /> 
+   	   	  	 	<entry key="pyxis.ext.fgi.afficherChef" value="READ" /> 
+   	   	  	 	<entry key="pyxis.ext.fgi.afficherMembre" value="READ" /> 
+   	   	  	 	<entry key="pyxis.maintenance.maintenance.importer" value="UPDATE" /> 
+   	   	  	 	<entry key="pyxis.tiers.fusionBanque.afficher" value="UPDATE" /> 
+   	   	  	 	<entry key="pyxis.iban.adressePaiementImport.afficher" value="UPDATE" /> 
+   	   	  	 	<entry key="pyxis.iban.adressePaiementExport.afficher" value="UPDATE" /> 
+   	   	  	 	<entry key="pyxis.iban.convert.afficher" value="UPDATE" /> 
+   	   	  	 	<entry key="pyxis.tiers.tiers.afficherGed" value="READ" /> 
+   	   	  	 	
+   	   	  	 	<!--  -->
+   	   	  	 	<entry key="pyxis.test.lettrage.afficherPlages" value="READ" /> 
+   	   	  	 
+   	   	  	 </map>
+   	   </constructor-arg>    	
+    </bean>
+    
+    <!-- 
+    	Definition des rêgle utilisée pour flagé les adresses de paiement 
+    	lors du processus de conversion IBAN
+    
+    <bean id="IBANCodeRule" class="globaz.pyxisavs.TAIBANCodeRule" />
+ -->
+	</beans>

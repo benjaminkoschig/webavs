@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.ij.business.models.IJSimplePrononce">
+		<description>
+			Simple modèle d'un prononcé IJ
+		</description>
+		<table name="IJPRONAI" hasSpy="false" hasCreationSpy="false" alwaysIncrementPrimaryKey="true" />
+	
+		<fields>
+			<primary-key 	name="idPrononce" 			column="XBIPAI" type="NUMERIC" 	mandatory="true" 	dataType="NUMERIC(15,0)" 	comment="Id du prononce" />
+			<field 			name="dateDebutPrononce" 	column="XBDDDR" type="DATE" 	mandatory="true" 	dataType="NUMERIC(8)" 		comment="Date de début du prononcé" />
+			<field 			name="dateFinPrononce" 		column="XBDFDR" type="DATE" 	mandatory="true" 	dataType="NUMERIC(8)" 		comment="Date de fin du prononcé" />
+			<field 			name="csGenreReadaptation" 	column="XBTGEN" type="NUMERIC" 	mandatory="true" 	dataType="NUMERIC(8)" 		comment="Genre de prononcé" />
+			<field 			name="idParent" 			column="XBIPAR" type="NUMERIC" 	mandatory="false"	dataType="NUMERIC(15)" 		comment="Id du prononcé parent" />
+			<field 			name="idDemande" 			column="XBIDEM" type="NUMERIC" 	mandatory="true" 	dataType="NUMERIC(15)" 		comment="Id de la demande" />
+			<field 			name="prononceSelectionne" 	column="XBSELE" type="STRING" 	mandatory="true" 	dataType="VARCHAR(1)" 		comment="Information concernant la sélection visuelle du prononcé" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field	name="forIdPrononce"  			operation="EQUALS"  field-ref="idPrononce" />
+				<search-field	name="forIdDemande" 			operation="EQUALS" 	field-ref="idDemande" />
+				<search-field	name="forDateDebutPrononce" 	operation="EQUALS" 	field-ref="dateDebutPrononce" />
+				<search-field	name="forDateFinPrononce" 		operation="EQUALS" 	field-ref="dateFinPrononce" />
+				<search-field	name="forCsGenreReadaptation" 	operation="EQUALS" 	field-ref="csGenreReadaptation" />
+				<search-field	name="forIdParent" 				operation="EQUALS" 	field-ref="idParent" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

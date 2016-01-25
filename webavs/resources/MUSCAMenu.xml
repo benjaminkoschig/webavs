@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus>
+
+	<!-- ************** -->
+	<!-- Menu Principal -->
+	<!-- ************** -->
+	<menu id="FA-MenuPrincipal">
+		<label refId="PRINCIPAL" />
+		<nodes>
+			<node>
+				<label refId="MENU_JOURNAUX_FACTURATION" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.passage.chercher" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_INTERETS_MORATOIRES" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.interets.gestionInterets.chercher" />
+					<parameter name="forDomaine" value="FA" />
+				</action>
+			</node>
+			<!-- 
+			<node>
+				<label refId="MENU_GESTION_JOUR_FERIE" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.gestionJourFerie.gestionJourFerie.chercher" />
+				</action>
+			</node>
+			 -->
+			<node open="yes">
+				<label refId="PARAMETRES" />			
+				<nodes>
+					<node>
+						<label refId="PLAN_FACTURATION" />
+						<action command="/musca" responseTarget="fr_main">
+							<parameter name="userAction" value="musca.facturation.planFacturation.chercher" />
+							<parameter name="idPassage" value="" />
+							<parameter name="selectedId" value="" />
+						</action>
+					</node>
+					<node>
+						<label refId="MODULE_FACTURATION" />
+						<action command="/musca" responseTarget="fr_main">
+							<parameter name="userAction" value="musca.facturation.moduleFacturation.chercher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MODULE_IMPRESSION" />
+						<action command="/musca" responseTarget="fr_main">
+							<parameter name="userAction" value="musca.facturation.moduleImpression.chercher" />
+						</action>
+					</node>
+					<node>
+						<label refId="REPERTOIRE_DOCUMENTS" />
+						<action command="/musca" responseTarget="fr_main">
+							<parameter name="userAction" value="musca.process.processServices.browseDirectory" />
+						</action>
+					</node>
+					<node>
+						<label refId="CATALOGUE_TEXTE" />
+						<action command="/babel" responseTarget="fr_main">
+							<parameter name="userAction" value="babel.cat.document.chercher" />
+							<parameter name="csGroupeDomaines" value="MUGRPDOM"/>
+							<parameter name="csGroupeTypesDocuments" value="MUGRPTDOC"/>
+						</action>
+					</node>
+				</nodes>
+			</node>	
+			<node open="no">
+				<label refId="ORDRE_IMPRESSION" />			
+				<nodes>
+					<node>
+						<label refId="ORDRE_CREATION" />
+						<action command="/musca" responseTarget="fr_main">
+							<parameter name="userAction" value="musca.facturation.ordreRegroupement.chercher" />
+						</action>
+					</node>	
+					<node>
+						<label refId="ORDRE_ATTRIBUER" />
+						<action command="/musca" responseTarget="fr_main">
+							<parameter name="userAction" value="musca.facturation.ordreAttribuer.chercher" />
+						</action>
+					</node>		
+				</nodes>
+			</node>	
+		</nodes>
+	</menu>
+	
+	<!-- ******************************************** -->
+	<!-- Menu Option détail du passage de facturation pour la rc_Liste -->
+	<!-- ******************************************** -->
+	<menu id="FA-PassageFacturationPopUp">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="MENU_JOURNAL_FACTURATION"/>
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.passage.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_DECOMPTES" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.enteteFacture.chercher" />
+					<parameter name="idPassage"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_GENERER" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.passageFacturation.generer" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_COMPTABILISER" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.passageFacturation.comptabiliser" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_VALIDER" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.passage.confirmationValider" />
+					<parameter name="selectedId"/>
+					<parameter name="_method" value="upd" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_DEVALIDER" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.passage.confirmationDevalider" />
+					<parameter name="selectedId"/>
+					<parameter name="_method" value="upd" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_ANNULER" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.passage.confirmationAnnuler" />
+					<parameter name="selectedId"/>
+					<parameter name="_method" value="upd" />
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_IMPRIMER" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.passageFacturation.imprimerDecomptes" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_IMPRIMER_SUSPENS" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.passageFacturation.listerAfactAQuittancer" />
+					<parameter name="id"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_LISTES" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.passageFacturation.listes" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_INTERETS_MORATOIRES" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.interets.interetMoratoire.chercher" />
+					<parameter name="id"/>
+					<parameter name="forIdJournalCalcul"/>
+					<parameter name="forDomaine" value="FA"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_AFACTS_SUSPENS" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.afactAQuittancer.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_MODULES" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.modulePassage.chercher" />
+					<parameter name="idPassage"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- ******************************************** -->
+	<!-- Menu Option détail du passage de facturation -->
+	<!-- ******************************************** -->
+	<menu id="FA-PassageFacturation">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="MENU_JOURNAL_FACTURATION"/>
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.passage.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_DECOMPTES" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.enteteFacture.chercher" />
+					<parameter name="idPassage"/>
+				</action>
+			</node>
+			<node open="yes">
+				<label refId="MENU_ACTIONS"/>
+				<nodes>
+					<node>
+						<label refId="OPTIONS_GENERER" />
+						<action command="/musca" responseTarget="fr_main">
+							<parameter name="userAction" value="musca.facturation.passageFacturation.generer" />
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+					<node>
+						<label refId="OPTIONS_COMPTABILISER" />
+						<action command="/musca" responseTarget="fr_main">
+							<parameter name="userAction" value="musca.facturation.passageFacturation.comptabiliser" />
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+					<node>
+						<label refId="OPTIONS_VALIDER" />
+						<action command="/musca" responseTarget="fr_main">
+							<parameter name="userAction" value="musca.facturation.passage.confirmationValider" />
+							<parameter name="selectedId"/>
+							<parameter name="_method" value="upd" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTIONS_DEVALIDER" />
+						<action command="/musca" responseTarget="fr_main">
+							<parameter name="userAction" value="musca.facturation.passage.confirmationDevalider" />
+							<parameter name="selectedId"/>
+							<parameter name="_method" value="upd" />
+						</action>
+					</node>
+					<node>
+						<label refId="OPTIONS_ANNULER" />
+						<action command="/musca" responseTarget="fr_main">
+							<parameter name="userAction" value="musca.facturation.passage.confirmationAnnuler" />
+							<parameter name="selectedId"/>
+							<parameter name="_method" value="upd" />
+						</action>
+					</node>
+				</nodes>
+				</node>
+				<node open="yes">
+					<label refId="OPTIONS_IMPRIMER"/>
+					<nodes>
+					<node>
+						<label refId="OPTIONS_IMPRIMER" />
+						<action command="/musca" responseTarget="fr_main">
+							<parameter name="userAction" value="musca.facturation.passageFacturation.imprimerDecomptes" />
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+					<node>
+						<label refId="OPTIONS_IMPRIMER_SUSPENS" />
+						<action command="/musca" responseTarget="fr_main">
+							<parameter name="userAction" value="musca.facturation.passageFacturation.listerAfactAQuittancer" />
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+					<node>
+						<label refId="OPTIONS_LISTES" />
+						<action command="/musca" responseTarget="fr_main">
+							<parameter name="userAction" value="musca.facturation.passageFacturation.listes" />
+							<parameter name="selectedId"/>
+						</action>
+					</node>
+				</nodes>
+			</node>
+			<node>
+				<label refId="OPTIONS_INTERETS_MORATOIRES" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.interets.interetMoratoire.chercher" />
+					<parameter name="id"/>
+					<parameter name="forIdJournalCalcul"/>
+					<parameter name="forDomaine" value="FA"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_AFACTS_SUSPENS" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.afactAQuittancer.chercher" />
+					<parameter name="selectedId"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_MODULES" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.modulePassage.chercher" />
+					<parameter name="idPassage"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_SOUS_ENSEMBLE_AFFILIES" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.passageFacturationSousEnsembleAffilies.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- ********************************************* -->
+	<!-- Menu Option détail des modules de facturation -->
+	<!-- ********************************************* -->
+	<menu id="FA-ModuleFacturationDetail">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_GESTION_MODULES" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.modulePlan.chercher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- ************************** -->
+	<!-- Menu Option only detail    -->
+	<!-- ************************** -->
+	<menu id="FA-Detail">
+		<label refId="OPTIONS" />
+	</menu>
+	
+	<!-- ****************************************** -->
+	<!-- Menu Option détail des entetes de factures -->
+	<!-- ****************************************** -->
+	<menu id="FA-EnteteFactureDetail">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_APERCU_AFACTS" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.afact.chercher" />
+					<parameter name="idEnteteFacture"/>
+					<parameter name="idTiersVueGlobale"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- ****************************** -->
+	<!-- Menu Option détail des calculs -->
+	<!-- ****************************** -->
+	<menu id="FA-DetailCalcul">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_DETAIL_CALCUL" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.interets.detailInteretMoratoire.chercher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- ******************************* -->
+	<!-- Menu Option décision d'intérêts -->
+	<!-- ******************************* -->
+	<menu id="FA-DecisionInterets">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_DECISION_INTERETS" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.interets.interetMoratoire.afficher" />
+					<parameter name="id"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
+	
+	<!-- ****************************************** -->
+	<!-- Menu Option détail des afacts à quittancer -->
+	<!-- ****************************************** -->
+	<menu id="FA-AfactAQuittancer">
+		<label refId="OPTIONS" />
+		<nodes>
+			<node>
+				<label refId="OPTIONS_ACCEPTER" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.afact.accepterAfact" />
+					<parameter name="idPassage"/>
+					<parameter name="fromIdExtRole"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+			<node>
+				<label refId="OPTIONS_REFUSER" />
+				<action command="/musca" responseTarget="fr_main">
+					<parameter name="userAction" value="musca.facturation.afact.refuserAfact" />
+					<parameter name="idPassage"/>
+					<parameter name="fromIdExtRole"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>	
+	<!-- ****************************************** -->
+	<!-- Menu Option vide -->
+	<!-- ****************************************** -->
+	<menu id="FA-OptionVide">
+		<label refId="OPTIONS" />
+	</menu>	
+</menus>

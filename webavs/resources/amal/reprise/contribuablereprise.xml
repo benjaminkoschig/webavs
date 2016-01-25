@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.reprise.ContribuableReprise">
+		<root-model name="simpleContribuableReprise" model-ref="ch.globaz.amal.business.models.reprise.SimpleContribuableReprise"/>
+				
+		<linked-model name="simpleContribuableInfoReprise" model-ref="ch.globaz.amal.business.models.reprise.SimpleContribuableInfoReprise" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idContribuable" operation="EQUALS" field-ref="simpleContribuableReprise.idContribuable"/>
+			</join-group>
+		</linked-model>
+ 
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdContribuable" field-ref="simpleContribuableReprise.idContribuable" operation="EQUALS" />
+				<search-field name="forIdTier" field-ref="simpleContribuableReprise.idTiers" operation="EQUALS" />				
+				<search-field name="forDateNaissance" field-ref="simpleContribuableReprise.zoneCommuneDateNaissance" operation="EQUALS"/>
+				<search-field name="forNoContribuable" field-ref="simpleContribuableReprise.zoneCommuneNoContribuable" operation="EQUALS"/>
+				<search-field name="likeNom" field-ref="simpleContribuableInfoReprise.nomDeFamille" operation="LIKE"/>  
+				<search-field name="likePrenom" field-ref="simpleContribuableInfoReprise.prenom" operation="LIKE"/>					
+				<search-field name="likeNoContribuableFormate" field-ref="simpleContribuableReprise.zoneCommuneNoContribuableFormate" operation="LIKE"/>
+			</search-group>
+		</search-definition>
+
+		<order-by>
+			<order-field field-ref="simpleContribuableReprise.idContribuable"/>
+		</order-by>
+
+	</complexe-model>
+</model-mapping>

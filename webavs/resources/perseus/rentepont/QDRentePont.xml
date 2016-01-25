@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.perseus.business.models.rentepont.QDRentePont">
+		<root-model name="simpleQDRentePont" model-ref="ch.globaz.perseus.business.models.rentepont.SimpleQDRentePont"/>
+		<linked-model name="dossier" model-ref="ch.globaz.perseus.business.models.dossier.Dossier" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="dossier.idDossier" operation="EQUALS" field-ref="simpleQDRentePont.idDossier"/>
+			</join-group>		
+		</linked-model>
+	
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDossier" operation="EQUALS" field-ref="simpleQDRentePont.idDossier"/>
+				<search-field name="forAnnee" operation="EQUALS" field-ref="simpleQDRentePont.annee"/>
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

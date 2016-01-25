@@ -1,0 +1,25 @@
+<%@page import="globaz.jade.client.util.JadeStringUtil"%>
+<ct:ifhasright element="naos.affiliation.affiliation.gedafficherdossier" crud="r">
+ <%
+	if (globaz.jade.ged.client.JadeGedFacade.isInstalled()) {
+ %>
+ 		<a title='<ct:FWLabel key="LINK_GED_DESC"/>' 
+		href="<%=servletContext 
+				+"/naos?userAction=naos.affiliation.affiliation.gedafficherdossier&amp;noAffiliationId=" 
+				+ gedAffilieNumero 
+				+"&amp;serviceNameId=" 
+				+ gedServiceName 
+				+ "&amp;gedFolderType=" 
+				+ gedFolderType 
+				+ "&amp;noAVSId=" 
+				+ gedNumAvs 
+				+"&amp;gedIdTiers=" 
+				+ gedIdTiers
+				+"&amp;idRole=" 
+				+ gedIdRole 
+		     %>" 
+		target="GED_CONSULT">
+      	<ct:FWLabel key="LINK_GED"/>
+		</a>
+<%}%>
+</ct:ifhasright>

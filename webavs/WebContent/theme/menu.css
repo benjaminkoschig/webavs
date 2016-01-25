@@ -1,0 +1,89 @@
+/* Here BEGIN the styles for the menu */
+.menuNormal {
+	border : solid 1px #B3C4DB;
+	padding : 2px 2px 2px 4px; 
+	background-color : #B3C4DB;
+	display: block;
+}
+
+.sepNormal {
+  border : solid 1px #B3C4DB;
+  padding : 2px 2px 2px 2px; 
+  cursor : default;
+  background-color : #B3C4DB;
+}
+
+.mainMenuList {
+	background-color : #B3C4DB;
+}
+
+.child{
+  margin-left : 7px;
+  padding-left :10px;
+  border-left : dotted 2px gray;
+  background-color : #B3C4DB;
+}
+
+.withChilds {
+	font-weight:bold;
+	cursor: pointer;
+}
+.withAction {
+	cursor: pointer;
+}
+
+.FWOptionSelectorButton {
+	border : solid 1px silver;
+	background-color: #e0e0e0;
+	font-family: Wingdings;
+	font-size: x-small;
+}
+
+.FWOptionSelectorSelect {
+	border : solid 1px silver;
+	background-color: #f0f0f0;
+	width:280px;
+	height:100%;
+}
+.menuPopupShortcut {  
+  background:#b0c0e0;
+  border:solid 1px black;
+  margin-left:4px;
+}
+.menuPopupMainStyle {
+	background: #e0e0e0;
+	border: solid 2px black;
+	width: 280px;
+	height:100%;
+}
+
+.menuTitle {
+	padding-left: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+    font-size : x-small;
+    font-family : "Lucida Sans Unicode",Verdana,Arial;
+    color : white;
+    background-color : #226194;
+    font-weight : bold;
+}
+
+span#FWOptionSelectorButton_myDiv {
+	position:absolute;
+	width:280px;
+	height:164px;
+	visibility:hidden;
+	z-index: 1000;
+}
+
+.menuButton {
+/*	border : solid 1px #B3C4DB;*/
+	font-family:Webdings;
+/*	cursor: pointer;*/
+}
+
+div.disabled {
+	color: #888;
+	cursor: default;
+}
+/* Here END the styles for the menu */

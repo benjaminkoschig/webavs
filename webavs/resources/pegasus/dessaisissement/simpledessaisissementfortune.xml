@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.business.models.dessaisissement.SimpleDessaisissementFortune">
+		<description>Dessaisissement fortune</description>
+		<table name="PCDESFOR" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idDessaisissementFortune" column="CZIDRE" comment="ID_DESSAISISSEMENT_REVENU"/>
+			<field name="idDonneeFinanciereHeader" column="CZIDFH" type="NUMERIC" mandatory="true" comment="ID_DONNEE_FINANCIERE_HEADER"/>
+			<field name="csMotifDessaisissement" column="CZTMDE" type="STRING" mandatory="true" comment="CS_MOTIF_DESSAISISSEMENT"/>
+			<field name="autreMotifDessaisissement" column="CZLAMD" type="STRING" mandatory="false" comment="AUTRE_MOTIF_DESSAISISSEMENT"/>
+			<field name="dateValeur" column="CZDVAL" type="DATE" mandatory="true" comment="DATE_VALEUR"/>
+			<field name="montantBrut" column="CZMBRU" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="MONTANT_BRUT_DESSAISI"/>
+			<field name="deductionMontantDessaisi" column="CZMDED" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="DEDUCTION_SUR_MONTANT_DESSAISI"/>
+			<field name="isContrePrestation" column="CZBCPR" type="BOOLEAN" mandatory="true" comment="DEDUCTION_SUR_MONTANT_DESSAISI"/>
+			<field name="charges" column="CZMCHA" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="CHARGES"/>
+			<field name="rendementFortune" column="CZMRFO" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="RENDEMENT_FORTUNE"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forListIdDonneeFinanciere" operation="IN" field-ref="idDonneeFinanciereHeader" />
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

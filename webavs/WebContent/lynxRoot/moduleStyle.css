@@ -1,0 +1,145 @@
+@import url("../theme/master.css");
+@import url("../heliosRoot/moduleStyle.css");
+
+.bvrOrange {
+	background-image:url(../images/lynx/bvr_orange.jpg);
+	background-repeat: no-repeat;
+	background-position: top left;
+}
+
+.bvrRouge {
+	background-image:url(../images/lynx/bvr_rouge.jpg);
+	background-repeat: no-repeat;
+	background-position: top left;
+}
+
+.virement {
+	background-color: #eeeeee;
+	border-style : solid;
+	border-width: 2;
+	border-color: black;
+}
+
+.caisse {
+	background-color: #e5dada;
+	border-style : solid;
+	border-width: 2;
+	border-color: black;
+}
+
+.lsv {
+	background-color:#d6ddf6;
+	border-style : solid;
+	border-width: 2;
+	border-color: black;
+}
+
+.canevasLsv {
+	background:#d6ddf6 url(../images/lynx/specimensvg.png) top right no-repeat;
+	border-style : solid;
+	border-width: 2;
+	border-color: black;
+}
+
+.canevasVirement {
+	background: #eeeeee url(../images/lynx/specimensvg.png) top right no-repeat;
+	border-style : solid;
+	border-width: 2;
+	border-color: black;
+}
+
+.canevasCaisse {
+	background: #e5dada url(../images/lynx/specimensvg.png) top right no-repeat;
+	border-style : solid;
+	border-width: 2;
+	border-color: black;
+}
+
+.canevasBvrOrange {
+	background-image:url(../images/lynx/bvr_orangeCanevas.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+}
+
+.canevasBvrRouge {
+	background-image:url(../images/lynx/bvr_rougeCanevas.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+}
+.noteDeCredit {
+	background-color: #dff5dd;
+	border-style : solid;
+	border-width: 2;
+	border-color: black;
+}
+
+.extourne {
+	border-style : solid;
+	border-width: 2;
+	border-color: black;
+}
+
+.libelleBvrOrangeDisabled{
+    font-family : Verdana,Arial;
+    background-color : #fff2e5;
+    font-weight : bold;
+}
+
+.libelleBvrRougeDisabled{
+    font-family : Verdana,Arial;
+    background-color : #feeae3;
+    font-weight : bold;
+}
+
+.libelleVirementDisabled{
+    font-family : Verdana,Arial;
+    background-color : #eeeeee;
+    font-weight : bold;
+}
+
+.fieldSetVirement {
+	width:350px;
+	height:175px;
+	text-align : right;
+}
+
+.libelleActionNDC {
+	width:100px;
+	height:33px;
+	font-family : Verdana,Arial;
+	background-color : #e5dada;
+	font-weight : bold;
+	font-size: 11;
+	color : black;
+}
+
+.libelleCaisseDisabled{
+    font-family : Verdana,Arial;
+    background-color : #e5dada;
+    font-weight : bold;
+}
+
+.libelleLsvDisabled{
+    font-family : Verdana,Arial;
+    background-color : #d6ddf6;
+    font-weight : bold;
+}
+
+.libelleNoteDeCreditDisabled{
+    font-family : Verdana,Arial;
+    background-color : #dff5dd;
+    font-weight : bold;
+}
+
+.pourcentage {
+    width : 1.5cm;
+	text-align: right;
+}
+
+.pourcentageDisabled {
+    width : 1.5cm;
+    font-family : Verdana,Arial;
+    font-weight : bold;
+    background-color : #cccccc;
+  	text-align : right;
+}

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="testsRafam.xsd">
+	<test id="1">
+		<description><![CDATA[Création d'un droit de naissance]]></description>
+		<idDroit>42161</idDroit>
+		<actions>
+			<action>
+				<update />
+			</action>
+		</actions>
+		<validations>
+			<validation id="1">
+				<load>
+					<genrePrestation>NAISSANCE</genrePrestation>
+				</load>
+				<check />
+			</validation>
+		</validations>
+	</test>
+	
+	<test id="2">
+		<description><![CDATA[Création d'un droit de naissance / annonce pas encore envoyée]]></description>
+		<idDroit>42161</idDroit>
+		<actions>
+			<!-- La 1e modification provoque la création d'une annonce -->
+			<action>
+				<update />
+			</action>
+			<!-- La 2e modification provoque la suppression de la 1e annonce et la création d'une nouvelle -->
+			<action>
+				<update />
+			</action>
+		</actions>
+		<validations>
+			<validation id="1">
+				<load>
+					<genrePrestation>NAISSANCE</genrePrestation>
+				</load>
+				<check />
+			</validation>
+		</validations>
+	</test>
+	
+	<test id="3">
+		<description><![CDATA[Création d'un droit de naissance / annonce existante et retournée validée]]></description>
+		<idDroit>42161</idDroit>
+		<actions>
+			<!-- 1e action : création, envoi et réception validé d'une annonce -->
+			<action>
+				<update />
+				<send>true</send>
+				<import>
+					<dataImport>
+						<genrePrestation>NAISSANCE</genrePrestation>
+						<codeErreur>_400_AUCUNE_ERREUR</codeErreur>
+						<codeRetour>TRAITE</codeRetour>
+						<etat>VALIDE</etat>
+					</dataImport>
+				</import>
+			</action>
+			<!-- 2e action : modification du droit. Aucune annonce ne doit être créée -->
+			<action>
+				<update />
+			</action>
+		</actions>
+		<validations>
+			<validation id="1">
+				<load>
+					<genrePrestation>NAISSANCE</genrePrestation>
+					<etat>A_TRANSMETTRE</etat>
+				</load>
+				<check zeroPrestation="true" />
+			</validation>
+		</validations>
+	</test>
+	
+	
+</tests>

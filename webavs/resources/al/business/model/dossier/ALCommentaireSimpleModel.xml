@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.dossier.CommentaireModel">
+		<description>Commentaires liés à un dossier (décision, dossier, ...)</description>
+		<table name="ALCOM" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idCommentaire" column="GID" comment="ID du commentaire"/>
+			<field name="idDossier" column="EID" type="NUMERIC" mandatory="true" comment="ID (FK) du dossier propriétaire du commentaire"/>
+			<field name="type" column="CSTYPE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="Type de commentaire (code système)"/>
+			<field name="texte" column="GTXT" type="STRING" dataType="VARCHAR(900)" mandatory="true" comment="Texte du commentaire"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+				<search-field name="forIdTexte" field-ref="texte" operation="EQUALS"/>
+				<search-field name="forTypeCommentaire" field-ref="type" operation="EQUALS"/>	
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

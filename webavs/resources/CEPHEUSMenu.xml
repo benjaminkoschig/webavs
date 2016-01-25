@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="menuHtml.xslt"?>
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+	<!-- 	Menu principal CEPHEUS
+
+		 	Regroupant :	- Paramètres :
+		 						- Demandes prestations
+	-->
+	<menu id="ap-menuprincipalcepheus">
+		<label refId="MENU_PRINCIPAL"/>
+		<nodes>
+		</nodes>
+	</menu>
+	<!-- Menu des options pour un droit APG -->
+	<menu id="ap-optionmenudroitcepheus">
+		<label refId="MENU_OPTION_TITLE"/>
+		<nodes>
+		</nodes>
+	</menu>
+</menus>

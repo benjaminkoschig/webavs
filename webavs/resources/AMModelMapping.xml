@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="amal/detailfamille/detailfamillepackage.xml"/>
+	<model-mapping import="amal/famille/famillepackage.xml"/>
+	<model-mapping import="amal/contribuable/contribuablepackage.xml"/>	
+	<model-mapping import="amal/document/documentpackage.xml"/>
+	<model-mapping import="amal/revenu/revenupackage.xml"/>
+	<model-mapping import="amal/subsideannee/subsideanneepackage.xml"/>
+	<model-mapping import="amal/parametremodel/parametremodelpackage.xml"/>
+	<model-mapping import="amal/parametreannuel/parametreannuelpackage.xml"/>
+	<model-mapping import="amal/primemoyenne/primemoyennepackage.xml"/>
+	<model-mapping import="amal/primeavantageuse/primeavantageusepackage.xml"/>
+	<model-mapping import="amal/deductionsfiscalesenfants/deductionsfiscalesenfantspackage.xml"/>
+	<model-mapping import="amal/controleurenvoi/controleurenvoipackage.xml"/>
+	<model-mapping import="amal/journalisation/journalisationpackage.xml"/>
+	<model-mapping import="amal/annonce/annoncepackage.xml"/>	
+	<model-mapping import="amal/reprise/reprisepackage.xml"/>	
+	<model-mapping import="amal/parametreapplication/parametreapplicationpackage.xml"/>
+	<model-mapping import="amal/uploadfichierreprise/uploadfichierreprisepackage.xml"/>
+	<model-mapping import="amal/caissemaladie/caissemaladiepackage.xml"/>		
+	<model-mapping import="amal/primesassurance/primesassurancepackage.xml"/>
+	<model-mapping import="amal/annoncesedex/annoncesedexpackage.xml"/>
+</model-mapping>

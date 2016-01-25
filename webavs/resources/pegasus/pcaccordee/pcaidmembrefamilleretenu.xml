@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.pcaccordee.PCAIdMembreFamilleRetenu">
+	
+		<root-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" />
+		
+		<select-fields>
+			<select-field name="montantPCMensuelle" field-ref="simplePlanDeCalcul.montantPCMensuelle"/>
+			<select-field name="etatPC" field-ref="simplePlanDeCalcul.etatPC"/>
+			<select-field name="idPCAccordee" field-ref="simplePlanDeCalcul.idPCAccordee"/>
+			<select-field name="idTiersBeneficiaire" field-ref="simplePrestationsAccordees.idTiersBeneficiaire"/>
+		</select-fields>
+		
+		<linked-model name="simplePrestationsAccordees" model-ref="ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPrestationAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPrestationAccordee"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simplePlanDeCalcul" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="simplePCAccordee.idPCAccordee"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simplePersonneDansPlanCalcul" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePersonneDansPlanCalcul" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPlanDeCalcul" operation="EQUALS" field-ref="simplePlanDeCalcul.idPlanDeCalcul"/>
+				<join-field name="isComprisDansCalcul" operation="EQUALS" value="TRUE"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleDroitMembreFamille" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille" join-type="INNER" select-fields="true">
+			<join-group operator="AND">
+				<join-field name="idDroitMembreFamille" operation="EQUALS" field-ref="simplePersonneDansPlanCalcul.idDroitMembreFamille"/>
+			</join-group>
+		</linked-model>
+		
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forDateValable" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+				<search-field name="isPlanRetenu" operation="EQUALS" field-ref="simplePlanDeCalcul.isPlanRetenu"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="simplePCAccordee.csRoleBeneficiaire" order="ASC" />
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

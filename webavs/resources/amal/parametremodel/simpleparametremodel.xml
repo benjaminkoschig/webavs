@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.parametremodel.SimpleParametreModel">
+		<description>Paramètre model</description>
+		<table name="MAPARMOD" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idParametreModel" column="IDPAMO" comment="Id paramètre model"/>
+			<field name="idFormule" column="IDFORM" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="Id formule"/>
+
+			<field name="codeAnnonceCaisse" column="CODANN" type="BOOLEAN" mandatory="false" comment="Code annonce caisse"/>
+
+			<field name="anneeValiditeDebut" column="ANVALD" type="NUMERIC" dataType="NUMERIC(4,0)" mandatory="false" comment="Année validité début"/>
+			<field name="anneeValiditeFin" column="ANVALF" type="NUMERIC" dataType="NUMERIC(4,0)" mandatory="false" comment="Année validité fin"/>
+			<field name="codeTraitementDossier" column="COTRDO" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Code traitement dossier"/>
+			<field name="codeSystemeFormule" column="CSFORM" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Code système document"/>
+			<field name="typeGed" column="COTYGE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Code type ged"/>
+			<field name="typeDocumentFamille" column="COFAMI" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Document famille"/>
+			<field name="documentAvecListe" column="COLIST" type="BOOLEAN" mandatory="false" comment="Document contient une liste (oui/non boolean)"/>
+			<field name="nombreElementListe" column="NBLIST" type="NUMERIC" dataType="NUMERIC(2,0)" mandatory="false" comment="Nombre Element Dans Liste"/>
+			<field name="documentContribuable" column="ISCONT" type="BOOLEAN" mandatory="false" comment="Document contribuable (C)"/>
+			<field name="documentSourcier" column="ISSOUR" type="BOOLEAN" mandatory="false" comment="Document sourcier (S)"/>
+			<field name="documentAssiste" column="ISASSI" type="BOOLEAN" mandatory="false" comment="Document assisté (A)"/>
+			<field name="documentPC" column="ISPC" type="BOOLEAN" mandatory="false" comment="Document PC (P)"/>
+			<field name="visibleCorrespondance" column="ISCORR" type="BOOLEAN" mandatory="false" comment="Document visible depuis correspondance"/>
+			<field name="visibleAttribution" column="ISATTR" type="BOOLEAN" mandatory="false" comment="Document visible depuis attribution"/>
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdParametreModel" field-ref="idParametreModel" operation="EQUALS"/>
+				<search-field name="forIdFormule" field-ref="idFormule" operation="EQUALS"/>
+				<search-field name="forCodeSystemeFormule" field-ref="codeSystemeFormule" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

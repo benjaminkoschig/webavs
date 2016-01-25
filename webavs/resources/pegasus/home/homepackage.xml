@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="pegasus/home/simplehome.xml"/>
+	<model-mapping import="pegasus/home/simpletypechambre.xml"/>
+	<model-mapping import="pegasus/home/simpleprixchambre.xml"/>
+	<model-mapping import="pegasus/home/simpleperiodeserviceetat.xml"/>
+	<model-mapping import="pegasus/home/periodeserviceetat.xml"/>
+	<model-mapping import="pegasus/home/home.xml"/>
+	<model-mapping import="pegasus/home/typechambre.xml"/>
+	<model-mapping import="pegasus/home/prixchambre.xml"/>
+	<model-mapping import="pegasus/home/membrefamillehome.xml"/>
+	<model-mapping import="pegasus/home/chambreMedicalisee.xml"/>
+</model-mapping>

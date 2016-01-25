@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.al.business.models.adi.AdiEnfantMoisModel">
+		<description>contient les informations relatives aux enfants nécessaires aux calculs des Allocations Différentielles Internationales (ADI)</description>
+		<table name="ALEPMADI" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="true"/>
+			<fields>
+				<primary-key comment="ID" column="XID" type="NUMERIC" name="idEnfantMoisAdi" mandatory="true"/>
+				<field comment="ID (FK) de décompte ADI" column="VID" type="NUMERIC" name="idDecompteAdi" mandatory="true"/>
+				<field comment="ID (FK) de droits" column="FID" type="NUMERIC" name="idDroit" mandatory="true"/>
+				<field comment="mois du décompte" column="XMOIP" type="MONTH_YEAR" name="moisPeriode" mandatory="true"/>
+		
+				<field comment="cours du change de la monnaie" column="XCOUR" type="NUMERIC" dataType="NUMERIC(7,6)"  name="coursChangeMonnaie" mandatory="true"/>
+				<field comment="nombre d'enfants" column="XNBE" type="NUMERIC" dataType="NUMERIC(2,0)"  name="nbrEnfantFamille" mandatory="true"/>
+				<field comment="montant du droit touché en suisse" column="XMOCH" type="NUMERIC" dataType="NUMERIC(8,2)"  name="montantAllocCH" mandatory="true"/>
+				<field comment="montant de l'alloc. touché à l'étranger" column="XMOET" type="NUMERIC" dataType="NUMERIC(8,2)" name="montantAllocEtr" mandatory="true"/>
+				
+				<field comment="montant total des allocations supplément touchées à l'étranger" column="XMOETA" type="NUMERIC" dataType="NUMERIC(8,2)"  name="montantRepartiEtrTotal" mandatory="true"/>
+				<field comment="montant réparti des allocations supplément touchées à l'étranger" column="XMOETB" type="NUMERIC" dataType="NUMERIC(8,2)"  name="montantRepartiEtr" mandatory="true"/>
+				<field comment="montant des allocations supplément(MEN, FNB) touché en suisse" column="XMOCHB" type="NUMERIC" dataType="NUMERIC(8,2)"  name="montantRepartiCHTotal" mandatory="true"/>
+				<field comment="montant des allocations supplément(MEN, FNB) réparti" column="XMOCHA" type="NUMERIC" dataType="NUMERIC(8,2)"  name="montantRepartiCH" mandatory="true"/>
+				
+				<field comment="montant total (droit et suppléments répartis) touché en suisse" column="XMOCHT" type="NUMERIC" dataType="NUMERIC(8,2)"  name="montantCHTotal" mandatory="true"/>
+				<field comment="montant total (droit et suppléments répartis) touché à l'étranger" column="XMOETT" type="NUMERIC" dataType="NUMERIC(8,2)"  name="montantEtrTotal" mandatory="true"/>
+				<field comment="montant touché à l'étranger en CHF" column="XMOFS" type="NUMERIC" dataType="NUMERIC(8,2)"  name="montantEtrTotalEnCh" mandatory="true"/>
+				<field comment="montant de l'ADI" column="XMOAD" type="NUMERIC" dataType="NUMERIC(8,2)"  name="montantAdi" mandatory="true"/>	
+			</fields>
+			<search-definition>
+				<search-group operator="AND">
+				<search-field name="forIdDecompteAdi" field-ref="idDecompteAdi" operation="EQUALS"/>
+				<search-field name="forIdDroit" field-ref="idDroit" operation="EQUALS"/>
+				</search-group>
+			</search-definition>
+			
+		<order-by>
+			<order-field field-ref="moisPeriode" order="ASC"/>
+		</order-by>
+			
+	</simple-model>
+</model-mapping>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.decomptes.DecompteSalaireAAnnoncerComplexModel">
+		
+		<select-fields>
+		
+			<select-field name="ligneDecompteSimpleModel.id" field-ref="ligneDecompteSimpleModel.id" />
+			<select-field name="ligneDecompteSimpleModel.salaireTotal" field-ref="ligneDecompteSimpleModel.salaireTotal" />
+			<select-field name="ligneDecompteSimpleModel.periodeDebut" field-ref="ligneDecompteSimpleModel.periodeDebut" />
+			<select-field name="ligneDecompteSimpleModel.periodeFin" field-ref="ligneDecompteSimpleModel.periodeFin" />
+			<select-field name="ligneDecompteSimpleModel.spy" field-ref="ligneDecompteSimpleModel.spy" />
+			
+			<select-field name="posteTravailSimpleModel.id" field-ref="posteTravailSimpleModel.id" />
+			
+		
+			<select-field name="travailleurPersonneEtendueSimpleModel.numAvsActuel" field-ref="travailleurPersonneEtendueSimpleModel.numAvsActuel" />
+
+			<select-field name="travailleurSimpleModel.id" field-ref="travailleurSimpleModel.id" />
+			<select-field name="travailleurTiersSimpleModel.designation1" field-ref="travailleurTiersSimpleModel.designation1" />
+			<select-field name="travailleurTiersSimpleModel.designation2" field-ref="travailleurTiersSimpleModel.designation2" />
+			
+			<select-field name="affiliationSimpleModel.affilieNumero" field-ref="affiliationSimpleModel.affilieNumero" />
+			<select-field name="affiliationSimpleModel.affiliationId" field-ref="affiliationSimpleModel.affiliationId" />
+			
+			
+			<select-field name="decompteSimpleModel.id" field-ref="decompteSimpleModel.id" />
+			<select-field name="decompteSimpleModel.idEmployeur" field-ref="decompteSimpleModel.idEmployeur" />
+			<select-field name="decompteSimpleModel.dateEtablissement" field-ref="decompteSimpleModel.dateEtablissement" />
+			
+		</select-fields>
+
+		<root-model name="ligneDecompteSimpleModel" select-fields="false"
+			model-ref="ch.globaz.vulpecula.business.models.decomptes.LigneDecompteSimpleModel" />
+
+		<linked-model name="posteTravailSimpleModel" select-fields="false"
+			model-ref="ch.globaz.vulpecula.business.models.postetravail.PosteTravailSimpleModel" join-type="INNER" >
+			<join-group operator="AND">
+				<join-field name="id" operation="EQUALS" field-ref="ligneDecompteSimpleModel.idPosteTravail" />
+			</join-group>
+		</linked-model>
+					
+		<linked-model name="travailleurSimpleModel" select-fields="false"
+			model-ref="ch.globaz.vulpecula.business.models.travailleur.TravailleurSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="id" operation="EQUALS" field-ref="posteTravailSimpleModel.idTravailleur" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="travailleurPersonneEtendueSimpleModel" select-fields="false"
+			model-ref="ch.globaz.pyxis.business.model.PersonneEtendueSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="travailleurSimpleModel.idTiers" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="travailleurPersonneSimpleModel" select-fields="false"
+			model-ref="ch.globaz.pyxis.business.model.PersonneSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="travailleurSimpleModel.idTiers" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="travailleurTiersSimpleModel" select-fields="false"
+			model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="travailleurSimpleModel.idTiers" />
+			</join-group>
+		</linked-model>
+
+		<linked-model name="affiliationSimpleModel" select-fields="false"
+			model-ref="ch.globaz.naos.business.model.AffiliationSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="affiliationId" operation="EQUALS" field-ref="posteTravailSimpleModel.idEmployeur" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="employeurTiersSimpleModel" select-fields="false"
+			model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="affiliationSimpleModel.idTiers" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="conventionAdministrationSimpleModel" select-fields="false"
+			model-ref="ch.globaz.pyxis.business.model.AdministrationSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idTiersAdministration" operation="EQUALS" field-ref="affiliationSimpleModel.idConvention" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="conventionTiersSimpleModel" select-fields="false"
+			model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="conventionAdministrationSimpleModel.idTiersAdministration" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="employeurSimpleModel" select-fields="false"
+			model-ref="ch.globaz.vulpecula.business.models.employeur.EmployeurSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idEmployeur" operation="EQUALS" field-ref="posteTravailSimpleModel.idEmployeur" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="decompteSimpleModel" select-fields="false"
+			model-ref="ch.globaz.vulpecula.business.models.decomptes.DecompteSimpleModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="id" operation="EQUALS" field-ref="ligneDecompteSimpleModel.idDecompte" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="ligneDecompteSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdDecompte" field-ref="ligneDecompteSimpleModel.idDecompte"
+					operation="EQUALS" />
+				<search-field name="forIdPosteTravail"
+					field-ref="ligneDecompteSimpleModel.idPosteTravail" operation="EQUALS" />
+				<search-field name="forIdTravailleur"
+					field-ref="travailleurSimpleModel.id" operation="EQUALS" />
+				<search-field name="forIdsDecomptesIn"
+					field-ref="ligneDecompteSimpleModel.idDecompte" operation="IN" />
+				<search-field name="forSequence" field-ref="ligneDecompteSimpleModel.sequence" operation="EQUALS" />
+				<search-field name="fromSequence" field-ref="ligneDecompteSimpleModel.sequence" operation="GREATER" />				
+				<search-field name="toSequence" field-ref="ligneDecompteSimpleModel.sequence" operation="LESS" />
+				<search-field name="forEtatDecompte" field-ref="decompteSimpleModel.etat" operation="EQUALS" />
+				<search-field name="beforeDateFinDecompte" field-ref="decompteSimpleModel.periodeFin" operation="LESS_OR_EQUALS" />
+				<search-field name="forPeriodeDebut" field-ref="ligneDecompteSimpleModel.periodeDebut" operation="GREATER_OR_EQUALS" />
+				<search-field name="forPeriodeFin" field-ref="ligneDecompteSimpleModel.periodeFin" operation="LESS_OR_EQUALS" />
+				<search-field name="forIdConvention" field-ref="affiliationSimpleModel.idConvention" operation="EQUALS" />
+				<search-field name="forTypeDecompteIn" field-ref="decompteSimpleModel.type" operation="IN" />
+				<search-field name="forDateNonAnnoncee" field-ref="ligneDecompteSimpleModel.dateAnnonce" operation="NULL"/>
+				<search-field name="forAnneeDecompteDebut" field-ref="decompteSimpleModel.dateEtablissement" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forAnneeDecompteFin" field-ref="decompteSimpleModel.dateEtablissement" operation="LESS_OR_EQUALS"/>
+			</search-group>
+		</search-definition>
+		<order-by name="employeur">
+			<order-field field-ref="travailleurSimpleModel.id" order="ASC" />
+			<order-field field-ref="affiliationSimpleModel.affiliationId" order="ASC" />
+			<order-field field-ref="ligneDecompteSimpleModel.periodeDebut" order="ASC" />
+			<order-field field-ref="ligneDecompteSimpleModel.periodeFin" order="ASC" />
+		</order-by>
+	</complexe-model>
+</model-mapping>
