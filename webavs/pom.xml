@@ -143,13 +143,19 @@
     </developers>
 
     <properties>
-    
-    
-    <httpclient.version>4.4.1</httpclient.version>
+
+
+        <httpclient.version>4.4.1</httpclient.version>
         <fluent-hc.version>4.4.1</fluent-hc.version>
         <httpasyncclient.version>4.1</httpasyncclient.version>
-    
-    
+
+        <ch.globaz.webavs.bms-domain.version>0.0.2-SNAPSHOT</ch.globaz.webavs.bms-domain.version>
+        <!-- todo choisir version de mercato -->
+        <ch.globaz.mercato.notification.version>0.0.4</ch.globaz.mercato.notification.version>
+
+
+
+
         <!-- SCM ATTRIBUTES -->
         <scm.path>webavs-repos</scm.path>
         <scm.tags>${scm.protocol}://${scm.base}/tags</scm.tags>
@@ -469,10 +475,20 @@
 
     <dependencyManagement>
         <dependencies>
-        
-        
-        
-                    <dependency>
+
+
+            <dependency>
+                <groupId>ch.globaz.webavs</groupId>
+                <artifactId>bms-domain</artifactId>
+                <version>${ch.globaz.webavs.bms-domain.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.globaz</groupId>
+                <artifactId>mercato.notification</artifactId>
+                <version>${ch.globaz.mercato.notification.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
                 <version>${httpclient.version}</version>
@@ -487,9 +503,9 @@
                 <artifactId>httpasyncclient</artifactId>
                 <version>${httpasyncclient.version}</version>
             </dependency>
-        
-        
-        
+
+
+
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>jsp-api</artifactId>
@@ -826,27 +842,35 @@
 
 
     <dependencies>
-    
-    
-                <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpclient</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>fluent-hc</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpasyncclient</artifactId>
-            </dependency>
-   
+
+        <dependency>
+            <groupId>ch.globaz.webavs</groupId>
+            <artifactId>bms-domain</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.globaz</groupId>
+            <artifactId>mercato.notification</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>fluent-hc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpasyncclient</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>pl.pragmatists</groupId>
             <artifactId>JUnitParams</artifactId>
-        </dependency> 
-    
-    
+        </dependency>
+
+
         <!-- Testing -->
         <dependency>
             <groupId>org.dbunit</groupId>
