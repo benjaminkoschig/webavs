@@ -1,0 +1,1 @@
+insert into SCHEMA.JADEDBVE (verlab, applab, reldat) values('@@@', 'WEBAVS', yyyymmdd);

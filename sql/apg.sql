@@ -1,0 +1,2 @@
+--D0107 Augmentation de la taille du champ remarque
+ALTER TABLE SCHEMA.APPRESP ALTER COLUMN VHLREM SET DATA TYPE VARCHAR(1024);
