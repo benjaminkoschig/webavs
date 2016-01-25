@@ -3,6 +3,7 @@ package ch.globaz.orion.businessimpl.services.merge;
 import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import ch.globaz.common.dom.ElementsDomParser;
@@ -34,6 +35,7 @@ public class MergePucsTest {
         assertEquals("3", parser.find("NumberOf-AHV-AVS-Salary-Tags").getFirstValue());
     }
 
+    @Ignore
     @Test
     public void testMergeAfSeul() throws Exception {
         String workDir = "testsresources\\ch\\globaz\\orion\\businessimpl\\services\\merge\\";
@@ -77,7 +79,7 @@ public class MergePucsTest {
     // String filePath = mergePucs.out("1078865-10-Af_Seul", document);
     //
     // }
-
+    @Ignore
     @Test
     public void testIsSameProvenance() throws Exception {
         List<PucsFile> files = new ArrayList<PucsFile>();

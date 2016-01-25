@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -112,6 +113,7 @@ public class PrestationExportableControllerControlTest {
         this.isTypeMenage = isTypeMenage;
     }
 
+    @Ignore
     @Test
     public void testControl() throws JadeApplicationServiceNotAvailableException, JadePersistenceException,
             JadeApplicationException {
