@@ -1,19 +1,18 @@
 package globaz.corvus.itext;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class REListeImpotSourceTest extends TestCase {
+public class REListeImpotSourceTest /* extends TestCase */{
 
     private REListeImpotSource testInstance;
 
     // @Before
-    @Override
-    public void setUp() throws Exception {
-        testInstance = new REListeImpotSource();
-    }
+    // @Override
+    // public void setUp() throws Exception {
+    // testInstance = new REListeImpotSource();
+    // }
 
     @Ignore
     @Test

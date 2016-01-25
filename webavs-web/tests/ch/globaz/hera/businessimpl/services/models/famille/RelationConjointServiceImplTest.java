@@ -31,7 +31,7 @@ public class RelationConjointServiceImplTest {
         Assert.assertEquals("23.04.1960", dateNaissanceConjoint);
     }
 
-    // @Ignore("A executer avec jade")
+    @Ignore("A executer avec jade")
     @Test(expected = RelationConjointException.class)
     public void getDateNaissanceTestWithNSSfail() throws Exception {
         String dateNaissanceConjoint = HeraServiceLocator.getRelationConjointService().getDateNaissanceConjointForDate(
