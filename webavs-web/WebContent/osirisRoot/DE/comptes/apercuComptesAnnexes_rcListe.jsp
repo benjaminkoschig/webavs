@@ -9,7 +9,7 @@
   <%
 CACompteAnnexeManagerListViewBean viewBean = (CACompteAnnexeManagerListViewBean)session.getAttribute(globaz.osiris.servlet.action.compte.CAComptesAnnexesAction.VBL_COMPTEANNEXE_MANAGER);
 size = viewBean.size();
-detailLink ="osiris?userAction=osiris.comptes.apercuComptes.afficher&" + ch.globaz.utils.VueGlobaleTiersUtils.PARAMETRE_REQUETE_ID_TIERS_VUE_GLOBALE + "="+  +"&selectedId=";
+detailLink ="osiris?userAction=osiris.comptes.apercuComptes.afficher&" + ch.globaz.utils.VueGlobaleTiersUtils.PARAMETRE_REQUETE_ID_TIERS_VUE_GLOBALE + "=" + "&selectedId=";
 
 globaz.osiris.db.comptes.CACompteAnnexe _compte = null ; 
 

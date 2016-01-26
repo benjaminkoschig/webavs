@@ -90,7 +90,7 @@ var typeImpressionSelect = function () {
 		<td><ct:FWLabel key="COMPTEANNEXE_DU"/></td>
   		<TD>
    			<input id="fromIdExterneRole" type="text" name="fromIdExterneRole" value="">&nbsp; au &nbsp;
-   			<input id="toIdExterneRole" type="text" name="toIdExterneRole" value=""
+   			<input id="toIdExterneRole" type="text" name="toIdExterneRole" value="">
    		</TD>
     </TR>
     

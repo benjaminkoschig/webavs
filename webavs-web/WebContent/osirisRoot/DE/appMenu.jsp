@@ -192,10 +192,9 @@ div.smallbodyContainer {
 	background-color: #eeeeee;
 }
 
-<%@page import="globaz.jade.common.Jade"%>
 
 body {
-	background-color: <%=Jade.getInstance().getWebappBackgroundColor()%>;
+	background-color: <%=globaz.jade.common.Jade.getInstance().getWebappBackgroundColor()%>;
 }
 </style>
 <TITLE></TITLE>
