@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="globazBuild" default="main">
+	
+
+
+	<!-- call de groovy pour la fusion des scripts -->
+	<target name="main" description="Agregate all the SQL files to one">
+		<taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" />
+
+
+		<echo message="current Version: ${currentVersion}" />
+		<echo message="source Sql Dir: ${sourceSqlDir}" />
+		<echo message="target Sql Dir:    ${targetSqlDir}" />
+
+
+
+
+		<echo message="GROOVY START MAKE SQL" level="info" />
+		<groovy src="src/ant/FusionSql.groovy">
+			<arg value="${currentVersion}" />
+			<arg value="${sourceSqlDir}" />
+			<arg value="${targetSqlDir}" />
+		</groovy>
+		<echo message="GROOVY START MAKE SQL" level="info" />
+	</target>
+
+</project>
