@@ -173,7 +173,7 @@
 			<c:if test="${bButtonNew || bButtonUpdate || bButtonDelete || bButtonValidate || bButtonCancel || bButtonPrint|| bButtonDevalidate}">
 				<div style="background-color=#FFFFFF;height:18;text-align: right;" id="btnCtrlJade">
 					<c:if test="${!viewBean.annulee}">
-						<input class="btnCtrl" type="button" id="btnAnnule" value='<ct:FWLabel key="JSP_ANNULER"/>' onclick="annuler()" />
+						<input class="btnCtrl" type="button" id="btnAnnule" value='<ct:FWLabel key="JSP_ANNULER_TO"/>' onclick="annuler()" />
 					</c:if>
 									
 					<c:if test="${bButtonNew}">
