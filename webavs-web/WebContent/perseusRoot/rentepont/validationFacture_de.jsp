@@ -1,15 +1,15 @@
+<%@ include file="/theme/detail_ajax/header.jspf" %>
+<%@ page language="java" import="globaz.globall.http.*" %>
+
 <%@page import="ch.globaz.perseus.business.constantes.CSEtatFacture"%>
 <%@page import="ch.globaz.perseus.business.services.PerseusServiceLocator"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="globaz.perseus.utils.PFGestionnaireHelper"%>
-<%@ include file="/theme/detail_ajax/header.jspf" %>
-<%@ page language="java" import="globaz.globall.http.*" %>
 <%@page import="globaz.perseus.vb.rentepont.PFValidationFactureViewBean"%>
-
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
 <%@ page isELIgnored ="false" %>
-
 
 <%
     idEcran="????";
@@ -24,57 +24,13 @@
 <%@ include file="/theme/detail_ajax/javascripts.jspf" %>
 <%-- tpl:insert attribute="zoneScripts" --%>
 
-
-<%-- <link rel="stylesheet" type="text/css" href="<%=servletContext%><%=(mainServletPath+"Root")%>/css/home/typeChambre_de.css"/> --%>
 <script type="text/javascript" src="<%=servletContext%>/scripts/ajax/DefaultTableAjax.js"/></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 <script language="JavaScript">
 	globazGlobal.ACTION_AJAX ="perseus.rentepont.validationFactureAjax";
 	globazGlobal.csEtatFactureEnregistre = <%=CSEtatFacture.ENREGISTRE.getCodeSystem()%>;
-
-	
-	//TODO: A corriger, appele d'un service dans une JSP !!! Il faut simuler un viewBean
-	var sousTypesSoins = <%=PerseusServiceLocator.getTypesSoinsRentePontService().getAllSousTypesInJson(objSession) %>;
-
-	listeSelect = {
-			$selectSousTypeSoin: null,
-			
-			init: function () {
-				this.$selectMaster = $("#typeSoin");
-				this.$selectSousTypeSoin=$("#sousTypeSoin");	
-				this.$selectSousTypeSoin.hide();
-				this.addEvent();
-				
-				if($.trim(this.$selectMaster.val()).length){
-					this.addOptions(this.$selectMaster.val());
-					
-				}
-			},
-			
-			createOptions : function (codeSystemParent) {
-				var options = "",
-				     typeSoins = sousTypesSoins[codeSystemParent];
-				for ( key in typeSoins) {
-					options += "<option value='"+key+"'>"+typeSoins[key]+"</option>";
-				}
-				return options;
-			},
-			
-			addOptions: function (codeSystemParent) {
-				this.$selectSousTypeSoin.children().remove();
-				this.$selectSousTypeSoin.append(this.createOptions(codeSystemParent));
-				this.$selectSousTypeSoin.show();
-			},
-			
-			addEvent: function () {
-				var that = this;
-				this.$selectMaster.change(function () {
-					that.addOptions(this.value);
-				});
-			}		
-	} 
 	
 	$(function () {
-		listeSelect.init();
 		defaultTableAjax.init({
 			s_actionAjax: globazGlobal.ACTION_AJAX,
 			
@@ -83,8 +39,9 @@
 				var map = {
 					"searchModel.forCsEtatFacture": globazGlobal.csEtatFactureEnregistre,
 					"searchModel.forIdGestionnaire":$("#searchModel\\.forIdGestionnaire").val(), 
-					"searchModel.forCSTypeQD":$("#sousTypeSoin").val()==null?'':$("#sousTypeSoin").val(),
-					"searchModel.likeDossierNss":$("#likeNss").val()
+					"searchModel.forCSTypeQD":$("#typeQd").val()==null?'':$("#typeQd").val(),
+					"searchModel.agence": $("searchModel\\.agence").val(),
+					"searchModel.likeNss":$("#searchModel\\.likeNss").val()
 				};
 				return map;
 			},
@@ -97,15 +54,27 @@
 				this.list(30, [20, 30, 50, 100]);
 				var that = this;
 				$(".areaSearch :input").change(function () {
-					if(this.id !='typeSoin'){
-						that.ajaxFind();
-					}
+					that.ajaxFind();
 				});
 				this.addSearch();
 			}
 		});
+		
+		$("#validerFactrueSelectionnee").click(function (){
+			var ids;
+			this.disabled = true;
+			$(".factureSelected:checked").each(function () {
+				if(ids){
+					ids += ","+this.id;
+				} else {
+					ids = this.id;
+				}
+			});
+		});
+		
 	});
 
+	
 </script>
 <style>
 	.montant{
@@ -117,6 +86,13 @@
 	.left{
 		 text-align: left;
 		 padding-left: 10px;
+	}
+	
+	.areaSearch{
+		border-top: 0px;
+		border-left: 0px;
+		border-right: 0px;
+		margin-bottom: 15px; 
 	}
 </style>
 
@@ -150,17 +126,21 @@
 		<td colspan="2">
 			<div class="area">
 				<div class="areaSearch" >
-					<label><ct:FWLabel key="JSP_PF_VALIDATION_NSS_DOSSIER"/></label><input type="text" id="likeNss" name="searchModel.likeNss" />
+					<label><ct:FWLabel key="JSP_PF_VALIDATION_NSS_DOSSIER"/></label>
+								<nss:nssPopup avsMinNbrDigit="99"
+								  nssMinNbrDigit="99"
+								  newnss=""
+								  name="searchModel.likeNss"/>			
 					<label><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_GESTIONAIRE"/></label>
-					<ct:FWListSelectTag data="<%=PFGestionnaireHelper.getResponsableData(objSession)%>" defaut=""  name="searchModel.forIdGestionnaire"/>
+					<ct:FWListSelectTag data="<%=PFGestionnaireHelper.getResponsableData(objSession)%>" defaut="<%=viewBean.getISession().getUserId()%>"  name="searchModel.forIdGestionnaire"/>
 					<label><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_TYPE"/></label>
-					<select name='searchModel.forCsTypeSoin' id="typeSoin"  notation="data-g-select='mandatory:true'">
+					<select name='searchModel.forCsTypeSoin' id="typeQd"  notation="data-g-select='mandatory:true'">
 						<option value=''></option>
 						<c:forEach items="${viewBean.type}" var="entry">
 					       <option value="${entry.key}">${entry.value}</option>
 					   	</c:forEach>
 					</select>
-					<select name='searchModel.forCsSousTypeSoin' id="sousTypeSoin"></select>
+				<ct:FWListSelectTag name="searchModel.agence" data="${=viewBean.agences}" defaut=""/>
 				</div>
 			
 				<table class="areaTable" width="98%">
@@ -182,7 +162,7 @@
 				<div style="margin: 20px 0 0 0;">
 					<ct:FWLabel key="JSP_PF_VALIDATION_RAPPORT_MAIL"/> 
 					<input type="text" name="mail" value="<%=objSession.getUserEMail()%>" />
-					<input style="float: right;" type="button" value="<ct:FWLabel key="JSP_PF_VALIDATION_VALIDER_SELECTIONNES"/>">
+					<input id="validerFactrueSelectionnee" style="float: right;" type="button" value="<ct:FWLabel key="JSP_PF_VALIDATION_VALIDER_SELECTIONNES"/>">
 				</div>
 			</div>
 		</td>
