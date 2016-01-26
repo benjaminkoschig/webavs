@@ -9,6 +9,6 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/testsresources"/>
         <property name="java-output-path" value="/webavs-web/target/classes"/>
         <property name="component.exclusion.patterns" value="**/properties/**"/>
-        <property name="context-root" value="/webavs"/>
+        <property name="context-root" value="webavs"/>
     </wb-module>
 </project-modules>
