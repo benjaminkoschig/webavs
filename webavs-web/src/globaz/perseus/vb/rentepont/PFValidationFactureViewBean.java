@@ -29,6 +29,13 @@ public class PFValidationFactureViewBean extends BJadePersistentObjectViewBean {
 
     @Override
     public void retrieve() throws Exception {
+
+        // HashSet hs = new HashSet();
+        // hs.add(CSTypeQD.FRAIS_MALADIE.getCodeSystem());
+        // %>
+        // <TD colspan="3"><ct:FWCodeSelectTag name="searchModel.forCSTypeQD" codeType="PFTYPEQD" wantBlank="true"
+        // except="<%=hs %>" defaut=""/></T
+
         type = PerseusServiceLocator.getTypesSoinsRentePontService().getMapSurTypes(getISession());
     }
 

@@ -1,13 +1,16 @@
 package globaz.perseus.vb.rentepont;
 
 import globaz.framework.bean.JadeAbstractAjaxListFindViewBean;
+import globaz.globall.db.BSession;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
-import ch.globaz.perseus.business.models.rentepont.FactureRentePontSearchModel;
+import globaz.perseus.utils.PFUserHelper;
+import ch.globaz.perseus.business.models.qd.FactureSearchModel;
 import ch.globaz.perseus.business.services.PerseusServiceLocator;
+import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
 
 public class PFValidationFactureAjaxViewBean extends JadeAbstractAjaxListFindViewBean {
 
-    private FactureRentePontSearchModel searchModel;
+    private FactureSearchModel searchModel;
 
     public PFValidationFactureAjaxViewBean() {
         initList();
@@ -15,7 +18,7 @@ public class PFValidationFactureAjaxViewBean extends JadeAbstractAjaxListFindVie
 
     @Override
     public void find() throws Exception {
-        searchModel = PerseusServiceLocator.getFactureRentePontService().search(searchModel);
+        searchModel = PerseusServiceLocator.getFactureService().search(searchModel);
     }
 
     @Override
@@ -25,7 +28,10 @@ public class PFValidationFactureAjaxViewBean extends JadeAbstractAjaxListFindVie
 
     @Override
     public void initList() {
-        searchModel = new FactureRentePontSearchModel();
+        searchModel = new FactureSearchModel();
     }
 
+    public String displayBeneficiaire(PersonneEtendueComplexModel personneEtendueComplexModel) {
+        return PFUserHelper.getDetailAssure((BSession) getISession(), personneEtendueComplexModel);
+    }
 }

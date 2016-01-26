@@ -16,7 +16,8 @@
    				<search-field name="forIdDossier" operation="EQUALS" field-ref="qd.qdAnnuelle.simpleQDAnnuelle.idDossier" /> 
    				<search-field name="likeNom" operation="LIKE" field-ref="qd.membreFamille.personneEtendue.tiers.designationUpper1"/>  
 				<search-field name="likePrenom" operation="LIKE" field-ref="qd.membreFamille.personneEtendue.tiers.designationUpper2"/>  
-				<search-field name="likeNss" operation="LIKE" field-ref="qd.membreFamille.personneEtendue.personneEtendue.numAvsActuel"/>  
+				<search-field name="likeNss" operation="LIKE" field-ref="qd.membreFamille.personneEtendue.personneEtendue.numAvsActuel"/> 
+				<search-field name="likeDossierNss" operation="LIKE" field-ref="qd.qdAnnuelle.dossier.demandePrestation.personneEtendue.personneEtendue.numAvsActuel"/>  
 				<search-field name="forIdQd" operation="EQUALS" field-ref="simpleFacture.idQD"/>  
 				<search-field name="forCsEtatFacture" operation="EQUALS" field-ref="simpleFacture.csEtat"/>  
 				<search-field name="forIdGestionnaire" operation="EQUALS" field-ref="simpleFacture.idGestionnaire"/>  

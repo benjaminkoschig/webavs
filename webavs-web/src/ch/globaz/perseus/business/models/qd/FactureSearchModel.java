@@ -30,6 +30,15 @@ public class FactureSearchModel extends JadeSearchComplexModel {
     private String likeNom = null;
     private String likeNss = null;
     private String likePrenom = null;
+    private String likeDossierNss = null;
+
+    public String getLikeDossierNss() {
+        return likeDossierNss;
+    }
+
+    public void setLikeDossierNss(String likeDossierNss) {
+        this.likeDossierNss = likeDossierNss;
+    }
 
     /**
      * @return the forAnnee
@@ -211,7 +220,7 @@ public class FactureSearchModel extends JadeSearchComplexModel {
      * @see globaz.jade.persistence.model.JadeAbstractSearchModel#whichModelClass()
      */
     @Override
-    public Class whichModelClass() {
+    public Class<Facture> whichModelClass() {
         return Facture.class;
     }
 

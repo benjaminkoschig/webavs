@@ -47,6 +47,12 @@
 				</action>
 			</node>
 			<node>
+				<label refId="MENU_PF_FACTURES_VALIDATION"/>
+				<action command="/perseus" responseTarget="fr_main">
+					<parameter name="userAction" value="perseus.rentepont.validationFacture.afficher"/>
+				</action>
+			</node>
+			<node>
 				<label refId="MENU_PF_QD"/>
 				<action command="/perseus" responseTarget="fr_main">
 					<parameter name="userAction" value="perseus.qd.qd.chercher"/>
@@ -70,12 +76,7 @@
 					<parameter name="userAction" value="perseus.rentepont.factureRentePont.chercher"/>
 				</action>
 			</node>
-			<node>
-				<label refId="MENU_PF_FACTURES_VALIDATION"/>
-				<action command="/perseus" responseTarget="fr_main">
-					<parameter name="userAction" value="perseus.rentepont.validationFacture.afficher"/>
-				</action>
-			</node>
+
 
 			<!-- Menu Paiements -->
 			<node>

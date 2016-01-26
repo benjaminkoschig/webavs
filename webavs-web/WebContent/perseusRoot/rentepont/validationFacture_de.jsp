@@ -1,3 +1,4 @@
+<%@page import="ch.globaz.perseus.business.constantes.CSEtatFacture"%>
 <%@page import="ch.globaz.perseus.business.services.PerseusServiceLocator"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="globaz.perseus.utils.PFGestionnaireHelper"%>
@@ -28,7 +29,8 @@
 <script type="text/javascript" src="<%=servletContext%>/scripts/ajax/DefaultTableAjax.js"/></script>
 <script language="JavaScript">
 	globazGlobal.ACTION_AJAX ="perseus.rentepont.validationFactureAjax";
-	
+	globazGlobal.csEtatFactureEnregistre = <%=CSEtatFacture.ENREGISTRE.getCodeSystem()%>;
+
 	
 	//TODO: A corriger, appele d'un service dans une JSP !!! Il faut simuler un viewBean
 	var sousTypesSoins = <%=PerseusServiceLocator.getTypesSoinsRentePontService().getAllSousTypesInJson(objSession) %>;
@@ -77,10 +79,12 @@
 			s_actionAjax: globazGlobal.ACTION_AJAX,
 			
 			getParametresForFind: function () {
+			
 				var map = {
-					"searchModel.likeNss": globazGlobal.IdHome,
-					"searchModel.forDateValable": $("#forDateValable").val() ,
-					"searchModel.forIdTypeChambre": globazGlobal.IdTypeChambre
+					"searchModel.forCsEtatFacture": globazGlobal.csEtatFactureEnregistre,
+					"searchModel.forIdGestionnaire":$("#searchModel\\.forIdGestionnaire").val(), 
+					"searchModel.forCSTypeQD":$("#sousTypeSoin").val()==null?'':$("#sousTypeSoin").val(),
+					"searchModel.likeDossierNss":$("#likeNss").val()
 				};
 				return map;
 			},
@@ -92,9 +96,10 @@
 			init: function () {	
 				this.list(30, [20, 30, 50, 100]);
 				var that = this;
-				console.log(that)
-				$(".areaSearch input").change(function () {
-					that.ajaxFind();
+				$(".areaSearch :input").change(function () {
+					if(this.id !='typeSoin'){
+						that.ajaxFind();
+					}
 				});
 				this.addSearch();
 			}
@@ -103,7 +108,16 @@
 
 </script>
 <style>
-
+	.montant{
+	 	width: 100px; 
+	 	text-align: right;
+	 	padding-right: 10px;
+	}
+	
+	.left{
+		 text-align: left;
+		 padding-left: 10px;
+	}
 </style>
 
 <%-- <script type="text/javascript" src="<%=rootPath %>/scripts/home/HomeTypeChambrePart.js"></script>  --%>
@@ -136,9 +150,9 @@
 		<td colspan="2">
 			<div class="area">
 				<div class="areaSearch" >
-					<label><ct:FWLabel key="JSP_PF_VALIDATION_NSS_DOSSIER"/></label><input type="text" name="searchModel.likeNss" />
+					<label><ct:FWLabel key="JSP_PF_VALIDATION_NSS_DOSSIER"/></label><input type="text" id="likeNss" name="searchModel.likeNss" />
 					<label><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_GESTIONAIRE"/></label>
-					<ct:FWListSelectTag data="<%=PFGestionnaireHelper.getResponsableData(objSession)%>" defaut="" name="searchModel.forIdGestionnaire"/>
+					<ct:FWListSelectTag data="<%=PFGestionnaireHelper.getResponsableData(objSession)%>" defaut=""  name="searchModel.forIdGestionnaire"/>
 					<label><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_TYPE"/></label>
 					<select name='searchModel.forCsTypeSoin' id="typeSoin"  notation="data-g-select='mandatory:true'">
 						<option value=''></option>
@@ -152,14 +166,14 @@
 				<table class="areaTable" width="98%">
 					<thead>
 						<tr>
-							<th class="notSortable"><input type="checkbox" data-g-masterCheckBox=" " /></th>
-							<th><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_BENEFICIAIRE"/></th>
-							<th><ct:FWLabel key="JSP_PF_VALIDATION_FACTUR_DATE"/></th>
+							<th class="notSortable"><input type="checkbox" data-g-mastercheckbox=" " /></th>
+							<th style=><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_BENEFICIAIRE"/></th>
+							<th style="width: 100px"><ct:FWLabel key="JSP_PF_VALIDATION_FACTUR_DATE"/></th>
 							<th><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_TYPE"/></th>
-						    <th><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_MONTANT"/></th>
-						    <th><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_REMBOURSE"/></th>	    
-						    <th><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_GESTIONAIRE"/></th>
-						    <th><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_NO_FACTURE"/></th>
+						    <th style="width: 100px"><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_MONTANT"/></th>
+						    <th style="width: 100px"> <ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_REMBOURSE"/></th>	    
+						    <th style="width: 100px"><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_GESTIONAIRE"/></th>
+						    <th style="width: 100px"><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_NO_FACTURE"/></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -168,7 +182,6 @@
 				<div style="margin: 20px 0 0 0;">
 					<ct:FWLabel key="JSP_PF_VALIDATION_RAPPORT_MAIL"/> 
 					<input type="text" name="mail" value="<%=objSession.getUserEMail()%>" />
-					
 					<input style="float: right;" type="button" value="<ct:FWLabel key="JSP_PF_VALIDATION_VALIDER_SELECTIONNES"/>">
 				</div>
 			</div>
