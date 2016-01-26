@@ -1,4 +1,4 @@
-name=webavs
-version=localhost
+name=${artifactId}
+version=${project.businessversion}
 version.servicepack=
-date=xx.xx.xxxx
+date=${buildnumber.date}
