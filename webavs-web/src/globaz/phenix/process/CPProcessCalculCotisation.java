@@ -662,7 +662,7 @@ public final class CPProcessCalculCotisation extends BProcess {
                             // Forcer la cotisation minimum pour certains cas métiers
                             if (!baremeDegressif) {
                                 if (!CPDecision.CS_RENTIER.equalsIgnoreCase(decision.getGenreAffilie())
-                                        || (revenuMin <= revenuDet)) {
+                                        || casProrataRentier) {
                                     if (((revenuMin > revenuDet) && !exerciceSur2Annee)
                                             || ((revenuMin > revenuDet) && perte)
                                             || ((revenuMin > revenuDet) && exerciceSur2Annee && decision
@@ -704,12 +704,14 @@ public final class CPProcessCalculCotisation extends BProcess {
                             // prorata
                             moisDebutDecision = JACalendar.getMonth(decision.getDebutDecision());
                             moisFinDecision = JACalendar.getMonth(decision.getFinDecision());
-                            ;
                             // Si rentier pendant l'année de décision et
                             // cotisation minimum et calcul praenumerando
                             // => période de décision dure jusqu'à lâge AVS
                             if (casProrataRentier) {
-                                moisFinDecision = JACalendar.getMonth(dateAvs);
+                                if (cotiMinimum) {
+                                    cotiAnnuelleBrut = Float.parseFloat(CPToolBox.getMontantProRata(
+                                            decision.getDebutDecision(), dateAvs, cotiAnnuelleBrut));
+                                }
                                 // this.decision.setFinDecision(this.dateAvs);
                             }
                             // Calcul de cotisation mensuelle
@@ -3063,7 +3065,6 @@ public final class CPProcessCalculCotisation extends BProcess {
         float nbMoisExercice = 0;
         float nbMoisExercice1 = 0;
         float nbMoisExercice2 = 0;
-        CPDonneesCalcul donCalcul = new CPDonneesCalcul();
         try {
             /*
              * codeRevenuAf= 0 => calcul normal codeRevenuAf= 1 => calcul avs sans tenir compte de revenu autre (revenu
