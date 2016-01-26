@@ -20,6 +20,8 @@
         <webapp.context>/webavs</webapp.context>
         <!-- empty enums make sonar fail... -->
         <sonar.exclusions>**ch/globaz/common/listoutput/generator/annotation/style/VerticalAlign*,**globaz/apg/enums/APStep2Rules*,**globaz/apg/itext/decompte/utils/APDonneeRegroupementDecompte*,**globaz/corvus/itext/REListeComparaisonLivraison2Centrale*,**ch/globaz/al/businessimpl/services/entetesDocument/EnteteDocumentUserInfoServiceImpl*,**globaz/apg/helpers/prestation/APPrestationHelper*,**globaz/apg/vb/droits/APSituationProfessionnelleViewBean*,**heliosRoot/**/*.xml*</sonar.exclusions>
+        
+        <project.businessversion>1.15.02</project.businessversion>
     </properties>
 
     <build>
@@ -96,10 +98,10 @@
                 <configuration>
                     <!-- do we need a jar file containing all classes in 
                         WEB-INF/lib instead of putting them in WEB-INF/classes? -->
-                    <archiveClasses>true</archiveClasses>
+                    <archiveClasses>false</archiveClasses>
 
                     <!-- do we need an artifact with the -classes classifier? -->
-                    <attachClasses>true</attachClasses>
+                    <attachClasses>false</attachClasses>
 
                     <includeEmptyDirectories>true</includeEmptyDirectories>
 
