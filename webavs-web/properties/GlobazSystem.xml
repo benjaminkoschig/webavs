@@ -27,7 +27,11 @@
 			<application id="FX"/>
 			<application id="HERCULE"/>
 			<application id="VULPECULA"/>
-			<application id="LIBRA"/>
+			
+			<application id="PEGASUS"/>
+			<application id="PERSEUS"/>
+			
+			
 			<application id="AL"/>
 	</remoteApplications>
 	</system>
@@ -60,6 +64,8 @@
 			<application id="VULPECULA_REMOTE" remoteId="VULPECULA"/>	
 			<application id="LIBRA_REMOTE" remoteId="LIBRA"/>
 			<application id="AL_REMOTE" remoteId="AL"/>
+			<application id="PEGASUS_REMOTE" remoteId="PEGASUS"/>
+			<application id="PERSEUS_REMOTE" remoteId="PERSEUS"/>
 		</remoteApplications>
 	</system>
 </GlobazSystem>
