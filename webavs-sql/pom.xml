@@ -29,7 +29,7 @@
 								<property name="sourceSqlDir" value="src/main/sql" />
 								<property name="targetSqlDir" value="${project.build.directory}" />
 
-								<ant antfile="../src/ant/build.xml">
+								<ant antfile="${basedir}/src/ant/build.xml">
 									<target name="main" />
 								</ant>
 
