@@ -164,7 +164,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>build-fvetemplates-zip</id>
+						<id>build-documents-fve-zip</id>
 						<goals>
 							<goal>single</goal>
 						</goals>
@@ -172,7 +172,7 @@
 						<configuration>
 							<classifier>documents-fve</classifier>
 							<descriptors>
-								<descriptor>assembly/build-fvetemplates-zip.xml</descriptor>
+								<descriptor>assembly/build-documents-fve-zip.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>
