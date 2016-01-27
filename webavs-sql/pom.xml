@@ -12,9 +12,7 @@
 	<name>The SQL scripts</name>
 	<packaging>pom</packaging>
 
-<properties>
-<p>${}</p>
-</properties>
+
 	<!-- Réalisation de la génération du script SQL agrégé pour WebAvs -->
 	<build>
 		<plugins>
@@ -31,7 +29,7 @@
 								<property name="sourceSqlDir" value="src/main/sql" />
 								<property name="targetSqlDir" value="${project.build.directory}" />
 
-								<ant antfile="./src/ant/build.xml">
+								<ant antfile="../src/ant/build.xml">
 									<target name="main" />
 								</ant>
 
