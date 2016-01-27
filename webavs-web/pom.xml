@@ -1,607 +1,613 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>ch.globaz</groupId>
-        <artifactId>webavs-parent</artifactId>
-        <version>1.15.02-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>ch.globaz</groupId>
+		<artifactId>webavs-parent</artifactId>
+		<version>1.15.02-SNAPSHOT</version>
+	</parent>
 
-    <packaging>war</packaging>
-    <artifactId>webavs-web</artifactId>
+	<packaging>war</packaging>
+	<artifactId>webavs-web</artifactId>
 
-    <name>WebAVS</name>
-    <description>WebAVS main web application</description>
+	<name>WebAVS</name>
+	<description>WebAVS main web application</description>
 
-    <properties>
-        <site.directory>${basedir}/site</site.directory>
-        <logback.configuration>${basedir}/resources/logback.xml</logback.configuration>
-        <webapp.context>/webavs</webapp.context>
-        <!-- empty enums make sonar fail... -->
-        <sonar.exclusions>**ch/globaz/common/listoutput/generator/annotation/style/VerticalAlign*,**globaz/apg/enums/APStep2Rules*,**globaz/apg/itext/decompte/utils/APDonneeRegroupementDecompte*,**globaz/corvus/itext/REListeComparaisonLivraison2Centrale*,**ch/globaz/al/businessimpl/services/entetesDocument/EnteteDocumentUserInfoServiceImpl*,**globaz/apg/helpers/prestation/APPrestationHelper*,**globaz/apg/vb/droits/APSituationProfessionnelleViewBean*,**heliosRoot/**/*.xml*</sonar.exclusions>
-        
-        <project.businessversion>1.15.02</project.businessversion>
-    </properties>
+	<properties>
+		<site.directory>${basedir}/site</site.directory>
+		<logback.configuration>${basedir}/resources/logback.xml</logback.configuration>
+		<webapp.context>/webavs</webapp.context>
+		<!-- empty enums make sonar fail... -->
+		<sonar.exclusions>**ch/globaz/common/listoutput/generator/annotation/style/VerticalAlign*,**globaz/apg/enums/APStep2Rules*,**globaz/apg/itext/decompte/utils/APDonneeRegroupementDecompte*,**globaz/corvus/itext/REListeComparaisonLivraison2Centrale*,**ch/globaz/al/businessimpl/services/entetesDocument/EnteteDocumentUserInfoServiceImpl*,**globaz/apg/helpers/prestation/APPrestationHelper*,**globaz/apg/vb/droits/APSituationProfessionnelleViewBean*,**heliosRoot/**/*.xml*</sonar.exclusions>
 
-    <build>
-        <sourceDirectory>src</sourceDirectory>
-        <resources>
-            <resource>
-                <directory>src</directory>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                    <exclude>**/.svn/**</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>webavs.version</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>resources</directory>
-                <filtering>false</filtering>
-                <excludes>
-                    <exclude>webavs.version</exclude>
-                </excludes>
-            </resource>
-        </resources>
+		<project.businessversion>1.15.02</project.businessversion>
+	</properties>
 
-        <testSourceDirectory>tests</testSourceDirectory>
-        <testResources>
-            <testResource>
-                <directory>testsresources</directory>
-            </testResource>
-        </testResources>
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>src</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+					<exclude>**/.svn/**</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>webavs.version</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>webavs.version</exclude>
+				</excludes>
+			</resource>
+		</resources>
 
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-eclipse-plugin</artifactId>
-                <configuration>
-                    <warContextRoot>${webapp.context}</warContextRoot>
-                </configuration>
-            </plugin>
+		<testSourceDirectory>tests</testSourceDirectory>
+		<testResources>
+			<testResource>
+				<directory>testsresources</directory>
+			</testResource>
+		</testResources>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <!-- FIXME this special compiler configuration is needed 
-                        to provide access to classes of the package com.sun.xml.internal.*, that 
-                        are used at some places by WebAVS... -->
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
-                    <compilerArgs>
-                        <arg>-XDignore.symbol.file</arg>
-                    </compilerArgs>
-                </configuration>
-            </plugin>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+					<warContextRoot>${webapp.context}</warContextRoot>
+				</configuration>
+			</plugin>
 
-            <!-- since we are referencing classes from the package com.sun.xml.internal.* 
-                in our code, we must be absolutely certain to use a Sun/Oracle JVM... -->
-            <!-- DISABLED : does not pass in jenkins! <plugin> <groupId>org.apache.maven.plugins</groupId> 
-                <artifactId>maven-enforcer-plugin</artifactId> <executions> <execution> <id>enforce-sun-jdk</id> 
-                <goals> <goal>enforce</goal> </goals> <configuration> <rules> <requireProperty> 
-                <property>java.vendor</property> <message>Java Vendor must be Sun/Oracle.</message> 
-                <regex>Sun Microsystems Inc\.</regex> <regexMessage>Java Vendor must be Sun/Oracle.</regexMessage> 
-                </requireProperty> <requireProperty> <property>java.runtime.name</property> 
-                <message>Java Vendor must be Sun/Oracle.</message> <regex>Java\(TM\) SE Runtime 
-                Environment</regex> <regexMessage>Java Vendor must be Sun/Oracle.</regexMessage> 
-                </requireProperty> </rules> <fail>true</fail> </configuration> </execution> 
-                </executions> </plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<!-- FIXME this special compiler configuration is needed to provide 
+						access to classes of the package com.sun.xml.internal.*, that are used at 
+						some places by WebAVS... -->
+					<forceJavacCompilerUse>true</forceJavacCompilerUse>
+					<compilerArgs>
+						<arg>-XDignore.symbol.file</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
 
-            <plugin>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <!-- do we need a jar file containing all classes in 
-                        WEB-INF/lib instead of putting them in WEB-INF/classes? -->
-                    <archiveClasses>false</archiveClasses>
+			<!-- since we are referencing classes from the package com.sun.xml.internal.* 
+				in our code, we must be absolutely certain to use a Sun/Oracle JVM... -->
+			<!-- DISABLED : does not pass in jenkins! <plugin> <groupId>org.apache.maven.plugins</groupId> 
+				<artifactId>maven-enforcer-plugin</artifactId> <executions> <execution> <id>enforce-sun-jdk</id> 
+				<goals> <goal>enforce</goal> </goals> <configuration> <rules> <requireProperty> 
+				<property>java.vendor</property> <message>Java Vendor must be Sun/Oracle.</message> 
+				<regex>Sun Microsystems Inc\.</regex> <regexMessage>Java Vendor must be Sun/Oracle.</regexMessage> 
+				</requireProperty> <requireProperty> <property>java.runtime.name</property> 
+				<message>Java Vendor must be Sun/Oracle.</message> <regex>Java\(TM\) SE Runtime 
+				Environment</regex> <regexMessage>Java Vendor must be Sun/Oracle.</regexMessage> 
+				</requireProperty> </rules> <fail>true</fail> </configuration> </execution> 
+				</executions> </plugin> -->
 
-                    <!-- do we need an artifact with the -classes classifier? -->
-                    <attachClasses>false</attachClasses>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<!-- do we need a jar file containing all classes in WEB-INF/lib instead 
+						of putting them in WEB-INF/classes? -->
+					<archiveClasses>false</archiveClasses>
 
-                    <includeEmptyDirectories>true</includeEmptyDirectories>
+					<!-- do we need an artifact with the -classes classifier? -->
+					<attachClasses>false</attachClasses>
 
-                    <!-- TODO marche pas!!! -->
-                    <packagingExcludes>**/properties/**</packagingExcludes>
-                </configuration>
-            </plugin>
+					<includeEmptyDirectories>true</includeEmptyDirectories>
 
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>build-globaz-war</id>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <classifier>globaz</classifier>
-                            <descriptors>
-                                <descriptor>assembly/build-globaz-war.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>build-3rdparty-zip</id>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <classifier>3rdparty</classifier>
-                            <descriptors>
-                                <descriptor>assembly/build-3rdparty-zip.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+					<!-- TODO marche pas!!! -->
+					<packagingExcludes>**/properties/**</packagingExcludes>
+				</configuration>
+			</plugin>
 
-    <profiles>
-        <!-- DEV is enabled by default -->
-        <profile>
-            <id>dev</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <resources>
-                    <!-- the properties are only included in the artifact 
-                        if we are building in dev mode -->
-                    <resource>
-                        <directory>properties</directory>
-                    </resource>
-                </resources>
-            </build>
-        </profile>
-        <profile>
-            <id>release</id>
-            <activation>
-                <property>
-                    <name>release</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-dependency-jars-to-tattletale-directory</id>
-                                <phase>pre-site</phase>
-                                <goals>
-                                    <goal>copy-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${tattletale.src}</outputDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-project-jar-and-java-rt-jar-to-tattletale-source-directory</id>
-                                <phase>pre-site</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${tattletale.src}</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>${project.build.directory}</directory>
-                                            <filtering>false</filtering>
-                                            <includes>
-                                                <include>${project.build.finalName}.jar</include>
-                                            </includes>
-                                        </resource>
-                                        <resource>
-                                            <directory>${java.home}/lib</directory>
-                                            <filtering>false</filtering>
-                                            <includes>
-                                                <include>rt.jar</include>
-                                            </includes>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.jboss.tattletale</groupId>
-                        <artifactId>tattletale-maven</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>build-globaz-war</id>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<classifier>globaz</classifier>
+							<descriptors>
+								<descriptor>assembly/build-globaz-war.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+					<execution>
+						<id>build-3rdparty-zip</id>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<classifier>3rdparty</classifier>
+							<descriptors>
+								<descriptor>assembly/build-3rdparty-zip.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
-        <!-- JSP Validation is in a separate profile, since there are DOZENS 
-            of issues with jsp at the moment :( -->
-        <!-- TODO when all jsp are compilable, move this plugin in the standard 
-            build/plugins section -->
-        <profile>
-            <id>compile-check-jsp</id>
-            <activation>
-                <property>
-                    <name>!skipCompileJsp</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.jasig.mojo.jspc</groupId>
-                        <artifactId>jspc-maven-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+	<profiles>
+		<!-- DEV is enabled by default -->
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<resources>
+					<!-- the properties are only included in the artifact if we are building 
+						in dev mode -->
+					<resource>
+						<directory>properties</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+		<profile>
+			<id>release</id>
+			<activation>
+				<property>
+					<name>release</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-dependency-jars-to-tattletale-directory</id>
+								<phase>pre-site</phase>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${tattletale.src}</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-project-jar-and-java-rt-jar-to-tattletale-source-directory</id>
+								<phase>pre-site</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${tattletale.src}</outputDirectory>
+									<resources>
+										<resource>
+											<directory>${project.build.directory}</directory>
+											<filtering>false</filtering>
+											<includes>
+												<include>${project.build.finalName}.jar</include>
+											</includes>
+										</resource>
+										<resource>
+											<directory>${java.home}/lib</directory>
+											<filtering>false</filtering>
+											<includes>
+												<include>rt.jar</include>
+											</includes>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.jboss.tattletale</groupId>
+						<artifactId>tattletale-maven</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 
-        <!-- explode and copy ch.globaz:jade-web.zip, use mvn dependency:unpack 
-            -DcopyJadeResource to integrate the source in the local codebase -->
-        <profile>
-            <id>copyJadeResource</id>
-            <activation>
-                <property>
-                    <name>copyJadeResource</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-dependency-plugin</artifactId>
+		<!-- JSP Validation is in a separate profile, since there are DOZENS of 
+			issues with jsp at the moment :( -->
+		<!-- TODO when all jsp are compilable, move this plugin in the standard 
+			build/plugins section -->
+		<profile>
+			<id>compile-check-jsp</id>
+			<activation>
+				<property>
+					<name>!skipCompileJsp</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jasig.mojo.jspc</groupId>
+						<artifactId>jspc-maven-plugin</artifactId>
+						<configuration>
+						    <!-- FIXME problème de chemin lorsque lancé depuis le parent -->
+							<skip>true</skip>
+							
+							<defaultSourcesDirectory>${project.basedir}/WebContent</defaultSourcesDirectory>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>ch.globaz</groupId>
-                                    <artifactId>jade</artifactId>
-                                    <version>${jade.version}</version>
-                                    <classifier>web</classifier>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${web.resources}</outputDirectory>
-                                    <includes>**/*.*</includes>
-                                    <excludes>
-                                        WEB-INF/web.xml,
-                                        META-INF/**/*.*,
-                                        images/**/*.*,
-                                        FR/appAdmin.jsp,
-                                        FR/appIcons.jsp,
-                                        FR/appIconsApplications.jsp,
-                                        FR/postit_pop.jsp,
-                                        DE/appAdmin.jsp,
-                                        DE/appIcons.jsp,
-                                        DE/appIconsApplications.jsp,
-                                        DE/postit_pop.jsp,
-                                        parameters/**/*.*,
-                                        *.*
-                                    </excludes>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+		<!-- explode and copy ch.globaz:jade-web.zip, use mvn dependency:unpack 
+			-DcopyJadeResource to integrate the source in the local codebase -->
+		<profile>
+			<id>copyJadeResource</id>
+			<activation>
+				<property>
+					<name>copyJadeResource</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-dependency-plugin</artifactId>
 
-
-    <dependencies>
-
-
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>mercato.notification</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>fluent-hc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpasyncclient</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>pl.pragmatists</groupId>
-            <artifactId>JUnitParams</artifactId>
-        </dependency>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>ch.globaz</groupId>
+									<artifactId>jade</artifactId>
+									<version>${jade.version}</version>
+									<classifier>web</classifier>
+									<type>zip</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${web.resources}</outputDirectory>
+									<includes>**/*.*</includes>
+									<excludes>
+										WEB-INF/web.xml,
+										META-INF/**/*.*,
+										images/**/*.*,
+										FR/appAdmin.jsp,
+										FR/appIcons.jsp,
+										FR/appIconsApplications.jsp,
+										FR/postit_pop.jsp,
+										DE/appAdmin.jsp,
+										DE/appIcons.jsp,
+										DE/appIconsApplications.jsp,
+										DE/postit_pop.jsp,
+										parameters/**/*.*,
+										*.*
+									</excludes>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 
-        <!-- Testing -->
-        <dependency>
-            <groupId>org.dbunit</groupId>
-            <artifactId>dbunit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
+	<dependencies>
 
 
-
-        <!-- Loggers configurations -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.1.3</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- JEE dependencies -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jsp-api</artifactId>
-        </dependency>
 		<dependency>
-		    <groupId>javax.servlet</groupId>
-		    <artifactId>jstl</artifactId>
+			<groupId>ch.globaz</groupId>
+			<artifactId>mercato.notification</artifactId>
 		</dependency>
 
-        <!-- Webapp dependencies -->
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>jade</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>fluent-hc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpasyncclient</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>pyxis-services</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>pyxis-services-impl</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>uidwse</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>gcom</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>envoi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>ebback-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>globaz-external-xsd</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>journalisation</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.admin.ofit</groupId>
-            <artifactId>Anakin</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.admin.ofit.anakin</groupId>
-            <artifactId>Arena</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>sunanda</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>rafam-e-delegue</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>bambou</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.resource</groupId>
-            <artifactId>connector-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>simple-output-list</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>jep</groupId>
-            <artifactId>jep</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.ibm.db2</groupId>
-            <artifactId>db2java</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>oro</groupId>
-            <artifactId>oro</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.ibm</groupId>
-            <artifactId>jt400</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.transaction</groupId>
-            <artifactId>jta</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.safehaus.jug</groupId>
-            <artifactId>jug</artifactId>
-            <classifier>lgpl</classifier>
-        </dependency>
-
-        <dependency>
-            <groupId>org.sadun</groupId>
-            <artifactId>util</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>taglibs</groupId>
-            <artifactId>standard</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.townleyenterprises</groupId>
-            <artifactId>common</artifactId>
-        </dependency>
-
-        <!-- GLOBAZ DEPENDENCIES -->
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>reprise-ctx</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>globaz-services</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>op</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>itucana</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.globaz</groupId>
-            <artifactId>alpha-externalservices</artifactId>
-        </dependency>
-
-        <!-- OFIT DEPENDENCIES -->
-        <dependency>
-            <groupId>ch.admin.ofit</groupId>
-            <artifactId>Augmentation</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>pl.pragmatists</groupId>
+			<artifactId>JUnitParams</artifactId>
+		</dependency>
 
 
-        <!-- EXTERNAL DEPENDENCIES -->
-        <dependency>
-            <groupId>javax.xml</groupId>
-            <artifactId>jaxrpc-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.axis</groupId>
-            <artifactId>axis-jaxrpc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.axis</groupId>
-            <artifactId>axis-ant</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>concurrent</groupId>
-            <artifactId>concurrent</artifactId>
-        </dependency>
+		<!-- Testing -->
+		<dependency>
+			<groupId>org.dbunit</groupId>
+			<artifactId>dbunit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-all</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>castor</groupId>
-            <artifactId>castor</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>colt</groupId>
-            <artifactId>colt</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.xml</groupId>
-            <artifactId>jsr173</artifactId>
-        </dependency>
 
-        <!-- Mailer implementation -->
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-        </dependency>
-    </dependencies>
 
-    <reporting>
-        <plugins>
-            <!-- Temporary fix for https://issues.apache.org/jira/browse/MRELEASE-926 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <reportSets>
-                    <reportSet>
-                        <id>default</id>
-                        <reports>
-                            <report>javadoc</report>
-                            <report>test-javadoc</report>
-                        </reports>
-                    </reportSet>
-                    <reportSet>
-                        <id>aggregate</id>
-                        <reports />
-                    </reportSet>
-                </reportSets>
-            </plugin>
-        </plugins>
-    </reporting>
+		<!-- Loggers configurations -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.3</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- JEE dependencies -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jsp-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+		</dependency>
+
+		<!-- Webapp dependencies -->
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>jade</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>pyxis-services</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>pyxis-services-impl</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>uidwse</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>gcom</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>envoi</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>ebback-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>globaz-external-xsd</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>journalisation</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.admin.ofit</groupId>
+			<artifactId>Anakin</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.admin.ofit.anakin</groupId>
+			<artifactId>Arena</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>sunanda</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>rafam-e-delegue</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>bambou</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.resource</groupId>
+			<artifactId>connector-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>simple-output-list</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jep</groupId>
+			<artifactId>jep</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.ibm.db2</groupId>
+			<artifactId>db2java</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>oro</groupId>
+			<artifactId>oro</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm</groupId>
+			<artifactId>jt400</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.transaction</groupId>
+			<artifactId>jta</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.safehaus.jug</groupId>
+			<artifactId>jug</artifactId>
+			<classifier>lgpl</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>org.sadun</groupId>
+			<artifactId>util</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>taglibs</groupId>
+			<artifactId>standard</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.townleyenterprises</groupId>
+			<artifactId>common</artifactId>
+		</dependency>
+
+		<!-- GLOBAZ DEPENDENCIES -->
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>reprise-ctx</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>globaz-services</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>op</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>itucana</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>alpha-externalservices</artifactId>
+		</dependency>
+
+		<!-- OFIT DEPENDENCIES -->
+		<dependency>
+			<groupId>ch.admin.ofit</groupId>
+			<artifactId>Augmentation</artifactId>
+		</dependency>
+
+
+		<!-- EXTERNAL DEPENDENCIES -->
+		<dependency>
+			<groupId>javax.xml</groupId>
+			<artifactId>jaxrpc-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.axis</groupId>
+			<artifactId>axis-jaxrpc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.axis</groupId>
+			<artifactId>axis-ant</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>concurrent</groupId>
+			<artifactId>concurrent</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>castor</groupId>
+			<artifactId>castor</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>colt</groupId>
+			<artifactId>colt</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml</groupId>
+			<artifactId>jsr173</artifactId>
+		</dependency>
+
+		<!-- Mailer implementation -->
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+		</dependency>
+	</dependencies>
+
+	<reporting>
+		<plugins>
+			<!-- Temporary fix for https://issues.apache.org/jira/browse/MRELEASE-926 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<reportSets>
+					<reportSet>
+						<id>default</id>
+						<reports>
+							<report>javadoc</report>
+							<report>test-javadoc</report>
+						</reports>
+					</reportSet>
+					<reportSet>
+						<id>aggregate</id>
+						<reports />
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>
