@@ -19,7 +19,9 @@
 				<td class="montant">${facture.simpleFacture.montant}</td>
 				<td class="montant">${facture.simpleFacture.montantRembourse}</td>
 				<td>${facture.simpleFacture.idGestionnaire}</td>
-				<td>${facture.simpleFacture.idFacture}</td>
+				<td>
+					<a style="display: none" data-g-externallink="reLoad:false" href="<c:out value="perseus?userAction=perseus.qd.detailfacture.afficher&selectedId=${facture.simpleFacture.idFacture}_readOnly"></c:out>">${facture.simpleFacture.idFacture}</a>${facture.simpleFacture.idFacture}
+				</td>
 			</tr>
 		</c:forEach>
 	</liste>

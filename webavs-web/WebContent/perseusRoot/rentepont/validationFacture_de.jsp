@@ -12,7 +12,7 @@
 <%@ page isELIgnored ="false" %>
 
 <%
-    idEcran="????";
+    idEcran="PPF2400";
 	PFValidationFactureViewBean viewBean = (PFValidationFactureViewBean)session.getAttribute("viewBean");
 %>
 <% String rootPath = servletContext+(mainServletPath+"Root");%>
@@ -31,6 +31,13 @@
 	globazGlobal.csEtatFactureEnregistre = <%=CSEtatFacture.ENREGISTRE.getCodeSystem()%>;
 	
 	$(function () {
+		
+		$(".areaTable").on("click", "td", function(){
+			console.log(this)
+			console.log($(this).parent().find("a"));
+			//$(this).parent().find("a").click();
+		})
+		
 		defaultTableAjax.init({
 			s_actionAjax: globazGlobal.ACTION_AJAX,
 			
@@ -106,7 +113,7 @@
 <%-- /tpl:insert --%>
 <%@ include file="/theme/detail_ajax/bodyStart.jspf" %>
 	<%-- tpl:insert attribute="zoneTitle" --%>
-	<ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_TITR"/>
+	<ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_TITRE"/>
 	<%-- /tpl:insert --%>
 <%@ include file="/theme/detail_ajax/bodyStart2.jspf" %>
 	<%-- tpl:insert attribute="zoneMain" --%>
@@ -140,7 +147,8 @@
 					       <option value="${entry.key}">${entry.value}</option>
 					   	</c:forEach>
 					</select>
-				<ct:FWListSelectTag name="searchModel.agence" data="${=viewBean.agences}" defaut=""/>
+					<label><ct:FWLabel key="JSP_PF_VALIDATION_CAISSE"/></label>
+					<ct:FWListSelectTag name="searchModel.agence" data="${viewBean.agences}" defaut=""/>
 				</div>
 			
 				<table class="areaTable" width="98%">
