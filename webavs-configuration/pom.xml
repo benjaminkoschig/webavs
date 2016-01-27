@@ -170,7 +170,7 @@
 						</goals>
 						<phase>package</phase>
 						<configuration>
-							<classifier>fvetemplates</classifier>
+							<classifier>documents-fve</classifier>
 							<descriptors>
 								<descriptor>assembly/build-fvetemplates-zip.xml</descriptor>
 							</descriptors>
