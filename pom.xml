@@ -64,6 +64,8 @@
         <module>webavs-api</module>
         <module>webavs-web</module>
         <module>webavs-ear</module>
+        <module>webavs-configuration</module>
+        <module>webavs-sql</module>
     </modules>
 
     <developers>
