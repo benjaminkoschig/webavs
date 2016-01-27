@@ -12,15 +12,11 @@
 	<name>The SQL scripts</name>
 	<packaging>pom</packaging>
 
-	<properties>
-		<y>${project.build.directory}</y>
-		<y>${project.version}}</y>
-		<y>${project.build.directory}</y>
-	</properties>
 
-
+	<!-- Réalisation de la génération du script SQL agrégé pour WebAvs -->
 	<build>
 		<plugins>
+			<!-- call de Ant puis Groovy pour la concaténation des scripts -->
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
@@ -36,13 +32,6 @@
 								<ant antfile="src/ant/build.xml">
 									<target name="main" />
 								</ant>
-								<!-- <exec executable="cmd"> -->
-								<!-- <arg value="${project.version}" /> -->
-								<!-- sourceSqlDir= -->
-								<!-- <arg value="src/main/sql" /> -->
-								<!-- targetSqlDir= -->
-								<!-- <arg value="${project.build.directory}/sql" /> -->
-								<!-- </exec> -->
 
 							</target>
 						</configuration>
@@ -52,6 +41,7 @@
 					</execution>
 				</executions>
 
+				<!-- Besoin de la dépendance sur Groovy -->
 				<dependencies>
 					<dependency>
 						<groupId>org.codehaus.groovy</groupId>
@@ -61,6 +51,7 @@
 				</dependencies>
 			</plugin>
 
+			<!-- création de l'assembly contenant le fichier SQL agrégé -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>

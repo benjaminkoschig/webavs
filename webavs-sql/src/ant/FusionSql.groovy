@@ -5,8 +5,8 @@ import static groovy.io.FileType.*
 // D:/workspaces/avs/1.14.00/sql
 class FusionSql {
 
-    def version = "unknown"
-    def sqlFilePath = ""
+    def version = null
+    def sqlFilePath = null
     def targetDir = null
     def distributionDir
 
@@ -14,9 +14,10 @@ class FusionSql {
 
     public FusionSql(currentVersion, sourceSqlDir, targetSqlDir) {
         super() 
-        println  'currentVersion' + currentVersion
-        println 'sourceSqlDir=' + sourceSqlDir
-        println 'targetSqlDir=' + targetSqlDir
+        println '     Groovy args : '
+        println '     -> currentVersion' + currentVersion
+        println '     -> sourceSqlDir=' + sourceSqlDir
+        println '     -> targetSqlDir=' + targetSqlDir
         version = currentVersion
         sqlFilePath = sourceSqlDir
         distributionDir = targetSqlDir
@@ -27,23 +28,14 @@ class FusionSql {
     }
 
     public make() {
-        println  'FusionSql.make()'
         
-        String scriptDdl = distributionDir + "/webavs_" + version + "_ddl.sql"
-        String scriptDml = distributionDir + "/webavs_" + version + "_dml.sql"
-        String scriptReorg = distributionDir + "/webavs_" + version + "_db2_reorg.sql"
-
-        File scriptDmlFile = initFile(scriptDml)
+        File scriptDmlFile = initFile(distributionDir + "/webavs-" + version + ".sql")
 
         new File(sqlFilePath).eachFileRecurse(FILES) {
 
             if(it.name.endsWith('.sql')) {
                 
                 printHeader(scriptDmlFile, it.name.toUpperCase())
-
-
-                println it.path
-                
                 def instruction = ""
                 it.eachLine { line ->
                     instruction = instruction + line

@@ -1,1 +1,0 @@
-select * from schema.APANNOP where APANNOP.tiers like '%rené èlterns';
