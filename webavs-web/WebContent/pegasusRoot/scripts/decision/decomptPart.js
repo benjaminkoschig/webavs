@@ -34,7 +34,7 @@ function bindEventButton(){
 
 function imposeMaxLength(obj){
 	$("#remarqueButtonSpan").css("background-image", "url(theme/jquery/images/ui-icons_f9bd01_256x240.png)");
-	var mlength=1025;
+	var mlength=1023;//1023 is 1024th position (begin 0)
 	if (obj.getAttribute && obj.value.length>mlength){
 		$("#remarqueSizeLimit").css("display","block");
 	  //obj.value=obj.value.substring(0,mlength);

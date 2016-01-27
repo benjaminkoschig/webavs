@@ -1055,11 +1055,11 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         // D0168
         String remarque = dacOO.getVersionDroit().getSimpleVersionDroit().getRemarqueDecompte();
         if (remarque != null && !remarque.trim().isEmpty()) {
-            data.addData("REMARQUE_TITLE", babelDoc.getTextes(16).getTexte(39).getDescription());
+            data.addData("REMARQUE_TITLE", babelDoc.getTextes(16).getTexte(41).getDescription());
             data.addData("REMARQUE_DECOMPTE", remarque);
         }
-        data.addData("NB_PAGES_REMARQUE1", babelDoc.getTextes(16).getTexte(40).getDescription());
-        data.addData("NB_PAGES_REMARQUE2", babelDoc.getTextes(16).getTexte(41).getDescription());
+        data.addData("NB_PAGES_REMARQUE1", babelDoc.getTextes(16).getTexte(42).getDescription());
+        data.addData("NB_PAGES_REMARQUE2", babelDoc.getTextes(16).getTexte(43).getDescription());
 
         // Ajout de l'ayant droit sur le recapitulatif
         Collection tabAyantDroit = new Collection("tabAyantDroit");
