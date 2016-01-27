@@ -24,6 +24,7 @@
 				<search-field name="forNumDecision" operation="EQUALS" field-ref="simpleFacture.numDecision"/>  
 				<search-field name="forIdMembreFamille" operation="EQUALS" field-ref="qd.membreFamille.simpleMembreFamille.idMembreFamille" />
 				<search-field name="inCsEtatFacture" operation="IN" field-ref="simpleFacture.csEtat" />
+				<search-field name="inIdFacture" operation="IN" field-ref="simpleFacture.idFacture" />
 				<search-field name="forIsHygienisteDentaire" operation="EQUALS" field-ref="simpleFacture.hygienisteDentaire" />
 			</search-group>
 		</search-definition>

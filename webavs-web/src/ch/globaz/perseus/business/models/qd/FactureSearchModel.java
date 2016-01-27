@@ -17,6 +17,7 @@ public class FactureSearchModel extends JadeSearchComplexModel {
      * 
      */
     private static final long serialVersionUID = 1L;
+    private List<String> inIdFacture = null;
     private String forAnnee = null;
     private String forCsEtatFacture = null;
     private String forCSTypeQD = null;
@@ -99,6 +100,10 @@ public class FactureSearchModel extends JadeSearchComplexModel {
 
     public List<String> getInCsEtatFacture() {
         return inCsEtatFacture;
+    }
+
+    public List<String> getInIdFacture() {
+        return inIdFacture;
     }
 
     /**
@@ -188,6 +193,10 @@ public class FactureSearchModel extends JadeSearchComplexModel {
 
     public void setInCsEtatFacture(List<String> inCsEtatFacture) {
         this.inCsEtatFacture = inCsEtatFacture;
+    }
+
+    public void setInIdFacture(List<String> inIdFacture) {
+        this.inIdFacture = inIdFacture;
     }
 
     /**

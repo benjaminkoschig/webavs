@@ -2,6 +2,7 @@ package ch.globaz.perseus.business.services.models.qd;
 
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
+import java.util.List;
 import java.util.Map;
 import ch.globaz.perseus.business.exceptions.models.facture.FactureException;
 import ch.globaz.perseus.business.models.qd.Facture;
@@ -120,4 +121,15 @@ public interface FactureService extends JadeApplicationService {
      * @throws FactureException
      */
     public Facture valider(Facture facture) throws JadePersistenceException, FactureException;
+
+    /**
+     * Permet de valider plusieurs factures d'un seul clic, fait appel a la validation individuelle pour comptabiliser
+     * dans un lot
+     * 
+     * @param factures
+     * @throws JadePersistenceException
+     * @throws FactureException
+     */
+    public void validerMultiple(List<String> idFactures) throws JadePersistenceException, FactureException;
+
 }
