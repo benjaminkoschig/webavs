@@ -27,7 +27,7 @@ public class DeclarationSalaireBuilderTest {
     public void testBuild() throws Exception {
 
         DeclarationSalaire ds = DeclarationSalaireBuilder.build(
-                "testsresources/ch/globaz/orion/businessimpl/services/pucs/pucs1.xml", buildFormater());
+                "src/test/resources/ch/globaz/orion/businessimpl/services/pucs/pucs1.xml", buildFormater());
         assertEquals(2012, ds.getAnnee());
         assertEquals(0, ds.getNbSalaire());
         assertEquals(new Montant(208067.2), ds.getMontantAc1());
