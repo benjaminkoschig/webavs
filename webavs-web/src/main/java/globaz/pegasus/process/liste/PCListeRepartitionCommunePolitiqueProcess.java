@@ -115,11 +115,11 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
 
         String filePath = Jade.getInstance().getPersistenceDir() + JadeUUIDGenerator.createStringUUID();
 
-        SimpleOutputListBuilder<BeneficiairePCCommunePolitiquePojo> builder = new SimpleOutputListBuilder<BeneficiairePCCommunePolitiquePojo>();
+        SimpleOutputListBuilder builder = new SimpleOutputListBuilder();
 
         Locale locale = new Locale(BSessionUtil.getSessionFromThreadContext().getIdLangueISO());
-        File file = builder.local(locale).classValue(BeneficiairePCCommunePolitiquePojo.class)
-                .title("Liste des bénéficiaires PC en cours par commune", Align.LEFT).asPdf().outputName(filePath)
+        File file = builder.local(locale).classElementList(BeneficiairePCCommunePolitiquePojo.class)
+                .addTitle("Liste des bénéficiaires PC en cours par commune", Align.LEFT).asPdf().outputName(filePath)
                 .addList(listBeneficiairePCCP).build();
 
         return file.getAbsolutePath();

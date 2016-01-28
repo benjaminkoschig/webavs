@@ -260,9 +260,6 @@ public class DeclarationSalaireBuilderTest {
 
                     Locale locale = Locale.FRENCH;
 
-                    SimpleOutputListBuilder<SalaryForListInterface> builder = new SimpleOutputListBuilder<SalaryForListInterface>();
-                    builder.classValue(SalaryForListInterface.class).local(locale).asPdf();
-
                     DeclarationSalaire ds = DeclarationSalaireBuilder.build(file.getAbsolutePath(), buildFormater());
 
                     List<SalaryForList> list = DeclarationSalaireBuilder.buildForList(ds.getEmployees());
@@ -281,7 +278,6 @@ public class DeclarationSalaireBuilderTest {
                     paramsData.add("MontantCaf", ds.getMontantCaf().toStringFormat());
 
                     paramsData.newLigne();
-                    builder.title("Liste des déclaration de salaire", Align.RIGHT);
 
                     List<SalaryForListInterface> forListInterface = new ArrayList<SalaryForListInterface>();
 
@@ -292,7 +288,10 @@ public class DeclarationSalaireBuilderTest {
                         forListInterface.add(salaryForList);
                     }
 
-                    File f = builder.addList(forListInterface).headerDetails(paramsData).outputName(path).build();
+                    SimpleOutputListBuilder builder = new SimpleOutputListBuilder().local(locale).asPdf();
+                    builder.addTitle("Liste des déclaration de salaire", Align.RIGHT);
+                    File f = builder.addList(forListInterface).classElementList(SalaryForListInterface.class)
+                            .addHeaderDetails(paramsData).outputName(path).build();
 
                 } catch (Throwable e) {
                     System.out.println(file.getName());

@@ -58,10 +58,10 @@ public class EBGenererListContact extends EBAbstractJadeJob {
 
                     Locale locale = new Locale(BSessionUtil.getSessionFromThreadContext().getIdLangueISO());
 
-                    SimpleOutputListBuilder<ContactEbusinessAffilie> builder = new SimpleOutputListBuilder<ContactEbusinessAffilie>();
+                    SimpleOutputListBuilder builder = new SimpleOutputListBuilder();
 
-                    File file = builder.local(locale).classValue(ContactEbusinessAffilie.class).asXls()
-                            .outputName(nomDoc).build();
+                    File file = builder.local(locale).addList(list).classElementList(ContactEbusinessAffilie.class)
+                            .asXls().outputName(nomDoc).build();
                     return file.getAbsolutePath();
                 }
 

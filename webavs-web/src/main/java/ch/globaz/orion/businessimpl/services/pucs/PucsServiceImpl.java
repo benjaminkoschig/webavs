@@ -162,8 +162,8 @@ public class PucsServiceImpl implements PucsService {
         BSession session = BSessionUtil.getSessionFromThreadContext();
         Locale locale = buildLocale(session);
 
-        SimpleOutputListBuilder<SalaryForList> builder = new SimpleOutputListBuilder<SalaryForList>();
-        builder.classValue(SalaryForList.class).local(locale).asXls();
+        SimpleOutputListBuilder builder = new SimpleOutputListBuilder();
+        builder.local(locale).asXls();
 
         File file = out(id, DeclarationSalaireProvenance.valueOf(provenance),
                 EtatSwissDecPucsFile.valueOf(etatSwissDecPucsFile), builder, session);
@@ -180,9 +180,8 @@ public class PucsServiceImpl implements PucsService {
     public static String pucFileLisiblePdf(String id, DeclarationSalaireProvenance provenance,
             EtatSwissDecPucsFile etatSwissDecPucsFile, BSession session) {
         Locale locale = buildLocale(session);
-
-        SimpleOutputListBuilder<SalaryForList> builder = new SimpleOutputListBuilder<SalaryForList>();
-        builder.classValue(SalaryForList.class).asPdf().local(locale);
+        SimpleOutputListBuilder builder = new SimpleOutputListBuilder();
+        builder.asPdf().local(locale);
 
         File file = out(id, provenance, etatSwissDecPucsFile, builder, session);
         return JadeFilenameUtil.normalizePathComponents(file.getAbsolutePath());
@@ -192,8 +191,8 @@ public class PucsServiceImpl implements PucsService {
             BSession session) {
 
         Locale locale = buildLocale(session);
-        SimpleOutputListBuilder<SalaryForList> builder = new SimpleOutputListBuilder<SalaryForList>();
-        builder.classValue(SalaryForList.class).asPdf().local(locale);
+        SimpleOutputListBuilder builder = new SimpleOutputListBuilder();
+        builder.asPdf().local(locale);
 
         File file = out(provenance, builder, parser, session);
         return JadeFilenameUtil.normalizePathComponents(file.getAbsolutePath());
@@ -211,8 +210,7 @@ public class PucsServiceImpl implements PucsService {
     }
 
     private static File out(String id, DeclarationSalaireProvenance provenance,
-            EtatSwissDecPucsFile etatSwissDecPucsFile, SimpleOutputListBuilder<SalaryForList> generator,
-            BSession session) {
+            EtatSwissDecPucsFile etatSwissDecPucsFile, SimpleOutputListBuilder generator, BSession session) {
         ElementsDomParser parser = buildElementDomParser(id, provenance, etatSwissDecPucsFile, session);
         return out(provenance, generator, parser, session);
     }
@@ -229,7 +227,7 @@ public class PucsServiceImpl implements PucsService {
         return parser;
     }
 
-    private static File out(DeclarationSalaireProvenance provenance, SimpleOutputListBuilder<SalaryForList> builder,
+    private static File out(DeclarationSalaireProvenance provenance, SimpleOutputListBuilder builder,
             ElementsDomParser parser, BSession session) {
 
         DeclarationSalaire ds = DeclarationSalaireBuilder.build(parser, provenance);
@@ -257,13 +255,14 @@ public class PucsServiceImpl implements PucsService {
         paramsData.add(session.getLabel("MONTANT_AC1"), ds.getMontantAc1().toStringFormat());
         paramsData.add(session.getLabel("MONTANT_AC2"), ds.getMontantAc2().toStringFormat());
         paramsData.add(session.getLabel("MONTANT_CAF"), ds.getMontantCaf().toStringFormat());
-        builder.title(session.getLabel("TITRE_LIST_SALAIRE") + "(" + PucsServiceImpl.NUMERO_INFORM_PUCS_LISIBLE + ")",
-                Align.RIGHT);
+        builder.addTitle(session.getLabel("TITRE_LIST_SALAIRE") + "(" + PucsServiceImpl.NUMERO_INFORM_PUCS_LISIBLE
+                + ")", Align.RIGHT);
         paramsData.newLigne();
         String name = (Jade.getInstance().getPersistenceDir() + ds.getNumeroAffilie() + "list_" + JadeUUIDGenerator
                 .createStringUUID());
 
-        File file = builder.addList(list).headerDetails(paramsData).outputName(name).build();
+        File file = builder.addList(list).classElementList(SalaryForList.class).addHeaderDetails(paramsData)
+                .outputName(name).build();
 
         return file;
     }

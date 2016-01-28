@@ -52,8 +52,8 @@ public class FullListeExcelRevision {
     public String createDoc(String nomDoc, RevisionQuadriennale revisionQuadriennale) {
         Locale locale = new Locale(BSessionUtil.getSessionFromThreadContext().getIdLangueISO());
 
-        SimpleOutputListBuilder<RevisionCsv> builder = new SimpleOutputListBuilder<RevisionCsv>();
-        builder.classValue(RevisionCsv.class).local(locale).addList(revisionQuadriennale.getDemandesARevisers())
+        SimpleOutputListBuilder builder = new SimpleOutputListBuilder();
+        builder.local(locale).addList(revisionQuadriennale.getDemandesARevisers()).classElementList(RevisionCsv.class)
                 .asCsv().outputName(nomDoc).build();
 
         return nomDoc;
