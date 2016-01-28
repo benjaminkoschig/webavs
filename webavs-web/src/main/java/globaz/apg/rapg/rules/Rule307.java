@@ -73,9 +73,11 @@ public class Rule307 extends Rule {
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException {
         BigDecimal montantMinime;
 
+        testDateNotEmptyAndValid(champsAnnonce.getStartOfPeriod(), "startOfPeriod");
+
         try {
             montantMinime = new BigDecimal(FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(),
-                    "1", "APGMINALEX", "", "", 0));
+                    "1", "APGMINALEX", champsAnnonce.getStartOfPeriod(), "", 0));
         } catch (Exception e) {
             throw new APRuleExecutionException(e);
         }
