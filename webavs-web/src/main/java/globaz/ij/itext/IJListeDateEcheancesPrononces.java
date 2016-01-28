@@ -79,7 +79,7 @@ public class IJListeDateEcheancesPrononces extends LYAbstractListGenerator {
         _addHeaderLine(null, null, getFontDocumentTitle(), _getDocumentTitle(), null, null);
 
         _addHeaderLine(getFontDate(),
-                getSession().getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_UTILISATEUR.getKey()) + " : "
+                getSession().getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_UTILISATEUR.getKey())
                         + getSession().getUserId(), null, null, null, null);
     }
 
