@@ -22,6 +22,8 @@
 		<project.businessversion>1.15.02</project.businessversion>
 		
 		<web.resources>src/main/webapp</web.resources>
+		
+		<compiler.version>2.5.1</compiler.version>
 	</properties>
 
 	<build>
