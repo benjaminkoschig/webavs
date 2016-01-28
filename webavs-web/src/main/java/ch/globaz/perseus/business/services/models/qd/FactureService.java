@@ -130,6 +130,6 @@ public interface FactureService extends JadeApplicationService {
      * @throws JadePersistenceException
      * @throws FactureException
      */
-    public void validerMultiple(List<String> idFactures) throws JadePersistenceException, FactureException;
+    public List<Facture> validerMultiple(List<String> idFactures) throws JadePersistenceException, FactureException;
 
 }

@@ -1,4 +1,4 @@
-package globaz.perseus.vb.rentepont;
+package globaz.perseus.vb.qd;
 
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BSpy;

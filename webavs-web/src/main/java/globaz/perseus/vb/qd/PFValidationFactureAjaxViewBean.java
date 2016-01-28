@@ -1,4 +1,4 @@
-package globaz.perseus.vb.rentepont;
+package globaz.perseus.vb.qd;
 
 import globaz.framework.bean.JadeAbstractAjaxListFindViewBean;
 import globaz.globall.db.BSession;

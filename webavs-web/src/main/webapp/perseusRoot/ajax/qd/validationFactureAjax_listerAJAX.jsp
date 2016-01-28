@@ -1,5 +1,5 @@
 <%@page import="globaz.framework.servlets.FWServlet"%>
-<%@page import="globaz.perseus.vb.rentepont.PFValidationFactureAjaxViewBean"%>
+<%@page import="globaz.perseus.vb.qd.PFValidationFactureAjaxViewBean"%>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page isELIgnored ="false" %>

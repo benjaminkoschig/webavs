@@ -11,7 +11,6 @@ import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,11 +19,9 @@ import ch.globaz.perseus.business.constantes.CSEtatFacture;
 import ch.globaz.perseus.business.constantes.CSEtatPrestation;
 import ch.globaz.perseus.business.constantes.CSTypeLot;
 import ch.globaz.perseus.business.constantes.CSTypeVersement;
-import ch.globaz.perseus.business.constantes.CSVariableMetier;
 import ch.globaz.perseus.business.exceptions.models.facture.FactureException;
 import ch.globaz.perseus.business.exceptions.models.lot.LotException;
 import ch.globaz.perseus.business.exceptions.models.qd.QDException;
-import ch.globaz.perseus.business.exceptions.models.variablemetier.VariableMetierException;
 import ch.globaz.perseus.business.models.lot.Lot;
 import ch.globaz.perseus.business.models.lot.OrdreVersement;
 import ch.globaz.perseus.business.models.lot.Prestation;
@@ -410,37 +407,22 @@ public class FactureServiceImpl extends PerseusAbstractServiceImpl implements Fa
     }
 
     @Override
-    public void validerMultiple(List<String> idFactures) throws JadePersistenceException, FactureException {
-        Float montantMaxValidationUserVM = null;
+    public List<Facture> validerMultiple(List<String> idFactures) throws JadePersistenceException, FactureException {
+        List<Facture> listFacture = new ArrayList<Facture>();
         FactureSearchModel searchFactures = new FactureSearchModel();
-        try {
-            montantMaxValidationUserVM = PerseusServiceLocator
-                    .getVariableMetierService()
-                    .getFromCS(CSVariableMetier.FACTURES_LIMITE_VALIDATION_GESTIONNAIRE.getCodeSystem(),
-                            Calendar.getInstance().getTime()).getMontant();
+        if (!idFactures.isEmpty()) {
+            searchFactures.setInIdFacture(idFactures);
+            searchFactures = search(searchFactures);
 
-            if (!idFactures.isEmpty() && montantMaxValidationUserVM != null) {
-                searchFactures.setInIdFacture(idFactures);
-                searchFactures = search(searchFactures);
+            // TODO assynch process
+            for (JadeAbstractModel jadeAbstractModel : searchFactures.getSearchResults()) {
+                Facture facture = (Facture) jadeAbstractModel;
 
-                for (JadeAbstractModel jadeAbstractModel : searchFactures.getSearchResults()) {
-                    Facture facture = (Facture) jadeAbstractModel;
-                    if (Float.valueOf(facture.getSimpleFacture().getMontantRembourse()) < montantMaxValidationUserVM) {
-                        valider(facture);
-                    }
-                }
+                // facture.getSimpleFacture().setCsEtat(CSEtatFacture.TRAITEMENT.getCodeSystem());
+                listFacture.add(valider(facture));
             }
-        } catch (VariableMetierException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (JadeApplicationServiceNotAvailableException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (NumberFormatException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
-
+        return listFacture;
         // // TODO Auto-generated method stub
         // if (((objSession.hasRight("perseus.facture.validation", FWSecureConstants.UPDATE)) || (objSession.hasRight(
         // "perseus.qd.detailfacture", FWSecureConstants.ADD)

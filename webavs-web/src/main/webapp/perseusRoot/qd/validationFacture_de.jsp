@@ -5,7 +5,7 @@
 <%@page import="ch.globaz.perseus.business.services.PerseusServiceLocator"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="globaz.perseus.utils.PFGestionnaireHelper"%>
-<%@page import="globaz.perseus.vb.rentepont.PFValidationFactureViewBean"%>
+<%@page import="globaz.perseus.vb.qd.PFValidationFactureViewBean"%>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
@@ -27,7 +27,7 @@
 <script type="text/javascript" src="<%=servletContext%>/scripts/ajax/DefaultTableAjax.js"/></script>
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 <script language="JavaScript">
-	globazGlobal.ACTION_AJAX ="perseus.rentepont.validationFactureAjax";
+	globazGlobal.ACTION_AJAX ="perseus.qd.validationFactureAjax";
 	globazGlobal.csEtatFactureEnregistre = <%=CSEtatFacture.ENREGISTRE.getCodeSystem()%>;
 	
 	$(function () {
