@@ -630,7 +630,7 @@ function rebuildNoga(idCode) {
 										codeType="VEBRANCHEE"/> 									
 								</TD>
 								<%
-								if(listeConventions.size() != 0){
+								if(listeConventions.size() > 1){
 								%>				
 								<TD>Konvention
 									<ct:FWListSelectTag name="convention"
