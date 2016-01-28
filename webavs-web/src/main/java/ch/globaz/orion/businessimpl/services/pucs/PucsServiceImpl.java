@@ -162,8 +162,7 @@ public class PucsServiceImpl implements PucsService {
         BSession session = BSessionUtil.getSessionFromThreadContext();
         Locale locale = buildLocale(session);
 
-        SimpleOutputListBuilder builder = new SimpleOutputListBuilder();
-        builder.local(locale).asXls();
+        SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance().local(locale).asXls();
 
         File file = out(id, DeclarationSalaireProvenance.valueOf(provenance),
                 EtatSwissDecPucsFile.valueOf(etatSwissDecPucsFile), builder, session);
@@ -180,8 +179,7 @@ public class PucsServiceImpl implements PucsService {
     public static String pucFileLisiblePdf(String id, DeclarationSalaireProvenance provenance,
             EtatSwissDecPucsFile etatSwissDecPucsFile, BSession session) {
         Locale locale = buildLocale(session);
-        SimpleOutputListBuilder builder = new SimpleOutputListBuilder();
-        builder.asPdf().local(locale);
+        SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance().asPdf().local(locale);
 
         File file = out(id, provenance, etatSwissDecPucsFile, builder, session);
         return JadeFilenameUtil.normalizePathComponents(file.getAbsolutePath());
@@ -191,8 +189,7 @@ public class PucsServiceImpl implements PucsService {
             BSession session) {
 
         Locale locale = buildLocale(session);
-        SimpleOutputListBuilder builder = new SimpleOutputListBuilder();
-        builder.asPdf().local(locale);
+        SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance().asPdf().local(locale);
 
         File file = out(provenance, builder, parser, session);
         return JadeFilenameUtil.normalizePathComponents(file.getAbsolutePath());

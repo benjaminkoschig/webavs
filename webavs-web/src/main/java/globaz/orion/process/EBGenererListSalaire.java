@@ -154,10 +154,8 @@ public class EBGenererListSalaire extends EBAbstractJadeJob {
             String nomDoc = generateFileName(ContactSalaire.NUMERO_INFOROM);
             Locale locale = new Locale(BSessionUtil.getSessionFromThreadContext().getIdLangueISO());
 
-            SimpleOutputListBuilder builder = new SimpleOutputListBuilder();
-
-            File file = builder.local(locale).addList(list).classElementList(ContactSalaire.class).asXls()
-                    .outputName(nomDoc).build();
+            File file = SimpleOutputListBuilder.newInstance().local(locale).addList(list)
+                    .classElementList(ContactSalaire.class).asXls().outputName(nomDoc).build();
 
             sendCompletionMail(email, file.getAbsolutePath(), body);
 

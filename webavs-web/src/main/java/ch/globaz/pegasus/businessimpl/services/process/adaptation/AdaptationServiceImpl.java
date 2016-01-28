@@ -142,10 +142,8 @@ public class AdaptationServiceImpl implements AdaptationService {
             }
         });
 
-        SimpleOutputListBuilder builder = new SimpleOutputListBuilder();
-
-        File file = builder.local(locale).addList(pcasForImpressions).classElementList(PcaForImpression.class).asXls()
-                .outputName(path).build();
+        File file = SimpleOutputListBuilder.newInstance().local(locale).addList(pcasForImpressions)
+                .classElementList(PcaForImpression.class).asXls().outputName(path).build();
 
         watch.stop();
 
