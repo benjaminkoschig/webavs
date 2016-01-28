@@ -15,8 +15,6 @@
 	<description>WebAVS main web application</description>
 
 	<properties>
-		<site.directory>${basedir}/site</site.directory>
-		<logback.configuration>${basedir}/resources/logback.xml</logback.configuration>
 		<webapp.context>/webavs</webapp.context>
 		<!-- empty enums make sonar fail... -->
 		<sonar.exclusions>**ch/globaz/common/listoutput/generator/annotation/style/VerticalAlign*,**globaz/apg/enums/APStep2Rules*,**globaz/apg/itext/decompte/utils/APDonneeRegroupementDecompte*,**globaz/corvus/itext/REListeComparaisonLivraison2Centrale*,**ch/globaz/al/businessimpl/services/entetesDocument/EnteteDocumentUserInfoServiceImpl*,**globaz/apg/helpers/prestation/APPrestationHelper*,**globaz/apg/vb/droits/APSituationProfessionnelleViewBean*,**heliosRoot/**/*.xml*</sonar.exclusions>
@@ -581,27 +579,4 @@
 			<artifactId>javax.mail</artifactId>
 		</dependency>
 	</dependencies>
-
-	<reporting>
-		<plugins>
-			<!-- Temporary fix for https://issues.apache.org/jira/browse/MRELEASE-926 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<reportSets>
-					<reportSet>
-						<id>default</id>
-						<reports>
-							<report>javadoc</report>
-							<report>test-javadoc</report>
-						</reports>
-					</reportSet>
-					<reportSet>
-						<id>aggregate</id>
-						<reports />
-					</reportSet>
-				</reportSets>
-			</plugin>
-		</plugins>
-	</reporting>
 </project>
