@@ -8,6 +8,11 @@
 
 	<web>
 		<link target="/">
+			<dir name="${rebel.workspace.path}/webavs-parent/webavs-web/target/m2e-wtp/web-resources">
+				<exclude name="/"/>
+			</dir>
+		</link>
+		<link target="/">
 			<dir name="${rebel.workspace.path}/webavs-parent/webavs-web/src/main/webapp">
 			</dir>
 		</link>
