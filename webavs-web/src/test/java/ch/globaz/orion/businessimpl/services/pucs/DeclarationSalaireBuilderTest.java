@@ -80,7 +80,7 @@ public class DeclarationSalaireBuilderTest {
     @Test
     public void testBuildAfSeul() throws Exception {
         DeclarationSalaire ds = DeclarationSalaireBuilder.build(
-                "testsresources/ch/globaz/orion/businessimpl/services/pucs/124.1195-AF_SEULE.xml", buildFormater());
+                "src/test/resources/ch/globaz/orion/businessimpl/services/pucs/124.1195-AF_SEULE.xml", buildFormater());
         assertEquals(2014, ds.getAnnee());
         assertEquals(1, ds.getNbSalaire());
         assertEquals(new Montant(0), ds.getMontantAc1());
@@ -109,7 +109,7 @@ public class DeclarationSalaireBuilderTest {
     @Test
     public void testBuildwithTestBalise() throws Exception {
         DeclarationSalaire ds = DeclarationSalaireBuilder.build(
-                "testsresources/ch/globaz/orion/businessimpl/services/pucs/swissDec1WithBaliseTest.xml",
+                "src/test/resources/ch/globaz/orion/businessimpl/services/pucs/swissDec1WithBaliseTest.xml",
                 buildFormater());
         assertTrue(ds.isTest());
     }
@@ -252,7 +252,7 @@ public class DeclarationSalaireBuilderTest {
         List<String> files = Arrays
                 .asList(new String[] { "pucs1", "swissDec1", "swissDec2", "swissDecMix", "swissDec3" });
 
-        final File folder = new File("testsresources/ch/globaz/orion/businessimpl/services/pucs");
+        final File folder = new File("src/test/resources/ch/globaz/orion/businessimpl/services/pucs");
 
         for (File file : folder.listFiles()) {
             if (file.isFile()) {
@@ -281,7 +281,7 @@ public class DeclarationSalaireBuilderTest {
 
                     List<SalaryForListInterface> forListInterface = new ArrayList<SalaryForListInterface>();
 
-                    String path = "testsresources/ch/globaz/orion/businessimpl/services/pdf/"
+                    String path = "src/test/resources/ch/globaz/orion/businessimpl/services/pdf/"
                             + file.getName().replace(".xml", "");
 
                     for (SalaryForList salaryForList : list) {
