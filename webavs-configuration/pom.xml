@@ -4,159 +4,22 @@
 
 	<parent>
 		<groupId>ch.globaz</groupId>
-		<artifactId>java-superpom</artifactId>
-		<version>1.0.0</version>
+		<artifactId>webavs-parent</artifactId>
+		<version>1.15.02-SNAPSHOT</version>
 	</parent>
 
 	<packaging>pom</packaging>
 	<artifactId>webavs-config</artifactId>
-	<version>1.15.01-SNAPSHOT</version>
 
 	<name>WebAVS Configuration Build</name>
 	<description>Build a zip for FVE</description>
 	<url>http://javadoc.ju.globaz.ch/${project.artifactId}/${project.version}</url>
 
-	<developers>
-		<developer>
-			<id>hna</id>
-			<name>Hervé NAVARRE</name>
-			<email>hna@globaz.ch</email>
-			<roles>
-				<role>developer</role>
-				<role>sm</role>
-			</roles>
-			<url>http://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CHNA</url>
-			<properties>
-				<phone>271</phone>
-				<picUrl>http://mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/dglobaz_hna_LThumb.jpg</picUrl>
-			</properties>
-		</developer>
-		<developer>
-			<id>mmo</id>
-			<name>Michaël MONTANDON</name>
-			<email>mmo@globaz.ch</email>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<url>http://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CMMO</url>
-			<properties>
-				<phone>284</phone>
-				<picUrl>http://mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/dglobaz_mmo_LThumb.jpg</picUrl>
-			</properties>
-		</developer>
-		<developer>
-			<id>cel</id>
-			<name>Charles-Elie LEROY</name>
-			<email>cel@globaz.ch</email>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<url>http://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CCEL</url>
-			<properties>
-				<phone>227</phone>
-				<picUrl>http://mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/cel_LThumb.jpg</picUrl>
-			</properties>
-		</developer>
-		<developer>
-			<id>lga</id>
-			<name>Lucien GATHERAT</name>
-			<email>lga@globaz.ch</email>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<url>http://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CLGA</url>
-			<properties>
-				<phone>285</phone>
-				<picUrl>http://mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/dglobaz_lga_LThumb.jpg</picUrl>
-			</properties>
-		</developer>
-		<developer>
-			<id>jts</id>
-			<name>Julien TSCHÄPPÄT</name>
-			<email>jts@globaz.ch</email>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<url>http://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CJTS</url>
-			<properties>
-				<phone>268</phone>
-				<picUrl>http://mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/dglobaz_jts_LThumb.jpg</picUrl>
-			</properties>
-		</developer>
-
-		<developer>
-			<id>sce</id>
-			<name>Sébastien CHÈVRE</name>
-			<email>sce@globaz.ch</email>
-			<roles>
-				<role>developer</role>
-				<role>sm</role>
-			</roles>
-			<url>http://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CSCE</url>
-			<properties>
-				<phone>259</phone>
-				<picUrl>http://mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/dglobaz_sce_LThumb.jpg</picUrl>
-			</properties>
-		</developer>
-
-		<developer>
-			<id>dma</id>
-			<name>Dorian MAGNIN</name>
-			<email>dma@globaz.ch</email>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<url>http://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CDMA</url>
-			<properties>
-				<phone>278</phone>
-				<picUrl>http://mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/dglobaz_dma_LThumb.jpg</picUrl>
-			</properties>
-		</developer>
-		<developer>
-			<id>bjo</id>
-			<name>Benoit JOSS</name>
-			<email>bjo@globaz.ch</email>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<url>http://mysite.ju.globaz.ch/Person.aspx?accountname=DGLOBAZ%5CBJO</url>
-			<properties>
-				<phone>275</phone>
-				<picUrl>http://mysite.ju.globaz.ch/User%20Photos/Images%20du%20profil/dglobaz_bjo_LThumb.jpg</picUrl>
-			</properties>
-		</developer>
-
-		<!-- TODO compléter -->
-	</developers>
 
 	<properties>
-		<!-- SCM ATTRIBUTES -->
-		<scm.path>webavs-repos</scm.path>
-		<scm.tags>${scm.protocol}://${scm.base}/tags</scm.tags>
-		<scm.url>${scm.protocol}://${scm.base}/trunk/configuration</scm.url>
-		<scm.weburl>http://${scm.base}/trunk/configuration</scm.weburl>
-		<release.tagFormat>webavs/@{project.version}</release.tagFormat>
-
 		<!-- CONTINUOUS INTEGRATION -->
 		<ci.url>http://ci-devtools.ju.globaz.ch:8080/jenkins</ci.url>
-
-		<!-- WIKI ATTRIBUTES -->
-		<wiki.parent>WebAVS RN</wiki.parent>
 	</properties>
-
-	<scm>
-		<url>${scm.weburl}</url>
-		<connection>scm:${scm.type}:${scm.url}</connection>
-		<developerConnection>scm:${scm.type}:${scm.url}</developerConnection>
-	</scm>
-
-	<distributionManagement>
-		<site>
-			<id>documentation-server</id>
-			<name>Javadoc Server</name>
-			<url>${documentation.root}/${project.artifactId}/${project.version}</url>
-		</site>
-	</distributionManagement>
 
 	<build>
 		<plugins>
