@@ -26,11 +26,11 @@
 	<!-- 	<defaultJdbcUrl>jdbc:jade:CCVD_DEV</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>CCVDDEV</defaultJdbcSchema> -->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_DEV</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
-	
-<!-- 		<defaultJdbcUrl>jdbc:jade:CICICAM_DEV</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>CICIWEB</defaultJdbcSchema> -->
+	<!-- 	<defaultJdbcUrl>jdbc:jade:CCJU_DEV</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
+		
+	<!-- 	<defaultJdbcUrl>jdbc:jade:CICICAM_DEV</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CICIWEB</defaultJdbcSchema> -->
 	
 	<!-- 	<defaultJdbcUrl>jdbc:jade:FERCIAM_DEV</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>WEBAVSCIAM</defaultJdbcSchema> -->
@@ -38,55 +38,57 @@
 	<!-- 	<defaultJdbcUrl>jdbc:jade:H51X_DEV</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
 	
- 	<defaultJdbcUrl>jdbc:jade:DEV2PROD</defaultJdbcUrl>  
- 	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> 	 
+	<!--  	<defaultJdbcUrl>jdbc:jade:DEV2PROD</defaultJdbcUrl>   -->
+	<!--  	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> 	  -->
+
+	<!--  	<defaultJdbcUrl>jdbc:jade:DATASOURCE_BMSDEV</defaultJdbcUrl>   -->
+	<!--  	<defaultJdbcSchema>WEBAVSS</defaultJdbcSchema> 	  -->
+ 	
+ 	
 <!-- BASES DE QUALITE -->
 
-<!-- 	<defaultJdbcUrl>jdbc:jade:FVE_QUALITE</defaultJdbcUrl> -->
-<!-- 	<defaultJdbcSchema>FVEQUA</defaultJdbcSchema> -->
+	<!-- 	<defaultJdbcUrl>jdbc:jade:FVE_QUALITE</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>FVEQUA</defaultJdbcSchema> -->
 	
-<!-- 	<defaultJdbcUrl>jdbc:jade:CCB_QUALITE</defaultJdbcUrl> -->
-<!-- 	<defaultJdbcSchema>CCBQUA</defaultJdbcSchema> -->
+	<!-- 	<defaultJdbcUrl>jdbc:jade:CCB_QUALITE</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CCBQUA</defaultJdbcSchema> -->
 
-<!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_QA</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>CCVDQUA</defaultJdbcSchema> -->
+	<!-- 	<defaultJdbcUrl>jdbc:jade:CCVD_QA</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CCVDQUA</defaultJdbcSchema> -->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>RT_AGLA</defaultJdbcSchema> -->
+	<!-- 	<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>RT_AGLA</defaultJdbcSchema> -->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>PC_CCVD</defaultJdbcSchema> -->
+	<!-- 	<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>PC_CCVD</defaultJdbcSchema> -->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>	 -->
+	<!-- 	<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>	 -->
 
-<!-- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
+	<!-- 	<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
 
-<!-- 	 	<defaultJdbcUrl>jdbc:jade:CCJU_PC_RFM_QUALITE_1_6</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
+	<!-- 	<defaultJdbcUrl>jdbc:jade:CCJU_PC_RFM_QUALITE_1_6</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:CICICAM_QUALITE</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>CICIWEB</defaultJdbcSchema> -->
+	<!-- 	<defaultJdbcUrl>jdbc:jade:CICICAM_QUALITE</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CICIWEB</defaultJdbcSchema> -->
 		
-<!-- 		 	<defaultJdbcUrl>jdbc:jade:CCVS_QUALITE</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>DB2COTT</defaultJdbcSchema> -->
+	<!--	<defaultJdbcUrl>jdbc:jade:CCVS_QUALITE</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>DB2COTT</defaultJdbcSchema> -->
 		
 	<!-- 	<defaultJdbcUrl>jdbc:jade:CVCI_QUALTIE</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>CVCIWEB</defaultJdbcSchema> -->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:FERCIAM_QUA</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>WEBAVSCIAM</defaultJdbcSchema> -->
+	<!-- 	<defaultJdbcUrl>jdbc:jade:FERCIAM_QUA</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>WEBAVSCIAM</defaultJdbcSchema> -->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:FPV_QUALITE</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>WEBAVSS</defaultJdbcSchema> -->
+	<!-- 	<defaultJdbcUrl>jdbc:jade:FPV_QUALITE</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>WEBAVSS</defaultJdbcSchema> -->
+	
+	<!-- 	<defaultJdbcUrl>jdbc:jade:FVE_INT</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>WEBAVS</defaultJdbcSchema> -->
 		
-<!-- 		<defaultJdbcUrl>jdbc:jade:FVE_INT</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>WEBAVS</defaultJdbcSchema> -->
-		
-	
-
-	
 	<!-- 	<defaultJdbcUrl>jdbc:jade:MEROBA_QUALITE</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>MEROWEB</defaultJdbcSchema> -->
 
@@ -96,17 +98,17 @@
 	<!-- 	<defaultJdbcUrl>jdbc:jade:REPRISE_PC</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
 	
-<!-- 			<defaultJdbcUrl>jdbc:jade:REP5PRO2</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>CVCIWEB</defaultJdbcSchema> -->
+	<!-- 	<defaultJdbcUrl>jdbc:jade:REP5PRO2</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CVCIWEB</defaultJdbcSchema> -->
 
 
 <!-- BASES INTEGRATION -->
 
-<!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_INT_TEST_GLOBAZ</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>CCVDINT</defaultJdbcSchema> -->
+	<!-- 	<defaultJdbcUrl>jdbc:jade:CCVD_INT_TEST_GLOBAZ</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CCVDINT</defaultJdbcSchema> -->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_INTEGRATION_TEST</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
+	<!-- 	<defaultJdbcUrl>jdbc:jade:CCJU_INTEGRATION_TEST</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
 	
 	<!-- 	<defaultJdbcUrl>jdbc:jade:CCJU_INTEGRATION_2</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->	
@@ -128,8 +130,9 @@
 	
 	<!-- 	<defaultJdbcUrl>jdbc:jade:MEROBA_INTEGRATION_2</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>MEROWEB</defaultJdbcSchema> -->
-<!-- 	<defaultJdbcUrl>jdbc:jade:REPRISE_CCVD_400</defaultJdbcUrl> -->
-<!-- 	<defaultJdbcSchema>RT_CCVD</defaultJdbcSchema> -->
+	
+	<!-- 	<defaultJdbcUrl>jdbc:jade:REPRISE_CCVD_400</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>RT_CCVD</defaultJdbcSchema> -->
 
 	<!--defaultJdbcTablePrefix: prefixe des tables JDBC par defaut-->
 	<defaultJdbcTablePrefix></defaultJdbcTablePrefix>
