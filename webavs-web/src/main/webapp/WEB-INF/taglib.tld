@@ -482,7 +482,7 @@
 	</tag>	
 	<tag>
 		<name>FWCode</name>
-		<tagclass>ch.globaz.common.taglibs.CodeTag</tagclass>
+		<tagclass>globaz.fweb.taglib.FWShortCodeTag</tagclass>
 		<bodycontent>empty</bodycontent>
 		<info>Tag pour afficher un code système raccourci</info>
 		<attribute>
@@ -1643,43 +1643,43 @@
 	</tag>
 	<tag>
 		<name>setAppColor</name>
-		<tagclass>ch.globaz.common.taglibs.AppColorTag</tagclass>
+		<tagclass>globaz.fweb.taglib.FWAppColorTag</tagclass>
 		<bodycontent>empty</bodycontent>
 		<info>Tag définissant la variable "languePage" dans le pageContext</info>
 	</tag>
 	<tag>
 		<name>setLanguePage</name>
-		<tagclass>ch.globaz.common.taglibs.LanguePageTag</tagclass>
+		<tagclass>globaz.fweb.taglib.FWLanguePageTag</tagclass>
 		<bodycontent>empty</bodycontent>
 		<info>Tag définissant la variable "appColor" dans le pageContext</info>
 	</tag>
 	<tag>
 		<name>setApplicationId</name>
-		<tagclass>ch.globaz.common.taglibs.ApplicationIdTag</tagclass>
+		<tagclass>globaz.fweb.taglib.FWApplicationIdTag</tagclass>
 		<bodycontent>empty</bodycontent>
 		<info>Tag définissant la variable "applicationId" dans le pageContext</info>
 	</tag>
 	<tag>
 		<name>setAutoShowErrorPopup</name>
-		<tagclass>ch.globaz.common.taglibs.AutoShowErrorPopupTag</tagclass>
+		<tagclass>globaz.fweb.taglib.FWAutoShowErrorPopupTag</tagclass>
 		<bodycontent>empty</bodycontent>
 		<info>Tag définissant la variable "autoShowErrorPopup" dans le pageContext</info>
 	</tag>
 	<tag>
 		<name>setErrorMessageFormatte</name>
-		<tagclass>ch.globaz.common.taglibs.ErrorMessageFormatteTag</tagclass>
+		<tagclass>globaz.fweb.taglib.FWErrorMessageFormatteTag</tagclass>
 		<bodycontent>empty</bodycontent>
 		<info>Tag définissant la variable "errorMsgFormatte" dans le pageContext</info>
 	</tag>
 	<tag>
 		<name>setCreationSpy</name>
-		<tagclass>ch.globaz.common.taglibs.CreationSpyTag</tagclass>
+		<tagclass>globaz.fweb.taglib.FWCreationSpyTag</tagclass>
 		<bodycontent>empty</bodycontent>
 		<info>Tag définissant la variable "creationSpy" dans le pageContext</info>
 	</tag>
 		<tag>
 		<name>checkRight</name>
-		<tagclass>ch.globaz.common.taglibs.CheckRightTag</tagclass>
+		<tagclass>globaz.fweb.taglib.FWCheckRightTag</tagclass>
 		<bodycontent>JSP</bodycontent>
 		<info>Tag définissant la variable "var" à true si l'utilisateur dispose du droit sur "element" et "crud"</info>
 		<attribute>
