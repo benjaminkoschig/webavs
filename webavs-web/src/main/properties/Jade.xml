@@ -2,7 +2,7 @@
 <!--Jade: proprietes generales du systeme-->
 <Jade>
 	<!--homeDir: repertoire de base de l'application, necessaire pour trouver les fichiers de l'application-->
-	<homeDir>D:\workspaces\avs\trunk\webavs\WebContent</homeDir>
+	<homeDir>D:\workspaces\avs\trunk\webavs-parent\webavs-web\src\main\webapp</homeDir>
 	<!--persistenceDir: repertoire pour la persistance interne, si vide: homeDir + /persistence-->
 	<persistenceDir></persistenceDir>
 	<!--logDir: repertoire pour les fichiers LOG de l'application, si vide: homeDir + /logs-->
