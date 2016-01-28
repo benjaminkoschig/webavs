@@ -2,6 +2,7 @@
 <%-- tpl:insert page="/theme/capage.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/find/header.jspf" %>
+<%@page import="globaz.draco.application.DSApplication"%>
 <%-- tpl:put name="zoneInit" --%>
 <%idEcran = "CDS0003";
 rememberSearchCriterias = true;%>
@@ -12,6 +13,16 @@ rememberSearchCriterias = true;%>
 globaz.draco.db.declaration.DSDeclarationViewBean viewBean = (globaz.draco.db.declaration.DSDeclarationViewBean)session.getAttribute ("viewBeanRC");
 actionNew = actionNew + "&idDeclaration=" + viewBean.getIdDeclaration();
 bButtonNew = objSession.hasRight("draco.declaration.ligneDeclaration.afficher","ADD");
+
+String gedFolderType = "";
+String gedServiceName = "";
+try {
+	globaz.globall.api.BIApplication osiApp = globaz.globall.api.GlobazSystem.getApplication(DSApplication.DEFAULT_APPLICATION_DRACO);
+	gedFolderType = osiApp.getProperty("ged.folder.type", "");
+	gedServiceName = osiApp.getProperty("ged.servicename.id", "");
+} catch (Exception e){
+	// Le reste de la page doit tout de même fonctionner
+}
 %>
 <%-- /tpl:put --%>
 <%@ include file="/theme/find/javascripts.jspf" %>
@@ -89,6 +100,18 @@ detailLink = servlet+"?userAction=draco.declaration.ligneDeclaration.afficher&_m
             <TD>&nbsp;</TD>
               <TD><INPUT type="text" name="etatEcran" value="<%=CodeSystem.getLibelle(session, viewBean.getEtat())%>" class="disabled" readonly tabindex="-1">
           </TR>
+          <tr>
+          <TD valign="top"  width="100">
+														<%
+										             		String gedAffilieNumero = viewBean.getAffiliation().getAffilieNumero();
+										             		String gedNumAvs = viewBean.getAffiliation().getTiers().getNumAvsActuel();
+										             		String gedIdTiers = viewBean.getIdTiers();
+										             		String gedIdRole = "";
+										             	%>
+														
+														<%@ include file="/theme/gedCall.jspf" %>
+													</TD>
+          </tr>
           <%-- /tpl:put --%>
 <%@ include file="/theme/find/bodyButtons.jspf" %>
 				<%-- tpl:put name="zoneButtons" --%>
