@@ -161,7 +161,7 @@
   <NamedRange ss:Name="labelAdressePaiement" ss:RefersTo="=Feuil1!R3C4"/>
   <NamedRange ss:Name="labelAssuree" ss:RefersTo="=Feuil1!R3C2"/>
   <NamedRange ss:Name="labelCommunePolitique" ss:RefersTo="=Feuil1!R3C1"/>
-  <NamedRange ss:Name="labelMontant" ss:RefersTo="=Feuil1!R3C4"/>
+  <NamedRange ss:Name="labelMontant" ss:RefersTo="=Feuil1!R3C6"/>
   <NamedRange ss:Name="labelTypeOv" ss:RefersTo="=Feuil1!R3C3"/>
   <NamedRange ss:Name="labelUser" ss:RefersTo="=Feuil1!R2C1"/>
   <NamedRange ss:Name="montant" ss:RefersTo="=Feuil1!R4C6"/>
@@ -203,10 +203,10 @@
       ss:Name="labelAssuree"/></Cell>
     <Cell ss:StyleID="s69"><Data ss:Type="String">Type</Data><NamedCell
       ss:Name="labelTypeOv"/></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Adresse Paiement</Data><NamedCell
-      ss:Name="labelMontant"/><NamedCell ss:Name="labelAdressePaiement"/></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Adresse Paiement</Data><NamedCell ss:Name="labelAdressePaiement"/></Cell>
     <Cell ss:StyleID="s70"/>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">Montant</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Montant</Data><NamedCell
+      ss:Name="labelMontant"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="57.75">
     <Cell ss:StyleID="s83"><Data ss:Type="String">communePolitique</Data><NamedCell
