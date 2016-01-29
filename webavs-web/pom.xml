@@ -95,7 +95,7 @@
 					<archiveClasses>true</archiveClasses>
 
 					<!-- do we need an artifact with the -classes classifier? -->
-					<attachClasses>false</attachClasses>
+					<attachClasses>true</attachClasses>
 
 					<includeEmptyDirectories>true</includeEmptyDirectories>
 
