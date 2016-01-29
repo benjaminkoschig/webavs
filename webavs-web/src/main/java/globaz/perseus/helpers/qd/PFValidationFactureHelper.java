@@ -8,32 +8,35 @@ import globaz.globall.db.BProcessLauncher;
 import globaz.globall.db.BSession;
 import globaz.perseus.process.qd.PFValidationFactureProcess;
 import globaz.perseus.vb.qd.PFValidationFactureViewBean;
+import java.util.Arrays;
+import java.util.List;
 
 public class PFValidationFactureHelper extends FWHelper {
 
-    private FWViewBeanInterface _actionValider(FWViewBeanInterface viewBean, FWAction action, BISession session)
-            throws Exception {
-        _start(viewBean, action, session);
-        return viewBean;
-    }
-
     @Override
-    protected void _start(FWViewBeanInterface viewBean, FWAction action, BISession session) {
+    protected FWViewBeanInterface execute(FWViewBeanInterface viewBean, FWAction action, BISession session) {
+        if ("actionValider".equals(action.getActionPart())) {
+            if (viewBean instanceof PFValidationFactureViewBean) {
+                PFValidationFactureProcess process = new PFValidationFactureProcess();
+                process.setSession((BSession) session);
+                process.setAdresseMail(((PFValidationFactureViewBean) viewBean).getAdresseMail());
+                String stringIds = ((PFValidationFactureViewBean) viewBean).getFactureSelected();
+                if (stringIds != null && !stringIds.isEmpty()) {
+                    List<String> ids = Arrays.asList(stringIds.split(","));
+                    process.setListIdFacture(ids);
+                }
 
-        if (viewBean instanceof PFValidationFactureViewBean) {
-            PFValidationFactureProcess process = new PFValidationFactureProcess();
-            process.setSession((BSession) session);
-            process.setAdresseMail(((PFValidationFactureViewBean) viewBean).getAdresseMail());
-
-            try {
-                BProcessLauncher.startJob(process);
-            } catch (Exception e) {
-                e.printStackTrace();
-                viewBean.setMessage("Unable to start........");
-                viewBean.setMsgType(FWViewBeanInterface.ERROR);
+                try {
+                    BProcessLauncher.startJob(process);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    viewBean.setMessage("Unable to start........");
+                    viewBean.setMsgType(FWViewBeanInterface.ERROR);
+                }
+            } else {
+                super._start(viewBean, action, session);
             }
-        } else {
-            super._start(viewBean, action, session);
         }
+        return viewBean;
     }
 }

@@ -15,6 +15,7 @@ import globaz.perseus.vb.qd.PFDetailfactureViewBean;
 import globaz.perseus.vb.qd.PFFactureViewBean;
 import globaz.perseus.vb.qd.PFOuvertureQdViewBean;
 import globaz.perseus.vb.qd.PFQdChercherViewBean;
+import globaz.perseus.vb.qd.PFValidationFactureViewBean;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -198,6 +199,7 @@ public class PFQdAction extends PFAbstractDefaultServletAction {
         // Attention, si appel de custom action, on passe le paramètre "id" au
         // lieu de "selectedId"
         String destination = null;
+        boolean isAjax = false;
         try {
             FWAction action = FWAction.newInstance(request.getParameter("userAction"));
 
@@ -217,6 +219,9 @@ public class PFQdAction extends PFAbstractDefaultServletAction {
                 String urlPlus = "&idDossier=" + vb.getFacture().getQd().getQdAnnuelle().getDossier().getId();
                 destination = getActionFullURL().replace("detailfacture", "facture") + ".chercher" + urlPlus;
                 session.setAttribute("viewBean", viewBean);
+            } else if (viewBean instanceof PFValidationFactureViewBean) {
+                request.setAttribute(FWServlet.VIEWBEAN, viewBean);
+                isAjax = true;
             } else {
                 session.setAttribute("viewBean", viewBean);
                 /*
@@ -234,10 +239,14 @@ public class PFQdAction extends PFAbstractDefaultServletAction {
             destination = FWDefaultServletAction.ERROR_PAGE;
         }
 
-        /*
-         * redirection vers la destination
-         */
-        goSendRedirect(destination, request, response);
+        if (isAjax) {
+            destination = "/jade/ajax/templateAjax_afficherAJAX.jsp";
+            servlet.getServletContext().getRequestDispatcher(destination).forward(request, response);
+        } else {
+            /*
+             * redirection vers la destination
+             */
+            goSendRedirect(destination, request, response);
+        }
     }
-
 }

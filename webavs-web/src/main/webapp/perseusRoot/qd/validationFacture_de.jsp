@@ -1,5 +1,6 @@
 <%@ include file="/theme/detail_ajax/header.jspf" %>
 <%@ page language="java" import="globaz.globall.http.*" %>
+<%@page import="ch.globaz.perseus.business.constantes.IPFActions"%>
 
 <%@page import="ch.globaz.perseus.business.constantes.CSEtatFacture"%>
 <%@page import="ch.globaz.perseus.business.services.PerseusServiceLocator"%>
@@ -25,21 +26,32 @@
 <%@ include file="/theme/detail_ajax/javascripts.jspf" %>
 <%-- tpl:insert attribute="zoneScripts" --%>
 
-<script type="text/javascript" src="<%=servletContext%>/scripts/ajax/DefaultTableAjax.js"/></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/ajax/DefaultTableAjaxList.js"/></script>
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 <script language="JavaScript">
 	globazGlobal.ACTION_AJAX ="perseus.qd.validationFactureAjax";
 	globazGlobal.csEtatFactureEnregistre = <%=CSEtatFacture.ENREGISTRE.getCodeSystem()%>;
-	var url = "perseus.qd.validationFacture";
+	var url ="<%=IPFActions.ACTION_VALIDATION_FACTURE%>";
+	
+	// Pour eviter les apple ajax tout les 500ms sur les notifc
+	try {
+		globazNotation.growl.init = function (){}
+	} catch(e){}
+	
 	$(function () {
-		
+	    var objetAjax ;
+
 		$(".areaTable").on("click", "td", function(){
-			console.log(this)
-			console.log($(this).parent().find("a"));
+			
 			//$(this).parent().find("a").click();
 		})
 		
-		defaultTableAjax.init({
+		$("body").on("click", ".ui-icon-closethick", function(){
+			objetAjax.ajaxFind();
+		})
+
+		
+		defaultTableAjaxList.init({
 			s_actionAjax: globazGlobal.ACTION_AJAX,
 			
 			getParametresForFind: function () {
@@ -60,17 +72,28 @@
 			
 			init: function () {	
 				this.list(30, [20, 30, 50, 100]);
-				var that = this;
+				objetAjax = this;
 				$(".areaSearch :input").change(function () {
-					that.ajaxFind();
+					objetAjax.ajaxFind();
 				});
 				this.addSearch();
 			}
 		});
-		
-		$("#validerFactrueSelectionnee").click(function (){
+	
+
+		$(".areaTable").on("click","input[type=checkbox]", function (){
+			if(	$("input[type=checkbox]:checked:not(#mastercheckbox)").length > 0){
+				$("#validerFactrueSelectionnee").prop("disabled",false);
+			}	else {
+				$("#validerFactrueSelectionnee").prop("disabled",true);
+			}	
+		})
+	
+		$("#validerFactrueSelectionnee").click(function (element){
 			var ids;
-			this.disabled = true;
+
+			$("#validerFactrueSelectionnee").prop("disabled", true);
+			$("#mastercheckbox").prop("checked", false); 
 			$(".factureSelected:checked").each(function () {
 				if(ids){
 					ids += ","+this.id;
@@ -78,13 +101,33 @@
 					ids = this.id;
 				}
 			});
-			//mettre en input hidden pour remonter au viewbean
-			$("#idFactures").val(ids);
+			
+			$.ajax({
+				url: globazNotation.utils.getFromAction(),
+ 				data: {
+ 	    	        userAction: url+".actionValider",
+ 	    	        factureSelected:ids,
+ 	    	        adresseMail: $("#adresseMail").val()
+ 				},
+				success: function (data) {
+					if(data){
+						if(data.viewBean.errorBean || data.viewBean.messages) {
+							ajaxUtils.dispalyLogOrError(data.viewBean);
+						}
+						objetAjax.ajaxFind();
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					ajaxUtils.displayError(jqXHR);				
+				},
+				type: "POST"
+			});
+			
 		});
 		
 	});
-	
-	
+	$("#validerFactrueSelectionnee").prop("disabled",true)
+
 </script>
 <style>
 	.montant{
@@ -157,7 +200,7 @@
 				<table class="areaTable" width="98%">
 					<thead>
 						<tr>
-							<th class="notSortable"><input type="checkbox" data-g-mastercheckbox=" " /></th>
+							<th class="notSortable" ><input type="checkbox" id="mastercheckbox" data-g-mastercheckbox=" " /></th>
 							<th style=><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_BENEFICIAIRE"/></th>
 							<th style="width: 100px"><ct:FWLabel key="JSP_PF_VALIDATION_FACTUR_DATE"/></th>
 							<th><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_TYPE"/></th>
@@ -170,13 +213,14 @@
 					<tbody>
 					</tbody>
 				</table>
-				<div style="margin: 20px 0 0 0;">
+	
+			</div>
+					<div style="margin: 20px 0 0 0;">
 					<ct:FWLabel key="JSP_PF_VALIDATION_RAPPORT_MAIL"/> 
-					<input type="text" name="adresseMail" value="<%=objSession.getUserEMail()%>" />
+					<input type="text" id="adresseMail" name="adresseMail" value="<%=objSession.getUserEMail()%>" />
 					<input type="hidden" id="idFactures" name="idFactures" />
 					<input id="validerFactrueSelectionnee" style="float: right;" type="button" value="<ct:FWLabel key="JSP_PF_VALIDATION_VALIDER_SELECTIONNES"/>" >
 				</div>
-			</div>
 		</td>
 	</tr>
 	 <%-- /tpl:insert --%>

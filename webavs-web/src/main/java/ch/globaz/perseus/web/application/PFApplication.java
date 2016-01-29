@@ -63,6 +63,8 @@ public class PFApplication extends BApplication {
         FWAction.registerActionCustom(IPFActions.ACTION_DOSSIER + ".actionAfficherDossierGed", FWSecureConstants.READ);
         FWAction.registerActionCustom(IPFActions.ACTION_FACTURE + ".actionValider", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(IPFActions.ACTION_FACTURE + ".actionRestituer", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom(IPFActions.ACTION_VALIDATION_FACTURE + ".actionValider", FWSecureConstants.UPDATE);
+
     }
 
 }

@@ -408,6 +408,9 @@ public class FactureServiceImpl extends PerseusAbstractServiceImpl implements Fa
 
     @Override
     public List<Facture> validerMultiple(List<String> idFactures) throws JadePersistenceException, FactureException {
+        if (idFactures == null) {
+            throw new RuntimeException("Unable to execute the vlaidation facture the ids facture is null");
+        }
         List<Facture> listFacture = new ArrayList<Facture>();
         FactureSearchModel searchFactures = new FactureSearchModel();
         if (!idFactures.isEmpty()) {
@@ -416,9 +419,9 @@ public class FactureServiceImpl extends PerseusAbstractServiceImpl implements Fa
 
             for (JadeAbstractModel jadeAbstractModel : searchFactures.getSearchResults()) {
                 Facture facture = (Facture) jadeAbstractModel;
-
                 // facture.getSimpleFacture().setCsEtat(CSEtatFacture.TRAITEMENT.getCodeSystem());
-                listFacture.add(valider(facture));
+                // facture = valider(facture);
+                listFacture.add(facture);
             }
         }
         return listFacture;
