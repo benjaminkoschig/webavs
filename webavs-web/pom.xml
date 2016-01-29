@@ -19,7 +19,7 @@
 		<!-- empty enums make sonar fail... -->
 		<sonar.exclusions>**ch/globaz/common/listoutput/generator/annotation/style/VerticalAlign*,**globaz/apg/enums/APStep2Rules*,**globaz/apg/itext/decompte/utils/APDonneeRegroupementDecompte*,**globaz/corvus/itext/REListeComparaisonLivraison2Centrale*,**ch/globaz/al/businessimpl/services/entetesDocument/EnteteDocumentUserInfoServiceImpl*,**globaz/apg/helpers/prestation/APPrestationHelper*,**globaz/apg/vb/droits/APSituationProfessionnelleViewBean*,**heliosRoot/**/*.xml*</sonar.exclusions>
 
-		<project.businessversion>1.15.02</project.businessversion>
+		<project.businessversion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</project.businessversion>
 		
 		<web.resources>src/main/webapp</web.resources>
 		
@@ -92,7 +92,7 @@
 				<configuration>
 					<!-- do we need a jar file containing all classes in WEB-INF/lib instead 
 						of putting them in WEB-INF/classes? -->
-					<archiveClasses>false</archiveClasses>
+					<archiveClasses>true</archiveClasses>
 
 					<!-- do we need an artifact with the -classes classifier? -->
 					<attachClasses>false</attachClasses>
