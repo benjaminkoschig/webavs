@@ -414,7 +414,6 @@ public class FactureServiceImpl extends PerseusAbstractServiceImpl implements Fa
             searchFactures.setInIdFacture(idFactures);
             searchFactures = search(searchFactures);
 
-            // TODO assynch process
             for (JadeAbstractModel jadeAbstractModel : searchFactures.getSearchResults()) {
                 Facture facture = (Facture) jadeAbstractModel;
 

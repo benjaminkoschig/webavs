@@ -18,6 +18,8 @@ public class PFValidationFactureViewBean extends BJadePersistentObjectViewBean {
 
     private Map<String, String> type = new HashMap<String, String>();
     private Vector agence = new Vector();
+    private String adresseMail;
+    private String factureSelected;
 
     @Override
     public void add() throws Exception {
@@ -78,4 +80,19 @@ public class PFValidationFactureViewBean extends BJadePersistentObjectViewBean {
         return null;
     }
 
+    public void setAdresseMail(String adresseMail) {
+        this.adresseMail = adresseMail;
+    }
+
+    public String getAdresseMail() {
+        return adresseMail;
+    }
+
+    public void setFactureSelected(String factureSelected) {
+        this.factureSelected = factureSelected;
+    }
+
+    public String getFactureSelected() {
+        return factureSelected;
+    }
 }

@@ -14,6 +14,7 @@
 <%
     idEcran="PPF2400";
 	PFValidationFactureViewBean viewBean = (PFValidationFactureViewBean)session.getAttribute("viewBean");
+	String usrAction = "actionValider";
 %>
 <% String rootPath = servletContext+(mainServletPath+"Root");%>
 <link rel="stylesheet" type="text/css" href="<%=servletContext%>/theme/widget.css"/>
@@ -29,7 +30,7 @@
 <script language="JavaScript">
 	globazGlobal.ACTION_AJAX ="perseus.qd.validationFactureAjax";
 	globazGlobal.csEtatFactureEnregistre = <%=CSEtatFacture.ENREGISTRE.getCodeSystem()%>;
-	
+	var url = "perseus.qd.validationFacture";
 	$(function () {
 		
 		$(".areaTable").on("click", "td", function(){
@@ -77,10 +78,12 @@
 					ids = this.id;
 				}
 			});
+			//mettre en input hidden pour remonter au viewbean
+			$("#idFactures").val(ids);
 		});
 		
 	});
-
+	
 	
 </script>
 <style>
@@ -169,8 +172,9 @@
 				</table>
 				<div style="margin: 20px 0 0 0;">
 					<ct:FWLabel key="JSP_PF_VALIDATION_RAPPORT_MAIL"/> 
-					<input type="text" name="mail" value="<%=objSession.getUserEMail()%>" />
-					<input id="validerFactrueSelectionnee" style="float: right;" type="button" value="<ct:FWLabel key="JSP_PF_VALIDATION_VALIDER_SELECTIONNES"/>">
+					<input type="text" name="adresseMail" value="<%=objSession.getUserEMail()%>" />
+					<input type="hidden" id="idFactures" name="idFactures" />
+					<input id="validerFactrueSelectionnee" style="float: right;" type="button" value="<ct:FWLabel key="JSP_PF_VALIDATION_VALIDER_SELECTIONNES"/>" >
 				</div>
 			</div>
 		</td>

@@ -7,17 +7,23 @@ import globaz.globall.api.BISession;
 import globaz.globall.db.BProcessLauncher;
 import globaz.globall.db.BSession;
 import globaz.perseus.process.qd.PFValidationFactureProcess;
-import globaz.perseus.vb.qd.PFValidationFactureAjaxViewBean;
+import globaz.perseus.vb.qd.PFValidationFactureViewBean;
 
 public class PFValidationFactureHelper extends FWHelper {
+
+    private FWViewBeanInterface _actionValider(FWViewBeanInterface viewBean, FWAction action, BISession session)
+            throws Exception {
+        _start(viewBean, action, session);
+        return viewBean;
+    }
 
     @Override
     protected void _start(FWViewBeanInterface viewBean, FWAction action, BISession session) {
 
-        if (viewBean instanceof PFValidationFactureAjaxViewBean) {
+        if (viewBean instanceof PFValidationFactureViewBean) {
             PFValidationFactureProcess process = new PFValidationFactureProcess();
             process.setSession((BSession) session);
-            // process.setAdresseMail(((PFValidationFactureAjaxViewBean) viewBean).getMail());
+            process.setAdresseMail(((PFValidationFactureViewBean) viewBean).getAdresseMail());
 
             try {
                 BProcessLauncher.startJob(process);

@@ -34,4 +34,5 @@ public class PFValidationFactureAjaxViewBean extends JadeAbstractAjaxListFindVie
     public String displayBeneficiaire(PersonneEtendueComplexModel personneEtendueComplexModel) {
         return PFUserHelper.getDetailAssure((BSession) getISession(), personneEtendueComplexModel);
     }
+
 }
