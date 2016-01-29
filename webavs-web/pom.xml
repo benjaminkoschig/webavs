@@ -20,10 +20,9 @@
 		<sonar.exclusions>**ch/globaz/common/listoutput/generator/annotation/style/VerticalAlign*,**globaz/apg/enums/APStep2Rules*,**globaz/apg/itext/decompte/utils/APDonneeRegroupementDecompte*,**globaz/corvus/itext/REListeComparaisonLivraison2Centrale*,**ch/globaz/al/businessimpl/services/entetesDocument/EnteteDocumentUserInfoServiceImpl*,**globaz/apg/helpers/prestation/APPrestationHelper*,**globaz/apg/vb/droits/APSituationProfessionnelleViewBean*,**heliosRoot/**/*.xml*</sonar.exclusions>
 
 		<project.businessversion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</project.businessversion>
-		
+
 		<web.resources>src/main/webapp</web.resources>
-		
-		<compiler.version>2.5.1</compiler.version>
+
 	</properties>
 
 	<build>
@@ -99,8 +98,16 @@
 
 					<includeEmptyDirectories>true</includeEmptyDirectories>
 
-					<!-- TODO marche pas!!! -->
-					<packagingExcludes>**/properties/**</packagingExcludes>
+					<webResources>
+						<resource>
+							<directory>src/main/resources</directory>
+							<excludes>
+								<exclude>**/*.properties</exclude>
+							</excludes>
+						</resource>
+					</webResources>
+
+
 				</configuration>
 			</plugin>
 
@@ -237,10 +244,10 @@
 						<groupId>org.jasig.mojo.jspc</groupId>
 						<artifactId>jspc-maven-plugin</artifactId>
 						<configuration>
-						    <!-- FIXME problème de chemin lorsque lancé depuis le parent -->
+							<!-- FIXME problème de chemin lorsque lancé depuis le parent -->
 							<skip>true</skip>
-							
-							<defaultSourcesDirectory>${project.basedir}/WebContent</defaultSourcesDirectory>
+
+							<defaultSourcesDirectory>${project.basedir}/src/main/webapp</defaultSourcesDirectory>
 						</configuration>
 					</plugin>
 				</plugins>
