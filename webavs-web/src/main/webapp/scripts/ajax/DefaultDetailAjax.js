@@ -107,7 +107,7 @@ var defaultDetailAjax = {
 		
 		//Tester si s_entityIdPath est vide 
 		if(!m_options.s_entityIdPath){
-			alert("L'option s_entityIdPath n'est pas définit.")
+			window.console && console.error("L'option s_entityIdPath n'est pas définit.");
 		}
 		
 		// pour chaque zone de détail trouvées par le sélecteur s_detail
