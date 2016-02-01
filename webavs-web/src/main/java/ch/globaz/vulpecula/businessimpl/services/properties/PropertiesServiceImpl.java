@@ -7,6 +7,8 @@ import globaz.globall.db.BSystem;
 import globaz.jade.properties.JadePropertiesService;
 import java.util.Arrays;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ch.globaz.vulpecula.business.services.properties.PropertiesService;
 import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Montant;
@@ -17,6 +19,7 @@ import ch.globaz.vulpecula.domain.models.common.Montant;
  */
 public class PropertiesServiceImpl implements PropertiesService {
     public final static String MODULENAME = "vulpecula";
+    private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesServiceImpl.class);
 
     @Override
     public Montant getDifferenceAutoriseeControleDecompte() {
@@ -81,6 +84,7 @@ public class PropertiesServiceImpl implements PropertiesService {
             if (commonValue != null) {
                 return commonValue;
             }
+            LOGGER.error("Ni la propriété 'vulpecula.caissesAF' ni 'common.caissesAF' n'est renseigné !");
             return null;
         } catch (Exception e) {
             return null;
