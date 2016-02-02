@@ -68,7 +68,7 @@ public class SimpleExternalModule<E> extends JadeSimpleModel {
         this.setParameters(builder.create().toJson(object));
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "hiding" })
     public <E> E getParameterAsObject() {
 
         GsonBuilder builder = new GsonBuilder();

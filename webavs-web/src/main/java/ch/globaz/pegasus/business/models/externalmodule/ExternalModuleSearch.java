@@ -11,6 +11,15 @@ public class ExternalModuleSearch extends JadeSearchComplexModel {
     private String forIdJob = null;
     private ExternalJobEtat forEtatJob = null;
     private ExternalJobActionSource forSourceActionJob = null;
+    private String forParameters = null;
+
+    public String getForParameters() {
+        return forParameters;
+    }
+
+    public void setForParameters(String forParameters) {
+        this.forParameters = forParameters;
+    }
 
     public String getForIdJob() {
         return forIdJob;

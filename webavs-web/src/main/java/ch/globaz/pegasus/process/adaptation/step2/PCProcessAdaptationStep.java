@@ -11,6 +11,7 @@ import ch.globaz.jade.process.business.interfaceProcess.step.JadeProcessStepAfte
 import ch.globaz.jade.process.business.interfaceProcess.step.JadeProcessStepHtmlCutomable;
 import ch.globaz.jade.process.business.interfaceProcess.step.JadeProcessStepInfoCurrentStep;
 import ch.globaz.jade.process.business.interfaceProcess.step.JadeProcessStepInterface;
+import ch.globaz.jade.process.business.interfaceProcess.step.JadeProcessStepValidable;
 import ch.globaz.jade.process.businessimpl.models.JadeProcessExecut;
 import ch.globaz.pegasus.business.models.externalmodule.ExternalJobActionSource;
 import ch.globaz.pegasus.business.models.externalmodule.jsonparameters.AdaptationParameter;
@@ -18,7 +19,7 @@ import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.process.adaptation.PCAdaptationUtils;
 
 public class PCProcessAdaptationStep implements JadeProcessStepInterface, JadeProcessStepHtmlCutomable,
-        JadeProcessStepInfoCurrentStep, JadeProcessStepAfterable {
+        JadeProcessStepInfoCurrentStep, JadeProcessStepAfterable, JadeProcessStepValidable {
 
     public static final String KEY_STEP = "6";
     private JadeProcessExecut infoProcess;
@@ -47,6 +48,12 @@ public class PCProcessAdaptationStep implements JadeProcessStepInterface, JadePr
     public void after(JadeProcessStep step, Map<Enum<?>, String> map) throws JadeApplicationException,
             JadePersistenceException {
 
+    }
+
+    @Override
+    public void validate(JadeProcessStep arg0, Map<? extends Enum<?>, String> arg1) throws JadeApplicationException,
+            JadePersistenceException {
+
         if (ChrysaorUtil.isChrysaorEnabled()) {
             try {
                 PegasusServiceLocator.getChrysaorService().sendJobFor(ExternalJobActionSource.ADAPTATION,
@@ -56,7 +63,6 @@ public class PCProcessAdaptationStep implements JadeProcessStepInterface, JadePr
                         " [Chrysaor] The job submitting for chrysaor throw an exception: " + e.getMessage());
             }
         }
-
     }
 
 }
