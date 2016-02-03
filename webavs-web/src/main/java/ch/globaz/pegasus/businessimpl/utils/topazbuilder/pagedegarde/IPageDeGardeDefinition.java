@@ -66,4 +66,8 @@ public interface IPageDeGardeDefinition {
     public BabelTextDefinition getHeader(String headerDoc);
 
     public TextGiver<BabelTextDefinition> getTextGiver();
+
+    public BabelTextDefinition getNomCollabo(String nomCollabo);
+
+    public BabelTextDefinition getTelCollabo(String tel);
 }

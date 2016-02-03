@@ -42,6 +42,8 @@ public class PageDeGardeDefinitionForDAC implements IPageDeGardeDefinition {
 
     private BabelTextDefinition TEL_COLLABORATEUR = new BabelTextDefinitionImpl(1, 110, "TEL_COLLABORATEUR",
             "téléphone du collaborateur");
+    private BabelTextDefinition TEL_COLLABO = new BabelTextDefinitionImpl(1, 110, "TEL_COLLABO",
+            "téléphone du collaborateur");
     private BabelTextDefinition DATE_ET_LIEU = new BabelTextDefinitionImpl(1, 1, "DATE_ET_LIEU",
             "lieu pour date et lieu du document");
     // Déclaré avec uniquement la clé
@@ -53,6 +55,7 @@ public class PageDeGardeDefinitionForDAC implements IPageDeGardeDefinition {
     private BabelTextDefinition GESTIONNAIRE = new BabelTextDefinitionImpl("GESTIONNAIRE");
     private BabelTextDefinition ID_USER = new BabelTextDefinitionImpl("ID_USER");
     private BabelTextDefinition NOM_COLLABORATEUR = new BabelTextDefinitionImpl("NOM_COLLABORATEUR");
+    private BabelTextDefinition NOM_COLLABO = new BabelTextDefinitionImpl("NOM_COLLABO");
     private BabelTextDefinition SALUTATIONS = new BabelTextDefinitionImpl("SALUTATIONS");
     private BabelTextDefinition SIGNATURE = new BabelTextDefinitionImpl("SIGNATURE");
     private BabelTextDefinition SIGNATURE_GESTIONNAIRE = new BabelTextDefinitionImpl("SIGNATURE_GESTIONNAIRE");
@@ -165,11 +168,24 @@ public class PageDeGardeDefinitionForDAC implements IPageDeGardeDefinition {
     }
 
     @Override
+    public BabelTextDefinition getNomCollabo(String nomCollabo) {
+        NOM_COLLABO = new BabelTextDefinitionImpl(nomCollabo, "NOM_COLLABO", "nom du collaborateur");
+        return NOM_COLLABO;
+    }
+
+    @Override
     public BabelTextDefinition getTelCollaborateur(String tel) {
         String telCollabo = textGiver.resolveText(TEL_COLLABORATEUR);
-        TEL_COLLABORATEUR = new BabelTextDefinitionImpl(tel + " " + telCollabo, "TEL_COLLABORATEUR",
+        TEL_COLLABORATEUR = new BabelTextDefinitionImpl(telCollabo + " " + tel, "TEL_COLLABORATEUR",
                 "téléphone du collaborateur");
         return TEL_COLLABORATEUR;
+    }
+
+    @Override
+    public BabelTextDefinition getTelCollabo(String tel) {
+        String telCollabo = textGiver.resolveText(TEL_COLLABO);
+        TEL_COLLABO = new BabelTextDefinitionImpl(telCollabo + " " + tel, "TEL_COLLABO", "téléphone du collaborateur");
+        return TEL_COLLABO;
     }
 
     @Override

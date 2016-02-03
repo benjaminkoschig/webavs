@@ -156,6 +156,9 @@ public class PageDeGardeBuilder extends AbstractPegasusBuilder {
         textMerger.addTextToDocument(pageDeGardeText.getPersonneDeReference());
         textMerger.addTextToDocument(pageDeGardeText.getNomCollaborateur(nomCollabo));
         textMerger.addTextToDocument(pageDeGardeText.getTelCollaborateur(gestionnaire.getPhone()));
+        textMerger.addTextToDocument(pageDeGardeText.getNomCollabo(nomCollabo));
+        textMerger.addTextToDocument(pageDeGardeText.getTelCollabo(gestionnaire.getPhone()));
+
         textMerger.addTextToDocument(pageDeGardeText.getTelGestionnaire(gestionnaire.getPhone()));
 
         // Les informations suivantes ne sont renseignées que lorsque l'on créer une page de garde pour une décision

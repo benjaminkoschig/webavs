@@ -58,10 +58,26 @@ public class PageDeGardeDefinition implements IPageDeGardeDefinition {
     private BabelTextDefinition NSS_BENEFICIAIRE = new BabelTextDefinitionImpl("NSS_BENEFICIAIRE");
     private BabelTextDefinition ADRESSE = new BabelTextDefinitionImpl("ADRESSE");
     private BabelTextDefinition header = new BabelTextDefinitionImpl("header");
+    private BabelTextDefinition NOM_COLLABO = new BabelTextDefinitionImpl("NOM_COLLABO");
+    private BabelTextDefinition TEL_COLLABO = new BabelTextDefinitionImpl(1, 110, "TEL_COLLABO",
+            "téléphone du collaborateur");
 
     @Override
     public BabelTextDefinition getPolitesse() {
         return POLITESSE;
+    }
+
+    @Override
+    public BabelTextDefinition getTelCollabo(String tel) {
+        String telCollabo = textGiver.resolveText(TEL_COLLABO);
+        TEL_COLLABO = new BabelTextDefinitionImpl(telCollabo + " " + tel, "TEL_COLLABO", "téléphone du collaborateur");
+        return TEL_COLLABO;
+    }
+
+    @Override
+    public BabelTextDefinition getNomCollabo(String nomCollabo) {
+        NOM_COLLABO = new BabelTextDefinitionImpl(nomCollabo, "NOM_COLLABO", "nom du collaborateur");
+        return NOM_COLLABO;
     }
 
     @Override
@@ -168,7 +184,7 @@ public class PageDeGardeDefinition implements IPageDeGardeDefinition {
     @Override
     public BabelTextDefinition getTelCollaborateur(String tel) {
         String telCollabo = textGiver.resolveText(TEL_COLLABORATEUR);
-        TEL_COLLABORATEUR = new BabelTextDefinitionImpl(tel + " " + telCollabo, "TEL_COLLABORATEUR",
+        TEL_COLLABORATEUR = new BabelTextDefinitionImpl(telCollabo + " " + tel, "TEL_COLLABORATEUR",
                 "téléphone du collaborateur");
         return TEL_COLLABORATEUR;
     }
