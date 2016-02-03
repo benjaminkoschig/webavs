@@ -6,7 +6,6 @@ import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
-import globaz.perseus.utils.PFAgenceCommunaleHelper;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -55,8 +54,18 @@ public class PFValidationFactureViewBean extends BJadePersistentObjectViewBean i
                         .getSessionFromThreadContext().getIdLangueISO())));
             }
         }
+
+        List<JadeCodeSysteme> codesCaisse = JadeBusinessServiceLocator.getCodeSystemeService().getFamilleCodeSysteme(
+                IPFConstantes.CSGROUP_CAISSE);
         // = PerseusServiceLocator.getTypesSoinsRentePontService().getMapSurTypes(getISession());
-        agence = PFAgenceCommunaleHelper.getListAdministration(IPFConstantes.CS_AGENCE_COMMUNALE);
+        // agence = PFAgenceCommunaleHelper.getListAdministration(IPFConstantes.CS_AGENCE_COMMUNALE);
+        agence.add(new String[] { "", "" });
+        for (JadeCodeSysteme codeCaisse : codesCaisse) {
+            agence.add(new String[] {
+                    codeCaisse.getIdCodeSysteme(),
+                    codeCaisse.getTraduction(Langues.getLangueDepuisCodeIso(BSessionUtil.getSessionFromThreadContext()
+                            .getIdLangueISO())) });
+        }
     }
 
     public Vector getAgences() {

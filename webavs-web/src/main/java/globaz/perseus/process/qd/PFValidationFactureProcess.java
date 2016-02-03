@@ -77,10 +77,7 @@ public class PFValidationFactureProcess extends PFAbstractJob {
             List<Facture> factures = factureService.validerMultiple(listIdFacture);
             List<FacturePourList> facturesPourXls = new ArrayList<FacturePourList>();
             for (Facture facture : factures) {
-                // "<b>" + nss + "</b><br />" + nomPrenom + " / " + dateNaissance + " / " + sexe + " / " + nationalite;
                 PersonneEtendueComplexModel personne = facture.getQd().getMembreFamille().getPersonneEtendue();
-                // String p = personne.getPersonneEtendue().getNumAvsActuel()+"\n"+personne.getTiers().getDesignation1()
-                // +" "+personne.getTiers().getDesignation2()+"";
                 FacturePourList facturePourList = new FacturePourList();
                 facturePourList.setCstypeSousType(facture.getQd().getSimpleQD().getCsType());
                 facturePourList.setDateFacture(facture.getSimpleFacture().getDateFacture());
@@ -92,6 +89,8 @@ public class PFValidationFactureProcess extends PFAbstractJob {
                 facturePourList.setIdFacture(facture.getId());
                 facturePourList.setMontant(facture.getSimpleFacture().getMontant());
                 facturePourList.setRembourse(facture.getSimpleFacture().getMontantRembourse());
+                facturePourList.setEtat(facture.getSimpleFacture().getCsEtat());
+                facturePourList.setErrorMessage("not implemented");
                 facturesPourXls.add(facturePourList);
             }
 
@@ -105,8 +104,8 @@ public class PFValidationFactureProcess extends PFAbstractJob {
 
             JadeSmtpClient.getInstance().sendMail(
                     adresseMail,
-                    "La validation des factures pour les pc famille c'est treminée",
-                    "La validation des factures pour les pc famille c'est treminée. Nb facture triaté: "
+                    "La validation des factures pour les pc famille s'est treminée",
+                    "La validation des factures pour les pc famille s'est treminée. Nb facture traitées: "
                             + facturesPourXls.size(), filenames);
         } catch (Exception e) {
             sendMailError(adresseMail, e, this, "");

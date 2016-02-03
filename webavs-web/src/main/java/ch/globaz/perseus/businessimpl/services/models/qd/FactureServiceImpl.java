@@ -136,11 +136,9 @@ public class FactureServiceImpl extends PerseusAbstractServiceImpl implements Fa
         return facture;
     }
 
-    private Facture createPrestationAndOV(Facture facture, Boolean restitution) throws JadePersistenceException,
-            FactureException {
+    private Facture createPrestationAndOVforLot(Facture facture, Boolean restitution, Lot lot)
+            throws JadePersistenceException, FactureException {
         try {
-            // Comptabilisé la facture dans le lot
-            Lot lot = PerseusServiceLocator.getLotService().getLotCourant(CSTypeLot.LOT_FACTURES);
             // Création de la prestation
             Prestation prestation = new Prestation();
             prestation.setLot(lot);
@@ -185,6 +183,23 @@ public class FactureServiceImpl extends PerseusAbstractServiceImpl implements Fa
 
                 ordreVersement = PerseusServiceLocator.getOrdreVersementService().create(ordreVersement);
             }
+        } catch (LotException e) {
+            throw new FactureException("LotException during facture validation - " + e.toString(), e);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new FactureException("Service facture not available - " + e.toString(), e);
+        }
+
+        return facture;
+    }
+
+    private Facture createPrestationAndOV(Facture facture, Boolean restitution) throws JadePersistenceException,
+            FactureException {
+        try {
+            // Comptabilisé la facture dans le lot
+            Lot lot = PerseusServiceLocator.getLotService().getLotCourant(CSTypeLot.LOT_FACTURES);
+            // Création de la prestation
+            createPrestationAndOVforLot(facture, restitution, lot);
+
         } catch (LotException e) {
             throw new FactureException("LotException during facture validation - " + e.toString(), e);
         } catch (JadeApplicationServiceNotAvailableException e) {
@@ -386,12 +401,20 @@ public class FactureServiceImpl extends PerseusAbstractServiceImpl implements Fa
      */
     @Override
     public Facture valider(Facture facture) throws JadePersistenceException, FactureException {
+        return valider(facture, null);
+    }
+
+    private Facture valider(Facture facture, Lot lot) throws JadePersistenceException, FactureException {
         if (facture == null) {
             throw new FactureException("Unable to validate Facture, the given model is null");
         }
         try {
             if (CSEtatFacture.ENREGISTRE.getCodeSystem().equals(facture.getSimpleFacture().getCsEtat())) {
-                facture = createPrestationAndOV(facture, false);
+                if (lot != null) {
+                    facture = createPrestationAndOVforLot(facture, false, lot);
+                } else {
+                    facture = createPrestationAndOV(facture, false);
+                }
                 // Passé la facture en état validé
                 facture.getSimpleFacture().setCsEtat(CSEtatFacture.VALIDE.getCodeSystem());
                 facture.getSimpleFacture().setDateValidation(JACalendar.todayJJsMMsAAAA());
@@ -416,12 +439,18 @@ public class FactureServiceImpl extends PerseusAbstractServiceImpl implements Fa
         if (!idFactures.isEmpty()) {
             searchFactures.setInIdFacture(idFactures);
             searchFactures = search(searchFactures);
+            try {
+                Lot lot = PerseusServiceLocator.getLotService().getLotCourant(CSTypeLot.LOT_FACTURES);
 
-            for (JadeAbstractModel jadeAbstractModel : searchFactures.getSearchResults()) {
-                Facture facture = (Facture) jadeAbstractModel;
-                // facture.getSimpleFacture().setCsEtat(CSEtatFacture.TRAITEMENT.getCodeSystem());
-                // facture = valider(facture);
-                listFacture.add(facture);
+                for (JadeAbstractModel jadeAbstractModel : searchFactures.getSearchResults()) {
+                    Facture facture = (Facture) jadeAbstractModel;
+                    facture = valider(facture, lot);
+                    listFacture.add(facture);
+                }
+            } catch (LotException e) {
+                throw new FactureException("LotException during facture validation - " + e.toString(), e);
+            } catch (JadeApplicationServiceNotAvailableException e) {
+                throw new FactureException("Service facture not available - " + e.toString(), e);
             }
         }
         return listFacture;

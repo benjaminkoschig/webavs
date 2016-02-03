@@ -9,7 +9,6 @@
 <%@page import="globaz.perseus.vb.qd.PFValidationFactureViewBean"%>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
 <%@ page isELIgnored ="false" %>
 
 <%
@@ -27,7 +26,6 @@
 <%-- tpl:insert attribute="zoneScripts" --%>
 
 <script type="text/javascript" src="<%=servletContext%>/scripts/ajax/DefaultTableAjaxList.js"/></script>
-<script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 <script language="JavaScript">
 	globazGlobal.ACTION_AJAX ="perseus.qd.validationFactureAjax";
 	globazGlobal.csEtatFactureEnregistre = <%=CSEtatFacture.ENREGISTRE.getCodeSystem()%>;
@@ -43,7 +41,7 @@
 
 		$(".areaTable").on("click", "td", function(){
 			
-			//$(this).parent().find("a").click();
+			$(this).parent().find("a").click();
 		})
 		
 		$("body").on("click", ".ui-icon-closethick", function(){
@@ -52,6 +50,7 @@
 
 		
 		defaultTableAjaxList.init({
+			
 			s_actionAjax: globazGlobal.ACTION_AJAX,
 			
 			getParametresForFind: function () {
@@ -60,8 +59,9 @@
 					"searchModel.forCsEtatFacture": globazGlobal.csEtatFactureEnregistre,
 					"searchModel.forIdGestionnaire":$("#searchModel\\.forIdGestionnaire").val(), 
 					"searchModel.forCSTypeQD":$("#typeQd").val()==null?'':$("#typeQd").val(),
-					"searchModel.agence": $("searchModel\\.agence").val(),
-					"searchModel.likeNss":$("#searchModel\\.likeNss").val()
+					"likeNss": $('input[name="searchModel\\.likeNss"]').val(),
+					"forCsCaisse": $("#forCsCaisse").val()
+					//
 				};
 				return map;
 			},
@@ -180,10 +180,9 @@
 			<div class="area">
 				<div class="areaSearch" >
 					<label><ct:FWLabel key="JSP_PF_VALIDATION_NSS_DOSSIER"/></label>
-								<nss:nssPopup avsMinNbrDigit="99"
-								  nssMinNbrDigit="99"
-								  newnss=""
-								  name="searchModel.likeNss"/>			
+								<input 
+								  name="searchModel.likeNss"
+								  data-g-nss="" />			
 					<label><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_GESTIONAIRE"/></label>
 					<ct:FWListSelectTag data="<%=PFGestionnaireHelper.getResponsableData(objSession)%>" defaut="<%=viewBean.getISession().getUserId()%>"  name="searchModel.forIdGestionnaire"/>
 					<label><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_TYPE"/></label>
@@ -194,7 +193,7 @@
 					   	</c:forEach>
 					</select>
 					<label><ct:FWLabel key="JSP_PF_VALIDATION_CAISSE"/></label>
-					<ct:FWListSelectTag name="searchModel.agence" data="${viewBean.agences}" defaut=""/>
+					<ct:FWListSelectTag name="forCsCaisse" data="${viewBean.agences}" defaut=""/>
 				</div>
 			
 				<table class="areaTable" width="98%">

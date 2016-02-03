@@ -23,6 +23,7 @@ public class FacturePourList {
     private String rembourse;
     private String gestionaire;
     private String idFacture;
+    private String errorMessage;
 
     @Column(name = "nss", order = 1)
     public String getNss() {
@@ -85,6 +86,11 @@ public class FacturePourList {
         return idFacture;
     }
 
+    @Column(name = "Erreur", order = 12)
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
     public void setNom(String nom) {
         this.nom = nom;
     }
@@ -129,4 +135,7 @@ public class FacturePourList {
         this.dateFacture = dateFacture;
     }
 
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 }
