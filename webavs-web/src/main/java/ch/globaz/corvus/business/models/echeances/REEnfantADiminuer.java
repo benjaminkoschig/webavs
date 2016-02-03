@@ -198,4 +198,9 @@ public class REEnfantADiminuer implements IREEcheances {
     public String getCommunePolitique() {
         return communePolitique;
     }
+
+    public void setCommunePolitique(String communePolitique) {
+        this.communePolitique = communePolitique;
+    }
+
 }

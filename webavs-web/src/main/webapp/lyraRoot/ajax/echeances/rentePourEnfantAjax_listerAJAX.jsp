@@ -1,3 +1,4 @@
+<%@page import="ch.globaz.common.properties.CommonProperties"%>
 <%@page import="globaz.jade.client.util.JadePeriodWrapper"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="ch.globaz.corvus.business.models.echeances.REMotifEcheance"%>
@@ -34,6 +35,18 @@
 					idRenteAccordee="<%=uneRente.getIdPrestationAccordee()%>" 
 					class="checkEnfant" />
 		</td>
+		
+		<%
+		if(CommonProperties.ADD_COMMUNE_POLITIQUE.getBooleanValue()){
+		    %>
+			<td>
+				<%=unEnfant.getCommunePolitique()%>
+			</td>
+		
+		<%
+		}
+		%>
+		
 		<td class="textAlignLeft">
 			<%=unEnfant.getNomTiers()%>
 		</td>

@@ -24,7 +24,6 @@ import globaz.osiris.external.IntRole;
 import globaz.prestation.enums.CommunePolitique;
 import globaz.prestation.interfaces.af.IPRAffilie;
 import globaz.prestation.interfaces.af.PRAffiliationHelper;
-import globaz.prestation.interfaces.tiers.exception.TiersNotFoundException;
 import globaz.prestation.tools.PRSession;
 import globaz.pyxis.adresse.formater.ITIAdresseFormater;
 import globaz.pyxis.adresse.formater.TIAdresseFormater;
@@ -48,9 +47,6 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementDataManager;
 import globaz.pyxis.db.tiers.TIAdministrationAdresse;
 import globaz.pyxis.db.tiers.TIAdministrationAdresseManager;
-import globaz.pyxis.db.tiers.TIAdministrationViewBean;
-import globaz.pyxis.db.tiers.TICompositionTiers;
-import globaz.pyxis.db.tiers.TICompositionTiersManager;
 import globaz.pyxis.db.tiers.TIPersonneAvsManager;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.db.tiers.TITiersViewBean;
@@ -62,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -1827,50 +1824,7 @@ public class PRTiersHelper {
         return ((BSession) session).getApplication().getCalendar().compare(new JADate(date), dateAVS) != JACalendar.COMPARE_FIRSTLOWER;
     }
 
-    /**
-     * Retourne la commune politique <strong>la plus récente</strong> en fonction de l'idTiers.</br>
-     * Si le tiers n'a pas pu être retrouvé en fonction de l'<code>idTiers</code> une
-     * <code>TiersNotFoundException</code> sera lancée</br>
-     * 
-     * Si le tiers à bien été retrouvé mais que sa commune politique n'est pas renseignée, ce sera la clé
-     * {@link CommunePolitique}.CommunePolitique traduite qui sera retournée</br>
-     * 
-     * @param idTiers L'idTiers à rechercher en DB
-     * @param session La session à utiliser pour les accès DB
-     * @return La commune politique dans la langue de l'utilisateur si la commune politique à pu être retrouvée sinon
-     *         retourne la traduction du label {@link CommunePolitique}.COMMUNE_NOT_FOUND
-     * @throws TiersNotFoundException Lancée si aucun tiers n'a pas pu être retrouvé en fonction de l'
-     *             <code>idTiers</code>
-     * @throws IllegalArgumentException Si l'<code>idTiers</code> est null ou vide OU si la <code>session</code> est
-     *             <code>null</code>
-     */
-    public static String getCommunePolitiqueActuelle(String idTiers, BSession session) throws TiersNotFoundException,
-            IllegalArgumentException {
-        return getCommunePolitique(idTiers, new Date(), session);
-    }
-
-    // /**
-    // * Retourne la commune politique en fonction de l'<code>idTiers</code> et <strong>pour l'année transmise en
-    // * argument.</strong></br>
-    // * Si le tiers n'a pas pu être retrouvé en fonction de l'<code>idTiers</code> une
-    // * <code>TiersNotFoundException</code> sera lancée</br>
-    // *
-    // * Si le tiers à bien été retrouvé mais que sa commune politique n'est pas renseignée, ce sera la clé
-    // * {@link CommunePolitique}.CommunePolitique traduite qui sera retournée</br>
-    // *
-    // * @param idTiers L'idTiers à rechercher en DB
-    // * @param session La session à utiliser pour les accès DB
-    // * @return La commune politique dans la langue de l'utilisateur si la commune politique à pu être retrouvée sinon
-    // * retourne la traduction du label {@link CommunePolitique}.COMMUNE_NOT_FOUND
-    // * @throws TiersNotFoundException Lancée si aucun tiers n'a pas pu être retrouvé en fonction de l'
-    // * <code>idTiers</code>
-    // * @throws IllegalArgumentException Si l'<code>idTiers</code> est null ou vide OU si la <code>session</code> est
-    // * <code>null</code>
-    // */
-    // public static String getCommunePolitique(String idTiers, int annee, BSession session)
-    // throws TiersNotFoundException, IllegalArgumentException {
-    // return getCommunePolitique(idTiers, date, session);
-    // }
+ 
 
     /**
      * Retourne la commune politique en fonction de l'<code>idTiers</code> et <strong>pour l'année transmise en
@@ -1885,74 +1839,48 @@ public class PRTiersHelper {
      * @param session La session à utiliser pour les accès DB
      * @return La commune politique dans la langue de l'utilisateur si la commune politique à pu être retrouvée sinon
      *         retourne la traduction du label {@link CommunePolitique}.COMMUNE_NOT_FOUND
-     * @throws TiersNotFoundException Lancée si aucun tiers n'a pas pu être retrouvé en fonction de l'
-     *             <code>idTiers</code>
      * @throws IllegalArgumentException Si l'<code>idTiers</code> est null ou vide OU si la <code>session</code> est
      *             <code>null</code>
      */
-    @Deprecated
+
+    /**
+     * Cette méthode fait appel à <code>getCommunePolitique(Set<String> setIdTiers, Date date, BSession session)</code>
+     * 
+     * @param idTiers Ul'idTiers pour lequel la commune politique doit être recherchée
+     * @param date La date pour la recherche des périodes dans les liens entre tiers. <strong>La date doit contenir le
+     *            jours, le mois et l'année</strong>
+     * @param session La session à utiliser. Doit posséder une transaction ouverte
+     * @return Une Map contenant les idTiers comme clé et les codes des communes politiques comme valeur.
+     * @throws Exception en cas d'arguments incorrectes..
+     */
     public static String getCommunePolitique(String idTiers, Date date, BSession session)
-            throws TiersNotFoundException, IllegalArgumentException {
+            throws IllegalArgumentException {
 
-        String dateFormatee = new SimpleDateFormat("ddMMyyyy").format(date);
+        Set<String> setIdTiers = new HashSet<String>();
+        setIdTiers.add(idTiers);
 
-        if (JadeStringUtil.isBlankOrZero(idTiers)) {
-            throw new IllegalArgumentException("Argument [idTiers] can not be null or empty");
-        }
-        if (session == null) {
-            throw new IllegalArgumentException("Argument [session] can not be null");
-        }
-
-        try {
-            String communePolitique = null;
-            // ----------------------------
-            TICompositionTiersManager manager = new TICompositionTiersManager();
-            manager.setSession(session);
-            manager.setForIdTiersParent(idTiers);
-            manager.setForTypeLien(CommunePolitique.CS_PYXIS_COMMUNE_POLITIQUE.getKey());
-            manager.setForDateEntreDebutEtFin(dateFormatee);
-            manager.find();
-
-            if (manager.isEmpty()) {
-                // Nothing to do
-            } else if (manager.getContainer().size() > 1) {
-                // TODO order par la plus récente ???
-            } else {
-                TICompositionTiers compositionTiers = (TICompositionTiers) manager.getContainer().get(0);
-                TIAdministrationViewBean administrationCommunale = new TIAdministrationViewBean();
-                administrationCommunale.setSession(session);
-                administrationCommunale.setIdTiersAdministration(compositionTiers.getIdTiersEnfant());
-                administrationCommunale.retrieve();
-                if (!administrationCommunale.isNew()) {
-                    // TODO A vor
-                    communePolitique = administrationCommunale.getNom();
-
-                }
-            }
-
-            if (JadeStringUtil.isBlank(communePolitique)) {
-                return session.getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_NOT_FOUND.getKey());
-            } else {
-                return communePolitique;
-            }
-        } catch (Exception e) {
-            // What can i do with this here ?! Nothing, so y re-throw them
-            throw new IllegalStateException("Exception occur when triing to get the tiers with id [" + idTiers + "]", e);
-        }
+        Map<String, String> cpMap = getCommunePolitique(setIdTiers, date, session);
+        return cpMap.get(idTiers);
     }
 
     /**
      * Récupère les codes des communes politiques pour la liste d'idTiers <code>idTiers</code></br>
      * La recherche est réalisée part lot de mille idTiers(limitation de la clause SQL 'IN'</br>
+     * </br>
+     * Si le tiers à bien été retrouvé mais que sa commune politique n'est pas renseignée, ce sera la clé
+     * {@link CommunePolitique}.LABEL_COMMUNE_POLITIQUE_NOT_FOUND traduite qui sera retournée</br>
+     * </br>
+     * Si le tiers à bien été retrouvé mais que plusieurs commune politique sont renseignées pour une même date
+     * (chevauchement), ce sera la clé {@link CommunePolitique}.LABEL_COMMUNE_POLITIQUE_PLUSIEURS_RESULTAT traduite qui
+     * sera retournée</br>
      * 
-     * TODO
      * 
      * @param idTiers Une list d'idTiers pour lesquels la commune politique doit être recherchée
      * @param date La date pour la recherche des périodes dans les liens entre tiers. <strong>La date doit contenir le
      *            jours, le mois et l'année</strong>
      * @param session La session à utiliser. Doit posséder une transaction ouverte
-     * @return Une Map contenant les idTiers comme clé et le code des commune s politique comme valeur.
-     * @throws Exception
+     * @return Une Map contenant les idTiers comme clé et les codes des communes politiques comme valeur.
+     * @throws Exception en cas d'arguments incorrectes..
      */
     public static Map<String, String> getCommunePolitique(Set<String> setIdTiers, Date date, BSession session)
             throws IllegalStateException {

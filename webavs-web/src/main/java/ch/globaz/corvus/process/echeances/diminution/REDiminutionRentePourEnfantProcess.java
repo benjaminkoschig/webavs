@@ -54,7 +54,6 @@ public class REDiminutionRentePourEnfantProcess extends LYAbstractEcheanceProces
         // traitement des rentes ayant pu être diminuées
         message.append(getSession().getLabel("MAIL_DIMINUTION_RENTES_ENFANTS_DIMINUTION_OK")).append(" : \n");
         for (String idRenteDiminuee : idRentesDiminutionOk) {
-            message.append(" - ");
             message.append(getTiersEtRentePourMail(idRenteDiminuee));
             message.append("\n");
         }

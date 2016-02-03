@@ -32,12 +32,15 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
+import globaz.prestation.enums.CommunePolitique;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRDateFormater;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import ch.globaz.common.properties.CommonProperties;
 
 public class REDiminutionListeRenteAccordeeProcess extends BProcess {
 
@@ -90,7 +93,7 @@ public class REDiminutionListeRenteAccordeeProcess extends BProcess {
             if (getListeEcheances().isEmpty()) {
                 getMemoryLog().logMessage(
                         getSession().getLabel("ERREUR_LISTEECHEANCEVIDE_REDIMINUTIONLISTERENTEACCORDEE"),
-                        FWMessage.ERREUR, "REDiminutionListeRenteAccordeeProcess");
+                        FWMessage.ERREUR, getClass().getSimpleName());
             } else {
 
                 echeancesIterator = getListeEcheances().iterator();
@@ -145,7 +148,7 @@ public class REDiminutionListeRenteAccordeeProcess extends BProcess {
                         getMemoryLog().logMessage(
                                 message + "\r\n" + " R" + echeanceCourrante.getCodePrestation()
                                         + " ID Rente accordée : " + echeanceCourrante.getIdRenteAccordee() + "\r\n",
-                                FWMessage.INFORMATION, this.getClass().getName());
+                                FWMessage.INFORMATION, this.getClass().getSimpleName());
                     }
 
                     // Traitement normal
@@ -167,7 +170,7 @@ public class REDiminutionListeRenteAccordeeProcess extends BProcess {
                                     getSession().getLabel("ERREUR_AUCUNERENTE_RELISTERECHEANCESPROCESS") + " "
                                             + echeanceCourrante.getNss() + " " + echeanceCourrante.getNom() + " "
                                             + echeanceCourrante.getPrenom(), FWMessage.ERREUR,
-                                    "REDiminutionListeRenteAccordeeProcess");
+                                    getClass().getSimpleName());
                         } else if (!JadeStringUtil.isBlankOrZero(renteAcc.getDateFinDroit())) {
                             // BZ 5708 : les RA ayant déjà une date de fin de droit ne sont pas (re-)diminuées
                             getMemoryLog().logMessage(
@@ -176,7 +179,7 @@ public class REDiminutionListeRenteAccordeeProcess extends BProcess {
                                             + echeanceCourrante.getIdRenteAccordee() + " / "
                                             + echeanceCourrante.getNss() + " - " + echeanceCourrante.getNom() + " "
                                             + echeanceCourrante.getPrenom(), FWMessage.INFORMATION,
-                                    this.getClass().getName());
+                                    this.getClass().getSimpleName());
                         } else if (REEcheancesUtils.isPrestationBloquee(renteAcc, enteteBlocage)) {
                             // Si la prestation est bloquée, elle doit être diminuée manuellement
                             StringBuilder messageErreur = new StringBuilder("\n");
@@ -192,7 +195,7 @@ public class REDiminutionListeRenteAccordeeProcess extends BProcess {
                                     echeanceCourrante.getPrenom());
 
                             getMemoryLog().logMessage(messageErreur.toString(), FWMessage.INFORMATION,
-                                    this.getClass().getName());
+                                    this.getClass().getSimpleName());
                         } else {
 
                             setIdRenteAccordee(echeanceCourrante.getIdRenteAccordee());
@@ -226,13 +229,11 @@ public class REDiminutionListeRenteAccordeeProcess extends BProcess {
                                 if (getListeEcheances().size() > 1) {
                                     getMemoryLog().logMessage(
                                             getSession().getLabel("MAIL_DIMINUTIONS_SUPPRESSIONRENTE25ANSPROCESS")
-                                                    + "\n", FWMessage.INFORMATION,
-                                            "REDiminutionListeRenteAccordeeProcess");
+                                                    + "\n", FWMessage.INFORMATION, getClass().getSimpleName());
                                 } else {
                                     getMemoryLog().logMessage(
                                             getSession().getLabel("MAIL_DIMINUTION_SUPPRESSIONRENTE25ANSPROCESS")
-                                                    + "\n", FWMessage.INFORMATION,
-                                            "REDiminutionListeRenteAccordeeProcess");
+                                                    + "\n", FWMessage.INFORMATION, getClass().getSimpleName());
                                 }
                             }
                             getMemoryLog().logMessage(log);
@@ -405,49 +406,60 @@ public class REDiminutionListeRenteAccordeeProcess extends BProcess {
                                     ra);
 
                             // Création de l'email envoyé à l'utilisateur
+                            if (CommonProperties.ADD_COMMUNE_POLITIQUE.getBooleanValue()) {
+
+                                String communePolitique = PRTiersHelper.getCommunePolitique(
+                                        echeanceCourrante.getIdTiers(), new Date(), getSession());
+                                getMemoryLog().logMessage(
+                                        getSession().getLabel(
+                                                CommunePolitique.LABEL_COMMUNE_POLITIQUE_TITRE_COLONNE.getKey())
+                                                + " : " + communePolitique, FWMessage.INFORMATION,
+                                        getClass().getSimpleName());
+                            }
+
                             getMemoryLog().logMessage(
                                     getSession().getLabel("NSS_SUPPRESSIONRENTES25ANSPROCESS") + " "
                                             + echeanceCourrante.getNss(), FWMessage.INFORMATION,
-                                    "REDiminutionListeRenteAccordeeProcess");
+                                    getClass().getSimpleName());
                             getMemoryLog().logMessage(
                                     getSession().getLabel("NOM_SUPPRESSIONRENTES25ANSPROCESS") + " "
                                             + echeanceCourrante.getNom(), FWMessage.INFORMATION,
-                                    "REDiminutionListeRenteAccordeeProcess");
+                                    getClass().getSimpleName());
                             getMemoryLog().logMessage(
                                     getSession().getLabel("PRENOM_SUPPRESSIONRENTES25ANSPROCESS") + " "
                                             + echeanceCourrante.getPrenom(), FWMessage.INFORMATION,
-                                    "REDiminutionListeRenteAccordeeProcess");
+                                    getClass().getSimpleName());
 
                             if (JadeStringUtil.isEmpty(echeanceCourrante.getCs2())
                                     && JadeStringUtil.isEmpty(echeanceCourrante.getCs5())) {
                                 getMemoryLog().logMessage(
                                         getSession().getLabel("GENRE_PRESTATION_SUPPRESSIONRENTES25ANSPROCESS") + " "
                                                 + echeanceCourrante.getCodePrestation() + "\n", FWMessage.INFORMATION,
-                                        "REDiminutionListeRenteAccordeeProcess");
+                                        getClass().getSimpleName());
                             } else {
                                 // Si code cas spéciaux 02 ou 05, un mail est envoyé
                                 // à l'utilisateur
                                 getMemoryLog().logMessage(
                                         getSession().getLabel("GENRE_PRESTATION_SUPPRESSIONRENTES25ANSPROCESS") + " "
                                                 + echeanceCourrante.getCodePrestation(), FWMessage.INFORMATION,
-                                        "REDiminutionListeRenteAccordeeProcess");
+                                        getClass().getSimpleName());
                                 if (!JadeStringUtil.isEmpty(echeanceCourrante.getCs2())
                                         && !JadeStringUtil.isEmpty(echeanceCourrante.getCs5())) {
                                     getMemoryLog().logMessage(
                                             getSession().getLabel("MAIL_CODECASSPECIAUX_SUPPRESSIONRENTE25ANSPROCESS")
                                                     + " " + echeanceCourrante.getCs2() + ", "
                                                     + echeanceCourrante.getCs5() + "\n", FWViewBeanInterface.WARNING,
-                                            "REDiminutionListeRenteAccordeeProcess");
+                                            getClass().getSimpleName());
                                 } else if (!JadeStringUtil.isEmpty(echeanceCourrante.getCs2())) {
                                     getMemoryLog().logMessage(
                                             getSession().getLabel("MAIL_CODECASSPECIAL_SUPPRESSIONRENTE25ANSPROCESS")
                                                     + " " + echeanceCourrante.getCs2() + "\n", FWMessage.INFORMATION,
-                                            "REDiminutionListeRenteAccordeeProcess");
+                                            getClass().getSimpleName());
                                 } else if (!JadeStringUtil.isEmpty(echeanceCourrante.getCs5())) {
                                     getMemoryLog().logMessage(
                                             getSession().getLabel("MAIL_CODECASSPECIAL_SUPPRESSIONRENTE25ANSPROCESS")
                                                     + " " + echeanceCourrante.getCs5() + "\n", FWMessage.INFORMATION,
-                                            "REDiminutionListeRenteAccordeeProcess");
+                                            getClass().getSimpleName());
                                 }
                             }
                         }
