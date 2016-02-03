@@ -87,17 +87,19 @@ public class IJListePrestationsLot extends FWIAbstractManagerDocumentList {
 
     @Override
     protected void bindPageHeader() throws Exception {
-        if (ajouterCommunePolitique) {
-            _addHeaderLine(getFontCompanyName(), _getCompanyName(), getFontDate(),
-                    getSession().getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_UTILISATEUR.getKey()) + " "
-                            + getSession().getUserId(), getFontDate(), JACalendar.format(JACalendar.today()));
 
-        } else {
-            _addHeaderLine(getFontCompanyName(), _getCompanyName(), null, null, getFontDate(),
-                    JACalendar.format(JACalendar.today()));
-        }
+        _addHeaderLine(getFontCompanyName(), _getCompanyName(), null, null, getFontDate(),
+                JACalendar.format(JACalendar.today()));
 
         _addHeaderLine(null, null, getFontDocumentTitle(), _getDocumentTitle(), null, null);
+
+        if (ajouterCommunePolitique) {
+            _addHeaderLine(getFontDate(),
+                    getSession().getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_UTILISATEUR.getKey()) + " : "
+                            + getSession().getUserId(), null, null, null, null);
+
+        }
+
     }
 
     /**

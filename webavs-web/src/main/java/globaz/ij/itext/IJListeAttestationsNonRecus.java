@@ -210,7 +210,7 @@ public class IJListeAttestationsNonRecus extends FWIAbstractManagerDocumentList 
 
         if (ajouterCommunePolitique) {
             this._addHeaderLine(getFontDate(),
-                    getSession().getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_UTILISATEUR.getKey()) + " "
+                    getSession().getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_UTILISATEUR.getKey()) + " : "
                             + getSession().getUserId(), null, null, null, null);
 
         }
