@@ -264,6 +264,17 @@ public class QueryExecutor {
                                 } catch (Exception e) {
                                     throw new CommonTechnicalException("Error durring introspection", e);
                                 }
+                            } else {
+                                try {
+                                    Method method = class1.getMethod(methodName, field.getType());
+                                    method.invoke(newObjet, field.getType().getConstructor(value.getClass())
+                                            .newInstance(value));
+                                } catch (Exception e) {
+                                    JadeLogger
+                                            .warn(QueryExecutor.class,
+                                                    "Error durring introspection for " + field.getType() + " : "
+                                                            + e.toString());
+                                }
                             }
                         }
                     }
