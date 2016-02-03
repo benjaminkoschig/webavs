@@ -1,4 +1,4 @@
 name=${artifactId}
 version=${project.businessversion}
 version.servicepack=
-date=${buildnumber.date}
+date=${maven.timestamp}

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>ch.globaz</groupId>
 		<artifactId>webavs-parent</artifactId>
-		<version>1.15.02-SNAPSHOT</version>
+		<version>1.15.2-SNAPSHOT</version>
 	</parent>
 
 	<packaging>war</packaging>
@@ -97,17 +97,6 @@
 					<attachClasses>true</attachClasses>
 
 					<includeEmptyDirectories>true</includeEmptyDirectories>
-
-					<webResources>
-						<resource>
-							<directory>src/main/resources</directory>
-							<excludes>
-								<exclude>**/*.properties</exclude>
-							</excludes>
-						</resource>
-					</webResources>
-
-
 				</configuration>
 			</plugin>
 
@@ -142,6 +131,36 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<!-- we need a "webavs.version" added to WEB-INF/classes (yea, our systems 
+				can not access that file in a jar...) -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-webavs.version-to-classes-dir</id>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<phase>prepare-package</phase>
+						<configuration>
+							<outputDirectory>${basedir}/target/${project.artifactId}-${project.version}/WEB-INF/classes</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/resources</directory>
+									<filtering>true</filtering>
+									<includes>
+										<include>webavs.version</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+
+
 		</plugins>
 	</build>
 
@@ -188,7 +207,6 @@
 						</executions>
 					</plugin>
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-resources-plugin</artifactId>
 						<executions>
 							<execution>
@@ -423,6 +441,10 @@
 		<dependency>
 			<groupId>ch.globaz</groupId>
 			<artifactId>globaz-external-xsd</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>stax</groupId>
+			<artifactId>stax-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>ch.globaz</groupId>
