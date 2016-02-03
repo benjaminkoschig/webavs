@@ -19,7 +19,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
@@ -222,30 +224,15 @@ public class QueryExecutor {
                             args[0] = value;
                             String methodName = "set" + JadeStringUtil.firstLetterToUpperCase(field.getName());
                             if (String.class.isAssignableFrom(field.getType())) {
-                                if (nameBd.startsWith("DATE")) {
-                                    try {
-                                        Method method = class1.getMethod(methodName, String.class);
-                                        String str = String.valueOf(value);
-                                        if (str.length() == 8) {
-                                            value = Converters.dbReadDateAMJ(value, nameBd);
-                                        } else {
-                                            value = Converters.dbReadDateAM(value, nameBd);
-                                        }
-                                        method.invoke(newObjet, value);
-                                    } catch (Exception e) {
-                                        throw new CommonTechnicalException("Error durring introspection", e);
+                                try {
+                                    Method method = class1.getMethod(methodName, String.class);
+                                    String val = String.valueOf(value).trim();
+                                    if ("0".equals(val)) {
+                                        val = null;
                                     }
-                                } else {
-                                    try {
-                                        Method method = class1.getMethod(methodName, String.class);
-                                        String val = String.valueOf(value).trim();
-                                        if ("0".equals(val)) {
-                                            val = null;
-                                        }
-                                        method.invoke(newObjet, val);
-                                    } catch (Exception e) {
-                                        throw new CommonTechnicalException("Error durring introspection", e);
-                                    }
+                                    method.invoke(newObjet, val);
+                                } catch (Exception e) {
+                                    throw new CommonTechnicalException("Error durring introspection", e);
                                 }
                             } else if (Boolean.class.isAssignableFrom(field.getType())) {
                                 try {
@@ -284,5 +271,35 @@ public class QueryExecutor {
 
         }
         return list;
+    }
+
+    /**
+     * This split a list by the limit defined.
+     * 
+     * @param list The list to split
+     * @param limit The number of elements in the list
+     * @return the list splited
+     */
+    public static <T> List<List<T>> split(Collection<T> list, Integer limit) {
+        if (limit <= 0) {
+            throw new IllegalArgumentException("The limit is less than or equal to zero, limit passed: " + limit);
+        }
+        final List<List<T>> listSplit = new ArrayList<List<T>>();
+        List<T> temp = new ArrayList<T>();
+        int i = 0;
+        for (final Iterator<? extends T> iterator = list.iterator(); iterator.hasNext();) {
+            if ((i % (limit) == 0) && i > 0) {
+                listSplit.add(temp);
+                temp = new ArrayList<T>();
+            }
+            temp.add(iterator.next());
+            i++;
+        }
+
+        if (!temp.isEmpty()) {
+            listSplit.add(temp);
+        }
+
+        return listSplit;
     }
 }

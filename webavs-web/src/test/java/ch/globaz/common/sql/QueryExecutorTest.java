@@ -1,11 +1,14 @@
 package ch.globaz.common.sql;
 
+import static org.fest.assertions.api.Assertions.*;
 import static org.junit.Assert.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
+import ch.globaz.simpleoutputlist.core.ListOutputGenerator;
 
 public class QueryExecutorTest {
 
@@ -55,4 +58,48 @@ public class QueryExecutorTest {
         return conn;
     }
 
+    @Test
+    public void testSplitSizeLimitEqualSizeList() throws Exception {
+        List<List<Integer>> list = ListOutputGenerator.split(build(10), 10);
+        assertThat(list).hasSize(1);
+        assertThat(list.get(0)).hasSize(10);
+    }
+
+    @Test
+    public void testSplitNoLimitSizeListSmaler() throws Exception {
+        List<List<Integer>> list = ListOutputGenerator.split(build(10), 100);
+        assertThat(list).hasSize(1);
+        assertThat(list.get(0)).hasSize(10);
+    }
+
+    @Test
+    public void testSplitLimitSizeListBiggerWithSameModule() throws Exception {
+        List<List<Integer>> list = ListOutputGenerator.split(build(10), 5);
+        assertThat(list).hasSize(2);
+        assertThat(list.get(0)).contains(0, 1, 2, 3, 4);
+        assertThat(list.get(1)).contains(5, 6, 7, 8, 9);
+    }
+
+    @Test
+    public void testSplitLimitSizeListBiggerWithNotSameModule() throws Exception {
+        List<List<Integer>> list = ListOutputGenerator.split(build(12), 5);
+        assertThat(list).hasSize(3);
+        assertThat(list.get(0)).contains(0, 1, 2, 3, 4);
+        assertThat(list.get(1)).contains(5, 6, 7, 8, 9);
+        assertThat(list.get(2)).contains(10, 11);
+    }
+
+    @Test
+    public void testSplitLimitSize() throws Exception {
+        List<List<Integer>> list = ListOutputGenerator.split(build(10000), 2000);
+        assertThat(list).hasSize(5);
+    }
+
+    private List<Integer> build(int nbLigne) {
+        List<Integer> values = new ArrayList<Integer>();
+        for (int i = 0; i < nbLigne; i++) {
+            values.add(i);
+        }
+        return values;
+    }
 }
