@@ -65,22 +65,22 @@ class MutationParser {
             String line = "";
             int nbFiltred = 0;
             while ((line = fileBuffered.readLine()) != null) {
+                if (!line.trim().isEmpty()) {
+                    try {
+                        Mutation mutation = parse(line);
+                        if (mutation.isValide()) {
+                            list.add(mutation);
+                        } else {
+                            nbFiltred++;
+                        }
 
-                try {
-                    Mutation mutation = parse(line);
-                    if (mutation.isValide()) {
-                        list.add(mutation);
-                    } else {
-                        nbFiltred++;
+                    } catch (Exception e) {
+                        errors.put(e, line);
                     }
-
-                } catch (Exception e) {
-                    errors.put(e, line);
                 }
             }
             LOG.debug("Nb mutation found {}", list.size());
             LOG.debug("Nb mutation filtred {}", nbFiltred);
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
