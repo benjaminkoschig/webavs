@@ -15,7 +15,6 @@ import globaz.perseus.vb.qd.PFDetailfactureViewBean;
 import globaz.perseus.vb.qd.PFFactureViewBean;
 import globaz.perseus.vb.qd.PFOuvertureQdViewBean;
 import globaz.perseus.vb.qd.PFQdChercherViewBean;
-import globaz.perseus.vb.qd.PFValidationFactureViewBean;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -219,9 +218,6 @@ public class PFQdAction extends PFAbstractDefaultServletAction {
                 String urlPlus = "&idDossier=" + vb.getFacture().getQd().getQdAnnuelle().getDossier().getId();
                 destination = getActionFullURL().replace("detailfacture", "facture") + ".chercher" + urlPlus;
                 session.setAttribute("viewBean", viewBean);
-            } else if (viewBean instanceof PFValidationFactureViewBean) {
-                request.setAttribute(FWServlet.VIEWBEAN, viewBean);
-                isAjax = true;
             } else {
                 session.setAttribute("viewBean", viewBean);
                 /*

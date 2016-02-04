@@ -2,6 +2,7 @@ package ch.globaz.perseus.business.services.models.qd;
 
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
+import globaz.perseus.process.facture.FactureWrapper;
 import java.util.List;
 import java.util.Map;
 import ch.globaz.perseus.business.exceptions.models.facture.FactureException;
@@ -130,6 +131,7 @@ public interface FactureService extends JadeApplicationService {
      * @throws JadePersistenceException
      * @throws FactureException
      */
-    public List<Facture> validerMultiple(List<String> idFactures) throws JadePersistenceException, FactureException;
+    public List<FactureWrapper> validerMultiple(List<String> idFactures) throws JadePersistenceException,
+            FactureException;
 
 }

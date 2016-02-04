@@ -10,6 +10,7 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.perseus.process.facture.FactureWrapper;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -401,10 +402,11 @@ public class FactureServiceImpl extends PerseusAbstractServiceImpl implements Fa
      */
     @Override
     public Facture valider(Facture facture) throws JadePersistenceException, FactureException {
-        return valider(facture, null);
+        return valider(facture, null).getFacture();
     }
 
-    private Facture valider(Facture facture, Lot lot) throws JadePersistenceException, FactureException {
+    private FactureWrapper valider(Facture facture, Lot lot) throws JadePersistenceException, FactureException {
+        String errorMessage = null;
         if (facture == null) {
             throw new FactureException("Unable to validate Facture, the given model is null");
         }
@@ -420,21 +422,23 @@ public class FactureServiceImpl extends PerseusAbstractServiceImpl implements Fa
                 facture.getSimpleFacture().setDateValidation(JACalendar.todayJJsMMsAAAA());
 
                 facture = PerseusServiceLocator.getFactureService().update(facture);
+            } else {
+                errorMessage = "PF_VALIDATION_FACTURE_ERREUR_FACTURE_ALLREADY_VALIDATED";
             }
 
         } catch (JadeApplicationServiceNotAvailableException e) {
             throw new FactureException("Service facture not available - " + e.toString(), e);
         }
-
-        return facture;
+        return new FactureWrapper(facture, errorMessage);
     }
 
     @Override
-    public List<Facture> validerMultiple(List<String> idFactures) throws JadePersistenceException, FactureException {
+    public List<FactureWrapper> validerMultiple(List<String> idFactures) throws JadePersistenceException,
+            FactureException {
         if (idFactures == null) {
             throw new RuntimeException("Unable to execute the vlaidation facture the ids facture is null");
         }
-        List<Facture> listFacture = new ArrayList<Facture>();
+        List<FactureWrapper> listFacture = new ArrayList<FactureWrapper>();
         FactureSearchModel searchFactures = new FactureSearchModel();
         if (!idFactures.isEmpty()) {
             searchFactures.setInIdFacture(idFactures);
@@ -444,8 +448,13 @@ public class FactureServiceImpl extends PerseusAbstractServiceImpl implements Fa
 
                 for (JadeAbstractModel jadeAbstractModel : searchFactures.getSearchResults()) {
                     Facture facture = (Facture) jadeAbstractModel;
-                    facture = valider(facture, lot);
-                    listFacture.add(facture);
+                    FactureWrapper wrapper = new FactureWrapper(facture,
+                            "PF_VALIDATION_FACTURE_ERREUR_FACTURE_ECHEC_PROCESS");
+                    try {
+                        wrapper = valider(facture, lot);
+                    } finally {
+                        listFacture.add(wrapper);
+                    }
                 }
             } catch (LotException e) {
                 throw new FactureException("LotException during facture validation - " + e.toString(), e);

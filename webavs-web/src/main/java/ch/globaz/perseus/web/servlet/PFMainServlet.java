@@ -126,6 +126,7 @@ public class PFMainServlet extends FWJadeServlet {
         registerActionMapping("perseus.decision", PFDecisionAction.class);
         registerActionMapping("perseus.lot", PFLotAction.class);
         registerActionMapping("perseus.qd", PFQdAction.class);
+        registerActionMapping("perseus.facture", PFFactureAction.class);
         registerActionMapping("perseus.creancier", PFCreancierAction.class);
         registerActionMapping("perseus.paiements", PFPaiementsAction.class);
         registerActionMapping("perseus.rentepont", PFRentePontAction.class);

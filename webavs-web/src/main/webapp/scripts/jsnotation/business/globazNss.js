@@ -1,5 +1,7 @@
 globazNotation.nss = {
-
+	/**
+	* not fully implemented element, just add disabeled input for nss prefix
+	*/
 	author: 'CEL',
 	forTagHtml: 'input',
 	type: globazNotation.typesNotation.BUSINESS_NOTATION,
@@ -17,4 +19,6 @@ globazNotation.nss = {
 		var $inputNSSPrefix = $("<input name='NssPrefixe' tabIndex='-1' title='Préfixe NSS' disabled='' class='' style='text-align: right;' type='text' size='3' maxLength='3' readOnly='' value='756.'/>");
 		this.$elementToPutObject.before($inputNSSPrefix);
 	}
+	
+	//TODO créer un hidden input avec la concaténation prefix et nss.
 };

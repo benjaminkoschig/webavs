@@ -49,7 +49,7 @@
 			<node>
 				<label refId="MENU_PF_FACTURES_VALIDATION"/>
 				<action command="/perseus" responseTarget="fr_main">
-					<parameter name="userAction" value="perseus.qd.validationFacture.afficher"/>
+					<parameter name="userAction" value="perseus.facture.validation.afficher"/>
 				</action>
 			</node>
 			<node>

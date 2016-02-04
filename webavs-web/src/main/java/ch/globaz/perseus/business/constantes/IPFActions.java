@@ -105,7 +105,7 @@ public interface IPFActions {
 
     public static final String ACTION_DROIT_VEHICULE_AJAX = "perseus.fortuneparticuliere.vehiculeAjax";
 
-    public static final String ACTION_VALIDATION_FACTURE = "perseus.qd.validationFacture";
+    public static final String ACTION_VALIDATION_FACTURE = "perseus.facture.validation";
 
     public static final String ACTION_FACTURE = "perseus.qd.detailfacture";
     public static final String ACTION_PAIEMENTS = "perseus.paiements.validationDecision";
