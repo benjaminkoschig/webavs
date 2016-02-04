@@ -1,7 +1,11 @@
 package ch.globaz.corvus.process.dnra;
 
+import globaz.corvus.db.dnra.REFichierDnraJournalierTraite;
+import globaz.corvus.db.dnra.REFichierDnraJournalierTraiteManager;
 import globaz.globall.api.GlobazSystem;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
+import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeFilenameUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
@@ -44,12 +48,6 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
         return this.getClass().getName();
     }
 
-    static String generateXls(List<DifferenceTrouvee> list, Locale locale) {
-        File file = SimpleOutputListBuilder.newInstance().local(locale).addList(list)
-                .classElementList(DifferenceTrouvee.class).asXls().outputName("mutationList").build();
-        return file.getAbsolutePath();
-    }
-
     @Override
     protected void process() {
         List<String> fichiersMutationsATraiterList;
@@ -59,15 +57,30 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
             // téléchargement du ou des fichiers à traiter
             fichiersMutationsATraiterList = telechargerFichiersMutations();
 
+            // traitement de chaque fichier et génération de la liste
             for (String fichierMutationName : fichiersMutationsATraiterList) {
-                // lecture du fichier et mapping dans la structure d'objet
-                MutationsContainer mutationsContainer = MutationParser.parsFile(fichierMutationName);
-                mutationsContainer.setFichierMutationName(fichierMutationName);
-                List<InfoTiers> listInfosTiers = findInfosTiers(mutationsContainer.extractNssActuel());
+                System.out.println("téléchargement du fichier : " + fichierMutationName);
 
-                JadeFsFacade.delete(fichierMutationName);
+                // // parsing et mapping dans la structure d'objet
+                // MutationsContainer mutationsContainer = MutationParser.parsFile(fichierMutationName);
+                // mutationsContainer.setFichierMutationName(fichierMutationName);
+                //
+                // // recherche des infos sur les tiers relatives aux mutations
+                // List<InfoTiers> listInfosTiers = findInfosTiers(mutationsContainer.extractNssActuel());
+                //
+                // // identification des différences entre les mutations annoncées et les données DB
+                // DifferenceFinder differenceFinder = new DifferenceFinder();
+                // List<DifferenceTrouvee> differenceTrouvees = differenceFinder.findAllDifference(
+                // mutationsContainer.getList(), listInfosTiers);
+                //
+                // // génération de la liste au format xls
+                // String path = generateXls(differenceTrouvees, new Locale(getSession().getIdLangueISO()));
+                // System.out.println(path);
+                //
+                marquerFichierDnraCommeTraite(fichierMutationName);
+                // // suppression du fichier journalier
+                // JadeFsFacade.delete(fichierMutationName);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -75,19 +88,63 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
         System.out.println("fin du traitement");
     }
 
+    /**
+     * Remonte toutes les informations relatives à la liste de NSS passée en paramètre
+     * 
+     * @param listNss
+     * @return
+     */
     private List<InfoTiers> findInfosTiers(List<String> listNss) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("select schema.TIPAVSP.HXNAVS as nss, schema.TITIERP.HNIPAY as codeNationalite, schema.TITIERP.HTLDE1 as nom, ");
-        sql.append("schema.TITIERP.HTLDE2 as prenom, schema.TIPERSP.HPDNAI as dateNaissance, schema.TIPERSP.HPDDEC as dateDeces, ");
-        sql.append("schema.TIPERSP.HPTSEX as sexe, schema.TIPERSP.HPTETC as codeEtatCivil ");
-        sql.append("from schema.TIPAVSP ");
-        sql.append("inner join schema.TITIERP on schema.TITIERP.HTITIE = schema.TIPAVSP.HTITIE ");
-        sql.append("inner join schema.TIPERSP on schema.TIPERSP.HTITIE = schema.TIPAVSP.HTITIE ");
-        sql.append("where HXNAVS in (").append(listNss).append(")");
-        List<InfoTiers> listInfosTiers = QueryExecutor.execute(sql.toString(), InfoTiers.class, getSession());
+        System.out.println("nbNss à chercher dans webtiers : " + listNss.size());
+        List<InfoTiers> listInfosTiers = new ArrayList<InfoTiers>();
+        List<List<String>> splittedList = QueryExecutor.split(listNss, 1000);
+        for (List<String> list : splittedList) {
+            StringBuilder sql = new StringBuilder();
+            sql.append("select schema.TIPAVSP.HXNAVS as nss, schema.TITIERP.HNIPAY as codeNationalite, schema.TITIERP.HTLDE1 as nom, ");
+            sql.append("schema.TITIERP.HTLDE2 as prenom, schema.TIPERSP.HPDNAI as dateNaissance, schema.TIPERSP.HPDDEC as dateDeces, ");
+            sql.append("schema.TIPERSP.HPTSEX as sexe, schema.TIPERSP.HPTETC as codeEtatCivil ");
+            sql.append("from schema.TIPAVSP ");
+            sql.append("inner join schema.TITIERP on schema.TITIERP.HTITIE = schema.TIPAVSP.HTITIE ");
+            sql.append("inner join schema.TIPERSP on schema.TIPERSP.HTITIE = schema.TIPAVSP.HTITIE ");
+            sql.append("where HXNAVS in (").append(QueryExecutor.forInString(list)).append(")");
+            listInfosTiers.addAll(QueryExecutor.execute(sql.toString(), InfoTiers.class, getSession()));
+        }
+        System.out.println("nbNss trouvés dans webtiers : " + listInfosTiers.size());
         return listInfosTiers;
     }
 
+    private void marquerFichierDnraCommeTraite(String nomFichier) throws Exception {
+        BTransaction transaction = null;
+        try {
+            transaction = new BTransaction(getSession());
+            transaction.openTransaction();
+            REFichierDnraJournalierTraite fichierDnra = new REFichierDnraJournalierTraite();
+            fichierDnra.setNomFichierDnraJournalierTraite(nomFichier);
+            fichierDnra.add(transaction);
+            transaction.commit();                       // tout s'est bien passé on commit
+        } catch (Exception e) {
+            transaction.rollback();                     // problème, on rollback le tout
+            JadeLogger.error(this.getClass(), "impossible d'ajouter le fichier dans la DB : " + nomFichier);
+        } finally {
+            if (transaction != null) {                    // s'assurer que la transaction n'est pas null
+                transaction.closeTransaction();         // on clot
+            }
+        }
+    }
+
+    /**
+     * Se connecte au serveur définit par la propriété en DB "nraUpiServer" et de télécharge tous les
+     * fichiers qui n'ont pas encore été traités (selon historique) par le process. Les fichiers sont déposés dans le
+     * répertoire "shared" (jade.xml). La méthode retourne les paths de tous les fichiers téléchargés.
+     * 
+     * @return liste des paths sur les fichiers téléchargés.
+     * @throws Exception
+     * @throws IllegalArgumentException
+     * @throws JadeServiceLocatorException
+     * @throws JadeServiceActivatorException
+     * @throws JadeClassCastException
+     * @throws JadeUrlMalformedException
+     */
     private List<String> telechargerFichiersMutations() throws Exception, IllegalArgumentException,
             JadeServiceLocatorException, JadeServiceActivatorException, JadeClassCastException,
             JadeUrlMalformedException {
@@ -119,6 +176,8 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
             return fichiersMutationsATraiterList;
         }
 
+        List<String> nomsFichiersDnraDejaTraites = recupererNomsFichiersDnraDejaTraites();
+
         // parcours de fichiers disponibles. Pour le moment on ne prend que celui du 20160129
         for (JadeFsFileInfo jadeFsFileInfo : jadeFsFileInfoList) {
             System.out.println(jadeFsFileInfo.getUri());
@@ -127,19 +186,58 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
             String nomFichierDistant = jadeUrlFichierDistant.getFile();
             System.out.println(nomFichierDistant);
             // BigDecimal todayAaaaMmJj = JACalendar.today().toAMJ();
-            String fileDate = nomFichierDistant.split("_")[1].split("\\.")[0];
-            if (fileDate.equals("20160129")) {
+            String dateFichier = nomFichierDistant.split("_")[1].split("\\.")[0];
+            if (!nomsFichiersDnraDejaTraites.contains(nomFichierDistant)) {
                 String uriDest = fichierMutationsLocauxDirectory + nomFichierDistant;
                 String uriSource = fichiersMutationsDistantUriNormalized + nomFichierDistant;
                 JadeLogger.info(CIUpiDailyProcess.class, "Téléchargement du fichier : " + uriSource + "...");
                 JadeFsFacade.copyFile(uriSource, uriDest);
-                fichiersMutationsATraiterList.add(nomFichierDistant);
+                fichiersMutationsATraiterList.add(uriDest);
             }
         }
 
         return fichiersMutationsATraiterList;
     }
 
+    /**
+     * récupère dans la table REDNRAJ les noms des fichiers qui ont déjà été traités par le process. Retourne une liste
+     * vide si aucun cas.
+     * 
+     * @return
+     * @throws Exception
+     */
+    private List<String> recupererNomsFichiersDnraDejaTraites() throws Exception {
+        // récupération des fichiers déjà traités par le process
+        REFichierDnraJournalierTraiteManager fichierDnraJournalierTraiteManager = new REFichierDnraJournalierTraiteManager();
+        fichierDnraJournalierTraiteManager.setSession(getSession());
+        fichierDnraJournalierTraiteManager.find(BManager.SIZE_NOLIMIT);
+        if (fichierDnraJournalierTraiteManager.size() > 0) {
+            return fichierDnraJournalierTraiteManager.getContainerAsList();
+        } else {
+            return new ArrayList<String>();
+        }
+    }
+
+    /**
+     * Générer une liste au format XLS
+     * 
+     * @param list
+     * @param locale
+     * @return
+     */
+    static String generateXls(List<DifferenceTrouvee> list, Locale locale) {
+        File file = SimpleOutputListBuilder.newInstance().local(locale).addList(list)
+                .classElementList(DifferenceTrouvee.class).asXls().outputName("mutationList").build();
+        return file.getAbsolutePath();
+    }
+
+    /**
+     * Retourne une session PAVO
+     * 
+     * @param session
+     * @return
+     * @throws Exception
+     */
     private static BSession getSessionPavo(BSession session) throws Exception {
         return (BSession) GlobazSystem.getApplication("PAVO").newSession(session);
     }

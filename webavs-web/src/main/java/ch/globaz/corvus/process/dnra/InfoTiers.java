@@ -3,7 +3,7 @@ package ch.globaz.corvus.process.dnra;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.pyxis.domaine.Sexe;
 
-class InfoTiers {
+public class InfoTiers {
     private String nss;
     private String nom;
     private String prenom;

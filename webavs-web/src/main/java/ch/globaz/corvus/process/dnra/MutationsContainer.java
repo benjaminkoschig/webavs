@@ -38,4 +38,8 @@ public class MutationsContainer {
     public int size() {
         return mutations.size();
     }
+
+    public List<Mutation> getList() {
+        return mutations;
+    }
 }

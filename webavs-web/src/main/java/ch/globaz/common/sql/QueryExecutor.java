@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import com.google.common.base.Joiner;
 
 public class QueryExecutor {
 
@@ -271,6 +272,12 @@ public class QueryExecutor {
 
         }
         return list;
+    }
+
+    public static String forInString(Collection<String> list) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("'").append(Joiner.on("','").join(list)).append("'");
+        return builder.toString();
     }
 
     /**
