@@ -75,6 +75,10 @@ public enum Sexe {
         this.codeSysteme = codeSysteme;
     }
 
+    public boolean isUndefined() {
+        return UNDEFINDED.equals(this);
+    }
+
     /**
      * @return le code système correspondant, sous forme d'un entier
      */

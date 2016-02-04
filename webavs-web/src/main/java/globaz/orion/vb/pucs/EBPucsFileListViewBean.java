@@ -141,6 +141,8 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBean {
         manager.setSession((BSession) getISession());
         manager.setForEtat(DSDeclarationViewBean.CS_OUVERT);
         manager.setForIdPucsFileNotEmpty(true);
+        manager.wantCallMethodAfter(false);
+        manager.wantCallMethodBefore(false);
 
         manager.find(BManager.SIZE_NOLIMIT);
 

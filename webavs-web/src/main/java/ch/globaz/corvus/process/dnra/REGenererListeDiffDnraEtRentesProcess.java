@@ -14,9 +14,13 @@ import globaz.jade.service.exception.JadeServiceLocatorException;
 import globaz.jade.url.JadeUrl;
 import globaz.jade.url.JadeUrlMalformedException;
 import globaz.pavo.db.upidaily.CIUpiDailyProcess;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.corvus.process.REAbstractJadeJob;
+import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 import com.sun.star.lang.IllegalArgumentException;
 
 /**
@@ -40,6 +44,12 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
         return this.getClass().getName();
     }
 
+    static String generateXls(List<DifferenceTrouvee> list, Locale locale) {
+        File file = SimpleOutputListBuilder.newInstance().local(locale).addList(list)
+                .classElementList(DifferenceTrouvee.class).asXls().outputName("mutationList").build();
+        return file.getAbsolutePath();
+    }
+
     @Override
     protected void process() {
         List<String> fichiersMutationsATraiterList;
@@ -51,7 +61,11 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
 
             for (String fichierMutationName : fichiersMutationsATraiterList) {
                 // lecture du fichier et mapping dans la structure d'objet
+                MutationsContainer mutationsContainer = MutationParser.parsFile(fichierMutationName);
+                mutationsContainer.setFichierMutationName(fichierMutationName);
+                List<InfoTiers> listInfosTiers = findInfosTiers(mutationsContainer.extractNssActuel());
 
+                JadeFsFacade.delete(fichierMutationName);
             }
 
         } catch (Exception e) {
@@ -59,6 +73,19 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
         }
 
         System.out.println("fin du traitement");
+    }
+
+    private List<InfoTiers> findInfosTiers(List<String> listNss) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("select schema.TIPAVSP.HXNAVS as nss, schema.TITIERP.HNIPAY as codeNationalite, schema.TITIERP.HTLDE1 as nom, ");
+        sql.append("schema.TITIERP.HTLDE2 as prenom, schema.TIPERSP.HPDNAI as dateNaissance, schema.TIPERSP.HPDDEC as dateDeces, ");
+        sql.append("schema.TIPERSP.HPTSEX as sexe, schema.TIPERSP.HPTETC as codeEtatCivil ");
+        sql.append("from schema.TIPAVSP ");
+        sql.append("inner join schema.TITIERP on schema.TITIERP.HTITIE = schema.TIPAVSP.HTITIE ");
+        sql.append("inner join schema.TIPERSP on schema.TIPERSP.HTITIE = schema.TIPAVSP.HTITIE ");
+        sql.append("where HXNAVS in (").append(listNss).append(")");
+        List<InfoTiers> listInfosTiers = QueryExecutor.execute(sql.toString(), InfoTiers.class, getSession());
+        return listInfosTiers;
     }
 
     private List<String> telechargerFichiersMutations() throws Exception, IllegalArgumentException,
