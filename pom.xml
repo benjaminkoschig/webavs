@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>ch.globaz</groupId>
@@ -8,14 +7,14 @@
 	</parent>
 
 	<artifactId>webavs-parent</artifactId>
-	<version>1.15.2-SNAPSHOT</version>
+	<version>0.0.3</version>
 	<packaging>pom</packaging>
 	<url>http://javadoc.ju.globaz.ch/webavs/${project.version}</url>
 
 	<scm>
-		<url>${scm.weburl}</url>
-		<connection>scm:${scm.type}:${scm.url}</connection>
-		<developerConnection>scm:${scm.type}:${scm.url}</developerConnection>
+		<url>scm:svn:http://svndev.ju.globaz.ch/webavs-repos/tags/webavs/0.0.3</url>
+		<connection>scm:svn:http://svndev.ju.globaz.ch/webavs-repos/tags/webavs/0.0.3</connection>
+		<developerConnection>scm:svn:http://svndev.ju.globaz.ch/webavs-repos/tags/webavs/0.0.3</developerConnection>
 	</scm>
 
 	<distributionManagement>
