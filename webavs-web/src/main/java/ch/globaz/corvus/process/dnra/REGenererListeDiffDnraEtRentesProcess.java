@@ -53,7 +53,7 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
     protected void process() {
         List<File> fichiersMutationsATraiterList;
 
-        System.out.println("début du traitement");
+        JadeLogger.info(getName(), "Début du traitement de génération des listes de différences");
         try {
             // téléchargement du ou des fichiers à traiter
             fichiersMutationsATraiterList = telechargerFichiersMutations();

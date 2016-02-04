@@ -26,10 +26,10 @@ public class MutationsContainer {
     public List<String> extractNssActuel() {
         List<String> listNss = new ArrayList<String>();
         for (Mutation mutation : mutations) {
-            if (listNss.contains(mutation.getNss())) {
-                LOG.warn("This nss {} is allready present in the list !", mutation.getNss());
+            if (listNss.contains(mutation.getNewNss())) {
+                LOG.warn("This nss {} is allready present in the list !", mutation.getNewNss());
             } else {
-                listNss.add(mutation.getNss());
+                listNss.add(mutation.getNewNss());
             }
         }
         return listNss;

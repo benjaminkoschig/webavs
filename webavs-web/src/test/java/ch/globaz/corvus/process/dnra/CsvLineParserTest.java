@@ -44,4 +44,12 @@ public class CsvLineParserTest {
         assertThat(csvLineParser.nextElementTrim()).isEqualTo("2");
     }
 
+    @Test
+    public void testFormatNss() throws Exception {
+        CsvLineParser csvLineParser = new CsvLineParser(
+                "63349158584;7569849984078;1;1;MARTINOVIC,JOZO;1;27021949;220;;;;;");
+        assertThat(csvLineParser.nextElementToNssFormate()).isEqualTo("63349158584");
+        assertThat(csvLineParser.nextElementToNssFormate()).isEqualTo("756.9849.9840.78");
+    }
+
 }

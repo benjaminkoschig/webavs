@@ -51,7 +51,7 @@ class CsvLineParser {
             String[] telArr = { nss.substring(0, 3), nss.substring(3, 7), nss.substring(7, 11), nss.substring(11, 13) };
             return text.format(telArr);
         }
-        return null;
+        return nss;
     }
 
     private static Date toDate(String date, String forField) {
