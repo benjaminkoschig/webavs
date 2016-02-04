@@ -20,6 +20,7 @@ import globaz.jade.url.JadeUrlMalformedException;
 import globaz.pavo.db.upidaily.CIUpiDailyProcess;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import ch.globaz.common.sql.QueryExecutor;
@@ -50,7 +51,7 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
 
     @Override
     protected void process() {
-        List<String> fichiersMutationsATraiterList;
+        List<File> fichiersMutationsATraiterList;
 
         System.out.println("début du traitement");
         try {
@@ -58,28 +59,30 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
             fichiersMutationsATraiterList = telechargerFichiersMutations();
 
             // traitement de chaque fichier et génération de la liste
-            for (String fichierMutationName : fichiersMutationsATraiterList) {
-                System.out.println("téléchargement du fichier : " + fichierMutationName);
+            for (File fichierMutation : fichiersMutationsATraiterList) {
+                System.out.println("téléchargement du fichier : " + fichierMutation.getName() + " ---->"
+                        + fichierMutation.getAbsolutePath());
 
-                // // parsing et mapping dans la structure d'objet
-                // MutationsContainer mutationsContainer = MutationParser.parsFile(fichierMutationName);
-                // mutationsContainer.setFichierMutationName(fichierMutationName);
-                //
-                // // recherche des infos sur les tiers relatives aux mutations
-                // List<InfoTiers> listInfosTiers = findInfosTiers(mutationsContainer.extractNssActuel());
-                //
-                // // identification des différences entre les mutations annoncées et les données DB
-                // DifferenceFinder differenceFinder = new DifferenceFinder();
-                // List<DifferenceTrouvee> differenceTrouvees = differenceFinder.findAllDifference(
-                // mutationsContainer.getList(), listInfosTiers);
-                //
-                // // génération de la liste au format xls
-                // String path = generateXls(differenceTrouvees, new Locale(getSession().getIdLangueISO()));
-                // System.out.println(path);
-                //
-                marquerFichierDnraCommeTraite(fichierMutationName);
-                // // suppression du fichier journalier
-                // JadeFsFacade.delete(fichierMutationName);
+                // parsing et mapping dans la structure d'objet
+                MutationsContainer mutationsContainer = MutationParser.parsFile(fichierMutation.getAbsolutePath());
+                mutationsContainer.setFichierMutationName(fichierMutation.getAbsolutePath());
+
+                // recherche des infos sur les tiers relatives aux mutations
+                List<InfoTiers> listInfosTiers = findInfosTiers(mutationsContainer.extractNssActuel());
+
+                // identification des différences entre les mutations annoncées et les données DB
+                DifferenceFinder differenceFinder = new DifferenceFinder();
+                List<DifferenceTrouvee> differenceTrouvees = differenceFinder.findAllDifference(
+                        mutationsContainer.getList(), listInfosTiers);
+
+                // génération de la liste au format xls
+                String path = generateXls(differenceTrouvees, new Locale(getSession().getIdLangueISO()));
+                System.out.println(path);
+
+                // marquerFichierDnraCommeTraite(fichierMutation.getName());
+
+                // suppression du fichier journalier
+                JadeFsFacade.delete(fichierMutation.getAbsolutePath());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -113,6 +116,12 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
         return listInfosTiers;
     }
 
+    /**
+     * Insert dans la DB le nom du fichier afin de l'identifier comme traité
+     * 
+     * @param nomFichier
+     * @throws Exception
+     */
     private void marquerFichierDnraCommeTraite(String nomFichier) throws Exception {
         BTransaction transaction = null;
         try {
@@ -135,7 +144,7 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
     /**
      * Se connecte au serveur définit par la propriété en DB "nraUpiServer" et de télécharge tous les
      * fichiers qui n'ont pas encore été traités (selon historique) par le process. Les fichiers sont déposés dans le
-     * répertoire "shared" (jade.xml). La méthode retourne les paths de tous les fichiers téléchargés.
+     * répertoire "shared" (jade.xml). La méthode retourne les paths de tous les fichiers téléchargés (trier par nom).
      * 
      * @return liste des paths sur les fichiers téléchargés.
      * @throws Exception
@@ -145,10 +154,10 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
      * @throws JadeClassCastException
      * @throws JadeUrlMalformedException
      */
-    private List<String> telechargerFichiersMutations() throws Exception, IllegalArgumentException,
+    private List<File> telechargerFichiersMutations() throws Exception, IllegalArgumentException,
             JadeServiceLocatorException, JadeServiceActivatorException, JadeClassCastException,
             JadeUrlMalformedException {
-        List<String> fichiersMutationsATraiterList = new ArrayList<String>();
+        List<File> fichiersMutationsATraiterList = new ArrayList<File>();
 
         // récupération de l'URI où sont stockés les fichiers dé-zippés et décryptés
         String fichiersMutationsDistantUri = getSessionPavo(getSession()).getApplication().getProperty("nraUpiServer");
@@ -192,9 +201,13 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                 String uriSource = fichiersMutationsDistantUriNormalized + nomFichierDistant;
                 JadeLogger.info(CIUpiDailyProcess.class, "Téléchargement du fichier : " + uriSource + "...");
                 JadeFsFacade.copyFile(uriSource, uriDest);
-                fichiersMutationsATraiterList.add(uriDest);
+                File fichierDest = new File(uriDest);
+                fichiersMutationsATraiterList.add(fichierDest);
             }
         }
+
+        // trier la collection
+        Collections.sort(fichiersMutationsATraiterList);
 
         return fichiersMutationsATraiterList;
     }
@@ -207,15 +220,23 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
      * @throws Exception
      */
     private List<String> recupererNomsFichiersDnraDejaTraites() throws Exception {
+        List<String> nomsFichiersDnraDejaTraites = new ArrayList<String>();
+
         // récupération des fichiers déjà traités par le process
         REFichierDnraJournalierTraiteManager fichierDnraJournalierTraiteManager = new REFichierDnraJournalierTraiteManager();
         fichierDnraJournalierTraiteManager.setSession(getSession());
         fichierDnraJournalierTraiteManager.find(BManager.SIZE_NOLIMIT);
+
+        // construction de la liste des noms déjà traités
         if (fichierDnraJournalierTraiteManager.size() > 0) {
-            return fichierDnraJournalierTraiteManager.getContainerAsList();
-        } else {
-            return new ArrayList<String>();
+            List<REFichierDnraJournalierTraite> fichiersDrnaDejaTraitesList = fichierDnraJournalierTraiteManager
+                    .getContainerAsList();
+            for (REFichierDnraJournalierTraite fichier : fichiersDrnaDejaTraitesList) {
+                nomsFichiersDnraDejaTraites.add(fichier.getNomFichierDnraJournalierTraite());
+            }
         }
+
+        return nomsFichiersDnraDejaTraites;
     }
 
     /**
