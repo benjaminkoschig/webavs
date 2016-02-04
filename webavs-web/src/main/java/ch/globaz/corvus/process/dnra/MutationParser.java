@@ -60,19 +60,27 @@ class MutationParser {
         final Map<Exception, String> errors = new HashMap<Exception, String>();
         BufferedReader fileBuffered = null;
         try {
-            fileBuffered = new BufferedReader(new FileReader(pahtFile), (81920));
+            LOG.debug("Reade file {}", pahtFile);
+            fileBuffered = new BufferedReader(new FileReader(pahtFile), 81920);
             String line = "";
+            int nbFiltred = 0;
             while ((line = fileBuffered.readLine()) != null) {
-                LOG.debug("Line {}", line);
+
                 try {
                     Mutation mutation = parse(line);
                     if (mutation.isValide()) {
                         list.add(mutation);
+                    } else {
+                        nbFiltred++;
                     }
+
                 } catch (Exception e) {
                     errors.put(e, line);
                 }
             }
+            LOG.debug("Nb mutation found {}", list.size());
+            LOG.debug("Nb mutation filtred {}", nbFiltred);
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {

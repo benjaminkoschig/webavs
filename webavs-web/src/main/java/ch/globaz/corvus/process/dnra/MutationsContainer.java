@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 public class MutationsContainer {
     private static final Logger LOG = LoggerFactory.getLogger(MutationsContainer.class);
 
-    private final List<Mutation> mutatations = new ArrayList<Mutation>();
+    private final List<Mutation> mutations = new ArrayList<Mutation>();
     private String fichierMutationName;
 
     public String getFichierMutationName() {
@@ -20,12 +20,12 @@ public class MutationsContainer {
     }
 
     public boolean add(Mutation mutation) {
-        return mutatations.add(mutation);
+        return mutations.add(mutation);
     }
 
     public List<String> extractNssActuel() {
         List<String> listNss = new ArrayList<String>();
-        for (Mutation mutation : mutatations) {
+        for (Mutation mutation : mutations) {
             if (listNss.contains(mutation.getNss())) {
                 LOG.warn("This nss {} is allready present in the list !", mutation.getNss());
             } else {
@@ -33,5 +33,9 @@ public class MutationsContainer {
             }
         }
         return listNss;
+    }
+
+    public int size() {
+        return mutations.size();
     }
 }
