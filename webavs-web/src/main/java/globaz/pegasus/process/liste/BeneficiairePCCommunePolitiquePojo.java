@@ -1,7 +1,12 @@
 package globaz.pegasus.process.liste;
 
+import ch.globaz.common.listoutput.converterImplemented.LabelTranslater;
 import ch.globaz.simpleoutputlist.annotation.Column;
+import ch.globaz.simpleoutputlist.annotation.Translater;
+import ch.globaz.simpleoutputlist.annotation.style.Align;
+import ch.globaz.simpleoutputlist.annotation.style.ColumnStyle;
 
+@Translater(value = LabelTranslater.class, identifier = "PEGASUS_LISTE_EXCEL_CP")
 public class BeneficiairePCCommunePolitiquePojo implements Comparable<BeneficiairePCCommunePolitiquePojo> {
 
     private String communePolitique = "";
@@ -14,6 +19,7 @@ public class BeneficiairePCCommunePolitiquePojo implements Comparable<Beneficiai
     private String montant = "";
 
     @Column(name = "commune", order = 1)
+    @ColumnStyle(align = Align.CENTER)
     public String getCommunePolitique() {
         return communePolitique;
     }
@@ -48,7 +54,7 @@ public class BeneficiairePCCommunePolitiquePojo implements Comparable<Beneficiai
         this.nom = nom;
     }
 
-    @Column(name = "Prénom", order = 4)
+    @Column(name = "Prenom", order = 4)
     public String getPrenom() {
         return prenom;
     }
@@ -57,7 +63,7 @@ public class BeneficiairePCCommunePolitiquePojo implements Comparable<Beneficiai
         this.prenom = prenom;
     }
 
-    @Column(name = "code préstation", order = 5)
+    @Column(name = "codePrestation", order = 5)
     public String getCodePrestation() {
         return codePrestation;
     }
@@ -75,6 +81,7 @@ public class BeneficiairePCCommunePolitiquePojo implements Comparable<Beneficiai
     }
 
     @Column(name = "Montant", order = 6)
+    @ColumnStyle(align = Align.RIGHT)
     public String getMontant() {
         return montant;
     }

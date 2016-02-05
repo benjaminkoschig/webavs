@@ -21,28 +21,38 @@ public class PCListeRepartitionCommunePolitiqueHelper extends PegasusHelper {
 
             PCListeRecapTotauxPcRfmParCommunePolitiqueProcess process = new PCListeRecapTotauxPcRfmParCommunePolitiqueProcess();
 
-            process.setISession(session);
-            process.setEMailAddress(vb.getEmail());
+            process.setEmail(vb.getEmail());
+            process.setSession((BSession) session);
             process.setDateMonthDebut(vb.getDateMonthDebut());
             process.setDateMonthFin(vb.getDateMonthFin());
 
             try {
-                BProcessLauncher.start(process);
+                process.checkValideArguments();
+            } catch (IllegalArgumentException e) {
+                viewBean.setMessage(e.getMessage());
+                viewBean.setMsgType(FWViewBeanInterface.ERROR);
+
+                return;
+            }
+
+            try {
+                BProcessLauncher.startJob(process);
 
             } catch (Exception e) {
-                vb.setMessage(e.toString());
-                vb.setMsgType(FWViewBeanInterface.ERROR);
+                putTransactionInError(viewBean, e);
             }
 
         }
 
-        if ("listePc".equals(vb.getTypeListe()) || "listePcRente".equals(vb.getTypeListe())) {
+        if (PCListeRepartitionCommunePolitiqueProcess.TYPE_LISTE_PC.equals(vb.getTypeListe())
+                || PCListeRepartitionCommunePolitiqueProcess.TYPE_LISTE_PC_RENTE.equals(vb.getTypeListe())) {
+
+            PCListeRepartitionCommunePolitiqueProcess process = new PCListeRepartitionCommunePolitiqueProcess();
+            process.setTypeListe(vb.getTypeListe());
+            process.setEmail(vb.getEmail());
+            process.setSession((BSession) session);
 
             try {
-                PCListeRepartitionCommunePolitiqueProcess process = new PCListeRepartitionCommunePolitiqueProcess();
-                process.setTypeListe(vb.getTypeListe());
-                process.setEmail(vb.getEmail());
-                process.setSession((BSession) session);
                 BProcessLauncher.startJob(process);
 
             } catch (Exception e) {

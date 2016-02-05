@@ -1,8 +1,34 @@
 package globaz.pegasus.process.liste;
 
-import globaz.globall.db.BProcess;
-import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.util.JACalendar;
+import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.client.util.JadeUUIDGenerator;
+import globaz.jade.common.Jade;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.smtp.JadeSmtpClient;
+import globaz.osiris.api.APIEcriture;
+import globaz.pegasus.process.PCAbstractJob;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import ch.globaz.common.domaine.Date;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.common.sql.QueryExecutor;
+import ch.globaz.pegasus.business.constantes.EPCProperties;
+import ch.globaz.simpleoutputlist.annotation.style.Align;
+import ch.globaz.simpleoutputlist.core.Details;
+import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 
 /**
  * Une liste récapitulative des totaux par commune PC et RFM est générée au format Excel (xmlml).
@@ -11,71 +37,250 @@ import globaz.jade.client.util.JadeStringUtil;
  * @author sco
  * 
  */
-public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends BProcess {
+public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstractJob {
 
     private static final long serialVersionUID = 1L;
     private String dateMonthDebut;
     private String dateMonthFin;
+    private Map<String, ContainerByTiers> recapTotauxByIdtiers = new HashMap<String, ContainerByTiers>();
+    private Map<String, ContainerByCommunePolitique> recapTotauxByCommunePolitique = new HashMap<String, ContainerByCommunePolitique>();
+    private String email = null;
 
-    @Override
-    protected void _executeCleanUp() {
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override
-    protected boolean _executeProcess() throws Exception {
-
-        boolean status = true;
+    protected void process() throws Exception {
 
         try {
 
-            // 1. Récupération des données
-            // a. décision PC
-            // b. Paiement PC
-            // c. décision RFM
+            // 1. Check les élements d'entrés
+            checkValideArguments();
 
-            // 2. Consolidation
+            // ---------------------------------
+            // 2. Récupération des données
+            // ---------------------------------
+            findDataCompta();
 
-            // 3. Impression de la liste
+            // ---------------------------------
+            // 3. Consolidation
+            // ---------------------------------
+            // Ajout de la commune politique
+            addCommunePolitique();
+
+            // Regroupement par Commune politique
+            groupDataByCommunePolitique();
+
+            // Tri de la liste
+            List<ContainerByCommunePolitique> listTotauxByCommunePolitiqueCollection = new ArrayList<ContainerByCommunePolitique>(
+                    recapTotauxByCommunePolitique.values());
+            Collections.sort(listTotauxByCommunePolitiqueCollection);
+
+            // ---------------------------------
+            // 4. Impression de la liste
+            // ---------------------------------
+            sendMailWithDoc(createExcelFile(listTotauxByCommunePolitiqueCollection));
 
         } catch (Exception e) {
-
-            status = false;
+            JadeLogger.error("An error occurred while generating prestation list by commune politique", e);
+            sendMailError(e);
         }
-
-        return status;
 
     }
 
-    @Override
-    protected void _validate() throws Exception {
+    private void findDataCompta() throws PropertiesException, JAException {
+        List<PaiementComptablePcRfmBean> listPaiementPcRfm = QueryExecutor.execute(getSqlOperationCompta(),
+                PaiementComptablePcRfmBean.class);
 
+        for (PaiementComptablePcRfmBean bean : listPaiementPcRfm) {
+
+            ContainerByTiers con = recapTotauxByIdtiers.get(bean.getIdTiers());
+            if (con == null) {
+                con = new ContainerByTiers(bean.getIdTiers());
+            }
+
+            // Si crédit = sort de la caisse, donc paiement
+            if (APIEcriture.CREDIT.equals(bean.getCodeDebitCredit())) {
+                con.addMontantPaiement(bean.getMontant());
+            }
+
+            if (APIEcriture.DEBIT.equals(bean.getCodeDebitCredit())) {
+                con.addMontantRestitution(bean.getMontant());
+            }
+
+            recapTotauxByIdtiers.put(bean.getIdTiers(), con);
+        }
+
+    }
+
+    private void sendMailError(Exception e) {
+
+        String subject = getSession().getLabel("PEGASUS_JAVA_LISTE_RECAP_TOTAUX_SUBJECT_MAIL");
+        String body = getSession().getLabel("PEGASUS_JAVA_LISTE_RECAP_TOTAUX_BODY_MAIL_ERROR");
+
+        body += "\n\n\n***** INFORMATIONS POUR GLOBAZ *****\n";
+        body += stack2string(e);
+
+        try {
+            JadeSmtpClient.getInstance().sendMail(getEmail(), subject, body, null);
+        } catch (Exception e1) {
+            JadeLogger.error("Unabled to send mail to " + getEmail(), e);
+        }
+
+    }
+
+    /**
+     * Check des éléments d'entrés
+     */
+    public void checkValideArguments() {
+
+        // Test si la date de début est présente
         if (dateMonthDebut == null || JadeStringUtil.isBlankOrZero(dateMonthDebut)) {
-            throw new IllegalArgumentException("La date de début de période ne peut être vide");
+            throw new IllegalArgumentException(getSession().getLabel("PEGASUS_JAVA_LISTE_RECAP_TOTAUX_DATE_DEBUT_VIDE"));
         }
-        // if (dateMonthFin == null || JadeStringUtil.isBlankOrZero(dateMonthFin)) {
-        // throw new IllegalArgumentException("La date de fin de période ne peut être vide");
-        // }
 
-        // Test si date de fin plus petite que date de début
+        // Test si date de début valide
+        if (!Date.isValid(dateMonthDebut)) {
+            throw new IllegalArgumentException(getSession().getLabel(
+                    "PEGASUS_JAVA_LISTE_RECAP_TOTAUX_DATE_DEBUT_NON_VALIDE"));
+        }
 
-        // Une liste récapitulative dans le futur n'a aucun sens.
-        // Dès lors, une message d'erreur peut être ajouté lorsque la date de fin de période est plus grande ou égale au
-        // prochaine paiement.
-        // Récupération date du prochain paiement
+        // Test si date de début dans le futur
+        if (new Date(dateMonthDebut).compareTo(new Date()) > 0) {
+            throw new IllegalArgumentException(getSession()
+                    .getLabel("PEGASUS_JAVA_LISTE_RECAP_TOTAUX_DATE_DEBUT_FUTUR"));
+        }
+
+        // Si une date de fin est présente
+        if (dateMonthFin != null && !JadeStringUtil.isBlankOrZero(dateMonthFin)) {
+
+            // test si valide
+            if (!Date.isValid(dateMonthFin)) {
+                throw new IllegalArgumentException(getSession().getLabel(
+                        "PEGASUS_JAVA_LISTE_RECAP_TOTAUX_DATE_FIN_NON_VALIDE"));
+            }
+
+            // Test si date de début > date de fin
+            if (new Date(dateMonthDebut).compareTo(new Date(dateMonthFin)) > 0) {
+                throw new IllegalArgumentException(getSession().getLabel(
+                        "PEGASUS_JAVA_LISTE_RECAP_TOTAUX_DATE_DEBUT_PLUS_DATE_FIN"));
+            }
+        }
+
     }
 
-    @Override
-    protected String getEMailObject() {
-        if (isOnError() || getSession().hasErrors() || isAborted()) {
-            return "Erreur";
+    private String getSqlOperationCompta() throws PropertiesException, JAException {
+
+        String codeReferencePC = EPCProperties.COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_PC.getValue();
+        String codeReferenceRFM = EPCProperties.COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_RFM.getValue();
+
+        String dateDebut = new Date(dateMonthDebut).getValueMonth();
+        String dateFin = new Date().getValue();
+        if (!JadeStringUtil.isEmpty(dateMonthFin)) {
+            dateFin = new Date(dateMonthFin).getValueMonth() + "31";
         } else {
-            return "OK";
+            dateMonthFin = new Date().getSwissMonthValue();
+        }
+
+        StringBuilder sql = new StringBuilder();
+
+        sql.append("SELECT ");
+        sql.append("    schema.CACPTAP.IDTIERS AS idtiers,  ");
+        sql.append("    sum(schema.CAOPERP.MONTANT) as MONTANT,  ");
+        sql.append("    schema.CAOPERP.CODEDEBITCREDIT as CODEDEBITCREDIT,  ");
+        sql.append("    schema.CARUBRP.IDEXTERNE as RUBRIQUE  ");
+        sql.append("FROM   schema.cacptap  ");
+        sql.append("    INNER JOIN schema.CAOPERP ON schema.CAOPERP.IDCOMPTEANNEXE = schema.CACPTAP.IDCOMPTEANNEXE  ");
+        sql.append("    INNER JOIN schema.CARUBRP on schema.CARUBRP.IDRUBRIQUE = schema.CAOPERP.IDCOMPTE  ");
+        sql.append("    INNER JOIN schema.CARERUP on schema.CARERUP.IDRUBRIQUE = schema.CARUBRP.IDRUBRIQUE  ");
+        sql.append("WHERE  ");
+        sql.append("  schema.cacptap.IDROLE = 517038 ");
+        sql.append("  and schema.CAOPERP.date BETWEEN ").append(dateDebut).append("01 AND ");
+        sql.append(dateFin);
+        sql.append("  and schema.caoperp.ETAT = 205002 ");
+        sql.append("  and schema.caoperp.IDTYPEOPERATION like 'E%' ");
+        sql.append("  and schema.carerup.IDCODEREFERENCE in (" + codeReferencePC);
+        if (!JadeStringUtil.isEmpty(codeReferenceRFM)) {
+            sql.append(",").append(codeReferenceRFM);
+        }
+        sql.append(") GROUP BY schema.CACPTAP.IDTIERS, schema.CARUBRP.IDEXTERNE, schema.CAOPERP.CODEDEBITCREDIT ");
+
+        return sql.toString();
+    }
+
+    private void addCommunePolitique() {
+
+        Set<String> setIdTiers = recapTotauxByIdtiers.keySet();
+        Map<String, String> mapIdTiersCommunePolitique = new HashMap<String, String>();
+
+        mapIdTiersCommunePolitique = PRTiersHelper.getCommunePolitique(setIdTiers, new Date().getDate(), getSession());
+
+        for (String idTiers : setIdTiers) {
+            String communePolitique = mapIdTiersCommunePolitique.get(idTiers);
+            if (!JadeStringUtil.isEmpty(communePolitique)) {
+                ContainerByTiers con = recapTotauxByIdtiers.get(idTiers);
+                con.setCommunePolitique(communePolitique);
+            }
         }
     }
 
-    @Override
-    public GlobazJobQueue jobQueue() {
-        return GlobazJobQueue.UPDATE_LONG;
+    private void groupDataByCommunePolitique() {
+        Iterator<ContainerByTiers> values = recapTotauxByIdtiers.values().iterator();
+
+        while (values.hasNext()) {
+            ContainerByTiers value = values.next();
+
+            ContainerByCommunePolitique con = recapTotauxByCommunePolitique.get(value.getCommunePolitique());
+            if (con == null) {
+                con = new ContainerByCommunePolitique(value.getCommunePolitique());
+            }
+
+            con.addMontantPaiement(value.getMontantPaiement());
+            con.addMontantRestitution(value.getMontantRestitution());
+
+            recapTotauxByCommunePolitique.put(value.getCommunePolitique(), con);
+        }
+    }
+
+    private String createExcelFile(List<ContainerByCommunePolitique> containerCP) {
+
+        String filePath = Jade.getInstance().getPersistenceDir() + JadeUUIDGenerator.createStringUUID();
+
+        Locale locale = new Locale(BSessionUtil.getSessionFromThreadContext().getIdLangueISO());
+
+        SimpleOutputListBuilder simpleOut = SimpleOutputListBuilder.newInstance().local(locale).addList(containerCP)
+                .classElementList(ContainerByCommunePolitique.class);
+
+        String titre = getSession().getLabel("PEGASUS_LISTE_EXCEL_CP_TITRE_RECAP_TOTAUX");
+        String genererLe = getSession().getLabel("PEGASUS_LISTE_EXCEL_CP_GENERE_LE");
+        String periodeConcerne = getSession().getLabel("PEGASUS_LISTE_EXCEL_CP_PERIODE_CONCERNE");
+
+        Details paramsData = new Details();
+        paramsData.add(genererLe, JACalendar.todayJJsMMsAAAA());
+        paramsData.newLigne();
+        paramsData.add(periodeConcerne, getDateMonthDebut() + " - " + getDateMonthFin());
+
+        File file = simpleOut.addTitle(titre, Align.LEFT).addHeaderDetails(paramsData).asXls().outputName(filePath)
+                .build();
+
+        return file.getAbsolutePath();
+
+    }
+
+    private void sendMailWithDoc(String fileName) throws Exception {
+
+        String[] tabFileName = { fileName };
+
+        String subject = getSession().getLabel("PEGASUS_JAVA_LISTE_RECAP_TOTAUX_SUBJECT_MAIL");
+        String body = getSession().getLabel("PEGASUS_JAVA_LISTE_RECAP_TOTAUX_BODY_MAIL_OK");
+
+        JadeSmtpClient.getInstance().sendMail(getEmail(), subject, body, tabFileName);
+
     }
 
     public String getDateMonthDebut() {
@@ -94,4 +299,24 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends BProcess 
         this.dateMonthFin = dateMonthFin;
     }
 
+    @Override
+    public String getDescription() {
+        return getSession().getLabel("PEGASUS_JAVA_LISTE_RECAP_TOTAUX_DESCRIPTION");
+    }
+
+    @Override
+    public String getName() {
+        return "PCListeRecapTotauxPcRfmParCommunePolitiqueProcess";
+    }
+
+    public static String stack2string(Exception e) {
+        try {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            return "------\r\n" + sw.toString() + "------\r\n";
+        } catch (Exception e2) {
+            return "bad stack2string";
+        }
+    }
 }
