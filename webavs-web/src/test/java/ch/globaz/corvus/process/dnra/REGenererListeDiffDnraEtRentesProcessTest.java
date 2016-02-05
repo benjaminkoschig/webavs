@@ -3,7 +3,6 @@ package ch.globaz.corvus.process.dnra;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import org.junit.Ignore;
 import org.junit.Test;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.pyxis.domaine.EtatCivil;
@@ -11,7 +10,6 @@ import ch.globaz.pyxis.domaine.Sexe;
 
 public class REGenererListeDiffDnraEtRentesProcessTest {
 
-    @Ignore
     @Test
     public void testGenerateXls() throws Exception {
         List<Mutation> mutations = new ArrayList<Mutation>();
@@ -35,7 +33,7 @@ public class REGenererListeDiffDnraEtRentesProcessTest {
             tiers.setDateNaissance(new Date());
             infosTiers.add(tiers);
         }
-        DifferenceFinder differenceFinder = new DifferenceFinder(Locale.FRANCE);
+        DifferenceFinder differenceFinder = new DifferenceFinder(Locale.FRANCE, null);
         List<DifferenceTrouvee> diffs = differenceFinder.findAllDifference(mutations, infosTiers);
         String path = REGenererListeDiffDnraEtRentesProcess.generateXls(diffs, Locale.FRENCH);
         System.out.println(path);

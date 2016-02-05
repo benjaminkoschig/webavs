@@ -5,13 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import ch.globaz.common.codesystem.CodeSystemeResolver;
 
 class DifferenceFinder {
 
     private final Locale locale;
+    private final CodeSystemeResolver codeSystemeResolver;
 
-    public DifferenceFinder(Locale locale) {
+    public DifferenceFinder(Locale locale, CodeSystemeResolver codeSystemeResolver) {
         this.locale = locale;
+        this.codeSystemeResolver = codeSystemeResolver;
     }
 
     public List<DifferenceTrouvee> findAllDifference(List<Mutation> mutations, List<InfoTiers> infosTiers) {
@@ -77,8 +80,17 @@ class DifferenceFinder {
             list.add(differenceTrouvee);
         }
         if (!isEtatCivilSame(mutation, infoTiers)) {
+            String etatCivilMutation = null;
+            String etatCivilTiers = null;
+            if (infoTiers.getEtatCivil() != null) {
+                etatCivilTiers = codeSystemeResolver.resovleTraduction(infoTiers.getEtatCivil().getCodeSysteme());
+            }
+            if (mutation.getEtatCivil() != null) {
+                etatCivilMutation = codeSystemeResolver.resovleTraduction(mutation.getEtatCivil().getCodeSysteme());
+            }
+
             DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.ETAT_CIVIL, mutation, infoTiers,
-                    infoTiers.getEtatCivil().toString(), mutation.getEtatCivil().toString());
+                    etatCivilTiers, etatCivilMutation);
             differenceTrouvee.setDateChangement(mutation.getDateChangementEtatCivil());
             list.add(differenceTrouvee);
         }
@@ -88,11 +100,11 @@ class DifferenceFinder {
             String sexeTiers = null;
 
             if (mutation.getSexe() != null) {
-                sexeMutation = mutation.getSexe().toString();
+                sexeMutation = codeSystemeResolver.resovleTraduction(mutation.getSexe().getCodeSysteme());
             }
 
             if (infoTiers.getSexe() != null) {
-                sexeTiers = infoTiers.getSexe().toString();
+                sexeTiers = codeSystemeResolver.resovleTraduction(infoTiers.getSexe().getCodeSysteme());
             }
             DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.SEXE, mutation, infoTiers, sexeTiers,
                     sexeMutation);

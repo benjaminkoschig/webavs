@@ -40,7 +40,6 @@ public class CodeSystemUtils {
      */
     public static CodeSystem searchCodeSystemTraduction(String codeSystemID, BSession session, String langueID) {
         return CodeSystemQueryExecutor.searchCodeSystemTraduction(codeSystemID, session, langueID);
-
     }
 
 }

@@ -8,7 +8,7 @@ public enum EtatCivil {
     DIVORCE(515003),
     VEUF(515004),
     SEPARE(515005),
-    SEPARE_DE_FAIT(515001),
+    SEPARE_DE_FAIT(515006),
     LPART(515007),
     LPART_DISSOUT(515008),
     LPART_DIS_DECES(515009),
@@ -67,5 +67,9 @@ public enum EtatCivil {
         }
         throw new IllegalArgumentException("The value [" + codeSysteme + "] is not valid for the systemCode of type ["
                 + EtatCivil.class.getName() + "]");
+    }
+
+    public static String getCodeFamille() {
+        return "PYETATCIVI";
     }
 }

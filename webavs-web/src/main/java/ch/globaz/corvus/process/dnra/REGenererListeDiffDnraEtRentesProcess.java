@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import ch.globaz.common.codesystem.CodeSystemeResolver;
 import ch.globaz.common.process.ProcessMailUtils;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.sql.ConverterDb;
@@ -46,7 +47,9 @@ import ch.globaz.common.sql.converters.EtatCivilConverter;
 import ch.globaz.common.sql.converters.PaysConverter;
 import ch.globaz.common.sql.converters.SexeConverter;
 import ch.globaz.corvus.process.REAbstractJadeJob;
+import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Pays;
+import ch.globaz.pyxis.domaine.Sexe;
 import ch.globaz.pyxis.loader.PaysLoader;
 import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 import com.sun.star.lang.IllegalArgumentException;
@@ -100,6 +103,9 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                         paysLoader);
                 mutationsContainer.setFichierMutationName(fichierMutation.getAbsolutePath());
 
+                CodeSystemeResolver codeSystemeResolver = new CodeSystemeResolver(getSession().getIdLangueISO());
+                codeSystemeResolver.addAllAndSerach(Sexe.getCodeFamille(), EtatCivil.getCodeFamille());
+
                 // recherche des infos sur les tiers relatives aux mutations
                 List<InfoTiers> listInfosTiers = findInfosTiers(mutationsContainer.extractNssActuel(),
                         paysLoader.getMapPaysByCodeCentrale());
@@ -108,7 +114,8 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                 supprimerInfoTiersNonDesires(listInfosTiers);
 
                 // identification des différences entre les mutations annoncées et les données DB
-                DifferenceFinder differenceFinder = new DifferenceFinder(new Locale(getSession().getIdLangueISO()));
+                DifferenceFinder differenceFinder = new DifferenceFinder(new Locale(getSession().getIdLangueISO()),
+                        codeSystemeResolver);
                 List<DifferenceTrouvee> differenceTrouvees = differenceFinder.findAllDifference(
                         mutationsContainer.getList(), listInfosTiers);
 

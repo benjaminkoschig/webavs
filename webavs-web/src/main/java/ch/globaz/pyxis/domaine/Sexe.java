@@ -75,6 +75,10 @@ public enum Sexe {
         this.codeSysteme = codeSysteme;
     }
 
+    public static String getCodeFamille() {
+        return "PYSEXE";
+    }
+
     public boolean isUndefined() {
         return UNDEFINDED.equals(this);
     }
