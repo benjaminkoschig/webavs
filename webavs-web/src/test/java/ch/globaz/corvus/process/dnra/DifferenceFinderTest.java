@@ -1,34 +1,41 @@
 package ch.globaz.corvus.process.dnra;
 
 import static org.fest.assertions.api.Assertions.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import ch.globaz.common.codesystem.CodeSystemeResolver;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Pays;
 import ch.globaz.pyxis.domaine.Sexe;
 
+@RunWith(MockitoJUnitRunner.class)
 public class DifferenceFinderTest {
 
     private Locale locale = Locale.FRANCE;
 
-    @Ignore
+    @Mock
+    private CodeSystemeResolver codeSystemeResolver;
+
     @Test
     public void testFindDifferenceEmpty() throws Exception {
-        DifferenceFinder differenceFinder = new DifferenceFinder(locale);
+        DifferenceFinder differenceFinder = new DifferenceFinder(locale, codeSystemeResolver);
         List<DifferenceTrouvee> list = differenceFinder.findDifference(new Mutation(), new InfoTiers());
         assertThat(list).isEmpty();
     }
 
-    @Ignore
     @Test
     public void testFindDifferenceNomPrenom() throws Exception {
-        DifferenceFinder differenceFinder = new DifferenceFinder(locale);
+        DifferenceFinder differenceFinder = new DifferenceFinder(locale, codeSystemeResolver);
         Mutation mutation = new Mutation();
         mutation.setNom("Nom");
         mutation.setPrenom("prenom");
@@ -49,10 +56,9 @@ public class DifferenceFinderTest {
         assertThat(list.get(0).getDifference()).isEqualTo(TypeDifference.NOM);
     }
 
-    @Ignore
     @Test
     public void testFindDifferenceEtatCivil() throws Exception {
-        DifferenceFinder differenceFinder = new DifferenceFinder(locale);
+        DifferenceFinder differenceFinder = new DifferenceFinder(locale, codeSystemeResolver);
         Mutation mutation = new Mutation();
         mutation.setEtatCivil(EtatCivil.CELIBATAIRE);
         mutation.setDateChangementEtatCivil(new Date());
@@ -61,14 +67,14 @@ public class DifferenceFinderTest {
         assertThat(list).hasSize(1);
         assertThat(list.get(0).getDifference()).isEqualTo(TypeDifference.ETAT_CIVIL);
         assertThat(list.get(0).getDateChangement()).isEqualTo(mutation.getDateChangementEtatCivil());
+        when(codeSystemeResolver.resovleTraduction(any(Integer.class))).thenReturn(EtatCivil.CELIBATAIRE.toString());
         assertThat(list.get(0).getValeurNouvelle()).isEqualTo(mutation.getEtatCivil().toString());
         assertThat(list.get(0).getValeurActuelle()).isNull();
     }
 
-    @Ignore
     @Test
     public void testFindDifferenceDateDece() throws Exception {
-        DifferenceFinder differenceFinder = new DifferenceFinder(locale);
+        DifferenceFinder differenceFinder = new DifferenceFinder(locale, codeSystemeResolver);
         Mutation mutation = new Mutation();
         mutation.setDateDece(new Date("10.10.2015"));
         mutation.setDateChangementEtatCivil(new Date());
@@ -81,10 +87,9 @@ public class DifferenceFinderTest {
         assertThat(list.get(0).getValeurActuelle()).isNull();
     }
 
-    @Ignore
     @Test
     public void testFindDifferenceDateNaissance() throws Exception {
-        DifferenceFinder differenceFinder = new DifferenceFinder(locale);
+        DifferenceFinder differenceFinder = new DifferenceFinder(locale, codeSystemeResolver);
         Mutation mutation = new Mutation();
         mutation.setDateNaissance(new Date("10.10.2015"));
         mutation.setDateChangementEtatCivil(new Date());
@@ -97,7 +102,6 @@ public class DifferenceFinderTest {
         assertThat(list.get(0).getValeurActuelle()).isNull();
     }
 
-    @Ignore
     @Test
     public void testIsNomSame() throws Exception {
         Mutation mutation = new Mutation();
@@ -111,7 +115,6 @@ public class DifferenceFinderTest {
         assertThat(DifferenceFinder.isNomSame(mutation, infoTiers)).isFalse();
     }
 
-    @Ignore
     @Test
     public void testIsNomSameUpercase() throws Exception {
         Mutation mutation = new Mutation();
@@ -121,7 +124,6 @@ public class DifferenceFinderTest {
         assertThat(DifferenceFinder.isNomSame(mutation, infoTiers)).isTrue();
     }
 
-    @Ignore
     @Test
     public void testIsPrenomSame() throws Exception {
         Mutation mutation = new Mutation();
@@ -135,7 +137,6 @@ public class DifferenceFinderTest {
         assertThat(DifferenceFinder.isPrenomSame(mutation, infoTiers)).isFalse();
     }
 
-    @Ignore
     @Test
     public void testIsPrenomSameUpercase() throws Exception {
         Mutation mutation = new Mutation();
@@ -145,7 +146,6 @@ public class DifferenceFinderTest {
         assertThat(DifferenceFinder.isPrenomSame(mutation, infoTiers)).isTrue();
     }
 
-    @Ignore
     @Test
     public void testIsNssSame() throws Exception {
         Mutation mutation = new Mutation();
@@ -159,7 +159,6 @@ public class DifferenceFinderTest {
         assertThat(DifferenceFinder.isNssSame(mutation, infoTiers)).isFalse();
     }
 
-    @Ignore
     @Test
     public void testIsSexeSame() throws Exception {
         Mutation mutation = new Mutation();
@@ -173,7 +172,6 @@ public class DifferenceFinderTest {
         assertThat(DifferenceFinder.isSexeSame(mutation, infoTiers)).isFalse();
     }
 
-    @Ignore
     @Test
     public void testIsDateNaissanceSame() throws Exception {
         Mutation mutation = new Mutation();
@@ -187,7 +185,6 @@ public class DifferenceFinderTest {
         assertThat(DifferenceFinder.isDateNaissanceSame(mutation, infoTiers)).isFalse();
     }
 
-    @Ignore
     @Test
     public void testIsDateDecesSame() throws Exception {
         Mutation mutation = new Mutation();
@@ -201,7 +198,6 @@ public class DifferenceFinderTest {
         assertThat(DifferenceFinder.isDateDecesSame(mutation, infoTiers)).isFalse();
     }
 
-    @Ignore
     @Test
     public void testIsNationaliteSame() throws Exception {
         Mutation mutation = new Mutation();
@@ -215,7 +211,6 @@ public class DifferenceFinderTest {
         assertThat(DifferenceFinder.isNationaliteSame(mutation, infoTiers)).isFalse();
     }
 
-    @Ignore
     @Test
     public void testFindAllDifference() throws Exception {
 
@@ -244,7 +239,7 @@ public class DifferenceFinderTest {
 
             infosTiers.add(tiers);
         }
-        DifferenceFinder differenceFinder = new DifferenceFinder(locale);
+        DifferenceFinder differenceFinder = new DifferenceFinder(locale, codeSystemeResolver);
         List<DifferenceTrouvee> diffs = differenceFinder.findAllDifference(mutations, infosTiers);
         assertThat(diffs).hasSize(14);
     }
