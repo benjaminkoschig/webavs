@@ -1,5 +1,7 @@
 package globaz.prestation.enums;
 
+import ch.globaz.al.business.constantes.ALCSTiers;
+
 public enum CommunePolitique {
 
     /**
@@ -19,8 +21,8 @@ public enum CommunePolitique {
      * Le code système pyxis pour les liens 'communes politiques'
      * key = valeur du code système
      */
-    // FIXME la valeur du code système n'est pas correcte (agence communale)
-    CS_PYXIS_COMMUNE_POLITIQUE("507007");
+    // la valeur du code système est pas correcte est agence communale
+    CS_PYXIS_COMMUNE_POLITIQUE(ALCSTiers.TYPE_LIAISON_AG_COMMUNALE);
 
     private String key;
 
