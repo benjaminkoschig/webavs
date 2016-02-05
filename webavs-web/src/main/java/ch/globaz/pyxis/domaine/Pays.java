@@ -1,6 +1,7 @@
 package ch.globaz.pyxis.domaine;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import ch.globaz.common.domaine.Checkers;
 import ch.globaz.common.domaine.EntiteDeDomaine;
@@ -29,6 +30,14 @@ public class Pays extends EntiteDeDomaine {
 
     public Map<Langues, String> getTraductionParLangue() {
         return traductionParLangue;
+    }
+
+    public String getTraduction(final Locale locale) {
+        return traductionParLangue.get(CodeIsoPays.parse(locale.getLanguage()));
+    }
+
+    public String getTraduction(final Langues langue) {
+        return traductionParLangue.get(codeIso);
     }
 
     /**

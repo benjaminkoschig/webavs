@@ -2,10 +2,11 @@ package ch.globaz.corvus.process.dnra;
 
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.listoutput.converterImplemented.DateSwissFormatConverter;
+import ch.globaz.common.listoutput.converterImplemented.PaysConverter;
 import ch.globaz.simpleoutputlist.annotation.Column;
 import ch.globaz.simpleoutputlist.annotation.ColumnValueConverter;
 
-@ColumnValueConverter(DateSwissFormatConverter.class)
+@ColumnValueConverter({ DateSwissFormatConverter.class, PaysConverter.class })
 public class DifferenceTrouvee {
     private String nss;
     private String nom;

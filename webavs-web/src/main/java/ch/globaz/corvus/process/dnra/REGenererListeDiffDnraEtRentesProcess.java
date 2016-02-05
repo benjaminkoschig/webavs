@@ -23,8 +23,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import ch.globaz.common.sql.ConverterDb;
 import ch.globaz.common.sql.QueryExecutor;
+import ch.globaz.common.sql.converters.DateConverter;
+import ch.globaz.common.sql.converters.PaysConverter;
+import ch.globaz.common.sql.converters.SexeConverter;
 import ch.globaz.corvus.process.REAbstractJadeJob;
+import ch.globaz.pyxis.domaine.Pays;
+import ch.globaz.pyxis.loader.PaysLoader;
 import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 import com.sun.star.lang.IllegalArgumentException;
 
@@ -64,11 +72,14 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                         + fichierMutation.getAbsolutePath());
 
                 // parsing et mapping dans la structure d'objet
-                MutationsContainer mutationsContainer = MutationParser.parsFile(fichierMutation.getAbsolutePath());
+                PaysLoader paysLoader = new PaysLoader();
+                MutationsContainer mutationsContainer = MutationParser.parsFile(fichierMutation.getAbsolutePath(),
+                        paysLoader);
                 mutationsContainer.setFichierMutationName(fichierMutation.getAbsolutePath());
 
                 // recherche des infos sur les tiers relatives aux mutations
-                List<InfoTiers> listInfosTiers = findInfosTiers(mutationsContainer.extractNssActuel());
+                List<InfoTiers> listInfosTiers = findInfosTiers(mutationsContainer.extractNssActuel(),
+                        paysLoader.getMapPaysByCodeCentrale());
 
                 // identification des différences entre les mutations annoncées et les données DB
                 DifferenceFinder differenceFinder = new DifferenceFinder();
@@ -97,20 +108,23 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
      * @param listNss
      * @return
      */
-    private List<InfoTiers> findInfosTiers(List<String> listNss) {
+    private List<InfoTiers> findInfosTiers(List<String> listNss, Map<String, Pays> mapPaysByCodeCentral) {
         System.out.println("nbNss à chercher dans webtiers : " + listNss.size());
         List<InfoTiers> listInfosTiers = new ArrayList<InfoTiers>();
-        List<List<String>> splittedList = QueryExecutor.split(listNss, 1000);
+        List<List<String>> splittedList = QueryExecutor.split(listNss, 2000);
+
+        Set<ConverterDb<?>> converters = QueryExecutor.newSetConverter(new SexeConverter(), new DateConverter(),
+                new PaysConverter(mapPaysByCodeCentral));
         for (List<String> list : splittedList) {
             StringBuilder sql = new StringBuilder();
             sql.append("select schema.TIPAVSP.HXNAVS as nss, schema.TITIERP.HNIPAY as codeNationalite, schema.TITIERP.HTLDE1 as nom, ");
             sql.append("schema.TITIERP.HTLDE2 as prenom, schema.TIPERSP.HPDNAI as dateNaissance, schema.TIPERSP.HPDDEC as dateDeces, ");
-            sql.append("schema.TIPERSP.HPTSEX as sexe, schema.TIPERSP.HPTETC as codeEtatCivil ");
+            sql.append(" schema.TITIERP.HNIPAY as pays, schema.TIPERSP.HPTSEX as sexe, schema.TIPERSP.HPTETC as codeEtatCivil ");
             sql.append("from schema.TIPAVSP ");
             sql.append("inner join schema.TITIERP on schema.TITIERP.HTITIE = schema.TIPAVSP.HTITIE ");
             sql.append("inner join schema.TIPERSP on schema.TIPERSP.HTITIE = schema.TIPAVSP.HTITIE ");
             sql.append("where HXNAVS in (").append(QueryExecutor.forInString(list)).append(")");
-            listInfosTiers.addAll(QueryExecutor.execute(sql.toString(), InfoTiers.class, getSession()));
+            listInfosTiers.addAll(QueryExecutor.execute(sql.toString(), InfoTiers.class, getSession(), converters));
         }
         System.out.println("nbNss trouvés dans webtiers : " + listInfosTiers.size());
         return listInfosTiers;
@@ -185,26 +199,27 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
             return fichiersMutationsATraiterList;
         }
 
-        List<String> nomsFichiersDnraDejaTraites = recupererNomsFichiersDnraDejaTraites();
+        // List<String> nomsFichiersDnraDejaTraites = recupererNomsFichiersDnraDejaTraites();
 
         // parcours de fichiers disponibles. Pour le moment on ne prend que celui du 20160129
-        for (JadeFsFileInfo jadeFsFileInfo : jadeFsFileInfoList) {
-            System.out.println(jadeFsFileInfo.getUri());
-            JadeUrl jadeUrlFichierDistant = new JadeUrl();
-            jadeUrlFichierDistant.setUrl(jadeFsFileInfo.getUri());
-            String nomFichierDistant = jadeUrlFichierDistant.getFile();
-            System.out.println(nomFichierDistant);
-            // BigDecimal todayAaaaMmJj = JACalendar.today().toAMJ();
-            String dateFichier = nomFichierDistant.split("_")[1].split("\\.")[0];
-            if (!nomsFichiersDnraDejaTraites.contains(nomFichierDistant)) {
-                String uriDest = fichierMutationsLocauxDirectory + nomFichierDistant;
-                String uriSource = fichiersMutationsDistantUriNormalized + nomFichierDistant;
-                JadeLogger.info(CIUpiDailyProcess.class, "Téléchargement du fichier : " + uriSource + "...");
-                JadeFsFacade.copyFile(uriSource, uriDest);
-                File fichierDest = new File(uriDest);
-                fichiersMutationsATraiterList.add(fichierDest);
-            }
-        }
+        // for (JadeFsFileInfo jadeFsFileInfo : jadeFsFileInfoList) {
+        JadeFsFileInfo jadeFsFileInfo = jadeFsFileInfoList.get(0);
+        System.out.println(jadeFsFileInfo.getUri());
+        JadeUrl jadeUrlFichierDistant = new JadeUrl();
+        jadeUrlFichierDistant.setUrl(jadeFsFileInfo.getUri());
+        String nomFichierDistant = jadeUrlFichierDistant.getFile();
+        System.out.println(nomFichierDistant);
+        // BigDecimal todayAaaaMmJj = JACalendar.today().toAMJ();
+        String dateFichier = nomFichierDistant.split("_")[1].split("\\.")[0];
+        // if (!nomsFichiersDnraDejaTraites.contains(nomFichierDistant)) {
+        String uriDest = fichierMutationsLocauxDirectory + nomFichierDistant;
+        String uriSource = fichiersMutationsDistantUriNormalized + nomFichierDistant;
+        JadeLogger.info(CIUpiDailyProcess.class, "Téléchargement du fichier : " + uriSource + "...");
+        JadeFsFacade.copyFile(uriSource, uriDest);
+        File fichierDest = new File(uriDest);
+        fichiersMutationsATraiterList.add(fichierDest);
+        // }
+        // }
 
         // trier la collection
         Collections.sort(fichiersMutationsATraiterList);

@@ -59,8 +59,17 @@ public class DifferenceFinderTest {
         assertThat(DifferenceFinder.isNomSame(mutation, infoTiers)).isFalse();
         infoTiers.setNom("Nom");
         assertThat(DifferenceFinder.isNomSame(mutation, infoTiers)).isTrue();
-        infoTiers.setNom("NoM");
+        infoTiers.setNom("NoM tttt");
         assertThat(DifferenceFinder.isNomSame(mutation, infoTiers)).isFalse();
+    }
+
+    @Test
+    public void testIsNomSameUpercase() throws Exception {
+        Mutation mutation = new Mutation();
+        InfoTiers infoTiers = new InfoTiers();
+        mutation.setNom("NOM");
+        infoTiers.setNom("Nom");
+        assertThat(DifferenceFinder.isNomSame(mutation, infoTiers)).isTrue();
     }
 
     @Test
@@ -72,8 +81,17 @@ public class DifferenceFinderTest {
         assertThat(DifferenceFinder.isPrenomSame(mutation, infoTiers)).isFalse();
         infoTiers.setPrenom("Prenom");
         assertThat(DifferenceFinder.isPrenomSame(mutation, infoTiers)).isTrue();
-        infoTiers.setPrenom("PrenoM");
+        infoTiers.setPrenom("Prenom2");
         assertThat(DifferenceFinder.isPrenomSame(mutation, infoTiers)).isFalse();
+    }
+
+    @Test
+    public void testIsPrenomSameUpercase() throws Exception {
+        Mutation mutation = new Mutation();
+        InfoTiers infoTiers = new InfoTiers();
+        mutation.setPrenom("Prenom");
+        infoTiers.setPrenom("PRENOM");
+        assertThat(DifferenceFinder.isPrenomSame(mutation, infoTiers)).isTrue();
     }
 
     @Test

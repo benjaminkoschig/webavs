@@ -10,6 +10,7 @@ import globaz.jade.persistence.mapping.JadeModelMappingProvider;
 import globaz.jade.persistence.sql.JadeSqlConstantes;
 import globaz.jade.persistence.util.JadePersistenceUtil;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -19,32 +20,52 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import com.google.common.base.Joiner;
 
 public class QueryExecutor {
 
-    public static <T> List<T> execute(String query, Class<T> clazz) {
+    public static <T> List<T> execute(String query, Class<T> clazz, Set<ConverterDb<?>> converters) {
         checkThreadContext(query, clazz);
-        return executeQueryList(query, clazz, JadeThread.currentJdbcConnection(), JadePersistenceUtil.getDbSchema());
+        return executeQueryList(query, clazz, JadeThread.currentJdbcConnection(), JadePersistenceUtil.getDbSchema(),
+                converters);
     }
 
-    public static <T> List<T> execute(String query, Class<T> clazz, BSession session) {
+    public static <T> List<T> execute(String query, Class<T> clazz) {
+        checkThreadContext(query, clazz);
+        return executeQueryList(query, clazz, JadeThread.currentJdbcConnection(), JadePersistenceUtil.getDbSchema(),
+                null);
+    }
+
+    public static Set<ConverterDb<?>> newSetConverter(ConverterDb<?>... converters) {
+        Set<ConverterDb<?>> set = new HashSet<ConverterDb<?>>();
+        set.addAll(Arrays.asList(converters));
+        return set;
+    }
+
+    public static <T> List<T> execute(String query, Class<T> clazz, BSession session, Set<ConverterDb<?>> converters) {
         Transaction transaction = new Transaction(session);
         try {
             return executeQueryList(query, clazz, transaction.getTransaction().getConnection(),
-                    JadePersistenceUtil.getDbSchema());
+                    JadePersistenceUtil.getDbSchema(), converters);
         } finally {
             // dans tous les cas, si on a ouvert une nouvelle transaction, on la clôture.
             if (transaction != null) {
                 transaction.closeOpenedTransaction();
             }
         }
+    }
+
+    public static <T> List<T> execute(String query, Class<T> clazz, BSession session) {
+        return execute(query, clazz, session, null);
     }
 
     public static BigDecimal executeAggregate(String query) {
@@ -132,14 +153,15 @@ public class QueryExecutor {
         return sql;
     }
 
-    static <T> List<T> executeQueryList(String query, Class<T> clazz, Connection connection, String schema) {
+    static <T> List<T> executeQueryList(String query, Class<T> clazz, Connection connection, String schema,
+            Set<ConverterDb<?>> converters) {
         query = createQuery(query, clazz, schema);
         long currentTime = System.currentTimeMillis();
         ArrayList<HashMap<String, Object>> listSql = executeQuery(query, clazz, connection);
         long timeQuery = System.currentTimeMillis() - currentTime;
         currentTime = System.currentTimeMillis();
 
-        List<T> list = createList(clazz, listSql);
+        List<T> list = createList(clazz, listSql, converters);
 
         long timeMapping = System.currentTimeMillis() - currentTime;
 
@@ -195,9 +217,18 @@ public class QueryExecutor {
      * @param listSql
      * @return
      */
-    private static <T> List<T> createList(Class<T> class1, ArrayList<HashMap<String, Object>> listSql) {
+    private static <T> List<T> createList(Class<T> class1, ArrayList<HashMap<String, Object>> listSql,
+            Set<ConverterDb<?>> converters) {
         Field[] fields = class1.getDeclaredFields();
         List<T> list = new ArrayList<T>();
+
+        Map<Class<?>, ConverterDb<?>> mapConverters = new HashMap<Class<?>, ConverterDb<?>>();
+        if (converters != null) {
+            for (ConverterDb<?> converterDb : converters) {
+                mapConverters.put(converterDb.forType(), converterDb);
+            }
+        }
+
         for (HashMap<String, Object> row : listSql) {
             T newObjet = null;
             try {
@@ -213,8 +244,8 @@ public class QueryExecutor {
             } else {
                 for (Field field : fields) {
                     if (!Modifier.isStatic(field.getModifiers())) {
-                        String nameBd = underscoreify(field.getName()).toUpperCase();
-                        Object value = row.get(nameBd);
+                        String alias = underscoreify(field.getName()).toUpperCase();
+                        Object value = row.get(alias);
 
                         if (value == null) {
                             value = row.get(field.getName().toUpperCase());
@@ -224,7 +255,24 @@ public class QueryExecutor {
                             Object[] args = new Object[1];
                             args[0] = value;
                             String methodName = "set" + JadeStringUtil.firstLetterToUpperCase(field.getName());
-                            if (String.class.isAssignableFrom(field.getType())) {
+                            if (!mapConverters.isEmpty() && mapConverters.containsKey(field.getType())) {
+                                ConverterDb<?> converterDb = mapConverters.get(field.getType());
+                                try {
+                                    Method method = class1.getMethod(methodName, field.getType());
+                                    Object val = converterDb.convert(value, field.getName(), alias);
+                                    method.invoke(newObjet, val);
+                                } catch (SecurityException e) {
+                                    throw new CommonTechnicalException("Error durring introspection", e);
+                                } catch (NoSuchMethodException e) {
+                                    throw new CommonTechnicalException("Error durring introspection", e);
+                                } catch (IllegalArgumentException e) {
+                                    throw new CommonTechnicalException("Error durring introspection", e);
+                                } catch (IllegalAccessException e) {
+                                    throw new CommonTechnicalException("Error durring introspection", e);
+                                } catch (InvocationTargetException e) {
+                                    throw new CommonTechnicalException("Error durring introspection", e);
+                                }
+                            } else if (String.class.isAssignableFrom(field.getType())) {
                                 try {
                                     Method method = class1.getMethod(methodName, String.class);
                                     String val = String.valueOf(value).trim();
@@ -247,7 +295,6 @@ public class QueryExecutor {
                                 try {
                                     Method method = class1.getMethod(methodName, Integer.class);
                                     Integer val = (Integer) value;
-
                                     method.invoke(newObjet, val);
                                 } catch (Exception e) {
                                     throw new CommonTechnicalException("Error durring introspection", e);

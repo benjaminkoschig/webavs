@@ -25,11 +25,13 @@ public class QueryExecutorTest {
         Connection connection = null;
         try {
             connection = createConnection();
-            List<String> names = QueryExecutor.executeQueryList(
-                    "select TBNAME from schema.JADEINCR where TBNAME='PCPCACC'", String.class, connection, SCHEMA);
+            List<String> names = QueryExecutor
+                    .executeQueryList("select TBNAME from schema.JADEINCR where TBNAME='PCPCACC'", String.class,
+                            connection, SCHEMA, null);
 
-            List<String> names2 = QueryExecutor.executeQueryList(
-                    "select incval from schema.JADEINCR where TBNAME='PCPCACC'", String.class, connection, SCHEMA);
+            List<String> names2 = QueryExecutor
+                    .executeQueryList("select incval from schema.JADEINCR where TBNAME='PCPCACC'", String.class,
+                            connection, SCHEMA, null);
 
             assertEquals(1, names.size());
 

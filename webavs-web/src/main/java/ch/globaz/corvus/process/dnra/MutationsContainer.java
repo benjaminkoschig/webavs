@@ -4,22 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ch.globaz.pyxis.loader.PaysLoader;
 
-public class MutationsContainer {
+class MutationsContainer {
+
     private static final Logger LOG = LoggerFactory.getLogger(MutationsContainer.class);
-
     private final List<Mutation> mutations = new ArrayList<Mutation>();
     private String fichierMutationName;
+    private final PaysLoader loader;
 
-    public String getFichierMutationName() {
-        return fichierMutationName;
+    public MutationsContainer(PaysLoader loader) {
+        this.loader = loader;
     }
 
     public void setFichierMutationName(String fichierMutationName) {
         this.fichierMutationName = fichierMutationName;
     }
 
+    public String getFichierMutationName() {
+        return fichierMutationName;
+    }
+
     public boolean add(Mutation mutation) {
+        mutation.setPays(loader.resolveByCodeCentrale(mutation.getCodeNationalite()));
         return mutations.add(mutation);
     }
 

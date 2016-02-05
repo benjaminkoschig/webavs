@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.pyxis.domaine.Sexe;
+import ch.globaz.pyxis.loader.PaysLoader;
 
 class MutationParser {
     private static final Logger LOG = LoggerFactory.getLogger(MutationParser.class);
@@ -55,8 +56,8 @@ class MutationParser {
         return mutation;
     }
 
-    public static MutationsContainer parsFile(String pahtFile) {
-        final MutationsContainer list = new MutationsContainer();
+    public static MutationsContainer parsFile(String pahtFile, PaysLoader paysLoader) {
+        final MutationsContainer list = new MutationsContainer(paysLoader);
         final Map<Exception, String> errors = new HashMap<Exception, String>();
         BufferedReader fileBuffered = null;
         try {

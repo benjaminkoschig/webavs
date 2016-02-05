@@ -120,14 +120,14 @@ class DifferenceFinder {
 
     static boolean isNomSame(Mutation mutation, InfoTiers infoTiers) {
         if (mutation.getNom() != null) {
-            return mutation.getNom().equals(infoTiers.getNom());
+            return mutation.getNom().equalsIgnoreCase(infoTiers.getNom());
         }
         return true;
     }
 
     static boolean isPrenomSame(Mutation mutation, InfoTiers infoTiers) {
         if (mutation.getPrenom() != null) {
-            return mutation.getPrenom().equals(infoTiers.getPrenom());
+            return mutation.getPrenom().equalsIgnoreCase(infoTiers.getPrenom());
         }
         return true;
     }

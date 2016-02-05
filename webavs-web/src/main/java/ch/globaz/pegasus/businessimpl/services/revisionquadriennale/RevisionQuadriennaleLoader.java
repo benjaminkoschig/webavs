@@ -34,6 +34,7 @@ import ch.globaz.pegasus.businessimpl.services.donneeFinanciere.DonneeFinanciere
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
 import ch.globaz.pyxis.business.service.AdresseService;
 import ch.globaz.pyxis.domaine.Pays;
+import ch.globaz.pyxis.loader.PaysLoader;
 
 public class RevisionQuadriennaleLoader {
 
@@ -79,7 +80,7 @@ public class RevisionQuadriennaleLoader {
                     if (mapRegimesByIdDroit.containsKey(idDroit)) {
                         donneesFinancieres.addAll(mapRegimesByIdDroit.get(idDroit));
                     }
-                    Pays pays = paysLoader.loadAndGetPaysById(revision.getIdPaysRequerant());
+                    Pays pays = paysLoader.resolveById(revision.getIdPaysRequerant());
                     PcaRequerantConjoint pcas = mapPcas.get(idDroit);
                     Adresse adresseCourrier = resovleAdresse(mapAdressesCourrier, resolveIdTierToUsedForAdresse(pcas));
                     Adresse adresseDomicile = resovleAdresse(mapAdressesDomicile, resolveIdTierToUsedForAdresse(pcas));

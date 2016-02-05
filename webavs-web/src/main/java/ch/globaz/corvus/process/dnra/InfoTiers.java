@@ -1,6 +1,7 @@
 package ch.globaz.corvus.process.dnra;
 
 import ch.globaz.common.domaine.Date;
+import ch.globaz.pyxis.domaine.Pays;
 import ch.globaz.pyxis.domaine.Sexe;
 
 public class InfoTiers {
@@ -8,10 +9,19 @@ public class InfoTiers {
     private String nom;
     private String prenom;
     private Date dateNaissance;
-    private Sexe sexe = null;
-    private String codeNationalite = null;
+    private Sexe sexe;
+    private String codeNationalite;
     private Date dateDeces;
     private String codeEtatCivil;
+    private Pays pays;
+
+    public Pays getPays() {
+        return pays;
+    }
+
+    public void setPays(Pays pays) {
+        this.pays = pays;
+    }
 
     public String getNss() {
         return nss;
@@ -76,4 +86,12 @@ public class InfoTiers {
     public void setCodeEtatCivil(String codeEtatCivil) {
         this.codeEtatCivil = codeEtatCivil;
     }
+
+    @Override
+    public String toString() {
+        return "InfoTiers [nss=" + nss + ", nom=" + nom + ", prenom=" + prenom + ", dateNaissance=" + dateNaissance
+                + ", sexe=" + sexe + ", codeNationalite=" + codeNationalite + ", dateDeces=" + dateDeces
+                + ", codeEtatCivil=" + codeEtatCivil + "]";
+    }
+
 }
