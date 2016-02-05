@@ -51,7 +51,7 @@ public class ProcessMailUtils {
      * @throws Exception
      */
     public static void sendMailError(List<String> mailsList, Throwable e, AbstractJadeJob process, String messageInfo,
-            BTransaction transaction, Object... objectsToJson) throws Exception {
+            BTransaction transaction, Object... objectsToJson) {
         String isoLangue = process.getSession().getIdLangueISO();
         String numAffile = "";
 
@@ -114,10 +114,15 @@ public class ProcessMailUtils {
         body = body + bodyGlobaz;
 
         String[] mailsTab = mailsList.toArray(new String[mailsList.size()]);
-        JadeSmtpClient.getInstance().sendMail(
-                mailsTab,
-                process.getName() + " - " + LabelCommonProvider.getLabel("PROCESS_IN_ERROR", isoLangue) + " "
-                        + numAffile, body, null);
+        try {
+            JadeSmtpClient.getInstance().sendMail(
+                    mailsTab,
+                    process.getName() + " - " + LabelCommonProvider.getLabel("PROCESS_IN_ERROR", isoLangue) + " "
+                            + numAffile, body, null);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+
         if (e != null) {
             e.printStackTrace();
         }

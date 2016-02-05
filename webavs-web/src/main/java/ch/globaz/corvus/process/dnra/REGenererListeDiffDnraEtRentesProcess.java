@@ -38,6 +38,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import ch.globaz.common.process.ProcessMailUtils;
+import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.sql.ConverterDb;
 import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.common.sql.converters.DateConverter;
@@ -74,6 +75,14 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
     @Override
     protected void process() {
         List<File> fichiersMutationsATraiterList;
+
+        // charger la liste des adresses email
+        List<String> mailsList = new ArrayList<String>();
+        try {
+            mailsList = loadMailsDestinataires();
+        } catch (PropertiesException e) {
+            mailsList.add(getSession().getUserEMail());
+        }
 
         JadeLogger.info(getName(), "Début du traitement de génération des listes de différences");
         try {
@@ -114,10 +123,12 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                 JadeFsFacade.delete(fichierMutation.getAbsolutePath());
 
                 // envoyer l'email
-                sendMail(generatedXlsFilePath);
+                sendMail(mailsList, generatedXlsFilePath);
             }
         } catch (Exception e) {
             JadeLogger.error(getName(), "une erreur est survenue lors du traitement");
+            ProcessMailUtils.sendMailError(mailsList, e, this, "le traitement ne s'est pas terminé correctement",
+                    getTransaction());
         }
 
         JadeLogger.info(getName(), "Fin du traitement de génération des listes de différences");
@@ -140,12 +151,7 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
         }
     }
 
-    private void sendMail(String joinFilePath) throws Exception {
-        // récupération de la liste des emails (properties en DB)
-        String emails = null;
-        emails = REProperties.DNRA_PROCESS_EMAILS.getValue();
-        List<String> mailsList = Arrays.asList(emails.split(","));
-
+    private void sendMail(List<String> mailsList, String joinFilePath) throws Exception {
         // ajout de la pièce jointe
         List<String> joinsFilesPathsList = new ArrayList<String>();
         joinsFilesPathsList.add(joinFilePath);
@@ -156,6 +162,13 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
 
         // envoi
         ProcessMailUtils.sendMail(mailsList, subject, body, joinsFilesPathsList);
+    }
+
+    private List<String> loadMailsDestinataires() throws PropertiesException {
+        String emails = null;
+        emails = REProperties.DNRA_PROCESS_EMAILS.getValue();
+        List<String> mailsList = Arrays.asList(emails.split(","));
+        return mailsList;
     }
 
     /**
