@@ -90,16 +90,21 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                 String path = generateXls(differenceTrouvees, new Locale(getSession().getIdLangueISO()));
                 System.out.println(path);
 
-                // marquerFichierDnraCommeTraite(fichierMutation.getName());
+                marquerFichierDnraCommeTraite(fichierMutation.getName());
 
                 // suppression du fichier journalier
                 JadeFsFacade.delete(fichierMutation.getAbsolutePath());
+
+                List<String> emailsList = new ArrayList<String>();
+                emailsList.add(getSession().getUserEMail());
+                sendCompletionMail(emailsList);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            JadeLogger.error(getName(), "une erreur est survenue lors du traitement");
         }
 
-        System.out.println("fin du traitement");
+        JadeLogger.info(getName(), "Fin du traitement de génération des listes de différences");
+
     }
 
     /**
@@ -144,13 +149,13 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
             REFichierDnraJournalierTraite fichierDnra = new REFichierDnraJournalierTraite();
             fichierDnra.setNomFichierDnraJournalierTraite(nomFichier);
             fichierDnra.add(transaction);
-            transaction.commit();                       // tout s'est bien passé on commit
+            transaction.commit();
         } catch (Exception e) {
-            transaction.rollback();                     // problème, on rollback le tout
+            transaction.rollback();
             JadeLogger.error(this.getClass(), "impossible d'ajouter le fichier dans la DB : " + nomFichier);
         } finally {
-            if (transaction != null) {                    // s'assurer que la transaction n'est pas null
-                transaction.closeTransaction();         // on clot
+            if (transaction != null) {
+                transaction.closeTransaction();
             }
         }
     }
@@ -199,27 +204,26 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
             return fichiersMutationsATraiterList;
         }
 
-        // List<String> nomsFichiersDnraDejaTraites = recupererNomsFichiersDnraDejaTraites();
+        List<String> nomsFichiersDnraDejaTraites = recupererNomsFichiersDnraDejaTraites();
 
         // parcours de fichiers disponibles. Pour le moment on ne prend que celui du 20160129
-        // for (JadeFsFileInfo jadeFsFileInfo : jadeFsFileInfoList) {
-        JadeFsFileInfo jadeFsFileInfo = jadeFsFileInfoList.get(0);
-        System.out.println(jadeFsFileInfo.getUri());
-        JadeUrl jadeUrlFichierDistant = new JadeUrl();
-        jadeUrlFichierDistant.setUrl(jadeFsFileInfo.getUri());
-        String nomFichierDistant = jadeUrlFichierDistant.getFile();
-        System.out.println(nomFichierDistant);
-        // BigDecimal todayAaaaMmJj = JACalendar.today().toAMJ();
-        String dateFichier = nomFichierDistant.split("_")[1].split("\\.")[0];
-        // if (!nomsFichiersDnraDejaTraites.contains(nomFichierDistant)) {
-        String uriDest = fichierMutationsLocauxDirectory + nomFichierDistant;
-        String uriSource = fichiersMutationsDistantUriNormalized + nomFichierDistant;
-        JadeLogger.info(CIUpiDailyProcess.class, "Téléchargement du fichier : " + uriSource + "...");
-        JadeFsFacade.copyFile(uriSource, uriDest);
-        File fichierDest = new File(uriDest);
-        fichiersMutationsATraiterList.add(fichierDest);
-        // }
-        // }
+        for (JadeFsFileInfo jadeFsFileInfo : jadeFsFileInfoList) {
+            System.out.println(jadeFsFileInfo.getUri());
+            JadeUrl jadeUrlFichierDistant = new JadeUrl();
+            jadeUrlFichierDistant.setUrl(jadeFsFileInfo.getUri());
+            String nomFichierDistant = jadeUrlFichierDistant.getFile();
+            System.out.println(nomFichierDistant);
+            // BigDecimal todayAaaaMmJj = JACalendar.today().toAMJ();
+            String dateFichier = nomFichierDistant.split("_")[1].split("\\.")[0];
+            if (!nomsFichiersDnraDejaTraites.contains(nomFichierDistant)) {
+                String uriDest = fichierMutationsLocauxDirectory + nomFichierDistant;
+                String uriSource = fichiersMutationsDistantUriNormalized + nomFichierDistant;
+                JadeLogger.info(CIUpiDailyProcess.class, "Téléchargement du fichier : " + uriSource + "...");
+                JadeFsFacade.copyFile(uriSource, uriDest);
+                File fichierDest = new File(uriDest);
+                fichiersMutationsATraiterList.add(fichierDest);
+            }
+        }
 
         // trier la collection
         Collections.sort(fichiersMutationsATraiterList);
