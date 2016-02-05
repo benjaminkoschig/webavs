@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -94,6 +95,9 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                 List<InfoTiers> listInfosTiers = findInfosTiers(mutationsContainer.extractNssActuel(),
                         paysLoader.getMapPaysByCodeCentrale());
 
+                // filtrer les infoTiers
+                supprimerInfoTiersNonDesires(listInfosTiers);
+
                 // identification des différences entre les mutations annoncées et les données DB
                 DifferenceFinder differenceFinder = new DifferenceFinder(new Locale(getSession().getIdLangueISO()));
                 List<DifferenceTrouvee> differenceTrouvees = differenceFinder.findAllDifference(
@@ -118,6 +122,22 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
 
         JadeLogger.info(getName(), "Fin du traitement de génération des listes de différences");
 
+    }
+
+    /**
+     * Supprime les tiers qu'on ne veut pas prendre en compte pour la comparaison
+     * 
+     * @param listInfosTiers
+     * @throws Exception
+     */
+    private void supprimerInfoTiersNonDesires(List<InfoTiers> listInfosTiers) throws Exception {
+        Iterator<InfoTiers> infoTiersIterator = listInfosTiers.iterator();
+        while (infoTiersIterator.hasNext()) {
+            InfoTiers infoTiers = infoTiersIterator.next();
+            if (!hasDemandeOrRenteActiveForFamilly(infoTiers.getIdTiers(), getSession())) {
+                infoTiersIterator.remove();
+            }
+        }
     }
 
     private void sendMail(String joinFilePath) throws Exception {
@@ -321,7 +341,7 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
      * @return
      * @throws Exception
      */
-    private boolean hasDemandeOrRAForFamillyWithCarotte(String idTiers, BSession session) throws Exception {
+    private boolean hasDemandeOrRenteActiveForFamilly(String idTiers, BSession session) throws Exception {
 
         // Utilisation de ce manager car AMHA c'est le seul capable et utilisé dans les rentes pour retrouver une
         // demande en fonction d'un idTiers
@@ -351,7 +371,13 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
         ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(session,
                 ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiers);
 
-        ISFMembreFamilleRequerant[] mf = sf.getMembresFamille(idTiers);
+        ISFMembreFamilleRequerant[] mf = null;
+        try {
+            mf = sf.getMembresFamille(idTiers);
+        } catch (Exception e) {
+            // il n'existe pas de situation familiale pour cette personne, on retourne volontairement false
+            return false;
+        }
 
         int today = Integer.valueOf(new SimpleDateFormat("yyyyMM").format(new Date()));
 
