@@ -57,7 +57,17 @@
 		$('#forIdDossier,[for=forIdDossier]').hide().after('&nbsp;');
 		<%}%>
 		
+		$("#forNumeroOFS").blur(function() {
+			var $this = $(this);
+			
+			$this.val(pad($this.val(), 8));
+		});
+		
 	})
+	
+	function pad(n, len) {
+	  return (new Array(len + 1).join('0') + n).slice(-len);
+	}
 		
 </SCRIPT>
 
@@ -100,6 +110,14 @@
 					<TD><ct:FWCodeSelectTag codeType="<%=IPFConstantes.CSGROUP_TYPE_DEMANDE%>" name="searchModel.forCsTypeDemande" wantBlank="true" defaut="blank"/></TD>
 				</TR>
 				<TR>
+					<TD></TD>
+					<TD></TD>
+					<TD><LABEL for="forIdDossierPcf"><ct:FWLabel key="JSP_PF_DEM_R_NO_DOSSIER_PCF"/></LABEL>&nbsp;</TD>
+					<TD><INPUT type="text" id="forIdDossierPcf" name="searchModel.forIdDossierPcf" class="clearable" value=""></TD>
+					<TD><LABEL for="forNumeroOFS"><ct:FWLabel key="JSP_PF_DEM_R_NO_DOSSIER_OFS"/></LABEL>&nbsp;</TD>
+					<TD><INPUT type="text" maxlength="8" id="forNumeroOFS" name="searchModel.forNumeroOFS" class="clearable" value=""></TD>
+				</TR>
+				<TR>
 					<TD colspan="6">&nbsp;</TD>
 				</TR>
 				<TR>
@@ -108,6 +126,7 @@
 					<TD><ct:FWLabel key="JSP_TRIER_PAR"/>&nbsp;</TD>
 					<TD><ct:FWListSelectTag data="<%=orderList%>" defaut="" name="searchModel.orderBy" /></TD>
 				</TR>
+				
 			</TABLE>
 		</TD>
 	</TR>							

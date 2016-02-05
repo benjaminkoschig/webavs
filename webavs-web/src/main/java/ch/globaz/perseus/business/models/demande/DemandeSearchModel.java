@@ -48,6 +48,7 @@ public class DemandeSearchModel extends JadeSearchComplexModel {
     private String forDateNaissance = null;
     private String forDateValable = null;
     private String forIdDossier = null;
+    private String forIdDossierPcf = null;
     private String forIdGestionnaire = null;
     private String forIdSituationFamiliale = null;
     private Boolean forIsDemandeIp = null;
@@ -156,6 +157,13 @@ public class DemandeSearchModel extends JadeSearchComplexModel {
      */
     public String getForIdDossier() {
         return forIdDossier;
+    }
+
+    /**
+     * @return the forIdDossierPcf
+     */
+    public String getForIdDossierPcf() {
+        return forIdDossierPcf;
     }
 
     /**
@@ -324,6 +332,14 @@ public class DemandeSearchModel extends JadeSearchComplexModel {
      */
     public void setForIdDossier(String forIdDossier) {
         this.forIdDossier = forIdDossier;
+    }
+
+    /**
+     * @param forIdDossierPcf
+     *            the forIdDossierPcf to set
+     */
+    public void setForIdDossierPcf(String forIdDossierPcf) {
+        this.forIdDossierPcf = forIdDossierPcf;
     }
 
     /**

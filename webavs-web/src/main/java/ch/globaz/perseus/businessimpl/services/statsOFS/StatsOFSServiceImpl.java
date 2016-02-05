@@ -94,6 +94,9 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
     private ArrayList<String> dossierDejaTraiter = new ArrayList<String>();
     private Dossiers dossiers = null;
     private ObjectFactory of = null;
+    private boolean isSommeRevenuAdditionnelSuperieurA1 = false;
+    private static final String DATE_JJ_MM_DEBUT_ANNEE = "01.01";
+    private static final int NB_MOIS_RETRO = -6;
 
     private String calculerMontantAutresPrestationsAssurancesSociale(InputCalcul inputCalcul) throws CalculException {
         Float montantAutresPrestationAssuranceSociale = new Float("0.00");
@@ -192,9 +195,15 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
         montantReturn += allocationCantonalMaternite;
         montantReturn += autreRevenusEnfant;
         if (montantReturn == 0) {
+            isSommeRevenuAdditionnelSuperieurA1 = false;
             return "";
         } else {
-            return this.roundFloat(montantReturn / 12).toString();
+            Float result = this.roundFloat(montantReturn / 12);
+            int valMin = result.compareTo(new Float(1));
+
+            isSommeRevenuAdditionnelSuperieurA1 = !(valMin < 0);
+
+            return result.toString();
         }
     }
 
@@ -320,7 +329,21 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
             row.setBBezugStichtag(StatsOFS.OUI);
         } else {
             row.setBBezugStichtag(StatsOFS.NON);
-            row.getDatLetzteZahlung().add(pcfacc.getDemande().getSimpleDemande().getDateFin());
+            // Changer la date de fin uniquement pour les cas RETRO en indiquant la date de comptabilisatation
+            // de la prestation.
+            if (conteneurDateComptabilisationPrestationRetro.containsKey(pcfacc.getSimplePCFAccordee()
+                    .getIdPCFAccordee())) {
+                // Utilisation de la date de comptabilisation comme date du dernier versement, uniquement pour les cas
+                // retroactif
+                String dateDeComptabilisationPrestation = "";
+                dateDeComptabilisationPrestation = conteneurDateComptabilisationPrestationRetro.get(pcfacc
+                        .getSimplePCFAccordee().getIdPCFAccordee());
+                row.getDatLetzteZahlung().add(dateDeComptabilisationPrestation);
+
+            } else {
+                row.getDatLetzteZahlung().add(pcfacc.getDemande().getSimpleDemande().getDateFin());
+            }
+
         }
 
         row.getDatAbgeschlossen().add(dateClotureDossier(pcfacc, "31.12." + anneeEnquete));
@@ -503,7 +526,9 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
                         .getValeur())) {
             wbsl.getRow().add(createWbslEinKommensartRowCommon("1", StatsOFS.NON));
         } else {
-            wbsl.getRow().add(createWbslEinKommensartRowCommon("1", StatsOFS.OUI));
+            wbsl.getRow().add(
+                    createWbslEinKommensartRowCommon("1", (isSommeRevenuAdditionnelSuperieurA1) ? StatsOFS.OUI
+                            : StatsOFS.NON));
         }
 
         boolean hasPensionAlimentaire = false;
@@ -512,10 +537,11 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
             hasPensionAlimentaire = true;
         }
 
-        if (hasPensionAlimentaire) {
+        if (hasPensionAlimentaire && isSommeRevenuAdditionnelSuperieurA1) {
             wbsl.getRow().add(createWbslEinKommensartRowCommon("113", StatsOFS.OUI));
         } else {
-            if (hasRevenuEnfant(inputCalcul, RevenuType.PENSION_ALIMENTAIRE_ENFANT)) {
+            if (hasRevenuEnfant(inputCalcul, RevenuType.PENSION_ALIMENTAIRE_ENFANT)
+                    && isSommeRevenuAdditionnelSuperieurA1) {
                 wbsl.getRow().add(createWbslEinKommensartRowCommon("113", StatsOFS.OUI));
             } else {
                 wbsl.getRow().add(createWbslEinKommensartRowCommon("113", StatsOFS.NON));
@@ -526,13 +552,17 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
                 .getElementRevenu(RevenuType.ALLOCATION_CANTONALE_MATERNITE).getValeur()) {
             wbsl.getRow().add(createWbslEinKommensartRowCommon("2", StatsOFS.NON));
         } else {
-            wbsl.getRow().add(createWbslEinKommensartRowCommon("2", StatsOFS.OUI));
+            wbsl.getRow().add(
+                    createWbslEinKommensartRowCommon("2", (isSommeRevenuAdditionnelSuperieurA1) ? StatsOFS.OUI
+                            : StatsOFS.NON));
         }
 
         if (!hasRevenuEnfant(inputCalcul, RevenuType.AUTRES_REVENUS_ENFANT)) {
             wbsl.getRow().add(createWbslEinKommensartRowCommon("20", StatsOFS.NON));
         } else {
-            wbsl.getRow().add(createWbslEinKommensartRowCommon("20", StatsOFS.OUI));
+            wbsl.getRow().add(
+                    createWbslEinKommensartRowCommon("20", (isSommeRevenuAdditionnelSuperieurA1) ? StatsOFS.OUI
+                            : StatsOFS.NON));
         }
 
         return wbsl;
@@ -643,7 +673,25 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
 
     private String dateClotureDossier(PCFAccordee pcfAcc, String dateFinAnneeEnquete) throws JAException {
         String dateClotureDossier = "";
-        if (!JadeStringUtil.isEmpty(pcfAcc.getDemande().getSimpleDemande().getDateFin())) {
+
+        // Modification de la date de cloture du dossier pour utiliser la date de comptabilisation (+6mois),
+        // pour les cas retro
+        if (conteneurDateComptabilisationPrestationRetro.containsKey(pcfAcc.getSimplePCFAccordee().getIdPCFAccordee())) {
+            // Utilisation de la date de comptabilisation comme date du dernier versement, uniquement pour les cas
+            // retroactif
+            String dateDeComptabilisationPrestation = conteneurDateComptabilisationPrestationRetro.get(pcfAcc
+                    .getSimplePCFAccordee().getIdPCFAccordee());
+
+            String dateClotureProvisoire = JadeDateUtil.addMonths(dateDeComptabilisationPrestation, 6);
+
+            if (PRDateFormater.convertDate_JJxMMxAAAA_to_AAAA(dateFinAnneeEnquete).equals(
+                    PRDateFormater.convertDate_JJxMMxAAAA_to_AAAA(dateClotureProvisoire))) {
+                dateClotureDossier = dateClotureProvisoire;
+            }
+
+        }
+
+        else if (!JadeStringUtil.isEmpty(pcfAcc.getDemande().getSimpleDemande().getDateFin())) {
 
             String dateClotureProvisoire = JadeDateUtil.addMonths(pcfAcc.getDemande().getSimpleDemande().getDateFin(),
                     6);
@@ -980,6 +1028,8 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
             throws PaiementException, JadeApplicationServiceNotAvailableException, JadePersistenceException,
             LotException, PCFAccordeeException {
 
+        // Modification de la date de début des cas retro au 01.07 de l'année précédent l'année renseigné dans
+        // l'écran
         HashMap<String, String> listePCFAccordee = loadPCFAccordeePrestationMensuelle(anneeEnquete, dateDebut, dateFin);
         HashMap<String, Prestation> listePrestationRetro = loadPrestationPaiementRetro(anneeEnquete, dateDebut, dateFin);
 
@@ -1008,9 +1058,7 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
     private HashMap<String, String> loadPCFAccordeePrestationMensuelle(String anneeEnquete, String dateDebut,
             String dateFin) throws PaiementException, JadeApplicationServiceNotAvailableException,
             JadePersistenceException {
-        List<String> listeMois = new ArrayList<String>();
         List<String> listeMoisPrestMensuelle = new ArrayList<String>();
-        String enCours = dateDebut + anneeEnquete;
 
         String enCoursPrestMensuelle = "01.07."
                 + JadeStringUtil.substring(JadeDateUtil.addYears("01.01." + anneeEnquete, -1), 6);
@@ -1027,11 +1075,6 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
         while (!JadeDateUtil.isDateAfter(enCoursPrestMensuelle, "01." + moisDebutPourPrestationMensuelle)) {
             listeMoisPrestMensuelle.add(enCoursPrestMensuelle.substring(3));
             enCoursPrestMensuelle = JadeDateUtil.addMonths(enCoursPrestMensuelle, 1);
-        }
-
-        while (!JadeDateUtil.isDateAfter(enCours, dateFin + anneeEnquete)) {
-            listeMois.add(enCours.substring(3));
-            enCours = JadeDateUtil.addMonths(enCours, 1);
         }
 
         HashMap<String, String> listePCFAccordeePaiementMensuel = new HashMap<String, String>();
@@ -1051,11 +1094,15 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
 
     private HashMap<String, Prestation> loadPrestationPaiementRetro(String anneeEnquete, String dateDebut,
             String dateFin) throws LotException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
+
+        // La date de début doit être antérieur de 6 mois (règle des 6 mois OFS) à la date de début initiale
+        String dateDebutAnterieur = JadeDateUtil.addMonths(DATE_JJ_MM_DEBUT_ANNEE + anneeEnquete, NB_MOIS_RETRO);
+
         PrestationSearchModel prestationSearch = new PrestationSearchModel();
         prestationSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
         prestationSearch.setForCsTypeLot(CSTypeLot.LOT_DECISION.getCodeSystem());
         prestationSearch.setForEtatLot(CSEtatLot.LOT_VALIDE.getCodeSystem());
-        prestationSearch.setBetweenDateComptabilisationDebut(dateDebut + anneeEnquete);
+        prestationSearch.setBetweenDateComptabilisationDebut(dateDebutAnterieur);
         prestationSearch.setBetweenDateComptabilisationFin(dateFin + anneeEnquete);
         prestationSearch.setOrderKey(PrestationSearchModel.ORDER_BY_DATE_COMPTABILIASTION_LOT_ASC);
 

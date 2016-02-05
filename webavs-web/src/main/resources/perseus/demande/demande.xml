@@ -25,6 +25,7 @@
 				<search-field name="forCsTypeDemande" operation="EQUALS" field-ref="simpleDemande.typeDemande"/>
 				<search-field name="forDateNaissance" operation="EQUALS" field-ref="dossier.demandePrestation.personneEtendue.personne.dateNaissance"/>
 				<search-field name="forIdDossier" operation="EQUALS" field-ref="simpleDemande.idDossier"/>
+				<search-field name="forIdDossierPcf" operation="EQUALS" field-ref="simpleDemande.idDossier"/>
 				<search-field name="forIdGestionnaire" operation="EQUALS" field-ref="simpleDemande.idGestionnaire"/>
 				<search-field name="forIdSituationFamiliale" operation="EQUALS" field-ref="simpleDemande.idSituationFamiliale"/>
 				<search-field name="betweenDateRevisionDebut" operation="GREATER_OR_EQUALS" field-ref="dossier.dossier.dateRevision"/>

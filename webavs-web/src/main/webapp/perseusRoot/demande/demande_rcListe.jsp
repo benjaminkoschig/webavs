@@ -31,7 +31,8 @@
 		<TH data-g-periodformatter=" "><ct:FWLabel key="JSP_PF_DEM_L_PERIODE"/></TH>
 		<TH><ct:FWLabel key="JSP_PF_DEM_L_ETAT"/></TH>
 		<TH><ct:FWLabel key="JSP_PF_DEM_L_GEST"/></TH>
-		<TH><ct:FWLabel key="JSP_PF_DEM_L_NO"/></TH> 
+		<TH><ct:FWLabel key="JSP_PF_DEM_L_NO"/></TH>
+		<TH><ct:FWLabel key="JSP_PF_DEM_L_NO_OFS"/></TH> 
    	
 	    <%-- /tpl:insert --%> 
 <%@ include file="/theme/list/tableHeader.jspf" %>
@@ -87,6 +88,7 @@
 		<TD class="mtd" nowrap onClick="<%=detailUrl%>"><%=objSession.getCodeLibelle(line.getDemande().getSimpleDemande().getCsEtatDemande())%></TD>
 		<TD class="mtd" nowrap onClick="<%=detailUrl%>"><%=PFGestionnaireHelper.getDetailGestionnaire(objSession,line.getDemande().getSimpleDemande().getIdGestionnaire())%></TD>
 		<TD class="mtd" nowrap onClick="<%=detailUrl%>"><%=line.getId()%></TD>
+		<TD class="mtd" nowrap onClick="<%=detailUrl%>"><%=line.getDemande().getSimpleDemande().getNumeroOFS()%></TD>
 
 		<%-- /tpl:insert --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>
