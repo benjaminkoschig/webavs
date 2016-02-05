@@ -1,12 +1,19 @@
 package ch.globaz.corvus.process.dnra;
 
+import globaz.corvus.api.demandes.IREDemandeRente;
+import globaz.corvus.db.demandes.REDemandeRenteJointPrestationAccordeeManager;
 import globaz.corvus.db.dnra.REFichierDnraJournalierTraite;
 import globaz.corvus.db.dnra.REFichierDnraJournalierTraiteManager;
+import globaz.corvus.db.rentesaccordees.REPrestationAccordeeManager;
+import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.corvus.properties.REProperties;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
+import globaz.hera.api.ISFMembreFamilleRequerant;
+import globaz.hera.api.ISFSituationFamiliale;
+import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeFilenameUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
@@ -20,9 +27,11 @@ import globaz.jade.url.JadeUrl;
 import globaz.jade.url.JadeUrlMalformedException;
 import globaz.pavo.db.upidaily.CIUpiDailyProcess;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -35,8 +44,6 @@ import ch.globaz.common.sql.converters.EtatCivilConverter;
 import ch.globaz.common.sql.converters.PaysConverter;
 import ch.globaz.common.sql.converters.SexeConverter;
 import ch.globaz.corvus.process.REAbstractJadeJob;
-import ch.globaz.jade.JadeBusinessServiceLocator;
-import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
 import ch.globaz.pyxis.domaine.Pays;
 import ch.globaz.pyxis.loader.PaysLoader;
 import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
@@ -82,12 +89,6 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                 MutationsContainer mutationsContainer = MutationParser.parsFile(fichierMutation.getAbsolutePath(),
                         paysLoader);
                 mutationsContainer.setFichierMutationName(fichierMutation.getAbsolutePath());
-
-                List<JadeCodeSysteme> listAvs = JadeBusinessServiceLocator.getCodeSystemeService()
-                        .getFamilleCodeSysteme("PCGENRREN");
-
-                List<JadeCodeSysteme> listApi = JadeBusinessServiceLocator.getCodeSystemeService()
-                        .getFamilleCodeSysteme("PCTYPAPI");
 
                 // recherche des infos sur les tiers relatives aux mutations
                 List<InfoTiers> listInfosTiers = findInfosTiers(mutationsContainer.extractNssActuel(),
@@ -310,6 +311,75 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
      */
     private static BSession getSessionPavo(BSession session) throws Exception {
         return (BSession) GlobazSystem.getApplication("PAVO").newSession(session);
+    }
+
+    /**
+     * Indique si un tiers ou un membre de sa famille a une rente en cours
+     * 
+     * @param idTiers
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    private boolean hasDemandeOrRAForFamillyWithCarotte(String idTiers, BSession session) throws Exception {
+
+        // Utilisation de ce manager car AMHA c'est le seul capable et utilisé dans les rentes pour retrouver une
+        // demande en fonction d'un idTiers
+        REDemandeRenteJointPrestationAccordeeManager demandeManager = new REDemandeRenteJointPrestationAccordeeManager();
+        demandeManager.setSession(session);
+
+        // Recherche le tiers requérant et nom le bénéficiaire. Ce qui nous intéresse ici est de savoir si l'id tiers
+        // reçu en argument à une demande à son nom
+        demandeManager.setForIdTiersRequ(idTiers);
+
+        // Gestion des états indésirable de la demande
+        StringBuilder sb = new StringBuilder();
+        sb.append(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_TRANSFERE);
+        sb.append(", ");
+        sb.append(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_TERMINE);
+        demandeManager.setForCSEtatDemandeNotIn(sb.toString());
+
+        demandeManager.find(); // OSEF du SIZE_NO_LIMIT ;)
+        if (demandeManager.getContainer().size() >= 1) {
+            return true;
+        }
+
+        // Manager utilisé pour la recherche des prestation accordées.
+        REPrestationAccordeeManager prestationManager = new REPrestationAccordeeManager();
+        prestationManager.setSession(session);
+
+        ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(session,
+                ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiers);
+
+        ISFMembreFamilleRequerant[] mf = sf.getMembresFamille(idTiers);
+
+        int today = Integer.valueOf(new SimpleDateFormat("yyyyMM").format(new Date()));
+
+        SimpleDateFormat dateFormater = new SimpleDateFormat("yyyyMM");
+        SimpleDateFormat dateReader = new SimpleDateFormat("MM.yyyy");
+
+        for (ISFMembreFamilleRequerant membre : mf) {
+            prestationManager.setForIdTiersBeneficiaire(membre.getIdTiers());
+            prestationManager.find();
+            for (Object o : prestationManager.getContainer()) {
+                REPrestationsAccordees pa = (REPrestationsAccordees) o;
+
+                int ddfd = JadeStringUtil.isBlankOrZero(pa.getDateFinDroit()) ? 0 : Integer.valueOf(dateFormater
+                        .format(dateReader.parse(pa.getDateFinDroit())));
+
+                // 1ère condition : pas de date de fin
+                if (ddfd == 0) {
+                    return true;
+                }
+
+                // 2ème check si la date de fin est plus que la date du jour
+                else if (ddfd > today) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
 }
