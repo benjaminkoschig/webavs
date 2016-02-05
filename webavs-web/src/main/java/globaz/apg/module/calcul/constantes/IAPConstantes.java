@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 
 public interface IAPConstantes {
 
+    // Deja présente dans les plages de valeurs : APGMINALEX
     public static final BigDecimal ALLOCATION_JOURNALIERE_EXPLOITATION = BigDecimal.valueOf(67.00);
+
+    // Non présente encore dans les plages de valeurs.
     public static final BigDecimal ALLOCATION_JOURNALIERE_MAX_FRAIS_GARDE = BigDecimal.valueOf(67.00);
     public static final BigDecimal ALLOCATION_POUR_ENFANT = BigDecimal.valueOf(20.00);
     public static final BigDecimal APG_JOURNALIERE_MAX = BigDecimal.valueOf(196.00);
