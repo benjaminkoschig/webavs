@@ -2,23 +2,30 @@ package ch.globaz.corvus.process.dnra;
 
 import static org.fest.assertions.api.Assertions.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import org.junit.Test;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.jade.business.models.Langues;
+import ch.globaz.pyxis.domaine.EtatCivil;
+import ch.globaz.pyxis.domaine.Pays;
 import ch.globaz.pyxis.domaine.Sexe;
 
 public class DifferenceFinderTest {
 
+    private Locale locale = Locale.FRANCE;
+
     @Test
     public void testFindDifferenceEmpty() throws Exception {
-        DifferenceFinder differenceFinder = new DifferenceFinder();
+        DifferenceFinder differenceFinder = new DifferenceFinder(locale);
         List<DifferenceTrouvee> list = differenceFinder.findDifference(new Mutation(), new InfoTiers());
         assertThat(list).isEmpty();
     }
 
     @Test
     public void testFindDifferenceNomPrenom() throws Exception {
-        DifferenceFinder differenceFinder = new DifferenceFinder();
+        DifferenceFinder differenceFinder = new DifferenceFinder(locale);
         Mutation mutation = new Mutation();
         mutation.setNom("Nom");
         mutation.setPrenom("prenom");
@@ -27,9 +34,13 @@ public class DifferenceFinderTest {
         mutation.setDateNaissance(new Date());
         mutation.setSexe(Sexe.FEMME);
 
-        mutation.setCodeEtatCivil("1");
+        mutation.setEtatCivil(EtatCivil.CELIBATAIRE);
         mutation.setCodeNationalite("4545");
+        Pays pays = new Pays();
+        pays.setTraductionParLangue(new HashMap<Langues, String>());
+        mutation.setPays(pays);
         InfoTiers infoTiers = new InfoTiers();
+        infoTiers.setPays(pays);
         List<DifferenceTrouvee> list = differenceFinder.findDifference(mutation, infoTiers);
         assertThat(list).hasSize(8);
         assertThat(list.get(0).getDifference()).isEqualTo(TypeDifference.NOM);
@@ -37,16 +48,46 @@ public class DifferenceFinderTest {
 
     @Test
     public void testFindDifferenceEtatCivil() throws Exception {
-        DifferenceFinder differenceFinder = new DifferenceFinder();
+        DifferenceFinder differenceFinder = new DifferenceFinder(locale);
         Mutation mutation = new Mutation();
-        mutation.setCodeEtatCivil("1");
+        mutation.setEtatCivil(EtatCivil.CELIBATAIRE);
         mutation.setDateChangementEtatCivil(new Date());
         InfoTiers infoTiers = new InfoTiers();
         List<DifferenceTrouvee> list = differenceFinder.findDifference(mutation, infoTiers);
         assertThat(list).hasSize(1);
         assertThat(list.get(0).getDifference()).isEqualTo(TypeDifference.ETAT_CIVIL);
         assertThat(list.get(0).getDateChangement()).isEqualTo(mutation.getDateChangementEtatCivil());
-        assertThat(list.get(0).getValeurNouvelle()).isEqualTo(mutation.getCodeEtatCivil());
+        assertThat(list.get(0).getValeurNouvelle()).isEqualTo(mutation.getEtatCivil().toString());
+        assertThat(list.get(0).getValeurActuelle()).isNull();
+    }
+
+    @Test
+    public void testFindDifferenceDateDece() throws Exception {
+        DifferenceFinder differenceFinder = new DifferenceFinder(locale);
+        Mutation mutation = new Mutation();
+        mutation.setDateDece(new Date("10.10.2015"));
+        mutation.setDateChangementEtatCivil(new Date());
+        InfoTiers infoTiers = new InfoTiers();
+        infoTiers.setDateDeces(null);
+        List<DifferenceTrouvee> list = differenceFinder.findDifference(mutation, infoTiers);
+        assertThat(list).hasSize(1);
+        assertThat(list.get(0).getDifference()).isEqualTo(TypeDifference.DATE_DECES);
+        assertThat(list.get(0).getValeurNouvelle()).isEqualTo(mutation.getDateDece().getSwissValue());
+        assertThat(list.get(0).getValeurActuelle()).isNull();
+    }
+
+    @Test
+    public void testFindDifferenceDateNaissance() throws Exception {
+        DifferenceFinder differenceFinder = new DifferenceFinder(locale);
+        Mutation mutation = new Mutation();
+        mutation.setDateNaissance(new Date("10.10.2015"));
+        mutation.setDateChangementEtatCivil(new Date());
+        InfoTiers infoTiers = new InfoTiers();
+        infoTiers.setDateNaissance(null);
+        List<DifferenceTrouvee> list = differenceFinder.findDifference(mutation, infoTiers);
+        assertThat(list).hasSize(1);
+        assertThat(list.get(0).getDifference()).isEqualTo(TypeDifference.DATE_NAISSANCE);
+        assertThat(list.get(0).getValeurNouvelle()).isEqualTo(mutation.getDateNaissance().getSwissValue());
         assertThat(list.get(0).getValeurActuelle()).isNull();
     }
 
@@ -165,6 +206,10 @@ public class DifferenceFinderTest {
         List<Mutation> mutations = new ArrayList<Mutation>();
         List<InfoTiers> infosTiers = new ArrayList<InfoTiers>();
         for (int i = 0; i < 2; i++) {
+
+            Pays pays = new Pays();
+            pays.setTraductionParLangue(new HashMap<Langues, String>());
+
             Mutation mutation = new Mutation();
             mutation.setNom("Nom_mutation");
             mutation.setPrenom("Prenom_mutation");
@@ -173,14 +218,17 @@ public class DifferenceFinderTest {
             mutation.setDateNaissance(new Date());
             mutation.setDateChangementEtatCivil(new Date());
             mutation.setSexe(Sexe.FEMME);
-            mutation.setCodeEtatCivil("1");
+            mutation.setEtatCivil(EtatCivil.CELIBATAIRE);
             mutation.setCodeNationalite("4545");
             mutations.add(mutation);
+            mutation.setPays(pays);
             InfoTiers tiers = new InfoTiers();
             tiers.setNss(mutation.getNss());
+            tiers.setPays(pays);
+
             infosTiers.add(tiers);
         }
-        DifferenceFinder differenceFinder = new DifferenceFinder();
+        DifferenceFinder differenceFinder = new DifferenceFinder(locale);
         List<DifferenceTrouvee> diffs = differenceFinder.findAllDifference(mutations, infosTiers);
         assertThat(diffs).hasSize(14);
     }

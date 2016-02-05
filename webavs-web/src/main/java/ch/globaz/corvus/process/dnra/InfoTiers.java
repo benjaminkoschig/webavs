@@ -1,10 +1,12 @@
 package ch.globaz.corvus.process.dnra;
 
 import ch.globaz.common.domaine.Date;
+import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Pays;
 import ch.globaz.pyxis.domaine.Sexe;
 
 public class InfoTiers {
+    private String idTiers;
     private String nss;
     private String nom;
     private String prenom;
@@ -12,8 +14,16 @@ public class InfoTiers {
     private Sexe sexe;
     private String codeNationalite;
     private Date dateDeces;
-    private String codeEtatCivil;
     private Pays pays;
+    private EtatCivil etatCivil;
+
+    public EtatCivil getEtatCivil() {
+        return etatCivil;
+    }
+
+    public void setEtatCivil(EtatCivil etatCivil) {
+        this.etatCivil = etatCivil;
+    }
 
     public Pays getPays() {
         return pays;
@@ -79,19 +89,19 @@ public class InfoTiers {
         this.dateDeces = dateDeces;
     }
 
-    public String getCodeEtatCivil() {
-        return codeEtatCivil;
+    public String getIdTiers() {
+        return idTiers;
     }
 
-    public void setCodeEtatCivil(String codeEtatCivil) {
-        this.codeEtatCivil = codeEtatCivil;
+    public void setIdTiers(String idTiers) {
+        this.idTiers = idTiers;
     }
 
     @Override
     public String toString() {
-        return "InfoTiers [nss=" + nss + ", nom=" + nom + ", prenom=" + prenom + ", dateNaissance=" + dateNaissance
-                + ", sexe=" + sexe + ", codeNationalite=" + codeNationalite + ", dateDeces=" + dateDeces
-                + ", codeEtatCivil=" + codeEtatCivil + "]";
+        return "InfoTiers [idTiers=" + idTiers + ", nss=" + nss + ", nom=" + nom + ", prenom=" + prenom
+                + ", dateNaissance=" + dateNaissance + ", sexe=" + sexe + ", codeNationalite=" + codeNationalite
+                + ", dateDeces=" + dateDeces + ", pays=" + pays + ", etatCivil=" + etatCivil + "]";
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 import org.junit.Test;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Sexe;
 
 public class REGenererListeDiffDnraEtRentesProcessTest {
@@ -22,7 +23,7 @@ public class REGenererListeDiffDnraEtRentesProcessTest {
             mutation.setDateNaissance(new Date());
             mutation.setDateChangementEtatCivil(new Date());
             mutation.setSexe(Sexe.FEMME);
-            mutation.setCodeEtatCivil("1");
+            mutation.setEtatCivil(EtatCivil.CELIBATAIRE);
             mutation.setCodeNationalite("4545");
             mutations.add(mutation);
             InfoTiers tiers = new InfoTiers();
@@ -32,7 +33,7 @@ public class REGenererListeDiffDnraEtRentesProcessTest {
             tiers.setDateNaissance(new Date());
             infosTiers.add(tiers);
         }
-        DifferenceFinder differenceFinder = new DifferenceFinder();
+        DifferenceFinder differenceFinder = new DifferenceFinder(Locale.FRANCE);
         List<DifferenceTrouvee> diffs = differenceFinder.findAllDifference(mutations, infosTiers);
         String path = REGenererListeDiffDnraEtRentesProcess.generateXls(diffs, Locale.FRENCH);
         System.out.println(path);

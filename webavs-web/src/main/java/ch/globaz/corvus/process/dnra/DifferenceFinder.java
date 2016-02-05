@@ -3,9 +3,16 @@ package ch.globaz.corvus.process.dnra;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 class DifferenceFinder {
+
+    private final Locale locale;
+
+    public DifferenceFinder(Locale locale) {
+        this.locale = locale;
+    }
 
     public List<DifferenceTrouvee> findAllDifference(List<Mutation> mutations, List<InfoTiers> infosTiers) {
         final List<DifferenceTrouvee> differences = new ArrayList<DifferenceTrouvee>();
@@ -59,11 +66,11 @@ class DifferenceFinder {
         if (!isDateNaissanceSame(mutation, infoTiers)) {
             String dateMutation = null;
             String dateTiers = null;
-            if (infoTiers.getDateDeces() != null) {
-                dateTiers = infoTiers.getDateDeces().getSwissValue();
+            if (infoTiers.getDateNaissance() != null) {
+                dateTiers = infoTiers.getDateNaissance().getSwissValue();
             }
-            if (mutation.getDateDece() != null) {
-                dateMutation = mutation.getDateDece().getSwissValue();
+            if (mutation.getDateNaissance() != null) {
+                dateMutation = mutation.getDateNaissance().getSwissValue();
             }
             DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.DATE_NAISSANCE, mutation, infoTiers,
                     dateTiers, dateMutation);
@@ -71,7 +78,7 @@ class DifferenceFinder {
         }
         if (!isEtatCivilSame(mutation, infoTiers)) {
             DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.ETAT_CIVIL, mutation, infoTiers,
-                    infoTiers.getCodeEtatCivil(), mutation.getCodeEtatCivil());
+                    infoTiers.getEtatCivil().toString(), mutation.getEtatCivil().toString());
             differenceTrouvee.setDateChangement(mutation.getDateChangementEtatCivil());
             list.add(differenceTrouvee);
         }
@@ -99,7 +106,7 @@ class DifferenceFinder {
 
         if (!isNationaliteSame(mutation, infoTiers)) {
             DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.NATIONALITE, mutation, infoTiers,
-                    infoTiers.getCodeNationalite(), mutation.getCodeNationalite());
+                    infoTiers.getPays().getTraduction(locale), mutation.getPays().getTraduction(locale));
             list.add(differenceTrouvee);
         }
         return list;
@@ -161,8 +168,8 @@ class DifferenceFinder {
     }
 
     static boolean isEtatCivilSame(Mutation mutation, InfoTiers infoTiers) {
-        if (mutation.getCodeEtatCivil() != null) {
-            return mutation.getCodeEtatCivil().equals(infoTiers.getCodeEtatCivil());
+        if (mutation.getEtatCivil() != null) {
+            return mutation.getEtatCivil().equals(infoTiers.getEtatCivil());
         }
         return true;
     }

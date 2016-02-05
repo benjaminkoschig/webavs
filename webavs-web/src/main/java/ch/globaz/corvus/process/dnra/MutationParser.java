@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Sexe;
 import ch.globaz.pyxis.loader.PaysLoader;
 
@@ -50,10 +51,37 @@ class MutationParser {
 
         mutation.setSourceDonnees(csvLineParser.nextElementTrim());
         mutation.setDateDece(csvLineParser.nextElementToDate("dateDece"));
-        mutation.setCodeEtatCivil(csvLineParser.nextElementTrim());
+        mutation.setEtatCivil(resovleEtatCivil(csvLineParser.nextElementTrim()));
         mutation.setRaisonDuPartenariatDissous(csvLineParser.nextElementTrim());
         mutation.setDateChangementEtatCivil(csvLineParser.nextElementToDate("dateChangementEtatCivil"));
         return mutation;
+    }
+
+    public static EtatCivil resovleEtatCivil(String etatCivil) {
+        if (etatCivil != null) {
+            if ("1".equals(etatCivil)) {
+                return EtatCivil.CELIBATAIRE;
+            } else if ("2".equals(etatCivil)) {
+                return EtatCivil.CELIBATAIRE;
+            } else if ("3".equals(etatCivil)) {
+                return EtatCivil.CELIBATAIRE;
+            } else if ("4".equals(etatCivil)) {
+                return EtatCivil.CELIBATAIRE;
+            } else if ("5".equals(etatCivil)) {
+                return EtatCivil.CELIBATAIRE;
+            } else if ("6".equals(etatCivil)) {
+                return EtatCivil.CELIBATAIRE;
+            } else if ("7".equals(etatCivil)) {
+                return EtatCivil.CELIBATAIRE;
+            } else if ("8".equals(etatCivil)) {
+                return EtatCivil.CELIBATAIRE;
+            } else if ("9".equals(etatCivil)) {
+                return EtatCivil.CELIBATAIRE;
+            } else if ("10".equals(etatCivil)) {
+                return EtatCivil.CELIBATAIRE;
+            }
+        }
+        return EtatCivil.UNDEFINDED;
     }
 
     public static MutationsContainer parsFile(String pahtFile, PaysLoader paysLoader) {

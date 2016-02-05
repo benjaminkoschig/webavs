@@ -31,9 +31,12 @@ import ch.globaz.common.process.ProcessMailUtils;
 import ch.globaz.common.sql.ConverterDb;
 import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.common.sql.converters.DateConverter;
+import ch.globaz.common.sql.converters.EtatCivilConverter;
 import ch.globaz.common.sql.converters.PaysConverter;
 import ch.globaz.common.sql.converters.SexeConverter;
 import ch.globaz.corvus.process.REAbstractJadeJob;
+import ch.globaz.jade.JadeBusinessServiceLocator;
+import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
 import ch.globaz.pyxis.domaine.Pays;
 import ch.globaz.pyxis.loader.PaysLoader;
 import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
@@ -80,12 +83,18 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                         paysLoader);
                 mutationsContainer.setFichierMutationName(fichierMutation.getAbsolutePath());
 
+                List<JadeCodeSysteme> listAvs = JadeBusinessServiceLocator.getCodeSystemeService()
+                        .getFamilleCodeSysteme("PCGENRREN");
+
+                List<JadeCodeSysteme> listApi = JadeBusinessServiceLocator.getCodeSystemeService()
+                        .getFamilleCodeSysteme("PCTYPAPI");
+
                 // recherche des infos sur les tiers relatives aux mutations
                 List<InfoTiers> listInfosTiers = findInfosTiers(mutationsContainer.extractNssActuel(),
                         paysLoader.getMapPaysByCodeCentrale());
 
                 // identification des différences entre les mutations annoncées et les données DB
-                DifferenceFinder differenceFinder = new DifferenceFinder();
+                DifferenceFinder differenceFinder = new DifferenceFinder(new Locale(getSession().getIdLangueISO()));
                 List<DifferenceTrouvee> differenceTrouvees = differenceFinder.findAllDifference(
                         mutationsContainer.getList(), listInfosTiers);
 
@@ -140,12 +149,12 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
         List<List<String>> splittedList = QueryExecutor.split(listNss, 2000);
 
         Set<ConverterDb<?>> converters = QueryExecutor.newSetConverter(new SexeConverter(), new DateConverter(),
-                new PaysConverter(mapPaysByCodeCentral));
+                new PaysConverter(mapPaysByCodeCentral), new EtatCivilConverter());
         for (List<String> list : splittedList) {
             StringBuilder sql = new StringBuilder();
             sql.append("select schema.TIPAVSP.HXNAVS as nss, schema.TITIERP.HNIPAY as codeNationalite, schema.TITIERP.HTLDE1 as nom, ");
             sql.append("schema.TITIERP.HTLDE2 as prenom, schema.TIPERSP.HPDNAI as dateNaissance, schema.TIPERSP.HPDDEC as dateDeces, ");
-            sql.append(" schema.TITIERP.HNIPAY as pays, schema.TIPERSP.HPTSEX as sexe, schema.TIPERSP.HPTETC as codeEtatCivil ");
+            sql.append(" schema.TITIERP.HNIPAY as pays, schema.TIPERSP.HPTSEX as sexe, schema.TIPERSP.HPTETC as etatCivil, schema.TITIERP.HTITIE as idTiers ");
             sql.append("from schema.TIPAVSP ");
             sql.append("inner join schema.TITIERP on schema.TITIERP.HTITIE = schema.TIPAVSP.HTITIE ");
             sql.append("inner join schema.TIPERSP on schema.TIPERSP.HTITIE = schema.TIPAVSP.HTITIE ");

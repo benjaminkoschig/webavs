@@ -33,7 +33,8 @@ public class Pays extends EntiteDeDomaine {
     }
 
     public String getTraduction(final Locale locale) {
-        return traductionParLangue.get(CodeIsoPays.parse(locale.getLanguage()));
+        Langues langues = Langues.getLangueDepuisCodeIso(locale.getLanguage());
+        return traductionParLangue.get(langues);
     }
 
     public String getTraduction(final Langues langue) {

@@ -14,7 +14,7 @@ public class DateConverter implements ConverterDb<Date> {
         if (dateString.equals("0")) {
             return null;
         }
-        return new Date();
+        return new Date(dateString);
     }
 
     @Override

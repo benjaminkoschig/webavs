@@ -1,6 +1,7 @@
 package ch.globaz.corvus.process.dnra;
 
 import ch.globaz.common.domaine.Date;
+import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Pays;
 import ch.globaz.pyxis.domaine.Sexe;
 
@@ -16,10 +17,18 @@ class Mutation {
     private String codeNationalite = null;
     private String sourceDonnees = "";
     private Date dateDece;
-    private String codeEtatCivil;
+    private EtatCivil etatCivil;
     private String raisonDuPartenariatDissous;
     private Date dateChangementEtatCivil;
     private Pays pays;
+
+    public EtatCivil getEtatCivil() {
+        return etatCivil;
+    }
+
+    public void setEtatCivil(EtatCivil etatCivil) {
+        this.etatCivil = etatCivil;
+    }
 
     public Pays getPays() {
         return pays;
@@ -115,14 +124,6 @@ class Mutation {
 
     public void setDateDece(Date dateDece) {
         this.dateDece = dateDece;
-    }
-
-    public String getCodeEtatCivil() {
-        return codeEtatCivil;
-    }
-
-    public void setCodeEtatCivil(String codeEtatCivil) {
-        this.codeEtatCivil = codeEtatCivil;
     }
 
     public String getRaisonDuPartenariatDissous() {
