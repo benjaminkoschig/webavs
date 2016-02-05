@@ -26,6 +26,7 @@
 <%-- tpl:insert attribute="zoneScripts" --%>
 
 <script type="text/javascript" src="<%=servletContext%>/scripts/ajax/DefaultTableAjaxList.js"/></script>
+<script type="text/javascript" src="<%=rootPath%>/ajax/facture/globazNss.js"></script>
 <script language="JavaScript">
 	globazGlobal.ACTION_AJAX ="perseus.facture.validationAjax";
 	globazGlobal.csEtatFactureEnregistre = <%=CSEtatFacture.ENREGISTRE.getCodeSystem()%>;
@@ -178,9 +179,9 @@
 			<div class="area">
 				<div class="areaSearch" >
 					<label><ct:FWLabel key="JSP_PF_VALIDATION_NSS_DOSSIER"/></label>
+					
 								<input 
-								  name="searchModel.likeNss"
-								  data-g-nss="" />			
+								  name="searchModel.likeNss" data-g-nss="" />	
 					<label><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_GESTIONAIRE"/></label>
 					<ct:FWListSelectTag data="<%=PFGestionnaireHelper.getResponsableData(objSession)%>" defaut="<%=viewBean.getISession().getUserId()%>"  name="searchModel.forIdGestionnaire"/>
 					<label><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_TYPE"/></label>

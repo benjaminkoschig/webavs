@@ -56,7 +56,7 @@
 <script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/business/globazEcheance.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/business/globazIban.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/business/globazNote.js"></script>
-<script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/business/globazNss.js"></script>
+
 
 
 <script type="text/javascript" src="<%=servletContext%>/scripts/ajax/ajaxUtils.js"></script>
