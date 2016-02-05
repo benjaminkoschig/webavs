@@ -17,6 +17,7 @@
 	}
 </style>
 <%@ include file="/theme/detail_el/bodyStart.jspf" %>
+<%@ include file="/theme/detail_el/bodyStart2.jspf" %>
 <%--  ******************************************************************* Corps de la page ******************************************************************* --%>
 	<input	type="hidden" 
 			id="idDemandeRente" 
