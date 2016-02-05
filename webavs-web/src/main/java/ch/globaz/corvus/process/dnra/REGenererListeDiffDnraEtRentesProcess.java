@@ -2,6 +2,7 @@ package ch.globaz.corvus.process.dnra;
 
 import globaz.corvus.db.dnra.REFichierDnraJournalierTraite;
 import globaz.corvus.db.dnra.REFichierDnraJournalierTraiteManager;
+import globaz.corvus.properties.REProperties;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
@@ -20,11 +21,13 @@ import globaz.jade.url.JadeUrlMalformedException;
 import globaz.pavo.db.upidaily.CIUpiDailyProcess;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import ch.globaz.common.process.ProcessMailUtils;
 import ch.globaz.common.sql.ConverterDb;
 import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.common.sql.converters.DateConverter;
@@ -87,17 +90,17 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                         mutationsContainer.getList(), listInfosTiers);
 
                 // génération de la liste au format xls
-                String path = generateXls(differenceTrouvees, new Locale(getSession().getIdLangueISO()));
-                System.out.println(path);
+                String generatedXlsFilePath = generateXls(differenceTrouvees, new Locale(getSession().getIdLangueISO()));
+                System.out.println(generatedXlsFilePath);
 
+                // flaguer le fichier
                 marquerFichierDnraCommeTraite(fichierMutation.getName());
 
                 // suppression du fichier journalier
                 JadeFsFacade.delete(fichierMutation.getAbsolutePath());
 
-                List<String> emailsList = new ArrayList<String>();
-                emailsList.add(getSession().getUserEMail());
-                sendCompletionMail(emailsList);
+                // envoyer l'email
+                sendMail(generatedXlsFilePath);
             }
         } catch (Exception e) {
             JadeLogger.error(getName(), "une erreur est survenue lors du traitement");
@@ -105,6 +108,24 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
 
         JadeLogger.info(getName(), "Fin du traitement de génération des listes de différences");
 
+    }
+
+    private void sendMail(String joinFilePath) throws Exception {
+        // récupération de la liste des emails (properties en DB)
+        String emails = null;
+        emails = REProperties.DNRA_PROCESS_EMAILS.getValue();
+        List<String> mailsList = Arrays.asList(emails.split(","));
+
+        // ajout de la pièce jointe
+        List<String> joinsFilesPathsList = new ArrayList<String>();
+        joinsFilesPathsList.add(joinFilePath);
+
+        // sujet et corps du mail
+        String subject = "Le processus d'impression des différences DNRA-Rentes s'est terminé avec succès";
+        String body = "Veuillez consulter la liste des différences en pièce jointe";
+
+        // envoi
+        ProcessMailUtils.sendMail(mailsList, subject, body, joinsFilesPathsList);
     }
 
     /**

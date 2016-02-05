@@ -59,7 +59,9 @@ public enum REProperties implements IProperties {
             "Rôle pour l'envoi des résultats de l'importation des CI. (Description à compléter)"),
     UTILISER_ADRESSE_DOMICILE(
             "isWantAdresseCourrier",
-            "Si la caisse n'utilise pas le genre d'adresse 'domicile', cette propriété permet de rechercher les données du canton de domicile à travers l'adresse de courrier du type 'Rentes'. (Description à compléter)");
+            "Si la caisse n'utilise pas le genre d'adresse 'domicile', cette propriété permet de rechercher les données du canton de domicile à travers l'adresse de courrier du type 'Rentes'. (Description à compléter)"),
+    DNRA_PROCESS_EMAILS("dnra.process.emails",
+            "permet de définir les adresses emails à utiliser lors du traitement DNRA, séparer les emails par des virgules");
 
     private String description;
     private String propertyName;
