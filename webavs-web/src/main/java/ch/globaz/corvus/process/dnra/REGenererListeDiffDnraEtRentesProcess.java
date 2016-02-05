@@ -1,5 +1,6 @@
 package ch.globaz.corvus.process.dnra;
 
+import globaz.caisse.report.helper.ACaisseReportHelper;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.db.demandes.REDemandeRenteJointPrestationAccordeeManager;
 import globaz.corvus.db.dnra.REFichierDnraJournalierTraite;
@@ -7,6 +8,8 @@ import globaz.corvus.db.dnra.REFichierDnraJournalierTraiteManager;
 import globaz.corvus.db.rentesaccordees.REPrestationAccordeeManager;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.corvus.properties.REProperties;
+import globaz.framework.printing.itext.fill.FWIImportProperties;
+import globaz.framework.util.FWMessageFormat;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
@@ -21,6 +24,7 @@ import globaz.jade.common.JadeClassCastException;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.fs.message.JadeFsFileInfo;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
 import globaz.jade.url.JadeUrl;
@@ -51,6 +55,10 @@ import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Pays;
 import ch.globaz.pyxis.domaine.Sexe;
 import ch.globaz.pyxis.loader.PaysLoader;
+import ch.globaz.simpleoutputlist.annotation.style.Align;
+import ch.globaz.simpleoutputlist.configuration.Configuration;
+import ch.globaz.simpleoutputlist.configuration.HeaderFooter;
+import ch.globaz.simpleoutputlist.outimpl.Configurations;
 import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 import com.sun.star.lang.IllegalArgumentException;
 
@@ -120,11 +128,11 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                         mutationsContainer.getList(), listInfosTiers);
 
                 // génération de la liste au format xls
-                String generatedXlsFilePath = generateXls(differenceTrouvees, new Locale(getSession().getIdLangueISO()));
+                String generatedXlsFilePath = generateXls(differenceTrouvees, getSession(), fichierMutation.getName());
                 System.out.println(generatedXlsFilePath);
 
                 // flaguer le fichier
-                marquerFichierDnraCommeTraite(fichierMutation.getName());
+                // marquerFichierDnraCommeTraite(fichierMutation.getName());
 
                 // suppression du fichier journalier
                 JadeFsFacade.delete(fichierMutation.getAbsolutePath());
@@ -336,9 +344,22 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
      * @param locale
      * @return
      */
-    static String generateXls(List<DifferenceTrouvee> list, Locale locale) {
-        File file = SimpleOutputListBuilder.newInstance().local(locale).addList(list)
-                .classElementList(DifferenceTrouvee.class).asXls().outputName("mutationList").build();
+    static String generateXls(List<DifferenceTrouvee> list, BSession session, String fileName) {
+        final String nomCaisse;
+        JadePublishDocumentInfo docInfo = new JadePublishDocumentInfo();
+        nomCaisse = (FWIImportProperties.getInstance().getProperty(docInfo, ACaisseReportHelper.JASP_PROP_NOM_CAISSE
+                + session.getIdLangueISO().toUpperCase()));
+        String title = FWMessageFormat.format(session.getLabel("LIST_CORVUS_DIFFERENCE_TROUVEE_TITLE"),
+                new ch.globaz.common.domaine.Date().getSwissValue(), fileName);
+        Configuration configuration = Configurations.buildeDefault();
+        HeaderFooter headerFooter;
+        headerFooter = configuration.getHeaderFooter();
+        headerFooter.setRightTop(session.getLabel("LIST_CORVUS_DIFFERENCE_TROUVEE_RIGHT_TOP"));
+        headerFooter.setLeftTop(nomCaisse);
+        headerFooter.setLeftBottom(" - " + session.getUserName());
+        File file = SimpleOutputListBuilder.newInstance().configure(configuration)
+                .local(new Locale(session.getIdLangueISO())).addList(list).classElementList(DifferenceTrouvee.class)
+                .addTitle(title, Align.LEFT).asXls().outputName("mutationList").build();
         return file.getAbsolutePath();
     }
 
