@@ -59,6 +59,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
+import globaz.globall.db.FWFindParameter;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
@@ -2515,6 +2516,16 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         }
     }
 
+    private BigDecimal[] getMontantMaxMinLamat(BSession session) throws Exception {
+        BigDecimal montantMax = new BigDecimal(FWFindParameter.findParameter(session.getCurrentThreadTransaction(),
+                "0", "M_MAXGROS", "01.03.2015", "", 2));
+        BigDecimal montantMin = new BigDecimal(FWFindParameter.findParameter(session.getCurrentThreadTransaction(),
+                "0", "M_MAXGROS", "01.03.2015", "", 2));
+
+        return new BigDecimal[] { montantMax, montantMin };
+
+    }
+
     /**
      * Mets à jours toutes les prestations liées à la restitution de la prestation courante. Mets à jours le champ
      * idRestitution.
@@ -2562,4 +2573,5 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             prestation.update(transaction);
         }
     }
+
 }

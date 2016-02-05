@@ -9,6 +9,7 @@ package globaz.apg.module.calcul.lamat;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.helpers.droits.APSituationProfessionnelleHelper;
+import globaz.apg.module.calcul.APCalculParametresAMAT;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -54,6 +55,7 @@ public class LAMatCalculateur {
      *            DOCUMENT ME!
      * @param dateFinPrestation
      *            DOCUMENT ME!
+     * @param apCalculParametresAMAT
      * 
      * @return DOCUMENT ME!
      * 
@@ -63,6 +65,11 @@ public class LAMatCalculateur {
     public BigDecimal calculerMontantLAMat(BSession session, BTransaction transaction, String genreService,
             String idDroit, String revenuMoyenDeterminant, String montantJournalier, String dateDebutPrestation,
             String dateFinPrestation, boolean isAllocationMax) throws Exception {
+
+        APCalculParametresAMAT parametresCalcul = new APCalculParametresAMAT().getParametres(transaction,
+                dateDebutPrestation);
+        final BigDecimal montantMax = parametresCalcul.getMontantMax();
+        final BigDecimal montantMin = parametresCalcul.getMontantMin();
 
         // on recalcule le revenu moyen determinant en tenant compte uniquement
         // situation prof.
@@ -107,15 +114,15 @@ public class LAMatCalculateur {
 
                 // si le 80% du revenu moyen determinant est inferieur a 54 CHF,
                 // la LAMat vaut 54 CHF
-                if ((rmd80.compareTo(new BigDecimal("54")) <= 0) && !isAllocationMax) {
+                if ((rmd80.compareTo(montantMin) <= 0) && !isAllocationMax) {
 
-                    montantLAMat = new BigDecimal("54");
+                    montantLAMat = montantMin;
 
                     // si le 80% du revenu moyen determinant est compris entre
                     // 54 et 237.60 CHF, la
                     // LAMat vaut ce 80% du revenu moyen determinant
-                } else if ((rmd80.compareTo(new BigDecimal("54")) > 0)
-                        && (rmd80.compareTo(new BigDecimal("237.60")) <= 0) && !isAllocationMax) {
+                } else if ((rmd80.compareTo(montantMin) > 0) && (rmd80.compareTo(new BigDecimal("237.60")) <= 0)
+                        && !isAllocationMax) {
 
                     montantLAMat = rmd80;
 
@@ -131,24 +138,23 @@ public class LAMatCalculateur {
                     && BSessionUtil.compareDateFirstLower(session, dateDebutPrestation, "01.01.2009")) {
                 // si le 80% du revenu moyen determinant est inferieur a 54 CHF,
                 // la LAMat vaut 54 CHF
-                if ((rmd80.compareTo(new BigDecimal("54")) <= 0) && !isAllocationMax) {
+                if ((rmd80.compareTo(montantMin) <= 0) && !isAllocationMax) {
 
-                    montantLAMat = new BigDecimal("54");
+                    montantLAMat = montantMin;
 
                     // si le 80% du revenu moyen determinant est compris entre
                     // 54 et 280 CHF, la
                     // LAMat vaut ce 80% du revenu moyen determinant
-                } else if ((rmd80.compareTo(new BigDecimal("54")) > 0) && (rmd80.compareTo(new BigDecimal("280")) <= 0)
-                        && !isAllocationMax) {
+                } else if ((rmd80.compareTo(montantMin) > 0) && (rmd80.compareTo(montantMax) <= 0) && !isAllocationMax) {
 
                     montantLAMat = rmd80;
 
                     // si le 80% du revenu moyen determinant est superieur a 280
                     // CHF,
                     // on donne le maximum LAMat soit 280 CHF
-                } else if ((rmd80.compareTo(new BigDecimal("280")) > 0) || isAllocationMax) {
+                } else if ((rmd80.compareTo(montantMax) > 0) || isAllocationMax) {
 
-                    montantLAMat = new BigDecimal("280");
+                    montantLAMat = montantMax;
                 }
             } else {
                 // si le 80% du revenu moyen determinant est inferieur a 62 CHF,
@@ -160,7 +166,7 @@ public class LAMatCalculateur {
                     // si le 80% du revenu moyen determinant est compris entre
                     // 62 et 280 CHF, la
                     // LAMat vaut ce 80% du revenu moyen determinant
-                } else if ((rmd80.compareTo(new BigDecimal("62")) > 0) && (rmd80.compareTo(new BigDecimal("280")) <= 0)
+                } else if ((rmd80.compareTo(new BigDecimal("62")) > 0) && (rmd80.compareTo(montantMax) <= 0)
                         && !isAllocationMax) {
 
                     montantLAMat = rmd80;
@@ -168,9 +174,9 @@ public class LAMatCalculateur {
                     // si le 80% du revenu moyen determinant est superieur a 280
                     // CHF,
                     // on donne le maximum LAMat soit 280 CHF
-                } else if ((rmd80.compareTo(new BigDecimal("280")) > 0) || isAllocationMax) {
+                } else if ((rmd80.compareTo(montantMax) > 0) || isAllocationMax) {
 
-                    montantLAMat = new BigDecimal("280");
+                    montantLAMat = montantMax;
                 }
             }
 
@@ -184,14 +190,13 @@ public class LAMatCalculateur {
 
             // si le montant journalier est inferieur a 54 CHF, on compense a
             // hauteur de 54 CHF
-            if ((mj.compareTo(new BigDecimal("54")) <= 0) && !isAllocationMax) {
+            if ((mj.compareTo(montantMin) <= 0) && !isAllocationMax) {
 
-                montantLAMat = new BigDecimal("54").subtract(mj);
+                montantLAMat = montantMin.subtract(mj);
 
                 // si le montant journalier est compris entre 54 et 172 CHF, on
                 // ne compense rien
-            } else if ((mj.compareTo(new BigDecimal("54")) > 0) && (mj.compareTo(new BigDecimal("172")) < 0)
-                    && !isAllocationMax) {
+            } else if ((mj.compareTo(montantMin) > 0) && (mj.compareTo(new BigDecimal("172")) < 0) && !isAllocationMax) {
 
                 montantLAMat = new BigDecimal(0);
 
@@ -228,14 +233,13 @@ public class LAMatCalculateur {
                 && BSessionUtil.compareDateFirstLower(session, dateDebutPrestation, "01.01.2009")) {
             // si le montant journalier est inferieur a 54 CHF, on compense a
             // hauteur de 54 CHF
-            if ((mj.compareTo(new BigDecimal("54")) <= 0) && !isAllocationMax) {
+            if ((mj.compareTo(montantMin) <= 0) && !isAllocationMax) {
 
-                montantLAMat = new BigDecimal("54").subtract(mj);
+                montantLAMat = montantMin.subtract(mj);
 
                 // si le montant journalier est compris entre 54 et 172 CHF, on
                 // ne compense rien
-            } else if ((mj.compareTo(new BigDecimal("54")) > 0) && (mj.compareTo(new BigDecimal("172")) < 0)
-                    && !isAllocationMax) {
+            } else if ((mj.compareTo(montantMin) > 0) && (mj.compareTo(new BigDecimal("172")) < 0) && !isAllocationMax) {
 
                 montantLAMat = new BigDecimal(0);
 
@@ -255,7 +259,7 @@ public class LAMatCalculateur {
                 // CHF, on donne
                 // la difference entre le maximum AMat et le 80% du revenu moyen
                 // determinant
-                if ((rmd80.compareTo(new BigDecimal("280")) <= 0) && !isAllocationMax) {
+                if ((rmd80.compareTo(montantMax) <= 0) && !isAllocationMax) {
 
                     montantLAMat = rmd80.subtract(new BigDecimal("172"));
 
@@ -263,9 +267,9 @@ public class LAMatCalculateur {
                     // CHF,
                     // on donne la difference entre le maximum AMat et le
                     // maximum LAMat
-                } else if ((rmd80.compareTo(new BigDecimal("280")) > 0) || isAllocationMax) {
+                } else if ((rmd80.compareTo(montantMax) > 0) || isAllocationMax) {
 
-                    montantLAMat = new BigDecimal("280").subtract(new BigDecimal("172"));
+                    montantLAMat = montantMax.subtract(new BigDecimal("172"));
                 }
             }
         } else if (BSessionUtil.compareDateFirstGreaterOrEqual(session, dateDebutPrestation, "01.01.2009")) {
@@ -298,7 +302,7 @@ public class LAMatCalculateur {
                 // CHF, on donne
                 // la difference entre le maximum AMat et le 80% du revenu moyen
                 // determinant
-                if ((rmd80.compareTo(new BigDecimal("280")) <= 0) && !isAllocationMax) {
+                if ((rmd80.compareTo(montantMax) <= 0) && !isAllocationMax) {
 
                     montantLAMat = rmd80.subtract(new BigDecimal("196"));
 
@@ -306,9 +310,9 @@ public class LAMatCalculateur {
                     // CHF,
                     // on donne la difference entre le maximum AMat et le
                     // maximum LAMat
-                } else if ((rmd80.compareTo(new BigDecimal("280")) > 0) || isAllocationMax) {
+                } else if ((rmd80.compareTo(montantMax) > 0) || isAllocationMax) {
 
-                    montantLAMat = new BigDecimal("280").subtract(new BigDecimal("196"));
+                    montantLAMat = montantMax.subtract(new BigDecimal("196"));
                 }
             }
         }
