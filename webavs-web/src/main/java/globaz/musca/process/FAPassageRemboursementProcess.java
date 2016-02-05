@@ -27,6 +27,7 @@ import globaz.osiris.translation.CACodeSystem;
 import globaz.pyxis.api.osiris.TITiersOSI;
 import java.util.Collection;
 import java.util.Iterator;
+import com.google.common.base.Preconditions;
 
 /**
  * Génération de la facturation. Date de création : (25.11.2002 11:52:37)
@@ -166,7 +167,10 @@ public class FAPassageRemboursementProcess extends FAGenericProcess {
 
     protected void fixIdForModeRecouvrement(CACompteAnnexe compteAnnexe, IFAPassage passage,
             FAEnteteFacture entFacture, Collection<?> sections, BSession session) throws Exception {
-        if (isCAContentieux(compteAnnexe)) {
+
+        String annee = passage.getDateFacturation().substring(3);
+
+        if (isCAContentieux(compteAnnexe, annee)) {
             entFacture.setIdModeRecouvrement(FAEnteteFacture.CS_MODE_RETENU_COMPTE_ANNEX_BLOQUE);
         } else if (compteAnnexe.getSoldeToCurrency().isPositive()) {
             Iterator<?> it = sections.iterator();
@@ -191,9 +195,11 @@ public class FAPassageRemboursementProcess extends FAGenericProcess {
         return TITiersOSI.DOMAINE_REMBOURSEMENT;
     }
 
-    protected boolean isCAContentieux(CACompteAnnexe compteAnnexe) {
+    protected boolean isCAContentieux(CACompteAnnexe compteAnnexe, String annee) throws CATechnicalException {
+        Preconditions.checkNotNull(annee, "The parameters [annee] can't be null");
+
         if (compteAnnexe.isASurveiller().booleanValue() || compteAnnexe.isMotifExistant(CACodeSystem.CS_RENTIER)
-                || compteAnnexe.isMotifExistant(CACodeSystem.CS_IRRECOUVRABLE)) {
+                || compteAnnexe.isMotifExistant(CACodeSystem.CS_IRRECOUVRABLE) || compteAnnexe.isEnFaillte(annee)) {
             return true;
         }
         return false;

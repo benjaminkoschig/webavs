@@ -25,7 +25,9 @@ public class FAInfoRom200PassageRemboursementProcess extends FAPassageRemboursem
         // par defaut on rembourse.
         entFacture.setIdModeRecouvrement(FAEnteteFacture.CS_MODE_REMBOURSEMENT);
 
-        if (isCAContentieux(compteAnnexe)) {
+        String annee = passage.getDateFacturation().substring(3);
+
+        if (isCAContentieux(compteAnnexe, annee)) {
             entFacture.setIdModeRecouvrement(FAEnteteFacture.CS_MODE_RETENU_COMPTE_ANNEX_BLOQUE);
         } else {
             // si il y a une section avec un solde positif on ne rembourse pas
