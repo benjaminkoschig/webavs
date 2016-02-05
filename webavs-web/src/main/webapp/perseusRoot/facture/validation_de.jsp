@@ -5,6 +5,7 @@
 <%@page import="ch.globaz.perseus.business.constantes.CSEtatFacture"%>
 <%@page import="ch.globaz.perseus.business.services.PerseusServiceLocator"%>
 <%@page import="java.util.HashMap"%>
+<%@ page import="globaz.jade.i18n.JadeI18n" %>
 <%@page import="globaz.perseus.utils.PFGestionnaireHelper"%>
 <%@page import="globaz.perseus.vb.facture.PFValidationViewBean"%>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -65,10 +66,6 @@
 				return map;
 			},
 			
-// 			getParametres : function () {
-// 				return {"prixChambre.simplePrixChambre.idHome": globazGlobal.currentIdHome};
-// 			},
-			
 			init: function () {	
 				this.list(30, [20, 30, 50, 100]);
 				objetAjax = this;
@@ -111,13 +108,17 @@
 				success: function (data) {
 					if(data){
 						if(data.viewBean.errorBean || data.viewBean.messages) {
-							ajaxUtils.dispalyLogOrError(data.viewBean);
+							ajaxUtils.displayLogOrError(data.viewBean);
 						}
-						objetAjax.ajaxFind();
+						setTimeout(objetAjax.ajaxFind(),3000);
 					}
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
-					ajaxUtils.displayError(jqXHR);				
+					if(ids){
+						alert("<%=JadeI18n.getInstance().getMessage(objSession.getIdLangue(), "perseus.validationfacture.erreur.error.ajax")%>");
+						ajaxUtils.displayError(jqXHR);
+					}
+					alert("<%=JadeI18n.getInstance().getMessage(objSession.getIdLangue(), "perseus.validationfacture.erreur.selection.vide")%>");
 				},
 				type: "POST"
 			});
@@ -217,7 +218,7 @@
 					<ct:FWLabel key="JSP_PF_VALIDATION_RAPPORT_MAIL"/> 
 					<input type="text" id="adresseMail" name="adresseMail" value="<%=objSession.getUserEMail()%>" />
 					<input type="hidden" id="idFactures" name="idFactures" />
-					<input id="validerFactrueSelectionnee" style="float: right;" type="button" value="<ct:FWLabel key="JSP_PF_VALIDATION_VALIDER_SELECTIONNES"/>" >
+					<input id="validerFactrueSelectionnee" style="float: right;" type="button" disabled="disabled" value="<ct:FWLabel key="JSP_PF_VALIDATION_VALIDER_SELECTIONNES"/>" >
 				</div>
 		</td>
 	</tr>
