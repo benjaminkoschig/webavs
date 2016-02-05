@@ -262,7 +262,7 @@ public class Date implements Comparable<Date> {
     /**
      * Retour la date au format standard Swiss
      * 
-     * @return String au format dd.MM.yyyy
+     * @return String au format MM.yyyy
      */
     public String getSwissMonthValue() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(Date.DATE_PATTERN_MONTH_SWISS);
