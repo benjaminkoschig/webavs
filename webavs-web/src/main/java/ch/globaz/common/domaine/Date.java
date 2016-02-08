@@ -19,10 +19,14 @@ public class Date implements Comparable<Date> {
 
     private static final String EXCEPTION_DATE_NULL = "La date ne peut être null";
     private static final String EXCEPTION_DATE_FORMATS_RESPECT = "La date '%s' doit respecter un des formats suivants : yyyyMMdd ; dd.MM.yyyy ; MM.yyyy ; yyyyMM";
-    private static final String DATE_PATTERN = "yyyyMMdd";
-    private static final String DATE_PATTERN_SWISS = "dd.MM.yyyy";
-    private static final String DATE_PATTERN_MONTH = "yyyyMM";
-    private static final String DATE_PATTERN_MONTH_SWISS = "MM.yyyy";
+    private static final String EXCEPTION_DATE_FORMATS_RESPECT_ONE = "La date '%s' doit respecter le format suivants : %s";
+
+    public static final String DATE_PATTERN = "yyyyMMdd";
+    public static final String DATE_PATTERN_SWISS = "dd.MM.yyyy";
+    public static final String DATE_PATTERN_MONTH = "yyyyMM";
+    public static final String DATE_PATTERN_MONTH_SWISS = "MM.yyyy";
+    public static final String DATE_PATTERN_ddMMyyyy = "ddMMyyyy";
+
     private static final String NULL_DATE_ALIAS = "";
 
     private static final String PATTERN_DAY = "dd";
@@ -51,8 +55,9 @@ public class Date implements Comparable<Date> {
     public static final int TRIMESTRE_4 = 4;
 
     private static final String REGEX_SWISS_MONTH_DATE = "^(0[1-9]|1[0-2]).[0-9][0-9]{3}$";
+    protected String pattern;
 
-    private final java.util.Date date;
+    protected final java.util.Date date;
 
     public static final String UNDEFINED_DATE_DEBUT = "01.01.1990";
 
@@ -130,6 +135,28 @@ public class Date implements Comparable<Date> {
         return calendar.getTime();
     }
 
+    protected String changeDate(String date) {
+        return date;
+    }
+
+    public Date(String date, final String pattern) {
+        this.pattern = pattern;
+        if (isNull(date)) {
+            throw new IllegalArgumentException(EXCEPTION_DATE_NULL);
+        }
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+        date = changeDate(date);
+        if (isDateOf(date, dateFormat)) {
+            try {
+                this.date = dateFormat.parse(date);
+            } catch (ParseException e) {
+                throw new IllegalArgumentException(String.format(EXCEPTION_DATE_FORMATS_RESPECT_ONE, date, pattern));
+            }
+        } else {
+            throw new IllegalArgumentException(String.format(EXCEPTION_DATE_FORMATS_RESPECT_ONE, date, pattern));
+        }
+    }
+
     /**
      * Création d'une date à partir d'une chaîne de caractères les formats
      * définis
@@ -138,7 +165,8 @@ public class Date implements Comparable<Date> {
      *            Date au format "yyyyMMdd"
      * @throws IllegalArgumentException()
      */
-    public Date(final String date) {
+    public Date(String date) {
+        date = changeDate(date);
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
         SimpleDateFormat dateFormatSwiss = new SimpleDateFormat(DATE_PATTERN_SWISS);
         SimpleDateFormat dateFormatMonth = new SimpleDateFormat(DATE_PATTERN_MONTH);

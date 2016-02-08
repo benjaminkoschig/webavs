@@ -5,14 +5,17 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import ch.globaz.common.codesystem.CodeSystemeResolver;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.common.domaine.DateRente;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Pays;
@@ -41,7 +44,7 @@ public class DifferenceFinderTest {
         mutation.setPrenom("prenom");
         mutation.setNewNss("756.123");
         mutation.setDateDece(new Date());
-        mutation.setDateNaissance(new Date());
+        mutation.setDateNaissance(new DateRente());
         mutation.setSexe(Sexe.FEMME);
 
         mutation.setEtatCivil(EtatCivil.CELIBATAIRE);
@@ -61,13 +64,14 @@ public class DifferenceFinderTest {
         DifferenceFinder differenceFinder = new DifferenceFinder(locale, codeSystemeResolver);
         Mutation mutation = new Mutation();
         mutation.setEtatCivil(EtatCivil.CELIBATAIRE);
-        mutation.setDateChangementEtatCivil(new Date());
+        mutation.setDateChangementEtatCivil(new DateRente());
         InfoTiers infoTiers = new InfoTiers();
+        when(codeSystemeResolver.resovleTraduction(any(Integer.class))).thenReturn(EtatCivil.CELIBATAIRE.toString());
+
         List<DifferenceTrouvee> list = differenceFinder.findDifference(mutation, infoTiers);
         assertThat(list).hasSize(1);
         assertThat(list.get(0).getDifference()).isEqualTo(TypeDifference.ETAT_CIVIL);
         assertThat(list.get(0).getDateChangement()).isEqualTo(mutation.getDateChangementEtatCivil());
-        when(codeSystemeResolver.resovleTraduction(any(Integer.class))).thenReturn(EtatCivil.CELIBATAIRE.toString());
         assertThat(list.get(0).getValeurNouvelle()).isEqualTo(mutation.getEtatCivil().toString());
         assertThat(list.get(0).getValeurActuelle()).isNull();
     }
@@ -77,7 +81,7 @@ public class DifferenceFinderTest {
         DifferenceFinder differenceFinder = new DifferenceFinder(locale, codeSystemeResolver);
         Mutation mutation = new Mutation();
         mutation.setDateDece(new Date("10.10.2015"));
-        mutation.setDateChangementEtatCivil(new Date());
+        mutation.setDateChangementEtatCivil(new DateRente());
         InfoTiers infoTiers = new InfoTiers();
         infoTiers.setDateDeces(null);
         List<DifferenceTrouvee> list = differenceFinder.findDifference(mutation, infoTiers);
@@ -91,8 +95,8 @@ public class DifferenceFinderTest {
     public void testFindDifferenceDateNaissance() throws Exception {
         DifferenceFinder differenceFinder = new DifferenceFinder(locale, codeSystemeResolver);
         Mutation mutation = new Mutation();
-        mutation.setDateNaissance(new Date("10.10.2015"));
-        mutation.setDateChangementEtatCivil(new Date());
+        mutation.setDateNaissance(new DateRente("10.10.2015"));
+        mutation.setDateChangementEtatCivil(new DateRente());
         InfoTiers infoTiers = new InfoTiers();
         infoTiers.setDateNaissance(null);
         List<DifferenceTrouvee> list = differenceFinder.findDifference(mutation, infoTiers);
@@ -177,11 +181,11 @@ public class DifferenceFinderTest {
         Mutation mutation = new Mutation();
         InfoTiers infoTiers = new InfoTiers();
         assertThat(DifferenceFinder.isDateNaissanceSame(mutation, infoTiers)).isTrue();
-        mutation.setDateNaissance(new Date("10.10.2000"));
+        mutation.setDateNaissance(new DateRente("10.10.2000"));
         assertThat(DifferenceFinder.isDateNaissanceSame(mutation, infoTiers)).isFalse();
-        infoTiers.setDateNaissance(new Date("10.10.2000"));
+        infoTiers.setDateNaissance(new DateRente("10.10.2000"));
         assertThat(DifferenceFinder.isDateNaissanceSame(mutation, infoTiers)).isTrue();
-        infoTiers.setDateNaissance(new Date("10.11.2000"));
+        infoTiers.setDateNaissance(new DateRente("10.11.2000"));
         assertThat(DifferenceFinder.isDateNaissanceSame(mutation, infoTiers)).isFalse();
     }
 
@@ -190,11 +194,13 @@ public class DifferenceFinderTest {
         Mutation mutation = new Mutation();
         InfoTiers infoTiers = new InfoTiers();
         assertThat(DifferenceFinder.isDateDecesSame(mutation, infoTiers)).isTrue();
-        mutation.setDateDece(new Date("10.10.2000"));
+        mutation.setDateDece(new DateRente("10.10.2000"));
         assertThat(DifferenceFinder.isDateDecesSame(mutation, infoTiers)).isFalse();
-        infoTiers.setDateDeces(new Date("10.10.2000"));
+        infoTiers.setDateDeces(new DateRente("10.10.2000"));
         assertThat(DifferenceFinder.isDateDecesSame(mutation, infoTiers)).isTrue();
-        infoTiers.setDateDeces(new Date("10.11.2000"));
+        infoTiers.setDateDeces(new DateRente("10.11.2000"));
+        assertThat(DifferenceFinder.isDateDecesSame(mutation, infoTiers)).isFalse();
+        mutation.setDateDece(null);
         assertThat(DifferenceFinder.isDateDecesSame(mutation, infoTiers)).isFalse();
     }
 
@@ -215,7 +221,7 @@ public class DifferenceFinderTest {
     public void testFindAllDifference() throws Exception {
 
         List<Mutation> mutations = new ArrayList<Mutation>();
-        List<InfoTiers> infosTiers = new ArrayList<InfoTiers>();
+        Set<InfoTiers> infosTiers = new HashSet<InfoTiers>();
         for (int i = 0; i < 2; i++) {
 
             Pays pays = new Pays();
@@ -225,12 +231,14 @@ public class DifferenceFinderTest {
             mutation.setNom("Nom_mutation");
             mutation.setPrenom("Prenom_mutation");
             mutation.setNss(i + "");
+            mutation.setNewNss(i + "");
             mutation.setDateDece(new Date());
-            mutation.setDateNaissance(new Date());
-            mutation.setDateChangementEtatCivil(new Date());
+            mutation.setDateNaissance(new DateRente());
+            mutation.setDateChangementEtatCivil(new DateRente());
             mutation.setSexe(Sexe.FEMME);
             mutation.setEtatCivil(EtatCivil.CELIBATAIRE);
             mutation.setCodeNationalite("4545");
+            mutation.setTypeMutation(TypeMutation.QUOTIDIEN);
             mutations.add(mutation);
             mutation.setPays(pays);
             InfoTiers tiers = new InfoTiers();
@@ -240,7 +248,9 @@ public class DifferenceFinderTest {
             infosTiers.add(tiers);
         }
         DifferenceFinder differenceFinder = new DifferenceFinder(locale, codeSystemeResolver);
-        List<DifferenceTrouvee> diffs = differenceFinder.findAllDifference(mutations, infosTiers);
+        Set<InfoTiers> infosTiersNssInvalide = new HashSet<InfoTiers>();
+        List<DifferenceTrouvee> diffs = differenceFinder
+                .findAllDifference(mutations, infosTiers, infosTiersNssInvalide);
         assertThat(diffs).hasSize(14);
     }
 }

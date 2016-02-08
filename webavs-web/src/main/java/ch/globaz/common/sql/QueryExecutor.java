@@ -10,7 +10,6 @@ import globaz.jade.persistence.mapping.JadeModelMappingProvider;
 import globaz.jade.persistence.sql.JadeSqlConstantes;
 import globaz.jade.persistence.util.JadePersistenceUtil;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -261,16 +260,10 @@ public class QueryExecutor {
                                     Method method = class1.getMethod(methodName, field.getType());
                                     Object val = converterDb.convert(value, field.getName(), alias);
                                     method.invoke(newObjet, val);
-                                } catch (SecurityException e) {
-                                    throw new CommonTechnicalException("Error durring introspection", e);
-                                } catch (NoSuchMethodException e) {
-                                    throw new CommonTechnicalException("Error durring introspection", e);
-                                } catch (IllegalArgumentException e) {
-                                    throw new CommonTechnicalException("Error durring introspection", e);
-                                } catch (IllegalAccessException e) {
-                                    throw new CommonTechnicalException("Error durring introspection", e);
-                                } catch (InvocationTargetException e) {
-                                    throw new CommonTechnicalException("Error durring introspection", e);
+                                } catch (Exception e) {
+                                    throw new CommonTechnicalException("Error durring introspection, value:" + value
+                                            + ", field.getName():" + field.getName() + ", alias:" + alias
+                                            + ", converterDb:" + converterDb, e);
                                 }
                             } else if (String.class.isAssignableFrom(field.getType())) {
                                 try {

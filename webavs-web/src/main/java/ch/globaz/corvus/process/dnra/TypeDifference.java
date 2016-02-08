@@ -8,5 +8,6 @@ public enum TypeDifference {
     DATE_NAISSANCE,
     DATE_DECES,
     SEXE,
-    NATIONALITE
+    NATIONALITE,
+    NSS_INVALIDE
 }

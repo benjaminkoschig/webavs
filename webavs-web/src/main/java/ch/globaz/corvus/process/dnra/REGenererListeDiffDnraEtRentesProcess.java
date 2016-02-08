@@ -35,18 +35,21 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import ch.globaz.common.codesystem.CodeSystemeResolver;
+import ch.globaz.common.listoutput.SimpleOutputListBuiliderJade;
 import ch.globaz.common.process.ProcessMailUtils;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.sql.ConverterDb;
 import ch.globaz.common.sql.QueryExecutor;
-import ch.globaz.common.sql.converters.DateConverter;
+import ch.globaz.common.sql.converters.DateRenteConverter;
 import ch.globaz.common.sql.converters.EtatCivilConverter;
 import ch.globaz.common.sql.converters.PaysConverter;
 import ch.globaz.common.sql.converters.SexeConverter;
@@ -59,7 +62,6 @@ import ch.globaz.simpleoutputlist.annotation.style.Align;
 import ch.globaz.simpleoutputlist.configuration.Configuration;
 import ch.globaz.simpleoutputlist.configuration.HeaderFooter;
 import ch.globaz.simpleoutputlist.outimpl.Configurations;
-import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 import com.sun.star.lang.IllegalArgumentException;
 
 /**
@@ -114,18 +116,27 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                 CodeSystemeResolver codeSystemeResolver = new CodeSystemeResolver(getSession().getIdLangueISO());
                 codeSystemeResolver.addAllAndSerach(Sexe.getCodeFamille(), EtatCivil.getCodeFamille());
 
-                // recherche des infos sur les tiers relatives aux mutations
-                List<InfoTiers> listInfosTiers = findInfosTiers(mutationsContainer.extractNssActuel(),
+                // recherche des infos sur les tiers relatives aux mutations qui on un nss actif et inactivé
+                Set<InfoTiers> listInfosTiersNssActifInactif = findInfosTiers(
+                        mutationsContainer.extractNssActifEtInactif(), paysLoader.getMapPaysByCodeCentrale());
+                // recherche des infos sur les tiers relatives aux mutations qui on un nss invalidé
+                Set<InfoTiers> listInfosTiersNssInvalide = findInfosTiers(mutationsContainer.extractNssInvalide(),
                         paysLoader.getMapPaysByCodeCentrale());
 
+                // // recherche des infos sur les tiers relatives aux mutations qui on un nss actif
+                // List<InfoTiers> listInfosTiersNssDesactive = findInfosTiers(mutationsContainer.extractNssActif(),
+                // paysLoader.getMapPaysByCodeCentrale());
+
                 // filtrer les infoTiers
-                supprimerInfoTiersNonDesires(listInfosTiers);
+                supprimerInfoTiersNonDesires(listInfosTiersNssActifInactif);
+                supprimerInfoTiersNonDesires(listInfosTiersNssInvalide);
 
                 // identification des différences entre les mutations annoncées et les données DB
                 DifferenceFinder differenceFinder = new DifferenceFinder(new Locale(getSession().getIdLangueISO()),
                         codeSystemeResolver);
+
                 List<DifferenceTrouvee> differenceTrouvees = differenceFinder.findAllDifference(
-                        mutationsContainer.getList(), listInfosTiers);
+                        mutationsContainer.getList(), listInfosTiersNssActifInactif, listInfosTiersNssInvalide);
 
                 // génération de la liste au format xls
                 String generatedXlsFilePath = generateXls(differenceTrouvees, getSession(), fichierMutation.getName());
@@ -156,7 +167,7 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
      * @param listInfosTiers
      * @throws Exception
      */
-    private void supprimerInfoTiersNonDesires(List<InfoTiers> listInfosTiers) throws Exception {
+    private void supprimerInfoTiersNonDesires(Set<InfoTiers> listInfosTiers) throws Exception {
         Iterator<InfoTiers> infoTiersIterator = listInfosTiers.iterator();
         while (infoTiersIterator.hasNext()) {
             InfoTiers infoTiers = infoTiersIterator.next();
@@ -192,12 +203,12 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
      * @param listNss
      * @return
      */
-    private List<InfoTiers> findInfosTiers(List<String> listNss, Map<String, Pays> mapPaysByCodeCentral) {
+    private Set<InfoTiers> findInfosTiers(Set<String> listNss, Map<String, Pays> mapPaysByCodeCentral) {
         System.out.println("nbNss à chercher dans webtiers : " + listNss.size());
         List<InfoTiers> listInfosTiers = new ArrayList<InfoTiers>();
         List<List<String>> splittedList = QueryExecutor.split(listNss, 2000);
 
-        Set<ConverterDb<?>> converters = QueryExecutor.newSetConverter(new SexeConverter(), new DateConverter(),
+        Set<ConverterDb<?>> converters = QueryExecutor.newSetConverter(new SexeConverter(), new DateRenteConverter(),
                 new PaysConverter(mapPaysByCodeCentral), new EtatCivilConverter());
         for (List<String> list : splittedList) {
             StringBuilder sql = new StringBuilder();
@@ -211,7 +222,10 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
             listInfosTiers.addAll(QueryExecutor.execute(sql.toString(), InfoTiers.class, getSession(), converters));
         }
         System.out.println("nbNss trouvés dans webtiers : " + listInfosTiers.size());
-        return listInfosTiers;
+        final Set<InfoTiers> infosTiers = new HashSet<InfoTiers>();
+        infosTiers.addAll(listInfosTiers);
+
+        return infosTiers;
     }
 
     /**
@@ -357,9 +371,17 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
         headerFooter.setRightTop(session.getLabel("LIST_CORVUS_DIFFERENCE_TROUVEE_RIGHT_TOP"));
         headerFooter.setLeftTop(nomCaisse);
         headerFooter.setLeftBottom(" - " + session.getUserName());
-        File file = SimpleOutputListBuilder.newInstance().configure(configuration)
-                .local(new Locale(session.getIdLangueISO())).addList(list).classElementList(DifferenceTrouvee.class)
-                .addTitle(title, Align.LEFT).asXls().outputName("mutationList").build();
+
+        Collections.sort(list, new Comparator<DifferenceTrouvee>() {
+            @Override
+            public int compare(DifferenceTrouvee o1, DifferenceTrouvee o2) {
+                return o1.getNss().compareTo(o2.getNss());
+            }
+        });
+
+        File file = SimpleOutputListBuiliderJade.newInstance().outputNameAndAddPath("mutationList")
+                .configure(configuration).addList(list).classElementList(DifferenceTrouvee.class)
+                .addTitle(title, Align.LEFT).asXls().build();
         return file.getAbsolutePath();
     }
 

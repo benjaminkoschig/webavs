@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.common.domaine.DateRente;
 import ch.globaz.pyxis.domaine.Pays;
 import ch.globaz.pyxis.domaine.Sexe;
 import ch.globaz.pyxis.loader.PaysLoader;
@@ -26,17 +27,17 @@ public class MutationParserTest {
                 .parse("7560050911013;7560050911013;1;1;\"NOM,PRENOM\";1;03021977;100;965000;10102016;5;3;05052001");
         assertThat(mutation.getNss()).isEqualTo("756.0050.9110.13");
         assertThat(mutation.getNewNss()).isEqualTo("756.0050.9110.13");
-        assertThat(mutation.getCodeMutation()).isEqualTo("1");
+        assertThat(mutation.getTypeMutation()).isEqualTo(TypeMutation.QUOTIDIEN);
         assertThat(mutation.isValide()).isTrue();
         assertThat(mutation.getNom()).isEqualTo("NOM");
         assertThat(mutation.getPrenom()).isEqualTo("PRENOM");
         assertThat(mutation.getSexe()).isEqualTo(Sexe.HOMME);
-        assertThat(mutation.getDateNaissance()).isEqualTo(new Date("03.02.1977"));
+        assertThat(mutation.getDateNaissance()).isEqualTo(new DateRente("03.02.1977"));
         assertThat(mutation.getCodeNationalite()).isEqualTo("100");
-        assertThat(mutation.getDateDece()).isEqualTo(new Date("10.10.2016"));
+        assertThat(mutation.getDateDece()).isEqualTo(new DateRente("10.10.2016"));
         // assertThat(mutation.getCodeEtatCivil()).isEqualTo("5");
         assertThat(mutation.getRaisonDuPartenariatDissous()).isEqualTo("3");
-        assertThat(mutation.getDateChangementEtatCivil()).isEqualTo(new Date("05.05.2001"));
+        assertThat(mutation.getDateChangementEtatCivil()).isEqualTo(new DateRente("05.05.2001"));
     }
 
     @Test
@@ -46,17 +47,17 @@ public class MutationParserTest {
                 .parse("7560050911013;7560050911013;1;1;\",\";1;03021977;100;965000;10102016;5;3;05052001");
         assertThat(mutation.getNss()).isEqualTo("756.0050.9110.13");
         assertThat(mutation.getNewNss()).isEqualTo("756.0050.9110.13");
-        assertThat(mutation.getCodeMutation()).isEqualTo("1");
+        assertThat(mutation.getTypeMutation()).isEqualTo(TypeMutation.QUOTIDIEN);
         assertThat(mutation.isValide()).isTrue();
         assertThat(mutation.getNom()).isNull();
         assertThat(mutation.getPrenom()).isNull();
         assertThat(mutation.getSexe()).isEqualTo(Sexe.HOMME);
-        assertThat(mutation.getDateNaissance()).isEqualTo(new Date("03.02.1977"));
+        assertThat(mutation.getDateNaissance()).isEqualTo(new DateRente("03.02.1977"));
         assertThat(mutation.getCodeNationalite()).isEqualTo("100");
         assertThat(mutation.getDateDece()).isEqualTo(new Date("10.10.2016"));
         // assertThat(mutation.getCodeEtatCivil()).isEqualTo("5");
         assertThat(mutation.getRaisonDuPartenariatDissous()).isEqualTo("3");
-        assertThat(mutation.getDateChangementEtatCivil()).isEqualTo(new Date("05.05.2001"));
+        assertThat(mutation.getDateChangementEtatCivil()).isEqualTo(new DateRente("05.05.2001"));
     }
 
     @Test

@@ -13,7 +13,7 @@ public enum EtatCivil {
     LPART_DISSOUT(515008),
     LPART_DIS_DECES(515009),
     LPART_SEP_FAIT(515010),
-    UNDEFINDED(0);
+    UNDEFINED(0);
 
     private Integer codeSystem;
 
@@ -23,6 +23,10 @@ public enum EtatCivil {
 
     public Integer getCodeSysteme() {
         return codeSystem;
+    }
+
+    public boolean isUndefined() {
+        return UNDEFINED.equals(this);
     }
 
     /**

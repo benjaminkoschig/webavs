@@ -26,7 +26,7 @@ class MutationParser {
         CsvLineParser csvLineParser = new CsvLineParser(line);
         mutation.setNss(csvLineParser.nextElementToNssFormate());
         mutation.setNewNss(csvLineParser.nextElementToNssFormate());
-        mutation.setCodeMutation(csvLineParser.nextElementTrim());
+        mutation.setTypeMutation(TypeMutation.parse(csvLineParser.nextElementTrim()));
         mutation.setValide(VALIDE.equals(csvLineParser.nextElementTrim()));
         String nomPrenom = csvLineParser.nextElementTrim();
         if (!nomPrenom.isEmpty()) {
@@ -46,14 +46,14 @@ class MutationParser {
         } else {
             mutation.setSexe(Sexe.UNDEFINDED);
         }
-        mutation.setDateNaissance(csvLineParser.nextElementToDate("dateNaissance"));
+        mutation.setDateNaissance(csvLineParser.nextElementToDateRente("dateNaissance"));
         mutation.setCodeNationalite(csvLineParser.nextElementTrim());
 
         mutation.setSourceDonnees(csvLineParser.nextElementTrim());
-        mutation.setDateDece(csvLineParser.nextElementToDate("dateDece"));
+        mutation.setDateDece(csvLineParser.nextElementToDateRente("dateDece"));
         mutation.setEtatCivil(resovleEtatCivil(csvLineParser.nextElementTrim()));
         mutation.setRaisonDuPartenariatDissous(csvLineParser.nextElementTrim());
-        mutation.setDateChangementEtatCivil(csvLineParser.nextElementToDate("dateChangementEtatCivil"));
+        mutation.setDateChangementEtatCivil(csvLineParser.nextElementToDateRente("dateChangementEtatCivil"));
         return mutation;
     }
 
@@ -62,26 +62,20 @@ class MutationParser {
             if ("1".equals(etatCivil)) {
                 return EtatCivil.CELIBATAIRE;
             } else if ("2".equals(etatCivil)) {
-                return EtatCivil.CELIBATAIRE;
+                return EtatCivil.MARIE;
             } else if ("3".equals(etatCivil)) {
-                return EtatCivil.CELIBATAIRE;
+                return EtatCivil.VEUF;
             } else if ("4".equals(etatCivil)) {
-                return EtatCivil.CELIBATAIRE;
+                return EtatCivil.DIVORCE;
             } else if ("5".equals(etatCivil)) {
-                return EtatCivil.CELIBATAIRE;
+                return EtatCivil.CELIBATAIRE; // A défaut de non marié(e);
             } else if ("6".equals(etatCivil)) {
-                return EtatCivil.CELIBATAIRE;
+                return EtatCivil.LPART;
             } else if ("7".equals(etatCivil)) {
-                return EtatCivil.CELIBATAIRE;
-            } else if ("8".equals(etatCivil)) {
-                return EtatCivil.CELIBATAIRE;
-            } else if ("9".equals(etatCivil)) {
-                return EtatCivil.CELIBATAIRE;
-            } else if ("10".equals(etatCivil)) {
-                return EtatCivil.CELIBATAIRE;
+                return EtatCivil.LPART_DISSOUT;
             }
         }
-        return EtatCivil.UNDEFINDED;
+        return EtatCivil.UNDEFINED;
     }
 
     public static MutationsContainer parsFile(String pahtFile, PaysLoader paysLoader) {
@@ -92,24 +86,17 @@ class MutationParser {
             LOG.debug("Reade file {}", pahtFile);
             fileBuffered = new BufferedReader(new FileReader(pahtFile), 81920);
             String line = "";
-            int nbFiltred = 0;
             while ((line = fileBuffered.readLine()) != null) {
                 if (!line.trim().isEmpty()) {
                     try {
                         Mutation mutation = parse(line);
-                        if (mutation.isValide()) {
-                            list.add(mutation);
-                        } else {
-                            nbFiltred++;
-                        }
-
+                        list.add(mutation);
                     } catch (Exception e) {
                         errors.put(e, line);
                     }
                 }
             }
             LOG.debug("Nb mutation found {}", list.size());
-            LOG.debug("Nb mutation filtred {}", nbFiltred);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {

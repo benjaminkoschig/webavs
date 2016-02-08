@@ -1,6 +1,7 @@
 package ch.globaz.corvus.process.dnra;
 
 import ch.globaz.common.domaine.Date;
+import ch.globaz.common.domaine.DateRente;
 import ch.globaz.pyxis.domaine.EtatCivil;
 import ch.globaz.pyxis.domaine.Pays;
 import ch.globaz.pyxis.domaine.Sexe;
@@ -8,19 +9,36 @@ import ch.globaz.pyxis.domaine.Sexe;
 class Mutation {
     private String nss = null;
     private String newNss = null;
-    private String codeMutation = null;
     private boolean isValide = false;
     private String nom = null;
     private String prenom = null;
     private Sexe sexe = null;
-    private Date dateNaissance = null;
+    private DateRente dateNaissance = null;
     private String codeNationalite = null;
     private String sourceDonnees = "";
     private Date dateDece;
     private EtatCivil etatCivil;
     private String raisonDuPartenariatDissous;
-    private Date dateChangementEtatCivil;
+    private DateRente dateChangementEtatCivil;
     private Pays pays;
+    private TypeMutation typeMutation;
+    private String nssInactive;
+
+    public TypeMutation getTypeMutation() {
+        return typeMutation;
+    }
+
+    public String getNssInactive() {
+        return nssInactive;
+    }
+
+    public void setNssInactive(String nssInactive) {
+        this.nssInactive = nssInactive;
+    }
+
+    public void setTypeMutation(TypeMutation typeMutation) {
+        this.typeMutation = typeMutation;
+    }
 
     public EtatCivil getEtatCivil() {
         return etatCivil;
@@ -70,14 +88,6 @@ class Mutation {
         this.newNss = newNss;
     }
 
-    public String getCodeMutation() {
-        return codeMutation;
-    }
-
-    public void setCodeMutation(String codeMutation) {
-        this.codeMutation = codeMutation;
-    }
-
     public boolean isValide() {
         return isValide;
     }
@@ -94,11 +104,11 @@ class Mutation {
         this.sexe = sexe;
     }
 
-    public Date getDateNaissance() {
+    public DateRente getDateNaissance() {
         return dateNaissance;
     }
 
-    public void setDateNaissance(Date dateNaissance) {
+    public void setDateNaissance(DateRente dateNaissance) {
         this.dateNaissance = dateNaissance;
     }
 
@@ -134,11 +144,22 @@ class Mutation {
         this.raisonDuPartenariatDissous = raisonDuPartenariatDissous;
     }
 
-    public Date getDateChangementEtatCivil() {
+    public DateRente getDateChangementEtatCivil() {
         return dateChangementEtatCivil;
     }
 
-    public void setDateChangementEtatCivil(Date dateChangementEtatCivil) {
+    public void setDateChangementEtatCivil(DateRente dateChangementEtatCivil) {
         this.dateChangementEtatCivil = dateChangementEtatCivil;
     }
+
+    @Override
+    public String toString() {
+        return "Mutation [nss=" + nss + ", newNss=" + newNss + ", isValide=" + isValide + ", nom=" + nom + ", prenom="
+                + prenom + ", sexe=" + sexe + ", dateNaissance=" + dateNaissance + ", codeNationalite="
+                + codeNationalite + ", sourceDonnees=" + sourceDonnees + ", dateDece=" + dateDece + ", etatCivil="
+                + etatCivil + ", raisonDuPartenariatDissous=" + raisonDuPartenariatDissous
+                + ", dateChangementEtatCivil=" + dateChangementEtatCivil + ", pays=" + pays + ", typeMutation="
+                + typeMutation + ", nssInactive=" + nssInactive + "]";
+    }
+
 }

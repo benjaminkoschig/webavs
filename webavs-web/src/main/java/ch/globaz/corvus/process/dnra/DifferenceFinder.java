@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import ch.globaz.common.codesystem.CodeSystemeResolver;
 
 class DifferenceFinder {
@@ -17,38 +18,44 @@ class DifferenceFinder {
         this.codeSystemeResolver = codeSystemeResolver;
     }
 
-    public List<DifferenceTrouvee> findAllDifference(List<Mutation> mutations, List<InfoTiers> infosTiers) {
+    public List<DifferenceTrouvee> findAllDifference(List<Mutation> mutations, Set<InfoTiers> infosTiers,
+            Set<InfoTiers> infosTiersInvalide) {
+
+        final Map<String, InfoTiers> map = new HashMap<String, InfoTiers>();
         final List<DifferenceTrouvee> differences = new ArrayList<DifferenceTrouvee>();
-        final Map<String, List<Mutation>> map = new HashMap<String, List<Mutation>>();
-        for (Mutation mutation : mutations) {
-            if (!map.containsKey(mutation.getNss())) {
-                map.put(mutation.getNss(), new ArrayList<Mutation>());
-            }
-            map.get(mutation.getNss()).add(mutation);
+
+        for (InfoTiers tiers : infosTiersInvalide) {
+            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.NSS_INVALIDE, tiers, "", "");
+            differences.add(differenceTrouvee);
         }
 
-        for (InfoTiers tiers : infosTiers) {
-            final List<Mutation> listMutations = map.get(tiers.getNss());
-            if (listMutations != null) {
-                for (final Mutation mutation : listMutations) {
-                    differences.addAll(findDifference(mutation, tiers));
-                }
-            } else {
-                throw new RuntimeException("Any mutation found for this tiers ! " + tiers.getNss());
+        for (InfoTiers infoTiers : infosTiers) {
+            map.put(infoTiers.getNss(), infoTiers);
+        }
+        for (Mutation mutation : mutations) {
+            InfoTiers tiers = map.get(mutation.getNewNss());
+            // si on a pas trouvé par le nss on tante de regarde si le nss a été inactivé
+            if (tiers == null) {
+                tiers = map.get(mutation.getNssInactive());
+            }
+            // On ne trait pas que les mutation pour la caisse;
+            if (tiers != null) {
+                differences.addAll(findDifference(mutation, tiers));
             }
         }
+
         return differences;
     }
 
     List<DifferenceTrouvee> findDifference(Mutation mutation, InfoTiers infoTiers) {
         List<DifferenceTrouvee> list = new ArrayList<DifferenceTrouvee>();
         if (!isNomSame(mutation, infoTiers)) {
-            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.NOM, mutation, infoTiers,
-                    infoTiers.getNom(), mutation.getNom());
+            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.NOM, infoTiers, infoTiers.getNom(),
+                    mutation.getNom());
             list.add(differenceTrouvee);
         }
         if (!isPrenomSame(mutation, infoTiers)) {
-            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.PRENOM, mutation, infoTiers,
+            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.PRENOM, infoTiers,
                     infoTiers.getPrenom(), mutation.getPrenom());
             list.add(differenceTrouvee);
         }
@@ -62,8 +69,8 @@ class DifferenceFinder {
                 dateMutation = mutation.getDateDece().getSwissValue();
             }
 
-            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.DATE_DECES, mutation, infoTiers,
-                    dateTiers, dateMutation);
+            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.DATE_DECES, infoTiers, dateTiers,
+                    dateMutation);
             list.add(differenceTrouvee);
         }
         if (!isDateNaissanceSame(mutation, infoTiers)) {
@@ -75,8 +82,8 @@ class DifferenceFinder {
             if (mutation.getDateNaissance() != null) {
                 dateMutation = mutation.getDateNaissance().getSwissValue();
             }
-            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.DATE_NAISSANCE, mutation, infoTiers,
-                    dateTiers, dateMutation);
+            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.DATE_NAISSANCE, infoTiers, dateTiers,
+                    dateMutation);
             list.add(differenceTrouvee);
         }
         if (!isEtatCivilSame(mutation, infoTiers)) {
@@ -89,8 +96,8 @@ class DifferenceFinder {
                 etatCivilMutation = codeSystemeResolver.resovleTraduction(mutation.getEtatCivil().getCodeSysteme());
             }
 
-            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.ETAT_CIVIL, mutation, infoTiers,
-                    etatCivilTiers, etatCivilMutation);
+            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.ETAT_CIVIL, infoTiers, etatCivilTiers,
+                    etatCivilMutation);
             differenceTrouvee.setDateChangement(mutation.getDateChangementEtatCivil());
             list.add(differenceTrouvee);
         }
@@ -106,29 +113,29 @@ class DifferenceFinder {
             if (infoTiers.getSexe() != null) {
                 sexeTiers = codeSystemeResolver.resovleTraduction(infoTiers.getSexe().getCodeSysteme());
             }
-            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.SEXE, mutation, infoTiers, sexeTiers,
-                    sexeMutation);
+            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.SEXE, infoTiers, sexeTiers, sexeMutation);
             list.add(differenceTrouvee);
         }
         if (!isNssSame(mutation, infoTiers)) {
-            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.NSS, mutation, infoTiers,
-                    infoTiers.getNss(), mutation.getNewNss());
+            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.NSS, infoTiers, infoTiers.getNss(),
+                    mutation.getNewNss());
             list.add(differenceTrouvee);
         }
 
         if (!isNationaliteSame(mutation, infoTiers)) {
-            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.NATIONALITE, mutation, infoTiers,
-                    infoTiers.getPays().getTraduction(locale), mutation.getPays().getTraduction(locale));
+            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.NATIONALITE, infoTiers, infoTiers
+                    .getPays().getTraduction(locale), mutation.getPays().getTraduction(locale));
             list.add(differenceTrouvee);
         }
         return list;
     }
 
-    private DifferenceTrouvee newDifference(TypeDifference difference, Mutation mutation, InfoTiers infoTiers,
-            String actuelle, String nouveau) {
+    private DifferenceTrouvee newDifference(TypeDifference difference, InfoTiers infoTiers, String actuelle,
+            String nouveau) {
         DifferenceTrouvee differenceTrouvee = new DifferenceTrouvee();
         differenceTrouvee.setDateNaissance(infoTiers.getDateNaissance());
         differenceTrouvee.setNom(infoTiers.getNom());
+        differenceTrouvee.setPrenom(infoTiers.getPrenom());
         differenceTrouvee.setNss(infoTiers.getNss());
 
         differenceTrouvee.setDifference(difference);
@@ -173,14 +180,17 @@ class DifferenceFinder {
     }
 
     static boolean isDateDecesSame(Mutation mutation, InfoTiers infoTiers) {
+
         if (mutation.getDateDece() != null) {
             return mutation.getDateDece().equals(infoTiers.getDateDeces());
+        } else if (mutation.getDateDece() == null && infoTiers.getDateDeces() != null) {
+            return false;
         }
         return true;
     }
 
     static boolean isEtatCivilSame(Mutation mutation, InfoTiers infoTiers) {
-        if (mutation.getEtatCivil() != null) {
+        if (!mutation.getEtatCivil().isUndefined()) {
             return mutation.getEtatCivil().equals(infoTiers.getEtatCivil());
         }
         return true;

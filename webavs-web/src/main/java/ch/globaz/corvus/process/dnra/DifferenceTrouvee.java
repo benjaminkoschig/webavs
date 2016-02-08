@@ -8,7 +8,7 @@ import ch.globaz.simpleoutputlist.annotation.Column;
 import ch.globaz.simpleoutputlist.annotation.ColumnValueConverter;
 import ch.globaz.simpleoutputlist.annotation.Translater;
 
-@ColumnValueConverter({ DateSwissFormatConverter.class, PaysConverter.class })
+@ColumnValueConverter({ DateSwissFormatConverter.class, PaysConverter.class, TypeDifferenceConverter.class })
 @Translater(value = LabelTranslater.class, identifier = "LIST_CORVUS_DIFFERENCE_TROUVEE")
 public class DifferenceTrouvee {
     private String nss;
@@ -45,17 +45,17 @@ public class DifferenceTrouvee {
         return difference;
     }
 
-    @Column(name = "ValeurActuelle", order = 7)
+    @Column(name = "ValeurActuelle", order = 6)
     public String getValeurActuelle() {
         return valeurActuelle;
     }
 
-    @Column(name = "NouvelleValeur", order = 8)
+    @Column(name = "NouvelleValeur", order = 7)
     public String getValeurNouvelle() {
         return valeurNouvelle;
     }
 
-    @Column(name = "DateChangementEtatCivil", order = 9)
+    @Column(name = "DateChangementEtatCivil", order = 8)
     public Date getDateChangement() {
         return dateChangement;
     }

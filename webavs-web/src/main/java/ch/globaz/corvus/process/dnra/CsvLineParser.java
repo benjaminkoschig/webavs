@@ -1,11 +1,10 @@
 package ch.globaz.corvus.process.dnra;
 
 import java.text.MessageFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.common.domaine.DateRente;
 
 class CsvLineParser {
     private final List<String> elements;
@@ -15,8 +14,8 @@ class CsvLineParser {
         elements = Arrays.asList(line.split(";"));
     }
 
-    public Date nextElementToDate(String forField) {
-        return toDate(nextElementTrim(), forField);
+    public DateRente nextElementToDateRente(String forField) {
+        return toDateRente(nextElementTrim(), forField);
     }
 
     public String nextElementTrim() {
@@ -54,17 +53,12 @@ class CsvLineParser {
         return nss;
     }
 
-    private static Date toDate(String date, String forField) {
-        Date dateDate = null;
+    static DateRente toDateRente(String date, String forField) {
+        DateRente dateDate = null;
         if (date != null) {
             date = date.trim();
             if (!date.isEmpty()) {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
-                try {
-                    dateDate = new Date(dateFormat.parse(date));
-                } catch (ParseException e) {
-                    throw new RuntimeException("Unable to pars date for forField : " + forField, e);
-                }
+                dateDate = new DateRente(date, Date.DATE_PATTERN_ddMMyyyy);
             }
         }
         return dateDate;

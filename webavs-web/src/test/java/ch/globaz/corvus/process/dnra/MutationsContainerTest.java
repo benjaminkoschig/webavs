@@ -22,7 +22,9 @@ public class MutationsContainerTest {
         MutationsContainer container = new MutationsContainer(paysLoader);
         Mutation mutation = new Mutation();
         mutation.setNss("756.0000.0000.00");
+        mutation.setTypeMutation(TypeMutation.QUOTIDIEN);
+        mutation.setValide(true);
         container.add(mutation);
-        assertThat(container.extractNssActuel()).hasSize(1);
+        assertThat(container.extractNssActifEtInactif()).hasSize(1);
     }
 }

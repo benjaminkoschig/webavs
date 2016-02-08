@@ -2,21 +2,21 @@ package ch.globaz.corvus.process.dnra;
 
 import static org.fest.assertions.api.Assertions.*;
 import org.junit.Test;
-import ch.globaz.common.domaine.Date;
+import ch.globaz.common.domaine.DateRente;
 
 public class CsvLineParserTest {
 
     @Test
     public void testNextTockenToDateEmptyValue() throws Exception {
         CsvLineParser csvLineParser = new CsvLineParser(" ");
-        assertThat(csvLineParser.nextElementToDate("testField")).isNull();
+        assertThat(csvLineParser.nextElementToDateRente("testField")).isNull();
     }
 
     @Test
     public void testNextTockenToDate() throws Exception {
         CsvLineParser csvLineParser = new CsvLineParser("31122015; ");
-        assertThat(csvLineParser.nextElementToDate("testField")).isEqualTo(new Date("31.12.2015"));
-        assertThat(csvLineParser.nextElementToDate("testField")).isNull();
+        assertThat(csvLineParser.nextElementToDateRente("testField")).isEqualTo(new DateRente("31.12.2015"));
+        assertThat(csvLineParser.nextElementToDateRente("testField")).isNull();
     }
 
     @Test
@@ -52,4 +52,8 @@ public class CsvLineParserTest {
         assertThat(csvLineParser.nextElementToNssFormate()).isEqualTo("756.9849.9840.78");
     }
 
+    // @Test
+    // public void testToDateRente() throws Exception {
+    // assertThat(CsvLineParser.toDateRente("16101900", "").getSwissValue()).isEqualTo("1900.01.16");
+    // }
 }
