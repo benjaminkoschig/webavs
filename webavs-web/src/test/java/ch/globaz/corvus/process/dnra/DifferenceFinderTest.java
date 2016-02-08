@@ -80,8 +80,10 @@ public class DifferenceFinderTest {
     public void testFindDifferenceDateDece() throws Exception {
         DifferenceFinder differenceFinder = new DifferenceFinder(locale, codeSystemeResolver);
         Mutation mutation = new Mutation();
-        mutation.setDateDece(new Date("10.10.2015"));
-        mutation.setDateChangementEtatCivil(new DateRente());
+        mutation.setDateDece(new DateRente("10.10.2015", Date.DATE_PATTERN_SWISS));
+        mutation.setDateChangementEtatCivil(new DateRente("11.12.2000", Date.DATE_PATTERN_SWISS));
+        mutation.setEtatCivil(EtatCivil.UNDEFINED);
+
         InfoTiers infoTiers = new InfoTiers();
         infoTiers.setDateDeces(null);
         List<DifferenceTrouvee> list = differenceFinder.findDifference(mutation, infoTiers);
@@ -95,8 +97,9 @@ public class DifferenceFinderTest {
     public void testFindDifferenceDateNaissance() throws Exception {
         DifferenceFinder differenceFinder = new DifferenceFinder(locale, codeSystemeResolver);
         Mutation mutation = new Mutation();
-        mutation.setDateNaissance(new DateRente("10.10.2015"));
-        mutation.setDateChangementEtatCivil(new DateRente());
+        mutation.setDateNaissance(new DateRente("10.10.2015", Date.DATE_PATTERN_SWISS));
+        mutation.setDateChangementEtatCivil(new DateRente("11.12.2000", Date.DATE_PATTERN_SWISS));
+        mutation.setEtatCivil(EtatCivil.UNDEFINED);
         InfoTiers infoTiers = new InfoTiers();
         infoTiers.setDateNaissance(null);
         List<DifferenceTrouvee> list = differenceFinder.findDifference(mutation, infoTiers);
@@ -181,11 +184,11 @@ public class DifferenceFinderTest {
         Mutation mutation = new Mutation();
         InfoTiers infoTiers = new InfoTiers();
         assertThat(DifferenceFinder.isDateNaissanceSame(mutation, infoTiers)).isTrue();
-        mutation.setDateNaissance(new DateRente("10.10.2000"));
+        mutation.setDateNaissance(new DateRente("10.10.2000", Date.DATE_PATTERN_SWISS));
         assertThat(DifferenceFinder.isDateNaissanceSame(mutation, infoTiers)).isFalse();
-        infoTiers.setDateNaissance(new DateRente("10.10.2000"));
+        infoTiers.setDateNaissance(new DateRente("10.10.2000", Date.DATE_PATTERN_SWISS));
         assertThat(DifferenceFinder.isDateNaissanceSame(mutation, infoTiers)).isTrue();
-        infoTiers.setDateNaissance(new DateRente("10.11.2000"));
+        infoTiers.setDateNaissance(new DateRente("10.11.2000", Date.DATE_PATTERN_SWISS));
         assertThat(DifferenceFinder.isDateNaissanceSame(mutation, infoTiers)).isFalse();
     }
 
@@ -194,11 +197,11 @@ public class DifferenceFinderTest {
         Mutation mutation = new Mutation();
         InfoTiers infoTiers = new InfoTiers();
         assertThat(DifferenceFinder.isDateDecesSame(mutation, infoTiers)).isTrue();
-        mutation.setDateDece(new DateRente("10.10.2000"));
+        mutation.setDateDece(new DateRente("10.10.2000", Date.DATE_PATTERN_SWISS));
         assertThat(DifferenceFinder.isDateDecesSame(mutation, infoTiers)).isFalse();
-        infoTiers.setDateDeces(new DateRente("10.10.2000"));
+        infoTiers.setDateDeces(new DateRente("10.10.2000", Date.DATE_PATTERN_SWISS));
         assertThat(DifferenceFinder.isDateDecesSame(mutation, infoTiers)).isTrue();
-        infoTiers.setDateDeces(new DateRente("10.11.2000"));
+        infoTiers.setDateDeces(new DateRente("10.11.2000", Date.DATE_PATTERN_SWISS));
         assertThat(DifferenceFinder.isDateDecesSame(mutation, infoTiers)).isFalse();
         mutation.setDateDece(null);
         assertThat(DifferenceFinder.isDateDecesSame(mutation, infoTiers)).isFalse();

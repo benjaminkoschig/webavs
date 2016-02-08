@@ -2,6 +2,7 @@ package ch.globaz.corvus.process.dnra;
 
 import static org.fest.assertions.api.Assertions.*;
 import org.junit.Test;
+import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.DateRente;
 
 public class CsvLineParserTest {
@@ -15,7 +16,8 @@ public class CsvLineParserTest {
     @Test
     public void testNextTockenToDate() throws Exception {
         CsvLineParser csvLineParser = new CsvLineParser("31122015; ");
-        assertThat(csvLineParser.nextElementToDateRente("testField")).isEqualTo(new DateRente("31.12.2015"));
+        assertThat(csvLineParser.nextElementToDateRente("testField")).isEqualTo(
+                new DateRente("31.12.2015", Date.DATE_PATTERN_SWISS));
         assertThat(csvLineParser.nextElementToDateRente("testField")).isNull();
     }
 

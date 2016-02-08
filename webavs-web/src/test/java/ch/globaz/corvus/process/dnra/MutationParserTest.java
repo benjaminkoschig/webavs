@@ -32,12 +32,13 @@ public class MutationParserTest {
         assertThat(mutation.getNom()).isEqualTo("NOM");
         assertThat(mutation.getPrenom()).isEqualTo("PRENOM");
         assertThat(mutation.getSexe()).isEqualTo(Sexe.HOMME);
-        assertThat(mutation.getDateNaissance()).isEqualTo(new DateRente("03.02.1977"));
+        assertThat(mutation.getDateNaissance()).isEqualTo(new DateRente("03.02.1977", Date.DATE_PATTERN_SWISS));
         assertThat(mutation.getCodeNationalite()).isEqualTo("100");
-        assertThat(mutation.getDateDece()).isEqualTo(new DateRente("10.10.2016"));
+        assertThat(mutation.getDateDece()).isEqualTo(new DateRente("10.10.2016", Date.DATE_PATTERN_SWISS));
         // assertThat(mutation.getCodeEtatCivil()).isEqualTo("5");
         assertThat(mutation.getRaisonDuPartenariatDissous()).isEqualTo("3");
-        assertThat(mutation.getDateChangementEtatCivil()).isEqualTo(new DateRente("05.05.2001"));
+        assertThat(mutation.getDateChangementEtatCivil()).isEqualTo(
+                new DateRente("05.05.2001", Date.DATE_PATTERN_SWISS));
     }
 
     @Test
@@ -52,12 +53,13 @@ public class MutationParserTest {
         assertThat(mutation.getNom()).isNull();
         assertThat(mutation.getPrenom()).isNull();
         assertThat(mutation.getSexe()).isEqualTo(Sexe.HOMME);
-        assertThat(mutation.getDateNaissance()).isEqualTo(new DateRente("03.02.1977"));
+        assertThat(mutation.getDateNaissance()).isEqualTo(new DateRente("03.02.1977", Date.DATE_PATTERN_SWISS));
         assertThat(mutation.getCodeNationalite()).isEqualTo("100");
         assertThat(mutation.getDateDece()).isEqualTo(new Date("10.10.2016"));
         // assertThat(mutation.getCodeEtatCivil()).isEqualTo("5");
         assertThat(mutation.getRaisonDuPartenariatDissous()).isEqualTo("3");
-        assertThat(mutation.getDateChangementEtatCivil()).isEqualTo(new DateRente("05.05.2001"));
+        assertThat(mutation.getDateChangementEtatCivil()).isEqualTo(
+                new DateRente("05.05.2001", Date.DATE_PATTERN_SWISS));
     }
 
     @Test
