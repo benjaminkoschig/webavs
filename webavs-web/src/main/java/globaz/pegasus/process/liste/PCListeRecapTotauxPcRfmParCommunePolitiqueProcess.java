@@ -10,6 +10,7 @@ import globaz.jade.log.JadeLogger;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.osiris.api.APIEcriture;
 import globaz.pegasus.process.PCAbstractJob;
+import globaz.prestation.enums.CommunePolitique;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import java.io.File;
 import java.io.PrintWriter;
@@ -264,6 +265,9 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
         paramsData.add(genererLe, JACalendar.todayJJsMMsAAAA());
         paramsData.newLigne();
         paramsData.add(periodeConcerne, getDateMonthDebut() + " - " + getDateMonthFin());
+        paramsData.newLigne();
+        paramsData.add(getSession().getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_UTILISATEUR.getKey()),
+                getSession().getUserId());
 
         File file = simpleOut.addTitle(titre, Align.LEFT).addHeaderDetails(paramsData).asXls().outputName(filePath)
                 .build();

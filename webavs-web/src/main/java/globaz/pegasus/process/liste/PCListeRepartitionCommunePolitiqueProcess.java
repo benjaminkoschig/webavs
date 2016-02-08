@@ -10,6 +10,7 @@ import globaz.jade.common.Jade;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.pegasus.process.PCAbstractJob;
+import globaz.prestation.enums.CommunePolitique;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import java.io.File;
 import java.io.PrintWriter;
@@ -53,6 +54,7 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
     private String labelBodyMailOk = "";
     private String labelBodyMailError = "";
     private String labelDescription = "";
+    private String labelUser = "";
 
     @Override
     protected void process() throws Exception {
@@ -108,6 +110,7 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
         }
 
         labelGenereLe = getSession().getLabel("PEGASUS_LISTE_EXCEL_CP_GENERE_LE");
+        labelUser = getSession().getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_UTILISATEUR.getKey());
     }
 
     private Map<String, List<BeneficiairePCCommunePolitiquePojo>> regroupByCommunePolitique(
@@ -171,6 +174,8 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
 
         Details paramsData = new Details();
         paramsData.add(labelGenereLe, JACalendar.todayJJsMMsAAAA());
+        paramsData.newLigne();
+        paramsData.add(labelUser, getSession().getUserId());
 
         Iterator<List<BeneficiairePCCommunePolitiquePojo>> ite = mapByCommunPolitique.values().iterator();
         while (ite.hasNext()) {
