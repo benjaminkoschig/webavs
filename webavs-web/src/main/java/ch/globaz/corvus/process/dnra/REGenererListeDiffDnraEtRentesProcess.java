@@ -104,7 +104,7 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
 
             // traitement de chaque fichier et génération de la liste
             for (File fichierMutation : fichiersMutationsATraiterList) {
-                System.out.println("téléchargement du fichier : " + fichierMutation.getName() + " ---->"
+                JadeLogger.info(getName(), "Traitement du fichier : " + fichierMutation.getName() + " "
                         + fichierMutation.getAbsolutePath());
 
                 // parsing et mapping dans la structure d'objet
@@ -116,16 +116,12 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                 CodeSystemeResolver codeSystemeResolver = new CodeSystemeResolver(getSession().getIdLangueISO());
                 codeSystemeResolver.addAllAndSerach(Sexe.getCodeFamille(), EtatCivil.getCodeFamille());
 
-                // recherche des infos sur les tiers relatives aux mutations qui on un nss actif et inactivé
+                // recherche des infos sur les tiers relatives aux mutations qui ont un nss actif ou inactivé
                 Set<InfoTiers> listInfosTiersNssActifInactif = findInfosTiers(
                         mutationsContainer.extractNssActifEtInactif(), paysLoader.getMapPaysByCodeCentrale());
                 // recherche des infos sur les tiers relatives aux mutations qui on un nss invalidé
                 Set<InfoTiers> listInfosTiersNssInvalide = findInfosTiers(mutationsContainer.extractNssInvalide(),
                         paysLoader.getMapPaysByCodeCentrale());
-
-                // // recherche des infos sur les tiers relatives aux mutations qui on un nss actif
-                // List<InfoTiers> listInfosTiersNssDesactive = findInfosTiers(mutationsContainer.extractNssActif(),
-                // paysLoader.getMapPaysByCodeCentrale());
 
                 // filtrer les infoTiers
                 supprimerInfoTiersNonDesires(listInfosTiersNssActifInactif);
@@ -138,12 +134,12 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                 List<DifferenceTrouvee> differenceTrouvees = differenceFinder.findAllDifference(
                         mutationsContainer.getList(), listInfosTiersNssActifInactif, listInfosTiersNssInvalide);
 
-                // génération de la liste au format xls
+                // génération de la liste au format XLS
                 String generatedXlsFilePath = generateXls(differenceTrouvees, getSession(), fichierMutation.getName());
-                System.out.println(generatedXlsFilePath);
+                JadeLogger.info(getName(), "le fichier XLS suivant a été généré avec succès" + generatedXlsFilePath);
 
                 // flaguer le fichier
-                // marquerFichierDnraCommeTraite(fichierMutation.getName());
+                marquerFichierDnraCommeTraite(fichierMutation.getName());
 
                 // suppression du fichier journalier
                 JadeFsFacade.delete(fichierMutation.getAbsolutePath());
@@ -183,8 +179,8 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
         joinsFilesPathsList.add(joinFilePath);
 
         // sujet et corps du mail
-        String subject = "Le processus d'impression des différences DNRA-Rentes s'est terminé avec succès";
-        String body = "Veuillez consulter la liste des différences en pièce jointe";
+        String subject = getSession().getLabel("LIST_CORVUS_DIFFERENCE_MAIL_SUBJECT_SUCCESS");
+        String body = getSession().getLabel("LIST_CORVUS_DIFFERENCE_MAIL_BODY_SUCCESS");
 
         // envoi
         ProcessMailUtils.sendMail(mailsList, subject, body, joinsFilesPathsList);
@@ -204,7 +200,6 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
      * @return
      */
     private Set<InfoTiers> findInfosTiers(Set<String> listNss, Map<String, Pays> mapPaysByCodeCentral) {
-        System.out.println("nbNss à chercher dans webtiers : " + listNss.size());
         List<InfoTiers> listInfosTiers = new ArrayList<InfoTiers>();
         List<List<String>> splittedList = QueryExecutor.split(listNss, 2000);
 
@@ -221,7 +216,6 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
             sql.append("where HXNAVS in (").append(QueryExecutor.forInString(list)).append(")");
             listInfosTiers.addAll(QueryExecutor.execute(sql.toString(), InfoTiers.class, getSession(), converters));
         }
-        System.out.println("nbNss trouvés dans webtiers : " + listInfosTiers.size());
         final Set<InfoTiers> infosTiers = new HashSet<InfoTiers>();
         infosTiers.addAll(listInfosTiers);
 
@@ -299,15 +293,11 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
 
         List<String> nomsFichiersDnraDejaTraites = recupererNomsFichiersDnraDejaTraites();
 
-        // parcours de fichiers disponibles. Pour le moment on ne prend que celui du 20160129
+        // parcours de fichiers disponibles
         for (JadeFsFileInfo jadeFsFileInfo : jadeFsFileInfoList) {
-            System.out.println(jadeFsFileInfo.getUri());
             JadeUrl jadeUrlFichierDistant = new JadeUrl();
             jadeUrlFichierDistant.setUrl(jadeFsFileInfo.getUri());
             String nomFichierDistant = jadeUrlFichierDistant.getFile();
-            System.out.println(nomFichierDistant);
-            // BigDecimal todayAaaaMmJj = JACalendar.today().toAMJ();
-            String dateFichier = nomFichierDistant.split("_")[1].split("\\.")[0];
             if (!nomsFichiersDnraDejaTraites.contains(nomFichierDistant)) {
                 String uriDest = fichierMutationsLocauxDirectory + nomFichierDistant;
                 String uriSource = fichiersMutationsDistantUriNormalized + nomFichierDistant;
