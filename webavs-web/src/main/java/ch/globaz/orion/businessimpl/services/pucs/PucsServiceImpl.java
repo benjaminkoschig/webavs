@@ -11,7 +11,6 @@ import globaz.naos.services.AFAffiliationServices;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
-import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.util.Arrays;
@@ -20,7 +19,6 @@ import java.util.Locale;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.dom.ElementsDomParser;
 import ch.globaz.common.domaine.Checkers;
-import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.exceptions.OrionPucsException;
@@ -37,7 +35,6 @@ import ch.globaz.xmlns.eb.pucs.LienInstitution;
 import ch.globaz.xmlns.eb.pucs.PUCSService;
 import ch.globaz.xmlns.eb.pucs.PucsEntrySummary;
 import ch.globaz.xmlns.eb.pucs.PucsSearchOrderByEnum;
-import com.google.common.base.Joiner;
 
 public class PucsServiceImpl implements PucsService {
 
@@ -283,19 +280,21 @@ public class PucsServiceImpl implements PucsService {
     public static boolean userHasRight(PucsFile pucsFile, EtatSwissDecPucsFile etatSwissDecPucsFile, BSession session) {
         boolean hasRight;
         try {
-            String path = PucsServiceImpl.retrieveFile(pucsFile.getId(), pucsFile.getProvenance(),
-                    etatSwissDecPucsFile, session);
-            ElementsDomParser parser = new ElementsDomParser(path);
+            // String path = PucsServiceImpl.retrieveFile(pucsFile.getId(), pucsFile.getProvenance(),
+            // etatSwissDecPucsFile, session);
+            // ElementsDomParser parser = new ElementsDomParser(path);
 
             List<AFAffiliation> affiliations = AFAffiliationServices.searchAffiliationByNumeros(
                     Arrays.asList(pucsFile.getNumeroAffilie().trim()), session);
             if (affiliations.isEmpty()) {
                 hasRight = false;
             } else {
-                hasRight = userHasRight(affiliations.get(0), parser, session);
+                hasRight = AFAffiliationServices.hasRightAccesSecurity(affiliations.get(0), session);
+
+                // hasRight = userHasRight(affiliations.get(0), parser, session);
             }
 
-            JadeFsFacade.delete(path);
+            // JadeFsFacade.delete(path);
         } catch (Exception e) {
             throw new CommonTechnicalException(pucsFile.toString(), e);
         }
@@ -305,22 +304,26 @@ public class PucsServiceImpl implements PucsService {
     public static boolean userHasRight(AFAffiliation affiliation, ElementsDomParser parser, BSession session) {
         boolean hasSecurity = true;
         if (affiliation != null) {
-            List<String> listNss = parser.findValues("Person SV-AS-Number");
-            String nssIn = '\'' + Joiner.on("','").skipNulls().join(listNss).replace(".", "") + '\'';
-            BigDecimal code = QueryExecutor.executeAggregate("select max(KATSEC) from schema.CIINDIP where KANAVS in ("
-                    + nssIn + ")", session);
+            // List<String> listNss = parser.findValues("Person SV-AS-Number");
+            // List<List<String>> splitedNSSList = split(listNss, 1000);
+            // for (List<String> splitedNss : splitedNSSList) {
+            // String nssIn = '\'' + Joiner.on("','").skipNulls().join(splitedNss).replace(".", "") + '\'';
+            // BigDecimal code = QueryExecutor.executeAggregate(
+            // "select max(KATSEC) from schema.CIINDIP where KANAVS in (" + nssIn + ")", session);
+            // if (!BigDecimal.ZERO.equals(code)) {
+            // String codeSecurity = code.toString();
+            // Integer ciSecurity = Integer.parseInt(codeSecurity.substring(codeSecurity.length() - 1));
+            // hasSecurity = AFAffiliationServices.hasRightAccesSecurity(ciSecurity, session);
+            // if (hasSecurity) {
+            // break;
+            // }
+            // }
+            // }
 
-            if (!BigDecimal.ZERO.equals(code)) {
-                String codeSecurity = code.toString();
-                Integer ciSecurity = Integer.parseInt(codeSecurity.substring(codeSecurity.length() - 1));
-                hasSecurity = AFAffiliationServices.hasRightAccesSecurity(ciSecurity, session);
-            }
-
-            if (hasSecurity) {
-                hasSecurity = AFAffiliationServices.hasRightAccesSecurity(affiliation, session);
-            }
+            // if (hasSecurity) {
+            hasSecurity = AFAffiliationServices.hasRightAccesSecurity(affiliation, session);
+            // }
         }
-
         return hasSecurity;
     }
 
