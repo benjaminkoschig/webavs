@@ -1,7 +1,7 @@
 package ch.globaz.corvus.process.dnra;
 
 public enum TypeDifference {
-    NSS,
+    NSS_INACTIVE,
     ETAT_CIVIL,
     NOM,
     PRENOM,

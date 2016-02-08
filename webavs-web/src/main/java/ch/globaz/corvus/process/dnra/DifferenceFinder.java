@@ -117,8 +117,8 @@ class DifferenceFinder {
             list.add(differenceTrouvee);
         }
         if (!isNssSame(mutation, infoTiers)) {
-            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.NSS, infoTiers, infoTiers.getNss(),
-                    mutation.getNewNss());
+            DifferenceTrouvee differenceTrouvee = newDifference(TypeDifference.NSS_INACTIVE, infoTiers,
+                    infoTiers.getNss(), mutation.getNewNss());
             list.add(differenceTrouvee);
         }
 
@@ -190,7 +190,7 @@ class DifferenceFinder {
     }
 
     static boolean isEtatCivilSame(Mutation mutation, InfoTiers infoTiers) {
-        if (!mutation.getEtatCivil().isUndefined()) {
+        if (mutation.getEtatCivil() != null && !mutation.getEtatCivil().isUndefined()) {
             return mutation.getEtatCivil().equals(infoTiers.getEtatCivil());
         }
         return true;
