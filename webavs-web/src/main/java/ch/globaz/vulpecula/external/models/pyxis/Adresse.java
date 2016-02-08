@@ -48,7 +48,9 @@ public class Adresse {
         }
 
         if (isNotEmpty(description3) && isNotEmpty(description4)) {
-            liste.add(description3 + " " + description4);
+            // Jira BMS-1960
+            liste.add(description3);
+            liste.add(description4);
         } else if (isNotEmpty(description3)) {
             liste.add(description3);
         } else if (isNotEmpty(description4)) {
