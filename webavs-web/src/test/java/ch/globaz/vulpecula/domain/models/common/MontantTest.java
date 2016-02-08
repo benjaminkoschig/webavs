@@ -119,9 +119,27 @@ public class MontantTest {
     }
 
     @Test
-    public void centime_given0_05() {
+    public void centimesWith0_given0_05() {
         Montant m = new Montant(0.05);
         assertEquals("05", m.getCentimesWith0());
+    }
+
+    @Test
+    public void centimesWith0_given1_00() {
+        Montant m = new Montant(1.00);
+        assertEquals("00", m.getCentimesWith0());
+    }
+
+    @Test
+    public void centimesWith0_given0_00() {
+        Montant m = new Montant(0.00);
+        assertEquals("00", m.getCentimesWith0());
+    }
+
+    @Test
+    public void centimesWith0_given1_50() {
+        Montant m = new Montant(1.50);
+        assertEquals("50", m.getCentimesWith0());
     }
 
     @Test
