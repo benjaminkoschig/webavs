@@ -395,12 +395,11 @@ public class DocumentRectificatif extends VulpeculaDocumentManager<Decompte> {
 
         if (!montant.isNegative() && !montant.isZero()) {
             super.setParametres(DocumentConstants.P_FRANC, String.valueOf(montant.getMontantSansCentimes()));
-            super.setParametres(DocumentConstants.P_CENTIME, String.valueOf(montant.getCentimes()));
+            super.setParametres(DocumentConstants.P_CENTIME, montant.getCentimesWith0());
         } else if (montant.isZero()) {
             super.setParametres(DocumentConstants.P_FRANC,
                     String.valueOf(decompte.getMontantContributionTotal().getMontantSansCentimes()));
-            super.setParametres(DocumentConstants.P_CENTIME,
-                    String.valueOf(decompte.getMontantContributionTotal().getCentimes()));
+            super.setParametres(DocumentConstants.P_CENTIME, decompte.getMontantContributionTotal().getCentimesWith0());
         } else {
             super.setParametres(DocumentConstants.P_FRANC, "XXXXXXXXXXXXXXX");
             super.setParametres(DocumentConstants.P_CENTIME, "XX");

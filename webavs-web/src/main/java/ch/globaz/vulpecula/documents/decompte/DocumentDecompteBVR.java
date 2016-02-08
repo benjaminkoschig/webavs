@@ -137,7 +137,7 @@ public class DocumentDecompteBVR extends VulpeculaDocumentManager<DecompteContai
 
         if (!montant.isNegative() && !montant.isZero()) {
             super.setParametres(DocumentConstants.P_FRANC, String.valueOf(montant.getMontantSansCentimes()));
-            super.setParametres(DocumentConstants.P_CENTIME, String.valueOf(montant.getCentimes()));
+            super.setParametres(DocumentConstants.P_CENTIME, montant.getCentimesWith0());
         } else if (montant.isZero()) {
             super.setParametres(DocumentConstants.P_FRANC, "");
             super.setParametres(DocumentConstants.P_CENTIME, "");

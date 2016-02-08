@@ -264,6 +264,13 @@ public class Montant implements ValueObject {
     }
 
     /**
+     * @return les centimes sans le montant toujours sur deux positions
+     */
+    public String getCentimesWith0() {
+        return (getCentimes() < 10 ? "0" : "") + getCentimes();
+    }
+
+    /**
      * Retourne la valeur normalisée arrondie au 5 centimes.
      * 
      * @return La valeur arrondie aux 5 centimes supérieures dans le cas où la décimal est 3 ou 4, la valeur arrondi au

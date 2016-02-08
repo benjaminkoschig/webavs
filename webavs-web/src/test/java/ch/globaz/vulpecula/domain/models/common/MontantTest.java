@@ -119,6 +119,12 @@ public class MontantTest {
     }
 
     @Test
+    public void centime_given0_05() {
+        Montant m = new Montant(0.05);
+        assertEquals("05", m.getCentimesWith0());
+    }
+
+    @Test
     public void getBigDecimalValueToString_GivenMontantOf10_0001_ShouldBe10_0001() {
         Montant m = new Montant(10.0001);
 
