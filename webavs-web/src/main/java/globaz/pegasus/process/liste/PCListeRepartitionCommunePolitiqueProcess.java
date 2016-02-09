@@ -3,7 +3,6 @@ package globaz.pegasus.process.liste;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JACalendar;
-import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.jade.common.Jade;
@@ -17,7 +16,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import ch.globaz.common.domaine.Date;
 import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.pegasus.business.domaine.pca.PcaEtat;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
@@ -62,12 +61,12 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
 
             findAllLabel();
 
-            String dateDuJourAMJ = (new JADate(JACalendar.todayJJsMMsAAAA())).toAMJ().toString();
+            String dateDuJourAM = new Date().getValueMonth();
 
-            List<BeneficiairePCCommunePolitiquePojo> listBeneficiairePCCP = loadDataPC(dateDuJourAMJ);
+            List<BeneficiairePCCommunePolitiquePojo> listBeneficiairePCCP = loadDataPC(dateDuJourAM);
 
             if (TYPE_LISTE_PC_RENTE.equalsIgnoreCase(typeListe)) {
-                listBeneficiairePCCP.addAll(loadDataRente(dateDuJourAMJ));
+                listBeneficiairePCCP.addAll(loadDataRente(dateDuJourAM));
             }
 
             addCommunePolitique(listBeneficiairePCCP);
@@ -216,7 +215,7 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
             setIdTiers.add(aBeneficiairePCCP.getIdTiers());
         }
 
-        mapIdTiersCommunePolitique = PRTiersHelper.getCommunePolitique(setIdTiers, new Date(), getSession());
+        mapIdTiersCommunePolitique = PRTiersHelper.getCommunePolitique(setIdTiers, new Date().getDate(), getSession());
 
         for (BeneficiairePCCommunePolitiquePojo aBeneficiairePCCP : listBeneficiairePCCP) {
             String communePolitique = mapIdTiersCommunePolitique.get(aBeneficiairePCCP.getIdTiers());
@@ -239,7 +238,7 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
         JadeSmtpClient.getInstance().sendMail(getEmail(), labelSubjectMailOk, labelBodyMailOk, tabFileName);
     }
 
-    private String getSqlSelectBeneficiairePC(String dateAMJ) {
+    private String getSqlSelectBeneficiairePC(String dateAM) {
 
         StringBuilder sql = new StringBuilder("");
 
@@ -249,27 +248,30 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
         sql.append(" inner join SCHEMA.TITIERP tier on (prac.ZTITBE = tier.HTITIE) ");
         sql.append(" inner join SCHEMA.TIPAVSP pavs on (pavs.htitie = tier.HTITIE) ");
         sql.append(" WHERE prac.ZTTGEN = " + IREPrestationAccordee.CS_GENRE_PC
-                + " and (prac.ZTDFDR = 0 or prac.ZTDFDR >= " + dateAMJ + ") and pcac.CUTETA = "
+                + " and (prac.ZTDFDR = 0 or prac.ZTDFDR >= " + dateAM + ") and pcac.CUTETA = "
                 + PcaEtat.VALIDE.getValue());
 
         return sql.toString();
     }
 
-    private String getSqlSelectBeneficiaireRente(String dateAMJ) {
+    private String getSqlSelectBeneficiaireRente(String dateAM) {
 
         StringBuilder sql = new StringBuilder("");
 
-        sql.append(" SELECT tier.HTITIE as idTiers, pavs.HXNAVS as nss, tier.HTLDE1 as nom, tier.HTLDE2 as prenom, prac.ZTLCPR as codePrestation,  prac.ZTMPRE as montantPrestation ");
+        sql.append(" SELECT tier.HTITIE as idTiers, pavs.HXNAVS as nss, tier.HTLDE1 as nom, tier.HTLDE2 as prenom, prac.ZTLCPR as codePrestation,  prac.ZTMPRE as montant ");
         sql.append(" FROM SCHEMA.REPRACC prac ");
         sql.append(" inner join SCHEMA.REREACC reac on (prac.ZTIPRA = reac.YLIRAC) ");
         sql.append(" inner join SCHEMA.REBACAL baca on (reac.YLIBAC = baca.YIIBCA) ");
         sql.append(" inner join SCHEMA.TITIERP tier on (baca.YIITBC = tier.HTITIE) ");
         sql.append(" inner join SCHEMA.TIPAVSP pavs on (pavs.htitie = tier.HTITIE) ");
-        sql.append(" WHERE prac.ZTTGEN = " + IREPrestationAccordee.CS_GENRE_RENTES
-                + " and (prac.ZTDFDR = 0 or prac.ZTDFDR >= " + dateAMJ + ") ");
+        sql.append(" WHERE ");
+        sql.append(" prac.ZTTGEN = " + IREPrestationAccordee.CS_GENRE_RENTES);
+        sql.append(" and ((prac.ZTTETA in (" + IREPrestationAccordee.CS_ETAT_VALIDE + ","
+                + IREPrestationAccordee.CS_ETAT_PARTIEL + ") and prac.ZTDFDR = 0 ) ");
+        sql.append(" OR (prac.ZTTETA = " + IREPrestationAccordee.CS_ETAT_DIMINUE
+                + " and (prac.ZTDFDR = 0 or prac.ZTDFDR >= " + dateAM + ")))");
 
         return sql.toString();
-
     }
 
     public String getTypeListe() {

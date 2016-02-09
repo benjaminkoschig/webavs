@@ -1,11 +1,17 @@
 package globaz.pegasus.process.liste;
 
+import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.listoutput.converterImplemented.LabelTranslater;
+import ch.globaz.common.listoutput.converterImplemented.MontantConverter;
+import ch.globaz.simpleoutputlist.annotation.Aggregate;
+import ch.globaz.simpleoutputlist.annotation.AggregateFunction;
 import ch.globaz.simpleoutputlist.annotation.Column;
+import ch.globaz.simpleoutputlist.annotation.ColumnValueConverter;
 import ch.globaz.simpleoutputlist.annotation.Translater;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
 import ch.globaz.simpleoutputlist.annotation.style.ColumnStyle;
 
+@ColumnValueConverter(MontantConverter.class)
 @Translater(value = LabelTranslater.class, identifier = "PEGASUS_LISTE_EXCEL_CP")
 public class BeneficiairePCCommunePolitiquePojo implements Comparable<BeneficiairePCCommunePolitiquePojo> {
 
@@ -16,7 +22,7 @@ public class BeneficiairePCCommunePolitiquePojo implements Comparable<Beneficiai
     private String prenom = "";
     private String codePrestation = "";
     private String typePrestation = "";
-    private String montant = "";
+    private Montant montant = Montant.ZERO;
 
     @Column(name = "commune", order = 1)
     @ColumnStyle(align = Align.CENTER)
@@ -82,11 +88,12 @@ public class BeneficiairePCCommunePolitiquePojo implements Comparable<Beneficiai
 
     @Column(name = "Montant", order = 6)
     @ColumnStyle(align = Align.RIGHT)
-    public String getMontant() {
+    @Aggregate(AggregateFunction.SUM)
+    public Montant getMontant() {
         return montant;
     }
 
-    public void setMontant(String montant) {
+    public void setMontant(Montant montant) {
         this.montant = montant;
     }
 
