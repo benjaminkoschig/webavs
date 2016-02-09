@@ -2,6 +2,8 @@ package globaz.pegasus.vb.liste;
 
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
+import globaz.jade.client.util.JadeStringUtil;
+import ch.globaz.common.domaine.Date;
 
 public class PCListeRepartitionCommunePolitiqueViewBean extends BJadePersistentObjectViewBean {
 
@@ -50,6 +52,9 @@ public class PCListeRepartitionCommunePolitiqueViewBean extends BJadePersistentO
     }
 
     public String getDateMonthDebut() {
+        if (JadeStringUtil.isEmpty(dateMonthDebut)) {
+            dateMonthDebut = "01." + new Date().getYear();
+        }
         return dateMonthDebut;
     }
 
@@ -58,6 +63,9 @@ public class PCListeRepartitionCommunePolitiqueViewBean extends BJadePersistentO
     }
 
     public String getDateMonthFin() {
+        if (JadeStringUtil.isEmpty(dateMonthFin)) {
+            dateMonthFin = new Date().getSwissMonthValue();
+        }
         return dateMonthFin;
     }
 
