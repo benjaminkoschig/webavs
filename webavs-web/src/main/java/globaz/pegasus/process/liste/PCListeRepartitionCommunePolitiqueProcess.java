@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.pegasus.business.domaine.pca.PcaEtat;
@@ -95,14 +96,16 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
 
     private void findAllLabel() {
         if (TYPE_LISTE_PC_RENTE.equalsIgnoreCase(typeListe)) {
-            labelNomDocument = getSession().getLabel("PEGASUS_LISTE_EXCEL_CP_TITRE_BENEFICIARE_PC_RENTE");
+            labelNomDocument = NUMERO_INFOROM_LISTE_PC_RENTE + "_"
+                    + getSession().getLabel("PEGASUS_LISTE_EXCEL_CP_TITRE_BENEFICIARE_PC_RENTE");
             labelSubjectMailOk = getSession().getLabel("PEGASUS_LISTE_MAIL_SUBJECT_BENEFICIARE_PC_RENTE_OK");
             labelSubjectMailko = getSession().getLabel("PEGASUS_LISTE_MAIL_SUBJECT_BENEFICIARE_PC_RENTE_ERROR");
             labelBodyMailOk = getSession().getLabel("PEGASUS_LISTE_BODY_SUBJECT_BENEFICIARE_PC_RENTE_OK");
             labelBodyMailError = getSession().getLabel("PEGASUS_LISTE_BODY_SUBJECT_BENEFICIARE_PC_RENTE_KO");
             labelDescription = getSession().getLabel("PEGASUS_LISTE_BENEFICIARE_PC_RENTE_DESCRIPTION");
         } else {
-            labelNomDocument = getSession().getLabel("PEGASUS_LISTE_EXCEL_CP_TITRE_BENEFICIARE_PC");
+            labelNomDocument = NUMERO_INFOROM_LISTE_PC + "_"
+                    + getSession().getLabel("PEGASUS_LISTE_EXCEL_CP_TITRE_BENEFICIARE_PC");
             labelSubjectMailOk = getSession().getLabel("PEGASUS_LISTE_MAIL_SUBJECT_BENEFICIARE_PC_OK");
             labelSubjectMailko = getSession().getLabel("PEGASUS_LISTE_MAIL_SUBJECT_BENEFICIARE_PC_ERROR");
             labelBodyMailOk = getSession().getLabel("PEGASUS_LISTE_BODY_SUBJECT_BENEFICIARE_PC_OK");
@@ -117,7 +120,7 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
     private Map<String, List<BeneficiairePCCommunePolitiquePojo>> regroupByCommunePolitique(
             List<BeneficiairePCCommunePolitiquePojo> listBeneficiairePCCP) {
 
-        Map<String, List<BeneficiairePCCommunePolitiquePojo>> mapByCommunPolitique = new HashMap<String, List<BeneficiairePCCommunePolitiquePojo>>();
+        Map<String, List<BeneficiairePCCommunePolitiquePojo>> mapByCommunPolitique = new TreeMap<String, List<BeneficiairePCCommunePolitiquePojo>>();
 
         for (BeneficiairePCCommunePolitiquePojo pojo : listBeneficiairePCCP) {
 
