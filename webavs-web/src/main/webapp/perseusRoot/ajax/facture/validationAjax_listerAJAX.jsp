@@ -11,15 +11,15 @@
 		<c:forEach var="facture" items="${viewBean.searchModel.searchResults}">
 			<tr>
 				<td class="ignoreExternalLink"><input type="checkbox" class="factureSelected" id="${facture.id}"/></td>
-				<td class="left">
+				<td class="left" onMouseOver="this.style.background='#f1f1f1'; this.style.cursor='pointer'" onMouseOut="this.style.background='none'">
 					${viewBean.displayBeneficiaire(facture.qd.membreFamille.personneEtendue)}
 				</td>
-				<td>${facture.simpleFacture.dateFacture}</td>
-				<td class="left">${viewBean.getISession().getCodeLibelle(facture.qd.simpleQD.csType) }</td>
-				<td class="montant">${facture.simpleFacture.montant}</td>
-				<td class="montant">${facture.simpleFacture.montantRembourse}</td>
-				<td>${facture.simpleFacture.idGestionnaire}</td>
-				<td>
+				<td onMouseOver="this.style.background='#f1f1f1'; this.style.cursor='pointer'" onMouseOut="this.style.background='none'">${facture.simpleFacture.dateFacture}</td>
+				<td class="left" onMouseOver="this.style.background='#f1f1f1'; this.style.cursor='pointer'" onMouseOut="this.style.background='none'">${viewBean.getISession().getCodeLibelle(facture.qd.simpleQD.csType) }</td>
+				<td class="montant" onMouseOver="this.style.background='#f1f1f1'; this.style.cursor='pointer'" onMouseOut="this.style.background='none'">${facture.simpleFacture.montant}</td>
+				<td class="montant" onMouseOver="this.style.background='#f1f1f1'; this.style.cursor='pointer'" onMouseOut="this.style.background='none'">${facture.simpleFacture.montantRembourse}</td>
+				<td onMouseOver="this.style.background='#f1f1f1'; this.style.cursor='pointer'" onMouseOut="this.style.background='none'">${facture.simpleFacture.idGestionnaire}</td>
+				<td onMouseOver="this.style.background='#f1f1f1'; this.style.cursor='pointer'" onMouseOut="this.style.background='none'">
 					<a style="display: none" data-g-externallink="reLoad:false" href="<c:out value="perseus?userAction=perseus.qd.detailfacture.afficher&selectedId=${facture.simpleFacture.idFacture}"></c:out>">${facture.simpleFacture.idFacture}</a>${facture.simpleFacture.idFacture}
 				</td>
 			</tr>

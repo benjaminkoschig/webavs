@@ -340,10 +340,10 @@
 						<input class="btnCtrl" id="btnModifier" type="button" value="Modifier la facture" onclick="if(validateModifier()) action(COMMIT);" /> 
 					<% } %>
 					<% if (CSEtatFacture.ENREGISTRE.getCodeSystem().equals(viewBean.getSimpleFacture().getCsEtat())) { %>
-						<% if (((objSession.hasRight("perseus.facture.validation", FWSecureConstants.UPDATE)) || (objSession.hasRight("perseus.qd.detailfacture", FWSecureConstants.ADD) && Float.valueOf(viewBean.getSimpleFacture().getMontantRembourse()) < viewBean.getMontantMaxValidationUser())) 
-								&& viewBean.isPaiementOKPourValidation()) { %>
+						 <% if (((objSession.hasRight("perseus.facture.validation", FWSecureConstants.UPDATE)) || (objSession.hasRight("perseus.qd.detailfacture", FWSecureConstants.ADD) && Float.valueOf(viewBean.getSimpleFacture().getMontantRembourse()) < viewBean.getMontantMaxValidationUser())) 
+								&& viewBean.isPaiementOKPourValidation()) { %> 
 							<input class="btnCtrl" id="btnVal" type="button" value="Valider la facture" onclick="if(validateValider()) action(COMMIT);" /> 
-						<% } %>
+						 <% } %>
 					<% } %>
 					
 				<%-- /tpl:insert --%>

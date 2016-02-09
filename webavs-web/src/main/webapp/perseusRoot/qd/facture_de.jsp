@@ -35,7 +35,7 @@
 	autoShowErrorPopup = true;
 	idEcran = "PPF1121";
 	String btnValidNewLabel = "";
-	boolean bBtnValidNew = true;
+	boolean bBtnValidNew = (viewBean.getIdFacture()==null);
 	boolean bBtnValidate = true;
 	boolean bBtnCancel = true;
 	boolean isFactureExistante = !(viewBean.getFacture().getQd().getTypeQD() == null);
@@ -49,7 +49,7 @@
 
 	String idAdresseCourrierDefault = "";
 	String idApplicationCourrierDefault = "";
-
+	
 	if (isFactureExistante) {
 		csTypeQdInitial = viewBean.getFacture().getQd().getTypeQD().getCodeSystem();
 	}
@@ -71,7 +71,7 @@
 
 	affichePersonnne = PFUserHelper.getDetailAssure(objSession,
 			personne);
-
+	bButtonValidate = false;
 	if (objSession
 			.hasRight("perseus.qd.facture", FWSecureConstants.ADD)) {
 		bButtonUpdate = true;
@@ -81,9 +81,7 @@
 		bButtonUpdate = false;
 		bButtonDelete = false;
 		bBtnCancel = false;
-		bBtnValidate = false;
 	}
-	bButtonValidate = false;
 	bButtonCancel = false;
 %>
 
@@ -193,7 +191,6 @@
 			$("#btnNew").fadeOut(0);
 			$("#btnVal").fadeIn(0);
 			<%bButtonUpdate = true;
-			//bButtonValidate = true;
 			bBtnValidate = true;
 			bButtonNew = true;%>
 			$("#modificationFacture").val("true");
@@ -201,7 +198,6 @@
 			$ancienMontantARembourserFacture.val($montantRembourse.val());
 			$("#ancienTypeQdParente").val()
 		}
-		
 		$motifLibre = $("#motifLibre");
 		$motifCs = $("#motifCs");
 		
@@ -1113,7 +1109,7 @@
     }
 %>
 
-<%if (bBtnValidate) {%><input class="btnCtrl" id="btnVal" type="button" value="<%=btnValLabel%>" onclick="if(validate()) action(COMMIT);"><%}%>
+<%if (bBtnValidate) {%><input class="btnCtrl" id="btnVal2" type="button" value="<%=btnValLabel%>" onclick="if(validate()) action(COMMIT);" ><%}%>
 
 <%
     if (bBtnCancel) {
