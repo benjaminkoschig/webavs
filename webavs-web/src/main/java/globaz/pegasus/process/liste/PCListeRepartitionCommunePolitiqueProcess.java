@@ -42,6 +42,8 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
 
     public static final String TYPE_LISTE_PC_RENTE = "listePcRente";
     public static final String TYPE_LISTE_PC = "listePc";
+    private static final String NUMERO_INFOROM_LISTE_PC_RENTE = "6512PPC";
+    private static final String NUMERO_INFOROM_LISTE_PC = "6511PPC";
 
     private String email = null;
     private String typeListe = "";
@@ -166,7 +168,12 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
 
     private String createExcelFile(Map<String, List<BeneficiairePCCommunePolitiquePojo>> mapByCommunPolitique) {
 
-        String filePath = Jade.getInstance().getPersistenceDir() + JadeUUIDGenerator.createStringUUID();
+        String filePath = Jade.getInstance().getPersistenceDir();
+        if (TYPE_LISTE_PC_RENTE.equalsIgnoreCase(typeListe)) {
+            filePath += NUMERO_INFOROM_LISTE_PC_RENTE + "_" + JadeUUIDGenerator.createStringUUID();
+        } else {
+            filePath += NUMERO_INFOROM_LISTE_PC + "_" + JadeUUIDGenerator.createStringUUID();
+        }
         Locale locale = new Locale(BSessionUtil.getSessionFromThreadContext().getIdLangueISO());
 
         SimpleOutputListBuilder simpleList = SimpleOutputListBuilder.newInstance().local(locale);

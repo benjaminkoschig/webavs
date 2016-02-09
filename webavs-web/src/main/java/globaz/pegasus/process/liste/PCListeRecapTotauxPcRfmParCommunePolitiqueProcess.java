@@ -41,6 +41,7 @@ import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstractJob {
 
     private static final long serialVersionUID = 1L;
+    private static final String NUMERO_INFOROM = "6510PPC";
     private String dateMonthDebut;
     private String dateMonthFin;
     private Map<String, ContainerByTiers> recapTotauxByIdtiers = new HashMap<String, ContainerByTiers>();
@@ -250,7 +251,8 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
 
     private String createExcelFile(List<ContainerByCommunePolitique> containerCP) {
 
-        String filePath = Jade.getInstance().getPersistenceDir() + JadeUUIDGenerator.createStringUUID();
+        String filePath = Jade.getInstance().getPersistenceDir() + NUMERO_INFOROM + "_"
+                + JadeUUIDGenerator.createStringUUID();
 
         Locale locale = new Locale(BSessionUtil.getSessionFromThreadContext().getIdLangueISO());
 
