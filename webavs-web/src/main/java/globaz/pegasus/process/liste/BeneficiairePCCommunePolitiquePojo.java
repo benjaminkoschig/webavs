@@ -99,7 +99,13 @@ public class BeneficiairePCCommunePolitiquePojo implements Comparable<Beneficiai
 
     @Override
     public int compareTo(BeneficiairePCCommunePolitiquePojo o) {
-        return getNss().compareToIgnoreCase(o.getNss());
-    }
 
+        int compareNom = getNom().compareToIgnoreCase(o.getNom());
+        if (compareNom == 0) {
+            return getPrenom().compareToIgnoreCase(o.getPrenom());
+        }
+
+        return compareNom;
+
+    }
 }
