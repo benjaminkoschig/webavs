@@ -217,7 +217,7 @@ $(document).ready(function(){
 					  <div class="control-group">
 		    			<label class="control-label" for="dateMonthFin"><ct:FWLabel key="PEGASUS_JSP_PPC2009_DATE_FIN"/></label>
 					    <div class="controls">
-		      				<input style="height: 25px;"  type="text" id="dateMonthFin" name="dateMonthFin" data-g-calendar="mandatory:true, type:month" value="<%= viewBean.getDateMonthFin()%>"> 
+		      				<input style="height: 25px;"  type="text" id="dateMonthFin" name="dateMonthFin" data-g-calendar="type:month" value="<%= viewBean.getDateMonthFin()%>"> 
 					    </div>
 					  </div>
 					 <button type="button" id="genererTotaux" class="btn"><strong><ct:FWLabel key="PEGASUS_JSP_PPC2009_GENERER_LISTE"/></strong></button>
