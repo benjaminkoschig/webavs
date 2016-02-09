@@ -69,7 +69,7 @@ public class ContainerByCommunePolitique implements Comparable<ContainerByCommun
 
     public void addMontantRestitution(Montant montant) {
         montantRestitution = montantRestitution.add(montant);
-        total = total.substract(montant);
+        total = total.add(montant);
     }
 
     @Override
