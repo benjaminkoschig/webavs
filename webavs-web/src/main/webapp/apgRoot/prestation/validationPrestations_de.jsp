@@ -148,6 +148,7 @@
 	
 </script>
 <%@ include file="/theme/detail_el/bodyStart.jspf" %>
+<%@ include file="/theme/detail_el/bodyStart2.jspf" %>
 
 	<table id="plausi" cellspacing="0" cellpadding="0" style="background-color: #B3C4DB; width: 100%; height: 30px; ">
 		<tr style="height:10;">
@@ -177,12 +178,14 @@
 <div style="height: 550px; overflow: auto; margin-top:5px;">
 	<table class="areaTable" style="border: thin; border: blue;">
 		<thead>
-			<th style="width: 120px; font-size: 12px;"><strong>Id prestation</strong></th>
-			<th style="width: 120px; font-size: 12px;"><strong>Date de début</strong></th>
-			<th style="width: 120px; font-size: 12px;"><strong>Date de fin</strong></th>
-			<th style="width: 80px; font-size: 12px;"><strong>Code</strong></th>
-			<th style="width: 200px; font-size: 12px;"><strong>Plausibilité</strong></th>
-			<th style="width: 120px; font-size: 12px;"><strong>Quittancer</strong></th>
+			<tr>
+				<th style="width: 120px; font-size: 12px;"><strong>Id prestation</strong></th>
+				<th style="width: 120px; font-size: 12px;"><strong>Date de début</strong></th>
+				<th style="width: 120px; font-size: 12px;"><strong>Date de fin</strong></th>
+				<th style="width: 80px; font-size: 12px;"><strong>Code</strong></th>
+				<th style="width: 200px; font-size: 12px;"><strong>Plausibilité</strong></th>
+				<th style="width: 120px; font-size: 12px;"><strong>Quittancer</strong></th>
+			</tr>
 		</thead>
 		
 		<c:forEach var="container" items="${viewBean.prestationValidees}">
