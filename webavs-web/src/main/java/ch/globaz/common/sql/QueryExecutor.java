@@ -23,12 +23,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 
 public class QueryExecutor {
 
@@ -321,32 +321,18 @@ public class QueryExecutor {
     }
 
     /**
-     * This split a list by the limit defined.
+     * This split a list by the size defined.
      * 
      * @param list The list to split
-     * @param limit The number of elements in the list
+     * @param size The number of elements in the list
      * @return the list splited
      */
-    public static <T> List<List<T>> split(Collection<T> list, Integer limit) {
-        if (limit <= 0) {
-            throw new IllegalArgumentException("The limit is less than or equal to zero, limit passed: " + limit);
-        }
-        final List<List<T>> listSplit = new ArrayList<List<T>>();
-        List<T> temp = new ArrayList<T>();
-        int i = 0;
-        for (final Iterator<? extends T> iterator = list.iterator(); iterator.hasNext();) {
-            if ((i % (limit) == 0) && i > 0) {
-                listSplit.add(temp);
-                temp = new ArrayList<T>();
-            }
-            temp.add(iterator.next());
-            i++;
+    public static <T> List<List<T>> split(Collection<T> list, int size) {
+
+        if (size <= 0) {
+            throw new IllegalArgumentException("The size is less than or equal to zero, size passed: " + size);
         }
 
-        if (!temp.isEmpty()) {
-            listSplit.add(temp);
-        }
-
-        return listSplit;
+        return Lists.partition(new ArrayList<T>(list), size);
     }
 }
