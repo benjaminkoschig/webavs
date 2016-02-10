@@ -11,6 +11,7 @@ import globaz.jade.smtp.JadeSmtpClient;
 import globaz.osiris.api.APIEcriture;
 import globaz.pegasus.process.PCAbstractJob;
 import globaz.prestation.enums.CommunePolitique;
+import globaz.prestation.interfaces.tiers.CommunePolitiqueBean;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import java.io.File;
 import java.io.PrintWriter;
@@ -218,13 +219,13 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
     private void addCommunePolitique() {
 
         Set<String> setIdTiers = recapTotauxByIdtiers.keySet();
-        Map<String, String> mapIdTiersCommunePolitique = new HashMap<String, String>();
+        Map<String, CommunePolitiqueBean> mapIdTiersCommunePolitique = new HashMap<String, CommunePolitiqueBean>();
 
-        mapIdTiersCommunePolitique = PRTiersHelper.getCommunePolitique(setIdTiers, new Date().getDate(), getSession());
+        mapIdTiersCommunePolitique = PRTiersHelper.findCommunePolitique(setIdTiers, new Date().getDate(), getSession());
 
         for (String idTiers : setIdTiers) {
-            String communePolitique = mapIdTiersCommunePolitique.get(idTiers);
-            if (!JadeStringUtil.isEmpty(communePolitique)) {
+            CommunePolitiqueBean communePolitique = mapIdTiersCommunePolitique.get(idTiers);
+            if (communePolitique != null) {
                 ContainerByTiers con = recapTotauxByIdtiers.get(idTiers);
                 con.setCommunePolitique(communePolitique);
             }
@@ -245,7 +246,7 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
             con.addMontantPaiement(value.getMontantPaiement());
             con.addMontantRestitution(value.getMontantRestitution());
 
-            recapTotauxByCommunePolitique.put(value.getCommunePolitique(), con);
+            recapTotauxByCommunePolitique.put(value.getCodeCommunePolitique(), con);
         }
     }
 

@@ -1,5 +1,6 @@
 package globaz.pegasus.process.liste;
 
+import globaz.prestation.interfaces.tiers.CommunePolitiqueBean;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.listoutput.converterImplemented.MontantConverter;
 import ch.globaz.simpleoutputlist.annotation.ColumnValueConverter;
@@ -10,7 +11,7 @@ public class ContainerByTiers {
     private String idTiers;
     private Montant montantRestitution;
     private Montant montantPaiement;
-    private String communePolitique;
+    private CommunePolitiqueBean communePolitique;
 
     public String getIdTiers() {
         return idTiers;
@@ -34,11 +35,15 @@ public class ContainerByTiers {
         montantPaiement = Montant.ZERO;
     }
 
-    public String getCommunePolitique() {
-        return communePolitique;
+    public String getCodeCommunePolitique() {
+        return communePolitique.getCode();
     }
 
-    public void setCommunePolitique(String communePolitique) {
+    public String getNomCommunePolitique() {
+        return communePolitique.getNom();
+    }
+
+    public void setCommunePolitique(CommunePolitiqueBean communePolitique) {
         this.communePolitique = communePolitique;
     }
 
@@ -49,4 +54,9 @@ public class ContainerByTiers {
     public void addMontantPaiement(Montant montant) {
         montantPaiement = montantPaiement.add(montant);
     }
+
+    public CommunePolitiqueBean getCommunePolitique() {
+        return communePolitique;
+    }
+
 }

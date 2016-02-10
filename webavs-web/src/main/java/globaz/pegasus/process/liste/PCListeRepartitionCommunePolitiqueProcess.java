@@ -10,6 +10,7 @@ import globaz.jade.log.JadeLogger;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.pegasus.process.PCAbstractJob;
 import globaz.prestation.enums.CommunePolitique;
+import globaz.prestation.interfaces.tiers.CommunePolitiqueBean;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import java.io.File;
 import java.io.PrintWriter;
@@ -57,6 +58,7 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
     private String labelBodyMailError = "";
     private String labelDescription = "";
     private String labelUser = "";
+    private String labelCommunePolitique = "";
 
     @Override
     protected void process() throws Exception {
@@ -115,6 +117,7 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
 
         labelGenereLe = getSession().getLabel("PEGASUS_LISTE_EXCEL_CP_GENERE_LE");
         labelUser = getSession().getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_UTILISATEUR.getKey());
+        labelCommunePolitique = getSession().getLabel("PEGASUS_LISTE_EXCEL_CP_COMMUNE_NOM");
     }
 
     private Map<String, List<BeneficiairePCCommunePolitiquePojo>> regroupByCommunePolitique(
@@ -124,12 +127,13 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
 
         for (BeneficiairePCCommunePolitiquePojo pojo : listBeneficiairePCCP) {
 
-            List<BeneficiairePCCommunePolitiquePojo> sousListe = mapByCommunPolitique.get(pojo.getCommunePolitique());
+            List<BeneficiairePCCommunePolitiquePojo> sousListe = mapByCommunPolitique.get(pojo
+                    .getCodeCommunePolitique());
             if (sousListe == null) {
                 sousListe = new ArrayList<BeneficiairePCCommunePolitiquePojo>();
             }
             sousListe.add(pojo);
-            mapByCommunPolitique.put(pojo.getCommunePolitique(), sousListe);
+            mapByCommunPolitique.put(pojo.getCodeCommunePolitique(), sousListe);
         }
 
         return mapByCommunPolitique;
@@ -181,16 +185,20 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
 
         SimpleOutputListBuilder simpleList = SimpleOutputListBuilder.newInstance().local(locale);
 
-        Details paramsData = new Details();
-        paramsData.add(labelGenereLe, JACalendar.todayJJsMMsAAAA());
-        paramsData.newLigne();
-        paramsData.add(labelUser, getSession().getUserId());
-
         Iterator<List<BeneficiairePCCommunePolitiquePojo>> ite = mapByCommunPolitique.values().iterator();
         while (ite.hasNext()) {
 
             List<BeneficiairePCCommunePolitiquePojo> sousListe = ite.next();
-            String sheetName = sousListe.get(0).getCommunePolitique();
+            String sheetName = sousListe.get(0).getCodeCommunePolitique();
+            String nomCommune = sousListe.get(0).getNomCommunePolitique();
+
+            Details paramsData = new Details();
+            paramsData.add(labelGenereLe, JACalendar.todayJJsMMsAAAA());
+            paramsData.newLigne();
+            paramsData.add(labelUser, getSession().getUserId());
+            paramsData.newLigne();
+            paramsData.add(labelCommunePolitique, nomCommune);
+
             simpleList.addList(sousListe).classElementList(BeneficiairePCCommunePolitiquePojo.class)
                     .addHeaderDetails(paramsData);
 
@@ -219,17 +227,17 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
     private void addCommunePolitique(List<BeneficiairePCCommunePolitiquePojo> listBeneficiairePCCP) {
 
         Set<String> setIdTiers = new HashSet<String>();
-        Map<String, String> mapIdTiersCommunePolitique = new HashMap<String, String>();
+        Map<String, CommunePolitiqueBean> mapIdTiersCommunePolitique = new HashMap<String, CommunePolitiqueBean>();
 
         for (BeneficiairePCCommunePolitiquePojo aBeneficiairePCCP : listBeneficiairePCCP) {
             setIdTiers.add(aBeneficiairePCCP.getIdTiers());
         }
 
-        mapIdTiersCommunePolitique = PRTiersHelper.getCommunePolitique(setIdTiers, new Date().getDate(), getSession());
+        mapIdTiersCommunePolitique = PRTiersHelper.findCommunePolitique(setIdTiers, new Date().getDate(), getSession());
 
         for (BeneficiairePCCommunePolitiquePojo aBeneficiairePCCP : listBeneficiairePCCP) {
-            String communePolitique = mapIdTiersCommunePolitique.get(aBeneficiairePCCP.getIdTiers());
-            if (!JadeStringUtil.isEmpty(communePolitique)) {
+            CommunePolitiqueBean communePolitique = mapIdTiersCommunePolitique.get(aBeneficiairePCCP.getIdTiers());
+            if (communePolitique != null) {
                 aBeneficiairePCCP.setCommunePolitique(communePolitique);
             }
         }

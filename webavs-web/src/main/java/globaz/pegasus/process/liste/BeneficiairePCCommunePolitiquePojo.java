@@ -1,5 +1,6 @@
 package globaz.pegasus.process.liste;
 
+import globaz.prestation.interfaces.tiers.CommunePolitiqueBean;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.listoutput.converterImplemented.LabelTranslater;
 import ch.globaz.common.listoutput.converterImplemented.MontantConverter;
@@ -15,7 +16,7 @@ import ch.globaz.simpleoutputlist.annotation.style.ColumnStyle;
 @Translater(value = LabelTranslater.class, identifier = "PEGASUS_LISTE_EXCEL_CP")
 public class BeneficiairePCCommunePolitiquePojo implements Comparable<BeneficiairePCCommunePolitiquePojo> {
 
-    private String communePolitique = "";
+    private CommunePolitiqueBean communePolitique;
     private String idTiers = "";
     private String nss = "";
     private String nom = "";
@@ -26,12 +27,16 @@ public class BeneficiairePCCommunePolitiquePojo implements Comparable<Beneficiai
 
     @Column(name = "commune", order = 1)
     @ColumnStyle(align = Align.CENTER)
-    public String getCommunePolitique() {
-        return communePolitique;
+    public String getCodeCommunePolitique() {
+        return communePolitique.getCode();
     }
 
-    public void setCommunePolitique(String communePolitique) {
+    public void setCommunePolitique(CommunePolitiqueBean communePolitique) {
         this.communePolitique = communePolitique;
+    }
+
+    public String getNomCommunePolitique() {
+        return communePolitique.getNom();
     }
 
     public String getIdTiers() {

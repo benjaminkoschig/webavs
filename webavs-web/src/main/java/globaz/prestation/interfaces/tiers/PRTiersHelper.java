@@ -1824,8 +1824,6 @@ public class PRTiersHelper {
         return ((BSession) session).getApplication().getCalendar().compare(new JADate(date), dateAVS) != JACalendar.COMPARE_FIRSTLOWER;
     }
 
- 
-
     /**
      * Retourne la commune politique en fonction de l'<code>idTiers</code> et <strong>pour l'année transmise en
      * argument.</strong></br>
@@ -1884,7 +1882,39 @@ public class PRTiersHelper {
      */
     public static Map<String, String> getCommunePolitique(Set<String> setIdTiers, Date date, BSession session)
             throws IllegalStateException {
+
+        Map<String, CommunePolitiqueBean> mapCommuneBeanParIdTiers = findCommunePolitique(setIdTiers, date, session);
         Map<String, String> mapCommuneParIdTiers = new HashMap<String, String>();
+
+        for (Map.Entry<String, CommunePolitiqueBean> entry : mapCommuneBeanParIdTiers.entrySet()) {
+            mapCommuneParIdTiers.put(entry.getKey(), entry.getValue().getCode());
+        }
+
+        return mapCommuneParIdTiers;
+    }
+
+    /**
+     * Récupère un objet {@link CommunePolitiqueBean} pour la liste d'idTiers <code>idTiers</code></br>
+     * La recherche est réalisée part lot de mille idTiers(limitation de la clause SQL 'IN'</br>
+     * </br>
+     * Si le tiers à bien été retrouvé mais que sa commune politique n'est pas renseignée, ce sera la clé
+     * {@link CommunePolitique}.LABEL_COMMUNE_POLITIQUE_NOT_FOUND traduite qui sera retournée</br>
+     * </br>
+     * Si le tiers à bien été retrouvé mais que plusieurs commune politique sont renseignées pour une même date
+     * (chevauchement), ce sera la clé {@link CommunePolitique}.LABEL_COMMUNE_POLITIQUE_PLUSIEURS_RESULTAT traduite qui
+     * sera retournée</br>
+     * 
+     * 
+     * @param idTiers Une list d'idTiers pour lesquels la commune politique doit être recherchée
+     * @param date La date pour la recherche des périodes dans les liens entre tiers. <strong>La date doit contenir le
+     *            jours, le mois et l'année</strong>
+     * @param session La session à utiliser. Doit posséder une transaction ouverte
+     * @return Une Map contenant les idTiers comme clé et les {@link CommunePolitiqueBean} comme valeur.
+     * @throws Exception en cas d'arguments incorrectes..
+     */
+    public static Map<String, CommunePolitiqueBean> findCommunePolitique(Set<String> setIdTiers, Date date,
+            BSession session) throws IllegalStateException {
+        Map<String, CommunePolitiqueBean> mapCommuneParIdTiers = new HashMap<String, CommunePolitiqueBean>();
 
         if (setIdTiers == null) {
             throw new IllegalArgumentException("Argument [idTiers] can not be null or empty");
@@ -1910,13 +1940,16 @@ public class PRTiersHelper {
         String schema = JadePersistenceUtil.getDbSchema();
         String dateFormatee = new SimpleDateFormat("yyyyMMdd").format(date);
 
-        String communeNonTrouvee = session.getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_NOT_FOUND.getKey());
-        String plusieursCommuneTrouvees = session.getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_PLUSIEURS_RESULTAT
-                .getKey());
+        CommunePolitiqueBean communeNonTrouvee = new CommunePolitiqueBean(
+                session.getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_NOT_FOUND.getKey()),
+                session.getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_NOT_FOUND_NOM_LONG.getKey()));
+        CommunePolitiqueBean plusieursCommuneTrouvees = new CommunePolitiqueBean(
+                session.getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_PLUSIEURS_RESULTAT.getKey()),
+                session.getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_PLUSIEURS_RESULTAT_NOM_LONG.getKey()));
 
         List<String> listIdTiers = new ArrayList<String>(setIdTiers);
         StringBuilder startQuery = new StringBuilder();
-        startQuery.append("SELECT tiers.HTITIE, administration.HBCADM ");
+        startQuery.append("SELECT tiers.HTITIE, administration.HBCADM, tiersAdmin.HTLDE1, tiersAdmin.HTLDE2 ");
         startQuery.append("FROM " + schema + ".TITIERP tiers ");
         startQuery.append("inner join " + schema
                 + ".TICTIEP as compositionTiers ON tiers.HTITIE = compositionTiers.HTITIP ");
@@ -1924,6 +1957,8 @@ public class PRTiersHelper {
                 + ".TITIERP as tiersCompose ON (compositionTiers.HTITIE = tiersCompose.HTITIE) ");
         startQuery.append("inner join " + schema
                 + ".TIADMIP as administration ON  tiersCompose.HTITIE = administration.HTITIE ");
+        startQuery.append("inner join " + schema
+                + ".TITIERP as tiersAdmin ON administration.HTITIE = tiersAdmin.HTITIE ");
         startQuery
                 .append("WHERE (("
                         + dateFormatee
@@ -1954,7 +1989,12 @@ public class PRTiersHelper {
                 ResultSet resultSet = stat.executeQuery();
                 while (resultSet.next()) {
                     String idTiers = String.valueOf(resultSet.getInt(1));
-                    String commune = resultSet.getString(2).trim();
+                    String codeCommune = resultSet.getString(2).trim();
+                    String nomCommune = resultSet.getString(3).trim();
+                    nomCommune += " " + resultSet.getString(4).trim();
+
+                    CommunePolitiqueBean commune = new CommunePolitiqueBean(codeCommune, nomCommune);
+
                     /*
                      * Si une commune est déjà renseignée pour cette id tiers
                      */
@@ -1971,10 +2011,8 @@ public class PRTiersHelper {
                      * Si aucune commune politique n'est renseigné pour cette idTiers
                      */
                     else {
-                        if (JadeStringUtil.isBlank(commune)) {
+                        if (JadeStringUtil.isBlank(codeCommune)) {
                             commune = communeNonTrouvee;
-                        } else {
-                            commune = commune.trim();
                         }
                         mapCommuneParIdTiers.put(idTiers.trim(), commune);
                     }
