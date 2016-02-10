@@ -18,8 +18,8 @@ public class Date implements Comparable<Date> {
     public static final String DATE_INCONNU = "????";
 
     private static final String EXCEPTION_DATE_NULL = "La date ne peut être null";
-    private static final String EXCEPTION_DATE_FORMATS_RESPECT = "La date '%s' doit respecter un des formats suivants : yyyyMMdd ; dd.MM.yyyy ; MM.yyyy ; yyyyMM";
-    private static final String EXCEPTION_DATE_FORMATS_RESPECT_ONE = "La date '%s' doit respecter le format suivants : %s";
+    private static final String EXCEPTION_DATE_FORMATS_RESPECT = "La date '%s' doit respecter un des formats suivants : yyyyMMdd ; dd.MM.yyyy ; MM.yyyy ; yyyyMM ou n'est pas une date valable !";
+    private static final String EXCEPTION_DATE_FORMATS_RESPECT_ONE = "La date '%s' doit respecter le format suivants : %s ou n'est pas une date valable !";
 
     public static final String DATE_PATTERN = "yyyyMMdd";
     public static final String DATE_PATTERN_SWISS = "dd.MM.yyyy";

@@ -14,6 +14,7 @@ public class REFichierDnraJournalierTraite extends BEntity {
     private static final long serialVersionUID = 1738761316025565423L;
     private String idFichierDnraJournalierTraite = new String();
     private String nomFichierDnraJournalierTraite = new String();
+    private Integer nbMutationTrouvee = Integer.valueOf(0);
 
     @Override
     protected void _beforeAdd(BTransaction transaction) throws java.lang.Exception {
@@ -32,6 +33,7 @@ public class REFichierDnraJournalierTraite extends BEntity {
     protected void _readProperties(BStatement statement) throws Exception {
         idFichierDnraJournalierTraite = statement.dbReadNumeric("DNRAID");
         nomFichierDnraJournalierTraite = statement.dbReadString("DNRANOM");
+        nbMutationTrouvee = Integer.valueOf(statement.dbReadNumeric("DNRANBMUT"));
     }
 
     @Override
@@ -54,6 +56,9 @@ public class REFichierDnraJournalierTraite extends BEntity {
                 "DNRANOM",
                 _dbWriteString(statement.getTransaction(), getNomFichierDnraJournalierTraite(),
                         "nomFichierDnraJournalierTraite"));
+
+        statement.writeField("DNRANBMUT",
+                _dbWriteNumeric(statement.getTransaction(), String.valueOf(nbMutationTrouvee), "nbMutationTrouvee"));
     }
 
     public String getIdFichierDnraJournalierTraite() {
@@ -70,6 +75,14 @@ public class REFichierDnraJournalierTraite extends BEntity {
 
     public void setNomFichierDnraJournalierTraite(String nomFichierDnraJournalierTraite) {
         this.nomFichierDnraJournalierTraite = nomFichierDnraJournalierTraite;
+    }
+
+    public Integer getNbMutationTrouvee() {
+        return nbMutationTrouvee;
+    }
+
+    public void setNbMutationTrouvee(Integer nbMutationTrouvee) {
+        this.nbMutationTrouvee = nbMutationTrouvee;
     }
 
 }

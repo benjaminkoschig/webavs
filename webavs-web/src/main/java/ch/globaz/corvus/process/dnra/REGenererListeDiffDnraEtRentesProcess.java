@@ -16,6 +16,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFSituationFamiliale;
+import globaz.hera.db.famille.SFMembreFamille;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeFilenameUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -37,11 +38,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import ch.globaz.common.codesystem.CodeSystemeResolver;
 import ch.globaz.common.listoutput.SimpleOutputListBuiliderJade;
@@ -109,7 +112,8 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
 
                 // parsing et mapping dans la structure d'objet
                 PaysLoader paysLoader = new PaysLoader();
-                MutationsContainer mutationsContainer = MutationParser.parsFile(fichierMutation.getAbsolutePath(),
+                MutationParser mutationParser = new MutationParser();
+                MutationsContainer mutationsContainer = mutationParser.parsFile(fichierMutation.getAbsolutePath(),
                         paysLoader);
                 mutationsContainer.setFichierMutationName(fichierMutation.getAbsolutePath());
 
@@ -122,6 +126,8 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                 // recherche des infos sur les tiers relatives aux mutations qui on un nss invalidé
                 Set<InfoTiers> listInfosTiersNssInvalide = findInfosTiers(mutationsContainer.extractNssInvalide(),
                         paysLoader.getMapPaysByCodeCentrale());
+
+                consolideEtatCivilDepuisLaSituationFamilliale(fichierMutation, listInfosTiersNssActifInactif);
 
                 // filtrer les infoTiers
                 supprimerInfoTiersNonDesires(listInfosTiersNssActifInactif);
@@ -139,13 +145,14 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                 JadeLogger.info(getName(), "le fichier XLS suivant a été généré avec succès" + generatedXlsFilePath);
 
                 // flaguer le fichier
-                marquerFichierDnraCommeTraite(fichierMutation.getName());
+                marquerFichierDnraCommeTraite(fichierMutation.getName(), differenceTrouvees.size());
 
                 // suppression du fichier journalier
                 JadeFsFacade.delete(fichierMutation.getAbsolutePath());
 
+                Integer nbDifference = differenceTrouvees.size();
                 // envoyer l'email
-                sendMail(mailsList, generatedXlsFilePath);
+                sendMail(mailsList, generatedXlsFilePath, mutationParser.getErrors(), nbDifference);
             }
         } catch (Exception e) {
             JadeLogger.error(getName(), "une erreur est survenue lors du traitement");
@@ -155,6 +162,21 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
 
         JadeLogger.info(getName(), "Fin du traitement de génération des listes de différences");
 
+    }
+
+    private void consolideEtatCivilDepuisLaSituationFamilliale(File fichierMutation,
+            Set<InfoTiers> listInfosTiersNssInvalide) {
+        ch.globaz.common.domaine.Date dateFile = resolveDateFile(fichierMutation);
+
+        for (InfoTiers infoTiers : listInfosTiersNssInvalide) {
+            infoTiers.setEtatCivil(findEtatCivil(infoTiers.getIdTiers(), dateFile));
+        }
+    }
+
+    private ch.globaz.common.domaine.Date resolveDateFile(File fichierMutation) {
+        ch.globaz.common.domaine.Date date = new ch.globaz.common.domaine.Date(fichierMutation.getName()
+                .substring(fichierMutation.getName().indexOf("_") + 1).substring(0, 8));
+        return date;
     }
 
     /**
@@ -173,14 +195,39 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
         }
     }
 
-    private void sendMail(List<String> mailsList, String joinFilePath) throws Exception {
+    private void sendMail(List<String> mailsList, String joinFilePath, Map<Exception, String> mapErrors,
+            Integer nbDifference) throws Exception {
         // ajout de la pièce jointe
         List<String> joinsFilesPathsList = new ArrayList<String>();
         joinsFilesPathsList.add(joinFilePath);
 
+        StringBuilder errors = new StringBuilder();
+        String body = "";
+
         // sujet et corps du mail
-        String subject = getSession().getLabel("LIST_CORVUS_DIFFERENCE_MAIL_SUBJECT_SUCCESS");
-        String body = getSession().getLabel("LIST_CORVUS_DIFFERENCE_MAIL_BODY_SUCCESS");
+        String subject = FWMessageFormat.format(getSession().getLabel("LIST_CORVUS_DIFFERENCE_MAIL_SUBJECT_SUCCESS"),
+                nbDifference);
+
+        if (!mapErrors.isEmpty()) {
+
+            subject = FWMessageFormat.format(getSession().getLabel("LIST_CORVUS_DIFFERENCE_MAIL_SUBJECT_SUCCESS"),
+                    nbDifference);
+
+            body = getSession().getLabel("LIST_CORVUS_DIFFERENCE_MAIL_BODY_ERREURS_DETECTEES") + "\n\n";
+
+            for (Entry<Exception, String> entry : mapErrors.entrySet()) {
+                errors.append("   ").append(entry.getKey().getMessage()).append(" ")
+                        .append(getSession().getLabel("LIST_CORVUS_DIFFERENCE_MAIL_BODY_ERREURS_MUTATION"))
+                        .append(": ");
+                errors.append(entry.getValue().trim()).append("\n");
+            }
+        }
+
+        if (!mapErrors.isEmpty()) {
+            body = body + errors + "\n\n";
+        }
+
+        body = body + getSession().getLabel("LIST_CORVUS_DIFFERENCE_MAIL_BODY_SUCCESS");
 
         // envoi
         ProcessMailUtils.sendMail(mailsList, subject, body, joinsFilesPathsList);
@@ -191,6 +238,60 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
         emails = REProperties.DNRA_PROCESS_EMAILS.getValue();
         List<String> mailsList = Arrays.asList(emails.split(","));
         return mailsList;
+    }
+
+    /**
+     * Remonte l'état civile pour un tiers à une date donnée si la date est null on prend la date du jour.
+     * 
+     * @param listNss
+     * @return
+     */
+    private EtatCivil findEtatCivil(String idTiers, ch.globaz.common.domaine.Date date) {
+
+        try {
+            SFMembreFamille membre = new SFMembreFamille();
+            membre.setSession(getSession());
+            membre.setIdTiers(idTiers);
+            membre.setCsDomaineApplication(ISFSituationFamiliale.CS_DOMAINE_RENTES);
+
+            membre.setAlternateKey(SFMembreFamille.ALTERNATE_KEY_IDTIERS);
+            membre.retrieve();
+            if (membre.isNew()) {
+                // On tente de récupérer le membre de famille pour le domaine
+                // standard !!!
+                membre.setCsDomaineApplication(ISFSituationFamiliale.CS_DOMAINE_STANDARD);
+                membre.retrieve();
+            }
+            String etatCivil = null;
+            if (!membre.isNew()) {
+                etatCivil = membre.getEtatCivil(date.getSwissValue());
+            }
+            Map<String, EtatCivil> mapSituationFamilliale = new HashMap<String, EtatCivil>() {
+                {
+                    put(ISFSituationFamiliale.CS_ETAT_CIVIL_CELIBATAIRE, EtatCivil.CELIBATAIRE);
+                    put(ISFSituationFamiliale.CS_ETAT_CIVIL_MARIE, EtatCivil.MARIE);
+                    put(ISFSituationFamiliale.CS_ETAT_CIVIL_DIVORCE, EtatCivil.DIVORCE);
+                    put(ISFSituationFamiliale.CS_ETAT_CIVIL_VEUF, EtatCivil.VEUF);
+                    put(ISFSituationFamiliale.CS_ETAT_CIVIL_SEPARE_DE_FAIT, EtatCivil.SEPARE_DE_FAIT);
+                    put(ISFSituationFamiliale.CS_ETAT_CIVIL_SEPARE_JUDICIAIREMENT, EtatCivil.SEPARE);
+                    put(ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_ENREGISTRE, EtatCivil.LPART);
+                    put(ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_DECES, EtatCivil.LPART_DIS_DECES);
+                    put(ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_JUDICIAIREMENT, EtatCivil.LPART_DISSOUT);
+                    put(ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_SEPARE_DE_FAIT, EtatCivil.LPART_SEP_FAIT);
+                }
+            };
+
+            if (mapSituationFamilliale.containsKey(etatCivil)) {
+                return mapSituationFamilliale.get(etatCivil);
+            } else {
+                // Aucune relation trouvé
+                return EtatCivil.CELIBATAIRE;
+            }
+
+        } catch (Exception e) {
+            throw new java.lang.RuntimeException(e);
+        }
+
     }
 
     /**
@@ -214,7 +315,7 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
             sql.append("inner join schema.TITIERP on schema.TITIERP.HTITIE = schema.TIPAVSP.HTITIE ");
             sql.append("inner join schema.TIPERSP on schema.TIPERSP.HTITIE = schema.TIPAVSP.HTITIE ");
             sql.append("where HXNAVS in (").append(QueryExecutor.forInString(list)).append(")");
-            listInfosTiers.addAll(QueryExecutor.execute(sql.toString(), InfoTiers.class, getSession(), converters));
+            listInfosTiers.addAll(QueryExecutor.execute(sql.toString(), InfoTiers.class, converters));
         }
         final Set<InfoTiers> infosTiers = new HashSet<InfoTiers>();
         infosTiers.addAll(listInfosTiers);
@@ -226,15 +327,17 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
      * Insert dans la DB le nom du fichier afin de l'identifier comme traité
      * 
      * @param nomFichier
+     * @param nbMutationTrouvee
      * @throws Exception
      */
-    private void marquerFichierDnraCommeTraite(String nomFichier) throws Exception {
+    private void marquerFichierDnraCommeTraite(String nomFichier, int nbMutationTrouvee) throws Exception {
         BTransaction transaction = null;
         try {
             transaction = new BTransaction(getSession());
             transaction.openTransaction();
             REFichierDnraJournalierTraite fichierDnra = new REFichierDnraJournalierTraite();
             fichierDnra.setNomFichierDnraJournalierTraite(nomFichier);
+            fichierDnra.setNbMutationTrouvee(nbMutationTrouvee);
             fichierDnra.add(transaction);
             transaction.commit();
         } catch (Exception e) {

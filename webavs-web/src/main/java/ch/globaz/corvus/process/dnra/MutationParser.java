@@ -19,6 +19,7 @@ class MutationParser {
     private static final String VALIDE = "1";
     private static final String HOMME = "1";
     private static final String FEMME = "2";
+    private final Map<Exception, String> errors = new HashMap<Exception, String>();
 
     static Mutation parse(String line) {
 
@@ -51,36 +52,42 @@ class MutationParser {
 
         mutation.setSourceDonnees(csvLineParser.nextElementTrim());
         mutation.setDateDece(csvLineParser.nextElementToDateRente("dateDece"));
-        mutation.setEtatCivil(resovleEtatCivil(csvLineParser.nextElementTrim()));
-        mutation.setRaisonDuPartenariatDissous(csvLineParser.nextElementTrim());
+        String codeEtatCivile = csvLineParser.nextElementTrim();
+        String codeRaison = csvLineParser.nextElementTrim();
+        mutation.setEtatCivil(resovleEtatCivil(codeEtatCivile, codeRaison));
+
+        mutation.setRaisonDuPartenariatDissous(codeRaison);
         mutation.setDateChangementEtatCivil(csvLineParser.nextElementToDateRente("dateChangementEtatCivil"));
         return mutation;
     }
 
-    public static EtatCivil resovleEtatCivil(String etatCivil) {
-        if (etatCivil != null) {
-            if ("1".equals(etatCivil)) {
+    public static EtatCivil resovleEtatCivil(String codeEtatCivile, String codeRaison) {
+        if (codeEtatCivile != null) {
+            if ("1".equals(codeEtatCivile)) {
                 return EtatCivil.CELIBATAIRE;
-            } else if ("2".equals(etatCivil)) {
+            } else if ("2".equals(codeEtatCivile)) {
                 return EtatCivil.MARIE;
-            } else if ("3".equals(etatCivil)) {
+            } else if ("3".equals(codeEtatCivile)) {
                 return EtatCivil.VEUF;
-            } else if ("4".equals(etatCivil)) {
+            } else if ("4".equals(codeEtatCivile)) {
                 return EtatCivil.DIVORCE;
-            } else if ("5".equals(etatCivil)) {
-                return EtatCivil.CELIBATAIRE; // A défaut de non marié(e);
-            } else if ("6".equals(etatCivil)) {
+            } else if ("5".equals(codeEtatCivile)) {
+                return EtatCivil.CELIBATAIRE; // a défaut de non marié
+            } else if ("6".equals(codeEtatCivile)) {
                 return EtatCivil.LPART;
-            } else if ("7".equals(etatCivil)) {
+            } else if ("7".equals(codeEtatCivile)) {
+                // Les autres cas sont traités par dissous.
+                if ("4".equals(codeRaison)) {
+                    return EtatCivil.LPART_DIS_DECES;
+                }
                 return EtatCivil.LPART_DISSOUT;
             }
         }
         return EtatCivil.UNDEFINED;
     }
 
-    public static MutationsContainer parsFile(String pahtFile, PaysLoader paysLoader) {
+    public MutationsContainer parsFile(String pahtFile, PaysLoader paysLoader) {
         final MutationsContainer list = new MutationsContainer(paysLoader);
-        final Map<Exception, String> errors = new HashMap<Exception, String>();
         BufferedReader fileBuffered = null;
         try {
             LOG.debug("Reade file {}", pahtFile);
@@ -108,5 +115,9 @@ class MutationParser {
             }
         }
         return list;
+    }
+
+    public Map<Exception, String> getErrors() {
+        return errors;
     }
 }

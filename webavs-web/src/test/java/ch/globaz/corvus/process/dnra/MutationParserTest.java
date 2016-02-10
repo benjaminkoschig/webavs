@@ -68,10 +68,10 @@ public class MutationParserTest {
         // List<String> files = Arrays
         // .asList(new String[] { "pucs1", "swissDec1", "swissDec2", "swissDecMix", "swissDec3" });
         final File folder = new File("src/test/resources/ch/globaz/corvus/dnra");
-
+        MutationParser mutationParser = new MutationParser();
         for (File file : folder.listFiles()) {
             if (file.isFile()) {
-                MutationParser.parsFile(file.getAbsolutePath(), paysLoader);
+                mutationParser.parsFile(file.getAbsolutePath(), paysLoader);
             }
         }
 
