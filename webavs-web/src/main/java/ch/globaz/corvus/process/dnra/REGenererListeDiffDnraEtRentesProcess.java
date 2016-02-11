@@ -127,11 +127,11 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                 Set<InfoTiers> listInfosTiersNssInvalide = findInfosTiers(mutationsContainer.extractNssInvalide(),
                         paysLoader.getMapPaysByCodeCentrale());
 
-                consolideEtatCivilDepuisLaSituationFamilliale(fichierMutation, listInfosTiersNssActifInactif);
-
                 // filtrer les infoTiers
                 supprimerInfoTiersNonDesires(listInfosTiersNssActifInactif);
                 supprimerInfoTiersNonDesires(listInfosTiersNssInvalide);
+
+                consolideEtatCivilDepuisLaSituationFamilliale(fichierMutation, listInfosTiersNssActifInactif);
 
                 // identification des différences entre les mutations annoncées et les données DB
                 DifferenceFinder differenceFinder = new DifferenceFinder(new Locale(getSession().getIdLangueISO()),
@@ -308,9 +308,9 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                 new PaysConverter(mapPaysByCodeCentral), new EtatCivilConverter());
         for (List<String> list : splittedList) {
             StringBuilder sql = new StringBuilder();
-            sql.append("select schema.TIPAVSP.HXNAVS as nss, schema.TITIERP.HNIPAY as codeNationalite, schema.TITIERP.HTLDE1 as nom, ");
-            sql.append("schema.TITIERP.HTLDE2 as prenom, schema.TIPERSP.HPDNAI as dateNaissance, schema.TIPERSP.HPDDEC as dateDeces, ");
-            sql.append(" schema.TITIERP.HNIPAY as pays, schema.TIPERSP.HPTSEX as sexe, schema.TIPERSP.HPTETC as etatCivil, schema.TITIERP.HTITIE as idTiers ");
+            sql.append("select schema.TIPAVSP.HXNAVS as nss, schema.TITIERP.HNIPAY as codeNationalite, schema.TITIERP.HTLDE1 as nom, schema.TITIERP.HTLDU1 as nomUpper, ");
+            sql.append("schema.TITIERP.HTLDE2 as prenom, schema.TITIERP.HTLDU2 as prenomUpper, schema.TIPERSP.HPDNAI as dateNaissance, schema.TIPERSP.HPDDEC as dateDeces, ");
+            sql.append("schema.TITIERP.HNIPAY as pays, schema.TIPERSP.HPTSEX as sexe, schema.TIPERSP.HPTETC as etatCivil, schema.TITIERP.HTITIE as idTiers ");
             sql.append("from schema.TIPAVSP ");
             sql.append("inner join schema.TITIERP on schema.TITIERP.HTITIE = schema.TIPAVSP.HTITIE ");
             sql.append("inner join schema.TIPERSP on schema.TIPERSP.HTITIE = schema.TIPAVSP.HTITIE ");
@@ -524,6 +524,7 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
         REPrestationAccordeeManager prestationManager = new REPrestationAccordeeManager();
         prestationManager.setSession(session);
 
+        // Il n'y pas besion de
         ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(session,
                 ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiers);
 
@@ -536,6 +537,7 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
         }
 
         int today = Integer.valueOf(new SimpleDateFormat("yyyyMM").format(new Date()));
+        ch.globaz.common.domaine.Date t = new ch.globaz.common.domaine.Date();
 
         SimpleDateFormat dateFormater = new SimpleDateFormat("yyyyMM");
         SimpleDateFormat dateReader = new SimpleDateFormat("MM.yyyy");

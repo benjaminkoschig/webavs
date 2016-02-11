@@ -33,6 +33,8 @@ public interface ISFSituationFamiliale {
     public static final String CS_DOMAINE_ID_RENTES = "R";
     public static final String CS_DOMAINE_ID_STANDARD = "STD";
     public static final String CS_DOMAINE_INDEMNITEE_JOURNALIERE = "36000001";
+    @Deprecated
+    // vue avec le RJE le domaine de rente n'est plus disponible pour les utilisateur. 11.02.2016
     public static final String CS_DOMAINE_RENTES = "36000003";
     public static final String CS_DOMAINE_STANDARD = "36000002";
 

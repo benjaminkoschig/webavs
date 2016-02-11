@@ -116,9 +116,9 @@ public class DifferenceFinderTest {
         assertThat(DifferenceFinder.isNomSame(mutation, infoTiers)).isTrue();
         mutation.setNom("Nom");
         assertThat(DifferenceFinder.isNomSame(mutation, infoTiers)).isFalse();
-        infoTiers.setNom("Nom");
+        infoTiers.setNomUpper("Nom");
         assertThat(DifferenceFinder.isNomSame(mutation, infoTiers)).isTrue();
-        infoTiers.setNom("NoM tttt");
+        infoTiers.setNomUpper("NoM tttt");
         assertThat(DifferenceFinder.isNomSame(mutation, infoTiers)).isFalse();
     }
 
@@ -127,7 +127,7 @@ public class DifferenceFinderTest {
         Mutation mutation = new Mutation();
         InfoTiers infoTiers = new InfoTiers();
         mutation.setNom("NOM");
-        infoTiers.setNom("Nom");
+        infoTiers.setNomUpper("NOM");
         assertThat(DifferenceFinder.isNomSame(mutation, infoTiers)).isTrue();
     }
 
@@ -138,9 +138,9 @@ public class DifferenceFinderTest {
         assertThat(DifferenceFinder.isPrenomSame(mutation, infoTiers)).isTrue();
         mutation.setPrenom("Prenom");
         assertThat(DifferenceFinder.isPrenomSame(mutation, infoTiers)).isFalse();
-        infoTiers.setPrenom("Prenom");
+        infoTiers.setPrenomUpper("Prenom");
         assertThat(DifferenceFinder.isPrenomSame(mutation, infoTiers)).isTrue();
-        infoTiers.setPrenom("Prenom2");
+        infoTiers.setPrenomUpper("Prenom2");
         assertThat(DifferenceFinder.isPrenomSame(mutation, infoTiers)).isFalse();
     }
 
@@ -149,7 +149,7 @@ public class DifferenceFinderTest {
         Mutation mutation = new Mutation();
         InfoTiers infoTiers = new InfoTiers();
         mutation.setPrenom("Prenom");
-        infoTiers.setPrenom("PRENOM");
+        infoTiers.setPrenomUpper("PRENOM");
         assertThat(DifferenceFinder.isPrenomSame(mutation, infoTiers)).isTrue();
     }
 

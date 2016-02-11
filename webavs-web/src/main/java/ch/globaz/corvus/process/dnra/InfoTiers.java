@@ -10,6 +10,8 @@ public class InfoTiers {
     private String nss;
     private String nom;
     private String prenom;
+    private String nomUpper;
+    private String prenomUpper;
     private DateRente dateNaissance;
     private Sexe sexe;
     private String codeNationalite;
@@ -97,11 +99,28 @@ public class InfoTiers {
         this.idTiers = idTiers;
     }
 
+    public String getNomUpper() {
+        return nomUpper;
+    }
+
+    public void setNomUpper(String nomUpper) {
+        this.nomUpper = nomUpper;
+    }
+
+    public String getPrenomUpper() {
+        return prenomUpper;
+    }
+
+    public void setPrenomUpper(String prenomUpper) {
+        this.prenomUpper = prenomUpper;
+    }
+
     @Override
     public String toString() {
-        return "InfoTiers [idTiers=" + idTiers + ", nss=" + nss + ", nom=" + nom + ", prenom=" + prenom
-                + ", dateNaissance=" + dateNaissance + ", sexe=" + sexe + ", codeNationalite=" + codeNationalite
-                + ", dateDeces=" + dateDeces + ", pays=" + pays + ", etatCivil=" + etatCivil + "]";
+        return "InfoTiers [idTiers=" + idTiers + ", nss=" + nss + ", nom=" + nom + ", prenom=" + prenom + ", nomUpper="
+                + nomUpper + ", prenomUpper=" + prenomUpper + ", dateNaissance=" + dateNaissance + ", sexe=" + sexe
+                + ", codeNationalite=" + codeNationalite + ", dateDeces=" + dateDeces + ", pays=" + pays
+                + ", etatCivil=" + etatCivil + "]";
     }
 
 }
