@@ -59,7 +59,7 @@ public class PageDeGardeDefinition implements IPageDeGardeDefinition {
     private BabelTextDefinition ADRESSE = new BabelTextDefinitionImpl("ADRESSE");
     private BabelTextDefinition header = new BabelTextDefinitionImpl("header");
     private BabelTextDefinition NOM_COLLABO = new BabelTextDefinitionImpl("NOM_COLLABO");
-    private BabelTextDefinition TEL_COLLABO = new BabelTextDefinitionImpl(1, 110, "TEL_COLLABO",
+    private BabelTextDefinition TEL_COLLABO = new BabelTextDefinitionImpl(1, 9, "TEL_COLLABO",
             "téléphone du collaborateur");
 
     @Override
