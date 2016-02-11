@@ -14,6 +14,7 @@ public class WebavsDocumentionLocator {
 
     private static final String PROP_NAME = "name";
     private static final String PROP_VERSION = "version";
+    private static final String PROP_VERSION_TECHNIQUE = "version.technical";
     private static final String PROP_VERSION_SERVICEPACK = "version.servicepack";
     private static final String WEBAVS_VERSION_PROP_FILE = "/webavs.version";
 
@@ -86,7 +87,7 @@ public class WebavsDocumentionLocator {
     }
 
     /**
-     * Retourne le numéro de version actuelle.
+     * Retourne le numéro de version business actuelle.
      * 
      * @return
      */
@@ -95,6 +96,21 @@ public class WebavsDocumentionLocator {
             loadProperties();
 
             return prop.getProperty(PROP_VERSION);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    /**
+     * Retourne le numéro de version technique
+     * 
+     * @return
+     */
+    public static String getVersionTechnique() {
+        try {
+            loadProperties();
+
+            return prop.getProperty(PROP_VERSION_TECHNIQUE);
         } catch (Exception e) {
             return "";
         }

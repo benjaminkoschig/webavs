@@ -52,25 +52,14 @@ if (datasource != null) {
 	                        <TD></TD>
 	                        <TD>Application :</TD>
 	                        <TD>
-	                        	<B>Web@AVS / Web@AHV (version <%=globaz.webavs.common.WebavsDocumentionLocator.getVersion()%><%=globaz.webavs.common.WebavsDocumentionLocator.getServicePackVersion()%> released on <%=globaz.webavs.common.WebavsDocumentionLocator.getDate()%>)</B>
+	                        	<B>Web@AVS / Web@AHV (technical version <%=globaz.webavs.common.WebavsDocumentionLocator.getVersionTechnique()%><%=globaz.webavs.common.WebavsDocumentionLocator.getServicePackVersion()%> released on <%=globaz.webavs.common.WebavsDocumentionLocator.getDate()%>)</B>
 	                        	<BR>
 	                        	<%
 	                        		java.util.List applications = new java.util.LinkedList();
 	                        		// liste les applications
 	                        		applications.add("Framework");
-									//applications.add("APG");
-	                        		//applications.add("Draco");
-	                        		//applications.add("Helios");
-									//applications.add("Hera");
-	                        		//applications.add("Hermes");
-									//applications.add("IJ");
-	                        		//applications.add("Musca");
-									//applications.add("Naos");
-	                        		//applications.add("Osiris");
-	                        		//applications.add("Pavo");
-	                        		//applications.add("Phenix");
 	                        		applications.add("Pyxis");
-	                        		//
+
 	                        		java.util.List versions = new java.util.LinkedList();
 	                        		for (java.util.Iterator iter = applications.iterator(); iter.hasNext(); ) {
 	                        			String applicationName = (String)iter.next();
