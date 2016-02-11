@@ -1,4 +1,5 @@
 name=${artifactId}
-version=${project.businessversion}
+version=${webavs.version.business}
+version.technical=${webavs.version.technical}
 version.servicepack=
 date=${maven.timestamp}
