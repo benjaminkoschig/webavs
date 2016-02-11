@@ -15,7 +15,7 @@
 	if (viewBean != null && viewBean.getSociete() != null && !viewBean.getSociete().isNew()) {
 		idSociete = viewBean.getSociete().getIdSociete();
 		libelleSociete = viewBean.getSociete().getNom();
-		idExterneSociete = viewBean.getSociete().getNumRubrique();
+		idExterneSociete = viewBean.getSociete().getIdExterne();
 		validateOnChange = false;
 	} else if (societeUnique != null && !societeUnique.isNew()) {
 		idSociete = societeUnique.getIdSociete();
