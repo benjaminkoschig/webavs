@@ -46,14 +46,8 @@ class FusionSql {
                     }
 
                     instruction = instruction.replaceAll("schema.", "SCHEMA.")
-
-                    if (instruction.trim().endsWith(";")) {
-                        scriptDmlFile << instruction + "\n"
-                        instruction = ""
-                    } else {
-                        instruction += "\n"
-                    }
-
+                    scriptDmlFile << instruction + "\n"
+                    instruction = ""
                 }
                 
             }
