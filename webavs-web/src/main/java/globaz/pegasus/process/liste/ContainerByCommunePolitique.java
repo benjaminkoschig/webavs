@@ -30,14 +30,14 @@ public class ContainerByCommunePolitique implements Comparable<ContainerByCommun
     @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
     @Aggregate(AggregateFunction.SUM)
     public BigDecimal getMontantRestitution() {
-        return montantRestitution.getBigDecimalValue();
+        return montantRestitution.getBigDecimalValue().abs();
     }
 
     @Column(name = "Paiement", order = 3)
     @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
     @Aggregate(AggregateFunction.SUM)
     public BigDecimal getMontantPaiement() {
-        return montantPaiement.getBigDecimalValue();
+        return montantPaiement.getBigDecimalValue().abs();
     }
 
     @Column(name = "commune", order = 1)
@@ -60,7 +60,7 @@ public class ContainerByCommunePolitique implements Comparable<ContainerByCommun
     @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
     @Aggregate(AggregateFunction.SUM)
     public BigDecimal getTotal() {
-        return total.getBigDecimalValue();
+        return total.getBigDecimalValue().abs();
     }
 
     public void setTotal(Montant total) {
