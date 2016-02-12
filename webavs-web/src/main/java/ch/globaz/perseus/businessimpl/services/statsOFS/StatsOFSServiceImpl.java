@@ -95,7 +95,7 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
     private Dossiers dossiers = null;
     private ObjectFactory of = null;
     private boolean isSommeRevenuAdditionnelSuperieurA1 = false;
-    private static final String DATE_JJ_MM_DEBUT_ANNEE = "01.01";
+    private static final String DATE_JJ_MM_DEBUT_ANNEE = "01.01.";
     private static final int NB_MOIS_RETRO = -6;
 
     private String calculerMontantAutresPrestationsAssurancesSociale(InputCalcul inputCalcul) throws CalculException {
