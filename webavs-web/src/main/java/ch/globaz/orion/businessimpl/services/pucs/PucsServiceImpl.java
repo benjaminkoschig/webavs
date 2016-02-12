@@ -249,14 +249,19 @@ public class PucsServiceImpl implements PucsService {
         paramsData.add(session.getLabel("MONTANT_AC1"), ds.getMontantAc1().toStringFormat());
         paramsData.add(session.getLabel("MONTANT_AC2"), ds.getMontantAc2().toStringFormat());
         paramsData.add(session.getLabel("MONTANT_CAF"), ds.getMontantCaf().toStringFormat());
-        builder.addTitle(session.getLabel("TITRE_LIST_SALAIRE") + "(" + PucsServiceImpl.NUMERO_INFORM_PUCS_LISIBLE
-                + ")", Align.RIGHT);
+
         paramsData.newLigne();
         String name = (Jade.getInstance().getPersistenceDir() + ds.getNumeroAffilie() + "list_" + JadeUUIDGenerator
                 .createStringUUID());
 
-        File file = builder.addList(list).classElementList(SalaryForList.class).addHeaderDetails(paramsData)
-                .outputName(name).build();
+        builder.addList(list)
+                .classElementList(SalaryForList.class)
+                .addHeaderDetails(paramsData)
+                .addTitle(
+                        session.getLabel("TITRE_LIST_SALAIRE") + "(" + PucsServiceImpl.NUMERO_INFORM_PUCS_LISIBLE + ")",
+                        Align.RIGHT);
+
+        File file = builder.outputName(name).build();
 
         return file;
     }

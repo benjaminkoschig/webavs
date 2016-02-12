@@ -288,8 +288,8 @@ public class DeclarationSalaireBuilderTest {
                         forListInterface.add(salaryForList);
                     }
 
-                    File f = SimpleOutputListBuilder.newInstance().local(locale).asPdf()
-                            .addTitle("Liste des déclaration de salaire", Align.RIGHT).addList(forListInterface)
+                    File f = SimpleOutputListBuilder.newInstance().local(locale).asPdf().addList(forListInterface)
+                            .addTitle("Liste des déclaration de salaire", Align.RIGHT)
                             .classElementList(SalaryForListInterface.class).addHeaderDetails(paramsData)
                             .outputName(path).build();
 

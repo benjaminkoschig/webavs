@@ -36,7 +36,7 @@ public class SimpleOutputListBuiliderJade extends SimpleOutputListBuilder {
     }
 
     public SimpleOutputListBuiliderJade outputNameAndAddPath(String name) {
-        String path = (Jade.getInstance().getPersistenceDir() + name + JadeUUIDGenerator.createStringUUID());
+        String path = (Jade.getInstance().getPersistenceDir() + name + "_" + JadeUUIDGenerator.createStringUUID());
         outputName(path);
         return this;
     }

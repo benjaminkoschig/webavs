@@ -1,11 +1,8 @@
 package globaz.pegasus.process.liste;
 
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
-import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.client.util.JadeUUIDGenerator;
-import globaz.jade.common.Jade;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.pegasus.process.PCAbstractJob;
@@ -21,11 +18,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.common.listoutput.SimpleOutputListBuiliderJade;
 import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.pegasus.business.domaine.pca.PcaEtat;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
@@ -175,15 +172,12 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
 
     private String createExcelFile(Map<String, List<BeneficiairePCCommunePolitiquePojo>> mapByCommunPolitique) {
 
-        String filePath = Jade.getInstance().getPersistenceDir();
+        String fileName = NUMERO_INFOROM_LISTE_PC;
         if (TYPE_LISTE_PC_RENTE.equalsIgnoreCase(typeListe)) {
-            filePath += NUMERO_INFOROM_LISTE_PC_RENTE + "_" + JadeUUIDGenerator.createStringUUID();
-        } else {
-            filePath += NUMERO_INFOROM_LISTE_PC + "_" + JadeUUIDGenerator.createStringUUID();
+            fileName = NUMERO_INFOROM_LISTE_PC_RENTE;
         }
-        Locale locale = new Locale(BSessionUtil.getSessionFromThreadContext().getIdLangueISO());
 
-        SimpleOutputListBuilder simpleList = SimpleOutputListBuilder.newInstance().local(locale);
+        SimpleOutputListBuilder simpleList = SimpleOutputListBuiliderJade.newInstance().outputNameAndAddPath(fileName);
 
         Iterator<List<BeneficiairePCCommunePolitiquePojo>> ite = mapByCommunPolitique.values().iterator();
         while (ite.hasNext()) {
@@ -201,6 +195,7 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
 
             simpleList.addList(sousListe).classElementList(BeneficiairePCCommunePolitiquePojo.class)
                     .addHeaderDetails(paramsData);
+            simpleList.addTitle(labelNomDocument, Align.LEFT);
 
             if (!JadeStringUtil.isEmpty(sheetName)) {
                 simpleList.addSubTitle(sheetName.replaceAll("\\*", "all"));
@@ -211,9 +206,7 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
             }
         }
 
-        simpleList.addTitle(labelNomDocument, Align.LEFT);
-
-        File file = simpleList.asXls().outputName(filePath).build();
+        File file = simpleList.asXls().build();
 
         return file.getAbsolutePath();
 

@@ -1,11 +1,8 @@
 package globaz.pegasus.process.liste;
 
-import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.client.util.JadeUUIDGenerator;
-import globaz.jade.common.Jade;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.osiris.api.APIEcriture;
@@ -21,10 +18,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.common.listoutput.SimpleOutputListBuiliderJade;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
@@ -252,12 +249,8 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
 
     private String createExcelFile(List<ContainerByCommunePolitique> containerCP) {
 
-        String filePath = Jade.getInstance().getPersistenceDir() + NUMERO_INFOROM + "_"
-                + JadeUUIDGenerator.createStringUUID();
-
-        Locale locale = new Locale(BSessionUtil.getSessionFromThreadContext().getIdLangueISO());
-
-        SimpleOutputListBuilder simpleOut = SimpleOutputListBuilder.newInstance().local(locale).addList(containerCP)
+        SimpleOutputListBuilder simpleOut = SimpleOutputListBuiliderJade.newInstance()
+                .outputNameAndAddPath(NUMERO_INFOROM).addList(containerCP)
                 .classElementList(ContainerByCommunePolitique.class);
 
         String titre = NUMERO_INFOROM + "_" + getSession().getLabel("PEGASUS_LISTE_EXCEL_CP_TITRE_RECAP_TOTAUX");
@@ -272,8 +265,7 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
         paramsData.add(getSession().getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_UTILISATEUR.getKey()),
                 getSession().getUserId());
 
-        File file = simpleOut.addTitle(titre, Align.LEFT).addHeaderDetails(paramsData).asXls().outputName(filePath)
-                .build();
+        File file = simpleOut.addTitle(titre, Align.LEFT).addHeaderDetails(paramsData).asXls().build();
 
         return file.getAbsolutePath();
 
