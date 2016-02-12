@@ -1968,10 +1968,13 @@ public class PRTiersHelper {
 
         String stopQuery = ")";
 
-        try {
-            int loopNumber = (setIdTiers.size() / 1000) + 1;
-            for (int loop = 0; loop < loopNumber; loop++) {
-                BPreparedStatement stat = new BPreparedStatement(transaction);
+        int loopNumber = (setIdTiers.size() / 1000) + 1;
+
+        for (int loop = 0; loop < loopNumber; loop++) {
+
+            BPreparedStatement stat = null;
+            try {
+                stat = new BPreparedStatement(transaction);
                 StringBuilder query = new StringBuilder();
                 int start = loop * 1000;
                 int stop = start + 1000;
@@ -2017,23 +2020,29 @@ public class PRTiersHelper {
                         mapCommuneParIdTiers.put(idTiers.trim(), commune);
                     }
                 }
-            }
-            /*
-             * Due au clause Where de la requête, certains idTiers inclus dans la requêtes ne sont potentiellement pas
-             * remonté.
-             * Dans ce cas le label LABEL_COMMUNE_POLITIQUE_NOT_FOUND est inséré à la place de la commune politique (qui
-             * n'existe pas)
-             */
-            for (String id : listIdTiers) {
-                if (!mapCommuneParIdTiers.containsKey(id)) {
-                    mapCommuneParIdTiers.put(id, communeNonTrouvee);
+
+            } catch (Exception e) {
+                // What can i do with this here ?! Nothing, so y re-throw them
+                throw new IllegalStateException("Exception occur when executing request : " + e.toString(), e);
+            } finally {
+                if (stat != null) {
+                    stat.closePreparedStatement();
                 }
             }
-
-        } catch (Exception e) {
-            // What can i do with this here ?! Nothing, so y re-throw them
-            throw new IllegalStateException("Exception occur when executing request : " + e.toString(), e);
         }
+
+        /*
+         * Due au clause Where de la requête, certains idTiers inclus dans la requêtes ne sont potentiellement pas
+         * remonté.
+         * Dans ce cas le label LABEL_COMMUNE_POLITIQUE_NOT_FOUND est inséré à la place de la commune politique (qui
+         * n'existe pas)
+         */
+        for (String id : listIdTiers) {
+            if (!mapCommuneParIdTiers.containsKey(id)) {
+                mapCommuneParIdTiers.put(id, communeNonTrouvee);
+            }
+        }
+
         return mapCommuneParIdTiers;
     }
 
