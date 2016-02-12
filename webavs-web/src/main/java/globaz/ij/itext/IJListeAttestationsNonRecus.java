@@ -360,22 +360,22 @@ public class IJListeAttestationsNonRecus extends FWIAbstractManagerDocumentList 
             Collections.sort(vectorManagerContainer);
 
             this._addColumnCenter(getSession()
-                    .getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_TITRE_COLONNE.getKey()), 5);
-            this._addColumnCenter("", 5);
+                    .getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_TITRE_COLONNE.getKey()), 3);
+            this._addColumnCenter("", 1);
 
         }
 
         // colonnes
         this._addColumnRight(getSession().getLabel("LISTE_FORMULAIRE_NO_PRONONCE"), 10);
-        this._addColumnCenter("", 5);
-        this._addColumnLeft(getSession().getLabel("LISTE_FORMULAIRE_DETAIL_REQUERANT"), 30);
+        this._addColumnCenter("", 2);
+        this._addColumnLeft(getSession().getLabel("LISTE_FORMULAIRE_DETAIL_REQUERANT"), 40);
         this._addColumnCenter("", 5);
         this._addColumnRight(getSession().getLabel("LISTE_FORMULAIRE_NO_BASEIND"), 10);
-        this._addColumnCenter("", 5);
+        this._addColumnCenter("", 2);
         this._addColumnLeft(getSession().getLabel("LISTE_FORMULAIRE_DATEENVOI"), 10);
-        this._addColumnCenter("", 5);
+        this._addColumnCenter("", 2);
         this._addColumnRight(getSession().getLabel("LISTE_FORMULAIRE_NBRAPPEL"), 10);
-        this._addColumnCenter("", 5);
+        this._addColumnCenter("", 2);
         this._addColumnLeft(getSession().getLabel("LISTE_FORMULAIRE_ENVOYEA"), 20);
 
     }
