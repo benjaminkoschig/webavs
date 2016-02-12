@@ -20,9 +20,9 @@
 
 		<web.resources>src/main/webapp</web.resources>
 
-		<!-- TODO adapter le numéro de la RC -->
-		<webavs.version.business>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-RC01-b03</webavs.version.business>
-		<webavs.version.technical>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-b03</webavs.version.technical>
+		<!-- TODO adapter le numéro de la business version et de la technical version -->
+		<webavs.version.business>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-RC01-b04</webavs.version.business>
+		<webavs.version.technical>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-b5</webavs.version.technical>
 	</properties>
 
 	<build>
