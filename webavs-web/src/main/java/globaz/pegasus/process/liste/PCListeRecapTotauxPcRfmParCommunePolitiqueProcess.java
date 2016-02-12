@@ -260,7 +260,7 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
         SimpleOutputListBuilder simpleOut = SimpleOutputListBuilder.newInstance().local(locale).addList(containerCP)
                 .classElementList(ContainerByCommunePolitique.class);
 
-        String titre = getSession().getLabel("PEGASUS_LISTE_EXCEL_CP_TITRE_RECAP_TOTAUX");
+        String titre = NUMERO_INFOROM + "_" + getSession().getLabel("PEGASUS_LISTE_EXCEL_CP_TITRE_RECAP_TOTAUX");
         String genererLe = getSession().getLabel("PEGASUS_LISTE_EXCEL_CP_GENERE_LE");
         String periodeConcerne = getSession().getLabel("PEGASUS_LISTE_EXCEL_CP_PERIODE_CONCERNE");
 
