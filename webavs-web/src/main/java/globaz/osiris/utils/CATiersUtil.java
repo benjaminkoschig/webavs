@@ -169,7 +169,7 @@ public class CATiersUtil {
         String cantonOfficePoursuite = null;
         if (!officePoursuiteTiers.isNew()) {
             TIAdresseDataSource adresseDataSource = officePoursuiteTiers.getAdresseAsDataSource(
-                    IConstantes.CS_AVOIR_ADRESSE_DOMICILE, IConstantes.CS_APPLICATION_DEFAUT, idExterneRole,
+                    IConstantes.CS_AVOIR_ADRESSE_COURRIER, IConstantes.CS_APPLICATION_DEFAUT, idExterneRole,
                     JACalendar.todayJJsMMsAAAA(), true, officePoursuiteTiers.getLangueIso());
             cantonOfficePoursuite = adresseDataSource.canton_court;
         }
