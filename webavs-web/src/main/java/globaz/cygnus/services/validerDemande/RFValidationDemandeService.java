@@ -246,15 +246,15 @@ public class RFValidationDemandeService {
 
         // Test si le délai de 15 mois et le délai décès est respecté
         if (!viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
+            boolean demandeNonRetro = !viewBean.getIsRetro();
+
             RFVerificationDelaisDemandeService rfVerificationDelaisDemandeService = new RFVerificationDelaisDemandeService();
             Set<String[]> idsMotifRefus = rfVerificationDelaisDemandeService.verifierDelais_Deces_15Mois(
                     new RFVerificationDelaisDemandeData(dateFacture, viewBean.getDateReception(),
                             viewBean.getIdTiers(), viewBean.getMontantAPayer(), viewBean.getDateDeces()), viewBean
-                            .getSession());
+                            .getSession(), demandeNonRetro);
 
             if ((null != idsMotifRefus) && (idsMotifRefus.size() > 0)) {
-
-                boolean demandeNonRetro = !viewBean.getIsRetro();
 
                 for (String idMotifRefu[] : idsMotifRefus) {
                     if (idMotifRefu[0].equals(IRFMotifsRefus.ID_DELAI_15_MOIS_DEPASSE) && demandeNonRetro) {
