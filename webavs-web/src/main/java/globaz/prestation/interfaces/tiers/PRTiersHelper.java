@@ -1993,8 +1993,8 @@ public class PRTiersHelper {
                 while (resultSet.next()) {
                     String idTiers = String.valueOf(resultSet.getInt(1));
                     String codeCommune = resultSet.getString(2).trim();
-                    String nomCommune = resultSet.getString(3).trim();
-                    nomCommune += " " + resultSet.getString(4).trim();
+                    String nomCommune = resultSet.getString(3).trim().replace('¬', '\'').replace('¢', '"');
+                    nomCommune += " " + resultSet.getString(4).trim().replace('¬', '\'').replace('¢', '"');
 
                     CommunePolitiqueBean commune = new CommunePolitiqueBean(codeCommune, nomCommune);
 
