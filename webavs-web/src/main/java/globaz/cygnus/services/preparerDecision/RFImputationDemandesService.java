@@ -1115,7 +1115,8 @@ public class RFImputationDemandesService {
                     Set<String[]> idsMotifRefusDelais = rfVerificationDelaisDemandeService.verifierDelais_Deces_15Mois(
                             new RFVerificationDelaisDemandeData(demandeCourante.getDateFacture(), demandeCourante
                                     .getDateReception(), demandeCourante.getIdTiers(), demandeCourante
-                                    .getMontantAccepte(), demandeCourante.getDateDeces()), session);
+                                    .getMontantAccepte(), demandeCourante.getDateDeces()), session, demandeCourante
+                                    .getIsRetro());
 
                     // Ajout du motif de refus
                     if ((null != idsMotifRefusDelais) && (idsMotifRefusDelais.size() > 0)) {

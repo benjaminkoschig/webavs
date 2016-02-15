@@ -195,6 +195,7 @@ public class RFProcessAdaptationAnnuelleRegimeHandlerEntity implements JadeProce
             rfDemande.setIsForcerPaiement(false);
             rfDemande.setIsContratDeTravail(false);
             rfDemande.setIsPP(false);
+            rfDemande.setIsRetro(demData.getIsRetro());
 
             // C'est la nouvelle demande -> on réutilise le calcul de la demande demData
             rfDemande.setMontantAPayer(demData.getMontantAccepte());
@@ -464,7 +465,7 @@ public class RFProcessAdaptationAnnuelleRegimeHandlerEntity implements JadeProce
 
         demandeCourante.setMontantAccepteAvantAdaptation(rfDem.getMontantAPayer());
         demandeCourante.setMontantMensuelAccepteAvantAdaptation(rfDem.getMontantMensuel());
-
+        demandeCourante.setIsRetro(rfDem.getIsRetro());
         demandeCourante.setDateReception(rfDem.getDateReception());
         demandeCourante.setDateFacture(rfDem.getDateFacture());
         demandeCourante.setDateDeces(rfDem.getDateDeces());

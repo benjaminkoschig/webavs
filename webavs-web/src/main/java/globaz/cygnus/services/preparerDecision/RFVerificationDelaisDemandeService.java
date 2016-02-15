@@ -29,8 +29,8 @@ public class RFVerificationDelaisDemandeService {
      * @return Set<String> labelsErrors
      * @throws Exception
      */
-    public Set<String[]> verifierDelais_Deces_15Mois(RFVerificationDelaisDemandeData dates, BSession session)
-            throws Exception {
+    public Set<String[]> verifierDelais_Deces_15Mois(RFVerificationDelaisDemandeData dates, BSession session,
+            Boolean isNonRetro) throws Exception {
 
         JACalendar cal = new JACalendarGregorian();
         Set<String[]> labelsErrors = new HashSet<String[]>();
@@ -41,7 +41,7 @@ public class RFVerificationDelaisDemandeService {
                 + PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dates.getDateFacture()));
         JADate dateFacturePlus15mois = cal.addDays(cal.addMonths(dateFacture, 16), -1);
 
-        if (cal.compare(dateReception, dateFacturePlus15mois) == JACalendar.COMPARE_FIRSTUPPER) {
+        if (cal.compare(dateReception, dateFacturePlus15mois) == JACalendar.COMPARE_FIRSTUPPER && isNonRetro) {
             labelsErrors.add(new String[] { IRFMotifsRefus.ID_DELAI_15_MOIS_DEPASSE, dates.getMontantAccepte() });
         }
 
@@ -52,7 +52,7 @@ public class RFVerificationDelaisDemandeService {
                             new JADate("01." + PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dates.getDateDeces())),
                             16), -1);
 
-            if (cal.compare(dateReception, dateDecesPlus12mois) == JACalendar.COMPARE_FIRSTUPPER) {
+            if (cal.compare(dateReception, dateDecesPlus12mois) == JACalendar.COMPARE_FIRSTUPPER && isNonRetro) {
                 labelsErrors.add(new String[] { IRFMotifsRefus.ID_DELAI_DECES_DEPASSE, dates.getMontantAccepte() });
             }
         }

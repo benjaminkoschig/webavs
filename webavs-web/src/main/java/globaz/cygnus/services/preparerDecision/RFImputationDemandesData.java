@@ -38,6 +38,16 @@ public class RFImputationDemandesData {
     private String idQdVirtuelle = "";
     private String idTiers = "";
     private boolean isConventionne = false;
+    private boolean isRetro = false;
+
+    public boolean getIsRetro() {
+        return isRetro;
+    }
+
+    public void setIsRetro(boolean isRetro) {
+        this.isRetro = isRetro;
+    }
+
     private boolean isEnfant = false;
     private boolean isEnfantExclu = false;
     private boolean isForcerImputation = false;

@@ -1288,6 +1288,7 @@ public class RFPreparerDecisionsService {
                 demandeCourante.setCodeTypeDeSoin(rfTypDemJointDosJointTie.getCodeTypeDeSoin());
                 demandeCourante.setCodeSousTypeDeSoin(rfTypDemJointDosJointTie.getCodeSousTypeDeSoin());
                 demandeCourante.setCsSousTypeDeSoin(rfTypDemJointDosJointTie.getIdSousTypeDeSoin());
+                demandeCourante.setIsRetro(rfTypDemJointDosJointTie.getIsRetro());
                 // On initialise le montant accepté de la demande à traiter par le montant a payer, ainsi on ne se
                 // préocupe plus des motifs de refus utilisateurs :-)
                 demandeCourante.setMontantAccepte(rfTypDemJointDosJointTie.getMontantAPayer().replace("'", ""));

@@ -93,6 +93,7 @@ public class RFProcessAdaptationAnnuelleFrqpppHandlerEntity implements JadeProce
             rfDemande.setIdSousTypeDeSoin(demData.getCsSousTypeDeSoin());
             rfDemande.setIsForcerPaiement(false);
             rfDemande.setIsContratDeTravail(false);
+            rfDemande.setIsRetro(demData.getIsRetro());
             rfDemande.setIsPP(true);
             rfDemande.setMontantAPayer(demData.getMontantAPayerInitial());
             rfDemande.setMontantFacture(demData.getMontantAPayerInitial());
