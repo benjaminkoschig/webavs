@@ -84,6 +84,9 @@ public class PCMainServlet extends FWJadeServlet {
         FWRemoveActionsEndingWith blocagePC = new FWRemoveActionsEndingWith(".pcAccordeeDetail.actionBloquerPC");
         FWRemoveActionsEndingWith deBlocagePC = new FWRemoveActionsEndingWith(".pcAccordeeDetail.actionDebloquerPC");
 
+        FWRemoveActionsEndingWith listeCommunePolitque = new FWRemoveActionsEndingWith(
+                ".listeRepartitionCommunePolitique.executer");
+
         aStack.addRule(removeLister);
         aStack.addRule(removeMotifier);
         aStack.addRule(removeSupprimer);
@@ -114,6 +117,8 @@ public class PCMainServlet extends FWJadeServlet {
         aStack.addRule(removeCalculer);
         aStack.addRule(removeProcessValider);
         aStack.addRule(removeScreenValider);
+
+        aStack.addRule(listeCommunePolitque);
         // Evite de garder 2 fois la même page
         aStack.addRule(new FWSuppressSameUserActions());
     }
