@@ -235,7 +235,7 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
         while (values.hasNext()) {
             ContainerByTiers value = values.next();
 
-            ContainerByCommunePolitique con = recapTotauxByCommunePolitique.get(value.getCommunePolitique());
+            ContainerByCommunePolitique con = recapTotauxByCommunePolitique.get(value.getCodeCommunePolitique());
             if (con == null) {
                 con = new ContainerByCommunePolitique(value.getCommunePolitique());
             }
