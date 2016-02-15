@@ -574,6 +574,13 @@ public enum CodePrestation {
     }
 
     /**
+     * @return le domaine complémentaire
+     */
+    public DomaineCodePrestation getDomaineComplementaire() {
+        return domaineComplementaire;
+    }
+
+    /**
      * @return les révisions dans lesquelles ce code prestation est valide
      */
     public Set<RevisionLoiAVS> getRevisions() {
