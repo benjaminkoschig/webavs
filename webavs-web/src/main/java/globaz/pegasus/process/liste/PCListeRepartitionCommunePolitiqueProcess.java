@@ -25,6 +25,8 @@ import ch.globaz.common.domaine.Date;
 import ch.globaz.common.listoutput.SimpleOutputListBuiliderJade;
 import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.pegasus.business.domaine.pca.PcaEtat;
+import ch.globaz.prestation.domaine.CodePrestation;
+import ch.globaz.prestation.domaine.constantes.DomaineCodePrestation;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
 import ch.globaz.simpleoutputlist.core.Details;
 import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
@@ -71,7 +73,7 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
                 listBeneficiairePCCP.addAll(loadDataRente(dateDuJourAM));
             }
 
-            addCommunePolitique(listBeneficiairePCCP);
+            completeInformation(listBeneficiairePCCP);
 
             sendMailWithDoc(createExcelFile(regroupByCommunePolitique(listBeneficiairePCCP)));
 
@@ -217,9 +219,10 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
      * 
      * @param listBeneficiairePCCP
      */
-    private void addCommunePolitique(List<BeneficiairePCCommunePolitiquePojo> listBeneficiairePCCP) {
+    private void completeInformation(List<BeneficiairePCCommunePolitiquePojo> listBeneficiairePCCP) {
 
         Set<String> setIdTiers = new HashSet<String>();
+        Map<String, String> mapLibelleTypePrestation = new HashMap<String, String>();
         Map<String, CommunePolitiqueBean> mapIdTiersCommunePolitique = new HashMap<String, CommunePolitiqueBean>();
 
         for (BeneficiairePCCommunePolitiquePojo aBeneficiairePCCP : listBeneficiairePCCP) {
@@ -228,10 +231,40 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
 
         mapIdTiersCommunePolitique = PRTiersHelper.findCommunePolitique(setIdTiers, new Date().getDate(), getSession());
 
-        for (BeneficiairePCCommunePolitiquePojo aBeneficiairePCCP : listBeneficiairePCCP) {
-            CommunePolitiqueBean communePolitique = mapIdTiersCommunePolitique.get(aBeneficiairePCCP.getIdTiers());
+        for (BeneficiairePCCommunePolitiquePojo beneficiairePCCP : listBeneficiairePCCP) {
+            CommunePolitiqueBean communePolitique = mapIdTiersCommunePolitique.get(beneficiairePCCP.getIdTiers());
             if (communePolitique != null) {
-                aBeneficiairePCCP.setCommunePolitique(communePolitique);
+                beneficiairePCCP.setCommunePolitique(communePolitique);
+
+                // *************
+                // Ajout du type de prestation
+                CodePrestation code = CodePrestation.getCodePrestation(Integer.valueOf(beneficiairePCCP
+                        .getCodePrestation()));
+                DomaineCodePrestation domainePrestation = code.getDomaineCodePrestation();
+
+                String codeSystemForLibelle = String.valueOf(domainePrestation.getCodeSystem());
+
+                String libelleTypePrestation = mapLibelleTypePrestation.get(codeSystemForLibelle);
+                if (libelleTypePrestation == null) {
+                    libelleTypePrestation = getSession().getCodeLibelle(codeSystemForLibelle);
+                    mapLibelleTypePrestation.put(codeSystemForLibelle, libelleTypePrestation);
+                }
+
+                if (code.isPC()) {
+                    String codeSystemSousTypeForLibelle = String.valueOf(code.getDomaineComplementaire()
+                            .getCodeSystem());
+
+                    String libelleSousTypePrestation = mapLibelleTypePrestation.get(codeSystemSousTypeForLibelle);
+                    if (libelleSousTypePrestation == null) {
+                        libelleSousTypePrestation = getSession().getCodeLibelle(codeSystemSousTypeForLibelle);
+                        mapLibelleTypePrestation.put(codeSystemSousTypeForLibelle, libelleSousTypePrestation);
+                    }
+
+                    libelleTypePrestation = libelleTypePrestation + " " + libelleSousTypePrestation;
+                }
+                beneficiairePCCP.setTypePrestation(libelleTypePrestation);
+                // *************
+
             }
         }
 
