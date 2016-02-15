@@ -2,6 +2,7 @@ package ch.globaz.pegasus.businessimpl.services.doc;
 
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeUUIDGenerator;
+import globaz.jade.common.Jade;
 import globaz.jade.exception.JadeApplicationException;
 import java.util.Locale;
 import ch.globaz.common.domaine.Date;
@@ -27,7 +28,7 @@ public class FullListeExcelRevision {
         LoaderOuter<String, RevisionQuadriennale, String> loaderOuter = new LoaderOuter<String, RevisionQuadriennale, String>() {
             @Override
             public String out(RevisionQuadriennale revisionQuadriennale) {
-                String nomDoc = OUTPUTNAME + "_"
+                String nomDoc = Jade.getInstance().getPersistenceDir() + OUTPUTNAME + "_"
                         + new Date(revisionQuadriennale.getPeriode().getDateDebut()).getValue() + "_"
                         + new Date(revisionQuadriennale.getPeriode().getDateFin()).getValue()
                         + JadeUUIDGenerator.createStringUUID() + CSV;
@@ -43,10 +44,11 @@ public class FullListeExcelRevision {
             }
         };
 
-        String chemain = loaderOuter.run(annee);
+        String path = loaderOuter.run(annee);
+        System.out.println("Path: " + path);
 
         loaderOuter.getTime().setNombre(loaderOuter.getDataLoaded().getDemandesARevisers().size());
-        return chemain;
+        return path;
     }
 
     public String createDoc(String nomDoc, RevisionQuadriennale revisionQuadriennale) {
