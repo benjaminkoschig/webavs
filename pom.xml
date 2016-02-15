@@ -54,9 +54,9 @@
 		<ch.globaz.mercato.notification.version>0.0.4</ch.globaz.mercato.notification.version>
 
 		<itucana.version>0.0.1</itucana.version>
-		<jade.version>5.1.49</jade.version>
+		<jade.version>5.1.51</jade.version>
 		<pyxis.version>1.23.0</pyxis.version>
-		<simple-output-list.version>1.1.1</simple-output-list.version>
+		<simple-output-list.version>1.1.2</simple-output-list.version>
 
 		<!-- CONTINUOUS INTEGRATION -->
 		<ci.url>http://ci-devtools.ju.globaz.ch:8080/jenkins</ci.url>
