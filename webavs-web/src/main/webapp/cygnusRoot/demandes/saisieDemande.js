@@ -225,13 +225,13 @@ var demandeUtils = {
 				var dateFinTraitementString = {};
 				
 				if (typeof(document.getElementsByName("dateDebutTraitement")[0]) != 'undefined'){
-					fieldFormat(document.getElementsByName("dateDebutTraitement")[0],"CALENDAR",null);
-					fieldFormat(document.getElementsByName("dateFinTraitement")[0],"CALENDAR",null);
+					//fieldFormat(document.getElementsByName("dateDebutTraitement")[0],"CALENDAR",null);
+					//fieldFormat(document.getElementsByName("dateFinTraitement")[0],"CALENDAR",null);
 					dateDebutTraitementString = document.getElementsByName("dateDebutTraitement")[0].value;
 					dateFinTraitementString = document.getElementsByName("dateFinTraitement")[0].value;
 				}else{
-					fieldFormat(document.getElementById("dateDebutTraitementIdMMAAAA"),"CALENDAR",null);
-					fieldFormat(document.getElementById("dateFinTraitementIdMMAAAA"),"CALENDAR",null);
+					//fieldFormat(document.getElementById("dateDebutTraitementIdMMAAAA"),"CALENDAR",null);
+					//fieldFormat(document.getElementById("dateFinTraitementIdMMAAAA"),"CALENDAR",null);
 					dateDebutTraitementString = document.getElementById("dateDebutTraitementIdMMAAAA").value;
 					dateFinTraitementString = document.getElementById("dateFinTraitementIdMMAAAA").value;
 				}
