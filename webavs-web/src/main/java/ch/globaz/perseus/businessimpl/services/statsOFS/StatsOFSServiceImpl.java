@@ -89,7 +89,7 @@ import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 
 public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements StatsOFSService {
-    private static final String PERSEUS_XSD_PATH = Jade.getInstance().getRootUrl() + "perseusRoot/xsd/";
+    private static final String PERSEUS_XSD_PATH = "perseusRoot/xsd/shsDossier_2013-08.xsd";
     private HashMap<String, String> conteneurDateComptabilisationPrestationRetro = new HashMap<String, String>();
     private ArrayList<String> dossierDejaTraiter = new ArrayList<String>();
     private Dossiers dossiers = null;
@@ -273,8 +273,8 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
         JAXBContext context = JAXBContext.newInstance("ch.globaz.perseus.businessimpl.services.statsOFS.jaxb");
 
         SchemaFactory schemaFactory = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema = schemaFactory
-                .newSchema(new URL(StatsOFSServiceImpl.PERSEUS_XSD_PATH + "shsDossier_2013-08.xsd"));
+        Schema schema = schemaFactory.newSchema(new URL(Jade.getInstance().getRootUrl()
+                + StatsOFSServiceImpl.PERSEUS_XSD_PATH));
 
         Marshaller m = context.createMarshaller();
         m.setSchema(schema);
