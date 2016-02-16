@@ -34,6 +34,8 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -244,6 +246,9 @@ public class RFValidationDemandeService {
 
         }
 
+        PRTiersWrapper w = PRTiersHelper.getTiersParId(viewBean.getSession(), viewBean.getIdTiers());
+        String dateDeces = w.getDateDeces();
+
         // Test si le délai de 15 mois et le délai décès est respecté
         if (!viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
             boolean demandeNonRetro = !viewBean.getIsRetro();
@@ -251,8 +256,8 @@ public class RFValidationDemandeService {
             RFVerificationDelaisDemandeService rfVerificationDelaisDemandeService = new RFVerificationDelaisDemandeService();
             Set<String[]> idsMotifRefus = rfVerificationDelaisDemandeService.verifierDelais_Deces_15Mois(
                     new RFVerificationDelaisDemandeData(dateFacture, viewBean.getDateReception(),
-                            viewBean.getIdTiers(), viewBean.getMontantAPayer(), viewBean.getDateDeces()), viewBean
-                            .getSession(), demandeNonRetro);
+                            viewBean.getIdTiers(), viewBean.getMontantAPayer(), dateDeces), viewBean.getSession(),
+                    demandeNonRetro);
 
             if ((null != idsMotifRefus) && (idsMotifRefus.size() > 0)) {
 
