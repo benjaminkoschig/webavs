@@ -16,6 +16,7 @@ public class PFGestionnaireHelper {
 
     private static final String ERREUR_GESTIONNAIRES_INTROUVABLE = "GESTIONNAIRES_INTROUVABLE";
     private static Vector responsables = null;
+    private static Vector gestionnairePlusAgence;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -65,6 +66,37 @@ public class PFGestionnaireHelper {
         }
 
         return PFGestionnaireHelper.responsables;
+    }
+
+    public static Vector findGestionaierEtAgence(BSession session) {
+        // créer les responsables s'ils n'ont pas déjà été récupérés
+        if (PFGestionnaireHelper.gestionnairePlusAgence == null) {
+            try {
+                PFGestionnaireHelper.gestionnairePlusAgence = new Vector();
+                Vector gestionnaires = PRGestionnaireHelper.getIdsEtNomsGestionnaires(((PFApplication) GlobazSystem
+                        .getApplication(PFApplication.DEFAULT_APPLICATION_PERSEUS))
+                        .getProperty(PFApplication.PROPERTY_GROUPE_PERSEUS_GESTIONNAIRE));
+
+                Vector agence = PRGestionnaireHelper.getIdsEtNomsGestionnaires(((PFApplication) GlobazSystem
+                        .getApplication(PFApplication.DEFAULT_APPLICATION_PERSEUS))
+                        .getProperty(PFApplication.PROPERTY_GROUPE_PERSEUS_AGENCE));
+
+                gestionnairePlusAgence.addAll(agence);
+                gestionnairePlusAgence.addAll(gestionnaires);
+
+            } catch (Exception e) {
+                session.addError(session.getLabel(PFGestionnaireHelper.ERREUR_GESTIONNAIRES_INTROUVABLE));
+            }
+
+            // on veut une ligne vide
+            if (PFGestionnaireHelper.gestionnairePlusAgence == null) {
+                PFGestionnaireHelper.gestionnairePlusAgence = new Vector();
+            }
+
+            PFGestionnaireHelper.gestionnairePlusAgence.insertElementAt(new String[] { "", "" }, 0);
+        }
+
+        return PFGestionnaireHelper.gestionnairePlusAgence;
     }
 
 }

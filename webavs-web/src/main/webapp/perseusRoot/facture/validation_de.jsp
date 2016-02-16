@@ -184,7 +184,7 @@
 								<input 
 								  name="searchModel.likeNss" data-g-nss="" />	
 					<label><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_GESTIONAIRE"/></label>
-					<ct:FWListSelectTag data="<%=PFGestionnaireHelper.getResponsableData(objSession)%>" defaut="<%=viewBean.getISession().getUserId()%>"  name="searchModel.forIdGestionnaire"/>
+					<ct:FWListSelectTag data="<%=PFGestionnaireHelper.findGestionaierEtAgence(objSession)%>" defaut="<%=viewBean.getISession().getUserId()%>"  name="searchModel.forIdGestionnaire"/>
 					<label><ct:FWLabel key="JSP_PF_VALIDATION_FACTURE_TYPE"/></label>
 					<select name='searchModel.forCsTypeSoin' id="typeQd"  notation="data-g-select='mandatory:true'">
 						<option value=''></option>
