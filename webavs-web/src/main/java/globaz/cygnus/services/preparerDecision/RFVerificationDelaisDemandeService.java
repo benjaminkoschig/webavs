@@ -50,7 +50,7 @@ public class RFVerificationDelaisDemandeService {
             JADate dateDecesPlus12mois = cal
                     .addDays(cal.addMonths(
                             new JADate("01." + PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dates.getDateDeces())),
-                            16), -1);
+                            13), -1);
 
             if (cal.compare(dateReception, dateDecesPlus12mois) == JACalendar.COMPARE_FIRSTUPPER && isNonRetro) {
                 labelsErrors.add(new String[] { IRFMotifsRefus.ID_DELAI_DECES_DEPASSE, dates.getMontantAccepte() });

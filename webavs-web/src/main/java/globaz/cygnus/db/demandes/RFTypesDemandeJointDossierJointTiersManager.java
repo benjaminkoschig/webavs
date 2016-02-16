@@ -85,6 +85,7 @@ public class RFTypesDemandeJointDossierJointTiersManager extends BManager {
         fields.append(RFDemande.FIELDNAME_ID_DECISION + ",");
         fields.append(RFDemande.FIELDNAME_ID_EXECUTION_PROCESS + ",");
         fields.append(RFDemande.FIELDNAME_IS_CONTRAT_TRAVAIL + ",");
+        fields.append(RFDemande.FIELDNAME_IS_RETRO + ",");
         fields.append(RFTypesDemandeJointDossierJointTiers.FIELDNAME_NUM_AVS + ",");
         fields.append(RFTypesDemandeJointDossierJointTiers.FIELDNAME_DATENAISSANCE + ",");
         fields.append(RFTypesDemandeJointDossierJointTiers.FIELDNAME_DATEDECES + ",");
