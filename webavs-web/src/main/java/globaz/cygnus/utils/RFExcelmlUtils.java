@@ -31,7 +31,7 @@ public class RFExcelmlUtils {
     public static String createDocumentExcel(String modelName, String nomDoc, RFXmlmlContainer container)
             throws Exception {
         ExcelmlWorkbook wk = null;
-        nomDoc += "-" + JadeUUIDGenerator.createStringUUID() + ".xls";
+        nomDoc += "_" + JadeUUIDGenerator.createStringUUID() + ".xls";
         // On va charger le classeur
         wk = RFExcelmlUtils.load(modelName);
         wk.mergeDocument(container);

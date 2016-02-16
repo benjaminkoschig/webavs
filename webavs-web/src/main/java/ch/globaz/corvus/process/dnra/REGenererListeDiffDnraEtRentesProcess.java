@@ -472,7 +472,7 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
             }
         });
 
-        File file = SimpleOutputListBuiliderJade.newInstance().outputNameAndAddPath("mutationList")
+        File file = SimpleOutputListBuiliderJade.newInstance().outputNameAndAddPath("5158PRE_REListeExcelWebAvsNRA")
                 .configure(configuration).addList(list).classElementList(DifferenceTrouvee.class)
                 .addTitle(title, Align.LEFT).asXls().build();
         return file.getAbsolutePath();
