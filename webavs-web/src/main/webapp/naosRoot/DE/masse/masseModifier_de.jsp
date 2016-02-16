@@ -96,9 +96,7 @@ function init() {}
 									<hr size="3" width="100%">
 								</TD>
 							</TR>
-							<tr>
-								<td><a href="#" onClick="openGedWindow()"><ct:FWLabel key="OPTION_GED"/></a></td>
-							</tr>
+							
 							</TBODY>
 							</TABLE>
 							</TD>
