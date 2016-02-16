@@ -378,8 +378,9 @@ public abstract class REListeEcheanceDocumentGenerator extends LYAbstractListGen
     protected void initializeTable() {
         if (getAjouterCommunePolitique()) {
             ajouterCommunePolitiques();
+            this._addColumnLeft("", 1);
             this._addColumnCenter(getSession()
-                    .getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_TITRE_COLONNE.getKey()), 12);
+                    .getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_TITRE_COLONNE.getKey()), 11);
         }
         this._addColumnLeft(getSession().getLabel("NSS_DOCUMENT_ANALYSE_ECHEANCE"), 9);
         this._addColumnLeft(getSession().getLabel("NOM_PRENOM_DOCUMENT_ANALYSE_ECHEANCE"), 25);
