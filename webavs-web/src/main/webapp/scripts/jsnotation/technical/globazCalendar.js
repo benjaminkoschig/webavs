@@ -490,7 +490,7 @@ globazNotation.calendar = {
 
 		if ($.support.boxModel) {
 			n_width = 180;
-			n_height = 165;
+			n_height = 180;
 		}
 
 		$(divMonthCalendarStr)

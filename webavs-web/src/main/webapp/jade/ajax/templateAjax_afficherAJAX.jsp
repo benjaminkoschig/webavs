@@ -4,8 +4,6 @@
 <%@page import="globaz.framework.ajax.utils.RenderTransportJson"%>
 <%
 	FWAJAXViewBeanInterface viewBean = ((FWAJAXViewBeanInterface) request.getAttribute(FWServlet.VIEWBEAN));
-
-	System.out.println(viewBean);
 	String json = RenderTransportJson.renderTransport(viewBean, true); // on sérilize le viewBean
 %>
 

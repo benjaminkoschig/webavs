@@ -58,7 +58,6 @@
 <script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/business/globazNote.js"></script>
 
 
-
 <script type="text/javascript" src="<%=servletContext%>/scripts/ajax/ajaxUtils.js"></script>
 
 <link rel="stylesheet" type="text/css" href="<%=servletContext%>/scripts/growl/ui.notify.css" media="screen" />
