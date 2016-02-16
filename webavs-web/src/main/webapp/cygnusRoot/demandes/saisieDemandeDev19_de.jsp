@@ -330,15 +330,15 @@ width: 320px;
 				<TR><TD colspan="6">&nbsp;</TD></TR>		
 				<TR>
 					
-					<TD><ct:FWLabel key="JSP_RF_DEM_S_DATE_DEVIS"/></TD>
-					<TD>
-						<input data-g-calendar=" "  name="dateFacture" value="<%=viewBean.getDateFacture()%>"/>
-					</TD>
-					
 					<TD><ct:FWLabel key="JSP_RF_DEM_S_DATE_RECEPTION"/></TD>
 					<TD>
 						<input data-g-calendar=" "  name="dateReception" value="<%=JadeStringUtil.isEmpty(viewBean.getDateReception())?JACalendar.todayJJsMMsAAAA():viewBean.getDateReception()%>"/>
 					</TD>	
+					
+					<TD><ct:FWLabel key="JSP_RF_DEM_S_DATE_DEVIS"/></TD>
+					<TD>
+						<input data-g-calendar=" "  name="dateFacture" value="<%=viewBean.getDateFacture()%>"/>
+					</TD>
 					
 					<!--  is retroactif -->
 					<TD><ct:FWLabel key="JSP_RF_DEM_S_IS_RETRO"/>
