@@ -25,10 +25,17 @@ public class Rule302Test {
     }
 
     @Test
-    public void testCheckServiceNot21Or22() throws Exception {
+    public void testCheckServiceNot20Or21() throws Exception {
 
         Rule302 rule = new Rule302("302");
         APChampsAnnonce champsAnnonce = new APChampsAnnonce();
+
+        // Ne devrais pas passer car + de 30 ans
+        champsAnnonce.setReferenceNumber("1111");
+        champsAnnonce.setStartOfPeriod("01.01.2016");
+        champsAnnonce.setInsurantBirthDate("05.05.1985");
+
+        // Rule passe quand même car pas service 20 ou 21
         champsAnnonce.setServiceType("19");
         Assert.assertTrue(rule.check(champsAnnonce));
 
@@ -46,7 +53,7 @@ public class Rule302Test {
         champsAnnonce.setStartOfPeriod("01.01.2016");
         champsAnnonce.setInsurantBirthDate("05.05.1986");
 
-        Assert.assertFalse(rule.check(champsAnnonce));
+        Assert.assertTrue(rule.check(champsAnnonce));
 
     }
 
@@ -75,6 +82,48 @@ public class Rule302Test {
         champsAnnonce.setInsurantBirthDate("05.05.1985");
 
         Assert.assertFalse(rule.check(champsAnnonce));
+
+    }
+
+    @Test
+    public void testCheck1() throws Exception {
+
+        Rule302 rule = new Rule302("302");
+        APChampsAnnonce champsAnnonce = new APChampsAnnonce();
+        champsAnnonce.setServiceType("20");
+        champsAnnonce.setReferenceNumber("1111");
+        champsAnnonce.setStartOfPeriod("01.11.2015");
+        champsAnnonce.setInsurantBirthDate("02.06.1985");
+
+        Assert.assertTrue(rule.check(champsAnnonce));
+
+    }
+
+    @Test
+    public void testCheck2() throws Exception {
+
+        Rule302 rule = new Rule302("302");
+        APChampsAnnonce champsAnnonce = new APChampsAnnonce();
+        champsAnnonce.setServiceType("20");
+        champsAnnonce.setReferenceNumber("1111");
+        champsAnnonce.setStartOfPeriod("01.05.2015");
+        champsAnnonce.setInsurantBirthDate("02.06.1985");
+
+        Assert.assertTrue(rule.check(champsAnnonce));
+
+    }
+
+    @Test
+    public void testCheck3() throws Exception {
+
+        Rule302 rule = new Rule302("302");
+        APChampsAnnonce champsAnnonce = new APChampsAnnonce();
+        champsAnnonce.setServiceType("20");
+        champsAnnonce.setReferenceNumber("1111");
+        champsAnnonce.setStartOfPeriod("01.05.2014");
+        champsAnnonce.setInsurantBirthDate("02.06.1985");
+
+        Assert.assertTrue(rule.check(champsAnnonce));
 
     }
 }
