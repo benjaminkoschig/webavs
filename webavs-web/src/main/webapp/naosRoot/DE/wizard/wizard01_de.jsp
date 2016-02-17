@@ -621,7 +621,7 @@ function resetEAAVisibility() {
 										wantBlank="true"/> 									
 								</TD>
 								<%
-									if(listeConventions.size() != 0){
+									if (listeConventions.size() > 1) {
 								%>				
 								<TD>Konvention
 									<ct:FWListSelectTag name="convention"
@@ -630,7 +630,7 @@ function resetEAAVisibility() {
 	            					/>
 				
 								</TD>
-								<%} %>
+								<% } %>
 							</TR>
 							<TR>
 								<TD nowrap height="31" width="161">Noga Code</TD>

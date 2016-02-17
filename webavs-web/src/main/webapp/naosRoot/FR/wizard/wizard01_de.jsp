@@ -621,7 +621,7 @@ function resetEAAVisibility() {
 										wantBlank="true"/> 									
 								</TD>
 								<%
-									if(listeConventions.size() != 0){
+									if (listeConventions.size() > 1) {
 								%>				
 								<TD>Convention
 									<ct:FWListSelectTag name="convention"
