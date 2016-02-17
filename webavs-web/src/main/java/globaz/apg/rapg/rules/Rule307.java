@@ -79,47 +79,6 @@ public class Rule307 extends Rule {
         return false;
     }
 
-    // protected boolean check(APChampsAnnonce champsAnnonce, BigDecimal montantMinime) throws APRuleExecutionException
-    // {
-    // boolean dailyIndemnityGuaranteeAI = champsAnnonce.getDailyIndemnityGuaranteeAI();
-    // boolean allowanceFarm = champsAnnonce.getAllowanceFarm();
-    // try {
-    // BigDecimal numberOfDays = new BigDecimal(champsAnnonce.getNumberOfDays());
-    // BigDecimal basicDailyAmount = new BigDecimal(champsAnnonce.getBasicDailyAmount());
-    // BigDecimal aAllowanceCareExpenses = new BigDecimal(champsAnnonce.getAllowanceCareExpenses());
-    // BigDecimal totalAPG = new BigDecimal(champsAnnonce.getTotalAPG());
-    //
-    // if (allowanceFarm) {
-    // BigDecimal calcul = (numberOfDays.multiply(basicDailyAmount.add(montantMinime)))
-    // .add(aAllowanceCareExpenses);
-    // if (calcul.compareTo(totalAPG.subtract(new BigDecimal(1))) >= 0
-    // && calcul.compareTo(totalAPG.add(new BigDecimal(1))) <= 0) {
-    // return true;
-    // }
-    // }
-    //
-    // if (dailyIndemnityGuaranteeAI) {
-    //
-    // BigDecimal calcul = (numberOfDays.multiply(basicDailyAmount)).add(aAllowanceCareExpenses);
-    // if (calcul.compareTo(totalAPG.subtract(new BigDecimal(1))) >= 0
-    // && calcul.compareTo(totalAPG.add(new BigDecimal(1))) <= 0) {
-    // return true;
-    // }
-    //
-    // } else {
-    //
-    // BigDecimal calcul = (numberOfDays.multiply(basicDailyAmount)).add(aAllowanceCareExpenses);
-    // if (calcul.compareTo(totalAPG) == 0) {
-    // return true;
-    // }
-    //
-    // }
-    // } catch (Exception exception) {
-    // throw new APRuleExecutionException(exception);
-    // }
-    // return false;
-    // }
-
     @Override
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException {
         BigDecimal montantMinime;

@@ -18,21 +18,20 @@ import java.util.List;
  */
 public class Rule314 extends Rule {
 
-    /**
-     * @param errorCode
-     */
     public Rule314(String errorCode) {
         super(errorCode, false);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * ch.globaz.apg.businessimpl.plausibilites.Rule#check(ch.globaz.apg.business.models.plausibilites.ChampsAnnonce)
-     */
     @Override
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException {
+
+        // TODO : AGE RETRAITE - Rechercher les années de retraite et ne pas utiliser des magics number
+        return check(champsAnnonce, 65, 64);
+    }
+
+    protected boolean check(APChampsAnnonce champsAnnonce, int ageRetraiteHomme, int ageRetraiteFemme)
+            throws APRuleExecutionException, IllegalArgumentException {
+
         String serviceType = champsAnnonce.getServiceType();
         String startOfPeriod = champsAnnonce.getStartOfPeriod();
         String insurantBirthDate = champsAnnonce.getInsurantBirthDate();
@@ -61,9 +60,9 @@ public class Rule314 extends Rule {
             validNotEmpty(insurantBirthDate, "insurantBirthDate");
 
             // définir l'age de la retraite en fonction du sexe
-            int ageRetraite = 65;
+            int ageRetraite = ageRetraiteHomme;
             if (IConstantes.CS_PERSONNE_SEXE_FEMME.equals(champsAnnonce.getInsurantSexe())) {
-                ageRetraite = 64;
+                ageRetraite = ageRetraiteFemme;
             }
 
             if (JadeDateUtil.getNbYearsBetween(insurantBirthDate, startOfPeriod) > ageRetraite) {
