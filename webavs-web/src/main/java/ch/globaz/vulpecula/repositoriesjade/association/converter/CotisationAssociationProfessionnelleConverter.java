@@ -1,12 +1,13 @@
 package ch.globaz.vulpecula.repositoriesjade.association.converter;
 
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.vulpecula.business.models.association.CotisationAssociationProfessionnelleComplexModel;
 import ch.globaz.vulpecula.business.models.association.CotisationAssociationProfessionnelleSearchSimpleModel;
 import ch.globaz.vulpecula.business.models.association.CotisationAssociationProfessionnelleSimpleModel;
 import ch.globaz.vulpecula.domain.models.association.CotisationAssociationProfessionnelle;
-import ch.globaz.vulpecula.domain.models.common.Montant;
+import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.registre.GenreCotisationAssociationProfessionnelle;
 import ch.globaz.vulpecula.external.repositoriesjade.pyxis.converters.AdministrationConverter;
 import ch.globaz.vulpecula.repositoriesjade.decompte.DomaineConverterJade;
@@ -39,13 +40,20 @@ public class CotisationAssociationProfessionnelleConverter
             CotisationAssociationProfessionnelle cotisationAssociationProfessionnelle) {
         CotisationAssociationProfessionnelleSimpleModel cotisationAssociationProfessionnelleSimpleModel = new CotisationAssociationProfessionnelleSimpleModel();
         cotisationAssociationProfessionnelleSimpleModel.setId(cotisationAssociationProfessionnelle.getId());
+        cotisationAssociationProfessionnelleSimpleModel
+                .setIdAssociationProfessionnelle(cotisationAssociationProfessionnelle.getIdAssociationProfessionnelle());
         cotisationAssociationProfessionnelleSimpleModel.setLibelle(cotisationAssociationProfessionnelle.getLibelle());
-        cotisationAssociationProfessionnelleSimpleModel.setMontantBase(cotisationAssociationProfessionnelle
-                .getMontantBase().getValue());
-        cotisationAssociationProfessionnelleSimpleModel.setMontantMinimum(cotisationAssociationProfessionnelle
-                .getMontantMinimum().getValue());
-        cotisationAssociationProfessionnelleSimpleModel.setMontantMaximum(cotisationAssociationProfessionnelle
-                .getMontantMaximum().getValue());
+        cotisationAssociationProfessionnelleSimpleModel.setLibelleUpper(JadeStringUtil
+                .toUpperCase(cotisationAssociationProfessionnelle.getLibelle()));
+        cotisationAssociationProfessionnelleSimpleModel.setLibelleFR(cotisationAssociationProfessionnelle
+                .getLibelleFR());
+        cotisationAssociationProfessionnelleSimpleModel.setLibelleDE(cotisationAssociationProfessionnelle
+                .getLibelleDE());
+        cotisationAssociationProfessionnelleSimpleModel.setLibelleIT(cotisationAssociationProfessionnelle
+                .getLibelleIT());
+        cotisationAssociationProfessionnelleSimpleModel.setPartParDefaut(cotisationAssociationProfessionnelle
+                .getPartParDefaut().getValue());
+
         cotisationAssociationProfessionnelleSimpleModel.setSpy(cotisationAssociationProfessionnelle.getSpy());
         cotisationAssociationProfessionnelleSimpleModel.setGenre(cotisationAssociationProfessionnelle.getGenre()
                 .getValue());
@@ -58,12 +66,14 @@ public class CotisationAssociationProfessionnelleConverter
         CotisationAssociationProfessionnelle cotisationAssociationProfessionnelle = new CotisationAssociationProfessionnelle();
         cotisationAssociationProfessionnelle.setId(cotisationAssociationProfessionnelleSimpleModel.getId());
         cotisationAssociationProfessionnelle.setLibelle(cotisationAssociationProfessionnelleSimpleModel.getLibelle());
-        cotisationAssociationProfessionnelle.setMontantBase(new Montant(cotisationAssociationProfessionnelleSimpleModel
-                .getMontantBase()));
-        cotisationAssociationProfessionnelle.setMontantMinimum(new Montant(
-                cotisationAssociationProfessionnelleSimpleModel.getMontantMinimum()));
-        cotisationAssociationProfessionnelle.setMontantMaximum(new Montant(
-                cotisationAssociationProfessionnelleSimpleModel.getMontantMaximum()));
+        cotisationAssociationProfessionnelle.setLibelleFR(cotisationAssociationProfessionnelleSimpleModel
+                .getLibelleFR());
+        cotisationAssociationProfessionnelle.setLibelleDE(cotisationAssociationProfessionnelleSimpleModel
+                .getLibelleDE());
+        cotisationAssociationProfessionnelle.setLibelleIT(cotisationAssociationProfessionnelleSimpleModel
+                .getLibelleIT());
+        cotisationAssociationProfessionnelle.setPartParDefaut(new Taux(cotisationAssociationProfessionnelleSimpleModel
+                .getPartParDefaut()));
         cotisationAssociationProfessionnelle.setSpy(cotisationAssociationProfessionnelleSimpleModel.getSpy());
         cotisationAssociationProfessionnelle.setGenre(GenreCotisationAssociationProfessionnelle
                 .fromValue(cotisationAssociationProfessionnelleSimpleModel.getGenre()));

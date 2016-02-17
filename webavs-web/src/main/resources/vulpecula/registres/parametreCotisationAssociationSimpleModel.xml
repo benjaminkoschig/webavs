@@ -8,8 +8,11 @@
 			<primary-key name="id" column="ID"
 				comment="Id de la table cotisation caisse métier" />
 			<field name="idCotisationAssociationProfessionnelle" column="ID_COTISATIONS_AP" type="NUMERIC" comment="id de la caisse métier" />
+			<field name="typeParam" column="CS_TYPE_PARAM" type="NUMERIC" />
 			<field name="taux" column="TAUX" type="NUMERIC"
 				comment="taux de la cotisation" />
+			<field name="montant" column="MONTANT" type="NUMERIC"
+				comment="montant de la cotisation" />
 			<field name="fourchetteDebut" column="FOURCHETTE_DEBUT"
 				type="NUMERIC" comment="fourchette de départ de la cotisation" />
 			<field name="fourchetteFin" column="FOURCHETTE_FIN"

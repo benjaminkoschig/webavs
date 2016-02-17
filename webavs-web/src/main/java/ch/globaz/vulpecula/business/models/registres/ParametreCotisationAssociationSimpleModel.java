@@ -6,8 +6,10 @@ public class ParametreCotisationAssociationSimpleModel extends JadeSimpleModel {
     private static final long serialVersionUID = -4476704137892710557L;
 
     private String id;
+    private String typeParam;
     private String idCotisationAssociationProfessionnelle;
     private String taux;
+    private String montant;
     private String fourchetteDebut;
     private String fourchetteFin;
 
@@ -29,6 +31,22 @@ public class ParametreCotisationAssociationSimpleModel extends JadeSimpleModel {
 
     public void setTaux(String taux) {
         this.taux = taux;
+    }
+
+    public String getTypeParam() {
+        return typeParam;
+    }
+
+    public void setTypeParam(String typeParamCotisationAP) {
+        typeParam = typeParamCotisationAP;
+    }
+
+    public String getMontant() {
+        return montant;
+    }
+
+    public void setMontant(String montant) {
+        this.montant = montant;
     }
 
     public String getFourchetteDebut() {

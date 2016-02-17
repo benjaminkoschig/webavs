@@ -23,7 +23,9 @@ import ch.globaz.vulpecula.domain.specifications.parametrecotisationap.Parametre
 public class ParametreCotisationAssociation implements DomainEntity, Serializable {
     private static final long serialVersionUID = 1L;
     private String id;
+    private TypeParamCotisationAP typeParam;
     private CotisationAssociationProfessionnelle cotisationAssociationProfessionnelle;
+    private Montant montant;
     private Taux taux;
     private Montant fourchetteDebut;
     private Montant fourchetteFin;
@@ -39,6 +41,14 @@ public class ParametreCotisationAssociation implements DomainEntity, Serializabl
 
     public void setTaux(String taux) {
         this.taux = new Taux(taux);
+    }
+
+    public Montant getMontant() {
+        return montant;
+    }
+
+    public void setMontant(Montant montant) {
+        this.montant = montant;
     }
 
     public Montant getFourchetteDebut() {
@@ -68,6 +78,14 @@ public class ParametreCotisationAssociation implements DomainEntity, Serializabl
     public void setCotisationAssociationProfessionnelle(
             CotisationAssociationProfessionnelle cotisationAssociationProfessionnelle) {
         this.cotisationAssociationProfessionnelle = cotisationAssociationProfessionnelle;
+    }
+
+    public TypeParamCotisationAP getTypeParam() {
+        return typeParam;
+    }
+
+    public void setTypeParam(TypeParamCotisationAP typeParamCotisationAP) {
+        typeParam = typeParamCotisationAP;
     }
 
     @Override

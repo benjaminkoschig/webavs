@@ -7,7 +7,7 @@ import ch.globaz.specifications.SpecificationMessage;
 import ch.globaz.vulpecula.domain.models.registre.ParametreCotisationAssociation;
 
 /**
- * Specification obligeant l'absence justifiée de posséder une période valide (date de début et date de fin renseignée).
+ * Specification empêchant le chevauchement de fourchette de paramCotiAP par type
  * 
  */
 public class ParametreCotisationAPFourchetteValideSpecification extends
@@ -27,6 +27,9 @@ public class ParametreCotisationAPFourchetteValideSpecification extends
             if (!parametreAComparer.getId().equals(parametreAAjouter.getId())) {
                 if (!parametreAComparer.getIdCotisationAssociationProfessionnelle().equals(
                         parametreAAjouter.getIdCotisationAssociationProfessionnelle())) {
+                    continue;
+                }
+                if (!parametreAComparer.getTypeParam().getValue().equals(parametreAAjouter.getTypeParam().getValue())) {
                     continue;
                 }
 

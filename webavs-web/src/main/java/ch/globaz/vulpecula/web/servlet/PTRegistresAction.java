@@ -5,6 +5,7 @@ import globaz.framework.controller.FWAction;
 import globaz.framework.servlets.FWServlet;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.vulpecula.vb.registre.PTAbstractAdministrationAjaxViewBean;
+import globaz.vulpecula.vb.registre.PTDetailParamCotiAPViewBean;
 import globaz.vulpecula.vb.registre.PTParametresCotisationsAssociationsViewBean;
 import globaz.vulpecula.vb.registre.PTParametresyndicatAjaxViewBean;
 import globaz.vulpecula.vb.registre.PTParametresyndicatViewBean;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
+import ch.globaz.vulpecula.domain.models.association.CotisationAssociationProfessionnelle;
 import ch.globaz.vulpecula.external.models.pyxis.Administration;
 import ch.globaz.vulpecula.web.gson.ConventionQualificationGSON;
 import com.google.gson.Gson;
@@ -63,6 +65,23 @@ public class PTRegistresAction extends PTAbstractDefaultServletAction {
                 }
             }
 
+        } else if (viewBean instanceof PTDetailParamCotiAPViewBean) {
+
+            PTDetailParamCotiAPViewBean vb = (PTDetailParamCotiAPViewBean) viewBean;
+            CotisationAssociationProfessionnelle cotiAP = new CotisationAssociationProfessionnelle();
+            if (request.getParameter("idCotisationAP") != null) {
+                String idCotisationAP = request.getParameter("idCotisationAP");
+                if (!JadeStringUtil.isEmpty(idCotisationAP)) {
+                    cotiAP = VulpeculaRepositoryLocator.getCotisationAssociationProfessionnelleRepository().findById(
+                            idCotisationAP);
+                    vb.setIdCotisationAP(idCotisationAP);
+                }
+            }
+            vb.setCotiAP(cotiAP);
+
+            List<Administration> associationsProfessionnelles = VulpeculaRepositoryLocator
+                    .getAdministrationRepository().findAllAssociationsProfessionnelles();
+            vb.setAssociationsProfessionnelles(associationsProfessionnelles);
         }
         return super.beforeAfficher(session, request, response, viewBean);
     }
@@ -131,6 +150,12 @@ public class PTRegistresAction extends PTAbstractDefaultServletAction {
             return "/" + getAction().getApplicationPart()
                     + "?userAction=vulpecula.registre.syndicat.afficher&idSyndicat=" + vb.getIdSyndicat();
         }
+        if (viewBean instanceof PTDetailParamCotiAPViewBean) {
+            PTDetailParamCotiAPViewBean vb = (PTDetailParamCotiAPViewBean) viewBean;
+            return "/" + getAction().getApplicationPart()
+                    + "?userAction=vulpecula.registre.detailParamCotiAP.afficher&idCotisationAP="
+                    + vb.getCotiAP().getId();
+        }
         return super._getDestAjouterSucces(session, request, response, viewBean);
     }
 
@@ -142,6 +167,12 @@ public class PTRegistresAction extends PTAbstractDefaultServletAction {
             return "/" + getAction().getApplicationPart()
                     + "?userAction=vulpecula.registre.syndicat.afficher&idSyndicat=" + vb.getIdSyndicat();
         }
+        if (viewBean instanceof PTDetailParamCotiAPViewBean) {
+            PTDetailParamCotiAPViewBean vb = (PTDetailParamCotiAPViewBean) viewBean;
+            return "/" + getAction().getApplicationPart()
+                    + "?userAction=vulpecula.registre.detailParamCotiAP.afficher&idCotisationAP="
+                    + vb.getCotiAP().getId();
+        }
         return super._getDestModifierSucces(session, request, response, viewBean);
     }
 
@@ -152,6 +183,9 @@ public class PTRegistresAction extends PTAbstractDefaultServletAction {
             PTParametresyndicatViewBean vb = (PTParametresyndicatViewBean) viewBean;
             return "/" + getAction().getApplicationPart()
                     + "?userAction=vulpecula.registre.syndicat.afficher&idSyndicat=" + vb.getIdSyndicat();
+        }
+        if (viewBean instanceof PTDetailParamCotiAPViewBean) {
+            return "/" + getAction().getApplicationPart() + "?userAction=vulpecula.registre.cotisationAP.afficher";
         }
         return super._getDestSupprimerSucces(session, request, response, viewBean);
     }

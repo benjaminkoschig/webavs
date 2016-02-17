@@ -254,6 +254,7 @@
 									<parameter name="userAction" value="vulpecula.registre.qualification.afficher"/>
 								</action>
 							</node>
+							<!-- REMOVED BY CEL until GO and cleanup 
 							<node>
 								<label refId="MENU_PT_PARAMETRES_COTISATIONS_ASSOCIATIONS" />
 								<action command="/vulpecula" responseTarget="fr_main">
@@ -265,7 +266,7 @@
 								<action command="/vulpecula" responseTarget="fr_main">
 									<parameter name="userAction" value="vulpecula.registre.cotisationsAP.afficher"/>
 								</action>						
-							</node>
+							</node> -->
 							<node>
 								<label refId="MENU_PT_TAUX_IMPOSITION" />
 								<action command="/vulpecula" responseTarget="fr_main">
@@ -274,6 +275,12 @@
 							</node>
 						</nodes>
 					</node>
+					<node>
+						<label refId="MENU_PT_COTISATIONS_AP" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.registre.cotisationsAP.afficher"/>
+						</action>						
+					</node>		
 					<node id="catalogue_texte">
 						<label defaultValue="Catalogue de textes">
 							<language iso="de">?Catalogue de textes</language>

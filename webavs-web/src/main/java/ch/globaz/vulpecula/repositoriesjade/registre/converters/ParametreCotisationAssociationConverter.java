@@ -11,6 +11,7 @@ import ch.globaz.vulpecula.domain.models.association.CotisationAssociationProfes
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.registre.ParametreCotisationAssociation;
+import ch.globaz.vulpecula.domain.models.registre.TypeParamCotisationAP;
 import ch.globaz.vulpecula.external.models.pyxis.Administration;
 import ch.globaz.vulpecula.external.repositoriesjade.pyxis.converters.AdministrationConverter;
 import ch.globaz.vulpecula.repositoriesjade.association.converter.CotisationAssociationProfessionnelleConverter;
@@ -33,7 +34,9 @@ public class ParametreCotisationAssociationConverter
         cotisationCaisseMetierSimpleModel.setId(parametreCotisationAssociation.getId());
         cotisationCaisseMetierSimpleModel.setIdCotisationAssociationProfessionnelle(parametreCotisationAssociation
                 .getIdCotisationAssociationProfessionnelle());
+        cotisationCaisseMetierSimpleModel.setTypeParam(parametreCotisationAssociation.getTypeParam().getValue());
         cotisationCaisseMetierSimpleModel.setTaux(parametreCotisationAssociation.getTaux().getValue());
+        cotisationCaisseMetierSimpleModel.setMontant(parametreCotisationAssociation.getMontant().getValue());
         cotisationCaisseMetierSimpleModel.setFourchetteDebut(parametreCotisationAssociation.getFourchetteDebut()
                 .getValueNormalisee());
         cotisationCaisseMetierSimpleModel.setFourchetteFin(parametreCotisationAssociation.getFourchetteFin()
@@ -47,8 +50,15 @@ public class ParametreCotisationAssociationConverter
             ParametreCotisationAssociationSimpleModel parametreCotisationAssociationSimpleModel) {
         ParametreCotisationAssociation cotisationCaisseMetier = new ParametreCotisationAssociation();
         cotisationCaisseMetier.setId(parametreCotisationAssociationSimpleModel.getId());
+        if (!JadeStringUtil.isEmpty(parametreCotisationAssociationSimpleModel.getTypeParam())) {
+            cotisationCaisseMetier.setTypeParam(TypeParamCotisationAP
+                    .fromValue(parametreCotisationAssociationSimpleModel.getTypeParam()));
+        }
         if (!JadeStringUtil.isEmpty(parametreCotisationAssociationSimpleModel.getTaux())) {
             cotisationCaisseMetier.setTaux(new Taux(parametreCotisationAssociationSimpleModel.getTaux()));
+        }
+        if (!JadeStringUtil.isEmpty(parametreCotisationAssociationSimpleModel.getMontant())) {
+            cotisationCaisseMetier.setMontant(new Montant(parametreCotisationAssociationSimpleModel.getMontant()));
         }
         if (!JadeStringUtil.isEmpty(parametreCotisationAssociationSimpleModel.getFourchetteDebut())) {
             cotisationCaisseMetier.setFourchetteDebut(new Montant(parametreCotisationAssociationSimpleModel

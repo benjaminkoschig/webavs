@@ -7,7 +7,10 @@
 				<c:out value="${entity.cotisationAssociationProfessionnelleSimpleModel.libelle}"/>
 			</td>
 			<td>
-				<c:out value="${entity.administrationComplexModel.admin.codeAdministration} - ${entity.administrationComplexModel.tiers.designation1} ${entity.administrationComplexModel.tiers.designation2}"/> 
+				<ct:FWCodeLibelle csCode="${entity.cotisationAssociationProfessionnelleSimpleModel.genre}"/>
+			</td>
+			<td>
+				<c:out value="${entity.administrationComplexModel.admin.codeAdministration} - ${entity.administrationComplexModel.tiers.designation1} ${entity.administrationComplexModel.tiers.designation2}" /> 
 			</td>
 		</tr>			
 	</c:forEach>

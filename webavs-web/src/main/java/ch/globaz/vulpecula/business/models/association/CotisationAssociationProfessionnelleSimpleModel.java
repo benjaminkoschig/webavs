@@ -9,9 +9,11 @@ public class CotisationAssociationProfessionnelleSimpleModel extends JadeSimpleM
     private String idAssociationProfessionnelle;
     private String libelle;
     private String libelleUpper;
-    private String montantBase;
-    private String montantMinimum;
-    private String montantMaximum;
+    private String libelleFR;
+    private String libelleDE;
+    private String libelleIT;
+    private String partParDefaut;
+
     private String genre;
 
     @Override
@@ -22,6 +24,38 @@ public class CotisationAssociationProfessionnelleSimpleModel extends JadeSimpleM
     @Override
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getLibelleFR() {
+        return libelleFR;
+    }
+
+    public void setLibelleFR(String libelleFR) {
+        this.libelleFR = libelleFR;
+    }
+
+    public String getLibelleDE() {
+        return libelleDE;
+    }
+
+    public void setLibelleDE(String libelleDE) {
+        this.libelleDE = libelleDE;
+    }
+
+    public String getLibelleIT() {
+        return libelleIT;
+    }
+
+    public void setLibelleIT(String libelleIT) {
+        this.libelleIT = libelleIT;
+    }
+
+    public String getPartParDefaut() {
+        return partParDefaut;
+    }
+
+    public void setPartParDefaut(String partParDefaut) {
+        this.partParDefaut = partParDefaut;
     }
 
     public String getIdAssociationProfessionnelle() {
@@ -38,30 +72,6 @@ public class CotisationAssociationProfessionnelleSimpleModel extends JadeSimpleM
 
     public void setLibelle(String libelle) {
         this.libelle = libelle;
-    }
-
-    public String getMontantBase() {
-        return montantBase;
-    }
-
-    public void setMontantBase(String montantBase) {
-        this.montantBase = montantBase;
-    }
-
-    public String getMontantMinimum() {
-        return montantMinimum;
-    }
-
-    public void setMontantMinimum(String montantMinimum) {
-        this.montantMinimum = montantMinimum;
-    }
-
-    public String getMontantMaximum() {
-        return montantMaximum;
-    }
-
-    public void setMontantMaximum(String montantMaximum) {
-        this.montantMaximum = montantMaximum;
     }
 
     public String getGenre() {

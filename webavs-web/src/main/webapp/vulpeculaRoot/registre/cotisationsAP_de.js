@@ -1,22 +1,16 @@
 $(function() {
 	var tableAjax = this;
 	
-	$('#currentEntity\\.cotisationAssociationProfessionnelleSimpleModel\\.id').change(function (event){
-			$('#redirectionParam').show();			
-	});
-	
-	$( "#redirectionParam" ).click(function( event ) {
-		  event.preventDefault();		  
-		  window.location.href='vulpecula?userAction=vulpecula.registre.parametresCotisationsAssociations.afficher&forLibelle='+$('#currentEntity\\.cotisationAssociationProfessionnelleSimpleModel\\.libelle').val();
-	});
-	
 	$('.areaSearch :input').change(function () {
 		tableAjax.ajaxFind();
 	});
 	
-	defaultTableAjax.init({
+	
+	defaultTableAjaxList.init({
+		s_selector: "#",
 		s_actionAjax: globazGlobal.ACTION_AJAX,
 		s_spy: "currentEntity.cotisationAssociationProfessionnelleSimpleModel",
+		userActionDetail : "vulpecula?userAction=vulpecula.registre.detailParamCotiAP.afficher&idCotisationAP=",
 		init : function() {
 			tableAjax = this;
 			this.capage(5, [10, 20, 30, 50, 100]);

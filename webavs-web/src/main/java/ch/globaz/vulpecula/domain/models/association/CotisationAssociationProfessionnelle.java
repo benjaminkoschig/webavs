@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import ch.globaz.specifications.UnsatisfiedSpecificationException;
 import ch.globaz.vulpecula.domain.models.common.DomainEntity;
-import ch.globaz.vulpecula.domain.models.common.Montant;
+import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.registre.GenreCotisationAssociationProfessionnelle;
 import ch.globaz.vulpecula.domain.specifications.cotisationAssociationProf.CotisationsAssociationProfessionnelleLibelleValideSpecification;
 import ch.globaz.vulpecula.domain.specifications.cotisationAssociationProf.CotisationsAssociationProfessionnelleMandatoriesSpecification;
@@ -18,9 +18,10 @@ public class CotisationAssociationProfessionnelle implements DomainEntity {
     private String id;
     private Administration associationProfessionnelle;
     private String libelle;
-    private Montant montantBase;
-    private Montant montantMinimum;
-    private Montant montantMaximum;
+    private String libelleFR;
+    private String libelleDE;
+    private String libelleIT;
+    private Taux partParDefaut;
     private String spy;
     private GenreCotisationAssociationProfessionnelle genre;
 
@@ -42,28 +43,36 @@ public class CotisationAssociationProfessionnelle implements DomainEntity {
         this.libelle = libelle;
     }
 
-    public Montant getMontantBase() {
-        return montantBase;
+    public String getLibelleFR() {
+        return libelleFR;
     }
 
-    public void setMontantBase(Montant montantBase) {
-        this.montantBase = montantBase;
+    public void setLibelleFR(String libelleFR) {
+        this.libelleFR = libelleFR;
     }
 
-    public Montant getMontantMinimum() {
-        return montantMinimum;
+    public String getLibelleDE() {
+        return libelleDE;
     }
 
-    public void setMontantMinimum(Montant montantMinimum) {
-        this.montantMinimum = montantMinimum;
+    public void setLibelleDE(String libelleDE) {
+        this.libelleDE = libelleDE;
     }
 
-    public Montant getMontantMaximum() {
-        return montantMaximum;
+    public String getLibelleIT() {
+        return libelleIT;
     }
 
-    public void setMontantMaximum(Montant montantMaximum) {
-        this.montantMaximum = montantMaximum;
+    public void setLibelleIT(String libelleIT) {
+        this.libelleIT = libelleIT;
+    }
+
+    public Taux getPartParDefaut() {
+        return partParDefaut;
+    }
+
+    public void setPartParDefaut(Taux partParDefaut) {
+        this.partParDefaut = partParDefaut;
     }
 
     @Override
