@@ -199,10 +199,8 @@ public class CAReferenceBVR {
         int valIdRole = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
                 IntReferenceBVRParser.VAL_ID_ROLE));
 
-        // Modification pour le BMS uniquement !
         String sIdExterneRole = removeNotLetterNotDigit(idExterneRole.split("-")[0]);
-        int iIdExterneRole = Integer.parseInt(sIdExterneRole);
-        // sIdExterneRole = StringUtils.leftPad(String.valueOf(iIdExterneRole), getLengthRefDebiteur(), '0');
+        long iIdExterneRole = Long.parseLong(sIdExterneRole);
 
         String role = JadeStringUtil.rightJustifyInteger(idRole, getLengthIdRole());
         String refDebiteur = JadeStringUtil.rightJustifyInteger(String.valueOf(iIdExterneRole), getLengthRefDebiteur());
