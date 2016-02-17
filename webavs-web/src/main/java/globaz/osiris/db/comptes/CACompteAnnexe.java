@@ -1404,7 +1404,7 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
             CASectionManager sectionManager = new CASectionManager();
             sectionManager.setSession(getSession());
             sectionManager.setForIdCompteAnnexe(idCompteAnnexe);
-            sectionManager.find();
+            sectionManager.find(BManager.SIZE_NOLIMIT);
 
             if (sectionManager.size() == 0) {
                 return false;

@@ -27,6 +27,7 @@ import globaz.osiris.translation.CACodeSystem;
 import globaz.pyxis.api.osiris.TITiersOSI;
 import java.util.Collection;
 import java.util.Iterator;
+import ch.globaz.common.domaine.Date;
 import com.google.common.base.Preconditions;
 
 /**
@@ -168,7 +169,8 @@ public class FAPassageRemboursementProcess extends FAGenericProcess {
     protected void fixIdForModeRecouvrement(CACompteAnnexe compteAnnexe, IFAPassage passage,
             FAEnteteFacture entFacture, Collection<?> sections, BSession session) throws Exception {
 
-        String annee = passage.getDateFacturation().substring(3);
+        Date dateFacturation = new Date(passage.getDateFacturation());
+        String annee = dateFacturation.getAnnee();
 
         if (isCAContentieux(compteAnnexe, annee)) {
             entFacture.setIdModeRecouvrement(FAEnteteFacture.CS_MODE_RETENU_COMPTE_ANNEX_BLOQUE);
