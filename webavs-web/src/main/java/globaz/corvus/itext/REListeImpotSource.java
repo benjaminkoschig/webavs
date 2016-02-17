@@ -593,13 +593,18 @@ public class REListeImpotSource extends FWIAbstractDocumentList {
                     this._addDataTableRow();
 
                     montantTotal.add(ligne.montant);
-
                     canton = ligne.canton;
 
                 }
+                if (getAjouterCommunePolitique()) {
+                    _addCell("_________________________");
+                    _addCell("________________________________________________________________________________________________");
+                    _addCell("____________________________________________________________________________________");
+                } else {
+                    _addCell("______________________________________________________________________________________________________");
+                    _addCell("_________________________________________________________________________________________________");
+                }
 
-                _addCell("____________________________________________________________________________________________________");
-                _addCell("________________________________________________________________________________________________");
                 _addCell("");
                 _addCell("");
                 _addCell("");
@@ -607,6 +612,9 @@ public class REListeImpotSource extends FWIAbstractDocumentList {
                 this._addDataTableRow();
 
                 _addCell(getSession().getLabel("LISTE_IMS_MONTANT_TOTAL"));
+                if (getAjouterCommunePolitique()) {
+                    _addCell("");
+                }
                 _addCell("");
                 _addCell(montantTotal.toStringFormat());
                 _addCell("");
