@@ -310,7 +310,7 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
             StringBuilder sql = new StringBuilder();
             sql.append("select schema.TIPAVSP.HXNAVS as nss, schema.TITIERP.HNIPAY as codeNationalite, schema.TITIERP.HTLDE1 as nom, schema.TITIERP.HTLDU1 as nomUpper, ");
             sql.append("schema.TITIERP.HTLDE2 as prenom, schema.TITIERP.HTLDU2 as prenomUpper, schema.TIPERSP.HPDNAI as dateNaissance, schema.TIPERSP.HPDDEC as dateDeces, ");
-            sql.append("schema.TITIERP.HNIPAY as pays, schema.TIPERSP.HPTSEX as sexe, schema.TIPERSP.HPTETC as etatCivil, schema.TITIERP.HTITIE as idTiers ");
+            sql.append("schema.TITIERP.HNIPAY as pays, schema.TIPERSP.HPTSEX as sexe, schema.TITIERP.HTITIE as idTiers ");
             sql.append("from schema.TIPAVSP ");
             sql.append("inner join schema.TITIERP on schema.TITIERP.HTITIE = schema.TIPAVSP.HTITIE ");
             sql.append("inner join schema.TIPERSP on schema.TIPERSP.HTITIE = schema.TIPAVSP.HTITIE ");
