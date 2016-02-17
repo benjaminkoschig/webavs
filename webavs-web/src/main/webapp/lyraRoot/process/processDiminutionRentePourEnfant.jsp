@@ -45,7 +45,7 @@ BSession session2 = BSessionUtil.getSessionFromThreadContext();
 					&#160;
 				</th>
 				
-				<th width="8%" rowspan="2">
+				<th width="8%" class="notSortable" rowspan="2">
 					<%=session2.getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_TITRE_COLONNE.getKey())%>
 				</th>
 				<th width="20%" rowspan="2">
