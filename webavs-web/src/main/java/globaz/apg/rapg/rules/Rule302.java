@@ -61,7 +61,7 @@ public class Rule302 extends Rule {
                     int insurantBirthDateYear = JACalendar.getYear(insurantBirthDate);
                     int age = startOfPeriodYear - insurantBirthDateYear;
 
-                    if (age >= 30) {
+                    if (age > 30) {
                         return false;
                     }
                 } catch (JAException e) {
