@@ -302,7 +302,7 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
      */
     private Set<InfoTiers> findInfosTiers(Set<String> listNss, Map<String, Pays> mapPaysByCodeCentral) {
         List<InfoTiers> listInfosTiers = new ArrayList<InfoTiers>();
-        List<List<String>> splittedList = QueryExecutor.split(listNss, 2000);
+        List<List<String>> splittedList = QueryExecutor.splitBy1000(listNss);
 
         Set<ConverterDb<?>> converters = QueryExecutor.newSetConverter(new SexeConverter(), new DateRenteConverter(),
                 new PaysConverter(mapPaysByCodeCentral), new EtatCivilConverter());

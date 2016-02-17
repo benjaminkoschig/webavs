@@ -30,6 +30,16 @@ import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
+/**
+ * Permet d'executer une requête sql et de charger un objet automatiquement.
+ * Pour charger l'objet on se base sur le nom des champs définit dans l'objet.
+ * Il faut que cette objet soit un bean, car on passe par les setters pour peupler l'objet.
+ * Pour définir le nom des champs il faut utiliser l'alias. Ceux-ci ne sont pas sensible à la casse.
+ * Mais si le setter et du style monChampDate l'alias de la db doit être nommé de la manière suivante: mon_champ_date ou MON_CHAMP_DATE
+ * 
+ * @author dma
+ * 
+ */
 public class QueryExecutor {
 
     public static <T> List<T> execute(String query, Class<T> clazz, Set<ConverterDb<?>> converters) {
@@ -250,7 +260,9 @@ public class QueryExecutor {
                             value = row.get(field.getName().toUpperCase());
                         }
 
-                        if (value != null) {
+                        if (value == null) {
+                            // TODO LOG.
+                        } else {
                             Object[] args = new Object[1];
                             args[0] = value;
                             String methodName = "set" + JadeStringUtil.firstLetterToUpperCase(field.getName());
@@ -318,6 +330,16 @@ public class QueryExecutor {
         StringBuilder builder = new StringBuilder();
         builder.append("'").append(Joiner.on("','").join(list)).append("'");
         return builder.toString();
+    }
+
+    /**
+     * This split a list by 1000 elements.
+     * 
+     * @param list The list to split
+     * @return the list splited
+     */
+    public static <T> List<List<T>> splitBy1000(Collection<T> list) {
+        return Lists.partition(new ArrayList<T>(list), 1000);
     }
 
     /**
