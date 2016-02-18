@@ -38,18 +38,14 @@
 		globazNotation.growl.init = function (){}
 	} catch(e){}
 	
+	// on le met en global pour permetre de rechareger le tableau lors du close du dialogue
+	var objetAjax;
 	$(function () {
-	    var objetAjax ;
 
 		$(".areaTable").on("click", "td:not(.ignoreExternalLink)", function(){
 			$(this).parent().find("a").click();
 		})
-		
-		$("body").on("click", ".ui-icon-closethick", function(){
-			objetAjax.ajaxFind();
-		})
 
-		
 		defaultTableAjaxList.init({
 			
 			s_actionAjax: globazGlobal.ACTION_AJAX,

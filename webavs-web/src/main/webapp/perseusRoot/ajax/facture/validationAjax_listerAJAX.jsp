@@ -20,7 +20,7 @@
 				<td class="montant" onMouseOver="this.style.background='#f1f1f1'; this.style.cursor='pointer'" onMouseOut="this.style.background='none'">${facture.simpleFacture.montantRembourse}</td>
 				<td onMouseOver="this.style.background='#f1f1f1'; this.style.cursor='pointer'" onMouseOut="this.style.background='none'">${facture.simpleFacture.idGestionnaire}</td>
 				<td onMouseOver="this.style.background='#f1f1f1'; this.style.cursor='pointer'" onMouseOut="this.style.background='none'">
-					<a style="display: none" data-g-externallink="reLoad:false" href="<c:out value="perseus?userAction=perseus.qd.detailfacture.afficher&selectedId=${facture.simpleFacture.idFacture}"></c:out>">${facture.simpleFacture.idFacture}</a>${facture.simpleFacture.idFacture}
+					<a style="display: none" data-g-externallink="reLoad:false, autoResize:true, cache:false, onClose:function(){objetAjax.ajaxFind()}" href="<c:out value="perseus?userAction=perseus.qd.detailfacture.afficher&selectedId=${facture.simpleFacture.idFacture}"></c:out>">${facture.simpleFacture.idFacture}</a>${facture.simpleFacture.idFacture}
 				</td>
 			</tr>
 		</c:forEach>
