@@ -7,14 +7,14 @@
 	</parent>
 
 	<artifactId>webavs-parent</artifactId>
-	<version>5.1.53</version>
+	<version>5.1.54-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<url>http://javadoc.ju.globaz.ch/webavs/${project.version}</url>
 
 	<scm>
-		<url>scm:svn:http://svndev.ju.globaz.ch/webavs-repos/tags/webavs/5.1.53</url>
-		<connection>scm:svn:http://svndev.ju.globaz.ch/webavs-repos/tags/webavs/5.1.53</connection>
-		<developerConnection>scm:svn:http://svndev.ju.globaz.ch/webavs-repos/tags/webavs/5.1.53</developerConnection>
+		<url>${scm.weburl}</url>
+		<connection>scm:${scm.type}:${scm.url}</connection>
+		<developerConnection>scm:${scm.type}:${scm.url}</developerConnection>
 	</scm>
 
 	<distributionManagement>
