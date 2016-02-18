@@ -29,6 +29,14 @@ globazNotation.externallink = {
 		autoResize: {
 			desc: "Si la page charger est plus petite que la fenêtre (frame) le dialogue sera automatiquement ajuster en hauteur",
 			param: "true(default), false"
+		},
+		cache: {
+			desc: "Indique si on veut que la page soit mise en cache per défaut true",
+			param: "true(default), false"
+		},
+		onClose: {
+			desc: "Fonction que l'on veut appler lors de la fermeture du dialog",
+			param: "function(){}"
 		}
 	},
 
@@ -36,7 +44,9 @@ globazNotation.externallink = {
 		selectorForClose: "",
 		reLoad: true,
 		forceReload: false,
-		autoResize: true
+		autoResize: true, 
+		cache: true,
+		onClose: function () {}
 	},
 
 	$iframe: {},
@@ -107,6 +117,8 @@ globazNotation.externallink = {
 					height: (n_height - 20)
 				});
 			}
+			// on fait une seule fois l'autoResize pour éviter le sizing lors de la navigation dans la boîte de dialogue
+			this.options.autoResize = false;
 		}
 	},
 
@@ -151,7 +163,8 @@ globazNotation.externallink = {
 		var that = this;
 		this.$elementToPutObject.click(function (event) {
 			event.preventDefault();
-			if (that.$dialog === null) {
+		
+			if (that.$dialog === null || !that.options.cache) {
 				that.createIframe();
 				that.createDialogue();
 			}
@@ -161,6 +174,8 @@ globazNotation.externallink = {
 				width: that.n_width - 8,
 				height: that.n_maxHeight
 			});
+			// Si on ne stop pas on créer un boucle ?????
+			event.stopImmediatePropagation();
 			that.bindEventForClose();
 		});
 	},
@@ -177,6 +192,7 @@ globazNotation.externallink = {
 			draggable: true,
 			close: function () {
 				that.reload();
+				that.options.onClose();
 			}
 		});
 		// On ajout une div entourante pour que le dialogue pense avoir un contnue // HACK

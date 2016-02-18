@@ -342,7 +342,7 @@ globazNotation.calendar = {
 	initTabBeaviorForStandardCal: function () {
 		var that = this;
 		that.$elementToPutObject.change(function(event) {
-			that.formatAndHandleError(that.formatStandardCalendarField,event);
+			that.formatAndHandleErrorAndTriggerEventIfNeeded(that.formatStandardCalendarField,event);
 		});
 		
 		//Sauvegarde de l'ancienne valeur
@@ -358,12 +358,11 @@ globazNotation.calendar = {
 	initTabBeaviorForMonthCal: function () {
 		var that = this;
 		that.$elementToPutObject.change(function (event) {
-			that.formatAndHandleError(that.formatMonthCalendarField,event);
+			that.formatAndHandleErrorAndTriggerEventIfNeeded(that.formatMonthCalendarField,event);
 		});
-
 		that.$elementToPutObject.keyup(function (event) {
 			if (that.$elementToPutObject.val().length === 6 && that.$elementToPutObject.val().indexOf('.') === -1) {
-				that.formatAndHandleError(that.formatMonthCalendarField,event);
+				that.formatAndHandleErrorAndTriggerEventIfNeeded(that.formatMonthCalendarField,event);
 			}
 		});
 		
@@ -373,7 +372,7 @@ globazNotation.calendar = {
 			that.$elementToPutObject.prevValue = prevValue;
 		});
 	},
-	formatAndHandleError : function(formatFunction, event) {
+	formatAndHandleErrorAndTriggerEventIfNeeded: function(formatFunction, event) {
 		var that = this;
 		var result = formatFunction.call(that);
 		if(result.error) {
@@ -387,11 +386,13 @@ globazNotation.calendar = {
 			if(notationManager.b_debug) console.log("error | stopImmediatePropagation");
 			event.stopImmediatePropagation();
 		}
-		
+	
 		if(!result.changed) {
 			if(notationManager.b_debug) console.log("value not changed | stopImmediatePropagation");
 			event.stopImmediatePropagation();				
-		}			
+		} else if (event.type === "keyup" && !result.error){
+			this.$elementToPutObject.change();
+		}		
 	},
 
 	/**
@@ -589,7 +590,6 @@ globazNotation.calendar = {
 		});
 
 		that.$elementToPutObject.blur(function () {
-
 			that.formatMonthCalendarField(that.$elementToPutObject);
 		});
 
@@ -721,7 +721,7 @@ globazNotation.calendar = {
 		} else {
 			isMonthDateValid = this.isMonthDateValid(value);
 		}
-		
+
 		return {
 			preValue : prevValue,
 			value : value,
