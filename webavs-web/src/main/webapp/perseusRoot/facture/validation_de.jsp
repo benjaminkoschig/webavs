@@ -218,7 +218,9 @@
 					<ct:FWLabel key="JSP_PF_VALIDATION_RAPPORT_MAIL"/> 
 					<input type="text" id="adresseMail" name="adresseMail" value="<%=objSession.getUserEMail()%>" />
 					<input type="hidden" id="idFactures" name="idFactures" />
-					<input id="validerFactrueSelectionnee" style="float: right;" type="button" disabled="disabled" value="<ct:FWLabel key="JSP_PF_VALIDATION_VALIDER_SELECTIONNES"/>" >
+					<% if (viewBean.isPaiementOKPourValidation()) { %>
+						<input id="validerFactrueSelectionnee" style="float: right;" type="button" disabled="disabled" value="<ct:FWLabel key="JSP_PF_VALIDATION_VALIDER_SELECTIONNES"/>" >
+					<% } %>
 				</div>
 		</td>
 	</tr>

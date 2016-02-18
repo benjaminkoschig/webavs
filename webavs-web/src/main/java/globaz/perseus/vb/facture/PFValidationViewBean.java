@@ -16,6 +16,7 @@ import ch.globaz.jade.business.models.Langues;
 import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
 import ch.globaz.perseus.business.constantes.IPFConstantes;
 import ch.globaz.perseus.business.models.qd.CSTypeQD;
+import ch.globaz.perseus.business.services.PerseusServiceLocator;
 
 public class PFValidationViewBean extends BJadePersistentObjectViewBean implements FWAJAXViewBeanInterface {
 
@@ -23,6 +24,7 @@ public class PFValidationViewBean extends BJadePersistentObjectViewBean implemen
     private Vector agence = new Vector();
     private String adresseMail;
     private String factureSelected;
+    private boolean isPaiementOKPourValidation = true;
 
     @Override
     public void add() throws Exception {
@@ -42,8 +44,18 @@ public class PFValidationViewBean extends BJadePersistentObjectViewBean implemen
         return null;
     }
 
+    public boolean isPaiementOKPourValidation() {
+        return isPaiementOKPourValidation;
+    }
+
+    public void setPaiementOKPourValidation(boolean isPaiementOKPourValidation) {
+        this.isPaiementOKPourValidation = isPaiementOKPourValidation;
+    }
+
     @Override
     public void retrieve() throws Exception {
+
+        setPaiementOKPourValidation(PerseusServiceLocator.getPmtMensuelService().isValidationDecisionAuthorise());
 
         List<JadeCodeSysteme> codes = JadeBusinessServiceLocator.getCodeSystemeService().getFamilleCodeSysteme(
                 "PFTYPEQD");
