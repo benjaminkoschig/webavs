@@ -1,5 +1,5 @@
 var cotisationSearch;
-var typeListeMONTANT = [68030001,68030002,68030005,68030006,68030007];
+var typeListeMONTANT = [68031001,68031002,68031005];
 
 
 $(function () {

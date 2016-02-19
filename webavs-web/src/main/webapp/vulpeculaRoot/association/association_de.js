@@ -85,6 +85,14 @@ globazGlobal.associations = (function() {
 			var $periodesFin = $(this).closest('.association').find('.periodeFin');
 			setValueToInputs($periodesFin, periodeFin);
 		});
+		
+		$associations.on('change','.idCotisation', function() {
+			var $masseSalariale = $(this).closest('.cotisationMembre').find('.masseSalariale');
+			findDefautMasseSalariale($(this).val(),function(taux){
+				var strTaux = taux;
+				$masseSalariale.val(strTaux);
+				});
+		});
 	}
 	
 	function setValueToInputs($inputs, value) {
@@ -149,6 +157,7 @@ globazGlobal.associations = (function() {
 		nouvelleCotisation += '<td><button class="deleteCotisation"><img src="images/edit-delete.png" /></button></td>';
 		nouvelleCotisation += '<td><select style="width:100%" class="idCotisation">';
 		var nbCotisations = cotisations.length;
+		var masseSalariale
 		for(var i=0;i<nbCotisations;i++) {
 			var cotisation = cotisations[i];
 			if(selectedId==i) {
@@ -183,6 +192,16 @@ globazGlobal.associations = (function() {
 				serviceClassName:globazGlobal.associationViewService,
 				serviceMethodName:'findCotisationsAssociationsProfessionnelles',
 				parametres:idAssociation + ',' + genre,
+				callBack:callback
+		};
+		vulpeculaUtils.lancementService(options);	
+	}
+	
+	function findDefautMasseSalariale(idCotisation, callback) {
+		var options = {
+				serviceClassName:globazGlobal.associationViewService,
+				serviceMethodName:'findDefaultMasseSalariale',
+				parametres:idCotisation,
 				callBack:callback
 		};
 		vulpeculaUtils.lancementService(options);	

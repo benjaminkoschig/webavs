@@ -98,13 +98,13 @@ public class PTDetailParamCotiAPViewBean extends BJadeSearchObjectELViewBean {
         cotiAP.setAssociationProfessionnelle(admini);
     }
 
-    public String getPartParDefaut() {
-        return cotiAP.getPartParDefaut().getValue();
+    public String getMasseSalarialeDefaut() {
+        return cotiAP.getMasseSalarialeDefaut().getValue();
     }
 
-    public void setPartParDefaut(String taux) {
-        Taux partParDefaut = new Taux(taux);
-        cotiAP.setPartParDefaut(partParDefaut);
+    public void setMasseSalarialeDefaut(String taux) {
+        Taux masseSalarialeDefaut = new Taux(taux);
+        cotiAP.setMasseSalarialeDefaut(masseSalarialeDefaut);
     }
 
     public PTDetailParamCotiAPViewBean() {

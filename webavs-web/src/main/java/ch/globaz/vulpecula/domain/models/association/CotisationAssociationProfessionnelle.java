@@ -21,7 +21,7 @@ public class CotisationAssociationProfessionnelle implements DomainEntity {
     private String libelleFR;
     private String libelleDE;
     private String libelleIT;
-    private Taux partParDefaut;
+    private Taux masseSalarialeDefaut;
     private String spy;
     private GenreCotisationAssociationProfessionnelle genre;
 
@@ -67,12 +67,12 @@ public class CotisationAssociationProfessionnelle implements DomainEntity {
         this.libelleIT = libelleIT;
     }
 
-    public Taux getPartParDefaut() {
-        return partParDefaut;
+    public Taux getMasseSalarialeDefaut() {
+        return masseSalarialeDefaut;
     }
 
-    public void setPartParDefaut(Taux partParDefaut) {
-        this.partParDefaut = partParDefaut;
+    public void setMasseSalarialeDefaut(Taux masseSalarialeDefaut) {
+        this.masseSalarialeDefaut = masseSalarialeDefaut;
     }
 
     @Override

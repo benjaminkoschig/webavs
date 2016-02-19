@@ -9,7 +9,7 @@
 				comment="Id de la table association cotisation" />
 			<field name="libelle" column="LIBELLE" type="STRING" comment="libelle" />
 			<field name="libelleUpper" column="LIBELLE_UPPER" type="STRING" comment="libelle upper" />
-			<field name="partParDefaut" column="PART_PAR_DEFAUT" type="NUMERIC" />
+			<field name="masseSalarialeDefaut" column="MASSE_SALARIALE_DEFAUT" type="NUMERIC" />
 			<field name="libelleFR" column="LIBELLE_FR" type="STRING" comment="libelleFR" />
 			<field name="libelleDE" column="LIBELLE_DE" type="STRING" comment="libelleDE" />
 			<field name="libelleIT" column="LIBELLE_IT" type="STRING" comment="libelleIT" />

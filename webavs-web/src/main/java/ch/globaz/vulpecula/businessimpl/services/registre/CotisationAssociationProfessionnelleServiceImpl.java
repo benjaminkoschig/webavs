@@ -39,4 +39,9 @@ public class CotisationAssociationProfessionnelleServiceImpl implements Cotisati
         cotisationCM.validate(cotisationList);
     }
 
+    @Override
+    public CotisationAssociationProfessionnelle findCotisationsById(String idCotisationAP) {
+        return repository.findById(idCotisationAP);
+    }
+
 }

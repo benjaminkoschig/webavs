@@ -12,7 +12,7 @@ public class CotisationAssociationProfessionnelleSimpleModel extends JadeSimpleM
     private String libelleFR;
     private String libelleDE;
     private String libelleIT;
-    private String partParDefaut;
+    private String masseSalarialeDefaut;
 
     private String genre;
 
@@ -50,12 +50,12 @@ public class CotisationAssociationProfessionnelleSimpleModel extends JadeSimpleM
         this.libelleIT = libelleIT;
     }
 
-    public String getPartParDefaut() {
-        return partParDefaut;
+    public String getMasseSalarialeDefaut() {
+        return masseSalarialeDefaut;
     }
 
-    public void setPartParDefaut(String partParDefaut) {
-        this.partParDefaut = partParDefaut;
+    public void setMasseSalarialeDefaut(String masseSalarialeDefaut) {
+        this.masseSalarialeDefaut = masseSalarialeDefaut;
     }
 
     public String getIdAssociationProfessionnelle() {

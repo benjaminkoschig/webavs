@@ -5,12 +5,13 @@ import java.util.List;
 import ch.globaz.specifications.AbstractSpecification;
 import ch.globaz.specifications.SpecificationMessage;
 import ch.globaz.vulpecula.domain.models.registre.ParametreCotisationAssociation;
+import ch.globaz.vulpecula.domain.models.registre.TypeParamCotisationAP;
 
 public class ParametreCotisationAPMandatoriesSpecification extends
         AbstractSpecification<ParametreCotisationAssociation> {
-    //TODO make it param
-    private final List<String> listCSMontant = Arrays
-            .asList("68030001", "68030002", "68030005", "68030006", "68030007");
+    // TODO make it param
+    private final List<String> listCSMontant = Arrays.asList(TypeParamCotisationAP.MONTANT_MIN.getValue(),
+            TypeParamCotisationAP.MONTANT_MAX.getValue(), TypeParamCotisationAP.FORFAIT_FIX.getValue());
 
     @Override
     public boolean isValid(ParametreCotisationAssociation cotisationAAjouter) {

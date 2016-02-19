@@ -11,11 +11,14 @@ import ch.globaz.vulpecula.domain.models.registre.GenreCotisationAssociationProf
 import ch.globaz.vulpecula.domain.models.registre.ParametreCotisationAssociation;
 
 public interface CotisationAssociationProfessionnelleService extends JadeApplicationService {
+
     Map<AssociationGenre, Collection<CotisationAssociationProfessionnelle>> findAllCotisationsByAssociationGenre();
 
     List<CotisationAssociationProfessionnelle> findCotisationsByAssociationGenre(String idAssociation,
             GenreCotisationAssociationProfessionnelle genre);
 
     void validate(ParametreCotisationAssociation cotisationCM) throws UnsatisfiedSpecificationException;
+
+    CotisationAssociationProfessionnelle findCotisationsById(String idCotisationAP);
 
 }

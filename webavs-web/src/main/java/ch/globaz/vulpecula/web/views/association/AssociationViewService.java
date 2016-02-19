@@ -18,6 +18,11 @@ public class AssociationViewService {
                         GenreCotisationAssociationProfessionnelle.fromValue(genre));
     }
 
+    public String findDefaultMasseSalariale(String idCotisationAP) {
+        return VulpeculaServiceLocator.getCotisationAssociationProfessionnelleService()
+                .findCotisationsById(idCotisationAP).getMasseSalarialeDefaut().getValue();
+    }
+
     public boolean create(String associationsJson) throws ViewException {
         Gson gson = new Gson();
         AssociationsGSON associationsGSON = gson.fromJson(associationsJson, AssociationsGSON.class);

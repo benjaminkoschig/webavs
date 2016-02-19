@@ -51,8 +51,8 @@ public class CotisationAssociationProfessionnelleConverter
                 .getLibelleDE());
         cotisationAssociationProfessionnelleSimpleModel.setLibelleIT(cotisationAssociationProfessionnelle
                 .getLibelleIT());
-        cotisationAssociationProfessionnelleSimpleModel.setPartParDefaut(cotisationAssociationProfessionnelle
-                .getPartParDefaut().getValue());
+        cotisationAssociationProfessionnelleSimpleModel.setMasseSalarialeDefaut(cotisationAssociationProfessionnelle
+                .getMasseSalarialeDefaut().getValue());
 
         cotisationAssociationProfessionnelleSimpleModel.setSpy(cotisationAssociationProfessionnelle.getSpy());
         cotisationAssociationProfessionnelleSimpleModel.setGenre(cotisationAssociationProfessionnelle.getGenre()
@@ -72,8 +72,8 @@ public class CotisationAssociationProfessionnelleConverter
                 .getLibelleDE());
         cotisationAssociationProfessionnelle.setLibelleIT(cotisationAssociationProfessionnelleSimpleModel
                 .getLibelleIT());
-        cotisationAssociationProfessionnelle.setPartParDefaut(new Taux(cotisationAssociationProfessionnelleSimpleModel
-                .getPartParDefaut()));
+        cotisationAssociationProfessionnelle.setMasseSalarialeDefaut(new Taux(
+                cotisationAssociationProfessionnelleSimpleModel.getMasseSalarialeDefaut()));
         cotisationAssociationProfessionnelle.setSpy(cotisationAssociationProfessionnelleSimpleModel.getSpy());
         cotisationAssociationProfessionnelle.setGenre(GenreCotisationAssociationProfessionnelle
                 .fromValue(cotisationAssociationProfessionnelleSimpleModel.getGenre()));

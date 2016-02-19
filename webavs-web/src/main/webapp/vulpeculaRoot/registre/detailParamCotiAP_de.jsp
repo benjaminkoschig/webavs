@@ -52,7 +52,6 @@
 		 }
 	}
 
-
 	function init(){
 		//reduce 100§ size of div who cause scrollbar
 		$('#mainWrapper').css('width', '100%').css('width', '-=10px');
@@ -147,8 +146,8 @@ select {
 			<td><input id="libelleDE" name="libelleDE" type="text" value="${viewBean.cotiAP.libelleDE}" tabindex="6"></span></td>
 		</tr>
 		<tr>
-			<td><ct:FWLabel key="JSP_PART_PAR_DEFAUT"/></td>
-			<td><input id="partParDefaut" name="partParDefaut" data-g-amount="" type="text" value="${viewBean.cotiAP.partParDefaut}" tabindex="4"/></td>
+			<td><ct:FWLabel key="JSP_MASSE_SALARIALE_DEFAUT"/></td>
+			<td><input id="masseSalarialeDefaut" name="masseSalarialeDefaut" data-g-amount="" type="text" value="${viewBean.cotiAP.masseSalarialeDefaut}" tabindex="4"/></td>
 			<td><ct:FWLabel key="JSP_LIBELLE_IT"/></td>
 			<td><input id="libelleIT" name="libelleIT" type="text" value="${viewBean.cotiAP.libelleIT}" tabindex="7"></span></td>
 		</tr>
