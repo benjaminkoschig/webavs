@@ -59,9 +59,9 @@
 	<!-- <globaz.jade.service.provider.JadeApplicationServiceLocator import="JadeApplicationServiceLocator.xml"/>-->
 	<!--globaz.jade.i18n.JadeI18n: liste des fichiers de messages métiers internationalisés-->
 	<globaz.jade.i18n.JadeI18n import="JadeI18n.xml"/>
-<!-- 	<globaz.jade.print.server.JadePrintServer verbose="true"> -->
-<!-- 		<pdf.merge.maxsize>20</pdf.merge.maxsize> -->
-<!--   	</globaz.jade.print.server.JadePrintServer> -->
+	<globaz.jade.print.server.JadePrintServer verbose="true">
+		<pdf.merge.maxsize>20</pdf.merge.maxsize>
+  	</globaz.jade.print.server.JadePrintServer>
 	
 	<globaz.jade.jdbc.JadeJdbcProfiler verbose="true">
 <!--             started: 'true' ou 'false' ('false' par defaut) -->
