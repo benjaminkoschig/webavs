@@ -203,6 +203,9 @@ public class REListeImpotSource extends FWIAbstractDocumentList {
     @Override
     public void _beforeExecuteReport() {
         try {
+            // nom du document
+            _setDocumentTitle(getSession().getLabel("LISTE_IMS_TITRE"));
+
             Set<String> setIdTiers = new HashSet<String>();
 
             // on ajoute au doc info le numéro de référence inforom
