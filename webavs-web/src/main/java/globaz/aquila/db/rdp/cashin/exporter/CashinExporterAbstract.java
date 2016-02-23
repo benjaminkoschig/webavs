@@ -27,7 +27,8 @@ public abstract class CashinExporterAbstract {
         FileWriter fileWriter = new FileWriter(fileName, true);
         BufferedWriter writer = new BufferedWriter(fileWriter);
         PrintWriter printWriter = new PrintWriter(writer);
-        printWriter.println(content);
+        printWriter.print(content);
+        printWriter.print(NEW_LINE);
         printWriter.close();
 
         JadeFsFacade.copyFile(fileName, path + fileName);
