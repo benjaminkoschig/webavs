@@ -26,6 +26,8 @@
 			<select-field name="langue" field-ref="tiersSimpleModel.langue" />
 			<select-field name="idJournal" field-ref="entetePrestationModel.idJournal" />
 			<select-field name="spy" field-ref="entetePrestationModel.pspy" />
+			<select-field name="dateComptableVersement" field-ref="entetePrestationModel.dateVersComp" />
+			<select-field name="numFactureRecap" field-ref="recapitulatifEntrepriseModel.numeroFacture" />
 		</select-fields>
 		
 		<root-model name="entetePrestationModel"
