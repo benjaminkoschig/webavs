@@ -58,7 +58,7 @@ public class DocumentCPPrinter extends DocumentPrestationsPrinter<CPParEmployeur
         for (CPParEmployeur cp : cps) {
             Employeur employeur = cp.getEmployeur();
             employeur.setAdressePrincipale(VulpeculaRepositoryLocator.getAdresseRepository()
-                    .findAdresseDomicileByIdTiers(employeur.getIdTiers()));
+                    .findAdressePrioriteCourrierByIdTiers(employeur.getIdTiers()));
             employeur.setCaisseMetier(VulpeculaRepositoryLocator.getAdhesionRepository().findCaisseMetier(
                     employeur.getId()));
         }
