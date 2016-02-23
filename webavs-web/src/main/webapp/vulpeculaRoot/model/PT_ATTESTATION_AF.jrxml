@@ -137,7 +137,7 @@
 						mode="Opaque"
 						x="394"
 						y="242"
-						width="60"
+						width="72"
 						height="17"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -214,27 +214,6 @@
 					</textElement>
 				<text><![CDATA[CHF]]></text>
 				</staticText>
-				<staticText>
-					<reportElement
-						mode="Opaque"
-						x="455"
-						y="242"
-						width="14"
-						height="17"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-2"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[.--]]></text>
-				</staticText>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="14"
@@ -299,7 +278,7 @@
 						mode="Opaque"
 						x="394"
 						y="260"
-						width="61"
+						width="72"
 						height="17"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -315,27 +294,6 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_IMPOTS}]]></textFieldExpression>
 				</textField>
-				<staticText>
-					<reportElement
-						mode="Opaque"
-						x="456"
-						y="260"
-						width="13"
-						height="17"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-3"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[.--]]></text>
-				</staticText>
 				<staticText>
 					<reportElement
 						mode="Opaque"
@@ -361,7 +319,7 @@
 						mode="Opaque"
 						x="394"
 						y="278"
-						width="61"
+						width="72"
 						height="17"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -377,27 +335,6 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_MONTANT_VERSE}]]></textFieldExpression>
 				</textField>
-				<staticText>
-					<reportElement
-						mode="Opaque"
-						x="456"
-						y="278"
-						width="14"
-						height="17"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-5"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[.--]]></text>
-				</staticText>
 				<staticText>
 					<reportElement
 						mode="Opaque"
