@@ -41,11 +41,13 @@ import ch.globaz.vulpecula.domain.repositories.caissemaladie.AffiliationCaisseMa
 import ch.globaz.vulpecula.domain.repositories.postetravail.AdhesionCotisationPosteTravailRepository;
 import ch.globaz.vulpecula.domain.repositories.postetravail.EmployeurRepository;
 import ch.globaz.vulpecula.domain.repositories.postetravail.PosteTravailRepository;
+import ch.globaz.vulpecula.domain.specifications.postetravail.PosteTravailAdhesionCheckAdresseDomicileExistPourLPPSpecification;
 import ch.globaz.vulpecula.domain.specifications.postetravail.PosteTravailDecompteSalaireExistantSpecification;
 import ch.globaz.vulpecula.domain.specifications.postetravail.PosteTravailDecompteSpecification;
 import ch.globaz.vulpecula.domain.specifications.postetravail.PosteTravailMultipleEmployeurTravailleurMemePeriodeSpecification;
 import ch.globaz.vulpecula.external.models.affiliation.Adhesion;
 import ch.globaz.vulpecula.external.models.affiliation.Cotisation;
+import ch.globaz.vulpecula.external.models.pyxis.Adresse;
 import ch.globaz.vulpecula.external.services.CotisationService;
 import ch.globaz.vulpecula.util.CodeSystem;
 import ch.globaz.vulpecula.util.CodeSystemAlphaComparator;
@@ -82,6 +84,16 @@ public class PosteTravailServiceImpl implements PosteTravailService {
     public PosteTravail create(final PosteTravail posteTravail) throws UnsatisfiedSpecificationException {
         posteTravail.validate();
 
+        // JIRA : BMS-1957 MyProdis: Empêcher l'ajout de la cotisation LPP si il n'y a pas d'adresse de domicile
+        // (12.02.2016)
+        // Récupération de l'adresse de domicile pour pouvoir la passer dans le validate et contrôler que lorsqu'on
+        // ajoute une cotisation LPP, on ai bien une adresse de domicile
+        Adresse adresseDomicile = VulpeculaRepositoryLocator.getAdresseRepository().findAdresseDomicileByIdTiers(
+                posteTravail.getTravailleurIdTiers());
+        PosteTravailAdhesionCheckAdresseDomicileExistPourLPPSpecification adhesionCheckAdresseDomicileExistPourLPPSpecification = new PosteTravailAdhesionCheckAdresseDomicileExistPourLPPSpecification(
+                adresseDomicile);
+        adhesionCheckAdresseDomicileExistPourLPPSpecification.isSatisfiedBy(posteTravail);
+
         // Création de l'employeur dans sa table si inexistant
         if (!employeurRepository.hasEntryInDB(posteTravail.getEmployeur())) {
             employeurRepository.create(posteTravail.getEmployeur());
@@ -107,6 +119,16 @@ public class PosteTravailServiceImpl implements PosteTravailService {
     @Override
     public PosteTravail update(final PosteTravail posteTravail) throws UnsatisfiedSpecificationException {
         posteTravail.validate();
+
+        // JIRA : BMS-1957 MyProdis: Empêcher l'ajout de la cotisation LPP si il n'y a pas d'adresse de domicile
+        // (12.02.2016)
+        // Récupération de l'adresse de domicile pour pouvoir la passer dans le validate et contrôler que lorsqu'on
+        // ajoute une cotisation LPP, on ai bien une adresse de domicile
+        Adresse adresseDomicile = VulpeculaRepositoryLocator.getAdresseRepository().findAdresseDomicileByIdTiers(
+                posteTravail.getTravailleurIdTiers());
+        PosteTravailAdhesionCheckAdresseDomicileExistPourLPPSpecification adhesionCheckAdresseDomicileExistPourLPPSpecification = new PosteTravailAdhesionCheckAdresseDomicileExistPourLPPSpecification(
+                adresseDomicile);
+        adhesionCheckAdresseDomicileExistPourLPPSpecification.isSatisfiedBy(posteTravail);
 
         // Recherche des postes de travail appartenant à l'employeur et
         // vérification que le poste n'est pas déjà présent pour le même

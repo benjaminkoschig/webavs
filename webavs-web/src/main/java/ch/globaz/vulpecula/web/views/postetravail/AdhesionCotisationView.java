@@ -20,6 +20,7 @@ public class AdhesionCotisationView implements Comparable<AdhesionCotisationView
     public String idPlanCaisse;
     public String libellePlanCaisse;
     public String spy;
+    public String idAssurance;
     public boolean checked;
 
     public String getIdCotisation() {
@@ -66,6 +67,10 @@ public class AdhesionCotisationView implements Comparable<AdhesionCotisationView
 
     public String getId() {
         return id;
+    }
+
+    public String getIdAssurance() {
+        return idAssurance;
     }
 
     public void setId(String id) {

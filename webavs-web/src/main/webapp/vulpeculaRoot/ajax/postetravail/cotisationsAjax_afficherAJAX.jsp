@@ -32,6 +32,7 @@
 							</c:if>
 							/>
 							<label for="cotisation${adhesionCotisationView.idCotisation}" title="${adhesionCotisationView.dateDebutCotisation} - ${adhesionCotisationView.dateFinCotisation}">${adhesionCotisationView.nom}</label>
+						<input type="hidden" class="idAssurance" id="idAssurance" value="${adhesionCotisationView.idAssurance}"/>
 						</td>
 						<td><input
 							id="cotisationDateDebut${adhesionCotisationView.idCotisation}"

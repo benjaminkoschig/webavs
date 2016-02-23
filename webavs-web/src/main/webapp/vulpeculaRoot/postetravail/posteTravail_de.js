@@ -302,6 +302,7 @@ GLO.cotisations = {
 		var s_dateDebut;
 		var s_dateFin;
 		var o_cotisation;
+		var i_assuranceId;
 		
 		var cotisations = [];
 		
@@ -313,13 +314,15 @@ GLO.cotisations = {
 			s_dateDebut = $(cotisation).find(".dateDebut").val();
 			s_dateFin = $(cotisation).find(".dateFin").val();
 			s_spy = $(cotisation).attr('data-spy');
+			i_assuranceId = $(cotisation).find(".idAssurance").val();
 			
 			o_cotisation = {
 				id : i_id,
 				idCotisation : i_cotisationId,
 				dateEntree : s_dateDebut,
 				dateSortie : s_dateFin,
-				spy : s_spy
+				spy : s_spy,
+				idAssurance : i_assuranceId
 			};
 			cotisations.push(o_cotisation);
 		});

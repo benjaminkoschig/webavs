@@ -159,6 +159,7 @@ public class PosteTravailViewService {
                 adhesionCotisationView.nom = adhesionCotisation.getCotisation().getAssurance().getLibelleFr();
             }
             adhesionCotisationView.libellePlanCaisse = adhesionCotisation.getCotisation().getPlanCaisse().getLibelle();
+            adhesionCotisationView.idAssurance = adhesionCotisation.getCotisation().getAssuranceId();
             adhesionsCotisationsActives.add(adhesionCotisationView);
         }
         return adhesionsCotisationsActives;
@@ -262,6 +263,7 @@ public class PosteTravailViewService {
                     }
                 }
             }
+            adhesionCotisationView.idAssurance = cotisation.getAssuranceId();
             adhesionsCotisationsPossibles.add(adhesionCotisationView);
         }
         return new AdhesionCotisationViewContainer(adhesionsCotisationsPossibles);
