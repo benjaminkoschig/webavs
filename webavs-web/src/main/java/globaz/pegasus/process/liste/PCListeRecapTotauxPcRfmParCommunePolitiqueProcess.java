@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -94,8 +95,14 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
     }
 
     private void findDataCompta() throws PropertiesException, JAException {
-        List<PaiementComptablePcRfmBean> listPaiementPcRfm = QueryExecutor.execute(getSqlOperationCompta(),
-                PaiementComptablePcRfmBean.class);
+
+        String codeReferencePC = EPCProperties.COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_PC.getValue();
+        String codeReferenceRFM = EPCProperties.COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_RFM.getValue();
+
+        List<String> listCodeReferencePC = Arrays.asList(codeReferencePC.split("\\s*,\\s*"));
+
+        List<PaiementComptablePcRfmBean> listPaiementPcRfm = QueryExecutor.execute(
+                getSqlOperationCompta(codeReferencePC, codeReferenceRFM), PaiementComptablePcRfmBean.class);
 
         for (PaiementComptablePcRfmBean bean : listPaiementPcRfm) {
 
@@ -104,13 +111,24 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
                 con = new ContainerByTiers(bean.getIdTiers());
             }
 
-            // Si crédit = sort de la caisse, donc paiement
-            if (APIEcriture.CREDIT.equals(bean.getCodeDebitCredit())) {
-                con.addMontantPaiement(bean.getMontant());
-            }
+            if (listCodeReferencePC.contains(bean.getReferenceRubrique().trim())) {
+                // Si crédit = sort de la caisse, donc paiement
+                if (APIEcriture.CREDIT.equals(bean.getCodeDebitCredit())) {
+                    con.addMontantPaiementPC(bean.getMontant());
+                }
 
-            if (APIEcriture.DEBIT.equals(bean.getCodeDebitCredit())) {
-                con.addMontantRestitution(bean.getMontant());
+                if (APIEcriture.DEBIT.equals(bean.getCodeDebitCredit())) {
+                    con.addMontantRestitutionPC(bean.getMontant());
+                }
+            } else {
+                // Si crédit = sort de la caisse, donc paiement
+                if (APIEcriture.CREDIT.equals(bean.getCodeDebitCredit())) {
+                    con.addMontantPaiementRFM(bean.getMontant());
+                }
+
+                if (APIEcriture.DEBIT.equals(bean.getCodeDebitCredit())) {
+                    con.addMontantRestitutionRFM(bean.getMontant());
+                }
             }
 
             recapTotauxByIdtiers.put(bean.getIdTiers(), con);
@@ -174,10 +192,8 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
 
     }
 
-    private String getSqlOperationCompta() throws PropertiesException, JAException {
-
-        String codeReferencePC = EPCProperties.COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_PC.getValue();
-        String codeReferenceRFM = EPCProperties.COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_RFM.getValue();
+    private String getSqlOperationCompta(String codeReferencePC, String codeReferenceRFM) throws PropertiesException,
+            JAException {
 
         String dateDebut = new Date(dateMonthDebut).getValueMonth();
         String dateFin = new Date().getValue();
@@ -193,7 +209,7 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
         sql.append("    schema.CACPTAP.IDTIERS AS idtiers,  ");
         sql.append("    sum(schema.CAOPERP.MONTANT) as MONTANT,  ");
         sql.append("    schema.CAOPERP.CODEDEBITCREDIT as CODEDEBITCREDIT,  ");
-        sql.append("    schema.CARUBRP.IDEXTERNE as RUBRIQUE  ");
+        sql.append("    schema.carerup.IDCODEREFERENCE as REFERENCERUBRIQUE  ");
         sql.append("FROM   schema.cacptap  ");
         sql.append("    INNER JOIN schema.CAOPERP ON schema.CAOPERP.IDCOMPTEANNEXE = schema.CACPTAP.IDCOMPTEANNEXE  ");
         sql.append("    INNER JOIN schema.CARUBRP on schema.CARUBRP.IDRUBRIQUE = schema.CAOPERP.IDCOMPTE  ");
@@ -208,7 +224,7 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
         if (!JadeStringUtil.isEmpty(codeReferenceRFM)) {
             sql.append(",").append(codeReferenceRFM);
         }
-        sql.append(") GROUP BY schema.CACPTAP.IDTIERS, schema.CARUBRP.IDEXTERNE, schema.CAOPERP.CODEDEBITCREDIT ");
+        sql.append(") GROUP BY schema.CACPTAP.IDTIERS, schema.CAOPERP.CODEDEBITCREDIT, schema.carerup.IDCODEREFERENCE ");
 
         return sql.toString();
     }
@@ -240,8 +256,10 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
                 con = new ContainerByCommunePolitique(value.getCommunePolitique());
             }
 
-            con.addMontantPaiement(value.getMontantPaiement());
-            con.addMontantRestitution(value.getMontantRestitution());
+            con.addMontantPaiementPC(value.getMontantPaiementPC());
+            con.addMontantRestitutionPC(value.getMontantRestitutionPC());
+            con.addMontantPaiementRFM(value.getMontantPaiementRFM());
+            con.addMontantRestitutionRFM(value.getMontantRestitutionRFM());
 
             recapTotauxByCommunePolitique.put(value.getCodeCommunePolitique(), con);
         }

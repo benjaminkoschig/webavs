@@ -14,30 +14,52 @@ import ch.globaz.simpleoutputlist.annotation.style.ColumnStyle;
 @Translater(value = LabelTranslater.class, identifier = "PEGASUS_LISTE_EXCEL_CP")
 public class ContainerByCommunePolitique implements Comparable<ContainerByCommunePolitique> {
 
-    private Montant montantRestitution;
-    private Montant montantPaiement;
+    private Montant montantRestitutionPC;
+    private Montant montantPaiementPC;
+    private Montant montantRestitutionRFM;
+    private Montant montantPaiementRFM;
+    private Montant totalPC;
+    private Montant totalRFM;
     private Montant total;
     private CommunePolitiqueBean communePolitique;
 
     public ContainerByCommunePolitique(CommunePolitiqueBean communePolitique) {
         this.communePolitique = communePolitique;
-        montantRestitution = Montant.ZERO;
-        montantPaiement = Montant.ZERO;
+        montantRestitutionPC = Montant.ZERO;
+        montantPaiementPC = Montant.ZERO;
+        montantRestitutionRFM = Montant.ZERO;
+        montantPaiementRFM = Montant.ZERO;
         total = Montant.ZERO;
+        totalPC = Montant.ZERO;
+        totalRFM = Montant.ZERO;
     }
 
-    @Column(name = "Restitution", order = 4)
+    @Column(name = "RestitutionPc", order = 4)
     @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
     @Aggregate(AggregateFunction.SUM)
-    public BigDecimal getMontantRestitution() {
-        return montantRestitution.getBigDecimalValue().abs();
+    public BigDecimal getMontantRestitutionPC() {
+        return montantRestitutionPC.getBigDecimalValue().abs();
     }
 
-    @Column(name = "Paiement", order = 3)
+    @Column(name = "PaiementPc", order = 3)
     @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
     @Aggregate(AggregateFunction.SUM)
-    public BigDecimal getMontantPaiement() {
-        return montantPaiement.getBigDecimalValue().abs();
+    public BigDecimal getMontantPaiementPC() {
+        return montantPaiementPC.getBigDecimalValue().abs();
+    }
+
+    @Column(name = "RestitutionRfm", order = 7)
+    @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
+    @Aggregate(AggregateFunction.SUM)
+    public BigDecimal getMontantRestitutionRFM() {
+        return montantRestitutionRFM.getBigDecimalValue().abs();
+    }
+
+    @Column(name = "PaiementRfm", order = 6)
+    @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
+    @Aggregate(AggregateFunction.SUM)
+    public BigDecimal getMontantPaiementRFM() {
+        return montantPaiementRFM.getBigDecimalValue().abs();
     }
 
     @Column(name = "commune", order = 1)
@@ -56,24 +78,52 @@ public class ContainerByCommunePolitique implements Comparable<ContainerByCommun
         this.communePolitique = communePolitique;
     }
 
-    @Column(name = "Total", order = 5)
+    @Column(name = "Total", order = 9)
     @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
     @Aggregate(AggregateFunction.SUM)
     public BigDecimal getTotal() {
         return total.getBigDecimalValue().abs();
     }
 
+    @Column(name = "TotalPc", order = 5)
+    @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
+    @Aggregate(AggregateFunction.SUM)
+    public BigDecimal getTotalPC() {
+        return totalPC.getBigDecimalValue().abs();
+    }
+
+    @Column(name = "TotalRfm", order = 8)
+    @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
+    @Aggregate(AggregateFunction.SUM)
+    public BigDecimal getTotalRFM() {
+        return totalRFM.getBigDecimalValue().abs();
+    }
+
     public void setTotal(Montant total) {
         this.total = total;
     }
 
-    public void addMontantPaiement(Montant montant) {
-        montantPaiement = montantPaiement.add(montant);
+    public void addMontantPaiementPC(Montant montant) {
+        montantPaiementPC = montantPaiementPC.add(montant);
+        totalPC = totalPC.add(montant);
         total = total.add(montant);
     }
 
-    public void addMontantRestitution(Montant montant) {
-        montantRestitution = montantRestitution.add(montant);
+    public void addMontantRestitutionPC(Montant montant) {
+        montantRestitutionPC = montantRestitutionPC.add(montant);
+        totalPC = totalPC.add(montant);
+        total = total.add(montant);
+    }
+
+    public void addMontantPaiementRFM(Montant montant) {
+        montantPaiementRFM = montantPaiementRFM.add(montant);
+        totalRFM = totalRFM.add(montant);
+        total = total.add(montant);
+    }
+
+    public void addMontantRestitutionRFM(Montant montant) {
+        montantRestitutionRFM = montantRestitutionRFM.add(montant);
+        totalRFM = totalRFM.add(montant);
         total = total.add(montant);
     }
 
