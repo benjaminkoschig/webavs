@@ -13,6 +13,7 @@
 			<field name="periodeDebut" column="DATE_DEBUT" type="DATE" comment="début d'activité de la cotisation" />
 			<field name="periodeFin" column="DATE_FIN" type="DATE" comment="fin d'activité de la cotisation" />
 			<field name="masseSalariale" column="MASSE_SALARIALE" type="NUMERIC" comment="taux de la masse salariale" />
+			<field name="forfait" column="FORFAIT" type="NUMERIC" comment="forfait unique sur l'association" />
 			<field name="reductionFacture" column="REDUCTION_FACTURE" type="NUMERIC" comment="taux de réduction facture" />
 		</fields>
 		<search-definition>

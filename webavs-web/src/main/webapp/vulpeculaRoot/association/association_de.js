@@ -170,6 +170,7 @@ globazGlobal.associations = (function() {
 		nouvelleCotisation += '<td><input class="periodeDebut" data-g-calendar="mandatory:true" /></td>';
 		nouvelleCotisation += '<td><input class="periodeFin" data-g-calendar="" /></td>';
 		nouvelleCotisation += '<td><input class="masseSalariale" type="text" data-g-amount=" " value="100.00" /></td>';
+		nouvelleCotisation += '<td><input class="forfait" type="text" data-g-amount="blankAsZero:false" value="" /></td>';
 		nouvelleCotisation += '<td><input class="reductionFacture" type="text" data-g-amount=" " value="'+reductionFacture+'" /></td>';
 		nouvelleCotisation += '</tr>';
 		
@@ -246,6 +247,7 @@ globazGlobal.associations = (function() {
 				cotisation.periodeDebut = $cotisation.find('.periodeDebut').val();
 				cotisation.periodeFin = $cotisation.find('.periodeFin').val();
 				cotisation.masseSalariale = $cotisation.find('.masseSalariale').val();
+				cotisation.forfait = $cotisation.find('.forfait').val();
 				cotisation.reductionFacture = $cotisation.find('.reductionFacture').val();
 				association.cotisations.push(cotisation);
 			}

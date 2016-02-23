@@ -82,6 +82,7 @@ s}
 						<td><ct:FWLabel key="JSP_PERIODE_DEBUT"/></td>
 						<td><ct:FWLabel key="JSP_PERIODE_FIN"/></td>
 						<td><ct:FWLabel key="JSP_ASSOCIATIONS_PROFESSIONNELLES_MASSE_SALARIALE"/></td>
+						<td><ct:FWLabel key="JSP_FORFAIT"/></td>
 						<td><ct:FWLabel key="JSP_REDUCTION_FACTURE"/></td>
 					</tr>
 				</table>
@@ -128,6 +129,7 @@ s}
 						<td><ct:FWLabel key="JSP_PERIODE_DEBUT"/></td>
 						<td><ct:FWLabel key="JSP_PERIODE_FIN"/></td>
 						<td><ct:FWLabel key="JSP_ASSOCIATIONS_PROFESSIONNELLES_MASSE_SALARIALE"/></td>
+						<td><ct:FWLabel key="JSP_FORFAIT"/></td>
 						<td><ct:FWLabel key="JSP_REDUCTION_FACTURE"/></td>
 					</tr>
 				<c:forEach var="associationCotisation" items="${entry.value}">
@@ -154,6 +156,7 @@ s}
 								</c:otherwise>
 							</c:choose>
 						</td>
+						<td><input class="forfait" type="text" data-g-amount="blankAsZero:false" value="${associationCotisation.forfait.value}" /></td>
 						<td><input class="reductionFacture" type="text" data-g-amount=" " value="${associationCotisation.reductionFacture.value}" /></td>
 				</tr><!-- cotisationMembre -->
 				</c:forEach>							

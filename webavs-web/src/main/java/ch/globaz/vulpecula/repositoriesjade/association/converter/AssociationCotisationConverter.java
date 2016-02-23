@@ -7,6 +7,7 @@ import ch.globaz.vulpecula.business.models.association.AssociationCotisationSear
 import ch.globaz.vulpecula.business.models.association.AssociationCotisationSimpleModel;
 import ch.globaz.vulpecula.domain.models.association.AssociationCotisation;
 import ch.globaz.vulpecula.domain.models.association.CotisationAssociationProfessionnelle;
+import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.registre.GenreCotisationAssociationProfessionnelle;
@@ -45,6 +46,7 @@ public class AssociationCotisationConverter
         associationCotisationSimpleModel.setPeriodeDebut(associationCotisation.getPeriodeDebutAsValue());
         associationCotisationSimpleModel.setPeriodeFin(associationCotisation.getPeriodeFinAsValue());
         associationCotisationSimpleModel.setMasseSalariale(associationCotisation.getMasseSalariale().getValue());
+        associationCotisationSimpleModel.setForfait(associationCotisation.getForfait().getValue());
         associationCotisationSimpleModel.setReductionFacture(associationCotisation.getReductionFacture().getValue());
         associationCotisationSimpleModel.setSpy(associationCotisation.getSpy());
         return associationCotisationSimpleModel;
@@ -64,6 +66,7 @@ public class AssociationCotisationConverter
             associationCotisation.setPeriode(new Periode(associationCotisationSimpleModel.getPeriodeDebut(), null));
         }
         associationCotisation.setMasseSalariale(new Taux(associationCotisationSimpleModel.getMasseSalariale()));
+        associationCotisation.setForfait(new Montant(associationCotisationSimpleModel.getForfait()));
         associationCotisation.setReductionFacture(new Taux(associationCotisationSimpleModel.getReductionFacture()));
         associationCotisation.setSpy(associationCotisationSimpleModel.getSpy());
         return associationCotisation;

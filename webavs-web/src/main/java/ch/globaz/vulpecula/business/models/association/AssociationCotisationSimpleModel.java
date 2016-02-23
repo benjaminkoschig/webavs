@@ -12,6 +12,7 @@ public class AssociationCotisationSimpleModel extends JadeSimpleModel {
     private String periodeDebut;
     private String periodeFin;
     private String masseSalariale;
+    private String forfait;
     private String reductionFacture;
 
     public AssociationCotisationSimpleModel() {
@@ -64,6 +65,14 @@ public class AssociationCotisationSimpleModel extends JadeSimpleModel {
 
     public void setMasseSalariale(String masseSalariale) {
         this.masseSalariale = masseSalariale;
+    }
+
+    public String getForfait() {
+        return forfait;
+    }
+
+    public void setForfait(String forfait) {
+        this.forfait = forfait;
     }
 
     public String getReductionFacture() {

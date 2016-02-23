@@ -16,6 +16,7 @@
 						<td style="width: 10%"><ct:FWLabel key="JSP_DATE_DEBUT"/></td>
 						<td style="width: 10%"><ct:FWLabel key="JSP_DATE_FIN"/></td>
 						<td style="width: 10%"><ct:FWLabel key="JSP_MASSE_SALARIALE"/></td>
+						<td style="width: 10%"><ct:FWLabel key="JSP_FORFAIT"/></td>
 						<td style="width: 10%"><ct:FWLabel key="JSP_REDUCTION_FACTURE"/></td>
 					</tr>
 				</thead>
@@ -27,6 +28,7 @@
 							<td>${associationCotisation.periodeDebutAsValue}</td>
 							<td>${associationCotisation.periodeFinAsValue}</td>
 							<td>${associationCotisation.masseSalariale.value}</td>
+							<td>${associationCotisation.forfait.value}</td>
 							<td>${associationCotisation.reductionFacture.value}</td>
 						</tr>
 					</c:forEach>				

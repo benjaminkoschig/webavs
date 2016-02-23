@@ -9,6 +9,7 @@ import java.util.Map;
 import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.DomainEntity;
+import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.registre.GenreCotisationAssociationProfessionnelle;
@@ -25,6 +26,7 @@ public class AssociationCotisation implements DomainEntity, Comparable<Associati
     private CotisationAssociationProfessionnelle cotisationAssociationProfessionnelle;
     private Periode periode;
     private Taux masseSalariale;
+    private Montant forfait;
     private Taux reductionFacture;
 
     public static final int LIMITE_COTISATION_NON_MEMBRE = 1;
@@ -110,6 +112,14 @@ public class AssociationCotisation implements DomainEntity, Comparable<Associati
 
     public void setMasseSalariale(Taux masseSalariale) {
         this.masseSalariale = masseSalariale;
+    }
+
+    public Montant getForfait() {
+        return forfait;
+    }
+
+    public void setForfait(Montant forfait) {
+        this.forfait = forfait;
     }
 
     public Taux getReductionFacture() {

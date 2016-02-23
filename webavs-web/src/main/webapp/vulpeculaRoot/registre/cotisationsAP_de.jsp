@@ -30,7 +30,7 @@
 		<div class="area">
 			<div class="areaSearch">
 			<table width="100%">
-				<tr><td width ="20%"><ct:FWLabel key='JSP_LIBELLE'/><td><input type="text" id="searchModel.forLibelleLike"></input></td></tr>
+				<tr><td width ="20%"><ct:FWLabel key='JSP_LIBELLE'/><td><input type="text" id="searchModel.forLibelleUpperLike"></input></td></tr>
 				<tr><td width ="20%"><ct:FWLabel key='JSP_CODE'/><td><input type="text" id="searchModel.forCodeLike"></input></td></tr>
 				<tr><td width ="20%"><ct:FWLabel key='JSP_ASSOCIATION_PROFESSIONNELLE'/><td><input type="text" id="searchModel.forAssociationLike"></input></td></tr>
 				<%-- <tr>

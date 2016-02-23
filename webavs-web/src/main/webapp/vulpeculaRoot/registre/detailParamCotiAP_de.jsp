@@ -7,6 +7,7 @@
 <%--  *********************************************************** Paramétrage global de la page ************************************************************** --%>
 <%-- labels n° écran et titre --%>
 <c:set var="idEcran" value="PPT10XX" />
+<c:set var="bButtonDelete" value="false" />
 
 <!-- TO BE ABLE TO USE DIFFERENT THEME, UNIMPORT JAVASCRIPT.JSPF FOR /find_ajax_el/ and manually add missing ones -->
 <%--  <%@ include file="/theme/find_ajax_el/javascripts.jspf" %>  --%>
@@ -44,17 +45,20 @@
 	}
 
 	function cancel() {
+		
 		 if (document.forms[0].elements('_method').value == "add"){
 			 document.forms[0].elements('userAction').value="back"; 
 		 }else{
-			 document.forms[0].elements('userAction').value="vulpecula.registre.detailParamCotiAP.afficher";
-		     document.forms[0].elements('idCotisationAP').value="${viewBean.idCotisationAP}";
+			 document.forms[0].elements('userAction').value="vulpecula.registre.detailParamCotiAP.reAfficher";
+			 document.forms[0].elements('_method').value="";
 		 }
 	}
 
 	function init(){
 		//reduce 100§ size of div who cause scrollbar
 		$('#mainWrapper').css('width', '100%').css('width', '-=10px');
+		if (document.forms[0].elements('_method').value == "add") {document.getElementById('paramButtons').style.display='none';};
+			
 	}
 </script>
 
@@ -230,8 +234,7 @@ select {
 						</tr>
 					</table>
 			</div>
-			
-			<div class="buttons">
+			<div id="paramButtons" class="buttons">
 					<%@ include file="/theme/detail_ajax_el/capageButtons.jspf"%>
 			</div>
 		</div> <!-- /areaDetail -->

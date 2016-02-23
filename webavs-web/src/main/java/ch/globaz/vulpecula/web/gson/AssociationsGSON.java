@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.domain.models.association.AssociationCotisation;
+import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.registre.GenreCotisationAssociationProfessionnelle;
@@ -23,6 +24,7 @@ public class AssociationsGSON {
         public String periodeDebut;
         public String periodeFin;
         public String reductionFacture;
+        public String forfait;
         public String masseSalariale;
     }
 
@@ -32,9 +34,11 @@ public class AssociationsGSON {
             for (CotisationGSON cotisationGSON : associationGSON.cotisations) {
                 AssociationCotisation associationCotisation = new AssociationCotisation();
                 associationCotisation.setIdEmployeur(idEmployeur);
-                associationCotisation.setGenre(GenreCotisationAssociationProfessionnelle.fromValue(associationGSON.genre));
+                associationCotisation.setGenre(GenreCotisationAssociationProfessionnelle
+                        .fromValue(associationGSON.genre));
                 associationCotisation.setPeriode(new Periode(cotisationGSON.periodeDebut, cotisationGSON.periodeFin));
                 associationCotisation.setReductionFacture(new Taux(cotisationGSON.reductionFacture));
+                associationCotisation.setForfait(new Montant(cotisationGSON.forfait));
                 associationCotisation.setMasseSalariale(new Taux(cotisationGSON.masseSalariale));
                 associationCotisation.setCotisationAssociationProfessionnelle(VulpeculaRepositoryLocator
                         .getCotisationAssociationProfessionnelleRepository().findById(cotisationGSON.id));
