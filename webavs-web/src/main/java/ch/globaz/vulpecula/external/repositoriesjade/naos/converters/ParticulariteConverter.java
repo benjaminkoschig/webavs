@@ -36,13 +36,21 @@ public final class ParticulariteConverter {
         particularite.setAffiliationId(particulariteSimpleModel.getAffiliationId());
         particularite.setChampAlphanumerique(particulariteSimpleModel.getChampAlphanumerique());
         particularite.setChampNumerique(particulariteSimpleModel.getChampNumerique());
-        if (particulariteSimpleModel.getDateDebut() != null && !particulariteSimpleModel.getDateDebut().equals("0")) {
+        if (isNotEmpty(particulariteSimpleModel.getDateDebut())) {
             particularite.setDateDebut(new Date(particulariteSimpleModel.getDateDebut()));
         }
-        if (particulariteSimpleModel.getDateFin() != null && !particulariteSimpleModel.getDateFin().equals("0")) {
+        if (isNotEmpty(particulariteSimpleModel.getDateFin())) {
             particularite.setDateFin(new Date(particulariteSimpleModel.getDateFin()));
         }
         particularite.setParticularite(particulariteSimpleModel.getParticularite());
         return particularite;
+    }
+
+    /**
+     * @param date
+     * @return true if date isn't empty or zero
+     */
+    private static boolean isNotEmpty(String date) {
+        return date != null && !date.equals("0") && date.length() > 0;
     }
 }
