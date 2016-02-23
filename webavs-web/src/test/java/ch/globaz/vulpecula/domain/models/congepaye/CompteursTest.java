@@ -31,7 +31,7 @@ public class CompteursTest {
 
     @Test
     public void add_CongePayeOf1500_ShouldBeOk() {
-        initCompteurs(new int[] { 2000, 2000 }, new int[] { 2000, 2000 });
+        initCompteurs(new float[] { 2000, 2000 }, new float[] { 2000, 2000 });
         when(congePaye.getTotalSalaire()).thenReturn(new Montant(1500));
         compteurs.add(congePaye);
 
@@ -41,7 +41,7 @@ public class CompteursTest {
 
     @Test
     public void add_CongePayeOf1500_OnTwoDifferentsCompteurs_ShouldBeOk() {
-        initCompteurs(new int[] { 2000, 1000 }, new int[] { 2000, 2000 });
+        initCompteurs(new float[] { 2000, 1000 }, new float[] { 2000, 2000 });
 
         when(congePaye.getTotalSalaire()).thenReturn(new Montant(1500));
         compteurs.add(congePaye);
@@ -52,7 +52,7 @@ public class CompteursTest {
 
     @Test
     public void add_CongePayeOf1500_OnOneFullCompteur_ShouldBeOk() {
-        initCompteurs(new int[] { 2000, 0 });
+        initCompteurs(new float[] { 2000, 0 });
 
         when(congePaye.getTotalSalaire()).thenReturn(new Montant(1500));
         compteurs.add(congePaye);
@@ -62,7 +62,7 @@ public class CompteursTest {
 
     @Test
     public void add_CongePayeOf200_OnCompteurOf1000_ShouldCreateOneRowAndMontant200() {
-        initCompteurs(new int[] { 1000, 1000 });
+        initCompteurs(new float[] { 1000, 1000 });
 
         when(congePaye.getTotalSalaire()).thenReturn(new Montant(200));
         compteurs.add(congePaye);
@@ -73,7 +73,7 @@ public class CompteursTest {
 
     @Test
     public void add_CongePayeOf200_OnCompteurOf0_ShouldReduceCompteurToMinus2000() {
-        initCompteurs(new int[] { 0, 0 });
+        initCompteurs(new float[] { 0, 0 });
 
         when(congePaye.getTotalSalaire()).thenReturn(new Montant(2000));
         compteurs.add(congePaye);
@@ -81,6 +81,17 @@ public class CompteursTest {
         assertEquals(1, getCompteur(0).getLignes().size());
         assertThat(getCompteur(0).getMontantVerse(), is(new Montant(2000)));
         assertThat(getCompteur(0).getMontantRestant(), is(new Montant(-2000)));
+    }
+
+    @Test
+    public void add_CongePayeOf4047() {
+        initCompteurs(new float[] { 0, -10948.70f }, new float[] { 0, 21024f });
+
+        when(congePaye.getTotalSalaire()).thenReturn(new Montant(10075.30));
+        compteurs.add(congePaye);
+
+        assertThat(getCompteur(0).getMontantRestant().normalize(), is(new Montant(0)));
+        assertThat(getCompteur(1).getMontantRestant().normalize(), is(new Montant(0)));
     }
 
     @Test
@@ -165,7 +176,7 @@ public class CompteursTest {
         compteurs.add(compteur);
     }
 
-    private Compteur createCompteur(int cumulCotisation, int montantRestant) {
+    private Compteur createCompteur(float cumulCotisation, float montantRestant) {
         Compteur compteur = new Compteur();
         compteur.setCumulCotisation(new Montant(cumulCotisation));
         compteur.setMontantRestant(new Montant(montantRestant));
@@ -185,7 +196,7 @@ public class CompteursTest {
      * 
      * @param values Tableau de int représentants les valeurs des compteurs
      */
-    private void initCompteurs(int[]... values) {
+    private void initCompteurs(float[]... values) {
         for (int i = 0; i < values.length; i++) {
             compteurs.add(createCompteur(values[i][0], values[i][1]));
         }

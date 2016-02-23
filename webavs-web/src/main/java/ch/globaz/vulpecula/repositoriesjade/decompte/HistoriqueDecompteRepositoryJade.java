@@ -2,6 +2,7 @@ package ch.globaz.vulpecula.repositoriesjade.decompte;
 
 import globaz.jade.client.util.JadeStringUtil;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang.NotImplementedException;
 import ch.globaz.vulpecula.business.models.decomptes.HistoriqueDecompteComplexModel;
@@ -61,7 +62,9 @@ public class HistoriqueDecompteRepositoryJade extends
         searchModel.setForEtatsIn(Arrays.asList(EtatDecompte.RECTIFIE.getValue(), EtatDecompte.VALIDE.getValue(),
                 EtatDecompte.RECEPTIONNE.getValue(), EtatDecompte.GENERE.getValue(), EtatDecompte.OUVERT.getValue()));
         searchModel.setOrderKey(ORDER_BY_DATE_DESC);
-        return searchAndFetch(searchModel);
+        List<HistoriqueDecompte> historiques = searchAndFetch(searchModel);
+        Collections.sort(historiques, Collections.reverseOrder());
+        return historiques;
     }
 
     @Override

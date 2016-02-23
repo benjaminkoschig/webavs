@@ -1,5 +1,6 @@
 package ch.globaz.vulpecula.domain.models.decompte;
 
+import static ch.globaz.vulpecula.domain.models.decompte.EtatDecompte.*;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.DomainEntity;
 
@@ -7,7 +8,7 @@ import ch.globaz.vulpecula.domain.models.common.DomainEntity;
  * @author Arnaud Geiser (AGE) | Créé le 20 févr. 2014
  * 
  */
-public class HistoriqueDecompte implements DomainEntity {
+public class HistoriqueDecompte implements DomainEntity, Comparable<HistoriqueDecompte> {
 
     private String id;
     private Decompte decompte;
@@ -76,6 +77,26 @@ public class HistoriqueDecompte implements DomainEntity {
 
     public String getHeureMinuteSpy() {
         return spy.substring(8, 10) + ":" + spy.substring(10, 12) + ":" + spy.substring(12, 14);
+    }
+
+    @Override
+    public int compareTo(HistoriqueDecompte hs) {
+        if (date.after(hs.getDate())) {
+            return 1;
+        } else if (date.before(hs.getDate())) {
+            return -1;
+        } else {
+            if (hs.getEtat().equals(etat)) {
+                return 0;
+            }
+            if (VALIDE.equals(etat) || RECTIFIE.equals(etat)) {
+                return 1;
+            }
+            if (VALIDE.equals(hs.getEtat()) || RECTIFIE.equals(hs.getEtat())) {
+                return -1;
+            }
+            return etat.compareTo(hs.getEtat());
+        }
     }
 
 }

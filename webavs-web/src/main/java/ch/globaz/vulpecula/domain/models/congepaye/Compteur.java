@@ -157,7 +157,7 @@ public class Compteur implements DomainEntity {
      * @throws NullPointerException si cumulCotisation est null ou montantRestant est null
      */
     public boolean isFull() {
-        return montantRestant.isZero() || montantRestant.isNegative();
+        return montantRestant.isZero();
     }
 
     /**

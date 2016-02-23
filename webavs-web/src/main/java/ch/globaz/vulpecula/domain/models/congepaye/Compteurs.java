@@ -29,6 +29,11 @@ public class Compteurs implements Iterable<Compteur> {
         return compteurs.iterator();
     }
 
+    /**
+     * Fournit un congé payé aux compteurs dans le but d'aborber la somme.
+     * 
+     * @param congePaye Congé payé à absorber
+     */
     public void add(CongePaye congePaye) {
         Montant montantAAbsorber = congePaye.getTotalSalaire();
         Iterator<Compteur> compteurIterator = compteurs.iterator();
