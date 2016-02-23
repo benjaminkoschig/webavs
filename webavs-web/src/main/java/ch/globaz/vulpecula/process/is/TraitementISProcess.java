@@ -142,12 +142,15 @@ public class TraitementISProcess extends BProcessWithContext {
      * @throws Exception
      */
     private void traiter(EntetePrestationComplexModel entete, JournalConteneur jc, String date) throws Exception {
-        Date dateJour = Date.now();
+        // Correctioon Jira BMS-1922
+        // Selon exemple PaiementDirectServiceImpl ln450
+        String numeroFacture = entete.getNumFactureRecap().substring(0, 4) + APISection.CATEGORIE_SECTION_AF + "000";
+
         CompteAnnexeSimpleModel compteAnnexe = findCompteAnnexe(jc.getJournalModel().getId(), entete.getIdTiers(),
                 entete.getNumAvsActuel());
+
         SectionSimpleModel section = CABusinessServiceLocator.getSectionService().getSectionByIdExterne(
-                compteAnnexe.getIdCompteAnnexe(), APISection.CATEGORIE_SECTION_AF,
-                dateJour.getAnnee() + APISection.CATEGORIE_SECTION_AF + "000", jc.getJournalModel());
+                compteAnnexe.getIdCompteAnnexe(), APISection.CATEGORIE_SECTION_AF, numeroFacture, jc.getJournalModel());
 
         Taux tauxApplicable = findTauxApplicable(entete);
         Montant montantPrestation = new Montant(entete.getMontantTotal());
