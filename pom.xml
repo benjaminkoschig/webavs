@@ -51,7 +51,7 @@
 		<httpasyncclient.version>4.1</httpasyncclient.version>
 
 		<!-- todo choisir version de mercato -->
-		<ch.globaz.mercato.notification.version>0.0.4</ch.globaz.mercato.notification.version>
+		<ch.globaz.mercato.notification.version>1.0.0</ch.globaz.mercato.notification.version>
 
 		<itucana.version>0.0.1</itucana.version>
 		<jade.version>5.1.53</jade.version>
