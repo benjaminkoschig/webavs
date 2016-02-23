@@ -53,7 +53,7 @@ public final class EmployeurConverter implements
         Employeur employeur = new Employeur(affilie);
         employeur.setConvention(ConventionConverter.convertToDomain(employeurComplexModel
                 .getAdministrationComplexModel()));
-        if (!JadeStringUtil.isEmpty(employeurSimpleModel.getTypeFacturation())) {
+        if (!JadeStringUtil.isBlankOrZero(employeurSimpleModel.getTypeFacturation())) {
             employeur.setTypeFacturation(TypeFacturation.fromValue(employeurSimpleModel.getTypeFacturation()));
         }
         employeur.setBvr(employeurSimpleModel.getBvr());
