@@ -37,7 +37,7 @@ public class COTrancheTaxeManager extends COBManager implements java.io.Serializ
      */
     @Override
     protected String _getOrder(globaz.globall.db.BStatement statement) {
-        return COTrancheTaxe.FNAME_ID_TRANCHE_TAXE;
+        return COTrancheTaxe.FNAME_VALEUR_PLAFOND;
     }
 
     /**
