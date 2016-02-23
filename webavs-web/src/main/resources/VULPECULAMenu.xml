@@ -135,7 +135,7 @@
 			</node>	
 		</nodes>		
 		<nodes>
-			<node open="no">
+			<node open="yes">
 				<label refId="MENU_PT_LISTES" />
 				<nodes>
 					<node>
