@@ -105,7 +105,8 @@ public class DeclarationVersementGlobalImposeSourceServiceImpl extends Declarati
             setTable(document, idDossier, dossier.getDossierModel().getIdTiersBeneficiaire(), dossier
                     .getAllocataireComplexModel().getAllocataireModel().getIdTiersAllocataire(), dateDebut, dateFin,
                     typeBonif, listPrestDossier.get(i).getListPrestatiion(),
-                    ALCSDeclarationVersement.DECLA_VERS_DIR_IMP_SOURCE, langueDocument);
+                    ALCSDeclarationVersement.DECLA_VERS_DIR_IMP_SOURCE, langueDocument,
+                    dossier.getAllocataireComplexModel());
 
             // this.setTable(document, idDossier, dossier.getDossierModel().getIdTiersBeneficiaire(), dossier
             // .getAllocataireComplexModel().getAllocataireModel().getIdTiersAllocataire(), dateDebut, dateFin,

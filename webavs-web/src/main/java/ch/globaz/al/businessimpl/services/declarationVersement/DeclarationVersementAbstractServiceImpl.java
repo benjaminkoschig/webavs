@@ -5,6 +5,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.properties.JadePropertiesService;
 import java.util.ArrayList;
 import java.util.HashSet;
 import ch.globaz.al.business.constantes.ALCSPrestation;
@@ -229,7 +230,25 @@ public class DeclarationVersementAbstractServiceImpl extends AbstractDocument {
                 this.getText("al.declarationVersement.prestation.periode.du.au", langueDocument, periode));
 
         // infos relatives à l'affilié
-        document.addData("info_numero_affilie_label", this.getText("al.declarationVersement.noAffilie", langueDocument));
+        try {
+            // CBU 23.02.2016
+            // Si on a la propriété relative au BMS (celle utilisée pour les allocation naissances supérieure, pas très
+            // propre mais le contexte est identique, autant utiliser la même plutôt que de créer une nouvelle
+            // propriété), on met le label spécifique au BMS. Sinon (ou en cas d'erreur), on
+            // met le label standard
+            String comptesANS = JadePropertiesService.getInstance().getProperty("vulpecula.comptesANS");
+            if (comptesANS != null && !JadeStringUtil.isBlankOrZero(comptesANS)) {
+                document.addData("info_numero_affilie_label",
+                        this.getText("al.declarationVersement.noAffilie_BMS", langueDocument));
+            } else {
+                document.addData("info_numero_affilie_label",
+                        this.getText("al.declarationVersement.noAffilie", langueDocument));
+            }
+        } catch (Exception ex) {
+            document.addData("info_numero_affilie_label",
+                    this.getText("al.declarationVersement.noAffilie", langueDocument));
+        }
+
         document.addData("info_numero_affilie_valeur", dossierComplex.getDossierModel().getNumeroAffilie());
 
         // données relatives à l'allocataire

@@ -131,7 +131,8 @@ public class DeclarationVersementGlobalFrontaliersNonActifServiceImpl extends
             setTable(document, idDossier, dossier.getDossierModel().getIdTiersBeneficiaire(), dossier
                     .getAllocataireComplexModel().getAllocataireModel().getIdTiersAllocataire(), dateDebut, dateFin,
                     typeBonif, listPrestDossier.get(i).getListPrestatiion(),
-                    ALConstDeclarationVersement.DECLA_VERSE_ATTEST_IMPOT, langueDocument);
+                    ALConstDeclarationVersement.DECLA_VERSE_ATTEST_IMPOT, langueDocument,
+                    dossier.getAllocataireComplexModel());
 
             // this.setTable(document, idDossier, dossier.getDossierModel().getIdTiersBeneficiaire(), dossier
             // .getAllocataireComplexModel().getAllocataireModel().getIdTiersAllocataire(), dateDebut, dateFin,

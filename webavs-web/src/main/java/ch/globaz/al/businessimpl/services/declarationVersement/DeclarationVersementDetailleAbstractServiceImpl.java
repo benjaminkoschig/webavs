@@ -1,17 +1,25 @@
 package ch.globaz.al.businessimpl.services.declarationVersement;
 
+import globaz.framework.util.FWCurrency;
+import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.properties.JadePropertiesService;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import ch.globaz.al.business.constantes.ALCSDroit;
 import ch.globaz.al.business.constantes.ALConstDocument;
 import ch.globaz.al.business.constantes.ALConstLangue;
 import ch.globaz.al.business.exceptions.declarationVersement.ALDeclarationVersementException;
+import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.prestation.DeclarationVersementDetailleComplexModel;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.declarationVersement.DeclarationVersementService;
@@ -401,6 +409,49 @@ public abstract class DeclarationVersementDetailleAbstractServiceImpl extends De
             totalPrestations = totalPrestations.add(new BigDecimal(declarDetail.getMontantDetailPrestation()));
 
         }
+        // /////////////////////////////
+        try {
+            String comptesANS = JadePropertiesService.getInstance().getProperty("vulpecula.comptesANS");
+            if (comptesANS != null && !JadeStringUtil.isBlankOrZero(comptesANS)) {
+                DossierComplexModel dossier = ALServiceLocator.getDossierComplexModelService().read(idDossier);
+
+                List<String> compteANS = Arrays.asList(comptesANS.split("\\s*,\\s*"));
+                AllocationSupplNaissanceCAManager allocationSupplNaissanceCAManager = new AllocationSupplNaissanceCAManager();
+                allocationSupplNaissanceCAManager.setSession(BSessionUtil.getSessionFromThreadContext());
+                allocationSupplNaissanceCAManager.setInIdExterne(compteANS);
+                allocationSupplNaissanceCAManager.setForIdExterneRole(dossier.getAllocataireComplexModel()
+                        .getPersonneEtendueComplexModel().getPersonneEtendue().getNumAvsActuel());
+                allocationSupplNaissanceCAManager.setDateValeurFrom(dateDebut);
+                allocationSupplNaissanceCAManager.setDateValeurTo(dateFin);
+
+                allocationSupplNaissanceCAManager.find();
+
+                for (Iterator it = allocationSupplNaissanceCAManager.getContainer().iterator(); it.hasNext();) {
+                    AllocationSupplNaissanceCA allocationSupplNaissanceCA = (AllocationSupplNaissanceCA) it.next();
+                    String montant = allocationSupplNaissanceCA.getMontant();
+
+                    if (JadeNumericUtil.isNumeric(montant)) {
+                        Double d_montant = JadeStringUtil.parseDouble(montant, 0.00) * -1;
+                        totalPrestations = totalPrestations.add(new BigDecimal(d_montant));
+                        DataList lignePrestation = new DataList("colonnePrestation");
+                        lignePrestation.addData("col_prenom", this.getText(
+                                "al.declarationVersement.AllocationNaissanceSupplementaire.libelle", langueDocument));
+                        // traitement pour le montant
+                        lignePrestation.addData("col_montant", new FWCurrency(d_montant.toString()).toStringFormat());
+                        // traitement pour la date de paiement
+                        lignePrestation.addData("col_date_pmt", allocationSupplNaissanceCA.getDateValeur());
+                        // ajout de la ligne au tableau
+                        tableauVersement.add(lignePrestation);
+                    }
+
+                }
+            }
+        } catch (Exception e) {
+            throw new ALDeclarationVersementException(
+                    "DeclarationVersementDetailleAbstractServiceImpl# setTable: Erreur traitement ANS ==> "
+                            + e.getMessage());
+        }
+        // /////////////////////////////
 
         // ajouter le montant de la prestation au montant total de l'enfant
 

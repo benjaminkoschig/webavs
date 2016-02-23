@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.services.declarationVersement;
 
+import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
@@ -7,17 +8,22 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import ch.globaz.al.business.constantes.ALCSDeclarationVersement;
 import ch.globaz.al.business.constantes.ALCSPrestation;
 import ch.globaz.al.business.constantes.ALConstDeclarationVersement;
 import ch.globaz.al.business.constantes.ALConstDocument;
 import ch.globaz.al.business.constantes.ALConstLangue;
 import ch.globaz.al.business.exceptions.declarationVersement.ALDeclarationVersementException;
+import ch.globaz.al.business.models.allocataire.AllocataireComplexModel;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.prestation.DeclarationVersementDetailleComplexModel;
 import ch.globaz.al.business.models.prestation.DetailPrestationGenComplexModel;
@@ -180,6 +186,8 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
 
     /**
      * Méthode qui permet de récupérer les différents totaux pour les paiment direct
+     * 
+     * @param allocataire
      * 
      * @param presta
      *            les prestation permettant de récupérer les données
@@ -408,7 +416,8 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
     protected void setTable(DocumentData document, String idDossier, String idTiersBeneneficiaire,
             String idTiersAllocataire, String dateDebut, String dateFin, HashSet<String> typeBoni,
             ArrayList<DeclarationVersementDetailleComplexModel> attestDecla, String typeDeclaration,
-            String langueDocument) throws JadeApplicationException, JadePersistenceException {
+            String langueDocument, AllocataireComplexModel allocataire) throws JadeApplicationException,
+            JadePersistenceException {
         // contrôle des paramètres
 
         if (document == null) {
@@ -455,6 +464,9 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
         } else {
             totaux = getTotauxPaiementDirect(/* detailPresta */attestDecla, idTiersAllocataire);
         }
+
+        // Récupération des ANS (seulement si la propriété existe ==> BMS)
+        totaux = recuperationANS(dateDebut, dateFin, allocataire, totaux);
 
         // année de versement
         String anneeVersement = JadeStringUtil.substring(/* detailPresta.getForDateDebut() */dateDebut, 6);
@@ -508,4 +520,74 @@ public abstract class DeclarationVersementGlobalAbstractServiceImpl extends Decl
         document.add(tableauVersement);
     }
 
+    /**
+     * Cette méthode va ajouter les ANS aux totaux. Uniquement si la propriété "vulpecula.comptesANS" existe !
+     * (Spécifique BMS)
+     * 
+     * @param dateDebut
+     * @param dateFin
+     * @param allocataire
+     * @param totaux
+     * @return
+     * @throws ALDeclarationVersementException
+     */
+    private HashMap<String, String> recuperationANS(String dateDebut, String dateFin,
+            AllocataireComplexModel allocataire, HashMap<String, String> totaux) throws ALDeclarationVersementException {
+        try {
+            String comptesANS = JadePropertiesService.getInstance().getProperty("vulpecula.comptesANS");
+            if (comptesANS != null && !JadeStringUtil.isBlankOrZero(comptesANS)) {
+                List<String> compteANS = Arrays.asList(comptesANS.split("\\s*,\\s*"));
+                AllocationSupplNaissanceCAManager allocationSupplNaissanceCAManager = new AllocationSupplNaissanceCAManager();
+                allocationSupplNaissanceCAManager.setSession(BSessionUtil.getSessionFromThreadContext());
+                allocationSupplNaissanceCAManager.setInIdExterne(compteANS);
+                allocationSupplNaissanceCAManager.setForIdExterneRole(allocataire.getPersonneEtendueComplexModel()
+                        .getPersonneEtendue().getNumAvsActuel());
+                allocationSupplNaissanceCAManager.setDateValeurFrom(dateDebut);
+                allocationSupplNaissanceCAManager.setDateValeurTo(dateFin);
+
+                allocationSupplNaissanceCAManager.find();
+
+                for (Iterator it = allocationSupplNaissanceCAManager.getContainer().iterator(); it.hasNext();) {
+                    AllocationSupplNaissanceCA allocationSupplNaissanceCA = (AllocationSupplNaissanceCA) it.next();
+                    String montant = allocationSupplNaissanceCA.getMontant();
+
+                    if (JadeNumericUtil.isNumeric(montant)) {
+                        Double d_montant = JadeStringUtil.parseDouble(montant, 0.00);
+                        d_montant = d_montant * -1;
+                        String anneeAlloc = allocationSupplNaissanceCA.getIdExterne().substring(0, 4);
+                        String anneeEnCours = dateDebut.substring(6);
+
+                        if (anneeAlloc.equals(anneeEnCours)) {
+                            // Total année
+                            Double d_total_annee = JadeStringUtil.parseDouble(
+                                    totaux.get(ALConstDeclarationVersement.TOTAL_ANNEE), 0.00);
+                            totaux.put(ALConstDeclarationVersement.TOTAL_ANNEE,
+                                    String.valueOf(d_total_annee + d_montant));
+
+                            Double d_total = JadeStringUtil.parseDouble(totaux.get(ALConstDeclarationVersement.TOTAL),
+                                    0.00);
+                            totaux.put(ALConstDeclarationVersement.TOTAL, String.valueOf(d_total + d_montant));
+                        } else {
+                            // Total rétro
+                            Double d_total_retro = JadeStringUtil.parseDouble(
+                                    totaux.get(ALConstDeclarationVersement.TOTAL_RETROACTIF), 0.00);
+                            totaux.put(ALConstDeclarationVersement.TOTAL_RETROACTIF,
+                                    String.valueOf(d_total_retro + d_montant));
+
+                            Double d_total = JadeStringUtil.parseDouble(totaux.get(ALConstDeclarationVersement.TOTAL),
+                                    0.00);
+                            totaux.put(ALConstDeclarationVersement.TOTAL, String.valueOf(d_total + d_montant));
+                        }
+                    }
+
+                }
+            }
+        } catch (Exception e) {
+            throw new ALDeclarationVersementException(
+                    "DeclarationVersementGlobalAbstractServiceImpl# setTable: Erreur traitement ANS ==> "
+                            + e.getMessage());
+        }
+
+        return totaux;
+    }
 }

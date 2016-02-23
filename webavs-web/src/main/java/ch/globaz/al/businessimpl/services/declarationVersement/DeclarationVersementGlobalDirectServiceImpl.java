@@ -136,7 +136,8 @@ public class DeclarationVersementGlobalDirectServiceImpl extends DeclarationVers
             setTable(document, idDossier, dossier.getDossierModel().getIdTiersBeneficiaire(), dossier
                     .getAllocataireComplexModel().getAllocataireModel().getIdTiersAllocataire(), dateDebut, dateFin,
                     typeBoni, listPrestDossier.get(i).getListPrestatiion(),
-                    ALConstDeclarationVersement.DECLA_VERSE_ATTEST_IMPOT, langueDocument);
+                    ALConstDeclarationVersement.DECLA_VERSE_ATTEST_IMPOT, langueDocument,
+                    dossier.getAllocataireComplexModel());
 
             String idTiersAffilie = AFBusinessServiceLocator.getAffiliationService().findIdTiersForNumeroAffilie(
                     dossier.getDossierModel().getNumeroAffilie());
