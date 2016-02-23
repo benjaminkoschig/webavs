@@ -39,19 +39,20 @@ class FusionSql {
                 def instruction = ""
                 it.eachLine { line ->
                     instruction = instruction + line
-                    
-                    if (it.name =~ "version.sql") {
-                        instruction = instruction.replaceAll("@@@", version)
-                        instruction = instruction.replaceAll("yyyymmdd", String.valueOf(new Date().format( 'yyyyMMdd' )))
-                    }
-
                     instruction = instruction.replaceAll("schema.", "SCHEMA.")
                     scriptDmlFile << instruction + "\n"
                     instruction = ""
                 }
-                
             }
         }
+        
+        // After script concatenation we add the WebAVS version SQL instruction
+       	def sqlVersion = 'insert into SCHEMA.JADEDBVE (verlab, applab, reldat) values(\'@@@\', \'WEBAVS\', yyyymmdd)'
+        sqlVersion = sqlVersion.replaceAll("@@@", version)
+        sqlVersion = sqlVersion.replaceAll("yyyymmdd", String.valueOf(new Date().format( 'yyyyMMdd' )))
+        
+        scriptDmlFile << "\n" 
+        scriptDmlFile << sqlVersion
 
     }
 
