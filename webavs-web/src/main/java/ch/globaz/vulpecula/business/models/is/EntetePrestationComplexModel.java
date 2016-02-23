@@ -27,6 +27,8 @@ public class EntetePrestationComplexModel extends JadeComplexModel {
     private String raisonSociale;
     private String activiteAllocataire;
     private String idJournal;
+    private String dateComptableVersement;
+    private String numFactureRecap;
     private String spy;
 
     /**
@@ -255,6 +257,34 @@ public class EntetePrestationComplexModel extends JadeComplexModel {
 
     public void setIdDossier(String idDossier) {
         this.idDossier = idDossier;
+    }
+
+    /**
+     * @return the dateComptableVersement
+     */
+    public String getDateComptableVersement() {
+        return dateComptableVersement;
+    }
+
+    /**
+     * @param dateComptableVersement the dateComptableVersement to set
+     */
+    public void setDateComptableVersement(String dateComptableVersement) {
+        this.dateComptableVersement = dateComptableVersement;
+    }
+
+    /**
+     * @return the numFactureRecap
+     */
+    public String getNumFactureRecap() {
+        return numFactureRecap;
+    }
+
+    /**
+     * @param numFactureRecap the numFactureRecap to set
+     */
+    public void setNumFactureRecap(String numFactureRecap) {
+        this.numFactureRecap = numFactureRecap;
     }
 
 }
