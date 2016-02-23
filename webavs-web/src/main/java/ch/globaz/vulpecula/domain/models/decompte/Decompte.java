@@ -653,6 +653,7 @@ public class Decompte implements DomainEntity, Serializable {
         switch (etat) {
             case OUVERT:
             case GENERE:
+            case SOMMATION:
                 return true;
             default:
                 return false;
@@ -954,7 +955,9 @@ public class Decompte implements DomainEntity, Serializable {
         Date dateRappel = null;
 
         if (periodeFin.beforeOrEquals(dateEtablissement)) {
-            dateRappel = dateEtablissement.addDays(jours);
+            // BMS-1962 Sommation: Révision du calcul de la date de rappel pour les décomptes dont la période de fin est
+            // < à la date du jour
+            dateRappel = dateEtablissement.addDays(30);
         } else {
             dateRappel = periodeFin.addDays(jours);
         }
@@ -1212,7 +1215,8 @@ public class Decompte implements DomainEntity, Serializable {
         if (isReprise()) {
             return TypeSection.DECOMPTE_COTISATION;
         }
-        if (TypeDecompte.SPECIAL.equals(getType()) || TypeDecompte.CONTROLE_EMPLOYEUR.equals(getType())) {
+        if (TypeDecompte.SPECIAL.equals(getType()) || TypeDecompte.CONTROLE_EMPLOYEUR.equals(getType())
+                || EtatDecompte.TAXATION_DOFFICE.equals(getEtat())) {
             return TypeSection.DECOMPTE_COTISATION;
         } else {
             return TypeSection.BULLETIN_NEUTRE;
