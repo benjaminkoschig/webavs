@@ -1,7 +1,6 @@
 package ch.globaz.vulpecula.documents.af;
 
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
-import globaz.globall.util.JANumberFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import ch.globaz.vulpecula.businessimpl.services.is.PrestationGroupee;
@@ -72,18 +71,14 @@ public class DocumentAttestationAF extends VulpeculaDocumentManager<PrestationGr
         setParametresP1();
         setParametres(P_TITRE, getCodeLibelle(getCurrentElement().getTitre()));
         setParametres(P_BENEFICIAIRE, getCurrentElement().getRaisonSociale());
-        setParametres(P_MONTANT_PRESTATION,
-                JANumberFormatter.fmt(getCurrentElement().getMontantPrestations().getValue(), true, true, false, 2));
+        setParametres(P_MONTANT_PRESTATION, getCurrentElement().getMontantPrestations().getValueNormalisee());
         setParametres(P_PERIODE_AF, getCurrentElement().getDebutVersement().getSwissValue() + " - "
                 + getCurrentElement().getFinVersement().getLastDayOfMonth().getSwissValue());
         setParametres(P_IMPOT_SOURCE, getTexte(3, 1));
-        setParametres(P_MONTANT_IMPOTS,
-                JANumberFormatter.fmt(getCurrentElement().getImpots().getValue(), true, true, false, 2));
-        setParametres(
-                P_MONTANT_VERSE,
-                JANumberFormatter.fmt(
-                        getCurrentElement().getMontantPrestations().substract(getCurrentElement().getImpots())
-                                .getValue(), true, true, false, 2));
+        setParametres(P_MONTANT_IMPOTS, getCurrentElement().getImpots().getValueNormalisee());
+        setParametres(P_MONTANT_VERSE,
+                getCurrentElement().getMontantPrestations().substract(getCurrentElement().getImpots())
+                        .getValueNormalisee());
         setParametres(P_P2, getTexte(8, 1));
         setParametres(P_SIGNATURE, getTexte(9, 1));
     }

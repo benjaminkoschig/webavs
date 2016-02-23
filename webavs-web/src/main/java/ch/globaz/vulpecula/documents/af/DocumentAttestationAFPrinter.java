@@ -67,9 +67,11 @@ public class DocumentAttestationAFPrinter extends DocumentPrinter<PrestationGrou
 
     @Override
     public void retrieve() {
+        Date dateFinLastDay = new Date(dateFin);
+
         try {
             setElements(VulpeculaServiceLocator.getImpotSourceService().getPrestationsForAllocIS(idAllocataire,
-                    new Date(dateDebut), new Date(dateFin)));
+                    new Date(dateDebut), dateFinLastDay.getLastDayOfMonth()));
         } catch (TauxImpositionNotFoundException e) {
             getTransaction().addErrors(ExceptionsUtil.translateException(e));
         }
