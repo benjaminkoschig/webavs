@@ -10,6 +10,7 @@ import ch.globaz.vulpecula.documents.catalog.DocumentType;
 import ch.globaz.vulpecula.documents.catalog.VulpeculaDocumentManager;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.decompte.Decompte;
+import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
 import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
 import ch.globaz.vulpecula.util.CodeSystemUtil;
 import ch.globaz.vulpecula.util.I18NUtil;
@@ -48,7 +49,14 @@ public class DocumentSommation extends VulpeculaDocumentManager<Decompte> {
         setParametres(P_CONCERNE, getTexte(1, 1));
         setParametres(P_TITRE, politesse);
         setParametres(P_P1, getTexte(2, 1));
-        setParametres(P_PERIODE, decompte.getDescription(locale));
+
+        if (TypeDecompte.COMPLEMENTAIRE.equals(decompte.getType())) {
+            setParametres(P_PERIODE, getSession().getLabel("COMPLEMENTAIRE") + " "
+                    + decompte.getPeriode().getAnneeDebut());
+        } else {
+            setParametres(P_PERIODE, decompte.getDescription(locale));
+        }
+
         setParametres(P_P2, getTexte(2, 2));
         setParametres(P_P3, getParagraphe3(politesse));
         setParametres(P_SIGNATURE, getTexte(9, 1));
