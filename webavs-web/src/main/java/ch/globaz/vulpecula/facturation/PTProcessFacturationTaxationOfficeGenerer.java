@@ -5,7 +5,6 @@ import globaz.musca.db.facturation.FAAfact;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.musca.db.facturation.FAModuleFacturation;
 import globaz.osiris.api.APIRubrique;
-import globaz.osiris.api.APISection;
 import globaz.osiris.db.comptes.CARubrique;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -81,7 +80,7 @@ public class PTProcessFacturationTaxationOfficeGenerer extends PTProcessFacturat
      */
     private FAEnteteFacture createEnteteFacture(final TaxationOffice taxationOffice) throws Exception {
         return createEnteteFacture(taxationOffice.getIdTiers(), taxationOffice.getEmployeurAffilieNumero(),
-                taxationOffice.getNumeroDecompteAsValue(), APISection.ID_TYPE_SECTION_DECOMPTE_COTISATION);
+                taxationOffice.getNumeroDecompteAsValue(), taxationOffice.getDecompte().getTypeSection().getValue());
     }
 
     /**
