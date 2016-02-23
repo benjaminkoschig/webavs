@@ -445,8 +445,8 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
     private List<EntetePrestationComplexModel> getPrestationsIS(String idAllocataire, Date dateDebut, Date dateFin) {
         EntetePrestationSearchComplexModel searchModel = new EntetePrestationSearchComplexModel();
         searchModel.setForIdAllocataire(idAllocataire);
-        searchModel.setForPeriodeDeAfterOrEquals(dateDebut);
-        searchModel.setForPeriodeDeBeforeOrEquals(dateFin);
+        searchModel.setForDateComptabilisationAfterOrEquals(dateDebut);
+        searchModel.setForDateComptabilisationBeforeOrEquals(dateFin);
         searchModel.setForEtat(ALCSPrestation.ETAT_CO);
         searchModel.setForIsRetenueImpot(true);
         searchModel.setForBonification(ALCSPrestation.BONI_DIRECT);
@@ -484,8 +484,8 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
      */
     private List<EntetePrestationComplexModel> getPrestationsIS(String canton, String caisseAF, Annee annee) {
         EntetePrestationSearchComplexModel searchModel = new EntetePrestationSearchComplexModel();
-        searchModel.setForPeriodeDeAfterOrEquals(annee.getFirstDayOfYear());
-        searchModel.setForPeriodeDeBeforeOrEquals(annee.getLastDayOfYear());
+        searchModel.setForDateComptabilisationAfterOrEquals(annee.getFirstDayOfYear());
+        searchModel.setForDateComptabilisationBeforeOrEquals(annee.getLastDayOfYear());
         searchModel.setForCantonResidence(canton);
         searchModel.setForEtat(ALCSPrestation.ETAT_CO);
         searchModel.setForIsRetenueImpot(true);
@@ -517,6 +517,7 @@ public class ImpotSourceServiceImpl implements ImpotSourceService {
                     prestation.getActiviteAllocataire(), new Date(prestation.getPeriodeDe()));
             prestation.setLibelleCaisseAF(assuranceInfo.getLibelleCourt());
             prestation.setCodeCaisseAF(assuranceInfo.getCodeCaisseProf());
+            // XXX BUG codeCaisseAF contient l'idTiersAdministration
             if (JadeStringUtil.isEmpty(codeCaisseAF) || assuranceInfo.getCodeCaisseProf().equals(codeCaisseAF)) {
                 prestationsFiltrees.add(prestation);
             }
