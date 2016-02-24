@@ -99,7 +99,8 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
         String codeReferencePC = EPCProperties.COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_PC.getValue();
         String codeReferenceRFM = EPCProperties.COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_RFM.getValue();
 
-        List<String> listCodeReferencePC = Arrays.asList(codeReferencePC.split("\\s*,\\s*"));
+        List<String> listCodeReferencePC = Arrays.asList(codeReferencePC.trim().split("\\s*,\\s*"));
+        List<String> listCodeReferenceRFM = Arrays.asList(codeReferenceRFM.trim().split("\\s*,\\s*"));
 
         List<PaiementComptablePcRfmBean> listPaiementPcRfm = QueryExecutor.execute(
                 getSqlOperationCompta(codeReferencePC, codeReferenceRFM), PaiementComptablePcRfmBean.class);
@@ -120,7 +121,7 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
                 if (APIEcriture.DEBIT.equals(bean.getCodeDebitCredit())) {
                     con.addMontantRestitutionPC(bean.getMontant());
                 }
-            } else {
+            } else if (listCodeReferenceRFM.contains(bean.getReferenceRubrique().trim())) {
                 // Si crédit = sort de la caisse, donc paiement
                 if (APIEcriture.CREDIT.equals(bean.getCodeDebitCredit())) {
                     con.addMontantPaiementRFM(bean.getMontant());
@@ -129,6 +130,8 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
                 if (APIEcriture.DEBIT.equals(bean.getCodeDebitCredit())) {
                     con.addMontantRestitutionRFM(bean.getMontant());
                 }
+            } else {
+                JadeLogger.warn(this, "Code référence inconnue : " + bean.getReferenceRubrique());
             }
 
             recapTotauxByIdtiers.put(bean.getIdTiers(), con);
