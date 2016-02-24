@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.notification.NotificationSimpleModel">
+		<table name="PT_HISTORIQUE_MYPRODIS" hasCreationSpy="true" hasSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="idTiers" column="IDTIERS"
+				comment="Id de la notification" />
+			<field name="infoType" column="INFOTYPE" type="STRING"
+				comment="Type de notification" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdTiers" field-ref="idTiers" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		<order-by name="idDesc">
+			<order-field field-ref="idTiers" order="DESC" />
+		</order-by>
+		<order-by name="idAsc">
+			<order-field field-ref="idTiers" />
+		</order-by>
+	</simple-model>
+</model-mapping>
