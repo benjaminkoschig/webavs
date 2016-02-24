@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.mercato.notification.Notification;
 import ch.globaz.vulpecula.application.ApplicationConstants;
+import ch.globaz.vulpecula.business.models.notification.HistoriqueMyProdisSimpleModel;
 import ch.globaz.vulpecula.business.models.notification.NotificationSimpleModel;
 
 public class RequestFactory {
@@ -57,6 +58,18 @@ public class RequestFactory {
             notificationSimpleModel.setIdCible(notification.getTargetId());
             notificationSimpleModel.setExtra(notification.getExtra());
             JadePersistenceManager.add(notificationSimpleModel);
+        } catch (JadePersistenceException e) {
+            LOGGER.error("Error while persisting notification.");
+        }
+
+    }
+
+    public void historiserEnvoiMyProdis(Notification notification, String idTiers) {
+        try {
+            HistoriqueMyProdisSimpleModel historiqueMyProdisSimpleModel = new HistoriqueMyProdisSimpleModel();
+            historiqueMyProdisSimpleModel.setIdTiers(idTiers);
+            historiqueMyProdisSimpleModel.setInfoType(notification.getInfoType().toString());
+            JadePersistenceManager.add(historiqueMyProdisSimpleModel);
         } catch (JadePersistenceException e) {
             LOGGER.error("Error while persisting notification.");
         }
