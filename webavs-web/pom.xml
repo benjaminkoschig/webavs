@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -21,7 +22,7 @@
 		<web.resources>src/main/webapp</web.resources>
 
 		<!-- TODO adapter le numéro de la business version et de la technical version -->
-		<webavs.version.business>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-RC1</webavs.version.business>
+		<webavs.version.business><![CDATA[${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-r${buildNumber}]]></webavs.version.business>
 		<webavs.version.technical>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-RC1</webavs.version.technical>
 	</properties>
 
@@ -156,11 +157,8 @@
 							</resources>
 						</configuration>
 					</execution>
-
 				</executions>
 			</plugin>
-
-
 		</plugins>
 	</build>
 
