@@ -21,9 +21,9 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>webavs-web</artifactId>
                             <classifier>globaz</classifier>
-                            <moduleId>webavs-web</moduleId>
+                            <moduleId>webavs</moduleId>
                             <contextRoot>webavs</contextRoot>
-                            <bundleFileName>webavs-web.war</bundleFileName>
+                            <bundleFileName>webavs.war</bundleFileName>
                         </webModule>
                     </modules>
                 </configuration>
