@@ -186,6 +186,16 @@
 					<name>release</name>
 				</property>
 			</activation>
+			<dependencies>
+				<!-- déclaration de la dépendance sur le projet configuration pour -->
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>webavs-configuration</artifactId>
+					<version>${project.version}</version>
+					<classifier>globaz-properties</classifier>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
 			<build>
 				<plugins>
 					<plugin>
@@ -204,6 +214,34 @@
 							</execution>
 						</executions>
 					</plugin>
+					<!-- Copy et renommage du globaz_properties.jar -->
+					<plugin>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>refactor-copy-globaz-properties</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>${project.groupId}</groupId>
+											<artifactId>webavs-configuration</artifactId>
+											<version>${project.version}</version>
+											<classifier>globaz-properties</classifier>
+											<type>jar</type>
+											<overWrite>false</overWrite>
+											<outputDirectory>${basedir}/target/${project.artifactId}-${project.version}/WEB-INF/lib/</outputDirectory>
+											<destFileName>globaz_properties.jar</destFileName>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
 					<plugin>
 						<artifactId>maven-resources-plugin</artifactId>
 						<executions>
