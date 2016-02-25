@@ -18,6 +18,7 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
+					<!--  génération du zip contenant les documents de la FVE -->
 					<execution>
 						<id>build-documents-fve-zip</id>
 						<goals>
@@ -31,6 +32,22 @@
 							</descriptors>
 						</configuration>
 					</execution>
+					
+					<!--  Génération du jar contenant les properties par défault de WebAvs -->
+					<execution>
+						<id>build-globaz-properties</id>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<classifier>globaz-properties</classifier>
+							<descriptors>
+								<descriptor>assembly/build-globaz-properties.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+					
 				</executions>
 			</plugin>
 		</plugins>
