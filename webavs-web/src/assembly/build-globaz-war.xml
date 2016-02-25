@@ -9,18 +9,18 @@
     </formats>
     <fileSets>
         <fileSet>
+          <directory>${project.build.directory}/${project.build.finalName}</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>WEB-INF/lib/globaz_properties.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${project.build.directory}/${project.build.finalName}</directory>
             <outputDirectory></outputDirectory>
             <excludes>
                 <exclude>WEB-INF/lib/*.jar</exclude>
             </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>${project.build.directory}</directory>
-            <outputDirectory>WEB-INF/lib</outputDirectory>
-            <includes>
-                <include>${artifactId}*-classes.jar</include>
-            </includes>
         </fileSet>
     </fileSets>
     <dependencySets>
