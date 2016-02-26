@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>ch.globaz</groupId>
 		<artifactId>webavs-parent</artifactId>
-		<version>0.0.6</version>
+		<version>1.16.0-SNAPSHOT</version>
 	</parent>
 
 	<packaging>war</packaging>
@@ -211,12 +211,6 @@
 									<outputDirectory>${tattletale.src}</outputDirectory>
 								</configuration>
 							</execution>
-						</executions>
-					</plugin>
-					<!-- Copy et renommage du globaz_properties.jar -->
-					<plugin>
-						<artifactId>maven-dependency-plugin</artifactId>
-						<executions>
 							<execution>
 								<id>refactor-copy-globaz-properties</id>
 								<phase>prepare-package</phase>
