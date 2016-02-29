@@ -96,6 +96,7 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
     private ObjectFactory of = null;
     private boolean isSommeRevenuAdditionnelSuperieurA1 = false;
     private static final String DATE_JJ_MM_DEBUT_ANNEE = "01.01.";
+    private static final String DATE_JJ_MM_FIN_ANNEE = "31.12.";
     private static final int NB_MOIS_RETRO = -6;
 
     private String calculerMontantAutresPrestationsAssurancesSociale(InputCalcul inputCalcul) throws CalculException {
@@ -346,7 +347,7 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
 
         }
 
-        row.getDatAbgeschlossen().add(dateClotureDossier(pcfacc, "31.12." + anneeEnquete));
+        row.getDatAbgeschlossen().add(dateClotureDossier(pcfacc, DATE_JJ_MM_FIN_ANNEE + anneeEnquete));
 
         String idLocalite = detailTiers.getFields().get(AdresseTiersDetail.ADRESSE_VAR_LOCALITE_ID);
         LocaliteSimpleModel localite = TIBusinessServiceLocator.getAdresseService().readLocalite(idLocalite);
@@ -853,8 +854,19 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
 
     private boolean hasMenagePrestationDecembreAnneeEnquête(PCFAccordee pcfAcc, String anneeEnquete) {
         boolean hasPrestationDecembre = false;
-        String dateFinAnneeEnquete = "31.12." + anneeEnquete;
-        if (JadeStringUtil.isEmpty(pcfAcc.getDemande().getSimpleDemande().getDateFin())) {
+        String dateFinAnneeEnquete = DATE_JJ_MM_FIN_ANNEE + anneeEnquete;
+
+        if (conteneurDateComptabilisationPrestationRetro.containsKey(pcfAcc.getSimplePCFAccordee().getIdPCFAccordee())) {
+            // Utilisation de la date de comptabilisation comme date du dernier versement, uniquement pour les cas
+            // retroactif
+            String dateDeComptabilisationPrestation = conteneurDateComptabilisationPrestationRetro.get(pcfAcc
+                    .getSimplePCFAccordee().getIdPCFAccordee());
+
+            if (dateDeComptabilisationPrestation.substring(3).equals("12." + anneeEnquete)) {
+                hasPrestationDecembre = true;
+            }
+
+        } else if (JadeStringUtil.isEmpty(pcfAcc.getDemande().getSimpleDemande().getDateFin())) {
             hasPrestationDecembre = true;
         } else if (dateFinAnneeEnquete.equals(pcfAcc.getDemande().getSimpleDemande().getDateFin())) {
             hasPrestationDecembre = true;
@@ -879,8 +891,8 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
     private String isNouveauDossier(PCFAccordee pcfAcc, String anneeEnquete) throws DecisionException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException {
         // Dossier connu l'année précédente si
-        String dateDebut = JadeDateUtil.addYears("01.01." + anneeEnquete, -1);
-        String dateFin = JadeDateUtil.addYears("31.12." + anneeEnquete, -1);
+        String dateDebut = JadeDateUtil.addYears(DATE_JJ_MM_DEBUT_ANNEE + anneeEnquete, -1);
+        String dateFin = JadeDateUtil.addYears(DATE_JJ_MM_FIN_ANNEE + anneeEnquete, -1);
         DecisionSearchModel decisionSearch = loadDecisionOctroiValideValableDurantAnneePrecedentEnqueteForidDossier(
                 anneeEnquete, dateDebut, dateFin, pcfAcc.getDemande().getSimpleDemande().getIdDossier());
         if (decisionSearch.getSize() >= 1) {
@@ -1061,7 +1073,7 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
         List<String> listeMoisPrestMensuelle = new ArrayList<String>();
 
         String enCoursPrestMensuelle = "01.07."
-                + JadeStringUtil.substring(JadeDateUtil.addYears("01.01." + anneeEnquete, -1), 6);
+                + JadeStringUtil.substring(JadeDateUtil.addYears(DATE_JJ_MM_DEBUT_ANNEE + anneeEnquete, -1), 6);
 
         String moisDebutPourPrestationMensuelle = "";
 
@@ -1237,7 +1249,8 @@ public class StatsOFSServiceImpl extends PerseusAbstractServiceImpl implements S
 
     private void traitementCasAnneeEnquete(String anneeEnquete) throws JadePersistenceException,
             JadeApplicationException, JAException {
-        HashMap<String, String> pcfPayee = this.loadPCFAccordee(anneeEnquete, "01.01.", "31.12.");
+        HashMap<String, String> pcfPayee = this.loadPCFAccordee(anneeEnquete, DATE_JJ_MM_DEBUT_ANNEE,
+                DATE_JJ_MM_FIN_ANNEE);
         for (Entry<String, String> entry : pcfPayee.entrySet()) {
             String idPcfAccordee = entry.getValue();
             if (!dossierDejaTraiter.contains(entry.getKey())) {
