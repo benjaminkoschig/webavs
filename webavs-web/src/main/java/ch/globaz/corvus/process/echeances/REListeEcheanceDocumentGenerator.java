@@ -184,6 +184,7 @@ public abstract class REListeEcheanceDocumentGenerator extends LYAbstractListGen
             agregerCasPousGenerationDesLettres(echeance, reponsesATraiter);
 
             if (getAjouterCommunePolitique()) {
+                _addCell("");
                 _addCell(echeance.getCommunePolitique());
             }
 
