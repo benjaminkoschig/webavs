@@ -2,13 +2,13 @@
 <!--Jade: proprietes generales du systeme-->
 <Jade>
 	<!--homeDir: repertoire de base de l'application, necessaire pour trouver les fichiers de l'application-->
-	<homeDir>D:\workspaces\avs\trunk\webavs\WebContent</homeDir>
+	<homeDir>D:\workspaces\avs\trunk\webavs-parent\webavs-web\src\main\webapp</homeDir>
 	<!--persistenceDir: repertoire pour la persistance interne, si vide: homeDir + /persistence-->
 	<persistenceDir></persistenceDir>
 	<!--logDir: repertoire pour les fichiers LOG de l'application, si vide: homeDir + /logs-->
 	<logDir></logDir>
 	<!--rootUrl: URL pour acceder a la WebApp, inutile si l'application Web n'est pas deployee-->
-	<rootUrl>localhost:8080/webavs</rootUrl>
+	<rootUrl>localhost:8080/webavs-web</rootUrl>
 
 	<!--defaultJdbcUrl: url JDBC par defaut-->
 	<!-- DRIVER DB2 -->
@@ -48,8 +48,8 @@
 <!-- 	<defaultJdbcUrl>jdbc:jade:CCB_QUALITE</defaultJdbcUrl> -->
 <!-- 	<defaultJdbcSchema>CCBQUA</defaultJdbcSchema> -->
 
-		<defaultJdbcUrl>jdbc:jade:CCVD_QA</defaultJdbcUrl>
-		<defaultJdbcSchema>CCVDQUA</defaultJdbcSchema>
+<!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_QA</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>CCVDQUA</defaultJdbcSchema> -->
 	
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>RT_AGLA</defaultJdbcSchema> -->
@@ -57,8 +57,8 @@
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>PC_CCVD</defaultJdbcSchema> -->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>	 -->
+		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl>
+		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>	
 
 <!-- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
