@@ -549,6 +549,16 @@ public final class CPProcessCalculCotisation extends BProcess {
                         if (saveDureeDecision != 0) {
                             valRevMax = (valRevMax / 12) * saveDureeDecision;
                         }
+
+                        int nbMois = 0;
+                        if (!JadeStringUtil.isBlankOrZero(decision.getNombreMoisTotalDecision())) {
+                            valRevMax = Double.parseDouble(JANumberFormatter.deQuote(varString));
+                            nbMois = Integer.parseInt(decision.getNombreMoisTotalDecision());
+                            if (nbMois != 0) {
+                                valRevMax = (valRevMax / 12) * nbMois;
+                            }
+                        }
+                        
                         double valRevenuCi = revenuCi;
                         if (valRevenuCi > valRevMax) {
                             revenuCi = (float) valRevMax;
