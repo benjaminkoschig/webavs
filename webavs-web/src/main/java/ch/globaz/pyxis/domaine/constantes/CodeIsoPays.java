@@ -275,7 +275,8 @@ public enum CodeIsoPays {
      */
     public static CodeIsoPays parse(final String codeIso) {
         if ((codeIso == null) || (codeIso.length() != 2)) {
-            throw new IllegalArgumentException("an ISO code for coutries must be made of 2 letters");
+            throw new IllegalArgumentException("An ISO code for coutries must be made of 2 letters! Code used: "
+                    + codeIso);
         }
 
         for (CodeIsoPays unCodeIso : CodeIsoPays.values()) {

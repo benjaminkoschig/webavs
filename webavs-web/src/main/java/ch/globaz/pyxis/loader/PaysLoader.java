@@ -87,7 +87,9 @@ public class PaysLoader {
     static Pays convert(PaysSimpleModel paysSimpleModel) {
         Pays pays = new Pays();
         pays.setId(Long.valueOf(paysSimpleModel.getId()));
-        if (paysSimpleModel.getCodeIso() != null && paysSimpleModel.getCodeIso().trim().length() > 0) {
+
+        // on fait se test car on ne veut pas tout arrêter si le code iso n'est pas juste.
+        if (paysSimpleModel.getCodeIso() != null && paysSimpleModel.getCodeIso().trim().length() == 2) {
             pays.setCodeIso(CodeIsoPays.parse(paysSimpleModel.getCodeIso()));
         } else {
             pays.setCodeIso(CodeIsoPays.INCONNU);
