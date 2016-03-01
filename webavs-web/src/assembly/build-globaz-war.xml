@@ -13,6 +13,7 @@
             <outputDirectory></outputDirectory>
             <includes>
                 <include>WEB-INF/lib/globaz_properties.jar</include>
+                <include>WEB-INF/lib/${artifactId}-*.jar</include>
             </includes>
         </fileSet>
         <fileSet>
