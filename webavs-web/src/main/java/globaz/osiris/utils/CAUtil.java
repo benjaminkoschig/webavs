@@ -955,7 +955,8 @@ public class CAUtil implements APIUtil {
         }
 
         if (categorieSection.length() != 6) {
-            throw new Exception("creerNumeroSectionUnique: wrong categorieSection :" + categorieSection);
+            throw new Exception("creerNumeroSectionUnique: wrong categorieSection :" + categorieSection
+                    + " for affiliation : " + idExterneRole);
         }
     }
 
