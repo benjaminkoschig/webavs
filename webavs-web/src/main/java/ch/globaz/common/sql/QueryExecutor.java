@@ -35,7 +35,8 @@ import com.google.common.collect.Lists;
  * Pour charger l'objet on se base sur le nom des champs définit dans l'objet.
  * Il faut que cette objet soit un bean, car on passe par les setters pour peupler l'objet.
  * Pour définir le nom des champs il faut utiliser l'alias. Ceux-ci ne sont pas sensible à la casse.
- * Mais si le setter et du style monChampDate l'alias de la db doit être nommé de la manière suivante: mon_champ_date ou MON_CHAMP_DATE
+ * Mais si le setter et du style monChampDate l'alias de la db doit être nommé de la manière suivante: mon_champ_date ou
+ * MON_CHAMP_DATE
  * 
  * @author dma
  * 
@@ -248,7 +249,7 @@ public class QueryExecutor {
             if (newObjet instanceof String) {
                 // on retourne une liste de String
                 for (Map.Entry<String, Object> entry : row.entrySet()) {
-                    list.add((T) String.valueOf(entry.getValue()));
+                    list.add((T) escapeSpecialChar(String.valueOf(entry.getValue())));
                 }
             } else {
                 for (Field field : fields) {
@@ -284,6 +285,7 @@ public class QueryExecutor {
                                     if ("0".equals(val)) {
                                         val = null;
                                     }
+                                    val = escapeSpecialChar(val);
                                     method.invoke(newObjet, val);
                                 } catch (Exception e) {
                                     throw new CommonTechnicalException("Error durring introspection", e);
@@ -324,6 +326,13 @@ public class QueryExecutor {
 
         }
         return list;
+    }
+
+    private static String escapeSpecialChar(String val) {
+        if (val != null) {
+            val = val.replaceAll("¬", "\'").replaceAll("¢", "\"");
+        }
+        return val;
     }
 
     public static String forInString(Collection<String> list) {

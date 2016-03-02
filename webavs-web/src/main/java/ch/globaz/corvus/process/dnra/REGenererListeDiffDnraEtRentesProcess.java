@@ -513,6 +513,8 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
         sb.append(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_TRANSFERE);
         sb.append(", ");
         sb.append(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_TERMINE);
+        sb.append(", ");
+        sb.append(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_VALIDE);
         demandeManager.setForCSEtatDemandeNotIn(sb.toString());
 
         demandeManager.find(); // OSEF du SIZE_NO_LIMIT ;)
@@ -543,22 +545,24 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
         SimpleDateFormat dateReader = new SimpleDateFormat("MM.yyyy");
 
         for (ISFMembreFamilleRequerant membre : mf) {
-            prestationManager.setForIdTiersBeneficiaire(membre.getIdTiers());
-            prestationManager.find();
-            for (Object o : prestationManager.getContainer()) {
-                REPrestationsAccordees pa = (REPrestationsAccordees) o;
+            if (!JadeStringUtil.isBlankOrZero(membre.getIdTiers())) {
+                prestationManager.setForIdTiersBeneficiaire(membre.getIdTiers());
+                prestationManager.find();
+                for (Object o : prestationManager.getContainer()) {
+                    REPrestationsAccordees pa = (REPrestationsAccordees) o;
 
-                int ddfd = JadeStringUtil.isBlankOrZero(pa.getDateFinDroit()) ? 0 : Integer.valueOf(dateFormater
-                        .format(dateReader.parse(pa.getDateFinDroit())));
+                    int ddfd = JadeStringUtil.isBlankOrZero(pa.getDateFinDroit()) ? 0 : Integer.valueOf(dateFormater
+                            .format(dateReader.parse(pa.getDateFinDroit())));
 
-                // 1ère condition : pas de date de fin
-                if (ddfd == 0) {
-                    return true;
-                }
+                    // 1ère condition : pas de date de fin
+                    if (ddfd == 0) {
+                        return true;
+                    }
 
-                // 2ème check si la date de fin est plus que la date du jour
-                else if (ddfd > today) {
-                    return true;
+                    // 2ème check si la date de fin est plus que la date du jour
+                    else if (ddfd > today) {
+                        return true;
+                    }
                 }
             }
         }
