@@ -31,6 +31,12 @@
 
 	java.util.List cucsCodeMutation = globaz.prestation.tools.PRCodeSystem.getCUCS(objSession, globaz.corvus.api.basescalcul.IRERenteAccordee.CS_GROUPE_CODE_MUTATION);
 	
+	String btnValLabel = "Valider";
+	String btnCanLabel = "Annuler";
+	if("DE".equals(languePage)) {
+		btnValLabel = "Best&auml;tigen";
+		btnCanLabel = "Annullieren";
+	}
 %>
 
 
@@ -275,8 +281,8 @@ $(document).ready(function() {
 	<div align="right">
 		<tr align="right">
 			<td bgcolor="#FFFFFF" colspan="3" align="center">					
-				<input id="btnOk" name="btnOk" type="button" value="Valider" onclick=""> 			
-				<input type="button" value="Annuler" onclick="cancel();">
+				<input id="btnOk" name="btnOk" type="button" value="<%=btnValLabel%>" onclick=""> 			
+				<input type="button" value="<%=btnCanLabel%>" onclick="cancel();">
 			</td>
 		</tr>
 	</div>
