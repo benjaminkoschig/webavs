@@ -7,6 +7,7 @@ import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASection;
 import java.util.Collection;
 import java.util.Iterator;
+import ch.globaz.common.domaine.Date;
 
 /**
  * @author: MMO 11.10.2010
@@ -25,7 +26,8 @@ public class FAInfoRom200PassageRemboursementProcess extends FAPassageRemboursem
         // par defaut on rembourse.
         entFacture.setIdModeRecouvrement(FAEnteteFacture.CS_MODE_REMBOURSEMENT);
 
-        String annee = passage.getDateFacturation().substring(3);
+        Date dateFacturation = new Date(passage.getDateFacturation());
+        String annee = dateFacturation.getAnnee();
 
         if (isCAContentieux(compteAnnexe, annee)) {
             entFacture.setIdModeRecouvrement(FAEnteteFacture.CS_MODE_RETENU_COMPTE_ANNEX_BLOQUE);
