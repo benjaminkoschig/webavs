@@ -381,7 +381,7 @@ function ai(){
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf"%>
 <%-- tpl:put name="zoneButtons" --%>
-<input type="button" class="btnCtrl" value="AI" onclick="ai()">
+<input type="button" class="btnCtrl" value="<ct:FWLabel key="LISTE_RECAP_AI"/>" onclick="ai()">
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyErrors.jspf" %>
 <%-- tpl:put name="zoneEndPage" --%>
