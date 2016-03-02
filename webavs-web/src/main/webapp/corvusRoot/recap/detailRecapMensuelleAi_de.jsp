@@ -386,7 +386,7 @@ function avs(){
 <input type="button" class="btnCtrl" value="<%=btnEnvCdCLabel%>" onclick="envoiHermes()">
 <%}%>
 <input type="button" class="btnCtrl" value="<%=btnPrintLabel%>" onclick="envoiCdC()">
-<input type="button" class="btnCtrl" value="AVS" onclick="avs()">
+<input type="button" class="btnCtrl" value="<ct:FWLabel key="LISTE_RECAP_AVS"/>" onclick="avs()">
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyErrors.jspf" %>
 <%-- tpl:put name="zoneEndPage" --%>
