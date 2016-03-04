@@ -181,7 +181,7 @@
 						mode="Transparent"
 						x="45"
 						y="48"
-						width="65"
+						width="78"
 						height="11"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -195,7 +195,7 @@
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="9"/>
 					</textElement>
-				<text><![CDATA[Rue du Lac 37
+				<text><![CDATA[Rue des Moulins 3
 
 ]]></text>
 				</staticText>
@@ -218,7 +218,7 @@
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="9"/>
 					</textElement>
-				<text><![CDATA[1815 CLARENS
+				<text><![CDATA[1800 VEVEY
 
 ]]></text>
 				</staticText>
