@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>ch.globaz</groupId>
 		<artifactId>webavs-parent</artifactId>
-		<version>1.16.0-SNAPSHOT</version>
+		<version>1.16.0-alpha-SNAPSHOT</version>
 	</parent>
 
 	<packaging>war</packaging>
@@ -20,9 +20,9 @@
 
 		<web.resources>src/main/webapp</web.resources>
 
-		<!-- TODO adapter le numéro de la business version et de la technical version -->
-		<webavs.version.business><![CDATA[${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-r${buildNumber}]]></webavs.version.business>
-		<webavs.version.technical>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-RC1</webavs.version.technical>
+		<!-- Ajout d'un build number pour les version SNAPSHOT -->
+		<webavs.version.business>${project.version}-b${build.number}</webavs.version.business>
+		<webavs.version.technical>${webavs.version.business}</webavs.version.technical>
 	</properties>
 
 	<build>
@@ -185,6 +185,11 @@
 					<name>release</name>
 				</property>
 			</activation>
+			<properties>
+				<!--pas de numéro de build pour une release -->
+				<webavs.version.business>${project.version}</webavs.version.business>
+				<webavs.version.technical>${webavs.version.business}</webavs.version.technical>
+			</properties>
 			<dependencies>
 				<!-- déclaration de la dépendance sur le projet configuration pour -->
 				<dependency>
