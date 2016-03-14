@@ -25,6 +25,7 @@
 			<application id="CEPHEUS"/>
 			<application id="LYRA"/>
 			<application id="FX"/>
+			<application id="CYGNUS"/>
 			<application id="HERCULE"/>
 			<application id="VULPECULA"/>
 			<application id="ORION"/>
@@ -58,6 +59,7 @@
 			<application id="CEPHEUS_REMOTE" remoteId="CEPHEUS"/>
 			<application id="LYRA_REMOTE" remoteId="LYRA"/>
 			<application id="FX_REMOTE" remoteId="FX"/>
+			<application id="CYGNUS_REMOTE" remoteId="CYGNUS"/>
 			<application id="HERCULE_REMOTE" remoteId="HERCULE"/>
 			<application id="VULPECULA_REMOTE" remoteId="VULPECULA"/>	
 			<application id="LIBRA_REMOTE" remoteId="LIBRA"/>
