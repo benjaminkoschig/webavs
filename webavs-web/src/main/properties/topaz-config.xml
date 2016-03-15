@@ -1087,6 +1087,9 @@
 		<when attribute="idEntete" operator="eq" value="AVS_AI_SPEC">
 			<doc-id action="set">enTetes/CCJU/HEADER_AVS_AI_PREST_OAIJU</doc-id>
 		</when>
+		<when attribute="idEntete" operator="eq" value="CAISSE_SPEC_ATTESTATIONS_FISCALES">
+			<doc-id action="set">enTetes/CCJU/HEADER_CAISSE_PREST_CCJU_WITHOUT_GEST</doc-id> 
+		</when>
 	</doc-selection>
 	
 	<doc-selection id="enTeteFpvNoirBlanc">

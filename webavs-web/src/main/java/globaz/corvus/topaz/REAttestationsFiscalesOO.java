@@ -423,7 +423,7 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             data = caisseHelper.addHeaderParameters(data, crBean, Boolean.FALSE);
             data = caisseHelper.addSignatureParameters(data, crBean);
 
-            data.addData("idEntete", "CAISSE");
+            data.addData("idEntete", "CAISSE_SPEC_ATTESTATIONS_FISCALES");
 
         } catch (Exception ex) {
             getLogSession().error(getName(), ex.toString());
