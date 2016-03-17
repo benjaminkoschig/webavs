@@ -47,7 +47,7 @@ class FusionSql {
         }
         
         // After script concatenation we add the WebAVS version SQL instruction
-       	def sqlVersion = 'insert into SCHEMA.JADEDBVE (verlab, applab, reldat) values(\'@@@\', \'WEBAVS\', yyyymmdd)'
+       	def sqlVersion = 'insert into SCHEMA.JADEDBVE (verlab, applab, reldat) values(\'@@@\', \'WEBAVS\', yyyymmdd);'
         sqlVersion = sqlVersion.replaceAll("@@@", version)
         sqlVersion = sqlVersion.replaceAll("yyyymmdd", String.valueOf(new Date().format( 'yyyyMMdd' )))
         
