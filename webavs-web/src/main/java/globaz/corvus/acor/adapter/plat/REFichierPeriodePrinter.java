@@ -118,8 +118,17 @@ public class REFichierPeriodePrinter extends PRAbstractFichierPlatPrinter {
                 membre = assures.next();
 
                 try {
-                    periodes = adapter().situationFamiliale().getPeriodes(
+                    ISFPeriode[] periodesToFilre = adapter().situationFamiliale().getPeriodes(
                             ((ISFMembreFamilleRequerant) membre).getIdMembreFamille());
+
+                    // On filtre les période qui ne sont pas connues d'ACOR
+                    List<ISFPeriode> listPeriode = new ArrayList<ISFPeriode>();
+                    for (int i = 0; i < periodesToFilre.length; i++) {
+                        if (!getTypePeriode(periodesToFilre[i]).isEmpty()) {
+                            listPeriode.add(periodesToFilre[i]);
+                        }
+                    }
+                    periodes = listPeriode.toArray(new ISFPeriode[listPeriode.size()]);
 
                     // si demande survivant
                     if (adapter().getTypeDemande().equals(PRACORConst.CA_TYPE_DEMANDE_SURVIVANT)) {
@@ -432,6 +441,5 @@ public class REFichierPeriodePrinter extends PRAbstractFichierPlatPrinter {
         this.writeChaine(writer, getSession().getCode(periode.getPays()));
 
         this.writeFinChamp(writer);
-
     }
 }
