@@ -15,6 +15,7 @@ import globaz.prestation.tools.PRDateFormater;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author BSC
@@ -31,7 +32,7 @@ public class RERetenuesJointPrestationAccordeeManager extends PRAbstractManager 
     private static final long serialVersionUID = 1L;
     private String dateFinDroitGreater = "";
     private String forCsEtatRente = "";
-    private List forCsEtatRenteList = null;
+    private List<String> forCsEtatRenteList = null;
     private String forDateDernierPaiement = "";
     private String forEnCoursAtDate = "";
     private String forIdRenteAccordee = "";
@@ -40,6 +41,7 @@ public class RERetenuesJointPrestationAccordeeManager extends PRAbstractManager 
     private String forRetenueEnCoursAtDate = "";
     private String fromDateFinDroit = "";
     private String orderBy = "";
+    private List<String> forCsTypseRetenues = new ArrayList<String>();
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -173,6 +175,15 @@ public class RERetenuesJointPrestationAccordeeManager extends PRAbstractManager 
             sqlWhere.append(REPrestationsAccordees.FIELDNAME_ID_PRESTATION_ACCORDEE).append("=")
                     .append(_dbWriteNumeric(statement.getTransaction(), getForIdRenteAccordee()));
         }
+
+        if (forCsTypseRetenues != null && !forCsTypseRetenues.isEmpty()) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere.append(" AND ");
+            }
+            sqlWhere.append(RERetenuesPaiement.FIELDNAME_TYPE_RETENU);
+            sqlWhere.append(" in ").append("(").append(StringUtils.join(forCsTypseRetenues, ',')).append(")");
+        }
+
         return sqlWhere.toString();
     }
 
@@ -366,6 +377,15 @@ public class RERetenuesJointPrestationAccordeeManager extends PRAbstractManager 
      */
     public void setFromDateFinDroit(String fromDateFinDroit) {
         this.fromDateFinDroit = fromDateFinDroit;
+    }
+
+    /**
+     * Modifie la sélection sur la date de fin de droit (>=...) (format AAAAMM)
+     * 
+     * @param fromDateFinDroit
+     */
+    public void setForTypesRetenues(List<String> forCsTypseRetenues) {
+        this.forCsTypseRetenues = forCsTypseRetenues;
     }
 
     /**

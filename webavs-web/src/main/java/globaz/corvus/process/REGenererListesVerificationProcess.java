@@ -15,6 +15,7 @@ import globaz.corvus.itext.REListeRetenuesBlocages;
 import globaz.corvus.itext.RERecapitulationPaiementAdapter;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.framework.util.FWMessage;
+import globaz.framework.util.FWMessageFormat;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
@@ -24,6 +25,7 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import java.util.List;
 import ch.globaz.common.properties.CommonProperties;
 
 /**
@@ -149,6 +151,22 @@ public class REGenererListesVerificationProcess extends BProcess {
                     FWMessage.INFORMATION, "");
             if (getMemoryLog().hasErrors()) {
                 throw new Exception("Erreur dans la génération de la mise à jour du flag des retenues");
+            }
+
+            startChrono();
+            List<RetenueMontantTotalCorrige> retenues = doUpdateRetenueIfNeeded(transaction);
+            stopChrono();
+
+            getMemoryLog().logMessage(
+                    FWMessageFormat.format(getSession().getLabel("LIST_VERIFICATION_RENTE_RETENUE_MODIFIER_INFO"),
+                            getChrono()), FWMessage.INFORMATION, "");
+            for (RetenueMontantTotalCorrige retenue : retenues) {
+
+                getMemoryLog().logMessage(
+                        FWMessageFormat.format(getSession().getLabel("LIST_VERIFICATION_RENTE_RETENUE_MODIFIER"),
+                                retenue.getNss() + " / " + retenue.getDesignation(), retenue.getMontantTotalARetenir(),
+                                retenue.getMontantTotaleAretenirCorriger(), retenue.getIdExterneRole(),
+                                retenue.getSection()), FWMessage.INFORMATION, "");
             }
 
             // ///////////////////////////////////////////////////////////////////////////////////////
@@ -325,6 +343,14 @@ public class REGenererListesVerificationProcess extends BProcess {
         listeRentesEnErreur.setParentWithCopy(this);
         listeRentesEnErreur.setTransaction(transaction);
         listeRentesEnErreur.executeProcess();
+    }
+
+    private List<RetenueMontantTotalCorrige> doUpdateRetenueIfNeeded(BITransaction transaction) throws Exception {
+        REMiseAJourRetenuesMontantProcess miseAJourRetenuesMontantProcess = new REMiseAJourRetenuesMontantProcess(
+                getSession(), transaction);
+        List<RetenueMontantTotalCorrige> retenuesMontantTotalCorrige = miseAJourRetenuesMontantProcess
+                .verifRetenueAndChangeSolde();
+        return retenuesMontantTotalCorrige;
     }
 
     private void doListeRetenues(BITransaction transaction) throws Exception {
