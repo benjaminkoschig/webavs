@@ -8,9 +8,9 @@ import globaz.hercule.db.controleEmployeur.CEControlesPrevusManager;
 import globaz.hercule.mappingXmlml.CEXmlmlMappingControlesPrevus;
 import globaz.hercule.utils.CEExcelmlUtils;
 import globaz.hercule.utils.CEUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * @author SCO
@@ -58,7 +58,7 @@ public class CEListeControlesPrevusProcess extends BProcess {
             // Création du document
             // On remplit le container par les données de la base
             if (manager.size() > 0) {
-                HerculeContainer container = CEXmlmlMappingControlesPrevus.loadResults(manager, this);
+                CommonExcelmlContainer container = CEXmlmlMappingControlesPrevus.loadResults(manager, this);
 
                 if (isAborted()) {
                     return false;

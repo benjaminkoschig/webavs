@@ -1,6 +1,6 @@
 package globaz.naos.listes.excel;
 
-import globaz.naos.listes.excel.util.NaosContainer;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 public class AFXmlmlSoldesAffiliesRadies {
 
@@ -21,7 +21,7 @@ public class AFXmlmlSoldesAffiliesRadies {
     public static final String NUMERO_INFOROM = "0117CAF";
     public static final String XLS_DOC_NAME = "ListeSoldesAffiliesRadies";
 
-    private NaosContainer container = new NaosContainer();
+    private CommonExcelmlContainer container = new CommonExcelmlContainer();
 
     public void createLigne(String numAffilie, String nom, String dateRadiation, String periode, String numSection,
             String dateSection, String descSection, String solde) {
@@ -39,7 +39,7 @@ public class AFXmlmlSoldesAffiliesRadies {
         container.put(AFXmlmlSoldesAffiliesRadies.DATA_EXCEL_NUM_INFOROM, AFXmlmlSoldesAffiliesRadies.NUMERO_INFOROM);
     }
 
-    public NaosContainer loadResults() {
+    public CommonExcelmlContainer loadResults() {
         loadDivers();
 
         return container;

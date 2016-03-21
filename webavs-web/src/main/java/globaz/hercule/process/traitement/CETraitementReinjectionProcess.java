@@ -13,10 +13,6 @@ import globaz.hercule.db.controleEmployeur.CEControleEmployeurManager;
 import globaz.hercule.db.reviseur.CEReviseur;
 import globaz.hercule.exception.HerculeException;
 import globaz.hercule.mappingXmlml.ICEListeColumns;
-import globaz.hercule.op.CEExcelDataContainer;
-import globaz.hercule.op.CEExcelDataContainer.CELine;
-import globaz.hercule.op.CEExcelDocumentParser;
-import globaz.hercule.op.CEExcelFilterNotSupportedException;
 import globaz.hercule.process.CEEmployeurRadieProcess;
 import globaz.hercule.process.CEEmployeurSansPersonnelProcess;
 import globaz.hercule.process.CEListeControlesAEffectuerProcess;
@@ -26,11 +22,15 @@ import globaz.hercule.service.CEControleEmployeurService;
 import globaz.hercule.utils.CEExcelmlUtils;
 import globaz.hercule.utils.CEUtils;
 import globaz.hercule.utils.CodeSystem;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.webavs.common.CommonExcelmlContainer;
+import globaz.webavs.common.op.CommonExcelDataContainer;
+import globaz.webavs.common.op.CommonExcelDataContainer.CommonLine;
+import globaz.webavs.common.op.CommonExcelDocumentParser;
+import globaz.webavs.common.op.CommonExcelFilterNotSupportedException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -61,8 +61,8 @@ public class CETraitementReinjectionProcess extends BProcess {
         setSendMailOnError(true);
 
         String headerAnnee = "";
-        HerculeContainer errorContainer = new HerculeContainer();
-        CEExcelDataContainer container = null;
+        CommonExcelmlContainer errorContainer = new CommonExcelmlContainer();
+        CommonExcelDataContainer container = null;
         String path = Jade.getInstance().getHomeDir() + "work/" + getFileName();
 
         // copy du fichier dans le répertoire work pour le traiter
@@ -71,8 +71,8 @@ public class CETraitementReinjectionProcess extends BProcess {
         // parse du document, retourne un container avec toutes les entrées et
         // valueres trouvées dans le document
         try {
-            container = CEExcelDocumentParser.parseWorkBook(CEExcelmlUtils.loadPath(path));
-        } catch (CEExcelFilterNotSupportedException e) {
+            container = CommonExcelDocumentParser.parseWorkBook(CEExcelmlUtils.loadPath(path));
+        } catch (CommonExcelFilterNotSupportedException e) {
             this._addError(getTransaction(), getSession().getLabel("ERREUR_FICHIER_REINJECTION_FILTRE"));
             String messageInformation = "Unsupported filtered Excel file injection throw exception in Parser due to file :"
                     + getFileName() + "\n";
@@ -110,7 +110,7 @@ public class CETraitementReinjectionProcess extends BProcess {
                     return false;
                 }
 
-                Iterator<CELine> lines = container.returnLinesIterator();
+                Iterator<CommonLine> lines = container.returnLinesIterator();
                 setProgressScaleValue(container.getSize());
 
                 // Date, heure et visa
@@ -132,7 +132,7 @@ public class CETraitementReinjectionProcess extends BProcess {
                 while (lines.hasNext()) {
                     incProgressCounter();
 
-                    CELine line = lines.next();
+                    CommonLine line = lines.next();
                     HashMap<String, String> lineMap = line.returnLineHashMap();
 
                     // On test quelle liste on doit réinjecter
@@ -258,8 +258,8 @@ public class CETraitementReinjectionProcess extends BProcess {
         return fileName;
     }
 
-    private void headerReinjectionControlesAEffectuer(final HerculeContainer errorContainer,
-            final CEExcelDataContainer container, final String numInforom) {
+    private void headerReinjectionControlesAEffectuer(final CommonExcelmlContainer errorContainer,
+            final CommonExcelDataContainer container, final String numInforom) {
         if (!JadeStringUtil.isEmpty(numInforom)) {
             errorContainer.put(ICEListeColumns.HEADER_NUM_INFOROM, numInforom);
         }
@@ -324,8 +324,8 @@ public class CETraitementReinjectionProcess extends BProcess {
         errorContainer.put(ICEListeColumns.HEADER_BLANK_3, "");
     }
 
-    private String headerReinjectionControlesPrevus(final HerculeContainer errorContainer,
-            final CEExcelDataContainer container, final String numInforom) {
+    private String headerReinjectionControlesPrevus(final CommonExcelmlContainer errorContainer,
+            final CommonExcelDataContainer container, final String numInforom) {
         if (!JadeStringUtil.isEmpty(numInforom)) {
             errorContainer.put(ICEListeColumns.HEADER_NUM_INFOROM, numInforom);
         }
@@ -337,8 +337,8 @@ public class CETraitementReinjectionProcess extends BProcess {
         return headerAnnee;
     }
 
-    private String headerReinjectionDsStructNonRemises(final HerculeContainer errorContainer,
-            final CEExcelDataContainer container, final String numInforom) {
+    private String headerReinjectionDsStructNonRemises(final CommonExcelmlContainer errorContainer,
+            final CommonExcelDataContainer container, final String numInforom) {
         String headerAnnee = "";
         if (!JadeStringUtil.isEmpty(numInforom)) {
             errorContainer.put(ICEListeColumns.HEADER_NUM_INFOROM, numInforom);
@@ -361,8 +361,8 @@ public class CETraitementReinjectionProcess extends BProcess {
         return headerAnnee;
     }
 
-    private void headerReinjectionEmployeurRadie(final HerculeContainer errorContainer,
-            final CEExcelDataContainer container, final String numInforom) {
+    private void headerReinjectionEmployeurRadie(final CommonExcelmlContainer errorContainer,
+            final CommonExcelDataContainer container, final String numInforom) {
         if (!JadeStringUtil.isEmpty(numInforom)) {
             errorContainer.put(ICEListeColumns.HEADER_NUM_INFOROM, numInforom);
         }
@@ -390,8 +390,8 @@ public class CETraitementReinjectionProcess extends BProcess {
         errorContainer.put(ICEListeColumns.HEADER_BLANK_3, "");
     }
 
-    private void headerReinjectionEmployeurSansPersonnel(final HerculeContainer errorContainer,
-            final CEExcelDataContainer container, final String numInforom) {
+    private void headerReinjectionEmployeurSansPersonnel(final CommonExcelmlContainer errorContainer,
+            final CommonExcelDataContainer container, final String numInforom) {
         if (!JadeStringUtil.isEmpty(numInforom)) {
             errorContainer.put(ICEListeColumns.HEADER_NUM_INFOROM, numInforom);
         }
@@ -405,8 +405,8 @@ public class CETraitementReinjectionProcess extends BProcess {
         errorContainer.put(ICEListeColumns.HEADER_BLANK_3, "");
     }
 
-    private void impressionListeControlesAEffectuerReinjection(final HerculeContainer errorContainer) throws Exception,
-            IOException {
+    private void impressionListeControlesAEffectuerReinjection(final CommonExcelmlContainer errorContainer)
+            throws Exception, IOException {
         // On imprime le document avec les lignes en erreur
         // On génère le doc
         String nomDoc = getSession().getLabel("LISTE_CONTROLE_EFFECTUER_NOM_DOCUMENT");
@@ -415,7 +415,8 @@ public class CETraitementReinjectionProcess extends BProcess {
         publicationDocument(nomDoc, docPath);
     }
 
-    private void impressionListeControlesPrevus(final HerculeContainer errorContainer) throws Exception, IOException {
+    private void impressionListeControlesPrevus(final CommonExcelmlContainer errorContainer) throws Exception,
+            IOException {
         // On imprime le document avec les lignes en erreur
         // On génère le doc
         String nomDoc = getSession().getLabel(CEListeControlesPrevusProcess.NOM_DOCUMENT);
@@ -424,7 +425,8 @@ public class CETraitementReinjectionProcess extends BProcess {
         publicationDocument(nomDoc, docPath);
     }
 
-    private void impressionListeControlesRadie(final HerculeContainer errorContainer) throws Exception, IOException {
+    private void impressionListeControlesRadie(final CommonExcelmlContainer errorContainer) throws Exception,
+            IOException {
         // On imprime le document avec les lignes en erreur
         // On génère le doc
         String nomDoc = getSession().getLabel("LISTE_EMPLOYEUR_RADIE_NOM_DOCUMENT");
@@ -433,7 +435,7 @@ public class CETraitementReinjectionProcess extends BProcess {
         publicationDocument(nomDoc, docPath);
     }
 
-    private void impressionListeControlesSansPersonnel(final HerculeContainer errorContainer) throws Exception,
+    private void impressionListeControlesSansPersonnel(final CommonExcelmlContainer errorContainer) throws Exception,
             IOException {
         // On imprime le document avec les lignes en erreur
         // On génère le doc
@@ -443,7 +445,8 @@ public class CETraitementReinjectionProcess extends BProcess {
         publicationDocument(nomDoc, docPath);
     }
 
-    private void impressionListeDsNonRetourne(final HerculeContainer errorContainer) throws Exception, IOException {
+    private void impressionListeDsNonRetourne(final CommonExcelmlContainer errorContainer) throws Exception,
+            IOException {
         // On imprime le document avec les lignes en erreur
         // On génère le doc
         String nomDoc = getSession().getLabel("LISTE_DS_NON_REMISE_NOM_DOCUMENT");
@@ -504,8 +507,9 @@ public class CETraitementReinjectionProcess extends BProcess {
         return controle;
     }
 
-    private void reinjectionControlesAEffectuer(final HerculeContainer errorContainer, final BTransaction transaction,
-            final CELine line, final HashMap<String, String> lineMap) throws Exception {
+    private void reinjectionControlesAEffectuer(final CommonExcelmlContainer errorContainer,
+            final BTransaction transaction, final CommonLine line, final HashMap<String, String> lineMap)
+            throws Exception {
         // On recherche si le contrôle existe
         // d'après le num. d'affilié, la 1ère période, la dernière période, la
         // date effective vide
@@ -575,7 +579,7 @@ public class CETraitementReinjectionProcess extends BProcess {
 
         // Commit si aucune erreur est présente, sinon on le notifie
         if (transaction.hasErrors()) {
-            CEUtils.fillHerculeContainerWithCELine(errorContainer, line, ICEListeColumns.listeNoms, transaction
+            CEUtils.fillContainerWithCommonLine(errorContainer, line, ICEListeColumns.listeNoms, transaction
                     .getErrors().toString(), ICEListeColumns.ERREUR);
             transaction.clearErrorBuffer();
             transaction.rollback();
@@ -594,8 +598,9 @@ public class CETraitementReinjectionProcess extends BProcess {
      * @param lineMap
      * @throws Exception
      */
-    private void reinjectionControlesPrevus(final HerculeContainer errorContainer, final BTransaction transaction,
-            final CELine line, final HashMap<String, String> lineMap) throws Exception {
+    private void reinjectionControlesPrevus(final CommonExcelmlContainer errorContainer,
+            final BTransaction transaction, final CommonLine line, final HashMap<String, String> lineMap)
+            throws Exception {
 
         CEControleEmployeur controle = null;
         String visaReviseur = null;
@@ -644,7 +649,7 @@ public class CETraitementReinjectionProcess extends BProcess {
 
         // Commit si aucune erreur est présente, sinon on le notifie
         if (transaction.hasErrors()) {
-            CEUtils.fillHerculeContainerWithCELine(errorContainer, line, ICEListeColumns.listeNoms, transaction
+            CEUtils.fillContainerWithCommonLine(errorContainer, line, ICEListeColumns.listeNoms, transaction
                     .getErrors().toString(), ICEListeColumns.ERREUR);
             transaction.clearErrorBuffer();
             transaction.rollback();
@@ -654,8 +659,9 @@ public class CETraitementReinjectionProcess extends BProcess {
         }
     }
 
-    private void reinjectionDsStructNonRemises(final HerculeContainer errorContainer, final BTransaction transaction,
-            final CELine line, final HashMap<String, String> lineMap, final String anneeImpression) throws Exception {
+    private void reinjectionDsStructNonRemises(final CommonExcelmlContainer errorContainer,
+            final BTransaction transaction, final CommonLine line, final HashMap<String, String> lineMap,
+            final String anneeImpression) throws Exception {
 
         String numAffilie = returnValeurHashMapWithNumAffilie(ICEListeColumns.NUM_AFFILIE, lineMap, transaction, "");
 
@@ -720,7 +726,7 @@ public class CETraitementReinjectionProcess extends BProcess {
 
         // Commit si aucune erreur est présente, sinon on le notifie
         if (transaction.hasErrors()) {
-            CEUtils.fillHerculeContainerWithCELine(errorContainer, line, ICEListeColumns.listeNoms, transaction
+            CEUtils.fillContainerWithCommonLine(errorContainer, line, ICEListeColumns.listeNoms, transaction
                     .getErrors().toString(), ICEListeColumns.ERREUR);
             transaction.clearErrorBuffer();
             transaction.rollback();
@@ -731,8 +737,8 @@ public class CETraitementReinjectionProcess extends BProcess {
 
     }
 
-    private void reinjectionEmployeurRadie(final HerculeContainer errorContainer, final BTransaction transaction,
-            final CELine line, final HashMap<String, String> lineMap) throws Exception {
+    private void reinjectionEmployeurRadie(final CommonExcelmlContainer errorContainer, final BTransaction transaction,
+            final CommonLine line, final HashMap<String, String> lineMap) throws Exception {
         String numAffilie = returnValeurHashMapWithNumAffilie(ICEListeColumns.NUM_AFFILIE, lineMap, transaction, "");
         if (!transaction.hasErrors()) {
             // On va créer le contrôle
@@ -793,7 +799,7 @@ public class CETraitementReinjectionProcess extends BProcess {
 
         // Commit si aucune erreur est présente, sinon on le notifie
         if (transaction.hasErrors()) {
-            CEUtils.fillHerculeContainerWithCELine(errorContainer, line, ICEListeColumns.listeNoms, transaction
+            CEUtils.fillContainerWithCommonLine(errorContainer, line, ICEListeColumns.listeNoms, transaction
                     .getErrors().toString(), ICEListeColumns.ERREUR);
             transaction.clearErrorBuffer();
             transaction.rollback();
@@ -804,8 +810,9 @@ public class CETraitementReinjectionProcess extends BProcess {
 
     }
 
-    private void reinjectionEmployeurSansPersonnel(final HerculeContainer errorContainer,
-            final BTransaction transaction, final CELine line, final HashMap<String, String> lineMap) throws Exception {
+    private void reinjectionEmployeurSansPersonnel(final CommonExcelmlContainer errorContainer,
+            final BTransaction transaction, final CommonLine line, final HashMap<String, String> lineMap)
+            throws Exception {
         String numAffilie = returnValeurHashMapWithNumAffilie(ICEListeColumns.NUM_AFFILIE, lineMap, transaction, "");
         if (!transaction.hasErrors()) {
 
@@ -854,7 +861,7 @@ public class CETraitementReinjectionProcess extends BProcess {
 
         // Commit si aucune erreur est présente, sinon on le notifie
         if (transaction.hasErrors()) {
-            CEUtils.fillHerculeContainerWithCELine(errorContainer, line, ICEListeColumns.listeNoms, transaction
+            CEUtils.fillContainerWithCommonLine(errorContainer, line, ICEListeColumns.listeNoms, transaction
                     .getErrors().toString(), ICEListeColumns.ERREUR);
             transaction.clearErrorBuffer();
             transaction.rollback();

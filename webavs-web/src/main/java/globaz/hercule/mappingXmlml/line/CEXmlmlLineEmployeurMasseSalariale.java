@@ -1,7 +1,7 @@
 package globaz.hercule.mappingXmlml.line;
 
 import globaz.hercule.mappingXmlml.ICEListeColumns;
-import globaz.hercule.utils.HerculeContainer;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * Classe représentant une ligne de données dans la liste des employeurs avec leur masse salariale
@@ -32,7 +32,7 @@ public class CEXmlmlLineEmployeurMasseSalariale extends CEXmlmlLine {
     public String libelle = "";
 
     @Override
-    public void remplirContainerWithLineData(HerculeContainer container) {
+    public void remplirContainerWithLineData(CommonExcelmlContainer container) {
 
         // Infos affiliés
         container.put(ICEListeColumns.NUM_AFFILIE, numAffilie);

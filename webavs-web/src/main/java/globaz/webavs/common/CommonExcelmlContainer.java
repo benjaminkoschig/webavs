@@ -12,22 +12,12 @@ import java.util.Map;
  */
 public class CommonExcelmlContainer implements IMergingContainer {
 
-    private HashMap<String, Collection<String>> container = null;
+    private Map<String, Collection<String>> container = null;
 
-    /**
-     * Constructeur de CommonExcelmlContainer
-     */
     public CommonExcelmlContainer() {
         container = new HashMap<String, Collection<String>>();
     }
 
-    public void addMap(Map m) {
-        container.putAll(m);
-    }
-
-    /**
-	 
-	 */
     @Override
     public boolean containsKey(String theKey) {
         theKey = theKey.toUpperCase();
@@ -35,19 +25,11 @@ public class CommonExcelmlContainer implements IMergingContainer {
         return container.containsKey(theKey);
     }
 
-    /**
-     * Dans cette implémentation retourne getFieldValues(theKey)
-     * 
-     * @return getFieldValues(theKey)
-     */
     @Override
     public Object getFieldValue(String theKey) {
         return getFieldValues(theKey);
     }
 
-    /**
-	 
-	 */
     @Override
     public Collection<String> getFieldValues(String theKey) {
         theKey = theKey.toUpperCase();
@@ -55,14 +37,9 @@ public class CommonExcelmlContainer implements IMergingContainer {
         return container.containsKey(theKey) ? container.get(theKey) : null;
     }
 
-    /**
-     * Dans cette implémentation retourne true
-     * 
-     * @return true
-     */
     @Override
     public boolean isMultiRow(String theKey) {
-        return true;
+        return getFieldValues(theKey) == null ? false : (getFieldValues(theKey).size() > 1);
     }
 
     /**
@@ -92,4 +69,7 @@ public class CommonExcelmlContainer implements IMergingContainer {
         return container.size();
     }
 
+    public boolean isEmpty() {
+        return container.isEmpty();
+    }
 }

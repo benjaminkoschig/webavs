@@ -10,9 +10,9 @@ import globaz.hercule.db.controleEmployeur.CEEmployeurRadieManager;
 import globaz.hercule.exception.HerculeException;
 import globaz.hercule.mappingXmlml.CEXmlmlMappingEmployeurRadie;
 import globaz.hercule.utils.CEExcelmlUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 public class CEEmployeurRadieProcess extends BProcess implements FWViewBeanInterface {
 
@@ -78,7 +78,7 @@ public class CEEmployeurRadieProcess extends BProcess implements FWViewBeanInter
 
     private boolean createDocument(final CEEmployeurRadieManager manager) throws HerculeException, Exception {
         setProgressScaleValue(manager.size());
-        HerculeContainer container = CEXmlmlMappingEmployeurRadie.loadResults(manager, this);
+        CommonExcelmlContainer container = CEXmlmlMappingEmployeurRadie.loadResults(manager, this);
 
         if (isAborted()) {
             return false;

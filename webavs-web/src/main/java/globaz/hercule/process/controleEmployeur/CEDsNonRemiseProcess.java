@@ -7,13 +7,13 @@ import globaz.hercule.application.CEApplication;
 import globaz.hercule.mappingXmlml.CEXmlmlMappingDsNonRemise;
 import globaz.hercule.utils.CEExcelmlUtils;
 import globaz.hercule.utils.CEUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.leo.constantes.ILEConstantes;
 import globaz.lupus.db.data.LUProvenanceDataSource;
 import globaz.lupus.db.journalisation.LUJournalListViewBean;
 import globaz.pyxis.db.tiers.TIRole;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * Processus d'impression des DS non remises.
@@ -65,7 +65,7 @@ public class CEDsNonRemiseProcess extends BProcess {
 
             if (manager.size() > 0) {
                 setProgressScaleValue(manager.size());
-                HerculeContainer container = CEXmlmlMappingDsNonRemise.loadResults(manager, this);
+                CommonExcelmlContainer container = CEXmlmlMappingDsNonRemise.loadResults(manager, this);
 
                 if (isAborted()) {
                     return false;

@@ -10,9 +10,9 @@ import globaz.hercule.db.controleEmployeur.CEEmployeurChangementMasseSalarialeMa
 import globaz.hercule.exception.HerculeException;
 import globaz.hercule.mappingXmlml.CEXmlmlMappingEmployeurChangementMasseSalariale;
 import globaz.hercule.utils.CEExcelmlUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 public class CEEmployeurChangementMasseSalarialeProcess extends BProcess implements FWViewBeanInterface {
 
@@ -80,7 +80,7 @@ public class CEEmployeurChangementMasseSalarialeProcess extends BProcess impleme
     private boolean createDocument(final CEEmployeurChangementMasseSalarialeManager manager) throws HerculeException,
             Exception {
         setProgressScaleValue(manager.size());
-        HerculeContainer container = CEXmlmlMappingEmployeurChangementMasseSalariale.loadResults(manager, this);
+        CommonExcelmlContainer container = CEXmlmlMappingEmployeurChangementMasseSalariale.loadResults(manager, this);
 
         if (isAborted()) {
             return false;

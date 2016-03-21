@@ -15,6 +15,7 @@ import globaz.op.common.merge.IMergingContainer;
 import globaz.op.excelml.model.document.ExcelmlWorkbook;
 import globaz.osiris.api.APIEcriture;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -131,7 +132,7 @@ public class ListeOrdresVersement extends PegasusAbstractExcelServiceImpl {
     @Override
     public IMergingContainer loadResults() throws JadeApplicationServiceNotAvailableException,
             JadePersistenceException, JadeApplicationException {
-        PegasusContainer container = new PegasusContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
         BSession session = BSessionUtil.getSessionFromThreadContext();
         SimpleLot lot = CorvusServiceLocator.getLotService().read(idLot);
 

@@ -14,6 +14,7 @@ import globaz.op.common.merge.IMergingContainer;
 import globaz.op.excelml.model.document.ExcelmlWorkbook;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tools.PRStringUtils;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,7 +77,7 @@ public class ListeDemandesPC extends PegasusAbstractExcelServiceImpl {
     @Override
     public IMergingContainer loadResults() throws JadeApplicationServiceNotAvailableException,
             JadePersistenceException, JadeApplicationException {
-        PegasusContainer container = new PegasusContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         BSession session = BSessionUtil.getSessionFromThreadContext();
 

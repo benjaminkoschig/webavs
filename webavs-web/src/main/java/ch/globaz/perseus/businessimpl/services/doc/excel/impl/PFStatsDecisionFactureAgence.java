@@ -6,6 +6,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.op.common.merge.IMergingContainer;
 import globaz.op.excelml.model.document.ExcelmlWorkbook;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ public class PFStatsDecisionFactureAgence extends PerseusAbstractExcelServiceImp
 
     public final static String MODEL_NAME = "statsDecisionFactureAgence.xml";
     public final static String MODEL_NAME_AGENCE = "statsDecisionFactureParAgence.xml";
-    private PerseusContainer container;
+    private CommonExcelmlContainer container;
     private String outPutName = "stats_decision_factures_agences";
 
     // Valeurs de l'entete de la feuille des statistiques
@@ -119,7 +120,7 @@ public class PFStatsDecisionFactureAgence extends PerseusAbstractExcelServiceImp
 
     @Override
     public IMergingContainer loadResults() throws Exception {
-        container = new PerseusContainer();
+        container = new CommonExcelmlContainer();
 
         if (!isStatParAgence) {
 

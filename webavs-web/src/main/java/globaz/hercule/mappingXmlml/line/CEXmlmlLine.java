@@ -1,7 +1,7 @@
 package globaz.hercule.mappingXmlml.line;
 
 import globaz.hercule.mappingXmlml.ICEListeColumns;
-import globaz.hercule.utils.HerculeContainer;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * 
@@ -16,7 +16,7 @@ public class CEXmlmlLine {
     public String npa = "";
     public String localite = "";
 
-    public void remplirContainerWithLineData(HerculeContainer container) {
+    public void remplirContainerWithLineData(CommonExcelmlContainer container) {
         container.put(ICEListeColumns.RUE, rue);
         container.put(ICEListeColumns.CASE_POSTALE, casePostale);
         container.put(ICEListeColumns.NPA, npa);

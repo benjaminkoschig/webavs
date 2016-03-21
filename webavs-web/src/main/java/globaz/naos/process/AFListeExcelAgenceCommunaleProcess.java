@@ -12,9 +12,9 @@ import globaz.naos.db.listeAgenceCommunale.AFListeAgenceCommunaleCSVFile;
 import globaz.naos.db.listeAgenceCommunale.AFListeAgenceCommunaleManager;
 import globaz.naos.listes.excel.AFXmlmlMappingAgenceCommunale;
 import globaz.naos.listes.excel.util.AFExcelmlUtils;
-import globaz.naos.listes.excel.util.NaosContainer;
 import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.DocumentInfoNaos;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 public class AFListeExcelAgenceCommunaleProcess extends BProcess implements FWViewBeanInterface {
 
@@ -123,7 +123,7 @@ public class AFListeExcelAgenceCommunaleProcess extends BProcess implements FWVi
     }
 
     private boolean createDocument(AFListeAgenceCommunaleManager manager) throws Exception, Exception {
-        NaosContainer container = AFXmlmlMappingAgenceCommunale.loadResults(manager, this, numCaisse,
+        CommonExcelmlContainer container = AFXmlmlMappingAgenceCommunale.loadResults(manager, this, numCaisse,
                 nomAgenceCommunale);
 
         if (isAborted()) {

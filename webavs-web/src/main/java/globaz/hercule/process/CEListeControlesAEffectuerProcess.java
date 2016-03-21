@@ -16,9 +16,9 @@ import globaz.hercule.db.controleEmployeur.CEControlesAEffectuerUnionManager;
 import globaz.hercule.mappingXmlml.CEXmlmlMappingControlesAEffectuer;
 import globaz.hercule.utils.CEExcelmlUtils;
 import globaz.hercule.utils.CEUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +102,7 @@ public class CEListeControlesAEffectuerProcess extends BProcess implements FWVie
             // ************************
             // 2. Génération des données qui seront dans le fichier de sortie
             // ************************
-            HerculeContainer container = genererDataForDocument(mapEntityByNumAffilie,
+            CommonExcelmlContainer container = genererDataForDocument(mapEntityByNumAffilie,
                     mapEntityByNumAffilieForAnneePrec);
 
             if (isAborted()) {
@@ -211,10 +211,10 @@ public class CEListeControlesAEffectuerProcess extends BProcess implements FWVie
         return mapEntityByNumAffilie;
     }
 
-    private HerculeContainer genererDataForDocument(final Map<String, CEControlesAEffectuer> mapEntity,
+    private CommonExcelmlContainer genererDataForDocument(final Map<String, CEControlesAEffectuer> mapEntity,
             final Map<String, CEControlesAEffectuer> mapEntityForAnneePrec) throws Exception {
 
-        HerculeContainer container = null;
+        CommonExcelmlContainer container = null;
 
         if (mapEntity.size() > 0 || mapEntityForAnneePrec.size() > 0) {
             CEXmlmlMappingControlesAEffectuer loadData = new CEXmlmlMappingControlesAEffectuer(mapEntity,
@@ -225,7 +225,7 @@ public class CEListeControlesAEffectuerProcess extends BProcess implements FWVie
         return container;
     }
 
-    private String createDocument(final HerculeContainer container, final String nomDoc) throws Exception {
+    private String createDocument(final CommonExcelmlContainer container, final String nomDoc) throws Exception {
 
         if (container == null || container.isEmpty()) {
             return null;

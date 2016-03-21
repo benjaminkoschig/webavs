@@ -14,6 +14,7 @@ import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.op.common.merge.IMergingContainer;
 import globaz.op.excelml.model.document.ExcelmlWorkbook;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +51,7 @@ public class StatsMensuelles extends PerseusAbstractExcelServiceImpl {
      */
 
     public final static String MODEL_NAME = "statsMensuelles.xml";
-    private PerseusContainer container;
+    private CommonExcelmlContainer container;
     private String moisDebut = null;
     private String moisFin = null;
     private String outPutName = "statsMensuelles";
@@ -69,7 +70,7 @@ public class StatsMensuelles extends PerseusAbstractExcelServiceImpl {
     private int nbPrestRestitution;
 
     public StatsMensuelles() {
-        container = new PerseusContainer();
+        container = new CommonExcelmlContainer();
     }
 
     /**

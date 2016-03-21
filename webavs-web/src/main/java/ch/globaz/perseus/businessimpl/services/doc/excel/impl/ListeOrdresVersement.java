@@ -14,6 +14,7 @@ import globaz.op.common.merge.IMergingContainer;
 import globaz.op.excelml.model.document.ExcelmlWorkbook;
 import globaz.perseus.utils.PFUserHelper;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.math.BigDecimal;
 import ch.globaz.perseus.business.constantes.CSTypeLot;
 import ch.globaz.perseus.business.constantes.CSTypeVersement;
@@ -114,7 +115,7 @@ public class ListeOrdresVersement extends PerseusAbstractExcelServiceImpl {
     public IMergingContainer loadResults() throws JadeApplicationServiceNotAvailableException,
             JadePersistenceException, JadeApplicationException {
 
-        PerseusContainer container = new PerseusContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
         OrdreVersementSearchModel ordreVersementSearch = new OrdreVersementSearchModel();
         ordreVersementSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
         ordreVersementSearch.setForIdLot(idLot);

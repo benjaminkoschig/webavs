@@ -4,6 +4,7 @@ import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.jade.common.Jade;
 import globaz.op.excelml.model.document.ExcelmlBuilder;
 import globaz.op.excelml.model.document.ExcelmlWorkbook;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import ch.globaz.orion.EBApplication;
@@ -26,7 +27,7 @@ public class EBExcelmlUtils {
      * @return filePath le chemin complet où à été sauvegardé le document
      * @throws Exception
      */
-    public static String createDocumentExcel(String modelName, String nomDoc, OrionContainer container)
+    public static String createDocumentExcel(String modelName, String nomDoc, CommonExcelmlContainer container)
             throws Exception {
         ExcelmlWorkbook wk = null;
         nomDoc += "-" + JadeUUIDGenerator.createStringUUID() + ".xml";

@@ -44,8 +44,6 @@ import globaz.naos.db.parametreAssurance.AFParametreAssuranceManager;
 import globaz.naos.db.planAffiliation.AFPlanAffiliation;
 import globaz.naos.db.planAffiliation.AFPlanAffiliationManager;
 import globaz.naos.db.releve.AFApercuReleveManager;
-import globaz.naos.listes.excel.util.AFExcelDataContainer.AFLine;
-import globaz.naos.listes.excel.util.NaosContainer;
 import globaz.naos.translation.CodeSystem;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CACompteur;
@@ -58,6 +56,8 @@ import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 import globaz.pyxis.db.tiers.TIRole;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.db.tiers.TITiersViewBean;
+import globaz.webavs.common.CommonExcelmlContainer;
+import globaz.webavs.common.op.CommonExcelDataContainer.CommonLine;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -147,7 +147,7 @@ public class AFUtil {
      * @param erreur
      * @param erreurName
      */
-    public static void fillNaosContainerWithAFLine(NaosContainer container, AFLine line, String[] tabNoms,
+    public static void fillNaosContainerWithAFLine(CommonExcelmlContainer container, CommonLine line, String[] tabNoms,
             String erreur, String erreurName) {
         HashMap<String, String> map = line.returnLineHashMap();
         Set<String> keySet = map.keySet();

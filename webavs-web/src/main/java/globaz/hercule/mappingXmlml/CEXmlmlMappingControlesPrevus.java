@@ -7,8 +7,8 @@ import globaz.hercule.exception.HerculeException;
 import globaz.hercule.process.CEListeControlesPrevusProcess;
 import globaz.hercule.utils.CEExcelmlUtils;
 import globaz.hercule.utils.CEUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * @author SCO
@@ -22,7 +22,7 @@ public class CEXmlmlMappingControlesPrevus {
      * @param container
      * @param process
      */
-    private static void loadHeader(final HerculeContainer container, final CEListeControlesPrevusProcess process) {
+    private static void loadHeader(final CommonExcelmlContainer container, final CEListeControlesPrevusProcess process) {
 
         // On set le header
         CEExcelmlUtils.remplirColumn(container, ICEListeColumns.HEADER_ANNEE, process.getAnnee(), "");
@@ -49,7 +49,7 @@ public class CEXmlmlMappingControlesPrevus {
      * @throws HerculeException
      * @throws Exception
      */
-    private static void loadDetail(final HerculeContainer container, final CEControlesPrevus entity,
+    private static void loadDetail(final CommonExcelmlContainer container, final CEControlesPrevus entity,
             final CEListeControlesPrevusProcess process) throws HerculeException {
 
         // Numéro de l'affilié
@@ -102,9 +102,9 @@ public class CEXmlmlMappingControlesPrevus {
      * @return
      * @throws HerculeException
      */
-    public static HerculeContainer loadResults(final CEControlesPrevusManager manager,
+    public static CommonExcelmlContainer loadResults(final CEControlesPrevusManager manager,
             final CEListeControlesPrevusProcess process) throws HerculeException {
-        HerculeContainer container = new HerculeContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         loadHeader(container, process);
 

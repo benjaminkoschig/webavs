@@ -1,6 +1,6 @@
 package globaz.naos.listes.excel;
 
-import globaz.naos.listes.excel.util.NaosContainer;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 public class AFXmlmlIdeTraitementAnnonce {
 
@@ -27,9 +27,9 @@ public class AFXmlmlIdeTraitementAnnonce {
     public static final String NUMERO_INFOROM = "0316CAF";
     public static final String XLS_DOC_NAME = "IdeTraitementAnnonceSortante";
 
-    private NaosContainer container = new NaosContainer();
+    private CommonExcelmlContainer container = new CommonExcelmlContainer();
 
-    public NaosContainer getContainer() {
+    public CommonExcelmlContainer getContainer() {
         return container;
     }
 

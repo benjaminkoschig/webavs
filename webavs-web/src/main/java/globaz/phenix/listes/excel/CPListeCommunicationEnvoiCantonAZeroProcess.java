@@ -7,6 +7,7 @@ import globaz.hercule.exception.HerculeException;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.phenix.application.CPApplication;
 import globaz.phenix.db.communications.CPCommunicationFiscaleAffichageManager;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * Impression des cas dont le canton est vide ou étranger
@@ -68,7 +69,8 @@ public class CPListeCommunicationEnvoiCantonAZeroProcess extends BProcess implem
     private boolean createDocument(CPCommunicationFiscaleAffichageManager manager) throws HerculeException, Exception {
         // manager.find(BManager.SIZE_NOLIMIT);
         setProgressScaleValue(manager.size());
-        PhenixContainer container = CPXmlmlMappingCommunicationEnvoiCantonAZeroProcess.loadResults(manager, this);
+        CommonExcelmlContainer container = CPXmlmlMappingCommunicationEnvoiCantonAZeroProcess
+                .loadResults(manager, this);
 
         if (isAborted()) {
             return false;

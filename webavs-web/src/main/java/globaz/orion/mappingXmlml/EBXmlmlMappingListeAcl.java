@@ -3,7 +3,7 @@ package globaz.orion.mappingXmlml;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import globaz.orion.process.EBImprimerListeAcl;
-import globaz.orion.utils.OrionContainer;
+import globaz.webavs.common.CommonExcelmlContainer;
 import ch.globaz.orion.business.models.acl.Acl;
 
 public class EBXmlmlMappingListeAcl {
@@ -11,7 +11,7 @@ public class EBXmlmlMappingListeAcl {
     // constantes
     public static final String PREFIXE_CODE_PAYS = "315";
 
-    private static void loadDetail(OrionContainer container, Acl acl, BSession session) throws Exception {
+    private static void loadDetail(CommonExcelmlContainer container, Acl acl, BSession session) throws Exception {
 
         container.put(IEBListeAcl.NUMERO_ASSURE, acl.getNumeroAssure());
         container.put(IEBListeAcl.DATE_ENGAGEMENT, acl.getDateEngagement());
@@ -23,7 +23,7 @@ public class EBXmlmlMappingListeAcl {
         container.put(IEBListeAcl.NUMERO_AFFILIE, acl.getNumeroAffilie());
     }
 
-    private static void loadHeader(OrionContainer container, BSession session) {
+    private static void loadHeader(CommonExcelmlContainer container, BSession session) {
 
         container.put(IEBListeAcl.HEADER_TITRE,
                 session.getLabel("LISTE_ACL_TITRE") + " : " + JACalendar.todayJJsMMsAAAA());
@@ -36,8 +36,8 @@ public class EBXmlmlMappingListeAcl {
         container.put(IEBListeAcl.HEADER_BLANK_3, "");
     }
 
-    public static OrionContainer loadResults(Acl[] acl, EBImprimerListeAcl process) throws Exception {
-        OrionContainer container = new OrionContainer();
+    public static CommonExcelmlContainer loadResults(Acl[] acl, EBImprimerListeAcl process) throws Exception {
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         EBXmlmlMappingListeAcl.loadHeader(container, process.getSession());
 

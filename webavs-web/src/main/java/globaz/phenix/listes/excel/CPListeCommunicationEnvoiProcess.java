@@ -9,6 +9,7 @@ import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.phenix.application.CPApplication;
 import globaz.phenix.db.communications.CPCommunicationFiscaleAffichageManager;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,7 +72,7 @@ public class CPListeCommunicationEnvoiProcess extends BProcess implements FWView
     private boolean createDocument(CPCommunicationFiscaleAffichageManager manager) throws HerculeException, Exception {
         // manager.find(BManager.SIZE_NOLIMIT);
         setProgressScaleValue(manager.size());
-        PhenixContainer container = CPXmlmlMappingCommunicationEnvoiProcess.loadResults(manager, this);
+        CommonExcelmlContainer container = CPXmlmlMappingCommunicationEnvoiProcess.loadResults(manager, this);
 
         if (isAborted()) {
             return false;

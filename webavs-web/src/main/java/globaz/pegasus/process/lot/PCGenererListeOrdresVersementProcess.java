@@ -1,6 +1,5 @@
 package globaz.pegasus.process.lot;
 
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.jade.common.Jade;
 import globaz.jade.print.server.JadePrintDocumentContainer;
@@ -9,6 +8,7 @@ import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
 import globaz.op.excelml.model.document.ExcelmlBuilder;
 import globaz.op.excelml.model.document.ExcelmlWorkbook;
 import globaz.pegasus.process.PCAbstractJob;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.io.FileInputStream;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.web.application.PCApplication;
@@ -55,7 +55,7 @@ public class PCGenererListeOrdresVersementProcess extends PCAbstractJob {
         return wk;
     }
 
-    public ExcelmlWorkbook mergeDocumentExcel(String modelName, String nomDoc, HerculeContainer container)
+    public ExcelmlWorkbook mergeDocumentExcel(String modelName, String nomDoc, CommonExcelmlContainer container)
             throws Exception {
         ExcelmlWorkbook wk = null;
         nomDoc += "-" + JadeUUIDGenerator.createStringUUID() + ".xls";

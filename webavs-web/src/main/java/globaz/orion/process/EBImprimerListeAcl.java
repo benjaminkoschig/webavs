@@ -5,7 +5,7 @@ import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.orion.mappingXmlml.EBXmlmlMappingListeAcl;
 import globaz.orion.utils.EBExcelmlUtils;
-import globaz.orion.utils.OrionContainer;
+import globaz.webavs.common.CommonExcelmlContainer;
 import ch.globaz.orion.EBApplication;
 import ch.globaz.orion.business.models.acl.Acl;
 
@@ -63,7 +63,7 @@ public class EBImprimerListeAcl extends BProcess {
 
     private boolean createDocument() throws Exception {
         setProgressScaleValue(acl.length);
-        OrionContainer container = EBXmlmlMappingListeAcl.loadResults(acl, this);
+        CommonExcelmlContainer container = EBXmlmlMappingListeAcl.loadResults(acl, this);
 
         if (isAborted()) {
             return false;

@@ -11,7 +11,7 @@ import globaz.jade.log.JadeLogger;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.orion.mappingXmlml.EBXmlmlMappingListeInscription;
 import globaz.orion.utils.EBExcelmlUtils;
-import globaz.orion.utils.OrionContainer;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.ArrayList;
 import ch.globaz.orion.EBApplication;
 import ch.globaz.orion.business.models.inscription.InscriptionEbusiness;
@@ -113,7 +113,7 @@ public class EBImprimerListeInscription extends BProcess {
      */
     private boolean createDocument() throws Exception {
         setProgressScaleValue(inscriptions.length);
-        OrionContainer container = EBXmlmlMappingListeInscription.loadResults(inscriptions, this);
+        CommonExcelmlContainer container = EBXmlmlMappingListeInscription.loadResults(inscriptions, this);
 
         if (isAborted()) {
             return false;

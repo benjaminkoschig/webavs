@@ -13,6 +13,7 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import globaz.op.common.merge.IMergingContainer;
 import globaz.op.excelml.model.document.ExcelmlWorkbook;
 import globaz.prestation.application.PRAbstractApplication;
+import globaz.webavs.common.CommonExcelmlContainer;
 import globaz.webavs.common.CommonProperties;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
@@ -42,7 +43,7 @@ public class ListeMutationMontantPCA extends PegasusAbstractExcelServiceImpl {
     private String dateMonth = null;
     private String outPutName = "liste_Mutation_Montant_PCA";
 
-    private void addListTocontainer(List<MutationPCA> list, PegasusContainer container, String type,
+    private void addListTocontainer(List<MutationPCA> list, CommonExcelmlContainer container, String type,
             Map<String, Object> containerInfo, boolean future) {
 
         BigDecimal totalAugmentation = new BigDecimal(0);
@@ -265,8 +266,8 @@ public class ListeMutationMontantPCA extends PegasusAbstractExcelServiceImpl {
         return save(wk, nomDoc);
     }
 
-    private Map<String, Object> createListesMutations(PegasusContainer container) throws JadePersistenceException,
-            MutationException, JadeApplicationServiceNotAvailableException {
+    private Map<String, Object> createListesMutations(CommonExcelmlContainer container)
+            throws JadePersistenceException, MutationException, JadeApplicationServiceNotAvailableException {
         // JadeDateUtil.convertDateMonthYear(JadeDateUtil.addMonths("01." + this.dateMonth, -1))
         List<MutationPCA> list = PegasusImplServiceLocator.getMutationService().findMutationMontantPCA(dateMonth);
 
@@ -387,7 +388,7 @@ public class ListeMutationMontantPCA extends PegasusAbstractExcelServiceImpl {
         return containerInfo;
     }
 
-    private void fillInfoRecap(PegasusContainer container, RecapitulationPcRfm recapitulationPcRfm, String type)
+    private void fillInfoRecap(CommonExcelmlContainer container, RecapitulationPcRfm recapitulationPcRfm, String type)
             throws JadeApplicationServiceNotAvailableException, JadePersistenceException, MutationException {
 
         double total = recapitulationPcRfm.getMontantTotalPCAVS().getBigDecimalValue()
@@ -402,9 +403,9 @@ public class ListeMutationMontantPCA extends PegasusAbstractExcelServiceImpl {
         container.put(type + "_total", new FWCurrency(String.valueOf(total)).toStringFormat());
     }
 
-    public BigDecimal fillRecapMutation(String type, PegasusContainer container, Map<String, Object> containerInfo,
-            RecapitulationPcRfm infoRecapCourant, RecapitulationPcRfm infoRecapPrecedent,
-            RecapitulationPcRfm infoRecapPasseFutur) {
+    public BigDecimal fillRecapMutation(String type, CommonExcelmlContainer container,
+            Map<String, Object> containerInfo, RecapitulationPcRfm infoRecapCourant,
+            RecapitulationPcRfm infoRecapPrecedent, RecapitulationPcRfm infoRecapPasseFutur) {
         BigDecimal recapMoisPrecedent = new BigDecimal(0);
         BigDecimal recapMoisCourant = new BigDecimal(0);
 
@@ -484,7 +485,7 @@ public class ListeMutationMontantPCA extends PegasusAbstractExcelServiceImpl {
         return recapitulationPcRfm;
     }
 
-    public RecapitulationPcRfm findRecapPcaReprac(PegasusContainer container) throws JadePersistenceException {
+    public RecapitulationPcRfm findRecapPcaReprac(CommonExcelmlContainer container) throws JadePersistenceException {
         // @formatter:off
 		String sql = "Select * from ( "
 				+ "select sum(planCalcule.CVMPCM) as SOMME,  count(planCalcule.CVMPCM) as NOMBRE, pcAccordee.CUTTYP as TYPEPC, 1 as ORDRE "
@@ -594,7 +595,7 @@ public class ListeMutationMontantPCA extends PegasusAbstractExcelServiceImpl {
 	@Override
 	public IMergingContainer loadResults() throws JadeApplicationServiceNotAvailableException,
 			JadePersistenceException, JadeApplicationException {
-		PegasusContainer container = new PegasusContainer();
+	    CommonExcelmlContainer container = new CommonExcelmlContainer();
 
 		Map<String, Object> containerInfo = createListesMutations(container);
 		recapPaiement(container, containerInfo);
@@ -624,7 +625,7 @@ public class ListeMutationMontantPCA extends PegasusAbstractExcelServiceImpl {
 		return container;
 	}
 
-	public void recapPaiement(PegasusContainer container, Map<String, Object> containerInfo) throws MutationException,
+	public void recapPaiement(CommonExcelmlContainer container, Map<String, Object> containerInfo) throws MutationException,
 			JadeApplicationServiceNotAvailableException, JadePersistenceException, PrestationCommonException {
 
 		RecapitulationPcRfm infoRecapCourant = findRecapPcaReprac(container);

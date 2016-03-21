@@ -12,8 +12,8 @@ import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliationJSection;
 import globaz.naos.db.affiliation.AFAffiliationJSectionManager;
 import globaz.naos.listes.excel.AFXmlmlSoldesAffiliesRadies;
-import globaz.naos.listes.excel.util.NaosContainer;
 import globaz.naos.util.AFUtil;
+import globaz.webavs.common.CommonExcelmlContainer;
 import globaz.webavs.common.CommonExcelmlUtils;
 
 public class AFSoldesAffiliesRadiesProcess extends BProcess {
@@ -92,7 +92,7 @@ public class AFSoldesAffiliesRadiesProcess extends BProcess {
     }
 
     private boolean createListExcel() throws Exception {
-        NaosContainer container = xmlml.loadResults();
+        CommonExcelmlContainer container = xmlml.loadResults();
 
         if (isAborted()) {
             return false;

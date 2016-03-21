@@ -9,12 +9,12 @@ import globaz.hercule.service.CETiersService;
 import globaz.naos.db.controleLpp.AFAffilieSoumiLppConteneur;
 import globaz.naos.db.controleLpp.AFAffilieSoumiLppConteneur.Salarie;
 import globaz.naos.listes.excel.util.IAFListeColumns;
-import globaz.naos.listes.excel.util.NaosContainer;
 import globaz.naos.process.AFControleLppAnnuelProcess;
 import globaz.pavo.db.compte.CICompteIndividuel;
 import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.db.tiers.TITiers;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 public class AFXmlmlMappingSoumisLpp {
 
@@ -44,7 +44,7 @@ public class AFXmlmlMappingSoumisLpp {
         return true;
     }
 
-    private static void loadDetail(AFControleLppAnnuelProcess process, NaosContainer container,
+    private static void loadDetail(AFControleLppAnnuelProcess process, CommonExcelmlContainer container,
             AFAffilieSoumiLppConteneur.Salarie sal, int nivSecuUser) throws Exception, Exception {
 
         AFXmlmlMappingSoumisLpp.renseigneNomEtAdresse(process.getSession(), process.getTypeAdresse(), container,
@@ -69,8 +69,8 @@ public class AFXmlmlMappingSoumisLpp {
                 : process.getSession().getLabel("NAOS_LIBELLE_NON"));
     }
 
-    private static void loadHeader(NaosContainer container, String dateImpression, String nomListe, String annee,
-            String numInforom, String user) throws Exception {
+    private static void loadHeader(CommonExcelmlContainer container, String dateImpression, String nomListe,
+            String annee, String numInforom, String user) throws Exception {
         // Modif PO 6352
         container.put(IAFListeColumns.HEADER_NUM_INFOROM, numInforom); // PO 6352
         container.put(IAFListeColumns.HEADER_USER, user); // PO 6352
@@ -97,10 +97,10 @@ public class AFXmlmlMappingSoumisLpp {
      * @throws Exception
      * @throws Exception
      */
-    public static NaosContainer loadResults(AFAffilieSoumiLppConteneur conteneur, AFControleLppAnnuelProcess process,
-            String nomListe, String numInforom) throws Exception, Exception {
+    public static CommonExcelmlContainer loadResults(AFAffilieSoumiLppConteneur conteneur,
+            AFControleLppAnnuelProcess process, String nomListe, String numInforom) throws Exception, Exception {
 
-        NaosContainer container = new NaosContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         // Chargement du header du document
         AFXmlmlMappingSoumisLpp.loadHeader(container, process.getDateImpression(), nomListe, process.getAnnee(),
@@ -129,7 +129,7 @@ public class AFXmlmlMappingSoumisLpp {
         return container;
     }
 
-    private static void renseigneNomEtAdresse(BSession session, String typeAdresse, NaosContainer container,
+    private static void renseigneNomEtAdresse(BSession session, String typeAdresse, CommonExcelmlContainer container,
             String idTiers, String numAffilie) throws Exception {
 
         String ville = "";

@@ -1,4 +1,4 @@
-package globaz.naos.listes.excel.util;
+package globaz.webavs.common.op;
 
 import globaz.op.common.model.element.Element;
 
@@ -6,7 +6,7 @@ import globaz.op.common.model.element.Element;
  * @author vyj
  * @version 1.0 created the 18 févr. 2005
  */
-public class AFElementExtractor {
+public class ElementExtractor {
 
     /**
      * Permet de récupérer le prochain élément selon l'appartion dans le texte (si c'est une feuille, prend la prochaine

@@ -36,11 +36,11 @@ import globaz.phenix.application.CPApplication;
 import globaz.phenix.db.communications.CPSedexContribuable;
 import globaz.phenix.db.principale.CPDecision;
 import globaz.phenix.db.principale.CPDecisionAffiliation;
-import globaz.phenix.listes.excel.PhenixContainer;
-import globaz.phenix.listes.excel.util.CPExcelDataContainer.CPLine;
 import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 import globaz.pyxis.db.tiers.TITiersViewBean;
+import globaz.webavs.common.CommonExcelmlContainer;
+import globaz.webavs.common.op.CommonExcelDataContainer.CommonLine;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -109,8 +109,8 @@ public class CPUtil {
      * @param erreur
      * @param erreurName
      */
-    public static void fillPhenixContainerWithCPLine(PhenixContainer container, CPLine line, String[] tabNoms,
-            String erreur, String erreurName) {
+    public static void fillPhenixContainerWithCPLine(CommonExcelmlContainer container, CommonLine line,
+            String[] tabNoms, String erreur, String erreurName) {
         HashMap<String, String> map = line.returnLineHashMap();
         Set<String> keySet = map.keySet();
         Iterator<String> colNameIt = keySet.iterator();

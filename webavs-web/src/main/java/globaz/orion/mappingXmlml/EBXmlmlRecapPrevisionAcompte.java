@@ -4,7 +4,7 @@ import globaz.framework.util.FWMessage;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.orion.process.EBImprimerPrevisionAcompte;
-import globaz.orion.utils.OrionContainer;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +15,8 @@ import ch.globaz.xmlns.eb.pac.StatusSaisiePAC;
  */
 public class EBXmlmlRecapPrevisionAcompte {
 
-    private static void loadDetail(OrionContainer container, Map<String, String> m, EBImprimerPrevisionAcompte process)
-            throws Exception, Exception {
+    private static void loadDetail(CommonExcelmlContainer container, Map<String, String> m,
+            EBImprimerPrevisionAcompte process) throws Exception, Exception {
         process.incProgressCounter();
         container.put(IEBListeAcl.NUMERO_AFFILIE, m.get(EBImprimerPrevisionAcompte.NUM_AFFILIE));
         container.put(IEBListeAcl.NOM_PRENOM, m.get(EBImprimerPrevisionAcompte.NOM));
@@ -37,7 +37,7 @@ public class EBXmlmlRecapPrevisionAcompte {
         }
     }
 
-    private static void loadHeader(OrionContainer container, EBImprimerPrevisionAcompte process,
+    private static void loadHeader(CommonExcelmlContainer container, EBImprimerPrevisionAcompte process,
             BigDecimal masseAnnuelleMaxPourPeriodiciteAnnuelle) throws Exception {
         container.put(IEBListeAcl.HEADER_NUM_INFOROM, EBImprimerPrevisionAcompte.NUMERO_INFOROM);
         container.put(IEBListeAcl.HEADER_DATE, JACalendar.todayJJsMMsAAAA());
@@ -50,9 +50,10 @@ public class EBXmlmlRecapPrevisionAcompte {
         container.put(IEBListeAcl.HEADER_BLANK_2, "");
     }
 
-    public static OrionContainer loadResults(List<Map<String, String>> manager, EBImprimerPrevisionAcompte process,
-            BigDecimal masseAnnuelleMaxPourPeriodiciteAnnuelle) throws Exception, Exception {
-        OrionContainer container = new OrionContainer();
+    public static CommonExcelmlContainer loadResults(List<Map<String, String>> manager,
+            EBImprimerPrevisionAcompte process, BigDecimal masseAnnuelleMaxPourPeriodiciteAnnuelle) throws Exception,
+            Exception {
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         EBXmlmlRecapPrevisionAcompte.loadHeader(container, process, masseAnnuelleMaxPourPeriodiciteAnnuelle);
 

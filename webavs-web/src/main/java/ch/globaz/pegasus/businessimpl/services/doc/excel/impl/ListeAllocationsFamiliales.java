@@ -11,6 +11,7 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import globaz.op.common.merge.IMergingContainer;
 import globaz.op.excelml.model.document.ExcelmlWorkbook;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,7 +76,7 @@ public class ListeAllocationsFamiliales extends PegasusAbstractExcelServiceImpl 
         return outPutName;
     }
 
-    private void createListeAF(PegasusContainer container, BSession session) throws JadePersistenceException,
+    private void createListeAF(CommonExcelmlContainer container, BSession session) throws JadePersistenceException,
             JadeApplicationServiceNotAvailableException, AllocationsFamilialesException {
 
         // recherche des données
@@ -144,7 +145,7 @@ public class ListeAllocationsFamiliales extends PegasusAbstractExcelServiceImpl 
         }
     }
 
-    private void createListeIndependants(PegasusContainer container, BSession session)
+    private void createListeIndependants(CommonExcelmlContainer container, BSession session)
             throws JadeApplicationServiceNotAvailableException, JadePersistenceException,
             RevenuActiviteLucrativeIndependanteException, DroitException {
 
@@ -243,7 +244,7 @@ public class ListeAllocationsFamiliales extends PegasusAbstractExcelServiceImpl 
     @Override
     public IMergingContainer loadResults() throws JadeApplicationServiceNotAvailableException,
             JadePersistenceException, JadeApplicationException {
-        PegasusContainer container = new PegasusContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         // remplacement des entêtes
         BSession session = BSessionUtil.getSessionFromThreadContext();

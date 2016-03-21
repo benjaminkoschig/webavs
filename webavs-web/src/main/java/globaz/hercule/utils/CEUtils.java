@@ -19,13 +19,14 @@ import globaz.hercule.application.CEApplication;
 import globaz.hercule.db.controleEmployeur.CEAttributionPts;
 import globaz.hercule.db.controleEmployeur.CEControleEmployeur;
 import globaz.hercule.db.controleEmployeur.CEControleEmployeurManager;
-import globaz.hercule.op.CEExcelDataContainer.CELine;
 import globaz.hercule.service.CEAffiliationService;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.log.JadeLogger;
 import globaz.naos.translation.CodeSystem;
 import globaz.pavo.application.CIApplication;
+import globaz.webavs.common.CommonExcelmlContainer;
+import globaz.webavs.common.op.CommonExcelDataContainer.CommonLine;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.ResultSet;
@@ -75,7 +76,7 @@ public class CEUtils {
     }
 
     /**
-     * Permet de remplir un HerculeContainer à partir d'une CELine et de rajouter une erreur dans le container
+     * Permet de remplir un CommonExcelmlContainer à partir d'une CELine et de rajouter une erreur dans le container
      * 
      * @param container
      * @param line
@@ -83,7 +84,7 @@ public class CEUtils {
      * @param erreur
      * @param erreurName
      */
-    public static void fillHerculeContainerWithCELine(HerculeContainer container, CELine line, String[] tabNoms,
+    public static void fillContainerWithCommonLine(CommonExcelmlContainer container, CommonLine line, String[] tabNoms,
             String erreur, String erreurName) {
         HashMap<String, String> map = line.returnLineHashMap();
         Set<String> keySet = map.keySet();

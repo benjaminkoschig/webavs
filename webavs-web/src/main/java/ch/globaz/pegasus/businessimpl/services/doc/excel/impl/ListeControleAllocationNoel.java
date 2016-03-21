@@ -11,6 +11,7 @@ import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.op.common.merge.IMergingContainer;
 import globaz.op.excelml.model.document.ExcelmlWorkbook;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.List;
 import java.util.Map;
 import ch.globaz.jade.process.business.JadeProcessServiceLocator;
@@ -71,7 +72,7 @@ public class ListeControleAllocationNoel extends PegasusAbstractExcelServiceImpl
     public IMergingContainer loadResults() throws JadeApplicationServiceNotAvailableException,
             JadePersistenceException, JadeApplicationException {
 
-        PegasusContainer container = new PegasusContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         List<AllocationNoelEntity> listAllocations = searchAllocation();
 

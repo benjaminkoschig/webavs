@@ -13,6 +13,7 @@ import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.lyra.process.LYAbstractExcelGenerator;
 import globaz.op.common.merge.IMergingContainer;
 import globaz.op.excelml.model.document.ExcelmlWorkbook;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.ArrayList;
 import ch.globaz.perseus.business.constantes.CSEtatDecision;
 import ch.globaz.perseus.business.constantes.CSEtatDemande;
@@ -58,7 +59,7 @@ public class ListeEcheance extends LYAbstractExcelGenerator {
     public final static String COL_TITRE_SUFFIXE = "head";
     public final static String MODEL_PATH = "perseus/doc/model/excelml/listeEcheances.xml";
     public final static String TITRE_PRINCIPAL = "mainTitle";
-    PerseusContainer container = null;
+    CommonExcelmlContainer container = null;
     private String dateDebut;
     private String dateFin;
     private Demande dernierDemande = null;
@@ -98,7 +99,7 @@ public class ListeEcheance extends LYAbstractExcelGenerator {
     }
 
     public ListeEcheance(BSession session) {
-        container = new PerseusContainer();
+        container = new CommonExcelmlContainer();
     }
 
     /**

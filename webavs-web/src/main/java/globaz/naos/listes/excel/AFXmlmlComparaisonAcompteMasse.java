@@ -4,8 +4,8 @@ import globaz.framework.util.FWMessage;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.listes.excel.util.AFExcelmlUtils;
 import globaz.naos.listes.excel.util.IAFListeColumns;
-import globaz.naos.listes.excel.util.NaosContainer;
 import globaz.naos.process.AFListeExcelComparaisonAcompteMasseProcess;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class AFXmlmlComparaisonAcompteMasse {
 
-    private static void loadDetail(NaosContainer container, Map<String, String> m,
+    private static void loadDetail(CommonExcelmlContainer container, Map<String, String> m,
             AFListeExcelComparaisonAcompteMasseProcess process) throws Exception, Exception {
         process.incProgressCounter();
         container.put(IAFListeColumns.NUM_AFFILIE, m.get("NUMAFFILIE"));
@@ -36,7 +36,7 @@ public class AFXmlmlComparaisonAcompteMasse {
         // container.addValue("taux", JANumberFormatter.format(dTaux, 0.01, 2, JANumberFormatter.NEAR));
     }
 
-    private static void loadHeader(NaosContainer container, AFListeExcelComparaisonAcompteMasseProcess process)
+    private static void loadHeader(CommonExcelmlContainer container, AFListeExcelComparaisonAcompteMasseProcess process)
             throws Exception {
 
         container.put(IAFListeColumns.HEADER_NUM_INFOROM, AFListeExcelComparaisonAcompteMasseProcess.NUMERO_INFOROM);
@@ -53,9 +53,9 @@ public class AFXmlmlComparaisonAcompteMasse {
 
     }
 
-    public static NaosContainer loadResults(List<Map<String, String>> manager,
+    public static CommonExcelmlContainer loadResults(List<Map<String, String>> manager,
             AFListeExcelComparaisonAcompteMasseProcess process) throws Exception, Exception {
-        NaosContainer container = new NaosContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         AFXmlmlComparaisonAcompteMasse.loadHeader(container, process);
 

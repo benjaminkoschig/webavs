@@ -20,17 +20,17 @@ import globaz.phenix.application.CPApplication;
 import globaz.phenix.db.principale.CPDecision;
 import globaz.phenix.db.principale.CPDecisionAffiliation;
 import globaz.phenix.db.principale.CPDecisionAffiliationManager;
-import globaz.phenix.listes.excel.CPExcelFilterNotSupportedException;
 import globaz.phenix.listes.excel.CPExcelmlUtils;
 import globaz.phenix.listes.excel.ICPListeColumns;
-import globaz.phenix.listes.excel.PhenixContainer;
-import globaz.phenix.listes.excel.util.CPExcelDataContainer;
-import globaz.phenix.listes.excel.util.CPExcelDataContainer.CPLine;
-import globaz.phenix.listes.excel.util.CPExcelDocumentParser;
 import globaz.phenix.toolbox.CPToolBox;
 import globaz.phenix.util.CPUtil;
 import globaz.pyxis.db.tiers.TIHistoriqueAvs;
 import globaz.pyxis.db.tiers.TITiersViewBean;
+import globaz.webavs.common.CommonExcelmlContainer;
+import globaz.webavs.common.op.CommonExcelDataContainer;
+import globaz.webavs.common.op.CommonExcelDataContainer.CommonLine;
+import globaz.webavs.common.op.CommonExcelDocumentParser;
+import globaz.webavs.common.op.CommonExcelFilterNotSupportedException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -68,10 +68,10 @@ public class CPReinjectionConcordanceCotPersCIProcess extends BProcess {
     protected boolean _executeProcess() throws Exception {
         setSendMailOnError(true);
 
-        PhenixContainer errorContainer = new PhenixContainer();
+        CommonExcelmlContainer errorContainer = new CommonExcelmlContainer();
         sessionPavo = (BSession) GlobazSystem.getApplication(CIApplication.DEFAULT_APPLICATION_PAVO).newSession(
                 getSession());
-        CPExcelDataContainer container = null;
+        CommonExcelDataContainer container = null;
         String path = Jade.getInstance().getHomeDir() + "work/" + getFileName();
 
         // copy du fichier dans le répertoire work pour le traiter
@@ -80,8 +80,8 @@ public class CPReinjectionConcordanceCotPersCIProcess extends BProcess {
         // parse du document, retourne un container avec toutes les entrées et
         // valueres trouvées dans le document
         try {
-            container = CPExcelDocumentParser.parseWorkBook(CPExcelmlUtils.loadPath(path));
-        } catch (CPExcelFilterNotSupportedException e) {
+            container = CommonExcelDocumentParser.parseWorkBook(CPExcelmlUtils.loadPath(path));
+        } catch (CommonExcelFilterNotSupportedException e) {
             this._addError(getTransaction(), getSession().getLabel("ERREUR_FICHIER_REINJECTION_FILTRE"));
             String messageInformation = "Unsupported filtered Excel file injection throw exception in Parser due to file :"
                     + getFileName() + "\n";
@@ -117,7 +117,7 @@ public class CPReinjectionConcordanceCotPersCIProcess extends BProcess {
                     return false;
                 }
 
-                Iterator<CPLine> lines = container.returnLinesIterator();
+                Iterator<CommonLine> lines = container.returnLinesIterator();
                 setProgressScaleValue(container.getSize());
 
                 // On récupère les infos de l'entête
@@ -127,7 +127,7 @@ public class CPReinjectionConcordanceCotPersCIProcess extends BProcess {
                 while (lines.hasNext()) {
                     incProgressCounter();
 
-                    CPLine line = lines.next();
+                    CommonLine line = lines.next();
                     HashMap<String, String> lineMap = line.returnLineHashMap();
 
                     // On récupère la catégorie de la ligne
@@ -218,8 +218,8 @@ public class CPReinjectionConcordanceCotPersCIProcess extends BProcess {
         }
     }
 
-    private void headerReinjectionConcordance(PhenixContainer errorContainer, CPExcelDataContainer container,
-            String numInforom) {
+    private void headerReinjectionConcordance(CommonExcelmlContainer errorContainer,
+            CommonExcelDataContainer container, String numInforom) {
         if (!JadeStringUtil.isEmpty(numInforom)) {
             errorContainer.put(ICPListeColumns.HEADER_NUM_INFOROM, numInforom);
         }
@@ -314,7 +314,7 @@ public class CPReinjectionConcordanceCotPersCIProcess extends BProcess {
 
     }
 
-    private void impressionListeConcordance(PhenixContainer errorContainer) throws Exception, IOException {
+    private void impressionListeConcordance(CommonExcelmlContainer errorContainer) throws Exception, IOException {
         // On imprime le document avec les lignes en erreur
         // On génère le doc
         String nomDoc = getSession().getLabel("LISTE_CONCORDANCE_COTPERD_CI");
@@ -341,8 +341,8 @@ public class CPReinjectionConcordanceCotPersCIProcess extends BProcess {
         this.registerAttachedDocument(docInfo, docPath);
     }
 
-    private void reinjectionCategorie1et3(PhenixContainer errorContainer, BTransaction transaction, CPLine line,
-            HashMap<String, String> lineMap, CIJournal journalCI) throws Exception {
+    private void reinjectionCategorie1et3(CommonExcelmlContainer errorContainer, BTransaction transaction,
+            CommonLine line, HashMap<String, String> lineMap, CIJournal journalCI) throws Exception {
         // On reprend les infos nécessaire pour la correction
         String numAffilie = returnValeurHashMapWithNumAffilie(ICPListeColumns.NUM_AFFILIE, lineMap, transaction, "");
         String numAvs = returnValeurHashMap(ICPListeColumns.NUM_AVS, lineMap, transaction);
@@ -434,8 +434,8 @@ public class CPReinjectionConcordanceCotPersCIProcess extends BProcess {
         }
     }
 
-    private void reinjectionCategorie4(PhenixContainer errorContainer, BTransaction transaction, CPLine line,
-            HashMap<String, String> lineMap) throws Exception {
+    private void reinjectionCategorie4(CommonExcelmlContainer errorContainer, BTransaction transaction,
+            CommonLine line, HashMap<String, String> lineMap) throws Exception {
         // On reprend les infos nécessaire pour la correction
         String numAffilie = returnValeurHashMapWithNumAffilie(ICPListeColumns.NUM_AFFILIE, lineMap, transaction, "");
         String idTiers = returnValeurHashMapWithNumAffilie(ICPListeColumns.ID_TIERS, lineMap, transaction, numAffilie);
@@ -488,8 +488,8 @@ public class CPReinjectionConcordanceCotPersCIProcess extends BProcess {
         }
     }
 
-    private void reinjectionCategorie5b(PhenixContainer errorContainer, BTransaction transaction, CPLine line,
-            HashMap<String, String> lineMap, CIJournal journalCI) throws Exception {
+    private void reinjectionCategorie5b(CommonExcelmlContainer errorContainer, BTransaction transaction,
+            CommonLine line, HashMap<String, String> lineMap, CIJournal journalCI) throws Exception {
         // On reprend les infos nécessaire pour la correction
         String numAffilie = returnValeurHashMapWithNumAffilie(ICPListeColumns.NUM_AFFILIE, lineMap, transaction, "");
         String idTiers = returnValeurHashMapWithNumAffilie(ICPListeColumns.ID_TIERS, lineMap, transaction, numAffilie);

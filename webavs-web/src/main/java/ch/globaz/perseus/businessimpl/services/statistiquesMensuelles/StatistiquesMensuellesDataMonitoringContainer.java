@@ -2,13 +2,13 @@ package ch.globaz.perseus.businessimpl.services.statistiquesMensuelles;
 
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.TreeMap;
 import ch.globaz.perseus.business.statsmensuelles.Administration;
 import ch.globaz.perseus.business.statsmensuelles.StatistiquesMensuellesDataMonitoringInterface;
 import ch.globaz.perseus.business.statsmensuelles.TypeStat;
-import ch.globaz.perseus.businessimpl.services.doc.excel.impl.PerseusContainer;
 
 /**
  * @author RCO
@@ -16,7 +16,7 @@ import ch.globaz.perseus.businessimpl.services.doc.excel.impl.PerseusContainer;
  */
 public class StatistiquesMensuellesDataMonitoringContainer {
 
-    private PerseusContainer container = new PerseusContainer();
+    private CommonExcelmlContainer container = new CommonExcelmlContainer();
     private StatistiquesMensuellesDonnees statMensuellesDM = null;
     // ------------------------- Les totaux -----------------------------------------
     private int demandesEnregistreesHorsRITotal = 0;
@@ -50,9 +50,9 @@ public class StatistiquesMensuellesDataMonitoringContainer {
      * @param statMensuellesDM {@link StatistiquesMensuellesDonnees}
      * @param moisDebut {@link String}
      * @param moisFin {@link String}
-     * @return Conteneur de données {@link PerseusContainer}
+     * @return Conteneur de données {@link CommonExcelmlContainer}
      */
-    public PerseusContainer getPerseusContainer(StatistiquesMensuellesDonnees statMensuellesDM, String moisDebut,
+    public CommonExcelmlContainer getPerseusContainer(StatistiquesMensuellesDonnees statMensuellesDM, String moisDebut,
             String moisFin) {
 
         this.statMensuellesDM = statMensuellesDM;

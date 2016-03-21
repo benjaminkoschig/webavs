@@ -5,6 +5,7 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.op.common.merge.IMergingContainer;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,7 +14,6 @@ import ch.globaz.al.business.constantes.enumerations.RafamImportProtocolFields;
 import ch.globaz.al.business.exceptions.document.ALDocumentException;
 import ch.globaz.al.business.services.rafam.AnnonceRafamImportProtocoleService;
 import ch.globaz.al.businessimpl.documents.excel.ALAbstractExcelServiceImpl;
-import ch.globaz.al.businessimpl.documents.excel.ALContainer;
 
 /**
  * Implémentation du service permettant la génération d'un protocole lors de l'importation du fichier d'annonces RAFam
@@ -52,7 +52,7 @@ public class AnnonceRafamImportProtocoleServiceImpl extends ALAbstractExcelServi
     protected IMergingContainer prepareData(Map<String, Object> parameters)
             throws JadeApplicationServiceNotAvailableException, JadePersistenceException, JadeApplicationException {
 
-        ALContainer container = new ALContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         for (HashMap<RafamImportProtocolFields, String> err : (ArrayList<HashMap<RafamImportProtocolFields, String>>) parameters
                 .get("data")) {

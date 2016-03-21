@@ -30,6 +30,7 @@ import globaz.phenix.db.principale.CPSortieManager;
 import globaz.phenix.process.CPListeExcelConcordanceCotPersCIProcess;
 import globaz.pyxis.db.tiers.TIHistoNumAvsListViewBean;
 import globaz.pyxis.db.tiers.TIHistoriqueAvs;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.math.BigDecimal;
 
 /**
@@ -40,7 +41,7 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
     private static CPDecisionForCompareCI chargerInfo(BigDecimal montantCp, BigDecimal montantCINoAffilie,
             BigDecimal montantCINoAVSNoAffilie, CPListeExcelConcordanceCotPersCIProcess process,
             CPDecisionForCompareCI entity, CPDecisionForCompareCI entityPrecedente,
-            CPDecisionForCompareCI entitySuivante, PhenixContainer container, int i) throws Exception {
+            CPDecisionForCompareCI entitySuivante, CommonExcelmlContainer container, int i) throws Exception {
         BigDecimal difference1 = montantCp.subtract(montantCINoAffilie);
         BigDecimal difference2 = montantCp.subtract(montantCINoAVSNoAffilie);
         BigDecimal limInf = new BigDecimal(process.getFromDiffAdmise());
@@ -150,7 +151,7 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
 
     }
 
-    private static void loadDetail(int i, PhenixContainer container, CPDecisionForCompareCI entity,
+    private static void loadDetail(int i, CommonExcelmlContainer container, CPDecisionForCompareCI entity,
             CPDecisionForCompareCI entityPrecedente, CPDecisionForCompareCI entitySuivante,
             CPListeExcelConcordanceCotPersCIProcess process) throws Exception, Exception {
 
@@ -185,7 +186,7 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
 
     }
 
-    private static void loadHeader(PhenixContainer container, CPListeExcelConcordanceCotPersCIProcess process,
+    private static void loadHeader(CommonExcelmlContainer container, CPListeExcelConcordanceCotPersCIProcess process,
             JadePublishDocumentInfo docInfo) throws Exception {
 
         container
@@ -227,10 +228,10 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
 
     }
 
-    public static PhenixContainer loadResults(CPDecisionForCompareCIManager manager,
+    public static CommonExcelmlContainer loadResults(CPDecisionForCompareCIManager manager,
             CPListeExcelConcordanceCotPersCIProcess process, JadePublishDocumentInfo docInfo) throws Exception,
             Exception {
-        PhenixContainer container = new PhenixContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         CPXmlmlMappingListeConcordanceCICotPers.loadHeader(container, process, docInfo);
         CPDecisionForCompareCI entityPrecedente = null;

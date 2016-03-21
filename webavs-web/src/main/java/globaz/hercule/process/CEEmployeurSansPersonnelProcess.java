@@ -9,9 +9,9 @@ import globaz.hercule.db.controleEmployeur.CEEmployeurSansPersonnelManager;
 import globaz.hercule.exception.HerculeException;
 import globaz.hercule.mappingXmlml.CEXmlmlMappingEmployeurSansPersonnel;
 import globaz.hercule.utils.CEExcelmlUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 public class CEEmployeurSansPersonnelProcess extends BProcess implements FWViewBeanInterface {
 
@@ -72,7 +72,7 @@ public class CEEmployeurSansPersonnelProcess extends BProcess implements FWViewB
 
     private boolean createDocument(final CEEmployeurSansPersonnelManager manager) throws HerculeException, Exception {
         setProgressScaleValue(manager.size());
-        HerculeContainer container = CEXmlmlMappingEmployeurSansPersonnel.loadResults(manager, this);
+        CommonExcelmlContainer container = CEXmlmlMappingEmployeurSansPersonnel.loadResults(manager, this);
 
         if (isAborted()) {
             return false;

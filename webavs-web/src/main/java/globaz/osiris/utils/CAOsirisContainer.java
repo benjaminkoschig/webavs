@@ -1,6 +1,3 @@
-/**
- * 
- */
 package globaz.osiris.utils;
 
 import globaz.op.common.merge.IMergingContainer;

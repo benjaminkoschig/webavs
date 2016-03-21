@@ -8,6 +8,7 @@ import globaz.hercule.exception.HerculeException;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.phenix.application.CPApplication;
 import globaz.phenix.db.communications.CPRejetsListViewBean;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 public class CPListeRejetsProcess extends BProcess implements FWViewBeanInterface {
 
@@ -62,7 +63,7 @@ public class CPListeRejetsProcess extends BProcess implements FWViewBeanInterfac
     private boolean createDocument(CPRejetsListViewBean manager) throws HerculeException, Exception {
         manager.find(BManager.SIZE_NOLIMIT);
         setProgressScaleValue(manager.size());
-        PhenixContainer container = CPXmlmlMappingRejetsProcess.loadResults(manager, this);
+        CommonExcelmlContainer container = CPXmlmlMappingRejetsProcess.loadResults(manager, this);
 
         if (isAborted()) {
             return false;

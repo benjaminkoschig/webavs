@@ -8,10 +8,10 @@ import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.naos.application.AFApplication;
 import globaz.naos.listes.excel.AFXmlmlComparaisonAcompteMasse;
 import globaz.naos.listes.excel.util.AFExcelmlUtils;
-import globaz.naos.listes.excel.util.NaosContainer;
 import globaz.naos.translation.CodeSystem;
 import globaz.pyxis.util.TISQL;
 import globaz.pyxis.util.TIToolBox;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -140,7 +140,7 @@ public class AFListeExcelComparaisonAcompteMasseProcess extends BProcess impleme
     }
 
     private boolean createDocument(List<Map<String, String>> manager) throws Exception, Exception {
-        NaosContainer container = AFXmlmlComparaisonAcompteMasse.loadResults(manager, this);
+        CommonExcelmlContainer container = AFXmlmlComparaisonAcompteMasse.loadResults(manager, this);
         String nomDoc = (getSession().getLabel("LISTE_COMPARAISON_ACOMPTEMASSE"));
 
         if (isAborted()) {

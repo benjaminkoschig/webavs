@@ -11,6 +11,7 @@ import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.op.common.merge.IMergingContainer;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,7 +27,6 @@ import ch.globaz.al.business.models.rafam.AnnonceRafamDelegueProtocoleComplexSea
 import ch.globaz.al.business.models.rafam.AnnonceRafamErrorComplexModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamErrorComplexSearchModel;
 import ch.globaz.al.business.services.rafam.AnnoncesRafamDelegueProtocoleService;
-import ch.globaz.al.businessimpl.documents.excel.ALContainer;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.utils.ALEncodingUtils;
 
@@ -119,9 +119,9 @@ public class AnnoncesRafamDelegueProtocoleServiceImpl extends AnnoncesRafamProto
         return ALImplServiceLocator.getAnnonceRafamDelegueProtocoleComplexModelService().search(search);
     }
 
-    protected ALContainer populateDelegue(ALContainer container, AnnonceRafamDelegueProtocoleComplexSearchModel search,
-            String tag) throws JadeApplicationException, JadePersistenceException,
-            JadeApplicationServiceNotAvailableException {
+    protected CommonExcelmlContainer populateDelegue(CommonExcelmlContainer container,
+            AnnonceRafamDelegueProtocoleComplexSearchModel search, String tag) throws JadeApplicationException,
+            JadePersistenceException, JadeApplicationServiceNotAvailableException {
 
         for (JadeAbstractModel annonces : search.getSearchResults()) {
             AnnonceRafamDelegueProtocoleComplexModel annonce = (AnnonceRafamDelegueProtocoleComplexModel) annonces;
@@ -187,7 +187,7 @@ public class AnnoncesRafamDelegueProtocoleServiceImpl extends AnnoncesRafamProto
             throws JadeApplicationServiceNotAvailableException, JadePersistenceException, JadeApplicationException {
 
         String idEmployeur = (String) parameters.get("idEmployeur");
-        ALContainer container = new ALContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
         container = populateDelegue(container, loadErreurs(idEmployeur), AnnoncesRafamProtocoleServiceImpl.tagErreur);
         container = populateDelegue(container, loadRappel(idEmployeur), AnnoncesRafamProtocoleServiceImpl.tagRappel);
         container = populateDelegue(container, loadUPI(idEmployeur), AnnoncesRafamProtocoleServiceImpl.tagUPI);

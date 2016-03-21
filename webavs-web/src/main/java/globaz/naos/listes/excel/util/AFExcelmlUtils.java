@@ -13,6 +13,7 @@ import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TITiers;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
@@ -34,7 +35,8 @@ public class AFExcelmlUtils {
      * @return filePath le chemin complet où à été sauvegardé le document
      * @throws Exception
      */
-    public static String createDocumentExcel(String modelName, String nomDoc, NaosContainer container) throws Exception {
+    public static String createDocumentExcel(String modelName, String nomDoc, CommonExcelmlContainer container)
+            throws Exception {
         ExcelmlWorkbook wk = null;
         nomDoc = JadeFilenameUtil.addOrReplaceFilenameSuffixUID(nomDoc + ".xml");
         // On va charger le classeur
@@ -96,7 +98,7 @@ public class AFExcelmlUtils {
      * @param column
      * @param value
      */
-    public static void remplirColumn(NaosContainer container, String column, String value, String defaultValue) {
+    public static void remplirColumn(CommonExcelmlContainer container, String column, String value, String defaultValue) {
         if (!JadeStringUtil.isEmpty(value)) {
             container.put(column, value);
         } else {
@@ -111,7 +113,7 @@ public class AFExcelmlUtils {
      * @param column
      * @param value
      */
-    public static void remplirColumnByLibelle(NaosContainer container, BSession session, String column,
+    public static void remplirColumnByLibelle(CommonExcelmlContainer container, BSession session, String column,
             String codeLibelle, String defaultValue) {
         if (!JadeStringUtil.isEmpty(codeLibelle)) {
             container.put(column, session.getCodeLibelle(codeLibelle));
@@ -130,8 +132,8 @@ public class AFExcelmlUtils {
      * @throws HerculeException
      * @throws Exception
      */
-    public static void renseigneAdresse(BSession session, String typeAdresse, NaosContainer container, String idTiers)
-            throws Exception {
+    public static void renseigneAdresse(BSession session, String typeAdresse, CommonExcelmlContainer container,
+            String idTiers) throws Exception {
 
         String ville = "";
         String rue = "";

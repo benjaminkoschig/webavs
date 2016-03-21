@@ -9,8 +9,8 @@ import globaz.hercule.service.CEComptesIndividuelsService;
 import globaz.hercule.service.CEControleEmployeurService;
 import globaz.hercule.utils.CEExcelmlUtils;
 import globaz.hercule.utils.CEUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * @author SCO
@@ -27,7 +27,7 @@ public class CEXmlmlMappingControlesEffectues {
      * @throws HerculeException
      * @throws Exception
      */
-    private static void loadDetail(final HerculeContainer container, final CEControlesEffectues entity,
+    private static void loadDetail(final CommonExcelmlContainer container, final CEControlesEffectues entity,
             final CEListeControlesEffectuesProcess process) throws HerculeException, Exception {
 
         // Numéro d'affilié
@@ -88,7 +88,8 @@ public class CEXmlmlMappingControlesEffectues {
      * @param container
      * @param process
      */
-    private static void loadHeader(final HerculeContainer container, final CEListeControlesEffectuesProcess process) {
+    private static void loadHeader(final CommonExcelmlContainer container,
+            final CEListeControlesEffectuesProcess process) {
 
         // On set le header
         container.put(ICEListeColumns.HEADER_FROM_DATE_IMPRESSION, process.getFromDateImpression());
@@ -113,9 +114,9 @@ public class CEXmlmlMappingControlesEffectues {
      * @return
      * @throws Exception
      */
-    public static HerculeContainer loadResults(final CEControlesEffectuesManager manager,
+    public static CommonExcelmlContainer loadResults(final CEControlesEffectuesManager manager,
             final CEListeControlesEffectuesProcess process) throws Exception {
-        HerculeContainer container = new HerculeContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         loadHeader(container, process);
 

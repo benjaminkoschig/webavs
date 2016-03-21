@@ -13,6 +13,7 @@ import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.op.common.merge.IMergingContainer;
 import globaz.op.excelml.model.document.ExcelmlWorkbook;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -205,7 +206,7 @@ public class ListeControleProcessAdaptation extends PegasusAbstractExcelServiceI
     public IMergingContainer loadResults() throws JadeApplicationServiceNotAvailableException,
             JadePersistenceException, JadeApplicationException {
 
-        PegasusContainer container = new PegasusContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         BigDecimal totalPcaInError = new BigDecimal(0);
         BigDecimal totalWihtOutErrorNewPca = new BigDecimal(0);

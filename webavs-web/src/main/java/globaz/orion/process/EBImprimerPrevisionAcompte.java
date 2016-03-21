@@ -8,7 +8,7 @@ import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.naos.application.AFApplication;
 import globaz.orion.mappingXmlml.EBXmlmlRecapPrevisionAcompte;
 import globaz.orion.utils.EBExcelmlUtils;
-import globaz.orion.utils.OrionContainer;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +93,7 @@ public class EBImprimerPrevisionAcompte extends BProcess implements FWViewBeanIn
     }
 
     private boolean createDocument(List<Map<String, String>> listPrevisionAcompte) throws Exception, Exception {
-        OrionContainer container = EBXmlmlRecapPrevisionAcompte.loadResults(listPrevisionAcompte, this,
+        CommonExcelmlContainer container = EBXmlmlRecapPrevisionAcompte.loadResults(listPrevisionAcompte, this,
                 masseAnnuelleMaxPourPeriodiciteAnnuelle);
         String nomDoc = (getSession().getLabel("LISTE_PREVISION_ACOMPTE"));
 

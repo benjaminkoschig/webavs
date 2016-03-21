@@ -11,12 +11,12 @@ import globaz.hercule.exception.HerculeException;
 import globaz.hercule.process.CEEmployeurRadieProcess;
 import globaz.hercule.utils.CEExcelmlUtils;
 import globaz.hercule.utils.CEUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 public class CEXmlmlMappingEmployeurRadie {
 
-    private static void loadDetail(final int i, final HerculeContainer container, final CEEmployeurRadie entity,
+    private static void loadDetail(final int i, final CommonExcelmlContainer container, final CEEmployeurRadie entity,
             final CEEmployeurRadieProcess process) throws HerculeException, Exception {
         process.incProgressCounter();
 
@@ -47,7 +47,7 @@ public class CEXmlmlMappingEmployeurRadie {
         CEExcelmlUtils.remplirColumn(container, ICEListeColumns.LIBELLE_SUVA, entity.getLibelleSuva(), "");
     }
 
-    private static void loadHeader(final HerculeContainer container, final CEEmployeurRadieProcess process)
+    private static void loadHeader(final CommonExcelmlContainer container, final CEEmployeurRadieProcess process)
             throws JAException {
 
         container.put(ICEListeColumns.HEADER_DATE_RADIATION,
@@ -83,9 +83,9 @@ public class CEXmlmlMappingEmployeurRadie {
                 process.getSession().getLabel("LISTE_CONTROLE_HEADER_LIBELLE_SUVA"));
     }
 
-    public static HerculeContainer loadResults(final CEEmployeurRadieManager manager,
+    public static CommonExcelmlContainer loadResults(final CEEmployeurRadieManager manager,
             final CEEmployeurRadieProcess process) throws HerculeException, Exception {
-        HerculeContainer container = new HerculeContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         CEXmlmlMappingEmployeurRadie.loadHeader(container, process);
 
@@ -97,7 +97,7 @@ public class CEXmlmlMappingEmployeurRadie {
         return container;
     }
 
-    private static void renseigneLastControle(final HerculeContainer container, final String idAffiliation,
+    private static void renseigneLastControle(final CommonExcelmlContainer container, final String idAffiliation,
             final BSession session) throws Exception {
         CEControleEmployeur entity = CEUtils.rechercheDernierControle(idAffiliation, session);
         if (entity != null) {

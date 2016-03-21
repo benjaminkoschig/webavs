@@ -31,10 +31,10 @@ import globaz.naos.db.cotisation.AFCotisationManager;
 import globaz.naos.listes.excel.AFXmlmlMappingSoumisLpp;
 import globaz.naos.listes.excel.util.AFExcelmlUtils;
 import globaz.naos.listes.excel.util.IAFListeColumns;
-import globaz.naos.listes.excel.util.NaosContainer;
 import globaz.naos.util.AFUtil;
 import globaz.pavo.util.CIUtil;
 import globaz.pyxis.db.tiers.TIRole;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Collection;
@@ -205,7 +205,8 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
     private int createDocument(AFAffilieSoumiLppConteneur conteneurList, String nomDoc, String titreDoc,
             String numInforom) throws Exception {
-        NaosContainer container = AFXmlmlMappingSoumisLpp.loadResults(conteneurList, this, titreDoc, numInforom);
+        CommonExcelmlContainer container = AFXmlmlMappingSoumisLpp.loadResults(conteneurList, this, titreDoc,
+                numInforom);
 
         Collection<String> ligne = container.getFieldValues(IAFListeColumns.NUM_AFFILIE);
         String docPath = AFExcelmlUtils.createDocumentExcel(getSession().getIdLangueISO().toUpperCase() + "/"

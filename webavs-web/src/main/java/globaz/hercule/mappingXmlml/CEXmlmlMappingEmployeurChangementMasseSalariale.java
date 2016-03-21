@@ -8,8 +8,8 @@ import globaz.hercule.process.CEEmployeurChangementMasseSalarialeProcess;
 import globaz.hercule.service.CEControleEmployeurService;
 import globaz.hercule.utils.CEExcelmlUtils;
 import globaz.hercule.utils.CEUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * @revision SCO 9 déc. 2010
@@ -26,8 +26,9 @@ public class CEXmlmlMappingEmployeurChangementMasseSalariale {
      * @throws HerculeException
      * @throws Exception
      */
-    private static void loadDetail(final HerculeContainer container, final CEEmployeurChangementMasseSalariale entity,
-            final CEEmployeurChangementMasseSalarialeProcess process) throws HerculeException, Exception {
+    private static void loadDetail(final CommonExcelmlContainer container,
+            final CEEmployeurChangementMasseSalariale entity, final CEEmployeurChangementMasseSalarialeProcess process)
+            throws HerculeException, Exception {
         float masseSalariale = Float.valueOf(entity.getMasseSalariale()).floatValue();
         float ancienneMasseSalariale = Float.valueOf(entity.getAncienneMasseSalariale()).floatValue();
 
@@ -61,7 +62,7 @@ public class CEXmlmlMappingEmployeurChangementMasseSalariale {
      * @param container
      * @param process
      */
-    private static void loadHeader(final HerculeContainer container,
+    private static void loadHeader(final CommonExcelmlContainer container,
             final CEEmployeurChangementMasseSalarialeProcess process) {
         String headerNumAffilie = "";
         if (!JadeStringUtil.isEmpty(process.getFromNumAffilie()) || !JadeStringUtil.isEmpty(process.getToNumAffilie())) {
@@ -101,9 +102,9 @@ public class CEXmlmlMappingEmployeurChangementMasseSalariale {
      * @return
      * @throws Exception
      */
-    public static HerculeContainer loadResults(final CEEmployeurChangementMasseSalarialeManager manager,
+    public static CommonExcelmlContainer loadResults(final CEEmployeurChangementMasseSalarialeManager manager,
             final CEEmployeurChangementMasseSalarialeProcess process) throws Exception {
-        HerculeContainer container = new HerculeContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         CEXmlmlMappingEmployeurChangementMasseSalariale.loadHeader(container, process);
 

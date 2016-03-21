@@ -13,6 +13,7 @@ import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.op.common.merge.IMergingContainer;
 import globaz.op.excelml.model.document.ExcelmlWorkbook;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +43,7 @@ public class StatsRentePont extends PerseusAbstractExcelServiceImpl {
      */
 
     public final static String MODEL_NAME = "statsRentePont.xml";
-    private PerseusContainer container;
+    private CommonExcelmlContainer container;
     private String moisDebut = null;
     private String moisFin = null;
     private String outPutName = "statsRentePont";
@@ -52,7 +53,7 @@ public class StatsRentePont extends PerseusAbstractExcelServiceImpl {
     int totalPrestations = 0;
 
     public StatsRentePont() {
-        container = new PerseusContainer();
+        container = new CommonExcelmlContainer();
     }
 
     private void addStatistique(String libelle, int nbPersonnes, int nbPrestations, double montant) {

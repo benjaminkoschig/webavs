@@ -11,10 +11,10 @@ import globaz.naos.db.listeAgenceCommunale.AFListeAgenceCommunaleManager;
 import globaz.naos.db.suiviCaisseAffiliation.AFSuiviCaisseAffiliation;
 import globaz.naos.listes.excel.util.AFExcelmlUtils;
 import globaz.naos.listes.excel.util.IAFListeColumns;
-import globaz.naos.listes.excel.util.NaosContainer;
 import globaz.naos.process.AFListeExcelAgenceCommunaleProcess;
 import globaz.naos.translation.CodeSystem;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * @revision SCO 15 déc. 2010
@@ -103,7 +103,7 @@ public class AFXmlmlMappingAgenceCommunale {
         return "";
     }
 
-    private static void loadDetail(int i, NaosContainer container, AFListeAgenceCommunale entity,
+    private static void loadDetail(int i, CommonExcelmlContainer container, AFListeAgenceCommunale entity,
             AFListeExcelAgenceCommunaleProcess process, String numCaisseDefaut) throws Exception, Exception {
         String numCaisseAF = "";
         String numCaisseAVS = "";
@@ -149,7 +149,7 @@ public class AFXmlmlMappingAgenceCommunale {
 
     }
 
-    private static void loadHeader(NaosContainer container, AFListeExcelAgenceCommunaleProcess process,
+    private static void loadHeader(CommonExcelmlContainer container, AFListeExcelAgenceCommunaleProcess process,
             String nomAgenceCommunale) throws Exception {
 
         container.put(IAFListeColumns.HEADER_NUM_INFOROM, AFListeExcelAgenceCommunaleProcess.NUMERO_INFOROM);
@@ -164,10 +164,10 @@ public class AFXmlmlMappingAgenceCommunale {
 
     }
 
-    public static NaosContainer loadResults(AFListeAgenceCommunaleManager manager,
+    public static CommonExcelmlContainer loadResults(AFListeAgenceCommunaleManager manager,
             AFListeExcelAgenceCommunaleProcess process, String numCaisse, String nomAgenceCommunale) throws Exception,
             Exception {
-        NaosContainer container = new NaosContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         AFXmlmlMappingAgenceCommunale.loadHeader(container, process, nomAgenceCommunale);
 

@@ -14,10 +14,10 @@ import globaz.naos.db.affiliation.AFAffiliationJTiersCI;
 import globaz.naos.db.affiliation.AFAffiliationJTiersCIManager;
 import globaz.naos.itext.affiliation.AFAffiliationNAIndSansCI_DocListe;
 import globaz.naos.listes.excel.AFXmlmlAffiliationNAIndSansCI;
-import globaz.naos.listes.excel.util.NaosContainer;
 import globaz.naos.translation.CodeSystem;
 import globaz.pyxis.db.alternate.TIPAvsAdrLienAdmin;
 import globaz.pyxis.db.alternate.TIPAvsAdrLienAdminManager;
+import globaz.webavs.common.CommonExcelmlContainer;
 import globaz.webavs.common.CommonExcelmlUtils;
 import java.io.IOException;
 
@@ -140,7 +140,7 @@ public class AFAffiliationNAIndSansCIProcess extends BProcess {
     }
 
     private boolean createListExcel() {
-        NaosContainer container = xmlml.loadResults();
+        CommonExcelmlContainer container = xmlml.loadResults();
 
         if (isAborted()) {
             return false;

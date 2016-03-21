@@ -6,6 +6,7 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.op.common.merge.IMergingContainer;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +21,6 @@ import ch.globaz.al.business.models.prestation.DetailPrestationComplexSearchMode
 import ch.globaz.al.business.services.affiliation.RadiationAffilieProtocoleService;
 import ch.globaz.al.business.services.dossiers.RadiationAutomatiqueService;
 import ch.globaz.al.businessimpl.documents.excel.ALAbstractExcelServiceImpl;
-import ch.globaz.al.businessimpl.documents.excel.ALContainer;
 
 /**
  * Implémentation du service permettant la génération d'un protocole lors de la radiation automatique de dossier (
@@ -68,7 +68,7 @@ public class RadiationAffilieProtocoleServiceImpl extends ALAbstractExcelService
     protected IMergingContainer prepareData(Map<String, Object> parameters)
             throws JadeApplicationServiceNotAvailableException, JadePersistenceException, JadeApplicationException {
 
-        ALContainer container = new ALContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         List<Map<ALEnumProtocoleRadiationAffilie, Map<ALEnumProtocoleRadiationAffilie, Object>>> listeDossier = (List<Map<ALEnumProtocoleRadiationAffilie, Map<ALEnumProtocoleRadiationAffilie, Object>>>) parameters
                 .get(RadiationAffilieProtocoleServiceImpl.LOG);

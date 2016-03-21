@@ -9,9 +9,9 @@ import globaz.hercule.db.controleEmployeur.CEControlesAttribuesManager;
 import globaz.hercule.mappingXmlml.CEXmlmlMappingControlesAAttribuer;
 import globaz.hercule.utils.CEExcelmlUtils;
 import globaz.hercule.utils.CEUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * @author hpe
@@ -67,7 +67,7 @@ public class CEListeControlesAttribuesProcess extends BProcess implements FWView
             if (manager.size() > 0) {
                 setProgressScaleValue(manager.size());
 
-                HerculeContainer container = CEXmlmlMappingControlesAAttribuer.loadResults(manager, this);
+                CommonExcelmlContainer container = CEXmlmlMappingControlesAAttribuer.loadResults(manager, this);
 
                 if (isAborted()) {
                     return false;

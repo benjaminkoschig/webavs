@@ -8,8 +8,8 @@ import globaz.hercule.mappingXmlml.line.CEXmlmlLineEmployeurMasseSalariale;
 import globaz.hercule.process.CEEmployeurMasseSalarialeProcess;
 import globaz.hercule.service.CEControleEmployeurService;
 import globaz.hercule.utils.CEExcelmlUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * Classe permettant de remplir la liste xml
@@ -28,7 +28,7 @@ public class CEXmlmlMappingEmployeurMasseSalariale {
      * @throws HerculeException
      * @throws Exception
      */
-    private static void loadDetail(final HerculeContainer container, final CEEmployeurMasseSalariale entity,
+    private static void loadDetail(final CommonExcelmlContainer container, final CEEmployeurMasseSalariale entity,
             final CEEmployeurMasseSalarialeProcess process) throws HerculeException, Exception {
 
         CEXmlmlLineEmployeurMasseSalariale xmlLine = new CEXmlmlLineEmployeurMasseSalariale();
@@ -77,7 +77,8 @@ public class CEXmlmlMappingEmployeurMasseSalariale {
      * @param container
      * @param process
      */
-    private static void loadHeader(final HerculeContainer container, final CEEmployeurMasseSalarialeProcess process) {
+    private static void loadHeader(final CommonExcelmlContainer container,
+            final CEEmployeurMasseSalarialeProcess process) {
 
         // -----------------------
         // Ajout des labels des infos de processus
@@ -166,9 +167,9 @@ public class CEXmlmlMappingEmployeurMasseSalariale {
      * @throws HerculeException
      * @throws Exception
      */
-    public static HerculeContainer loadResults(final CEEmployeurMasseSalarialeManager manager,
+    public static CommonExcelmlContainer loadResults(final CEEmployeurMasseSalarialeManager manager,
             final CEEmployeurMasseSalarialeProcess process) throws HerculeException, Exception {
-        HerculeContainer container = new HerculeContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         CEXmlmlMappingEmployeurMasseSalariale.loadHeader(container, process);
 

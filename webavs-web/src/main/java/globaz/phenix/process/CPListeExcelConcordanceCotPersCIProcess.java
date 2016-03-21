@@ -11,7 +11,7 @@ import globaz.naos.translation.CodeSystem;
 import globaz.phenix.db.principale.CPDecisionForCompareCIManager;
 import globaz.phenix.listes.excel.CPExcelmlUtils;
 import globaz.phenix.listes.excel.CPXmlmlMappingListeConcordanceCICotPers;
-import globaz.phenix.listes.excel.PhenixContainer;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 public class CPListeExcelConcordanceCotPersCIProcess extends BProcess implements FWViewBeanInterface {
 
@@ -93,7 +93,7 @@ public class CPListeExcelConcordanceCotPersCIProcess extends BProcess implements
         setProgressScaleValue(manager.size());
         JadePublishDocumentInfo docInfo = createDocumentInfo();
 
-        PhenixContainer container = CPXmlmlMappingListeConcordanceCICotPers.loadResults(manager, this, docInfo);
+        CommonExcelmlContainer container = CPXmlmlMappingListeConcordanceCICotPers.loadResults(manager, this, docInfo);
 
         if (isAborted()) {
             return false;

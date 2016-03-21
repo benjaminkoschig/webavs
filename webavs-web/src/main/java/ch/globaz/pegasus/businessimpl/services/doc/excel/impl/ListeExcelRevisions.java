@@ -15,6 +15,7 @@ import globaz.op.common.merge.IMergingContainer;
 import globaz.op.excelml.model.document.ExcelmlWorkbook;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tools.PRStringUtils;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,7 +83,7 @@ public class ListeExcelRevisions extends PegasusAbstractExcelServiceImpl {
     public IMergingContainer loadResults() throws JadeApplicationServiceNotAvailableException,
             JadePersistenceException, JadeApplicationException {
         // container de data pour l'excel
-        PegasusContainer container = new PegasusContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
         // Recherche des cas
         ListRevisionsSearch listRevisionsSearch = new ListRevisionsSearch();
         listRevisionsSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);

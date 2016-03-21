@@ -13,6 +13,7 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import globaz.op.common.merge.IMergingContainer;
 import globaz.op.excelml.model.document.ExcelmlWorkbook;
 import globaz.perseus.utils.PFUserHelper;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,12 +33,12 @@ import ch.globaz.pyxis.business.model.AdresseTiersDetail;
 public class ListeVerification extends PerseusAbstractExcelServiceImpl {
 
     public final static String MODEL_NAME = "listeVerification.xml";
-    private PerseusContainer container;
+    private CommonExcelmlContainer container;
     private String mois = null;
     private String outPutName = "liste_verifications";
 
     public ListeVerification() {
-        container = new PerseusContainer();
+        container = new CommonExcelmlContainer();
     }
 
     public void compterLot(CSTypeLot typeLot, String nbr, String montant)

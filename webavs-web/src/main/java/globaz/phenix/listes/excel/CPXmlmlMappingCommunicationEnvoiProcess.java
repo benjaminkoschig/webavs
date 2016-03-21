@@ -5,13 +5,14 @@ import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.phenix.db.communications.CPCommunicationFiscaleAffichage;
 import globaz.phenix.db.communications.CPCommunicationFiscaleAffichageManager;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * @revision SCO 15 déc. 2010
  */
 public class CPXmlmlMappingCommunicationEnvoiProcess {
 
-    private static void loadDetail(int i, PhenixContainer container, CPCommunicationFiscaleAffichage entity,
+    private static void loadDetail(int i, CommonExcelmlContainer container, CPCommunicationFiscaleAffichage entity,
             CPListeCommunicationEnvoiProcess process) throws Exception {
         process.incProgressCounter();
         container.put(ICPListeColumns.NUM_AFFILIE, entity.getNumAffilie());
@@ -22,7 +23,7 @@ public class CPXmlmlMappingCommunicationEnvoiProcess {
         container.put(ICPListeColumns.ANNEE, entity.getAnneeDecision());
     }
 
-    private static void loadHeader(PhenixContainer container, CPListeCommunicationEnvoiProcess process)
+    private static void loadHeader(CommonExcelmlContainer container, CPListeCommunicationEnvoiProcess process)
             throws JAException {
         container.put("headerBlank1", " ");
         container.put("headerBlank2", " ");
@@ -39,9 +40,9 @@ public class CPXmlmlMappingCommunicationEnvoiProcess {
         container.put("dateEnvoi", JACalendar.todayJJsMMsAAAA());
     }
 
-    public static PhenixContainer loadResults(CPCommunicationFiscaleAffichageManager manager,
+    public static CommonExcelmlContainer loadResults(CPCommunicationFiscaleAffichageManager manager,
             CPListeCommunicationEnvoiProcess process) throws Exception, Exception {
-        PhenixContainer container = new PhenixContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         CPXmlmlMappingCommunicationEnvoiProcess.loadHeader(container, process);
 

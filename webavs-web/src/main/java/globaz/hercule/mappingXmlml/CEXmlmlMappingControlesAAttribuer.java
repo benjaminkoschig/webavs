@@ -6,8 +6,8 @@ import globaz.hercule.db.controleEmployeur.CEControlesAttribuesManager;
 import globaz.hercule.exception.HerculeException;
 import globaz.hercule.process.CEListeControlesAttribuesProcess;
 import globaz.hercule.utils.CEExcelmlUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 public class CEXmlmlMappingControlesAAttribuer {
 
@@ -17,7 +17,8 @@ public class CEXmlmlMappingControlesAAttribuer {
      * @param container
      * @param process
      */
-    private static void loadHeader(final HerculeContainer container, final CEListeControlesAttribuesProcess process) {
+    private static void loadHeader(final CommonExcelmlContainer container,
+            final CEListeControlesAttribuesProcess process) {
 
         // On set le header
         CEExcelmlUtils.remplirColumn(container, ICEListeColumns.HEADER_ANNEE, process.getAnnee(), "");
@@ -57,7 +58,7 @@ public class CEXmlmlMappingControlesAAttribuer {
      * @param process
      * @throws HerculeException
      */
-    private static void loadDetail(final HerculeContainer container, final CEControlesAttribues entity,
+    private static void loadDetail(final CommonExcelmlContainer container, final CEControlesAttribues entity,
             final CEListeControlesAttribuesProcess process) throws HerculeException {
 
         container.put(ICEListeColumns.NUM_AFFILIE, entity.getNumAffilie());
@@ -106,10 +107,10 @@ public class CEXmlmlMappingControlesAAttribuer {
      * @return
      * @throws HerculeException
      */
-    public static HerculeContainer loadResults(final CEControlesAttribuesManager manager,
+    public static CommonExcelmlContainer loadResults(final CEControlesAttribuesManager manager,
             final CEListeControlesAttribuesProcess process) throws HerculeException {
 
-        HerculeContainer container = new HerculeContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         CEXmlmlMappingControlesAAttribuer.loadHeader(container, process);
 

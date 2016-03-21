@@ -10,9 +10,9 @@ import globaz.hercule.db.controleEmployeur.CEEmployeurMasseSalarialeManager;
 import globaz.hercule.exception.HerculeException;
 import globaz.hercule.mappingXmlml.CEXmlmlMappingEmployeurMasseSalariale;
 import globaz.hercule.utils.CEExcelmlUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * @author hpe
@@ -82,7 +82,7 @@ public class CEEmployeurMasseSalarialeProcess extends BProcess implements FWView
 
     private boolean createDocument(final CEEmployeurMasseSalarialeManager manager) throws HerculeException, Exception {
         setProgressScaleValue(manager.size());
-        HerculeContainer container = CEXmlmlMappingEmployeurMasseSalariale.loadResults(manager, this);
+        CommonExcelmlContainer container = CEXmlmlMappingEmployeurMasseSalariale.loadResults(manager, this);
 
         if (isAborted()) {
             return false;

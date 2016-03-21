@@ -5,14 +5,15 @@ import globaz.helios.tools.TimeHelper;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.phenix.db.communications.CPRejets;
 import globaz.phenix.db.communications.CPRejetsListViewBean;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * @revision SCO 15 déc. 2010
  */
 public class CPXmlmlMappingRejetsProcess {
 
-    private static void loadDetail(int i, PhenixContainer container, CPRejets entity, CPListeRejetsProcess process)
-            throws Exception {
+    private static void loadDetail(int i, CommonExcelmlContainer container, CPRejets entity,
+            CPListeRejetsProcess process) throws Exception {
         process.incProgressCounter();
         container.put(ICPListeColumns.YOUR_BUSINESS, entity.getYourBusinessReferenceId());
         container.put(ICPListeColumns.NOM, entity.getNom() + " " + entity.getPrenom());
@@ -24,7 +25,7 @@ public class CPXmlmlMappingRejetsProcess {
         container.put(ICPListeColumns.ETAT, process.getSession().getCodeLibelle(entity.getEtat()));
     }
 
-    private static void loadHeader(PhenixContainer container, CPListeRejetsProcess process) throws JAException {
+    private static void loadHeader(CommonExcelmlContainer container, CPListeRejetsProcess process) throws JAException {
         String nomCaisse = "";
         try {
             nomCaisse = process.getSession().getApplication()
@@ -57,9 +58,9 @@ public class CPXmlmlMappingRejetsProcess {
                 + process.getSession().getUserName());
     }
 
-    public static PhenixContainer loadResults(CPRejetsListViewBean manager, CPListeRejetsProcess process)
+    public static CommonExcelmlContainer loadResults(CPRejetsListViewBean manager, CPListeRejetsProcess process)
             throws Exception, Exception {
-        PhenixContainer container = new PhenixContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         CPXmlmlMappingRejetsProcess.loadHeader(container, process);
 

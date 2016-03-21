@@ -10,6 +10,7 @@ import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.op.common.merge.IMergingContainer;
 import globaz.op.excelml.model.document.ExcelmlWorkbook;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,13 +33,13 @@ import ch.globaz.perseus.business.services.PerseusServiceLocator;
 public class StatsJournalieres extends PerseusAbstractExcelServiceImpl {
 
     public final static String MODEL_NAME = "statsJournalieres.xml";
-    private PerseusContainer container;
+    private CommonExcelmlContainer container;
     private String jourDebut = null;
     private String jourFin = null;
     private String outPutName = "statsJournalieres";
 
     public StatsJournalieres() {
-        container = new PerseusContainer();
+        container = new CommonExcelmlContainer();
     }
 
     /**

@@ -4,7 +4,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.orion.process.EBImprimerListeInscription;
-import globaz.orion.utils.OrionContainer;
+import globaz.webavs.common.CommonExcelmlContainer;
 import ch.globaz.orion.business.models.inscription.InscriptionEbusiness;
 
 public class EBXmlmlMappingListeInscription {
@@ -24,7 +24,7 @@ public class EBXmlmlMappingListeInscription {
      * @param session
      * @throws Exception
      */
-    private static void loadDetail(OrionContainer container, InscriptionEbusiness inscription, BSession session)
+    private static void loadDetail(CommonExcelmlContainer container, InscriptionEbusiness inscription, BSession session)
             throws Exception {
         container.put(EBXmlmlMappingListeInscription.CELL_NUMERO_AFFILIE, inscription.getNumAffilie());
         container.put(EBXmlmlMappingListeInscription.CELL_RAISON_SOCIALE, inscription.getRaisonSociale());
@@ -43,7 +43,7 @@ public class EBXmlmlMappingListeInscription {
      * @param container
      * @param session
      */
-    private static void loadHeader(OrionContainer container, BSession session) {
+    private static void loadHeader(CommonExcelmlContainer container, BSession session) {
         container.put(IEBListeAcl.HEADER_TITRE,
                 session.getLabel("LISTE_INSCRIPTION_TITRE") + " : " + JACalendar.todayJJsMMsAAAA());
 
@@ -62,9 +62,9 @@ public class EBXmlmlMappingListeInscription {
      * @return
      * @throws Exception
      */
-    public static OrionContainer loadResults(InscriptionEbusiness[] inscriptions, EBImprimerListeInscription process)
-            throws Exception {
-        OrionContainer container = new OrionContainer();
+    public static CommonExcelmlContainer loadResults(InscriptionEbusiness[] inscriptions,
+            EBImprimerListeInscription process) throws Exception {
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         EBXmlmlMappingListeInscription.loadHeader(container, process.getSession());
 

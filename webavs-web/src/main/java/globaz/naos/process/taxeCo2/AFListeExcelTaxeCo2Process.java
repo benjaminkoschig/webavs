@@ -10,7 +10,7 @@ import globaz.naos.application.AFApplication;
 import globaz.naos.db.taxeCo2.AFListeExcelTaxeCo2Manager;
 import globaz.naos.listes.excel.taxeCo2.AFXmlmlMappingTaxeCo2;
 import globaz.naos.listes.excel.util.AFExcelmlUtils;
-import globaz.naos.listes.excel.util.NaosContainer;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 public class AFListeExcelTaxeCo2Process extends BProcess implements FWViewBeanInterface {
 
@@ -83,7 +83,7 @@ public class AFListeExcelTaxeCo2Process extends BProcess implements FWViewBeanIn
 
     private boolean createDocument(AFListeExcelTaxeCo2Manager manager) throws Exception, Exception {
         setProgressScaleValue(manager.size());
-        NaosContainer container = AFXmlmlMappingTaxeCo2.loadResults(manager, this);
+        CommonExcelmlContainer container = AFXmlmlMappingTaxeCo2.loadResults(manager, this);
 
         if (isAborted()) {
             return false;

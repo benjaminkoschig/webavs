@@ -6,8 +6,8 @@ import globaz.naos.db.taxeCo2.AFListeExcelTaxeCo2Manager;
 import globaz.naos.listes.excel.AFXmlmlMappingAgenceCommunale;
 import globaz.naos.listes.excel.util.AFExcelmlUtils;
 import globaz.naos.listes.excel.util.IAFListeColumns;
-import globaz.naos.listes.excel.util.NaosContainer;
 import globaz.naos.process.taxeCo2.AFListeExcelTaxeCo2Process;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * @revision SCO 15 déc. 2010
@@ -16,7 +16,7 @@ public class AFXmlmlMappingTaxeCo2 {
 
     public final static String CS_AFFILIATION = "519007";
 
-    private static void loadDetail(int i, NaosContainer container, AFListeExcelTaxeCo2 entity,
+    private static void loadDetail(int i, CommonExcelmlContainer container, AFListeExcelTaxeCo2 entity,
             AFListeExcelTaxeCo2Process process) throws Exception, Exception {
 
         process.incProgressCounter();
@@ -38,7 +38,8 @@ public class AFXmlmlMappingTaxeCo2 {
 
     }
 
-    private static void loadHeader(NaosContainer container, AFListeExcelTaxeCo2Process process) throws Exception {
+    private static void loadHeader(CommonExcelmlContainer container, AFListeExcelTaxeCo2Process process)
+            throws Exception {
 
         container.put(IAFListeColumns.HEADER_NUM_INFOROM, AFListeExcelTaxeCo2Process.NUMERO_INFOROM);
         container.put(IAFListeColumns.HEADER_NOM_LISTE, process.getSession().getLabel("LISTE_TAXE_CO2"));
@@ -52,9 +53,9 @@ public class AFXmlmlMappingTaxeCo2 {
 
     }
 
-    public static NaosContainer loadResults(AFListeExcelTaxeCo2Manager manager, AFListeExcelTaxeCo2Process process)
-            throws Exception, Exception {
-        NaosContainer container = new NaosContainer();
+    public static CommonExcelmlContainer loadResults(AFListeExcelTaxeCo2Manager manager,
+            AFListeExcelTaxeCo2Process process) throws Exception, Exception {
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
         String tauxDefaut = manager.getTauxDefaut(process.getForAnnee());
         AFXmlmlMappingTaxeCo2.loadHeader(container, process);
 

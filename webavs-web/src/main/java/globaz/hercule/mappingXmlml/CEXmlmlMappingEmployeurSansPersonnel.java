@@ -9,11 +9,11 @@ import globaz.hercule.exception.HerculeException;
 import globaz.hercule.process.CEEmployeurSansPersonnelProcess;
 import globaz.hercule.utils.CEExcelmlUtils;
 import globaz.hercule.utils.CEUtils;
-import globaz.hercule.utils.HerculeContainer;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 public class CEXmlmlMappingEmployeurSansPersonnel {
 
-    private static void loadDetail(final int i, final HerculeContainer container,
+    private static void loadDetail(final int i, final CommonExcelmlContainer container,
             final CEEmployeurSansPersonnel entity, final CEEmployeurSansPersonnelProcess process)
             throws HerculeException, Exception {
         process.incProgressCounter();
@@ -47,7 +47,7 @@ public class CEXmlmlMappingEmployeurSansPersonnel {
 
     }
 
-    private static void loadHeader(final HerculeContainer container, final CEEmployeurSansPersonnelProcess process) {
+    private static void loadHeader(final CommonExcelmlContainer container, final CEEmployeurSansPersonnelProcess process) {
 
         container.put(ICEListeColumns.HEADER_ANNEE, process.getForAnnee());
         container.put(ICEListeColumns.HEADER_DATE_VISA, TimeHelper.getCurrentTime() + " - "
@@ -70,9 +70,9 @@ public class CEXmlmlMappingEmployeurSansPersonnel {
 
     }
 
-    public static HerculeContainer loadResults(final CEEmployeurSansPersonnelManager manager,
+    public static CommonExcelmlContainer loadResults(final CEEmployeurSansPersonnelManager manager,
             final CEEmployeurSansPersonnelProcess process) throws HerculeException, Exception {
-        HerculeContainer container = new HerculeContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         CEXmlmlMappingEmployeurSansPersonnel.loadHeader(container, process);
 
@@ -84,7 +84,7 @@ public class CEXmlmlMappingEmployeurSansPersonnel {
         return container;
     }
 
-    private static void renseigneLastControle(final HerculeContainer container, final String idAffiliation,
+    private static void renseigneLastControle(final CommonExcelmlContainer container, final String idAffiliation,
             final BSession session) throws Exception {
         CEControleEmployeur entity = CEUtils.rechercheDernierControle(idAffiliation, session);
         if (entity != null) {

@@ -14,6 +14,7 @@ import globaz.op.excelml.model.document.ExcelmlWorkbook;
 import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.db.tiers.TITiers;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
@@ -35,7 +36,7 @@ public class CEExcelmlUtils {
      * @return filePath le chemin complet où à été sauvegardé le document
      * @throws Exception
      */
-    public static String createDocumentExcel(String modelName, String nomDoc, HerculeContainer container)
+    public static String createDocumentExcel(String modelName, String nomDoc, CommonExcelmlContainer container)
             throws Exception {
         ExcelmlWorkbook wk = null;
         nomDoc = JadeFilenameUtil.addOrReplaceFilenameSuffixUID(nomDoc + ".xml");
@@ -98,7 +99,7 @@ public class CEExcelmlUtils {
      * @param column
      * @param value
      */
-    public static void remplirColumn(HerculeContainer container, String column, String value, String defaultValue) {
+    public static void remplirColumn(CommonExcelmlContainer container, String column, String value, String defaultValue) {
         if (!JadeStringUtil.isEmpty(value)) {
             container.put(column, value);
         } else {
@@ -113,7 +114,7 @@ public class CEExcelmlUtils {
      * @param column
      * @param value
      */
-    public static void remplirColumnByLibelle(HerculeContainer container, BSession session, String column,
+    public static void remplirColumnByLibelle(CommonExcelmlContainer container, BSession session, String column,
             String codeLibelle, String defaultValue) {
         if (!JadeStringUtil.isEmpty(codeLibelle)) {
             container.put(column, session.getCodeLibelle(codeLibelle));
@@ -132,7 +133,7 @@ public class CEExcelmlUtils {
      * @throws HerculeException
      * @throws Exception
      */
-    public static void renseigneAdresse(BSession session, String typeAdresse, HerculeContainer container,
+    public static void renseigneAdresse(BSession session, String typeAdresse, CommonExcelmlContainer container,
             String idTiers, String numAffilie) throws HerculeException {
 
         String ville = "";

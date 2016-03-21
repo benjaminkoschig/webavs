@@ -1,15 +1,15 @@
-package globaz.naos.listes.excel.util;
+package globaz.webavs.common.op;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class AFExcelDataContainer {
-    public class AFLine {
+public class CommonExcelDataContainer {
+    public class CommonLine {
         private HashMap<String, String> container = null;
 
-        public AFLine() {
+        public CommonLine() {
             super();
             container = new HashMap<String, String>();
         }
@@ -23,7 +23,6 @@ public class AFExcelDataContainer {
         }
 
         public void registerCol(String name, String value) {
-            // TODO CHanger avec JadeStringUtil.isEmpty()
             if (value != null) {
                 container.put(name, value);
             }
@@ -42,11 +41,11 @@ public class AFExcelDataContainer {
 
     private HashMap<String, String> headerValues = null;
 
-    private Collection<AFLine> lines = null;
+    private Collection<CommonLine> lines = null;
 
-    public AFExcelDataContainer() {
+    public CommonExcelDataContainer() {
         super();
-        lines = new ArrayList<AFLine>();
+        lines = new ArrayList<CommonLine>();
         headerValues = new HashMap<String, String>();
     }
 
@@ -64,22 +63,22 @@ public class AFExcelDataContainer {
         return taille;
     }
 
-    public AFLine newLine() {
-        return new AFLine();
+    public CommonLine newLine() {
+        return new CommonLine();
     }
 
     public void registerHeader(String name, String value) {
         headerValues.put(name, value);
     }
 
-    public void registerLine(AFLine line) {
+    public void registerLine(CommonLine line) {
         if (line.container.size() != 0) {
             lines.add(line);
         }
     }
 
-    public Iterator<AFLine> returnLinesIterator() {
-        Iterator<AFLine> lineIt = lines.iterator();
+    public Iterator<CommonLine> returnLinesIterator() {
+        Iterator<CommonLine> lineIt = lines.iterator();
         return lineIt;
     }
 
@@ -93,7 +92,7 @@ public class AFExcelDataContainer {
             str.append(" - " + name + " : " + getHeaderValue(name));
         }
 
-        Iterator<AFLine> lineIt = lines.iterator();
+        Iterator<CommonLine> lineIt = lines.iterator();
         while (lineIt.hasNext()) {
             str.append("\n******************************************************************\n");
             str.append(lineIt.next().toString());

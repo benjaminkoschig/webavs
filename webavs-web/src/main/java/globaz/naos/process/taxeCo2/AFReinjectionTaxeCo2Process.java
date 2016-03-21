@@ -10,15 +10,15 @@ import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.naos.application.AFApplication;
 import globaz.naos.db.taxeCo2.AFTaxeCo2;
 import globaz.naos.db.taxeCo2.AFTaxeCo2Manager;
-import globaz.naos.listes.excel.AFExcelFilterNotSupportedException;
-import globaz.naos.listes.excel.util.AFExcelDataContainer;
-import globaz.naos.listes.excel.util.AFExcelDataContainer.AFLine;
-import globaz.naos.listes.excel.util.AFExcelDocumentParser;
 import globaz.naos.listes.excel.util.AFExcelmlUtils;
 import globaz.naos.listes.excel.util.IAFListeColumns;
-import globaz.naos.listes.excel.util.NaosContainer;
 import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.AFUtil;
+import globaz.webavs.common.CommonExcelmlContainer;
+import globaz.webavs.common.op.CommonExcelDataContainer;
+import globaz.webavs.common.op.CommonExcelDataContainer.CommonLine;
+import globaz.webavs.common.op.CommonExcelDocumentParser;
+import globaz.webavs.common.op.CommonExcelFilterNotSupportedException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,8 +53,8 @@ public class AFReinjectionTaxeCo2Process extends BProcess {
         setSendMailOnError(true);
 
         String headerAnnee = "";
-        NaosContainer errorContainer = new NaosContainer();
-        AFExcelDataContainer container = null;
+        CommonExcelmlContainer errorContainer = new CommonExcelmlContainer();
+        CommonExcelDataContainer container = null;
         String path = Jade.getInstance().getHomeDir() + "work/" + getFileName();
 
         // copy du fichier dans le répertoire work pour le traiter
@@ -63,9 +63,9 @@ public class AFReinjectionTaxeCo2Process extends BProcess {
         // parse du document, retourne un container avec toutes les entrées et
         // valueres trouvées dans le document
         try {
-            container = AFExcelDocumentParser.parseWorkBook(AFExcelmlUtils.loadPath(path));
+            container = CommonExcelDocumentParser.parseWorkBook(AFExcelmlUtils.loadPath(path));
 
-        } catch (AFExcelFilterNotSupportedException e) {
+        } catch (CommonExcelFilterNotSupportedException e) {
             this._addError(getTransaction(), getSession().getLabel("ERREUR_FICHIER_REINJECTION_FILTRE"));
             String messageInformation = "Unsupported filtered Excel file injection throw exception in Parser due to file :"
                     + getFileName() + "\n";
@@ -100,7 +100,7 @@ public class AFReinjectionTaxeCo2Process extends BProcess {
                     return false;
                 }
 
-                Iterator<AFLine> lines = container.returnLinesIterator();
+                Iterator<CommonLine> lines = container.returnLinesIterator();
                 setProgressScaleValue(container.getSize());
 
                 // On récupère les infos de l'entête
@@ -110,7 +110,7 @@ public class AFReinjectionTaxeCo2Process extends BProcess {
                 while (lines.hasNext()) {
                     incProgressCounter();
 
-                    AFLine line = lines.next();
+                    CommonLine line = lines.next();
                     HashMap<String, String> lineMap = line.returnLineHashMap();
 
                     // On test quelle liste on doit réinjecter
@@ -165,7 +165,7 @@ public class AFReinjectionTaxeCo2Process extends BProcess {
         return fileName;
     }
 
-    private void headerReinjectionTaxeCo2(NaosContainer errorContainer, AFExcelDataContainer container,
+    private void headerReinjectionTaxeCo2(CommonExcelmlContainer errorContainer, CommonExcelDataContainer container,
             String numInforom) {
         if (!JadeStringUtil.isEmpty(numInforom)) {
             errorContainer.put(IAFListeColumns.HEADER_NUM_INFOROM, numInforom);
@@ -183,7 +183,7 @@ public class AFReinjectionTaxeCo2Process extends BProcess {
         }
     }
 
-    private void impressionListeRadieTaxeCo2(NaosContainer errorContainer) throws Exception, IOException {
+    private void impressionListeRadieTaxeCo2(CommonExcelmlContainer errorContainer) throws Exception, IOException {
         // On imprime le document avec les lignes en erreur
         // On génère le doc
         String nomDoc = getSession().getLabel("LISTE_RADIE_TAXE_CO2");
@@ -192,7 +192,7 @@ public class AFReinjectionTaxeCo2Process extends BProcess {
         publicationDocument(nomDoc, docPath);
     }
 
-    private void impressionListeTaxeCo2(NaosContainer errorContainer) throws Exception, IOException {
+    private void impressionListeTaxeCo2(CommonExcelmlContainer errorContainer) throws Exception, IOException {
         // On imprime le document avec les lignes en erreur
         // On génère le doc
         String nomDoc = getSession().getLabel("LISTE_TAXE_CO2");
@@ -238,7 +238,7 @@ public class AFReinjectionTaxeCo2Process extends BProcess {
         return taxe;
     }
 
-    private void reinjectionTaxeCo2(NaosContainer errorContainer, BTransaction transaction, AFLine line,
+    private void reinjectionTaxeCo2(CommonExcelmlContainer errorContainer, BTransaction transaction, CommonLine line,
             HashMap<String, String> lineMap) throws Exception {
         // On recherche si la taxe existe
         // d'après l'id de la taxe

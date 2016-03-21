@@ -10,6 +10,7 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.op.common.merge.IMergingContainer;
 import globaz.op.excelml.model.document.ExcelmlWorkbook;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,7 +38,8 @@ public class ListeMutationPca extends PegasusAbstractExcelServiceImpl {
     private String modelName = null;
     private String outPutName = "liste_Mutation_Montant_PCA";
 
-    private void addLine(PegasusContainer container, String type, RecapMutation mutation, RecapCategorie recapCategorie) {
+    private void addLine(CommonExcelmlContainer container, String type, RecapMutation mutation,
+            RecapCategorie recapCategorie) {
 
         String nss = type + "_NSS";
         String nom = type + "_NOM";
@@ -104,7 +106,7 @@ public class ListeMutationPca extends PegasusAbstractExcelServiceImpl {
         container.put(type + "_PERIODE", mutation.getPeriode());
     }
 
-    private void addListTocontainer(RecapListMutation recapListMutation, PegasusContainer container, String type,
+    private void addListTocontainer(RecapListMutation recapListMutation, CommonExcelmlContainer container, String type,
             RecapCategorie recapCategorie) {
 
         Comparator<RecapMutation> comparator = new Comparator<RecapMutation>() {
@@ -149,7 +151,7 @@ public class ListeMutationPca extends PegasusAbstractExcelServiceImpl {
         return save(wk, nomDoc);
     }
 
-    private void fillInfoRecap(PegasusContainer container, Entry<RecapDomainePca, RecapInfoDomaine> entry) {
+    private void fillInfoRecap(CommonExcelmlContainer container, Entry<RecapDomainePca, RecapInfoDomaine> entry) {
         String code = entry.getKey().getCode();
         RecapInfoDomaine info = entry.getValue();
         container.put(code + "_courant_nbDossier", String.valueOf(info.getNbDossierNouveau()));
@@ -170,7 +172,7 @@ public class ListeMutationPca extends PegasusAbstractExcelServiceImpl {
 
     }
 
-    public void fillRecapMutation(PegasusContainer container, Entry<RecapDomainePca, RecapInfoDomaine> entry) {
+    public void fillRecapMutation(CommonExcelmlContainer container, Entry<RecapDomainePca, RecapInfoDomaine> entry) {
         String type = entry.getKey().getCode();
         RecapInfoDomaine info = entry.getValue();
 
@@ -216,7 +218,7 @@ public class ListeMutationPca extends PegasusAbstractExcelServiceImpl {
     @Override
     public IMergingContainer loadResults() throws JadeApplicationServiceNotAvailableException,
             JadePersistenceException, JadeApplicationException {
-        PegasusContainer container = new PegasusContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         recapPaiement(container);
 
@@ -238,7 +240,7 @@ public class ListeMutationPca extends PegasusAbstractExcelServiceImpl {
         return container;
     }
 
-    public void recapPaiement(PegasusContainer container) throws MutationException,
+    public void recapPaiement(CommonExcelmlContainer container) throws MutationException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, PrestationCommonException {
 
         Recap recap = PegasusServiceLocator.getRecapService().createRecap(dateMonth);

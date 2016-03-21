@@ -1,4 +1,4 @@
-package globaz.phenix.listes.excel;
+package globaz.webavs.common.op;
 
 import globaz.op.common.exception.OpNodeInstanciationException;
 
@@ -9,8 +9,11 @@ import globaz.op.common.exception.OpNodeInstanciationException;
  * @author cel
  * 
  */
-public class CPExcelFilterNotSupportedException extends OpNodeInstanciationException {
-    public CPExcelFilterNotSupportedException(String string) {
+public class CommonExcelFilterNotSupportedException extends OpNodeInstanciationException {
+
+    private static final long serialVersionUID = 1L;
+
+    public CommonExcelFilterNotSupportedException(String string) {
         super(string);
     }
 }

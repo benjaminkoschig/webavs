@@ -11,6 +11,7 @@ import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.op.common.merge.IMergingContainer;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
@@ -26,7 +27,6 @@ import ch.globaz.al.business.models.rafam.AnnonceRafamProtocoleComplexModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamProtocoleComplexSearchModel;
 import ch.globaz.al.business.services.rafam.AnnoncesRafamProtocoleService;
 import ch.globaz.al.businessimpl.documents.excel.ALAbstractExcelServiceImpl;
-import ch.globaz.al.businessimpl.documents.excel.ALContainer;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.utils.ALEncodingUtils;
 
@@ -139,8 +139,9 @@ public class AnnoncesRafamProtocoleServiceImpl extends ALAbstractExcelServiceImp
         return ALImplServiceLocator.getAnnonceRafamProtocoleComplexModelService().search(search);
     }
 
-    protected ALContainer populate(ALContainer container, AnnonceRafamProtocoleComplexSearchModel search, String tag)
-            throws JadeApplicationException, JadePersistenceException, JadeApplicationServiceNotAvailableException {
+    protected CommonExcelmlContainer populate(CommonExcelmlContainer container,
+            AnnonceRafamProtocoleComplexSearchModel search, String tag) throws JadeApplicationException,
+            JadePersistenceException, JadeApplicationServiceNotAvailableException {
 
         for (JadeAbstractModel annonces : search.getSearchResults()) {
             AnnonceRafamProtocoleComplexModel annonce = (AnnonceRafamProtocoleComplexModel) annonces;
@@ -214,7 +215,7 @@ public class AnnoncesRafamProtocoleServiceImpl extends ALAbstractExcelServiceImp
         // container.put(champ, session.getLabel("EXCEL_LISTE_CAS_AF_" + champ));
         // }
 
-        ALContainer container = new ALContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
         container = populate(container, loadErreurs(), AnnoncesRafamProtocoleServiceImpl.tagErreur);
         container = populate(container, loadRappel(), AnnoncesRafamProtocoleServiceImpl.tagRappel);
         container = populate(container, loadSuspendus(), AnnoncesRafamProtocoleServiceImpl.tagSuspendu);

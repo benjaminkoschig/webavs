@@ -11,13 +11,13 @@ import globaz.hercule.process.controleEmployeur.CEDsNonRemiseProcess;
 import globaz.hercule.service.CEControleEmployeurService;
 import globaz.hercule.utils.CEExcelmlUtils;
 import globaz.hercule.utils.CEUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.lupus.db.journalisation.LUJournalListViewBean;
 import globaz.lupus.db.journalisation.LUJournalViewBean;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.pavo.application.CIApplication;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * @author JPA
@@ -47,7 +47,7 @@ public class CEXmlmlMappingDsNonRemise {
      * @param process
      * @throws HerculeException
      */
-    private static void loadDetail(final HerculeContainer container, final LUJournalViewBean entity,
+    private static void loadDetail(final CommonExcelmlContainer container, final LUJournalViewBean entity,
             final CEDsNonRemiseProcess process) throws HerculeException {
 
         CEExcelmlUtils.remplirColumn(container, ICEListeColumns.NUM_AFFILIE, entity.getLibelle(), "");
@@ -104,7 +104,7 @@ public class CEXmlmlMappingDsNonRemise {
         container.put(ICEListeColumns.REVISEUR, "");
     }
 
-    private static void loadInfosSuva(final HerculeContainer container, final CEDsNonRemiseProcess process,
+    private static void loadInfosSuva(final CommonExcelmlContainer container, final CEDsNonRemiseProcess process,
             final String codeSuva) {
         // Code suva
         if (!JadeStringUtil.isEmpty(codeSuva)) {
@@ -132,7 +132,7 @@ public class CEXmlmlMappingDsNonRemise {
      * @param container
      * @param process
      */
-    private static void loadHeader(final HerculeContainer container, final CEDsNonRemiseProcess process) {
+    private static void loadHeader(final CommonExcelmlContainer container, final CEDsNonRemiseProcess process) {
 
         container.put(ICEListeColumns.HEADER_DATE_VISA, TimeHelper.getCurrentTime() + " - "
                 + process.getSession().getUserName());
@@ -165,9 +165,9 @@ public class CEXmlmlMappingDsNonRemise {
      * @return
      * @throws HerculeException
      */
-    public static HerculeContainer loadResults(final LUJournalListViewBean manager, final CEDsNonRemiseProcess process)
-            throws HerculeException {
-        HerculeContainer container = new HerculeContainer();
+    public static CommonExcelmlContainer loadResults(final LUJournalListViewBean manager,
+            final CEDsNonRemiseProcess process) throws HerculeException {
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         // On remplit le header
         CEXmlmlMappingDsNonRemise.loadHeader(container, process);

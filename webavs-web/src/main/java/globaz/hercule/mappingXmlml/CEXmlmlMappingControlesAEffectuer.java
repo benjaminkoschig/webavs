@@ -19,8 +19,8 @@ import globaz.hercule.process.CEListeControlesAEffectuerProcess;
 import globaz.hercule.service.CEControleEmployeurService;
 import globaz.hercule.utils.CEExcelmlUtils;
 import globaz.hercule.utils.CEUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +41,7 @@ public class CEXmlmlMappingControlesAEffectuer {
     private Map<String, CEControlesAEffectuer> mapEntity;
     private Map<String, CEControlesAEffectuer> mapEntityForAnneePrec;
     private boolean reattributionReviseur = false;
-    private HerculeContainer container;
+    private CommonExcelmlContainer container;
     private CEListeControlesAEffectuerProcess processParent;
 
     public CEXmlmlMappingControlesAEffectuer(final Map<String, CEControlesAEffectuer> mapEntity,
@@ -63,7 +63,7 @@ public class CEXmlmlMappingControlesAEffectuer {
         this.mapEntityForAnneePrec = mapEntityForAnneePrec;
         processParent = process;
         this.reattributionReviseur = reattributionReviseur;
-        container = new HerculeContainer();
+        container = new CommonExcelmlContainer();
     }
 
     /**
@@ -72,7 +72,7 @@ public class CEXmlmlMappingControlesAEffectuer {
      * @return
      * @throws Exception
      */
-    public HerculeContainer processResults() throws Exception {
+    public CommonExcelmlContainer processResults() throws Exception {
         // Info pour la progress bar
         processParent.setProgressScaleValue(mapEntity.size());
 

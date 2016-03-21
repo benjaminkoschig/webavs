@@ -8,8 +8,8 @@ import globaz.hercule.db.controleEmployeur.CEControlesExtraOrdinairesEffectuesMa
 import globaz.hercule.exception.HerculeException;
 import globaz.hercule.process.controleEmployeur.CEControles5PourCentProcess;
 import globaz.hercule.utils.CEExcelmlUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * @author JPA
@@ -26,7 +26,7 @@ public class CEXmlmlMappingControles5Pourcent {
      * @throws HerculeException
      * @throws Exception
      */
-    private static void loadDetailControles5PourCent(final HerculeContainer container,
+    private static void loadDetailControles5PourCent(final CommonExcelmlContainer container,
             final CEControles5PourCentManager manager, final CEControles5PourCentProcess process)
             throws HerculeException, Exception {
 
@@ -71,7 +71,7 @@ public class CEXmlmlMappingControles5Pourcent {
      * @throws HerculeException
      * @throws Exception
      */
-    private static void loadDetailControlesExtras(final HerculeContainer container,
+    private static void loadDetailControlesExtras(final CommonExcelmlContainer container,
             final CEControlesExtraOrdinairesEffectuesManager manager, final CEControles5PourCentProcess process)
             throws HerculeException, Exception {
 
@@ -115,7 +115,7 @@ public class CEXmlmlMappingControles5Pourcent {
      * @param nombreControles5PourCent
      * @param nombreControlesExtraordinaires
      */
-    private static void loadHeader(final HerculeContainer container, final CEControles5PourCentProcess process,
+    private static void loadHeader(final CommonExcelmlContainer container, final CEControles5PourCentProcess process,
             final int nombre5PourCent, final int nombreControles5PourCent, final int nombreControlesExtraordinaires) {
 
         // On set le header
@@ -143,7 +143,7 @@ public class CEXmlmlMappingControles5Pourcent {
      * @param container
      * @param session
      */
-    public static void loadLabel(final HerculeContainer container, final BSession session) {
+    public static void loadLabel(final CommonExcelmlContainer container, final BSession session) {
 
         container.put(ICEListeColumns.HEADER_LABEL_NOM_LISTE,
                 session.getLabel("LISTE_CONTROLE_5_POURCENT_NOM_DOCUMENT"));
@@ -193,12 +193,12 @@ public class CEXmlmlMappingControles5Pourcent {
      * @return
      * @throws Exception
      */
-    public static HerculeContainer loadResults(final CEControles5PourCentManager manager5PourCent,
+    public static CommonExcelmlContainer loadResults(final CEControles5PourCentManager manager5PourCent,
             final CEControlesExtraOrdinairesEffectuesManager managerExtraOrdinaires, final int nombre5PourCent,
             final int nombreControles5PourCent, final int nombreControlesExtraordinaires,
             final CEControles5PourCentProcess process) throws Exception {
 
-        HerculeContainer container = new HerculeContainer();
+        CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         // On s'occupe des labels du documents
         loadLabel(container, process.getSession());

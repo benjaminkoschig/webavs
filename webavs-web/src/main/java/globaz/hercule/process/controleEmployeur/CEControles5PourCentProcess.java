@@ -9,9 +9,9 @@ import globaz.hercule.db.controleEmployeur.CEControlesExtraOrdinairesEffectuesMa
 import globaz.hercule.mappingXmlml.CEXmlmlMappingControles5Pourcent;
 import globaz.hercule.utils.CEExcelmlUtils;
 import globaz.hercule.utils.CEUtils;
-import globaz.hercule.utils.HerculeContainer;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 /**
  * @author jpa
@@ -68,7 +68,7 @@ public class CEControles5PourCentProcess extends BProcess {
             // Si on a au moins un controle, on crée le document
             if ((nombreControlesExtraordinaires != 0) || (nombreControles5PourCent != 0)) {
                 setProgressScaleValue(nombreControles5PourCent + nombreControlesExtraordinaires);
-                HerculeContainer container = CEXmlmlMappingControles5Pourcent.loadResults(manager5PourCent,
+                CommonExcelmlContainer container = CEXmlmlMappingControles5Pourcent.loadResults(manager5PourCent,
                         managerExtraOrdinaires, nombre5PourCent, nombreControles5PourCent,
                         nombreControlesExtraordinaires, this);
 
