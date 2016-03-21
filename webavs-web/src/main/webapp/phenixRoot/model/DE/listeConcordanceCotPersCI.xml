@@ -29,7 +29,7 @@
   <Style ss:ID="Default" ss:Name="Normal">
    <Alignment ss:Vertical="Bottom"/>
    <Borders/>
-   <Font ss:FontName="Arial"/>
+   <Font ss:FontName="Arial" x:Family="Swiss"/>
    <Interior/>
    <NumberFormat/>
    <Protection/>
@@ -76,42 +76,37 @@
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
   </Style>
   <Style ss:ID="s74">
-   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000" ss:Bold="1"/>
   </Style>
-  <Style ss:ID="s77">
-   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
-   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
-   <Interior ss:Color="#C0C0C0" ss:Pattern="Solid"/>
+  <Style ss:ID="s75">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
   </Style>
   <Style ss:ID="s78">
    <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
    <Interior ss:Color="#C0C0C0" ss:Pattern="Solid"/>
-   <NumberFormat ss:Format="@"/>
   </Style>
   <Style ss:ID="s79">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
+   <Interior ss:Color="#C0C0C0" ss:Pattern="Solid"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s80">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
    <Interior/>
   </Style>
-  <Style ss:ID="s80">
+  <Style ss:ID="s81">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1" ss:Italic="1"/>
    <Interior/>
   </Style>
-  <Style ss:ID="s81">
+  <Style ss:ID="s82">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
-    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
-    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
-   </Borders>
-  </Style>
-  <Style ss:ID="s82">
-   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom" ss:WrapText="1"/>
-   <Borders>
-    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
    </Borders>
@@ -120,7 +115,6 @@
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom" ss:WrapText="1"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
-    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
    </Borders>
@@ -133,9 +127,18 @@
     <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
    </Borders>
-   <NumberFormat ss:Format="@"/>
   </Style>
   <Style ss:ID="s85">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s86">
    <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -145,7 +148,7 @@
    </Borders>
    <NumberFormat ss:Format="Fixed"/>
   </Style>
-  <Style ss:ID="s86">
+  <Style ss:ID="s87">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom" ss:WrapText="1"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -155,16 +158,16 @@
    </Borders>
    <NumberFormat ss:Format="Standard"/>
   </Style>
-  <Style ss:ID="s87">
+  <Style ss:ID="s88">
    <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
    <Interior/>
    <NumberFormat ss:Format="@"/>
   </Style>
-  <Style ss:ID="s88">
+  <Style ss:ID="s89">
    <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
    <Interior/>
   </Style>
-  <Style ss:ID="s89">
+  <Style ss:ID="s90">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Italic="1"/>
    <Interior/>
@@ -172,11 +175,23 @@
   </Style>
  </Styles>
  <Names>
-  <NamedRange ss:Name="annee" ss:RefersTo="=Feuil1!R12C5"/>
-  <NamedRange ss:Name="categorie" ss:RefersTo="=Feuil1!R12C11"/>
-  <NamedRange ss:Name="difference1" ss:RefersTo="=Feuil1!R12C9"/>
-  <NamedRange ss:Name="difference2" ss:RefersTo="=Feuil1!R12C10"/>
-  <NamedRange ss:Name="genre" ss:RefersTo="=Feuil1!R12C4"/>
+  <NamedRange ss:Name="annee" ss:RefersTo="=Feuil1!R13C5"/>
+  <NamedRange ss:Name="categorie" ss:RefersTo="=Feuil1!R13C11"/>
+  <NamedRange ss:Name="col_annee" ss:RefersTo="=Feuil1!C5"/>
+  <NamedRange ss:Name="col_categorie" ss:RefersTo="=Feuil1!C11"/>
+  <NamedRange ss:Name="col_difference1" ss:RefersTo="=Feuil1!C9"/>
+  <NamedRange ss:Name="col_difference2" ss:RefersTo="=Feuil1!C10"/>
+  <NamedRange ss:Name="col_genre" ss:RefersTo="=Feuil1!C4"/>
+  <NamedRange ss:Name="col_idCI" ss:RefersTo="=Feuil1!C1"/>
+  <NamedRange ss:Name="col_idTiers" ss:RefersTo="=Feuil1!C12"/>
+  <NamedRange ss:Name="col_montantCINoAffilie" ss:RefersTo="=Feuil1!C7"/>
+  <NamedRange ss:Name="col_montantCINoAVSNoAffilie" ss:RefersTo="=Feuil1!C8"/>
+  <NamedRange ss:Name="col_montantCotPers" ss:RefersTo="=Feuil1!C6"/>
+  <NamedRange ss:Name="col_numAffilie" ss:RefersTo="=Feuil1!C2"/>
+  <NamedRange ss:Name="col_numAVS" ss:RefersTo="=Feuil1!C3"/>
+  <NamedRange ss:Name="difference1" ss:RefersTo="=Feuil1!R13C9"/>
+  <NamedRange ss:Name="difference2" ss:RefersTo="=Feuil1!R13C10"/>
+  <NamedRange ss:Name="genre" ss:RefersTo="=Feuil1!R13C4"/>
   <NamedRange ss:Name="headerAnnee" ss:RefersTo="=Feuil1!R5C2"/>
   <NamedRange ss:Name="headerBlank1" ss:RefersTo="=Feuil1!R3C1"/>
   <NamedRange ss:Name="headerBlank2" ss:RefersTo="=Feuil1!R7C1"/>
@@ -199,16 +214,17 @@
   <NamedRange ss:Name="headerReinjectable5a" ss:RefersTo="=Feuil1!R7C9"/>
   <NamedRange ss:Name="headerReinjectable5b" ss:RefersTo="=Feuil1!R8C9"/>
   <NamedRange ss:Name="headerReinjectable6" ss:RefersTo="=Feuil1!R9C9"/>
-  <NamedRange ss:Name="idCI" ss:RefersTo="=Feuil1!R12C1"/>
-  <NamedRange ss:Name="idTiers" ss:RefersTo="=Feuil1!R12C12"/>
-  <NamedRange ss:Name="montantCINoAffilie" ss:RefersTo="=Feuil1!R12C7"/>
-  <NamedRange ss:Name="montantCINoAVSNoAffilie" ss:RefersTo="=Feuil1!R12C8"/>
-  <NamedRange ss:Name="montantCotPers" ss:RefersTo="=Feuil1!R12C6"/>
-  <NamedRange ss:Name="numAffilie" ss:RefersTo="=Feuil1!R12C2"/>
-  <NamedRange ss:Name="numAVS" ss:RefersTo="=Feuil1!R12C3"/>
+  <NamedRange ss:Name="idCI" ss:RefersTo="=Feuil1!R13C1"/>
+  <NamedRange ss:Name="idTiers" ss:RefersTo="=Feuil1!R13C12"/>
+  <NamedRange ss:Name="montantCINoAffilie" ss:RefersTo="=Feuil1!R13C7"/>
+  <NamedRange ss:Name="montantCINoAVSNoAffilie" ss:RefersTo="=Feuil1!R13C8"/>
+  <NamedRange ss:Name="montantCotPers" ss:RefersTo="=Feuil1!R13C6"/>
+  <NamedRange ss:Name="numAffilie" ss:RefersTo="=Feuil1!R13C2"/>
+  <NamedRange ss:Name="numAVS" ss:RefersTo="=Feuil1!R13C3"/>
+  <NamedRange ss:Name="row_tableDefinition" ss:RefersTo="=Feuil1!R12"/>
  </Names>
  <Worksheet ss:Name="Feuil1">
-  <Table ss:ExpandedColumnCount="20" ss:ExpandedRowCount="12" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="20" ss:ExpandedRowCount="13" x:FullColumns="1"
    x:FullRows="1" ss:DefaultColumnWidth="60">
    <Column ss:AutoFitWidth="0" ss:Width="71.25"/>
    <Column ss:AutoFitWidth="0" ss:Width="78.75"/>
@@ -227,136 +243,168 @@
    <Column ss:AutoFitWidth="0" ss:Width="90"/>
    <Row>
     <Cell ss:MergeAcross="11" ss:StyleID="s69"><Data ss:Type="String">headerNomCaisse</Data><NamedCell
-      ss:Name="headerNomCaisse"/></Cell>
+      ss:Name="headerNomCaisse"/><NamedCell ss:Name="col_idCI"/></Cell>
    </Row>
    <Row>
     <Cell><Data ss:Type="String">0229CAF</Data><NamedCell
-      ss:Name="headerNumInforom"/></Cell>
+      ss:Name="headerNumInforom"/><NamedCell ss:Name="col_idCI"/></Cell>
     <Cell ss:Index="11" ss:StyleID="s70"><Data ss:Type="String">headerDateVisa</Data><NamedCell
-      ss:Name="headerDateVisa"/></Cell>
+      ss:Name="headerDateVisa"/><NamedCell ss:Name="col_categorie"/></Cell>
    </Row>
    <Row>
-    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">Catégorie 1</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">Catégorie 1</Data><NamedCell
+      ss:Name="col_genre"/></Cell>
     <Cell ss:StyleID="s72"><Data ss:Type="String">headerCategorie1</Data><NamedCell
-      ss:Name="headerCategorie1"/></Cell>
-    <Cell ss:StyleID="s72"/>
+      ss:Name="headerCategorie1"/><NamedCell ss:Name="col_annee"/></Cell>
+    <Cell ss:StyleID="s72"><NamedCell ss:Name="col_montantCotPers"/></Cell>
     <Cell ss:Index="9" ss:StyleID="s73"><Data ss:Type="String">headerReinjectable1</Data><NamedCell
-      ss:Name="headerReinjectable1"/></Cell>
+      ss:Name="headerReinjectable1"/><NamedCell ss:Name="col_difference1"/></Cell>
    </Row>
    <Row>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">Nom Liste</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Nom Liste</Data><NamedCell
+      ss:Name="col_idCI"/></Cell>
     <Cell><Data ss:Type="String">headerNomListe</Data><NamedCell
-      ss:Name="headerNomListe"/></Cell>
-    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">Catégorie 2</Data></Cell>
+      ss:Name="headerNomListe"/><NamedCell ss:Name="col_numAffilie"/></Cell>
+    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">Catégorie 2</Data><NamedCell
+      ss:Name="col_genre"/></Cell>
     <Cell ss:StyleID="s72"><Data ss:Type="String">headerCategorie2</Data><NamedCell
-      ss:Name="headerCategorie2"/></Cell>
-    <Cell ss:StyleID="s72"/>
+      ss:Name="headerCategorie2"/><NamedCell ss:Name="col_annee"/></Cell>
+    <Cell ss:StyleID="s72"><NamedCell ss:Name="col_montantCotPers"/></Cell>
     <Cell ss:Index="9" ss:StyleID="s73"><Data ss:Type="String">headerReinjectable2</Data><NamedCell
-      ss:Name="headerReinjectable2"/></Cell>
+      ss:Name="headerReinjectable2"/><NamedCell ss:Name="col_difference1"/></Cell>
    </Row>
    <Row>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">Année</Data></Cell>
-    <Cell><Data ss:Type="String">headerAnnee</Data><NamedCell ss:Name="headerAnnee"/></Cell>
-    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">Catégorie 3</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Année</Data><NamedCell
+      ss:Name="col_idCI"/></Cell>
+    <Cell><Data ss:Type="String">headerAnnee</Data><NamedCell ss:Name="headerAnnee"/><NamedCell
+      ss:Name="col_numAffilie"/></Cell>
+    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">Catégorie 3</Data><NamedCell
+      ss:Name="col_genre"/></Cell>
     <Cell ss:StyleID="s72"><Data ss:Type="String">headerCategorie3</Data><NamedCell
-      ss:Name="headerCategorie3"/></Cell>
-    <Cell ss:StyleID="s72"/>
+      ss:Name="headerCategorie3"/><NamedCell ss:Name="col_annee"/></Cell>
+    <Cell ss:StyleID="s72"><NamedCell ss:Name="col_montantCotPers"/></Cell>
     <Cell ss:Index="9" ss:StyleID="s73"><Data ss:Type="String">headerReinjectable3</Data><NamedCell
-      ss:Name="headerReinjectable3"/></Cell>
+      ss:Name="headerReinjectable3"/><NamedCell ss:Name="col_difference1"/></Cell>
    </Row>
    <Row>
-    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">Catégorie 4</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">Catégorie 4</Data><NamedCell
+      ss:Name="col_genre"/></Cell>
     <Cell ss:StyleID="s72"><Data ss:Type="String">headerCategorie4</Data><NamedCell
-      ss:Name="headerCategorie4"/></Cell>
-    <Cell ss:StyleID="s72"/>
+      ss:Name="headerCategorie4"/><NamedCell ss:Name="col_annee"/></Cell>
+    <Cell ss:StyleID="s72"><NamedCell ss:Name="col_montantCotPers"/></Cell>
     <Cell ss:Index="9" ss:StyleID="s73"><Data ss:Type="String">headerReinjectable4</Data><NamedCell
-      ss:Name="headerReinjectable4"/></Cell>
+      ss:Name="headerReinjectable4"/><NamedCell ss:Name="col_difference1"/></Cell>
    </Row>
    <Row>
-    <Cell ss:StyleID="s72"><NamedCell ss:Name="headerBlank2"/></Cell>
-    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">Catégorie 5a</Data></Cell>
+    <Cell ss:StyleID="s72"><NamedCell ss:Name="headerBlank2"/><NamedCell
+      ss:Name="col_idCI"/></Cell>
+    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">Catégorie 5a</Data><NamedCell
+      ss:Name="col_genre"/></Cell>
     <Cell ss:StyleID="s72"><Data ss:Type="String">headerCategorie5a</Data><NamedCell
-      ss:Name="headerCategorie5a"/></Cell>
-    <Cell ss:StyleID="s72"/>
+      ss:Name="headerCategorie5a"/><NamedCell ss:Name="col_annee"/></Cell>
+    <Cell ss:StyleID="s72"><NamedCell ss:Name="col_montantCotPers"/></Cell>
     <Cell ss:Index="9" ss:StyleID="s73"><Data ss:Type="String">headerReinjectable5a</Data><NamedCell
-      ss:Name="headerReinjectable5a"/></Cell>
+      ss:Name="headerReinjectable5a"/><NamedCell ss:Name="col_difference1"/></Cell>
    </Row>
    <Row>
-    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">Catégorie 5b</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">Catégorie 5b</Data><NamedCell
+      ss:Name="col_genre"/></Cell>
     <Cell ss:StyleID="s72"><Data ss:Type="String">headerCategorie5b</Data><NamedCell
-      ss:Name="headerCategorie5b"/></Cell>
-    <Cell ss:StyleID="s72"/>
+      ss:Name="headerCategorie5b"/><NamedCell ss:Name="col_annee"/></Cell>
+    <Cell ss:StyleID="s72"><NamedCell ss:Name="col_montantCotPers"/></Cell>
     <Cell ss:Index="9" ss:StyleID="s73"><Data ss:Type="String">headerReinjectable5b</Data><NamedCell
-      ss:Name="headerReinjectable5b"/></Cell>
+      ss:Name="headerReinjectable5b"/><NamedCell ss:Name="col_difference1"/></Cell>
    </Row>
    <Row>
-    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">Catégorie 6</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">Catégorie 6</Data><NamedCell
+      ss:Name="col_genre"/></Cell>
     <Cell ss:StyleID="s72"><Data ss:Type="String">headerCategorie6</Data><NamedCell
-      ss:Name="headerCategorie6"/></Cell>
-    <Cell ss:StyleID="s72"/>
+      ss:Name="headerCategorie6"/><NamedCell ss:Name="col_annee"/></Cell>
+    <Cell ss:StyleID="s72"><NamedCell ss:Name="col_montantCotPers"/></Cell>
     <Cell ss:Index="9" ss:StyleID="s73"><Data ss:Type="String">headerReinjectable6</Data><NamedCell
-      ss:Name="headerReinjectable6"/></Cell>
+      ss:Name="headerReinjectable6"/><NamedCell ss:Name="col_difference1"/></Cell>
    </Row>
    <Row>
-    <Cell ss:Index="4" ss:StyleID="s71"/>
-    <Cell ss:StyleID="s72"/>
-    <Cell ss:StyleID="s72"/>
-    <Cell ss:Index="9" ss:StyleID="s73"/>
-   </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="51" ss:StyleID="s74">
-    <Cell ss:StyleID="s77"><Data ss:Type="String">IdCI</Data></Cell>
-    <Cell ss:StyleID="s77"><Data ss:Type="String">Numéro d'affilié</Data></Cell>
-    <Cell ss:StyleID="s77"><Data ss:Type="String">Num AVS</Data></Cell>
-    <Cell ss:StyleID="s78"><Data ss:Type="String">Genre de décision</Data></Cell>
-    <Cell ss:StyleID="s78"><Data ss:Type="String">Année</Data></Cell>
-    <Cell ss:StyleID="s77"><Data ss:Type="String">Montant Cot. Pers.&#10;(1)</Data></Cell>
-    <Cell ss:StyleID="s77"><Data ss:Type="String">Montant CI N° Affilie&#10;(2)</Data></Cell>
-    <Cell ss:StyleID="s77"><Data ss:Type="String">Montant CI N° AVS &#10;et N° Affilie (3)</Data></Cell>
-    <Cell ss:StyleID="s77"><Data ss:Type="String">Différence&#10;1-2</Data></Cell>
-    <Cell ss:StyleID="s77"><Data ss:Type="String">Différence&#10;1-3</Data></Cell>
-    <Cell ss:StyleID="s77"><Data ss:Type="String">Catégorie</Data></Cell>
-    <Cell ss:StyleID="s77"><Data ss:Type="String">IdTiers</Data></Cell>
-    <Cell ss:StyleID="s79"/>
-    <Cell ss:StyleID="s79"/>
-    <Cell ss:StyleID="s79"/>
-    <Cell ss:StyleID="s79"/>
-    <Cell ss:StyleID="s79"/>
-    <Cell ss:StyleID="s79"/>
-    <Cell ss:StyleID="s80"/>
-    <Cell ss:StyleID="s67"/>
+    <Cell ss:Index="2" ss:StyleID="s74"><NamedCell ss:Name="col_numAffilie"/></Cell>
+    <Cell ss:Index="4" ss:StyleID="s71"><NamedCell ss:Name="col_genre"/></Cell>
+    <Cell ss:StyleID="s72"><NamedCell ss:Name="col_annee"/></Cell>
+    <Cell ss:StyleID="s72"><NamedCell ss:Name="col_montantCotPers"/></Cell>
+    <Cell ss:Index="9" ss:StyleID="s73"><NamedCell ss:Name="col_difference1"/></Cell>
    </Row>
    <Row>
-    <Cell ss:StyleID="s81"><Data ss:Type="String">idCI</Data><NamedCell
-      ss:Name="idCI"/></Cell>
-    <Cell ss:StyleID="s82"><Data ss:Type="String">numAffilie</Data><NamedCell
-      ss:Name="numAffilie"/></Cell>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">numAVS</Data><NamedCell
-      ss:Name="numAVS"/></Cell>
-    <Cell ss:StyleID="s84"><Data ss:Type="String">genre</Data><NamedCell
-      ss:Name="genre"/></Cell>
-    <Cell ss:StyleID="s84"><Data ss:Type="String">annee</Data><NamedCell
-      ss:Name="annee"/></Cell>
-    <Cell ss:StyleID="s85"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="montantCotPers"/></Cell>
-    <Cell ss:StyleID="s85"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="montantCINoAffilie"/></Cell>
-    <Cell ss:StyleID="s85"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="montantCINoAVSNoAffilie"/></Cell>
-    <Cell ss:StyleID="s85"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="difference1"/></Cell>
-    <Cell ss:StyleID="s85"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="difference2"/></Cell>
-    <Cell ss:StyleID="s86"><Data ss:Type="String">categorie</Data><NamedCell
-      ss:Name="categorie"/></Cell>
-    <Cell ss:StyleID="s86"><Data ss:Type="String">idTiers</Data><NamedCell
-      ss:Name="idTiers"/></Cell>
-    <Cell ss:StyleID="s87"/>
-    <Cell ss:StyleID="s87"/>
+    <Cell ss:Index="4" ss:StyleID="s71"><NamedCell ss:Name="col_genre"/></Cell>
+    <Cell ss:StyleID="s72"><NamedCell ss:Name="col_annee"/></Cell>
+    <Cell ss:StyleID="s72"><NamedCell ss:Name="col_montantCotPers"/></Cell>
+    <Cell ss:Index="9" ss:StyleID="s73"><NamedCell ss:Name="col_difference1"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="51" ss:StyleID="s75">
+    <Cell ss:StyleID="s78"><Data ss:Type="String">IdCI</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_idCI"/></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="String">Numéro d'affilié</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_numAffilie"/></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="String">Num AVS</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_numAVS"/></Cell>
+    <Cell ss:StyleID="s79"><Data ss:Type="String">Genre de décision</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_genre"/></Cell>
+    <Cell ss:StyleID="s79"><Data ss:Type="String">Année</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_annee"/></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="String">Montant Cot. Pers.&#10;(1)</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_montantCotPers"/></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="String">Montant CI N° Affilie&#10;(2)</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_montantCINoAffilie"/></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="String">Montant CI N° AVS &#10;et N° Affilie (3)</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_montantCINoAVSNoAffilie"/></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="String">Différence&#10;1-2</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_difference1"/></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="String">Différence&#10;1-3</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_difference2"/></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="String">Catégorie</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_categorie"/></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="String">IdTiers</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_idTiers"/></Cell>
+    <Cell ss:StyleID="s80"><NamedCell ss:Name="row_tableDefinition"/></Cell>
+    <Cell ss:StyleID="s80"><NamedCell ss:Name="row_tableDefinition"/></Cell>
+    <Cell ss:StyleID="s80"><NamedCell ss:Name="row_tableDefinition"/></Cell>
+    <Cell ss:StyleID="s80"><NamedCell ss:Name="row_tableDefinition"/></Cell>
+    <Cell ss:StyleID="s80"><NamedCell ss:Name="row_tableDefinition"/></Cell>
+    <Cell ss:StyleID="s80"><NamedCell ss:Name="row_tableDefinition"/></Cell>
+    <Cell ss:StyleID="s81"><NamedCell ss:Name="row_tableDefinition"/></Cell>
+    <Cell ss:StyleID="s67"><NamedCell ss:Name="row_tableDefinition"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="s82"><Data ss:Type="String">idCI</Data><NamedCell
+      ss:Name="idCI"/><NamedCell ss:Name="col_idCI"/></Cell>
+    <Cell ss:StyleID="s83"><Data ss:Type="String">numAffilie</Data><NamedCell
+      ss:Name="numAffilie"/><NamedCell ss:Name="col_numAffilie"/></Cell>
+    <Cell ss:StyleID="s84"><Data ss:Type="String">numAVS</Data><NamedCell
+      ss:Name="numAVS"/><NamedCell ss:Name="col_numAVS"/></Cell>
+    <Cell ss:StyleID="s85"><Data ss:Type="String">genre</Data><NamedCell
+      ss:Name="genre"/><NamedCell ss:Name="col_genre"/></Cell>
+    <Cell ss:StyleID="s85"><Data ss:Type="String">annee</Data><NamedCell
+      ss:Name="annee"/><NamedCell ss:Name="col_annee"/></Cell>
+    <Cell ss:StyleID="s86"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="montantCotPers"/><NamedCell ss:Name="col_montantCotPers"/></Cell>
+    <Cell ss:StyleID="s86"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="montantCINoAffilie"/><NamedCell ss:Name="col_montantCINoAffilie"/></Cell>
+    <Cell ss:StyleID="s86"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="montantCINoAVSNoAffilie"/><NamedCell
+      ss:Name="col_montantCINoAVSNoAffilie"/></Cell>
+    <Cell ss:StyleID="s86"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="difference1"/><NamedCell ss:Name="col_difference1"/></Cell>
+    <Cell ss:StyleID="s86"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="difference2"/><NamedCell ss:Name="col_difference2"/></Cell>
+    <Cell ss:StyleID="s87"><Data ss:Type="String">categorie</Data><NamedCell
+      ss:Name="categorie"/><NamedCell ss:Name="col_categorie"/></Cell>
+    <Cell ss:StyleID="s87"><Data ss:Type="String">idTiers</Data><NamedCell
+      ss:Name="idTiers"/><NamedCell ss:Name="col_idTiers"/></Cell>
     <Cell ss:StyleID="s88"/>
-    <Cell ss:StyleID="s87"/>
-    <Cell ss:StyleID="s87"/>
     <Cell ss:StyleID="s88"/>
     <Cell ss:StyleID="s89"/>
+    <Cell ss:StyleID="s88"/>
+    <Cell ss:StyleID="s88"/>
+    <Cell ss:StyleID="s89"/>
+    <Cell ss:StyleID="s90"/>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -378,8 +426,7 @@
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>1</ActiveRow>
-     <ActiveCol>10</ActiveCol>
+     <ActiveRow>12</ActiveRow>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>

@@ -7,10 +7,10 @@
  xmlns:html="http://www.w3.org/TR/REC-html40">
  <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
   <Author>Michaël MONTANDON</Author>
-  <LastAuthor>Magali BUTILLON</LastAuthor>
+  <LastAuthor>Sullivan CORNEILLE</LastAuthor>
   <LastPrinted>2011-07-11T13:11:29Z</LastPrinted>
   <Created>2010-07-23T06:10:31Z</Created>
-  <LastSaved>2011-07-12T11:40:14Z</LastSaved>
+  <LastSaved>2016-03-18T14:57:26Z</LastSaved>
   <Company>Globaz</Company>
   <Version>14.00</Version>
  </DocumentProperties>
@@ -55,51 +55,54 @@
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
   </Style>
   <Style ss:ID="s68">
-   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000" ss:Bold="1"/>
   </Style>
-  <Style ss:ID="s70">
+  <Style ss:ID="s69">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
-   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
-   <Interior ss:Color="#C0C0C0" ss:Pattern="Solid"/>
   </Style>
   <Style ss:ID="s71">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
    <Interior ss:Color="#C0C0C0" ss:Pattern="Solid"/>
-   <NumberFormat ss:Format="@"/>
   </Style>
   <Style ss:ID="s72">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
    <Interior ss:Color="#C0C0C0" ss:Pattern="Solid"/>
-   <NumberFormat ss:Format="Standard"/>
+   <NumberFormat ss:Format="@"/>
   </Style>
   <Style ss:ID="s73">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
+   <Interior ss:Color="#C0C0C0" ss:Pattern="Solid"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s74">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1" ss:Italic="1"/>
    <Interior ss:Color="#C0C0C0" ss:Pattern="Solid"/>
   </Style>
-  <Style ss:ID="s74">
+  <Style ss:ID="s75">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000" ss:Bold="1"
     ss:Italic="1"/>
   </Style>
-  <Style ss:ID="s75">
-   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
-  </Style>
   <Style ss:ID="s76">
    <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
-   <NumberFormat ss:Format="@"/>
   </Style>
   <Style ss:ID="s77">
    <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
-   <NumberFormat ss:Format="Standard"/>
+   <NumberFormat ss:Format="@"/>
   </Style>
   <Style ss:ID="s78">
    <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
-   <NumberFormat ss:Format="#,##0.0000"/>
+   <NumberFormat ss:Format="Standard"/>
   </Style>
   <Style ss:ID="s79">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <NumberFormat ss:Format="#,##0.0000"/>
+  </Style>
+  <Style ss:ID="s80">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Italic="1"/>
    <NumberFormat ss:Format="Standard"/>
@@ -107,6 +110,24 @@
  </Styles>
  <Names>
   <NamedRange ss:Name="casePostale" ss:RefersTo="=Feuil1!R7C5"/>
+  <NamedRange ss:Name="col_casePostale" ss:RefersTo="=Feuil1!C5"/>
+  <NamedRange ss:Name="col_dateAffiliation" ss:RefersTo="=Feuil1!C11"/>
+  <NamedRange ss:Name="col_dateDebutCaisse" ss:RefersTo="=Feuil1!C14"/>
+  <NamedRange ss:Name="col_dateFinCaisse" ss:RefersTo="=Feuil1!C15"/>
+  <NamedRange ss:Name="col_dateRadiation" ss:RefersTo="=Feuil1!C12"/>
+  <NamedRange ss:Name="col_description" ss:RefersTo="=Feuil1!C3"/>
+  <NamedRange ss:Name="col_erreur" ss:RefersTo="=Feuil1!C18"/>
+  <NamedRange ss:Name="col_etat" ss:RefersTo="=Feuil1!C17"/>
+  <NamedRange ss:Name="col_idTaxe" ss:RefersTo="=Feuil1!C1"/>
+  <NamedRange ss:Name="col_Localite" ss:RefersTo="=Feuil1!C7"/>
+  <NamedRange ss:Name="col_masse" ss:RefersTo="=Feuil1!C8"/>
+  <NamedRange ss:Name="col_montant" ss:RefersTo="=Feuil1!C10"/>
+  <NamedRange ss:Name="col_motifFin" ss:RefersTo="=Feuil1!C13"/>
+  <NamedRange ss:Name="col_npa" ss:RefersTo="=Feuil1!C6"/>
+  <NamedRange ss:Name="col_numAffilie" ss:RefersTo="=Feuil1!C2"/>
+  <NamedRange ss:Name="col_numCaisseAVS" ss:RefersTo="=Feuil1!C16"/>
+  <NamedRange ss:Name="col_rue" ss:RefersTo="=Feuil1!C4"/>
+  <NamedRange ss:Name="col_taux" ss:RefersTo="=Feuil1!C9"/>
   <NamedRange ss:Name="dateAffiliation" ss:RefersTo="=Feuil1!R7C11"/>
   <NamedRange ss:Name="dateDebutCaisse" ss:RefersTo="=Feuil1!R7C14"/>
   <NamedRange ss:Name="dateFinCaisse" ss:RefersTo="=Feuil1!R7C15"/>
@@ -128,6 +149,7 @@
   <NamedRange ss:Name="npa" ss:RefersTo="=Feuil1!R7C6"/>
   <NamedRange ss:Name="numAffilie" ss:RefersTo="=Feuil1!R7C2"/>
   <NamedRange ss:Name="numCaisseAVS" ss:RefersTo="=Feuil1!R7C16"/>
+  <NamedRange ss:Name="row_tableDefinition" ss:RefersTo="=Feuil1!R6"/>
   <NamedRange ss:Name="rue" ss:RefersTo="=Feuil1!R7C4"/>
   <NamedRange ss:Name="taux" ss:RefersTo="=Feuil1!R7C9"/>
  </Names>
@@ -153,80 +175,105 @@
    <Column ss:AutoFitWidth="0" ss:Width="90"/>
    <Row>
     <Cell><Data ss:Type="String">0274CAF</Data><NamedCell
-      ss:Name="headerNumInforom"/></Cell>
+      ss:Name="headerNumInforom"/><NamedCell ss:Name="col_idTaxe"/></Cell>
    </Row>
    <Row>
     <Cell><Data ss:Type="String">headerBlank1</Data><NamedCell
-      ss:Name="headerBlank1"/></Cell>
+      ss:Name="headerBlank1"/><NamedCell ss:Name="col_idTaxe"/></Cell>
    </Row>
    <Row>
-    <Cell ss:StyleID="s67"><Data ss:Type="String">Name der Liste</Data></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">Name der Liste</Data><NamedCell
+      ss:Name="col_idTaxe"/></Cell>
     <Cell><Data ss:Type="String">headerNomListe</Data><NamedCell
-      ss:Name="headerNomListe"/></Cell>
+      ss:Name="headerNomListe"/><NamedCell ss:Name="col_numAffilie"/></Cell>
    </Row>
    <Row>
-    <Cell ss:StyleID="s67"><Data ss:Type="String">Jahr</Data></Cell>
-    <Cell><Data ss:Type="String">headerAnnee</Data><NamedCell ss:Name="headerAnnee"/></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">Jahr</Data><NamedCell
+      ss:Name="col_idTaxe"/></Cell>
+    <Cell><Data ss:Type="String">headerAnnee</Data><NamedCell ss:Name="headerAnnee"/><NamedCell
+      ss:Name="col_numAffilie"/></Cell>
+    <Cell ss:Index="4" ss:StyleID="s68"><NamedCell ss:Name="col_rue"/></Cell>
    </Row>
    <Row>
     <Cell><Data ss:Type="String">headerBlank3</Data><NamedCell
-      ss:Name="headerBlank3"/></Cell>
+      ss:Name="headerBlank3"/><NamedCell ss:Name="col_idTaxe"/></Cell>
    </Row>
-   <Row ss:StyleID="s68">
-    <Cell ss:StyleID="s70"><Data ss:Type="String">ID CO2 Steuer</Data></Cell>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">Mitglied-Nr.</Data></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Beschreibung</Data></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Strasse</Data></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Postfach</Data></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">PLZ</Data></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Ort</Data></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Lohnsumme</Data></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Beitragssatz</Data></Cell>
-    <Cell ss:StyleID="s72"><Data ss:Type="String">Rückverteilung</Data></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Begindatum</Data></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Enddatum</Data></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Grund</Data></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Begindatum</Data></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Enddatum</Data></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Kasse-Nr.</Data></Cell>
-    <Cell ss:StyleID="s73"><Data ss:Type="String">Status</Data></Cell>
-    <Cell ss:StyleID="s74"><Data ss:Type="String">Fehler</Data></Cell>
+   <Row ss:StyleID="s69">
+    <Cell ss:StyleID="s71"><Data ss:Type="String">ID CO2 Steuer</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_idTaxe"/></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="String">Mitglied-Nr.</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_numAffilie"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Beschreibung</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_description"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Strasse</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_rue"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Postfach</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_casePostale"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">PLZ</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_npa"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Ort</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_Localite"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Lohnsumme</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_masse"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Beitragssatz</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_taux"/></Cell>
+    <Cell ss:StyleID="s73"><Data ss:Type="String">Rückverteilung</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_montant"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Begindatum</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_dateAffiliation"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Enddatum</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_dateRadiation"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Grund</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_motifFin"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Begindatum</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_dateDebutCaisse"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Enddatum</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_dateFinCaisse"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Kasse-Nr.</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_numCaisseAVS"/></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">Status</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_etat"/></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">Fehler</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_erreur"/></Cell>
    </Row>
    <Row>
-    <Cell ss:StyleID="s75"><Data ss:Type="String">idTaxe</Data><NamedCell
-      ss:Name="idTaxe"/></Cell>
-    <Cell ss:StyleID="s76"><Data ss:Type="String">numAffilie</Data><NamedCell
-      ss:Name="numAffilie"/></Cell>
-    <Cell ss:StyleID="s75"><Data ss:Type="String">description</Data><NamedCell
-      ss:Name="description"/></Cell>
-    <Cell ss:StyleID="s75"><Data ss:Type="String">rue</Data><NamedCell
-      ss:Name="rue"/></Cell>
-    <Cell ss:StyleID="s75"><Data ss:Type="String">casePostale</Data><NamedCell
-      ss:Name="casePostale"/></Cell>
-    <Cell ss:StyleID="s75"><Data ss:Type="String">npa</Data><NamedCell
-      ss:Name="npa"/></Cell>
-    <Cell ss:StyleID="s75"><Data ss:Type="String">Localite</Data><NamedCell
-      ss:Name="Localite"/></Cell>
-    <Cell ss:StyleID="s77"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="masse"/></Cell>
-    <Cell ss:StyleID="s78"><Data ss:Type="Number">0</Data><NamedCell ss:Name="taux"/></Cell>
-    <Cell ss:StyleID="s77" ss:Formula="=ROUND((RC[-2]*RC[-1])/500,2)*5"><Data
-      ss:Type="Number">0</Data><NamedCell ss:Name="montant"/></Cell>
-    <Cell ss:StyleID="s76"><Data ss:Type="String">Date début</Data><NamedCell
-      ss:Name="dateAffiliation"/></Cell>
-    <Cell ss:StyleID="s76"><Data ss:Type="String">Date de fin </Data><NamedCell
-      ss:Name="dateRadiation"/></Cell>
-    <Cell ss:StyleID="s75"><Data ss:Type="String">motif</Data><NamedCell
-      ss:Name="motifFin"/></Cell>
-    <Cell ss:StyleID="s76"><Data ss:Type="String">Date début</Data><NamedCell
-      ss:Name="dateDebutCaisse"/></Cell>
-    <Cell ss:StyleID="s76"><Data ss:Type="String">Date de fin</Data><NamedCell
-      ss:Name="dateFinCaisse"/></Cell>
-    <Cell ss:StyleID="s75"><Data ss:Type="Number">40179</Data><NamedCell
-      ss:Name="numCaisseAVS"/></Cell>
-    <Cell ss:StyleID="s79"><Data ss:Type="String">etat</Data><NamedCell
-      ss:Name="etat"/></Cell>
-    <Cell><Data ss:Type="String">erreur</Data><NamedCell ss:Name="erreur"/></Cell>
+    <Cell ss:StyleID="s76"><Data ss:Type="String">idTaxe</Data><NamedCell
+      ss:Name="idTaxe"/><NamedCell ss:Name="col_idTaxe"/></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">numAffilie</Data><NamedCell
+      ss:Name="numAffilie"/><NamedCell ss:Name="col_numAffilie"/></Cell>
+    <Cell ss:StyleID="s76"><Data ss:Type="String">description</Data><NamedCell
+      ss:Name="description"/><NamedCell ss:Name="col_description"/></Cell>
+    <Cell ss:StyleID="s76"><Data ss:Type="String">rue</Data><NamedCell
+      ss:Name="rue"/><NamedCell ss:Name="col_rue"/></Cell>
+    <Cell ss:StyleID="s76"><Data ss:Type="String">casePostale</Data><NamedCell
+      ss:Name="casePostale"/><NamedCell ss:Name="col_casePostale"/></Cell>
+    <Cell ss:StyleID="s76"><Data ss:Type="String">npa</Data><NamedCell
+      ss:Name="npa"/><NamedCell ss:Name="col_npa"/></Cell>
+    <Cell ss:StyleID="s76"><Data ss:Type="String">Localite</Data><NamedCell
+      ss:Name="Localite"/><NamedCell ss:Name="col_Localite"/></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="masse"/><NamedCell ss:Name="col_masse"/></Cell>
+    <Cell ss:StyleID="s79"><Data ss:Type="Number">0</Data><NamedCell ss:Name="taux"/><NamedCell
+      ss:Name="col_taux"/></Cell>
+    <Cell ss:StyleID="s78" ss:Formula="=ROUND((RC[-2]*RC[-1])/500,2)*5"><Data
+      ss:Type="Number">0</Data><NamedCell ss:Name="montant"/><NamedCell
+      ss:Name="col_montant"/></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">Date début</Data><NamedCell
+      ss:Name="dateAffiliation"/><NamedCell ss:Name="col_dateAffiliation"/></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">Date de fin </Data><NamedCell
+      ss:Name="dateRadiation"/><NamedCell ss:Name="col_dateRadiation"/></Cell>
+    <Cell ss:StyleID="s76"><Data ss:Type="String">motif</Data><NamedCell
+      ss:Name="motifFin"/><NamedCell ss:Name="col_motifFin"/></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">Date début</Data><NamedCell
+      ss:Name="dateDebutCaisse"/><NamedCell ss:Name="col_dateDebutCaisse"/></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">Date de fin</Data><NamedCell
+      ss:Name="dateFinCaisse"/><NamedCell ss:Name="col_dateFinCaisse"/></Cell>
+    <Cell ss:StyleID="s76"><Data ss:Type="Number">40179</Data><NamedCell
+      ss:Name="numCaisseAVS"/><NamedCell ss:Name="col_numCaisseAVS"/></Cell>
+    <Cell ss:StyleID="s80"><Data ss:Type="String">etat</Data><NamedCell
+      ss:Name="etat"/><NamedCell ss:Name="col_etat"/></Cell>
+    <Cell><Data ss:Type="String">erreur</Data><NamedCell ss:Name="erreur"/><NamedCell
+      ss:Name="col_erreur"/></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -245,12 +292,10 @@
    </Print>
    <PageBreakZoom>60</PageBreakZoom>
    <Selected/>
-   <LeftColumnVisible>8</LeftColumnVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>5</ActiveRow>
-     <ActiveCol>13</ActiveCol>
+     <ActiveRow>6</ActiveRow>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
