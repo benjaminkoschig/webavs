@@ -284,9 +284,7 @@
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="7" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[Caisse de compensation des entrepreneurs | Agence vaudoise 66.1 | Route Ignace Paderewski 2 | Case postale | 1131 Tolochenaz
-T +41 21 802 88 88 | F +41 21 802 88 80 | www.fve.ch | N° TVA 523774
-]]></text>
+				<text><![CDATA[Caisse de compensation des entrepreneurs | Agence vaudoise 66.1 | Route Ignace Paderewski 2 | Case postale | 1131 Tolochenaz |  Suisse | T +41 21 619 20 00 | F +41 21 619 20 09 | www.avs66-1.ch]]></text>
 				</staticText>
 				<image  scaleImage="FillFrame" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
 						mode="Opaque"
