@@ -3128,7 +3128,12 @@ public class REDecisionOO extends REAbstractJobOO {
                 ITITiers tiersTitre = (ITITiers) getSession().getAPIFor(ITITiers.class);
                 Hashtable<String, String> params = new Hashtable<String, String>();
 
-                PRTiersWrapper tiersT = tiers;
+                PRTiersWrapper tiersT = PRTiersHelper.getTiersParId(getSession(),
+                        decision.getIdTiersBeneficiairePrincipal());
+                if (null == tiersT) {
+                    tiersT = PRTiersHelper.getAdministrationParId(getSession(),
+                            decision.getIdTiersBeneficiairePrincipal());
+                }
 
                 if (isAdresseCourrierDiffTiersDecision) {
                     tiersT = PRTiersHelper.getTiersParId(getSession(), decision.getIdTiersAdrCourrier());
