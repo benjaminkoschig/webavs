@@ -692,6 +692,7 @@ public class PRTiersHelper {
         if (!JadeStringUtil.isEmpty(admAdr.getRue())) {
             adresseTribunal += ", " + admAdr.getRue();
         }
+
         if (!JadeStringUtil.isEmpty(admAdr.getNumero())) {
             adresseTribunal += " " + admAdr.getNumero();
         }
@@ -731,6 +732,7 @@ public class PRTiersHelper {
 
         if (null != officeAI) {
             admAdrMgr.setForCantonAdministration(officeAI.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON));
+            admAdrMgr.setForDateEntreDebutEtFin(JadeDateUtil.getDMYDate(new Date()));
             admAdrMgr.find();
 
             if (admAdrMgr.size() == 0) {
@@ -747,14 +749,18 @@ public class PRTiersHelper {
                 if (!JadeStringUtil.isEmpty(admAdr.getDesignation2_tiers())) {
                     adresseTribunal += " " + admAdr.getDesignation2_tiers();
                 }
-                if (!JadeStringUtil.isBlank(admAdr.getCasePostaleComp())) {
-                    adresseTribunal += ", " + admAdr.getCasePostaleComp();
+
+                if (!JadeStringUtil.isEmpty(admAdr.getAttention())) {
+                    adresseTribunal += ", " + admAdr.getAttention();
                 }
                 if (!JadeStringUtil.isEmpty(admAdr.getRue())) {
                     adresseTribunal += ", " + admAdr.getRue();
                 }
                 if (!JadeStringUtil.isEmpty(admAdr.getNumero())) {
                     adresseTribunal += " " + admAdr.getNumero();
+                }
+                if (!JadeStringUtil.isBlank(admAdr.getCasePostaleComp())) {
+                    adresseTribunal += ", " + admAdr.getCasePostaleComp();
                 }
                 if (!JadeStringUtil.isEmpty(admAdr.getNpa())) {
                     adresseTribunal += ", " + admAdr.getNpa();
@@ -785,18 +791,25 @@ public class PRTiersHelper {
                         if (!JadeStringUtil.isEmpty(admAdr.getDesignation2_tiers())) {
                             adresseTribunal += " " + admAdr.getDesignation2_tiers();
                         }
-                        if (!JadeStringUtil.isBlank(admAdr.getCasePostaleComp())) {
-                            adresseTribunal += ", " + admAdr.getCasePostaleComp();
+
+                        if (!JadeStringUtil.isEmpty(admAdr.getAttention())) {
+                            adresseTribunal += ", " + admAdr.getAttention();
                         }
-                        if (!JadeStringUtil.isBlank(casePostal) && JadeStringUtil.isBlank(admAdr.getCasePostaleComp())) {
-                            adresseTribunal += ", " + casePostal;
-                        }
+
                         if (!JadeStringUtil.isEmpty(admAdr.getRue())) {
                             adresseTribunal += ", " + admAdr.getRue();
                         }
                         if (!JadeStringUtil.isEmpty(admAdr.getNumero())) {
                             adresseTribunal += " " + admAdr.getNumero();
                         }
+
+                        if (!JadeStringUtil.isBlank(admAdr.getCasePostaleComp())) {
+                            adresseTribunal += ", " + admAdr.getCasePostaleComp();
+                        }
+                        if (!JadeStringUtil.isBlank(casePostal) && JadeStringUtil.isBlank(admAdr.getCasePostaleComp())) {
+                            adresseTribunal += ", " + casePostal;
+                        }
+
                         if (!JadeStringUtil.isEmpty(admAdr.getNpa())) {
                             adresseTribunal += ", " + admAdr.getNpa();
                         }
