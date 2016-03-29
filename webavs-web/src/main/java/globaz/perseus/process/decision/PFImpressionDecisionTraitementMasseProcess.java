@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import ch.globaz.perseus.business.constantes.CSCaisse;
 import ch.globaz.perseus.business.constantes.CSEtatDecision;
 import ch.globaz.perseus.business.constantes.CSTypeDecision;
 import ch.globaz.perseus.business.constantes.CSTypeDemande;
@@ -85,14 +84,13 @@ public class PFImpressionDecisionTraitementMasseProcess extends PFAbstractJob {
             JadeApplicationServiceNotAvailableException, JadePersistenceException, Exception {
         hashAllDoc = new DecisionChangementConditionsPersonnellesTraitementMasseBuilder().build(decision
                 .getSimpleDecision().getId(), mailAddressCaissePrincipale, decision.getSimpleDecision()
-                .getDateDocument(), isSendToGed(decision), hashAllDoc);
+                .getDateDocument(), Boolean.TRUE, hashAllDoc);
     }
 
     private void genererDecisionOctroiCompletRevisionPeriodique(Decision decision) throws DecisionException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, Exception {
         hashAllDoc = new DecisionOctroiHorsRiTraitementMasseBuilder().build(decision.getSimpleDecision().getId(),
-                mailAddressCaissePrincipale, decision.getSimpleDecision().getDateDocument(), isSendToGed(decision),
-                hashAllDoc);
+                mailAddressCaissePrincipale, decision.getSimpleDecision().getDateDocument(), Boolean.TRUE, hashAllDoc);
     }
 
     private void genererDecisionOctroiForTypeDemande(Decision decision) throws DecisionException,
@@ -132,15 +130,14 @@ public class PFImpressionDecisionTraitementMasseProcess extends PFAbstractJob {
     private void genererDecisionOctroiPartielApresOctroiComplet(Decision decision) throws DecisionException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, Exception {
         hashAllDoc = new DecisionSuppressionEconomiqueTraitementMasseBuilder().build(decision.getSimpleDecision()
-                .getId(), mailAddressCaissePrincipale, decision.getSimpleDecision().getDateDocument(),
-                isSendToGed(decision), hashAllDoc);
+                .getId(), mailAddressCaissePrincipale, decision.getSimpleDecision().getDateDocument(), Boolean.TRUE,
+                hashAllDoc);
     }
 
     private void genererDecisionOctroiPartielQuiResteEnPartiel(Decision decision) throws DecisionException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, Exception {
         hashAllDoc = new DecisionOctroiPartielTraitementMasseBuilder().build(decision.getSimpleDecision().getId(),
-                mailAddressCaissePrincipale, decision.getSimpleDecision().getDateDocument(), isSendToGed(decision),
-                hashAllDoc);
+                mailAddressCaissePrincipale, decision.getSimpleDecision().getDateDocument(), Boolean.TRUE, hashAllDoc);
     }
 
     @Override
@@ -196,16 +193,6 @@ public class PFImpressionDecisionTraitementMasseProcess extends PFAbstractJob {
         pubInfoDestination.setDocumentTypeNumber(numInforom);
         return pubInfoDestination;
 
-    }
-
-    private boolean isSendToGed(Decision decision) {
-        boolean isSendToGed = false;
-
-        if (CSCaisse.CCVD.getCodeSystem().equals(decision.getDemande().getSimpleDemande().getCsCaisse())) {
-            isSendToGed = true;
-        }
-
-        return isSendToGed;
     }
 
     private void logErrorTypeDecision(Decision decision) {
