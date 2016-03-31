@@ -370,7 +370,7 @@
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>op</artifactId>
-				<version>5.0.2.sp1</version>
+				<version>5.0.3-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>ch.globaz</groupId>
