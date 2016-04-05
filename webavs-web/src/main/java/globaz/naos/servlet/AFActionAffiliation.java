@@ -29,6 +29,7 @@ import globaz.jade.log.JadeLogger;
 import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.naos.db.affiliation.AFAffiliationViewBean;
+import globaz.naos.db.wizard.AFWizardViewBean;
 import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.AFVerrouAffiliation;
 import globaz.osiris.db.comptes.CASection;
@@ -48,7 +49,7 @@ import javax.servlet.http.HttpSession;
  * 
  * @author sau
  */
-public class AFActionAffiliation extends AFDefaultActionChercher {
+public class AFActionAffiliation extends AFIdeDefaultActionChercher {
 
     public final static String ACTION_AFFICHER_ADRESSES_TIERS = "rechercheAdressesTiers";
     public final static String ACTION_AFFICHER_DOSSIER_GED = "gedafficherdossier";
@@ -121,6 +122,15 @@ public class AFActionAffiliation extends AFDefaultActionChercher {
                 String affiliationId = request.getParameter("selectedId");
 
                 AFAffiliationViewBean viewBean = new AFAffiliationViewBean();
+
+                FWViewBeanInterface vbSession = (FWViewBeanInterface) session.getAttribute("viewBean");
+                if (vbSession != null && AFAffiliationViewBean.class.isAssignableFrom(vbSession.getClass())) {
+                    viewBean.setWarningMessageAnnonceIdeCreationNotAdded(((AFAffiliationViewBean) vbSession)
+                            .getWarningMessageAnnonceIdeCreationNotAdded());
+                } else if (vbSession != null && AFWizardViewBean.class.isAssignableFrom(vbSession.getClass())) {
+                    viewBean.setWarningMessageAnnonceIdeCreationNotAdded(((AFWizardViewBean) vbSession)
+                            .getWarningMessageAnnonceIdeCreationNotAdded());
+                }
 
                 String idTiers = "";
                 if (!JadeStringUtil.isBlank(request.getParameter("idTiers"))) {
