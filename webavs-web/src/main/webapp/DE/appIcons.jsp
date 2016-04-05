@@ -236,13 +236,7 @@ var oAppsPopup = window.createPopup();
 								</a>
 							<%}%>
 	
-							<%if (objSession.hasRight("orion", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88374937" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88374937,'#D7E4FF',1);selected=this.children.iditem88374937;" onblur="javascript:changeStyle(this.children.iditem88374937,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/draco');">
-									<div id="iditem88374937" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/orion');">
-										E-Business
-									</div>
-								</a>
-							<%}%>
+>
 							
 							<%if (objSession.hasRight("perseus", globaz.framework.secure.FWSecureConstants.READ)) {%>
 								<a href="#" id="iditem88347311" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88347311,'#D7E4FF',1);selected=this.children.iditem88347311;" onblur="javascript:changeStyle(this.children.iditem88347311,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/perseus');">
