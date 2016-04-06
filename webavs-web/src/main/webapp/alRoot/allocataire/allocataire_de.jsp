@@ -91,6 +91,13 @@ function upd() {
 	}
 }
 function validate() {
+	var typeDomaine = $('#TypeDomaineAgriculteur').val();
+	var msgErreur = '<%=JavascriptEncoder.getInstance().encode(objSession.getLabel("MESSAGE_ERREUR_DOMAINE_ACTIVITE_OBLIGATOIRE"))%>';
+	if(typeDomaine==null || typeDomaine.length==0 || typeDomaine==""){
+		alert(msgErreur);
+		return;
+	}
+	
     state = validateFields();
 
     if (document.forms[0].elements('_method').value == "add")

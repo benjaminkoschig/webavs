@@ -108,6 +108,12 @@ function upd() {
 }
 
 function validate() {
+	var typeDomaine = $('#TypeDomaineAgriculteur').val();
+	var msgErreur = '<%=JavascriptEncoder.getInstance().encode(objSession.getLabel("MESSAGE_ERREUR_DOMAINE_ACTIVITE_OBLIGATOIRE"))%>';
+	if(typeDomaine==null || typeDomaine.length==0 || typeDomaine==""){
+		alert(msgErreur);
+		return;
+	}
 	
     state = validateFields();
     if (document.forms[0].elements('_method').value == "add")
@@ -180,10 +186,10 @@ function init(){
 		if (val == 61040001 || val == 61040002 || val == 61040006) {
 			$("#TypeDomaineAgriculteur").css("visibility", "visible");
 			$("#TypeDomaineAgriculteur").css("width", "80px");	
-			//alert(document.getElementById('TypeDomaineAgriculteur').value);
 		} else {
 			$("#TypeDomaineAgriculteur").css("visibility", "hidden");	
 			$("#TypeDomaineAgriculteur").css("width", "0px");	
+			$("#TypeDomaineAgriculteur").val("false");
 		}
 		
 		if(val == 61040005){
@@ -731,14 +737,15 @@ var MAIN_URL = "<%=(servletContext + mainServletPath)%>";
 	                    	 <select id="TypeDomaineAgriculteur" name="dossierAgricoleComplexModel.allocataireAgricoleComplexModel.agricoleModel.domaineMontagne" style="width:0px;visibility:hidden">">
 		                    	<%
 	                    	 	//Type montagne par défaut
-	                    	 	boolean typeDomaine = true;
+	                    	 	String typeDomaine = "";
 	                    	 	                  	 		                    
 	                    	 	if (!viewBean.getDossierAgricoleComplexModel().getAllocataireAgricoleComplexModel().getAgricoleModel().isNew()) {
-	                    	 	     typeDomaine = viewBean.getDossierAgricoleComplexModel().getAllocataireAgricoleComplexModel().getAgricoleModel().getDomaineMontagne();
+	                    	 	     typeDomaine = viewBean.getDossierAgricoleComplexModel().getAllocataireAgricoleComplexModel().getAgricoleModel().getDomaineMontagne().toString();
 	                    	 	}
 	                    	 %>
-		                    		<option value="true" label='<%=objSession.getLabel("AL0006_ALLOC_DOMAINE_MONTAGNE")%>' <%=typeDomaine==true?"selected=selected":""%> />	
-			                    	<option value="false" label='<%=objSession.getLabel("AL0006_ALLOC_DOMAINE_PLAINE")%>' <%=typeDomaine==false?"selected=selected":""%> />
+		                    		<option value="" label='' <%=JadeStringUtil.isEmpty(typeDomaine)?"selected=selected":""%>/>
+		                    		<option value="true" label='<%=objSession.getLabel("AL0006_ALLOC_DOMAINE_MONTAGNE")%>' <%=typeDomaine.equals("true")?"selected=selected":""%> />	
+			                    	<option value="false" label='<%=objSession.getLabel("AL0006_ALLOC_DOMAINE_PLAINE")%>' <%=typeDomaine.equals("false")?"selected=selected":""%> />
 		                    	</select> 
 	                     <%
  	                     	}
