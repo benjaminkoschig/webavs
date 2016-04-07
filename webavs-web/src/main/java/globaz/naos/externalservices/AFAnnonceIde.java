@@ -3,18 +3,16 @@ package globaz.naos.externalservices;
 import globaz.globall.db.BAbstractEntityExternalService;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.common.Jade;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.naos.util.AFIDEUtil;
 import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.db.adressecourrier.TIAdresse;
-import globaz.pyxis.db.adressecourrier.TIAdresseViewBean;
 import globaz.pyxis.db.adressecourrier.TIAvoirAdresse;
-import globaz.pyxis.db.adressecourrier.TIAvoirAdresseManager;
 import globaz.pyxis.db.adressecourrier.TIAvoirAdresseViewBean;
 import globaz.pyxis.db.adressecourrier.TILocalite;
 import globaz.pyxis.db.tiers.TITiersViewBean;
@@ -27,8 +25,19 @@ import java.util.Hashtable;
  */
 public class AFAnnonceIde extends BAbstractEntityExternalService {
 
+    private static final String PROVENANCE_AFTER_ADD = "PROVENANCE_AFTER_ADD";
+    private static final String PROVENANCE_DEFAULT = "PROVENANCE_DEFAULT";
+
     @Override
     public void afterAdd(BEntity entity) throws Throwable {
+
+        if (entity instanceof TIAvoirAdresseViewBean) {
+            generateMutationAvoirAdresse(entity, PROVENANCE_AFTER_ADD);
+        }
+
+        if (entity.getSession().hasErrors()) {
+            throw new Exception(entity.getSession().getErrors().toString());
+        }
     }
 
     @Override
@@ -49,14 +58,7 @@ public class AFAnnonceIde extends BAbstractEntityExternalService {
 
     @Override
     public void beforeAdd(BEntity entity) throws Throwable {
-        if (entity instanceof TIAdresseViewBean) {
-            generateMutationAdresse(entity);
-        } else if (entity instanceof TIAvoirAdresseViewBean) {
-            generateMutationAvoirAdresse(entity);
-        }
-        if (entity.getSession().hasErrors()) {
-            throw new Exception(entity.getSession().getErrors().toString());
-        }
+
     }
 
     @Override
@@ -79,67 +81,58 @@ public class AFAnnonceIde extends BAbstractEntityExternalService {
         } else if (entity instanceof TITiersViewBean) {
             // Mutation si la langue a été modifiée
             generateMutationTiers(entity, transactionLecture);
-        } else if (entity instanceof TIAdresseViewBean) {
-            generateMutationAdresse(entity);
         } else if (entity instanceof TIAvoirAdresse) {
-            generateMutationAvoirAdresse(entity);
+            generateMutationAvoirAdresse(entity, PROVENANCE_DEFAULT);
         }
         if (entity.getSession().hasErrors()) {
             throw new Exception(entity.getSession().getErrors().toString());
         }
     }
 
-    private void generateMutationAvoirAdresse(BEntity entity) throws Exception {
-        TIAvoirAdresse avoirAdresse = (TIAvoirAdresse) entity;
-        if (!JadeStringUtil.isEmpty(avoirAdresse.getIdAdresseIntUnique())) {
-            TIAvoirAdresse avoirAdresseAvantModif = new TIAvoirAdresse();
-            avoirAdresseAvantModif.setSession(avoirAdresse.getSession());
-            avoirAdresseAvantModif.setIdAdresse(avoirAdresse.getIdAdresseIntUnique());
-            avoirAdresseAvantModif.retrieve(avoirAdresse.getSession().getCurrentThreadTransaction());
-            // Modification si changement d'adresse
-            if (avoirAdresseAvantModif.getIdAdresse().equalsIgnoreCase(avoirAdresse.getIdAdresse())) {
-                TITiersViewBean tiers = new TITiersViewBean();
-                tiers.setIdTiers(avoirAdresse.getIdTiers());
-                tiers.setSession(avoirAdresse.getSession());
-                tiers.retrieve();
-                findAffiliatioAndGenerateMutation(tiers, avoirAdresse.getIdAdresseIntUnique());
-            }
-        }
-    }
+    private void generateMutationAvoirAdresse(BEntity entity, String provenance) throws Exception {
 
-    private void generateMutationAdresse(BEntity entity) throws Exception {
-        TIAdresseViewBean adresse = (TIAdresseViewBean) entity;
+        TIAvoirAdresse avoirAdresse = (TIAvoirAdresse) entity;
+        BSession theSession = avoirAdresse.getSession();
+
+        TITiersViewBean tiers = new TITiersViewBean();
+        tiers.setSession(theSession);
+        tiers.setIdTiers(avoirAdresse.getIdTiers());
+        tiers.retrieve();
+
+        TIAdresse adresse = new TIAdresse();
+        adresse.setSession(theSession);
+        adresse.setIdAdresseUnique(avoirAdresse.getIdAdresse());
+        adresse.retrieve();
+
+        TILocalite localite = new TILocalite();
+        localite.setSession(theSession);
+        localite.setIdLocalite(adresse.getIdLocalite());
+        localite.retrieve();
+
+        TIAvoirAdresse avoirAdresseAvantModif = new TIAvoirAdresse();
+        avoirAdresseAvantModif.setSession(theSession);
+        avoirAdresseAvantModif.setId(avoirAdresse.getId());
+        avoirAdresseAvantModif.retrieve();
+
         TIAdresse adresseAvantModif = new TIAdresse();
-        adresseAvantModif.setSession(adresse.getSession());
-        adresseAvantModif.setIdAdresseUnique(adresse.getOldIdAdresse());
-        adresseAvantModif.retrieve(adresse.getSession().getCurrentThreadTransaction());
+        adresseAvantModif.setSession(theSession);
+        adresseAvantModif.setIdAdresseUnique(avoirAdresseAvantModif.getIdAdresse());
+        adresseAvantModif.retrieve();
+
         TILocalite localiteAvantModif = new TILocalite();
-        localiteAvantModif.setSession(adresse.getSession());
+        localiteAvantModif.setSession(theSession);
         localiteAvantModif.setIdLocalite(adresseAvantModif.getIdLocalite());
-        localiteAvantModif.retrieve(adresse.getSession().getCurrentThreadTransaction());
-        if (!adresseAvantModif.isNew() && !localiteAvantModif.isNew()) {
-            // Champs modifiés devant être annoncé
-            if (!adresseAvantModif.getRue().equalsIgnoreCase(adresse.getRue())
-                    || !localiteAvantModif.getLocalite().equalsIgnoreCase(adresse.getLocalite())
-                    || !adresseAvantModif.getNumeroRue().equalsIgnoreCase(adresse.getNumeroRue())
-                    || !localiteAvantModif.getNumPostal().equalsIgnoreCase(adresse.getLocaliteCode())) {
-                // Recherche tiers
-                TIAvoirAdresseManager avoirAdresseMng = new TIAvoirAdresseManager();
-                avoirAdresseMng.setSession(adresse.getSession());
-                avoirAdresseMng.setForIdAdresse(adresse.getOldIdAdresse());
-                avoirAdresseMng.changeManagerSize(BManager.SIZE_NOLIMIT);
-                avoirAdresseMng.setOrderBy(Jade.getInstance().getDefaultJdbcSchema() + ".TITIERP.HTITIE");
-                avoirAdresseMng.find();
-                for (int i = 0; i < avoirAdresseMng.getSize(); i++) {
-                    TIAvoirAdresse avoirAdresse = (TIAvoirAdresse) avoirAdresseMng.getEntity(i);
-                    TITiersViewBean tiers = new TITiersViewBean();
-                    tiers.setIdTiers(avoirAdresse.getIdTiers());
-                    tiers.setSession(adresse.getSession());
-                    tiers.retrieve();
-                    findAffiliatioAndGenerateMutation(tiers, adresse.getOldIdAdresse());
-                }
-            }
+        localiteAvantModif.retrieve();
+
+        if (PROVENANCE_AFTER_ADD.equalsIgnoreCase(provenance)
+                || !adresseAvantModif.getRue().equalsIgnoreCase(adresse.getRue())
+                || !localiteAvantModif.getLocalite().equalsIgnoreCase(localite.getLocalite())
+                || !adresseAvantModif.getNumeroRue().equalsIgnoreCase(adresse.getNumeroRue())
+                || !localiteAvantModif.getNumPostal().equalsIgnoreCase(localite.getNumPostal())) {
+
+            findAffiliatioAndGenerateMutation(tiers, avoirAdresseAvantModif.getIdAdresse());
         }
+
     }
 
     private void generateMutationTiers(BEntity entity, BTransaction transactionLecture) throws Exception {
