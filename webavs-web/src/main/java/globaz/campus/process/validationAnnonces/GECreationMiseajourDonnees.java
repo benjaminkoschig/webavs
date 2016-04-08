@@ -679,63 +679,69 @@ public class GECreationMiseajourDonnees {
 
             // check si le tiers est modifiable d'après les conditions métiers
             // @see GECreationAnnoncesRules
-            if (GECreationAnnoncesRules.checkIfModifiable(idTiers, sessionCampus)) {
 
-                if (JadeStringUtil.isBlankOrZero(idTiers)) {
-                    // Création du Tiers
-                    tiers.setDesignation1(annonce.getNom());
-                    tiers.setDesignation2(annonce.getPrenom());
-                    tiers.setEtatCivil(annonce.getCsEtatCivil());
-                    tiers.setSexe(annonce.getCsSexe());
-                    tiers.setNumAvsActuel(annonce.getNumAvs());
-                    tiers.setDateNaissance(annonce.getDateNaissance());
+            boolean isTiersMofifiable = GECreationAnnoncesRules.checkIfModifiable(idTiers, sessionCampus);
 
-                    if (!JadeStringUtil.isEmpty(annonce.getNumAvs())) {
-                        String numAvs = NSUtil.unFormatAVS(annonce.getNumAvs());
-                        if (numAvs.length() == 11) {
-                            if (numAvs.charAt(9) >= '5') {
-                                tiers.setIdPays("");
-                            } else {
-                                tiers.setIdPays("100");
-                            }
+            if (JadeStringUtil.isBlankOrZero(idTiers)) {
+                // Création du Tiers
+                tiers.setDesignation1(annonce.getNom());
+                tiers.setDesignation2(annonce.getPrenom());
+                tiers.setEtatCivil(annonce.getCsEtatCivil());
+                tiers.setSexe(annonce.getCsSexe());
+                tiers.setNumAvsActuel(annonce.getNumAvs());
+                tiers.setDateNaissance(annonce.getDateNaissance());
+
+                if (!JadeStringUtil.isEmpty(annonce.getNumAvs())) {
+                    String numAvs = NSUtil.unFormatAVS(annonce.getNumAvs());
+                    if (numAvs.length() == 11) {
+                        if (numAvs.charAt(9) >= '5') {
+                            tiers.setIdPays("");
+                        } else {
+                            tiers.setIdPays("100");
                         }
                     }
+                }
 
+                if (isTiersMofifiable) {
                     tiers.add(transaction);
-                } else {
-                    // Mise à jour du tiers
-                    tiers.setIdTiers(idTiers);
-                    tiers.retrieve(transaction);
-                    if (!tiers.isNew() && (tiers != null)) {
-                        if (!JadeStringUtil.isBlank(annonce.getNom())) {
-                            tiers.setDesignation1(annonce.getNom());
-                        }
-                        if (!JadeStringUtil.isBlank(annonce.getPrenom())) {
-                            tiers.setDesignation2(annonce.getPrenom());
-                        }
-                        if (!JadeStringUtil.isBlank(annonce.getCsEtatCivil())) {
-                            tiers.setEtatCivil(annonce.getCsEtatCivil());
-                        }
-                        if (!JadeStringUtil.isBlank(annonce.getCsSexe())) {
-                            tiers.setSexe(annonce.getCsSexe());
-                        }
-                        // On ne va plus mettre à jour le numAvs
-                        // PO : 2397
-                        /*
-                         * if (!JadeStringUtil.isBlank(annonce.getNumAvs())){
-                         * tiers.setNumAvsActuel(annonce.getNumAvs()); }
-                         */
-                        if (!JadeStringUtil.isBlank(annonce.getDateNaissance())) {
-                            tiers.setDateNaissance(annonce.getDateNaissance());
-                        }
+                }
+            } else {
+                // Mise à jour du tiers
+                tiers.setIdTiers(idTiers);
+                tiers.retrieve(transaction);
+                if (!tiers.isNew() && (tiers != null)) {
+                    if (!JadeStringUtil.isBlank(annonce.getNom())) {
+                        tiers.setDesignation1(annonce.getNom());
+                    }
+                    if (!JadeStringUtil.isBlank(annonce.getPrenom())) {
+                        tiers.setDesignation2(annonce.getPrenom());
+                    }
+                    if (!JadeStringUtil.isBlank(annonce.getCsEtatCivil())) {
+                        tiers.setEtatCivil(annonce.getCsEtatCivil());
+                    }
+                    if (!JadeStringUtil.isBlank(annonce.getCsSexe())) {
+                        tiers.setSexe(annonce.getCsSexe());
+                    }
+                    // On ne va plus mettre à jour le numAvs
+                    // PO : 2397
+                    /*
+                     * if (!JadeStringUtil.isBlank(annonce.getNumAvs())){
+                     * tiers.setNumAvsActuel(annonce.getNumAvs()); }
+                     */
+                    if (!JadeStringUtil.isBlank(annonce.getDateNaissance())) {
+                        tiers.setDateNaissance(annonce.getDateNaissance());
+                    }
+                    if (isTiersMofifiable) {
                         tiers.update(transaction);
                     }
                 }
-                if (transaction.hasErrors()) {
-                    throw new Exception(transaction.getErrors().toString());
-                }
+            }
+            if (transaction.hasErrors()) {
+                throw new Exception(transaction.getErrors().toString());
+            }
 
-                // Création des adresses
+            // Création des adresses
+            if (isTiersMofifiable) {
                 creationAdresses(annonce, tiers.getIdTiers(), annee, process);
             }
 
