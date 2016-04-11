@@ -79,6 +79,7 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
         public String raNom = "";
         public String raNss = "";
         public String raPrenom = "";
+        public String idInfoComptable = "";
 
         public void addRelation(final String csDomaine, final String idConjoint, final RelationContainer relation) {
 
@@ -139,6 +140,7 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
             raDateDeces = raMF.getDateDeces();
             raIdTiersBaseCalcul = raMF.getIdTiersBaseCalcul();
             isTiersInactif = raMF.getIsTiersInactif();
+            idInfoComptable = raMF.getIdInformationComptable();
 
             return this;
         }
@@ -716,6 +718,12 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
                 addCell(infoBC, getSession().getLabel("LISTE_ERR_ERREUR_13"));
             }
         }
+
+        // test 10 information comptabilite a 0
+        if (JadeStringUtil.isBlankOrZero(infoBC.idInfoComptable)) {
+            addCell(infoBC, getSession().getLabel("LISTE_ERREUR_INFO_COMPTA_0"));
+        }
+
     }
 
     private String getDateFormatted(final Calendar cal) {

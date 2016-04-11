@@ -15,6 +15,10 @@ import globaz.pyxis.db.tiers.ITITiersDefTable;
  */
 public class RERenteActiveJoinMembresFamille extends BEntity {
 
+    public String getIdInformationComptable() {
+        return idInformationComptable;
+    }
+
     /**
      * 
      */
@@ -47,6 +51,7 @@ public class RERenteActiveJoinMembresFamille extends BEntity {
     private String nom;
     private String nss;
     private String prenom;
+    private String idInformationComptable;
 
     public RERenteActiveJoinMembresFamille() {
         super();
@@ -78,6 +83,7 @@ public class RERenteActiveJoinMembresFamille extends BEntity {
         nom = "";
         nss = "";
         prenom = "";
+        idInformationComptable = "";
     }
 
     @Override
@@ -109,6 +115,7 @@ public class RERenteActiveJoinMembresFamille extends BEntity {
         String tableMembreFamille = _getCollection() + SFMembreFamille.TABLE_NAME;
         String tableConjoint = _getCollection() + SFConjoint.TABLE_NAME;
         String tableRelationConjugale = _getCollection() + SFRelationConjoint.TABLE_NAME;
+        String tableInformationComptabilite = _getCollection() + REInformationsComptabilite.TABLE_NAME_INFO_COMPTA;
 
         sql.append(tablePrestationAccordee).append(".").append(REPrestationsAccordees.FIELDNAME_ID_PRESTATION_ACCORDEE)
                 .append(",");
@@ -118,6 +125,8 @@ public class RERenteActiveJoinMembresFamille extends BEntity {
         sql.append(tablePrestationAccordee).append(".").append(REPrestationsAccordees.FIELDNAME_FRACTION_RENTE)
                 .append(",");
         sql.append(tablePrestationAccordee).append(".").append(REPrestationsAccordees.FIELDNAME_ID_TIERS_BENEFICIAIRE)
+                .append(",");
+        sql.append(tablePrestationAccordee).append(".").append(REPrestationsAccordees.FIELDNAME_ID_INFO_COMPTA)
                 .append(",");
 
         sql.append(tableRenteAccordee).append(".").append(RERenteAccordee.FIELDNAME_CODE_CAS_SPECIAUX_1).append(",");
@@ -151,8 +160,10 @@ public class RERenteActiveJoinMembresFamille extends BEntity {
         sql.append(tableRelationConjugale).append(".").append(SFRelationConjoint.FIELD_IDRELATIONCONJOINT).append(",");
         sql.append(tableRelationConjugale).append(".").append(SFRelationConjoint.FIELD_DATEDEBUT).append(",");
         sql.append(tableRelationConjugale).append(".").append(SFRelationConjoint.FIELD_DATEFIN).append(",");
-        sql.append(tableRelationConjugale).append(".").append(SFRelationConjoint.FIELD_TYPERELATION);
+        sql.append(tableRelationConjugale).append(".").append(SFRelationConjoint.FIELD_TYPERELATION).append(",");
 
+        sql.append(tableInformationComptabilite).append(".")
+                .append(REInformationsComptabilite.FIELDNAME_ID_INFO_COMPTA);
         return sql.toString();
     }
 
@@ -170,8 +181,14 @@ public class RERenteActiveJoinMembresFamille extends BEntity {
         String tableMembreFamille = _getCollection() + SFMembreFamille.TABLE_NAME;
         String tableConjoint = _getCollection() + SFConjoint.TABLE_NAME;
         String tableRelationConjugale = _getCollection() + SFRelationConjoint.TABLE_NAME;
+        String tableInformationComptabilite = _getCollection() + REInformationsComptabilite.TABLE_NAME_INFO_COMPTA;
 
         sql.append(tablePrestationAccordee);
+        sql.append(" LEFT OUTER JOIN ").append(tableInformationComptabilite);
+        sql.append(" ON ").append(tablePrestationAccordee).append(".")
+                .append(REPrestationsAccordees.FIELDNAME_ID_INFO_COMPTA).append("=")
+                .append(tableInformationComptabilite).append(".")
+                .append(REInformationsComptabilite.FIELDNAME_ID_INFO_COMPTA);
 
         sql.append(" LEFT OUTER JOIN ").append(tableRenteAccordee);
         sql.append(" ON ").append(tableRenteAccordee).append(".").append(RERenteAccordee.FIELDNAME_ID_RENTE_ACCORDEE)
@@ -252,6 +269,7 @@ public class RERenteActiveJoinMembresFamille extends BEntity {
         nom = statement.dbReadString(ITITiersDefTable.DESIGNATION_1);
         nss = statement.dbReadString(ITIPersonneAvsDefTable.NUMERO_AVS_ACTUEL);
         prenom = statement.dbReadString(ITITiersDefTable.DESIGNATION_2);
+        idInformationComptable = statement.dbReadNumeric(REInformationsComptabilite.FIELDNAME_ID_INFO_COMPTA);
 
     }
 
