@@ -15,6 +15,7 @@
 		<search-definition>
 			<search-group operator="AND">
 				<search-field name="forIdDecisionRefus" operation="EQUALS" field-ref="idDecisionRefus" />
+				<search-field name="forIdDecisionHeader" operation="EQUALS" field-ref="idDecisionHeader" />
 			</search-group>
 		</search-definition>
 	</simple-model>
