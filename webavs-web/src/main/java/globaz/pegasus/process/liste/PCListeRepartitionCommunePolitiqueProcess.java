@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import ch.globaz.common.domaine.Date;
-import ch.globaz.common.listoutput.SimpleOutputListBuiliderJade;
+import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
 import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.pegasus.business.domaine.pca.PcaEtat;
 import ch.globaz.prestation.domaine.CodePrestation;
@@ -179,7 +179,7 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
             fileName = NUMERO_INFOROM_LISTE_PC_RENTE;
         }
 
-        SimpleOutputListBuilder simpleList = SimpleOutputListBuiliderJade.newInstance().outputNameAndAddPath(fileName);
+        SimpleOutputListBuilder simpleList = SimpleOutputListBuilderJade.newInstance().outputNameAndAddPath(fileName);
 
         Iterator<List<BeneficiairePCCommunePolitiquePojo>> ite = mapByCommunPolitique.values().iterator();
         while (ite.hasNext()) {

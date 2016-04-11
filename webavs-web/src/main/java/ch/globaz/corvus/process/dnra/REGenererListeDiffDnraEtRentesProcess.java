@@ -47,7 +47,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import ch.globaz.common.codesystem.CodeSystemeResolver;
-import ch.globaz.common.listoutput.SimpleOutputListBuiliderJade;
+import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
 import ch.globaz.common.process.ProcessMailUtils;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.sql.ConverterDb;
@@ -472,7 +472,7 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
             }
         });
 
-        File file = SimpleOutputListBuiliderJade.newInstance().outputNameAndAddPath("5158PRE_REListeExcelWebAvsNRA")
+        File file = SimpleOutputListBuilderJade.newInstance().outputNameAndAddPath("5158PRE_REListeExcelWebAvsNRA")
                 .configure(configuration).addList(list).classElementList(DifferenceTrouvee.class)
                 .addTitle(title, Align.LEFT).asXls().build();
         return file.getAbsolutePath();
