@@ -63,6 +63,26 @@ function onClickCheckBox(monAction){
 	document.forms[0].submit();
 }
 
+
+function formatNss($nss) {
+	var numAVS, newNumAVS;
+	newNumAVS = $nss.val();
+	numAVS = $.trim($nss.val()).replace(/\./g,"");
+	if(/^\d*$/.test(numAVS)) {
+		newNumAVS = numAVS.substring(0,3);
+		if (numAVS.length > 3) {
+			newNumAVS += "." + numAVS.substring(3,7);
+			if (numAVS.length > 7) {
+				newNumAVS += "." + numAVS.substring(7,11);
+			}
+			if (numAVS.length > 10) {
+				newNumAVS += "." + numAVS.substring(11,13);
+			}
+		}
+	}
+	$nss.val(newNumAVS)
+}
+
 $(function(){
 	$("#forStatus").change(function () {
 		if($(this).val()==612005){
@@ -76,6 +96,40 @@ $(function(){
 			$("#estAbandonne").attr('checked',false);
 		}
 	});
+	var $critere = $("#critere");
+	var $recherche = $("#recherche");
+	
+	$recherche.keyup(function () {
+		if(/^756\..*/.test($recherche.val())){
+			$critere.val("CRITERE_NSS")
+		};
+	})
+	
+	$critere.change(function () {
+		if($critere.val() === 'CRITERE_NSS'){
+			formatNss($recherche)
+		}
+	});
+	
+	$recherche.blur( function () {
+		if($critere.val() === 'CRITERE_NSS'){
+			formatNss($recherche)
+		}
+	});
+
+	var $find = $("[name=btnFind]");
+	
+	$("[name=mainForm]").submit(function () {
+		if($critere.val() === 'CRITERE_NSS'){
+			var numAVS = $.trim($recherche.val()).replace(/\./g,"");
+			if(numAVS.length<5){
+				$find.attr("disabled", false);
+				alert("Il n'est pas possible d'exécuter une recherche sur les NSS avec moins de 5 caractères, point non compris (756.XX)");
+				return false;
+			}
+		}
+	})
+
 });
 </SCRIPT>
 
@@ -116,7 +170,7 @@ $(function(){
 		<TR>
             <TD nowrap width="30%" >Suche</TD>
             <TD nowrap width="70%" align="left" >
-				<INPUT type="text" name="reqLibelle"  class="libelleLong" value="" tabindex="1" >
+				<INPUT type="text" id="recherche" name="reqLibelle"  class="libelleLong" value="" tabindex="1" >
 			</TD>
 			<TD nowrap width="30%">Status</TD>
            <TD width="70%" nowrap>
@@ -152,12 +206,14 @@ $(function(){
 		<TR>
             <TD nowrap width="30%" >Kriterium</TD>
             <TD nowrap width="70%" align="left" >
-				<SELECT name="critere"    class="libelleLong" >
+				<SELECT name="critere" id="critere" class="libelleLong" >
 					<OPTION selected="selected" value='CRITERE_AFFILIE'>Mitglied-Nr</OPTION>
 					<OPTION value='CRITERE_CONTRIBUABLE'>Steuer-Nr</OPTION>
 					<OPTION value='CRITERE_NOM'>Name</OPTION>
 					<OPTION value='CRITERE_PRENOM'>Vorname</OPTION>
 					<OPTION value='CRITERE_ANNEE'>Jahr</OPTION>
+					<OPTION value='CRITERE_NSS'>Versichertennummer</OPTION>
+					<OPTION value='CRITERE_NOM_PRENOM'>Name, Vorname</OPTION>
 				</SELECT>
 
 			</TD>

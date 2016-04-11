@@ -1853,6 +1853,16 @@ public class CPActionApercuCommunicationFiscaleRetour extends FWDefaultServletAc
                 listViewBean.setForAnnee(recherche);
             } else if ("CRITERE_AFFILIE".equalsIgnoreCase(critere)) {
                 listViewBean.setLikeNumAffilie(recherche);
+            } else if ("CRITERE_NSS".equalsIgnoreCase(critere)) {
+                listViewBean.setLikeNss(recherche.replaceAll("\\.", ""));
+            } else if ("CRITERE_NOM_PRENOM".equalsIgnoreCase(critere)) {
+                String[] cs = recherche.split(",");
+                if (cs.length > 0) {
+                    listViewBean.setLikeNomSedex(cs[0].trim());
+                }
+                if (cs.length == 2) {
+                    listViewBean.setLikePrenomSedex(cs[1].trim());
+                }
             }
         }
 

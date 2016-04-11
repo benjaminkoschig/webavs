@@ -301,16 +301,24 @@ public class QueryExecutor {
                             } else if (Integer.class.isAssignableFrom(field.getType())) {
                                 try {
                                     Method method = class1.getMethod(methodName, Integer.class);
-                                    Integer val = (Integer) value;
-                                    method.invoke(newObjet, val);
+                                    if (field.getType().equals(value.getClass())) {
+                                        method.invoke(newObjet, value);
+                                    } else {
+                                        method.invoke(newObjet, String.valueOf(value));
+                                    }
                                 } catch (Exception e) {
                                     throw new CommonTechnicalException("Error durring introspection", e);
                                 }
                             } else {
                                 try {
                                     Method method = class1.getMethod(methodName, field.getType());
-                                    method.invoke(newObjet, field.getType().getConstructor(value.getClass())
-                                            .newInstance(value));
+                                    if (field.getType().equals(value.getClass())) {
+                                        method.invoke(newObjet, value);
+                                    } else {
+                                        method.invoke(newObjet, field.getType().getConstructor(value.getClass())
+                                                .newInstance(value));
+                                    }
+
                                 } catch (Exception e) {
                                     JadeLogger
                                             .warn(QueryExecutor.class,

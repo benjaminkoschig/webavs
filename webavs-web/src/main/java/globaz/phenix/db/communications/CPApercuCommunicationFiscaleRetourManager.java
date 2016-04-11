@@ -11,6 +11,7 @@ import globaz.globall.db.BStatement;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.phenix.toolbox.CPToolBox;
+import ch.globaz.common.sql.SQLWriter;
 
 /**
  * @author mmu
@@ -26,9 +27,29 @@ public class CPApercuCommunicationFiscaleRetourManager extends CPCommunicationFi
     private String forReportType = "";
 
     private String likeNom = "";
-
     private String likePrenom = "";
+
+    private String likeNomSedex = "";
+    private String likePrenomSedex = "";
+
+    public String getLikeNomSedex() {
+        return likeNomSedex;
+    }
+
+    public void setLikeNomSedex(String likeNomSedex) {
+        this.likeNomSedex = likeNomSedex;
+    }
+
+    public String getLikePrenomSedex() {
+        return likePrenomSedex;
+    }
+
+    public void setLikePrenomSedex(String likePrenomSedex) {
+        this.likePrenomSedex = likePrenomSedex;
+    }
+
     private String likeSenderId = "";
+    private String likeNss = "";
 
     /*
      * (non-Javadoc)
@@ -404,6 +425,27 @@ public class CPApercuCommunicationFiscaleRetourManager extends CPCommunicationFi
             sqlWhere += "CPSECON.SESENID like "
                     + this._dbWriteString(statement.getTransaction(), "%" + getLikeSenderId() + "%");
         }
+
+        String sql;
+        if (!JadeStringUtil.isBlank(likeNss) || !JadeStringUtil.isBlank(likeNomSedex)
+                || !JadeStringUtil.isBlank(likePrenomSedex)) {
+            sql = SQLWriter
+                    .newWriter(_getCollection())
+                    .select("communication.ikiret")
+                    .from("schema.cpcretp communication")
+                    .join("schema.CPSECON contribuable on communication.ikiret = contribuable.ikiret")
+                    .join("schema.CPSEFEM conjoint on communication.ikiret = conjoint.ikiret")
+                    .where()
+                    .and("contribuable.SEVNAVS like '?%' or conjoint.SEVNAVS like '?%'", likeNss)
+                    .and("(upper(contribuable.SEOFNAM) like upper('%?%') or upper(conjoint.SEOFNAM) like upper('%?%'))",
+                            likeNomSedex)
+                    .and("(upper(contribuable.SEFINAM) like upper('%?%') or upper(conjoint.SEFINAM) like upper('%?%'))",
+                            likePrenomSedex).toSql();
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += "cpcretp.ikiret in(" + sql + ")";
+        }
         return sqlWhere;
     }
 
@@ -482,6 +524,14 @@ public class CPApercuCommunicationFiscaleRetourManager extends CPCommunicationFi
 
     public void setLikeSenderId(String likeSenderId) {
         this.likeSenderId = likeSenderId;
+    }
+
+    public String getLikeNss() {
+        return likeNss;
+    }
+
+    public void setLikeNss(String likeNss) {
+        this.likeNss = likeNss;
     }
 
 }
