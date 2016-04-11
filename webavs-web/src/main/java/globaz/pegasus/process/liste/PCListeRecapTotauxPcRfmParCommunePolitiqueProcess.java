@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import ch.globaz.common.domaine.Date;
-import ch.globaz.common.listoutput.SimpleOutputListBuiliderJade;
+import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
@@ -270,7 +270,7 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
 
     private String createExcelFile(List<ContainerByCommunePolitique> containerCP) {
 
-        SimpleOutputListBuilder simpleOut = SimpleOutputListBuiliderJade.newInstance()
+        SimpleOutputListBuilder simpleOut = SimpleOutputListBuilderJade.newInstance()
                 .outputNameAndAddPath(NUMERO_INFOROM).addList(containerCP)
                 .classElementList(ContainerByCommunePolitique.class);
 
