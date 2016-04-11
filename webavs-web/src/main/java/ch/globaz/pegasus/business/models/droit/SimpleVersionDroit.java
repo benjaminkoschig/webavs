@@ -1,6 +1,7 @@
 package ch.globaz.pegasus.business.models.droit;
 
 import globaz.jade.persistence.model.JadeSimpleModel;
+import ch.globaz.pegasus.business.domaine.droit.EtatDroit;
 
 public class SimpleVersionDroit extends JadeSimpleModel {
 
@@ -142,6 +143,10 @@ public class SimpleVersionDroit extends JadeSimpleModel {
 
     public boolean isInitial() {
         return noVersion.equals("1");
+    }
+
+    public EtatDroit getEtat() {
+        return EtatDroit.fromValue(csEtatDroit);
     }
 
 }

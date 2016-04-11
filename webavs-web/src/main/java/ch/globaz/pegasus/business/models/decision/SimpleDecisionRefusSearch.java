@@ -17,6 +17,15 @@ public class SimpleDecisionRefusSearch extends JadeSearchSimpleModel {
      */
     private static final long serialVersionUID = 1L;
     private String forIdDecisionRefus = null;
+    private String forIdDecisionHeader = null;
+
+    public String getForIdDecisionHeader() {
+        return forIdDecisionHeader;
+    }
+
+    public void setForIdDecisionHeader(String forIdDecisionHeader) {
+        this.forIdDecisionHeader = forIdDecisionHeader;
+    }
 
     /**
      * @return the forIdDecisionRefus
@@ -39,7 +48,7 @@ public class SimpleDecisionRefusSearch extends JadeSearchSimpleModel {
      * @see globaz.jade.persistence.model.JadeAbstractSearchModel#whichModelClass()
      */
     @Override
-    public Class whichModelClass() {
+    public Class<SimpleDecisionRefus> whichModelClass() {
         return SimpleDecisionRefus.class;
     }
 

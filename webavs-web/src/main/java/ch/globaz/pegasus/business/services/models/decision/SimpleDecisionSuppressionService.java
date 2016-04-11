@@ -62,6 +62,15 @@ public interface SimpleDecisionSuppressionService extends JadeApplicationService
     public SimpleDecisionSuppression read(String idDecision) throws JadePersistenceException, DecisionException;
 
     /**
+     * @param idDecisionHeader
+     * @return
+     * @throws JadePersistenceException
+     * @throws DecisionException
+     */
+    public SimpleDecisionSuppression readByIdDecisionHeader(String idDecisionHeader) throws JadePersistenceException,
+            DecisionException;
+
+    /**
      * Recherche en fonction des paramètres de recherche
      * 
      * @param decisionSearch

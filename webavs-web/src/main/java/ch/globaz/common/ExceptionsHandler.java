@@ -14,8 +14,8 @@ public class ExceptionsHandler {
     }
 
     public static boolean add(String message, Exception e) {
-        TechnicalExceptionWithTiers technicalExceptionWithTiers = new TechnicalExceptionWithTiers(message, e);
-        return getInstance().add(technicalExceptionWithTiers);
+        RuntimeException ex = new RuntimeException(message, e);
+        return getInstance().add(ex);
     }
 
     public static boolean add(String message, PersonneEtendueComplexModel personne, Exception e) {

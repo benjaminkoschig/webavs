@@ -8,6 +8,7 @@ import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import java.util.Date;
 import java.util.List;
 import ch.globaz.pegasus.business.constantes.IPCDecision;
@@ -71,8 +72,13 @@ public class SimpleDecisionHeaderServiceImpl extends PegasusAbstractServiceImpl 
         if (idsDecisionHeader == null) {
             throw new DecisionException("Unable to delete idsDecisionHeader, the model passed is null!");
         }
+
         SimpleDecisionHeaderSearch searchModel = new SimpleDecisionHeaderSearch();
         searchModel.setForInIdDecisionHeader(idsDecisionHeader);
+        searchModel = (SimpleDecisionHeaderSearch) JadePersistenceManager.search(searchModel);
+        for (JadeAbstractModel model : searchModel.getSearchResults()) {
+            SimpleDecisionHeaderChecker.checkForDelete((SimpleDecisionHeader) model);
+        }
         JadePersistenceManager.delete(searchModel);
     }
 
@@ -86,6 +92,7 @@ public class SimpleDecisionHeaderServiceImpl extends PegasusAbstractServiceImpl 
         if (decision == null) {
             throw new DecisionException("Unable to delete decisions, the search model passed is null!");
         }
+        SimpleDecisionHeaderChecker.checkForDelete(decision);
         return (SimpleDecisionHeader) JadePersistenceManager.delete(decision);
     }
 

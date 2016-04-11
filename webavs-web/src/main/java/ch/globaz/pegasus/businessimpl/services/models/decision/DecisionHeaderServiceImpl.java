@@ -9,12 +9,17 @@ import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
+import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.models.decision.CopiesDecision;
 import ch.globaz.pegasus.business.models.decision.CopiesDecisionSearch;
 import ch.globaz.pegasus.business.models.decision.DecisionHeader;
 import ch.globaz.pegasus.business.models.decision.DecisionHeaderSearch;
 import ch.globaz.pegasus.business.models.decision.SimpleAnnexesDecision;
 import ch.globaz.pegasus.business.models.decision.SimpleAnnexesDecisionSearch;
+import ch.globaz.pegasus.business.models.decision.SimpleDecisionApresCalcul;
+import ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader;
+import ch.globaz.pegasus.business.models.decision.SimpleDecisionSuppression;
+import ch.globaz.pegasus.business.models.droit.SimpleVersionDroit;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.business.services.models.decision.DecisionHeaderService;
 import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
@@ -157,16 +162,42 @@ public class DecisionHeaderServiceImpl extends PegasusAbstractServiceImpl implem
         return (DecisionHeaderSearch) JadePersistenceManager.search(decisionSearch);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ch.globaz.pegasus.business.services.models.decision.DecisionHeaderService
-     * #update(ch.globaz.pegasus.business.models.decision.DecisionHeader)
-     */
     @Override
-    public DecisionHeader update(DecisionHeader decision) {
-        // TODO Auto-generated method stub
-        return null;
+    public SimpleVersionDroit loadSimpleVersionDroit(SimpleDecisionHeader decision) throws DecisionException,
+            JadePersistenceException {
+        String idVersionDroit = null;
+
+        if (decision.getType().isTypeApresCalcul()) {
+            SimpleDecisionApresCalcul decisionApresCalcul;
+            try {
+                decisionApresCalcul = PegasusImplServiceLocator.getSimpleDecisionApresCalculService()
+                        .readByIdDecisionHeader(decision.getIdDecisionHeader());
+            } catch (JadeApplicationServiceNotAvailableException e) {
+                throw new RuntimeException(e);
+            }
+            idVersionDroit = decisionApresCalcul.getIdVersionDroit();
+        } else if (decision.getType().isSuppression()) {
+            try {
+                SimpleDecisionSuppression simpleDecisionSuppression = PegasusImplServiceLocator
+                        .getSimpleDecisionSuppressionService().readByIdDecisionHeader(decision.getIdDecisionHeader());
+                idVersionDroit = simpleDecisionSuppression.getIdVersionDroit();
+            } catch (JadeApplicationServiceNotAvailableException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            throw new DecisionException("Type(" + decision.getCsTypeDecision()
+                    + ") of décision not supported ! for this id decisionHeader: " + decision.getId());
+        }
+
+        SimpleVersionDroit simpleVersionDroit = null;
+        try {
+            simpleVersionDroit = PegasusImplServiceLocator.getSimpleVersionDroitService().read(idVersionDroit);
+        } catch (DroitException e) {
+            throw new RuntimeException(e);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new RuntimeException(e);
+        }
+        return simpleVersionDroit;
     }
 
     @Override

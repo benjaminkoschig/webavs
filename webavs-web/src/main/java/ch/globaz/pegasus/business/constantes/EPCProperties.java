@@ -46,7 +46,8 @@ public enum EPCProperties implements IProperties {
     LVPC("pegasus.loi.pc.vaud"),
     CHRYSAOR("pegasus.chrysaor.enabled"),
     COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_PC("commune.politique.code.reference.rubrique.pc"),
-    COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_RFM("commune.politique.code.reference.rubrique.rfm");
+    COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_RFM("commune.politique.code.reference.rubrique.rfm"),
+    MAILS_DEBUG("analyse.error.sendMail");
 
     private String property;
 

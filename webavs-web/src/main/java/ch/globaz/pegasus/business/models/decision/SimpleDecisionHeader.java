@@ -4,6 +4,8 @@
 package ch.globaz.pegasus.business.models.decision;
 
 import globaz.jade.persistence.model.JadeSimpleModel;
+import ch.globaz.pegasus.business.domaine.decision.EtatDecision;
+import ch.globaz.pegasus.business.domaine.decision.TypeDecision;
 
 /**
  * @author SCE Modèle simple pour les header des décisions 14 juil. 2010
@@ -270,6 +272,14 @@ public class SimpleDecisionHeader extends JadeSimpleModel {
      */
     public void setValidationPar(String validationPar) {
         this.validationPar = validationPar;
+    }
+
+    public TypeDecision getType() {
+        return TypeDecision.fromValue(csTypeDecision);
+    }
+
+    public EtatDecision getEtat() {
+        return EtatDecision.fromValue(csEtatDecision);
     }
 
 }

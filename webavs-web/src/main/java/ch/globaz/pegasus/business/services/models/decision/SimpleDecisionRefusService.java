@@ -65,4 +65,17 @@ public interface SimpleDecisionRefusService extends JadeApplicationService {
      */
     public SimpleDecisionRefus update(SimpleDecisionRefus decision) throws JadePersistenceException, DecisionException;
 
+    /**
+     * Permet de charger un décision de refus avec un idDecisionHeader
+     * Retourne null si rien n'est trouvé
+     * Une exception est levé si trop de décision de refus sont trouvé.
+     * 
+     * @param idDecisionHeader
+     * @return
+     * @throws JadePersistenceException
+     * @throws DecisionException
+     */
+    public SimpleDecisionRefus readByIdDecisionHeader(String idDecisionHeader) throws JadePersistenceException,
+            DecisionException;
+
 }

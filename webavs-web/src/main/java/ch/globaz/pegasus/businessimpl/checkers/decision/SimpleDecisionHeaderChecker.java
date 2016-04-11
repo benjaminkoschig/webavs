@@ -9,11 +9,19 @@ import globaz.jade.context.JadeThread;
 import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import ch.globaz.common.mail.MailDebugInfo;
+import ch.globaz.pegasus.business.constantes.EPCProperties;
+import ch.globaz.pegasus.business.domaine.decision.EtatDecision;
+import ch.globaz.pegasus.business.domaine.decision.TypeDecision;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
+import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
 import ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader;
+import ch.globaz.pegasus.business.models.droit.SimpleVersionDroit;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.checkers.PegasusAbstractChecker;
+import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
+import ch.globaz.pegasus.businessimpl.services.adresse.TechnicalExceptionWithTiers;
 
 /**
  * @author SCE
@@ -88,40 +96,99 @@ public class SimpleDecisionHeaderChecker extends PegasusAbstractChecker {
      * 
      * @param decision
      * @throws DecisionException
-     * @throws JadePersistenceException
-     * @throws JadeNoBusinessLogSessionError
      */
-    public static void checkForDelete(SimpleDecisionHeaderChecker decision) throws DecisionException,
-            JadePersistenceException, JadeNoBusinessLogSessionError {
-    }
-
-    public static void checkForPrevalidation(SimpleDecisionHeader decision) throws DecisionException,
-            JadePersistenceException, JadeNoBusinessLogSessionError {
-        // Check mandatory
-        SimpleDecisionHeaderChecker.checkMandatory(decision);
-
-        if (!PegasusAbstractChecker.threadOnError()) {
-            SimpleDecisionHeaderChecker.checkIntegrity(decision);
+    public static void checkForDelete(SimpleDecisionHeader decision) throws DecisionException {
+        EtatDecision etat = EtatDecision.fromValue(decision.getCsEtatDecision());
+        if (etat.isValide()) {
+            MailDebugInfo.sendMail(EPCProperties.MAILS_DEBUG, "Tentative de suppression d'une décision validé !",
+                    toBodyMail(decision));
+            throwException("pegasus.simpleDecisionHeader.etat.delete.integrity", decision);
         }
-
     }
 
     /**
      * Validation lors de la mise à jour d'un header de decision
      * 
      * @param decision
-     * @throws DecisionException
      * @throws JadePersistenceException
-     * @throws JadeNoBusinessLogSessionError
+     * @throws JadeApplicationServiceNotAvailableException
+     * 
+     * @throws DroitException
      */
-    public static void checkForUpdate(SimpleDecisionHeader decision) throws DecisionException,
-            JadePersistenceException, JadeNoBusinessLogSessionError {
+    public static void checkForUpdate(SimpleDecisionHeader decision) throws DecisionException, JadePersistenceException {
         // Check mandatory
         SimpleDecisionHeaderChecker.checkMandatory(decision);
-
         if (!PegasusAbstractChecker.threadOnError()) {
             SimpleDecisionHeaderChecker.checkIntegrity(decision);
+            checkEtatDecision(decision);
         }
+    }
+
+    private static void checkEtatDecision(SimpleDecisionHeader decision) throws DecisionException,
+            JadePersistenceException {
+
+        if (decision.getEtat().isPreValide()) {
+            SimpleDecisionHeader oldDecision = readDecision(decision);
+            EtatDecision etatOld = EtatDecision.fromValue(oldDecision.getCsEtatDecision());
+            if (etatOld.isValide()) {
+                String body = toBodyMail(decision);
+                MailDebugInfo.sendMail(EPCProperties.MAILS_DEBUG,
+                        "Changement d'état à prés-validé pour une décision dans l'état validé!", body);
+                throwException("pegasus.simpleDecisionHeader.etat.valideApresValide.integrity", decision);
+            }
+        } else if (decision.getEtat().isEnregistre()) {
+            SimpleDecisionHeader oldDecision = readDecision(decision);
+            TypeDecision typeDecision = TypeDecision.fromValue(decision.getCsTypeDecision());
+
+            // Le changement d'état de validé à enregistré se fait lors de la dévalidation c'est pour cette raison
+            // que l'on test l'état du droit ne peut pas être validé
+            if (decision.getEtat().isValide()) {
+                SimpleVersionDroit simpleVersionDroit = null;
+                // On ne fait la verification que pour le décisions qui sont liée à une version de droit
+                if (typeDecision.isSuppression() || typeDecision.isTypeApresCalcul()) {
+                    try {
+                        simpleVersionDroit = PegasusServiceLocator.getDecisionHeaderService().loadSimpleVersionDroit(
+                                decision);
+                    } catch (JadeApplicationServiceNotAvailableException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    if (simpleVersionDroit.getEtat().isValide()) {
+                        String body = toBodyMail(decision);
+                        MailDebugInfo.sendMail(
+                                EPCProperties.MAILS_DEBUG,
+                                "Changement d'état à enregistre pour une décision dans l'état"
+                                        + oldDecision.getCsEtatDecision() + " non authorisé ", body);
+                        throwException("pegasus.simpleDecisionHeader.etat.valide.integrity", decision);
+                    }
+                }
+            }
+        }
+    }
+
+    private static String toBodyMail(SimpleDecisionHeader decision) {
+        String body = "Décision header en cause: " + MailDebugInfo.toJson(decision) + "\n\n"
+                + TechnicalExceptionWithTiers.readDescriptionTiers(decision.getIdTiersBeneficiaire());
+        return body;
+    }
+
+    private static void throwException(String message, SimpleDecisionHeader decision) {
+        String[] p = new String[2];
+        p[0] = TechnicalExceptionWithTiers.readDescriptionTiers(decision.getIdTiersBeneficiaire());
+        p[1] = decision.getIdDecisionHeader();
+        JadeThread.logError(decision.getClass().getName(), message, p);
+        throw new TechnicalExceptionWithTiers(JadeThread.getMessage(message, p), decision.getIdTiersBeneficiaire());
+    }
+
+    private static SimpleDecisionHeader readDecision(SimpleDecisionHeader decision) {
+        try {
+            SimpleDecisionHeader oldDecision = PegasusImplServiceLocator.getSimpleDecisionHeaderService().read(
+                    decision.getIdDecisionHeader());
+            return oldDecision;
+        } catch (Exception e) {
+
+        }
+        return decision;
     }
 
     /**
@@ -132,8 +199,7 @@ public class SimpleDecisionHeaderChecker extends PegasusAbstractChecker {
      * @throws JadePersistenceException
      * @throws JadeNoBusinessLogSessionError
      */
-    private static void checkIntegrity(SimpleDecisionHeader decision) throws DecisionException,
-            JadePersistenceException, JadeNoBusinessLogSessionError {
+    private static void checkIntegrity(SimpleDecisionHeader decision) {
 
         // Le decision header doit avoir un type
         if (JadeStringUtil.isEmpty(decision.getCsTypeDecision())) {
@@ -166,12 +232,8 @@ public class SimpleDecisionHeaderChecker extends PegasusAbstractChecker {
      * Validation des champs obligatoires
      * 
      * @param decision
-     * @throws DecisionException
-     * @throws JadePersistenceException
-     * @throws JadeNoBusinessLogSessionError
      */
-    private static void checkMandatory(SimpleDecisionHeader decision) throws DecisionException,
-            JadePersistenceException, JadeNoBusinessLogSessionError {
+    private static void checkMandatory(SimpleDecisionHeader decision) {
 
         // La date de decision doit etre spécifié
         if (JadeStringUtil.isEmpty(decision.getDateDecision())) {

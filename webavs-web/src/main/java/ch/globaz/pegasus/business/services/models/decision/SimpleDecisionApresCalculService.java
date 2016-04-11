@@ -80,4 +80,17 @@ public interface SimpleDecisionApresCalculService extends JadeApplicationService
     public SimpleDecisionApresCalcul update(SimpleDecisionApresCalcul decision) throws JadePersistenceException,
             DecisionException;
 
+    /**
+     * Permet de trouver la simpleDecisionApresCalcul avec un idDecisionHeader.
+     * Si rien n'est retrouvé NULL sera renvoyé.
+     * Si plusieurs décisions après calcul sont retrouve une exception sera levé.
+     * 
+     * @param idDecisionHeader
+     * @return
+     * @throws JadePersistenceException
+     * @throws DecisionException
+     */
+    public SimpleDecisionApresCalcul readByIdDecisionHeader(String idDecisionHeader) throws DecisionException,
+            JadePersistenceException;
+
 }

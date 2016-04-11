@@ -16,12 +16,21 @@ public class SimpleDecisionSuppressionSearch extends JadeSearchSimpleModel {
     private static final long serialVersionUID = 1L;
     private String forIdDecisionSuppression = null;
     private String forIdVersionDroit = null;
+    private String forIdDecisionHeader = null;
 
     /**
      * @return the forIdDecisionSuppression
      */
     public String getForIdDecisionSuppression() {
         return forIdDecisionSuppression;
+    }
+
+    public String getForIdDecisionHeader() {
+        return forIdDecisionHeader;
+    }
+
+    public void setForIdDecisionHeader(String forIdDecisionHeader) {
+        this.forIdDecisionHeader = forIdDecisionHeader;
     }
 
     public String getForIdVersionDroit() {
@@ -46,7 +55,7 @@ public class SimpleDecisionSuppressionSearch extends JadeSearchSimpleModel {
      * @see globaz.jade.persistence.model.JadeAbstractSearchModel#whichModelClass()
      */
     @Override
-    public Class whichModelClass() {
+    public Class<SimpleDecisionSuppression> whichModelClass() {
         return SimpleDecisionSuppression.class;
     }
 

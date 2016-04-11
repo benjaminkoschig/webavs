@@ -117,4 +117,21 @@ public class SimpleDecisionSuppressionServiceImpl extends PegasusAbstractService
         return (SimpleDecisionSuppression) JadePersistenceManager.update(decision);
     }
 
+    @Override
+    public SimpleDecisionSuppression readByIdDecisionHeader(String idDecisionHeader) throws JadePersistenceException,
+            DecisionException {
+        SimpleDecisionSuppressionSearch search = new SimpleDecisionSuppressionSearch();
+        search.setForIdDecisionHeader(idDecisionHeader);
+        search = (SimpleDecisionSuppressionSearch) JadePersistenceManager.search(search);
+        SimpleDecisionSuppression decisionSuppression = null;
+        if (search.getSize() == 1) {
+            decisionSuppression = (SimpleDecisionSuppression) search.getSearchResults()[0];
+        } else if (search.getSize() > 1) {
+            throw new DecisionException("Too many decisionApresCalcul found with this idDecisionHeader: "
+                    + idDecisionHeader);
+        }
+
+        return decisionSuppression;
+    }
+
 }

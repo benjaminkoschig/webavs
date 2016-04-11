@@ -8,17 +8,24 @@ import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 
 public class TechnicalExceptionWithTiers extends RuntimeException {
 
-    public TechnicalExceptionWithTiers(Exception e) {
-        super(e);
+    public TechnicalExceptionWithTiers(String message, String idTiers) {
+        super(message + " " + readDescriptionTiers(idTiers));
     }
 
-    public TechnicalExceptionWithTiers(String message, Exception e) {
-        super(message, e);
+    public TechnicalExceptionWithTiers(String message, String idTiers, String... params) {
+        super(message + " " + readDescriptionTiers(idTiers));
     }
 
     public TechnicalExceptionWithTiers(String message, String idTiers, Exception e) {
-        super(message + " " + generateTiersMessage(readTiers(idTiers)), e);
-        readTiers(idTiers);
+        super(message + " " + readDescriptionTiers(idTiers), e);
+    }
+
+    public static String readDescriptionTiers(String idTiers) {
+        return generateTiersMessage(readTiers(idTiers));
+    }
+
+    public TechnicalExceptionWithTiers(String message, PersonneEtendueComplexModel personne, Exception e) {
+        super(message + " " + generateTiersMessage(personne), e);
     }
 
     private static PersonneEtendueComplexModel readTiers(String idTiers) {
@@ -33,12 +40,8 @@ public class TechnicalExceptionWithTiers extends RuntimeException {
         }
     }
 
-    public TechnicalExceptionWithTiers(String message, PersonneEtendueComplexModel personne, Exception e) {
-        super(message + " " + generateTiersMessage(personne), e);
-    }
-
     private static String generateTiersMessage(PersonneEtendueComplexModel personne) {
-        String msg = " Tiers concerné: " + personne.getPersonneEtendue().getNumAvsActuel() + " "
+        String msg = "Tiers: " + personne.getPersonneEtendue().getNumAvsActuel() + " "
                 + personne.getTiers().getDesignation1() + " " + personne.getTiers().getDesignation2();
         return msg;
     }

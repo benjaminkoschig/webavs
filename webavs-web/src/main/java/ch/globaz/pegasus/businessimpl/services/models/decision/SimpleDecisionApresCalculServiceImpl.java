@@ -6,6 +6,7 @@ package ch.globaz.pegasus.businessimpl.services.models.decision;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.List;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
@@ -117,6 +118,23 @@ public class SimpleDecisionApresCalculServiceImpl extends PegasusAbstractService
             throw new DecisionException("Unable to search simpleDecisionApresCalcul, the search model passed is null!");
         }
         return (SimpleDecisionApresCalculSearch) JadePersistenceManager.search(decisionSearch);
+    }
+
+    @Override
+    public SimpleDecisionApresCalcul readByIdDecisionHeader(String idDecisionHeader) throws DecisionException,
+            JadePersistenceException {
+        SimpleDecisionApresCalculSearch search = new SimpleDecisionApresCalculSearch();
+        search.setForIdDecisionHeader(idDecisionHeader);
+        search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+        search = search(search);
+        SimpleDecisionApresCalcul decisionApresCalcul = null;
+        if (search.getSize() == 1) {
+            decisionApresCalcul = (SimpleDecisionApresCalcul) search.getSearchResults()[0];
+        } else if (search.getSize() > 1) {
+            throw new DecisionException("Too many decisionApresCalcul found with this idDecisionHeader: "
+                    + idDecisionHeader);
+        }
+        return decisionApresCalcul;
     }
 
     /*

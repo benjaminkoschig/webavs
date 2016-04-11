@@ -78,6 +78,23 @@ public class SimpleDecisionRefusServiceImpl extends PegasusAbstractServiceImpl i
         return (SimpleDecisionRefus) JadePersistenceManager.read(simpleDecisionRefus);
     }
 
+    public SimpleDecisionRefus readByIdDecisionHeader(String idDecisionHeader) throws JadePersistenceException,
+            DecisionException {
+        SimpleDecisionRefusSearch search = new SimpleDecisionRefusSearch();
+
+        search.setForIdDecisionHeader(idDecisionHeader);
+        search = (SimpleDecisionRefusSearch) JadePersistenceManager.search(search);
+        SimpleDecisionRefus decisionRefus = null;
+        if (search.getSize() == 1) {
+            decisionRefus = (SimpleDecisionRefus) search.getSearchResults()[0];
+        } else if (search.getSize() > 1) {
+            throw new DecisionException("Too many decisionApresCalcul found with this idDecisionHeader: "
+                    + idDecisionHeader);
+        }
+
+        return decisionRefus;
+    }
+
     /*
      * (non-Javadoc)
      * 

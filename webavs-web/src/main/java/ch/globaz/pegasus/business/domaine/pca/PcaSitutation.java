@@ -27,7 +27,7 @@ public enum PcaSitutation {
                 return COUPLE_SEPARE_CONJOINT_HOME;
             } else if (isDom2R) {
                 throw new IllegalArgumentException(
-                        "Il n'est pas possible d'avoir couple séparé par la maladi et dom2R en même temps.");
+                        "Il n'est pas possible d'avoir un couple séparé par la maladi et dom2R en même temps");
             } else {
                 throw new IllegalArgumentException("Il n'est pas possible d'avoir deux pca de type domicile");
             }
