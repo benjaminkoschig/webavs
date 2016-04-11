@@ -54,8 +54,8 @@ public class AFIDEUtil {
      * @return boolean
      */
     public static boolean isAnnonceSupprimable(String etatAnnonce, String typeAnnonce) {
-        return AFIDEUtil.getListEtatAnnonceIdeEnCours().contains(etatAnnonce)
-                && !CodeSystem.TYPE_ANNONCE_IDE_MUTATION.equalsIgnoreCase(typeAnnonce);
+        return AFIDEUtil.getListEtatAnnonceIdeEnCours().contains(etatAnnonce);
+
     }
 
     /**
@@ -567,17 +567,20 @@ public class AFIDEUtil {
 
         IDEDataBean ideDataBean = new IDEDataBean();
 
-        ideDataBean.setAdresse(AFIDEUtil.formatAdresseForIde(adresseDataSouce));
-        ideDataBean.setCanton(adresseDataSouce.canton_court);
+        if (adresseDataSouce != null) {
+            ideDataBean.setAdresse(AFIDEUtil.formatAdresseForIde(adresseDataSouce));
+            ideDataBean.setCanton(adresseDataSouce.canton_court);
+            ideDataBean.setLocalite(adresseDataSouce.localiteNom);
+            ideDataBean.setNpa(adresseDataSouce.localiteNpa);
+            ideDataBean.setRue(adresseDataSouce.rue);
+            ideDataBean.setNumeroRue(adresseDataSouce.numeroRue);
+            ideDataBean.setCareOf(adresseDataSouce.attention);
+        }
+
         ideDataBean.setLangue(tiers.getLangueIso().toUpperCase());
-        ideDataBean.setLocalite(adresseDataSouce.localiteNom);
-        ideDataBean.setNpa(adresseDataSouce.localiteNpa);
         ideDataBean.setNumeroIDE(ideAnnonce.getNumeroIde());
         ideDataBean.setNumeroIDERemplacement(ideAnnonce.getNumeroIdeRemplacement());
         ideDataBean.setRaisonSociale(ideAnnonce.getRaisonSociale());
-        ideDataBean.setRue(adresseDataSouce.rue);
-        ideDataBean.setNumeroRue(adresseDataSouce.numeroRue);
-        ideDataBean.setCareOf(adresseDataSouce.attention);
         ideDataBean.setStatut(ideAnnonce.getStatutIde());
         ideDataBean.setBrancheEconomique(affiliation.getBrancheEconomique());
         ideDataBean.setPersonnaliteJuridique(affiliation.getPersonnaliteJuridique());

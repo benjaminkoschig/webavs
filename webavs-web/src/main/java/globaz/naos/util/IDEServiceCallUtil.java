@@ -73,6 +73,7 @@ import ch.ech.xmlns.ech_0108_f._3.OrganisationType;
 public class IDEServiceCallUtil {
 
     private final static int SERVICE_MAX_RECORD_RETURN = 30;
+    private static final int MAX_LOT_ANNONCE_SORTANTE_MASSE_SIZE = 99;
 
     private static String logCallWebService(BSession session, String methodIDEServiceCallUtilCalled,
             String methodWebServiceCalled, String dataSended) {
@@ -250,13 +251,40 @@ public class IDEServiceCallUtil {
             IPartnerServicesDeregisterInfrastructureFaultFaultFaultMessage,
             IPartnerServicesDeregisterSecurityFaultFaultFaultMessage {
 
-        RegisterDeregisterResult registerDeregisterResult;
-        try {
-            logCallWebService(session, "desenregistrementActif", "deregister", giveMeSendedDataForLog(listIDE));
-        } finally {
-            registerDeregisterResult = port.deregister(listIDE);
+        Map<String, RegisterDeregisterStatus> mapRetourWebService = new HashMap<String, RegisterDeregisterStatus>();
+
+        int startIndex = 0;
+        int stopIndex = listIDE.getUidStructureType().size();
+        int lastIndex = listIDE.getUidStructureType().size();
+
+        if (stopIndex > MAX_LOT_ANNONCE_SORTANTE_MASSE_SIZE) {
+            stopIndex = MAX_LOT_ANNONCE_SORTANTE_MASSE_SIZE;
         }
-        return formatdata(registerDeregisterResult);
+
+        while (startIndex < stopIndex) {
+
+            ArrayOfUidStructureType subListIDE = new ArrayOfUidStructureType();
+            subListIDE.getUidStructureType().addAll(listIDE.getUidStructureType().subList(startIndex, stopIndex));
+
+            RegisterDeregisterResult registerDeregisterResult;
+            try {
+                logCallWebService(session, "desenregistrementActif", "deregister", giveMeSendedDataForLog(subListIDE));
+            } finally {
+                registerDeregisterResult = port.deregister(subListIDE);
+            }
+
+            mapRetourWebService.putAll(formatdata(registerDeregisterResult));
+
+            startIndex = stopIndex;
+            stopIndex = stopIndex + MAX_LOT_ANNONCE_SORTANTE_MASSE_SIZE;
+
+            if (stopIndex > lastIndex) {
+                stopIndex = lastIndex;
+            }
+
+        }
+
+        return mapRetourWebService;
 
     }
 
@@ -266,14 +294,40 @@ public class IDEServiceCallUtil {
             IPartnerServicesRegisterInfrastructureFaultFaultFaultMessage,
             IPartnerServicesRegisterSecurityFaultFaultFaultMessage {
 
-        RegisterDeregisterResult registerDeregisterResult;
-        try {
-            logCallWebService(session, "enregistrementActif", "register", giveMeSendedDataForLog(listIDE));
-        } finally {
-            registerDeregisterResult = port.register(listIDE);
+        Map<String, RegisterDeregisterStatus> mapRetourWebService = new HashMap<String, RegisterDeregisterStatus>();
+
+        int startIndex = 0;
+        int stopIndex = listIDE.getUidStructureType().size();
+        int lastIndex = listIDE.getUidStructureType().size();
+
+        if (stopIndex > MAX_LOT_ANNONCE_SORTANTE_MASSE_SIZE) {
+            stopIndex = MAX_LOT_ANNONCE_SORTANTE_MASSE_SIZE;
         }
 
-        return formatdata(registerDeregisterResult);
+        while (startIndex < stopIndex) {
+
+            ArrayOfUidStructureType subListIDE = new ArrayOfUidStructureType();
+            subListIDE.getUidStructureType().addAll(listIDE.getUidStructureType().subList(startIndex, stopIndex));
+
+            RegisterDeregisterResult registerDeregisterResult;
+            try {
+                logCallWebService(session, "enregistrementActif", "register", giveMeSendedDataForLog(subListIDE));
+            } finally {
+                registerDeregisterResult = port.register(subListIDE);
+            }
+
+            mapRetourWebService.putAll(formatdata(registerDeregisterResult));
+
+            startIndex = stopIndex;
+            stopIndex = stopIndex + MAX_LOT_ANNONCE_SORTANTE_MASSE_SIZE;
+
+            if (stopIndex > lastIndex) {
+                stopIndex = lastIndex;
+            }
+
+        }
+
+        return mapRetourWebService;
 
     }
 
@@ -319,14 +373,41 @@ public class IDEServiceCallUtil {
             IPartnerServicesUnsubscribeInfrastructureFaultFaultFaultMessage,
             IPartnerServicesUnsubscribeSecurityFaultFaultFaultMessage {
 
-        RegisterDeregisterResult registerDeregisterResult;
-        try {
-            logCallWebService(session, "desenregistrementPassif", "unsubscribe", giveMeSendedDataForLog(listIDE));
-        } finally {
-            registerDeregisterResult = port.unsubscribe(listIDE);
+        Map<String, RegisterDeregisterStatus> mapRetourWebService = new HashMap<String, RegisterDeregisterStatus>();
+
+        int startIndex = 0;
+        int stopIndex = listIDE.getUidStructureType().size();
+        int lastIndex = listIDE.getUidStructureType().size();
+
+        if (stopIndex > MAX_LOT_ANNONCE_SORTANTE_MASSE_SIZE) {
+            stopIndex = MAX_LOT_ANNONCE_SORTANTE_MASSE_SIZE;
         }
 
-        return formatdata(registerDeregisterResult);
+        while (startIndex < stopIndex) {
+
+            ArrayOfUidStructureType subListIDE = new ArrayOfUidStructureType();
+            subListIDE.getUidStructureType().addAll(listIDE.getUidStructureType().subList(startIndex, stopIndex));
+
+            RegisterDeregisterResult registerDeregisterResult;
+            try {
+                logCallWebService(session, "desenregistrementPassif", "unsubscribe", giveMeSendedDataForLog(subListIDE));
+            } finally {
+                registerDeregisterResult = port.unsubscribe(subListIDE);
+            }
+
+            mapRetourWebService.putAll(formatdata(registerDeregisterResult));
+
+            startIndex = stopIndex;
+            stopIndex = stopIndex + MAX_LOT_ANNONCE_SORTANTE_MASSE_SIZE;
+
+            if (stopIndex > lastIndex) {
+                stopIndex = lastIndex;
+            }
+
+        }
+
+        return mapRetourWebService;
+
     }
 
     public static final Map<String, RegisterDeregisterStatus> enregistrementPassif(BSession session,
@@ -335,14 +416,40 @@ public class IDEServiceCallUtil {
             IPartnerServicesSubscribeInfrastructureFaultFaultFaultMessage,
             IPartnerServicesSubscribeSecurityFaultFaultFaultMessage {
 
-        RegisterDeregisterResult registerDeregisterResult;
-        try {
-            logCallWebService(session, "enregistrementPassif", "subscribe", giveMeSendedDataForLog(listIDE));
-        } finally {
-            registerDeregisterResult = port.subscribe(listIDE);
+        Map<String, RegisterDeregisterStatus> mapRetourWebService = new HashMap<String, RegisterDeregisterStatus>();
+
+        int startIndex = 0;
+        int stopIndex = listIDE.getUidStructureType().size();
+        int lastIndex = listIDE.getUidStructureType().size();
+
+        if (stopIndex > MAX_LOT_ANNONCE_SORTANTE_MASSE_SIZE) {
+            stopIndex = MAX_LOT_ANNONCE_SORTANTE_MASSE_SIZE;
         }
 
-        return formatdata(registerDeregisterResult);
+        while (startIndex < stopIndex) {
+
+            ArrayOfUidStructureType subListIDE = new ArrayOfUidStructureType();
+            subListIDE.getUidStructureType().addAll(listIDE.getUidStructureType().subList(startIndex, stopIndex));
+
+            RegisterDeregisterResult registerDeregisterResult;
+            try {
+                logCallWebService(session, "enregistrementPassif", "subscribe", giveMeSendedDataForLog(subListIDE));
+            } finally {
+                registerDeregisterResult = port.subscribe(subListIDE);
+            }
+
+            mapRetourWebService.putAll(formatdata(registerDeregisterResult));
+
+            startIndex = stopIndex;
+            stopIndex = stopIndex + MAX_LOT_ANNONCE_SORTANTE_MASSE_SIZE;
+
+            if (stopIndex > lastIndex) {
+                stopIndex = lastIndex;
+            }
+
+        }
+
+        return mapRetourWebService;
     }
 
     public static final UidStructureType getStructureForEnregistrement(IDEDataBean ideDataBean) {
