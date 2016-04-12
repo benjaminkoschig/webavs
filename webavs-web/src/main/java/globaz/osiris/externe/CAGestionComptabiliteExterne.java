@@ -227,6 +227,7 @@ public final class CAGestionComptabiliteExterne implements APIGestionComptabilit
         compteAnnexe.setIdTiers(idTiers);
         compteAnnexe.setIdRole(idRole);
         compteAnnexe.setIdExterneRole(idExterneRole);
+        compteAnnexe.setModeBulletinNeutre(CACompteAnnexe.CS_BN_DEFAUT);
 
         try {
             compteAnnexe.add(transaction);
