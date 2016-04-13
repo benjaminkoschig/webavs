@@ -282,6 +282,46 @@ public final class CAGestionComptabiliteExterne implements APIGestionComptabilit
     }
 
     /**
+     * Création du journal de comptabilisation de type facturation.
+     */
+    @Override
+    public APIJournal createJournalTypeFacturation() {
+        // Sortir si erreur
+        if (hasFatalErrors()) {
+            return null;
+        }
+
+        if (!journal.isNew()) {
+            log.logMessage("5001", "{createJournal}", FWMessage.FATAL);
+            return null;
+        }
+
+        if (transaction == null) {
+            log.logMessage("5003", null, FWMessage.FATAL, this.getClass().getName());
+            return null;
+        }
+
+        try {
+            journal.setTypeJournal(CAJournal.TYPE_FACTURATION);
+            journal.add(transaction);
+
+            journal.setMemoryLog((FWMemoryLog) getMessageLog());
+
+            if (journal.isNew() || journal.hasErrors()) {
+                log.logStringBuffer(transaction.getErrors(), this.getClass().getName());
+                log.logMessage("5004", null, FWMessage.FATAL, this.getClass().getName());
+                return null;
+            }
+        } catch (Exception e) {
+            log.logMessage("5002", "Error in createJournal - " + e.getMessage(), FWMessage.FATAL, this.getClass()
+                    .getName());
+            return null;
+        }
+
+        return journal;
+    }
+
+    /**
      * Création du journal de comptabilisation.
      */
     @Override
