@@ -1402,8 +1402,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     .getDescription(), "{montantFinal}", JANumberFormatter.formatNoRound(grandTotal.toString())));
 
             // Insertion de l'addresse de paiement, si non ventillé
-            if ((grandTotal.compareTo(new FWCurrency(0)) > 0)
-                    && (JadeStringUtil.isBlankOrZero(decompteCourant.getIdAffilie()))) {
+            if ((grandTotal.compareTo(new FWCurrency(0)) > 0)) {
                 // Récupération de l'addresse de paiement
                 final String adressePaiement = getAdressePaiementAffilie(getSession(), decompteCourant.getIdTiers(),
                         decompteCourant.getIdAffilie());
