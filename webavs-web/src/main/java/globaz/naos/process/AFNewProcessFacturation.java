@@ -37,6 +37,7 @@ import globaz.osiris.db.comptes.CACompteur;
 import globaz.pyxis.util.TISQL;
 import globaz.pyxis.util.TIToolBox;
 import java.util.HashMap;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Process pour la facturation des Cotisations Personnelles, Paritaires
@@ -1036,13 +1037,17 @@ public final class AFNewProcessFacturation extends BProcess {
         } else {
             lineFacture.setAnneeCotisation("");
         }
-        String langue = donneesFacturation.getLangue();
-        if (langue.equalsIgnoreCase(CodeSystem.LANGUE_FRANCAIS)) {
-            lineFacture.setLibelle(donneesFacturation.getAssuranceLibelleFr());
-        } else if (langue.equalsIgnoreCase(CodeSystem.LANGUE_ALLEMAND)) {
-            lineFacture.setLibelle(donneesFacturation.getAssuranceLibelleAl());
-        } else if (langue.equalsIgnoreCase(CodeSystem.LANGUE_ITALIEN)) {
-            lineFacture.setLibelle(donneesFacturation.getAssuranceLibelleIt());
+        if (StringUtils.isEmpty(lineFacturation.getLibelle().trim())) {
+            String langue = donneesFacturation.getLangue();
+            if (langue.equalsIgnoreCase(CodeSystem.LANGUE_FRANCAIS)) {
+                lineFacture.setLibelle(donneesFacturation.getAssuranceLibelleFr());
+            } else if (langue.equalsIgnoreCase(CodeSystem.LANGUE_ALLEMAND)) {
+                lineFacture.setLibelle(donneesFacturation.getAssuranceLibelleAl());
+            } else if (langue.equalsIgnoreCase(CodeSystem.LANGUE_ITALIEN)) {
+                lineFacture.setLibelle(donneesFacturation.getAssuranceLibelleIt());
+            }
+        } else {
+            lineFacture.setLibelle(lineFacturation.getLibelle());
         }
         lineFacture.setIdRubrique(donneesFacturation.getAssuranceRubriqueId());
         lineFacture.setDebutPeriode(lineFacturation.getDebutPeriode());
