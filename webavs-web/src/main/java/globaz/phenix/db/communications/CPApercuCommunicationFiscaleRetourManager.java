@@ -430,7 +430,7 @@ public class CPApercuCommunicationFiscaleRetourManager extends CPCommunicationFi
         if (!JadeStringUtil.isBlank(likeNss) || !JadeStringUtil.isBlank(likeNomSedex)
                 || !JadeStringUtil.isBlank(likePrenomSedex)) {
             sql = SQLWriter
-                    .newWriter(_getCollection())
+                    .write(_getCollection())
                     .select("communication.ikiret")
                     .from("schema.cpcretp communication")
                     .join("schema.CPSECON contribuable on communication.ikiret = contribuable.ikiret")
