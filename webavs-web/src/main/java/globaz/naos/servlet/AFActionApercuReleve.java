@@ -116,14 +116,15 @@ public class AFActionApercuReleve extends AFDefaultActionChercher {
                     JSPUtils.setBeanProperties(request, viewBean);
 
                     // Formatage des dates de début et de fin
-                    if (viewBean.getDateFin().length() == 7) {
-                        viewBean.setDateFin("01." + viewBean.getDateFin());
-                    }
-                    if (viewBean.getDateDebut().length() == 7) {
-                        viewBean.setDateDebut("01." + viewBean.getDateDebut());
-                    }
-                    viewBean.setDateDebut(AFUtil.getDateBeginingOfMonth(viewBean.getDateDebut()));
-                    viewBean.setDateFin(AFUtil.getDateEndOfMonth(viewBean.getDateFin()));
+                    // ! Removed since setter force dd.mm.yyyy format !
+                    // if (viewBean.getDateFin().length() == 7) {
+                    // viewBean.setDateFin("01." + viewBean.getDateFin());
+                    // }
+                    // if (viewBean.getDateDebut().length() == 7) {
+                    // viewBean.setDateDebut("01." + viewBean.getDateDebut());
+                    // }
+                    // viewBean.setDateDebut(AFUtil.getDateBeginingOfMonth(viewBean.getDateDebut()));
+                    // viewBean.setDateFin(AFUtil.getDateEndOfMonth(viewBean.getDateFin()));
 
                     String errorMessage = viewBean.validationMandatory();
                     if (!JadeStringUtil.isEmpty(errorMessage)) {
@@ -232,12 +233,13 @@ public class AFActionApercuReleve extends AFDefaultActionChercher {
             viewBean.setMessage(e.getMessage());
         }
         // PO 9395
-        if (viewBean.getDateDebut().length() > 7) {
-            viewBean.setDateDebut(viewBean.getDateDebut().substring(3));
-        }
-        if (viewBean.getDateFin().length() > 7) {
-            viewBean.setDateFin(viewBean.getDateFin().substring(3));
-        }
+        // ! Removed since setter force dd.mm.yyyy format !
+        // if (viewBean.getDateDebut().length() > 7) {
+        // viewBean.setDateDebut(viewBean.getDateDebut().substring(3));
+        // }
+        // if (viewBean.getDateFin().length() > 7) {
+        // viewBean.setDateFin(viewBean.getDateFin().substring(3));
+        // }
         session.removeAttribute("viewBean");
         session.setAttribute("viewBean", viewBean);
 
@@ -436,12 +438,13 @@ public class AFActionApercuReleve extends AFDefaultActionChercher {
                 viewBean.setDateReception(viewBean.giveDateReceptionInfoRom206());
             }
             // PO 9395
-            if (viewBean.getDateDebut().length() > 7) {
-                viewBean.setDateDebut(viewBean.getDateDebut().substring(3));
-            }
-            if (viewBean.getDateFin().length() > 7) {
-                viewBean.setDateFin(viewBean.getDateFin().substring(3));
-            }
+            // ! Removed since setter force dd.mm.yyyy format !
+            // if (viewBean.getDateDebut().length() > 7) {
+            // viewBean.setDateDebut(viewBean.getDateDebut().substring(3));
+            // }
+            // if (viewBean.getDateFin().length() > 7) {
+            // viewBean.setDateFin(viewBean.getDateFin().substring(3));
+            // }
 
         } catch (Exception e) {
             viewBean.setMsgType(FWViewBeanInterface.ERROR);
