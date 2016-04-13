@@ -43,24 +43,81 @@ import com.google.common.collect.Lists;
  */
 public class QueryExecutor {
 
-    public static <T> List<T> execute(String query, Class<T> clazz, Set<ConverterDb<?>> converters) {
-        checkThreadContext(query, clazz);
-        return executeQueryList(query, clazz, JadeThread.currentJdbcConnection(), JadePersistenceUtil.getDbSchema(),
-                converters);
-    }
-
+    /**
+     * Execute une requête SQL et charge une liste d'objet et convertit des valeur en fonction.
+     * Cette fonction est à utilisé avec la nouvelle persistence on se base sur le threadContext pour avoir la
+     * connection.
+     * 
+     * @param query La requête qui sera exécuté.
+     * @param clazz La represent la class des objet qui seront charger en mémoire. L'introspection pour créer les objets
+     *            sont fait sur cette class.
+     * @param converters Liste des converter à utiliser pour charger l'objet.
+     * @return La liste des objets chargé en mémoire.
+     */
     public static <T> List<T> execute(String query, Class<T> clazz) {
         checkThreadContext(query, clazz);
         return executeQueryList(query, clazz, JadeThread.currentJdbcConnection(), JadePersistenceUtil.getDbSchema(),
                 null);
     }
 
-    public static Set<ConverterDb<?>> newSetConverter(ConverterDb<?>... converters) {
-        Set<ConverterDb<?>> set = new HashSet<ConverterDb<?>>();
-        set.addAll(Arrays.asList(converters));
-        return set;
+    /**
+     * Execute une requête SQL et charge une liste d'objet et convertit des valeur en fonction des converters.
+     * Cette fonction est à utilisé avec la nouvelle persistence on se base sur le threadContext pour avoir la
+     * connection.
+     * 
+     * @param query La requête qui sera exécuté.
+     * @param clazz La represent la class des objet qui seront charger en mémoire. L'introspection pour créer les objets
+     *            sont fait sur cette class.
+     * @param converters Liste des converter à utiliser pour charger l'objet.
+     * @return La liste des objets chargé en mémoire.
+     */
+    public static <T> List<T> execute(String query, Class<T> clazz, Set<ConverterDb<?>> converters) {
+        checkThreadContext(query, clazz);
+        return executeQueryList(query, clazz, JadeThread.currentJdbcConnection(), JadePersistenceUtil.getDbSchema(),
+                converters);
     }
 
+    /**
+     * Execute une requête SQL et charge une liste d'objet et convertit des valeur en fonction des converters.
+     * Cette fonction est à utilisé avec la nouvelle persistence on se base sur le threadContext pour avoir la
+     * connection.
+     * 
+     * @param query La requête qui sera exécuté.
+     * @param clazz La represent la class des objet qui seront charger en mémoire. L'introspection pour créer les objets
+     *            sont fait sur cette class.
+     * @param converters Liste des converter à utiliser pour charger l'objet.
+     * @return La liste des objets chargé en mémoire.
+     */
+    public static <T> List<T> execute(String query, Class<T> clazz, ConverterDb<?>... converters) {
+        checkThreadContext(query, clazz);
+        return executeQueryList(query, clazz, JadeThread.currentJdbcConnection(), JadePersistenceUtil.getDbSchema(),
+                newSetConverter(converters));
+    }
+
+    /**
+     * Execute une requête SQL et charge une liste d'objet et convertit des valeur en fonction.
+     * Cette fonction est à utilisé avec l'ancienne persistence pour avoir la connection.
+     * 
+     * @param query La requête qui sera exécuté.
+     * @param clazz La represent la class des objet qui seront charger en mémoire. L'introspection pour créer les objets
+     *            sont fait sur cette class.
+     * @param converters Liste des converter à utiliser pour charger l'objet.
+     * @return La liste des objets chargé en mémoire.
+     */
+    public static <T> List<T> execute(String query, Class<T> clazz, BSession session) {
+        return execute(query, clazz, session, null);
+    }
+
+    /**
+     * Execute une requête SQL et charge une liste d'objet et convertit des valeur en fonction des converters.
+     * Cette fonction est à utilisé avec l'ancienne persistence pour avoir la connection.
+     * 
+     * @param query La requête qui sera exécuté.
+     * @param clazz La represent la class des objet qui seront charger en mémoire. L'introspection pour créer les objets
+     *            sont fait sur cette class.
+     * @param converters Liste des converter à utiliser pour charger l'objet.
+     * @return La liste des objets chargé en mémoire.
+     */
     public static <T> List<T> execute(String query, Class<T> clazz, BSession session, Set<ConverterDb<?>> converters) {
         Transaction transaction = new Transaction(session);
         try {
@@ -74,15 +131,28 @@ public class QueryExecutor {
         }
     }
 
-    public static <T> List<T> execute(String query, Class<T> clazz, BSession session) {
-        return execute(query, clazz, session, null);
-    }
-
+    /**
+     * Permet d'executer une requête qui à un fonction d'aggregate(count, min, max, sum) dont on veut un seul résultat
+     * et champs.
+     * Cette fonction est à utilisé avec la nouvelle persistence on se base sur le threadContext pour avoir la
+     * connection.
+     * 
+     * @param query La requête qui sera exécuté.
+     * @return Le résultat de la requête
+     */
     public static BigDecimal executeAggregate(String query) {
         checkThreadContext(query, QueryExecutor.class);
         return executeAggregate(query, BSessionUtil.getSessionFromThreadContext());
     }
 
+    /**
+     * Permet d'executer une requête qui à un fonction d'aggregate(count, min, max, sum) dont on veut un seul résultat
+     * et champs.
+     * Cette fonction est à utilisé avec l'ancienne persistence pour avoir la connection.
+     * 
+     * @param query La requête qui sera exécuté.
+     * @return Le résultat de la requête
+     */
     public static BigDecimal executeAggregate(String query, BSession session) {
         Transaction transaction = new Transaction(session);
         try {
@@ -93,6 +163,44 @@ public class QueryExecutor {
                 transaction.closeOpenedTransaction();
             }
         }
+    }
+
+    public static Set<ConverterDb<?>> newSetConverter(ConverterDb<?>... converters) {
+        Set<ConverterDb<?>> set = new HashSet<ConverterDb<?>>();
+        set.addAll(Arrays.asList(converters));
+        return set;
+    }
+
+    public static String forInString(Collection<String> list) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("'").append(Joiner.on("','").join(list)).append("'");
+        return builder.toString();
+    }
+
+    /**
+     * This split a list by 1000 elements.
+     * 
+     * @param list The list to split
+     * @return the list splited
+     */
+    public static <T> List<List<T>> splitBy1000(Collection<T> list) {
+        return Lists.partition(new ArrayList<T>(list), 1000);
+    }
+
+    /**
+     * This split a list by the size defined.
+     * 
+     * @param list The list to split
+     * @param size The number of elements in the list
+     * @return the list splited
+     */
+    public static <T> List<List<T>> split(Collection<T> list, int size) {
+
+        if (size <= 0) {
+            throw new IllegalArgumentException("The size is less than or equal to zero, size passed: " + size);
+        }
+
+        return Lists.partition(new ArrayList<T>(list), size);
     }
 
     private static String underscoreify(String in) {
@@ -343,35 +451,4 @@ public class QueryExecutor {
         return val;
     }
 
-    public static String forInString(Collection<String> list) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("'").append(Joiner.on("','").join(list)).append("'");
-        return builder.toString();
-    }
-
-    /**
-     * This split a list by 1000 elements.
-     * 
-     * @param list The list to split
-     * @return the list splited
-     */
-    public static <T> List<List<T>> splitBy1000(Collection<T> list) {
-        return Lists.partition(new ArrayList<T>(list), 1000);
-    }
-
-    /**
-     * This split a list by the size defined.
-     * 
-     * @param list The list to split
-     * @param size The number of elements in the list
-     * @return the list splited
-     */
-    public static <T> List<List<T>> split(Collection<T> list, int size) {
-
-        if (size <= 0) {
-            throw new IllegalArgumentException("The size is less than or equal to zero, size passed: " + size);
-        }
-
-        return Lists.partition(new ArrayList<T>(list), size);
-    }
 }
