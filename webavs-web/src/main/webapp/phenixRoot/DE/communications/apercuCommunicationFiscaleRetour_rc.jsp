@@ -124,7 +124,7 @@ $(function(){
 			var numAVS = $.trim($recherche.val()).replace(/\./g,"");
 			if(numAVS.length<5){
 				$find.attr("disabled", false);
-				alert("Il n'est pas possible d'exécuter une recherche sur les NSS avec moins de 5 caractères, point non compris (756.XX)");
+				alert("Es ist nicht möglich eine Suche auf den SVN mit weniger als 5 Charakteren auszuführen, Punkt nicht eingeschlossen (756.XX)");
 				return false;
 			}
 		}
