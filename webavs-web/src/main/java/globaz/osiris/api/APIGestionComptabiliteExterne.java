@@ -50,6 +50,12 @@ public interface APIGestionComptabiliteExterne {
     public APIJournal createJournal();
 
     /**
+     * Création du journal de comptabilisation de type Facturation
+     */
+
+    public APIJournal createJournalTypeFacturation();
+
+    /**
      * Crée un ordre de recouvrement Date de création : (11.11.2005 07:20:04)
      * 
      * @return globaz.osiris.interfaceext.comptes.APIOperationOrdreRecouvrement

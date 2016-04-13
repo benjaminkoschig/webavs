@@ -540,7 +540,8 @@ public class FAPassageComptabiliserProcess extends FAGenericProcess {
                 compta.setSendCompletionMail(false);
                 compta.setTransaction(getTransaction());
                 compta.setProcess(this);
-                compta.createJournal();
+                compta.createJournalTypeFacturation();
+
                 currentNumeroJournal = numeroJournal;
 
                 // informer le numéro du journal Osiris dans le passage de

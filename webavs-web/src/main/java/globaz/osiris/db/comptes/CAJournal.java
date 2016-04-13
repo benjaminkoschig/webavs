@@ -60,6 +60,7 @@ public class CAJournal extends BEntity implements Serializable, APIJournal {
     public static final String TABLE_CAJOURP = "CAJOURP";
     public final static String TRAITEMENT = "202006";
 
+    public final static String TYPE_FACTURATION = "203009";
     public final static String TYPE_AUTOMATIQUE = "203001";
     public final static String TYPE_BULLETIN_NEUTRE = "203008";
     public final static String TYPE_CONTENTIEUX = "203004";

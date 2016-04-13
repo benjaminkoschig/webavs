@@ -995,8 +995,13 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         // S'il n'y a pas d'erreur, on effectue certaines transformations
         if (!getMemoryLog().hasErrors()) {
 
+            boolean isJournalTypeFacturation = false;
+            if (getJournal() != null) {
+                isJournalTypeFacturation = CAJournal.TYPE_FACTURATION.equalsIgnoreCase(getJournal().getTypeJournal());
+            }
+
             // Calcul de la cotisation le cas échéant
-            if (JadeStringUtil.isDecimalEmpty(getMontant())
+            if (!isJournalTypeFacturation && JadeStringUtil.isDecimalEmpty(getMontant())
                     && getCompte().getNatureRubrique().equals(APIRubrique.COTISATION_AVEC_MASSE)) {
 
                 // Calculer la cotisation
