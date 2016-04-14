@@ -491,7 +491,7 @@ public class CETraitementReinjectionProcess extends BProcess {
         manager.setForDateDebutControle(premierePeriode);
         manager.setForDateFinControle(dernierePeriode);
         manager.setForNotDateEffective(true);
-        manager.find(transaction);
+        manager.find(transaction, BManager.SIZE_USEDEFAULT);
 
         if (manager.size() > 1) {
             // Il existe plus d'un controle pour cet affilié, on log
@@ -538,6 +538,8 @@ public class CETraitementReinjectionProcess extends BProcess {
                 if (!JadeStringUtil.isBlankOrZero(idReviseur)) {
                     controle.setIdReviseur(idReviseur);
                     controle.update(transaction);
+                } else {
+                    transaction.addErrors(getSession().getLabel("REINJECTION_REVISEUR_INCONNU") + " : " + numAffilie);
                 }
 
             } else if (!transaction.hasErrors()) {
@@ -714,6 +716,9 @@ public class CETraitementReinjectionProcess extends BProcess {
                     String idReviseur = retrieveIdReviseur(getSession(), transaction, visaReviseur);
                     if (!JadeStringUtil.isBlankOrZero(idReviseur)) {
                         newControle.setIdReviseur(idReviseur);
+                    } else {
+                        transaction.addErrors(getSession().getLabel("REINJECTION_REVISEUR_INCONNU") + " : "
+                                + visaReviseur);
                     }
                 }
 
@@ -781,6 +786,8 @@ public class CETraitementReinjectionProcess extends BProcess {
                 String idReviseur = retrieveIdReviseur(getSession(), transaction, visaReviseur);
                 if (!JadeStringUtil.isBlankOrZero(idReviseur)) {
                     newControle.setIdReviseur(idReviseur);
+                } else {
+                    transaction.addErrors(getSession().getLabel("REINJECTION_REVISEUR_INCONNU") + " : " + visaReviseur);
                 }
             }
 
@@ -850,6 +857,8 @@ public class CETraitementReinjectionProcess extends BProcess {
                 String idReviseur = retrieveIdReviseur(getSession(), transaction, visaReviseur);
                 if (!JadeStringUtil.isBlankOrZero(idReviseur)) {
                     newControle.setIdReviseur(idReviseur);
+                } else {
+                    transaction.addErrors(getSession().getLabel("REINJECTION_REVISEUR_INCONNU") + " : " + visaReviseur);
                 }
             }
 
@@ -875,7 +884,10 @@ public class CETraitementReinjectionProcess extends BProcess {
     private String retrieveIdReviseur(final BSession session, final BTransaction transaction, final String visaReviseur)
             throws HerculeException {
         CEReviseur reviseur = CEControleEmployeurService.retrieveReviseur(session, transaction, visaReviseur);
-        return reviseur.getIdReviseur();
+        if (reviseur != null) {
+            return reviseur.getIdReviseur();
+        }
+        return null;
     }
 
     private String returnValeurHashMapCouldBeEmpty(final String valeur, final HashMap<String, String> lineMap) {
