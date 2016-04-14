@@ -235,8 +235,6 @@ var oAppsPopup = window.createPopup();
 									</div>
 								</a>
 							<%}%>
-	
->
 							
 							<%if (objSession.hasRight("perseus", globaz.framework.secure.FWSecureConstants.READ)) {%>
 								<a href="#" id="iditem88347311" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88347311,'#D7E4FF',1);selected=this.children.iditem88347311;" onblur="javascript:changeStyle(this.children.iditem88347311,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/perseus');">
