@@ -243,6 +243,7 @@ public class COProcessCreerARD extends BProcess {
         section.setIdSectionPrincipal(idSectionPrincipale);
         section.setIdTypeSection(APISection.ID_TYPE_SECTION_ARD);
         section.setIdSequenceContentieux("0");
+        section.setDateSection(JACalendar.todayJJsMMsAAAA());
 
         section.setSession(sessionOsiris());
         section.add(transaction);
