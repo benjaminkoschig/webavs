@@ -1,5 +1,23 @@
 package ch.globaz.corvus.process.attestationsfiscales;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import ch.globaz.jade.JadeBusinessServiceLocator;
+import ch.globaz.jade.business.models.Langues;
+import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
+import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
+import ch.globaz.prestation.domaine.CodePrestation;
 import globaz.corvus.api.basescalcul.IREPrestationDue;
 import globaz.corvus.application.REApplication;
 import globaz.corvus.db.attestationsFiscales.REDonneesPourAttestationsFiscales;
@@ -30,29 +48,11 @@ import globaz.pyxis.adresse.formater.TIAdresseFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.api.ITITiers;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import ch.globaz.jade.JadeBusinessServiceLocator;
-import ch.globaz.jade.business.models.Langues;
-import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
-import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
-import ch.globaz.prestation.domaine.CodePrestation;
 
 public class REGenererAttestationsFiscalesProcess extends BProcess {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private REAbstractAnalyseurLot analyseurLot1;
@@ -142,14 +142,14 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
     /**
      * Test si la famille ne possède que des rentes de type API
-     * 
+     *
      * @param famille
      * @return <code>true</code> si la famille ne possède que des rentes de type API
      */
     private boolean hasOnlyRenteAPI(REFamillePourAttestationsFiscales famille) {
         for (RERentePourAttestationsFiscales uneRente : famille.getRentesDeLaFamille()) {
-            CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(uneRente
-                    .getCodePrestation()));
+            CodePrestation codePrestation = CodePrestation
+                    .getCodePrestation(Integer.parseInt(uneRente.getCodePrestation()));
             if (codePrestation.isAPI()) {
                 continue;
             } else {
@@ -219,14 +219,30 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
     }
 
     private void creerFichierDeStatistiquesExcel() {
-        REGenrererListeExcelAttestationsNonSortiesProcess process = new REGenrererListeExcelAttestationsNonSortiesProcess(
-                new REListeExcelAttestationsFiscalesNonSorties(getSession(), annee, famillesSansLot), getEMailAddress());
-        process.run();
+        if (hasAttesationsNonSorties()) {
+            REGenrererListeExcelAttestationsNonSortiesProcess process = new REGenrererListeExcelAttestationsNonSortiesProcess(
+                    new REListeExcelAttestationsFiscalesNonSorties(getSession(), annee, famillesSansLot),
+                    getEMailAddress());
+            process.run();
+        }
+    }
+
+    private boolean hasAttesationsNonSorties() {
+        return famillesSansLot.size() > 0;
     }
 
     private void ecrireLesStatistiquesDansLeMail() {
         String intro = FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_INTRO"), annee);
         StringBuilder message = new StringBuilder(intro);
+
+        if (!hasAttesationsNonSorties()) {
+            message.append("\n\n");
+            message.append(getSession().getLabel("ATTESTATION_FISCALE_PAS_ATTESTATION_NON_SORTIE"));
+            message.append("\n\n");
+            getMemoryLog().logMessage(message.toString(), FWMessage.INFORMATION,
+                    REGenererAttestationsFiscalesProcess.class.getSimpleName());
+            message = new StringBuilder();
+        }
 
         message.append("\n\n");
 
@@ -247,7 +263,6 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
         getMemoryLog().logMessage(message.toString(), FWMessage.INFORMATION,
                 REGenererAttestationsFiscalesProcess.class.getSimpleName());
-
         message = new StringBuilder(intro);
 
         message.append("\n\n");
@@ -256,7 +271,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                 .append("\n");
         message.append(
                 FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_SANS_LOT"),
-                        famillesSansLot.size())).append("\n");
+                famillesSansLot.size())).append("\n");
 
         getMemoryLog().logMessage(message.toString(), FWMessage.INFORMATION,
                 REGenererAttestationsFiscalesProcess.class.getSimpleName());
@@ -610,7 +625,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
      * {@link REFamillePourAttestationsFiscales#hasPlusieursAdressePaiement()} sera à <code>true</code> afin qu'une
      * phrase supplémentaire soit imprimée dans l'attestation fiscale de cette famille.
      * </p>
-     * 
+     *
      * @param values
      * @return
      */
@@ -673,7 +688,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
     /**
      * Regroupe les données brutes par tiers requérant (tiers auquel l'attestation fiscale sera envoyée) et ajoute tous
      * les tiers bénéficiaires (et leurs rentes) liés à ce tiers requérant (par ID tiers de la base de calcul)
-     * 
+     *
      * @param donnees
      *            les données brutes chargées par {@link REDonneesPourAttestationsFiscalesManager}
      * @return les données regroupées par tiers requérant

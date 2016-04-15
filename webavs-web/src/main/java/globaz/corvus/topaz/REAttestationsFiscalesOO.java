@@ -1,29 +1,5 @@
 package globaz.corvus.topaz;
 
-import globaz.babel.utils.CatalogueText;
-import globaz.caisse.helper.CaisseHelperFactory;
-import globaz.caisse.report.helper.CaisseHeaderReportBean;
-import globaz.caisse.report.helper.ICaisseReportHelperOO;
-import globaz.corvus.api.codesystem.IRECatalogueTexte;
-import globaz.corvus.api.topaz.IRENoDocumentInfoRom;
-import globaz.corvus.application.REApplication;
-import globaz.corvus.utils.REGedUtils;
-import globaz.docinfo.TIDocumentInfoHelper;
-import globaz.framework.util.FWCurrency;
-import globaz.globall.util.JACalendar;
-import globaz.globall.util.JADate;
-import globaz.globall.util.JANumberFormatter;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.print.server.JadePrintDocumentContainer;
-import globaz.jade.publish.document.JadePublishDocumentInfo;
-import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import globaz.prestation.tools.PRDateFormater;
-import globaz.prestation.tools.PRStringUtils;
-import globaz.pyxis.api.ITIPersonne;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -48,11 +24,35 @@ import ch.globaz.prestation.domaine.CodePrestation;
 import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DataList;
 import ch.globaz.topaz.datajuicer.DocumentData;
+import globaz.babel.utils.CatalogueText;
+import globaz.caisse.helper.CaisseHelperFactory;
+import globaz.caisse.report.helper.CaisseHeaderReportBean;
+import globaz.caisse.report.helper.ICaisseReportHelperOO;
+import globaz.corvus.api.codesystem.IRECatalogueTexte;
+import globaz.corvus.api.topaz.IRENoDocumentInfoRom;
+import globaz.corvus.application.REApplication;
+import globaz.corvus.utils.REGedUtils;
+import globaz.docinfo.TIDocumentInfoHelper;
+import globaz.framework.util.FWCurrency;
+import globaz.globall.util.JACalendar;
+import globaz.globall.util.JADate;
+import globaz.globall.util.JANumberFormatter;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.print.server.JadePrintDocumentContainer;
+import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.prestation.tools.PRDateFormater;
+import globaz.prestation.tools.PRStringUtils;
+import globaz.pyxis.api.ITIPersonne;
 
 public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -132,14 +132,14 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
     private DocumentData genererAttestationPourUneFamille(REFamillePourAttestationsFiscales uneFamille)
             throws Exception {
-        RETiersPourAttestationsFiscales tiersCorrespondance = REAttestationsFiscalesUtils.getTiersCorrespondance(
-                uneFamille, annee);
+        RETiersPourAttestationsFiscales tiersCorrespondance = REAttestationsFiscalesUtils
+                .getTiersCorrespondance(uneFamille, annee);
 
         // récupération du catalogue de texte à utiliser en fonction de la langue de correspondance du tiers
         CatalogueText catalogueAttestationFiscaleDansLaLangueDuTiers = cataloguesAttestationsFiscalesParCodeIso
                 .get(tiersCorrespondance.getCodeIsoLangue().toLowerCase());
-        CatalogueText catalogueDecisionDansLaLangueDuTiers = cataloguesDecisionParCodeIso.get(tiersCorrespondance
-                .getCodeIsoLangue().toLowerCase());
+        CatalogueText catalogueDecisionDansLaLangueDuTiers = cataloguesDecisionParCodeIso
+                .get(tiersCorrespondance.getCodeIsoLangue().toLowerCase());
 
         // remplissage des champs statiques (paragraphes, titres, en-tête de tableau, etc...)
         DocumentData data = getDonneesPreRemplies(catalogueAttestationFiscaleDansLaLangueDuTiers);
@@ -171,16 +171,16 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             public int compare(RETiersPourAttestationsFiscales tiers1, RETiersPourAttestationsFiscales tiers2) {
 
                 for (RERentePourAttestationsFiscales renteTiers1 : tiers1.getRentes()) {
-                    CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(renteTiers1
-                            .getCodePrestation()));
+                    CodePrestation codePrestation = CodePrestation
+                            .getCodePrestation(Integer.parseInt(renteTiers1.getCodePrestation()));
                     if (codePrestation.isRentePrincipale()) {
                         return -1;
                     }
                 }
 
                 for (RERentePourAttestationsFiscales renteTiers2 : tiers2.getRentes()) {
-                    CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(renteTiers2
-                            .getCodePrestation()));
+                    CodePrestation codePrestation = CodePrestation
+                            .getCodePrestation(Integer.parseInt(renteTiers2.getCodePrestation()));
                     if (codePrestation.isRentePrincipale()) {
                         return 1;
                     }
@@ -197,69 +197,80 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                     .append(" ").append(unTiersBeneficiaire.getPrenom());
 
             for (RERentePourAttestationsFiscales uneRenteDuBeneficiaire : unTiersBeneficiaire.getRentes()) {
-                CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer
-                        .parseInt(uneRenteDuBeneficiaire.getCodePrestation()));
-
-                // si API, on ne l'affiche pas dans la liste, mais une remarque sera ajouté plus tard
-                // avec le degré de cette API
-                if (codePrestation.isAPI()) {
-                    hasAPI = true;
-                    degreAPI = codePrestation.getDegreImpotenceAPI();
-                    continue;
-                }
-
-                DataList ligneInfoBeneficiaire = new DataList("ligneInfoAssure");
-                ligneInfoBeneficiaire.addData("infoTiers", infoTiers.toString());
-                tableauBeneficiaires.add(ligneInfoBeneficiaire);
-
-                DataList ligneInfoRente = new DataList("ligneInfoRente");
-
-                String traductionCodePrestation = null;
-                StringBuilder csCodePrestation = new StringBuilder();
-                csCodePrestation.append("52821").append(codePrestation);
-                if (JadeStringUtil.isBlankOrZero(uneRenteDuBeneficiaire.getFractionRente())) {
-                    csCodePrestation.append("0");
-                } else {
-                    csCodePrestation.append(uneRenteDuBeneficiaire.getFractionRente());
-                }
-
-                // cas particulier des rentes de veuf (pour la description de la rente)
-                if (ITIPersonne.CS_HOMME.equals(unTiersBeneficiaire.getCsSexe())
-                        && (codePrestation.getCodePrestation() == 13)) {
-                    // texte "Rente de veuf" pris depuis le catalogue de texte de la décision de rente
-                    traductionCodePrestation = getTexte(catalogueDecisionDansLaLangueDuTiers, 2, 11);
-                } else if (ITIPersonne.CS_HOMME.equals(unTiersBeneficiaire.getCsSexe())
-                        && (codePrestation.getCodePrestation() == 23)) {
-                    // texte "Rente de veuf extraordinaire" pris depuis le catalogue de texte de la décision de rente
-                    traductionCodePrestation = getTexte(catalogueDecisionDansLaLangueDuTiers, 2, 12);
-                } else {
-                    traductionCodePrestation = getTraductionGenreRente(csCodePrestation.toString(),
-                            tiersCorrespondance.getCodeIsoLangue());
-                }
-
-                if (traductionCodePrestation == null) {
-                    throw new Exception("Unable to find a translation for the code prestation : "
-                            + csCodePrestation.toString());
-                } else {
-                    ligneInfoRente.addData("genre_rente", traductionCodePrestation);
-                }
 
                 String dateMoisDebut = "01." + getMoisDebut(uneRenteDuBeneficiaire);
                 String dateMoisFin = getDerniereDateMois(getMoisFin(uneRenteDuBeneficiaire));
                 int nbMois = JadeDateUtil.getNbMonthsBetween(dateMoisDebut, dateMoisFin);
 
-                StringBuilder periodeRente = new StringBuilder();
-                periodeRente.append(dateMoisDebut).append(" - ").append(dateMoisFin);
+                /*
+                 * Si décision de vieillesse pour un couple et que 2 décisions on étés prise en avance pour une des 2
+                 * personne
+                 * La date de fin de droit sera plus petite que la date de fin ce qui amène des montant négatif sur
+                 * l'attestation fiscales
+                 */
+                if (nbMois > 0) {
 
-                ligneInfoRente.addData("periode_rente", periodeRente.toString());
+                    CodePrestation codePrestation = CodePrestation
+                            .getCodePrestation(Integer.parseInt(uneRenteDuBeneficiaire.getCodePrestation()));
 
-                double montantAnnuel = Double.parseDouble(JANumberFormatter.deQuote(uneRenteDuBeneficiaire
-                        .getMontantPrestation())) * nbMois;
-                montantTotal += montantAnnuel;
+                    // si API, on ne l'affiche pas dans la liste, mais une remarque sera ajouté plus tard
+                    // avec le degré de cette API
+                    if (codePrestation.isAPI()) {
+                        hasAPI = true;
+                        degreAPI = codePrestation.getDegreImpotenceAPI();
+                        continue;
+                    }
 
-                ligneInfoRente.addData("montant_rente", new FWCurrency(montantAnnuel).toStringFormat());
+                    DataList ligneInfoBeneficiaire = new DataList("ligneInfoAssure");
+                    ligneInfoBeneficiaire.addData("infoTiers", infoTiers.toString());
+                    tableauBeneficiaires.add(ligneInfoBeneficiaire);
 
-                tableauBeneficiaires.add(ligneInfoRente);
+                    DataList ligneInfoRente = new DataList("ligneInfoRente");
+
+                    String traductionCodePrestation = null;
+                    StringBuilder csCodePrestation = new StringBuilder();
+                    csCodePrestation.append("52821").append(codePrestation);
+                    if (JadeStringUtil.isBlankOrZero(uneRenteDuBeneficiaire.getFractionRente())) {
+                        csCodePrestation.append("0");
+                    } else {
+                        csCodePrestation.append(uneRenteDuBeneficiaire.getFractionRente());
+                    }
+
+                    // cas particulier des rentes de veuf (pour la description de la rente)
+                    if (ITIPersonne.CS_HOMME.equals(unTiersBeneficiaire.getCsSexe())
+                            && (codePrestation.getCodePrestation() == 13)) {
+                        // texte "Rente de veuf" pris depuis le catalogue de texte de la décision de rente
+                        traductionCodePrestation = getTexte(catalogueDecisionDansLaLangueDuTiers, 2, 11);
+                    } else if (ITIPersonne.CS_HOMME.equals(unTiersBeneficiaire.getCsSexe())
+                            && (codePrestation.getCodePrestation() == 23)) {
+                        // texte "Rente de veuf extraordinaire" pris depuis le catalogue de texte de la décision de
+                        // rente
+                        traductionCodePrestation = getTexte(catalogueDecisionDansLaLangueDuTiers, 2, 12);
+                    } else {
+                        traductionCodePrestation = getTraductionGenreRente(csCodePrestation.toString(),
+                                tiersCorrespondance.getCodeIsoLangue());
+                    }
+
+                    if (traductionCodePrestation == null) {
+                        throw new Exception("Unable to find a translation for the code prestation : "
+                                + csCodePrestation.toString());
+                    } else {
+                        ligneInfoRente.addData("genre_rente", traductionCodePrestation);
+                    }
+
+                    StringBuilder periodeRente = new StringBuilder();
+                    periodeRente.append(dateMoisDebut).append(" - ").append(dateMoisFin);
+
+                    ligneInfoRente.addData("periode_rente", periodeRente.toString());
+
+                    double montantAnnuel = Double.parseDouble(
+                            JANumberFormatter.deQuote(uneRenteDuBeneficiaire.getMontantPrestation())) * nbMois;
+                    montantTotal += montantAnnuel;
+
+                    ligneInfoRente.addData("montant_rente", new FWCurrency(montantAnnuel).toStringFormat());
+
+                    tableauBeneficiaires.add(ligneInfoRente);
+                }
             }
         }
         data.add(tableauBeneficiaires);
@@ -297,9 +308,9 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             data.addData("PLUSIEURS_ATT_FAMILLE", getTexte(catalogueAttestationFiscaleDansLaLangueDuTiers, 4, 6));
         }
 
-        data.addData("SALUTATION_ATTESTATION", PRStringUtils.replaceString(
-                getTexte(catalogueAttestationFiscaleDansLaLangueDuTiers, 5, 1), "{TitreSalutation}",
-                tiersCorrespondance.getTitreTiers()));
+        data.addData("SALUTATION_ATTESTATION",
+                PRStringUtils.replaceString(getTexte(catalogueAttestationFiscaleDansLaLangueDuTiers, 5, 1),
+                        "{TitreSalutation}", tiersCorrespondance.getTitreTiers()));
 
         return data;
     }
@@ -347,9 +358,11 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             singleDocInfo.setPublishDocument(false);
             singleDocInfo.setDocumentType(IRENoDocumentInfoRom.ATTESTATIONS_FISCALES_ANNUELLE);
             singleDocInfo.setDocumentTypeNumber(IRENoDocumentInfoRom.ATTESTATIONS_FISCALES_ANNUELLE);
-            singleDocInfo.setDocumentProperty(REGedUtils.PROPRIETE_GED_TYPE_DEMANDE_RENTE, REGedUtils
-                    .getCleGedPourTypeRente(getSession(), REGedUtils.getTypeRentePourListeCodesPrestation(getSession(),
-                            getCodePrestationFamille(uneFamille), false, true)));
+            singleDocInfo
+                    .setDocumentProperty(REGedUtils.PROPRIETE_GED_TYPE_DEMANDE_RENTE,
+                            REGedUtils.getCleGedPourTypeRente(getSession(),
+                                    REGedUtils.getTypeRentePourListeCodesPrestation(getSession(),
+                                            getCodePrestationFamille(uneFamille), false, true)));
 
             // bz-7950
             RETiersPourAttestationsFiscales tiersCorrespondance = null;
@@ -373,16 +386,16 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
     private void genererEnTeteSignature(RETiersPourAttestationsFiscales tiersCorrespondance, DocumentData data) {
         try {
-            CatalogueText catalogueLangueTiers = cataloguesAttestationsFiscalesParCodeIso.get(tiersCorrespondance
-                    .getCodeIsoLangue().toLowerCase());
+            CatalogueText catalogueLangueTiers = cataloguesAttestationsFiscalesParCodeIso
+                    .get(tiersCorrespondance.getCodeIsoLangue().toLowerCase());
 
             data.addData("SIGNATURE", getTexte(catalogueLangueTiers, 7, 1));
 
             CaisseHeaderReportBean crBean = new CaisseHeaderReportBean();
             crBean.setAdresse(tiersCorrespondance.getAdresseCourrierFormatee());
 
-            ICaisseReportHelperOO caisseHelper = CaisseHelperFactory.getInstance().getCaisseReportHelperOO(
-                    getSession().getApplication(), tiersCorrespondance.getCodeIsoLangue());
+            ICaisseReportHelperOO caisseHelper = CaisseHelperFactory.getInstance()
+                    .getCaisseReportHelperOO(getSession().getApplication(), tiersCorrespondance.getCodeIsoLangue());
             caisseHelper.setTemplateName(REAttestationsFiscalesOO.FICHIER_MODELE_ENTETE_CORVUS);
 
             if (Boolean.parseBoolean(getSession().getApplication().getProperty("isAfficherDossierTraitePar"))) {
@@ -413,8 +426,8 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             } else if (JadeDateUtil.isGlobazDateMonthYear(dateImpression)) {
                 JADate date = new JADate(dateImpression);
                 StringBuilder dateImpression = new StringBuilder();
-                dateImpression.append(" ").append(
-                        JACalendar.getMonthName(date.getMonth(), tiersCorrespondance.getCodeIsoLangue()));
+                dateImpression.append(" ")
+                        .append(JACalendar.getMonthName(date.getMonth(), tiersCorrespondance.getCodeIsoLangue()));
                 dateImpression.append(" ").append(Integer.toString(date.getYear()));
 
                 crBean.setDate(dateImpression.toString());
@@ -440,8 +453,8 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
         for (RERentePourAttestationsFiscales uneRente : famille.getRentesDeLaFamille()) {
             if (!JadeStringUtil.isBlankOrZero(uneRente.getCodePrestation())
                     && JadeNumericUtil.isInteger(uneRente.getCodePrestation())) {
-                CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(uneRente
-                        .getCodePrestation()));
+                CodePrestation codePrestation = CodePrestation
+                        .getCodePrestation(Integer.parseInt(uneRente.getCodePrestation()));
                 codesPrestation.add(codePrestation);
             }
         }

@@ -1,5 +1,14 @@
 package ch.globaz.corvus.process.attestationsfiscales;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import ch.globaz.prestation.domaine.CodePrestation;
 import globaz.corvus.api.retenues.IRERetenues;
 import globaz.corvus.utils.codeprestation.enums.RECodePrestationResolver;
 import globaz.jade.client.util.JadeDateUtil;
@@ -7,12 +16,6 @@ import globaz.jade.client.util.JadePeriodWrapper;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.prestation.tools.PRDateFormater;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import ch.globaz.prestation.domaine.CodePrestation;
 
 public class REAttestationsFiscalesUtils {
 
@@ -20,8 +23,10 @@ public class REAttestationsFiscalesUtils {
      * <p>
      * Défini si une retenue de type "Impôt à la source" a été en cours durant l'année fiscale voulue.
      * </p>
-     * </p>Si c'est le cas, aucune attestation ne devrait sortir.</p>
-     * 
+     * </p>
+     * Si c'est le cas, aucune attestation ne devrait sortir.
+     * </p>
+     *
      * @param famille
      * @param annee
      *            l'année fiscale voulue
@@ -47,7 +52,7 @@ public class REAttestationsFiscalesUtils {
 
     /**
      * Test si l'<code>annee</code> est contenue dans la période
-     * 
+     *
      * @param dateDeDebut la date de début de la période
      * @param dateDeFin la date de fin de la période
      * @param anneeReference l'année de référence
@@ -119,7 +124,7 @@ public class REAttestationsFiscalesUtils {
      * <p>
      * Si une rente bloquée est trouvée, aucune attestation fiscale ne doit sortir pour ce cas.
      * </p>
-     * 
+     *
      * @param famille
      * @param annee
      *            l'année fiscale voulue
@@ -128,9 +133,8 @@ public class REAttestationsFiscalesUtils {
     public static boolean hasRenteBloquee(REFamillePourAttestationsFiscales famille, String annee) {
         for (RERentePourAttestationsFiscales uneRente : famille.getRentesDeLaFamille()) {
             // rente bloquée avec date de fin vide ou date de fin plus grande que l'année fiscales -> true
-            if (uneRente.isRenteBloquee()
-                    && (JadeStringUtil.isBlank(uneRente.getDateFinDroit()) || JadeDateUtil.isDateMonthYearAfter(
-                            uneRente.getDateFinDroit(), "12." + annee))) {
+            if (uneRente.isRenteBloquee() && (JadeStringUtil.isBlank(uneRente.getDateFinDroit())
+                    || JadeDateUtil.isDateMonthYearAfter(uneRente.getDateFinDroit(), "12." + annee))) {
                 return true;
             }
         }
@@ -142,7 +146,7 @@ public class REAttestationsFiscalesUtils {
      * Retournera <code>true</code> si la rente principale de cette famille se termine dans l'année, sans une autre
      * rente principale pour reprendre le droit.
      * </p>
-     * 
+     *
      * @param famille
      * @param annee
      * @return
@@ -154,8 +158,8 @@ public class REAttestationsFiscalesUtils {
         // regroupement des périodes par tiers
         for (RERentePourAttestationsFiscales uneRente : famille.getRentesDeLaFamille()) {
             // uniquement les rentes principales
-            CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(uneRente
-                    .getCodePrestation()));
+            CodePrestation codePrestation = CodePrestation
+                    .getCodePrestation(Integer.parseInt(uneRente.getCodePrestation()));
 
             if (codePrestation.isRentePrincipale()) {
                 SortedSet<JadePeriodWrapper> periodeDuTiers;
@@ -178,20 +182,23 @@ public class REAttestationsFiscalesUtils {
             for (Iterator<JadePeriodWrapper> iterator = periodesDuTiers.iterator(); iterator.hasNext();) {
                 JadePeriodWrapper unePeriodeDuTiers = iterator.next();
 
-                if (periodeGlobaleDuTiers == null) {
-                    periodeGlobaleDuTiers = new JadePeriodWrapper(unePeriodeDuTiers.getDateDebut(),
-                            unePeriodeDuTiers.getDateFin());
-                } else {
-                    JadePeriodWrapper unionDesPeriodes = periodeGlobaleDuTiers.union(unePeriodeDuTiers);
-                    // Si l'union n'a rien donnée (période qui ne se suivent pas) et que la période globale
-                    // se termine dans l'année fiscale, c'est qu'il y a un trou ou une fin de droit -> return true
-                    if (unionDesPeriodes == null) {
-                        if (periodeGlobaleDuTiers.isDateDansLaPeriode("01.01." + annee)
-                                && !periodeGlobaleDuTiers.isDateDansLaPeriode("01.01." + (Integer.parseInt(annee) + 1))) {
-                            return true;
-                        }
+                if (!isDateDefinPlusPetiteQueDateDeDebut(unePeriodeDuTiers)) {
+
+                    if (periodeGlobaleDuTiers == null) {
+                        periodeGlobaleDuTiers = new JadePeriodWrapper(unePeriodeDuTiers.getDateDebut(),
+                                unePeriodeDuTiers.getDateFin());
                     } else {
-                        periodeGlobaleDuTiers = unionDesPeriodes;
+                        JadePeriodWrapper unionDesPeriodes = periodeGlobaleDuTiers.union(unePeriodeDuTiers);
+                        // Si l'union n'a rien donnée (période qui ne se suivent pas) et que la période globale
+                        // se termine dans l'année fiscale, c'est qu'il y a un trou ou une fin de droit -> return true
+                        if (unionDesPeriodes == null) {
+                            if (periodeGlobaleDuTiers.isDateDansLaPeriode("01.01." + annee) && !periodeGlobaleDuTiers
+                                    .isDateDansLaPeriode("01.01." + (Integer.parseInt(annee) + 1))) {
+                                return true;
+                            }
+                        } else {
+                            periodeGlobaleDuTiers = unionDesPeriodes;
+                        }
                     }
                 }
             }
@@ -216,11 +223,47 @@ public class REAttestationsFiscalesUtils {
         return false;
     }
 
+    /**
+     * Test si la date de fin est plus petite que la date de début
+     * Format de Date attendu MM.yyyy
+     *
+     * @param periode
+     * @return
+     */
+    private static boolean isDateDefinPlusPetiteQueDateDeDebut(JadePeriodWrapper periode) {
+        if (JadeStringUtil.isBlankOrZero(periode.getDateFin())) {
+            return false;
+        }
+        SimpleDateFormat reader = new SimpleDateFormat("MM.yyyy");
+        Date dateDebut = null;
+        Date dateFin = null;
+        try {
+            dateDebut = reader.parse(periode.getDateDebut());
+        } catch (ParseException e) {
+            throw new IllegalArgumentException(
+                    "Wrong dateDebut format, expected [MM.yyyy], received value [" + periode.getDateDebut() + "]", e);
+        }
+
+        try {
+            dateFin = reader.parse(periode.getDateFin());
+        } catch (ParseException e) {
+            throw new IllegalArgumentException(
+                    "Wrong dateFin format, expected [MM.yyyy], received value [" + periode.getDateFin() + "]", e);
+        }
+
+        SimpleDateFormat writer = new SimpleDateFormat("yyyyMM");
+
+        int debut = Integer.valueOf(writer.format(dateDebut));
+        int fin = Integer.valueOf(writer.format(dateFin));
+
+        return fin < debut;
+    }
+
     public static boolean hasRetroDansAnneeFiscale(REFamillePourAttestationsFiscales famille, String annee) {
         for (RERentePourAttestationsFiscales uneRente : famille.getRentesDeLaFamille()) {
 
-            CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(uneRente
-                    .getCodePrestation()));
+            CodePrestation codePrestation = CodePrestation
+                    .getCodePrestation(Integer.parseInt(uneRente.getCodePrestation()));
 
             if (codePrestation.isAPI()) {
                 continue;
@@ -242,8 +285,8 @@ public class REAttestationsFiscalesUtils {
     public static boolean isAttestationRenteSurvivant(REFamillePourAttestationsFiscales uneFamille) {
         for (RERentePourAttestationsFiscales uneRente : uneFamille.getRentesDeLaFamille()) {
 
-            CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(uneRente
-                    .getCodePrestation()));
+            CodePrestation codePrestation = CodePrestation
+                    .getCodePrestation(Integer.parseInt(uneRente.getCodePrestation()));
 
             if (codePrestation.isSurvivant()) {
                 return true;
@@ -255,9 +298,8 @@ public class REAttestationsFiscalesUtils {
     public static boolean isAvecDecisionPendantAnneeFiscale(REFamillePourAttestationsFiscales famille, String annee) {
 
         for (RERentePourAttestationsFiscales uneRente : famille.getRentesDeLaFamille()) {
-            if (!JadeStringUtil.isBlank(uneRente.getDateDecision())
-                    && (Integer.parseInt(annee) == Integer.parseInt((PRDateFormater
-                            .convertDate_JJxMMxAAAA_to_AAAA(uneRente.getDateDecision()))))) {
+            if (!JadeStringUtil.isBlank(uneRente.getDateDecision()) && (Integer.parseInt(annee) == Integer
+                    .parseInt((PRDateFormater.convertDate_JJxMMxAAAA_to_AAAA(uneRente.getDateDecision()))))) {
                 return true;
             }
         }
@@ -269,9 +311,8 @@ public class REAttestationsFiscalesUtils {
             String annee) {
 
         for (RERentePourAttestationsFiscales uneRente : famille.getRentesDeLaFamille()) {
-            if (!JadeStringUtil.isBlank(uneRente.getDateDecision())
-                    && (Integer.parseInt(annee) <= Integer.parseInt((PRDateFormater
-                            .convertDate_JJxMMxAAAA_to_AAAA(uneRente.getDateDecision()))))) {
+            if (!JadeStringUtil.isBlank(uneRente.getDateDecision()) && (Integer.parseInt(annee) <= Integer
+                    .parseInt((PRDateFormater.convertDate_JJxMMxAAAA_to_AAAA(uneRente.getDateDecision()))))) {
                 return false;
             }
         }
@@ -282,7 +323,7 @@ public class REAttestationsFiscalesUtils {
     /**
      * Retourne <code>true</code> si la famille ne possède pas de rente principale et que toute les rentes
      * complémentaire ont une date de fin
-     * 
+     *
      * @param famille Les données de la famille à analyser
      * @param annee L'année concernée
      * @return <code>true</code> si la famille ne possède pas de rente principale et que toute les rentes
@@ -308,24 +349,24 @@ public class REAttestationsFiscalesUtils {
     /**
      * Retourne <code>true</code> si le tiers de correspondance à peu être retrouvé selon différentes règles et s'il
      * possède une adresse valide.
-     * 
+     *
      * Cette méthode s'appuye sur la méthode {@link REAttestationsFiscalesUtils}.getTiersCorrespondance(famille, annee)
-     * 
+     *
      * @param uneFamille la famille à analyser
      * @param annee L'année fiscale
      * @return <code>true</code> si le tiers de correspondance à peu être retrouvé selon différentes règles et s'il
      */
     public static boolean hasTiersCorrespondanceAvecAdresseValide(REFamillePourAttestationsFiscales uneFamille,
             String annee) {
-        RETiersPourAttestationsFiscales tiersCorrespondance = REAttestationsFiscalesUtils.getTiersCorrespondance(
-                uneFamille, annee);
+        RETiersPourAttestationsFiscales tiersCorrespondance = REAttestationsFiscalesUtils
+                .getTiersCorrespondance(uneFamille, annee);
         return tiersCorrespondance != null && !JadeStringUtil.isBlank(tiersCorrespondance.getAdresseCourrierFormatee());
     }
 
     /**
      * Méthode utilitaire pour retrouver le tiers de correspondance.
      * Gère les cas particulier liés aux rentes de survivants
-     * 
+     *
      * @param uneFamille
      * @return
      */
@@ -336,7 +377,8 @@ public class REAttestationsFiscalesUtils {
         // Si des rentes de survivants sont versées à la famille une analyse doit être faite pour déterminer le tiers
         // pour correspondance
         if (analyseurLot2.isFamilleDansLot(uneFamille) || analyseurLot4.isFamilleDansLot(uneFamille)) {
-            RETiersPourAttestationsFiscales tiersBeneficiaireRentePrinciapel = getBeneficiaireRenteSurvivant(uneFamille);
+            RETiersPourAttestationsFiscales tiersBeneficiaireRentePrinciapel = getBeneficiaireRenteSurvivant(
+                    uneFamille);
             if (tiersBeneficiaireRentePrinciapel != null) {
                 return tiersBeneficiaireRentePrinciapel;
             }
@@ -347,7 +389,7 @@ public class REAttestationsFiscalesUtils {
     /**
      * Cette méthode est responsable de retrouver le tiers de correspondance dans le cas ou des rentes de survivant sont
      * versées à la famille
-     * 
+     *
      * @param famille la famille à traiter
      * @return le tiers bénéficiaire à utiliser pour la correspondance
      */
@@ -392,8 +434,8 @@ public class REAttestationsFiscalesUtils {
                     continue;
                 }
                 for (RERentePourAttestationsFiscales uneRente : unTiers.getRentes()) {
-                    CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(uneRente
-                            .getCodePrestation()));
+                    CodePrestation codePrestation = CodePrestation
+                            .getCodePrestation(Integer.parseInt(uneRente.getCodePrestation()));
                     if (codePrestation.isSurvivant()) {
                         if ((tiersBeneficiaire == null)
                                 || (codePrestation.getCodePrestation() < codePrestationDuTiersBeneficiaire)) {
