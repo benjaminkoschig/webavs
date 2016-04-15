@@ -47,6 +47,7 @@ import globaz.osiris.db.comptes.CATypeOperation;
 import globaz.osiris.db.comptes.CATypeOperationManager;
 import globaz.osiris.db.comptes.extrait.CAExtraitCompte;
 import globaz.osiris.db.comptes.extrait.CAExtraitCompteManager;
+import globaz.osiris.db.interets.CARubriqueSoumiseInteretManager;
 import globaz.osiris.external.IntRole;
 import globaz.osiris.external.IntTiers;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
@@ -301,6 +302,30 @@ public abstract class CODocumentManager extends FWIDocumentManager {
         public boolean isPaiementOP() {
             return !JadeStringUtil.isIntegerEmpty(extraitCompte.getProvenancePmt());
         }
+
+        /**
+         * Si j'ai une rubrique et qu'elle fait partis de la liste des soumis à intérêt (cfr : compta.aux.)
+         * 
+         * @param BSession pour le manager des rubrique
+         * @return si trouvé l'id rubrique de l'item courant dans la table des rubrique soumises à IM <br/>
+         *         (sans session ou en erreur retourne faux)
+         */
+        public boolean isSoumisInteret(BSession session) {
+            if (extraitCompte.getRubrique() != null) {
+                CARubriqueSoumiseInteretManager rsiManager = new CARubriqueSoumiseInteretManager();
+                rsiManager.setSession(session);
+                rsiManager.setForIdRubrique(extraitCompte.getRubrique().getId());
+                try {
+                    if (rsiManager.getCount() == 1) {
+                        return true;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            return false;
+        }
+
     }
 
     /* Constantes utilisées pour la sommation et la décision indiquant s'il y a un verso. */
@@ -922,7 +947,7 @@ public abstract class CODocumentManager extends FWIDocumentManager {
             COSituationCompteItem item = operIter.next();
 
             if (!item.isLineBlocked(csEtape) && item.isMontantDifferentZero()) {
-                if (item.isCompensation() == true || item.isPaiement() == true) {
+                if (item.isCompensation() == true || item.isPaiement() == true || item.isSoumisInteret(getSession())) {
                     totalPaiement.add(item.getMontant());
                 } else {
 
