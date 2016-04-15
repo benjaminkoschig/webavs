@@ -1,14 +1,5 @@
 package globaz.al.vb.decision;
 
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSpy;
-import globaz.globall.vb.BJadePersistentObjectViewBean;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.Date;
 import ch.globaz.al.business.constantes.ALCSCopie;
 import ch.globaz.al.business.exceptions.decision.ALDecisionException;
@@ -18,11 +9,22 @@ import ch.globaz.al.business.models.dossier.CommentaireSearchModel;
 import ch.globaz.al.business.models.dossier.CopieComplexModel;
 import ch.globaz.al.business.models.dossier.CopieComplexSearchModel;
 import ch.globaz.al.business.models.dossier.DossierDecisionComplexModel;
+import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.services.ALServiceLocator;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.BSpy;
+import globaz.globall.vb.BJadePersistentObjectViewBean;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 /**
  * Viewbean gérant un modèle représentant une décision
- * 
+ *
  * @author JER
  */
 public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
@@ -103,6 +105,11 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
     private String typeDecompte = null;
 
     /**
+     * Si la décision est en file d'attente
+     */
+    private boolean isFileAttente = false;
+
+    /**
      * Constructeur de la classe
      */
     public ALDecisionViewBean() {
@@ -120,7 +127,7 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Constructeur de la classe
-     * 
+     *
      * @param _dossierDecisionComplexModel
      *            Un dossier d'allocation familiale
      */
@@ -162,8 +169,8 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
      * @return Le modèle complexe de copie situé à l'indexe
      */
     public CopieComplexModel getCopieAt(int idx) {
-        return idx < copieComplexSearchModel.getSize() ? (CopieComplexModel) copieComplexSearchModel.getSearchResults()[idx]
-                : new CopieComplexModel();
+        return idx < copieComplexSearchModel.getSize()
+                ? (CopieComplexModel) copieComplexSearchModel.getSearchResults()[idx] : new CopieComplexModel();
     }
 
     /**
@@ -211,7 +218,7 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
     }
 
     /**
-     * 
+     *
      * @return idCopieToDelete
      */
     public String getIdCopieToDelete() {
@@ -238,7 +245,7 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retourne le libellé à afficher pour la copie en question
-     * 
+     *
      * @param idx
      *            index dans la copie dans la liste des copies à l'écran
      * @return le libellé
@@ -291,8 +298,8 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
 
     @Override
     public BSpy getSpy() {
-        return (dossierDecisionComplexModel != null) && !dossierDecisionComplexModel.isNew() ? new BSpy(
-                dossierDecisionComplexModel.getSpy()) : new BSpy(getSession());
+        return (dossierDecisionComplexModel != null) && !dossierDecisionComplexModel.isNew()
+                ? new BSpy(dossierDecisionComplexModel.getSpy()) : new BSpy(getSession());
     }
 
     /**
@@ -310,10 +317,8 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
         return typeDecompte;
     }
 
-    public String idDossierForDecompte(String idDecompte) throws JadeApplicationServiceNotAvailableException,
-            JadeApplicationException, JadePersistenceException {
-        String idDossier = null;
-
+    public String idDossierForDecompte(String idDecompte)
+            throws JadeApplicationServiceNotAvailableException, JadeApplicationException, JadePersistenceException {
         return idDossier = ALServiceLocator.getAdiDecompteComplexModelService().read(idDecompte).getDecompteAdiModel()
                 .getIdDossier();
     }
@@ -438,7 +443,7 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * définit l'id tiers destinataire récupéré de la séléction via [...]
-     * 
+     *
      * @param idDest
      *            l'id récupéré
      */
@@ -490,9 +495,29 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
     public void update() throws Exception {
 
         // On ne met pas à jour le modèle complexe complet, mais uniquement le
-        // dossierModel (pour le champ référence, seul champ éditable)
-        dossierDecisionComplexModel.setDossierModel(ALServiceLocator.getDossierModelService().update(
-                dossierDecisionComplexModel.getDossierModel()));
+        // dossierModel (pour le champ référence et la case à cocher file d'attente, seuls champs éditables)
+
+        DossierModel oldDossier = ALServiceLocator.getDossierModelService()
+                .read(dossierDecisionComplexModel.getDossierModel().getId());
+
+        // Analyse de l'enavien état de la case à cocher 'file d'attente'
+        boolean oldValue = !JadeStringUtil.isEmpty(oldDossier.getIdGestionnaire());
+
+        // Dans le case ou aucun idGestionnaire état stocké et, que la case à cocher est désormais sélectionnée, on
+        // stocke l'id du gestionnaire qui à coché la case à cochée
+        if (!oldValue && getIsFileAttente()) {
+            dossierDecisionComplexModel.getDossierModel()
+                    .setIdGestionnaire(BSessionUtil.getSessionFromThreadContext().getUserId());
+        }
+
+        // Dans le cas inverse, ou la case était précédemment sélectionnée mais plus maintenant, on met l'idGestionnaire
+        // à null
+        else if (oldValue && !getIsFileAttente()) {
+            dossierDecisionComplexModel.getDossierModel().setIdGestionnaire(null);
+        }
+
+        dossierDecisionComplexModel.setDossierModel(
+                ALServiceLocator.getDossierModelService().update(dossierDecisionComplexModel.getDossierModel()));
 
         // Mise à jour du texte libre
         if (!JadeStringUtil.isEmpty(commentaireModel.getTexte())) {
@@ -505,22 +530,24 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
             ALServiceLocator.getCommentaireModelService().delete(commentaireModel);
         }
 
-        // on récupère la valeur de chaque case à cocher (stocké sous forme de
-        // string)
-
-        String delimiter = "\\,";
-        String[] temp = impressionBatchOverview.split(delimiter);
-
-        // Mise à jour des cases à cocher des copies
-        for (int i = 0; i < copieComplexSearchModel.getSize(); i++) {
-            CopieComplexModel copieComplexModel = ((CopieComplexModel) copieComplexSearchModel.getSearchResults()[i]);
-            // modification de impression batch selon case à cocher
-            copieComplexModel.getCopieModel().setImpressionBatch(Boolean.valueOf(temp[i]));
-            ALServiceLocator.getCopieComplexModelService().update(copieComplexModel);
-        }
-
         if (!JadeNumericUtil.isEmptyOrZero(getCopieComplexModel().getCopieModel().getIdTiersDestinataire())) {
             ALServiceLocator.getCopieComplexModelService().create(copieComplexModel);
         }
+
     }
+
+    /**
+     * @return the fileAttente
+     */
+    public boolean getIsFileAttente() {
+        return isFileAttente;
+    }
+
+    /**
+     * @param fileAttente the fileAttente to set
+     */
+    public void setIsFileAttente(boolean fileAttente) {
+        isFileAttente = fileAttente;
+    }
+
 }

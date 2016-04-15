@@ -1,18 +1,18 @@
 package ch.globaz.al.business.models.dossier;
 
-import globaz.jade.persistence.model.JadeSearchComplexModel;
 import java.util.Collection;
+import globaz.jade.persistence.model.JadeSearchComplexModel;
 
 /**
  * Modèle de recherche pour les modèles complexes de dossier
- * 
+ *
  * @author jts
- * 
+ *
  */
 public class DossierComplexSearchModel extends JadeSearchComplexModel {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -32,10 +32,11 @@ public class DossierComplexSearchModel extends JadeSearchComplexModel {
     public static final String SEARCH_LIST_DOSSIER_ACTIF = "listDossierActif";
     public static final String SEARCH_RADIATION_AFFILIE = "RadiationAffilie";
     public static final String SEARCH_DOSSIERS_ACTIF = "dossiersActifs";
+    public static final String SEARCH_DOSSIERS_FILE_ATTENTE = "dossiersFileAttente";
 
     /**
      * Recherche selon une liste d'état
-     * 
+     *
      * @see ch.globaz.al.business.constantes.ALCSDossier#GROUP_ETAT
      */
     private String forEtat = null;
@@ -43,7 +44,7 @@ public class DossierComplexSearchModel extends JadeSearchComplexModel {
      * Recherche sur la date de fin de validité du dossier
      */
     private String forFinValidite = null;
-     /**
+    /**
      * Recherche sur la date de debut de validité du dossier
      */
     private String forDebutValidite = null;
@@ -70,13 +71,13 @@ public class DossierComplexSearchModel extends JadeSearchComplexModel {
     private String forNumeroAffilie = null;
     /**
      * Recherche sur une ou plusieurs activité(s)
-     * 
+     *
      * @see ch.globaz.al.business.constantes.ALCSDossier#GROUP_ACTIVITE_ALLOC
      */
     private Collection<String> inActivites = null;
     /**
      * Recherche selon une liste d'état
-     * 
+     *
      * @see ch.globaz.al.business.constantes.ALCSDossier#GROUP_ETAT
      */
     private Collection<String> inEtat = null;
@@ -90,7 +91,7 @@ public class DossierComplexSearchModel extends JadeSearchComplexModel {
     private Collection<String> inNumeroAffilie = null;
     /**
      * Recherche selon une liste de statut
-     * 
+     *
      * @see ch.globaz.al.business.constantes.ALCSDossier#GROUP_STATUT
      */
     private Collection<String> inStatut = null;
@@ -98,6 +99,8 @@ public class DossierComplexSearchModel extends JadeSearchComplexModel {
      * Recherche par n° affilié
      */
     private String likeNumeroAffilie = null;
+
+    private String forIdGestionnaire;
 
     /**
      * @return the forEtat
@@ -282,4 +285,19 @@ public class DossierComplexSearchModel extends JadeSearchComplexModel {
     public void setForDebutValidite(String forDebutValidite) {
         this.forDebutValidite = forDebutValidite;
     }
+
+    /**
+     * @return the forIdGestionnaire
+     */
+    public String getForIdGestionnaire() {
+        return forIdGestionnaire;
+    }
+
+    /**
+     * @param forIdGestionnaire the forIdGestionnaire to set
+     */
+    public void setForIdGestionnaire(String forIdGestionnaire) {
+        this.forIdGestionnaire = forIdGestionnaire;
+    }
+
 }

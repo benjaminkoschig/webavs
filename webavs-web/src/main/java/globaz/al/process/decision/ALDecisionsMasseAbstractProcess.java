@@ -1,27 +1,5 @@
 package globaz.al.process.decision;
 
-import globaz.al.process.ALAbsrtactProcess;
-import globaz.globall.parameters.FWParametersCode;
-import globaz.globall.parameters.FWParametersSystemCodeManager;
-import globaz.jade.client.util.JadeCodesSystemsUtil;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeFileUtil;
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.common.JadeClassCastException;
-import globaz.jade.context.JadeThread;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.fs.JadeFsFacade;
-import globaz.jade.i18n.JadeI18n;
-import globaz.jade.log.business.JadeBusinessMessage;
-import globaz.jade.log.business.JadeBusinessMessageLevels;
-import globaz.jade.persistence.model.JadeAbstractModel;
-import globaz.jade.persistence.model.JadeAbstractSearchModel;
-import globaz.jade.print.server.JadePrintDocumentContainer;
-import globaz.jade.service.exception.JadeServiceActivatorException;
-import globaz.jade.service.exception.JadeServiceLocatorException;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -51,10 +29,31 @@ import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.decision.DecisionBuilderService;
 import ch.globaz.al.business.services.models.dossier.DossierComplexModelService;
 import ch.globaz.al.business.services.models.droit.DroitComplexModelService;
+import globaz.al.process.ALAbsrtactProcess;
+import globaz.globall.parameters.FWParametersCode;
+import globaz.globall.parameters.FWParametersSystemCodeManager;
+import globaz.jade.client.util.JadeCodesSystemsUtil;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeFileUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.JadeClassCastException;
+import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.fs.JadeFsFacade;
+import globaz.jade.log.business.JadeBusinessMessage;
+import globaz.jade.log.business.JadeBusinessMessageLevels;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.print.server.JadePrintDocumentContainer;
+import globaz.jade.service.exception.JadeServiceActivatorException;
+import globaz.jade.service.exception.JadeServiceLocatorException;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 /**
  * Process permettant l'impression d'un lot de décision dont les ID sont contenu dans un fichier txt (Ref : InfoRom 580)
- * 
+ *
  * @author jts
  */
 public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess {
@@ -99,7 +98,7 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
 
     /**
      * Ajout le message <code>message</code> au logger (protocole) lié au process
-     * 
+     *
      * @param dossier
      *            dossier pour lequel le message doit être ajouté
      * @param message
@@ -109,8 +108,7 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
 
         String idDossier = dossier.getId();
         String allocataire = dossier.getAllocataireComplexModel().getPersonneEtendueComplexModel().getTiers()
-                .getDesignation1()
-                + " "
+                .getDesignation1() + " "
                 + dossier.getAllocataireComplexModel().getPersonneEtendueComplexModel().getTiers().getDesignation2();
 
         try {
@@ -140,15 +138,15 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
 
     /**
      * Charge la liste des dossiers dont les identifiants sont contenus dans le fichier passé au process.
-     * 
+     *
      * @return Les dossiers chargés
      * @throws IOException
      *             Exception levée en cas d'erreur de lecture du fichier
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    private JadeAbstractModel[] getListDossiers() throws IOException, JadeApplicationException,
-            JadePersistenceException {
+    private JadeAbstractModel[] getListDossiers()
+            throws IOException, JadeApplicationException, JadePersistenceException {
 
         List<String> idDossiersList = loadFile();
 
@@ -162,15 +160,15 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
 
     /**
      * Charge la liste des dossiers en statut radié avec les critères donnés.
-     * 
+     *
      * @return Les dossiers chargés
      * @throws IOException
      *             Exception levée en cas d'erreur de lecture du fichier
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    private JadeAbstractModel[] getListDossiersRadie() throws IOException, JadeApplicationException,
-            JadePersistenceException {
+    private JadeAbstractModel[] getListDossiersRadie()
+            throws IOException, JadeApplicationException, JadePersistenceException {
 
         // chargement des dossiers
         DossierComplexSearchModel searchDossier = new DossierComplexSearchModel();
@@ -186,15 +184,15 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
 
     /**
      * Charge la liste des dossiers en statut actif avec les critères donnés.
-     * 
+     *
      * @return Les dossiers chargés
      * @throws IOException
      *             Exception levée en cas d'erreur de lecture du fichier
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    private JadeAbstractModel[] getListDossiersActif() throws IOException, JadeApplicationException,
-            JadePersistenceException {
+    private JadeAbstractModel[] getListDossiersActif()
+            throws IOException, JadeApplicationException, JadePersistenceException {
 
         // chargement des dossiers
         DossierComplexSearchModel searchDossier = new DossierComplexSearchModel();
@@ -221,7 +219,7 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
     }
 
     // factorisation du code
-    private JadeAbstractModel[] getSearchResults(DossierComplexSearchModel searchDossier)
+    protected JadeAbstractModel[] getSearchResults(DossierComplexSearchModel searchDossier)
             throws JadeApplicationException, JadePersistenceException {
         searchDossier.setOrderKey(getImpressOrderKey());
         searchDossier.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
@@ -231,14 +229,14 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
 
     /**
      * applique tous les filtre et ordonnancement a faire hors du modèle
-     * 
+     *
      * @return
      * @throws IOException
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    protected List<DossierComplexModel> getDossierOrderedFiltered() throws IOException, JadeApplicationException,
-            JadePersistenceException {
+    protected List<DossierComplexModel> getDossierOrderedFiltered()
+            throws IOException, JadeApplicationException, JadePersistenceException {
         JadeAbstractModel[] arrayDossiers;
         List<DossierComplexModel> listDossiers;
         if (!fileName.equals("")) {
@@ -263,7 +261,8 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
             for (int i = 0; i < stop; i++) {
                 if (getPaiementMode(listDossiers.get(i)).equalsIgnoreCase(ALCSDossier.PAIEMENT_INDIRECT)) {
                     DossierComplexModel temp = listDossiers.get(i);
-                    LOG.debug("{} is Indirect, pushing end respecting other order by Alloc or Affilie in", temp.getId());
+                    LOG.debug("{} is Indirect, pushing end respecting other order by Alloc or Affilie in",
+                            temp.getId());
                     listDossiers.remove(i);
                     listDossiers.add(temp);
                     i--;
@@ -276,13 +275,14 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
 
     /**
      * Méthode retournant le mode de paiement du dossier en fonction du tiers bénéficiaire défini
-     * 
-     * @return <ul>
+     *
+     * @return
+     *         <ul>
      *         <li><code>ALCSDossier.PAIEMENT_DIRECT</code></li>
      *         <li><code>ALCSDossier.PAIEMENT_INDIRECT</code></li>
      *         <li><code>ALCSDossier.PAIEMENT_TIERS</code></li>
      *         </ul>
-     * 
+     *
      */
     public String getPaiementMode(DossierComplexModel dossierComplexModel) {
 
@@ -302,10 +302,10 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
 
     /**
      * Charge les droits du dossier <code>idDossier</code>
-     * 
+     *
      * @param idDossier
      *            Id du dossier pour lequel les droit doivent être chargés
-     * 
+     *
      * @return Modèle de recherche contenant les droits du dossier
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
@@ -313,8 +313,8 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    private DroitComplexSearchModel loadDroits(String idDossier) throws JadeApplicationException,
-            JadePersistenceException {
+    private DroitComplexSearchModel loadDroits(String idDossier)
+            throws JadeApplicationException, JadePersistenceException {
 
         if (JadeStringUtil.isEmpty(idDossier)) {
             throw new ALCalculException("CalculModeAbstract#loadDroits : idDossier is null or empty");
@@ -331,7 +331,7 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
 
     /**
      * tri post DB sur des critères non configurable dans le SearchModel
-     * 
+     *
      * @param arrayDossiers de la DB
      * @return
      * @throws JadePersistenceException
@@ -387,9 +387,9 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
                                         // début de mois
                                         moinsSeize.setDate(01);
 
-                                        droitMatch = formatter.parse(
-                                                droit.getEnfantComplexModel().getPersonneEtendueComplexModel()
-                                                        .getPersonne().getDateNaissance()).after(moinsSeize);
+                                        droitMatch = formatter.parse(droit.getEnfantComplexModel()
+                                                .getPersonneEtendueComplexModel().getPersonne().getDateNaissance())
+                                                .after(moinsSeize);
                                     } catch (ParseException e) {
                                         throw new ALDecisionException("noSQLFilter filter can't parse date ", e);
                                     }
@@ -406,8 +406,8 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
                         try {
                             String finValidite = ((DossierComplexModelRoot) dossier).getDossierModel().getFinValidite();
                             if (finValidite.isEmpty()) {
-                                usedDate = formatter.parse(((DossierComplexModelRoot) dossier).getDossierModel()
-                                        .getDebutValidite());
+                                usedDate = formatter.parse(
+                                        ((DossierComplexModelRoot) dossier).getDossierModel().getDebutValidite());
                             } else {
                                 usedDate = formatter.parse(finValidite);
                             }
@@ -445,7 +445,7 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
      * dans le cas d'un import d'une liste de dossiers depuis un fichier texte, remettre après l'execution SQL IN les
      * dossier dans le
      * même ordre que le dans le fichier.
-     * 
+     *
      * @param arrayDossiers
      * @return liste des Dossier dans le même ordre que le fichier
      * @throws IOException a la lecture du fichier
@@ -472,7 +472,7 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
 
     /**
      * Lit le contenu du fichier passé au process
-     * 
+     *
      * @return Liste de numéro de dossiers contenus dans le fichier
      * @throws IOException
      * @throws JadeClassCastException
@@ -503,7 +503,7 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
     }
 
     /**
-     * 
+     *
      * @return
      */
     protected HashMap<String, String> getParam() {
@@ -514,14 +514,14 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
         params.put(ALConstProtocoles.INFO_EMAIL, getEmail());
         params.put(ALConstProtocoles.INFO_DATE_DEBUT_VALIDITE, getDateDebutValidite());
         params.put(ALConstProtocoles.INFO_TEXTE_LIBRE, getTexteLibre().isEmpty() ? "0" : getTexteLibre());
-        params.put(ALConstProtocoles.INFO_GESTION_TEXTE_LIBRE, getGestionTexteLibre() ? "al.protocoles.commun.info.oui"
-                : "al.protocoles.commun.info.non");
-        params.put(ALConstProtocoles.INFO_INSERTION_GED, getInsertionGED() ? "al.protocoles.commun.info.oui"
-                : "al.protocoles.commun.info.non");
+        params.put(ALConstProtocoles.INFO_GESTION_TEXTE_LIBRE,
+                getGestionTexteLibre() ? "al.protocoles.commun.info.oui" : "al.protocoles.commun.info.non");
+        params.put(ALConstProtocoles.INFO_INSERTION_GED,
+                getInsertionGED() ? "al.protocoles.commun.info.oui" : "al.protocoles.commun.info.non");
         params.put(ALConstProtocoles.INFO_DATE_IMPRESSION, getDateImpression());
         params.put(ALConstProtocoles.INFO_TRI_IMPRESSION, getTriImpressionHR());
-        params.put(ALConstProtocoles.INFO_GESTION_COPIE, getGestionCopie() ? "al.protocoles.commun.info.oui"
-                : "al.protocoles.commun.info.non");
+        params.put(ALConstProtocoles.INFO_GESTION_COPIE,
+                getGestionCopie() ? "al.protocoles.commun.info.oui" : "al.protocoles.commun.info.non");
         params.put(ALConstProtocoles.CRITERE_LISTEDOSSIER, getOriginalFileName());
         params.put(ALConstProtocoles.CRITERE_AFFILIE,
                 (getInNumeroAffilie() != null) ? Arrays.toString(getInNumeroAffilie().toArray()) : "0");
@@ -529,21 +529,21 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
                 (getInActivites() != null) ? Arrays.toString(getInActivitesHR().toArray()) : "0");
         params.put(ALConstProtocoles.CRITERE_STATUT,
                 (getInStatut() != null) ? Arrays.toString(getInStatutHR().toArray()) : "0");
-        params.put(ALConstProtocoles.CRITERE_TARIF, (getInTarif() != null) ? Arrays.toString(getInTarifHR().toArray())
-                : "0");
+        params.put(ALConstProtocoles.CRITERE_TARIF,
+                (getInTarif() != null) ? Arrays.toString(getInTarifHR().toArray()) : "0");
         params.put(ALConstProtocoles.CRITERE_DROIT,
                 (getInTypeDroit() != null) ? Arrays.toString(getInTypeDroitHR().toArray()) : "0");
-        params.put(
-                ALConstProtocoles.CRITERE_ETAT,
-                getEtatFilter().equals(DossierComplexSearchModel.ETATACTIF) ? "al.protocoles.commun.critere.etat.actif.label"
-                        : getEtatFilter().equals(DossierComplexSearchModel.ETATRADIE) ? "al.protocoles.commun.critere.etat.radie.label"
-                                : "0");
-        params.put(ALConstProtocoles.CRITERE_VALID_FIN_GREAT, getDateFinValiditeGREAT().isEmpty() ? "0"
-                : getDateFinValiditeGREAT());
-        params.put(ALConstProtocoles.CRITERE_VALID_FIN_LESS, getDateFinValiditeLESS().isEmpty() ? "0"
-                : getDateFinValiditeLESS());
-        params.put(ALConstProtocoles.CRITERE_VALID_GREAT, getDateValiditeGREAT().isEmpty() ? "0"
-                : getDateValiditeGREAT());
+        params.put(ALConstProtocoles.CRITERE_ETAT,
+                getEtatFilter().equals(DossierComplexSearchModel.ETATACTIF)
+                        ? "al.protocoles.commun.critere.etat.actif.label"
+                        : getEtatFilter().equals(DossierComplexSearchModel.ETATRADIE)
+                                ? "al.protocoles.commun.critere.etat.radie.label" : "0");
+        params.put(ALConstProtocoles.CRITERE_VALID_FIN_GREAT,
+                getDateFinValiditeGREAT().isEmpty() ? "0" : getDateFinValiditeGREAT());
+        params.put(ALConstProtocoles.CRITERE_VALID_FIN_LESS,
+                getDateFinValiditeLESS().isEmpty() ? "0" : getDateFinValiditeLESS());
+        params.put(ALConstProtocoles.CRITERE_VALID_GREAT,
+                getDateValiditeGREAT().isEmpty() ? "0" : getDateValiditeGREAT());
         params.put(ALConstProtocoles.CRITERE_VALID_LESS, getDateValiditeLESS().isEmpty() ? "0" : getDateValiditeLESS());
 
         return params;
@@ -551,7 +551,7 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
 
     /**
      * HumanReading triImpression.
-     * 
+     *
      * @return ALLabel reference used in frontend
      */
     private String getTriImpressionHR() {
@@ -598,7 +598,7 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
 
     /**
      * Human Readable list
-     * 
+     *
      * @return the list human readable (codesys)
      */
     private Collection<String> translateCodeSysCollection(String idGroupe, Collection<String> inListe) {
@@ -629,12 +629,6 @@ public abstract class ALDecisionsMasseAbstractProcess extends ALAbsrtactProcess 
 
     public String getDateImpression() {
         return dateImpression;
-    }
-
-    @Override
-    public String getDescription() {
-        return JadeI18n.getInstance().getMessage(JadeThread.currentLanguage(),
-                "globaz.al.process.ALDecisionsMasseProcess.description");
     }
 
     public String getEmail() {

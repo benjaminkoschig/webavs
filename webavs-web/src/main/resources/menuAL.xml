@@ -93,6 +93,13 @@
   									<parameter name="_method" value="add"/>
   								</action>
   							</node>
+  							<node>
+  								<label defaultValue="RADIATION 20-25" refId="MENU_TRAITEMENT_DECISION_FILE_ATTENTE"/>
+  								<action command="/al" responseTarget="fr_main" >
+  									<parameter name="userAction" value="al.decision.decisionFileAttente.afficher"/>
+  									<parameter name="_method" value="add"/>
+  								</action>
+  							</node>
   						</nodes>
   					</node>
 	  		
@@ -932,7 +939,7 @@
 							<parameter name="userAction" value="al.decision.decision.afficher"/><!--"al.adi.imprimerDecompte.afficher"/>-->
 							<parameter name="selectedId"/>
 							<parameter name="_method" value="upd"/>
-							<parameter name="fromDecompte" value="1"/>¨
+							<parameter name="fromDecompte" value="1"/>
 							<parameter name="idDossier"/>
 						</action>
 					</node>

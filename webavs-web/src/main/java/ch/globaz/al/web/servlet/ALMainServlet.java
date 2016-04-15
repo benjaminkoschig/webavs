@@ -1,5 +1,11 @@
 package ch.globaz.al.web.servlet;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import ch.globaz.al.web.application.ALApplication;
 import globaz.framework.menu.FWMenuBlackBox;
 import globaz.framework.secure.FWSecureConstants;
 import globaz.framework.servlets.FWJadeServlet;
@@ -10,12 +16,6 @@ import globaz.fx.common.application.servlet.NaviRules;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
 import globaz.jade.log.JadeLogger;
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import ch.globaz.al.web.application.ALApplication;
 
 /**
  * Main Servlet de l'application WEB@AF
@@ -155,6 +155,7 @@ public class ALMainServlet extends FWJadeServlet {
         registerActionMapping("al.allocataire", ALActionAllocataire.class);
         registerActionMapping("al.ajax", ALAbstractDefaultAction.class);
         registerActionMapping("al.decision", ALActionDecision.class);
+        registerActionMapping("al.decisionFileAttente", ALActionDecision.class);
         registerActionMapping("al.personne", ALActionPersonne.class);
         registerActionMapping("al.prestation", ALActionPrestation.class);
         registerActionMapping("al.generations", ALAbstractDefaultAction.class);

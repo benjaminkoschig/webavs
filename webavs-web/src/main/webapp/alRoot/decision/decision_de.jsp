@@ -1,3 +1,4 @@
+<%@page import="ch.globaz.al.properties.ALProperties"%>
 <%@page import="globaz.framework.secure.FWSecureConstants"%>
 <%@page import="globaz.al.vb.decision.ALDecisionViewBean"%>
 <%@ page language="java" errorPage="/errorPage.jsp"
@@ -141,8 +142,18 @@ $(function() {
 		return false;
 	});
 
-	
-	
+	// CheckBox file d'attente
+	var checked = false;
+	<%
+		if(ALProperties.DECISION_FILE_ATTENTE.getBooleanValue()){
+		    %>
+			checked = <%=viewBean.getIsFileAttente()%>;
+			<%
+		}
+	%>
+	if(checked){
+		$( "#fileAttenteCheckBox" ).prop( "checked", true );
+	}
 });
 
 </script>
@@ -268,6 +279,17 @@ $(function() {
 				</script>
 			</td>
 		</tr>
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td class="label"><ct:FWLabel key="AL0016_ENTETE_FILE_ATTENTE"/></td>
+			<td><input type="checkbox" id="fileAttenteCheckBox" name="isFileAttente"/></td>
+		
+		
+		</tr>
+		
 	</table>
 	<hr />
 
@@ -282,7 +304,6 @@ $(function() {
 			<th scope="col" style="width: 5%;"></th>
 			<th scope="col" style="width: 10%;"><ct:FWLabel key="AL0016_ENVOI_TEXTE_DOC"/></th>
 			<th scope="col" style="width: 55%;"><ct:FWLabel key="AL0016_ENVOI_TEXTE_ENVOI"/></th>
-			<th scope="col" style="width: 5%;"><ct:FWLabel key="AL0016_ENVOI_FILE_ATTENTE"/></th>
 			<th scope="col" style="width: 10%;"><ct:FWLabel key="AL0016_ENVOI_ENVOI"/></th>
 			<th scope="col" style="width: 5%;"><ct:FWLabel key="AL0016_ENVOI_TIERS"/></th>
 			<th scope="col" style="width: 5%;"><ct:FWLabel key="AL0016_ENVOI_ADMIN"/></th>
@@ -311,9 +332,7 @@ $(function() {
 				<input class="normal readonly" type="text" style="width: 100%; " readonly="true"
 				value="<%=viewBean.getLibelleCopie(i) %>" />
 			</td>
-			<td align="center">
-				<input type="checkbox" name="impressionBatch-<%=i%>" <%=(viewBean.getCopieAt(i).getCopieModel().getImpressionBatch().booleanValue())?"CHECKED":""%>>		
-			</td>
+
 			<td align="center">Poste <%--TODO: dynamiser le mode d'envoi --%></td>
 			<td align="center">
 				<%
@@ -391,10 +410,7 @@ $(function() {
 				value="<%=viewBean.getLibelleCopie(i) %>"/>
 			
 			</td>
-			<td align="center">
-			
-				<input type="checkbox" name="impressionBatch-<%=i%>">
-			</td>
+
 			<td></td>
 			<td align="center">
 				<%

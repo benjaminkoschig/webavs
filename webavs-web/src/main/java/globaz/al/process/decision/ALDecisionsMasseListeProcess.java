@@ -1,5 +1,14 @@
 package globaz.al.process.decision;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ch.globaz.al.business.models.dossier.DossierComplexModel;
+import ch.globaz.al.business.services.ALServiceLocator;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeFilenameUtil;
 import globaz.jade.common.Jade;
@@ -14,15 +23,6 @@ import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.message.JadePublishDocumentMessage;
 import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ch.globaz.al.business.models.dossier.DossierComplexModel;
-import ch.globaz.al.business.services.ALServiceLocator;
 
 public class ALDecisionsMasseListeProcess extends ALDecisionsMasseAbstractProcess {
     private static final Logger LOG = LoggerFactory.getLogger(ALDecisionsMasseListeProcess.class);
@@ -41,16 +41,11 @@ public class ALDecisionsMasseListeProcess extends ALDecisionsMasseAbstractProces
             printListCSV();
 
         } catch (Exception e) {
-            getLogSession().error(
-                    this.getClass().getName(),
+            getLogSession().error(this.getClass().getName(),
                     JadeI18n.getInstance().getMessage(JadeThread.currentLanguage(),
-                            "globaz.al.process.generic.err_process")
-                            + e.getMessage());
-            LOG.error(
-                    this.getClass().getName(),
-                    JadeI18n.getInstance().getMessage(JadeThread.currentLanguage(),
-                            "globaz.al.process.generic.err_process")
-                            + e.getMessage());
+                            "globaz.al.process.generic.err_process") + e.getMessage());
+            LOG.error(this.getClass().getName(), JadeI18n.getInstance().getMessage(JadeThread.currentLanguage(),
+                    "globaz.al.process.generic.err_process") + e.getMessage());
         } finally {
             sendMail();
         }
@@ -59,12 +54,19 @@ public class ALDecisionsMasseListeProcess extends ALDecisionsMasseAbstractProces
     @Override
     public String getName() {
         return JadeI18n.getInstance().getMessage(JadeThread.currentLanguage(),
-                "globaz.al.process.ALDecisionMasseListeProcess.name");
+                "globaz.al.process.decision.ALDecisionMasseListeProcess.name");
+    }
+
+    @Override
+    public String getDescription() {
+        // TODO labelisation
+        return JadeI18n.getInstance().getMessage(JadeThread.currentLanguage(),
+                "globaz.al.process.ALDecisionsMasseListeProcess.description");
     }
 
     /**
      * Lance la génération et l'envoi par email d'une liste csv des dossiers concernés par les critères sélectionnés
-     * 
+     *
      * @throws JadePersistenceException
      * @throws JadeApplicationException
      * @throws JadeServiceLocatorException
@@ -106,7 +108,7 @@ public class ALDecisionsMasseListeProcess extends ALDecisionsMasseAbstractProces
     /**
      * Retourne le chemin vers le dossier 'work' de ce module pour la génération de fichier. Le 'slash/anti-slash' de
      * fin n'est pas inséré
-     * 
+     *
      * @return le chemin vers le dossier 'work' de ce module pour la génération de fichier. Le 'slash/anti-slash' de fin
      *         n'est pas inséré
      */

@@ -1,5 +1,25 @@
 package globaz.al.helpers.decision;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import ch.globaz.al.business.constantes.ALCSCopie;
+import ch.globaz.al.business.constantes.ALCSDossier;
+import ch.globaz.al.business.constantes.ALConstCalcul;
+import ch.globaz.al.business.models.dossier.CopieModel;
+import ch.globaz.al.business.models.dossier.DossierComplexModel;
+import ch.globaz.al.business.models.dossier.DossierDecisionComplexModel;
+import ch.globaz.al.business.models.dossier.DossierModel;
+import ch.globaz.al.business.models.droit.CalculBusinessModel;
+import ch.globaz.al.business.models.droit.CalculDroitEditingModel;
+import ch.globaz.al.business.models.droit.CalculDroitEditingSearchModel;
+import ch.globaz.al.business.services.ALServiceLocator;
+import ch.globaz.al.utils.ALEditingUtils;
 import globaz.al.helpers.ALAbstractHelper;
 import globaz.al.process.adiDecomptes.ALAdiDecomptesImpressionProcess;
 import globaz.al.process.decision.ALDecisionProcess;
@@ -21,32 +41,12 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import ch.globaz.al.business.constantes.ALCSCopie;
-import ch.globaz.al.business.constantes.ALCSDossier;
-import ch.globaz.al.business.constantes.ALConstCalcul;
-import ch.globaz.al.business.models.dossier.CopieModel;
-import ch.globaz.al.business.models.dossier.DossierComplexModel;
-import ch.globaz.al.business.models.dossier.DossierDecisionComplexModel;
-import ch.globaz.al.business.models.dossier.DossierModel;
-import ch.globaz.al.business.models.droit.CalculBusinessModel;
-import ch.globaz.al.business.models.droit.CalculDroitEditingModel;
-import ch.globaz.al.business.models.droit.CalculDroitEditingSearchModel;
-import ch.globaz.al.business.services.ALServiceLocator;
-import ch.globaz.al.utils.ALEditingUtils;
 
 /**
  * Helper dédié au viewBean ALDecisionViewBean
- * 
+ *
  * @author JER
- * 
+ *
  */
 @Editing(family = "FAM_DECISIONS_AF", references = { "3006WAF" })
 public class ALDecisionHelper extends ALAbstractHelper {
@@ -89,28 +89,37 @@ public class ALDecisionHelper extends ALAbstractHelper {
         // on créer éventuelles les copies par défaut ici, car retrieve du
         // viewBean => pas de création
         if (viewBean instanceof ALDecisionViewBean) {
+            ALDecisionViewBean vb = (ALDecisionViewBean) viewBean;
 
             DossierDecisionComplexModel dossierDecision = null;
 
             if ("1".equals(((ALDecisionViewBean) viewBean).getFromDecompte())) {
-                dossierDecision = ALServiceLocator.getDossierDecisionComplexeModelService().read(
-                        ((ALDecisionViewBean) viewBean).getIdDossier());
+                dossierDecision = ALServiceLocator.getDossierDecisionComplexeModelService()
+                        .read(((ALDecisionViewBean) viewBean).getIdDossier());
             } else {
-                dossierDecision = ALServiceLocator.getDossierDecisionComplexeModelService().read(
-                        ((ALDecisionViewBean) viewBean).getId());
+                dossierDecision = ALServiceLocator.getDossierDecisionComplexeModelService()
+                        .read(((ALDecisionViewBean) viewBean).getId());
             }
 
             ALServiceLocator.getCopiesBusinessService().createDefaultCopies(dossierDecision, ALCSCopie.TYPE_DECISION);
+            vb.setDossierDecisionComplexModel(dossierDecision);
 
-            ((ALDecisionViewBean) viewBean).setDossierDecisionComplexModel(dossierDecision);
-
+            // Est-ce que le dossier est en file d'attente
+            boolean fileAttente = false;
+            if (vb.getDossierDecisionComplexModel() != null) {
+                if (vb.getDossierDecisionComplexModel().getDossierModel() != null) {
+                    fileAttente = !JadeStringUtil
+                            .isBlank(vb.getDossierDecisionComplexModel().getDossierModel().getIdGestionnaire());
+                }
+            }
+            vb.setIsFileAttente(fileAttente);
         }
         super._retrieve(viewBean, action, session);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeglobaz.framework.controller.FWHelper#_start(globaz.framework.bean. FWViewBeanInterface,
      * globaz.framework.controller.FWAction, globaz.globall.api.BISession)
      */
@@ -139,18 +148,10 @@ public class ALDecisionHelper extends ALAbstractHelper {
 
                         String soapMessageForDecision = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
                                 + "	xmlns:q0=\"www.globaz.ch/xmlns/editing/al/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" "
-                                + "	xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"
-                                + "	<soapenv:Body>"
-                                + "		<q0:generateDecision>"
-                                + "			<idDossier>"
-                                + idDossier
-                                + "</idDossier>"
-                                + "			<idUser>"
-                                + user
-                                + "</idUser>"
-                                + "		</q0:generateDecision>"
-                                + "	</soapenv:Body>"
-                                + "</soapenv:Envelope>";
+                                + "	xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" + "	<soapenv:Body>"
+                                + "		<q0:generateDecision>" + "			<idDossier>" + idDossier + "</idDossier>"
+                                + "			<idUser>" + user + "</idUser>" + "		</q0:generateDecision>"
+                                + "	</soapenv:Body>" + "</soapenv:Envelope>";
 
                         ALDecisionHelper.sendSOAP("http://" + server + ":" + port + "/wt/editing/al",
                                 soapMessageForDecision);
@@ -208,8 +209,8 @@ public class ALDecisionHelper extends ALAbstractHelper {
                 if (((ALDecisionViewBean) viewBean).getDossierDecisionComplexModel().isNew()) {
                     ((ALDecisionViewBean) viewBean).retrieve();
                 }
-                CopieModel copieToDelete = ALServiceLocator.getCopieModelService().read(
-                        ((ALDecisionViewBean) viewBean).getIdCopieToDelete());
+                CopieModel copieToDelete = ALServiceLocator.getCopieModelService()
+                        .read(((ALDecisionViewBean) viewBean).getIdCopieToDelete());
                 ALServiceLocator.getCopieModelService().delete(copieToDelete);
             } catch (Exception e) {
                 viewBean.setMessage(e.toString());
@@ -223,7 +224,7 @@ public class ALDecisionHelper extends ALAbstractHelper {
 
     /**
      * Retourne la date à utiliser pour le calcul de la décision selon le dossier
-     * 
+     *
      * @param dossierComplexModel
      *            dossier
      * @return la date à utiliser pour le calcul dans la décision
@@ -242,20 +243,20 @@ public class ALDecisionHelper extends ALAbstractHelper {
 
     /**
      * Méthode qui permet de mettre en base de donnnées les calculs du dossier
-     * 
+     *
      * @param numeroDossier
      * @throws JadeApplicationServiceNotAvailableException
      * @throws JadeApplicationException
      * @throws JadePersistenceException
      */
-    private void getListDroitDB(String numeroDossier, String user) throws JadeApplicationServiceNotAvailableException,
-            JadeApplicationException, JadePersistenceException {
+    private void getListDroitDB(String numeroDossier, String user)
+            throws JadeApplicationServiceNotAvailableException, JadeApplicationException, JadePersistenceException {
         // lecture du dossier
         DossierComplexModel dossierComplex = ALServiceLocator.getDossierComplexModelService().read(numeroDossier);
 
         // charger les calculs des droits
-        ArrayList<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService().getCalcul(
-                dossierComplex, getDateCalcul(dossierComplex.getDossierModel()));
+        ArrayList<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService()
+                .getCalcul(dossierComplex, getDateCalcul(dossierComplex.getDossierModel()));
         // calcul du montant total de la décision
         HashMap<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
                 resultatCalcul, ALCSDossier.UNITE_CALCUL_MOIS, "1", false,
@@ -303,8 +304,8 @@ public class ALDecisionHelper extends ALAbstractHelper {
             calculDroit
                     .setTypePrestation(ALEditingUtils.getValueEditingTypePrestation(resultatCalcul.get(i).getType()));
             // total pour l'ensemle des drotis
-            calculDroit.setMontantTotal(new FWCurrency(total.get(ALConstCalcul.TOTAL_EFFECTIF).toString())
-                    .getBigDecimalValue().toString());
+            calculDroit.setMontantTotal(
+                    new FWCurrency(total.get(ALConstCalcul.TOTAL_EFFECTIF).toString()).getBigDecimalValue().toString());
             // total par unité
             calculDroit.setMontantTotalUnite(new FWCurrency((String) total.get(ALConstCalcul.TOTAL_UNITE_EFFECTIF))
                     .getBigDecimalValue().toString());
@@ -346,8 +347,8 @@ public class ALDecisionHelper extends ALAbstractHelper {
             throws JadeApplicationException, JadePersistenceException {
         // contrôle du paramète
         // charger les calculs des droits
-        ArrayList<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService().getCalcul(
-                dossierComplex, getDateCalcul(dossierComplex.getDossierModel()));
+        ArrayList<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService()
+                .getCalcul(dossierComplex, getDateCalcul(dossierComplex.getDossierModel()));
         // calcul du montant total de la décision
         HashMap<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
                 resultatCalcul, ALCSDossier.UNITE_CALCUL_MOIS, "1", false,
@@ -360,8 +361,8 @@ public class ALDecisionHelper extends ALAbstractHelper {
                 resultatCalcul, ALCSDossier.UNITE_CALCUL_JOUR, dossierComplex.getDossierModel().getNbJoursDebut(),
                 false, getDateCalcul(dossierComplex.getDossierModel()));
         //
-        calculDroit.setMontantTotalDebut(new FWCurrency((String) tot.get(ALConstCalcul.TOTAL_EFFECTIF))
-                .getBigDecimalValue().toString());
+        calculDroit.setMontantTotalDebut(
+                new FWCurrency((String) tot.get(ALConstCalcul.TOTAL_EFFECTIF)).getBigDecimalValue().toString());
 
     }
 
@@ -372,8 +373,8 @@ public class ALDecisionHelper extends ALAbstractHelper {
             throws JadeApplicationException, JadePersistenceException {
         // contrôle du paramète
         // charger les calculs des droits
-        ArrayList<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService().getCalcul(
-                dossierComplex, getDateCalcul(dossierComplex.getDossierModel()));
+        ArrayList<CalculBusinessModel> resultatCalcul = ALServiceLocator.getCalculBusinessService()
+                .getCalcul(dossierComplex, getDateCalcul(dossierComplex.getDossierModel()));
         // calcul du montant total de la décision
         HashMap<?, ?> total = ALServiceLocator.getCalculBusinessService().getTotal(dossierComplex.getDossierModel(),
                 resultatCalcul, ALCSDossier.UNITE_CALCUL_MOIS, "1", false,
@@ -386,8 +387,8 @@ public class ALDecisionHelper extends ALAbstractHelper {
                 resultatCalcul, ALCSDossier.UNITE_CALCUL_JOUR, dossierComplex.getDossierModel().getNbJoursFin(), false,
                 getDateCalcul(dossierComplex.getDossierModel()));
         // TODO ajouter seulement si pas naissance ou acceuil
-        calculDroit.setMontantTotalFin(new FWCurrency((String) tot.get(ALConstCalcul.TOTAL_EFFECTIF))
-                .getBigDecimalValue().toString());
+        calculDroit.setMontantTotalFin(
+                new FWCurrency((String) tot.get(ALConstCalcul.TOTAL_EFFECTIF)).getBigDecimalValue().toString());
 
     }
 
@@ -404,8 +405,8 @@ public class ALDecisionHelper extends ALAbstractHelper {
         if (((ALDecisionViewBean) viewBean).getDossierDecisionComplexModel().isNew()) {
             ((ALDecisionViewBean) viewBean).retrieve();
         }
-        process.setIdDossier(((ALDecisionViewBean) viewBean).getDossierDecisionComplexModel().getDossierModel()
-                .getIdDossier());
+        process.setIdDossier(
+                ((ALDecisionViewBean) viewBean).getDossierDecisionComplexModel().getDossierModel().getIdDossier());
 
         process.setDateImpression(((ALDecisionViewBean) viewBean).getDateImpression());
 

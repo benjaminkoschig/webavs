@@ -1,14 +1,5 @@
 package globaz.al.process.decision;
 
-import globaz.al.process.ALAbsrtactProcess;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.i18n.JadeI18n;
-import globaz.jade.job.common.JadeJobQueueNames;
-import globaz.jade.log.JadeLogger;
-import globaz.jade.print.server.JadePrintDocumentContainer;
-import globaz.jade.publish.document.JadePublishDocumentInfo;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,16 +16,25 @@ import ch.globaz.libra.business.services.LibraServiceLocator;
 import ch.globaz.libra.constantes.ILIConstantesExternes;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import ch.globaz.topaz.datajuicer.DocumentData;
+import globaz.al.process.ALAbsrtactProcess;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.i18n.JadeI18n;
+import globaz.jade.job.common.JadeJobQueueNames;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.print.server.JadePrintDocumentContainer;
+import globaz.jade.publish.document.JadePublishDocumentInfo;
 
 /**
  * Permet d'exécuter le process d'impression des décisions
- * 
+ *
  * @author JER/PTA/JTS
  */
 public class ALDecisionProcess extends ALAbsrtactProcess {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -57,7 +57,7 @@ public class ALDecisionProcess extends ALAbsrtactProcess {
 
     /**
      * Méthode qui fournit les information de publication pour les copies de décisions
-     * 
+     *
      * @param containerDecision
      *            JadePrintDocumentCotnaienr
      * @param docData
@@ -72,7 +72,7 @@ public class ALDecisionProcess extends ALAbsrtactProcess {
 
     /**
      * Méthode qui fournit les information de publication pour les décision originale
-     * 
+     *
      * @param dossier
      *            Dossier pour laquelle la décision est faite
      * @param docData
@@ -192,8 +192,8 @@ public class ALDecisionProcess extends ALAbsrtactProcess {
         try {
 
             // lecture du dossier
-            DossierDecisionComplexModel dossier = ALServiceLocator.getDossierDecisionComplexeModelService().read(
-                    getIdDossier());
+            DossierDecisionComplexModel dossier = ALServiceLocator.getDossierDecisionComplexeModelService()
+                    .read(getIdDossier());
             // si le dossier est en suspendu et qu'on envoie en GEd, on (ré)active le dossier
             if (ALCSDossier.ETAT_SUSPENDU.equals(dossier.getDossierModel().getEtatDossier()) && envoiGED) {
                 // FIXME vérifier pourquoi seulement modif sur modèle simple. Si possible passer par
@@ -214,8 +214,8 @@ public class ALDecisionProcess extends ALAbsrtactProcess {
             String langueDocument = null;
             // Si langue reprise langue affilié
             if (dossier.getAllocataireComplexModel().getAllocataireModel().getLangueAffilie()) {
-                langueDocument = ALServiceLocator.getLangueAllocAffilieService().langueTiersAffilie(
-                        dossier.getDossierModel().getNumeroAffilie());
+                langueDocument = ALServiceLocator.getLangueAllocAffilieService()
+                        .langueTiersAffilie(dossier.getDossierModel().getNumeroAffilie());
             }// si reprise langue allocataire
             else {
                 langueDocument = ALServiceLocator.getLangueAllocAffilieService().langueTiersAlloc(
@@ -225,12 +225,11 @@ public class ALDecisionProcess extends ALAbsrtactProcess {
 
             // récupération des décisions (original & copies + lettres
             // d'accompagnement)
-            HashMap<String, ArrayList<DocumentData>> listesDocument = ALServiceLocator
-                    .getDecisionService(serviceClass)
-                    .loadData(
-                            dossier,
-                            JadeStringUtil.isEmpty(getDateImpression()) ? JadeDateUtil
-                                    .getGlobazFormattedDate(new Date()) : getDateImpression(), langueDocument, userInfo);
+            HashMap<String, ArrayList<DocumentData>> listesDocument = ALServiceLocator.getDecisionService(serviceClass)
+                    .loadData(dossier,
+                            JadeStringUtil.isEmpty(getDateImpression())
+                                    ? JadeDateUtil.getGlobazFormattedDate(new Date()) : getDateImpression(),
+                            langueDocument, userInfo);
 
             JadePrintDocumentContainer containerDecision = new JadePrintDocumentContainer();
 
@@ -251,8 +250,8 @@ public class ALDecisionProcess extends ALAbsrtactProcess {
             publishInfo.setDocumentTypeNumber("DecisionAF");
             publishInfo.setDocumentDate(getDateImpression());
 
-            String[] date = { JadeStringUtil.isEmpty(getDateImpression()) ? JadeDateUtil
-                    .getGlobazFormattedDate(new Date()) : getDateImpression() };
+            String[] date = { JadeStringUtil.isEmpty(getDateImpression())
+                    ? JadeDateUtil.getGlobazFormattedDate(new Date()) : getDateImpression() };
             publishInfo.setDocumentTitle(getDocumentSubject(dossier));
             publishInfo.setDocumentSubject(getDocumentSubject(dossier));
             publishInfo.setOwnerId(JadeThread.currentUserId());
@@ -262,6 +261,12 @@ public class ALDecisionProcess extends ALAbsrtactProcess {
             containerDecision.setMergedDocDestination(publishInfo);
 
             this.createDocuments(containerDecision);
+
+            // Rest du flag IDGEST dans ALDOSSIER seulement si ce n'est pas un aperçu
+            if (!isPreview) {
+                dossier.getDossierModel().setIdGestionnaire(null);
+                ALServiceLocator.getDossierModelService().update(dossier.getDossierModel());
+            }
 
             // journalisation d'une décision si envoi en GED est à true
             if (getEnvoiGED()) {
@@ -294,9 +299,8 @@ public class ALDecisionProcess extends ALAbsrtactProcess {
             try {
                 sendCompletionMail(emails);
             } catch (Exception e1) {
-                JadeLogger.error(this,
-                        "Impossible d'envoyer le mail de résultat du traitement. Raison : " + e1.getMessage() + ", "
-                                + e1.getCause());
+                JadeLogger.error(this, "Impossible d'envoyer le mail de résultat du traitement. Raison : "
+                        + e1.getMessage() + ", " + e1.getCause());
             }
         }
     }

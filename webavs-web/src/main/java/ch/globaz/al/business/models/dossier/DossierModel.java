@@ -2,14 +2,14 @@ package ch.globaz.al.business.models.dossier;
 
 /**
  * Modèle complet d'un dossier AF. Ce modèle contient toutes les colonnes de la table "Dossier" (ALDOS)
- * 
+ *
  * @author jts
- * 
+ *
  */
 public class DossierModel extends DossierFkModel {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     /**
@@ -48,7 +48,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Motif de réduction pour les dossiers ayant un taux inférieur à 100%
-     * 
+     *
      * @see ch.globaz.al.business.constantes.ALCSDossier#GROUP_MOTIF_REDUC
      */
     private String motifReduction = null;
@@ -88,10 +88,17 @@ public class DossierModel extends DossierFkModel {
     private String tauxVersement = null;
     /**
      * Unité de calcul
-     * 
+     *
      * @see ch.globaz.al.business.constantes.ALCSDossier#GROUP_UNITE_CALCUL
      */
     private String uniteCalcul = null;
+
+    /**
+     *
+     * Id du gestionnaire ayant réalisée le dernière modification sur le dossier.</br>
+     * Cette information est utilisée pour l'impression par file d'attente.
+     */
+    private String idGestionnaire;
 
     /**
      * @return the categorieProf
@@ -102,7 +109,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Retourne la date de début d'activité de l'allocataire chez son employeur
-     * 
+     *
      * @return the debutActivite
      */
     public String getDebutActivite() {
@@ -111,7 +118,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Retourne la date de début de validité du dossier
-     * 
+     *
      * @return the debutValidite
      */
     public String getDebutValidite() {
@@ -120,7 +127,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Retourne la date de fin d'activité de l'allocataire chez l'affilié
-     * 
+     *
      * @return the finActivite
      */
     public String getFinActivite() {
@@ -129,7 +136,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Retourne la date de fin de validité du dossier
-     * 
+     *
      * @return the finValidite
      */
     public String getFinValidite() {
@@ -138,7 +145,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Indique si la décision doit être imprimée
-     * 
+     *
      * @return <code>true</code> si la décision doit être imprimée <code>false</code>
      */
     public Boolean getImprimerDecision() {
@@ -154,7 +161,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Retourne le montant Force du dossier.
-     * 
+     *
      * @return the montantForce
      */
     public String getMontantForce() {
@@ -163,7 +170,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Retourne le motif de réduction du dossier. Utilisé si le taux de versement n'est pas de 100%
-     * 
+     *
      * @return the motifReduction
      * @see DossierModel#getTauxVersement
      */
@@ -173,7 +180,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Retourne le nombre de jour effectif du premier mois de droit si ce n'est pas un mois complet
-     * 
+     *
      * @return the nbJoursDebut
      */
     public String getNbJoursDebut() {
@@ -182,7 +189,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Retourne le nombre de jour effectif du dernier mois de droit si ce n'est pas un mois complet
-     * 
+     *
      * @return the nbJoursFin
      */
     public String getNbJoursFin() {
@@ -191,7 +198,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Indique si l'activité de l'allocataire lié au dossier est accessoire (utilisé pour les agriculteurs)
-     * 
+     *
      * @return
      */
     public Boolean getProfessionAccessoire() {
@@ -207,7 +214,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Indique si une retenue d'impôt doit être effectuée
-     * 
+     *
      * @return the retenueImpot
      */
     public Boolean getRetenueImpot() {
@@ -223,7 +230,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Retourne le taux d'occupation de l'allocataire
-     * 
+     *
      * @return the tauxOccupation
      */
     public String getTauxOccupation() {
@@ -232,7 +239,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Retourne le taux de versement du dossier
-     * 
+     *
      * @return the tauxVersement
      */
     public String getTauxVersement() {
@@ -241,7 +248,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Retourne l'unité de calcul (Mois, Jour ou Heure)
-     * 
+     *
      * @return the uniteCalcul
      */
     public String getUniteCalcul() {
@@ -258,7 +265,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Définit la date de début d'activité de l'allocataire chez son employeur
-     * 
+     *
      * @param debutActivite
      *            the debutActivite to set
      */
@@ -268,7 +275,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Définit la date de début de validité du dossier
-     * 
+     *
      * @param debutValidite
      *            the debutValidite to set
      */
@@ -278,7 +285,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * retourne la date de fin d'activité de l'allocataire chez l'affilié
-     * 
+     *
      * @param finActivite
      *            the finActivite to set
      */
@@ -288,7 +295,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Définit la date de fin de validité du dossier
-     * 
+     *
      * @param finValidite
      *            the finValidite to set
      */
@@ -298,7 +305,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Définit l'indicateur d'impression de la décision
-     * 
+     *
      * @param imprimerDecision
      *            <code>true</code> si la décision doit être imprimée, <code>false</code> sinon
      */
@@ -316,7 +323,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Définit le montant Force du dossier
-     * 
+     *
      * @param montantForce
      *            the montantForce to set
      */
@@ -326,10 +333,10 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Définit le motif de réduction du dossier
-     * 
+     *
      * @param motifReduction
      *            the motifReduction to set
-     * 
+     *
      * @see DossierModel#setTauxVersement(String)
      */
     public void setMotifReduction(String motifReduction) {
@@ -338,7 +345,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Définit le nombre de jour effectif du premier mois de droit si ce n'est pas un mois complet
-     * 
+     *
      * @param nbJoursDebut
      *            the nbJoursDebut to set
      */
@@ -348,7 +355,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Définit le nombre de jour effectif du dernier mois de droit si ce n'est pas un mois complet
-     * 
+     *
      * @param nbJoursFin
      *            the nbJoursFin to set
      */
@@ -370,7 +377,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Définit l'indicateur de retenue d'impôt
-     * 
+     *
      * @param retenueImpot
      *            the retenueImpot to set
      */
@@ -388,7 +395,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Définit le taux d'occupation de l'allocataire
-     * 
+     *
      * @param tauxOccupation
      *            the tauxOccupation to set
      */
@@ -398,7 +405,7 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Définit le taux de réduction du dossier
-     * 
+     *
      * @param tauxVersement
      *            the tauxVersement to set
      */
@@ -408,12 +415,32 @@ public class DossierModel extends DossierFkModel {
 
     /**
      * Définit l'unité de calcul (Mois, Jour ou Heure)
-     * 
+     *
      * @param uniteCalcul
      *            the uniteCalcul to set
      */
     public void setUniteCalcul(String uniteCalcul) {
         this.uniteCalcul = uniteCalcul;
+    }
+
+    /**
+     * Retourne l'id du gestionnaire ayant réalisée le dernière modification sur le dossier.</br>
+     * Cette information est utilisée pour l'impression par file d'attente.
+     *
+     * @return l'id du gestionnaire ayant réalisée le dernière modification sur le dossier.
+     */
+    public String getIdGestionnaire() {
+        return idGestionnaire;
+    }
+
+    /**
+     * Set l'id du gestionnaire ayant réalisée le dernière modification sur le dossier.</br>
+     * Cette information est utilisée pour l'impression par file d'attente.
+     *
+     * @param idGestionnaire l'id du gestionnaire ayant réalisée le dernière modification sur le dossier.
+     */
+    public void setIdGestionnaire(String idGestionnaire) {
+        this.idGestionnaire = idGestionnaire;
     }
 
 }

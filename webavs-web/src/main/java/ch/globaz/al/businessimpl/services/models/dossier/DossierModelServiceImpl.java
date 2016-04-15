@@ -1,11 +1,5 @@
 package ch.globaz.al.businessimpl.services.models.dossier;
 
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.persistence.JadePersistenceManager;
-import globaz.jade.persistence.model.JadeAbstractModel;
 import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.exceptions.model.dossier.ALDossierModelException;
 import ch.globaz.al.business.models.dossier.CommentaireSearchModel;
@@ -19,6 +13,14 @@ import ch.globaz.al.businessimpl.checker.ALAbstractChecker;
 import ch.globaz.al.businessimpl.checker.model.dossier.DossierModelChecker;
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.al.utils.ALEntityFieldChangeAnalyser;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
 
 /**
  * Implémentation du service de gestion de la persistance des données des dossiers
@@ -195,8 +197,38 @@ public class DossierModelServiceImpl extends ALAbstractBusinessServiceImpl imple
         // Valide l'integrity
         DossierModelChecker.validate(dossierModel);
 
-        // Le met à jour en DB
+        // Doit être fait avant la sauvegarde afin de détecter les changes
+        checkChanges(dossierModel);
+
         return (DossierModel) JadePersistenceManager.update(dossierModel);
+    }
+
+    /**
+     * Le but de cette méthode est d'intercepté certains changement qui sont fait sur le dossier et stocker l'id du
+     * gestionnaire ayant réalisé les changements
+     *
+     * @param dossierToUpdate
+     * @throws JadeApplicationException
+     * @throws JadePersistenceException
+     */
+    private void checkChanges(DossierModel dossierToUpdate) throws JadeApplicationException, JadePersistenceException {
+        // Recherche le dossier stocké en DB pour comparer certain champs avec le dossier qui va être mis à jour
+        String id = dossierToUpdate.getId();
+        DossierModel persistentDossier = read(id);
+        if (persistentDossier == null || persistentDossier.isNew()) {
+            throw new ALDossierModelException("Unable to load DossierModel with id [" + id + "]");
+        }
+
+        // contrôle si la date de validité à changé
+        boolean dateDebutValiditeChange = ALEntityFieldChangeAnalyser
+                .hasValueChanged(persistentDossier.getDebutValidite(), dossierToUpdate.getDebutValidite());
+        boolean dateFinValiditeChange = ALEntityFieldChangeAnalyser.hasValueChanged(persistentDossier.getFinValidite(),
+                dossierToUpdate.getFinValidite());
+
+        if (dateDebutValiditeChange || dateFinValiditeChange) {
+            dossierToUpdate.setIdGestionnaire(BSessionUtil.getSessionFromThreadContext().getUserId());
+        }
+
     }
 
 }

@@ -1,12 +1,9 @@
 package ch.globaz.al.businessimpl.services.models.droit;
 
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.persistence.JadePersistenceManager;
 import ch.globaz.al.business.constantes.ALCSDroit;
 import ch.globaz.al.business.exceptions.model.droit.ALDroitComplexModelException;
 import ch.globaz.al.business.exceptions.model.droit.ALDroitModelException;
+import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.models.droit.DroitComplexModel;
 import ch.globaz.al.business.models.droit.DroitComplexSearchModel;
 import ch.globaz.al.business.models.droit.DroitSearchModel;
@@ -15,19 +12,26 @@ import ch.globaz.al.business.services.models.droit.DroitComplexModelService;
 import ch.globaz.al.businessimpl.checker.model.droit.DroitComplexModelChecker;
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.al.utils.ALEntityFieldChangeAnalyser;
 import ch.globaz.al.utils.ALImportUtils;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 /**
  * Service de gestion de la persistance du modèle complexe des droits
- * 
+ *
  * @author jts
- * 
+ *
  */
 public class DroitComplexModelServiceImpl extends ALAbstractBusinessServiceImpl implements DroitComplexModelService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.al.business.services.models.droit.DroitComplexModelService#
      * clone(ch.globaz.al.business.models.droit.DroitComplexModel, java.lang.String)
      */
@@ -44,8 +48,8 @@ public class DroitComplexModelServiceImpl extends ALAbstractBusinessServiceImpl 
 
         // clone du droit model / nouveau enregistrement en DB (crée quand
         // droitComplexModel.create)
-        newDroitComplexModel.setDroitModel(ALImplServiceLocator.getDroitModelService().clone(
-                droitComplexModel.getDroitModel(), idDossier));
+        newDroitComplexModel.setDroitModel(
+                ALImplServiceLocator.getDroitModelService().clone(droitComplexModel.getDroitModel(), idDossier));
 
         return newDroitComplexModel;
 
@@ -68,13 +72,13 @@ public class DroitComplexModelServiceImpl extends ALAbstractBusinessServiceImpl 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.al.business.services.models.droit.DroitComplexModelService#
      * create(ch.globaz.al.business.models.droit.DroitComplexModel)
      */
     @Override
-    public DroitComplexModel create(DroitComplexModel droitCM) throws JadeApplicationException,
-            JadePersistenceException {
+    public DroitComplexModel create(DroitComplexModel droitCM)
+            throws JadeApplicationException, JadePersistenceException {
 
         if (droitCM == null) {
             throw new ALDroitComplexModelException(
@@ -91,11 +95,11 @@ public class DroitComplexModelServiceImpl extends ALAbstractBusinessServiceImpl 
             // on ne créé pas forcément un nouvel enfant, on peut créer un droit
             // à partir d'un enfant existant
             if (droitCM.getEnfantComplexModel().getEnfantModel().isNew()) {
-                droitCM.setEnfantComplexModel(ALImplServiceLocator.getEnfantComplexModelService().create(
-                        droitCM.getEnfantComplexModel()));
+                droitCM.setEnfantComplexModel(
+                        ALImplServiceLocator.getEnfantComplexModelService().create(droitCM.getEnfantComplexModel()));
             } else {
-                droitCM.setEnfantComplexModel(ALImplServiceLocator.getEnfantComplexModelService().update(
-                        droitCM.getEnfantComplexModel()));
+                droitCM.setEnfantComplexModel(
+                        ALImplServiceLocator.getEnfantComplexModelService().update(droitCM.getEnfantComplexModel()));
             }
 
             droitCM.getDroitModel().setIdEnfant(droitCM.getEnfantComplexModel().getEnfantModel().getIdEnfant());
@@ -116,13 +120,13 @@ public class DroitComplexModelServiceImpl extends ALAbstractBusinessServiceImpl 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.al.business.services.models.droit.DroitComplexModelService#
      * delete(ch.globaz.al.business.models.droit.DroitComplexModel)
      */
     @Override
-    public DroitComplexModel delete(DroitComplexModel droitCM) throws JadeApplicationException,
-            JadePersistenceException {
+    public DroitComplexModel delete(DroitComplexModel droitCM)
+            throws JadeApplicationException, JadePersistenceException {
 
         if (droitCM == null) {
             throw new ALDroitComplexModelException(
@@ -140,8 +144,8 @@ public class DroitComplexModelServiceImpl extends ALAbstractBusinessServiceImpl 
             droitSearch.setForIdEnfant(droitCM.getEnfantComplexModel().getEnfantModel().getIdEnfant());
 
             if (JadePersistenceManager.count(droitSearch) == 1) {
-                droitCM.setEnfantComplexModel(ALImplServiceLocator.getEnfantComplexModelService().delete(
-                        droitCM.getEnfantComplexModel()));
+                droitCM.setEnfantComplexModel(
+                        ALImplServiceLocator.getEnfantComplexModelService().delete(droitCM.getEnfantComplexModel()));
             }
         }
 
@@ -155,13 +159,13 @@ public class DroitComplexModelServiceImpl extends ALAbstractBusinessServiceImpl 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.al.business.services.models.droit.DroitComplexModelService#
      * initModel(ch.globaz.al.business.models.droit.DroitComplexModel)
      */
     @Override
-    public DroitComplexModel initModel(DroitComplexModel droitComplexModel) throws JadeApplicationException,
-            JadePersistenceException {
+    public DroitComplexModel initModel(DroitComplexModel droitComplexModel)
+            throws JadeApplicationException, JadePersistenceException {
 
         String idDroit = droitComplexModel.getDroitModel().getIdDroit();
         String idEnfant = droitComplexModel.getEnfantComplexModel().getEnfantModel().getIdEnfant();
@@ -172,8 +176,8 @@ public class DroitComplexModelServiceImpl extends ALAbstractBusinessServiceImpl 
 
         if (droitComplexModel.getDroitModel().isNew()) {
             droitComplexModel.getDroitModel().setIdEnfant(idEnfant);
-            droitComplexModel.setDroitModel(ALImplServiceLocator.getDroitModelService().initModel(
-                    droitComplexModel.getDroitModel()));
+            droitComplexModel.setDroitModel(
+                    ALImplServiceLocator.getDroitModelService().initModel(droitComplexModel.getDroitModel()));
         }
 
         if (!JadeStringUtil.isEmpty(idEnfant)) {
@@ -181,8 +185,8 @@ public class DroitComplexModelServiceImpl extends ALAbstractBusinessServiceImpl 
         }
 
         if (droitComplexModel.getEnfantComplexModel().isNew()) {
-            droitComplexModel.setEnfantComplexModel(ALImplServiceLocator.getEnfantComplexModelService().initModel(
-                    droitComplexModel.getEnfantComplexModel()));
+            droitComplexModel.setEnfantComplexModel(ALImplServiceLocator.getEnfantComplexModelService()
+                    .initModel(droitComplexModel.getEnfantComplexModel()));
         }
 
         return droitComplexModel;
@@ -191,11 +195,12 @@ public class DroitComplexModelServiceImpl extends ALAbstractBusinessServiceImpl 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.al.business.services.models.droit.DroitComplexModelService# read(java.lang.String)
      */
     @Override
-    public DroitComplexModel read(String idDroitComplexModel) throws JadeApplicationException, JadePersistenceException {
+    public DroitComplexModel read(String idDroitComplexModel)
+            throws JadeApplicationException, JadePersistenceException {
 
         if (JadeStringUtil.isEmpty(idDroitComplexModel)) {
             throw new ALDroitModelException("unable to read droitComplexModel- the id passed is empty");
@@ -209,7 +214,7 @@ public class DroitComplexModelServiceImpl extends ALAbstractBusinessServiceImpl 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.al.business.services.models.droit.DroitComplexModelService#
      * search(ch.globaz.al.business.models.droit.DroitComplexSearchModel)
      */
@@ -224,13 +229,13 @@ public class DroitComplexModelServiceImpl extends ALAbstractBusinessServiceImpl 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.al.business.services.models.droit.DroitComplexModelService#
      * update(ch.globaz.al.business.models.droit.DroitComplexModel)
      */
     @Override
-    public DroitComplexModel update(DroitComplexModel droitCM) throws JadeApplicationException,
-            JadePersistenceException {
+    public DroitComplexModel update(DroitComplexModel droitCM)
+            throws JadeApplicationException, JadePersistenceException {
 
         if (droitCM == null) {
             throw new ALDroitComplexModelException("Unable to update the droitComplexModel-the model passed is empty");
@@ -243,6 +248,10 @@ public class DroitComplexModelServiceImpl extends ALAbstractBusinessServiceImpl 
         // validation
         DroitComplexModelChecker.validate(droitCM);
 
+        // Contrôle si certain champs ont été modifié. Si oui, on stocke l'id du gestionnaire
+        // ayant réalisé la modification au niveau du dossier
+        checkChanges(droitCM);
+
         // si le droit est de type ENF ou FORM on doit mettre à jour l'enfant
         if (ALCSDroit.TYPE_ENF.equals(droitCM.getDroitModel().getTypeDroit())
                 || ALCSDroit.TYPE_FORM.equals(droitCM.getDroitModel().getTypeDroit())) {
@@ -253,6 +262,32 @@ public class DroitComplexModelServiceImpl extends ALAbstractBusinessServiceImpl 
         droitCM.setDroitModel(ALImplServiceLocator.getDroitModelService().update(droitCM.getDroitModel()));
 
         return droitCM;
+    }
+
+    private void checkChanges(DroitComplexModel droitToUpdate)
+            throws JadeApplicationServiceNotAvailableException, JadeApplicationException, JadePersistenceException {
+        // Recherche le dossier stocké en DB pour comparer certain champs
+        String id = droitToUpdate.getId();
+        DroitComplexModel persistentDroit = read(id);
+        if (persistentDroit == null || persistentDroit.isNew()) {
+            throw new ALDroitModelException("Unable to load DroitComplexModel with id [" + id + "]");
+        }
+
+        // Contrôle si le type d'allocation à changé
+        String typeAllocationPersistence = persistentDroit.getEnfantComplexModel().getEnfantModel()
+                .getTypeAllocationNaissance();
+        String typeAllocationUpdate = droitToUpdate.getEnfantComplexModel().getEnfantModel()
+                .getTypeAllocationNaissance();
+
+        boolean allocationChange = ALEntityFieldChangeAnalyser.hasValueChanged(typeAllocationPersistence,
+                typeAllocationUpdate);
+
+        if (allocationChange) {
+            String idDossierModel = droitToUpdate.getDroitModel().getIdDossier();
+            DossierModel dossier = ALServiceLocator.getDossierModelService().read(idDossierModel);
+            dossier.setIdGestionnaire(BSessionUtil.getSessionFromThreadContext().getUserId());
+            ALServiceLocator.getDossierModelService().update(dossier);
+        }
     }
 
 }

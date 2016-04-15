@@ -185,6 +185,14 @@
 			</search-group>
 		</search-definition>
 		
+		<search-definition name="dossiersFileAttente">
+			<search-group operator="AND">
+				<search-literal><![CDATA[ (#{dossierModel.idGestionnaire} is not null and #{dossierModel.idGestionnaire} <> '' ) ]]></search-literal>
+				<search-field name="forIdGestionnaire" field-ref="dossierModel.idGestionnaire" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+
 		<order-by name="OrderAlloc">
 			<order-field field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation1" order="ASC"/>
 			<order-field field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designation2" order="ASC"/>

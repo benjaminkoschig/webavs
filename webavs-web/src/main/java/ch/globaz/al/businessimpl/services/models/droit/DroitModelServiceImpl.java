@@ -1,17 +1,14 @@
 /**
- * 
+ *
  */
 package ch.globaz.al.businessimpl.services.models.droit;
 
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.persistence.JadePersistenceManager;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.al.business.constantes.ALCSDroit;
+import ch.globaz.al.business.exceptions.model.dossier.ALDossierModelException;
 import ch.globaz.al.business.exceptions.model.droit.ALDroitModelException;
+import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.models.droit.DroitModel;
 import ch.globaz.al.business.models.droit.DroitSearchModel;
 import ch.globaz.al.business.services.ALServiceLocator;
@@ -19,6 +16,13 @@ import ch.globaz.al.business.services.models.droit.DroitModelService;
 import ch.globaz.al.businessimpl.checker.model.droit.DroitModelChecker;
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.al.utils.ALEntityFieldChangeAnalyser;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 /**
  * classe d'implémentation des services de DroitModel
@@ -111,8 +115,32 @@ public class DroitModelServiceImpl extends ALAbstractBusinessServiceImpl impleme
         }
         // contrôle de validité métier et des données du Droit
         DroitModelChecker.validate(droitModel);
+
         // ajoute le Droit dans la persistance et le retourne
-        return (DroitModel) JadePersistenceManager.add(droitModel);
+        DroitModel droit = (DroitModel) JadePersistenceManager.add(droitModel);
+
+        checkChanges(droit);
+
+        return droit;
+    }
+
+    /**
+     * Stock l'id du gestionnaire ayant rajouté un nouveau droit au dossier
+     *
+     * @param droit
+     * @throws JadeApplicationServiceNotAvailableException
+     * @throws JadeApplicationException
+     * @throws JadePersistenceException
+     */
+    private void checkChanges(DroitModel droit)
+            throws JadeApplicationServiceNotAvailableException, JadeApplicationException, JadePersistenceException {
+        String id = droit.getIdDossier();
+        DossierModel dossier = ALServiceLocator.getDossierModelService().read(id);
+        if (dossier == null || dossier.isNew()) {
+            throw new ALDossierModelException("Unable to load DossierModel with id [" + id + "]");
+        }
+        dossier.setIdGestionnaire(BSessionUtil.getSessionFromThreadContext().getUserId());
+        JadePersistenceManager.update(dossier);
     }
 
     /*
@@ -226,7 +254,52 @@ public class DroitModelServiceImpl extends ALAbstractBusinessServiceImpl impleme
         }
         // contrôle de validité des données
         DroitModelChecker.validate(droitModel);
+
+        trigChangesParGestionnaire(droitModel);
+
         return (DroitModel) JadePersistenceManager.update(droitModel);
     }
 
+    /**
+     * Le but de cette méthode est d'intercepté certains changement qui sont fait sur le droit et stocker l'id du
+     * gestionnaire ayant réalisé les changements au niveau du dossier
+     *
+     * @param droitToUpdate
+     * @throws JadeApplicationException
+     * @throws JadePersistenceException
+     */
+    private void trigChangesParGestionnaire(DroitModel droitToUpdate)
+            throws JadeApplicationException, JadePersistenceException {
+        // Recherche le dossier stocké en DB pour comparer certain champs avec le dossier qui va être mis à jour
+        String id = droitToUpdate.getId();
+        DroitModel persistentDroit = read(id);
+        if (persistentDroit == null || persistentDroit.isNew()) {
+            throw new ALDroitModelException("Unable to load DroitModel with id [" + id + "]");
+        }
+
+        // contrôle si la date d'échéance à changé
+        boolean dateFinDroitChange = ALEntityFieldChangeAnalyser.hasValueChanged(persistentDroit.getFinDroitForcee(),
+                droitToUpdate.getFinDroitForcee());
+
+        // contrôle si le motif à changé
+        boolean motifChange = ALEntityFieldChangeAnalyser.hasValueChanged(persistentDroit.getMotifFin(),
+                droitToUpdate.getMotifFin());
+
+        // contrôle si le montant fixe à changé
+        boolean montantFixeChange = ALEntityFieldChangeAnalyser.hasValueChanged(persistentDroit.getMontantForce(),
+                droitToUpdate.getMontantForce());
+
+        // contrôle si l'état du droit changé CSETAT
+        boolean etatDroitChange = ALEntityFieldChangeAnalyser.hasValueChanged(persistentDroit.getEtatDroit(),
+                droitToUpdate.getEtatDroit());
+
+        boolean change = dateFinDroitChange || motifChange || montantFixeChange || etatDroitChange;
+
+        if (change) {
+            String idDossierModel = droitToUpdate.getIdDossier();
+            DossierModel dossier = ALServiceLocator.getDossierModelService().read(idDossierModel);
+            dossier.setIdGestionnaire(BSessionUtil.getSessionFromThreadContext().getUserId());
+            JadePersistenceManager.update(dossier);
+        }
+    }
 }
