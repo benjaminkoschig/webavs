@@ -1,14 +1,14 @@
 package globaz.prestation.interfaces.tiers;
 
-import globaz.globall.db.BSession;
-import globaz.globall.shared.GlobazValueObject;
-import globaz.pyxis.db.tiers.TITiersViewBean;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import globaz.globall.db.BSession;
+import globaz.globall.shared.GlobazValueObject;
+import globaz.pyxis.db.tiers.TITiersViewBean;
 
 /**
  * <p>
@@ -23,14 +23,14 @@ import java.util.SortedSet;
  * Implémente {@link Comparable} et a donc un ordre de tri naturel (nom->prénom->idTiers par ordre alphabétique) et peut
  * donc être stocké dans un conteneur trié (tel que {@link SortedSet} ou {@link SortedMap})
  * </p>
- * 
+ *
  * @author VRE
  * @author PBA
  */
 public class PRTiersWrapper implements Serializable, Comparable<PRTiersWrapper> {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private static final String EMPTY_STRING = "";
@@ -60,6 +60,7 @@ public class PRTiersWrapper implements Serializable, Comparable<PRTiersWrapper> 
     public static final String PROPERTY_PRENOM = "PRENOM";
     public static final String PROPERTY_SEXE = "SEXE";
     public static final String PROPERTY_TITRE = "TITRE";
+    public static final String PROPERTY_DESIGNATION_3 = "DESIGNATION3";
 
     static final String TI_PERSONNE_AVS = "TIPersonneAvs";
     static final String TI_PERSONNE_AVS_ADRESSE = "TIPersonneAvsAdresse";
@@ -102,6 +103,7 @@ public class PRTiersWrapper implements Serializable, Comparable<PRTiersWrapper> 
         fields.put(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL, "numAvsActuel");
         fields.put(PRTiersWrapper.PROPERTY_PERSONNE_AVS_ETAT_CIVIL, "etatCivil");
         fields.put(PRTiersWrapper.PROPERTY_PRENOM, "designation2");
+        fields.put(PRTiersWrapper.PROPERTY_DESIGNATION_3, "designation3");
         fields.put(PRTiersWrapper.PROPERTY_SEXE, "sexe");
         fields.put(PRTiersWrapper.PROPERTY_TITRE, "titreTiers");
         fields.put(PRTiersWrapper.PROPERTY_LANGUE, "langue");
@@ -221,10 +223,10 @@ public class PRTiersWrapper implements Serializable, Comparable<PRTiersWrapper> 
 
     /**
      * getter pour l'attribut property
-     * 
+     *
      * @param name
      *            DOCUMENT ME!
-     * 
+     *
      * @return la valeur courante de l'attribut property
      */
     public String getProperty(String name) {

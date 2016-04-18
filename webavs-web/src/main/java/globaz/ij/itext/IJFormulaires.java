@@ -227,8 +227,10 @@ public class IJFormulaires extends FWIDocumentManager {
                                 "IJFormulaires");
                 abort();
             }
-
             crBean.setAdresse(adresse); // l'adresse est celle de l'institution
+
+            // nom du collaborateur
+            crBean.setNomCollaborateur(getSession().getUserFullName());
 
             // nom du document est celui de l'institution
             setDocumentTitle(agentExec.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + " - "

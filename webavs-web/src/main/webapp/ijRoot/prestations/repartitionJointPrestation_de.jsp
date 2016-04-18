@@ -116,16 +116,6 @@ if (viewBean.isCreationNouvelleRepartition()) { %>
 							<TD>
 								<INPUT type="text" name="nomPlus" value="<%=viewBean.getNomPlus()%>" class="libelleLongDisabled" readonly>
 
-								<ct:FWSelectorTag
-									name="selecteurBeneficiaire"
-
-									methods="<%=viewBean.getMethodesSelectionBeneficiaire()%>"
-									providerApplication="pyxis"
-									providerPrefix="TI"
-									providerAction="pyxis.tiers.tiers.chercher"
-									target="fr_main"
-									redirectUrl="<%=mainServletPath%>"/>
-
 							</TD>
 						</TR>
 						<TR>
@@ -135,17 +125,50 @@ if (viewBean.isCreationNouvelleRepartition()) { %>
 							<TD><INPUT type="text" name="numAffilieEmployeur" value="<%=viewBean.getNumAffilieEmployeur()%>"  onchange="rechercherAffilie(value)" class="montant">
 						</TR>
 						
+						<TR>
+						<TD colspan="3"></TD>
+							<TD>
+								<LABEL for="nom"><ct:FWLabel key="JSP_TIERS"/></LABEL>&nbsp;
+																
+								<ct:FWSelectorTag
+									name="selecteurBeneficiaire"
+
+									methods="<%=viewBean.getMethodesSelectionBeneficiaire()%>"
+									providerApplication="pyxis"
+									providerPrefix="TI"
+									providerAction="pyxis.tiers.tiers.chercher"
+									target="fr_main"
+									redirectUrl="<%=mainServletPath%>"/>
+								
+								<LABEL for="nom"><ct:FWLabel key="JSP_ADMINISTRATION"/></LABEL>&nbsp;
+									
+									<ct:FWSelectorTag
+									name="selecteurBeneficiaire2"
+
+									methods="<%=viewBean.getMethodesSelectionBeneficaire2()%>"
+									providerApplication="pyxis"
+									providerPrefix="TI"
+									providerAction="pyxis.tiers.administration.chercher"
+									target="fr_main"
+									redirectUrl="<%=mainServletPath%>"/>
+								</TD>
+						
+						</TR>
+						
+						
+						
+						
 						<% if (!viewBean.isDefinitif()) {%>
 							<TR><TD colspan="4">&nbsp;</TD></TR>
-							<TR><TD colspan="4">&nbsp;</TD></TR>
+							<TR><TD colspan="3">&nbsp;</TD></TR>
 
 							<TR>
 								<TD valign="top"><LABEL for="addressePaiement"><ct:FWLabel key="JSP_REP_D_ADRESSE_PAIEMENT"/></LABEL></TD>
 								<TD><PRE><span class="IJAfficheText"><%=viewBean.getCcpOuBanqueFormatte()%></span></PRE></TD>
 								<TD><PRE><span class="IJAfficheText"><%=viewBean.getAdresseFormattee()%></span></PRE></TD>
+								
 								<TD>
-
-									<ct:FWSelectorTag
+								<ct:FWSelectorTag
 										name="selecteurAdresses"
 
 										methods="<%=viewBean.getMethodesSelectionAdresse()%>"
@@ -153,7 +176,7 @@ if (viewBean.isCreationNouvelleRepartition()) { %>
 										providerPrefix="TI"
 										providerAction="pyxis.adressepaiement.adressePaiement.chercher"
 										target="fr_main"
-										redirectUrl="<%=mainServletPath%>"/>
+										redirectUrl="<%=mainServletPath%>"/>&nbsp;
 								</TD>
 							</TR>
 						<% } %>

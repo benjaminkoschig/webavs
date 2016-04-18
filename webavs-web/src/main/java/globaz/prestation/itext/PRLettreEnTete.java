@@ -161,6 +161,9 @@ public class PRLettreEnTete extends FWIDocumentManager {
 
             } else if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_IJAI)) {
 
+                // nom du collaborateur
+                crBean.setNomCollaborateur(getSession().getUserFullName());
+
                 adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
                         tierAdresse.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), getIdAffilie(), "519009");
 
@@ -276,6 +279,8 @@ public class PRLettreEnTete extends FWIDocumentManager {
                     ((IJDecisionACaisseReportHelper) caisseHelper).addHeaderParameters(getImporter(), crBean,
                             adresseOfficeAi, codeIsoLangue, "");
                 }
+                // crBean.setAdresse(adresseOfficeAi);
+                // caisseHelper.addHeaderParameters(this, crBean);
 
                 TIAdresseDataManager tiAdresseDatamgr = new TIAdresseDataManager();
                 tiAdresseDatamgr.setSession(getSession());
@@ -289,7 +294,15 @@ public class PRLettreEnTete extends FWIDocumentManager {
                 dataSource.load((TIAbstractAdresseData) tiAdresseDatamgr.getFirstEntity(), "");
 
                 try {
+                    // if (null != dataSource) {
+                    // CaisseSignatureReportBean csBean = new CaisseSignatureReportBean();
+                    // csBean.setSignatureCaisse(PRStringUtils.replaceString(document.getTextes(1).getTexte(4)
+                    // .getDescription(), PRLettreEnTete.CDT_SIGNATURE, dataSource.ligne1));
+                    // caisseHelper.addSignatureParameters(this, csBean);
+                    // }
+
                     if ((caisseHelper instanceof IJDecisionACaisseReportHelper) && (null != dataSource)) {
+
                         ((IJDecisionACaisseReportHelper) caisseHelper).addSignatureParameters(getImporter(), null,
                                 PRStringUtils.replaceString(document.getTextes(1).getTexte(4).getDescription(),
                                         PRLettreEnTete.CDT_SIGNATURE, dataSource.ligne1));
@@ -395,6 +408,9 @@ public class PRLettreEnTete extends FWIDocumentManager {
             // creation du helper pour les entetes et pieds de page
             if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_IJAI)) {
                 docInfo.setDocumentTypeNumber(IPRConstantesExternes.LETTRE_ACCOMPAGNEMENT_IJ);
+                // caisseHelper = CaisseHelperFactory.getInstance().getCaisseReportHelper(docInfo,
+                // getSession().getApplication(), codeIsoLangue);
+                // TODO vérifier les check d'instance ijdeci
                 caisseHelper = new IJDecisionACaisseReportHelper(docInfo);
                 caisseHelper.init(getSession().getApplication(), codeIsoLangue);
 

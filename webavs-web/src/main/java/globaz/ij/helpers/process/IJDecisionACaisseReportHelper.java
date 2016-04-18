@@ -5,6 +5,7 @@ import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelper;
 import globaz.framework.printing.itext.api.FWIImporterInterface;
 import globaz.framework.printing.itext.fill.FWIImportProperties;
+import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.naos.util.AFIDEUtil;
@@ -76,13 +77,36 @@ public class IJDecisionACaisseReportHelper extends ACaisseReportHelper {
             doc.setParametre(ICaisseReportHelper.PARAM_HEADER_NOM_COLLABORATEUR, "");
         }
 
-        if (!JadeStringUtil.isEmpty(bean.getTelCollaborateur() == null ? bean.getTelCollaborateur() : bean
-                .getTelCollaborateur().trim())) {
+        /**
+         * utiliser le num en paramètre même si pas de num passé
+         */
+        /* TEL */
+        String tel = doc.getTemplateProperty(docInfo, ACaisseReportHelper.JASP_PROP_HEADER_TEL_COLLABORATEUR
+                + codeIsoLangue);
+        if (tel != null) {
+            String userId = "";
+            if ((bean != null) && (bean.getUser() != null)) {
+                JadeUser user = bean.getUser();
+                if (user != null) {
+                    userId = user.getIdUser();
+                }
+            }
+            tel = ACaisseReportHelper._replaceVars(tel, userId, null);
+        }
+        String telCol = bean.getTelCollaborateur();
+        if ((tel == null) || tel.equalsIgnoreCase("$telUser")) {
+            tel = telCol == null ? telCol : telCol.trim();
+            if (JadeStringUtil.isEmpty(tel)) {
+                tel = "";
+            }
+        }
+        if (!JadeStringUtil.isEmpty(tel)) {
             doc.setParametre(
                     ICaisseReportHelper.PARAM_HEADER_TEL_COLLABORATEUR,
-                    doc.getTemplateProperty(docInfo, JASP_PROP_HEADER_PREFIXE_TEL_COLLABORATEUR + codeIsoLangue)
-                            + bean.getTelCollaborateur());
-        } else if (!JadeStringUtil.isNull(bean.getTelCollaborateur())) {
+                    doc.getTemplateProperty(docInfo, ACaisseReportHelper.JASP_PROP_HEADER_PREFIXE_TEL_COLLABORATEUR
+                            + codeIsoLangue)
+                            + tel);
+        } else {
             doc.setParametre(ICaisseReportHelper.PARAM_HEADER_TEL_COLLABORATEUR, "");
         }
 

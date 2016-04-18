@@ -89,7 +89,7 @@ public class IJCalculeeAction extends PRDefaultAction {
             ijInt.setMontantGarantiAAReduit(request.getParameter("ijInterneMontantGarantiAAReduit"));
         }
         if (!JadeStringUtil.isNull(request.getParameter("ijInterneMontantComplet"))) {
-            ijInt.setMontantSupplementaireReadaptation(request.getParameter("ijInterneMontantComplet"));
+            ijInt.setMontantComplet(request.getParameter("ijInterneMontantComplet"));
         }
         if (!JadeStringUtil.isNull(request.getParameter("ijInterneMontantPlafonne"))) {
             ijInt.setMontantPlafonne(request.getParameter("ijInterneMontantPlafonne"));
@@ -130,7 +130,7 @@ public class IJCalculeeAction extends PRDefaultAction {
             ijExt.setMontantGarantiAAReduit(request.getParameter("ijExterneMontantGarantiAAReduit"));
         }
         if (!JadeStringUtil.isNull(request.getParameter("ijExterneMontantComplet"))) {
-            ijExt.setMontantSupplementaireReadaptation(request.getParameter("ijExterneMontantComplet"));
+            ijExt.setMontantComplet(request.getParameter("ijExterneMontantComplet"));
         }
         if (!JadeStringUtil.isNull(request.getParameter("ijExterneMontantPlafonne"))) {
             ijExt.setMontantPlafonne(request.getParameter("ijExterneMontantPlafonne"));

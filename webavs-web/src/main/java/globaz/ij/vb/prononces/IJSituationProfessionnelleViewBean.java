@@ -3,6 +3,7 @@
  */
 package globaz.ij.vb.prononces;
 
+import java.util.Vector;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.util.JANumberFormatter;
 import globaz.ij.db.prononces.IJPrononce;
@@ -13,11 +14,10 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRImagesConstants;
 import globaz.prestation.tools.nnss.PRNSSUtil;
-import java.util.Vector;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author dvh
  */
 public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnelle implements FWViewBeanInterface {
@@ -26,16 +26,23 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
     // -------------------------------------------------------------------------------------
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
     private static final String ERREUR_EMPLOYEUR_INTROUVABLE = "EMPLOYEUR_INTROUVABLE";
 
     private static final Vector MENU_DEROULANT_BLANK = new Vector();
+
     private static final Object[] METHODES_SEL_EMPLOYEUR = new Object[] {
             new String[] { "idTiersEmployeurDepuisPyxis", "idTiers" }, new String[] { "nomEmployeur", "nom" },
             new String[] { "numAffilieEmployeur", "numAffilieActuel" } };
+
+    /**
+     * Retourne les données d'un objet de type TIAdministrationAdresse
+     */
+    private static final Object[] METHODES_SEL_EMPLOYEUR_ADDMINISTRATION = new Object[] {
+            new String[] { "idTiersEmployeurDepuisPyxis", "idTiers" }, new String[] { "nomEmployeur", "nom" } };
 
     static {
         MENU_DEROULANT_BLANK.add(new String[] { "", "" });
@@ -78,7 +85,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * getter pour l'attribut affiliations employeur.
-     * 
+     *
      * @return la valeur courante de l'attribut affiliations employeur
      */
     public Vector getAffiliationsEmployeur() {
@@ -91,7 +98,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * getter pour l'attribut autre remuneration.
-     * 
+     *
      * @return la valeur courante de l'attribut autre remuneration
      */
     @Override
@@ -106,7 +113,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * getter pour l'attribut cs type IJ.
-     * 
+     *
      * @return la valeur courante de l'attribut cs type IJ
      */
     public String getCsTypeIJ() {
@@ -115,7 +122,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * getter pour l'attribut date debut prononce.
-     * 
+     *
      * @return la valeur courante de l'attribut date debut prononce
      */
     public String getDateDebutPrononce() {
@@ -148,10 +155,10 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
             if (!"999".equals(getSession()
                     .getCode(
                             getSession().getSystemCode("CIPAYORI",
-                                    tiers.getProperty(PRTiersWrapper.PROPERTY_ID_PAYS_DOMICILE))))) {
+                    tiers.getProperty(PRTiersWrapper.PROPERTY_ID_PAYS_DOMICILE))))) {
                 nationalite = getSession().getCodeLibelle(
                         getSession().getSystemCode("CIPAYORI",
-                                tiers.getProperty(PRTiersWrapper.PROPERTY_ID_PAYS_DOMICILE)));
+                        tiers.getProperty(PRTiersWrapper.PROPERTY_ID_PAYS_DOMICILE)));
             }
 
             return PRNSSUtil.formatDetailRequerantDetail(
@@ -169,7 +176,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * getter pour l'attribut id affilie employeur.
-     * 
+     *
      * @return la valeur courante de l'attribut id affilie employeur
      */
     public String getIdAffilieEmployeur() {
@@ -185,7 +192,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * getter pour l'attribut id particularite employeur.
-     * 
+     *
      * @return la valeur courante de l'attribut id particularite employeur
      */
     public String getIdParticulariteEmployeur() {
@@ -201,7 +208,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * getter pour l'attribut id tiers employeur.
-     * 
+     *
      * @return la valeur courante de l'attribut id tiers employeur
      */
     public String getIdTiersEmployeur() {
@@ -217,7 +224,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * getter pour l'attribut versement assure.
-     * 
+     *
      * @return la valeur courante de l'attribut versement assure
      */
     public String getImageVersementAssure() {
@@ -230,7 +237,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * getter pour l'attribut menu departement.
-     * 
+     *
      * @return la valeur courante de l'attribut menu departement
      */
     public Vector getMenuDepartement() {
@@ -239,16 +246,20 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * getter pour l'attribut methodes selection employeur.
-     * 
+     *
      * @return la valeur courante de l'attribut methodes selection employeur
      */
     public Object[] getMethodesSelecteurEmployeur() {
         return METHODES_SEL_EMPLOYEUR;
     }
 
+    public Object[] getMethodesSelecteurEmployeurAdministration() {
+        return METHODES_SEL_EMPLOYEUR_ADDMINISTRATION;
+    }
+
     /**
      * getter pour l'attribut no AVSAssure.
-     * 
+     *
      * @return la valeur courante de l'attribut no AVSAssure
      */
     public String getNoAVS() {
@@ -257,7 +268,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * getter pour l'attribut nom employeur.
-     * 
+     *
      * @return la valeur courante de l'attribut nom employeur
      */
     public String getNomEmployeur() {
@@ -275,7 +286,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * getter pour l'attribut num affilie.
-     * 
+     *
      * @return la valeur courante de l'attribut num affilie
      */
     public String getNumAffilieEmployeur() {
@@ -297,7 +308,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * getter pour l'attribut prenom nom assure.
-     * 
+     *
      * @return la valeur courante de l'attribut prenom nom assure
      */
     public String getPrenomNom() {
@@ -306,7 +317,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * getter pour l'attribut salaire.
-     * 
+     *
      * @return la valeur courante de l'attribut salaire
      */
     @Override
@@ -316,7 +327,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * getter pour l'attribut salaire nature.
-     * 
+     *
      * @return la valeur courante de l'attribut salaire nature
      */
     @Override
@@ -333,7 +344,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * getter pour l'attribut modifier permis.
-     * 
+     *
      * @return la valeur courante de l'attribut modifier permis
      */
     public boolean isModifierPermis() {
@@ -342,7 +353,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * getter pour l'attribut retour depuis pyxis.
-     * 
+     *
      * @return la valeur courante de l'attribut retour depuis pyxis
      */
     public boolean isRetourDepuisPyxis() {
@@ -358,7 +369,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * @return DOCUMENT ME!
-     * 
+     *
      * @throws Exception
      *             DOCUMENT ME!
      */
@@ -379,7 +390,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * setter pour l'attribut affiliations employeur.
-     * 
+     *
      * @param affiliationsEmployeur
      *            une nouvelle valeur pour cet attribut
      */
@@ -394,7 +405,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * setter pour l'attribut autre remuneration.
-     * 
+     *
      * @param autreRemuneration
      *            une nouvelle valeur pour cet attribut
      */
@@ -405,7 +416,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * setter pour l'attribut cs type IJ.
-     * 
+     *
      * @param csTypeIJ
      *            une nouvelle valeur pour cet attribut
      */
@@ -415,7 +426,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * setter pour l'attribut date debut prononce.
-     * 
+     *
      * @param dateDebutPrononce
      *            une nouvelle valeur pour cet attribut
      */
@@ -425,7 +436,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * setter pour l'attribut id affilie employeur.
-     * 
+     *
      * @param idAffilieEmployeur
      *            une nouvelle valeur pour cet attribut
      */
@@ -440,7 +451,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * setter pour l'attribut id particularite employeur.
-     * 
+     *
      * @param idParticulariteEmployeur
      *            une nouvelle valeur pour cet attribut
      */
@@ -455,7 +466,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * setter pour l'attribut id tiers employeur.
-     * 
+     *
      * @param idTiersEmployeur
      *            une nouvelle valeur pour cet attribut
      */
@@ -470,12 +481,12 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * setter pour l'attribut id tiers employeur depuis pyxis.
-     * 
+     *
      * <p>
      * Note: cette methode renseigne le champ retourDepuisPyxis a vrai ce qui sera interprete dans l'action comme le
      * fait que l'on revient depuis pyxis, il est necessaire de reinitialiser ce champ a la fin.
      * </p>
-     * 
+     *
      * @param idTiersEmployeur
      *            une nouvelle valeur pour cet attribut
      */
@@ -488,7 +499,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * set le menu deroulant transmis ou un menu deroulant vide si l'argument est nul.
-     * 
+     *
      * @param menuDepartement
      *            une nouvelle valeur pour cet attribut
      */
@@ -503,7 +514,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * setter pour l'attribut modifier permis.
-     * 
+     *
      * @param modifierPermis
      *            une nouvelle valeur pour cet attribut
      */
@@ -513,7 +524,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * setter pour l'attribut no AVSAssure.
-     * 
+     *
      * @param noAVSAssure
      *            une nouvelle valeur pour cet attribut
      */
@@ -523,7 +534,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * setter pour l'attribut nom employeur.
-     * 
+     *
      * @param string
      *            une nouvelle valeur pour cet attribut
      */
@@ -533,7 +544,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * setter pour l'attribut num affilie employeur.
-     * 
+     *
      * @param numAffilieEmployeur
      *            une nouvelle valeur pour cet attribut
      */
@@ -543,7 +554,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * setter pour l'attribut prenom nom assure.
-     * 
+     *
      * @param prenomNomAssure
      *            une nouvelle valeur pour cet attribut
      */
@@ -553,7 +564,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * setter pour l'attribut retour depuis pyxis.
-     * 
+     *
      * @param retourDepuisPyxis
      *            une nouvelle valeur pour cet attribut
      */
@@ -570,7 +581,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * setter pour l'attribut salaire.
-     * 
+     *
      * @param salaire
      *            une nouvelle valeur pour cet attribut
      */
@@ -581,7 +592,7 @@ public class IJSituationProfessionnelleViewBean extends IJSituationProfessionnel
 
     /**
      * setter pour l'attribut salaire nature.
-     * 
+     *
      * @param salaireNature
      *            une nouvelle valeur pour cet attribut
      */

@@ -299,7 +299,10 @@
 							<td valign="top">
 								<ct:FWLabel key="JSP_ADR_COURRIER" />
 							</td>
+							
+							
 							<td valign="top" align="right" colspan="2">
+							<LABEL for="nom"><ct:FWLabel key="JSP_TIERS"/></LABEL>&nbsp;
 								<ct:FWSelectorTag	name="selecteurBeneficiaire" 
 													methods="<%=viewBean.getMethodesSelectionAdresseCourrier()%>" 
 													providerApplication="pyxis" 
@@ -309,6 +312,25 @@
 													redirectUrl="<%=mainServletPath%>" />
 								&nbsp;
 							</td>
+							
+						</tr>
+						
+						
+						<tr>
+							<td valign="top">
+							</td>
+							<td valign="top" align="right" colspan="2">
+							<LABEL for="nom"><ct:FWLabel key="JSP_ADMINISTRATION"/></LABEL>&nbsp;
+								<ct:FWSelectorTag	name="selecteurAdministration" 
+													methods="<%=viewBean.getMethodesSelectionAdresseCourrier()%>" 
+													providerApplication="pyxis" 
+													providerPrefix="TI" 
+													providerAction="pyxis.tiers.administration.chercher" 
+													target="fr_main" 
+													redirectUrl="<%=mainServletPath%>" />
+								&nbsp;
+							</td>
+							
 							<td align="left" colspan="2">
 								<span class="IJAfficheText">
 									<%=viewBean.getAdresseCourrierFormatee()%>
@@ -317,7 +339,7 @@
 										name="idTierAdresseCourrier" 
 										value="<%=viewBean.getIdTierAdresseCourrier()%>" />
 							</td>
-						</tr>
+						
 						<tr>
 							<td colspan="5">
 								&nbsp;

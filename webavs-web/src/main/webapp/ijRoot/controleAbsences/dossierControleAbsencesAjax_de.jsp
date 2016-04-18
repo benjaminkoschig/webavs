@@ -130,7 +130,13 @@ var langue = "<%=languePage%>";
 											<div class="span10">
 												<strong>
 													<%=viewBean.getDetailAssure()%>
+													<%if (globaz.jade.ged.client.JadeGedFacade.isInstalled()) { %>
+													 &nbsp;/&nbsp;<A href="#" onclick="window.open('<%=servletContext%><%=("/ij")%>?userAction=<%=globaz.ij.servlet.IIJActions.ACTION_PRONONCE%>.actionAfficherDossierGed&amp;noAVSId=<%=viewBean.getNoNSS()%>&amp;serviceNameId=<%=objSession.getApplication().getProperty(globaz.externe.IPRConstantesExternes.PROPERTY_AFFICHAGE_DOSSIER_GED)%>','GED_CONSULT')" ><ct:FWLabel key="JSP_GED"/></A>
+													 <% } %>
+													 &nbsp;/&nbsp;<a href="<%=servletContext + "/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId="+viewBean.getIdTiers()%>"><ct:FWLabel key="JSP_TIERS" /></a>
+													
 												</strong>
+												
 											</div>
 										</div>
 										<div class="row-fluid">

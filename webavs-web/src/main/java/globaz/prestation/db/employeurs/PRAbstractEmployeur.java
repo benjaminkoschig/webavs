@@ -1,6 +1,8 @@
 package globaz.prestation.db.employeurs;
 
+import globaz.globall.api.BISession;
 import globaz.globall.db.BEntity;
+import globaz.globall.db.BSession;
 import globaz.globall.format.IFormatData;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.application.PRAbstractApplication;
@@ -12,12 +14,12 @@ import globaz.webavs.common.CommonProperties;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * <p>
  * Classe de base pour les employeurs, fournit des methodes pour la gestion des employeurs avec ou sans numero
  * d'affilie.
  * </p>
- * 
+ *
  * @author vre
  */
 public abstract class PRAbstractEmployeur extends BEntity {
@@ -26,7 +28,7 @@ public abstract class PRAbstractEmployeur extends BEntity {
     // -------------------------------------------------------------------------------------
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private static final String SUFFIXE_NUM_BIDON = "?";
@@ -37,10 +39,10 @@ public abstract class PRAbstractEmployeur extends BEntity {
     /**
      * dans le cas ou un numero d'affilie a ete genere par la methode {@link #loadNumero() loadNumero()}, extrait
      * l'identifiant du tiers de ce numero.
-     * 
+     *
      * @param numAffilie
      *            un numero bidon (pas de test)
-     * 
+     *
      * @return DOCUMENT ME!
      */
     public static final String extractIdTiers(String numAffilie) {
@@ -48,8 +50,8 @@ public abstract class PRAbstractEmployeur extends BEntity {
         String retValue = "";
 
         try {
-            classFormatNoAffilie = PRAbstractApplication.getApplication("APG").getProperty(
-                    CommonProperties.KEY_FORMAT_NUM_AFFILIE);
+            classFormatNoAffilie = PRAbstractApplication.getApplication("APG")
+                    .getProperty(CommonProperties.KEY_FORMAT_NUM_AFFILIE);
         } catch (Exception e) {
             e.printStackTrace();
             // on utilise la classe de formattage standard
@@ -90,10 +92,10 @@ public abstract class PRAbstractEmployeur extends BEntity {
     /**
      * retourne vrai si le numero passe en argument semble avoir ete genere au par la methode {@link #loadNumero()
      * loadNumero}.
-     * 
+     *
      * @param numAffilie
      *            DOCUMENT ME!
-     * 
+     *
      * @return la valeur courante de l'attribut numero bidon
      */
     public static final boolean isNumeroBidon(String numAffilie) {
@@ -116,7 +118,7 @@ public abstract class PRAbstractEmployeur extends BEntity {
 
     /**
      * cree une cle unique qui identifie cet employeur en se basant sur son idTiers et son idAffilie (s'il existe).
-     * 
+     *
      * @return la valeur courante de l'attribut cle unique
      */
     public String getCleUnique() {
@@ -125,7 +127,7 @@ public abstract class PRAbstractEmployeur extends BEntity {
 
     /**
      * getter pour l'attribut id affilie.
-     * 
+     *
      * @return la valeur courante de l'attribut id affilie
      */
     public String getIdAffilie() {
@@ -134,7 +136,7 @@ public abstract class PRAbstractEmployeur extends BEntity {
 
     /**
      * getter pour l'attribut id employeur.
-     * 
+     *
      * @return la valeur courante de l'attribut id employeur
      */
     public String getIdEmployeur() {
@@ -143,7 +145,7 @@ public abstract class PRAbstractEmployeur extends BEntity {
 
     /**
      * getter pour l'attribut id particularite.
-     * 
+     *
      * @return la valeur courante de l'attribut id particularite
      */
     public String getIdParticularite() {
@@ -152,7 +154,7 @@ public abstract class PRAbstractEmployeur extends BEntity {
 
     /**
      * getter pour l'attribut id tiers.
-     * 
+     *
      * @return la valeur courante de l'attribut id tiers
      */
     public String getIdTiers() {
@@ -161,16 +163,16 @@ public abstract class PRAbstractEmployeur extends BEntity {
 
     /**
      * charge cet employeur en tant qu'affilie.
-     * 
+     *
      * @return une instance de IPRAffilie ou null si idAffilie est null ou 0
-     * 
+     *
      * @throws Exception
      *             DOCUMENT ME!
      */
     public IPRAffilie loadAffilie() throws Exception {
         if ((affilie == null) && !JadeStringUtil.isIntegerEmpty(idAffilie)) {
-            affilie = PRAffiliationHelper.getEmployeurParIdAffilie(getSession(), getSession()
-                    .getCurrentThreadTransaction(), idAffilie, idTiers);
+            affilie = PRAffiliationHelper.getEmployeurParIdAffilie(getSession(),
+                    getSession().getCurrentThreadTransaction(), idAffilie, idTiers);
         }
 
         return affilie;
@@ -178,7 +180,7 @@ public abstract class PRAbstractEmployeur extends BEntity {
 
     /**
      * @return DOCUMENT ME!
-     * 
+     *
      * @throws Exception
      *             DOCUMENT ME!
      */
@@ -195,75 +197,111 @@ public abstract class PRAbstractEmployeur extends BEntity {
 
     /**
      * retourne le nom de cet employeur.
-     * 
+     *
      * <p>
      * S'il s'agit d'un affilie, retourne le nom de l'entreprise, sinon, retourne le nom du tiers.
      * </p>
-     * 
+     *
      * @return retourne le nom de l'entreprise ou le nom du tiers ou chaine vide si idTiers est null ou 0.
-     * 
+     *
      * @throws Exception
      *             DOCUMENT ME!
      */
     public String loadNom() throws Exception {
+        return loadNomEmployeur(idTiers, idAffilie, getISession());
+    }
+
+    public static String loadNomEmployeur(String idTiers, String idAffilie, BISession session) throws Exception {
         String result = "";
         if (JadeStringUtil.isIntegerEmpty(idTiers)) {
             return result;
         }
 
         if (JadeStringUtil.isIntegerEmpty(idAffilie)) {
-            result = loadTiers().getProperty(PRTiersWrapper.PROPERTY_PRENOM);
 
-            // Dans le cas ou un employeur a un nom et pas de prénom, sans ce
-            // test
-            // on obtient une chaine de caractère commencant par un espace.
-            // Cet espace ne sera pas pris en compte par ACOR, et le matching
-            // entre les situations professionnelle
-            // et le résultat de l'importation de ACOR ne pourra plus se faire.
-            if (!JadeStringUtil.isEmpty(result)) {
-                result += " ";
+            PRTiersWrapper tiers = PRTiersHelper.getTiersParId(session, idTiers);
+            if (tiers != null) {
+                result = tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
+                result += " " + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM);
+                result = result.trim();
+
+            } else {
+                tiers = PRTiersHelper.getAdministrationParId(session, idTiers);
+                if (tiers != null) {
+                    String temp = tiers.getProperty(PRTiersWrapper.PROPERTY_NOM);
+                    if (!JadeStringUtil.isBlank(temp)) {
+                        result = temp.trim();
+                    }
+                    temp = tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
+                    if (!JadeStringUtil.isBlank(temp)) {
+                        result += " " + temp.trim();
+                    }
+                    temp = tiers.getProperty(PRTiersWrapper.PROPERTY_DESIGNATION_3);
+                    if (!JadeStringUtil.isBlank(temp)) {
+                        result += " " + temp.trim();
+                    }
+                }
             }
 
-            result += loadTiers().getProperty(PRTiersWrapper.PROPERTY_NOM);
         } else {
-            result = loadAffilie().getNom();
+            IPRAffilie affilie = PRAffiliationHelper.getEmployeurParIdAffilie(session,
+                    ((BSession) session).getCurrentThreadTransaction(), idAffilie, idTiers);
 
-            // Dans le cas d'un independant, il y a aussi un prenom
-            if (!JadeStringUtil.isEmpty(result) && !JadeStringUtil.isEmpty(loadAffilie().getNoAVS())
-                    && !JadeStringUtil.isEmpty(loadTiers().getProperty(PRTiersWrapper.PROPERTY_PRENOM))) {
-                result += " " + loadTiers().getProperty(PRTiersWrapper.PROPERTY_PRENOM);
+            if (affilie != null) {
+                result = affilie.getNom();
+
+                // Dans le cas d'un independant, il y a aussi un prenom
+                if (!JadeStringUtil.isEmpty(result) && !JadeStringUtil.isEmpty(affilie.getNoAVS())) {
+
+                    PRTiersWrapper tiers = PRTiersHelper.getTiersParId(session, idTiers);
+
+                    if (tiers != null && !JadeStringUtil.isEmpty(tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM))) {
+                        result += " " + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
+                    }
+                }
             }
         }
 
         // Supression des caractères spéciaux dans les noms des employeurs, car
-        // si existant
-        // le fichier batch généré va s'interrompre, car non supporté par la
-        // commande DOS : ECHO
+        // si existant le fichier batch généré va s'interrompre, car non supporté par la commande DOS : ECHO
+        result = cleanNomEmployeur(result);
+        return result;
+    }
+
+    /**
+     * élimine les caractère spéciaux pouvant créer des problèmes</br>
+     * Supression des caractères spéciaux dans les noms des employeurs, car
+     * si existant
+     * le fichier batch généré va s'interrompre, car non supporté par la
+     * commande DOS : ECHO
+     *
+     * @param result
+     * @return
+     */
+    private static String cleanNomEmployeur(String result) {
         result = result.replace('&', ' ');
         result = result.replace('<', ' ');
         result = result.replace('>', ' ');
         result = result.replace('\'', ' ');
         result = result.replace('"', ' ');
-
         return result;
-
     }
 
     /**
      * s'il est affilie, retourne le numero d'affilie de cet employeur, sinon retourne un no bidon mais unique (base sur
      * son idTiers).
-     * 
+     *
      * <p>
      * Note: Il n'y a pas de verification du idTiers, il peut etre vide ou 0.
      * </p>
-     * 
+     *
      * <p>
      * Note: il est possible de determiner si un numero d'affilie bidon a ete cree avec cette methode en utilisant la
      * methode {@link #isNumeroBidon(String) isNumeroBidon}
      * </p>
-     * 
+     *
      * @return DOCUMENT ME!
-     * 
+     *
      * @throws Exception
      *             DOCUMENT ME!
      */
@@ -277,9 +315,9 @@ public abstract class PRAbstractEmployeur extends BEntity {
 
     /**
      * charge cet employeur en tant que tiers.
-     * 
+     *
      * @return une instance PRTiersWrapper ou null si idTiers est null ou 0.
-     * 
+     *
      * @throws Exception
      *             DOCUMENT ME!
      */
@@ -292,8 +330,23 @@ public abstract class PRAbstractEmployeur extends BEntity {
     }
 
     /**
+     * charge cet employeur en tant qu'administration.
+     *
+     * @return une instance PRTiersWrapper ou null si idTiers est null ou 0.
+     *
+     * @throws Exception
+     */
+    public PRTiersWrapper loadAdministration() throws Exception {
+        if ((tiers == null) && !JadeStringUtil.isIntegerEmpty(idTiers)) {
+            tiers = PRTiersHelper.getAdministrationParId(getISession(), idTiers);
+        }
+
+        return tiers;
+    }
+
+    /**
      * setter pour l'attribut id affilie.
-     * 
+     *
      * @param idAffilie
      *            une nouvelle valeur pour cet attribut
      */
@@ -304,7 +357,7 @@ public abstract class PRAbstractEmployeur extends BEntity {
 
     /**
      * setter pour l'attribut id employeur.
-     * 
+     *
      * @param idEmployeur
      *            une nouvelle valeur pour cet attribut
      */
@@ -314,7 +367,7 @@ public abstract class PRAbstractEmployeur extends BEntity {
 
     /**
      * setter pour l'attribut id particularite.
-     * 
+     *
      * @param idParticularite
      *            une nouvelle valeur pour cet attribut
      */
@@ -324,7 +377,7 @@ public abstract class PRAbstractEmployeur extends BEntity {
 
     /**
      * setter pour l'attribut id tiers.
-     * 
+     *
      * @param idTiers
      *            une nouvelle valeur pour cet attribut
      */

@@ -268,11 +268,12 @@ public class IJAttestations extends FWIDocumentManager {
             // + "\n" + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + " " +
             // tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM));
             crBean.setAdresse(adresse);
+            // nom du collaborateur
+            crBean.setNomCollaborateur(getSession().getUserFullName());
 
             // Ajoute le libelle CONFIDENTIEL dans l'adresse de l'entete du
             // document
             if ("true".equals(getSession().getApplication().getProperty(IJApplication.PROPERTY_DOC_CONFIDENTIEL))) {
-
                 crBean.setConfidentiel(true);
             }
 

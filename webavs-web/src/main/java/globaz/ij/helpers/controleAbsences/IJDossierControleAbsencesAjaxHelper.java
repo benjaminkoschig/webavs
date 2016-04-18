@@ -41,6 +41,7 @@ public class IJDossierControleAbsencesAjaxHelper extends FWHelper {
 
     private void chargerDetailAssure(IJDossierControleAbsencesAjaxViewBean vb) throws Exception {
         PRTiersWrapper tiers = PRTiersHelper.getTiersParId(BSessionUtil.getSessionFromThreadContext(), vb.getIdTiers());
+        vb.setNoNSS(tiers.getNSS());
         vb.setDetailAssure(RETiersForJspUtils.getInstance(BSessionUtil.getSessionFromThreadContext()).getDetailsTiers(
                 tiers, false));
     }

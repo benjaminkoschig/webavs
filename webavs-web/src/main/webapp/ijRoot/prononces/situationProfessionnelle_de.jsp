@@ -174,16 +174,33 @@ bButtonDelete = bButtonDelete && viewBean.isModifierPermis();
 						<TR>
 							<TD><LABEL for="nomEmployeur"><ct:FWLabel key="JSP_EMPLOYEUR"/></LABEL></TD>
 							<TD>
+								
+								<!--  start -->
+								
 								<INPUT type="text" name="nomEmployeur" value="<%=viewBean.getNomEmployeur()%>" class="disabled" readonly>
+								<LABEL for="nom"><ct:FWLabel key="JSP_TIERS"/></LABEL>&nbsp;
 								<ct:FWSelectorTag
 									name="selecteurEmployeur"
-
 									methods="<%=viewBean.getMethodesSelecteurEmployeur()%>"
 									providerApplication="pyxis"
 									providerPrefix="TI"
 									providerAction="pyxis.tiers.tiers.chercher"
 									target="fr_main"
 									redirectUrl="<%=mainServletPath%>"/>
+									
+									<LABEL for="nom"><ct:FWLabel key="JSP_ADMINISTRATION"/></LABEL>&nbsp;
+								<ct:FWSelectorTag
+									name="selecteurAdministration"
+									methods="<%=viewBean.getMethodesSelecteurEmployeurAdministration()%>"
+									providerApplication="pyxis"
+									providerPrefix="TI"
+									providerAction="pyxis.tiers.administration.chercher"
+									target="fr_main"
+									redirectUrl="<%=mainServletPath%>"/>
+									
+									
+									<!-- stop -->
+									
 							</TD>
 							<TD><LABEL for="idAffilie"><ct:FWLabel key="JSP_NO_AFFILIE"/></LABEL></TD>
 							<TD>

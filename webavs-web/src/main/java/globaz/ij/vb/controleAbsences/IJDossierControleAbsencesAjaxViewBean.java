@@ -21,6 +21,7 @@ public class IJDossierControleAbsencesAjaxViewBean extends
     private String idBaseIndemnisation;
     private String idPrononce;
     private String idTiers;
+    private String noNSS;
     private boolean isImposeALaSource;
 
     public IJDossierControleAbsencesAjaxViewBean() {
@@ -30,6 +31,7 @@ public class IJDossierControleAbsencesAjaxViewBean extends
         detailAssure = "";
         idBaseIndemnisation = "";
         idTiers = "";
+        noNSS = "";
     }
 
     public BSpy getCreationSpy() {
@@ -88,6 +90,14 @@ public class IJDossierControleAbsencesAjaxViewBean extends
     public JadeCrudService<IJSimpleDossierControleAbsences, IJSimpleDossierControleAbsencesSearchModel> getService()
             throws JadeApplicationServiceNotAvailableException {
         return IJServiceLocator.getDossierControleAbsenceService();
+    }
+
+    public String getNoNSS() {
+        return noNSS;
+    }
+
+    public void setNoNSS(String noNSS) {
+        this.noNSS = noNSS;
     }
 
     @Override

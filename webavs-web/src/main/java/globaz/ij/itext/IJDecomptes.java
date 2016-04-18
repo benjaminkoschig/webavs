@@ -583,6 +583,8 @@ public class IJDecomptes extends FWIDocumentManager {
                 setDocumentTitle(affilie.getNumAffilie() + " - " + affilie.getNom());
             }
 
+            // nom du collaborateur
+            crBean.setNomCollaborateur(getSession().getUserFullName());
             // création des paramètres pour l'en-tête
             try {
                 // Ajoute le libellé CONFIDENTIEL dans l'adresse de l'entête du document

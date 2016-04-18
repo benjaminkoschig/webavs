@@ -7,6 +7,8 @@ import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
+import globaz.prestation.db.employeurs.PRAbstractEmployeur;
 import globaz.prestation.interfaces.af.IPRAffilie;
 import globaz.prestation.interfaces.af.PRAffiliationHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -14,7 +16,7 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author dvh
  */
 public class IJSitProJointEmployeur extends BEntity {
@@ -23,14 +25,14 @@ public class IJSitProJointEmployeur extends BEntity {
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
     /**
      * @param schema
      *            DOCUMENT ME!
-     * 
+     *
      * @return DOCUMENT ME!
      */
     public static final String createFromClause(String schema) {
@@ -74,13 +76,13 @@ public class IJSitProJointEmployeur extends BEntity {
 
     /**
      * (non-Javadoc).
-     * 
+     *
      * @param transaction
      *            DOCUMENT ME!
-     * 
+     *
      * @throws Exception
      *             DOCUMENT ME!
-     * 
+     *
      * @see globaz.globall.db.BEntity#_afterRetrieve(globaz.globall.db.BTransaction)
      */
     @Override
@@ -95,9 +97,9 @@ public class IJSitProJointEmployeur extends BEntity {
 
     /**
      * (non-Javadoc).
-     * 
+     *
      * @return DOCUMENT ME!
-     * 
+     *
      * @see globaz.globall.db.BEntity#_allowAdd()
      */
     @Override
@@ -107,9 +109,9 @@ public class IJSitProJointEmployeur extends BEntity {
 
     /**
      * (non-Javadoc).
-     * 
+     *
      * @return DOCUMENT ME!
-     * 
+     *
      * @see globaz.globall.db.BEntity#_allowDelete()
      */
     @Override
@@ -119,9 +121,9 @@ public class IJSitProJointEmployeur extends BEntity {
 
     /**
      * (non-Javadoc).
-     * 
+     *
      * @return DOCUMENT ME!
-     * 
+     *
      * @see globaz.globall.db.BEntity#_allowUpdate()
      */
     @Override
@@ -131,12 +133,12 @@ public class IJSitProJointEmployeur extends BEntity {
 
     /**
      * (non-Javadoc).
-     * 
+     *
      * @param statement
      *            DOCUMENT ME!
-     * 
+     *
      * @return DOCUMENT ME!
-     * 
+     *
      * @see globaz.globall.db.BEntity#_getFrom(globaz.globall.db.BStatement)
      */
     @Override
@@ -150,9 +152,9 @@ public class IJSitProJointEmployeur extends BEntity {
 
     /**
      * (non-Javadoc).
-     * 
+     *
      * @return DOCUMENT ME!
-     * 
+     *
      * @see globaz.globall.db.BEntity#_getTableName()
      */
     @Override
@@ -162,13 +164,13 @@ public class IJSitProJointEmployeur extends BEntity {
 
     /**
      * (non-Javadoc).
-     * 
+     *
      * @param statement
      *            DOCUMENT ME!
-     * 
+     *
      * @throws Exception
      *             DOCUMENT ME!
-     * 
+     *
      * @see globaz.globall.db.BEntity#_readProperties(globaz.globall.db.BStatement)
      */
     @Override
@@ -182,13 +184,13 @@ public class IJSitProJointEmployeur extends BEntity {
 
     /**
      * (non-Javadoc).
-     * 
+     *
      * @param statement
      *            DOCUMENT ME!
-     * 
+     *
      * @throws Exception
      *             DOCUMENT ME!
-     * 
+     *
      * @see globaz.globall.db.BEntity#_validate(globaz.globall.db.BStatement)
      */
     @Override
@@ -198,13 +200,13 @@ public class IJSitProJointEmployeur extends BEntity {
 
     /**
      * (non-Javadoc).
-     * 
+     *
      * @param statement
      *            DOCUMENT ME!
-     * 
+     *
      * @throws Exception
      *             DOCUMENT ME!
-     * 
+     *
      * @see globaz.globall.db.BEntity#_writePrimaryKey(globaz.globall.db.BStatement)
      */
     @Override
@@ -215,13 +217,13 @@ public class IJSitProJointEmployeur extends BEntity {
 
     /**
      * (non-Javadoc).
-     * 
+     *
      * @param statement
      *            DOCUMENT ME!
-     * 
+     *
      * @throws Exception
      *             DOCUMENT ME!
-     * 
+     *
      * @see globaz.globall.db.BEntity#_writeProperties(globaz.globall.db.BStatement)
      */
     @Override
@@ -231,7 +233,7 @@ public class IJSitProJointEmployeur extends BEntity {
 
     /**
      * getter pour l'attribut id affilie.
-     * 
+     *
      * @return la valeur courante de l'attribut id affilie
      */
     public String getIdAffilie() {
@@ -240,7 +242,7 @@ public class IJSitProJointEmployeur extends BEntity {
 
     /**
      * getter pour l'attribut id situation professionnelle.
-     * 
+     *
      * @return la valeur courante de l'attribut id situation professionnelle
      */
     public String getIdSituationProfessionnelle() {
@@ -249,7 +251,7 @@ public class IJSitProJointEmployeur extends BEntity {
 
     /**
      * getter pour l'attribut id tiers.
-     * 
+     *
      * @return la valeur courante de l'attribut id tiers
      */
     public String getIdTiers() {
@@ -258,7 +260,7 @@ public class IJSitProJointEmployeur extends BEntity {
 
     /**
      * getter pour l'attribut no affilie.
-     * 
+     *
      * @return la valeur courante de l'attribut no affilie
      */
     public String getNoAffilie() {
@@ -267,24 +269,44 @@ public class IJSitProJointEmployeur extends BEntity {
 
     /**
      * getter pour l'attribut nom.
-     * 
+     *
      * @return la valeur courante de l'attribut nom
      */
     public String getNom() {
         if (nom == null) {
+            String result = null;
             try {
-                nom = PRTiersHelper.getTiersParId(getSession(), idTiers).getProperty(PRTiersWrapper.PROPERTY_NOM);
+                result = PRAbstractEmployeur.loadNomEmployeur(idTiers, idAffilie, getSession());
+
             } catch (Exception e) {
+                JadeLogger.error(this, e);
+            }
+            nom = result;
+            if (JadeStringUtil.isEmpty(nom)) {
                 nom = getSession().getLabel("NOM_INTROUVABLE");
             }
         }
-
         return nom;
     }
 
     /**
+     * charge cet employeur en tant qu'administration.
+     *
+     * @return une instance PRTiersWrapper ou null si idTiers est null ou 0.
+     *
+     * @throws Exception
+     */
+    public PRTiersWrapper loadAdministration() throws Exception {
+        PRTiersWrapper tiers = null;
+        if (!JadeStringUtil.isIntegerEmpty(idTiers)) {
+            tiers = PRTiersHelper.getAdministrationParId(getISession(), idTiers);
+        }
+        return tiers;
+    }
+
+    /**
      * getter pour l'attribut versement employeur.
-     * 
+     *
      * @return la valeur courante de l'attribut versement employeur
      */
     public Boolean getVersementEmployeur() {
@@ -293,7 +315,7 @@ public class IJSitProJointEmployeur extends BEntity {
 
     /**
      * retrouve le numero AVS d'un affilie
-     * 
+     *
      * @return le numero AVS de l'affilie ou un String vide si pas de numero AVS pour cet affilie
      */
     public String retrieveNoAVS() {

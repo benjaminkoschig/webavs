@@ -39,7 +39,6 @@ public class CAReferenceBVR {
     private static int lengthRefDebiteur = Integer.MIN_VALUE;
     private static int lengthRefFacture = Integer.MIN_VALUE;
     private static int lengthTypeFacture = Integer.MIN_VALUE;
-    private static String valNumBanque = "";
     private static final int MAX_LENGTH_NUM_AFFILIE = 13;
     private static final int MAX_LENGTH_REFERENCE = 26; // +1 du modulo de contrôle = les 27 positions
 
@@ -194,16 +193,13 @@ public class CAReferenceBVR {
      */
     private String genererNumReferenceBVR(String idRole, String idExterneRole, boolean isPlanPaiement,
             String typeSection, String idExterneSection, String idCompteAnnexe) throws Exception {
-
         // Valeur forcée dans les paramètres pour idRole
         int valIdRole = Integer.parseInt(CAApplication.getApplicationOsiris().getProperty(
                 IntReferenceBVRParser.VAL_ID_ROLE));
 
-        String sIdExterneRole = removeNotLetterNotDigit(idExterneRole.split("-")[0]);
-        long iIdExterneRole = Long.parseLong(sIdExterneRole);
-
+        String idExterneRoleUnformatted = removeNotLetterNotDigit(idExterneRole);
         String role = JadeStringUtil.rightJustifyInteger(idRole, getLengthIdRole());
-        String refDebiteur = JadeStringUtil.rightJustifyInteger(String.valueOf(iIdExterneRole), getLengthRefDebiteur());
+        String refDebiteur = JadeStringUtil.rightJustifyInteger(idExterneRoleUnformatted, getLengthRefDebiteur());
         String refFacture = JadeStringUtil.rightJustifyInteger(idExterneSection, getLengthRefFacture());
         String idTypeFacture = "";
 
@@ -239,7 +235,6 @@ public class CAReferenceBVR {
         }
 
         StringBuffer ref = new StringBuffer();
-        ref.append(getValeurNumeroBanque());
         ref.append(role);
         ref.append(JadeStringUtil.rightJustifyInteger(refDebiteur, getLengthRefDebiteur()));
         ref.append(idTypeFacture);
@@ -378,16 +373,6 @@ public class CAReferenceBVR {
                     IntReferenceBVRParser.LEN_ID_EXTERNE_ROLE));
         }
         return CAReferenceBVR.lengthRefDebiteur;
-    }
-
-    /**
-     * @return numéro provenant de la banque et devant figuré au début du numéro de référence
-     */
-    private String getValeurNumeroBanque() {
-        if (valNumBanque == null || valNumBanque.length() == 0) {
-            valNumBanque = CAApplication.getApplicationOsiris().getProperty(IntReferenceBVRParser.VAL_NUM_BANQUE, "");
-        }
-        return valNumBanque;
     }
 
     /**

@@ -1,11 +1,18 @@
 /*
  * Créé le 21 févr. 06
- * 
+ *
  * Pour changer le modèle de ce fichier généré, allez à : Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code
  * et commentaires
  */
 package globaz.ij.process;
 
+import java.text.DateFormat;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.printing.itext.exception.FWIException;
@@ -31,16 +38,10 @@ import globaz.ij.db.prononces.IJMesureJointAgentExecutionManager;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.db.prononces.IJPrononceManager;
 import globaz.ij.itext.IJFormulaires;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.prestation.tools.PRDateFormater;
-import java.text.DateFormat;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 
 public class IJGenererFormulairesProcess extends BProcess {
 
@@ -80,7 +81,7 @@ public class IJGenererFormulairesProcess extends BProcess {
 
     /**
      * Crée une nouvelle instance de la classe IJGenererFormulairesProcess.
-     * 
+     *
      * @param parent
      *            DOCUMENT ME!
      */
@@ -91,7 +92,7 @@ public class IJGenererFormulairesProcess extends BProcess {
 
     /**
      * Crée une nouvelle instance de la classe IJGenererFormulairesProcess.
-     * 
+     *
      * @param session
      *            DOCUMENT ME!
      */
@@ -102,7 +103,7 @@ public class IJGenererFormulairesProcess extends BProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BProcess#_executeCleanUp()
      */
     @Override
@@ -111,7 +112,7 @@ public class IJGenererFormulairesProcess extends BProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BProcess#_executeProcess()
      */
     @Override
@@ -180,7 +181,7 @@ public class IJGenererFormulairesProcess extends BProcess {
 
     /**
      * Création du titre du mail en fonction du resultat
-     * 
+     *
      * @param succesGenererFormulaires
      * @param succesImprimerFormulaires
      * @return
@@ -194,13 +195,13 @@ public class IJGenererFormulairesProcess extends BProcess {
                     if (hasAttachedDocuments()) {
                         updatePropertiesOfAttachedDoc(MessageFormat.format(
                                 getSession().getLabel("GENERER_FORMULAIRES_ATTESTATION_OK_IMPRESSION_OK_PERIODE"), // OK
-                                new Object[] { JACalendar.getMonthName(Integer.parseInt(moisDebut), langue),
-                                        anneeDebut, JACalendar.getMonthName(Integer.parseInt(moisFin)), anneeFin }));
+                                new Object[] { JACalendar.getMonthName(Integer.parseInt(moisDebut), langue), anneeDebut,
+                                        JACalendar.getMonthName(Integer.parseInt(moisFin)), anneeFin }));
                     } else {
                         eMailObject = MessageFormat.format(
                                 getSession().getLabel("GENERER_FORMULAIRES_ATTESTATION_OK_AUCUN_FORMULAIRES_PERIODE"), // OK
-                                new Object[] { JACalendar.getMonthName(Integer.parseInt(moisDebut), langue),
-                                        anneeDebut, JACalendar.getMonthName(Integer.parseInt(moisFin)), anneeFin });
+                                new Object[] { JACalendar.getMonthName(Integer.parseInt(moisDebut), langue), anneeDebut,
+                                        JACalendar.getMonthName(Integer.parseInt(moisFin)), anneeFin });
                     }
                 } else {
                     if (hasAttachedDocuments()) {
@@ -224,21 +225,22 @@ public class IJGenererFormulairesProcess extends BProcess {
             if (succesImprimerFormulaires) {
                 if (isForPeriode()) {
                     if (hasAttachedDocuments()) {
-                        updatePropertiesOfAttachedDoc(MessageFormat.format(
-                                getSession().getLabel("GENERER_FORMULAIRES_ATTESTATION_IMPRESSION_OK_PERIODE"), // OK
-                                new Object[] { JACalendar.getMonthName(Integer.parseInt(moisDebut), langue),
-                                        anneeDebut, JACalendar.getMonthName(Integer.parseInt(moisFin)), anneeFin }));
+                        updatePropertiesOfAttachedDoc(MessageFormat
+                                .format(getSession().getLabel("GENERER_FORMULAIRES_ATTESTATION_IMPRESSION_OK_PERIODE"), // OK
+                                        new Object[] { JACalendar.getMonthName(Integer.parseInt(moisDebut), langue),
+                                                anneeDebut, JACalendar.getMonthName(Integer.parseInt(moisFin)),
+                                                anneeFin }));
                     } else {
                         eMailObject = MessageFormat.format(
                                 getSession().getLabel("GENERER_FORMULAIRES_ATTESTATION_AUCUN_FORMULAIRES_PERIODE"), // OK
-                                new Object[] { JACalendar.getMonthName(Integer.parseInt(moisDebut), langue),
-                                        anneeDebut, JACalendar.getMonthName(Integer.parseInt(moisFin)), anneeFin });
+                                new Object[] { JACalendar.getMonthName(Integer.parseInt(moisDebut), langue), anneeDebut,
+                                        JACalendar.getMonthName(Integer.parseInt(moisFin)), anneeFin });
                     }
                 } else {
                     if (hasAttachedDocuments()) {
                         updatePropertiesOfAttachedDoc(MessageFormat.format(
                                 getSession().getLabel("GENERER_FORMULAIRES_ATTESTATION_IMPRESSION_OK"), new Object[] { // OK
-                                mois, annee }));
+                                        mois, annee }));
                     } else {
                         eMailObject = MessageFormat.format(
                                 getSession().getLabel("GENERER_FORMULAIRES_ATTESTATION_AUCUN_FORMULAIRES"), // OK
@@ -259,7 +261,7 @@ public class IJGenererFormulairesProcess extends BProcess {
 
     /**
      * decoupe la periode donnée en mois
-     * 
+     *
      * @param dateDebut
      * @param dateFin
      * @return
@@ -352,7 +354,7 @@ public class IJGenererFormulairesProcess extends BProcess {
     }
 
     /**
-     * 
+     *
      * @return
      */
     private boolean genererFormulaires(String dateDebut, String dateFin) {
@@ -423,6 +425,12 @@ public class IJGenererFormulairesProcess extends BProcess {
                             baseInd.setCsEtat(IIJBaseIndemnisation.CS_OUVERT);
                             baseInd.setCsTypeBase(IIJBaseIndemnisation.CS_NORMAL);
                             baseInd.setCsTypeIJ(prononce.getCsTypeIJ());
+
+                            if (!JadeStringUtil.isBlankOrZero(prononce.getCsCantonImpositionSource())) {
+                                baseInd.setCsCantonImpotSource(prononce.getCsCantonImpositionSource());
+                                baseInd.setTauxImpotSource(prononce.getTauxImpositionSource());
+                            }
+
                             // Modification suite à la mise en service de la demnade Inforom 492
                             baseInd.setNombreJoursExterne("1");
 
@@ -465,7 +473,8 @@ public class IJGenererFormulairesProcess extends BProcess {
 
                     // si pas de formulaire d'indemnisation pour cet agent on en
                     // cree un
-                    if ((formInd = (IJFormulaireIndemnisation) formIndManager.cursorReadNext(bstatementFormInd)) == null) {
+                    if ((formInd = (IJFormulaireIndemnisation) formIndManager
+                            .cursorReadNext(bstatementFormInd)) == null) {
 
                         formInd = new IJFormulaireIndemnisation();
                         formInd.setSession(getSession());
@@ -548,7 +557,7 @@ public class IJGenererFormulairesProcess extends BProcess {
     }
 
     /**
-     * 
+     *
      * @param cal
      * @param bSession
      * @return
@@ -579,7 +588,7 @@ public class IJGenererFormulairesProcess extends BProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BProcess#getEMailObject()
      */
     @Override
@@ -660,7 +669,7 @@ public class IJGenererFormulairesProcess extends BProcess {
     }
 
     /**
-     * 
+     *
      * @return
      */
     private boolean imprimerFormulaires(String dateDebut, String dateFin, List idsBasesIndemnisationImprimees) {
@@ -699,7 +708,8 @@ public class IJGenererFormulairesProcess extends BProcess {
                 IJMesureJointAgentExecution agentExec = null;
 
                 // pour tous les agents d'execution
-                while ((agentExec = (IJMesureJointAgentExecution) agentExecManager.cursorReadNext(bStatementAgents)) != null) {
+                while ((agentExec = (IJMesureJointAgentExecution) agentExecManager
+                        .cursorReadNext(bStatementAgents)) != null) {
 
                     // chercher base d'indemnisation pour le prononce et le mois
                     // selectionner
@@ -730,10 +740,13 @@ public class IJGenererFormulairesProcess extends BProcess {
                         // envoyer le formulaire si (dans etat CS_ATTENTE et
                         // impressionFormulairesForEtat=Non-envoyé)
                         // ou (impressionFormulairesForEtat=Tous)
-                        if (((formInd = (IJFormulaireIndemnisation) formIndManager.cursorReadNext(bstatementFormInd)) != null)
-                                && ((formInd.getEtat().equalsIgnoreCase(IIJFormulaireIndemnisation.CS_ATTENTE) && getImpressionFomulairesForEtat()
-                                        .equalsIgnoreCase(getSession().getLabel("JSP_NON_ENVOYE"))) || (getImpressionFomulairesForEtat()
-                                        .equalsIgnoreCase(getSession().getLabel("JSP_TOUS"))))) {
+                        if (((formInd = (IJFormulaireIndemnisation) formIndManager
+                                .cursorReadNext(bstatementFormInd)) != null)
+                                && ((formInd.getEtat().equalsIgnoreCase(IIJFormulaireIndemnisation.CS_ATTENTE)
+                                        && getImpressionFomulairesForEtat()
+                                                .equalsIgnoreCase(getSession().getLabel("JSP_NON_ENVOYE")))
+                                        || (getImpressionFomulairesForEtat()
+                                                .equalsIgnoreCase(getSession().getLabel("JSP_TOUS"))))) {
 
                             // Evite d'imprimer un même document à double !!!!
                             //
@@ -747,11 +760,11 @@ public class IJGenererFormulairesProcess extends BProcess {
                             // dans le
                             // document final sans ce test.
 
-                            if (!idsBasesIndemnisationImprimees.contains(baseInd.getIdBaseIndemisation()
-                                    + formInd.getIdFormulaireIndemnisation())) {
+                            if (!idsBasesIndemnisationImprimees.contains(
+                                    baseInd.getIdBaseIndemisation() + formInd.getIdFormulaireIndemnisation())) {
 
-                                idsBasesIndemnisationImprimees.add(baseInd.getIdBaseIndemisation()
-                                        + formInd.getIdFormulaireIndemnisation());
+                                idsBasesIndemnisationImprimees
+                                        .add(baseInd.getIdBaseIndemisation() + formInd.getIdFormulaireIndemnisation());
                                 try {
                                     IJFormulaires document = new IJFormulaires(getSession());
                                     System.out.println("docRef = " + formInd.getIdFormulaireIndemnisation() + " - ");
@@ -779,11 +792,9 @@ public class IJGenererFormulairesProcess extends BProcess {
                                                 formInd.setDateEnvoi(getDateSurDocument());
                                                 formInd.update(bTransaction);
                                             } catch (Exception e) {
-                                                getMemoryLog().logMessage(
-                                                        e.getMessage(),
-                                                        FWMessage.ERREUR,
-                                                        getSession().getLabel(
-                                                                "ERREUR_MISE_A_JOUR_ATTESTATION_DE_PRESENCE")
+                                                getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR,
+                                                        getSession()
+                                                                .getLabel("ERREUR_MISE_A_JOUR_ATTESTATION_DE_PRESENCE")
                                                                 + formInd.getIdFormulaireIndemnisation());
                                                 succes = false;
                                             }
@@ -840,7 +851,7 @@ public class IJGenererFormulairesProcess extends BProcess {
     }
 
     /**
-     * 
+     *
      * @return true si pour plusieurs mois
      */
     private boolean isForPeriode() {
@@ -853,7 +864,7 @@ public class IJGenererFormulairesProcess extends BProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BProcess#jobQueue()
      */
     @Override
@@ -969,7 +980,7 @@ public class IJGenererFormulairesProcess extends BProcess {
 
     /**
      * Update du tite des mails
-     * 
+     *
      * @param subject
      * @param from
      */

@@ -1247,25 +1247,39 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                     champs = new HashMap();
                     champs.putAll(headerChamps);
 
-                    String montantPlafonneeRev4 = "";
-
-                    if (is2007) {
-                        montantPlafonneeRev4 = PRAbstractApplication.getApplication(
-                                IJApplication.DEFAULT_APPLICATION_IJ).getProperty(
-                                IJApplication.PROPERTY_MONTANT_INDEMNITE_PLAFONNEE_REV_4);
+                    String montantDeterminantMax = "";
+                    if (!IJDecision.NO5EMEREVISION.equals(noRev)) {
+                        if (is2007) {
+                            montantDeterminantMax = PRAbstractApplication.getApplication(
+                                    IJApplication.DEFAULT_APPLICATION_IJ).getProperty(
+                                    IJApplication.PROPERTY_MONTANT_REVENU_DETERMINANT_MAXIMUM_REV_4);
+                        } else {
+                            montantDeterminantMax = PRAbstractApplication.getApplication(
+                                    IJApplication.DEFAULT_APPLICATION_IJ).getProperty(
+                                    IJApplication.PROPERTY_MONTANT_REVENU_DETERMINANT_MAXIMUM_REV_4_DES2008);
+                        }
                     } else {
-                        montantPlafonneeRev4 = PRAbstractApplication.getApplication(
-                                IJApplication.DEFAULT_APPLICATION_IJ).getProperty(
-                                IJApplication.PROPERTY_MONTANT_INDEMNITE_PLAFONNEE_REV_4_DES2008);
+                        // 5ème révision dès 2016
+                        if (isDes2016) {
+                            montantDeterminantMax = IJProperties.MONTANT_REVENU_DETERMINANT_MAXIMUM_REV_5_DES2016
+                                    .getValue();
+                        }
+                        // 5ème révision jusqu'à fin 2015
+                        else {
+                            montantDeterminantMax = PRAbstractApplication.getApplication(
+                                    IJApplication.DEFAULT_APPLICATION_IJ).getProperty(
+                                    IJApplication.PROPERTY_MONTANT_REVENU_DETERMINANT_MAXIMUM_REV_5);
+                        }
                     }
 
                     String montantBase = ijijCalculee.getMontantBase();
+                    String montantRevenuDeterminant = ijijCalculee.getRevenuDeterminant();
 
                     if (ijijCalculee.getCsTypeIJ().equals(IIJIJCalculee.CS_TYPE_GRANDE_IJ)) {
 
                         // Si indemnité de base >= Montant plafonne, on prend en
                         // compte le montant plafonne
-                        if (new BigDecimal(montantBase).compareTo(new BigDecimal(montantPlafonneeRev4)) >= 0) {
+                        if (new BigDecimal(montantRevenuDeterminant).compareTo(new BigDecimal(montantDeterminantMax)) >= 0) {
 
                             isIndemnitePlafonnee = true;
 

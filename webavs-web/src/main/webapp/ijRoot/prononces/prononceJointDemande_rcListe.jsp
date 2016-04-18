@@ -43,6 +43,11 @@
 				<th>
 					<ct:FWLabel key="JSP_DETAIL_REQUERANT" />
 				</th>
+				<%if (globaz.jade.ged.client.JadeGedFacade.isInstalled()) {%>
+				<th>
+					<ct:FWLabel key="JSP_GED" />
+				</th>
+				<%}%>
 				<th>
 					<ct:FWLabel key="JSP_PERIODE_PRONONCE" />
 				</th>
@@ -217,6 +222,11 @@
 <%
 	}
 %>
+			<%if (globaz.jade.ged.client.JadeGedFacade.isInstalled()) {%>
+				<td class="mtd" nowrap>
+					<A href="#" onclick="window.open('<%=servletContext%><%=("/ij")%>?userAction=<%=globaz.ij.servlet.IIJActions.ACTION_PRONONCE%>.actionAfficherDossierGed&amp;noAVSId=<%=courant.getNoAVS()%>&amp;serviceNameId=<%=viewBean.getSession().getApplication().getProperty(globaz.externe.IPRConstantesExternes.PROPERTY_AFFICHAGE_DOSSIER_GED)%>','GED_CONSULT')" ><ct:FWLabel key="JSP_GED"/></A>
+				</td>
+			<%}%>
 				<td class="mtd" nowrap onClick="<%=actionDetail%>">
 					<%=periode%>
 				</td>

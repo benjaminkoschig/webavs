@@ -120,8 +120,11 @@ function simulerPaiement(){
 						<TR>
 							<TD><ct:FWLabel key="JSP_ASSURE"/></TD>
 							<TD COLSPAN="5">
-							   <%=viewBean.getDetailRequerantListe()%>&nbsp;/&nbsp;
+							   <%=viewBean.getDetailRequerantListe()%>
+							   <%if (globaz.jade.ged.client.JadeGedFacade.isInstalled()) {%>
+							   &nbsp;/&nbsp;
 							    <A href="#" onclick="window.open('<%=servletContext%><%=("/ij")%>?userAction=<%=globaz.ij.servlet.IIJActions.ACTION_PRONONCE%>.actionAfficherDossierGed&amp;noAVSId=<%=viewBean.getNoAVS()%>&amp;serviceNameId=<%=viewBean.getSession().getApplication().getProperty(globaz.externe.IPRConstantesExternes.PROPERTY_AFFICHAGE_DOSSIER_GED)%>','GED_CONSULT')" ><ct:FWLabel key="JSP_GED"/></A>
+							    <%}%>
 							</TD>
 						</TR>
 						<TR>
@@ -334,7 +337,9 @@ function simulerPaiement(){
 											<TD style="text-align: center">
 												<IMG SRC="<%=request.getContextPath()+(!employeur.getVersementEmployeur().booleanValue()?"/images/ok.gif":"/images/erreur.gif")%>" ALT="">
 											</TD>
+											<%if (globaz.jade.ged.client.JadeGedFacade.isInstalled()) {%>
 											<TD><A  href="<%=servletContext%><%=("/ij")%>?userAction=<%=globaz.ij.servlet.IIJActions.ACTION_PRONONCE%>.actionAfficherDossierGed&amp;noAffiliationId=<%=employeur.getNoAffilie()%>&amp;noAVSId=<%=employeur.retrieveNoAVS()%>&amp;serviceNameId=<%=viewBean.getSession().getApplication().getProperty(globaz.externe.IPRConstantesExternes.PROPERTY_AFFICHAGE_DOSSIER_GED_COTI)%>" target="GED_CONSULT"><ct:FWLabel key="JSP_GED"/></A></TD>
+											<%}%>
 										</TR>
 									<% }} %>
 									</TBODY>
