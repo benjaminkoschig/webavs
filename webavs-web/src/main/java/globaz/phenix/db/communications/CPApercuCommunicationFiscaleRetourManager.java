@@ -436,11 +436,11 @@ public class CPApercuCommunicationFiscaleRetourManager extends CPCommunicationFi
                     .join("schema.CPSECON contribuable on communication.ikiret = contribuable.ikiret")
                     .join("schema.CPSEFEM conjoint on communication.ikiret = conjoint.ikiret")
                     .where()
-                    .and("contribuable.SEVNAVS like '?%' or conjoint.SEVNAVS like '?%'", likeNss)
+                    .and("contribuable.SEVNAVS like '?%' or conjoint.SEVNAVS like '?%'", likeNss, likeNss)
                     .and("(upper(contribuable.SEOFNAM) like upper('%?%') or upper(conjoint.SEOFNAM) like upper('%?%'))",
                             likeNomSedex, likeNomSedex)
                     .and("(upper(contribuable.SEFINAM) like upper('%?%') or upper(conjoint.SEFINAM) like upper('%?%'))",
-                            likePrenomSedex, likeNomSedex).toSql();
+                            likePrenomSedex, likePrenomSedex).toSql();
             if (sqlWhere.length() != 0) {
                 sqlWhere += " AND ";
             }
