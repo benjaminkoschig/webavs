@@ -24,8 +24,7 @@ public class SQLWriterTest {
 
     @Test
     public void testWhereWithParam() throws Exception {
-        assertThat(SQLWriter.write().where("field1 == ? or filed2 = ?", "param").toSql()).isEqualTo(
-                " where field1 == param or filed2 = param");
+        assertThat(SQLWriter.write().where("field1 == '?'", "param").toSql()).isEqualTo(" where field1 == 'param'");
     }
 
     @Test
@@ -70,25 +69,13 @@ public class SQLWriterTest {
 
     @Test
     public void testAndWithParams() throws Exception {
-        assertThat(SQLWriter.write().and("in (?)", "3", "2", "1").toSql()).isEqualTo(" in (3,2,1)");
+        assertThat(SQLWriter.write().and("in (?,?,?)", "3", "2", "1").toSql()).isEqualTo(" in (3,2,1)");
         assertThat(SQLWriter.write().and("in (?)", new ArrayList<String>()).toSql()).isEqualTo("");
         List<String> l = new ArrayList<String>();
         l.add("1");
         l.add("2");
         l.add("3");
-        assertThat(SQLWriter.write().and("in (?)", l).toSql()).isEqualTo(" in (1,2,3)");
-    }
-
-    @Test
-    public void testAndAddQuote() throws Exception {
-        List<String> l = null;
-        assertThat(SQLWriter.write().andAddQuote("in (?)", l).toSql()).isEqualTo("");
-        l = new ArrayList<String>();
-        l.add("1");
-        assertThat(SQLWriter.write().andAddQuote("in (?)", l).toSql()).isEqualTo(" in ('1')");
-        String s = null;
-        assertThat(SQLWriter.write().andAddQuote("in (?)", s).toSql()).isEqualTo("");
-        assertThat(SQLWriter.write().andAddQuote("in (?)", "1").toSql()).isEqualTo(" in ('1')");
+        assertThat(SQLWriter.write().and("in (?,?,?)", l).toSql()).isEqualTo(" in (1,2,3)");
     }
 
     @Test
@@ -107,30 +94,18 @@ public class SQLWriterTest {
 
     @Test
     public void testOrWithParams() throws Exception {
-        assertThat(SQLWriter.write().or("in (?)", "3", "2", "1").toSql()).isEqualTo(" in (3,2,1)");
+        assertThat(SQLWriter.write().or("in (?,?,?)", "3", "2", "1").toSql()).isEqualTo(" in (3,2,1)");
         assertThat(SQLWriter.write().or("in (?)", new ArrayList<String>()).toSql()).isEqualTo("");
         List<String> l = new ArrayList<String>();
         l.add("1");
         l.add("2");
         l.add("3");
-        assertThat(SQLWriter.write().or("in (?)", l).toSql()).isEqualTo(" in (1,2,3)");
+        assertThat(SQLWriter.write().or("in (?,?,?)", l).toSql()).isEqualTo(" in (1,2,3)");
     }
 
     @Test
-    public void testOrAddQuote() throws Exception {
-        List<String> l = null;
-        assertThat(SQLWriter.write().orAddQuote("in (?)", l).toSql()).isEqualTo("");
-        l = new ArrayList<String>();
-        l.add("1");
-        assertThat(SQLWriter.write().orAddQuote("in (?)", l).toSql()).isEqualTo(" in ('1')");
-        String s = null;
-        assertThat(SQLWriter.write().orAddQuote("in (?)", s).toSql()).isEqualTo("");
-        assertThat(SQLWriter.write().orAddQuote("in (?)", "1").toSql()).isEqualTo(" in ('1')");
-    }
-
-    @Test
-    public void testReplaceParam() throws Exception {
-        assertThat(SQLWriter.write().replaceParam("toto = ? and tata = ?", "kk")).isEqualTo("toto = kk and tata = kk");
+    public void testReplace() throws Exception {
+        assertThat(SQLWriter.write().replace("toto = ? and tata = ?", "kk", "bb")).isEqualTo("toto = kk and tata = bb");
     }
 
     @Test
@@ -155,6 +130,14 @@ public class SQLWriterTest {
     @Test
     public void testAppend() throws Exception {
         assertThat(SQLWriter.write().append("(").toSql()).isEqualTo("(");
+        assertThat(SQLWriter.write().append("(").append(")").toSql()).isEqualTo("( )");
+    }
+
+    @Test
+    public void testIsQueryEmpty() throws Exception {
+        assertThat(SQLWriter.write().isQueryEmpty()).isTrue();
+        assertThat(SQLWriter.write().append(" ").isQueryEmpty()).isFalse();
+
     }
 
 }

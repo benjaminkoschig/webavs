@@ -438,9 +438,9 @@ public class CPApercuCommunicationFiscaleRetourManager extends CPCommunicationFi
                     .where()
                     .and("contribuable.SEVNAVS like '?%' or conjoint.SEVNAVS like '?%'", likeNss)
                     .and("(upper(contribuable.SEOFNAM) like upper('%?%') or upper(conjoint.SEOFNAM) like upper('%?%'))",
-                            likeNomSedex)
+                            likeNomSedex, likeNomSedex)
                     .and("(upper(contribuable.SEFINAM) like upper('%?%') or upper(conjoint.SEFINAM) like upper('%?%'))",
-                            likePrenomSedex).toSql();
+                            likePrenomSedex, likeNomSedex).toSql();
             if (sqlWhere.length() != 0) {
                 sqlWhere += " AND ";
             }

@@ -4,15 +4,15 @@ import java.util.Collection;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * Le but de cette class est de permettre de créer une requête ou une partie de requête.
+ * Le but de cette class est de permettre la création de requête ou une partie de requête.
  * 
  * @author dma
  * 
  */
 public class SQLWriter {
 
-    private StringBuffer query = new StringBuffer();
-    private String schema;
+    private final StringBuffer query = new StringBuffer();
+    private final String schema;
     private boolean mustAddOperator = false;
 
     private SQLWriter(String schema) {
@@ -74,7 +74,7 @@ public class SQLWriter {
     /**
      * Ajoute le mot where à la requête et ajoute le fragment SQL passé en paramètres à la requête.
      * 
-     * @param sqlFragement SQl à ajouté à la requête. Le fragment devrait contenir que la condition.
+     * @param sqlFragement SQl à ajouté à la requête.
      * 
      * @return SQLWriter utilisé
      */
@@ -85,13 +85,12 @@ public class SQLWriter {
     }
 
     /**
-     * Ajoute le mot 'where' à la requête et ajoute le fragment SQL passé en paramètre à la requête. Si le param donné
-     * n'est pas vide le fragment SQL est ajoute à la requête.
+     * Ajoute le mot 'where' à la requête et ajoute le fragment SQL passé en paramètre à la requête. Si params n'est pas
+     * vide le fragment SQL est ajoute à la requête.
      * 
-     * @param sqlFragement SQl à ajouté à la requête. le caractère [?] est remplacer par le param donnée en
-     *            paramètre(Ex: nom = '?' , => nom = 'Test').
-     * @param params Paramétrées à utilisé dans le fragment SQL, si il y a plusieurs paramètres ceux-ci seront sérialisé
-     *            de la manière suivante : p1,p2,p3.
+     * @param sqlFragement SQl à ajouté à la requête. les caractères [?] sont remplacés par ordre des params donnée en
+     *            paramètre(Ex: nom = '?' and age = '?', => nom = 'Test' and age=12).
+     * @param params Paramétrées à utilisé dans le fragment SQL
      * 
      * @return SQLWriter utilisé
      */
@@ -103,94 +102,88 @@ public class SQLWriter {
     }
 
     /**
-     * Ajoute le mot 'and' à la requête.
+     * Ajoute le mot 'where' à la requête et ajoute le fragment SQL passé en paramètre à la requête. Si le param donné
+     * n'est pas vide le fragment SQL est ajoute à la requête.
      * 
-     * @param sqlFragement
+     * @param sqlFragement SQl à ajouté à la requête. le caractère [?] est remplacer par le param donnée en
+     *            paramètre(Ex: nom = '?' , => nom = 'Test').
+     * @param params Paramétrées à utilisé dans le fragment SQL.
+     * 
      * @return SQLWriter utilisé
      */
-    public SQLWriter and(String sqlFragement) {
-        addOpertor(sqlFragement, "and");
+    public SQLWriter where(String sqlFragement, Collection<String> params) {
+        this.where();
+        this.and(sqlFragement, params);
+        mustAddOperator = true;
         return this;
     }
 
     /**
-     * Ajoute le mot 'and' à la requête et le fragment SQL si les paramètres ne sont pas vide.
+     * Ajoute le mot 'and' à la requête si besoin.
      * 
-     * @param params Paramétrées à utilisé dans le fragment SQL, si il y a plusieurs paramètres ceux-ci seront sérialisé
-     *            de la manière suivante : p1,p2,p3
-     * @param sqlFragement SQl à ajouté à la requête. le caractère [?] est remplacer par le param donnée en
-     *            paramètre(Ex: nom = '?' , => nom = 'Test'). * @param sqlFragement
+     * @param fragmentSql
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter and() {
+        addOpertor("and");
+        return this;
+    }
+
+    /**
+     * Ajoute le mot 'and' à la requête si besoin et le sqlFramgment.
+     * 
+     * @param sqlFramgment
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter and(String sqlFramgment) {
+        this.and();
+        query.append(" ").append(sqlFramgment);
+        return this;
+    }
+
+    /**
+     * Ajoute le mot 'and' à la requête(si besoin) et le fragment SQL si les paramètres ne sont pas vide(null).
+     * 
+     * @param params Paramétrées à utilisé dans le fragment SQL
+     * @param sqlFragement SQl à ajouté à la requête. Les caractères [?] sont remplacés par les params donnés en
+     *            paramètre(Ex: nom = '?' , => nom = 'Test').
      * @return SQLWriter utilisé
      */
     public SQLWriter and(String sqlFragement, Integer... params) {
         if (isNotEmpty(params)) {
-            this.and(replace(sqlFragement, StringUtils.join(params, ',')));
+            this.and(replace(sqlFragement, params));
         }
         return this;
     }
 
     /**
-     * Ajoute le mot 'and' à la requête et le fragment SQL si les paramètres ne sont pas vide.
+     * Ajoute le mot 'and' à la requête(si besoin) et le fragment SQL si les paramètres ne sont pas vide(null ou chain
+     * vide).
      * 
-     * @param params Paramétrées à utilisé dans le fragment SQL, si il y a plusieurs paramètres ceux-ci seront sérialisé
-     *            de la manière suivante : p1,p2,p3
-     * @param sqlFragement SQl à ajouté à la requête. le caractère [?] est remplacer par le param donnée en
-     *            paramètre(Ex: nom = '?' , => nom = 'Test'). * @param sqlFragement
+     * @param params Paramétrées à utilisé dans le fragment SQL
+     * @param sqlFragement SQl à ajouté à la requête. Les caractères [?] sont remplacés par les params donnés en
+     *            paramètre(Ex: and('Test', '12') nom = '?' and age = ? , => nom = 'Test' and age = 12).
      * @return SQLWriter utilisé
      */
     public SQLWriter and(String sql, String... params) {
         if (isNotEmpty(params)) {
-            this.and(replace(sql, StringUtils.join(params, ',')));
+            this.and(replace(sql, params));
         }
         return this;
     }
 
     /**
-     * Ajoute le mot 'and' à la requête et le fragment SQL si les paramètres ne sont pas vide.
+     * Ajoute le mot 'and' à la requête(si besoin) et le fragment SQL si les paramètres ne sont pas vide(null ou chain
+     * vide).
      * 
-     * @param params Paramétrées à utilisé dans le fragment SQL, si il y a plusieurs paramètres ceux-ci seront sérialisé
-     *            de la manière suivante : p1,p2,p3
-     * @param sqlFragement SQl à ajouté à la requête. le caractère [?] est remplacer par le param donnée en
-     *            paramètre(Ex: nom = '?' , => nom = 'Test'). * @param sqlFragement
+     * @param params Paramétrées à utilisé dans le fragment SQL
+     * @param sqlFragement SQl à ajouté à la requête. Les caractères [?] sont remplacés par les params donnés en
+     *            paramètre(Ex: and('Test', '12') nom = '?' and age = ? , => nom = 'Test' and age = 12).
      * @return SQLWriter utilisé
      */
     public SQLWriter and(String sql, Collection<String> params) {
         if (params != null && !params.isEmpty()) {
-            this.and(replace(sql, StringUtils.join(params, ',')));
-        }
-        return this;
-    }
-
-    /**
-     * Ajoute le mot 'and' à la requête et le fragment SQL si les paramètres ne sont pas vide.
-     * Ajoute automatiquement des quotes au paramètres données
-     * 
-     * @param params Paramétrées à utilisé dans le fragment SQL, si il y a plusieurs paramètres ceux-ci seront sérialisé
-     *            de la manière suivante : 'p1','p2','p3'
-     * @param sqlFragement SQl à ajouté à la requête. le caractère [?] est remplacer par le param donnée en
-     *            paramètre(Ex: nom = ? , => nom = 'Test').
-     * @return SQLWriter utilisé
-     */
-    public SQLWriter andAddQuote(String sql, String... params) {
-        if (isNotEmpty(params)) {
-            this.and(replace(sql, toStringForIn(params)));
-        }
-        return this;
-    }
-
-    /**
-     * Ajoute le mot 'and' à la requête et le fragment SQL si les paramètres ne sont pas vide.
-     * Ajoute automatiquement des quotes au paramètres données
-     * 
-     * @param params Paramétrées à utilisé dans le fragment SQL, si il y a plusieurs paramètres ceux-ci seront sérialisé
-     *            de la manière suivante : 'p1','p2','p3'
-     * @param sqlFragement SQl à ajouté à la requête. le caractère [?] est remplacer par le param donnée en
-     *            paramètre(Ex: nom = ? , => nom = 'Test').
-     * @return SQLWriter utilisé
-     */
-    public SQLWriter andAddQuote(String sql, Collection<String> params) {
-        if (params != null && !params.isEmpty()) {
-            this.and(replace(sql, toStringForIn(params)));
+            this.and(replace(sql, params));
         }
         return this;
     }
@@ -201,101 +194,81 @@ public class SQLWriter {
      * @param sqlFragement
      * @return SQLWriter utilisé
      */
-    public SQLWriter or(String sqlFragement) {
-        addOpertor(sqlFragement, "or");
+    public SQLWriter or(String sqlFramgment) {
+        addOpertor("or");
+        query.append(" ").append(sqlFramgment);
         return this;
     }
 
     /**
-     * Ajoute le mot 'or' à la requête et le fragment SQL si les paramètres ne sont pas vide.
+     * Ajoute le mot 'or' à la requête(si besoin) et le fragment SQL si les paramètres ne sont pas vide(null).
      * 
-     * @param params Paramétrées à utilisé dans le fragment SQL, si il y a plusieurs paramètres ceux-ci seront sérialisé
-     *            de la manière suivante : p1,p2,p3
-     * @param sqlFragement SQl à ajouté à la requête. le caractère [?] est remplacer par le param donnée en
-     *            paramètre(Ex: nom = '?' , => nom = 'Test'). * @param sqlFragement
+     * @param params Paramétrées à utilisé dans le fragment SQL
+     * @param sqlFragement SQl à ajouté à la requête. Les caractères [?] sont remplacés par les params donnés en
+     *            paramètre(Ex: nom = '?' , => nom = 'Test').
      * @return SQLWriter utilisé
      */
     public SQLWriter or(String sql, Integer... params) {
         if (isNotEmpty(params)) {
-            this.or(replace(sql, StringUtils.join(params, ',')));
+            this.or(replace(sql, params));
         }
         return this;
     }
 
     /**
-     * Ajoute le mot 'or' à la requête et le fragment SQL si les paramètres ne sont pas vide.
+     * Ajoute le mot 'or' à la requête(si besoin) et le fragment SQL si les paramètres ne sont pas vide(null ou chain
+     * vide).
      * 
-     * @param params Paramétrées à utilisé dans le fragment SQL, si il y a plusieurs paramètres ceux-ci seront sérialisé
-     *            de la manière suivante : p1,p2,p3
-     * @param sqlFragement SQl à ajouté à la requête. le caractère [?] est remplacer par le param donnée en
-     *            paramètre(Ex: nom = '?' , => nom = 'Test'). * @param sqlFragement
+     * @param params Paramétrées à utilisé dans le fragment SQL
+     * @param sqlFragement SQl à ajouté à la requête. Les caractères [?] sont remplacés par les params donnés en
+     *            paramètre(Ex: and('Test', '12') nom = '?' and age = ? , => nom = 'Test' and age = 12).
      * @return SQLWriter utilisé
      */
     public SQLWriter or(String sql, String... params) {
         if (isNotEmpty(params)) {
-            this.or(replace(sql, StringUtils.join(params, ',')));
+            this.or(replace(sql, params));
         }
         return this;
     }
 
     /**
-     * Ajoute le mot 'or' à la requête et le fragment SQL si les paramètres ne sont pas vide.
+     * Ajoute le mot 'or' à la requête(si besoin) et le fragment SQL si les paramètres ne sont pas vide(null ou chain
+     * vide).
      * 
-     * @param params Paramétrées à utilisé dans le fragment SQL, si il y a plusieurs paramètres ceux-ci seront sérialisé
-     *            de la manière suivante : p1,p2,p3
-     * @param sqlFragement SQl à ajouté à la requête. le caractère [?] est remplacer par le param donnée en
-     *            paramètre(Ex: nom = '?' , => nom = 'Test'). * @param sqlFragement
+     * @param params Paramétrées à utilisé dans le fragment SQL
+     * @param sqlFragement SQl à ajouté à la requête. Les caractères [?] sont remplacés par les params donnés en
+     *            paramètre(Ex: and('Test', '12') nom = '?' and age = ? , => nom = 'Test' and age = 12).
      * @return SQLWriter utilisé
      */
     public SQLWriter or(String sql, Collection<String> params) {
         if (params != null && !params.isEmpty()) {
-            this.or(replace(sql, StringUtils.join(params, ',')));
+            this.or(replace(sql, params));
         }
         return this;
     }
 
     /**
-     * Ajoute le mot 'or' à la requête et le fragment SQL si les paramètres ne sont pas vide.
-     * Ajoute automatiquement des quotes au paramètres données
-     * 
-     * @param params Paramétrées à utilisé dans le fragment SQL, si il y a plusieurs paramètres ceux-ci seront sérialisé
-     *            de la manière suivante : 'p1','p2','p3'
-     * @param sqlFragement SQl à ajouté à la requête. le caractère [?] est remplacer par le param donnée en
-     *            paramètre(Ex: nom = ? , => nom = 'Test').
-     * @return SQLWriter utilisé
-     */
-    public SQLWriter orAddQuote(String sql, String... params) {
-        if (isNotEmpty(params)) {
-            this.or(replace(sql, toStringForIn(params)));
-        }
-        return this;
-    }
-
-    /**
-     * Ajoute le mot 'or' à la requête et le fragment SQL si les paramètres ne sont pas vide.
-     * Ajoute automatiquement des quotes au paramètres données
-     * 
-     * @param params Paramétrées à utilisé dans le fragment SQL, si il y a plusieurs paramètres ceux-ci seront sérialisé
-     *            de la manière suivante : 'p1','p2','p3'
-     * @param sqlFragement SQl à ajouté à la requête. le caractère [?] est remplacer par le param donnée en
-     *            paramètre(Ex: nom = ? , => nom = 'Test').
-     * @return SQLWriter utilisé
-     */
-    public SQLWriter orAddQuote(String sql, Collection<String> params) {
-        if (params != null && !params.isEmpty()) {
-            this.or(replace(sql, toStringForIn(params)));
-        }
-        return this;
-    }
-
-    /**
-     * Ajoute le fragment SQL à la requête.
+     * Ajoute le fragment SQL à la requête et met un espace devant le fragment SQL.
      * 
      * @param sqlFragment Le fragment SQL à ajouter à la requête.
      * @return SQLWriter utilisé
      */
     public SQLWriter append(String sqlFragment) {
+        if (!isQueryEmpty()) {
+            query.append(" ");
+        }
         query.append(sqlFragment);
+        return this;
+    }
+
+    /**
+     * Ajoute le fragment SQL à la requête et met un espace devant le fragment SQL.
+     * 
+     * @param sqlFragment Le fragment SQL à ajouter à la requête.
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter append(String sqlFragment, String... params) {
+        query.append(replace(sqlFragment, params));
         return this;
     }
 
@@ -307,10 +280,11 @@ public class SQLWriter {
      * @param condition Condition pour ajouter le fragment.
      * @return SQLWriter utilisé
      */
-    public void append(String sqlFragment, boolean condition) {
+    public SQLWriter append(boolean condition, String sqlFragment) {
         if (condition) {
-            query.append(sqlFragment);
+            this.append(sqlFragment);
         }
+        return this;
     }
 
     /**
@@ -331,7 +305,7 @@ public class SQLWriter {
      * @param condition Condition pour ajouter le fragment.
      * @return SQLWriter utilisé
      */
-    public SQLWriter join(String sql, boolean condition) {
+    public SQLWriter join(boolean condition, String sql) {
         if (condition) {
             query.append(" inner join ").append(sql);
         }
@@ -356,7 +330,7 @@ public class SQLWriter {
      * @param condition Condition pour ajouter le fragment.
      * @return SQLWriter utilisé
      */
-    public SQLWriter leftJoin(String sql, boolean condition) {
+    public SQLWriter leftJoin(boolean condition, String sql) {
         if (condition) {
             query.append(" left join ").append(sql);
         }
@@ -381,11 +355,15 @@ public class SQLWriter {
      * @param condition Condition pour ajouter le fragment.
      * @return SQLWriter utilisé
      */
-    public SQLWriter rightJoin(String sql, boolean condition) {
+    public SQLWriter rightJoin(boolean condition, String sql) {
         if (condition) {
             query.append(" right join ").append(sql);
         }
         return this;
+    }
+
+    boolean isQueryEmpty() {
+        return query.length() == 0;
     }
 
     /**
@@ -418,27 +396,48 @@ public class SQLWriter {
         return true;
     }
 
+    static String toStringForIn(Integer... params) {
+        return StringUtils.join(params, ",");
+    }
+
     static String toStringForIn(String... params) {
-        return "\'" + StringUtils.join(params, "\','") + "\'";
+        return "\'" + StringUtils.join(params, "','") + "\'";
     }
 
     static String toStringForIn(Collection<String> params) {
-        return "\'" + StringUtils.join(params, "\','") + "\'";
+        return "\'" + StringUtils.join(params, "','") + "\'";
     }
 
-    String replaceParam(String sql, String param) {
-        return replace(sql, param);
+    String replace(String sql, String... params) {
+        for (String p : params) {
+            sql = replace(sql, p);
+        }
+        return sql;
     }
 
-    private void addOpertor(String sql, String operator) {
+    String replace(String sql, Integer... params) {
+        for (Integer p : params) {
+            sql = replace(sql, String.valueOf(p));
+        }
+        return sql;
+    }
+
+    String replace(String sql, Collection<String> params) {
+        for (String p : params) {
+            sql = replace(sql, p);
+        }
+        return sql;
+    }
+
+    private void addOpertor(String operator) {
         if (mustAddOperator) {
             query.append(" ").append(operator);
         }
-        query.append(" ").append(sql);
         mustAddOperator = true;
     }
 
-    private String replace(String sql, String param) {
-        return sql.replaceAll("\\?", param);
+    private String replace(String sql, String p) {
+        return sql.replaceFirst("\\?", p);
     }
+
 }

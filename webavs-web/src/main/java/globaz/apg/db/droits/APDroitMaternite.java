@@ -7,6 +7,7 @@ import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BEntity;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BStatement;
@@ -22,6 +23,7 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.constantes.IConstantes;
+import ch.globaz.common.sql.QueryWriterExecutor;
 
 /**
  * BEntity représentant un droit maternité Créé le 9 mai 05
@@ -66,12 +68,15 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
      */
     @Override
     protected void _afterDelete(BTransaction transaction) throws Exception {
+        // a faire en premier !!!
+        int idDroitPrecedant = findIdDroitPrecedant(transaction);
+
         // effacement des situations familiales
         APSituationFamilialeMatManager mgr = new APSituationFamilialeMatManager();
 
         mgr.setSession(getSession());
         mgr.setForIdDroitMaternite(getIdDroit());
-        mgr.find(transaction);
+        mgr.find(transaction, BManager.SIZE_NOLIMIT);
 
         for (int idSitFam = 0; idSitFam < mgr.size(); ++idSitFam) {
             APSituationFamilialeMat sitFam = (APSituationFamilialeMat) mgr.get(idSitFam);
@@ -83,7 +88,7 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
         APDroitMaterniteManager dMgr = new APDroitMaterniteManager();
         dMgr.setSession(getSession());
         dMgr.setForIdDroitParent(getIdDroit());
-        dMgr.find(transaction);
+        dMgr.find(transaction, BManager.SIZE_NOLIMIT);
 
         for (int idEnfant = 0; idEnfant < dMgr.size(); ++idEnfant) {
             APDroitMaternite droitMat = (APDroitMaternite) dMgr.get(idEnfant);
@@ -97,7 +102,7 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
 
         mgrsp.setSession(getSession());
         mgrsp.setForIdDroit(getIdDroit());
-        mgrsp.find(transaction);
+        mgrsp.find(transaction, BManager.SIZE_NOLIMIT);
 
         for (int idSitPro = 0; idSitPro < mgrsp.size(); ++idSitPro) {
             APSituationProfessionnelle sitPro = (APSituationProfessionnelle) mgrsp.get(idSitPro);
@@ -111,7 +116,7 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
 
         pMgr.setSession(getSession());
         pMgr.setForIdDroit(getIdDroit());
-        pMgr.find(transaction);
+        pMgr.find(transaction, BManager.SIZE_NOLIMIT);
 
         for (int idPrestation = 0; idPrestation < pMgr.size(); ++idPrestation) {
             APPrestation prestation = (APPrestation) pMgr.get(idPrestation);
@@ -119,16 +124,18 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
             prestation.delete(transaction);
         }
 
-        // les prestations annulées du droit parent doivent être mise dans
+        // les prestations annulées du droit parent ou du frère doivent être mise dans
         // l'etat valide
         if (!JadeStringUtil.isBlankOrZero(getIdDroitParent())) {
-
             pMgr = new APPrestationManager();
 
             pMgr.setSession(getSession());
             pMgr.setForIdDroit(getIdDroitParent());
+            if (idDroitPrecedant != 0) {
+                pMgr.setForIdDroit(String.valueOf(idDroitPrecedant));
+            }
             pMgr.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_ANNULE);
-            pMgr.find(transaction);
+            pMgr.find(transaction, BManager.SIZE_NOLIMIT);
 
             boolean foundPrestation = false;
             for (int idPrestation = 0; idPrestation < pMgr.size(); ++idPrestation) {
@@ -152,6 +159,15 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
         }
 
         super._afterDelete(transaction);
+    }
+
+    private Integer findIdDroitPrecedant(BTransaction transaction) {
+        if (!JadeStringUtil.isBlankOrZero(getIdDroitParent())) {
+            return QueryWriterExecutor
+                    .query("select max(anciennePrestation.VHIDRO) from schema.APPRESP as nouvellePrestation inner join schema.APPRESP as anciennePrestation on anciennePrestation.VHIRST = nouvellePrestation.VHIPRS where nouvellePrestation.VHIDRO = ?",
+                            getIdDroit()).useTransaction(transaction).executeAggregateToInt();
+        }
+        return null;
     }
 
     @Override
