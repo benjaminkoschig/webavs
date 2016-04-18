@@ -41,8 +41,8 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="0"
-						y="57"
-						width="539"
+						y="49"
+						width="537"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -53,16 +53,16 @@
 						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="true"
 						isPrintWhenDetailOverflows="true"/>
-					<textElement textAlignment="Justified" verticalAlignment="Middle" rotation="None" isStyledText="true" lineSpacing="Single">
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font reportFont="ARIAL_NORMAL"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REMARQUE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="16"
-						y="10"
-						width="190"
+						x="10"
+						y="2"
+						width="183"
 						height="14"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -80,9 +80,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="229"
-						y="10"
-						width="80"
+						x="198"
+						y="2"
+						width="76"
 						height="14"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -101,7 +101,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="0"
-						y="10"
+						y="2"
 						width="16"
 						height="14"
 						forecolor="#000000"
@@ -120,9 +120,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="207"
-						y="10"
-						width="37"
+						x="187"
+						y="2"
+						width="31"
 						height="14"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -133,16 +133,16 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font reportFont="ARIAL_NORMAL" fontName="ARIAL.TTF"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_FRANC}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="16"
-						y="25"
-						width="190"
+						x="10"
+						y="17"
+						width="183"
 						height="14"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -160,9 +160,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="229"
-						y="25"
-						width="80"
+						x="198"
+						y="17"
+						width="76"
 						height="14"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -181,7 +181,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="0"
-						y="25"
+						y="17"
 						width="16"
 						height="14"
 						forecolor="#000000"
@@ -200,9 +200,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="207"
-						y="25"
-						width="37"
+						x="187"
+						y="17"
+						width="31"
 						height="14"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -213,16 +213,16 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font reportFont="ARIAL_NORMAL" fontName="ARIAL.TTF"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_FRANCB}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="16"
-						y="41"
-						width="190"
+						x="10"
+						y="33"
+						width="183"
 						height="14"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -240,9 +240,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="229"
-						y="41"
-						width="80"
+						x="198"
+						y="33"
+						width="76"
 						height="14"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -261,7 +261,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="0"
-						y="41"
+						y="33"
 						width="16"
 						height="14"
 						forecolor="#000000"
@@ -280,9 +280,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="207"
-						y="41"
-						width="37"
+						x="187"
+						y="33"
+						width="31"
 						height="14"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -293,16 +293,16 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font reportFont="ARIAL_NORMAL" fontName="ARIAL.TTF"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_FRANCN}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="312"
-						y="10"
-						width="226"
+						x="276"
+						y="2"
+						width="284"
 						height="14"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -320,9 +320,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="312"
-						y="25"
-						width="226"
+						x="276"
+						y="17"
+						width="284"
 						height="14"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -340,9 +340,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="312"
-						y="41"
-						width="226"
+						x="276"
+						y="33"
+						width="284"
 						height="14"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -361,9 +361,9 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="208"
-						y="25"
-						width="100"
+						x="185"
+						y="17"
+						width="88"
 						height="0"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -379,9 +379,9 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="208"
-						y="39"
-						width="100"
+						x="185"
+						y="31"
+						width="88"
 						height="0"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
