@@ -77,7 +77,7 @@ public class REInfoComplViewBean extends PRInfoCompl implements FWViewBeanInterf
      * 
      * @return Résultat du prédicat
      */
-    public boolean doPrintButtonGenereRenteVeuvePerdure() {
+    public boolean doPrintButtonGenereRenteSurvivantPerdure() {
         return isInfoCompl(IREDemandeRente.CS_TYPE_INFORMATION_COMPLEMENTAIRE_RENTE_VEUVE_PERDURE);
     }
 
@@ -123,7 +123,7 @@ public class REInfoComplViewBean extends PRInfoCompl implements FWViewBeanInterf
     public boolean doShowPrintButton() {
         // Le viewbean ne doit pas comporter d'erreur ...
         if (hasNoError() && REPmtMensuel.isValidationDecisionAuthorise(getSession())) {
-            if (doPrintButtonGenereRenteVeuvePerdure()) {
+            if (doPrintButtonGenereRenteSurvivantPerdure()) {
                 return true;
             }
 
@@ -187,6 +187,10 @@ public class REInfoComplViewBean extends PRInfoCompl implements FWViewBeanInterf
      */
     public boolean isDemandeRenteVieillesse() {
         return IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE.equals(csTypeDemandeRente);
+    }
+
+    public boolean isDemandeRenteInvalidite() {
+        return IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE.equals(csTypeDemandeRente);
     }
 
     public boolean isEtatDemandeValide() {
@@ -254,26 +258,26 @@ public class REInfoComplViewBean extends PRInfoCompl implements FWViewBeanInterf
 
     /**
      * BZ 5462<br/>
-     * Pour qu'il n'y ai la possibilité d'avoir une rente de veuve perdure qu'avec une rente vieillesse et dans un des
+     * Pour qu'il n'y ai la possibilité d'avoir une rente de survivant perdure qu'avec une rente vieillesse et dans un
+     * des
      * états suivant :<br/>
      * <li>Enregistré</li> <li>Au calcul</li> <li>Calculé</li> <li>Terminé</li><br/>
      * <br/>
      * 
-     * @return <code>true</code> s'il est autorisé d'afficher l'option "rente de veuve perdure", sinon
+     * @return <code>true</code> s'il est autorisé d'afficher l'option "rente de survivant perdure", sinon
      *         <code>false</code>
      */
-    public boolean isValideForRenteVeuvePerdure() {
-        if (isFemme()) {
-            if (isDemandeRenteVieillesse()) {
+    public boolean isValideForRenteSurvivantPerdure() {
 
-                String[] etatsAutorises = { IREDemandeRente.CS_ETAT_DEMANDE_RENTE_ENREGISTRE,
-                        IREDemandeRente.CS_ETAT_DEMANDE_RENTE_AU_CALCUL, IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE,
-                        IREDemandeRente.CS_ETAT_DEMANDE_RENTE_TERMINE };
+        if (isDemandeRenteVieillesse() || isDemandeRenteInvalidite()) {
 
-                for (String etat : etatsAutorises) {
-                    if (isEtatDemande(etat)) {
-                        return true;
-                    }
+            String[] etatsAutorises = { IREDemandeRente.CS_ETAT_DEMANDE_RENTE_ENREGISTRE,
+                    IREDemandeRente.CS_ETAT_DEMANDE_RENTE_AU_CALCUL, IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE,
+                    IREDemandeRente.CS_ETAT_DEMANDE_RENTE_TERMINE };
+
+            for (String etat : etatsAutorises) {
+                if (isEtatDemande(etat)) {
+                    return true;
                 }
             }
         }

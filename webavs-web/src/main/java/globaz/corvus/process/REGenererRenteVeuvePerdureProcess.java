@@ -8,6 +8,8 @@ import globaz.corvus.db.basescalcul.REBasesCalcul;
 import globaz.corvus.db.demandes.REDemandeRente;
 import globaz.corvus.db.demandes.REDemandeRenteJointBaseCalcul;
 import globaz.corvus.db.demandes.REDemandeRenteJointBaseCalculManager;
+import globaz.corvus.db.demandes.REPeriodeInvalidite;
+import globaz.corvus.db.demandes.REPeriodeInvaliditeManager;
 import globaz.corvus.topaz.RERenteVeuvePerdureOO;
 import globaz.corvus.utils.REGedUtils;
 import globaz.docinfo.TIDocumentInfoHelper;
@@ -55,7 +57,7 @@ public class REGenererRenteVeuvePerdureProcess extends AbstractJadeJob {
     }
 
     private void addCopiePourAgenceCommunale(JadePrintDocumentContainer allDoc, BTransaction transaction,
-            PRTiersWrapper tierAdmin) throws Exception {
+            PRTiersWrapper tierAdmin, REDemandeRente demandeRente) throws Exception {
 
         // Création de la page de garde pour la copie envoyée à la commune d'origine
         JadePublishDocumentInfo pageDeGardeInfo = JadePublishDocumentInfoProvider.newInstance(this);
@@ -80,7 +82,7 @@ public class REGenererRenteVeuvePerdureProcess extends AbstractJadeJob {
 
         RERenteVeuvePerdureOO copieRenteVeuvePerdureOO = new RERenteVeuvePerdureOO(getSession(), getDateDocument(),
                 getIdDemandeRente(), getMontantRenteVeuve(), getMontantRenteVieillesse(),
-                getDateDebutRenteVieillesse(), getIdTiers(), true);
+                getDateDebutRenteVieillesse(), getIdTiers(), true, demandeRente.getCsTypeDemandeRente());
         copieRenteVeuvePerdureOO.setAnnexes(annexes);
         copieRenteVeuvePerdureOO.setAnnexeParDefaut(isAnnexeParDefaut());
         copieRenteVeuvePerdureOO.setCopiePourAgenceAvs(tierAdmin.getIdTiers());
@@ -252,8 +254,25 @@ public class REGenererRenteVeuvePerdureProcess extends AbstractJadeJob {
             demandeRente.setIdDemandeRente(idDemandeRente);
             demandeRente.retrieve(transaction);
 
+            if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE.equals(demandeRente.getCsTypeDemandeRente())) {
+                REPeriodeInvaliditeManager periodeInvaliditeManager = new REPeriodeInvaliditeManager();
+                periodeInvaliditeManager.setSession(getSession());
+                periodeInvaliditeManager.setForIdDemandeRente(idDemandeRente);
+                periodeInvaliditeManager.setOrderBy(REPeriodeInvalidite.FIELDNAME_DATE_DEBUT_INVALIDITE);
+                periodeInvaliditeManager.find(1);
+
+                if (periodeInvaliditeManager.size() == 1) {
+                    REPeriodeInvalidite periode = (REPeriodeInvalidite) periodeInvaliditeManager.get(0);
+                    setDateDebutRenteVieillesse(periode.getDateDebutInvalidite());
+                } else {
+                    throw new Exception(getSession().getLabel("ERREUR_PERIODE_RENTE_INVALIDITE"));
+                }
+
+            }
+
             // ce document n'est imprimable que pour des rentes vieillesse
-            if (!IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE.equals(demandeRente.getCsTypeDemandeRente())) {
+            if (!IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE.equals(demandeRente.getCsTypeDemandeRente())
+                    && !IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE.equals(demandeRente.getCsTypeDemandeRente())) {
                 throw new Exception(getSession().getLabel("ERREUR_DEMANDE_RENTE_TYPE_INVALIDE"));
             }
 
@@ -322,7 +341,7 @@ public class REGenererRenteVeuvePerdureProcess extends AbstractJadeJob {
 
             RERenteVeuvePerdureOO renteVeuvePerdureOO = new RERenteVeuvePerdureOO(getSession(), getDateDocument(),
                     getIdDemandeRente(), getMontantRenteVeuve(), getMontantRenteVieillesse(),
-                    getDateDebutRenteVieillesse(), getIdTiers(), false);
+                    getDateDebutRenteVieillesse(), getIdTiers(), false, demandeRente.getCsTypeDemandeRente());
             renteVeuvePerdureOO.setAnnexes(annexes);
             renteVeuvePerdureOO.setAnnexeParDefaut(isAnnexeParDefaut());
 
@@ -334,7 +353,7 @@ public class REGenererRenteVeuvePerdureProcess extends AbstractJadeJob {
             allDoc.addDocument(renteVeuvePerdureOO.getData(), decisionDocInfo);
 
             if (inclureCopiePourAgenceCommunale) {
-                addCopiePourAgenceCommunale(allDoc, transaction, tierAdministration);
+                addCopiePourAgenceCommunale(allDoc, transaction, tierAdministration, demandeRente);
             }
 
             this.createDocuments(allDoc);

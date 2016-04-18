@@ -131,6 +131,14 @@ public class REDemandeRenteJointPrestationAccordeeViewBean extends REDemandeRent
         }
     }
 
+    public boolean isInfoComplRefus() {
+        if (IREDemandeRente.CS_TYPE_INFORMATION_COMPLEMENTAIRE_REFUS.equals(getCsTypeInfoComplementaire())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Méthode qui contrôle si la préparation de la décision peut s'effectuer
      * 

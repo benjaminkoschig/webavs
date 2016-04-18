@@ -64,6 +64,9 @@ public class REDemandeRenteJointPrestationAccordeeHtmlConverter {
             htmlTypeDemandeBuilder.append("<br/>");
             htmlTypeDemandeBuilder.append(viewBean.getSession().getLabel(
                     "JSP_DRE_R_TYPEDEMANDE_PLUS_RENTE_VEUVE_PERDURE"));
+        } else if (REDemandeRenteJointPrestationAccordeeHtmlConverter.isInfoComplRenteRefus(viewBean)) {
+            htmlTypeDemandeBuilder.append("<br/>");
+            htmlTypeDemandeBuilder.append(viewBean.getSession().getLabel("JSP_DRE_R_TYPEDEMANDE_PLUS_REFUS"));
         } else if (REDemandeRenteJointPrestationAccordeeHtmlConverter.isInfoComplDeces(viewBean)) {
             htmlTypeDemandeBuilder.append(" - ");
             htmlTypeDemandeBuilder.append(viewBean.getSession().getLabel("JSP_DRE_R_TYPE_INFO_COMPL_DECES"));
@@ -127,6 +130,14 @@ public class REDemandeRenteJointPrestationAccordeeHtmlConverter {
     private static boolean isInfoComplRenteVeuvePerdure(REDemandeRenteJointPrestationAccordeeViewBean viewBean) {
         if (IREDemandeRente.CS_TYPE_INFORMATION_COMPLEMENTAIRE_RENTE_VEUVE_PERDURE.equals(viewBean
                 .getCsTypeInfoComplementaire())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean isInfoComplRenteRefus(REDemandeRenteJointPrestationAccordeeViewBean viewBean) {
+        if (IREDemandeRente.CS_TYPE_INFORMATION_COMPLEMENTAIRE_REFUS.equals(viewBean.getCsTypeInfoComplementaire())) {
             return true;
         } else {
             return false;

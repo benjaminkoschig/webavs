@@ -6,6 +6,7 @@ import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelperOO;
 import globaz.corvus.api.codesystem.IRECatalogueTexte;
+import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.application.REApplication;
 import globaz.corvus.db.demandes.REDemandeRente;
 import globaz.framework.util.FWCurrency;
@@ -39,10 +40,11 @@ public class RERenteVeuvePerdureOO {
     private PRTiersWrapper tiers = null;
     /** Utilisé lorsqu'une copie est envoyée à la commune d'origine */
     private String tiersAdministrationCommunale;
+    private String typeDemandeRente;
 
     public RERenteVeuvePerdureOO(BSession session, String dateDocument, String idDemandeRente,
             String montantRenteVeuve, String montantRenteVieillesse, String dateDebutRenteVieillesse, String idTiers,
-            boolean copie) throws Exception {
+            boolean copie, String type) throws Exception {
         super();
 
         this.session = session;
@@ -60,6 +62,7 @@ public class RERenteVeuvePerdureOO {
         this.idDemandeRente = idDemandeRente;
         this.montantRenteVeuve = new FWCurrency(montantRenteVeuve);
         this.montantRenteVieillesse = new FWCurrency(montantRenteVieillesse);
+        typeDemandeRente = type;
 
         data = new DocumentData();
 
@@ -82,6 +85,7 @@ public class RERenteVeuvePerdureOO {
         if (this.montantRenteVeuve == null) {
             throw new NullPointerException(session.getLabel("ERREUR_RENTE_VEUVE_INTROUVABLE"));
         }
+
         if (this.montantRenteVeuve.doubleValue() < this.montantRenteVieillesse.doubleValue()) {
             throw new Exception(session
                     .getLabel("ERREUR_RENTE_VEUVE_PLUS_PETITE_RENTE_VIEILLESSE")
@@ -123,13 +127,25 @@ public class RERenteVeuvePerdureOO {
                 "titre_tiers",
                 babelContainer.getTexte(catalogueTextRenteVeuvePerdure, 1, 2).replace("{titreTiers}",
                         chargerTitreTiers()));
-        data.addData(
-                "paragraphe1",
-                babelContainer
-                        .getTexte(catalogueTextRenteVeuvePerdure, 2, 1)
-                        .replace("{montantRenteVieillesse}",
-                                montantRenteVieillesse.toStringFormat().replace(".00", ".-"))
-                        .replace("{dateDebutRenteVieillesse}", dateDebutRenteVieillesse));
+
+        if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE.equals(typeDemandeRente)) {
+            data.addData(
+                    "paragraphe1",
+                    babelContainer
+                            .getTexte(catalogueTextRenteVeuvePerdure, 2, 1)
+                            .replace("{montantRenteVieillesse}",
+                                    montantRenteVieillesse.toStringFormat().replace(".00", ".-"))
+                            .replace("{dateDebutRenteVieillesse}", dateDebutRenteVieillesse));
+        } else if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE.equals(typeDemandeRente)) {
+            data.addData(
+                    "paragraphe1",
+                    babelContainer
+                            .getTexte(catalogueTextRenteVeuvePerdure, 2, 2)
+                            .replace("{montantRentelnvalidite}",
+                                    montantRenteVieillesse.toStringFormat().replace(".00", ".-"))
+                            .replace("{dateDebutRentelnvalidite}", dateDebutRenteVieillesse));
+        }
+
         data.addData("paragraphe2_partie1", babelContainer.getTexte(catalogueTextRenteVeuvePerdure, 3, 1));
         data.addData(
                 "montant_rente_veuve",

@@ -141,7 +141,7 @@
 
 	
 
-	if (courant.isInfoComplRenteVeuvePerdure() 
+	if (courant.isInfoComplRenteVeuvePerdure() || courant.isInfoComplRefus()
 		|| IREDemandeRente.CS_TYPE_CALCUL_PREVISIONNEL.equals(courant.getCsTypeCalcul()) 
 		|| IREDemandeRente.CS_TYPE_CALCUL_BILATERALES.equals(courant.getCsTypeCalcul())) {
 		if (!IREDemandeRente.CS_ETAT_DEMANDE_RENTE_TRANSFERE.equals(courant.getCsEtatDemande()) 

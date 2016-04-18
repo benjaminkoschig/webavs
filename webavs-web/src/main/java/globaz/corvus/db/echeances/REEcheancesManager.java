@@ -27,7 +27,6 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.prestation.db.infos.PRInfoCompl;
 import globaz.prestation.tools.PRDateFormater;
-import globaz.pyxis.api.ITIPersonne;
 import globaz.pyxis.db.location.ITIAvoirGroupeLocalitesDefTable;
 import globaz.pyxis.db.tiers.ITIPersonneAvsDefTable;
 import globaz.pyxis.db.tiers.ITIPersonneDefTable;
@@ -159,10 +158,8 @@ public class REEcheancesManager extends BManager {
         for (int i = 0; i < getSize(); i++) {
             REEcheancesEntity uneEcheanceDeLaRequete = (REEcheancesEntity) get(i);
 
-            // si c'est une rente survivant, et que le tiers est une femme,
-            // on vérifie si c'est une rente de veuve perdure
-            if (ITIPersonne.CS_FEMME.equals(uneEcheanceDeLaRequete.getCsSexeTiers())
-                    && hasRenteSurvivant(uneEcheanceDeLaRequete)) {
+            // si c'est une rente survivant on vérifie si c'est une rente de veuve perdure
+            if (hasRenteSurvivant(uneEcheanceDeLaRequete)) {
                 checkRenteVeuvePerdure(uneEcheanceDeLaRequete);
             }
 

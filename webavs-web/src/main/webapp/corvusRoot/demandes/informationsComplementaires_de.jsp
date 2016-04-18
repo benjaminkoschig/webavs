@@ -79,7 +79,7 @@
 <%	if (viewBean.doPrintButtonGenereTransfertDossier()) {
 %>				$userAction.val("<%=IREActions.ACTION_GENERER_TRANSFERT_DOSSIER%>.afficher");
 				$form.submit();
-<%	} else if (viewBean.doPrintButtonGenereRenteVeuvePerdure()) {
+<%	} else if (viewBean.doPrintButtonGenereRenteSurvivantPerdure()) {
 %>				$userAction.val("<%=IREActions.ACTION_GENERER_RENTE_VEUVE_PERDURE%>.afficher");
 				$form.submit();
 <%	}%>
@@ -204,7 +204,7 @@
 %>										<ct:excludeCode code="<%=IREDemandeRente.CS_TYPE_INFORMATION_COMPLEMENTAIRE_ENVOYE%>" />
 <%
 	}
-	if (!viewBean.isValideForRenteVeuvePerdure()) {
+	if (!viewBean.isValideForRenteSurvivantPerdure()) {
 %>										<ct:excludeCode code="<%=IREDemandeRente.CS_TYPE_INFORMATION_COMPLEMENTAIRE_RENTE_VEUVE_PERDURE%>" />
 <%
 	}

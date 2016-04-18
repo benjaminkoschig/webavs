@@ -1,10 +1,12 @@
 package globaz.corvus.process;
 
 import globaz.corvus.api.demandes.IREDemandeRente;
+import globaz.corvus.dao.REDeleteCascadeDemandeAPrestationsDues;
 import globaz.corvus.db.basescalcul.REBasesCalcul;
 import globaz.corvus.db.basescalcul.REBasesCalculManager;
 import globaz.corvus.db.demandes.REDemandeRente;
 import globaz.framework.util.FWMessage;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
@@ -63,7 +65,6 @@ public class RETerminerDemandeRentePrevBilProcess extends BProcess {
 
     @Override
     protected boolean _executeProcess() throws Exception {
-        // TODO mettre un try catch avec un rollback en bas de problème
 
         try {
             REDemandeRente dm = new REDemandeRente();
@@ -100,12 +101,12 @@ public class RETerminerDemandeRentePrevBilProcess extends BProcess {
             REBasesCalculManager bcm = new REBasesCalculManager();
             bcm.setSession(getSession());
             bcm.setForIdRenteCalculee(dm.getIdRenteCalculee());
-            bcm.find(getTransaction());
+            bcm.find(getTransaction(), BManager.SIZE_NOLIMIT);
 
             for (Iterator iterator = bcm.iterator(); iterator.hasNext();) {
-                REBasesCalcul bc = (REBasesCalcul) iterator.next();
-                // Je supprime toutes les bases de calcul
-                bc.delete(getTransaction());
+                REBasesCalcul baseCalcul = (REBasesCalcul) iterator.next();
+                REDeleteCascadeDemandeAPrestationsDues.supprimerBaseCalculCascade_noCommit(getSession(),
+                        getTransaction(), baseCalcul);
             }
 
             // Je set l'état de la demande de rente à terminé
