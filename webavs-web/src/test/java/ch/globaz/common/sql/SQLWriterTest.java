@@ -4,6 +4,7 @@ import static org.fest.assertions.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
+import ch.globaz.common.business.exceptions.CommonTechnicalException;
 
 public class SQLWriterTest {
 
@@ -104,11 +105,6 @@ public class SQLWriterTest {
     }
 
     @Test
-    public void testReplace() throws Exception {
-        assertThat(SQLWriter.write().replace("toto = ? and tata = ?", "kk", "bb")).isEqualTo("toto = kk and tata = bb");
-    }
-
-    @Test
     public void testIsNotEmpty() throws Exception {
         String param = null;
         assertThat(SQLWriter.write().isNotEmpty(param)).isFalse();
@@ -134,10 +130,80 @@ public class SQLWriterTest {
     }
 
     @Test
+    public void testAppendWithParams() throws Exception {
+        assertThat(SQLWriter.write().append("select * from", null).toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().append("select * from", "").toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().append("select * from where t1 = '?'", "1").toSql()).isEqualTo(
+                "select * from where t1 = '1'");
+
+    }
+
+    @Test
     public void testIsQueryEmpty() throws Exception {
         assertThat(SQLWriter.write().isQueryEmpty()).isTrue();
         assertThat(SQLWriter.write().append(" ").isQueryEmpty()).isFalse();
 
+    }
+
+    @Test
+    public void testCountCharToReplaceZeroResult() throws Exception {
+        assertThat(SQLWriter.write().countCharToReplace("")).isZero();
+        assertThat(SQLWriter.write().countCharToReplace("select * from toto where t1=t2")).isZero();
+    }
+
+    @Test
+    public void testCountCharToReplaceWitheResult() throws Exception {
+        assertThat(SQLWriter.write().countCharToReplace("?")).isEqualTo(1);
+        assertThat(SQLWriter.write().countCharToReplace("select * from toto where t1=? and t2 = ? and t3='?'"))
+                .isEqualTo(3);
+    }
+
+    @Test
+    public void testCheckMatchParmasZeroCharToReplaceOne() throws Exception {
+        try {
+            SQLWriter.write().checkMatchParams("?", 0);
+            failBecauseExceptionWasNotThrown(CommonTechnicalException.class);
+        } catch (CommonTechnicalException e) {
+            assertThat(e)
+                    .hasMessage(
+                            "Unabeld to replace the ? with parmas. The number (1) of the ? not match with the number of parmas (0)");
+        }
+    }
+
+    @Test
+    public void testCheckMatchParmasOneCharToReplaceFor() throws Exception {
+        try {
+            SQLWriter.write().checkMatchParams("?,?,?,?)", 1);
+            failBecauseExceptionWasNotThrown(CommonTechnicalException.class);
+        } catch (CommonTechnicalException e) {
+            assertThat(e)
+                    .hasMessage(
+                            "Unabeld to replace the ? with parmas. The number (4) of the ? not match with the number of parmas (1)");
+        }
+    }
+
+    @Test
+    public void testCheckMatchParmasOneCharToReplaceZero() throws Exception {
+        try {
+            SQLWriter.write().checkMatchParams("", 1);
+            failBecauseExceptionWasNotThrown(CommonTechnicalException.class);
+        } catch (CommonTechnicalException e) {
+            assertThat(e)
+                    .hasMessage(
+                            "Unabeld to replace the ? with parmas. The number (0) of the ? not match with the number of parmas (1)");
+        }
+    }
+
+    @Test
+    public void testCheckMatchParmasTowCharToReplaceOne() throws Exception {
+        try {
+            SQLWriter.write().checkMatchParams("?", 2);
+            failBecauseExceptionWasNotThrown(CommonTechnicalException.class);
+        } catch (CommonTechnicalException e) {
+            assertThat(e)
+                    .hasMessage(
+                            "Unabeld to replace the ? with parmas. The number (1) of the ? not match with the number of parmas (2)");
+        }
     }
 
 }

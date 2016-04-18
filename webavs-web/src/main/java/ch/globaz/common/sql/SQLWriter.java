@@ -1,7 +1,10 @@
 package ch.globaz.common.sql;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
+import ch.globaz.common.business.exceptions.CommonTechnicalException;
 
 /**
  * Le but de cette class est de permettre la création de requête ou une partie de requête.
@@ -14,6 +17,8 @@ public class SQLWriter {
     private final StringBuffer query = new StringBuffer();
     private final String schema;
     private boolean mustAddOperator = false;
+    private String charToReplace = "?";
+    private List<String> paramsToUse = new ArrayList<String>();
 
     private SQLWriter(String schema) {
         this.schema = schema;
@@ -151,7 +156,10 @@ public class SQLWriter {
      */
     public SQLWriter and(String sqlFragement, Integer... params) {
         if (isNotEmpty(params)) {
-            this.and(replace(sqlFragement, params));
+            for (Integer p : params) {
+                paramsToUse.add(String.valueOf(p));
+            }
+            this.and(sqlFragement);
         }
         return this;
     }
@@ -167,7 +175,10 @@ public class SQLWriter {
      */
     public SQLWriter and(String sql, String... params) {
         if (isNotEmpty(params)) {
-            this.and(replace(sql, params));
+            for (String p : params) {
+                paramsToUse.add(p);
+            }
+            this.and(sql);
         }
         return this;
     }
@@ -183,7 +194,8 @@ public class SQLWriter {
      */
     public SQLWriter and(String sql, Collection<String> params) {
         if (params != null && !params.isEmpty()) {
-            this.and(replace(sql, params));
+            paramsToUse.addAll(params);
+            this.and(sql);
         }
         return this;
     }
@@ -208,9 +220,12 @@ public class SQLWriter {
      *            paramètre(Ex: nom = '?' , => nom = 'Test').
      * @return SQLWriter utilisé
      */
-    public SQLWriter or(String sql, Integer... params) {
+    public SQLWriter or(String sqlFragement, Integer... params) {
         if (isNotEmpty(params)) {
-            this.or(replace(sql, params));
+            for (Integer p : params) {
+                paramsToUse.add(String.valueOf(p));
+            }
+            this.or(sqlFragement);
         }
         return this;
     }
@@ -224,9 +239,12 @@ public class SQLWriter {
      *            paramètre(Ex: and('Test', '12') nom = '?' and age = ? , => nom = 'Test' and age = 12).
      * @return SQLWriter utilisé
      */
-    public SQLWriter or(String sql, String... params) {
+    public SQLWriter or(String sqlFragement, String... params) {
         if (isNotEmpty(params)) {
-            this.or(replace(sql, params));
+            for (String p : params) {
+                paramsToUse.add(String.valueOf(p));
+            }
+            this.or(sqlFragement);
         }
         return this;
     }
@@ -240,9 +258,10 @@ public class SQLWriter {
      *            paramètre(Ex: and('Test', '12') nom = '?' and age = ? , => nom = 'Test' and age = 12).
      * @return SQLWriter utilisé
      */
-    public SQLWriter or(String sql, Collection<String> params) {
+    public SQLWriter or(String sqlFragement, Collection<String> params) {
         if (params != null && !params.isEmpty()) {
-            this.or(replace(sql, params));
+            paramsToUse.addAll(params);
+            this.or(sqlFragement);
         }
         return this;
     }
@@ -262,13 +281,19 @@ public class SQLWriter {
     }
 
     /**
-     * Ajoute le fragment SQL à la requête et met un espace devant le fragment SQL.
+     * Ajoute le fragment SQL à la requête si les params donnée en paramètres ne sont pas vide.
      * 
-     * @param sqlFragment Le fragment SQL à ajouter à la requête.
+     * @param sqlFragment Le fragment SQL à ajouter.
+     * @param params Les paramètres à utiliser pour la requête.
      * @return SQLWriter utilisé
      */
     public SQLWriter append(String sqlFragment, String... params) {
-        query.append(replace(sqlFragment, params));
+        if (isNotEmpty(params)) {
+            for (String p : params) {
+                paramsToUse.add(p);
+            }
+            query.append(sqlFragment);
+        }
         return this;
     }
 
@@ -375,10 +400,13 @@ public class SQLWriter {
         if (schema != null) {
             return query.toString().replaceAll("schema.", schema);
         }
-        return query.toString();
+        return this.replace(query.toString(), paramsToUse);
     }
 
     boolean isNotEmpty(String... param) {
+        if (param == null) {
+            return false;
+        }
         if (param.length == 1) {
             if (param[0] == null || param[0].length() == 0) {
                 return false;
@@ -408,25 +436,20 @@ public class SQLWriter {
         return "\'" + StringUtils.join(params, "','") + "\'";
     }
 
-    String replace(String sql, String... params) {
+    String replace(String sqlFragment, Collection<String> params) {
+        checkMatchParams(sqlFragment, params.size());
         for (String p : params) {
-            sql = replace(sql, p);
+            sqlFragment = replace(sqlFragment, p);
         }
-        return sql;
+        return sqlFragment;
     }
 
-    String replace(String sql, Integer... params) {
-        for (Integer p : params) {
-            sql = replace(sql, String.valueOf(p));
+    void checkMatchParams(String sqlFragment, int nbParams) {
+        int nbMatch = countCharToReplace(sqlFragment);
+        if (nbMatch != nbParams) {
+            throw new CommonTechnicalException("Unabeld to replace the " + charToReplace + " with parmas. The number ("
+                    + nbMatch + ") of the " + charToReplace + " not match with the number of parmas (" + nbParams + ")");
         }
-        return sql;
-    }
-
-    String replace(String sql, Collection<String> params) {
-        for (String p : params) {
-            sql = replace(sql, p);
-        }
-        return sql;
     }
 
     private void addOpertor(String operator) {
@@ -436,8 +459,12 @@ public class SQLWriter {
         mustAddOperator = true;
     }
 
+    int countCharToReplace(String sqlFragment) {
+        return StringUtils.countMatches(sqlFragment, charToReplace);
+    }
+
     private String replace(String sql, String p) {
-        return sql.replaceFirst("\\?", p);
+        return StringUtils.replaceOnce(sql, charToReplace, p);
     }
 
 }

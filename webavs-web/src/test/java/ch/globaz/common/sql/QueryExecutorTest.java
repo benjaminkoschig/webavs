@@ -210,4 +210,5 @@ public class QueryExecutorTest {
         });
         QueryExecutor.createList(TestBean.class, result, converters);
     }
+
 }
