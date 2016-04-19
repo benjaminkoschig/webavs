@@ -91,11 +91,14 @@ function upd() {
 	}
 }
 function validate() {
-	var typeDomaine = $('#TypeDomaineAgriculteur').val();
-	var msgErreur = '<%=JavascriptEncoder.getInstance().encode(objSession.getLabel("MESSAGE_ERREUR_DOMAINE_ACTIVITE_OBLIGATOIRE"))%>';
-	if(typeDomaine==null || typeDomaine.length==0 || typeDomaine==""){
-		alert(msgErreur);
-		return;
+	var typeActivite = $('#typeActivite').val();
+	if(typeActivite == 61040001 || typeActivite == 61040002 || typeActivite == 61040006){
+		var typeDomaine = $('#domaineMontagne').val();
+		var msgErreur = '<%=JavascriptEncoder.getInstance().encode(objSession.getLabel("MESSAGE_ERREUR_DOMAINE_ACTIVITE_OBLIGATOIRE"))%>';
+		if(typeDomaine==null || typeDomaine.length==0 || typeDomaine==""){
+			alert(msgErreur);
+			return;
+		}
 	}
 	
     state = validateFields();
@@ -525,7 +528,7 @@ $(document).ready(function() {
           <ct:inputHidden name="agricoleContext"/>
           <%-- Paramètres GET nécessaires au retour (après ajout,modif,...)--%>
           <ct:inputHidden name="idDossier" defaultValue="<%=idDossier%>"/>
-   		  <ct:inputHidden name="typeActivite" defaultValue="<%=request.getParameter(\"typeActivite\") %>"/>
+   		  <ct:inputHidden id="typeActivite" name="typeActivite" defaultValue="<%=request.getParameter(\"typeActivite\") %>"/>
           <ct:inputHidden name="dossierIsNew" defaultValue="<%=request.getParameter(\"dossierIsNew\") %>"/>
           <ct:inputHidden name="fromPage" defaultValue="<%=request.getParameter(\"fromPage\") %>"/>
 			<%-- /tpl:insert --%>			

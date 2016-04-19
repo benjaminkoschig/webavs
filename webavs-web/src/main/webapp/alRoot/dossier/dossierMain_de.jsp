@@ -108,11 +108,14 @@ function upd() {
 }
 
 function validate() {
-	var typeDomaine = $('#TypeDomaineAgriculteur').val();
-	var msgErreur = '<%=JavascriptEncoder.getInstance().encode(objSession.getLabel("MESSAGE_ERREUR_DOMAINE_ACTIVITE_OBLIGATOIRE"))%>';
-	if(typeDomaine==null || typeDomaine.length==0 || typeDomaine==""){
-		alert(msgErreur);
-		return;
+	var typeActivite = $('#activiteAllocataire').val();
+	if(typeActivite == 61040001 || typeActivite == 61040002 || typeActivite == 61040006){
+		var typeDomaine = $('#TypeDomaineAgriculteur').val();
+		var msgErreur = '<%=JavascriptEncoder.getInstance().encode(objSession.getLabel("MESSAGE_ERREUR_DOMAINE_ACTIVITE_OBLIGATOIRE"))%>';
+		if(typeDomaine==null || typeDomaine.length==0 || typeDomaine==""){
+			alert(msgErreur);
+			return;
+		}	
 	}
 	
     state = validateFields();
@@ -183,15 +186,17 @@ function init(){
 
 	$('#dossierComplexModel\\.dossierModel\\.activiteAllocataire').on('change', function(){
 		var val = $(this).val();		
+		// si activité agricole
 		if (val == 61040001 || val == 61040002 || val == 61040006) {
 			$("#TypeDomaineAgriculteur").css("visibility", "visible");
 			$("#TypeDomaineAgriculteur").css("width", "80px");	
 		} else {
 			$("#TypeDomaineAgriculteur").css("visibility", "hidden");	
-			$("#TypeDomaineAgriculteur").css("width", "0px");	
-			$("#TypeDomaineAgriculteur").val("false");
+			$("#TypeDomaineAgriculteur").css("width", "0px");
+// 			$("#TypeDomaineAgriculteur").val("");
 		}
 		
+		// si activité salarié
 		if(val == 61040005){
 			$("#complementActiviteAllocataire").css("visibility", "visible");
 			$("#complementActiviteAllocataire").css("width", "80px");	
