@@ -26,7 +26,7 @@
 						x="1"
 						y="89"
 						width="533"
-						height="492"
+						height="454"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="staticText-2"
@@ -41,29 +41,27 @@
 					</textElement>
 				<text><![CDATA[La loi sur l’AVS prévoit, à son article 3, que les personnes sans activité lucrative sont soumises à l’obligation de cotiser, dès le 1er janvier de leur 21ème année.
 
-Les étudiants sont assimilés à des personnes sans activité lucrative, au sens de cette même loi. Toutefois, s’ils peuvent justifier d'un revenu <style isBold="true">sur lequel des cotisations AVS ont été prélevées</style> (salaire, allocation APG, indemnité journalière de l'AI ou de l'assurance-chômage, etc.) pour l'année 2014, ils seront exonérés partiellement si ledit revenu annuel est inférieur à Fr. 4'667.- et totalement s'il est égal ou supérieur à ce montant.
+Les étudiants sont assimilés à des personnes sans activité lucrative, au sens de cette même loi. Toutefois, s’ils peuvent justifier d'un revenu <style isBold="true">sur lequel des cotisations AVS ont été prélevées</style> (salaire, allocation APG, indemnité journalière de l'AI ou de l'assurance-chômage, etc.) pour l'année <style isBold="true">2015</style>, ils seront exonérés partiellement si ledit revenu annuel est inférieur à CHF 4'667.- et totalement s'il est égal ou supérieur à ce montant.
 
 Les étudiants étrangers au bénéfice d’un permis B séjour pour formation, ne sont pas soumis à cette disposition et seront exonérés sur présentation d’une copie dudit permis.
 
-Pour les personnes mariées, le revenu annuel du conjoint est pris en compte lorsqu'il est supérieur à Fr. 9'334.-. Le cas échéant, l’étudiant marié n’aura pas de cotisation à payer.
+Pour les personnes mariées, le revenu annuel du conjoint est pris en compte lorsqu'il est supérieur à CHF 9'334.-. Le cas échéant, l’étudiant marié n’aura pas de cotisation à payer.
 
-Les établissements d'enseignement annoncent à la caisse AVS compétente (pour Lausanne : l’agence d’assurances sociales) les coordonnées des étudiants ayant 21 ans révolus et plus et ceci, quelle que soit leur commune de domicile. 
+Les établissements d'enseignement annoncent à la caisse AVS compétente (pour le canton de Vaud : l’agence d’assurances sociales de Lausanne) les coordonnées des étudiants ayant 21 ans révolus et plus et ceci, quelle que soit leur commune de domicile. 
 
 Il appartient aux étudiants de produire les photocopies des pièces justificatives (<style isBold="true">certificat de salaire annuel</style>, décomptes de chômage ou d'indemnité journalière AI, décompte APG militaire ou maternité, etc.) pour obtenir une dispense partielle ou totale. En effet, les cotisations des assurés sont versées auprès de quatre-vingts caisses AVS réparties dans toute la Suisse et ne sont pas centralisées. Ce n'est qu'au moment de la réalisation d'un risque assuré (vieillesse, invalidité, décès) que toutes les données sont regroupées auprès d'une seule caisse afin que les prestations puissent être calculées et versées.
 
-Les justificatifs peuvent être envoyés par poste, par fax ou par courriel (<style isBold="true">sas.etudiants@lausanne.ch</style>). Ces documents ne pourront pas être restitués.<style isBold="true"> Les étudiants exonérés totalement ou partiellement ne doivent pas payer la cotisation AVS minimale de Fr. 492.- ; ils recevront un nouveau décompte ultérieurement.</style>
+Les justificatifs peuvent être envoyés par poste, par fax ou par courriel (<style isBold="true">sas.etudiants@lausanne.ch</style>) en mentionnant votre numéro d'affilié que vous trouverez sur la facture. Ces documents ne pourront pas être restitués.<style isBold="true"> Les étudiants exonérés totalement ou partiellement ne doivent pas payer la cotisation AVS minimale de CHF 492.- ; ils recevront un nouveau décompte ultérieurement.</style>
 
-Les étudiants de plus de 25 ans (dès le 1er janvier de l'année de leurs 26 ans) sont soumis aux règles applicables aux personnes sans activité lucrative (calcul des cotisations sur la base de la fortune et des revenus acquis sous forme de rentes). Si vous aviez 26 ans et plus en 2014 et que vous disposiez durant l'année précitée d'une fortune égale ou supérieure à Fr. 300'000.-, et/ou de revenus sous forme de rentes supérieurs ou égaux à Fr. 15'000.- par an, nous vous prions de bien vouloir nous en informer afin que nous puissions déterminer le montant des cotisations AVS dues en fonction de votre situation.
-
-Pour tout renseignement complémentaire, vous pouvez nous atteindre par téléphone au 021/315.11.11 ou par fax au 021/315.70.02.
+Les étudiants de plus de 25 ans (dès le 1er janvier de l'année de leurs 26 ans) sont soumis aux règles applicables aux personnes sans activité lucrative (calcul des cotisations sur la base de la fortune et des revenus acquis sous forme de rentes). Si vous aviez 26 ans et plus en 2015 et que vous disposiez durant l'année précitée d'une fortune égale ou supérieure à CHF 300'000.-, et/ou de revenus sous forme de rentes supérieurs ou égaux à CHF 15'000.- par an, nous vous prions de bien vouloir nous en informer afin que nous puissions déterminer le montant des cotisations AVS dues en fonction de votre situation.
 
 Nous vous remercions de votre collaboration.]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
 						mode="Opaque"
-						x="212"
-						y="602"
+						x="210"
+						y="552"
 						width="244"
 						height="35"
 						forecolor="#000000"
@@ -76,7 +74,7 @@ Nous vous remercions de votre collaboration.]]></text>
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<text><![CDATA[Agence d’assurances sociales 
 Lausanne]]></text>
