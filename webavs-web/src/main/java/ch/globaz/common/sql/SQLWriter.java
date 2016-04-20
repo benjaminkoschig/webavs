@@ -165,6 +165,8 @@ public class SQLWriter {
     }
 
     /**
+     * TODO que faire si certaine paramétre sont vide ???
+     * 
      * Ajoute le mot 'and' à la requête(si besoin) et le fragment SQL si les paramètres ne sont pas vide(null ou chain
      * vide).
      * 
@@ -397,22 +399,25 @@ public class SQLWriter {
      * @return le SQL si un schéma a été définit celui-ci sera automatiquement remplacé.
      */
     public String toSql() {
+        String sql = query.toString();
         if (schema != null) {
-            return query.toString().replaceAll("schema.", schema);
+            sql = sql.replaceAll("schema.", schema);
         }
-        return this.replace(query.toString(), paramsToUse);
+        return this.replace(sql, paramsToUse);
     }
 
     boolean isNotEmpty(String... param) {
         if (param == null) {
             return false;
         }
-        if (param.length == 1) {
-            if (param[0] == null || param[0].length() == 0) {
-                return false;
+
+        for (String p : param) {
+            if (!(param[0] == null || param[0].length() == 0)) {
+                return true;
             }
         }
-        return true;
+
+        return false;
     }
 
     boolean isNotEmpty(Integer... param) {

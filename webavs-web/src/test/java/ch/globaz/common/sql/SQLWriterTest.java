@@ -110,6 +110,9 @@ public class SQLWriterTest {
         assertThat(SQLWriter.write().isNotEmpty(param)).isFalse();
         assertThat(SQLWriter.write().isNotEmpty("")).isFalse();
         assertThat(SQLWriter.write().isNotEmpty("d")).isTrue();
+        assertThat(SQLWriter.write().isNotEmpty("", "", "", "")).isFalse();
+        assertThat(SQLWriter.write().isNotEmpty(param, param, param, param)).isFalse();
+
     }
 
     @Test
@@ -198,12 +201,21 @@ public class SQLWriterTest {
     public void testCheckMatchParmasTowCharToReplaceOne() throws Exception {
         try {
             SQLWriter.write().checkMatchParams("?", 2);
+
+            // SQLWriter.write("use ") + schema +";"
+
             failBecauseExceptionWasNotThrown(CommonTechnicalException.class);
         } catch (CommonTechnicalException e) {
             assertThat(e)
                     .hasMessage(
                             "Unabeld to replace the ? with parmas. The number (1) of the ? not match with the number of parmas (2)");
         }
+    }
+
+    @Test
+    public void testToSql() throws Exception {
+        assertThat(SQLWriter.write().append(" ? ", "toto").toSql()).isEqualTo(" toto ");
+        assertThat(SQLWriter.write("schema").append(" ? ", "toto").toSql()).isEqualTo(" toto ");
     }
 
 }
