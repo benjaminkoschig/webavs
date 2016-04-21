@@ -1,6 +1,7 @@
 package globaz.osiris.parser;
 
 import globaz.globall.api.GlobazSystem;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.parameters.FWParametersSystemCodeManager;
@@ -62,7 +63,7 @@ public class CAAutoComplete {
                 manager.setForIdGenreCompte(forIdGenreCompte);
             }
 
-            manager.find();
+            manager.find(BManager.SIZE_USEDEFAULT);
 
             for (int i = 0; i < manager.size(); i++) {
                 CACompteAnnexe compteAnnexe = (CACompteAnnexe) manager.get(i);
@@ -119,11 +120,11 @@ public class CAAutoComplete {
     /**
      * Recherche les caisses professionnelles en fonction du masque like (toLowerCase).
      * 
-     * @param session
-     * @param like
-     * @param idExterneRole
-     * @param idRole
-     * @return
+     * @param session Une session valide
+     * @param like Un numéro de caisse professionelle
+     * @param idExterneRole Un numéro d'affilié
+     * @param idRole Le code systeme d'un rôle
+     * @return Le code html de selection de la caisse professionnelle
      */
     public static String getCaissesProf(BSession session, String like, String idExterneRole, String idRole) {
         if (like == null) {
@@ -140,15 +141,15 @@ public class CAAutoComplete {
 
             compteAnnexe.retrieve();
 
-            if (compteAnnexe.isNew() || (compteAnnexe.getRole().getAffiliation() == null)) {
+            if (compteAnnexe.isNew() || (compteAnnexe.getRole().getAffiliation(idExterneRole) == null)) {
                 return options;
             }
 
             BSession sessionAffiliation = (BSession) GlobazSystem.getApplication("NAOS").newSession();
             session.connectSession(sessionAffiliation);
 
-            Hashtable criteres = new Hashtable();
-            criteres.put(IAFAdhesion.FIND_FOR_AFFILIATION_ID, compteAnnexe.getRole().getAffiliation()
+            Hashtable<String, String> criteres = new Hashtable<String, String>();
+            criteres.put(IAFAdhesion.FIND_FOR_AFFILIATION_ID, compteAnnexe.getRole().getAffiliation(idExterneRole)
                     .getAffiliationId());
             criteres.put(IAFAdhesion.FIND_FOR_TYPE_ADHESION, IAFAdhesion.ADHESION_CAISSE_PRINCIPALE);
 
@@ -243,7 +244,7 @@ public class CAAutoComplete {
             manager.setSession(session);
             manager.setForIdCompteAnnexe(compteAnnexe.getIdCompteAnnexe());
             manager.setLikeIdExterne(like);
-            manager.find();
+            manager.find(BManager.SIZE_USEDEFAULT);
 
             for (int i = 0; i < manager.size(); i++) {
                 CASection section = (CASection) manager.get(i);
@@ -300,7 +301,7 @@ public class CAAutoComplete {
             manager.setSession(session);
             manager.setForIdSectionPrinc(idSection);
             manager.setLikeIdExterne(like);
-            manager.find();
+            manager.find(BManager.SIZE_USEDEFAULT);
 
             for (int i = 0; i < manager.size(); i++) {
                 CASection section = (CASection) manager.get(i);
@@ -347,7 +348,7 @@ public class CAAutoComplete {
         manager.setSession(session);
         manager.setForIdSectionPrinc(idSection);
         try {
-            manager.find();
+            manager.find(BManager.SIZE_USEDEFAULT);
         } catch (Exception e) {
             // Do nothing. IDSECTIONPRINCIPALE n'existe pas =>
             // isSectionPrincipale(...) return false

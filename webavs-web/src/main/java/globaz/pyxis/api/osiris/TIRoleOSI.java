@@ -198,13 +198,8 @@ public class TIRoleOSI implements IntRole {
         return this.getAffiliation(getIdExterne());
     }
 
-    /**
-     * Renvoie l'affilié correspondant au numéro en paramètre.
-     * 
-     * @param idExterneRole
-     * @return
-     */
-    private IAFAffiliation getAffiliation(String idExterneRole) {
+    @Override
+    public IAFAffiliation getAffiliation(String idExterneRole) {
         if ((affiliation == null) || !affiliation.getAffilieNumero().equals(idExterneRole)) {
             try {
                 BSession sessionAF = (BSession) GlobazSystem.getApplication("NAOS").newSession();

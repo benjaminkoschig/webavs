@@ -56,6 +56,14 @@ public interface IntRole extends BIEntity {
     public IAFAffiliation getAffiliation();
 
     /**
+     * Renvoie l'affilié correspondant au numéro en paramètre.
+     * 
+     * @param idExterneRole Un numéro d'affilié
+     * @return Un objet affilié
+     */
+    public IAFAffiliation getAffiliation(String idExterneRole);
+
+    /**
      * Retourne la date de début d'affiliation au format jj.mm.aaaa En cas de problème retourne ""
      * 
      * @return la valeur de la propriété dateDebut
