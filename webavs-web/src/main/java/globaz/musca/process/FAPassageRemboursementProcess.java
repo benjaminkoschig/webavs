@@ -169,16 +169,20 @@ public class FAPassageRemboursementProcess extends FAGenericProcess {
     protected void fixIdForModeRecouvrement(CACompteAnnexe compteAnnexe, IFAPassage passage,
             FAEnteteFacture entFacture, Collection<?> sections, BSession session) throws Exception {
 
+        // par defaut on rembourse.
+        entFacture.setIdModeRecouvrement(FAEnteteFacture.CS_MODE_REMBOURSEMENT);
+
         if (compteAnnexe != null && !compteAnnexe.isNew()) {
             Date dateFacturation = new Date(passage.getDateFacturation());
             String annee = dateFacturation.getAnnee();
 
+            // Si il est au contentieux => on bloque le remboursement
             if (isCAContentieux(compteAnnexe, annee)) {
                 entFacture.setIdModeRecouvrement(FAEnteteFacture.CS_MODE_RETENU_COMPTE_ANNEX_BLOQUE);
             } else if (compteAnnexe.getSoldeToCurrency().isPositive()) {
                 Iterator<?> it = sections.iterator();
-                // par defaut on rembourse.
-                entFacture.setIdModeRecouvrement(FAEnteteFacture.CS_MODE_REMBOURSEMENT);
+
+                // Si section au contentieux, on bloque le remboursement
                 while (it.hasNext()) {
                     CASection section = (CASection) it.next();
                     if (isSectionEchue(section, passage, session)) {
@@ -189,10 +193,8 @@ public class FAPassageRemboursementProcess extends FAGenericProcess {
                     }
                 }
             }
-        } else {
-            // mettre l'entete en mode remboursement
-            entFacture.setIdModeRecouvrement(FAEnteteFacture.CS_MODE_REMBOURSEMENT);
         }
+
     }
 
     protected String giveDomaineForAdressePaiement() {
