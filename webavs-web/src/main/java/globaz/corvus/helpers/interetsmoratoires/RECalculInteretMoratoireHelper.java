@@ -3,8 +3,12 @@
  */
 package globaz.corvus.helpers.interetsmoratoires;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import globaz.corvus.api.basescalcul.IREPrestationDue;
 import globaz.corvus.api.creances.IRECreancier;
+import globaz.corvus.api.decisions.IREPreparationDecision;
 import globaz.corvus.db.creances.RECreanceAccordee;
 import globaz.corvus.db.creances.RECreanceAccordeeManager;
 import globaz.corvus.db.interetsmoratoires.RECalculInteretMoratoire;
@@ -17,6 +21,7 @@ import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.db.rentesaccordees.RERenteVerseeATort;
 import globaz.corvus.db.rentesaccordees.RERenteVerseeATortManager;
+import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.vb.interetsmoratoires.RECalculInteretMoratoireViewBean;
 import globaz.corvus.vb.interetsmoratoires.REPreparationInteretMoratoireViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -32,11 +37,10 @@ import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.helpers.PRAbstractHelper;
 import globaz.prestation.tools.PRDateFormater;
-import java.math.BigDecimal;
 
 /**
  * @author BSC
- * 
+ *
  */
 public class RECalculInteretMoratoireHelper extends PRAbstractHelper {
 
@@ -46,16 +50,16 @@ public class RECalculInteretMoratoireHelper extends PRAbstractHelper {
     /**
      * Preparation pour le calcul des interets moratoires. Pour chaque rente accordee: - calcul de la dette envers des
      * tiers - calcul du montant retroactif
-     * 
+     *
      * @param viewBean
      *            DOCUMENT ME!
      * @param action
      *            DOCUMENT ME!
      * @param session
      *            DOCUMENT ME!
-     * 
+     *
      * @return DOCUMENT ME!
-     * 
+     *
      * @throws Exception
      *             DOCUMENT ME!
      */
@@ -66,6 +70,26 @@ public class RECalculInteretMoratoireHelper extends PRAbstractHelper {
         RECalculInteretMoratoireViewBean cimViewBean = new RECalculInteretMoratoireViewBean();
         cimViewBean.setSession(pimViewBean.getSession());
         BITransaction transaction = null;
+
+        // Si la valeur est vide --> true
+        boolean isCalculStandard = JadeStringUtil.isBlankOrZero(pimViewBean.getCsTypePreparationDecision());
+
+        // ou si la valeur est calcul STANDARD
+        if (!isCalculStandard) {
+            isCalculStandard = IREPreparationDecision.CS_TYP_PREP_DECISION_STANDARD
+                    .equals(pimViewBean.getCsTypePreparationDecision());
+        }
+
+        // Format mm.YYYY
+        String dateDernierPmtMensuel = REPmtMensuel.getDateDernierPmt(session);
+        if (REPmtMensuel.DATE_NON_TROUVEE_POUR_DERNIER_PAIEMENT.equals(dateDernierPmtMensuel)) {
+            String message = session.getLabel("ERREUR_IMPOSSIBLE_RETROUVER_DATE_DERNIER_PAIEMENT");
+            throw new Exception(message);
+        }
+        SimpleDateFormat reader = new SimpleDateFormat("MM.yyyy");
+        SimpleDateFormat writer = new SimpleDateFormat("yyyyMM");
+        Date d1 = reader.parse(dateDernierPmtMensuel);
+        int dernierPmtMensuel = Integer.valueOf(writer.format(d1));
 
         try {
             transaction = session.newTransaction();
@@ -93,8 +117,8 @@ public class RECalculInteretMoratoireHelper extends PRAbstractHelper {
             RERenteAccJoinTblTiersJoinDemRenteManager rajdrManager = new RERenteAccJoinTblTiersJoinDemRenteManager();
             rajdrManager.setSession(session);
             rajdrManager.setForNoDemandeRente(pimViewBean.getIdDemandeRente());
-            rajdrManager.setFromDateDebutDroit(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(pimViewBean
-                    .getDateDecision()));
+            rajdrManager.setFromDateDebutDroit(
+                    PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(pimViewBean.getDateDecision()));
 
             // date prochaine facturation+1
 
@@ -105,11 +129,11 @@ public class RECalculInteretMoratoireHelper extends PRAbstractHelper {
                 RERenteAccJoinTblTiersJoinDemandeRente rajdr = (RERenteAccJoinTblTiersJoinDemandeRente) rajdrManager
                         .getEntity(i);
 
-                RECalculInteretMoratoire cim = new RECalculInteretMoratoire();
-                cim.setSession(session);
-                cim.setDateDebut(rajdr.getDateDebutDroit());
-                cim.setDateFin(rajdr.getDateFinDroit());
-                cim.setIdTiers(rajdr.getIdTiersBeneficiaire());
+                RECalculInteretMoratoire interetMoratoire = new RECalculInteretMoratoire();
+                interetMoratoire.setSession(session);
+                interetMoratoire.setDateDebut(rajdr.getDateDebutDroit());
+                interetMoratoire.setDateFin(rajdr.getDateFinDroit());
+                interetMoratoire.setIdTiers(rajdr.getIdTiersBeneficiaire());
 
                 // On cherche le montant retroactif pour cette rente accordee en
                 // additionnant
@@ -121,12 +145,12 @@ public class RECalculInteretMoratoireHelper extends PRAbstractHelper {
                 pdManager.find(transaction);
                 FWCurrency totalRetro = new FWCurrency("0.0");
                 for (int p = 0; p < pdManager.size(); p++) {
-                    REPrestationDue pd = (REPrestationDue) pdManager.getEntity(p);
+                    REPrestationDue prestationDue = (REPrestationDue) pdManager.getEntity(p);
 
-                    JADate dateDebut = new JADate(pd.getDateDebutPaiement());
+                    JADate dateDebut = new JADate(prestationDue.getDateDebutPaiement());
 
                     // on met la date de fin au dernier jour du moi
-                    JADate dateFin = new JADate(pd.getDateFinPaiement());
+                    JADate dateFin = new JADate(prestationDue.getDateFinPaiement());
                     JACalendar cal = new JACalendarGregorian();
                     dateFin = cal.addMonths(dateFin, 1);
                     dateFin = cal.addDays(dateFin, -1);
@@ -135,9 +159,8 @@ public class RECalculInteretMoratoireHelper extends PRAbstractHelper {
                     // on modifie la date de fin au mois qui precede celui de la
                     // decision
                     JADate dateDecision = new JADate(pimViewBean.getDateDecision());
-                    if (JadeStringUtil.isEmpty(pd.getDateFinPaiement())
-                            || BSessionUtil.compareDateFirstGreaterOrEqual(session, dateFin.toStr("."),
-                                    dateDecision.toStr("."))) {
+                    if (JadeStringUtil.isEmpty(prestationDue.getDateFinPaiement()) || BSessionUtil
+                            .compareDateFirstGreaterOrEqual(session, dateFin.toStr("."), dateDecision.toStr("."))) {
                         dateFin = dateDecision;
                         if (dateDecision.getMonth() == 1) {
                             dateFin.setYear(dateFin.getYear() - 1);
@@ -147,7 +170,8 @@ public class RECalculInteretMoratoireHelper extends PRAbstractHelper {
                         }
 
                         // on met a jours la date de fin
-                        cim.setDateFin(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dateFin.toStr(".")));
+                        interetMoratoire
+                                .setDateFin(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dateFin.toStr(".")));
                     }
 
                     int nbMois = getNombreDeMoisEntre(dateDebut, dateFin);
@@ -155,11 +179,11 @@ public class RECalculInteretMoratoireHelper extends PRAbstractHelper {
                         nbMois = 0;
                     }
 
-                    BigDecimal retro = new BigDecimal(pd.getMontant());
+                    BigDecimal retro = new BigDecimal(prestationDue.getMontant());
                     retro = retro.multiply(new BigDecimal(nbMois));
                     totalRetro.add(retro.doubleValue());
                 }
-                cim.setMontantRetro(totalRetro.toString());
+                interetMoratoire.setMontantRetro(totalRetro.toString());
 
                 // on cherche les dettes envers des tiers
                 RECreanceAccordeeManager caManager = new RECreanceAccordeeManager();
@@ -180,21 +204,34 @@ public class RECalculInteretMoratoireHelper extends PRAbstractHelper {
                 renteVerseeATortManager.find();
                 for (RERenteVerseeATort uneRenteVerseeATort : renteVerseeATortManager.getContainerAsList()) {
                     totalDette.add(uneRenteVerseeATort.getMontant().toString());
+
+                    // suppression du montant de l'ancienne rente a totalDette si condition réunie
+                    if (isCalculStandard) {
+                        String idRa = null;
+                        if (uneRenteVerseeATort.getIdRenteAccordeeAncienDroit() != null) {
+                            idRa = String.valueOf(uneRenteVerseeATort.getIdRenteAccordeeAncienDroit());
+                            String montant = calculerMontantADeduire(session, idRa, dernierPmtMensuel);
+                            totalDette.sub(montant);
+                        }
+                    }
                 }
 
+                //
+
+                // Création intérêts moratoire en DB et maj RA
                 if (totalDette.compareTo(totalRetro) > 0) {
-                    cim.setMontantDette(totalRetro.toString());
+                    interetMoratoire.setMontantDette(totalRetro.toString());
                 } else {
-                    cim.setMontantDette(totalDette.toString());
+                    interetMoratoire.setMontantDette(totalDette.toString());
                 }
-                cim.add(transaction);
+                interetMoratoire.add(transaction);
 
                 // mise a jours de la rente accodee
                 RERenteAccordee ra = new RERenteAccordee();
                 ra.setSession(session);
                 ra.setIdPrestationAccordee(rajdr.getIdPrestationAccordee());
                 ra.retrieve(transaction);
-                ra.setIdCalculInteretMoratoire(cim.getIdCalculInteretMoratoire());
+                ra.setIdCalculInteretMoratoire(interetMoratoire.getIdCalculInteretMoratoire());
                 ra.update(transaction);
             }
 
@@ -227,6 +264,58 @@ public class RECalculInteretMoratoireHelper extends PRAbstractHelper {
         }
 
         return cimViewBean;
+    }
+
+    /**
+     * Récupère la rente accordée (qui doit être la rente de l'ancien droit).</br>
+     * Retourne le montant de l'encienne rente si :</br>
+     * - La rente accordée n'a pas de date de fin</br>
+     * - La date de fin de la rente accordée est plus grande ou égale à la date du dernier paiement mensuel
+     * <code>dateDernierPmtMensuel</code> </br>
+     * - sinon retourne 0</br>
+     *
+     * @param session La session à utiliser
+     * @param idRenteAccordee L'id de la rente accordée de l'ancien droit
+     * @param dateDernierPmtMensuel La date du dernier paiement mensuel au format yyyyMM
+     * @return Le montant à déduire en fonction des conditions énumérés ci-dessus
+     * @throws Exception En cas d'erreurs d'accès à la persistence ou si la rente accordée n'as pas pu être récupérée
+     */
+    private String calculerMontantADeduire(BSession session, String idRenteAccordee, int dateDernierPmtMensuel)
+            throws Exception {
+        String montantADeduire = "0";
+
+        // Dans le cas de RVAT créée manuellement, il peut ne pas y avoir d'idRAAncienDroit
+        if (JadeStringUtil.isBlankOrZero(idRenteAccordee)) {
+            return montantADeduire;
+        }
+
+        RERenteAccordee renteAccordee = new RERenteAccordee();
+        renteAccordee.setSession(session);
+        renteAccordee.setIdPrestationAccordee(idRenteAccordee);
+        renteAccordee.retrieve();
+        if (renteAccordee.isNew()) {
+            throw new IllegalArgumentException("Unable to retrieve RERenteAccordee with id [" + idRenteAccordee + "]");
+        }
+
+        // Format MM.yyyy
+        String dateFinRA = renteAccordee.getDateFinDroit();
+
+        // On réalise la déduction du montant de l'ancienne rente si la date est vide
+        boolean doDeduction = JadeStringUtil.isBlankOrZero(dateFinRA);
+
+        // ou si la date de fin n'est pas vide mais égale ou plus grande que la date du dernier paiement mensuel
+        if (!doDeduction) {
+            Date a = new SimpleDateFormat("MM.yyyy").parse(dateFinRA);
+            String b = new SimpleDateFormat("yyyyMM").format(a);
+            int dateFinRAInt = Integer.valueOf(b);
+            doDeduction = dateFinRAInt >= dateDernierPmtMensuel;
+        }
+
+        if (doDeduction) {
+            montantADeduire = renteAccordee.getMontantPrestation();
+        }
+
+        return montantADeduire;
     }
 
     /**

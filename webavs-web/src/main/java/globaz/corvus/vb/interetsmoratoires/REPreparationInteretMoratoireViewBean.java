@@ -14,7 +14,7 @@ import globaz.prestation.vb.PRAbstractViewBeanSupport;
 
 /**
  * @author BSC
- * 
+ *
  */
 
 public class REPreparationInteretMoratoireViewBean extends PRAbstractViewBeanSupport implements FWViewBeanInterface {
@@ -32,6 +32,7 @@ public class REPreparationInteretMoratoireViewBean extends PRAbstractViewBeanSup
     private String idDemandeRente = "";
     private String idTierRequerant = "";
     private String testRetenue = "";
+    private String csTypePreparationDecision = "";
 
     // ~ Methods
     // -----------------------------------------------------------------------------------------
@@ -168,9 +169,17 @@ public class REPreparationInteretMoratoireViewBean extends PRAbstractViewBeanSup
         this.testRetenue = testRetenue;
     }
 
+    public String getCsTypePreparationDecision() {
+        return csTypePreparationDecision;
+    }
+
+    public void setCsTypePreparationDecision(String csTypePreparationDecision) {
+        this.csTypePreparationDecision = csTypePreparationDecision;
+    }
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.prestation.vb.PRAbstractViewBeanSupport#validate()
      */
     @Override
