@@ -710,8 +710,9 @@ public class PRTiersHelper {
     /**
      * Retourne une string de l'adresse du tribunal pour un prononce (tribunal du canton de domicile du tiers)
      */
-    public static final String getAdresseTribunalPourOfficeAI(BISession session, String csOfficeAI, String idTiers)
-            throws Exception {
+    public static final String getAdresseTribunalPourOfficeAI(BISession session, String csOfficeAI, String idTiers,
+            String dateForTribunal) throws Exception {
+
         String adresseTribunal = "";
 
         TIAdministrationAdresseManager admAdrMgr = new TIAdministrationAdresseManager();
@@ -720,7 +721,7 @@ public class PRTiersHelper {
 
         PRTiersWrapper[] officesAI = null;
         PRTiersWrapper officeAI = null;
-        officesAI = PRTiersHelper.getAdministrationForGenre(session, "509004");
+        officesAI = PRTiersHelper.getAdministrationActiveForGenre(session, "509004");
 
         if (officesAI != null) {
             for (int i = 0; i < officesAI.length; i++) {
@@ -732,8 +733,12 @@ public class PRTiersHelper {
 
         if (null != officeAI) {
             admAdrMgr.setForCantonAdministration(officeAI.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON));
-            admAdrMgr.setForDateEntreDebutEtFin(JadeDateUtil.getDMYDate(new Date()));
-            admAdrMgr.find();
+
+            if (null != dateForTribunal && JadeDateUtil.isGlobazDate(dateForTribunal)) {
+                admAdrMgr.setForDateEntreDebutEtFin(dateForTribunal);
+            }
+
+            admAdrMgr.find(BManager.SIZE_NOLIMIT);
 
             if (admAdrMgr.size() == 0) {
 
