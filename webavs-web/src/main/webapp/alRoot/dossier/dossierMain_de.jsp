@@ -746,6 +746,10 @@ var MAIN_URL = "<%=(servletContext + mainServletPath)%>";
 	                    	 	                  	 		                    
 	                    	 	if (!viewBean.getDossierAgricoleComplexModel().getAllocataireAgricoleComplexModel().getAgricoleModel().isNew()) {
 	                    	 	     typeDomaine = viewBean.getDossierAgricoleComplexModel().getAllocataireAgricoleComplexModel().getAgricoleModel().getDomaineMontagne().toString();
+	                    	 	}else{
+	                    	 	   if(viewBean.getDossierAgricoleComplexModel().getAllocataireAgricoleComplexModel().getAgricoleModel().getDomaineMontagne()!=null){
+	                    	 	      typeDomaine = viewBean.getDossierAgricoleComplexModel().getAllocataireAgricoleComplexModel().getAgricoleModel().getDomaineMontagne().toString();   
+	                    	 	   }
 	                    	 	}
 	                    	 %>
 		                    		<option value="" label='' <%=JadeStringUtil.isEmpty(typeDomaine)?"selected=selected":""%>/>
