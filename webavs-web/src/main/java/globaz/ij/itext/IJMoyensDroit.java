@@ -118,7 +118,7 @@ public class IJMoyensDroit extends FWIDocumentManager {
                     IJApplication.IS_CAISSE_CANTONALE))) {
 
                 donnesTribunal = PRTiersHelper.getAdresseTribunalPourOfficeAI(getSession(), prononce.getOfficeAI(),
-                        tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+                        tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), null);
 
             } else {
 
