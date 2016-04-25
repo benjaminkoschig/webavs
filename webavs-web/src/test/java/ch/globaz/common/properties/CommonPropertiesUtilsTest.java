@@ -50,4 +50,11 @@ public class CommonPropertiesUtilsTest {
                 "9100.2000.1000", "2450.2100.1200");
         assertThat(CommonPropertiesUtils.decoupeStringValue("9100.2000.1000,2450.2100.1200")).hasSize(2);
     }
+
+    @Test
+    public void testDecoupeStringValue5() throws Exception {
+        assertThat(CommonPropertiesUtils.decoupeStringValue("    9100.2000.1000 ,  2450.2100.1200 ")).contains(
+                "9100.2000.1000", "2450.2100.1200");
+        assertThat(CommonPropertiesUtils.decoupeStringValue("    9100.2000.1000 ,  2450.2100.1200 ")).hasSize(2);
+    }
 }

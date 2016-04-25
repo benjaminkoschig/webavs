@@ -215,7 +215,7 @@ public class CommonPropertiesUtils {
             return new ArrayList<String>();
         }
 
-        String[] decoupe = values.split(",");
+        String[] decoupe = values.trim().split("\\s*,\\s*");
         return Arrays.asList(decoupe);
     }
 }
