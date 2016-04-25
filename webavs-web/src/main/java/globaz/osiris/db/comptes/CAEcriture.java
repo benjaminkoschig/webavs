@@ -35,6 +35,9 @@ import globaz.osiris.utils.CADateUtil;
 import globaz.osiris.utils.CASursisPaiementEcheancier;
 import globaz.pyxis.api.osiris.TITiersAdministrationOSI;
 import java.math.BigDecimal;
+import java.util.List;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.osiris.business.constantes.CAProperties;
 
 /**
  * Date de création : (29.01.2002 18:29:44)
@@ -44,9 +47,6 @@ import java.math.BigDecimal;
  */
 public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     private static final String DELAI_DECLENCHEMENT_DEFAUT = "0";
     private static final String LABEL_COMPTE_ANNEXE_AUXILIAIRE = "COMPTE_ANNEXE_AUXILIAIRE";
@@ -146,28 +146,12 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         }
     }
 
-    /**
-     * Effectue des traitements après un ajout dans la BD et après avoir vidé le tampon de lecture <i>
-     * <p>
-     * A surcharger pour effectuer les traitements après l'ajout de l'entité dans la BD
-     * <p>
-     * La transaction n'est pas validée si le buffer d'erreurs n'est pas vide après l'exécution de
-     * <code>_afterAdd()</code>
-     * <p>
-     * Ne pas oublier de partager la connexion avec les autres DAB !!! </i>
-     * 
-     * @exception java.lang.Exception
-     *                en cas d'erreur fatale
-     */
     @Override
     protected void _afterAdd(globaz.globall.db.BTransaction transaction) throws java.lang.Exception {
         // mise à jour du fichier FWParametersUserValue - AJPPVUT
         _synchroValUtili();
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (26.03.2002 18:39:22)
-     */
     @Override
     protected void _afterRetrieveWithResultSet(globaz.globall.db.BStatement statement) throws Exception {
         // Laisser la supercalsse traiter l'événement
@@ -181,28 +165,12 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         _updateUnsynchronizeSigneMasseOnLoad();
     }
 
-    /**
-     * Effectue des traitements après une mise à jour dans la BD et après avoir vidé le tampon de lecture <i>
-     * <p>
-     * A surcharger pour effectuer les traitements après la mise à jour de l'entité dans la BD
-     * <p>
-     * La transaction n'est pas validée si le buffer d'erreurs n'est pas vide après l'exécution de
-     * <code>_afterUpdate()</code>
-     * <p>
-     * Ne pas oublier de partager la connexion avec les autres DAB !!! </i>
-     * 
-     * @exception java.lang.Exception
-     *                en cas d'erreur fatale
-     */
     @Override
     protected void _afterUpdate(globaz.globall.db.BTransaction transaction) throws java.lang.Exception {
         // mise à jour du fichier FWParametersUserValue - AJPPVUT
         _synchroValUtili();
     }
 
-    /**
-     * @see globaz.osiris.db.comptes.CAOperation#_beforeActiver(globaz.globall.db.BTransaction)
-     */
     @Override
     protected void _beforeActiver(BTransaction tr) {
         // Gestion de la caisse professionnelle
@@ -428,9 +396,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         }
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (30.01.2002 17:06:20)
-     */
     @Override
     protected void _beforeAdd(globaz.globall.db.BTransaction transaction) throws Exception {
         // Laisser la superclasse s'initialiser
@@ -446,9 +411,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         }
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (25.02.2002 10:55:44)
-     */
     @Override
     protected void _beforeDesactiver(BTransaction tr) {
         // ignorer les codes master
@@ -522,9 +484,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         }
     }
 
-    /**
-     * @see globaz.osiris.db.comptes.CAOperation#_createExtourne(BTransaction, String)
-     */
     @Override
     protected CAOperation _createExtourne(BTransaction transaction, String text) throws Exception {
         // Création d'un double de l'écriture
@@ -618,9 +577,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         }
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (20.03.2002 13:45:40)
-     */
     private void _synchroRubriqueFromEcran(globaz.globall.db.BTransaction transaction) {
         // Si l'id est null, on met à zéro le compte
         if (JadeStringUtil.isBlank(getIdExterneRubriqueEcran())) {
@@ -1320,12 +1276,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
 
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (05.03.2002 09:29:02)
-     * 
-     * @exception java.lang.Exception
-     *                La description de l'exception.
-     */
     @Override
     protected void _writeProperties(globaz.globall.db.BStatement statement) throws java.lang.Exception {
 
@@ -1412,23 +1362,12 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         return grp;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (25.02.2002 17:38:57)
-     * 
-     * @return globaz.osiris.interfaceext.comptes.IntSlave
-     */
     protected APISlave createSlave() {
         CAEcriture ecr = new CAEcriture();
         ecr.dupliquer(this);
         return ecr;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (13.02.2002 10:40:36)
-     * 
-     * @param oper
-     *            globaz.osiris.db.comptes.CAEcriture
-     */
     public void dupliquer(CAEcriture oper) {
 
         // Dupliquer les paramètres de la superclasse
@@ -1482,11 +1421,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         return codeDebitCredit;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (07.02.2002 14:02:32)
-     * 
-     * @return Boolean
-     */
     public String getCodeDebitCreditEcran() {
 
         // Si pas encore chargé
@@ -1521,11 +1455,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         }
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (30.01.2002 07:44:40)
-     * 
-     * @return globaz.osiris.db.comptes.CARubrique
-     */
     @Override
     public CARubrique getCompte() {
         if (JadeStringUtil.isIntegerEmpty(getIdCompte())) {
@@ -1548,11 +1477,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         return rubrique;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (30.01.2002 07:49:45)
-     * 
-     * @return globaz.osiris.db.comptes.CARubrique
-     */
     public CARubrique getContrepartie() {
         if (JadeStringUtil.isIntegerEmpty(getIdContrepartie())) {
             return null;
@@ -1575,13 +1499,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         return contrepartie;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (11.03.2002 13:00:19)
-     * 
-     * @return String
-     * @param codeISOL
-     *            String
-     */
     @Override
     public String getDescription(String codeISOLangue) {
         String s = new String();
@@ -1617,21 +1534,11 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
 
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (29.01.2002 18:32:03)
-     * 
-     * @return String
-     */
     @Override
     public String getIdCompte() {
         return idCompte;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (20.03.2002 15:55:06)
-     * 
-     * @return String
-     */
     public String getIdCompteEcran() {
         return idCompteEcran;
     }
@@ -1641,11 +1548,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         return idContrepartie;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (20.03.2002 13:44:59)
-     * 
-     * @return String
-     */
     public String getIdExterneRubriqueEcran() {
         if (loadIdExterneRubriqueEcran) {
             loadIdExterneRubriqueEcran = false;
@@ -1659,47 +1561,22 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         return idExterneRubriqueEcran;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (07.05.2003 17:20:22)
-     * 
-     * @return String
-     */
     public String getImAnneeCotisation() {
         return getAnneeCotisation();
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (07.05.2003 17:19:22)
-     * 
-     * @return globaz.osiris.api.APICompteCourant
-     */
     public APICompteCourant getImCompteCourant() {
         return getCompteCourant();
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (07.05.2003 17:20:04)
-     * 
-     * @return String
-     */
     public String getImDate() {
         return getDate();
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (07.05.2003 17:19:45)
-     * 
-     * @return String
-     */
     public String getImMontant() {
         return getMontant();
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (07.05.2003 17:20:55)
-     * 
-     * @return globaz.osiris.api.APIRubrique
-     */
     public APIRubrique getImRubrique(BITransaction transaction) {
         return getCompte();
     }
@@ -1755,11 +1632,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         return JANumberFormatter.deQuote(_masseSignée);
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (07.02.2002 14:07:15)
-     * 
-     * @return String
-     */
     public String getMasseEcran() {
 
         // Si masse pas encore chargée
@@ -1800,11 +1672,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         return masseEcran;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (13.06.2002 16:11:54)
-     * 
-     * @return globaz.framework.util.FWCurrency
-     */
     public FWCurrency getMasseToCurrency() {
         return new FWCurrency(getMasse());
     }
@@ -1841,11 +1708,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         return JANumberFormatter.deQuote(montantSigne);
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (07.02.2002 14:04:36)
-     * 
-     * @return String
-     */
     public String getMontantEcran() {
 
         // Si montant écran pas encore chargé
@@ -1875,11 +1737,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         return JANumberFormatter.deQuote(montantEcran);
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (31.05.2002 08:51:38)
-     * 
-     * @return globaz.framework.util.FWCurrency
-     */
     public FWCurrency getMontantToCurrency() {
         return new FWCurrency(getMontant());
     }
@@ -1895,20 +1752,10 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         return piece;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (26.03.2002 16:24:25)
-     * 
-     * @return Boolean
-     */
     public Boolean getRechercheRubriqueEcran() {
         return rechercheRubriqueEcran;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (15.04.2003 10:57:55)
-     * 
-     * @return String
-     */
     public String getSigneCodeDebitCredit() {
         if (getSession().getIdLangueISO().equalsIgnoreCase("DE")) {
             if (getCodeDebitCreditEcran().equalsIgnoreCase("D")) {
@@ -1963,11 +1810,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         }
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (07.05.2003 17:18:58)
-     * 
-     * @return boolean
-     */
     public boolean isImForcerNonSoumis() {
         // Si non actif, pas soumis
         if (!getEstActive().booleanValue()) {
@@ -1978,20 +1820,34 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         }
     }
 
-    /**
-     * @see globaz.osiris.db.comptes.CAOperation#isOperationExtournable()
-     */
     @Override
     public boolean isOperationExtournable() {
         CARubrique rub = getCompte();
-        // On n'extourne pas les compensations
-        if ((rub != null)
-                && (rub.getNatureRubrique().equals(APIRubrique.COMPTE_COMPENSATION) || rub.getNatureRubrique().equals(
-                        APIRubrique.COMPTE_FINANCIER))) {
-            return false;
-        } else {
+
+        if (rub == null) {
             return true;
         }
+
+        // On n'extourne pas les compensations
+        if (rub.getNatureRubrique().equals(APIRubrique.COMPTE_COMPENSATION)
+                || rub.getNatureRubrique().equals(APIRubrique.COMPTE_FINANCIER)) {
+            return false;
+        }
+
+        // On n'extourne par les rubriques définies dans la propriétées
+        try {
+            List<String> rubList = CAProperties.RUBRIQUE_SANS_EXTOURNE.getListValue();
+
+            if (rubList.contains(rub.getIdExterne())) {
+                return false;
+            }
+
+        } catch (PropertiesException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Retourne true par défaut.
+        return true;
     }
 
     /**
@@ -2070,22 +1926,10 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         // _addError(null, getSession().getLabel("5133"));
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (07.02.2002 14:09:42)
-     * 
-     * @param newCodeDebitCreditEcran
-     *            Boolean
-     */
     public void setCodeDebitCreditEcran(String newCodeDebitCreditEcran) {
         codeDebitCreditEcran = newCodeDebitCreditEcran;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (29.01.2002 18:34:23)
-     * 
-     * @param newIdCompte
-     *            String
-     */
     @Override
     public void setIdCompte(String newIdCompte) {
         // if (isUpdatable()) {
@@ -2095,12 +1939,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         // _addError(null, getSession().getLabel("5133"));
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (20.03.2002 15:55:06)
-     * 
-     * @param newIdCompteEcran
-     *            String
-     */
     public void setIdCompteEcran(String newIdCompteEcran) {
         idCompteEcran = newIdCompteEcran;
     }
@@ -2114,12 +1952,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         // _addError(null, getSession().getLabel("5133"));
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (20.03.2002 13:44:59)
-     * 
-     * @param newIdExterneRubriqueEcran
-     *            String
-     */
     public void setIdExterneRubriqueEcran(String newIdExterneRubriqueEcran) {
         idExterneRubriqueEcran = newIdExterneRubriqueEcran;
     }
@@ -2132,22 +1964,11 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         // _addError(null, getSession().getLabel("5133"));
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (07.02.2002 14:16:38)
-     * 
-     * @return String
-     */
     public void setMasseEcran(String newMasseEcran) {
         masseEcran = newMasseEcran;
         masse = newMasseEcran;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (30.01.2002 07:36:40)
-     * 
-     * @param newMontant
-     *            String
-     */
     @Override
     public void setMontant(String newMontant) {
         // if (isUpdatable())
@@ -2156,11 +1977,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         // _addError(null, getSession().getLabel("5133"));
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (07.02.2002 14:16:49)
-     * 
-     * @return String
-     */
     public void setMontantEcran(String newMontantEcran) {
         montantEcran = newMontantEcran;
         montant = newMontantEcran;
@@ -2179,12 +1995,6 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
         // _addError(null, getSession().getLabel("5133"));
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (26.03.2002 16:25:14)
-     * 
-     * @param newRechercheRubriqueEcran
-     *            String
-     */
     public void setRechercheRubriqueEcran(String newRechercheRubriqueEcran) {
         try {
             rechercheRubriqueEcran = Boolean.valueOf(newRechercheRubriqueEcran);

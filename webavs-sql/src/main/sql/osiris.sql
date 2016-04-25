@@ -7,3 +7,6 @@ insert into SCHEMA.FWCOSP (PCOSID, PPTYGR, PCONCS, PPTYCN, PPTYCL, PPTYSA, PCOSL
 
 insert into SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) values (203009, 'F', 'FAC', 'Facturation', '20160412120000globazf');
 insert into SCHEMA.FWCOUP (PCOSID, PLAIDE, PCOUID, PCOLUT, PSPY) values (203009, 'D', 'FAC', 'Berechnung', '20160412120000globazf');
+
+--D0101 - Extourne d'une section en comptabilité auxiliaire - Taxe Co2
+INSERT INTO schema.jadeprop (PROPNAME,PROPVAL) VALUES ('osiris.rubrique.sansExtourne','');

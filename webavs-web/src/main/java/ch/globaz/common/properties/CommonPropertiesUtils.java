@@ -5,6 +5,8 @@ import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSystem;
 import globaz.jade.client.util.JadeStringUtil;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CommonPropertiesUtils {
@@ -191,5 +193,29 @@ public class CommonPropertiesUtils {
             return true;
         }
         return false;
+    }
+
+    /**
+     * /**
+     * Permet de retrouver la valeur de la properties si cette properties n'existe pas on lance une exception.
+     * La propriété définit une liste de valeur séparée par une virgule.
+     * Le résultat est retourné sous forme de liste de valeur
+     * 
+     * @param properties La propriété voulue
+     * @return Une liste de valeur
+     * @throws PropertiesException
+     */
+    public static List<String> getListValue(final IProperties properties) throws PropertiesException {
+        return decoupeStringValue(CommonPropertiesUtils.getValue(properties));
+    }
+
+    static List<String> decoupeStringValue(String values) throws PropertiesException {
+
+        if (CommonPropertiesUtils.isEmptyValue(values)) {
+            return new ArrayList<String>();
+        }
+
+        String[] decoupe = values.split(",");
+        return Arrays.asList(decoupe);
     }
 }

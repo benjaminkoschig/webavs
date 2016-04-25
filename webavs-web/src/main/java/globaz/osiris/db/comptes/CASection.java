@@ -68,9 +68,6 @@ import java.util.Iterator;
  */
 public class CASection extends BEntity implements Serializable, APISection, IntRemarque {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     public final static int AK_IDEXTERNE = 1;
     public final static int AK_REFERENCE_BVR = 2;
@@ -197,11 +194,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         super();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.globall.db.BEntity#_afterAdd(globaz.globall.db.BTransaction)
-     */
     @Override
     protected void _afterAdd(BTransaction transaction) throws Exception {
         if (APISection.ID_CATEGORIE_SECTION_LTN.equals(getCategorieSection())) {
@@ -220,9 +212,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         super._afterAdd(transaction);
     }
 
-    /**
-     * Date de création : (26.03.2002 18:39:22)
-     */
     @Override
     protected void _afterRetrieveWithResultSet(BStatement statement) throws Exception {
         // Laisser la supercalsse traiter l'événement
@@ -232,18 +221,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         ancienIdSequenceContentieux = idSequenceContentieux;
     }
 
-    /**
-     * Effectue des traitements avant un ajout dans la BD <i>
-     * <p>
-     * A surcharger pour effectuer les traitements avant l'ajout de l'entité dans la BD
-     * <p>
-     * L'exécution de l'ajout n'est pas effectuée si le buffer d'erreurs n'est pas vide après l'exécution de
-     * <code>_beforeAdd()</code>
-     * <p>
-     * Ne pas oublier de partager la connexion avec les autres DAB !!! </i>
-     * 
-     * @exception Exception en cas d'erreur fatale
-     */
     @Override
     protected void _beforeAdd(BTransaction transaction) throws Exception {
         // incrémente le prochain numéro
@@ -307,9 +284,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         }
     }
 
-    /**
-     * Date de création : (22.01.2002 15:18:10)
-     */
     @Override
     protected void _beforeDelete(BTransaction transaction) throws Exception {
         if (hasOperations()) {
@@ -330,9 +304,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         }
     }
 
-    /**
-     * Date de création : (22.01.2002 14:44:51)
-     */
     @Override
     protected void _beforeUpdate(BTransaction transaction) throws Exception {
         updateDateFinPeriode();
@@ -378,17 +349,11 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return date;
     }
 
-    /**
-     * Renvoie le nom de la table
-     */
     @Override
     protected String _getTableName() {
         return CASection.TABLE_CASECTP;
     }
 
-    /**
-     * read
-     */
     @Override
     protected void _readProperties(BStatement statement) throws Exception {
         idSection = statement.dbReadNumeric(CASection.FIELD_IDSECTION);
@@ -430,9 +395,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         statutBN = statement.dbReadNumeric(CASection.FIELD_STATUTBN);
     }
 
-    /**
-     * Date de création : (14.03.2002 16:32:32)
-     */
     private void _saveRemarque(BTransaction transaction) {
         try {
             if (saveRemarque) {
@@ -446,9 +408,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         }
     }
 
-    /**
-     * valide le contenu de l'entite (notamment les champs obligatoires)
-     */
     @Override
     protected void _validate(BStatement statement) {
         _propertyMandatory(statement.getTransaction(), getIdCompteAnnexe(), getSession().getLabel("5106"));
@@ -514,12 +473,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         }
     }
 
-    /**
-     * Date de création : (11.04.2002 10:33:12)
-     * 
-     * @param alternateKey int
-     * @exception Exception La description de l'exception.
-     */
     @Override
     protected void _writeAlternateKey(BStatement statement, int alternateKey) throws Exception {
         // Clé alternée numéro 1 : idCompteAnnexe, idTypeSection, idExterne
@@ -541,18 +494,12 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         }
     }
 
-    /**
-     * valide le contenu de l'entite (notamment les champs obligatoires)
-     */
     @Override
     protected void _writePrimaryKey(BStatement statement) throws Exception {
         statement.writeKey(CASection.FIELD_IDSECTION,
                 this._dbWriteNumeric(statement.getTransaction(), getIdSection(), ""));
     }
 
-    /**
-     * write
-     */
     @Override
     protected void _writeProperties(BStatement statement) throws Exception {
         statement.writeField(CASection.FIELD_IDSECTION,
@@ -1263,6 +1210,8 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
     }
 
     /**
+     * Extourne les écritures de la section
+     * 
      * @param transaction
      * @param journal
      * @param text
@@ -1321,7 +1270,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         CAEcritureManager mgr = new CAEcritureManager();
         mgr.setSession(getSession());
         mgr.setForIdSection(getIdSection());
-        mgr.find(transaction);
+        mgr.find(transaction, BManager.SIZE_NOLIMIT);
 
         for (int i = 0; i < mgr.size(); i++) {
             // Récupérer l'opération
@@ -1361,11 +1310,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return JANumberFormatter.deQuote(base);
     }
 
-    /**
-     * Date de création : (07.01.2002 10:10:20)
-     * 
-     * @return String
-     */
     public String getBaseFormate() {
         return globaz.globall.util.JANumberFormatter.formatNoRound(getBase(), 2);
     }
@@ -1375,11 +1319,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return categorieSection;
     }
 
-    /**
-     * Date de création : (21.01.2002 11:17:22)
-     * 
-     * @return String
-     */
     @Override
     public APICompteAnnexe getCompteAnnexe() {
         if ((compteAnnexe == null) || !compteAnnexe.getIdCompteAnnexe().equals(getIdCompteAnnexe())) {
@@ -1403,21 +1342,11 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return compteAnnexe;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.osiris.api.APISection#getContentieuxEstSuspendu()
-     */
     @Override
     public Boolean getContentieuxEstSuspendu() {
         return contentieuxEstSuspendu;
     }
 
-    /**
-     * Date de création : (17.01.2002 13:02:45)
-     * 
-     * @return String
-     */
     public FWParametersSystemCode getCsMotifContentieuxSuspendu() {
         if (csMotifContentieuxSuspendu == null) {
             // liste pas encore chargee, on la charge
@@ -1427,11 +1356,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return csMotifContentieuxSuspendu;
     }
 
-    /**
-     * Date de création : (17.01.2002 13:05:28)
-     * 
-     * @return globaz.globall.parameters.FWParametersSystemCodeManager
-     */
     public FWParametersSystemCodeManager getCsMotifContentieuxSuspendus() {
         // liste déjà chargée ?
         if (csMotifContentieuxSuspendus == null) {
@@ -1472,11 +1396,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return dateFinPeriode;
     }
 
-    /**
-     * Date de création : (04.06.2002 14:19:57)
-     * 
-     * @return String
-     */
     @Override
     public String getDateReferenceContentieux(APIParametreEtape etape) {
         return null;
@@ -1487,32 +1406,15 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return dateSection;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.osiris.api.APISection#getDateSuspendu()
-     */
     @Override
     public String getDateSuspendu() {
         return dateSuspendu;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.osiris.api.APISection#getDescription()
-     */
     @Override
     public String getDescription() {
         return getSectionDescriptor().getDescription();
     }
-
-    /**
-     * Date de création : (11.03.2002 11:12:24)
-     * 
-     * @return String
-     * @param codeISOLangue String
-     */
 
     public String getDescription(String codeISOLangue) {
         return getSectionDescriptor().getDescription(codeISOLangue);
@@ -1606,9 +1508,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return s;
     }
 
-    /**
-     * @return the idCaissePro
-     */
     public String getIdCaisseProfessionnelle() {
         return idCaissePro;
     }
@@ -1637,21 +1536,11 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return idLastEtapeCtx;
     }
 
-    /**
-     * Cette méthode retourne le dernier état de la section dans le contentieux Aquila (Code système)
-     * 
-     * @return String idLastEtatAquila
-     */
     @Override
     public String getIdLastEtatAquila() {
         return idLastEtatAquila;
     }
 
-    /**
-     * Cette méthode retourne le mode de compensation de la section (code Système)
-     * 
-     * @return String idModeCompensation
-     */
     @Override
     public String getIdModeCompensation() {
         if (JadeStringUtil.isBlank(idModeCompensation)) {
@@ -1666,11 +1555,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return idMotifContentieuxSuspendu;
     }
 
-    /**
-     * Cette méthode retourne l'identifiant du passage dans lequel le report de la section est pris en compte
-     * 
-     * @return String idPassageComp
-     */
     @Override
     public String getIdPassageComp() {
         return idPassageComp;
@@ -1689,17 +1573,11 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return idRemarque;
     }
 
-    /**
-     * Getter
-     */
     @Override
     public String getIdSection() {
         return idSection;
     }
 
-    /**
-     * @return
-     */
     public String getIdSectionPrincipal() {
         return idSectionPrincipal;
     }
@@ -1713,21 +1591,11 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return idTypeSection;
     }
 
-    /**
-     * Date de création : (21.02.2002 17:30:52)
-     * 
-     * @return String
-     */
     @Override
     public String getInterets() {
         return interets;
     }
 
-    /**
-     * Date de création : (01.02.2002 11:50:43)
-     * 
-     * @return globaz.osiris.db.comptes.CAJournal
-     */
     public CAJournal getJournal() {
         if (journal == null) {
             journal = new CAJournal();
@@ -1767,11 +1635,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return etape;
     }
 
-    /**
-     * Date de création : (04.07.2002 11:54:10)
-     * 
-     * @return globaz.osiris.db.contentieux.CAEvenementContentieux
-     */
     public CAEvenementContentieux getLastEvenementContentieux() {
         if (!JadeStringUtil.isIntegerEmpty(getIdLastEtapeCtx())) {
             if (lastEvenementContentieux == null) {
@@ -1793,18 +1656,10 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return lastEvenementContentieux;
     }
 
-    /**
-     * @return the nonImprimable
-     */
     public Boolean getNonImprimable() {
         return nonImprimable;
     }
 
-    /**
-     * Date de création : (21.06.2002 13:36:31)
-     * 
-     * @return String
-     */
     @Override
     public String getNumeroPoursuite() {
         return numeroPoursuite;
@@ -1849,27 +1704,14 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return JANumberFormatter.deQuote(pmtCmp);
     }
 
-    /**
-     * Date de création : (07.01.2002 10:30:49)
-     * 
-     * @return String
-     */
     public String getPmtCmpFormate() {
         return globaz.globall.util.JANumberFormatter.formatNoRound(getPmtCmp(), 2);
     }
 
-    /**
-     * @return the referenceBvr
-     */
     public String getReferenceBvr() {
         return referenceBvr;
     }
 
-    /**
-     * Date de création : (21.01.2002 11:33:15)
-     * 
-     * @return globaz.osiris.db.utils.CARemarque
-     */
     public CARemarque getRemarque() {
         // Instancier une nouvelle remarque
         remarque = new CARemarque();
@@ -1897,11 +1739,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         }
     }
 
-    /**
-     * Date de création : (15.01.2002 07:30:21)
-     * 
-     * @return String
-     */
     public String getResumeContentieux() {
         StringBuffer sb = new StringBuffer();
         if (!CAApplication.getApplicationOsiris().getCAParametres().isContentieuxAquila()) {
@@ -1912,9 +1749,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return sb.toString();
     }
 
-    /**
-     * @param sb
-     */
     private void getResumeContentieuxAquila(StringBuffer sb) {
         // Si contentieux suspendu
         try {
@@ -1941,9 +1775,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         }
     }
 
-    /**
-     * @param sb
-     */
     private void getResumeContentieuxOsiris(StringBuffer sb) {
         // Si contentieux suspendu
         try {
@@ -1968,11 +1799,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         }
     }
 
-    /**
-     * Date de création : (11.03.2002 11:06:46)
-     * 
-     * @return globaz.osiris.interfaceext.comptes.APISectionDescriptor
-     */
     protected APISectionDescriptor getSectionDescriptor() {
         if ((sectionDescriptor == null) || !sectionDescriptor.getIdSection().equals(getIdSection())) {
             try {
@@ -1996,11 +1822,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
 
     }
 
-    /**
-     * Date de création : (21.01.2002 11:33:15)
-     * 
-     * @return globaz.osiris.db.utils.CARemarque
-     */
     public CASequenceContentieux getSequenceContentieux() {
         // Si sequenceContentieux pas déjà instanciée
         if (sequenceContentieux == null) {
@@ -2026,11 +1847,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return JANumberFormatter.deQuote(solde);
     }
 
-    /**
-     * Date de création : (07.01.2002 10:10:20)
-     * 
-     * @return String
-     */
     @Override
     public String getSoldeFormate() {
         return globaz.globall.util.JANumberFormatter.formatNoRound(getSolde(), 2);
@@ -2057,37 +1873,19 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         }
     }
 
-    /**
-     * Date de création : (16.08.2002 15:53:47)
-     * 
-     * @return globaz.framework.util.FWCurrency
-     */
     public FWCurrency getSoldeToCurrency() {
         return new FWCurrency(getSolde());
     }
 
-    /**
-     * @return the statutBN
-     */
     public String getStatutBN() {
         return statutBN;
     }
 
-    /**
-     * Date de création : (21.02.2002 17:30:28)
-     * 
-     * @return String
-     */
     @Override
     public String getTaxes() {
         return taxes;
     }
 
-    /**
-     * Date de création : (22.01.2002 08:16:23)
-     * 
-     * @return String
-     */
     @Override
     public String getTexteRemarque() {
         return texteRemarque;
@@ -2098,11 +1896,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return typeAdresse;
     }
 
-    /**
-     * Date de création : (17.01.2002 12:00:16)
-     * 
-     * @return String le type de section ou null si pas trouvé.
-     */
     @Override
     public APITypeSection getTypeSection() {
         typeSection = new CATypeSection();
@@ -2120,11 +1913,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return typeSection;
     }
 
-    /**
-     * Date de création : (17.01.2002 13:47:48)
-     * 
-     * @return globaz.globall.parameters.FWParametersUserCode
-     */
     public FWParametersUserCode getUcMotifContentieuxSuspendu() {
         if (ucMotifContentieuxSuspendu == null) {
             // liste pas encore chargee, on la charge
@@ -2185,11 +1973,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return retour;
     }
 
-    /**
-     * @param idModifBlocage
-     * @return
-     * @throws CATechnicalException
-     */
     public boolean hasMotifContentieux(String idModifBlocage) throws CATechnicalException {
         boolean contentieux = false;
 
@@ -2205,10 +1988,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return contentieux;
     }
 
-    /**
-     * @throws CATechnicalException
-     * @see APISection.hasMotifContentieuxForYear(String idModifBlocage, String year)
-     */
     @Override
     public boolean hasMotifContentieuxForYear(String idModifBlocage, String year) throws CATechnicalException {
         return CAMotifContentieuxUtil.hasMotifContentieuxForYear(getSession(), null, getIdSection(), idModifBlocage,
@@ -2240,11 +2019,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.osiris.api.APISection#isSectionAuContentieux()
-     */
     @Override
     public boolean isSectionAuContentieux() {
         if (!CAApplication.getApplicationOsiris().getCAParametres().isContentieuxAquila()) {
@@ -2341,17 +2115,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         return isSectionAvecSectionsContentieux;
     }
 
-    /**
-     * 
-     * @param transaction
-     * @param compteAnnexe
-     * @param journal
-     * @param sectionList
-     * @param montantMax
-     * @param date
-     * @return
-     * @throws Exception
-     */
     private FWCurrency lettrer(BTransaction transaction, CACompteAnnexe compteAnnexe, CAJournal journal,
             Collection<CASection> sectionList, FWCurrency montant, FWCurrency soldeALettrer, String date)
             throws Exception {
@@ -2541,11 +2304,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         dateSection = newDate;
     }
 
-    /**
-     * Date de création : (23.05.2002 08:02:14)
-     * 
-     * @param newDateSuspendu String
-     */
     public void setDateSuspendu(String newDateSuspendu) {
         dateSuspendu = newDateSuspendu;
     }
@@ -2554,18 +2312,10 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         this.domaine = domaine;
     }
 
-    /**
-     * Date de création : (21.02.2002 17:30:40)
-     * 
-     * @param newFrais String
-     */
     public void setFrais(String newFrais) {
         frais = newFrais;
     }
 
-    /**
-     * @param idCaissePro the idCaissePro to set
-     */
     public void setIdCaisseProfessionnelle(String idCaissePro) {
         this.idCaissePro = idCaissePro;
     }
@@ -2583,11 +2333,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         idJournal = newIdJournal;
     }
 
-    /**
-     * Date de création : (07.03.2002 08:42:28)
-     * 
-     * @param newIdLastEtapeCtx String
-     */
     public void setIdLastEtapeCtx(String newIdLastEtapeCtx) {
         idLastEtapeCtx = newIdLastEtapeCtx;
         lastEvenementContentieux = null;
@@ -2636,25 +2381,16 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         idPosteJournalisation = newIdPosteJournalisation;
     }
 
-    /**
-     * Date de création : (22.01.2002 13:15:39)
-     */
     @Override
     public void setIdRemarque(String newIdRemarque) {
         idRemarque = newIdRemarque;
     }
 
-    /**
-     * Setter
-     */
     @Override
     public void setIdSection(String newIdSection) {
         idSection = newIdSection;
     }
 
-    /**
-     * @param string
-     */
     public void setIdSectionPrincipal(String string) {
         idSectionPrincipal = string;
     }
@@ -2668,27 +2404,14 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         idTypeSection = newIdTypeSection;
     }
 
-    /**
-     * Date de création : (21.02.2002 17:30:52)
-     * 
-     * @param newInterets String
-     */
     public void setInterets(String newInterets) {
         interets = newInterets;
     }
 
-    /**
-     * @param nonImprimable
-     */
     public void setNonImprimable(Boolean nonImprimable) {
         this.nonImprimable = nonImprimable;
     }
 
-    /**
-     * Date de création : (21.06.2002 13:36:31)
-     * 
-     * @param newNumeroPoursuite String
-     */
     public void setNumeroPoursuite(String newNumeroPoursuite) {
         numeroPoursuite = newNumeroPoursuite;
     }
@@ -2706,9 +2429,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         pmtCmp = newPmtCmp;
     }
 
-    /**
-     * @param referenceBvr the referenceBvr to set
-     */
     public void setReferenceBvr(String referenceBvr) {
         this.referenceBvr = referenceBvr;
     }
@@ -2717,27 +2437,14 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         solde = newSolde;
     }
 
-    /**
-     * @param statutBN the statutBN to set
-     */
     public void setStatutBN(String statutBN) {
         this.statutBN = statutBN;
     }
 
-    /**
-     * Date de création : (21.02.2002 17:30:28)
-     * 
-     * @param newTaxes String
-     */
     public void setTaxes(String newTaxes) {
         taxes = newTaxes;
     }
 
-    /**
-     * Date de création : (22.01.2002 08:16:23)
-     * 
-     * @param newTexteRemarque String
-     */
     @Override
     public void setTexteRemarque(String newTexteRemarque) {
         texteRemarque = newTexteRemarque;
@@ -2825,9 +2532,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         }
     }
 
-    /**
-     * @see globaz.globall.db.BEntity#toString()
-     */
     public String toMyString() {
         try {
             CACompteAnnexe ca = (CACompteAnnexe) getCompteAnnexe();
@@ -2988,11 +2692,6 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.osiris.api.APISection#updateInfoCompensation(java.lang.String, java.lang.String)
-     */
     @Override
     public void updateInfoCompensation(String idModeCompensation, String idPassageComp) throws Exception {
         CASection sect = new CASection();
