@@ -103,7 +103,8 @@ public class REAttestationsFiscalesUtils {
         }
     }
 
-    public static boolean hasPersonneDecedeeDurantAnneeFiscale(REFamillePourAttestationsFiscales famille, String annee) {
+    public static boolean hasPersonneDecedeeDurantAnneeFiscale(REFamillePourAttestationsFiscales famille,
+            String annee) {
 
         JadePeriodWrapper anneeFiscale = new JadePeriodWrapper("01.01." + annee, "31.12." + annee);
         for (RETiersPourAttestationsFiscales unTiers : famille.getTiersBeneficiaires()) {
@@ -175,6 +176,7 @@ public class REAttestationsFiscalesUtils {
                 periodeDuTiers.add(periodeDeCetteRente);
             }
         }
+        boolean hasAuMoinsUnePeriodeValable = false;
 
         // parcours des périodes à la recherche de trous dans l'année fiscale (elle sont ordonnées par ancienneté)
         for (SortedSet<JadePeriodWrapper> periodesDuTiers : periodesDesRentesParTiers.values()) {
@@ -206,16 +208,23 @@ public class REAttestationsFiscalesUtils {
             JadePeriodWrapper periodeFiscale = new JadePeriodWrapper("01.01." + annee, "31.12." + annee);
 
             String dateFinPeriodeGlobale = null;
-            if (JadeDateUtil.isGlobazDateMonthYear(periodeGlobaleDuTiers.getDateFin())) {
-                dateFinPeriodeGlobale = "01." + periodeGlobaleDuTiers.getDateFin();
-            } else {
-                dateFinPeriodeGlobale = periodeGlobaleDuTiers.getDateFin();
-            }
 
+            if (periodeGlobaleDuTiers != null) {
+                hasAuMoinsUnePeriodeValable = true;
+                if (JadeDateUtil.isGlobazDateMonthYear(periodeGlobaleDuTiers.getDateFin())) {
+                    dateFinPeriodeGlobale = "01." + periodeGlobaleDuTiers.getDateFin();
+                } else {
+                    dateFinPeriodeGlobale = periodeGlobaleDuTiers.getDateFin();
+                }
+            }
             // on regarde si la période globale de ce tiers s'est terminée durant l'année fiscale
             if (periodeFiscale.isDateDansLaPeriode(dateFinPeriodeGlobale)) {
                 return true;
             }
+        }
+
+        if (!hasAuMoinsUnePeriodeValable) {
+            return true;
         }
         if (hasUniquementRenteComplementaireAvecDateFin(famille, annee)) {
             return true;
