@@ -1,16 +1,18 @@
 package globaz.apg.rapg.rules;
 
-import globaz.apg.exceptions.APRuleExecutionException;
-import globaz.apg.pojo.APChampsAnnonce;
-import globaz.globall.db.FWFindParameter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import globaz.apg.exceptions.APRuleExecutionException;
+import globaz.apg.pojo.APChampsAnnonce;
+import globaz.globall.db.FWFindParameter;
 
 /**
- * <strong>Règles de validation des plausibilités RAPG</br> Description :</strong></br>
+ * <strong>Règles de validation des plausibilités RAPG</br>
+ * Description :</strong></br>
  * Pour les recrues (et les services avec taux recrue), le registre vérifiera que l'allocation journalière de base
- * sélève à 25% du montant maximal de l'allocation total</br><strong>Champs concerné(s)
+ * sélève à 25% du montant maximal de l'allocation total</br>
+ * <strong>Champs concerné(s)
  * :</strong></br>
  * numberOfDays<br>
  * basicDailyAmount<br>
@@ -18,9 +20,9 @@ import java.util.List;
  * totalAPG<br>
  * allowanceFarm<br>
  * dailyIndemnityGuaranteeAI
- * 
+ *
  * @author sco
- * 
+ *
  */
 public class Rule307 extends Rule {
 
@@ -60,14 +62,13 @@ public class Rule307 extends Rule {
             if (dailyIndemnityGuaranteeAI && !serviceCivils.contains(champsAnnonce.getServiceType())) {
 
                 BigDecimal calcul = (numberOfDays.multiply(basicDailyAmount)).add(aAllowanceCareExpenses);
-                if (calcul.compareTo(totalAPG.subtract(new BigDecimal(1))) >= 0
-                        && calcul.compareTo(totalAPG.add(new BigDecimal(1))) <= 0) {
-                    return true;
-                }
+                return totalAPG.compareTo(calcul) >= 0;
 
             } else {
 
                 BigDecimal calcul = (numberOfDays.multiply(basicDailyAmount)).add(aAllowanceCareExpenses);
+                // La différence de +/- 1 CHF n'est pas contrôlée du fait que le totalAPG est calculé de la même manière
+                // (nombre jours * basicDailyAmount)
                 if (calcul.compareTo(totalAPG) == 0) {
                     return true;
                 }

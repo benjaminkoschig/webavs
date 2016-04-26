@@ -1,5 +1,10 @@
 package globaz.apg.utils;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
@@ -24,19 +29,16 @@ import globaz.apg.enums.APBreakableRules;
 import globaz.apg.enums.APTypeActiviteProfessionnel;
 import globaz.apg.enums.APTypeVersement;
 import globaz.apg.exceptions.APEntityNotFoundException;
+import globaz.apg.properties.APParameter;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
+import globaz.globall.db.FWFindParameter;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 public class APGenerateurAnnonceRAPG {
 
@@ -85,9 +87,28 @@ public class APGenerateurAnnonceRAPG {
         // Champs non modifiables --> Calcul
         FWCurrency montantJournalierPrestation = new FWCurrency(prestation.getMontantJournalier());
         annonceACreer.setNombreJoursService(prestation.getNombreJoursSoldes());
-        annonceACreer.setTauxJournalierAllocationBase(prestation.getBasicDailyAmount());
-        BigDecimal montantTotalAPG = new BigDecimal(montantJournalierPrestation.toString()).multiply(new BigDecimal(
-                annonceACreer.getNombreJoursService()));
+
+        // Gestion du taux journalier si droit acquis
+        if (!JadeStringUtil.isBlankOrZero(prestation.getDroitAcquis())) {
+            // Si c'est une prestation maternité on ne s'occupe pas du nombre d'enfants -> géré dans la méthode
+            int nombreEnfant = Integer.valueOf(getNombreEnfant(session, droit, prestation.getDateDebut()));
+
+            BigDecimal montantPrestation = new BigDecimal(prestation.getBasicDailyAmount());
+
+            BigDecimal montantMaxDroitAcquis = getMontantMaxDroitAcquis(session, nombreEnfant,
+                    prestation.getDateDebut());
+            if (montantPrestation.compareTo(montantMaxDroitAcquis) == 1) {
+                annonceACreer.setTauxJournalierAllocationBase(montantMaxDroitAcquis.toString());
+            } else {
+                annonceACreer.setTauxJournalierAllocationBase(montantPrestation.toString());
+            }
+
+        } else {
+            annonceACreer.setTauxJournalierAllocationBase(prestation.getBasicDailyAmount());
+        }
+
+        BigDecimal montantTotalAPG = new BigDecimal(montantJournalierPrestation.toString())
+                .multiply(new BigDecimal(annonceACreer.getNombreJoursService()));
         if (JadeStringUtil.isIntegerEmpty(prestation.getMontantAllocationExploitation())) {
             annonceACreer.setIsAllocationExploitation("0");
         } else {
@@ -114,8 +135,8 @@ public class APGenerateurAnnonceRAPG {
 
         if ("1".equals(annonceACreer.getContenuAnnonce()) || "2".equals(annonceACreer.getContenuAnnonce())) {
             annonceACreer.setInsurantDomicileCountry(PRACORConst.csEtatToAcor(droit.getPays()));
-            annonceACreer.setNumeroAssure(droit.loadDemande().loadTiers()
-                    .getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
+            annonceACreer.setNumeroAssure(
+                    droit.loadDemande().loadTiers().getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
             annonceACreer.setEtatCivil(getCodeEtatCivil(session, droit));
             annonceACreer.setGenreActivite(getGenreActivite(session, prestation));
             annonceACreer.setRevenuMoyenDeterminant(prestation.getRevenuMoyenDeterminant());
@@ -186,8 +207,8 @@ public class APGenerateurAnnonceRAPG {
                 prestManager.setForIdRestitution(prestation.getIdPrestation());
             }
             prestManager.setSession(session);
-            prestManager.setOrderBy(APPrestation.FIELDNAME_DATEDEBUT + " asc, " + APPrestation.FIELDNAME_IDANNONCE
-                    + " asc ");
+            prestManager.setOrderBy(
+                    APPrestation.FIELDNAME_DATEDEBUT + " asc, " + APPrestation.FIELDNAME_IDANNONCE + " asc ");
             prestManager.find();
             // Si il n'y a rien on essaie peut-être que c'était un duplicata (seulement dans le cas des mat)
             if (prestManager.getSize() == 0) {
@@ -224,8 +245,8 @@ public class APGenerateurAnnonceRAPG {
             }
             if (annonceEnHistorique) {
                 breakRules.add("600");
-                annonceACreer.setNumeroAssure(droit.loadDemande().loadTiers()
-                        .getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
+                annonceACreer.setNumeroAssure(
+                        droit.loadDemande().loadTiers().getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
                 annonceACreer.setMoisAnneeComptable(moisAnneeComptable);
                 annonceACreer.setTauxJournalierAllocationBase(montantJournalierPrestation.toString());
                 annonceACreer.setPeriodeDe(prestation.getDateDebut());
@@ -278,6 +299,29 @@ public class APGenerateurAnnonceRAPG {
         return annonceACreer;
     }
 
+    /**
+     * Recherche le montant max du taux journalier pour un droit acquis en fonction du nombre d'enfant
+     *
+     * @param session La session à utiliser
+     * @param nombreEnfant le nombre d'enfant
+     * @return le montant max du taux journalier pour un droit acquis en fonction du nombre d'enfant
+     * @throws Exception si aucune valeur n'a pu êtr trouvée
+     */
+    private BigDecimal getMontantMaxDroitAcquis(BSession session, int nombreEnfant, String date) throws Exception {
+        String parameterName = null;
+        if (nombreEnfant == 0) {
+            parameterName = APParameter.TAUX_JOURNALIER_MAX_DROIT_ACQUIS_0_ENFANT.getParameterName();
+        } else if (nombreEnfant == 1) {
+            parameterName = APParameter.TAUX_JOURNALIER_MAX_DROIT_ACQUIS_1_ENFANT.getParameterName();
+        } else if (nombreEnfant == 2) {
+            parameterName = APParameter.TAUX_JOURNALIER_MAX_DROIT_ACQUIS_2_ENFANT.getParameterName();
+        } else {
+            parameterName = APParameter.TAUX_JOURNALIER_MAX_DROIT_ACQUIS_PLUS_DE_2_ENFANT.getParameterName();
+        }
+        return new BigDecimal(
+                FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "0", parameterName, date, "", 2));
+    }
+
     private String getGenreActivite(BSession session, APPrestation prestation) throws Exception {
         APSituationProfessionnelleManager situationProfessionnelleManager = new APSituationProfessionnelleManager();
         situationProfessionnelleManager.setSession(session);
@@ -295,8 +339,8 @@ public class APGenerateurAnnonceRAPG {
         for (int j = 0; j < situationProfessionnelleManager.size(); j++) {
             situationProfessionnelle = (APSituationProfessionnelle) (situationProfessionnelleManager.getEntity(j));
             aUnNiIndependantNiNonActif = aUnNiIndependantNiNonActif
-                    || (!situationProfessionnelle.getIsIndependant().booleanValue() && !situationProfessionnelle
-                            .getIsNonActif().booleanValue());
+                    || (!situationProfessionnelle.getIsIndependant().booleanValue()
+                            && !situationProfessionnelle.getIsNonActif().booleanValue());
             aUnIndependant = aUnIndependant || situationProfessionnelle.getIsIndependant().booleanValue();
             aUnNonActif = aUnNonActif || situationProfessionnelle.getIsNonActif().booleanValue();
         }
@@ -320,8 +364,8 @@ public class APGenerateurAnnonceRAPG {
     }
 
     private String getCodeEtatCivil(BSession session, APDroitLAPG droit) throws Exception {
-        String s = session.getCode(PRTiersHelper.getPersonneAVS(session, droit.loadDemande().getIdTiers()).getProperty(
-                PRTiersWrapper.PROPERTY_PERSONNE_AVS_ETAT_CIVIL));
+        String s = session.getCode(PRTiersHelper.getPersonneAVS(session, droit.loadDemande().getIdTiers())
+                .getProperty(PRTiersWrapper.PROPERTY_PERSONNE_AVS_ETAT_CIVIL));
 
         try {
             // Si code état civil == vide -> return 1 (célibataire)
@@ -344,8 +388,8 @@ public class APGenerateurAnnonceRAPG {
             }
 
             // si le code n'est pas 1, 2, 3 ou 4, on retourne 1
-            if (!((Integer.parseInt(s) == 1) || (Integer.parseInt(s) == 2) || (Integer.parseInt(s) == 3) || (Integer
-                    .parseInt(s) == 4))) {
+            if (!((Integer.parseInt(s) == 1) || (Integer.parseInt(s) == 2) || (Integer.parseInt(s) == 3)
+                    || (Integer.parseInt(s) == 4))) {
                 return PRACORConst.CA_CELIBATAIRE;
             }
         } catch (Exception e) {
@@ -399,8 +443,8 @@ public class APGenerateurAnnonceRAPG {
         repartitionPaiementsManager.find();
 
         if (repartitionPaiementsManager.getSize() == 0) {
-            throw new Exception("Aucune répartition pour cette prestation : idPRst = "
-                    + prestation.getIdPrestationApg() + " idDroit= " + prestation.getIdDroit());
+            throw new Exception("Aucune répartition pour cette prestation : idPRst = " + prestation.getIdPrestationApg()
+                    + " idDroit= " + prestation.getIdDroit());
         }
         APRepartitionPaiements repartitionPaiements = null;
         boolean hasVersementEmployeur = false;
@@ -408,10 +452,10 @@ public class APGenerateurAnnonceRAPG {
 
         for (int i = 0; i < repartitionPaiementsManager.size(); i++) {
             repartitionPaiements = (APRepartitionPaiements) repartitionPaiementsManager.getEntity(i);
-            hasVersementEmployeur |= repartitionPaiements.getTypePaiement().equals(
-                    IAPRepartitionPaiements.CS_PAIEMENT_EMPLOYEUR);
-            hasVersementAssure |= repartitionPaiements.getTypePaiement().equals(
-                    IAPRepartitionPaiements.CS_PAIEMENT_DIRECT);
+            hasVersementEmployeur |= repartitionPaiements.getTypePaiement()
+                    .equals(IAPRepartitionPaiements.CS_PAIEMENT_EMPLOYEUR);
+            hasVersementAssure |= repartitionPaiements.getTypePaiement()
+                    .equals(IAPRepartitionPaiements.CS_PAIEMENT_DIRECT);
         }
 
         if (hasVersementAssure) {
