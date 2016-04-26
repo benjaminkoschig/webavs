@@ -2409,7 +2409,7 @@ public class REDecisionOO extends REAbstractJobOO {
             // Trouver les données du tribunal (Tribunal du canton de domicile du bp)
             // --> si BE, choisir celui dans la langue de l'assuré
             String donnesTribunal = PRTiersHelper.getAdresseTribunalPourOfficeAI(getSession(), officeAI,
-                    tiers.getIdTiers());
+                    tiers.getIdTiers(), decision.getDateDecision());
 
             data.addData("TITRE_MOYENS_DROIT", getTexte(catalogeDeTexteDecision, 7, 20));
 
