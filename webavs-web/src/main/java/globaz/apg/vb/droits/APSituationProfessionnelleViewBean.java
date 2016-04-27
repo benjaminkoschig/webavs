@@ -622,7 +622,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
             try {
 
                 final List<IAFAssurance> assurancesList = APRechercherAssuranceFromDroitCotisationService.rechercher(
-                        getId(), getIdAffilieEmployeur());
+                        getIdDroit(), getIdAffilieEmployeur(), getSession());
 
                 for (final IAFAssurance assuranceCourante : assurancesList) {
                     if (IAFAssurance.TYPE_ASS_MATERNITE.equals(assuranceCourante.getTypeAssurance())) {

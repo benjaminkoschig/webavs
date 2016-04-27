@@ -34,11 +34,25 @@ public class APRechercherAssuranceFromDroitCotisationService {
      * @throws Exception
      */
     public static List<IAFAssurance> rechercher(String idDroit, String idAffilieEmployeur) throws Exception {
-
-        APRechercherAssuranceFromDroitCotisationService.validerParametres(idDroit, idAffilieEmployeur);
-
         // TODO: ->service cotisation, si le temps du mandat D00065 le permet
         BISession session = BSessionUtil.getSessionFromThreadContext();
+        return rechercher(idDroit, idAffilieEmployeur, session);
+    }
+
+    /**
+     * 
+     * Recherche les assurances selon l'id affilie et l'id du droit. Les assurances retournées correspondent à la
+     * période du droit.
+     * 
+     * @param idDroit
+     * @param idAffilieEmployeur
+     * @return
+     * @throws Exception
+     */
+    public static List<IAFAssurance> rechercher(String idDroit, String idAffilieEmployeur, BISession session)
+            throws Exception {
+
+        APRechercherAssuranceFromDroitCotisationService.validerParametres(idDroit, idAffilieEmployeur);
 
         // la cotisation doit être validée au moment du droit
         APDroitLAPG droit = new APDroitLAPG();
