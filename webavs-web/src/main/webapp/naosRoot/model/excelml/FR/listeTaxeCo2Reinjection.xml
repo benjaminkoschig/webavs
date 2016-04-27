@@ -119,7 +119,7 @@
   <NamedRange ss:Name="col_erreur" ss:RefersTo="=Feuil1!C18"/>
   <NamedRange ss:Name="col_etat" ss:RefersTo="=Feuil1!C17"/>
   <NamedRange ss:Name="col_idTaxe" ss:RefersTo="=Feuil1!C1"/>
-  <NamedRange ss:Name="col_Localite" ss:RefersTo="=Feuil1!C7"/>
+  <NamedRange ss:Name="col_localite" ss:RefersTo="=Feuil1!C7"/>
   <NamedRange ss:Name="col_masse" ss:RefersTo="=Feuil1!C8"/>
   <NamedRange ss:Name="col_montant" ss:RefersTo="=Feuil1!C10"/>
   <NamedRange ss:Name="col_motifFin" ss:RefersTo="=Feuil1!C13"/>
@@ -142,7 +142,7 @@
   <NamedRange ss:Name="headerNomListe" ss:RefersTo="=Feuil1!R3C2"/>
   <NamedRange ss:Name="headerNumInforom" ss:RefersTo="=Feuil1!R1C1"/>
   <NamedRange ss:Name="idTaxe" ss:RefersTo="=Feuil1!R7C1"/>
-  <NamedRange ss:Name="Localite" ss:RefersTo="=Feuil1!R7C7"/>
+  <NamedRange ss:Name="localite" ss:RefersTo="=Feuil1!R7C7"/>
   <NamedRange ss:Name="masse" ss:RefersTo="=Feuil1!R7C8"/>
   <NamedRange ss:Name="montant" ss:RefersTo="=Feuil1!R7C10"/>
   <NamedRange ss:Name="motifFin" ss:RefersTo="=Feuil1!R7C13"/>
@@ -212,7 +212,7 @@
     <Cell ss:StyleID="s71"><Data ss:Type="String">NPA</Data><NamedCell
       ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_npa"/></Cell>
     <Cell ss:StyleID="s71"><Data ss:Type="String">Localité</Data><NamedCell
-      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_Localite"/></Cell>
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_localite"/></Cell>
     <Cell ss:StyleID="s71"><Data ss:Type="String">Masse</Data><NamedCell
       ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_masse"/></Cell>
     <Cell ss:StyleID="s71"><Data ss:Type="String">Taux</Data><NamedCell
@@ -250,7 +250,7 @@
     <Cell ss:StyleID="s76"><Data ss:Type="String">npa</Data><NamedCell
       ss:Name="npa"/><NamedCell ss:Name="col_npa"/></Cell>
     <Cell ss:StyleID="s76"><Data ss:Type="String">Localite</Data><NamedCell
-      ss:Name="Localite"/><NamedCell ss:Name="col_Localite"/></Cell>
+      ss:Name="localite"/><NamedCell ss:Name="col_localite"/></Cell>
     <Cell ss:StyleID="s78"><Data ss:Type="Number">0</Data><NamedCell
       ss:Name="masse"/><NamedCell ss:Name="col_masse"/></Cell>
     <Cell ss:StyleID="s79"><Data ss:Type="Number">0</Data><NamedCell ss:Name="taux"/><NamedCell

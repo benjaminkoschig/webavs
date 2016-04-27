@@ -1,5 +1,6 @@
 package globaz.naos.process.taxeCo2;
 
+import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazJobQueue;
@@ -29,30 +30,20 @@ import java.util.Iterator;
  */
 public class AFReinjectionTaxeCo2Process extends BProcess {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     private static final String NUM_INFOROM_NAME_SPACE = "headerNumInforom";
     private String fileName = null;
     private boolean isAtLessOneError = false;
     private boolean status = true;
 
-    /**
-     * @see globaz.globall.db.BProcess#_executeCleanUp()
-     */
     @Override
     protected void _executeCleanUp() {
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#_executeProcess()
-     */
     @Override
     protected boolean _executeProcess() throws Exception {
         setSendMailOnError(true);
 
-        String headerAnnee = "";
         CommonExcelmlContainer errorContainer = new CommonExcelmlContainer();
         CommonExcelDataContainer container = null;
         String path = Jade.getInstance().getHomeDir() + "work/" + getFileName();
@@ -145,9 +136,6 @@ public class AFReinjectionTaxeCo2Process extends BProcess {
         return status;
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#getEMailObject()
-     */
     @Override
     protected String getEMailObject() {
         if (isOnError() || !status) {
@@ -181,6 +169,10 @@ public class AFReinjectionTaxeCo2Process extends BProcess {
         } else {
             errorContainer.put(IAFListeColumns.HEADER_ANNEE, "");
         }
+
+        errorContainer.put(IAFListeColumns.HEADER_BLANK_1, "");
+        errorContainer.put(IAFListeColumns.HEADER_BLANK_2, "");
+        errorContainer.put(IAFListeColumns.HEADER_BLANK_3, "");
     }
 
     private void impressionListeRadieTaxeCo2(CommonExcelmlContainer errorContainer) throws Exception, IOException {
@@ -201,9 +193,6 @@ public class AFReinjectionTaxeCo2Process extends BProcess {
         publicationDocument(nomDoc, docPath);
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#jobQueue()
-     */
     @Override
     public GlobazJobQueue jobQueue() {
         return GlobazJobQueue.UPDATE_LONG;
@@ -226,7 +215,7 @@ public class AFReinjectionTaxeCo2Process extends BProcess {
         AFTaxeCo2Manager taxeMana = new AFTaxeCo2Manager();
         taxeMana.setSession(getSession());
         taxeMana.setForTaxeCo2Id(idTaxe);
-        taxeMana.find(transaction);
+        taxeMana.find(transaction, BManager.SIZE_USEDEFAULT);
 
         if (taxeMana.size() <= 0) {
             // Le controle n'est pas trouvé, on retourne null
@@ -259,8 +248,8 @@ public class AFReinjectionTaxeCo2Process extends BProcess {
                 taxe.update(transaction);
 
             } else if (!transaction.hasErrors()) {
-                AFUtil.fillNaosContainerWithAFLine(errorContainer, line, IAFListeColumns.listeNoms, transaction
-                        .getErrors().toString(), IAFListeColumns.ERREUR);
+                AFUtil.fillNaosContainerWithAFLine(errorContainer, line, IAFListeColumns.listeNoms, getSession()
+                        .getLabel("REINJECTION_ERROR_TAXE_NON_TROUVE") + idTaxe, IAFListeColumns.ERREUR);
                 transaction.clearErrorBuffer();
                 transaction.rollback();
                 isAtLessOneError = true;
@@ -276,23 +265,6 @@ public class AFReinjectionTaxeCo2Process extends BProcess {
             isAtLessOneError = true;
         } else {
             transaction.commit();
-        }
-    }
-
-    private String returnValeurHashMap(String valeur, HashMap<String, String> lineMap, BTransaction transaction) {
-        if (lineMap.containsKey(valeur)) {
-            return lineMap.get(valeur);
-        } else {
-            transaction.addErrors(valeur + " " + getSession().getLabel("DOIT_ETRE_RENSEIGNE"));
-            return "";
-        }
-    }
-
-    private String returnValeurHashMapCouldBeEmpty(String valeur, HashMap<String, String> lineMap) {
-        if (lineMap.containsKey(valeur)) {
-            return lineMap.get(valeur);
-        } else {
-            return "";
         }
     }
 
