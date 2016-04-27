@@ -16,6 +16,7 @@ import ch.globaz.al.business.services.models.droit.DroitModelService;
 import ch.globaz.al.businessimpl.checker.model.droit.DroitModelChecker;
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.al.properties.ALProperties;
 import ch.globaz.al.utils.ALEntityFieldChangeAnalyser;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeNumericUtil;
@@ -39,8 +40,8 @@ public class DroitModelServiceImpl extends ALAbstractBusinessServiceImpl impleme
      * .globaz.al.business.models.droit.DroitModel, java.lang.String)
      */
     @Override
-    public DroitModel clone(DroitModel droitModel, String idDossier) throws JadeApplicationException,
-            JadePersistenceException {
+    public DroitModel clone(DroitModel droitModel, String idDossier)
+            throws JadeApplicationException, JadePersistenceException {
         DroitModel newDroitModel = new DroitModel();
         newDroitModel = droitModel;
         // en fait pas besoin de cloner, car on utilise plus le droitModel de
@@ -119,7 +120,9 @@ public class DroitModelServiceImpl extends ALAbstractBusinessServiceImpl impleme
         // ajoute le Droit dans la persistance et le retourne
         DroitModel droit = (DroitModel) JadePersistenceManager.add(droitModel);
 
-        checkChanges(droit);
+        if (ALProperties.DECISION_FILE_ATTENTE.getBooleanValue()) {
+            checkChanges(droit);
+        }
 
         return droit;
     }
@@ -227,8 +230,8 @@ public class DroitModelServiceImpl extends ALAbstractBusinessServiceImpl impleme
      * DroitSearchModel)
      */
     @Override
-    public DroitSearchModel search(DroitSearchModel droitSearchModel) throws JadeApplicationException,
-            JadePersistenceException {
+    public DroitSearchModel search(DroitSearchModel droitSearchModel)
+            throws JadeApplicationException, JadePersistenceException {
         if (droitSearchModel == null) {
             throw new ALDroitModelException(
                     "DroitModelServiceImpl#search: unable to search droits, searchModel passed is empty");
@@ -254,8 +257,9 @@ public class DroitModelServiceImpl extends ALAbstractBusinessServiceImpl impleme
         }
         // contrôle de validité des données
         DroitModelChecker.validate(droitModel);
-
-        trigChangesParGestionnaire(droitModel);
+        if (ALProperties.DECISION_FILE_ATTENTE.getBooleanValue()) {
+            trigChangesParGestionnaire(droitModel);
+        }
 
         return (DroitModel) JadePersistenceManager.update(droitModel);
     }

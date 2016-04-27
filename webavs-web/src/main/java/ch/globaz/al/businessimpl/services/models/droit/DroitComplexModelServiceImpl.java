@@ -12,6 +12,7 @@ import ch.globaz.al.business.services.models.droit.DroitComplexModelService;
 import ch.globaz.al.businessimpl.checker.model.droit.DroitComplexModelChecker;
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.al.properties.ALProperties;
 import ch.globaz.al.utils.ALEntityFieldChangeAnalyser;
 import ch.globaz.al.utils.ALImportUtils;
 import globaz.globall.db.BSessionUtil;
@@ -250,7 +251,9 @@ public class DroitComplexModelServiceImpl extends ALAbstractBusinessServiceImpl 
 
         // Contrôle si certain champs ont été modifié. Si oui, on stocke l'id du gestionnaire
         // ayant réalisé la modification au niveau du dossier
-        checkChanges(droitCM);
+        if (ALProperties.DECISION_FILE_ATTENTE.getBooleanValue()) {
+            checkChanges(droitCM);
+        }
 
         // si le droit est de type ENF ou FORM on doit mettre à jour l'enfant
         if (ALCSDroit.TYPE_ENF.equals(droitCM.getDroitModel().getTypeDroit())

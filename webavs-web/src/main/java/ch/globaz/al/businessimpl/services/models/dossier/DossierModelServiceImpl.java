@@ -13,6 +13,7 @@ import ch.globaz.al.businessimpl.checker.ALAbstractChecker;
 import ch.globaz.al.businessimpl.checker.model.dossier.DossierModelChecker;
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.al.properties.ALProperties;
 import ch.globaz.al.utils.ALEntityFieldChangeAnalyser;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeNumericUtil;
@@ -171,8 +172,8 @@ public class DossierModelServiceImpl extends ALAbstractBusinessServiceImpl imple
      * (ch.globaz.al.business.models.dossier.DossierSearchModel)
      */
     @Override
-    public DossierSearchModel search(DossierSearchModel searchModel) throws JadeApplicationException,
-            JadePersistenceException {
+    public DossierSearchModel search(DossierSearchModel searchModel)
+            throws JadeApplicationException, JadePersistenceException {
         if (searchModel == null) {
             throw new ALDossierModelException("DossierModelServiceImpl#search : searchModel is null");
         }
@@ -198,7 +199,9 @@ public class DossierModelServiceImpl extends ALAbstractBusinessServiceImpl imple
         DossierModelChecker.validate(dossierModel);
 
         // Doit être fait avant la sauvegarde afin de détecter les changes
-        checkChanges(dossierModel);
+        if (ALProperties.DECISION_FILE_ATTENTE.getBooleanValue()) {
+            checkChanges(dossierModel);
+        }
 
         return (DossierModel) JadePersistenceManager.update(dossierModel);
     }

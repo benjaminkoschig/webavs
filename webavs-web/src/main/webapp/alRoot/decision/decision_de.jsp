@@ -1,4 +1,3 @@
-<%@page import="ch.globaz.al.properties.ALProperties"%>
 <%@page import="globaz.framework.secure.FWSecureConstants"%>
 <%@page import="globaz.al.vb.decision.ALDecisionViewBean"%>
 <%@ page language="java" errorPage="/errorPage.jsp"
@@ -143,14 +142,7 @@ $(function() {
 	});
 
 	// CheckBox file d'attente
-	var checked = false;
-	<%
-		if(ALProperties.DECISION_FILE_ATTENTE.getBooleanValue()){
-		    %>
-			checked = <%=viewBean.getIsFileAttente()%>;
-			<%
-		}
-	%>
+	var checked = <%=viewBean.getIsFileAttente()%>;
 	if(checked){
 		$( "#fileAttenteCheckBox" ).prop( "checked", true );
 	}
