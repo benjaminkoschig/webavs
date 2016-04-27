@@ -1,5 +1,6 @@
 package globaz.corvus.db.retenues;
 
+import java.math.BigDecimal;
 import globaz.corvus.api.retenues.IRERetenues;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.utils.REPmtMensuel;
@@ -25,7 +26,7 @@ import globaz.prestation.tools.PRDateFormater;
 public class RERetenuesPaiement extends BEntity {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     public static final String FIELDNAME_CANTON_IMPOSITION = "YQLCAN";
@@ -98,12 +99,12 @@ public class RERetenuesPaiement extends BEntity {
         montantRetenuMensuel = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_MONTANT_RETENU_MENS);
         montantDejaRetenu = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_MONTANT_DEJA_RETENU);
         montantTotalARetenir = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_MONTANT_TOTAL_A_RETENIR);
-        dateDebutRetenue = PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(statement
-                .dbReadNumeric(RERetenuesPaiement.FIELDNAME_DATE_DEBUT_RETENUE));
+        dateDebutRetenue = PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(
+                statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_DATE_DEBUT_RETENUE));
         csGenreRetenue = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_GENRE_RETENUE);
         idRubrique = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_ID_RUBRIQUE);
-        dateFinRetenue = PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(statement
-                .dbReadNumeric(RERetenuesPaiement.FIELDNAME_DATE_FIN_RETENUE));
+        dateFinRetenue = PRDateFormater
+                .convertDate_AAAAMM_to_MMxAAAA(statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_DATE_FIN_RETENUE));
         referenceInterne = statement.dbReadString(RERetenuesPaiement.FIELDNAME_REF_INTERNE);
         tauxImposition = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_TAUX_IMPOSITION);
         cantonImposition = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_CANTON_IMPOSITION);
@@ -167,8 +168,8 @@ public class RERetenuesPaiement extends BEntity {
                 }
             }
             if (idTiers == null) {
-                _addError(statement.getTransaction(), getSession().getLabel("ERREUR_AUCUN_TIERS_TROUVE_POUR_NO")
-                        + idExterne);
+                _addError(statement.getTransaction(),
+                        getSession().getLabel("ERREUR_AUCUN_TIERS_TROUVE_POUR_NO") + idExterne);
             }
             setReferenceInterne(idTiers);
         }
@@ -189,6 +190,22 @@ public class RERetenuesPaiement extends BEntity {
         if (IRERetenues.CS_TYPE_IMPOT_SOURCE.equals(getCsTypeRetenue())) {
             if (JadeStringUtil.isIntegerEmpty(getCantonImposition())) {
                 _addError(statement.getTransaction(), getSession().getLabel("VALID_RET_PMT_CANTON_IMPOSITION"));
+            }
+        }
+
+        // Contrôle que le montant à retenir soit supérieur à 0 pour les cas de retenue qui ne sont pas de type Impôts à
+        // la source
+        if (!IRERetenues.CS_TYPE_IMPOT_SOURCE.equals(getCsTypeRetenue())) {
+
+            if (JadeStringUtil.isBlank(getMontantRetenuMensuel())) {
+                _addError(statement.getTransaction(), getSession().getLabel("MONTANT_RETENUE_MENSUEL_INVALID"));
+            }
+
+            BigDecimal zero = new BigDecimal("0.00");
+            BigDecimal montantARetenir = new BigDecimal(getMontantRetenuMensuel());
+
+            if (montantARetenir.compareTo(zero) <= 0) {
+                _addError(statement.getTransaction(), getSession().getLabel("MONTANT_RETENUE_MENSUEL_INVALID"));
             }
         }
 
@@ -228,16 +245,14 @@ public class RERetenuesPaiement extends BEntity {
                 this._dbWriteNumeric(statement.getTransaction(), montantDejaRetenu, "montantDejaRetenu"));
         statement.writeField(RERetenuesPaiement.FIELDNAME_MONTANT_TOTAL_A_RETENIR,
                 this._dbWriteNumeric(statement.getTransaction(), montantTotalARetenir, "montantTotalARetenir"));
-        statement.writeField(
-                RERetenuesPaiement.FIELDNAME_DATE_DEBUT_RETENUE,
+        statement.writeField(RERetenuesPaiement.FIELDNAME_DATE_DEBUT_RETENUE,
                 this._dbWriteNumeric(statement.getTransaction(),
                         PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(dateDebutRetenue), "dateDebutRetenue"));
         statement.writeField(RERetenuesPaiement.FIELDNAME_GENRE_RETENUE,
                 this._dbWriteNumeric(statement.getTransaction(), csGenreRetenue, "csGenreRetenue"));
         statement.writeField(RERetenuesPaiement.FIELDNAME_ID_RUBRIQUE,
                 this._dbWriteNumeric(statement.getTransaction(), idRubrique, "idRubrique"));
-        statement.writeField(
-                RERetenuesPaiement.FIELDNAME_DATE_FIN_RETENUE,
+        statement.writeField(RERetenuesPaiement.FIELDNAME_DATE_FIN_RETENUE,
                 this._dbWriteNumeric(statement.getTransaction(),
                         PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(dateFinRetenue), "dateFinRetenue"));
         statement.writeField(RERetenuesPaiement.FIELDNAME_REF_INTERNE,
@@ -322,7 +337,7 @@ public class RERetenuesPaiement extends BEntity {
 
     /**
      * Récupère la rente accordée
-     * 
+     *
      * @return the renteAccordee
      */
     public RERenteAccordee getRenteAccordee() {
@@ -338,7 +353,7 @@ public class RERetenuesPaiement extends BEntity {
 
     /**
      * Récupère la rente accordée
-     * 
+     *
      * @return the renteAccordee
      */
     public RERenteAccordee getRenteAccordee(String idRA) {
@@ -371,7 +386,7 @@ public class RERetenuesPaiement extends BEntity {
 
     /**
      * Chargement de la rente accordée
-     * 
+     *
      * @param idRA
      * @return
      * @throws Exception
@@ -402,7 +417,7 @@ public class RERetenuesPaiement extends BEntity {
 
     /**
      * Modification de la date de début de la retenue
-     * 
+     *
      * @param newDateDebutRetenue
      */
     public void setDateDebutRetenue(String newDateDebutRetenue) {
@@ -411,7 +426,7 @@ public class RERetenuesPaiement extends BEntity {
 
     /**
      * Modification de la date de fin de la retenue
-     * 
+     *
      * @param newDateFinRetenue
      */
     public void setDateFinRetenue(String newDateFinRetenue) {
