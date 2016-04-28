@@ -6,12 +6,17 @@ import globaz.corvus.db.basescalcul.REBasesCalcul;
 import globaz.corvus.db.basescalcul.REBasesCalculManager;
 import globaz.corvus.db.demandes.REDemandeRente;
 import globaz.framework.util.FWMessage;
+import globaz.globall.context.BJadeThreadActivator;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
+import globaz.jade.context.JadeThread;
 import globaz.prestation.db.infos.PRInfoCompl;
 import java.util.Iterator;
+import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
+import ch.globaz.corvus.business.services.CorvusServiceLocator;
+import ch.globaz.corvus.domaine.DemandeRente;
 
 public class RETerminerDemandeRentePrevBilProcess extends BProcess {
 
@@ -113,6 +118,26 @@ public class RETerminerDemandeRentePrevBilProcess extends BProcess {
             dm.setCsEtat(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_TERMINE);
             dm.save(getTransaction());
 
+            if (!dm.isNew()) {
+
+                boolean newContextCreated = true;
+
+                try {
+                    if (JadeThread.currentContext() == null) {
+                        BJadeThreadActivator.startUsingContext(getSession().getCurrentThreadTransaction());
+                        newContextCreated = true;
+                    }
+
+                    DemandeRente demandeRente = CorvusCrudServiceLocator.getDemandeRenteCrudService().read(
+                            Long.parseLong(dm.getIdDemandeRente()));
+                    CorvusServiceLocator.getDemandeRenteService().mettreAJourLaPeriodeDeLaDemandeEnFonctionDesRentes(
+                            demandeRente);
+                } finally {
+                    if (newContextCreated) {
+                        BJadeThreadActivator.stopUsingContext(getSession().getCurrentThreadTransaction());
+                    }
+                }
+            }
         } catch (Exception e) {
             try {
                 getTransaction().rollback();

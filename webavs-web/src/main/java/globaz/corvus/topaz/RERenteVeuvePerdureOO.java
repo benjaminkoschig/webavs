@@ -141,9 +141,9 @@ public class RERenteVeuvePerdureOO {
                     "paragraphe1",
                     babelContainer
                             .getTexte(catalogueTextRenteVeuvePerdure, 2, 2)
-                            .replace("{montantRentelnvalidite}",
+                            .replace("{montantRenteInvalidite}",
                                     montantRenteVieillesse.toStringFormat().replace(".00", ".-"))
-                            .replace("{dateDebutRentelnvalidite}", dateDebutRenteVieillesse));
+                            .replace("{dateDebutRenteInvalidite}", dateDebutRenteVieillesse));
         }
 
         data.addData("paragraphe2_partie1", babelContainer.getTexte(catalogueTextRenteVeuvePerdure, 3, 1));
