@@ -73,7 +73,7 @@ public class AFIdeDefaultActionChercher extends AFDefaultActionChercher {
                     if (NAOS_IDE_ACTION_BASE64_PARAM.equalsIgnoreCase(""
                             + session.getAttribute(selectorName + "ProviderAction"))
                             && paramName.equalsIgnoreCase(PARAM_TO_BASE64)) {
-                        paramValue = new String(Base64.encodeBase64(paramValue.getBytes(), false, true));
+                        paramValue = new String(Base64.encodeBase64URLSafe(paramValue.getBytes()));
                     }
                     destination += "&" + paramName + "=" + paramValue;
                 }

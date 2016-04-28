@@ -75,7 +75,7 @@ public class AFWizard extends BEntity implements Serializable {
         return isMessageAnnonceIdeCreationAjouteeToDisplay;
     }
 
-    // commence par souligné afin de ne pas être prise par jspSetBeanProperties
+    // commence par '_' afin de ne pas être prise par jspSetBeanProperties
     public void _setMessageAnnonceIdeCreationAjouteeToDisplay(boolean isMessageAnnonceIdeCreationAjouteeToDisplay) {
         this.isMessageAnnonceIdeCreationAjouteeToDisplay = isMessageAnnonceIdeCreationAjouteeToDisplay;
     }
@@ -668,6 +668,10 @@ public class AFWizard extends BEntity implements Serializable {
         return affiliation.getRaisonSocialeb64();
     }
 
+    public String getActivite() {
+        return affiliation.getActivite();
+    }
+
     public String getRaisonSocialeCourt() {
         return affiliation.getRaisonSocialeCourt();
     }
@@ -817,6 +821,10 @@ public class AFWizard extends BEntity implements Serializable {
      */
     public void setIdeRaisonSocialeb64(String iDE_raisonSocialeb64) {
         affiliation.setIdeRaisonSocialeb64(iDE_raisonSocialeb64);
+    }
+
+    public void setActivite(String activite) {
+        affiliation.setActivite(activite);
     }
 
     public void setDateDebut(java.lang.String newDateDebut) {
@@ -1025,6 +1033,7 @@ public class AFWizard extends BEntity implements Serializable {
     public String getConvention() {
         return affiliation.getConvention();
     }
+
     /**
      * Contrôle si les champs obligatoires de l'affiliation sont renseignés et valides.
      * 

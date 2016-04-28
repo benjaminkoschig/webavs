@@ -318,10 +318,6 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     private boolean wantGenerationSuiviLAALPP = true;
     // D0050 - Champ IDE
-    // private String ideDebutAnnonceActive = "";
-    // private String ideFinAnnonceActive = "";
-    // private String ideDebutAnnoncePassive = "";
-    // private String ideFinAnnoncePassive = "";
     private java.lang.Boolean ideAnnoncePassive = new Boolean(false);
     private String ideStatut = "";
     private String ideRaisonSociale = "";
@@ -329,6 +325,10 @@ public class AFAffiliation extends BEntity implements Serializable {
     // D0050 - Champ IDE non persisté
     private boolean isAnnonceIdeCreationToAdd = false;
     private boolean rulesByPass = false;
+
+    // D0181 - avenant IDE champ activité
+    private String activite = "";
+    private boolean confirmerAnnonceActivite = false;
 
     private String warningMessageAnnonceIdeCreationNotAdded = "";
 
@@ -369,6 +369,14 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     public void setRulesByPass(boolean rulesByPass) {
         this.rulesByPass = rulesByPass;
+    }
+
+    public boolean getConfirmerAnnonceActivite() {
+        return confirmerAnnonceActivite;
+    }
+
+    public void setConfirmerAnnonceActivite(boolean confirmerAnnonceActivite) {
+        this.confirmerAnnonceActivite = confirmerAnnonceActivite;
     }
 
     /**
@@ -1641,13 +1649,11 @@ public class AFAffiliation extends BEntity implements Serializable {
         codeSUVA = statement.dbReadNumeric("MATSUV");
         convention = statement.dbReadNumeric("MACONV");
         // D0050 - Cahmp IDE
-        // ideDebutAnnonceActive = statement.dbReadDateAMJ("MADAAC");
-        // ideFinAnnonceActive = statement.dbReadDateAMJ("MAFAAC");
-        // ideDebutAnnoncePassive = statement.dbReadDateAMJ("MADAPA");
-        // ideFinAnnoncePassive = statement.dbReadDateAMJ("MAFAPA");
         ideAnnoncePassive = statement.dbReadBoolean("MATPAS");
         ideStatut = statement.dbReadNumeric("MATSTA");
         ideRaisonSociale = statement.dbReadString("MATRSO");
+        // D0181 - activité
+        activite = statement.dbReadString("MATACT");
     }
 
     /**
@@ -2426,20 +2432,13 @@ public class AFAffiliation extends BEntity implements Serializable {
         statement.writeField("MACONV", this._dbWriteNumeric(statement.getTransaction(), getConvention(), "convention"));
 
         // D0050 - Champs IDE
-        // statement.writeField("MADAAC",
-        // this._dbWriteDateAMJ(statement.getTransaction(), getIdeDebutAnnonceActive(), "ideDebutAnnonceActive"));
-        // statement.writeField("MAFAAC",
-        // this._dbWriteDateAMJ(statement.getTransaction(), getIdeFinAnnonceActive(), "ideFinAnnonceActive"));
-        // statement
-        // .writeField("MADAPA", this._dbWriteDateAMJ(statement.getTransaction(), getIdeDebutAnnoncePassive(),
-        // "ideDebutAnnoncePassive"));
-        // statement.writeField("MAFAPA",
-        // this._dbWriteDateAMJ(statement.getTransaction(), getIdeFinAnnoncePassive(), "ideFinAnnoncePassive"));
         statement.writeField("MATPAS",
                 this._dbWriteBoolean(statement.getTransaction(), isIdeAnnoncePassive(), "ideAnnoncePassive"));
         statement.writeField("MATSTA", this._dbWriteNumeric(statement.getTransaction(), getIdeStatut(), "ideStatut"));
         statement.writeField("MATRSO",
                 this._dbWriteString(statement.getTransaction(), getIdeRaisonSociale(), "ideRaisonSociale"));
+        // D0181 - activité
+        statement.writeField("MATACT", this._dbWriteString(statement.getTransaction(), getActivite(), "activite"));
 
     }
 
@@ -2937,22 +2936,6 @@ public class AFAffiliation extends BEntity implements Serializable {
         return except;
     }
 
-    // public String getIdeDebutAnnonceActive() {
-    // return ideDebutAnnonceActive;
-    // }
-    //
-    // public String getIdeFinAnnonceActive() {
-    // return ideFinAnnonceActive;
-    // }
-    //
-    // public String getIdeDebutAnnoncePassive() {
-    // return ideDebutAnnoncePassive;
-    // }
-    //
-    // public String getIdeFinAnnoncePassive() {
-    // return ideFinAnnoncePassive;
-    // }
-
     public String getIdeRaisonSociale() {
         return ideRaisonSociale;
     }
@@ -3038,13 +3021,18 @@ public class AFAffiliation extends BEntity implements Serializable {
         return raisonSociale;
     }
 
+    public String getActivite() {
+        return activite;
+    }
+
     /**
      * conversion Base64 : Une raison sociale peut contenir des caractères non autorisé en get
+     * utilisé pour transiter la raison sociale vers la recherche ide
      * 
-     * @return
+     * @return la raison sociale en B64
      */
     public String getRaisonSocialeb64() {
-        return new String(Base64.encodeBase64(raisonSociale.getBytes()));
+        return new String(Base64.encodeBase64URLSafe(raisonSociale.getBytes()));
     }
 
     public String getRaisonSocialeCourt() {
@@ -3482,22 +3470,9 @@ public class AFAffiliation extends BEntity implements Serializable {
         exonerationGenerale = newExonerationGenerale;
     }
 
-    //
-    // public void setIdeDebutAnnonceActive(String iDE_debutAnnonceActive) {
-    // ideDebutAnnonceActive = iDE_debutAnnonceActive;
-    // }
-
-    // public void setIdeFinAnnonceActive(String iDE_finAnnonceActive) {
-    // ideFinAnnonceActive = iDE_finAnnonceActive;
-    // }
-
-    // public void setIdeDebutAnnoncePassive(String iDE_debutAnnoncePassive) {
-    // ideDebutAnnoncePassive = iDE_debutAnnoncePassive;
-    // }
-    //
-    // public void setIdeFinAnnoncePassive(String iDE_finAnnoncePassive) {
-    // ideFinAnnoncePassive = iDE_finAnnoncePassive;
-    // }
+    public void setActivite(String activite) {
+        this.activite = activite;
+    }
 
     public void setIdeStatut(String iDE_statut) {
         ideStatut = iDE_statut;

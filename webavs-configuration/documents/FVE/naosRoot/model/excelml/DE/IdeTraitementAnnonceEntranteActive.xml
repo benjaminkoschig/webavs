@@ -201,7 +201,7 @@
   <NamedRange ss:Name="NUMERO_INFOROM" ss:RefersTo="=Feuil1!R1C1"/>
   <NamedRange ss:Name="DATE_DOC" ss:RefersTo="=Feuil1!R1C8"/>
   <NamedRange ss:Name="TITRE_DOC" ss:RefersTo="=Feuil1!R2C1"/>
-  <NamedRange ss:Name="DATE_A_PARTIR" ss:RefersTo="=Feuil1!R4C2"/>
+  <NamedRange ss:Name="DATE_TRAITEMENT" ss:RefersTo="=Feuil1!R4C2"/>
   
   <NamedRange ss:Name="TYPE_ANNONCE" ss:RefersTo="=Feuil1!R7C1"/>
   <NamedRange ss:Name="ETAT_ANNNOCE" ss:RefersTo="=Feuil1!R7C2"/>
@@ -214,13 +214,15 @@
   <NamedRange ss:Name="NPA" ss:RefersTo="=Feuil1!R7C9"/>
   <NamedRange ss:Name="LOCALITE" ss:RefersTo="=Feuil1!R7C10"/>
   <NamedRange ss:Name="CANTON" ss:RefersTo="=Feuil1!R7C11"/>
-  <NamedRange ss:Name="MESSAGE_ERREUR" ss:RefersTo="=Feuil1!R7C12"/>
+  <NamedRange ss:Name="MESSAGE_ERREUR" ss:RefersTo="=Feuil1!R7C14"/>
+  <NamedRange ss:Name="NAISSANCE" ss:RefersTo="=Feuil1!R7C12"/>
+  <NamedRange ss:Name="NOGA" ss:RefersTo="=Feuil1!R7C13"/>
  </Names>
  <Worksheet ss:Name="Feuil1">
   <Names>
    <NamedRange ss:Name="_FilterDatabase" ss:RefersTo="=Feuil1!#REF!" ss:Hidden="1"/>
   </Names>
-  <Table ss:ExpandedColumnCount="10" ss:ExpandedRowCount="7" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="14" ss:ExpandedRowCount="7" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s62" ss:DefaultColumnWidth="60"
    ss:DefaultRowHeight="11.25">
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="75.75"/>
@@ -256,7 +258,7 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s68"><Data ss:Type="String">Bearbeitung vom:</Data></Cell>
     <Cell ss:StyleID="s69"><Data ss:Type="DateTime">2001-10-10T00:00:00.000</Data><NamedCell
-      ss:Name="DATE_A_PARTIR"/></Cell>
+      ss:Name="DATE_TRAITEMENT"/></Cell>
     <Cell ss:StyleID="s63"/>
     <Cell ss:StyleID="s65"/>
     <Cell ss:StyleID="s66"/>
@@ -281,6 +283,8 @@
     <Cell ss:StyleID="s73"><Data ss:Type="String">PLZ</Data></Cell>
     <Cell ss:StyleID="s73"><Data ss:Type="String">Ort</Data></Cell>
     <Cell ss:StyleID="s73"><Data ss:Type="String">Kanton</Data></Cell>
+    <Cell ss:StyleID="s73"><Data ss:Type="String">Geburtsdatum</Data></Cell>
+    <Cell ss:StyleID="s73"><Data ss:Type="String">Noga Code</Data></Cell>
     <Cell ss:StyleID="s73"><Data ss:Type="String">Fehlermeldung</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -306,6 +310,10 @@
       ss:Name="LOCALITE"/></Cell>
     <Cell ss:StyleID="s87"><Data ss:Type="String">Canton</Data><NamedCell
       ss:Name="CANTON"/></Cell>
+    <Cell ss:StyleID="s87"><Data ss:Type="String">Naissance</Data><NamedCell
+      ss:Name="NAISSANCE"/></Cell>
+    <Cell ss:StyleID="s87"><Data ss:Type="String">Noga</Data><NamedCell
+      ss:Name="NOGA"/></Cell>
     <Cell ss:StyleID="s87"><Data ss:Type="String">error</Data><NamedCell
       ss:Name="MESSAGE_ERREUR"/></Cell>
    </Row>

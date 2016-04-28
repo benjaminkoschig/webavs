@@ -21,6 +21,7 @@ import globaz.naos.db.cotisation.AFCotisation;
 import globaz.naos.db.cotisation.AFCotisationManager;
 import globaz.naos.db.ide.AFIdeAnnonce;
 import globaz.naos.db.ide.AFIdeAnnonceManager;
+import globaz.naos.exceptions.AFIdeNumberNoMatchException;
 import globaz.naos.properties.AFProperties;
 import globaz.naos.translation.CodeSystem;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
@@ -191,7 +192,9 @@ public class AFIDEUtil {
 
         String numAff = ideAnnonce.getNumeroAffilie();
         String numAffLiee = ideAnnonce.getIdeAnnonceListNumeroAffilieLiee();
-        String numAffForEcran = numAff;
+        // D0181 si j'ai un num affilié historisé sur l'annonce
+        String numAffForEcran = (ideAnnonce.getHistNumeroAffilie().isEmpty() ? numAff : ideAnnonce
+                .getHistNumeroAffilie());
         if (!JadeStringUtil.isBlankOrZero(numAff) && !JadeStringUtil.isBlankOrZero(numAffLiee)) {
             numAffForEcran = numAffForEcran + ",";
         }
@@ -360,6 +363,13 @@ public class AFIDEUtil {
 
     }
 
+    public static boolean isAnnonceAnnulationSansRemplacement(AFIdeAnnonce annonce) {
+
+        return CodeSystem.TYPE_ANNONCE_IDE_ANNULEE.equalsIgnoreCase(annonce.getIdeAnnonceType())
+                && JadeStringUtil.isBlankOrZero(annonce.getNumeroIdeRemplacement());
+
+    }
+
     public static String checkAnnonceCreationMandatory(BSession session, String idAffiliation) throws Exception {
 
         AFAffiliation affiliation = AFAffiliationUtil.getAffiliation(idAffiliation, session);
@@ -373,6 +383,14 @@ public class AFIDEUtil {
             }
             errorBuffer.append(session
                     .getLabel("NAOS_ANNONCE_IDE_CREATION_MANDATORY_ERREUR_NUMERO_IDE_AFFILIATION_NOT_BLANK"));
+
+        }
+        if (JadeStringUtil.isBlankOrZero(affiliation.getActivite())) {
+            if (errorBuffer.length() > 0) {
+                errorBuffer.append(" / ");
+            }
+            errorBuffer.append(session
+                    .getLabel("NAOS_ANNONCE_IDE_CREATION_MANDATORY_ERREUR_ACTIVITE_AFFILIATION_NOT_BLANK"));
 
         }
 
@@ -406,6 +424,12 @@ public class AFIDEUtil {
         ideAnnonce.setHistNumeroIde(ideDataBean.getNumeroIDE());
         ideAnnonce.setHistRaisonSociale(ideDataBean.getRaisonSociale());
         ideAnnonce.setHistStatutIde(ideDataBean.getStatut());
+        // D0181
+        ideAnnonce.setHistNumeroAffilie(ideDataBean.getNumeroAffilie());
+        ideAnnonce.setHistNaissance(ideDataBean.getNaissance());
+        ideAnnonce.setHistActivite(ideDataBean.getActivite());
+        ideAnnonce.setHistNoga(ideDataBean.getNogaCode());
+
         // si la date de validité OFS est dans le passé, alors la date du jour est persistée à la place
         ideAnnonce.setHistTypeAnnonceDate(!JadeStringUtil.isBlankOrZero(ideAnnonce.getTypeAnnonceDate())
                 && BSessionUtil.compareDateFirstGreater(session, ideAnnonce.getTypeAnnonceDate(),
@@ -502,7 +526,12 @@ public class AFIDEUtil {
         if (e != null && session != null) {
             System.out.println(e.getMessage());
             e.printStackTrace();
-            return session.getLabel("NAOS_IDE_MESSAGE_ERREUR_GENERIQUE_EXCEPTION");
+
+            if (e instanceof AFIdeNumberNoMatchException) {
+                return e.getMessage();
+            } else {
+                return session.getLabel("NAOS_IDE_MESSAGE_ERREUR_GENERIQUE_EXCEPTION");
+            }
         }
 
         return "";
@@ -522,12 +551,12 @@ public class AFIDEUtil {
         ideAnnonce.setMessageErreurForBusinessUser(erreur);
     }
 
-    public static String giveMeStatusAnnonceApresTraitementAccordingToError(AFIdeAnnonce ideAnnonce) {
+    public static String giveMeStatusAnnonceApresTraitementAccordingToError(AFIdeAnnonce ideAnnonce,
+            boolean errorMustFlagAnnonceAsSuccess) {
 
-        if (ideAnnonce.hasAnnonceErreur()) {
+        if (ideAnnonce.hasAnnonceErreur() && !errorMustFlagAnnonceAsSuccess) {
             return CodeSystem.ETAT_ANNONCE_IDE_ERREUR;
         }
-
         return CodeSystem.ETAT_ANNONCE_IDE_TRAITE;
     }
 
@@ -580,10 +609,21 @@ public class AFIDEUtil {
         ideDataBean.setLangue(tiers.getLangueIso().toUpperCase());
         ideDataBean.setNumeroIDE(ideAnnonce.getNumeroIde());
         ideDataBean.setNumeroIDERemplacement(ideAnnonce.getNumeroIdeRemplacement());
-        ideDataBean.setRaisonSociale(ideAnnonce.getRaisonSociale());
+        // D0181//ideDataBean.setRaisonSociale(ideAnnonce.getRaisonSociale());
         ideDataBean.setStatut(ideAnnonce.getStatutIde());
         ideDataBean.setBrancheEconomique(affiliation.getBrancheEconomique());
         ideDataBean.setPersonnaliteJuridique(affiliation.getPersonnaliteJuridique());
+        // D0181
+        if (tiers.getPersonnePhysique()) {
+            ideDataBean.setNaissance(tiers.getDateNaissance());
+            ideDataBean.setRaisonSociale(tiers.getPrenomNom());
+        } else {
+            ideDataBean.setRaisonSociale(ideAnnonce.getRaisonSociale());
+        }
+        ideDataBean.setActivite(affiliation.getActivite());
+        ideDataBean.setNumeroAffilie(ideAnnonce.getNumeroAffilie());
+        // le code noga n'est rempli qu'en annonce entrante
+        ideDataBean.setNogaCode("");
 
         return ideDataBean;
     }

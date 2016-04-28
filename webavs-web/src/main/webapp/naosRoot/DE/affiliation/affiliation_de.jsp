@@ -40,6 +40,7 @@ if(!JadeStringUtil.isEmpty(libDateDebutReelle)) {
 
 <SCRIPT language="JavaScript">
 var activeCheckTypeAff = false;
+var confirmOnce = true;
 function add() {
 	if ("<%=request.getParameter("_valid")%>" != "fail") {
 		<% if (viewBean.getAffilieNumero()==null || viewBean.getAffilieNumero().length() == 0) { %>
@@ -82,6 +83,12 @@ function updateChampIde(tag){
 	}
 	
 function validate() {
+	
+	// si attendre sur popup?
+	if(confirmerMutationActivite()){
+		return ;
+	}
+	
 	if(document.forms[0].elements('affilieNumero').value != '<%= viewBean.getAffilieNumero()%>' && '<%= viewBean.getAffilieNumero()%>'!='' ) 
 	{
 		if(!window.confirm("Sie sind dabei, die Nummer eines Mitgliedes zu ändern! Wollen Sie fortfahren?"))
@@ -126,6 +133,51 @@ function updateGenreAff (data){
 	if(oldData==<%=globaz.naos.translation.CodeSystem.TYPE_AFFILI_PROVIS%> && data != <%=globaz.naos.translation.CodeSystem.TYPE_AFFILI_PROVIS%>){
 		document.forms[0].elements('traitement').checked = false;
 	}
+}
+
+function confirmerMutationActivite(){
+	if(confirmOnce){
+	//D0181
+	// n'est pas une création	
+	if (document.forms[0].elements('_method').value != "add"){
+		// si l'activité a changé
+		if(document.forms[0].elements('activite').value != '<%= viewBean.getActivite()%>' && document.forms[0].elements('activite').value != "" ) 
+		{
+			if(document.forms[0].elements('numeroIDESansCHE').value != '' && !document.getElementById('ideAnnoncePassive').checked &&
+					document.forms[0].elements('raisonSociale').value == '<%=viewBean.getRaisonSociale()%>' &&
+					document.forms[0].elements('typeAffiliation').value == '<%=viewBean.getTypeAffiliation()%>' && 
+					document.forms[0].elements('brancheEconomique').value == '<%=viewBean.getBrancheEconomique()%>'){
+				
+			
+			$( "#dialog_confirm_mutation_activite" ).dialog({
+			      resizable: false,
+			      height:140,
+			      modal: true,
+			      buttons: {
+
+			      "<ct:FWLabel key='NAOS_DIALOG_LINK_OR_CREATE_ANNONCE_BOUTON_OUI'/>": function() {
+			    	  document.forms[0].elements('confirmerAnnonceActivite').value=true;
+			          $( this ).dialog( "close" );
+			          if(validate()) action(COMMIT);
+			        },
+
+			        "<ct:FWLabel key='NAOS_DIALOG_LINK_OR_CREATE_ANNONCE_BOUTON_NON'/>": function() {
+			        	document.forms[0].elements('confirmerAnnonceActivite').value=false;
+				        $( this ).dialog( "close" );
+				        if(validate()) action(COMMIT);
+			        }
+			      }
+			    });
+			
+			//avoid validate popup twice
+			confirmOnce = false;
+			
+			return true;
+			}
+		}
+	}
+	}
+	return false;
 }
 
 function checkEnvoiAutomatique() {
@@ -438,6 +490,12 @@ function rebuildNoga(idCode) {
 	}
 }
 
+function maxLength(zone,max)
+{
+	if(zone.value.length>=max){
+		zone.value=zone.value.substring(0,max);
+	}
+}
 </SCRIPT> 
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
@@ -453,8 +511,11 @@ function rebuildNoga(idCode) {
   							 	<ct:FWLabel key="NAOS_DIALOG_LINK_OR_CREATE_ANNONCE_TEXTE"/>
   							</p>
 						</div>
-
-						
+						<div style="display:none" id="dialog_confirm_mutation_activite" title="<ct:FWLabel key='NAOS_DIALOG_CONFIRM_MUTATION_ACTIVITE_TITRE'/>">
+  							 <p>
+  							 	<ct:FWLabel key="NAOS_DIALOG_CONFIRM_MUTATION_ACTIVITE_TEXTE"/>
+  							</p>
+						</div>
 						
 						<INPUT type="hidden" id="idAnnonceIdeCreationLiee" name="idAnnonceIdeCreationLiee" value="<%=viewBean.getIdAnnonceIdeCreationLiee()%>">
 						<TR> 
@@ -643,7 +704,7 @@ function rebuildNoga(idCode) {
 							</TR>
 							<TR>
 								<TD nowrap height="31" width="161">Noga Code</TD>
-								<TD nowrap colspan="4"> 
+								<TD nowrap colspan="2"> 
 									<ct:FWCodeSelectTag 
 		                				name="categorieNoga"
 										defaut="<%=viewBean.getCategorieNoga()%>"
@@ -664,6 +725,11 @@ function rebuildNoga(idCode) {
 									</script>
 																	
 								</TD>
+								<TD nowrap height="31" width="161">Aktivit&auml;t(en)</TD>
+								<td rowspan="3">
+									<TEXTAREA name="activite" rows="5" cols="50" onkeypress="maxLength(this, 254);"><%=viewBean.getActivite()%></TEXTAREA>
+									<INPUT type="hidden" name="confirmerAnnonceActivite" value="<%=viewBean.getConfirmerAnnonceActivite()%>"/>
+								</td>
 							</TR>
 							<TR> 
 								<TD nowrap width="161">Fakturierung</TD>

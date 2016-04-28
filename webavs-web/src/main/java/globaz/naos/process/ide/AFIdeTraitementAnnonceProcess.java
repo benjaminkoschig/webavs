@@ -22,6 +22,7 @@ import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationUtil;
 import globaz.naos.db.ide.AFIdeAnnonce;
 import globaz.naos.db.ide.AFIdeAnnonceManager;
+import globaz.naos.exceptions.AFIdeNumberNoMatchException;
 import globaz.naos.listes.excel.AFXmlmlIdeTraitementAnnonce;
 import globaz.naos.listes.excel.AFXmlmlIdeTraitementAnnonceEntranteActive;
 import globaz.naos.listes.excel.AFXmlmlIdeTraitementAnnonceEntrantePassive;
@@ -30,6 +31,7 @@ import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.AFIDEUtil;
 import globaz.naos.util.IDEDataBean;
 import globaz.naos.util.IDEServiceCallUtil;
+import globaz.pyxis.db.tiers.TITiersViewBean;
 import globaz.webavs.common.CommonExcelmlUtils;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -788,7 +790,17 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
             numeroIDE = ideAnnonceEntrante.getNumeroIdeRemplacement();
         }
 
-        List<IDEDataBean> listIdeDataBeans = IDEServiceCallUtil.searchForNumeroIDE(numeroIDE, getSession());
+        List<IDEDataBean> listIdeDataBeans;
+
+        if (AFIDEUtil.isAnnonceAnnulationSansRemplacement(ideAnnonceEntrante)) {
+            // D0181 Si annonce d'annulation sans IDE de remplacement, mettre à blanc les champs numIde,RaisonSocIde et
+            // Status des affiliations
+            listIdeDataBeans = new ArrayList<IDEDataBean>();
+            listIdeDataBeans.add(new IDEDataBean());
+        } else {
+            // sinon mettre à jour par rapport à ce qui est dans le registre
+            listIdeDataBeans = IDEServiceCallUtil.searchForNumeroIDE(numeroIDE, getSession());
+        }
         if (listIdeDataBeans.size() == 1) {
 
             IDEDataBean ideDataBean = listIdeDataBeans.get(0);
@@ -803,7 +815,10 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                 aAffiliation.update(getTransaction());
 
             }
-
+            if (AFIDEUtil.isAnnonceAnnulationDoublon(ideAnnonceEntrante)) {
+                // D0181 générer une annonce d'enregistrement Actif pour le numéro ide de remplacement
+                AFIDEUtil.generateAnnonceEnregistrementActif(getSession(), listAffiliation.get(0), null);
+            }
         } else {
             throw new Exception(
                     "AFIdeTraitementAnnonceProcess.updateAffiliationWithAnnonceEntrante : unable to update affiliation because no entity IDE founded in register for number "
@@ -908,6 +923,7 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
         for (AFIdeAnnonce ideAnnonceEntrante : listAnnonceIde) {
 
             boolean isAnnoncePassive = AFIDEUtil.isAnnoncePassive(ideAnnonceEntrante);
+            boolean errorMustFlagAnnonceAsSuccess = false;
             List<AFAffiliation> listAffiliationToUpdate = null;
             try {
                 viderErreurProcess();
@@ -959,13 +975,22 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
                 }
 
+            } catch (AFIdeNumberNoMatchException e) {
+                // D0181 si l'annonce entrantes de type ANNULE (avec ou sans le remplacement) renseignent un
+                // numéro IDE inconnu dans nos affilié, l'annonce doit
+                // générer une erreur spécifique pour pouvoir malgré tout la passer en Traité
+                if (AFIDEUtil.isAnnonceAnnulationDoublon(ideAnnonceEntrante)
+                        || AFIDEUtil.isAnnonceAnnulationSansRemplacement(ideAnnonceEntrante)) {
+                    errorMustFlagAnnonceAsSuccess = true;
+                }
+                AFIDEUtil.handleError(getSession(), e, ideAnnonceEntrante);
             } catch (Exception e) {
                 AFIDEUtil.handleError(getSession(), e, ideAnnonceEntrante);
             } finally {
 
                 try {
                     doUpdateAfterTraitementAnnonceEntrante(ideAnnonceEntrante, isAnnoncePassive,
-                            listAffiliationToUpdate);
+                            listAffiliationToUpdate, errorMustFlagAnnonceAsSuccess);
                 } catch (Exception e2) {
                     AFIDEUtil.logExceptionAndCreateMessageForUser(getSession(), e2);
                     getTransaction().addErrors(e2.getMessage());
@@ -982,7 +1007,7 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
     }
 
     private void doUpdateAfterTraitementAnnonceEntrante(AFIdeAnnonce ideAnnonceEntrante, boolean isAnnoncePassive,
-            List<AFAffiliation> listAffiliationToUpdate) throws Exception {
+            List<AFAffiliation> listAffiliationToUpdate, boolean errorMustFlagAnnonceAsSuccess) throws Exception {
 
         if (!ideAnnonceEntrante.hasAnnonceErreur()) {
             if (!isAnnoncePassive) {
@@ -991,7 +1016,8 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
         }
 
         updateAnnonceAfterTraitementAnnonceEntrante(ideAnnonceEntrante,
-                AFIDEUtil.giveMeStatusAnnonceApresTraitementAccordingToError(ideAnnonceEntrante));
+                AFIDEUtil.giveMeStatusAnnonceApresTraitementAccordingToError(ideAnnonceEntrante,
+                        errorMustFlagAnnonceAsSuccess));
 
     }
 
@@ -1140,8 +1166,8 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                                 .getCodeLibelle(aIdeAnnonce.getHistStatutIde()), AFIDEUtil
                                 .giveMeAllNumeroAffilieInAnnonceSeparatedByVirgul(aIdeAnnonce), aIdeAnnonce
                                 .getHistRaisonSociale(), aIdeAnnonce.getHistRue(), aIdeAnnonce.getHistNPA(),
-                        aIdeAnnonce.getHistLocalite(), aIdeAnnonce.getHistCanton(), aIdeAnnonce
-                                .getMessageErreurForBusinessUser());
+                        aIdeAnnonce.getHistLocalite(), aIdeAnnonce.getHistCanton(), aIdeAnnonce.getHistNaissance(),
+                        aIdeAnnonce.getHistNoga(), aIdeAnnonce.getMessageErreurForBusinessUser());
             }
 
         }
@@ -1175,8 +1201,8 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                         numIde, getSession().getCodeLibelle(aIdeAnnonce.getHistStatutIde()), AFIDEUtil
                                 .giveMeAllNumeroAffilieInAnnonceSeparatedByVirgul(aIdeAnnonce), aIdeAnnonce
                                 .getHistRaisonSociale(), aIdeAnnonce.getHistRue(), aIdeAnnonce.getHistNPA(),
-                        aIdeAnnonce.getHistLocalite(), aIdeAnnonce.getHistCanton(), aIdeAnnonce
-                                .getMessageErreurForBusinessUser());
+                        aIdeAnnonce.getHistLocalite(), aIdeAnnonce.getHistCanton(), aIdeAnnonce.getHistNaissance(),
+                        aIdeAnnonce.getHistNoga(), aIdeAnnonce.getMessageErreurForBusinessUser());
             }
 
         }
@@ -1197,16 +1223,25 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
             AFAffiliation aff = new AFAffiliation();
             aff = AFAffiliationUtil.getAffiliation(aIdeAnnonce.getIdeAnnonceIdAffiliation(), getSession());
 
+            // D0181 raisonSoc = prenomNom pour personne physique
+            String raisonSoc = aIdeAnnonce.getHistRaisonSocialeONLY();
+            if (JadeStringUtil.isEmpty(raisonSoc)) {
+                TITiersViewBean tiers = new TITiersViewBean();
+                tiers.setSession(getSession());
+                tiers.setIdTiers(aIdeAnnonce.getIdTiers());
+                tiers.retrieve();
+                if (tiers.getPersonnePhysique()) {
+                    raisonSoc = tiers.getPrenomNom();
+                } else {
+                    raisonSoc = aIdeAnnonce.getHistRaisonSociale();
+                }
+            }
+
             String numIDE = aIdeAnnonce.getNumeroIde();
             if (!aff.isNew() && JadeStringUtil.isEmpty(numIDE)) {
                 numIDE = aff.getNumeroIDE();
             }
-            String raison = aff.getRaisonSociale();
 
-            // String raison = aIdeAnnonce.getRaisonSociale();
-            // if (!aff.isNew() && JadeStringUtil.isEmpty(raison)) {
-            // raison = aff.getRaisonSociale();
-            // }
             String statutIDE = aIdeAnnonce.getStatutIde();
             if (!aff.isNew() && JadeStringUtil.isEmpty(statutIDE)) {
                 statutIDE = aff.getIdeStatut();
@@ -1215,9 +1250,10 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
             xmlml.createLigne(getSession().getCodeLibelle(aIdeAnnonce.getIdeAnnonceType()), getSession()
                     .getCodeLibelle(aIdeAnnonce.getIdeAnnonceEtat()), aIdeAnnonce.getIdeAnnonceDateCreation(),
                     AFIDEUtil.giveMeNumIdeFormatedWithPrefix(numIDE), getSession().getCodeLibelle(statutIDE), AFIDEUtil
-                            .giveMeAllNumeroAffilieInAnnonceSeparatedByVirgul(aIdeAnnonce), raison, aIdeAnnonce
+                            .giveMeAllNumeroAffilieInAnnonceSeparatedByVirgul(aIdeAnnonce), raisonSoc, aIdeAnnonce
                             .getHistRue(), aIdeAnnonce.getHistNPA(), aIdeAnnonce.getHistLocalite(), aIdeAnnonce
-                            .getHistCanton(), aIdeAnnonce.getMessageErreurForBusinessUser());
+                            .getHistCanton(), aIdeAnnonce.getHistNaissance(), aIdeAnnonce.getHistActivite(),
+                    aIdeAnnonce.getMessageErreurForBusinessUser());
         }
     }
 

@@ -13,6 +13,7 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.security.GeneralSecurityException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +21,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
@@ -635,6 +637,25 @@ public class IDEServiceCallUtil {
         } catch (Exception e) {
             legalForm = "";
         }
+        String birthDate = "";
+        try {
+            birthDate = IDEServiceMappingUtil.getNaissance(organisation);
+
+        } catch (Exception e) {
+            birthDate = "";
+        }
+        String numAff = "";
+        try {
+            numAff = IDEServiceMappingUtil.getNumeroAffilie(organisation);
+        } catch (Exception e) {
+            numAff = "";
+        }
+        String activite = "";
+        try {
+            activite = IDEServiceMappingUtil.getActivite(organisation);
+        } catch (Exception e) {
+            activite = "";
+        }
 
         StringBuffer sendedData = new StringBuffer();
 
@@ -647,7 +668,10 @@ public class IDEServiceCallUtil {
         sendedData.append("Town : " + localite + " / ");
         sendedData.append("Street : " + rue + " / ");
         sendedData.append("Care Of : " + aLAttention + " / ");
-        sendedData.append("LegalForm : " + legalForm);
+        sendedData.append("LegalForm : " + legalForm + " / ");
+        sendedData.append("BirthDate : " + birthDate + " / ");
+        sendedData.append("OtherId : " + numAff + " / ");
+        sendedData.append("uidBranch : " + activite);
         return sendedData.toString();
 
     }
@@ -684,6 +708,11 @@ public class IDEServiceCallUtil {
         ideDataBean.setPersonnaliteJuridique(IDEServiceMappingUtil.getLegalForm(organisation));
         ideDataBean.setBrancheEconomique(IDEServiceMappingUtil.getOrganisationType(organisation));
         ideDataBean.setLangue(IDEServiceMappingUtil.getLangue(organisation));
+        // D0181
+        ideDataBean.setNaissance(IDEServiceMappingUtil.getNaissance(organisation));
+        ideDataBean.setActivite(IDEServiceMappingUtil.getActivite(organisation));
+        ideDataBean.setNumeroAffilie(IDEServiceMappingUtil.getNumeroAffilie(organisation));
+        ideDataBean.setNogaCode(IDEServiceMappingUtil.getNogaCode(organisation));
 
         return ideDataBean;
     }
@@ -732,13 +761,15 @@ public class IDEServiceCallUtil {
     }
 
     public static final List<IDEDataBean> search(String forRaisonSociale, String forNpa, String forLocalite,
-            String forRue, String forNumeroRue, BSession session) throws Exception, RemoteException {
+            String forRue, String forNumeroRue, String forNaissance, BSession session) throws Exception,
+            RemoteException {
 
         boolean isInputValid = !JadeStringUtil.isBlankOrZero(forRaisonSociale);
         isInputValid = isInputValid || !JadeStringUtil.isBlankOrZero(forNpa);
         isInputValid = isInputValid || !JadeStringUtil.isBlankOrZero(forLocalite);
         isInputValid = isInputValid || !JadeStringUtil.isBlankOrZero(forRue);
         isInputValid = isInputValid || !JadeStringUtil.isBlankOrZero(forNumeroRue);
+        isInputValid = isInputValid || !JadeStringUtil.isBlankOrZero(forNaissance);
 
         if (!isInputValid) {
             throw new Exception(session.getLabel("NAOS_RECHERCHE_IDE_WS_ERREUR_RECHERCHE_SANS_NUM_IDE_MANDATORY"));
@@ -751,7 +782,7 @@ public class IDEServiceCallUtil {
 
         ArrayOfRatedOrganisation arrayOrganisation = null;
         OrganisationType organisationType = IDEServiceMappingUtil.getStructureForSearch(forRaisonSociale, forNpa,
-                forLocalite, forRue, forNumeroRue);
+                forLocalite, forRue, forNumeroRue, forNaissance);
         try {
             IPartnerServices port = initService();
 
@@ -768,15 +799,20 @@ public class IDEServiceCallUtil {
         return formatdata(arrayOrganisation);
     }
 
+    /**
+     * convert Date (String globaz) to xmlGregorianCalendar and add labeled errors to transaction
+     * 
+     * @param session for I18N
+     * @param transaction to add error if
+     * @param date warning String jj.mm.aaaa
+     * @param numAffilie
+     * @return
+     */
     public static XMLGregorianCalendar convertDateAMJtoXMLDateGregorian(BSession session, BTransaction transaction,
             String date, String numAffilie) {
         XMLGregorianCalendar xmlCalendar = null;
-        GregorianCalendar gCalendar = new GregorianCalendar();
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
         try {
-            gCalendar.setTime(format.parse(date));
-            DatatypeFactory dataTypeFac = DatatypeFactory.newInstance();
-            xmlCalendar = dataTypeFac.newXMLGregorianCalendar(gCalendar);
+            xmlCalendar = convertDateAMJtoXMLDateGregorian(date);
         } catch (Exception e) {
             if (!JadeStringUtil.isEmpty(numAffilie)) {
                 // Erreur lors du traitement de l'année
@@ -790,6 +826,24 @@ public class IDEServiceCallUtil {
             }
             return null;
         }
+        return xmlCalendar;
+    }
+
+    /**
+     * 
+     * @param date WARNING jj.mm.aaaa
+     * @return
+     * @throws ParseException
+     * @throws DatatypeConfigurationException
+     */
+    public static XMLGregorianCalendar convertDateAMJtoXMLDateGregorian(String date) throws ParseException,
+            DatatypeConfigurationException {
+        XMLGregorianCalendar xmlCalendar = null;
+        GregorianCalendar gCalendar = new GregorianCalendar();
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+        gCalendar.setTime(format.parse(date));
+        DatatypeFactory dataTypeFac = DatatypeFactory.newInstance();
+        xmlCalendar = dataTypeFac.newXMLGregorianCalendar(gCalendar);
         return xmlCalendar;
     }
 

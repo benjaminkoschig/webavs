@@ -33,6 +33,7 @@ function showHideChamRecherche() {
 		jscss("add", document.forms[0].forLocalite, "hidden");
 		jscss("add", document.forms[0].forRue, "hidden");
 		jscss("add", document.forms[0].forNumeroRue, "hidden");
+		jscss("add", document.forms[0].forNaissance, "hidden");
 		/* jscss("add", document.forms[0].wantSemblable, "hidden"); */
 		$("#libSearchNumeroIDE").show();
 		$("#libSearchRaisonSociale").hide();
@@ -40,6 +41,8 @@ function showHideChamRecherche() {
 		$("#libSearchLocalite").hide();
 		$("#libSearchRue").hide();
 		$("#libSearchNumeroRue").hide();
+		$("#libSearchNaissance").hide();
+		$("#divForNaissance").hide();
 		/* $("#libSearchSemblable").hide(); */
 		
 	} 
@@ -52,6 +55,7 @@ function showHideChamRecherche() {
 		jscss("remove", document.forms[0].forLocalite, "hidden");
 		jscss("remove", document.forms[0].forRue, "hidden");
 		jscss("remove", document.forms[0].forNumeroRue, "hidden");
+		jscss("remove", document.forms[0].forNaissance, "hidden");
 		/* jscss("remove", document.forms[0].wantSemblable, "hidden"); */
 		$("#libSearchNumeroIDE").hide();
 		$("#libSearchRaisonSociale").show();
@@ -59,6 +63,8 @@ function showHideChamRecherche() {
 		$("#libSearchLocalite").show();
 		$("#libSearchRue").show();
 		$("#libSearchNumeroRue").show();
+		$("#libSearchNaissance").show();
+		$("#divForNaissance").show();
 		/* $("#libSearchSemblable").show(); */
 	}
 
@@ -103,9 +109,9 @@ function postInit(){
            <INPUT type="hidden" id="ideAnnonceCategorie" name="ideAnnonceCategorie" value="<%=CodeSystem.CATEGORIE_ANNONCE_IDE_ENVOI%>">
            <INPUT type="hidden" id="ideAnnonceEtat" name="ideAnnonceEtat" value="<%=CodeSystem.ETAT_ANNONCE_IDE_ENREGISTRE%>">
            <INPUT type="hidden" id="ideAnnonceType" name="ideAnnonceType" value="<%=CodeSystem.TYPE_ANNONCE_IDE_CREATION%>">
-           <INPUT type="hidden" id="raisonSociale" name="raisonSociale" value="<%=(request.getParameter("forRaisonSociale")==null)?"":new String(Base64.decodeBase64(request.getParameter("forRaisonSociale").getBytes())) %>">
+           <INPUT type="hidden" id="raisonSociale" name="raisonSociale" value="<%=(request.getParameter("forRaisonSociale")==null)?"":new String(Base64.decodeBase64(request.getParameter("forRaisonSociale").getBytes())).replaceAll("\"","&quot;")%>">
            
-            <TD colspan="8">
+            <TD colspan="10">
             	<label id="libRadioSearchIDE"><ct:FWLabel key="NAOS_JSP_IDE_RADIO_IDE"/></label>
             	<INPUT TYPE="radio" name="forTypeRecherche" id="modeSearch1" value="<%=AFIDEUtil.TYPE_RECHERCHE_NUM_IDE %>" onclick="showHideChamRecherche()">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             	<label id="libRadioSearchAutreChamp"><ct:FWLabel key="NAOS_JSP_IDE_RADIO_AUTRECHAMP"/></label>
@@ -115,39 +121,44 @@ function postInit(){
       	</TR>
       	
       	<TR>
-      		<TD colspan="8">&nbsp;</TD>
+      		<TD colspan="10">&nbsp;</TD>
       	</TR>
 
 	  	<TR>
             <TD><label id="libSearchNumeroIDE"><ct:FWLabel key="NAOS_JSP_IDE_SEARCH_NUMERO_IDE"/></label></TD>
             <TD><INPUT type="text" id="idePrefixe" name="idePrefixe" disabled="disabled" value="CHE" maxlength="3" size="3" style="text-align:center;" /> <INPUT type="text" id="forNumeroIDE" name="forNumeroIDE" value='<%=(request.getParameter("forNumeroIDE")==null)?"":request.getParameter("forNumeroIDE") %>'/></TD>
-            <TD colspan="6"></TD>
+            <TD colspan="8"></TD>
       	</TR>
       	
             	
       	<TR>
             <TD><label id="libSearchRaisonSociale"><ct:FWLabel key="NAOS_JSP_IDE_SEARCH_RAISON_SOCIALE"/></label></TD>
             <TD>
-            	<INPUT type="text" id="forRaisonSociale" name="forRaisonSociale" value="<%=(request.getParameter("forRaisonSociale")==null)?"":new String(Base64.decodeBase64(request.getParameter("forRaisonSociale").getBytes())) %>"/>
+            	<INPUT type="text" id="forRaisonSociale" name="forRaisonSociale" value="<%=(request.getParameter("forRaisonSociale")==null)?"":new String(Base64.decodeBase64(request.getParameter("forRaisonSociale").getBytes())).replaceAll("\"","&quot;")%>"/>
             	<div id="helpForRaisonSociale"><ct:FWLabel key="NAOS_JSP_IDE_SEARCH_RAISON_SOCIALE_HELP"/></div>
            	
             </TD>
-          	<TD colspan="6"></TD>
+          	<TD colspan="8"></TD>
       	</TR>
       	
       	<TR>
-      		<TD colspan="8">&nbsp;</TD>
+      		<TD colspan="10">&nbsp;</TD>
       	</TR>
       	
       	<TR>
            <TD><label id="libSearchNpa"><ct:FWLabel key="NAOS_JSP_IDE_SEARCH_NPA"/></label></TD>
-           <TD colspan="7"><INPUT type="text" id="forNpa" name="forNpa">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+           <TD colspan="9"><INPUT type="text" id="forNpa" name="forNpa">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
            <label id="libSearchLocalite"><ct:FWLabel key="NAOS_JSP_IDE_SEARCH_LOCALITE"/></label>&nbsp;&nbsp;&nbsp;
            <INPUT type="text" id="forLocalite" name="forLocalite">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
            <label id="libSearchRue"><ct:FWLabel key="NAOS_JSP_IDE_SEARCH_RUE"/></label>&nbsp;&nbsp;&nbsp;
            <INPUT type="text" id="forRue" name="forRue">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
            <label id="libSearchNumeroRue"><ct:FWLabel key="NAOS_JSP_IDE_SEARCH_NUMERO_RUE"/></label>&nbsp;&nbsp;&nbsp;
-           <INPUT type="text" id="forNumeroRue" name="forNumeroRue" ></TD>
+           <INPUT type="text" id="forNumeroRue" name="forNumeroRue" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+           <span id="divForNaissance">
+           <label id="libSearchNaissance"><ct:FWLabel key="NAOS_JSP_IDE_SEARCH_NAISSANCE"/></label>&nbsp;&nbsp;&nbsp;
+           <ct:inputText id="forNaissance" name="forNaissance" notation="data-g-calendar=''" />
+           </span>
+           </TD>
       	</TR>
       	
       <TR>

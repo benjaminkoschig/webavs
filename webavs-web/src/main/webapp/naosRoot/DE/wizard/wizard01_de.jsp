@@ -399,6 +399,13 @@ function resetEAAVisibility() {
 
 	
 }
+	
+function maxLength(zone,max)
+{
+	if(zone.value.length>=max){
+		zone.value=zone.value.substring(0,max);
+	}
+}
 </SCRIPT> 
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
@@ -634,7 +641,7 @@ function resetEAAVisibility() {
 							</TR>
 							<TR>
 								<TD nowrap height="31" width="161">Noga Code</TD>
-								<TD nowrap colspan="4"> 
+								<TD nowrap colspan="2"> 
 									<ct:FWCodeSelectTag 
 		                				name="categorieNoga"
 										defaut="<%=viewBean.getCategorieNoga()%>"
@@ -655,6 +662,10 @@ function resetEAAVisibility() {
 									</script>
 																	
 								</TD>
+								<TD nowrap height="31" width="161">Aktivit&auml;t(en)</TD>
+								<td rowspan="3">
+									<TEXTAREA name="activite" rows="5" cols="50" onkeypress="maxLength(this, 254);"><%=viewBean.getActivite()%></TEXTAREA>
+								</td>
 							</TR>
 						<TR> 
 								<TD nowrap width="161">Fakturierung</TD>

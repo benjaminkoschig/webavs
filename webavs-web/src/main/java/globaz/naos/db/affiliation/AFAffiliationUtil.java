@@ -32,6 +32,7 @@ import globaz.naos.db.processFacturation.AFProcessFacturationManager;
 import globaz.naos.db.processFacturation.AFProcessFacturationViewBean;
 import globaz.naos.db.suiviCaisseAffiliation.AFSuiviCaisseAffiliation;
 import globaz.naos.db.suiviCaisseAffiliation.AFSuiviCaisseAffiliationManager;
+import globaz.naos.exceptions.AFIdeNumberNoMatchException;
 import globaz.naos.translation.CodeSystem;
 import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
@@ -144,7 +145,7 @@ public class AFAffiliationUtil {
                 return null;
             }
 
-            throw new Exception(
+            throw new AFIdeNumberNoMatchException(
                     session.getLabel("NAOS_AFFILIATION_UTIL_LOAD_AFFILIATION_USING_NUMERO_IDE_ERREUR_PAS_AFFILIATION_TROUVEE"));
         } else {
 

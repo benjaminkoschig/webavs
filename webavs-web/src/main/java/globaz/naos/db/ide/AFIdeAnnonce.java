@@ -46,6 +46,11 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
     public static final String IDE_ANNONCE_FIELD_HISTORIQUE_NUMERO_IDE = "AIDEHN";
     public static final String IDE_ANNONCE_FIELD_HISTORIQUE_STATUT_IDE = "AIDEHS";
     public static final String IDE_ANNONCE_FIELD_HISTORIQUE_TYPE_ANNONCE_DATE_IDE = "AIDEHD";
+    // D0181
+    public static final String IDE_ANNONCE_FIELD_HISTORIQUE_NAISSANCE = "AIDHDN";
+    public static final String IDE_ANNONCE_FIELD_HISTORIQUE_ACTIVITE = "AIDHAC";
+    public static final String IDE_ANNONCE_FIELD_HISTORIQUE_NOGA = "AIDHNO";
+    public static final String IDE_ANNONCE_FIELD_HISTORIQUE_NUMERO_AFFILIE = "AIDHNA";
 
     public static final String IDE_ANNONCE_FIELD_MESSAGE_ERREUR_BUSINESS = "AIDEMB";
     public static final String IDE_ANNONCE_FIELD_MESSAGE_ERREUR_TECHNICAL = "AIDEMT";
@@ -73,6 +78,15 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
     private String histNumeroIde = "";
     private String histStatutIde = "";
     private String histTypeAnnonceDate = "";
+    // D0181
+    private String histNaissance = "";
+    private String histActivite = "";
+    /**
+     * code noga selon le registre != code noga dans l'affiliation
+     */
+    private String histNoga = "";
+    private String histNumeroAffilie = "";
+
     private String numeroIdeRemplacement = "";
     private String ideAnnonceListIdAffiliationLiee = "";
     private String ideAnnonceListNumeroAffilieLiee = "";
@@ -176,10 +190,25 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
         this.histCanton = histCanton;
     }
 
+    /**
+     * CAUTION with fallBack to getRaisonSociale() if hist is empty
+     * 
+     * @return historique ou raison sociale de l'affilié si historique vide
+     */
     public String getHistRaisonSociale() {
         if (JadeStringUtil.isEmpty(histRaisonSociale)) {
             return getRaisonSociale();
         }
+        return histRaisonSociale;
+    }
+
+    /**
+     * hist only, empty if DB column is empty<br>
+     * CAUTION this one BECAUSE getHistRaisonSociale() auto fallBack to getRaisonSociale() if hist is empty
+     * 
+     * @return only the hist, without fallback
+     */
+    public String getHistRaisonSocialeONLY() {
         return histRaisonSociale;
     }
 
@@ -343,6 +372,12 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
         messageErreurForTechnicalUser = statement.dbReadString(AFIdeAnnonce.IDE_ANNONCE_FIELD_MESSAGE_ERREUR_TECHNICAL);
         numeroIdeRemplacement = statement.dbReadString(AFIdeAnnonce.IDE_ANNONCE_FIELD_NUMERO_IDE_REMPLACEMENT);
 
+        // D0181
+        histNumeroAffilie = statement.dbReadString(AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_NUMERO_AFFILIE);
+        histNoga = statement.dbReadString(AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_NOGA);
+        histNaissance = statement.dbReadDateAMJ(AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_NAISSANCE);
+        histActivite = statement.dbReadString(AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_ACTIVITE);
+
         numeroIde = statement.dbReadString(AFAffiliation.FIELDNAME_NUMERO_IDE);
         numeroAffilie = statement.dbReadString(AFAffiliation.FIELDNAME_NUMERO_AFFILIE);
         raisonSociale = statement.dbReadString(AFAffiliation.FIELDNAME_RAISON_SOCIALE);
@@ -434,6 +469,16 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
         statement.writeField(AFIdeAnnonce.IDE_ANNONCE_FIELD_MESSAGE_ERREUR_TECHNICAL, this._dbWriteString(
                 statement.getTransaction(), messageErreurForTechnicalUser, "messageErreurForTechnicalUser"));
 
+        // D0181
+        statement.writeField(AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_NAISSANCE,
+                this._dbWriteDateAMJ(statement.getTransaction(), histNaissance, "histNaissance"));
+        statement.writeField(AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_NUMERO_AFFILIE,
+                this._dbWriteString(statement.getTransaction(), histNumeroAffilie, "histNumeroAffilie"));
+        statement.writeField(AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_NOGA,
+                this._dbWriteString(statement.getTransaction(), histNoga, "histNoga"));
+        statement.writeField(AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_ACTIVITE,
+                this._dbWriteString(statement.getTransaction(), histActivite, "histActivite"));
+
     }
 
     public String getIdeAnnonceIdAnnonce() {
@@ -517,6 +562,38 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
 
     public void setHistTypeAnnonceDate(String histTypeAnnonceDate) {
         this.histTypeAnnonceDate = histTypeAnnonceDate;
+    }
+
+    public String getHistNaissance() {
+        return histNaissance;
+    }
+
+    public void setHistNaissance(String histNaissance) {
+        this.histNaissance = histNaissance;
+    }
+
+    public String getHistActivite() {
+        return histActivite;
+    }
+
+    public void setHistActivite(String histActivite) {
+        this.histActivite = histActivite;
+    }
+
+    public String getHistNoga() {
+        return histNoga;
+    }
+
+    public void setHistNoga(String histNoga) {
+        this.histNoga = histNoga;
+    }
+
+    public String getHistNumeroAffilie() {
+        return histNumeroAffilie;
+    }
+
+    public void setHistNumeroAffilie(String histNumeroAffilie) {
+        this.histNumeroAffilie = histNumeroAffilie;
     }
 
 }

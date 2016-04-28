@@ -4,6 +4,7 @@ import globaz.framework.bean.FWViewBeanInterface;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.AFIDEUtil;
+import globaz.pyxis.db.tiers.TITiersViewBean;
 
 public class AFIdeAnnonceListViewBean extends AFIdeAnnonceManager implements FWViewBeanInterface {
 
@@ -27,7 +28,7 @@ public class AFIdeAnnonceListViewBean extends AFIdeAnnonceManager implements FWV
                 .formatNumIDE(((AFIdeAnnonce) getEntity(index)).getNumeroIdeRemplacement());
 
         if (!JadeStringUtil.isBlankOrZero(numIdeRemplacement)) {
-            numIDE = numIdeRemplacement + "<BR>(" + numIDE + ")";
+            numIDE = numIdeRemplacement + (JadeStringUtil.isBlankOrZero(numIDE) ? "" : "<BR>(" + numIDE + ")");
         }
 
         return numIDE;
@@ -49,10 +50,29 @@ public class AFIdeAnnonceListViewBean extends AFIdeAnnonceManager implements FWV
         return AFIDEUtil.giveMeAllNumeroAffilieInAnnonceSeparatedByVirgul((AFIdeAnnonce) getEntity(index));
     }
 
+    /**
+     * Since RaisonSociale must be also PrenomNom for PersonnePhysique in Tiers, this return more complicate
+     * if Annonce has HistRaisonSociale is empty, check (retrieve) the linked Tiers to know if Tiers is PersonnePhysique
+     * RaisonSociale is replaced by PrenomNom from Tiers if PersonnePhysique
+     * 
+     * @param index
+     * @return histRaisonSociale > PersonnePhysique? Tiers.PrenonNom : IDEAnnonce.RaisonSociale
+     */
     public String getRaisonSociale(final int index) {
-        String raison = ((AFIdeAnnonce) getEntity(index)).getHistRaisonSociale();
+        String raison = ((AFIdeAnnonce) getEntity(index)).getHistRaisonSocialeONLY();
         if (JadeStringUtil.isBlankOrZero(raison)) {
             raison = ((AFIdeAnnonce) getEntity(index)).getRaisonSociale();
+            try {
+                TITiersViewBean tiers = new TITiersViewBean();
+                tiers.setSession(getSession());
+                tiers.setIdTiers(((AFIdeAnnonce) getEntity(index)).getIdTiers());
+                tiers.retrieve();
+                if (tiers.getPersonnePhysique()) {
+                    raison = tiers.getPrenomNom();
+                }
+            } catch (Exception e) {
+                // unable to find tiers, RaisonSocial = affilation
+            }
         }
         return raison;
 

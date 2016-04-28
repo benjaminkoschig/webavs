@@ -40,14 +40,14 @@ userActionValue = "naos.ide.ideTraitementAnnonce.executer";
 						  	</TD>
           				</TR>
           				
-          				<!-- 
+          				 
           				<TR> 
   				          	<TD><ct:FWLabel key="NAOS_JSP_IDE_TRAITEMENT_ANNONCE_TEST_SEDEX"/></TD>
  				          	<TD> 
 								<INPUT type="checkbox" id="modeTestSedex" name="modeTestSedex">                        
 						  	</TD>
           				</TR>
-          				 -->
+          				
           				
           				
             

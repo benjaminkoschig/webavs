@@ -20,6 +20,8 @@ public class AFXmlmlIdeTraitementAnnonce {
     private static final String DATA_EXCEL_NPA = "NPA";
     private static final String DATA_EXCEL_LOCALITE = "LOCALITE";
     private static final String DATA_EXCEL_CANTON = "CANTON";
+    private static final String DATA_EXCEL_NAISSANCE = "NAISSANCE";
+    private static final String DATA_EXCEL_ACTIVITE = "ACTIVITE";
 
     public static final String DATA_EXCEL_TITRE_DOC = "TITRE_DOC";
 
@@ -35,7 +37,7 @@ public class AFXmlmlIdeTraitementAnnonce {
 
     public void createLigne(String typeAnnonce, String etatAnnonce, String dateCreation, String numIde,
             String numIdeStatut, String numAffiliation, String raisonSoc, String rue, String npa, String localite,
-            String canton, String messErreur) {
+            String canton, String naissance, String activite, String messErreur) {
         container.put(AFXmlmlIdeTraitementAnnonce.DATA_EXCEL_TYPE_ANNONCE, typeAnnonce);
         container.put(AFXmlmlIdeTraitementAnnonce.DATA_EXCEL_ETAT_ANNNOCE, etatAnnonce);
         container.put(AFXmlmlIdeTraitementAnnonce.DATA_EXCEL_DATE_CREATION_ANNONCE, dateCreation);
@@ -47,6 +49,8 @@ public class AFXmlmlIdeTraitementAnnonce {
         container.put(AFXmlmlIdeTraitementAnnonce.DATA_EXCEL_NPA, npa);
         container.put(AFXmlmlIdeTraitementAnnonce.DATA_EXCEL_LOCALITE, localite);
         container.put(AFXmlmlIdeTraitementAnnonce.DATA_EXCEL_CANTON, canton);
+        container.put(AFXmlmlIdeTraitementAnnonce.DATA_EXCEL_NAISSANCE, naissance);
+        container.put(AFXmlmlIdeTraitementAnnonce.DATA_EXCEL_ACTIVITE, activite);
         container.put(AFXmlmlIdeTraitementAnnonce.DATA_EXCEL_MESSAGE_ERREUR, messErreur);
     }
 

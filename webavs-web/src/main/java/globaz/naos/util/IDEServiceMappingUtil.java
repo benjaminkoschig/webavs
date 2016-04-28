@@ -1,8 +1,10 @@
 package globaz.naos.util;
 
 import globaz.jade.client.util.JadeStringUtil;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import javax.xml.bind.JAXBElement;
+import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import org.apache.axis.types.NonNegativeInteger;
@@ -14,14 +16,18 @@ import ch.ech.xmlns.ech_0010_f._6.CountryType;
 import ch.ech.xmlns.ech_0010_f._6.MailAddressType;
 import ch.ech.xmlns.ech_0046_f._3.AddressType;
 import ch.ech.xmlns.ech_0046_f._3.ContactType;
+import ch.ech.xmlns.ech_0097_f._2.NamedOrganisationIdType;
 import ch.ech.xmlns.ech_0097_f._2.OrganisationIdentificationType;
 import ch.ech.xmlns.ech_0097_f._2.UidOrganisationIdCategorieType;
 import ch.ech.xmlns.ech_0097_f._2.UidStructureType;
+import ch.ech.xmlns.ech_0098_f._3.DatePartiallyKnownType;
+import ch.ech.xmlns.ech_0098_f._3.FoundationType;
 import ch.ech.xmlns.ech_0108_f._3.OrganisationType;
 import ch.ech.xmlns.ech_0108_f._3.UidregInformationType;
 
 public class IDEServiceMappingUtil {
 
+    public static final String CATEGORIE_NUMERO_AFFILIE = "CH.AK";
     public static final String COUNTRY_CH = "CH";
     public static final String ADRESSE_CATEGORY_MAIN = "main";
 
@@ -103,6 +109,39 @@ public class IDEServiceMappingUtil {
 
     public static final String getRaisonSociale(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         return String.valueOf(organisationType.getOrganisation().getOrganisationIdentification().getOrganisationName());
+    }
+
+    public static final String getNaissance(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+        try {
+            XMLGregorianCalendar birth = organisationType.getOrganisation().getFoundation().getFoundationDate()
+                    .getYearMonthDay();
+            if (birth != null && birth.isValid()) {
+                return String.valueOf(getDateJJMMYYYY(birth));
+            }
+        } catch (NullPointerException e) {
+            // if foundation not set in Organisation,
+            // do nothing, return "";
+        }
+        return "";
+    }
+
+    public static final String getActivite(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+        return String.valueOf(organisationType.getOrganisation().getUidBrancheText());
+    }
+
+    /**
+     * code noga selon le registre != code noga dans l'affiliation
+     */
+    public static final String getNogaCode(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+        return String.valueOf(organisationType.getOrganisation().getNogaCode());
+    }
+
+    public static final String getNumeroAffilie(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+        if (!organisationType.getOrganisation().getOrganisationIdentification().getOtherOrganisationId().isEmpty()) {
+            return String.valueOf(organisationType.getOrganisation().getOrganisationIdentification()
+                    .getOtherOrganisationId().get(0).getOrganisationId());
+        }
+        return "";
     }
 
     public static final String getAdresse(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
@@ -250,6 +289,26 @@ public class IDEServiceMappingUtil {
         // Langue
         organisation.setLanguageOfCorrespondance(ideDataBean.getLangue());
 
+        // D0181 activité - naissance
+        if (!JadeStringUtil.isBlankOrZero(ideDataBean.getActivite())) {
+            organisation.setUidBrancheText(ideDataBean.getActivite());
+        }
+        if (!JadeStringUtil.isBlankOrZero(ideDataBean.getNaissance())) {
+            FoundationType foundation = new FoundationType();
+            DatePartiallyKnownType dateNaissance = new DatePartiallyKnownType();
+            try {
+                dateNaissance.setYearMonthDay(IDEServiceCallUtil.convertDateAMJtoXMLDateGregorian(ideDataBean
+                        .getNaissance()));
+            } catch (ParseException e) {
+                System.err.println("Unable to parse ideDataBean.getNaissance() into XMLGregorianCalendar");
+                e.printStackTrace();
+            } catch (DatatypeConfigurationException e) {
+                System.err.println("Unable to parse ideDataBean.getNaissance() into XMLGregorianCalendar");
+                e.printStackTrace();
+            }
+            foundation.setFoundationDate(dateNaissance);
+            organisation.setFoundation(foundation);
+        }
         organisationType.setOrganisation(organisation);
 
         // Type d'entité IDE
@@ -264,8 +323,15 @@ public class IDEServiceMappingUtil {
     }
 
     public static final OrganisationType getStructureForCreateEntiteIde(IDEDataBean ideDataBean) {
+        OrganisationType root = getStructureCommonForCreateUpdateEntiteIde(ideDataBean);
 
-        return getStructureCommonForCreateUpdateEntiteIde(ideDataBean);
+        // D0181
+        NamedOrganisationIdType numeroAffilie = new NamedOrganisationIdType();
+        numeroAffilie.setOrganisationId(ideDataBean.getNumeroAffilie());
+        numeroAffilie.setOrganisationIdCategory(CATEGORIE_NUMERO_AFFILIE);
+        root.getOrganisation().getOrganisationIdentification().getOtherOrganisationId().add(numeroAffilie);
+
+        return root;
     }
 
     public static final ch.ech.xmlns.ech_0108_f._3.OrganisationType getStructureForSearchByNumeroIDE(String numeroIDE) {
@@ -290,7 +356,7 @@ public class IDEServiceMappingUtil {
     }
 
     public static final ch.ech.xmlns.ech_0108_f._3.OrganisationType getStructureForSearch(String forRaisonSociale,
-            String forNpa, String forLocalite, String forRue, String forNumeroRue) {
+            String forNpa, String forLocalite, String forRue, String forNumeroRue, String forNaissance) {
 
         OrganisationType organisationType = new OrganisationType();
 
@@ -328,6 +394,22 @@ public class IDEServiceMappingUtil {
         contact.getAddress().add(addressType);
 
         org.setContact(contact);
+
+        if (!JadeStringUtil.isBlankOrZero(forNaissance)) {
+            FoundationType foundation = new FoundationType();
+            DatePartiallyKnownType dateNaissance = new DatePartiallyKnownType();
+            try {
+                dateNaissance.setYearMonthDay(IDEServiceCallUtil.convertDateAMJtoXMLDateGregorian(forNaissance));
+            } catch (ParseException e) {
+                System.err.println("Unable to parse ideDataBean.getNaissance() into XMLGregorianCalendar");
+                e.printStackTrace();
+            } catch (DatatypeConfigurationException e) {
+                System.err.println("Unable to parse ideDataBean.getNaissance() into XMLGregorianCalendar");
+                e.printStackTrace();
+            }
+            foundation.setFoundationDate(dateNaissance);
+            org.setFoundation(foundation);
+        }
 
         organisationType.setOrganisation(org);
 

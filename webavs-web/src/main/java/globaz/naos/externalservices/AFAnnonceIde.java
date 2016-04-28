@@ -146,11 +146,14 @@ public class AFAnnonceIde extends BAbstractEntityExternalService {
             tiersAvantModif.retrieve(tiers.getSession().getCurrentThreadTransaction());
             if (!tiersAvantModif.isNew()) {
                 // Champs modifiés devant être annoncé
-                if (!tiersAvantModif.getLangue().equalsIgnoreCase(tiers.getLangue())) {
+                if (!tiersAvantModif.getLangue().equalsIgnoreCase(tiers.getLangue())
+                        || (tiers.getPersonnePhysique() && (!tiersAvantModif.getDateNaissance().equalsIgnoreCase(
+                                tiers.getDateNaissance()) || !tiersAvantModif.getNom().equalsIgnoreCase(tiers.getNom())))) {
                     // Création d'une mutation pour chaque les affiliations non provisoire qui ont un numéro IDE
                     // différent
                     findAffiliatioAndGenerateMutation(tiers, "");
                 }
+
             }
         }
     }
@@ -207,14 +210,34 @@ public class AFAnnonceIde extends BAbstractEntityExternalService {
                 // si je change le numero IDE
                 if (!JadeStringUtil.isEmpty(affiliationAvantModif.getNumeroIDE())) {
                     // Champs modifiés devant être annoncés
-                    if (!affiliationAvantModif.getRaisonSociale().equalsIgnoreCase(affiliation.getRaisonSociale())
-                            || !affiliationAvantModif.getNumeroIDE().equalsIgnoreCase(affiliation.getNumeroIDE())
+                    if (!affiliationAvantModif.getNumeroIDE().equalsIgnoreCase(affiliation.getNumeroIDE())
                             || !affiliationAvantModif.getTypeAffiliation().equalsIgnoreCase(
                                     affiliation.getTypeAffiliation())
                             || !affiliationAvantModif.getBrancheEconomique().equalsIgnoreCase(
                                     affiliation.getBrancheEconomique())) {
                         // Création annonce mutation
                         AFIDEUtil.generateAnnonceMutationIde(affiliation.getSession(), affiliation);
+                    } else {
+                        // D0181 cas particulier de la raison sociale(exclure si personnes physique)
+                        if (!affiliationAvantModif.getRaisonSociale().equalsIgnoreCase(affiliation.getRaisonSociale())) {
+                            TITiersViewBean tiers = new TITiersViewBean();
+                            tiers.setSession(entity.getSession());
+                            tiers.setIdTiers(affiliation.getIdTiers());
+                            tiers.retrieve(affiliation.getSession().getCurrentThreadTransaction());
+                            if (!tiers.getPersonnePhysique()) {
+                                AFIDEUtil.generateAnnonceMutationIde(affiliation.getSession(), affiliation);
+                            }
+                        } else {
+                            // D0181 Si seul l'activité a changé (cas particulier de la popup de confirmation)
+                            if (!affiliationAvantModif.getActivite().equalsIgnoreCase(affiliation.getActivite())
+                                    && !JadeStringUtil.isBlankOrZero(affiliation.getActivite())) {
+                                // vérifier que l'utilisateur a confirmé sa volonté de l'annoncer
+                                if (affiliation.getConfirmerAnnonceActivite()) {
+                                    AFIDEUtil.generateAnnonceMutationIde(affiliation.getSession(), affiliation);
+                                }
+                            }
+
+                        }
                     }
                 }
             }

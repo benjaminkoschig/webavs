@@ -150,8 +150,8 @@ function init() {
 		<TR>
 			<TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_LANGUE_TIERS"/></TD>
         	<TD nowrap width="300"><INPUT name="" type="text" value="<%=viewBean.getLangueTiers()%>" class="libelleLongDisabled" readonly></TD>
-        	<TD nowrap width="140"></TD>
-			<TD nowrap width="300">&nbsp;</TD>
+        	<TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_NAISSANCE"/></TD>
+			<TD nowrap width="300"><INPUT name="" type="text" value="<%=viewBean.getNaissance()%>" class="libelleLongDisabled" readonly></TD>
 		</TR>
 		
 		<TR>
@@ -163,10 +163,24 @@ function init() {
 		
 		<TR>
 		<TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_ADRESSE_RUE"/></TD>
-	    <TD nowrap width="300" colspan="3"><INPUT  name="" type="text" value="<%=viewBean.getRue()%>" class="libelleLong10Disabled" readonly></TD>
-	    <TD nowrap width="140">&nbsp;</TD>
-	    <TD nowrap width="300"></TD>
+	    <TD nowrap width="300" ><INPUT  name="" type="text" value="<%=viewBean.getRue()%>" class="libelleLong10Disabled" readonly></TD>
+	    <TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_ACTIVITE"/></TD>
+	    <TD nowrap width="300" ><INPUT  name="" type="text" value="<%=viewBean.getActivite()%>" class="libelleLong10Disabled" readonly></TD>
         </TR>
+		
+		<TR>
+			<TD nowrap width="140">&nbsp;</TD>
+        	<TD nowrap width="300"></TD>
+        	<TD nowrap width="140"></TD>
+        	<TD nowrap width="300"></TD>
+		</TR>
+		
+		<TR>
+        	<TD nowrap width="140"></TD>
+        	<TD nowrap width="300"></TD>
+        	<TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_CODE_NOGA"/></TD>
+        	<TD nowrap width="300"><INPUT name="" type="text" value="<%=viewBean.getNoga()%>" class="libelleLongDisabled" readonly></TD>
+		</TR>
 		
 		<TR>
 			<TD nowrap width="140">&nbsp;</TD>

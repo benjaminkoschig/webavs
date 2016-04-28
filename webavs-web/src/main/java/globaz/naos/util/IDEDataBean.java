@@ -17,6 +17,14 @@ public class IDEDataBean {
     private String brancheEconomique = "";
     private String typeAnnonceIde = "";
     private String careOf = "";
+    // D0181
+    private String naissance = "";
+    private String activite = "";
+    private String numeroAffilie = "";
+    /**
+     * code noga selon le registre != code noga dans l'affiliation
+     */
+    private String nogaCode = "";
 
     public String getNumeroIDERemplacement() {
         return numeroIDERemplacement;
@@ -113,6 +121,38 @@ public class IDEDataBean {
 
     public void setCareOf(String careOf) {
         this.careOf = careOf;
+    }
+
+    public String getNaissance() {
+        return naissance;
+    }
+
+    public void setNaissance(String naissance) {
+        this.naissance = naissance;
+    }
+
+    public String getActivite() {
+        return activite;
+    }
+
+    public void setActivite(String activite) {
+        this.activite = activite;
+    }
+
+    public String getNumeroAffilie() {
+        return numeroAffilie;
+    }
+
+    public void setNumeroAffilie(String numeroAffilie) {
+        this.numeroAffilie = numeroAffilie;
+    }
+
+    public String getNogaCode() {
+        return nogaCode;
+    }
+
+    public void setNogaCode(String nogaCode) {
+        this.nogaCode = nogaCode;
     }
 
     public String getNumeroIDE() {

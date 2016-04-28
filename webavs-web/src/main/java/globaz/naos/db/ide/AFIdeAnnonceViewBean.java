@@ -2,6 +2,7 @@ package globaz.naos.db.ide;
 
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.BTransaction;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.AFIDEUtil;
@@ -23,6 +24,15 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
     private String formeJuridique = "";
     private String langueTiers = "";
     private String brancheEconomique = "";
+
+    // D0181
+    private String naissance = "";
+    private String activite = "";
+    /**
+     * code noga selon le registre != code noga dans l'affiliation
+     */
+    private String noga = "";
+    private String prenomNom = "";
 
     public boolean isTraite() {
         return CodeSystem.ETAT_ANNONCE_IDE_TRAITE.equalsIgnoreCase(getIdeAnnonceEtat());
@@ -59,6 +69,9 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
             langueTiers = getHistLangueTiers();
             brancheEconomique = getHistBrancheEconomique();
             super.setTypeAnnonceDate(super.getHistTypeAnnonceDate());
+            naissance = getHistNaissance();
+            activite = getHistActivite();
+            noga = getHistNoga();
 
         } else {
 
@@ -74,6 +87,13 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
             formeJuridique = CodeSystem.getLibelle(getSession(), affiliation.getPersonnaliteJuridique());
             langueTiers = tiers.getLangueIso().toUpperCase();
             brancheEconomique = CodeSystem.getLibelle(getSession(), affiliation.getBrancheEconomique());
+
+            activite = affiliation.getActivite();
+            if (tiers.getPersonnePhysique()) {
+                naissance = tiers.getDateNaissance();
+                prenomNom = tiers.getPrenomNom();
+            }
+
         }
 
     }
@@ -149,4 +169,25 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
     public void setTiers(TITiersViewBean tiers) {
         this.tiers = tiers;
     }
+
+    public String getNaissance() {
+        return naissance;
+    }
+
+    public String getActivite() {
+        return activite;
+    }
+
+    public String getNoga() {
+        return noga;
+    }
+
+    @Override
+    public String getRaisonSociale() {
+        if (JadeStringUtil.isBlankOrZero(prenomNom)) {
+            return super.getRaisonSociale();
+        }
+        return prenomNom;
+    }
+
 }

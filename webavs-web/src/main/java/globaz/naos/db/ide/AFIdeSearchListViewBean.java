@@ -29,6 +29,7 @@ public class AFIdeSearchListViewBean extends BAccessBean implements FWViewBeanIn
     private String forRue;
     private String forNumeroRue;
     private String forRaisonSociale;
+    private String forNaissance;
     private String forTypeRecherche = "";
 
     private String message = "";
@@ -41,7 +42,7 @@ public class AFIdeSearchListViewBean extends BAccessBean implements FWViewBeanIn
                 listIdeDataBean = IDEServiceCallUtil.searchForNumeroIDE(forNumeroIDE, getSession());
             } else if (AFIDEUtil.TYPE_RECHERCHE_RAISON_SOCIALE.equalsIgnoreCase(forTypeRecherche)) {
                 listIdeDataBean = IDEServiceCallUtil.search(getForRaisonSociale(), getForNpa(), getForLocalite(),
-                        getForRue(), getForNumeroRue(), getSession());
+                        getForRue(), getForNumeroRue(), getForNaissance(), getSession());
             }
         } catch (Exception e) {
             setMsgType(FWViewBeanInterface.ERROR);
@@ -90,6 +91,14 @@ public class AFIdeSearchListViewBean extends BAccessBean implements FWViewBeanIn
 
     public String getForRaisonSocialeb64() {
         return new String(Base64.encodeBase64(forRaisonSociale.getBytes()));
+    }
+
+    public String getForNaissance() {
+        return forNaissance;
+    }
+
+    public void setForNaissance(String forNaissance) {
+        this.forNaissance = forNaissance;
     }
 
     public String getForRue() {
@@ -185,6 +194,10 @@ public class AFIdeSearchListViewBean extends BAccessBean implements FWViewBeanIn
     public void setMsgType(String msgType) {
         this.msgType = msgType;
 
+    }
+
+    public String getNaissance(int i) {
+        return listIdeDataBean.get(i).getNaissance();
     }
 
     public String getAdresse(int i) {
