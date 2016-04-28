@@ -37,7 +37,7 @@ import com.google.common.collect.Multimaps;
  * @see globaz.corvus.api.arc.downloader.RETraitementImportAnnonces
  * 
  */
-public final class NSSAyantDroit {
+public final class NSSAyantDroitV1 {
 
     enum AnnonceCINSSFinderCharacterPosition {
         CI_NORMAL_START(36),
@@ -66,7 +66,7 @@ public final class NSSAyantDroit {
      * @param session la session, NullPointer Exception si null
      * @param log l'instance de FWMemoryLog permettant de logguer le traitement, NullPointer Exception si null
      */
-    public NSSAyantDroit(REAnnoncesHermesMap annonce, BSession session, FWMemoryLog log) {
+    public NSSAyantDroitV1(REAnnoncesHermesMap annonce, BSession session, FWMemoryLog log) {
 
         Preconditions.checkNotNull(annonce, "The annonce can't be null");
         Preconditions.checkNotNull(session, "The session can't be null");
@@ -77,7 +77,7 @@ public final class NSSAyantDroit {
 
     }
 
-    protected NSSAyantDroit() {
+    protected NSSAyantDroitV1() {
         annonce = null;
     };
 
@@ -105,10 +105,10 @@ public final class NSSAyantDroit {
      * Retourne une instance de la classe en effectuant le traitement du nss en plus
      * 
      * @param type le type de ci
-     * @return une instance de <code>NSSAyantDroit</code> avec le traitement d'affection du nss effectué
+     * @return une instance de <code>NSSAyantDroitV1</code> avec le traitement d'affection du nss effectué
      * @throws Exception
      */
-    public NSSAyantDroit forTypeCI(TypeCI type) throws Exception {
+    public NSSAyantDroitV1 forTypeCI(TypeCI type) throws Exception {
 
         String findingNss;
 
@@ -325,6 +325,15 @@ public final class NSSAyantDroit {
         return idTiersWithDemandePrestations;
     }
 
+    @SuppressWarnings("unchecked")
+    private List<String> getListIdCiesLies(CICompteIndividuel compteIndividuel, BSession session) throws Exception {
+        List<String> idsCiLies = compteIndividuel.getIdCILies(session.getCurrentThreadTransaction());
+
+        idsCiLies.remove(new String(compteIndividuel.getId()));
+
+        return idsCiLies;
+    }
+
     private RECILiesWrapper findNssNavsInCI(String nss) throws Exception {
         CICompteIndividuel compteIndividuel = CICompteIndividuel.loadCI(nss, session.getCurrentThreadTransaction());// TODO
                                                                                                                     // vois
@@ -335,7 +344,7 @@ public final class NSSAyantDroit {
 
             wrapper.setCompteIndividuel(compteIndividuel);
 
-            List<String> idsCiLies = compteIndividuel.getIdCILies(session.getCurrentThreadTransaction());
+            List<String> idsCiLies = getListIdCiesLies(compteIndividuel, session);
 
             // parcours des ci lies et récuératoin du ou des nss
             for (String idCi : idsCiLies) {
@@ -463,7 +472,7 @@ public final class NSSAyantDroit {
 
     @Override
     public String toString() {
-        return "NSSAyantDroit [nss=" + nss + ", nssRecuDansAnnonce=" + nssRecuDansAnnonce + "]";
+        return "NSSAyantDroitV1 [nss=" + nss + ", nssRecuDansAnnonce=" + nssRecuDansAnnonce + "]";
     }
 
 }

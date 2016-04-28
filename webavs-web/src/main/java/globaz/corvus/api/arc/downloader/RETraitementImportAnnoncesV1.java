@@ -1,6 +1,9 @@
 package globaz.corvus.api.arc.downloader;
 
 import globaz.commons.nss.NSUtil;
+import globaz.corvus.api.arc.downloader.domaine.NSSAyantDroit;
+import globaz.corvus.api.arc.downloader.domaine.NSSAyantDroitV1;
+import globaz.corvus.api.arc.downloader.domaine.TypeCI;
 import globaz.corvus.api.ci.IRERassemblementCI;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.api.external.arc.REDownloaderException;
@@ -24,6 +27,7 @@ import globaz.hermes.api.IHEOutputAnnonce;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
+import globaz.jade.log.JadeLogger;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
 import java.util.ArrayList;
@@ -34,6 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import com.google.common.base.Preconditions;
 
 class RETraitementImportAnnoncesV1 {
     private final FWMemoryLog _log;
@@ -344,7 +349,7 @@ class RETraitementImportAnnoncesV1 {
              * 38001 11001 11001 39001 38001 38001 39002 38002 38002 39001 39001 38001 39001 39002
              */
 
-            boolean isCI_ADD = false;
+            boolean isCI_ADD = determineIfIsCI_ADD(listeAnnonces);
             String refArc = "";
             RERassemblementCI rci = null;
             String idTiersCIPourControle = "";
@@ -356,14 +361,6 @@ class RETraitementImportAnnoncesV1 {
 
             // liste des NNS ayant déjà été annoncés dans le mail (pour n'avoir qu'une fois chaque NSS)
             Set<String> nssDejaAnnoncesDansLeMail = new HashSet<String>();
-
-            // on prend le premier élément de la liste pour définir si ça
-            // sera un CI-ADD ou pas
-            if (listeAnnonces.size() > 0) {
-                REAnnoncesHermesMap annonce = listeAnnonces.get(0);
-
-                isCI_ADD = JadeStringUtil.substring(annonce.getAnnonce().getChampEnregistrement(), 0, 2).equals("11") == false;
-            }
 
             REAnnoncesHermesMap ann1104 = null;
 
@@ -383,44 +380,29 @@ class RETraitementImportAnnoncesV1 {
 
                     // On ne traite que les annonces 38 et enregistrement 01
                     // pour les CI-ADD
-                    if ("38".equals(JadeStringUtil.substring(ann.getAnnonce().getChampEnregistrement(), 0, 2))
-                            && "1".equals(JadeStringUtil.substring(ann.getAnnonce().getChampEnregistrement(), 71, 1))) {
+                    if (isAnnonces38Enregistrement01(ann)) {
 
-                        // on cherche l'assure dans Pyxis
-                        String nssAssureAyantDroit = JadeStringUtil.substring(
-                                ann.getAnnonce().getChampEnregistrement(), 31, 11);
-                        String nssAssureAyantDroitRecuDansAnnonce = nssAssureAyantDroit;
-                        if (nssAssureAyantDroit.startsWith("-")) {
-                            nssAssureAyantDroit = JadeStringUtil.change(nssAssureAyantDroit, "-", "756");
-                        } else {
-                            // on cherche dans la table de concordance pour
-                            // trouver le NSS
-                            String nssConcordance = NSUtil.returnNNSS(_session, nssAssureAyantDroit);
-                            if (nssConcordance != null) {
-                                nssAssureAyantDroit = nssConcordance;
-                            }
-                        }
+                        // Gestion du nss
+                        NSSAyantDroitV1 nssAyantDroit = new NSSAyantDroitV1(ann, _session, _log)
+                                .forTypeCI(TypeCI.CI_ADDITIONNEL);
 
-                        System.out.println("CI-ADD pour: " + nssAssureAyantDroit);
-                        if (!nssDejaAnnoncesDansLeMail.contains(nssAssureAyantDroit)) {
+                        JadeLogger.info(this, "CI-ADD pour: " + nssAyantDroit);
+
+                        if (!nssDejaAnnoncesDansLeMail.contains(nssAyantDroit.getNss())) {
                             String information = FWMessageFormat.format((_session).getLabel("INFO_CI_ADD_POUR"),
-                                    NSUtil.formatAVSUnknown(nssAssureAyantDroit));
+                                    NSUtil.formatAVSUnknown(nssAyantDroit.getNss()));
 
                             this.logMessage(information);
 
-                            nssDejaAnnoncesDansLeMail.add(nssAssureAyantDroit);
+                            nssDejaAnnoncesDansLeMail.add(nssAyantDroit.getNss());
                         }
 
-                        // premiere recherche dans les NSS/N AVS courant
-                        PRTiersWrapper assureAyantDroit = REDownloaderInscriptionsCI.getTiersFromNss(_session,
-                                _transaction, nssAssureAyantDroit);
-
                         // le tiers existe dans Pyxis
-                        if (assureAyantDroit != null) {
+                        if (nssAyantDroit.existInPyxs()) {
                             //
                             // Récupération du CI de l'assuré
-                            RECompteIndividuel ci = rechercherOuCreerCI(assureAyantDroit
-                                    .getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+                            RECompteIndividuel ci = rechercherOuCreerCI(nssAyantDroit.getTiers().getProperty(
+                                    PRTiersWrapper.PROPERTY_ID_TIERS));
 
                             // Récupération de la référence unique dans les ARC (RNREFU de HEANNOP)
                             refArc = JadeStringUtil.stripBlanks(ann.getAnnonce().getRefUnique());
@@ -435,7 +417,7 @@ class RETraitementImportAnnoncesV1 {
                                 // Si déjà un RCI avec la même ref unique (ne provenant pas de cette importation),
                                 // il y a un possible doublon et on ignore l'importation de ce CI-ADD
                                 String information = FWMessageFormat.format((_session).getLabel("INFO_DOUBLON_CI_ADD"),
-                                        NSUtil.formatAVSUnknown(nssAssureAyantDroit), refArc);
+                                        NSUtil.formatAVSUnknown(nssAyantDroit.getNss()), refArc);
 
                                 this.logMessage(information);
 
@@ -447,14 +429,14 @@ class RETraitementImportAnnoncesV1 {
 
                                 // le dernier rassemblement CI (pour même ref unique des ARC (RNREFU)
                                 rci = (RERassemblementCI) rciSimilaireMgr.getFirstEntity();
-                                verifierRCI(rci, assureAyantDroit, ann.getAnnonce());
+                                verifierRCI(rci, nssAyantDroit.getTiers(), ann.getAnnonce());
                             } else {
                                 // si pas de RCI avec le même N° d'ARC, creation d'un nouvel RCI
                                 // qui va contenir le CI-add
 
-                                RERassemblementCI rciParent = rechercherOuCreerRCIParent(
-                                        assureAyantDroit.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS),
-                                        JadeStringUtil.substring(ann.getAnnonce().getChampEnregistrement(), 42, 2),
+                                RERassemblementCI rciParent = rechercherOuCreerRCIParent(nssAyantDroit.getTiers()
+                                        .getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), JadeStringUtil.substring(ann
+                                        .getAnnonce().getChampEnregistrement(), 42, 2),
                                         PRDateFormater.convertDate_MMAA_to_MMxAAAA(JadeStringUtil.substring(ann
                                                 .getAnnonce().getChampEnregistrement(), 44, 4)), ci.getIdCi());
 
@@ -468,7 +450,8 @@ class RETraitementImportAnnoncesV1 {
                                 rci.setDateCloture(PRDateFormater.convertDate_MMAA_to_MMxAAAA(JadeStringUtil.substring(
                                         ann.getAnnonce().getChampEnregistrement(), 44, 4)));
                                 rci.setDateRassemblement(JACalendar.todayJJsMMsAAAA());
-                                rci.setIdTiersAyantDroit(assureAyantDroit.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+                                rci.setIdTiersAyantDroit(nssAyantDroit.getTiers().getProperty(
+                                        PRTiersWrapper.PROPERTY_ID_TIERS));
                                 rci.setIdParent(rciParent.getIdRCI());
                                 rci.add(_transaction);
                             }
@@ -503,23 +486,23 @@ class RETraitementImportAnnoncesV1 {
                             // si pas de tier pour ce NSS, on ne fait rien
                             // on passe au prochain groupe d'annonces
 
-                            if (nssAssureAyantDroitRecuDansAnnonce.equals(nssAssureAyantDroit)) {
+                            if (nssAyantDroit.areTwoNssEquals()) {
 
                                 // Ajouter message dans le mail
                                 System.out.println("Le NSS ou no AVS suivant n'a pas été trouvé dans les tiers: "
-                                        + nssAssureAyantDroit + ". Le CI-add n'a pas été traité.");
+                                        + nssAyantDroit + ". Le CI-add n'a pas été traité.");
 
                                 String information = FWMessageFormat.format(
                                         (_session).getLabel("INFO_NSS_NAVS_PAS_DANS_TIERS_POUR_CI_ADD"),
-                                        NSUtil.formatAVSUnknown(nssAssureAyantDroit));
+                                        NSUtil.formatAVSUnknown(nssAyantDroit.getNss()));
 
                                 this.logMessage(information);
                             } else {
 
                                 String information = FWMessageFormat.format(
                                         (_session).getLabel("INFO_NAVS_ET_NSS_CONCORDANCE_PAS_DANS_TIERS_POUR_CI_ADD"),
-                                        NSUtil.formatAVSUnknown(nssAssureAyantDroitRecuDansAnnonce),
-                                        NSUtil.formatAVSUnknown(nssAssureAyantDroit));
+                                        NSUtil.formatAVSUnknown(nssAyantDroit.getNssRecuDansAnnonce()),
+                                        NSUtil.formatAVSUnknown(nssAyantDroit.getNss()));
 
                                 this.logMessage(information);
                             }
@@ -537,13 +520,9 @@ class RETraitementImportAnnoncesV1 {
                 } else {
 
                     // Pour l'annonce 11 (la première normalement)
-                    if (JadeStringUtil.substring(ann.getAnnonce().getChampEnregistrement(), 0, 2).equals("11")) {
+                    if (isAnnonce11(ann)) {
 
-                        // on test si ce nest pas un motif 99
-                        // on peut recevoir un CI avec un motif 99, mais sans annonce 29 liee.
-                        // Ces CI ne doivent pas etre enregistre dans la DB
-                        if ("99".equals(JadeStringUtil.substring(ann.getAnnonce().getChampEnregistrement(), 99, 2))) {
-
+                        if (isMotif99(ann)) {
                             continue groupesAnnonce;
                         }
 
@@ -551,36 +530,37 @@ class RETraitementImportAnnoncesV1 {
                         // on cherche bien le nss dans l'annonce 11
                         // TODO Attention, la logique d'extraction du nss ici n'est pas identique à celle trouvée dans
                         // createAnnonce38 -> à uniformiser!
-                        String nssAssureAyantDroit = JadeStringUtil.substring(
-                                ann.getAnnonce().getChampEnregistrement(), 36, 11);
-                        String nssAssureAyantDroitRecuDansAnnonce = nssAssureAyantDroit;
-                        if (nssAssureAyantDroit.startsWith("-")) {
-                            nssAssureAyantDroit = JadeStringUtil.change(nssAssureAyantDroit, "-", "756");
-                        } else {
-                            // on cherche dans la table de concordance pour
-                            // trouver le NSS
-                            String nssConcordance = NSUtil.returnNNSS(_session, nssAssureAyantDroit);
-                            if (nssConcordance != null) {
-                                nssAssureAyantDroit = nssConcordance;
-                            }
-                        }
+                        // String nssAssureAyantDroit = JadeStringUtil.substring(
+                        // ann.getAnnonce().getChampEnregistrement(), 36, 11);
+                        // String nssAssureAyantDroitRecuDansAnnonce = nssAssureAyantDroit;
+                        // if (nssAssureAyantDroit.startsWith("-")) {
+                        // nssAssureAyantDroit = JadeStringUtil.change(nssAssureAyantDroit, "-", "756");
+                        // } else {
+                        // // on cherche dans la table de concordance pour
+                        // // trouver le NSS
+                        // String nssConcordance = NSUtil.returnNNSS(_session, nssAssureAyantDroit);
+                        // if (nssConcordance != null) {
+                        // nssAssureAyantDroit = nssConcordance;
+                        // }
+                        // }
 
-                        System.out.println("CI pour: " + nssAssureAyantDroit);
+                        NSSAyantDroit nssAyantDroit = new NSSAyantDroit(ann, _session, _log)
+                                .forTypeCI(TypeCI.CI_NORMAL);
 
                         String information = FWMessageFormat.format((_session).getLabel("INFO_CI_POUR"),
-                                NSUtil.formatAVSUnknown(nssAssureAyantDroit));
+                                NSUtil.formatAVSUnknown(nssAyantDroit.getNss()));
 
                         this.logMessage(information);
 
                         // premiere recherche dans les NSS/N AVS courant
-                        PRTiersWrapper assureAyantDroit = REDownloaderInscriptionsCI.getTiersFromNss(_session,
-                                _transaction, nssAssureAyantDroit);
+                        // PRTiersWrapper assureAyantDroit = REDownloaderInscriptionsCI.getTiersFromNss(_session,
+                        // _transaction, nssAyantDroit.nss());
 
                         // le tiers existe dans Pyxis
-                        if (assureAyantDroit != null) {
+                        if (nssAyantDroit.existInPyxs()) {
                             // Récupération du CI de l'assuré
-                            RECompteIndividuel ci = rechercherOuCreerCI(assureAyantDroit
-                                    .getProperty(PRTiersWrapper.PROPERTY_ID_TIERS)); // Table RECI
+                            RECompteIndividuel ci = rechercherOuCreerCI(nssAyantDroit.getTiers().getProperty(
+                                    PRTiersWrapper.PROPERTY_ID_TIERS)); // Table RECI
 
                             idTiersCIPourControle = ci.getIdTiers();
                             idCIPourControle = ci.getIdCi();
@@ -601,7 +581,7 @@ class RETraitementImportAnnoncesV1 {
                             // rciMgr.setRefARCEndWith(refArc);
                             rciMgr.setForRefARC(refArc);
 
-                            rciMgr.setForIdTiers(assureAyantDroit.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+                            rciMgr.setForIdTiers(nssAyantDroit.getTiers().getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
                             rciMgr.setOrderBy(RERassemblementCI.FIELDNAME_ID_RCI + " DESC");
                             rciMgr.find(_transaction, 1);
 
@@ -614,7 +594,7 @@ class RETraitementImportAnnoncesV1 {
                                 if (IRERassemblementCI.CS_ETAT_RASSEMBLE.equals(rci.getCsEtat())) {
                                     String information2 = FWMessageFormat.format(
                                             (_session).getLabel("INFO_DOUBLON_RASSEMBLEMENT"),
-                                            NSUtil.formatAVSUnknown(nssAssureAyantDroit), refArc);
+                                            NSUtil.formatAVSUnknown(nssAyantDroit.getNss()), refArc);
 
                                     this.logMessage(information2);
 
@@ -672,7 +652,8 @@ class RETraitementImportAnnoncesV1 {
                                 }
 
                                 rci.setReferenceUniqueArc(refArc);
-                                rci.setIdTiersAyantDroit(assureAyantDroit.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+                                rci.setIdTiersAyantDroit(nssAyantDroit.getTiers().getProperty(
+                                        PRTiersWrapper.PROPERTY_ID_TIERS));
                                 rci.add(_transaction);
 
                             }
@@ -681,7 +662,8 @@ class RETraitementImportAnnoncesV1 {
                             // ayant droit
                             if (JadeStringUtil.isIntegerEmpty(rci.getIdTiersAyantDroit())) {
                                 rci.retrieve(_transaction);
-                                rci.setIdTiersAyantDroit(assureAyantDroit.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+                                rci.setIdTiersAyantDroit(nssAyantDroit.getTiers().getProperty(
+                                        PRTiersWrapper.PROPERTY_ID_TIERS));
                                 rci.update(_transaction);
                             }
 
@@ -691,22 +673,22 @@ class RETraitementImportAnnoncesV1 {
 
                             // Ajouter message dans le mail
 
-                            if (nssAssureAyantDroitRecuDansAnnonce.equals(nssAssureAyantDroit)) {
+                            if (nssAyantDroit.areTwoNssEquals()) {
 
                                 System.out.println("Le NSS ou no AVS suivant n'a pas été trouvé dans les tiers: "
-                                        + nssAssureAyantDroit + ". Le CI n'a pas été traité.");
+                                        + nssAyantDroit + ". Le CI n'a pas été traité.");
 
                                 String information2 = FWMessageFormat.format(
                                         (_session).getLabel("INFO_NSS_NAVS_PAS_DANS_TIERS_POUR_CI"),
-                                        NSUtil.formatAVSUnknown(nssAssureAyantDroit));
+                                        NSUtil.formatAVSUnknown(nssAyantDroit.getNss()));
 
                                 this.logMessage(information2);
                             } else {
 
                                 String information2 = FWMessageFormat.format(
                                         (_session).getLabel("INFO_NAVS_ET_NSS_CONCORDANCE_PAS_DANS_TIERS_POUR_CI"),
-                                        NSUtil.formatAVSUnknown(nssAssureAyantDroitRecuDansAnnonce),
-                                        NSUtil.formatAVSUnknown(nssAssureAyantDroit));
+                                        NSUtil.formatAVSUnknown(nssAyantDroit.getNssRecuDansAnnonce()),
+                                        NSUtil.formatAVSUnknown(nssAyantDroit.getNss()));
 
                                 this.logMessage(information2);
                             }
@@ -771,6 +753,49 @@ class RETraitementImportAnnoncesV1 {
         }
 
         return inscriptionCIAjoutees;
+    }
+
+    /**
+     * on test si ce nest pas un motif 99
+     * on peut recevoir un CI avec un motif 99, mais sans annonce 29 liee.
+     * Ces CI ne doivent pas etre enregistre dans la DB
+     * 
+     * @param ann l'annonce servant à déterminer le motif
+     * @return booléen si c'est un motif 99
+     */
+    private boolean isMotif99(REAnnoncesHermesMap ann) {
+        return "99".equals(JadeStringUtil.substring(ann.getAnnonce().getChampEnregistrement(), 99, 2));
+    }
+
+    private boolean isAnnonce11(REAnnoncesHermesMap ann) {
+        return JadeStringUtil.substring(ann.getAnnonce().getChampEnregistrement(), 0, 2).equals("11");
+    }
+
+    private boolean isAnnonces38Enregistrement01(REAnnoncesHermesMap ann) {
+        return "38".equals(JadeStringUtil.substring(ann.getAnnonce().getChampEnregistrement(), 0, 2))
+                && "1".equals(JadeStringUtil.substring(ann.getAnnonce().getChampEnregistrement(), 71, 1));
+    }
+
+    /**
+     * Détermine si on est dans le cas d'un CI_ADDITIONEL.
+     * On prend le premier élément de la liste pour définir si ça
+     * sera un CI-ADD ou pas
+     * 
+     * @param listeAnnonces, la liste des annonces
+     * @return état booléen si on est dans le cas d'un CI Additionel
+     */
+    private boolean determineIfIsCI_ADD(REArrayListPourAnnonce listeAnnonces) {
+
+        Preconditions.checkNotNull(listeAnnonces);
+
+        boolean isCI_ADD = false;
+
+        if (listeAnnonces.size() > 0) {
+            REAnnoncesHermesMap annonce = listeAnnonces.get(0);
+
+            isCI_ADD = isAnnonce11(annonce) == false;
+        }
+        return isCI_ADD;
     }
 
     private void logErreur(String text) {
@@ -919,4 +944,5 @@ class RETraitementImportAnnoncesV1 {
             rci.update(_transaction);
         }
     }
+
 }
