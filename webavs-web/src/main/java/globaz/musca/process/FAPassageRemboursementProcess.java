@@ -194,7 +194,6 @@ public class FAPassageRemboursementProcess extends FAGenericProcess {
                 }
             }
         }
-
     }
 
     protected String giveDomaineForAdressePaiement() {
