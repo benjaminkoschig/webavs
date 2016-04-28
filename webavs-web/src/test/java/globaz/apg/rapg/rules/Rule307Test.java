@@ -1,9 +1,9 @@
 package globaz.apg.rapg.rules;
 
-import globaz.apg.pojo.APChampsAnnonce;
 import java.math.BigDecimal;
 import org.junit.Assert;
 import org.junit.Test;
+import globaz.apg.pojo.APChampsAnnonce;
 
 public class Rule307Test {
 
@@ -96,7 +96,7 @@ public class Rule307Test {
         champsAnnonce.setAllowanceFarm(false);
         champsAnnonce.setTotalAPG("1000");
         Assert.assertTrue(rule.check(champsAnnonce, new BigDecimal("67")));
-        champsAnnonce.setTotalAPG("999");
+        champsAnnonce.setTotalAPG("1000");
         Assert.assertTrue(rule.check(champsAnnonce, new BigDecimal("67")));
         champsAnnonce.setTotalAPG("1001");
         Assert.assertTrue(rule.check(champsAnnonce, new BigDecimal("67")));
