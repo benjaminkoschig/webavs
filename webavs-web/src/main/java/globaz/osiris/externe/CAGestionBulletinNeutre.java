@@ -86,6 +86,7 @@ public class CAGestionBulletinNeutre implements APIGestionBulletinNeutre {
         compteAnnexe.setIdTiers(idTiers);
         compteAnnexe.setIdRole(idRole);
         compteAnnexe.setIdExterneRole(idExterneRole);
+        compteAnnexe.setModeBulletinNeutre(CACompteAnnexe.CS_BN_DEFAUT);
 
         compteAnnexe.add(transaction);
 
