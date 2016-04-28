@@ -60,6 +60,7 @@ import globaz.prestation.utils.PRDateUtils.DateOrder;
 import globaz.prestation.utils.PRDateUtils.PRDateEquality;
 import globaz.pyxis.constantes.IConstantes;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
@@ -1000,6 +1001,12 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                 } else if ((PRDateUtils.compare(periode.getDateDeDebut(), periode.getDateDeFin()) != PRDateEquality.AFTER)
                         && (PRDateUtils.compare(periode.getDateDeDebut(), periode.getDateDeFin()) != PRDateEquality.EQUALS)) {
                     errors.add(APValidationDroitError.PERIODE_INCOHERENTE);
+                    periodeErrorsfounded = true;
+                } else if ((PRDateUtils.compare(PRDateUtils.convertCalendarToGlobazDate(Calendar.getInstance()),
+                        periode.getDateDeFin()) == PRDateEquality.AFTER)
+                        || (PRDateUtils.compare(PRDateUtils.convertCalendarToGlobazDate(Calendar.getInstance()),
+                                periode.getDateDeFin()) == PRDateEquality.AFTER)) {
+                    errors.add(APValidationDroitError.PERIODE_DANS_FUTUR);
                     periodeErrorsfounded = true;
                 }
                 nombrePeriodes++;
