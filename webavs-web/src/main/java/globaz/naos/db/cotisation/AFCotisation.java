@@ -1886,7 +1886,7 @@ public class AFCotisation extends BEntity {
             manager.setForIdAssurance(assuranceIdCriteria);
             manager.setForDate(dateCriteria);
             manager.setOrderByRangDebutDesc();
-            manager.find(t);
+            manager.find(t, BManager.SIZE_USEDEFAULT);
             if (manager.size() > 0) {
                 // return manager.getContainer();
                 return (AFTauxAssurance) manager.getEntity(0);
@@ -1900,7 +1900,7 @@ public class AFCotisation extends BEntity {
             manager.setForIdAssurance(assuranceIdCriteria);
             manager.setForDate(dateCriteria);
             manager.setOrderByRangDebutDesc();
-            manager.find(t);
+            manager.find(t, BManager.SIZE_USEDEFAULT);
             if (manager.size() > 0) {
                 // return manager.getContainer();
                 return (AFTauxAssurance) manager.getEntity(0);

@@ -1,9 +1,3 @@
-/*
- * Créé le 7 déc. 05
- * 
- * Pour changer le modèle de ce fichier généré, allez à : Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code
- * et commentaires
- */
 package globaz.naos.process;
 
 import globaz.caisse.helper.CaisseHelperFactory;
@@ -55,9 +49,6 @@ import java.util.Map;
  */
 public class AFCalculRetroactifProcess extends BProcess implements FWViewBeanInterface {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -318,9 +309,6 @@ public class AFCalculRetroactifProcess extends BProcess implements FWViewBeanInt
 
     private TITiersViewBean tiers = null;
 
-    /**
-	 * 
-	 */
     public AFCalculRetroactifProcess() {
         super();
     }
@@ -430,9 +418,6 @@ public class AFCalculRetroactifProcess extends BProcess implements FWViewBeanInt
         return success;
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#_validate()
-     */
     @Override
     protected void _validate() throws Exception {
         super._validate();
@@ -758,9 +743,6 @@ public class AFCalculRetroactifProcess extends BProcess implements FWViewBeanInt
         return dateCalcul;
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#getEMailObject()
-     */
     @Override
     protected String getEMailObject() {
         return "Calcul des cotisations rétroactives";
@@ -813,9 +795,6 @@ public class AFCalculRetroactifProcess extends BProcess implements FWViewBeanInt
         return previsionAcompteEbu;
     }
 
-    /*
-     * public void setAffiliation(AFAffiliationViewBean affiliation) { this.affiliation = affiliation; }
-     */
     public BISession getSessionOsiris() throws Exception {
         if (sessionOsiris == null) {
             AFApplication appAf = (AFApplication) GlobazServer.getCurrentSystem().getApplication(
@@ -838,9 +817,6 @@ public class AFCalculRetroactifProcess extends BProcess implements FWViewBeanInt
         return processExterne;
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#jobQueue()
-     */
     @Override
     public GlobazJobQueue jobQueue() {
         return GlobazJobQueue.UPDATE_SHORT;
@@ -875,8 +851,6 @@ public class AFCalculRetroactifProcess extends BProcess implements FWViewBeanInt
     public void setPrevisionAcompteEbu(Boolean previsionAcompteEbu) {
         this.previsionAcompteEbu = previsionAcompteEbu;
     }
-
-    // ----------------------------------------------------------------------------------------------------------
 
     public void setProcessExterne(boolean processExterne) {
         this.processExterne = processExterne;

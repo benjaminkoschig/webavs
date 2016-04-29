@@ -1,6 +1,7 @@
 package globaz.naos.db.tauxAssurance;
 
 import globaz.framework.util.FWCurrency;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazServer;
 import globaz.globall.util.JADate;
@@ -417,7 +418,7 @@ public class AFTauxVariableUtil {
                 mgr.setUntilAnnee(periode);
             }
         }
-        mgr.find();
+        mgr.find(BManager.SIZE_USEDEFAULT);
         AFTauxAssurance result = null;
         if (mgr.isEmpty()) {
             // aucun taux trouvé, on retourne le taux de la première tranche

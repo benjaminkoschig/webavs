@@ -1326,11 +1326,11 @@ public class AFApercuReleve extends BEntity {
                 } else {
                     if (masseAnnuelTaux != 0.0) {
                         // recherche du taux en fonction de la masse
-                        taux = tauxVarUtil
-                                .getTaux(getSession(), masseAnnuelPourTaux.toString(), line.getDebutPeriode());
+                        taux = tauxVarUtil.getTaux(getSession(), masseAnnuelPourTaux.abs().toString(),
+                                line.getDebutPeriode());
                     } else {
                         // recherche du taux en fonction de la masse
-                        taux = tauxVarUtil.getTaux(getSession(), masseAnnuel.toString(), line.getDebutPeriode());
+                        taux = tauxVarUtil.getTaux(getSession(), masseAnnuel.abs().toString(), line.getDebutPeriode());
                     }
                 }
                 // calcul du montant de la cotisation
