@@ -145,7 +145,7 @@ public class CACompteAnnexe extends BEntity implements Serializable, APISynchron
     private String remarque = new String();
     private String solde = "0.00";
     // D0009
-    private String modeBulletinNeutre = new String();
+    private String modeBulletinNeutre = CACompteAnnexe.CS_BN_DEFAUT;
 
     private FWParametersUserCode ucMotifContentieuxSuspendu = null;
 
