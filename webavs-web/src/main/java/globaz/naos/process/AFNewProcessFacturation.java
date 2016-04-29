@@ -3,6 +3,7 @@ package globaz.naos.process;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -221,6 +222,7 @@ public final class AFNewProcessFacturation extends BProcess {
     public final static int PERIODIQUE_COT_PERS = 0;
     public final static int PERIODIQUE_COT_PERS_IND = 1;
     public final static int PERIODIQUE_COT_PERS_NAC = 2;
+    private static boolean ffppDejaFacturee = false;
 
     /**
      * Calcul de la masse MENSUELLE de la cotisation de l'assurance de Référence.
@@ -336,9 +338,8 @@ public final class AFNewProcessFacturation extends BProcess {
      */
     public static final LineFacturation calculerCotisation(BProcess process,
             AFProcessFacturationViewBean donneesFacturation, String anneeFacturation, String moisFacturation,
-            boolean isParitaire, boolean isPersonnel, boolean isRI_PC, boolean isLAE, boolean ffppDejaFacturee,
-            String debutPeriodeFacturation, String finPeriodeFacturation, AFAgeRente ageRente, String roleAffilie,
-            String idPassage) throws Exception {
+            boolean isParitaire, boolean isPersonnel, boolean isRI_PC, boolean isLAE, String debutPeriodeFacturation,
+            String finPeriodeFacturation, AFAgeRente ageRente, String roleAffilie, String idPassage) throws Exception {
 
         String dateEffectiveDebutFacturation = null;
         String dateEffectiveFinFacturation = null;
@@ -456,8 +457,8 @@ public final class AFNewProcessFacturation extends BProcess {
         // *******************************
         else if (AFNewProcessFacturation.isCotisationParitaire(donneesFacturation) && isParitaire) {
             lineFacturation = AFNewProcessFacturation.facturationParitaire(process, donneesFacturation,
-                    anneeFacturation, ffppDejaFacturee, dateEffectiveDebutFacturation, dateEffectiveFinFacturation,
-                    lineFacturation, sessionNaos, nbMoisFacturer);
+                    anneeFacturation, dateEffectiveDebutFacturation, dateEffectiveFinFacturation, lineFacturation,
+                    sessionNaos, nbMoisFacturer);
 
         } else {
             montant = 0.0;
@@ -657,7 +658,7 @@ public final class AFNewProcessFacturation extends BProcess {
 
     protected static LineFacturation calculerCotsationFFPP(BProcess process,
             AFProcessFacturationViewBean donneesFacturation, String anneeFacturation, BSession sessionNaos,
-            AFTauxAssurance tauxAssurance, boolean ffppDejaFacturee) throws Exception, NumberFormatException {
+            AFTauxAssurance tauxAssurance) throws Exception, NumberFormatException {
         double montant;
         if (ffppDejaFacturee == false) {
             if (AFParticulariteAffiliation.existeParticularite(process.getSession(),
@@ -760,7 +761,7 @@ public final class AFNewProcessFacturation extends BProcess {
         afac.setForIdRubrique("151");
         afac.setForIdPassage(idPassage);
         afac.setSession(sessionNaos);
-        afac.find();
+        afac.find(BManager.SIZE_USEDEFAULT);
         if (afac.getSize() > 0) {
 
             FAAfact fa = (FAAfact) afac.getFirstEntity();
@@ -786,7 +787,7 @@ public final class AFNewProcessFacturation extends BProcess {
     }
 
     protected static LineFacturation facturationParitaire(BProcess process,
-            AFProcessFacturationViewBean donneesFacturation, String anneeFacturation, boolean ffppDejaFacturee,
+            AFProcessFacturationViewBean donneesFacturation, String anneeFacturation,
             String dateEffectiveDebutFacturation, String dateEffectiveFinFacturation, LineFacturation lineFacturation,
             BSession sessionNaos, int nbMoisFacturer) throws NumberFormatException, Exception {
         double montant;
@@ -818,7 +819,7 @@ public final class AFNewProcessFacturation extends BProcess {
             if (CodeSystem.TYPE_ASS_FFPP.equals(donneesFacturation.getTypeAssurance())) {
                 // test si avec personnel
                 lineFacturation = AFNewProcessFacturation.calculerCotsationFFPP(process, donneesFacturation,
-                        anneeFacturation, sessionNaos, tauxAssurance, ffppDejaFacturee);
+                        anneeFacturation, sessionNaos, tauxAssurance);
 
                 // *****************************************************
                 // Taux Fixe
@@ -883,7 +884,7 @@ public final class AFNewProcessFacturation extends BProcess {
         manager.setSession(sessionNaos);
         manager.setForIdRole(roleAffilie);
         manager.setForIdExterneRole(numAff);
-        manager.find();
+        manager.find(BManager.SIZE_USEDEFAULT);
         if (!manager.isEmpty()) {
             AFNewProcessFacturation._compteAnnexe = (CACompteAnnexe) manager.getEntity(0);
         }
@@ -1152,7 +1153,6 @@ public final class AFNewProcessFacturation extends BProcess {
             int nbLineFactureError = 0;
             int nbMontantZero = 0;
             int nbException = 0;
-            boolean ffppDejaFacturee = false;
             boolean exceptionPourAffilie = false;
             boolean ligneFactureCree = false;
 
@@ -1289,7 +1289,7 @@ public final class AFNewProcessFacturation extends BProcess {
                     managerAffilie.setForIdAffiliation(donneesFacturation.getAffiliationId());
                     managerAffilie.setForMotifFin("");
                     managerAffilie.setForAssuranceId("");
-                    managerAffilie.find();
+                    managerAffilie.find(BManager.SIZE_USEDEFAULT);
                     if (managerAffilie.getSize() > 0) {
                         periodiciteAffilieLaPlusPetite = ((AFProcessFacturationViewBean) managerAffilie
                                 .getFirstEntity()).getPeriodiciteCoti();
@@ -1313,8 +1313,8 @@ public final class AFNewProcessFacturation extends BProcess {
                 if (enteteFacture != null) {
                     LineFacturation lineFacturation = AFNewProcessFacturation.calculerCotisation(this,
                             donneesFacturation, anneeFacturation, moisFacturation, isFacturerParitaire(),
-                            isFacturerPersonnel(), isFacturerRI_PC(), isFacturerLAE(), ffppDejaFacturee,
-                            getDebutPeriodeFacturation(), getFinPeriodeFacturation(), ageRente, roleAffilie, idPassage);
+                            isFacturerPersonnel(), isFacturerRI_PC(), isFacturerLAE(), getDebutPeriodeFacturation(),
+                            getFinPeriodeFacturation(), ageRente, roleAffilie, idPassage);
                     // Mise à jour du code rentier... déterminer dans le calcul de la cotisation
                     if (enteteFacture.getEstRentierNa().equals(Boolean.FALSE)
                             && donneesFacturation.getIsRentier().equals(Boolean.TRUE)) {
@@ -1570,7 +1570,7 @@ public final class AFNewProcessFacturation extends BProcess {
         entete.setLikeIdExterneFacture(idExterneFacture.substring(0, 6));
         entete.setForIdExterneRole(donneesFacturation.getAffilieNumero());
         entete.setForIdTiers(donneesFacturation.getIdTiers());
-        entete.find();
+        entete.find(BManager.SIZE_NOLIMIT);
         // recherche sur les en-tête déjà existantes
         idFacturationExt = 0;
         for (int iEntete = 0; iEntete < entete.size(); iEntete++) {
