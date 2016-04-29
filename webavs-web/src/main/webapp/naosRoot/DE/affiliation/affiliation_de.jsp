@@ -141,10 +141,10 @@ function confirmerMutationActivite(){
 	// n'est pas une création	
 	if (document.forms[0].elements('_method').value != "add"){
 		// si l'activité a changé
-		if(document.forms[0].elements('activite').value.replace(/\r|\n/gi,'') != '<%=viewBean.getActivite().replaceAll("(\\r|\\n)", "")%>' && document.forms[0].elements('activite').value != "" )  
+		if(document.forms[0].elements('activite').value.replace(/\r|\n|'/gi,'') != '<%=viewBean.getActivite().replaceAll("(\\r|\\n|\')", "")%>' && document.forms[0].elements('activite').value != "" ) 
 		{
 			if(document.forms[0].elements('numeroIDESansCHE').value != '' && !document.getElementById('ideAnnoncePassive').checked &&
-					document.forms[0].elements('raisonSociale').value == '<%=viewBean.getRaisonSociale()%>' &&
+					document.forms[0].elements('raisonSociale').value.replace(/\r|\n|'/gi,'') == '<%=viewBean.getRaisonSociale().replaceAll("(\\r|\\n|\')", "")%>' &&
 					document.forms[0].elements('typeAffiliation').value == '<%=viewBean.getTypeAffiliation()%>' && 
 					document.forms[0].elements('brancheEconomique').value == '<%=viewBean.getBrancheEconomique()%>'){
 				
