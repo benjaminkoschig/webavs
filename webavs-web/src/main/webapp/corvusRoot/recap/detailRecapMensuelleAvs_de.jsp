@@ -115,13 +115,14 @@ function addCommas(myId){
   nStr = document.getElementById(myId).value;
 	nStr += '';
 	x = nStr.split('.');
-	x1 = x[0];
-	x2 = x.length > 1 ? '.' + ( x[1] < 10 ? x[1]*10 : x[1] ) : '.00';	
+	x1 = (nStr.length < 1 ? 0 : x[0]);
+	x2 = parseFloat((x.length > 1 ? parseFloat('0.'+x[1]) : 0.0)).toFixed(2);
+	dec = x2.split('.');
 	var rgx = /(\d+)(\d{3})/;
 	while (rgx.test(x1)) {
 		x1 = x1.replace(rgx, '$1' + "'" + '$2');
 	}
-	document.getElementById(myId).value=(x1 + x2);
+	document.getElementById(myId).value=(x1 + "." + dec[1]);
 }
 
 function initCommas(){

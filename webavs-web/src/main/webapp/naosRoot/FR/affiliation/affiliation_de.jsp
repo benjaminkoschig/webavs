@@ -142,6 +142,7 @@ function confirmerMutationActivite(){
 	// n'est pas une création	
 	if (document.forms[0].elements('_method').value != "add"){
 		// si l'activité a changé
+		//ignorer les retour charriot et single quote qui feraient peter le javascript de la page
 		if(document.forms[0].elements('activite').value.replace(/\r|\n|'/gi,'') != '<%=viewBean.getActivite().replaceAll("(\\r|\\n|\')", "")%>' && document.forms[0].elements('activite').value != "" ) 
 		{
 			if(document.forms[0].elements('numeroIDESansCHE').value != '' && !document.getElementById('ideAnnoncePassive').checked &&
