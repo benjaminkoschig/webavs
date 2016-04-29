@@ -1,5 +1,14 @@
 package globaz.apg.impl.process;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import globaz.apg.api.lots.IAPLot;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.api.process.IAPGenererCompensationProcess;
@@ -36,15 +45,6 @@ import globaz.osiris.db.comptes.CACompteAnnexeManager;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRSession;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 /**
  * <p>
@@ -57,7 +57,7 @@ import java.util.TreeMap;
  * cas) grâce aux méthodes {@link #isSectionACompenserAutomatiquement(APISection)} et
  * {@link #isSectionAVerifier(APISection)}.
  * </p>
- * 
+ *
  * @author PBA
  */
 public abstract class APGenererCompensationsProcessAvecSectionCompensable extends BProcess implements
@@ -390,7 +390,7 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                         idTiersEnCours = key.idTiers;
                         montantDejaCompenseSurSectionEnCours = new FWCurrency(0);
                         propositionsCompensationsPourTiersEnCours = getCollectionSectionsACompenser(key.idTiers,
-                                sommePourUnTiers.get(key.idTiers));
+                                sommes.get(key));
                         propositionsCompensationsIterator = propositionsCompensationsPourTiersEnCours.iterator();
 
                         if (propositionsCompensationsIterator.hasNext()) {
