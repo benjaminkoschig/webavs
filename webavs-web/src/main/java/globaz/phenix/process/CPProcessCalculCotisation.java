@@ -2237,7 +2237,7 @@ public final class CPProcessCalculCotisation extends BProcess {
             if (!perte) {
                 if (((revenuMin > revenuDet) && decision.getPremiereAssurance().equals(new Boolean(true))
                         && decision.getTaxation().equalsIgnoreCase("N") && periodeIncomplete)
-                        || ((revenuMin > revenuDet) && isDepartEtrangerOuDeces
+                        || ((revenuMin > revenuDet) && !isDepartEtrangerOuDeces
                                 && (2004 <= Integer.parseInt(decision.getAnneeDecision())) && periodeIncomplete)
                         || casProrataRentier
                         || (decision.getTaxation().equalsIgnoreCase("A") && ((moisDebutDecision != 01) || (moisFinDecision != 12)))

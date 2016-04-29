@@ -33,6 +33,16 @@ public class AFApercuReleveViewBean extends AFApercuReleve implements FWViewBean
     private static final long serialVersionUID = 1L;
     private boolean isSalaireDifferesPresent = false;
 
+    private String warningMessage = new String();
+
+    public String getWarningMessage() {
+        return warningMessage;
+    }
+
+    public void setWarningMessage(String warningMessage) {
+        this.warningMessage = warningMessage;
+    }
+
     /**
      * Récupère la liste des collaborateurs
      * 
@@ -161,6 +171,7 @@ public class AFApercuReleveViewBean extends AFApercuReleve implements FWViewBean
                     }
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 // TODO: handle exception
             }
 
@@ -170,6 +181,45 @@ public class AFApercuReleveViewBean extends AFApercuReleve implements FWViewBean
             }
         }
         return plausi;
+    }
+
+    public void fillWarningMessage() {
+
+        StringBuilder messageBuilder = new StringBuilder();
+
+        try {
+            int annee = JACalendar.getYear(getDateDebut());
+
+            if (AFReleve1314Checker.hasReleveAFacturerOuValide(CodeSystem.TYPE_RELEVE_BOUCLEMENT_ACOMPTE, annee,
+                    getAffilieNumero(), getIdReleve(), getSession())) {
+                messageBuilder.append(getSession().getLabel("RELEVE_AVERTISSEMENT_TYPE_14_EXISTE_DEJA")).append(
+                        "<br />");
+            }
+
+            if (AFReleve1314Checker.hasReleveAFacturerOuValide(CodeSystem.TYPE_RELEVE_DECOMP_FINAL_COMPTA, annee,
+                    getAffilieNumero(), getIdReleve(), getSession())) {
+                messageBuilder.append(getSession().getLabel("RELEVE_AVERTISSEMENT_TYPE_13_EXISTE_DEJA")).append(
+                        "<br />");
+            }
+
+            if (AFReleve1314Checker.hasDeclarationSalaireAFacturer(DSDeclarationViewBean.CS_BOUCLEMENT_ACOMPTE, annee,
+                    getAffilieNumero(), getSession())) {
+                messageBuilder.append(getSession().getLabel("DECLARATION_AVERTISSEMENT_TYPE_14_EXISTE_DEJA")).append(
+                        "<br />");
+            }
+
+            if (AFReleve1314Checker.hasDeclarationSalaireAFacturer(DSDeclarationViewBean.CS_PRINCIPALE, annee,
+                    getAffilieNumero(), getSession())) {
+                messageBuilder.append(getSession().getLabel("DECLARATION_AVERTISSEMENT_TYPE_13_EXISTE_DEJA"));
+            }
+        } catch (Exception e) {
+            messageBuilder
+                    .append("L'existence de relevé ou de déclaration de versement de type 13 et 14 n'a pas pu être effectué : ")
+                    .append(e.getMessage()).append("");
+        }
+
+        setWarningMessage(messageBuilder.toString());
+
     }
 
     /**

@@ -47,6 +47,7 @@ import globaz.naos.db.controleEmployeur.AFControleEmployeurManager;
 import globaz.naos.db.cotisation.AFCotisation;
 import globaz.naos.db.cotisation.AFCotisationManager;
 import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliationManager;
+import globaz.naos.db.releve.AFReleve1314Checker;
 import globaz.naos.db.tauxAssurance.AFTauxAssurance;
 import globaz.naos.services.AFAssuranceServices;
 import globaz.naos.translation.CodeSystem;
@@ -202,6 +203,8 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
     private String validationDateSpy = new String();
     /** V_SPY */
     private String validationSpy = new String();
+
+    private String warningMessage = new String();
 
     /**
      * Commentaire relatif au constructeur DSDeclaration
@@ -659,6 +662,45 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
         // Référence facture - inForom 282
         referenceFacture = statement.dbReadString("TARFAC");
         idTiers = statement.dbReadString("HTITIE");
+    }
+
+    public void fillWarningMessage() {
+
+        StringBuilder messageBuilder = new StringBuilder();
+
+        try {
+            int annee = Integer.parseInt(getAnnee());
+
+            if (AFReleve1314Checker.hasReleveAFacturerOuValide(CodeSystem.TYPE_RELEVE_BOUCLEMENT_ACOMPTE, annee,
+                    getAffilieNumero(), "", getSession())) {
+                messageBuilder.append(getSession().getLabel("RELEVE_AVERTISSEMENT_TYPE_14_EXISTE_DEJA")).append(
+                        "<br />");
+            }
+
+            if (AFReleve1314Checker.hasReleveAFacturerOuValide(CodeSystem.TYPE_RELEVE_DECOMP_FINAL_COMPTA, annee,
+                    getAffilieNumero(), "", getSession())) {
+                messageBuilder.append(getSession().getLabel("RELEVE_AVERTISSEMENT_TYPE_13_EXISTE_DEJA")).append(
+                        "<br />");
+            }
+
+            if (AFReleve1314Checker.hasDeclarationSalaireAFacturer(DSDeclarationViewBean.CS_BOUCLEMENT_ACOMPTE, annee,
+                    getAffilieNumero(), getSession())) {
+                messageBuilder.append(getSession().getLabel("DECLARATION_AVERTISSEMENT_TYPE_14_EXISTE_DEJA")).append(
+                        "<br />");
+            }
+
+            if (AFReleve1314Checker.hasDeclarationSalaireAFacturer(DSDeclarationViewBean.CS_PRINCIPALE, annee,
+                    getAffilieNumero(), getSession())) {
+                messageBuilder.append(getSession().getLabel("DECLARATION_AVERTISSEMENT_TYPE_13_EXISTE_DEJA"));
+            }
+        } catch (Exception e) {
+            messageBuilder
+                    .append("L'existence de relevé ou de déclaration de versement de type 13 et 14 n'a pas pu être effectué : ")
+                    .append(e.getMessage()).append("");
+        }
+
+        setWarningMessage(messageBuilder.toString());
+
     }
 
     @Override
@@ -2258,6 +2300,14 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
 
     public void setValidationSpy(String validationSpy) {
         this.validationSpy = validationSpy;
+    }
+
+    public String getWarningMessage() {
+        return warningMessage;
+    }
+
+    public void setWarningMessage(String warningMessage) {
+        this.warningMessage = warningMessage;
     }
 
 }

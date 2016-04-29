@@ -7,6 +7,8 @@ import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Le Manager pour l'entité Relevé.
@@ -26,14 +28,15 @@ public class AFApercuReleveManager extends BManager {
     private String forIdEnteteFacture;
     private String forIdExterneFacture;
     private String forIdTiers;
+    private String notForIdReleve;
     private String forJob;
     private String forPlanAffiliationId;
     private String forType;
     private String fromDateDebut;
     private String order = "MALNAF, MMDDEB DESC";
     private boolean ordreByDateFin = false;
-
     private String untilDateFin;
+    private List<String> inEtats = new ArrayList<String>();
 
     public AFApercuReleveManager() {
         super();
@@ -88,6 +91,14 @@ public class AFApercuReleveManager extends BManager {
     @Override
     protected String _getWhere(BStatement statement) {
         String sqlWhere = "";
+
+        // id de relevé différent
+        if (!JadeStringUtil.isEmpty(getNotForIdReleve())) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += "MMIREL <> " + this._dbWriteNumeric(statement.getTransaction(), getNotForIdReleve());
+        }
 
         // Numéro d'affilié
         if (!JadeStringUtil.isEmpty(getForAffilieNumero())) {
@@ -160,6 +171,21 @@ public class AFApercuReleveManager extends BManager {
                 sqlWhere += " AND ";
             }
             sqlWhere += "MMETAT = " + this._dbWriteNumeric(statement.getTransaction(), getForEtat());
+        }
+
+        if (inEtats != null && inEtats.size() > 0) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+
+            sqlWhere += "MMETAT IN (";
+
+            for (String etat : inEtats) {
+                sqlWhere += etat + ", ";
+            }
+
+            sqlWhere = sqlWhere.substring(0, sqlWhere.length() - 2);
+            sqlWhere += ") ";
         }
 
         // Collaborateur
@@ -308,5 +334,17 @@ public class AFApercuReleveManager extends BManager {
 
     public void setUntilDateFin(String untilDateFin) {
         this.untilDateFin = untilDateFin;
+    }
+
+    public String getNotForIdReleve() {
+        return notForIdReleve;
+    }
+
+    public void setNotForIdReleve(String notForIdReleve) {
+        this.notForIdReleve = notForIdReleve;
+    }
+
+    public void setInEtats(List<String> etats) {
+        inEtats = etats;
     }
 }

@@ -127,6 +127,16 @@ function checkTypeReleve() {
 	}
 }
 
+$(function () {
+	
+	<%viewBean.fillWarningMessage();%>
+	var warningMessage = "<%=viewBean.getWarningMessage()%>";
+	
+	if(warningMessage.length > 0) {
+		globazNotation.utils.consoleWarn(warningMessage,'<ct:FWLabel key="RELEVE_AVERTISSEMENT" />', true);
+	}
+});
+
 
 </SCRIPT>
 <%-- /tpl:put --%>
