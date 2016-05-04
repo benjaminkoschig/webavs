@@ -205,7 +205,6 @@ function control() {
 }
 
 $(function () {
-	
 	<%viewBean.fillWarningMessage();%>
 	var warningMessage = "<%=viewBean.getWarningMessage()%>";
 	

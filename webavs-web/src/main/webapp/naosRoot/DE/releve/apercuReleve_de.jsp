@@ -35,6 +35,8 @@
 		}
 		}
 	actionNew = servletContext + mainServletPath + "?userAction=" + request.getParameter("userAction").substring(0,request.getParameter("userAction").lastIndexOf('.')) + ".afficherPreSaisie&_method=add";
+	
+	viewBean.fillWarningMessage();
 %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%>
@@ -127,6 +129,13 @@ function checkTypeReleve() {
 	}
 }
 
+$(function () {
+	var warningMessage = "<%=viewBean.getWarningMessage()%>";
+	
+	if(warningMessage.length > 0) {
+		globazNotation.utils.consoleWarn(warningMessage,'<ct:FWLabel key="RELEVE_AVERTISSEMENT" />', true);
+	}
+});
 
 </SCRIPT>
 <%-- /tpl:put --%>

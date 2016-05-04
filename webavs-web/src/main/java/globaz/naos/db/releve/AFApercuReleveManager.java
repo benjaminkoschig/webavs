@@ -1,6 +1,3 @@
-/*
- * Créé le 18 avr. 05
- */
 package globaz.naos.db.releve;
 
 import globaz.globall.db.BEntity;
@@ -17,9 +14,6 @@ import java.util.List;
  */
 public class AFApercuReleveManager extends BManager {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     private String forAffilieNumero;
     private String forCollaborateur;
@@ -53,11 +47,6 @@ public class AFApercuReleveManager extends BManager {
                                                                                                        */
     }
 
-    /**
-     * Renvoie la clause FROM.
-     * 
-     * @see globaz.globall.db.BManager#_getFrom(globaz.globall.db.BStatement)
-     */
     @Override
     protected String _getFrom(BStatement statement) {
         return _getCollection() + "AFREVEP LEFT OUTER JOIN " + _getCollection() + "FAENTFP ON " + _getCollection()
@@ -67,11 +56,6 @@ public class AFApercuReleveManager extends BManager {
         // "AFAFFIP.MAIAFF = " + _getCollection() + "AFREVEP.MAIAFF";
     }
 
-    /**
-     * Renvoie la composante de tri de la requête SQL.
-     * 
-     * @see globaz.globall.db.BManager#_getOrder(globaz.globall.db.BStatement)
-     */
     @Override
     protected String _getOrder(BStatement statement) {
 
@@ -83,11 +67,6 @@ public class AFApercuReleveManager extends BManager {
         return order;
     }
 
-    /**
-     * Renvoie la composante de sélection de la requête SQL.
-     * 
-     * @see globaz.globall.db.BManager#_getWhere(globaz.globall.db.BStatement)
-     */
     @Override
     protected String _getWhere(BStatement statement) {
         String sqlWhere = "";
@@ -208,11 +187,6 @@ public class AFApercuReleveManager extends BManager {
         return sqlWhere;
     }
 
-    /**
-     * Crée une nouvelle entité.
-     * 
-     * @see globaz.globall.db.BManager#_newEntity()
-     */
     @Override
     protected BEntity _newEntity() throws Exception {
         return new AFApercuReleve();
@@ -254,9 +228,6 @@ public class AFApercuReleveManager extends BManager {
         return forJob;
     }
 
-    /**
-     * @return
-     */
     public String getForPlanAffiliationId() {
         return forPlanAffiliationId;
     }
@@ -313,9 +284,6 @@ public class AFApercuReleveManager extends BManager {
         forJob = string;
     }
 
-    /**
-     * @param string
-     */
     public void setForPlanAffiliationId(String string) {
         forPlanAffiliationId = string;
     }

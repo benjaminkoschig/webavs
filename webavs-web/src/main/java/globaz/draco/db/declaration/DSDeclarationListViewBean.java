@@ -67,12 +67,8 @@ public class DSDeclarationListViewBean extends BManager {
     private String likeNumeroAffilie = new String();
     private java.lang.String order = new String();
     private String toAffilie = new String();
+    private String notForIdDeclaration = new String();
 
-    /**
-     * retourne la clause FROM de la requete SQL (la table)
-     * 
-     * @return String le nom de la table
-     */
     @Override
     protected String _getFrom(BStatement statement) {
 
@@ -85,13 +81,6 @@ public class DSDeclarationListViewBean extends BManager {
         }
     }
 
-    /**
-     * retourne la clause ORDER BY de la requete SQL (la table)
-     * 
-     * @param BStatement
-     *            le statement
-     * @return String le ORDER BY
-     */
     @Override
     protected String _getOrder(BStatement statement) {
         if (getForSelectionTri().equals("1")) {
@@ -114,13 +103,6 @@ public class DSDeclarationListViewBean extends BManager {
         return "";
     }
 
-    /**
-     * retourne la clause WHERE de la requete SQL
-     * 
-     * @param BStatement
-     *            le statement
-     * @return la clause WHERE
-     */
     @Override
     protected String _getWhere(BStatement statement) {
 
@@ -132,6 +114,15 @@ public class DSDeclarationListViewBean extends BManager {
             }
             sqlWhere += "TAIDDE=" + this._dbWriteNumeric(statement.getTransaction(), getForIdDeclaration());
         }
+
+        // traitement du positionnement
+        if (getNotForIdDeclaration().isEmpty()) {
+            if (!sqlWhere.isEmpty()) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += "TAIDDE <> " + this._dbWriteNumeric(statement.getTransaction(), getNotForIdDeclaration());
+        }
+
         // traitement du positionnement
         if (getForAffiliationId().length() != 0) {
             if (sqlWhere.length() != 0) {
@@ -359,13 +350,6 @@ public class DSDeclarationListViewBean extends BManager {
         return sqlWhere;
     }
 
-    /**
-     * Instancie un objet étendant BEntity
-     * 
-     * @return BEntity un objet repésentant le résultat
-     * @throws Exception
-     *             la création a échouée
-     */
     @Override
     protected BEntity _newEntity() throws Exception {
         return new DSDeclarationViewBean();
@@ -425,11 +409,6 @@ public class DSDeclarationListViewBean extends BManager {
         return forIdControlEmployeur;
     }
 
-    /**
-     * Insérez la description de la méthode ici.
-     * 
-     * @return String
-     */
     public String getForIdDeclaration() {
         return forIdDeclaration;
     }
@@ -438,9 +417,6 @@ public class DSDeclarationListViewBean extends BManager {
         return forIdDeclarationDistante;
     }
 
-    /**
-     * @return
-     */
     public String getForIdJournal() {
         return forIdJournal;
     }
@@ -511,9 +487,6 @@ public class DSDeclarationListViewBean extends BManager {
         return inTypeDeclaration;
     }
 
-    /**
-     * @return
-     */
     public String getLikeNumeroAffilie() {
         return likeNumeroAffilie;
     }
@@ -582,12 +555,6 @@ public class DSDeclarationListViewBean extends BManager {
         this.forIdControlEmployeur = forIdControlEmployeur;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (22.10.2002 13:52:58)
-     * 
-     * @param newD
-     *            String
-     */
     public void setForIdDeclaration(String newForIdDeclaration) {
         forIdDeclaration = newForIdDeclaration;
     }
@@ -596,9 +563,6 @@ public class DSDeclarationListViewBean extends BManager {
         this.forIdDeclarationDistante = forIdDeclarationDistante;
     }
 
-    /**
-     * @param string
-     */
     public void setForIdJournal(String string) {
         forIdJournal = string;
     }
@@ -671,9 +635,6 @@ public class DSDeclarationListViewBean extends BManager {
         this.inTypeDeclaration = inTypeDeclaration;
     }
 
-    /**
-     * @param string
-     */
     public void setLikeNumeroAffilie(String string) {
         likeNumeroAffilie = string;
     }
@@ -684,6 +645,14 @@ public class DSDeclarationListViewBean extends BManager {
 
     public void setToAffilie(String toAffilie) {
         this.toAffilie = toAffilie;
+    }
+
+    public String getNotForIdDeclaration() {
+        return notForIdDeclaration;
+    }
+
+    public void setNotForIdDeclaration(String notForIdDeclaration) {
+        this.notForIdDeclaration = notForIdDeclaration;
     }
 
 }

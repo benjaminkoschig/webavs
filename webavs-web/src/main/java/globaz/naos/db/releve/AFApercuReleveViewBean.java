@@ -1,6 +1,3 @@
-/*
- * Créé le 18 avr. 05
- */
 package globaz.naos.db.releve;
 
 import globaz.draco.db.declaration.DSDeclarationListViewBean;
@@ -27,9 +24,6 @@ import java.util.Vector;
  */
 public class AFApercuReleveViewBean extends AFApercuReleve implements FWViewBeanInterface {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     private boolean isSalaireDifferesPresent = false;
 
@@ -183,39 +177,57 @@ public class AFApercuReleveViewBean extends AFApercuReleve implements FWViewBean
         return plausi;
     }
 
+    /**
+     * Methode permettant de rechercher des messages de warnings qui seront affichées à l'écran
+     */
     public void fillWarningMessage() {
 
         StringBuilder messageBuilder = new StringBuilder();
 
+        if (JadeStringUtil.isEmpty(getDateDebut())) {
+            return;
+        }
+
         try {
             int annee = JACalendar.getYear(getDateDebut());
 
-            if (AFReleve1314Checker.hasReleveAFacturerOuValide(CodeSystem.TYPE_RELEVE_BOUCLEMENT_ACOMPTE, annee,
-                    getAffilieNumero(), getIdReleve(), getSession())) {
-                messageBuilder.append(getSession().getLabel("RELEVE_AVERTISSEMENT_TYPE_14_EXISTE_DEJA")).append(
-                        "<br />");
+            if (CodeSystem.TYPE_RELEVE_BOUCLEMENT_ACOMPTE.equals(getType())) {
+
+                if (AFReleve1314Checker.hasDeclarationSalaireAFacturer(DSDeclarationViewBean.CS_PRINCIPALE, annee,
+                        getAffilieNumero(), getSession())) {
+                    messageBuilder.append(getSession().getLabel("DECLARATION_AVERTISSEMENT_TYPE_13_EXISTE_DEJA"));
+                }
+
+            } else if (CodeSystem.TYPE_RELEVE_DECOMP_FINAL_COMPTA.equals(getType())) {
+
+                if (AFReleve1314Checker.hasDeclarationSalaireAFacturer(DSDeclarationViewBean.CS_PRINCIPALE, annee,
+                        getAffiliationId(), getSession())) {
+                    messageBuilder.append(getSession().getLabel("DECLARATION_AVERTISSEMENT_TYPE_13_EXISTE_DEJA"));
+                }
+
+                if (AFReleve1314Checker.hasDeclarationSalaireAFacturer(DSDeclarationViewBean.CS_BOUCLEMENT_ACOMPTE,
+                        annee, getAffiliationId(), getSession())) {
+                    messageBuilder.append(getSession().getLabel("DECLARATION_AVERTISSEMENT_TYPE_14_EXISTE_DEJA"))
+                            .append("<br />");
+                }
+
+                if (AFReleve1314Checker.hasReleveAFacturerOuValide(CodeSystem.TYPE_RELEVE_BOUCLEMENT_ACOMPTE, annee,
+                        getAffilieNumero(), getIdReleve(), getSession())) {
+                    messageBuilder.append(getSession().getLabel("RELEVE_AVERTISSEMENT_TYPE_14_EXISTE_DEJA")).append(
+                            "<br />");
+                }
+
+                if (AFReleve1314Checker.hasReleveAFacturerOuValide(CodeSystem.TYPE_RELEVE_DECOMP_FINAL_COMPTA, annee,
+                        getAffilieNumero(), getIdReleve(), getSession())) {
+                    messageBuilder.append(getSession().getLabel("RELEVE_AVERTISSEMENT_TYPE_13_EXISTE_DEJA")).append(
+                            "<br />");
+                }
             }
 
-            if (AFReleve1314Checker.hasReleveAFacturerOuValide(CodeSystem.TYPE_RELEVE_DECOMP_FINAL_COMPTA, annee,
-                    getAffilieNumero(), getIdReleve(), getSession())) {
-                messageBuilder.append(getSession().getLabel("RELEVE_AVERTISSEMENT_TYPE_13_EXISTE_DEJA")).append(
-                        "<br />");
-            }
-
-            if (AFReleve1314Checker.hasDeclarationSalaireAFacturer(DSDeclarationViewBean.CS_BOUCLEMENT_ACOMPTE, annee,
-                    getAffilieNumero(), getSession())) {
-                messageBuilder.append(getSession().getLabel("DECLARATION_AVERTISSEMENT_TYPE_14_EXISTE_DEJA")).append(
-                        "<br />");
-            }
-
-            if (AFReleve1314Checker.hasDeclarationSalaireAFacturer(DSDeclarationViewBean.CS_PRINCIPALE, annee,
-                    getAffilieNumero(), getSession())) {
-                messageBuilder.append(getSession().getLabel("DECLARATION_AVERTISSEMENT_TYPE_13_EXISTE_DEJA"));
-            }
         } catch (Exception e) {
-            messageBuilder
-                    .append("L'existence de relevé ou de déclaration de versement de type 13 et 14 n'a pas pu être effectué : ")
-                    .append(e.getMessage()).append("");
+
+            // On fait rien car on doit pas bloquer l'affichage
+            JadeLogger.warn("Unabled to find releve or declaration 13/14 for warning message", e);
         }
 
         setWarningMessage(messageBuilder.toString());

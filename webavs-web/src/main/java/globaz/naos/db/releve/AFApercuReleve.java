@@ -15,6 +15,7 @@ import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BEntity;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BStatement;
@@ -1868,7 +1869,7 @@ public class AFApercuReleve extends BEntity {
         mgr.setForAffilieNumero(getAffilieNumero());
         mgr.setForTypesAffParitaires();
         mgr.setForIdTiers(getIdTiers());
-        mgr.find();
+        mgr.find(BManager.SIZE_USEDEFAULT);
         if (mgr.isEmpty()) {
             return null;
         } else {
