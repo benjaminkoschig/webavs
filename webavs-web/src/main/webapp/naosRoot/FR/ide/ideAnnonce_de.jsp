@@ -166,7 +166,7 @@ function init() {
 	    <TD nowrap width="300" colspan="1"><INPUT  name="" type="text" value="<%=viewBean.getRue()%>" class="libelleLong10Disabled" readonly></TD>
 	    
 	    <TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_ACTIVITE"/></TD>
-	    <TD nowrap width="300" colspan="1"><INPUT  name="" type="text" value="<%=viewBean.getActivite()%>" class="libelleLong10Disabled" readonly></TD>
+	    <TD nowrap width="300" colspan="1"><INPUT  name="" type="text" value="<%=viewBean.getActivite().replaceAll("\"", "&quot;")%>" class="libelleLong10Disabled" readonly></TD>
         </TR>
 		
 		<TR>

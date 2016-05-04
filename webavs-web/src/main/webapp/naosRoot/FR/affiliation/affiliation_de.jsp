@@ -728,9 +728,9 @@ function maxLength(zone,max)
 									</script>
 																	
 								</TD>
-								<TD nowrap height="31" width="161">Activit&eacute;(s)</TD>
-								<td rowspan="3">
-									<TEXTAREA name="activite" rows="5" cols="50" onkeypress="maxLength(this, 254);"><%=viewBean.getActivite()%></TEXTAREA>
+								<TD nowrap height="31" width="161">&nbsp;Activit&eacute;(s)</TD>
+								<td>
+									<TEXTAREA name="activite" rows="5" cols="50" onkeyup="maxLength(this, 254);"><%=viewBean.getActivite()%></TEXTAREA>
 									<INPUT type="hidden" name="confirmerAnnonceActivite" value="<%=viewBean.getConfirmerAnnonceActivite()%>"/>
 								</td>
 								
