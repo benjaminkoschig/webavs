@@ -244,8 +244,11 @@ public class IDEServiceMappingUtil {
 
         ch.ech.xmlns.ech_0098_f._3.OrganisationType organisation = new ch.ech.xmlns.ech_0098_f._3.OrganisationType();
         // personnalité juridique
-        organisationIdentification.setLegalForm(AFIDEUtil.translatePersJuriVersLegalForm(ideDataBean
-                .getPersonnaliteJuridique()));
+
+        String legalForm = AFIDEUtil.translatePersJuriVersLegalForm(ideDataBean.getPersonnaliteJuridique());
+        if (!JadeStringUtil.isBlankOrZero(legalForm)) {
+            organisationIdentification.setLegalForm(legalForm);
+        }
 
         // ATTENTION ! ne pas modifier car la méthode appelante getStructureForUpdateEntiteIde se base sur le fait
         // qu'une organisation identification est renseignée
