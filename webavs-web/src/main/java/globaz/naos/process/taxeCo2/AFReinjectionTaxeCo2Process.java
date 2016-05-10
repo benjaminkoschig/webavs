@@ -240,12 +240,20 @@ public class AFReinjectionTaxeCo2Process extends BProcess {
             if (taxe != null) {
                 if (etat.equals(getSession().getLabel("ETAT_TAXE_CO2_ABANDONNE"))) {
                     taxe.setEtat(CodeSystem.ETAT_TAXE_CO2_ABANDONNE);
+                    taxe.update(transaction);
                 } else if (etat.equals(getSession().getLabel("ETAT_TAXE_CO2_FACTURE"))) {
                     taxe.setEtat(CodeSystem.ETAT_TAXE_CO2_FACTURE);
-                } else {
+                    taxe.update(transaction);
+                } else if (etat.equals(getSession().getLabel("ETAT_TAXE_CO2_ATRAITER"))) {
                     taxe.setEtat(CodeSystem.ETAT_TAXE_CO2_A_TRAITER);
+                    taxe.update(transaction);
+                } else {
+                    AFUtil.fillNaosContainerWithAFLine(errorContainer, line, IAFListeColumns.listeNoms, getSession()
+                            .getLabel("REINJECTION_ERROR_ETAT_TAXE_NON_EXISTANTE"), IAFListeColumns.ERREUR);
+                    transaction.clearErrorBuffer();
+                    transaction.rollback();
+                    isAtLessOneError = true;
                 }
-                taxe.update(transaction);
 
             } else if (!transaction.hasErrors()) {
                 AFUtil.fillNaosContainerWithAFLine(errorContainer, line, IAFListeColumns.listeNoms, getSession()
