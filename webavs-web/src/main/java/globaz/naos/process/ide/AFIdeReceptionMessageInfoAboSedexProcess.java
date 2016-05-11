@@ -144,6 +144,8 @@ public class AFIdeReceptionMessageInfoAboSedexProcess {
             annonce.setHistNumeroIde(ideDataBean.getNumeroIDE());
             annonce.setHistRaisonSociale(ideDataBean.getRaisonSociale());
             annonce.setHistStatutIde(ideDataBean.getStatut());
+            annonce.setHistNoga(ideDataBean.getNogaCode());
+            annonce.setHistNaissance(ideDataBean.getNaissance());
             annonce.add(transaction);
 
         } finally {
