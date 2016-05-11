@@ -2397,34 +2397,38 @@ public class AFApercuReleve extends BEntity {
     }
 
     public void setDateDebut(String string) throws JAException {
-        if (string.matches("^[0-3][0-9].[0-1][0-9].[0-9]{4}$")) {
-            dateDebut = string;
-        } else {
-            if (!JadeStringUtil.isEmpty(string)) {
-                try {
+
+        if (!JadeStringUtil.isEmpty(string)) {
+            try {
+
+                if (string.matches("^[0-3][0-9].[0-1][0-9].[0-9]{4}$")) {
+                    dateDebut = string;
+                } else {
+
                     JADate date = new JADate(string);
                     dateDebut = AFUtil.getDateBeginingOfMonth(date.toStr("."));
-                } catch (JAException e) {
-                    e.printStackTrace();
-                    throw e;
                 }
+            } catch (JAException e) {
+                JadeLogger.error(this, e);
+                throw e;
             }
         }
+
     }
 
     public void setDateFin(String string) throws JAException {
-        // TODO valider
-        if (string.matches("^[0-3][0-9].[0-1][0-9].[0-9]{4}$")) {
-            dateFin = string;
-        } else {
-            if (!JadeStringUtil.isEmpty(string)) {
-                try {
+        if (!JadeStringUtil.isEmpty(string)) {
+            try {
+                if (string.matches("^[0-3][0-9].[0-1][0-9].[0-9]{4}$")) {
+                    dateFin = string;
+                } else {
+
                     JADate date = new JADate(string);
                     dateFin = AFUtil.getDateEndOfMonth(date.toStr("."));
-                } catch (JAException e) {
-                    e.printStackTrace();
-                    throw e;
                 }
+            } catch (JAException e) {
+                JadeLogger.error(this, e);
+                throw e;
             }
         }
     }

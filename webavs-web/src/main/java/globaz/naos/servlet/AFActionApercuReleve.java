@@ -393,12 +393,15 @@ public class AFActionApercuReleve extends AFDefaultActionChercher {
 
                                     // On récupère la date de fin du dernier
                                     // relevé
-                                    viewBean.setDateFin(AFUtil.getDateEndOfNextMonth(getDateFinDernierReleve(session,
-                                            viewBean)));
+                                    String dateDernierReleve = getDateFinDernierReleve(session, viewBean);
+                                    String dateEndOfNextMonth = AFUtil.getDateEndOfNextMonth(dateDernierReleve);
+
                                     // Si la récupération a donné null, on
                                     // récupère la date de fin de l'affiliation
-                                    if (viewBean.getDateFin() == null) {
+                                    if (dateEndOfNextMonth == null) {
                                         viewBean.setDateFin(AFUtil.getDateEndOfMonth(affiliation.getDateFin()));
+                                    } else {
+                                        viewBean.setDateFin(dateEndOfNextMonth);
                                     }
 
                                     if (BSessionUtil.compareDateFirstLower(bSession, today, viewBean.getDateFin())) {
