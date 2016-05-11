@@ -92,6 +92,10 @@ public class ALDecisionsFileAttenteProcess extends ALDecisionsMasseProcess {
     @Override
     protected void process() {
 
+        // Paramétrages du process parent
+        super.setGestionTexteLibre(true);
+        super.setGestionCopie(true);
+
         validate();
         try {
 
