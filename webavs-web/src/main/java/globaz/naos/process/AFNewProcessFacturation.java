@@ -222,7 +222,8 @@ public final class AFNewProcessFacturation extends BProcess {
     public final static int PERIODIQUE_COT_PERS = 0;
     public final static int PERIODIQUE_COT_PERS_IND = 1;
     public final static int PERIODIQUE_COT_PERS_NAC = 2;
-    private static boolean ffppDejaFacturee = false;
+    private static Boolean ffppDejaFacturee = false;
+    private static Boolean ffppNegativeDejaFacturee = false;
 
     /**
      * Calcul de la masse MENSUELLE de la cotisation de l'assurance de Référence.
@@ -660,26 +661,29 @@ public final class AFNewProcessFacturation extends BProcess {
             AFProcessFacturationViewBean donneesFacturation, String anneeFacturation, BSession sessionNaos,
             AFTauxAssurance tauxAssurance) throws Exception, NumberFormatException {
         double montant;
-        if (ffppDejaFacturee == false) {
-            if (AFParticulariteAffiliation.existeParticularite(process.getSession(),
-                    donneesFacturation.getAffiliationId(), CodeSystem.PARTIC_AFFILIE_SANS_PERSONNEL,
-                    JACalendar.todayJJsMMsAAAA())) {
-                // l'affilié est sans personnel -> ne pas facturer
-                process.getMemoryLog().logMessage(
-                        FWMessageFormat.format((sessionNaos).getLabel("2010"), donneesFacturation.getCotisationId(),
-                                donneesFacturation.getAssuranceId()), FWMessage.AVERTISSEMENT,
-                        AFNewProcessFacturation.class.getName());
-            } else {
-                // recherche du nombre d'assuré
-                String nbrAssures = donneesFacturation.getNbrAssures(anneeFacturation);
-                if (nbrAssures != null) {
-                    AFTauxAssurance taux = tauxAssurance;
-                    if ((taux == null) || taux.isNew()) {
-                        process.getMemoryLog().logMessage(sessionNaos.getLabel("2020"), FWMessage.AVERTISSEMENT,
-                                AFNewProcessFacturation.class.getName());
-                    } else {
-                        montant = Integer.parseInt(JANumberFormatter.deQuote(taux.getValeurEmployeur()))
-                                * Double.parseDouble(JANumberFormatter.deQuote(nbrAssures));
+
+        if (AFParticulariteAffiliation.existeParticularite(process.getSession(), donneesFacturation.getAffiliationId(),
+                CodeSystem.PARTIC_AFFILIE_SANS_PERSONNEL, JACalendar.todayJJsMMsAAAA())) {
+            // l'affilié est sans personnel -> ne pas facturer
+            process.getMemoryLog().logMessage(
+                    FWMessageFormat.format((sessionNaos).getLabel("2010"), donneesFacturation.getCotisationId(),
+                            donneesFacturation.getAssuranceId()), FWMessage.AVERTISSEMENT,
+                    AFNewProcessFacturation.class.getName());
+        } else {
+            // recherche du nombre d'assuré
+            String nbrAssures = donneesFacturation.getNbrAssures(anneeFacturation);
+            if (nbrAssures != null) {
+                AFTauxAssurance taux = tauxAssurance;
+                if ((taux == null) || taux.isNew()) {
+                    process.getMemoryLog().logMessage(sessionNaos.getLabel("2020"), FWMessage.AVERTISSEMENT,
+                            AFNewProcessFacturation.class.getName());
+                } else {
+
+                    montant = Integer.parseInt(JANumberFormatter.deQuote(taux.getValeurEmployeur()))
+                            * Double.parseDouble(JANumberFormatter.deQuote(nbrAssures));
+
+                    if ((ffppDejaFacturee == false && montant >= 0)
+                            || (ffppNegativeDejaFacturee == false && montant < 0)) {
                         // création de la ligne
                         LineFacturation lineFFPP = new LineFacturation(donneesFacturation, anneeFacturation, "", "",
                                 0.0, montant, 0.0);
@@ -695,19 +699,27 @@ public final class AFNewProcessFacturation extends BProcess {
                             lineFFPP.setLibelle(donneesFacturation.getAssuranceLibelleIt() + " " + nbrAssures + " x "
                                     + taux.getValeurEmployeur() + ".-");
                         }
-                        ffppDejaFacturee = true;
+
+                        if (ffppDejaFacturee == false && montant >= 0) {
+                            ffppDejaFacturee = true;
+                        }
+                        if (ffppNegativeDejaFacturee == false && montant < 0) {
+                            ffppNegativeDejaFacturee = true;
+                        }
+
                         return lineFFPP;
                     }
-                } else {
-                    // l'affiliation est bien une FFPP mais le nombre
-                    // d'assuré n'est pas renseigné
-                    process.getMemoryLog().logMessage(
-                            FWMessageFormat.format((sessionNaos).getLabel("2010"),
-                                    donneesFacturation.getCotisationId(), donneesFacturation.getAssuranceId()),
-                            FWMessage.AVERTISSEMENT, AFNewProcessFacturation.class.getName());
                 }
+            } else {
+                // l'affiliation est bien une FFPP mais le nombre
+                // d'assuré n'est pas renseigné
+                process.getMemoryLog().logMessage(
+                        FWMessageFormat.format((sessionNaos).getLabel("2010"), donneesFacturation.getCotisationId(),
+                                donneesFacturation.getAssuranceId()), FWMessage.AVERTISSEMENT,
+                        AFNewProcessFacturation.class.getName());
             }
         }
+
         return null;
     }
 
@@ -1246,6 +1258,7 @@ public final class AFNewProcessFacturation extends BProcess {
                         || !previousKey.equals(donneesFacturation.getIdTiers() + ","
                                 + donneesFacturation.getIdPlanAffiliation())) {
                     ffppDejaFacturee = false;
+                    ffppNegativeDejaFacturee = false;
                     // Indiquer le nombre d'affilié qui ont eu une exception dans une de leur cotisation à facturer
                     if (exceptionPourAffilie) {
                         nbException++;
