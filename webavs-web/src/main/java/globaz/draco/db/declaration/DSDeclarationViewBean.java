@@ -330,7 +330,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                 viewBean.setForValeurCodeSysteme(ILEConstantes.CS_CATEGORIE_SUIVI_DS);
             }
 
-            viewBean.find();
+            viewBean.find(BManager.SIZE_USEDEFAULT);
             // Dans le cas où il existe un envoi, on va mettre la date de
             // réception dans LEO
             if (viewBean.size() > 0) {
@@ -482,7 +482,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
             particulariteMana.setSession(getSession());
             particulariteMana.setForAffiliationId(getAffiliationId());
             particulariteMana.setForParticularite(CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE);
-            particulariteMana.find();
+            particulariteMana.find(BManager.SIZE_USEDEFAULT);
             if (particulariteMana.size() > 0) {
                 String numAffilie = getNumeroAffilie();
                 if (JadeStringUtil.isBlankOrZero(numAffilie)) {
@@ -506,7 +506,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                 particulariteMana.setSession(getSession());
                 particulariteMana.setForAffiliationId(getAffiliationId());
                 particulariteMana.setForParticularite(CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL);
-                particulariteMana.find();
+                particulariteMana.find(BManager.SIZE_USEDEFAULT);
                 if (particulariteMana.size() > 0) {
                     String numAffilie = getNumeroAffilie();
                     if (JadeStringUtil.isBlankOrZero(numAffilie)) {
@@ -789,13 +789,6 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                     }
                 }
             }
-
-            if (AFReleve1314Checker.hasDeclarationSalaireAFacturer(DSDeclarationViewBean.CS_BOUCLEMENT_ACOMPTE, annee,
-                    getAffilieNumero(), getSession(), getIdDeclaration())) {
-
-                setWarningMessage(getSession().getLabel("DECLARATION_AVERTISSEMENT_TYPE_14_EXISTE_DEJA"));
-            }
-
         }
         if (!JadeStringUtil.isBlankOrZero(noDecompte)) {
             int longDecompte;
@@ -831,7 +824,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                 particulariteMana.setSession(getSession());
                 particulariteMana.setForAffiliationId(getAffiliationId());
                 particulariteMana.setForParticularite(CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL);
-                particulariteMana.find();
+                particulariteMana.find(BManager.SIZE_USEDEFAULT);
                 if (particulariteMana.size() > 0) {
                     _addError(statement.getTransaction(), getSession().getLabel("PLAUSI_PARTICULARITE")
                             + getSession().getCodeLibelle(CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL)
@@ -864,7 +857,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
             param.setIdActeurParametre("0");
             param.setPlageValDeParametre("0");
             param.setDateDebutValidite("01.01." + getAnnee());
-            param.find();
+            param.find(BManager.SIZE_USEDEFAULT);
             if (param.size() > 0) {
                 String plafondLtnAffilie = ((FWFindParameter) param.getFirstEntity()).getValeurNumParametre();
                 if (Double.valueOf(getTotalControleDS()).doubleValue() > Double.valueOf(plafondLtnAffilie)
@@ -1076,7 +1069,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                 viewBean.setForValeurCodeSysteme(ILEConstantes.CS_DEF_FORMULE_ATT_DS);
             }
 
-            viewBean.find();
+            viewBean.find(BManager.SIZE_USEDEFAULT);
             if (viewBean.size() > 0) {
                 LUJournalViewBean journalViewBean = (LUJournalViewBean) viewBean.getEntity(0);
                 dateEnvoi = journalViewBean.getDate();
@@ -1116,7 +1109,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                 viewBean.setForValeurCodeSysteme(ILEConstantes.CS_DEF_FORMULE_SOMMATION_DS);
             }
 
-            viewBean.find();
+            viewBean.find(BManager.SIZE_USEDEFAULT);
             if (viewBean.size() > 0) {
                 LUJournalViewBean journalViewBean = (LUJournalViewBean) viewBean.getEntity(0);
                 dateSommation = journalViewBean.getDate();
@@ -1159,7 +1152,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
         manager.setSession(getSession());
         manager.setForAffiliationId(getAffiliationId());
         try {
-            manager.find();
+            manager.find(BManager.SIZE_USEDEFAULT);
             if (!manager.isEmpty()) {
                 _affiliation = (AFAffiliation) manager.getEntity(0);
             } else {
@@ -1189,7 +1182,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
             manager.setSession(getSession());
             manager.setForAffiliationId(getAffiliationId());
             try {
-                manager.find();
+                manager.find(BManager.SIZE_USEDEFAULT);
                 if (!manager.isEmpty()) {
                     _affiliation = (AFAffiliation) manager.getEntity(0);
                 } else {
@@ -1229,7 +1222,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                 AFAffiliationManager affManager = new AFAffiliationManager();
                 affManager.setSession(getSession());
                 affManager.setForAffiliationId(getAffiliationId());
-                affManager.find();
+                affManager.find(BManager.SIZE_USEDEFAULT);
                 if (affManager.size() > 0) {
                     return ((AFAffiliation) affManager.getFirstEntity()).getDateDebut();
                 }
@@ -1254,7 +1247,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                 AFAffiliationManager affManager = new AFAffiliationManager();
                 affManager.setSession(getSession());
                 affManager.setForAffiliationId(getAffiliationId());
-                affManager.find();
+                affManager.find(BManager.SIZE_USEDEFAULT);
                 if (affManager.size() > 0) {
                     return ((AFAffiliation) affManager.getFirstEntity()).getAffilieNumero();
                 }
@@ -1303,7 +1296,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                 AFAffiliationManager affManager = new AFAffiliationManager();
                 affManager.setSession(getSession());
                 affManager.setForAffiliationId(getAffiliationId());
-                affManager.find();
+                affManager.find(BManager.SIZE_USEDEFAULT);
                 if (affManager.size() > 0) {
                     return ((AFAffiliation) affManager.getFirstEntity()).getDateFin();
                 }
@@ -1328,7 +1321,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                 AFAffiliationManager affManager = new AFAffiliationManager();
                 affManager.setSession(getSession());
                 affManager.setForAffiliationId(getAffiliationId());
-                affManager.find();
+                affManager.find(BManager.SIZE_USEDEFAULT);
                 if (affManager.size() > 0) {
                     return globaz.draco.translation.CodeSystem.getLibelle(getSession(),
                             ((AFAffiliation) affManager.getFirstEntity()).getTypeAffiliation());
@@ -1475,7 +1468,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                 manager.setForIdRole(CaisseHelperFactory.getInstance().getRoleForAffilieParitaire(
                         getSession().getApplication()));
                 manager.setForIdExterneRole(getAffiliation().getAffilieNumero());
-                manager.find();
+                manager.find(BManager.SIZE_USEDEFAULT);
                 if (!manager.isEmpty()) {
                     _compteAnnexe = (CACompteAnnexe) manager.getEntity(0);
                     /*
@@ -1615,7 +1608,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                 AFControleEmployeurManager AFControlManager = new AFControleEmployeurManager();
                 AFControlManager.setSession(getSession());
                 AFControlManager.setForControleEmployeurId(getForControleEmployeurId());
-                AFControlManager.find();
+                AFControlManager.find(BManager.SIZE_USEDEFAULT);
                 if (AFControlManager.size() > 0) {
                     return ((AFControleEmployeur) AFControlManager.getFirstEntity()).getDateEffective();
                 }
@@ -1649,7 +1642,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                     AFControleEmployeurManager AFControlManager = new AFControleEmployeurManager();
                     AFControlManager.setSession(getSession());
                     AFControlManager.setForControleEmployeurId(getForControleEmployeurId());
-                    AFControlManager.find();
+                    AFControlManager.find(BManager.SIZE_USEDEFAULT);
                     if (AFControlManager.size() > 0) {
                         return ((AFControleEmployeur) AFControlManager.getFirstEntity()).getDatePrevue();
                     }
