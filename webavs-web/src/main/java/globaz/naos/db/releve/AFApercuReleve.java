@@ -1,6 +1,3 @@
-/*
- * Créé le 18 avr. 05
- */
 package globaz.naos.db.releve;
 
 import globaz.caisse.helper.CaisseHelperFactory;
@@ -427,7 +424,7 @@ public class AFApercuReleve extends BEntity {
                             particulariteMana.setSession(getSession());
                             particulariteMana.setForAffiliationId(planAffilie.getAffiliationId());
                             particulariteMana.setForParticularite(CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL);
-                            particulariteMana.find();
+                            particulariteMana.find(BManager.SIZE_USEDEFAULT);
                             if (particulariteMana.size() > 0) {
                                 _addError(statement.getTransaction(), getSession().getLabel("PLAUSI_PARTICULARITE")
                                         + getSession().getCodeLibelle(CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL)
@@ -735,7 +732,7 @@ public class AFApercuReleve extends BEntity {
                 managerCE.setForAffiliationId(getAffiliation().getAffiliationId());
                 managerCE.setForAnnee(JACalendar.todayJJsMMsAAAA().substring(6));
                 managerCE.setSession(getSession());
-                managerCE.find();
+                managerCE.find(BManager.SIZE_USEDEFAULT);
 
                 if (managerCE.size() == 0) {
                     CEControleEmployeur CE = new CEControleEmployeur();
@@ -756,7 +753,7 @@ public class AFApercuReleve extends BEntity {
                 managerCE.setForAffiliationId(getAffiliation().getAffiliationId());
                 managerCE.setForAnnee(JACalendar.todayJJsMMsAAAA().substring(6));
                 managerCE.setSession(getSession());
-                managerCE.find();
+                managerCE.find(BManager.SIZE_USEDEFAULT);
 
                 if (managerCE.size() == 0) {
                     AFControleEmployeur CE = new AFControleEmployeur();
@@ -1915,7 +1912,7 @@ public class AFApercuReleve extends BEntity {
             manager.setForIdRole(CaisseHelperFactory.getInstance().getRoleForAffilieParitaire(
                     getSession().getApplication()));
             manager.setForIdExterneRole(getAffilieNumero());
-            manager.find();
+            manager.find(BManager.SIZE_USEDEFAULT);
             if (!manager.isEmpty()) {
                 _compteAnnexe = (CACompteAnnexe) manager.getEntity(0);
                 /*
@@ -2242,7 +2239,7 @@ public class AFApercuReleve extends BEntity {
                 mgrDeclaration.setForAnnee(String.valueOf(JADate.getYear(getDateFin())));
                 mgrDeclaration.setForTypeDeclaration(DSDeclarationViewBean.CS_PRINCIPALE);
                 mgrDeclaration.setForSelectionTri("1");
-                mgrDeclaration.find();
+                mgrDeclaration.find(BManager.SIZE_USEDEFAULT);
 
                 if (mgrDeclaration.size() == 1) {
                     DSDeclarationViewBean entityDeclaration = (DSDeclarationViewBean) mgrDeclaration.getFirstEntity();
@@ -2589,7 +2586,7 @@ public class AFApercuReleve extends BEntity {
             AFAffiliationManager manager = new AFAffiliationManager();
             manager.setSession(getSession());
             manager.setForAffilieNumero(getAffilieNumero());
-            manager.find();
+            manager.find(BManager.SIZE_USEDEFAULT);
             if (manager.size() > 0) {
                 if (!idTiers.equals((aff = (AFAffiliation) manager.get(0)).getIdTiers())) {
                     message.append(getSession().getLabel("1630") + "\n");
