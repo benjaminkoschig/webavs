@@ -1167,7 +1167,8 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                                 .giveMeAllNumeroAffilieInAnnonceSeparatedByVirgul(aIdeAnnonce), aIdeAnnonce
                                 .getHistRaisonSociale(), aIdeAnnonce.getHistRue(), aIdeAnnonce.getHistNPA(),
                         aIdeAnnonce.getHistLocalite(), aIdeAnnonce.getHistCanton(), aIdeAnnonce.getHistNaissance(),
-                        aIdeAnnonce.getHistNoga(), aIdeAnnonce.getMessageErreurForBusinessUser());
+                        AFIDEUtil.formatNogaRegistre(aIdeAnnonce.getHistNoga(), getSession()), aIdeAnnonce
+                                .getMessageErreurForBusinessUser());
             }
 
         }
@@ -1202,7 +1203,8 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                                 .giveMeAllNumeroAffilieInAnnonceSeparatedByVirgul(aIdeAnnonce), aIdeAnnonce
                                 .getHistRaisonSociale(), aIdeAnnonce.getHistRue(), aIdeAnnonce.getHistNPA(),
                         aIdeAnnonce.getHistLocalite(), aIdeAnnonce.getHistCanton(), aIdeAnnonce.getHistNaissance(),
-                        aIdeAnnonce.getHistNoga(), aIdeAnnonce.getMessageErreurForBusinessUser());
+                        AFIDEUtil.formatNogaRegistre(aIdeAnnonce.getHistNoga(), getSession()), aIdeAnnonce
+                                .getMessageErreurForBusinessUser());
             }
 
         }

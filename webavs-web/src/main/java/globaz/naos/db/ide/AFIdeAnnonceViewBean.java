@@ -71,7 +71,7 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
             super.setTypeAnnonceDate(super.getHistTypeAnnonceDate());
             naissance = getHistNaissance();
             activite = getHistActivite();
-            noga = getHistNoga();
+            noga = AFIDEUtil.formatNogaRegistre(getHistNoga(), transaction.getSession());
 
         } else {
 

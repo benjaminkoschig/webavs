@@ -47,6 +47,7 @@ public class AFIDEUtil {
     public static final String IDE_FORMATED_PREFIXE = "CHE-";
     public static final String IDE_FORMAT = "   -   .   .   ";
     public static final String IDE_FORMAT_SANS_CHE = "   .   .   ";
+    public static final String OFS_NOGA_INDETERMINE = "990099";
 
     /**
      * Determine si l'annonce peut être supprimée
@@ -2382,4 +2383,12 @@ public class AFIDEUtil {
         AFAffiliation affiliation = AFAffiliationUtil.getAffiliation(idAffiliation, session);
         return affiliation.isIdeProvisoire();
     }
+
+    public static String formatNogaRegistre(String noga, BSession session) {
+        if (noga.equals(OFS_NOGA_INDETERMINE)) {
+            return session.getLabel("NAOS_IDE_UTIL_OFS_NOGA_UNDETERMINATED");
+        }
+        return noga;
+    }
+
 }
