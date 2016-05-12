@@ -456,7 +456,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                             idTiersEnCours = key.idTiers;
                             montantDejaCompenseSurSectionEnCours = new FWCurrency(0);
                             propositionsCompensationsPourTiersEnCours = getCollectionSectionsACompenser(key.idTiers,
-                                    (FWCurrency) sommePourUnTiers.get(key.idTiers));
+                                    (FWCurrency) sommes.get(key));
                             propositionsCompensationsIterator = propositionsCompensationsPourTiersEnCours.iterator();
 
                             if (propositionsCompensationsIterator.hasNext()) {
