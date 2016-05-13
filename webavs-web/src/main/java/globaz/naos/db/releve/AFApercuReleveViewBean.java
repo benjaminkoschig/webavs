@@ -191,6 +191,15 @@ public class AFApercuReleveViewBean extends AFApercuReleve implements FWViewBean
         try {
             int annee = JACalendar.getYear(getDateDebut());
 
+            if (JadeStringUtil.isEmpty(getAffiliationId())) {
+                AFAffiliation aff = getAffiliation();
+                if (aff != null & !aff.isNew()) {
+                    setAffiliationId(aff.getAffiliationId());
+                } else {
+                    return;
+                }
+            }
+
             if (CodeSystem.TYPE_RELEVE_BOUCLEMENT_ACOMPTE.equals(getType())) {
 
                 if (AFReleve1314Checker.hasDeclarationSalaireAFacturer(DSDeclarationViewBean.CS_PRINCIPALE, annee,
