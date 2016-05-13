@@ -202,16 +202,17 @@ public class AFApercuReleveViewBean extends AFApercuReleve implements FWViewBean
 
             if (CodeSystem.TYPE_RELEVE_BOUCLEMENT_ACOMPTE.equals(getType())) {
 
-                if (AFReleve1314Checker.hasDeclarationSalaireAFacturer(DSDeclarationViewBean.CS_PRINCIPALE, annee,
-                        getAffilieNumero(), getSession())) {
-                    messageBuilder.append(getSession().getLabel("DECLARATION_AVERTISSEMENT_TYPE_13_EXISTE_DEJA"));
+                if (AFReleve1314Checker.hasDeclarationSalaireAFacturer(DSDeclarationViewBean.CS_BOUCLEMENT_ACOMPTE,
+                        annee, getAffiliationId(), getSession())) {
+                    messageBuilder.append(getSession().getLabel("DECLARATION_AVERTISSEMENT_TYPE_14_EXISTE_DEJA"));
                 }
 
             } else if (CodeSystem.TYPE_RELEVE_DECOMP_FINAL_COMPTA.equals(getType())) {
 
                 if (AFReleve1314Checker.hasDeclarationSalaireAFacturer(DSDeclarationViewBean.CS_PRINCIPALE, annee,
                         getAffiliationId(), getSession())) {
-                    messageBuilder.append(getSession().getLabel("DECLARATION_AVERTISSEMENT_TYPE_13_EXISTE_DEJA"));
+                    messageBuilder.append(getSession().getLabel("DECLARATION_AVERTISSEMENT_TYPE_13_EXISTE_DEJA"))
+                            .append("<br />");
                 }
 
                 if (AFReleve1314Checker.hasDeclarationSalaireAFacturer(DSDeclarationViewBean.CS_BOUCLEMENT_ACOMPTE,
