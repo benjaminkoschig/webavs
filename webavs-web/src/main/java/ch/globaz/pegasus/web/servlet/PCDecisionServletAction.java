@@ -564,7 +564,7 @@ public class PCDecisionServletAction extends PCAbstractServletAction {
 
         JadeBusinessMessageRendererJson msgrender = new JadeBusinessMessageRendererJson();
         String jsonMessageError = msgrender.render(JadeThread.logMessages(), BSessionUtil.getSessionFromThreadContext()
-                .getIdLangue());
+                .getIdLangueISO());
 
         // **********Préparation************, on passe par la méthode réAffiche, avec l'erreur json en paramètre
         // DAC
