@@ -3,6 +3,14 @@ package globaz.corvus.vb.demandes;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
 
 /**
  * Classe permettant de convertir un {@link REDemandeRenteJointPrestationAccordeeViewBean} en code HTML pour les JSP
@@ -10,6 +18,15 @@ import globaz.prestation.tools.nnss.PRNSSUtil;
  * @author PBA
  */
 public class REDemandeRenteJointPrestationAccordeeHtmlConverter {
+
+    private static final String HTML_CARRIAGE_RETURN = "<br/>";
+    private static final String HTML_BLANK_SPACE = " ";
+    private static final String HTML_TRAIT_UNION_WITH_SPACE = " - ";
+    private static final String HTML_TRAIT_UNION = "-";
+    private static final String HTML_ITALIC = "<i>";
+    private static final String HTML_ITALIC_END = "</i>";
+    private static final String HTML_BOLD = "<b>";
+    private static final String HTML_BOLD_END = "</b>";
 
     /**
      * Format les détails d'un requérant pour un {@link REDemandeRenteJointPrestationAccordeeViewBean} <br/>
@@ -32,6 +49,113 @@ public class REDemandeRenteJointPrestationAccordeeHtmlConverter {
         }
     }
 
+    private static StringBuilder premiereLigne(REDemandeRenteJointPrestationAccordeeViewBean viewBean) {
+
+        StringBuilder htmlTypeDemandeBuilder = new StringBuilder();
+
+        if (viewBean.getCsTypeCalcul().equals(IREDemandeRente.CS_TYPE_CALCUL_BILATERALES)) {
+            htmlTypeDemandeBuilder.append(HTML_CARRIAGE_RETURN);
+            htmlTypeDemandeBuilder.append(viewBean.getSession().getLabel("JSP_DRE_R_TYPEDEMANDE_PLUS_BILATERALES"));
+        } else if (viewBean.getCsTypeCalcul().equals(IREDemandeRente.CS_TYPE_CALCUL_TRANSITOIRE)) {
+            htmlTypeDemandeBuilder.append(HTML_BLANK_SPACE);
+            htmlTypeDemandeBuilder.append(viewBean.getSession().getLabel("JSP_DRE_R_TYPEDEMANDE_TRANSITOIRE"));
+        } else if (viewBean.getCsTypeCalcul().equals(IREDemandeRente.CS_TYPE_CALCUL_PREVISIONNEL)) {
+            htmlTypeDemandeBuilder.append(HTML_CARRIAGE_RETURN);
+            htmlTypeDemandeBuilder.append(viewBean.getSession().getLabel("JSP_DRE_R_TYPEDEMANDE_PLUS_PREVISIONNEL"));
+
+        }
+
+        return htmlTypeDemandeBuilder;
+    }
+
+    private static StringBuilder deuxiemeLigne(REDemandeRenteJointPrestationAccordeeViewBean viewBean) {
+
+        StringBuilder htmlTypeDemandeBuilder = new StringBuilder();
+
+        if (REDemandeRenteJointPrestationAccordeeHtmlConverter.isInfoComplRenteVeuvePerdure(viewBean)) {
+            htmlTypeDemandeBuilder.append(HTML_CARRIAGE_RETURN);
+            htmlTypeDemandeBuilder.append(viewBean.getSession().getLabel(
+                    "JSP_DRE_R_TYPEDEMANDE_PLUS_RENTE_VEUVE_PERDURE"));
+        } else if (REDemandeRenteJointPrestationAccordeeHtmlConverter.isInfoComplRenteRefus(viewBean)) {
+            htmlTypeDemandeBuilder.append(HTML_CARRIAGE_RETURN);
+            htmlTypeDemandeBuilder.append(viewBean.getSession().getLabel("JSP_DRE_R_TYPEDEMANDE_PLUS_REFUS"));
+        } else if (REDemandeRenteJointPrestationAccordeeHtmlConverter.isInfoComplDeces(viewBean)) {
+            htmlTypeDemandeBuilder.append(HTML_TRAIT_UNION_WITH_SPACE);
+            htmlTypeDemandeBuilder.append(viewBean.getSession().getLabel("JSP_DRE_R_TYPE_INFO_COMPL_DECES"));
+        }
+
+        return htmlTypeDemandeBuilder;
+    }
+
+    protected static Map<CodeRente, String> combineListsIntoOrderedMap(List<CodeRente> keys, List<String> values) {
+
+        if (keys.size() != values.size()) {
+            throw new IllegalArgumentException("Cannot combine lists with dissimilar sizes");
+        }
+
+        Map<CodeRente, String> map = new HashMap<CodeRente, String>();
+
+        for (int i = 0; i < keys.size(); i++) {
+
+            map.put((keys.get(i)), values.get(i));
+        }
+        return map;
+    }
+
+    protected static List<CodeRente> convertToCodesRente(List<String> codesRenteToConvert) {
+
+        List<CodeRente> codesRente = new ArrayList<CodeRente>();
+
+        for (String code : codesRenteToConvert) {
+            codesRente.add(new CodeRente(code));
+        }
+
+        return codesRente;
+    }
+
+    protected static StringBuilder codesPrestations(List<String> codesPrest, List<String> dateFinDroit) {
+
+        // converion de la liste en liste de CodeRente pour utilisation de plusieurs meme valeurs dans une map en tant
+        // que clé!
+        List<CodeRente> codesPrestations = convertToCodesRente(codesPrest);
+        // map des deux listes combinées
+        final Map<CodeRente, String> codePrestFinDroit = combineListsIntoOrderedMap(codesPrestations, dateFinDroit);
+
+        List<String> codesPrestationsAsHtml = FluentIterable.from(codesPrestations)
+
+        .filter(new Predicate<CodeRente>() {
+
+            @Override
+            public boolean apply(CodeRente input) {
+                return input.getCodeRente() != null && !input.getCodeRente().isEmpty();
+            }
+
+        }).transform(new Function<CodeRente, String>() {
+
+            @Override
+            public String apply(CodeRente input) {
+                String output = "";
+
+                String dateFinDroit = codePrestFinDroit.get(input);
+                boolean isFinDroit = dateFinDroit != null && !dateFinDroit.isEmpty();
+
+                if (isFinDroit) {
+                    output = HTML_ITALIC + input.getCodeRente() + HTML_ITALIC_END;
+                } else {
+                    output = HTML_BOLD + input.getCodeRente() + HTML_BOLD_END;
+                }
+
+                return output;
+            }
+
+        }).toList();
+
+        Joiner codesFusiones = Joiner.on(HTML_TRAIT_UNION);
+
+        return new StringBuilder(codesFusiones.join(codesPrestationsAsHtml));
+
+    }
+
     /**
      * Format le type de demande pour un {@link REDemandeRenteJointPrestationAccordeeViewBean}<br/>
      * (avec les codes de prestations)<br/>
@@ -43,70 +167,17 @@ public class REDemandeRenteJointPrestationAccordeeHtmlConverter {
      *             si impossible de résoudre les codes systèmes du type de demande
      */
     public static String formatTypeDemande(REDemandeRenteJointPrestationAccordeeViewBean viewBean) throws Exception {
-        StringBuilder htmlTypeDemandeBuilder = new StringBuilder();
 
-        htmlTypeDemandeBuilder.append(viewBean.getSession().getCodeLibelle(viewBean.getCsTypeDemande()));
+        StringBuilder htmlTypeDemandeBuilder = new StringBuilder(viewBean.getSession().getCodeLibelle(
+                viewBean.getCsTypeDemande()));
 
-        // 1ère ligne
-        // Type de demande
-        if (viewBean.getCsTypeCalcul().equals(IREDemandeRente.CS_TYPE_CALCUL_BILATERALES)) {
-            htmlTypeDemandeBuilder.append("<br/>");
-            htmlTypeDemandeBuilder.append(viewBean.getSession().getLabel("JSP_DRE_R_TYPEDEMANDE_PLUS_BILATERALES"));
-        } else if (viewBean.getCsTypeCalcul().equals(IREDemandeRente.CS_TYPE_CALCUL_TRANSITOIRE)) {
-            htmlTypeDemandeBuilder.append(" ");
-            htmlTypeDemandeBuilder.append(viewBean.getSession().getLabel("JSP_DRE_R_TYPEDEMANDE_TRANSITOIRE"));
-        } else if (viewBean.getCsTypeCalcul().equals(IREDemandeRente.CS_TYPE_CALCUL_PREVISIONNEL)) {
-            htmlTypeDemandeBuilder.append("<br/>");
-            htmlTypeDemandeBuilder.append(viewBean.getSession().getLabel("JSP_DRE_R_TYPEDEMANDE_PLUS_PREVISIONNEL"));
-            // BZ 5198, si de type rente de veuve perdure (dans les info complémentaires)
-            // je l'affiche dans le type de demande
-        } else if (REDemandeRenteJointPrestationAccordeeHtmlConverter.isInfoComplRenteVeuvePerdure(viewBean)) {
-            htmlTypeDemandeBuilder.append("<br/>");
-            htmlTypeDemandeBuilder.append(viewBean.getSession().getLabel(
-                    "JSP_DRE_R_TYPEDEMANDE_PLUS_RENTE_VEUVE_PERDURE"));
-        } else if (REDemandeRenteJointPrestationAccordeeHtmlConverter.isInfoComplRenteRefus(viewBean)) {
-            htmlTypeDemandeBuilder.append("<br/>");
-            htmlTypeDemandeBuilder.append(viewBean.getSession().getLabel("JSP_DRE_R_TYPEDEMANDE_PLUS_REFUS"));
-        } else if (REDemandeRenteJointPrestationAccordeeHtmlConverter.isInfoComplDeces(viewBean)) {
-            htmlTypeDemandeBuilder.append(" - ");
-            htmlTypeDemandeBuilder.append(viewBean.getSession().getLabel("JSP_DRE_R_TYPE_INFO_COMPL_DECES"));
-        }
-        htmlTypeDemandeBuilder.append("<br/>");
+        htmlTypeDemandeBuilder.append(premiereLigne(viewBean));
 
-        // 2ème ligne
-        // les codes de prestation
-        boolean isFirst = true;
-        for (int i = 0; i < viewBean.getCodesPrestation().size(); i++) {
-            String codePrestation = viewBean.getCodesPrestation().get(i);
+        htmlTypeDemandeBuilder.append(deuxiemeLigne(viewBean));
 
-            if (!JadeStringUtil.isBlank(codePrestation)) {
-                boolean isFinDroit = !JadeStringUtil.isEmpty(viewBean.getDatesFinDroit().get(i));
+        htmlTypeDemandeBuilder.append(HTML_CARRIAGE_RETURN);
 
-                if (!isFirst) {
-                    htmlTypeDemandeBuilder.append("-");
-                }
-                // si la prestation est terminée, le code prestation sera en italique
-                if (isFinDroit) {
-                    htmlTypeDemandeBuilder.append("<i>");
-                }
-                // sinon en gras
-                else {
-                    htmlTypeDemandeBuilder.append("<b>");
-                }
-
-                htmlTypeDemandeBuilder.append(viewBean.getCodesPrestation().get(i));
-
-                if (isFinDroit) {
-                    htmlTypeDemandeBuilder.append("</i>");
-                } else {
-                    htmlTypeDemandeBuilder.append("</b>");
-                }
-
-                if (isFirst) {
-                    isFirst = false;
-                }
-            }
-        }
+        htmlTypeDemandeBuilder.append(codesPrestations(viewBean.getCodesPrestation(), viewBean.getDatesFinDroit()));
 
         return htmlTypeDemandeBuilder.toString();
     }
@@ -128,6 +199,7 @@ public class REDemandeRenteJointPrestationAccordeeHtmlConverter {
      * @return <code>true</code> si de type "rente de veuve perdure", sinon <code>false</code>
      */
     private static boolean isInfoComplRenteVeuvePerdure(REDemandeRenteJointPrestationAccordeeViewBean viewBean) {
+
         if (IREDemandeRente.CS_TYPE_INFORMATION_COMPLEMENTAIRE_RENTE_VEUVE_PERDURE.equals(viewBean
                 .getCsTypeInfoComplementaire())) {
             return true;
@@ -137,10 +209,26 @@ public class REDemandeRenteJointPrestationAccordeeHtmlConverter {
     }
 
     private static boolean isInfoComplRenteRefus(REDemandeRenteJointPrestationAccordeeViewBean viewBean) {
+
         if (IREDemandeRente.CS_TYPE_INFORMATION_COMPLEMENTAIRE_REFUS.equals(viewBean.getCsTypeInfoComplementaire())) {
             return true;
         } else {
             return false;
         }
     }
+
+    protected static class CodeRente {
+
+        private String codeRente;
+
+        public CodeRente(String codeRente) {
+            this.codeRente = codeRente;
+        }
+
+        String getCodeRente() {
+            return codeRente;
+        }
+
+    }
+
 }
