@@ -18,7 +18,8 @@
 			<!--               'false' pour les creer qu'en cas de besoin ('false' par defaut)-->
 			<!--hold: 'true' pour que la file d'attente soit initialement arretee,-->
 			<!--      'false' pour qu'elle soit demarree ('false' par defaut)-->
-			<maxConcurrentJobs>1</maxConcurrentJobs>
+<!-- 			<maxConcurrentJobs>1</maxConcurrentJobs> -->
+			<maxConcurrentJobs>12</maxConcurrentJobs>
 			<createThreads>false</createThreads>
 			<hold>false</hold>
 		</queue>
@@ -28,7 +29,8 @@
 			<!--               'false' pour les creer qu'en cas de besoin ('false' par defaut)-->
 			<!--hold: 'true' pour que la file d'attente soit initialement arretee,-->
 			<!--      'false' pour qu'elle soit demarree ('false' par defaut)-->
-			<maxConcurrentJobs>2</maxConcurrentJobs>
+<!-- 			<maxConcurrentJobs>2</maxConcurrentJobs> -->
+			<maxConcurrentJobs>12</maxConcurrentJobs>
 			<createThreads>false</createThreads>
 			<hold>false</hold>
 		</queue>

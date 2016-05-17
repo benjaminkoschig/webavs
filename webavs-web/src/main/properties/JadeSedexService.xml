@@ -4,26 +4,111 @@
 	<testDeliveryFlag>true</testDeliveryFlag>
 	<!--dir.input: répertoire où arrivent les messages SEDEX destinés à cette application-->
 	<!--dir.output: répertoire où sont déposés les messages SEDEX générés par cette application-->
-	<dir.input checkDelay="1m">d:\sedex\inbox</dir.input>
-	<dir.output>d:\sedex\outbox</dir.output>
-	<dir.output.backup>d:\sedex\backup</dir.output.backup>
+<!-- 	<dir.input checkDelay="1m">d:\data\sedex\inbox</dir.input> -->
+	<dir.input checkDelay="1m">d:\data\sedex\inbox</dir.input>
+	<dir.output>d:\data\sedex\outbox</dir.output>
+	<dir.output.backup>d:\data\sedex\backup</dir.output.backup>
 	<!--dir.repository: emplacement du repository SEDEX, contenant notamment l'annuaire 'particiant-list'-->
-	<dir.repository>d:\sedex\repos</dir.repository>
+	<dir.repository>d:\data\sedex\repos</dir.repository>
 	<!--send.id: identifiant SEDEX de cette application-->
-	<sender.id>6-123456-1</sender.id>
-	<!-- <sender.id>T6-051010-1</sender.id> -->
+	<sender.id>6-150000-1</sender.id>
 	<!--messageparser: nom de classe du parser des messages XML-->
 	<messageparser>ch.globaz.eavs.parser.XmlParser</messageparser>
 	<!-- mappings -->
-	<messageMappings>
+<messageMappings>
+		<mapping>
+			<criteria name="//message/header/messageType">2011</criteria>
+			<criteria name="//message/header/subMessageType">000104</criteria>
+			<handler>
+				<class>globaz.phenix.process.communications.CPProcessSedexReceptionRejets</class>
+				<param key="userSedex">S7FNHNEbzm4=</param>
+				<param key="passSedex">d5UwBcw1VTk=</param>
+			</handler>
+		</mapping>
+		<mapping>
+			<criteria name="//message/header/messageType">2011</criteria>
+			<criteria name="//message/header/subMessageType">000103</criteria>
+			<handler>
+				<class>globaz.phenix.process.communications.CPProcessSedexReception</class>
+				<param key="userSedex">S7FNHNEbzm4=</param>
+				<param key="passSedex">d5UwBcw1VTk=</param>
+			</handler>
+		</mapping>
 		<mapping>
 			<criteria name="//message/header/messageType">2605</criteria>
 			<criteria name="//message/header/subMessageType">0</criteria>
 			<handler>
 				<class>ch.globaz.al.businessimpl.rafam.sedex.ImportAnnoncesRafam</class>
-				<param key="userSedex">7RcBU1zGtiU=</param>
-				<param key="passSedex">7RcBU1zGtiU=</param>
+				<param key="userSedex">S7FNHNEbzm4=</param>
+				<param key="passSedex">d5UwBcw1VTk=</param>
 			</handler>
 		</mapping>
+		<mapping>
+			<criteria name="//message/header/messageType">2015</criteria>
+			<criteria name="//message/header/subMessageType">000501</criteria>
+			<handler>
+				<class>globaz.apg.services.AnnoncesRapgRetourHandler</class>
+				<param key="userSedex">S7FNHNEbzm4=</param>
+				<param key="passSedex">d5UwBcw1VTk=</param>
+			</handler>
+		</mapping>
+		
+		<!-- SPECIFIC MESSAGES AMAL -->
+		<mapping>
+			<criteria name="//message/header/messageType">5201</criteria>
+			<handler>
+				<class>ch.globaz.amal.businessimpl.services.sedexRP.AnnoncesRPServiceImpl</class>
+				<param key="userSedex">vo9DJpF5Hqk=</param>
+				<param key="passSedex">9meyJ15labSB7l8iBOC3zA==</param>
+			</handler>
+		</mapping>
+		<mapping>
+			<criteria name="//message/header/messageType">5202</criteria>
+			<handler>
+				<class>ch.globaz.amal.businessimpl.services.sedexRP.AnnoncesRPServiceImpl</class>
+				<param key="userSedex">vo9DJpF5Hqk=</param>
+				<param key="passSedex">9meyJ15labSB7l8iBOC3zA==</param>
+			</handler>
+		</mapping>
+		<mapping>
+			<criteria name="//message/header/messageType">5203</criteria>
+			<handler>
+				<class>ch.globaz.amal.businessimpl.services.sedexRP.AnnoncesRPServiceImpl</class>
+				<param key="userSedex">yfwcvrgB2W8=</param>
+				<param key="passSedex">eeLQGogCEk2B7l8iBOC3zA==</param>
+			</handler>
+		</mapping>
+		<mapping>
+			<criteria name="//message/header/messageType">5211</criteria>
+			<handler>
+				<class>ch.globaz.amal.businessimpl.services.sedexRP.AnnoncesRPServiceImpl</class>
+				<param key="userSedex">vo9DJpF5Hqk=</param>
+				<param key="passSedex">9meyJ15labSB7l8iBOC3zA==</param>
+			</handler>
+		</mapping>
+		<mapping>
+			<criteria name="//message/header/messageType">5212</criteria>
+			<handler>
+				<class>ch.globaz.amal.businessimpl.services.sedexRP.AnnoncesRPServiceImpl</class>
+				<param key="userSedex">vo9DJpF5Hqk=</param>
+				<param key="passSedex">9meyJ15labSB7l8iBOC3zA==</param>
+			</handler>
+		</mapping>
+		<mapping>
+			<criteria name="//message/header/messageType">5213</criteria>
+			<handler>
+				<class>ch.globaz.amal.businessimpl.services.sedexRP.AnnoncesRPServiceImpl</class>
+				<param key="userSedex">yfwcvrgB2W8=</param>
+				<param key="passSedex">eeLQGogCEk2B7l8iBOC3zA==</param>
+			</handler>
+		</mapping>
+		<mapping>
+			<criteria name="//message/header/messageType">5214</criteria>
+			<handler>
+				<class>ch.globaz.amal.businessimpl.services.sedexRP.AnnoncesRPServiceImpl</class>
+				<param key="userSedex">yfwcvrgB2W8=</param>
+				<param key="passSedex">eeLQGogCEk2B7l8iBOC3zA==</param>
+			</handler>
+		</mapping>  
 	</messageMappings>
 </globaz.jade.sedex.JadeSedexService>

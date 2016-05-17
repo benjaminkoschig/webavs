@@ -17,6 +17,7 @@
 			<application id="PHENIX"/>
 			<application id="LEO"/>
 			<application id="AQUILA"/>
+			<application id="HERCULE"/>
 			<application id="BABEL"/>
 			<application id="APG"/>
 			<application id="IJ"/>
@@ -25,14 +26,21 @@
 			<application id="CEPHEUS"/>
 			<application id="LYRA"/>
 			<application id="FX"/>
-			<application id="CYGNUS"/>
+			<application id="CAMPUS"/>
+			<application id="LACERTA"/>	
+			<application id="LYNX"/>
 			<application id="HERCULE"/>
-			<application id="VULPECULA"/>
-			<application id="ORION"/>
+			<application id="CYGNUS"/>
 			<application id="PEGASUS"/>
-			<application id="PERSEUS"/>
+			<application id="ORION"/>
+			<application id="TUCANA"/>			
 			<application id="AL"/>
-	</remoteApplications>
+			<application id="AMAL"/>
+			<application id="PERSEUS"/>
+			<application id="AURIGA"/>
+			<application id="ARIES"/>
+			<application id="LIBRA"/>
+		</remoteApplications>
 	</system>
 	<system id="GLOBAZ_REMOTE" remoteId="GLOBAZ">
 		<access>
@@ -51,6 +59,7 @@
 			<application id="PHENIX_REMOTE" remoteId="PHENIX"/>
 			<application id="LEO_REMOTE" remoteId="LEO"/>
 			<application id="AQUILA_REMOTE" remoteId="AQUILA"/>
+			<application id="HERCULE_REMOTE" remoteId="HERCULE"/>
 			<application id="BABEL_REMOTE" remoteId="BABEL"/>
 			<application id="APG_REMOTE" remoteId="APG"/>
 			<application id="IJ_REMOTE" remoteId="IJ"/>
@@ -59,14 +68,20 @@
 			<application id="CEPHEUS_REMOTE" remoteId="CEPHEUS"/>
 			<application id="LYRA_REMOTE" remoteId="LYRA"/>
 			<application id="FX_REMOTE" remoteId="FX"/>
-			<application id="CYGNUS_REMOTE" remoteId="CYGNUS"/>
+			<application id="CAMPUS_REMOTE" remoteId="CAMPUS"/>
+			<application id="ORION_REMOTE" remoteId="ORION"/>	
+			<application id="LACERTA_REMOTE" remoteId="LACERTA"/>	
+			<application id="LYNX_REMOTE" remoteId="LYNX"/>
 			<application id="HERCULE_REMOTE" remoteId="HERCULE"/>
-			<application id="VULPECULA_REMOTE" remoteId="VULPECULA"/>	
-			<application id="LIBRA_REMOTE" remoteId="LIBRA"/>
-			<application id="AL_REMOTE" remoteId="AL"/>
-			<application id="ORION_REMOTE" remoteId="ORION"/>
+			<application id="CYGNUS_REMOTE" remoteId="CYGNUS"/>		
 			<application id="PEGASUS_REMOTE" remoteId="PEGASUS"/>
+			<application id="TUCANA_REMOTE" remoteId="TUCANA"/>
+			<application id="AL_REMOTE" remoteId="AL"/>
+			<application id="AMAL_REMOTE" remoteId="AMAL"/>
 			<application id="PERSEUS_REMOTE" remoteId="PERSEUS"/>
+			<application id="AURIGA_REMOTE" remoteId="AURIGA"/>
+			<application id="ARIES_REMOTE" remoteId="ARIES"/>
+			<application id="LIBRA_REMOTE" remoteId="LIBRA"/>
 		</remoteApplications>
 	</system>
 </GlobazSystem>
