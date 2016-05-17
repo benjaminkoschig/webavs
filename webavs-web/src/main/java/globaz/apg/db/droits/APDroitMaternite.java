@@ -151,6 +151,9 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
                 APDroitLAPG parent = new APDroitLAPG();
                 parent.setSession(getSession());
                 parent.setIdDroit(getIdDroitParent());
+                if (idDroitPrecedant != 0) {
+                    parent.setIdDroit(String.valueOf(idDroitPrecedant));
+                }
                 parent.retrieve(transaction);
                 PRAssert.notIsNew(parent, null);
                 parent.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL);
@@ -167,7 +170,7 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
                     .query("select max(anciennePrestation.VHIDRO) from schema.APPRESP as nouvellePrestation inner join schema.APPRESP as anciennePrestation on anciennePrestation.VHIRST = nouvellePrestation.VHIPRS where nouvellePrestation.VHIDRO = ?",
                             getIdDroit()).useTransaction(transaction).executeAggregateToInt();
         }
-        return null;
+        return 0;
     }
 
     @Override
