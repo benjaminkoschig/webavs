@@ -163,165 +163,180 @@
 		<when attribute="idProcess" operator="eq" value="PCFFactureRemboursementFrais">
 			<doc-id action="set">perseus/facture/factureRemboursementFrais</doc-id>
 		</when>
+		<when attribute="idProcess" operator="eq" value="PCFFactureRemboursementFraisRentePont">
+			<doc-id action="set">perseus/facture/factureRemboursementFraisRentePont</doc-id>
+		</when>
 		<when attribute="idProcess" operator="eq" value="PCFDecisionRefusDemande">
 			<doc-id action="set">perseus/decision/decisionRefusDemande</doc-id>
 		</when>
-		<when attribute="idProcess" operator="eq" value="PCFAttestationsFiscales">
-			<doc-id action="set">perseus\attestationsFiscales/attestationFiscale</doc-id>
+		<when attribute="idProcess" operator="eq" value="PCFAttestationsFiscalesPCF">
+			<doc-id action="set">perseus/attestationsFiscales/attestationFiscalePCF</doc-id>
 		</when>
+		<when attribute="idProcess" operator="eq" value="PCFAttestationsFiscalesRP">
+			<doc-id action="set">perseus/attestationsFiscales/attestationFiscaleRP</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="PCFRevisionDossierFormulaire">
+			<doc-id action="set">perseus/revisionDossier/revisionDossierFormulaire</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="PCFDecisionNonEntreeEnMatiere">
+			<doc-id action="set">perseus/decision/decisionNonEntreeEnMatiere</doc-id>
+		</when>
+		
 	<!-- ********************************************* FIN PERSEUS PCF ********************************************** -->
 
 	<!-- ************************************************ CYGNUS RFM ************************************************ -->
-		<!-- recapitulation des importations AVASAD -->
-		<when attribute="idProcess" operator="eq" value="RFRecapitulationImportationAvasadOO">
-			<doc-id action="set">cygnus/tableaux/_CCVD/avasad/recapAvasad</doc-id>
-		</when>
-				
-		<!-- gestion des lettres d'en tête pour copies et annexes -->
-		<when attribute="idProcess" operator="eq" value="RFMLettreEnTeteOO">
-			<doc-id action="set">cygnus/lettresEnTete/_CCVD/lettreEnTete</doc-id>
-		</when>
-		<!-- annexe bordereau d'accompagnement de la décision -->
-		<when attribute="idProcess" operator="eq" value="RFLettreBordereauOO">
-			<doc-id action="set">cygnus/bordereaux/_CCVD/bordereauAccompagnement</doc-id>
-		</when>		
-		<!-- décision -->
-		<when attribute="idProcess" operator="eq" value="RFValiderDecisionOO">
-			<doc-id action="set">cygnus/decisions/_CCVD/decisionPonctuelle</doc-id>
-		</when>		
-		<when attribute="idProcess" operator="eq" value="RFRefuserDecisionMensuelleRegimeOO">
-			<doc-id action="set">cygnus/decisions/_CCVD/decisionRegimeRefus</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFValiderDecisionMensuelleRegimeOO">
-			<doc-id action="set">cygnus/decisions/_CCVD/decisionRegimeOctroi</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFDecisionRestitutionOO">
-			<doc-id action="set">cygnus/decisions/_CCVD/decisionRestitution</doc-id>
-		</when>
-		
-		<!-- lettres type -->
-		<!-- régime -->
-		<when attribute="idProcess" operator="eq" value="RFDecisionRefus1OO">
-			<doc-id action="set">cygnus/lettresType/regime/decisionRefus1</doc-id>
-		</when>		
-		<when attribute="idProcess" operator="eq" value="RFRegimeQuestionnaireOO">
-			<doc-id action="set">cygnus/lettresType/regime/questionnaire</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFPrescriptionDietetiqueFormulaireOO">
-			<doc-id action="set">cygnus/lettresType/regime/annexePrescriptionDietetiqueFormulaire</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFDemandeEvaluationCMSOO">
-			<doc-id action="set">cygnus/lettresType/regime/demandeEvaluationCMS</doc-id>
-		</when>	
-		<when attribute="idProcess" operator="eq" value="RFFormulaireCompleterCMSOO">
-			<doc-id action="set">cygnus/lettresType/regime/formulaireEvaluationCMS</doc-id>
-		</when>			
-		<when attribute="idProcess" operator="eq" value="RFDecisionRefus2OO">
-			<doc-id action="set">cygnus/lettresType/regime/decisionRefus2</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFDecisionRefus3OO">
-			<doc-id action="set">cygnus/lettresType/regime/decisionRefus3</doc-id>
-		</when>						
-		<when attribute="idProcess" operator="eq" value="RFDecisionOctroiOO">
-			<doc-id action="set">cygnus/lettresType/regime/decisionOctroi</doc-id>
-		</when>							
-		<when attribute="idProcess" operator="eq" value="RFDecisionSuppressionOO">
-			<doc-id action="set">cygnus/lettresType/regime/decisionSuppression</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFDroitMaintenuRevisionsOO">
-			<doc-id action="set">cygnus/lettresType/regime/droitMaintenuRevision</doc-id>
-		</when>						
-		<when attribute="idProcess" operator="eq" value="RFPrescriptionDietetiqueMedecinOO">
-			<doc-id action="set">cygnus/lettresType/regime/prescriptionDietetiqueMedecin</doc-id>
-		</when>							
-		<when attribute="idProcess" operator="eq" value="RFQuestionnaireRevisionsOO">
-			<doc-id action="set">cygnus/lettresType/regime/questionnaireRevision</doc-id>
-		</when>							
-		<when attribute="idProcess" operator="eq" value="RFRappelQuestionnaireRemplirOO">
-			<doc-id action="set">cygnus/lettresType/regime/rappelQuestionnaire</doc-id>
-		</when>								
-		<when attribute="idProcess" operator="eq" value="RFRappelQuestionnaireRevisionsOO">
-			<doc-id action="set">cygnus/lettresType/regime/rappelQuestionnaireRevision</doc-id>
-		</when>
-
-		<!-- ménage -->	
-		<when attribute="idProcess" operator="eq" value="RFMenageDemandeEvaluationCMSOO">
-			<doc-id action="set">cygnus/lettresType/menage/demandeEvaluationCMS</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFMenageDemandeReevaluationCMSOO">
-			<doc-id action="set">cygnus/lettresType/menage/demandeReevaluationCMS</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFMenageRappelDemandeReevaluationCMSOO">
-			<doc-id action="set">cygnus/lettresType/menage/rappelDemandeReevaluationCMS</doc-id>
-		</when>	
-
-		<!-- dentiste -->
-		<when attribute="idProcess" operator="eq" value="RFDentistesDemandeDocumentsManquantsOO">
-			<doc-id action="set">cygnus/lettresType/dentiste/bisDentistesDemandeDocumentsManquants</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFDentistesDemandeDocumentsManquantsQMDOO">
-			<doc-id action="set">cygnus/lettresType/dentiste/dentistesDemandeDocumentsManquantsQMD</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFDentistesDemandeTraitementOrthodontiqueQMDOO">
-			<doc-id action="set">cygnus/lettresType/dentiste/dentistesDemandeTraitementOrthodontiqueQMD</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFDentistesEnvoiDevisMedecinOO">
-			<doc-id action="set">cygnus/lettresType/dentiste/dentistesEnvoiDevisMedecin</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFDentistesEnvoiDevisTraitementOrthodontiqueMedecinOO">
-			<doc-id action="set">cygnus/lettresType/dentiste/dentistesEnvoiDevisTraitementOrthodontiqueMedecin</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFDentistesEnvoiDossierMedecinOO">
-			<doc-id action="set">cygnus/lettresType/dentiste/dentistesEnvoiDossierMedecin</doc-id>
-		</when>		
-		<when attribute="idProcess" operator="eq" value="RFDentistesEnvoiFactureEtrangerOO">
-			<doc-id action="set">cygnus/lettresType/dentiste/dentistesEnvoiFactureEtranger</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFDentistesEnvoiFactureMedecinOO">
-			<doc-id action="set">cygnus/lettresType/dentiste/dentistesEnvoiFactureMedecin</doc-id>
-		</when>		
-		<when attribute="idProcess" operator="eq" value="RFDentistesEnvoiRappelMedecinOO">
-			<doc-id action="set">cygnus/lettresType/dentiste/dentistesEnvoiRappelMedecin</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFDentistesLettreDevisEtrangerOO">
-			<doc-id action="set">cygnus/lettresType/dentiste/dentistesLettreDevisEtranger</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFDentistesRappelDemandeDocumentsManquantsQMDOO">
-			<doc-id action="set">cygnus/lettresType/dentiste/dentistesRappelDemandeDocumentsManquantsQMD</doc-id>
-		</when>	
-		<when attribute="idProcess" operator="eq" value="RFDentistesRappelDemandeDocumentsManquantsQMDOO">
-			<doc-id action="set">cygnus/lettresType/dentiste/dentistesRappelDemandeDocumentsManquantsQMD</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFDentistesLettreAssureReponseMedecinDevisOO">
-			<doc-id action="set">cygnus/lettresType/dentiste/dentistesLettreReponseMedecinDevis</doc-id>
-		</when>
-
-		<!-- moyens auxiliaires -->
-		<when attribute="idProcess" operator="eq" value="RFBonMoyensAuxiliairesOO">
-			<doc-id action="set">cygnus/lettresType/moyensAuxiliaires/moyensAuxiliairesBon</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFBonAchatMoyensAuxiliairesOO">
-			<doc-id action="set">cygnus/lettresType/moyensAuxiliaires/moyensAuxiliairesBonAchat</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFAnnexeMoyensAuxiliaireBonAchatAccuseReceptionBeneficiairePcOO">
-			<doc-id action="set">cygnus/lettresType/moyensAuxiliaires/wait_annexeMoyensAuxiliairesAccuseReception</doc-id>
-		</when>
-		
-		<!-- lits électrique -->
-		<when attribute="idProcess" operator="eq" value="RFBonLivraisonOO">
-			<doc-id action="set">cygnus/lettresType/litElectrique/litElectriqueFormulaire</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFQuestionnaireOO">
-			<doc-id action="set">cygnus/lettresType/litElectrique/litElectriqueQuestionnaire</doc-id>
-		</when>
-		
-		<!-- restitution -->
-		<when attribute="idProcess" operator="eq" value="RFRestitutionSuiteNouveauCalculRetroactifOO">
-			<doc-id action="set">cygnus/lettresType/restitution/restitutionNouveauCalculRetroactif</doc-id>
-		</when>
-		<when attribute="idProcess" operator="eq" value="RFRestitutionSuiteDecesBeneficiaire">
-			<doc-id action="set">cygnus/lettresType/restitution/restitutionDecesBeneficiaire</doc-id>
-		</when>
+	<when attribute="idProcess" operator="eq" value="RFRecapitulationImportationAvasadOO">
+		<doc-id action="set">cygnus/tableaux/_CCVD/avasad/recapAvasad</doc-id>
+	</when>
+			
+	<!-- gestion des lettres d'en tête pour copies et annexes -->
+	<when attribute="idProcess" operator="eq" value="RFMLettreEnTeteOO">
+		<doc-id action="set">cygnus/lettresEnTete/_CCVD/lettreEnTete</doc-id>
+	</when>
+	<!-- annexe bordereau d'accompagnement de la décision -->
+	<when attribute="idProcess" operator="eq" value="RFLettreBordereauOO">
+		<doc-id action="set">cygnus/bordereaux/_CCVD/bordereauAccompagnement</doc-id>
+	</when>		
+	<!-- décision -->
+	<when attribute="idProcess" operator="eq" value="RFDecisionPonctuelleOO"> 
+		<doc-id action="set">cygnus/decisions/_CCVD/decisionPonctuelle</doc-id>
+	</when>		
+	<when attribute="idProcess" operator="eq" value="RFDecisionRegimeAvecExcedentRefusOO"> 
+		<doc-id action="set">cygnus/decisions/_CCVD/decisionRegimeAvecExcedentRefus</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFDecisionRegimeAvecExcedentOctroiOO">
+		<doc-id action="set">cygnus/decisions/_CCVD/decisionRegimeAvecExcedentOctroi</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFDecisionRegimeSansExcedentOctroiOO"> 
+		<doc-id action="set">cygnus/decisions/_CCVD/decisionRegimeSansExcedentOctroi</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFDecisionRestitutionOO">
+		<doc-id action="set">cygnus/decisions/_CCVD/decisionRestitution</doc-id>
+	</when>
+	
+	<!-- lettres type -->
+	<!-- régime -->
+	<when attribute="idProcess" operator="eq" value="RFDecisionRefus1OO">
+		<doc-id action="set">cygnus/lettresType/regime/decisionRefus1</doc-id>
+	</when>		
+	<when attribute="idProcess" operator="eq" value="RFRegimeQuestionnaireOO">
+		<doc-id action="set">cygnus/lettresType/regime/questionnaire</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFPrescriptionDietetiqueFormulaireOO">
+		<doc-id action="set">cygnus/lettresType/regime/annexePrescriptionDietetiqueFormulaire</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFDemandeEvaluationCMSOO">
+		<doc-id action="set">cygnus/lettresType/regime/demandeEvaluationCMS</doc-id>
+	</when>	
+	<when attribute="idProcess" operator="eq" value="RFFormulaireCompleterCMSOO">
+		<doc-id action="set">cygnus/lettresType/regime/formulaireEvaluationCMS</doc-id>
+	</when>			
+	<when attribute="idProcess" operator="eq" value="RFDecisionRefus2OO">
+		<doc-id action="set">cygnus/lettresType/regime/decisionRefus2</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFDecisionRefus3OO">
+		<doc-id action="set">cygnus/lettresType/regime/decisionRefus3</doc-id>
+	</when>						
+	<when attribute="idProcess" operator="eq" value="RFDecisionOctroiOO">
+		<doc-id action="set">cygnus/lettresType/regime/decisionOctroi</doc-id>
+	</when>							
+	<when attribute="idProcess" operator="eq" value="RFDecisionSuppressionOO">
+		<doc-id action="set">cygnus/lettresType/regime/decisionSuppression</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFDroitMaintenuRevisionsOO">
+		<doc-id action="set">cygnus/lettresType/regime/droitMaintenuRevision</doc-id>
+	</when>						
+	<when attribute="idProcess" operator="eq" value="RFPrescriptionDietetiqueMedecinOO">
+		<doc-id action="set">cygnus/lettresType/regime/prescriptionDietetiqueMedecin</doc-id>
+	</when>							
+	<when attribute="idProcess" operator="eq" value="RFQuestionnaireRevisionsOO">
+		<doc-id action="set">cygnus/lettresType/regime/questionnaireRevision</doc-id>
+	</when>							
+	<when attribute="idProcess" operator="eq" value="RFRappelQuestionnaireRemplirOO">
+		<doc-id action="set">cygnus/lettresType/regime/rappelQuestionnaire</doc-id>
+	</when>								
+	<when attribute="idProcess" operator="eq" value="RFRappelQuestionnaireRevisionsOO">
+		<doc-id action="set">cygnus/lettresType/regime/rappelQuestionnaireRevision</doc-id>
+	</when>
+	
+	<!-- ménage -->	
+	<when attribute="idProcess" operator="eq" value="RFMenageDemandeEvaluationCMSOO">
+		<doc-id action="set">cygnus/lettresType/menage/demandeEvaluationCMS</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFMenageDemandeReevaluationCMSOO">
+		<doc-id action="set">cygnus/lettresType/menage/demandeReevaluationCMS</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFMenageRappelDemandeReevaluationCMSOO">
+		<doc-id action="set">cygnus/lettresType/menage/rappelDemandeReevaluationCMS</doc-id>
+	</when>	
+	
+	<!-- dentiste -->
+	<when attribute="idProcess" operator="eq" value="RFDentistesDemandeDocumentsManquantsOO">
+		<doc-id action="set">cygnus/lettresType/dentiste/bisDentistesDemandeDocumentsManquants</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFDentistesDemandeDocumentsManquantsQMDOO">
+		<doc-id action="set">cygnus/lettresType/dentiste/dentistesDemandeDocumentsManquantsQMD</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFDentistesDemandeTraitementOrthodontiqueQMDOO">
+		<doc-id action="set">cygnus/lettresType/dentiste/dentistesDemandeTraitementOrthodontiqueQMD</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFDentistesEnvoiDevisMedecinOO">
+		<doc-id action="set">cygnus/lettresType/dentiste/dentistesEnvoiDevisMedecin</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFDentistesEnvoiDevisTraitementOrthodontiqueMedecinOO">
+		<doc-id action="set">cygnus/lettresType/dentiste/dentistesEnvoiDevisTraitementOrthodontiqueMedecin</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFDentistesEnvoiDossierMedecinOO">
+		<doc-id action="set">cygnus/lettresType/dentiste/dentistesEnvoiDossierMedecin</doc-id>
+	</when>		
+	<when attribute="idProcess" operator="eq" value="RFDentistesEnvoiFactureEtrangerOO">
+		<doc-id action="set">cygnus/lettresType/dentiste/dentistesEnvoiFactureEtranger</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFDentistesEnvoiFactureMedecinOO">
+		<doc-id action="set">cygnus/lettresType/dentiste/dentistesEnvoiFactureMedecin</doc-id>
+	</when>		
+	<when attribute="idProcess" operator="eq" value="RFDentistesEnvoiRappelMedecinOO">
+		<doc-id action="set">cygnus/lettresType/dentiste/dentistesEnvoiRappelMedecin</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFDentistesLettreDevisEtrangerOO">
+		<doc-id action="set">cygnus/lettresType/dentiste/dentistesLettreDevisEtranger</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFDentistesRappelDemandeDocumentsManquantsQMDOO">
+		<doc-id action="set">cygnus/lettresType/dentiste/dentistesRappelDemandeDocumentsManquantsQMD</doc-id>
+	</when>	
+	<when attribute="idProcess" operator="eq" value="RFDentistesRappelDemandeDocumentsManquantsQMDOO">
+		<doc-id action="set">cygnus/lettresType/dentiste/dentistesRappelDemandeDocumentsManquantsQMD</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFDentistesLettreAssureReponseMedecinDevisOO">
+		<doc-id action="set">cygnus/lettresType/dentiste/dentistesLettreReponseMedecinDevis</doc-id>
+	</when>
+	
+	<!-- moyens auxiliaires -->
+	<when attribute="idProcess" operator="eq" value="RFBonMoyensAuxiliairesOO">
+		<doc-id action="set">cygnus/lettresType/moyensAuxiliaires/moyensAuxiliairesBon</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFBonAchatMoyensAuxiliairesOO">
+		<doc-id action="set">cygnus/lettresType/moyensAuxiliaires/moyensAuxiliairesBonAchat</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFAnnexeMoyensAuxiliaireBonAchatAccuseReceptionBeneficiairePcOO">
+		<doc-id action="set">cygnus/lettresType/moyensAuxiliaires/wait_annexeMoyensAuxiliairesAccuseReception</doc-id>
+	</when>
+	
+	<!-- lits électrique -->
+	<when attribute="idProcess" operator="eq" value="RFBonLivraisonOO">
+		<doc-id action="set">cygnus/lettresType/litElectrique/litElectriqueFormulaire</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFQuestionnaireOO">
+		<doc-id action="set">cygnus/lettresType/litElectrique/litElectriqueQuestionnaire</doc-id>
+	</when>
+	
+	<!-- restitution -->
+	<when attribute="idProcess" operator="eq" value="RFRestitutionSuiteNouveauCalculRetroactifOO">
+		<doc-id action="set">cygnus/lettresType/restitution/restitutionNouveauCalculRetroactif</doc-id>
+	</when>
+	<when attribute="idProcess" operator="eq" value="RFRestitutionSuiteDecesBeneficiaire">
+		<doc-id action="set">cygnus/lettresType/restitution/restitutionDecesBeneficiaire</doc-id>
+	</when>
 	<!-- ********************************************** FIN CYGNUS RFM ********************************************** -->
 
 	<!-- *************************************************** AMAL *************************************************** -->
@@ -425,6 +440,11 @@
 	<!-- ************************************************* FIN AMAL ************************************************* -->
 
 	<!-- ************************************************** RENTES ************************************************** -->
+	
+		<when attribute="idProcess" operator="eq" value="RECommunicationMutationOO">
+			<doc-id action="set">corvus/communicationMutationOAI</doc-id>
+		</when>
+		
 		<when attribute="idProcess" operator="eq" value="REDecisionOOWithElectronicSignature">
 			<doc-id action="set">CCJU/decisionRentesWithElectronicSignature</doc-id>
 		</when>
@@ -469,6 +489,9 @@
 		</when>
 		<when attribute="idProcess" operator="eq" value="RERenteVeuvePerdureOO">
 			<doc-id action="set">decision/renteVeuvePerdure</doc-id>
+		</when>
+		<when attribute="idProcess" operator="eq" value="REConfirmationAjournementOO">
+			<doc-id action="set">decision/lettreConfirmationAjournement</doc-id>
 		</when>
 	<!-- ************************************************ FIN RENTES ************************************************ -->
 
@@ -552,6 +575,159 @@
 			<doc-id action="set">protocoles/paiementDirect/protocoleErreursPaiementDirect</doc-id>
 		</when>
 	<!-- ************************************************ FIN ?????? ************************************************ -->
+<!-- ALLOCATIONS FAMILIALES -->
+		<when attribute="AL_idDocument" operator="eq" value="AL_decisionProcess">
+			<doc-id action="set">AL/BMS/decision/decisionProcess</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_protocoleGenGlobale">
+			<doc-id action="set">AL/protocoles/generation/protocoleGenGlobale</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_simulationCompensationDetaillee">
+			<doc-id action="set">AL/protocoles/compensation/simulationCompensationDetaillee</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_simulationCompensationRecapitulative">
+			<doc-id action="set">AL/protocoles/compensation/simulationCompensationRecapitulative</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_protocoleEcheances">
+			<doc-id action="set">AL/protocoles/echeances/protocoleEcheances</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_droitsEcheancesAffilieIndirect">
+			<doc-id action="set">AL/BMS/echeances/droitsEcheancesAffilieIndirect</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_droitsEcheancesAllocataireIndirect">
+			<doc-id action="set">AL/BMS/echeances/droitsEcheancesAllocataireIndirect</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_droitsEcheancesAllocataireDirect">
+			<doc-id action="set">AL/BMS/echeances/droitsEcheancesAllocataireDirect</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_droitsEcheancesAffilieDirect">
+			<doc-id action="set">AL/BMS/echeances/droitsEcheancesAffilieDirect</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_droitsEcheancesAffilieIndirectSansDocAlloc">
+			<doc-id action="set">AL/BMS/echeances/droitsEcheancesAffilieIndirectSansDocAlloc</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_protocolesErreursImpressionEcheances">
+			<doc-id action="set">AL/protocoles/echeances/protocoleErreursImpressionEcheance</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_lettreAccompagnement">
+			<doc-id action="set">AL/lettreAccompagnement/lettreAccompagnement</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_recapitulatifEntreprise">
+			<doc-id action="set">AL/BMS/recapitulatifEntreprise/recapitulatifEntreprise</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_declarationVersement">
+			<doc-id action="set">AL/declarationVersement/declarationVersement</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_declarationVersementDetaille">
+			<doc-id action="set">AL/BMS/declarationVersement/declarationVersementDetaille</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_protocoleErreursCompensation">
+			<doc-id action="set">AL/protocoles/compensation/protocoleErreursCompensation</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_protocoleDeclarationVersement">
+			<doc-id action="set">AL/protocoles/declarationVersement/protocoleDeclarationVersement</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_protocoleReceptionAnnonce">
+			<doc-id action="set">AL/protocoles/annoncesRAFAM/protocoleReceptionAnnonce</doc-id>
+		</when>
+		<!-- <when attribute="AL_idDocument" operator="eq" value="adiDecompteDetailleDirect">
+			<doc-id action="set">AL/adi/adiDecompteDetailleDirect</doc-id>
+		</when>-->
+		<when attribute="AL_idDocument" operator="eq" value="AL_adiDecompteDetailleIndirect">
+			<doc-id action="set">AL/adi/adiDecompteDetailleIndirect</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_adiDecompteGlobalIndirect">
+			<doc-id action="set">AL/adi/adiDecompteGlobalIndirect</doc-id>
+		</when>
+		<!-- <when attribute="AL_idDocument" operator="eq" value="adiDecompteGlobalDirect">
+			<doc-id action="set">AL/adi/adiDecompteGlobalDirect</doc-id>
+		</when>-->
+		<when attribute="AL_idDocument" operator="eq" value="AL_simulationPaiementDirectListeDetaillee">
+			<doc-id action="set">AL/protocoles/paiementDirect/simulationPaiementDirectDetaille</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_simulationPaiementDirectListeRecapitulative">
+			<doc-id action="set">AL/protocoles/paiementDirect/simulationPaiementDirectRecapitulative</doc-id>
+		</when>
+		<when attribute="AL_idDocument" operator="eq" value="AL_protocoleErreursPaiementDirect">
+			<doc-id action="set">AL/protocoles/paiementDirect/protocoleErreursPaiementDirect</doc-id>
+		</when>
+		
+		<when attribute="AL_idDocument" operator="eq" value="AL_protocoleDecisionsMasse">
+			<doc-id action="set">AL/protocoles/decisions/protocoleDecisionsMasse</doc-id>
+		</when>
+	</doc-selection>
+
+	<doc-selection id="AL_tableau_decision">
+		<when attribute="isAgricoleInterCantonal" operator="eq" value="OUI">
+			<doc-id action="set">AL/decision/listDroitAgricoleInterCantonal</doc-id>
+		</when>
+		<when attribute="isInterCantonal" operator="eq" value="OUI">
+			<doc-id action="set">AL/decision/listDroitInterCantonal</doc-id>
+		</when>
+		<when attribute="isAgricole" operator="eq" value="OUI">
+			<doc-id action="set">AL/decision/listDroitAgricole</doc-id>
+		</when>
+		<otherwise>
+			<doc-id action="set">AL/decision/listDroitSalarie</doc-id>
+		</otherwise>
+	</doc-selection>
+	
+	<doc-selection id="AL_reference_decision">
+		<otherwise>
+			<!-- <doc-id action="set">AL/decision/references/aff_loi_ref</doc-id> -->
+			<doc-id action="set">AL/decision/references/aff</doc-id>
+		</otherwise>	
+	</doc-selection>
+	
+	<doc-selection id="AL_entete">
+		<when attribute="idEntete" operator="eq" value="CCJU_Caisse">
+			<doc-id action="set">AL/CCJU/commun/entetes/CCJU_CaisseAF</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="CCJU_Agricole">
+			<doc-id action="set">AL/CCJU/commun/entetes/CCJU_Agricole</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="CCJU_Protocole">
+			<doc-id action="set">AL/CCJU/commun/entetes/CCJU_Protocole</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="Commun_Protocole_CaisseAF">
+			<doc-id action="set">AL/commun/entetes/ProtocoleAF_Papier_Entete</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="Commun_Document_CaisseAF">
+			<doc-id action="set">AL/commun/entetes/CaisseAF_Papier_Entete</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="ENTETE_H51X_STANDARD_FR">
+			<doc-id action="set">AL/H51X/commun/entetes/H51X_CaisseAF_STANDARD_FR</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="ENTETE_H51X_DECISION_DE">
+			<doc-id action="set">AL/H51X/commun/entetes/H51X_CaisseAF_DECISION_DE</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="ENTETE_H51X_DECISION_FR">
+			<doc-id action="set">AL/H51X/commun/entetes/H51X_CaisseAF_DECISION_FR</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="ENTETE_H51X_STANDARD_DE">
+			<doc-id action="set">AL/H51X/commun/entetes/H51X_CaisseAF_STANDARD_DE</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="ENTETE_H515_STANDARD_FR">
+			<doc-id action="set">AL/H515/commun/entetes/H515_CaisseAF_FR</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="ENTETE_H515_STANDARD_DE">
+			<doc-id action="set">AL/H515/commun/entetes/H515_CaisseAF_DE</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="ENTETE_CCVD_CAI_COMPENS">
+			<doc-id action="set">AL/CCVD/commun/entetes/CCVD_Compensation</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="ENTETE_CCVD_ALLOC_FAMI">
+			<doc-id action="set">AL/CCVD/commun/entetes/CCVD_CaisseAF</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="ENTETE_CICI_STANDARD">
+			<doc-id action="set">AL/CICI/commun/entetes/CICI_CaisseAF_STANDARD</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="ENTETE_H514_STANDARD_DE">
+			<doc-id action="set">AL/H514/commun/entetes/H514_CaisseAF_DE</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="ENTETE_H514_STANDARD_FR">
+			<doc-id action="set">AL/H514/commun/entetes/H514_CaisseAF_FR</doc-id>
+		</when>
 </doc-selection>
 
 <!-- ################################################################################################################ -->
@@ -581,7 +757,7 @@
 		</doc-selection>
 		
 		<!-- Signature -->
-		<doc-selection id="PCsignature">
+		<doc-selection id="PCsignatureDAC">
 			<when attribute="signature" operator="eq" value="STANDARD">
 				<!-- <doc-id action="set">pegasus/signatures/SIG_CCJU</doc-id>  -->
 				<doc-id action="set">pegasus/signatures/SIG_CCVD</doc-id>
@@ -679,6 +855,7 @@
 <!-- FIN PEGASUS PC ***************************************************************************************************-->
 
 <!-- *********************************************** PERSEUS PCF ************************************************ -->
+	<!-- ************************* PC Famille ************************* -->
 	 <!-- INSERTION DE L'EN-TETE -->
 	 <doc-selection id="enTetePCF">
 		<when attribute="idEntete" operator="eq" value="CCVD">
@@ -688,7 +865,15 @@
 			<doc-id action="set">perseus/header/HEADER_AGLAU_FAM</doc-id>
 		</when>
 	</doc-selection>
-
+	 <!-- INSERTION DU PLAN DE CALCUL -->
+	<doc-selection id="planDeCalcul">
+		<when attribute="isPlanDeCalculInclude" operator="eq" value="TRUE">
+			<doc-id action="set">perseus/planDeCalcul/planDeCalcul</doc-id>
+		</when>
+		<when attribute="isPlanDeCalculInclude" operator="eq" value="FALSE">
+			<doc-id action="nodoc"></doc-id>
+		</when>
+	</doc-selection>
 	<!-- INSERTION DE LA SIGNATURE -->
 	 <doc-selection id="signatureStandard">
 		<when attribute="idSignature" operator="eq" value="CCVD">
@@ -698,7 +883,6 @@
 			<doc-id action="set">perseus/signatures/signatureStandard_AGLAU</doc-id>
 		</when>
 	</doc-selection>
-
 	<!-- INSERTION DU BANDEAU SUR DECISIONS NON VALIDEES -->
 	 <doc-selection id="decisionNonValide">
 		<when attribute="isNonValide" operator="eq" value="TRUE">
@@ -708,7 +892,6 @@
 			<doc-id action="nodoc"></doc-id>
 		</when>
 	</doc-selection>
-
 	<!-- INSERTION DU TABLEAU POUR DECISION -->
 	<doc-selection id="tableauPerseus">
 		<when attribute="isTableauInclude" operator="eq" value="TRUE">
@@ -718,7 +901,6 @@
 			<doc-id action="nodoc"></doc-id>
 		</when>
 	</doc-selection>
-
 	<!-- INSERTION DU TABLEAU POUR FACTURE DE FRAIS DE MALADIE -->
 	<doc-selection id="tableauDecompteFactureMaladiePerseus">
 		<when attribute="isTableauMaladieInclude" operator="eq" value="TRUE">
@@ -728,13 +910,30 @@
 			<doc-id action="nodoc"></doc-id>
 		</when>
 	</doc-selection>
-
 	<!-- INSERTION DU TABLEAU POUR FACTURE DE FRAIS DE GARDE -->
 	<doc-selection id="tableauDecompteFactureGardePerseus">
 		<when attribute="isTableauGardeInclude" operator="eq" value="TRUE">
 			<doc-id action="set">perseus/tableauxDeDecomptes/tableauDecompteGardeFacture</doc-id>
 		</when>
 		<when attribute="isTableauGardeInclude" operator="eq" value="FALSE">
+			<doc-id action="nodoc"></doc-id>
+		</when>
+	</doc-selection>
+	<!-- INSERTION DE L'ENTÊTE POUR LE FORMULAIRE DE REVISION DE DOSSIER -->
+	<doc-selection id="headerFormulaire">
+		<when attribute="isCaissePrincipale" operator="eq" value="TRUE">
+			<doc-id action="set">perseus/revisionDossier/headerFormulaire/headerFormulaireCCVD</doc-id>
+		</when>
+		<when attribute="isCaissePrincipale" operator="eq" value="FALSE">
+			<doc-id action="set">perseus/revisionDossier/headerFormulaire/headerFormulaireAGLAU</doc-id>
+		</when>
+	</doc-selection>
+	<!-- INSRTION DE LA LETTRE D'ACCOMPAGNEMENT AVEC LE FORMULAIRE DE REVISON DE DOSSIER -->
+	<doc-selection id="lettreAcc">
+		<when attribute="isLettreAccompagnement" operator="eq" value="TRUE">
+			<doc-id action="set">perseus/revisionDossier/revisionDossierLettreAccompagnement</doc-id>
+		</when>
+		<when attribute="isLettreAccompagnement" operator="eq" value="FALSE">
 			<doc-id action="nodoc"></doc-id>
 		</when>
 	</doc-selection>
@@ -750,7 +949,7 @@
 			<doc-id action="nodoc"></doc-id>
 		</when>
 	</doc-selection>
-
+	
 	<!-- gestion des en-têtes -->
 	<doc-selection id="enTetesDecisionRFM">
 		<when attribute="idEntete" operator="eq" value="HEADER_CAISSE">
@@ -768,9 +967,9 @@
 			<doc-id action="nodoc"></doc-id>
 		</when>
 	</doc-selection>
-
+	
 	<!-- gestion des décomptes de décisions -->
-	<doc-selection id="tableauDecompte">
+	<doc-selection id="tabDecompteDecisionPonctuelle">
 		<when attribute="decompte" operator="eq" value="STANDARD">
 			<doc-id action="set">cygnus/tableaux/_CCVD/tableauDecompteDecisionPonctuelle</doc-id>
 		</when>
@@ -778,7 +977,7 @@
 			<doc-id action="nodoc"></doc-id>
 		</when>					
 	</doc-selection>
-
+	
 	<!-- gestion du tableau de versement pour décision de régime-->
 	<doc-selection id="tabVersementRFM">
 		<when attribute="isTableauVersementInclude" operator="eq" value="STANDARD">
@@ -788,7 +987,7 @@
 			<doc-id action="nodoc"></doc-id>
 		</when>
 	</doc-selection>
-
+	
 	<!-- gestion du tableau de decompte pour décision de régime-->
 	<doc-selection id="tabDecompteRFM">
 		<when attribute="isTableauDecompteInclude" operator="eq" value="STANDARD">
@@ -800,78 +999,78 @@
 	</doc-selection>
 	
 	<!-- gestion du tableau de calcul pour décision de régime (refus)-->
-		<doc-selection id="tabCalculDecisionRegimeRefusRFM">
-			<when attribute="isTableauCalculDecisionRegimeRefusInclude" operator="eq" value="STANDARD">
-				<doc-id action="set">cygnus/tableaux/_CCVD/tableauCalculDecisionRefus</doc-id>
-			</when>
-			<when attribute="isTableauCalculDecisionRegimeRefusInclude" operator="eq" value="NONE">
-				<doc-id action="nodoc"></doc-id>
-			</when>
-		</doc-selection>
-		
-	<!-- gestion du tableau de calcul pour décision de régime (octroi)-->
-		<doc-selection id="tabCalculDecisionRegimeOctroiRFM">
-			<when attribute="isTableauCalculDecisionRegimeOctroiInclude" operator="eq" value="STANDARD">
-				<doc-id action="set">cygnus/tableaux/_CCVD/tableauCalculDecisionOctroi</doc-id>
-			</when>
-			<when attribute="isTableauCalculDecisionRegimeOctroiInclude" operator="eq" value="NONE">
-				<doc-id action="nodoc"></doc-id>
-			</when>
-		</doc-selection>
-		
-	<!-- gestion du tableau de décompte pour décision de régime (octroi)-->
-		<doc-selection id="tabDecompteDecisionRegimeOctroiRFM">
-			<when attribute="isTableauDecompteDecisionRegimeAvecExcedantOctroiInclude" operator="eq" value="STANDARD">
-				<doc-id action="set">cygnus/tableaux/_CCVD/tableauDecompteDecisionOctroi</doc-id>
-			</when>
-			<when attribute="isTableauDecompteDecisionRegimeAvecExcedantOctroiInclude" operator="eq" value="NONE">
-				<doc-id action="nodoc"></doc-id>
-			</when>
-		</doc-selection>
-	
-	<!-- gestion du tableau de versement pour décision de régime (octroi)-->
-		<doc-selection id="tabVersementDecisionRegimeOctroiRFM">
-			<when attribute="isTableauVersementDecisionRegimeAvecExcedantOctroiInclude" operator="eq" value="STANDARD">
-				<doc-id action="set">cygnus/tableaux/_CCVD/tableauVersementDecisionOctroi</doc-id>
-			</when>
-			<when attribute="isTableauVersementDecisionRegimeAvecExcedantOctroiInclude" operator="eq" value="NONE">
-				<doc-id action="nodoc"></doc-id>
-			</when>
-		</doc-selection>
-		
-	<!-- gestion du tableau de decompte pour décision de restitution-->
-		<doc-selection id="tabDecompteRestitutionRFM">
-			<when attribute="isTableauRestitutionInclude" operator="eq" value="STANDARD">
-				<doc-id action="set">cygnus/tableaux/_CCVD/tableauDecisionRestitution</doc-id>
-			</when>
-			<when attribute="isTableauRestitutionInclude" operator="eq" value="NONE">
-				<doc-id action="nodoc"></doc-id>
-			</when>
-		</doc-selection>
-
-	<!-- gestion du tableau des annexes et copies en bas de page pour décision-->
-	<doc-selection id="tabAnnexesEtCopiesRFM">
-		<when attribute="isTableauAnnexesEtCopiesInclude" operator="eq" value="STANDARD">
-			<doc-id action="set">cygnus/tableaux/_CCVD/tableauAnnexesEtCopies</doc-id>
+	<doc-selection id="tabCalculDecisionRegimeRefusRFM">
+		<when attribute="isTableauCalculDecisionRegimeRefusInclude" operator="eq" value="STANDARD">
+			<doc-id action="set">cygnus/tableaux/_CCVD/tableauCalculDecisionRefus</doc-id>
 		</when>
-		<when attribute="isTableauAnnexesEtCopiesInclude" operator="eq" value="NONE">
+		<when attribute="isTableauCalculDecisionRegimeRefusInclude" operator="eq" value="NONE">
 			<doc-id action="nodoc"></doc-id>
 		</when>
+	</doc-selection>
+	
+	<!-- gestion du tableau de calcul pour décision de régime (octroi)-->
+	<doc-selection id="tabCalculDecisionRegimeOctroiRFM">
+		<when attribute="isTableauCalculDecisionRegimeOctroiInclude" operator="eq" value="STANDARD">
+			<doc-id action="set">cygnus/tableaux/_CCVD/tableauCalculDecisionOctroi</doc-id>
+		</when>
+		<when attribute="isTableauCalculDecisionRegimeOctroiInclude" operator="eq" value="NONE">
+			<doc-id action="nodoc"></doc-id>
+		</when>
+	</doc-selection>
+	
+	<!-- gestion du tableau de décompte pour décision de régime (octroi)-->
+	<doc-selection id="tabDecompteDecisionRegimeOctroiRFM">
+		<when attribute="isTableauDecompteDecisionRegimeAvecExcedantOctroiInclude" operator="eq" value="STANDARD">
+			<doc-id action="set">cygnus/tableaux/_CCVD/tableauDecompteDecisionOctroi</doc-id>
+		</when>
+		<when attribute="isTableauDecompteDecisionRegimeAvecExcedantOctroiInclude" operator="eq" value="NONE">
+			<doc-id action="nodoc"></doc-id>
+		</when>
+	</doc-selection>
+	
+	<!-- gestion du tableau de versement pour décision de régime (octroi)-->
+	<doc-selection id="tabVersementDecisionRegimeOctroiRFM">
+		<when attribute="isTableauVersementDecisionRegimeAvecExcedantOctroiInclude" operator="eq" value="STANDARD">
+			<doc-id action="set">cygnus/tableaux/_CCVD/tableauVersementDecisionOctroi</doc-id>
+		</when>
+		<when attribute="isTableauVersementDecisionRegimeAvecExcedantOctroiInclude" operator="eq" value="NONE">
+			<doc-id action="nodoc"></doc-id>
+		</when>
+	</doc-selection>
+	
+	<!-- gestion du tableau de decompte pour décision de restitution-->
+	<doc-selection id="tabDecompteRestitutionRFM">
+		<when attribute="isTableauRestitutionInclude" operator="eq" value="STANDARD">
+			<doc-id action="set">cygnus/tableaux/_CCVD/tableauDecisionRestitution</doc-id>
+		</when>
+		<when attribute="isTableauRestitutionInclude" operator="eq" value="NONE">
+			<doc-id action="nodoc"></doc-id>
+		</when>
+	</doc-selection>
+	
+	<!-- gestion du tableau des annexes et copies en bas de page pour décision-->
+	<doc-selection id="tabAnnexesEtCopiesRFM">
+	<when attribute="isTableauAnnexesEtCopiesInclude" operator="eq" value="STANDARD">
+		<doc-id action="set">cygnus/tableaux/_CCVD/tableauAnnexesEtCopies</doc-id>
+	</when>
+	<when attribute="isTableauAnnexesEtCopiesInclude" operator="eq" value="NONE">
+		<doc-id action="nodoc"></doc-id>
+	</when>
 	</doc-selection>
 	
 	<!-- gestion des liste détaillées de la récap AVASAD -->
 	<doc-selection id="recapAvasadListeCasTraite">
-		<when attribute="isTableauListeCasTraitesAvasad" operator="eq" value="STANDARD">
-			<doc-id action="set">cygnus/tableaux/_CCVD/avasad/recapAvasadListeCasTraite</doc-id>
-		</when>
+	<when attribute="isTableauListeCasTraitesAvasad" operator="eq" value="STANDARD">
+		<doc-id action="set">cygnus/tableaux/_CCVD/avasad/recapAvasadListeCasTraite</doc-id>
+	</when>
 	</doc-selection>
 	<doc-selection id="recapAvasadListeCasRejete">
-		<when attribute="isTableauListeCasRejetesAvasad" operator="eq" value="STANDARD">
-			<doc-id action="set">cygnus/tableaux/_CCVD/avasad/recapAvasadListeCasRejete</doc-id>
-		</when>
-		<when attribute="isTableauListeCasRejetesAvasad" operator="eq" value="NONE">
-			<doc-id action="nodoc"></doc-id>
-		</when>
+	<when attribute="isTableauListeCasRejetesAvasad" operator="eq" value="STANDARD">
+		<doc-id action="set">cygnus/tableaux/_CCVD/avasad/recapAvasadListeCasRejete</doc-id>
+	</when>
+	<when attribute="isTableauListeCasRejetesAvasad" operator="eq" value="NONE">
+		<doc-id action="nodoc"></doc-id>
+	</when>
 	</doc-selection>
 <!-- ********************************************** FIN CYGNUS RFM ********************************************** -->
 
@@ -880,13 +1079,25 @@
 <!-- ################################################################################################################ -->
 	<doc-selection id="enTetesDecision">
 		<when attribute="idEntete" operator="eq" value="AVS_AI">
+			<doc-id action="set">enTetes/CCJU/HEADER_AVS_AI_PREST</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="CAISSE">
+			<doc-id action="set">enTetes/CCJU/HEADER_CAISSE_PREST_CCJU</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="AVS_AI_SPEC">
+			<doc-id action="set">enTetes/CCJU/HEADER_AVS_AI_PREST_OAIJU</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="CAISSE_SPEC_ATTESTATIONS_FISCALES">
+			<doc-id action="set">enTetes/CCJU/HEADER_CAISSE_PREST_CCJU_WITHOUT_GEST</doc-id> 
+		</when>
+	</doc-selection>
+	
+	<doc-selection id="enTeteFpvNoirBlanc">
+		<when attribute="idEntete" operator="eq" value="AVS_AI">
 			<doc-id action="set">enTetes/HEADER_AVS_AI_PREST</doc-id>
 		</when>
 		<when attribute="idEntete" operator="eq" value="CAISSE">
-			<doc-id action="set">enTetes/HEADER_CAISSE_PREST_CICI</doc-id>
-		</when>
-		<when attribute="idEntete" operator="eq" value="AVS_AI_SPEC">
-			<doc-id action="set">enTetes/HEADER_AVS_AI_PREST_OAIJU</doc-id>
+			<doc-id action="set">enTetes/FPV/HEADER_CAISSE_PREST_FPV_NOIR_BLANC</doc-id>
 		</when>
 	</doc-selection>
 
@@ -1029,5 +1240,4 @@
 			<doc-id action="set">protocoles/echeances/listeDroitsEcheances</doc-id>
 		</otherwise>
 	</doc-selection>
-
 </topaz-system>

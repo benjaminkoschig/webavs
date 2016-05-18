@@ -2,22 +2,21 @@
 <!--Jade: proprietes generales du systeme-->
 <Jade>
 	<!--homeDir: repertoire de base de l'application, necessaire pour trouver les fichiers de l'application-->
-	<homeDir>D:\workspaces\avs\1.14.01\webavs\WebContent</homeDir>
+	<homeDir>D:\workspaces\avs\trunk\webavs-parent\webavs-web\src\main\webapp</homeDir>
 	<!--persistenceDir: repertoire pour la persistance interne, si vide: homeDir + /persistence-->
 	<persistenceDir></persistenceDir>
 	<!--logDir: repertoire pour les fichiers LOG de l'application, si vide: homeDir + /logs-->
 	<logDir></logDir>
 	<!--rootUrl: URL pour acceder a la WebApp, inutile si l'application Web n'est pas deployee-->
-	<rootUrl>localhost:8080/webavs</rootUrl>
+	<rootUrl>localhost:8080/webavs-web</rootUrl>
 
 	<!--defaultJdbcUrl: url JDBC par defaut-->
 	<!-- DRIVER DB2 -->
+	<!--<defaultJdbcUrl>jdbc:jade:GLOBAZ_DATASOURCE_400</defaultJdbcUrl> -->
 	<!-- <defaultJdbcUrl>jdbc:jade:GLOBAZ_DATASOURCE_DB2</defaultJdbcUrl> -->
 	<!-- DRIVER AS400
 	<defaultJdbcUrl>jdbc:jade:GLOBAZ_DATASOURCE_400</defaultJdbcUrl>-->
 
-<!-- 		<defaultJdbcUrl>jdbc:jade:CICIACM</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>WEBAVSCIAN</defaultJdbcSchema> -->
 
 <!-- BASES DE DEVELOPPEMENT -->
 
@@ -38,19 +37,13 @@
 	
 	<!-- 	<defaultJdbcUrl>jdbc:jade:H51X_DEV</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
-
-
-<!--  Site spéciaux -->
-
-<!-- 	<defaultJdbcUrl>jdbc:jade:CCJU_ADP</defaultJdbcUrl> -->
-<!-- 	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
-
-<!-- 	<defaultJdbcUrl>jdbc:jade:CCVD_ADP</defaultJdbcUrl> -->
-<!-- 	<defaultJdbcSchema>CCVDADP</defaultJdbcSchema> -->
-
+	
+<!--  	<defaultJdbcUrl>jdbc:jade:DEV2PROD</defaultJdbcUrl>   -->
+<!--  	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> 	  -->
 <!-- BASES DE QUALITE -->
 
-
+<!-- 	<defaultJdbcUrl>jdbc:jade:FVE_QUALITE</defaultJdbcUrl> -->
+<!-- 	<defaultJdbcSchema>FVEQUA</defaultJdbcSchema> -->
 	
 <!-- 	<defaultJdbcUrl>jdbc:jade:CCB_QUALITE</defaultJdbcUrl> -->
 <!-- 	<defaultJdbcSchema>CCBQUA</defaultJdbcSchema> -->
@@ -64,10 +57,13 @@
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>PC_CCVD</defaultJdbcSchema> -->
 	
-		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE</defaultJdbcUrl>
+		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl>
 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>	
 
-<!-- 	 	<defaultJdbcUrl>jdbc:jade:CCJU_PC_RFM_QUALITE</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
+
+<!-- 	 	<defaultJdbcUrl>jdbc:jade:CCJU_PC_RFM_QUALITE_1_6</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
 	
 <!-- 		<defaultJdbcUrl>jdbc:jade:CICICAM_QUALITE</defaultJdbcUrl> -->
@@ -79,17 +75,17 @@
 	<!-- 	<defaultJdbcUrl>jdbc:jade:CVCI_QUALTIE</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>CVCIWEB</defaultJdbcSchema> -->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:FER-CIAM_QUA</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcUrl>jdbc:jade:FERCIAM_QUA</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>WEBAVSCIAM</defaultJdbcSchema> -->
-
-<!-- 		<defaultJdbcUrl>jdbc:jade:FER-CIAN_QUA</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>WEBAVSCIAN</defaultJdbcSchema> -->
 	
 <!-- 		<defaultJdbcUrl>jdbc:jade:FPV_QUALITE</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>WEBAVSS</defaultJdbcSchema> -->
+		
+<!-- 		<defaultJdbcUrl>jdbc:jade:FVE_INT</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>WEBAVS</defaultJdbcSchema> -->
+		
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
+
 	
 	<!-- 	<defaultJdbcUrl>jdbc:jade:MEROBA_QUALITE</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>MEROWEB</defaultJdbcSchema> -->
@@ -130,15 +126,10 @@
 	<!-- 	<defaultJdbcUrl>jdbc:jade:MEROBA_INTEGRATION_RENTES</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>MEROWEB</defaultJdbcSchema> -->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:MEROBA_INTEGRATION</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>MEROWEB</defaultJdbcSchema> -->
-
-<!-- 		<defaultJdbcUrl>jdbc:jade:AGRIVIT_INT</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>AGRIINT</defaultJdbcSchema> -->
-
-	<!-- Bases de Debug du centre de service -->
-	<!-- 	<defaultJdbcUrl>jdbc:jade:REP_4_PROD</defaultJdbcUrl> -->
-	<!-- 	<defaultJdbcSchema>CVCIWEB</defaultJdbcSchema> -->
+	<!-- 	<defaultJdbcUrl>jdbc:jade:MEROBA_INTEGRATION_2</defaultJdbcUrl> -->
+	<!-- 	<defaultJdbcSchema>MEROWEB</defaultJdbcSchema> -->
+<!-- 	<defaultJdbcUrl>jdbc:jade:REPRISE_CCVD_400</defaultJdbcUrl> -->
+<!-- 	<defaultJdbcSchema>RT_CCVD</defaultJdbcSchema> -->
 
 	<!--defaultJdbcTablePrefix: prefixe des tables JDBC par defaut-->
 	<defaultJdbcTablePrefix></defaultJdbcTablePrefix>
@@ -179,6 +170,6 @@
 	<!--shareDir: répertoire de partage pour l'upload de fichier par le client-->
 	<sharedDir>d:\Temp</sharedDir>
 	<!-- Emplacement de la documentation webavs (AQ) -->
-	<application.properties.in.db>true</application.properties.in.db> 
 	<documentationUrl>http://docavsaq.ju.globaz.ch/</documentationUrl>
+	<application.properties.in.db>true</application.properties.in.db>
 </Jade>

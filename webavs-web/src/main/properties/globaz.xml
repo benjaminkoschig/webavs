@@ -53,27 +53,32 @@
 	<!--  import: nom du fichier a partir duquel importer les proprietes-->
 	<!--  verbose: indique si le service doit fonctionner en mode verbose (true, false), false par defaut-->
 	<globaz.jade.fs.service.JadeFsServer import="JadeFsServer.xml"/>
-	<globaz.jade.sedex.JadeSedexService import="JadeSedexService.xml"/>
+<!-- 	<globaz.jade.sedex.JadeSedexService import="JadeSedexService.xml"/> -->
+<!-- 	<globaz.jade.daemon.JadeDaemonLocator import="JadeDaemonLocator.xml"/> -->
 	<globaz.jade.persistence.mapping.JadeModelMappingProvider import="JadeModelMappingProvider.xml" verbose="true"/>
 	<!-- <globaz.jade.service.provider.JadeApplicationServiceLocator import="JadeApplicationServiceLocator.xml"/>-->
 	<!--globaz.jade.i18n.JadeI18n: liste des fichiers de messages métiers internationalisés-->
 	<globaz.jade.i18n.JadeI18n import="JadeI18n.xml"/>
-	<globaz.jade.print.server.JadePrintServer verbose="true">
-		<pdf.merge.maxsize>20</pdf.merge.maxsize>
-  	</globaz.jade.print.server.JadePrintServer>
+<!-- 	<globaz.jade.print.server.JadePrintServer verbose="true"> -->
+<!-- 		<pdf.merge.maxsize>20</pdf.merge.maxsize> -->
+<!--   	</globaz.jade.print.server.JadePrintServer> -->
 	
 	<globaz.jade.jdbc.JadeJdbcProfiler verbose="true">
-            <!--started: 'true' ou 'false' ('false' par defaut)-->
-            <!--statementsOnly: 'true' ou 'false' ('true' par defaut)-->
+<!--             started: 'true' ou 'false' ('false' par defaut) -->
+<!--             statementsOnly: 'true' ou 'false' ('true' par defaut) -->
             <started>true</started>
             <statementsOnly>true</statementsOnly>
           </globaz.jade.jdbc.JadeJdbcProfiler>
-          <globaz.jade.stat.JadeStatistics>
-            <!--started: 'true' ou 'false' ('false' par defaut)-->
-            <!--filename: nom du fichier de sauvegarde (par defaut, dans logDir)-->
-            <!--autoSaveDelay: nombre de minutes avant sauvegarde automatique (par defaut, 0=pas de sauvegarde)-->
-            <started>false</started>
-            <filename>JadeStatistics.dat</filename>
-            <autoSaveDelayMinutes>1</autoSaveDelayMinutes>
-          </globaz.jade.stat.JadeStatistics>
+<!--           <globaz.jade.stat.JadeStatistics> -->
+<!--             started: 'true' ou 'false' ('false' par defaut) -->
+<!--             filename: nom du fichier de sauvegarde (par defaut, dans logDir) -->
+<!--             autoSaveDelay: nombre de minutes avant sauvegarde automatique (par defaut, 0=pas de sauvegarde) -->
+<!--             <started>true</started> -->
+<!--             <filename>JadeStatistics.dat</filename> -->
+<!--             <autoSaveDelayMinutes>1</autoSaveDelayMinutes> -->
+<!--           </globaz.jade.stat.JadeStatistics> -->
+
+	<ch.globaz.orion.EBOrionAppStarter>
+            <orion.cotiservice.ws.port>9030</orion.cotiservice.ws.port>
+    </ch.globaz.orion.EBOrionAppStarter>
 </GLOBAZ>
