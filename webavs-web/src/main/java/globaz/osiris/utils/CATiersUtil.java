@@ -160,6 +160,10 @@ public class CATiersUtil {
 
         // recherche de l'office des poursuites relatifs au tiers
         IntTiers officePoursuite = CATiersUtil.getOfficePoursuite(session, tiers, idExterne);
+        if (officePoursuite == null) {
+            throw new Exception(session.getLabel("IM_ERR_OP_INTROUVABLE"));
+        }
+
         TITiers officePoursuiteTiers = new TITiers();
         officePoursuiteTiers.setIdTiers(officePoursuite.getIdTiers());
         officePoursuiteTiers.setSession(session);

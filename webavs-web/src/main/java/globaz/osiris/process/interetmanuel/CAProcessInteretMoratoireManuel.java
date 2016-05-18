@@ -345,28 +345,31 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                 plan.getIdPlan(), getIdSection(), null, dateMaxPourPaiement.toStrAMJ());
 
         FWCurrency montantCumule = new FWCurrency();
-        JADate dateCaculDebutInteret;
+        JADate dateCalculDebutInteret;
         CASectionAuxPoursuites sectionAuxPoursuite = getSectionAuxPoursuites();
         String dateExecution = "";
-
-        // récupération du canton de l'office des poursuites relatif au tiers
-        CASection section = interetTardif.getSection(getSession(), getTransaction());
-        String cantonOfficePoursuite = CATiersUtil.getCantonOfficePoursuite(getSession(), section.getCompteAnnexe()
-                .getTiers(), section.getIdExterne(), section.getCompteAnnexe().getIdExterneRole());
-
-        if (JadeStringUtil.isBlank(cantonOfficePoursuite)) {
-            JadeLogger.warn(FWMessage.ERREUR, getSession().getLabel("IM_ERR_OP_INTROUVABLE"));
-        }
 
         boolean isNouveauCDP = isNouveauCDP(sectionAuxPoursuite);
 
         // si le nouveau régime est activé
-        // ET que le canton n'est pas exclu du nouveau régime on applique le nouveau régime
-        if (isNouveauCDP && !isOfficeExcluDuNouveauRegime(cantonOfficePoursuite)) {
-            dateExecution = JadeDateUtil.addDays(sectionAuxPoursuite.getHistorique().getDateExecution(), 1);
-            dateCaculDebutInteret = new JADate(dateExecution);
+        if (isNouveauCDP) {
+            // récupération du canton de l'office des poursuites relatif au tiers
+            CASection section = interetTardif.getSection(getSession(), getTransaction());
+            String cantonOfficePoursuite = CATiersUtil.getCantonOfficePoursuite(getSession(), section.getCompteAnnexe()
+                    .getTiers(), section.getIdExterne(), section.getCompteAnnexe().getIdExterneRole());
+            if (JadeStringUtil.isBlank(cantonOfficePoursuite)) {
+                JadeLogger.warn(FWMessage.ERREUR, getSession().getLabel("IM_ERR_OP_INTROUVABLE"));
+            }
+
+            // si le canton n'est pas exclu du nouveau régime on applique le nouveau régime
+            if (!isOfficeExcluDuNouveauRegime(cantonOfficePoursuite)) {
+                dateExecution = JadeDateUtil.addDays(sectionAuxPoursuite.getHistorique().getDateExecution(), 1);
+                dateCalculDebutInteret = new JADate(dateExecution);
+            } else {
+                dateCalculDebutInteret = interetTardif.getDateCalculDebutInteret(getSession(), getTransaction());
+            }
         } else {
-            dateCaculDebutInteret = interetTardif.getDateCalculDebutInteret(getSession(), getTransaction());
+            dateCalculDebutInteret = interetTardif.getDateCalculDebutInteret(getSession(), getTransaction());
         }
 
         for (int i = 0; i < manager.size(); i++) {
@@ -381,17 +384,17 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                 if (montantSoumis.isPositive()
                         && interetTardif.isTardif(getSession(), getTransaction(), ecriture.getDate())
                         && (isDateEcritureApresDatePoursuite || !isNouveauCDP)) {
-                    double taux = CAInteretUtil.getTaux(getTransaction(), dateCaculDebutInteret.toStr("."));
+                    double taux = CAInteretUtil.getTaux(getTransaction(), dateCalculDebutInteret.toStr("."));
                     FWCurrency montantInteret = CAInteretUtil.getMontantInteret(getSession(), montantSoumis,
-                            ecriture.getJADate(), dateCaculDebutInteret, taux);
+                            ecriture.getJADate(), dateCalculDebutInteret, taux);
 
                     if ((montantInteret != null) && !montantInteret.isZero()) {
                         interet = addDetailInteretMoratoire(interet, montantSoumis, taux, montantInteret,
-                                dateCaculDebutInteret, ecriture.getJADate().toStr("."));
+                                dateCalculDebutInteret, ecriture.getJADate().toStr("."));
                     }
 
                     montantCumule.add(montantInteret);
-                    dateCaculDebutInteret = getSession().getApplication().getCalendar()
+                    dateCalculDebutInteret = getSession().getApplication().getCalendar()
                             .addDays(ecriture.getJADate(), 1);
                 }
 
@@ -400,13 +403,13 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
         }
 
         if (montantSoumis.isPositive()
-                && (getSession().getApplication().getCalendar().compare(dateCaculDebutInteret, getDateFinAsJADate()) == JACalendar.COMPARE_FIRSTLOWER)) {
-            double taux = CAInteretUtil.getTaux(getTransaction(), dateCaculDebutInteret.toStr("."));
+                && (getSession().getApplication().getCalendar().compare(dateCalculDebutInteret, getDateFinAsJADate()) == JACalendar.COMPARE_FIRSTLOWER)) {
+            double taux = CAInteretUtil.getTaux(getTransaction(), dateCalculDebutInteret.toStr("."));
             FWCurrency montantInteret = CAInteretUtil.getMontantInteret(getSession(), montantSoumis,
-                    getDateFinAsJADate(), dateCaculDebutInteret, taux);
+                    getDateFinAsJADate(), dateCalculDebutInteret, taux);
 
             if ((montantInteret != null) && !montantInteret.isZero()) {
-                addDetailInteretMoratoire(interet, montantSoumis, taux, montantInteret, dateCaculDebutInteret,
+                addDetailInteretMoratoire(interet, montantSoumis, taux, montantInteret, dateCalculDebutInteret,
                         getDateFinAsJADate().toStr("."));
             }
 
@@ -422,6 +425,16 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
         return (BSession) GlobazSystem.getApplication("AQUILA").newSession(session);
     }
 
+    /**
+     * Retourne true si la date d'exécution de la section aux poursuites est après la date de mise en production du
+     * nouveau CDP (propriété en DB - dateProductionNouveauCDP)
+     * Attention retourne false si la section aux poursuites est null
+     * 
+     * @param sectionAuxPoursuite
+     * @return
+     * @throws RemoteException
+     * @throws Exception
+     */
     private boolean isNouveauCDP(CASectionAuxPoursuites sectionAuxPoursuite) throws RemoteException, Exception {
         boolean isNouveauCDP = false;
         if (sectionAuxPoursuite != null) {
