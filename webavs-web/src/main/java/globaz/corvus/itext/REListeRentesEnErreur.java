@@ -719,11 +719,6 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
             }
         }
 
-        // test 10 information comptabilite a 0
-        if (JadeStringUtil.isBlankOrZero(infoBC.idInfoComptable)) {
-            addCell(infoBC, getSession().getLabel("LISTE_ERREUR_INFO_COMPTA_0"));
-        }
-
     }
 
     private String getDateFormatted(final Calendar cal) {

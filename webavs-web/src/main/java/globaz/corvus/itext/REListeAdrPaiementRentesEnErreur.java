@@ -128,28 +128,37 @@ public class REListeAdrPaiementRentesEnErreur extends FWIAbstractManagerDocument
         } else {
             _addCell("Tiers non-défini : idTiers = " + ra.getIdTiersBeneficiaire());
         }
-        _addCell(ra.getIdPrestationAccordee());
+        _addCell(ra.getIdPrestationAccordee() + " / " + ra.getCodePrestation());
         StringBuffer cellule = new StringBuffer();
-        if (JadeNumericUtil.isEmptyOrZero(ra.getIdTiersAdressePmt())) {
-            cellule.append(getSession().getLabel("LISTE_ADR_DOM_ERR_ERREUR_01"));
-        }
-        if (JadeNumericUtil.isEmptyOrZero(ra.getIdDomaineApplication())) {
-            if (cellule.length() != 0) {
-                cellule.append(" - ");
+
+        // information comptabilite a 0
+        if (JadeNumericUtil.isEmptyOrZero(ra.getIdInfoCompta())) {
+            cellule.append(getSession().getLabel("LISTE_ADR_INFO_COMPTA_4"));
+        } else {
+
+            if (JadeNumericUtil.isEmptyOrZero(ra.getIdTiersAdressePmt())) {
+                cellule.append(getSession().getLabel("LISTE_ADR_DOM_ERR_ERREUR_01"));
             }
-            cellule.append(getSession().getLabel("LISTE_ADR_DOM_ERR_ERREUR_02"));
-        } else if (JadeNumericUtil.isEmptyOrZero(ra.getIdAdrPmtRente())
-                && JadeNumericUtil.isEmptyOrZero(ra.getIdAdrPmtStd())) {
-            if (cellule.length() != 0) {
-                cellule.append(" - ");
+
+            if (JadeNumericUtil.isEmptyOrZero(ra.getIdDomaineApplication())) {
+                if (cellule.length() != 0) {
+                    cellule.append(" - ");
+                }
+                cellule.append(getSession().getLabel("LISTE_ADR_DOM_ERR_ERREUR_02"));
+            } else if (JadeNumericUtil.isEmptyOrZero(ra.getIdAdrPmtRente())
+                    && JadeNumericUtil.isEmptyOrZero(ra.getIdAdrPmtStd())) {
+                if (cellule.length() != 0) {
+                    cellule.append(" - ");
+                }
+                cellule.append(getSession().getLabel("LISTE_ADR_DOM_ERR_ERREUR_02"));
             }
-            cellule.append(getSession().getLabel("LISTE_ADR_DOM_ERR_ERREUR_02"));
-        }
-        if (JadeNumericUtil.isEmptyOrZero(ra.getIdCompteAnnexe())) {
-            if (cellule.length() != 0) {
-                cellule.append(" - ");
+
+            if (JadeNumericUtil.isEmptyOrZero(ra.getIdCompteAnnexe())) {
+                if (cellule.length() != 0) {
+                    cellule.append(" - ");
+                }
+                cellule.append(getSession().getLabel("LISTE_ADR_DOM_ERR_ERREUR_03"));
             }
-            cellule.append(getSession().getLabel("LISTE_ADR_DOM_ERR_ERREUR_03"));
         }
 
         _addCell(cellule.toString());

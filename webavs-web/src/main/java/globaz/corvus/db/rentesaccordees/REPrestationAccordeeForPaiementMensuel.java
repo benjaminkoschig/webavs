@@ -11,7 +11,7 @@ import globaz.pyxis.db.tiers.ITITiersDefTable;
 /**
  * @author BSC
  */
-public class REPrestationAccordeeForPaiementMensuel extends RERenteAccordee {
+public class REPrestationAccordeeForPaiementMensuel extends REPrestationsAccordees {
 
     /**
      * 
@@ -41,6 +41,10 @@ public class REPrestationAccordeeForPaiementMensuel extends RERenteAccordee {
         String tableInfoCompta = _getCollection() + REInformationsComptabilite.TABLE_NAME_INFO_COMPTA;
 
         StringBuilder sql = new StringBuilder();
+        sql.append(tablePrestationAccordee).append(".").append(REPrestationsAccordees.FIELDNAME_ID_PRESTATION_ACCORDEE)
+                .append(",");
+        sql.append(tablePrestationAccordee).append(".").append(REPrestationsAccordees.FIELDNAME_CODE_PRESTATION)
+                .append(",");
 
         sql.append(tablePrestationAccordee).append(".").append(REPrestationsAccordees.FIELDNAME_ID_TIERS_BENEFICIAIRE)
                 .append(",");
@@ -83,7 +87,7 @@ public class REPrestationAccordeeForPaiementMensuel extends RERenteAccordee {
 
         sql.append(tablePrestationAccordee);
 
-        sql.append(" INNER JOIN ");
+        sql.append(" LEFT OUTER JOIN ");
         sql.append(tableInfoCompta);
         sql.append(" ON ");
         sql.append(tablePrestationAccordee).append(".").append(REPrestationsAccordees.FIELDNAME_ID_INFO_COMPTA);
@@ -246,4 +250,5 @@ public class REPrestationAccordeeForPaiementMensuel extends RERenteAccordee {
     public void setIdTiersAdressePmt(String idTiersAdressePmt) {
         this.idTiersAdressePmt = idTiersAdressePmt;
     }
+
 }
