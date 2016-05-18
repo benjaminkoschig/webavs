@@ -2101,8 +2101,11 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 renteVerseeATortEnBase.setMontant(uneRenteVerseeATort.getMontant());
                 renteVerseeATortEnBase.update(transaction);
             } else {
-                uneRenteVerseeATort.setSession(session);
-                uneRenteVerseeATort.add(transaction);
+                if (uneRenteVerseeATort.getIdRenteAccordeeNouveauDroit() != null
+                        && uneRenteVerseeATort.getIdRenteAccordeeNouveauDroit() != 0) {
+                    uneRenteVerseeATort.setSession(session);
+                    uneRenteVerseeATort.add(transaction);
+                }
             }
         }
     }
