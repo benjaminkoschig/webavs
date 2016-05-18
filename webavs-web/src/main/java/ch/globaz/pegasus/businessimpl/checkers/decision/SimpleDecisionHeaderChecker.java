@@ -127,8 +127,16 @@ public class SimpleDecisionHeaderChecker extends PegasusAbstractChecker {
     private static void checkEtatDecision(SimpleDecisionHeader decision) throws DecisionException,
             JadePersistenceException {
 
-        if (decision.getEtat().isPreValide()) {
-            SimpleDecisionHeader oldDecision = readDecision(decision);
+        SimpleDecisionHeader oldDecision = readDecision(decision);
+
+        if (decision.getEtat().isValide()) {
+            TypeDecision typeDecision = TypeDecision.fromValue(decision.getCsTypeDecision());
+            if (typeDecision.isOctroi() && typeDecision.isPartiel() && oldDecision.getEtat().isEnregistre()) {
+                MailDebugInfo.sendMail(EPCProperties.MAILS_DEBUG,
+                        "Changement d'état à validé pour une décision dans l'état enregistré !", toBodyMail(decision));
+                throwException("pegasus.simpleDecisionHeader.etat.valideApresValide.integrity", decision);
+            }
+        } else if (decision.getEtat().isPreValide()) {
             EtatDecision etatOld = EtatDecision.fromValue(oldDecision.getCsEtatDecision());
             if (etatOld.isValide()) {
                 String body = toBodyMail(decision);
@@ -137,7 +145,7 @@ public class SimpleDecisionHeaderChecker extends PegasusAbstractChecker {
                 throwException("pegasus.simpleDecisionHeader.etat.valideApresValide.integrity", decision);
             }
         } else if (decision.getEtat().isEnregistre()) {
-            SimpleDecisionHeader oldDecision = readDecision(decision);
+
             TypeDecision typeDecision = TypeDecision.fromValue(decision.getCsTypeDecision());
 
             // Le changement d'état de validé à enregistré se fait lors de la dévalidation c'est pour cette raison
