@@ -149,8 +149,9 @@ public class DemandeRenteServiceImpl implements DemandeRenteService {
             demandeRenteEntity.retrieve();
 
             Periode periodeDroitRentesDeLaDemande = demande.getPeriodeDuDroitDesRentesAccordees();
-
-            demandeRenteEntity.setDateDebut(periodeDroitRentesDeLaDemande.getDateDebut());
+            if (!periodeDroitRentesDeLaDemande.getDateDebut().isEmpty()) {
+                demandeRenteEntity.setDateDebut(periodeDroitRentesDeLaDemande.getDateDebut());
+            }
             demandeRenteEntity.setDateFin(periodeDroitRentesDeLaDemande.getDateFin());
 
             demandeRenteEntity.update();
