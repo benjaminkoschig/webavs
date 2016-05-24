@@ -6,7 +6,8 @@ import ch.globaz.common.properties.IProperties;
 import ch.globaz.common.properties.PropertiesException;
 
 public enum EFAProperties implements IProperties {
-    FACTUARTION_MULTISHEET("facturation.separateMultiSheets");
+    FACTUARTION_MULTISHEET("facturation.separateMultiSheets"),
+    USE_USER_SESSION_FOR_HEADER("facturation.user.session.header");
 
     private String property;
 

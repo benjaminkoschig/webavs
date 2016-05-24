@@ -44,11 +44,9 @@ import globaz.osiris.db.interets.CAInteretMoratoireManager;
 import globaz.osiris.print.itext.CAImpressionBulletinsSoldes_Doc;
 import globaz.pyxis.util.TISQL;
 import globaz.pyxis.util.TIToolBox;
-
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.skirnir.client.SkirnirUtils;
 
@@ -238,32 +236,14 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
 
     public boolean unificationProcess = false;
 
-    /**
-     * Commentaire relatif au constructeur Doc2_3006Batch.
-     * 
-     * @exception java.lang.Exception
-     *                La description de l'exception.
-     */
     public FAImpressionFactureProcess() throws Exception {
         super();
     }
 
-    /**
-     * Commentaire relatif au constructeur Doc2_3006Batch.
-     * 
-     * @exception java.lang.Exception
-     *                La description de l'exception.
-     */
     public FAImpressionFactureProcess(BProcess parent) throws Exception {
         super(parent);
     }
 
-    /**
-     * Commentaire relatif au constructeur Doc2_3006Batch.
-     * 
-     * @exception java.lang.Exception
-     *                La description de l'exception.
-     */
     public FAImpressionFactureProcess(BSession session) throws Exception {
         super(session);
     }
@@ -356,11 +336,6 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
 
     }
 
-    /**
-     * Insert the method's description here. Creation date: (12.06.2003 11:15:52)
-     * 
-     * @return boolean
-     */
     public boolean _createDocument(FAEnteteFactureManager manager, IntModuleImpression interface_moduleImpression) {
 
         BStatement statement = null;
@@ -523,11 +498,6 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
         return success;
     }
 
-    /**
-     * Launch a process for each entete to print Creation date: (12.06.2003 11:33:57)
-     * 
-     * @return boolean
-     */
     @Override
     public boolean _doWrapperDocument() {
         try {
@@ -543,9 +513,6 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
         }
     }
 
-    /**
-     * Nettoyage après erreur ou exécution Date de création : (13.02.2002 14:12:14)
-     */
     @Override
     protected void _executeCleanUp() {
     }
@@ -792,26 +759,25 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
         // zone email
         getMemoryLog().logMessage(getSession().getLabel("OBJEMAIL_FAPRINT_ATTACHMENTINFO"),
                 globaz.framework.util.FWMessage.INFORMATION, this.getClass().getName());
-        
+
         // EDI0001 - SKIRNIR - invoque the rest service
         // EDI0001 - SKIRNIR - invoque the rest service
-        try {        	
-			SkirnirUtils.buildDefaultClient(getSession()).publishFacturation(
-					Long.valueOf(getIdPassage()), //
-					"decompte_coti", //
-					"0099CFA", //
-					getIdSousType(), //
-					aImprimer, //
-					getFromIdExterneRole(), //
-					getTillIdExterneRole(), //
-					getIdTri(), //
-					getEnvoyerGed(), //
-					docinfo.getFinalDocument() //
-				);
-			
-		} catch (Exception e) {
-			JadeLogger.warn(this, "Exception encountered trying to invoke publish service: "+e);
-		}
+        try {
+            SkirnirUtils.buildDefaultClient(getSession()).publishFacturation(Long.valueOf(getIdPassage()), //
+                    "decompte_coti", //
+                    "0099CFA", //
+                    getIdSousType(), //
+                    aImprimer, //
+                    getFromIdExterneRole(), //
+                    getTillIdExterneRole(), //
+                    getIdTri(), //
+                    getEnvoyerGed(), //
+                    docinfo.getFinalDocument() //
+                    );
+
+        } catch (Exception e) {
+            JadeLogger.warn(this, "Exception encountered trying to invoke publish service: " + e);
+        }
 
         return success;
 
@@ -827,11 +793,6 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
         }
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (14.02.2002 14:26:51)
-     * 
-     * @return boolean
-     */
     @Override
     protected boolean _executeProcess() {
         // initialiser l'executionDate avec l'heure actuelle
@@ -860,6 +821,15 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
         if (!_initializePassage(passage)) {
             abort();
             return false;
+        }
+
+        try {
+            if (EFAProperties.USE_USER_SESSION_FOR_HEADER.getBooleanValue()) {
+                setJadeUser(getSession().getUserInfo());
+            }
+        } catch (PropertiesException ex) {
+            JadeLogger.warn(this, "The property [" + EFAProperties.USE_USER_SESSION_FOR_HEADER.getPropertyName()
+                    + "] is undefined!");
         }
 
         // au préalable, générer les modules associés (manuellement) au passage
@@ -899,11 +869,6 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
         return estImprime;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (22.05.2003 11:20:23)
-     * 
-     * @return globaz.musca.api.IFAModuleImpression
-     */
     @Override
     public IntModuleImpression _getInterfaceImpressionFromCache(String nomClasse) {
 
@@ -929,11 +894,6 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
 
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (21.05.2003 14:58:23)
-     * 
-     * @return globaz.musca.db.facturation.FAModuleImpression
-     */
     @Override
     public IFAModuleImpression _getModuleImpressionByCritere(IFAPrintDoc intEnteteFacture) {
 
@@ -980,13 +940,6 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
         }
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (20.05.2003 11:02:21)
-     * 
-     * @return boolean
-     * @param passage
-     *            globaz.musca.db.facturation.FAPassage
-     */
     @Override
     public boolean _passageIsValid(IFAPassage p) { // si le passage n'existe
         // pas, arrêter le process
@@ -1104,108 +1057,58 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
 
     }
 
-    /**
-     * @return
-     */
     @Override
     public java.lang.String getAImprimer() {
         return aImprimer;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (20.06.2002 07:42:07)
-     * 
-     * @return java.lang.String
-     */
     @Override
     public java.lang.String getDateImpression() {
         return dateImpression;
     }
 
-    /**
-     * Returns the documentType.
-     * 
-     * @return String
-     */
     @Override
     public String getDocumentType() {
         return documentType;
     }
 
-    /**
-     * @return
-     */
     @Override
     public String getFactureType() {
         return titreDocument;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (31.05.2003 13:41:58)
-     * 
-     * @return java.lang.String
-     */
     @Override
     public java.lang.String getFromIdExterneRole() {
         return fromIdExterneRole;
     }
 
-    /**
-     * @return
-     */
     public String getIdPersRef() {
         return idPersRef;
     }
 
-    /**
-     * @return
-     */
     public String getIdSign1() {
         return idSign1;
     }
 
-    /**
-     * @return
-     */
     public String getIdSign2() {
         return idSign2;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (02.05.2003 13:25:37)
-     * 
-     * @return java.lang.String
-     */
     @Override
     public java.lang.String getIdSousType() {
         return idSousType;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (02.05.2003 13:25:47)
-     * 
-     * @return java.lang.String
-     */
     @Override
     public java.lang.String getIdTri() {
         return idTri;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (02.05.2003 13:25:47)
-     * 
-     * @return java.lang.String
-     */
     @Override
     public java.lang.String getIdTriDecompte() {
         return idTriDecompte;
     }
 
-    /**
-     * Returns the impressionClassName.
-     * 
-     * @return String
-     */
     @Override
     public String getImpressionClassName() {
         return ImpressionClassName;
@@ -1215,11 +1118,6 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
         return impressionDef;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (22.05.2003 11:25:09)
-     * 
-     * @return java.util.HashMap
-     */
     @Override
     public java.util.HashMap getInterfaceImpressionContainer() {
         return interfaceImpressionContainer;
@@ -1229,11 +1127,6 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
         return jadeUser;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (02.05.2003 13:45:09)
-     * 
-     * @return java.lang.String
-     */
     @Override
     public java.lang.String getLibelle() {
         return libelle;
@@ -1243,61 +1136,29 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
         return modeFonctionnement;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (21.05.2003 17:05:05)
-     * 
-     * @return globaz.musca.db.facturation.FAModuleImpressionManager
-     */
     public globaz.musca.db.facturation.FAModuleImpressionManager getModImpManager() {
         return modImpManager;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (21.05.2003 16:50:59)
-     * 
-     * @return java.util.HashMap
-     */
     @Override
     public java.util.HashMap getModImpMap() {
         return modImpMap;
     }
 
-    /**
-     * Insert the method's description here. Creation date: (20.06.2003 14:17:54)
-     * 
-     * @return long
-     */
     @Override
     public int getNbImprimer() {
         return nbImprimer;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (25.06.2002 16:48:19)
-     * 
-     * @return int
-     */
     @Override
     public int getSizeManager() {
         return sizeManager;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (31.05.2003 13:44:12)
-     * 
-     * @return java.lang.String
-     */
     @Override
     public java.lang.String getTillIdExterneRole() {
         return tillIdExterneRole;
     }
-
-    /**
-     * Insérez la description de la méthode ici. Date de création : (14.02.2002 14:26:51)
-     * 
-     * @return boolean
-     * @throws Exception
-     */
 
     private String giveConditionInfoRom336() {
 
@@ -1393,19 +1254,11 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
 
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (25.06.2002 20:42:47)
-     * 
-     * @return boolean
-     */
     @Override
     public boolean isFlagCodeMaj() {
         return flagCodeMaj;
     }
 
-    /**
-     * @return
-     */
     public boolean isImprimable() {
         return imprimable;
     }
@@ -1414,134 +1267,68 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
         return unificationProcess;
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#jobQueue()
-     */
     @Override
     public GlobazJobQueue jobQueue() {
         return GlobazJobQueue.READ_LONG;
     }
 
-    /**
-     * @param string
-     */
     @Override
     public void setAImprimer(java.lang.String string) {
         aImprimer = string;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (20.06.2002 07:42:07)
-     * 
-     * @param newDateImpression
-     *            java.lang.String
-     */
     @Override
     public void setDateImpression(java.lang.String newDateImpression) {
         dateImpression = newDateImpression;
     }
 
-    /**
-     * Sets the documentType.
-     * 
-     * @param documentType
-     *            The documentType to set
-     */
     @Override
     public void setDocumentType(String documentType) {
         this.documentType = documentType;
     }
 
-    /**
-     * @param string
-     */
     @Override
     public void setFactureType(String string) {
         titreDocument = string;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (25.06.2002 20:42:47)
-     * 
-     * @param newFlagCodeMaj
-     *            boolean
-     */
     @Override
     public void setFlagCodeMaj(boolean newFlagCodeMaj) {
         flagCodeMaj = newFlagCodeMaj;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (31.05.2003 13:41:58)
-     * 
-     * @param newFromIdExterneRole
-     *            java.lang.String
-     */
     @Override
     public void setFromIdExterneRole(java.lang.String newFromIdExterneRole) {
         fromIdExterneRole = newFromIdExterneRole;
     }
 
-    /**
-     * @param string
-     */
     public void setIdPersRef(String string) {
         idPersRef = string;
     }
 
-    /**
-     * @param string
-     */
     public void setIdSign1(String string) {
         idSign1 = string;
     }
 
-    /**
-     * @param string
-     */
     public void setIdSign2(String string) {
         idSign2 = string;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (02.05.2003 13:25:37)
-     * 
-     * @param newIdSousType
-     *            java.lang.String
-     */
     @Override
     public void setIdSousType(java.lang.String newIdSousType) {
         idSousType = newIdSousType;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (02.05.2003 13:25:47)
-     * 
-     * @param newIdTri
-     *            java.lang.String
-     */
     @Override
     public void setIdTri(java.lang.String newIdTri) {
         idTri = newIdTri;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (02.05.2003 13:25:47)
-     * 
-     * @param newIdTriDecompte
-     *            java.lang.String
-     */
     @Override
     public void setIdTriDecompte(java.lang.String newIdTriDecompte) {
         idTriDecompte = newIdTriDecompte;
     }
 
-    /**
-     * Sets the impressionClassName.
-     * 
-     * @param impressionClassName
-     *            The impressionClassName to set
-     */
     @Override
     public void setImpressionClassName(String impressionClassName) {
         ImpressionClassName = impressionClassName;
@@ -1551,12 +1338,6 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
         this.impressionDef = impressionDef;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (22.05.2003 11:25:09)
-     * 
-     * @param newInterfaceImpressionContainer
-     *            java.util.HashMap
-     */
     @Override
     public void setInterfaceImpressionContainer(java.util.HashMap newInterfaceImpressionContainer) {
         interfaceImpressionContainer = newInterfaceImpressionContainer;
@@ -1566,12 +1347,6 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
         this.jadeUser = jadeUser;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (02.05.2003 13:45:09)
-     * 
-     * @param newLibelle
-     *            java.lang.String
-     */
     @Override
     public void setLibelle(java.lang.String newLibelle) {
         libelle = newLibelle;
@@ -1581,55 +1356,25 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
         this.modeFonctionnement = modeFonctionnement;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (21.05.2003 17:05:05)
-     * 
-     * @param newModImpManager
-     *            globaz.musca.db.facturation.FAModuleImpressionManager
-     */
     public void setModImpManager(globaz.musca.db.facturation.FAModuleImpressionManager newModImpManager) {
         modImpManager = newModImpManager;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (21.05.2003 16:50:59)
-     * 
-     * @param newModImpMap
-     *            java.util.HashMap
-     */
     @Override
     public void setModImpMap(java.util.HashMap newModImpMap) {
         modImpMap = newModImpMap;
     }
 
-    /**
-     * Insert the method's description here. Creation date: (20.06.2003 14:17:54)
-     * 
-     * @param newNbImprimer
-     *            long
-     */
     @Override
     public void setNbImprimer(int newNbImprimer) {
         nbImprimer = newNbImprimer;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (25.06.2002 16:48:19)
-     * 
-     * @param newSizeManager
-     *            int
-     */
     @Override
     public void setSizeManager(int newSizeManager) {
         sizeManager = newSizeManager;
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (31.05.2003 13:44:12)
-     * 
-     * @param newTillIdExterneRole
-     *            java.lang.String
-     */
     @Override
     public void setTillIdExterneRole(java.lang.String newTillIdExterneRole) {
         tillIdExterneRole = newTillIdExterneRole;
