@@ -2,7 +2,7 @@
 <!-- Created with iReport - A designer for JasperReports -->
 <!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 <jasperReport
-		 name="HeaderFER"
+		 name="Header_FPV_IDE_BVR"
 		 columnCount="1"
 		 printOrder="Vertical"
 		 orientation="Landscape"
@@ -190,24 +190,24 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="94"
-						y="160"
+						y="161"
 						width="194"
 						height="11"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="textField-7"
+						key="textField-8"
 						stretchType="NoStretch"
 						positionType="Float"
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false">
-							<printWhenExpression><![CDATA[new Boolean($P{P_HEADER_NOM_COLLABORATEUR}!=null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[new Boolean($P{P_HEADER_TEL_COLLABORATEUR}!=null)]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font reportFont="Arial_Normal" size="8"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_NOM_COLLABORATEUR}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_TEL_COLLABORATEUR}]]></textFieldExpression>
 				</textField>
 			</band>
 		</pageHeader>
