@@ -47,8 +47,7 @@ public enum EPCProperties implements IProperties {
     CHRYSAOR("pegasus.chrysaor.enabled"),
     COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_PC("commune.politique.code.reference.rubrique.pc"),
     COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_RFM("commune.politique.code.reference.rubrique.rfm"),
-    MAILS_DEBUG("analyse.error.sendMail"),
-    LOI_CANTONALE_PC("pegasus.canton.loi.pc");
+    MAILS_DEBUG("analyse.error.sendMail");
 
     private String property;
 
