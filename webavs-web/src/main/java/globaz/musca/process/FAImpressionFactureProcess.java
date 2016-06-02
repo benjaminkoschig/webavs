@@ -536,6 +536,15 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
             }
         }
 
+        try {
+            if (EFAProperties.USE_USER_SESSION_FOR_HEADER.getBooleanValue()) {
+                setJadeUser(getSession().getUserInfo());
+            }
+        } catch (PropertiesException ex) {
+            JadeLogger.warn(this, "The property [" + EFAProperties.USE_USER_SESSION_FOR_HEADER.getPropertyName()
+                    + "] is undefined!");
+        }
+
         // mettre le passage passé en param en variable de classe
         this.setPassage(passage);
         try {
@@ -821,15 +830,6 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
         if (!_initializePassage(passage)) {
             abort();
             return false;
-        }
-
-        try {
-            if (EFAProperties.USE_USER_SESSION_FOR_HEADER.getBooleanValue()) {
-                setJadeUser(getSession().getUserInfo());
-            }
-        } catch (PropertiesException ex) {
-            JadeLogger.warn(this, "The property [" + EFAProperties.USE_USER_SESSION_FOR_HEADER.getPropertyName()
-                    + "] is undefined!");
         }
 
         // au préalable, générer les modules associés (manuellement) au passage
