@@ -110,7 +110,7 @@ function upd() {
 function validate() {
 	var typeActivite = $('#activiteAllocataire').val();
 	if(typeActivite == 61040001 || typeActivite == 61040002 || typeActivite == 61040006){
-		var typeDomaine = $('#TypeDomaineAgriculteur').val();
+		var typeDomaine = $('#dossierComplexModel\\.domaineMontagne').val();
 		var msgErreur = '<%=JavascriptEncoder.getInstance().encode(objSession.getLabel("MESSAGE_ERREUR_DOMAINE_ACTIVITE_OBLIGATOIRE"))%>';
 		if(typeDomaine==null || typeDomaine.length==0 || typeDomaine==""){
 			alert(msgErreur);
@@ -596,14 +596,14 @@ var MAIN_URL = "<%=(servletContext + mainServletPath)%>";
 		                
 		                <input type="hidden" id="domaineMontagne"/>
 		                <input type="hidden" name="dossierAgricoleComplexModel.allocataireAgricoleComplexModel.agricoleModel.idAllocataire" />
-		                <input type="hidden" name="dossierAgricoleComplexModel.allocataireAgricoleComplexModel.agricoleModel.domaineMontagne" id="dossierComplexModel.domaineMontagne"/>
-		              
+
 		                <ct:inputHidden name="dossierComplexModel.allocataireComplexModel.personneEtendueComplexModel.personne.new"/>
 		                <ct:inputHidden name="dossierComplexModel.allocataireComplexModel.personneEtendueComplexModel.personneEtendue.new"/>
 		                <ct:inputHidden name="dossierComplexModel.allocataireComplexModel.personneEtendueComplexModel.tiers.new"/>
 	            		<ct:inputHidden name="dossierComplexModel.allocataireComplexModel.allocataireModel.new"/>
 	            		<ct:inputHidden name="dossierComplexModel.dossierModel.idTiersBeneficiaire" id="idTiersBeneficiaire"/>
 	            		<ct:inputHidden name="dossierComplexModel.dossierModel.activiteAllocataire" id="activiteAllocataire"/>
+	            		<ct:inputHidden name="dossierAgricoleComplexModel.allocataireAgricoleComplexModel.agricoleModel.domaineMontagne" id="dossierComplexModel.domaineMontagne"/>
 	                	<%-- /zone --%>
 	                	<td class="subtitle">
 	                		<ct:FWLabel key="AL0004_TITRE_ALLOC"/>
