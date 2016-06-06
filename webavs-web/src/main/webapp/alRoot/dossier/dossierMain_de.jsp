@@ -112,7 +112,7 @@ function validate() {
 	if(typeActivite == 61040001 || typeActivite == 61040002 || typeActivite == 61040006){
 		var typeDomaine = $('#dossierComplexModel\\.domaineMontagne').val();
 		var msgErreur = '<%=JavascriptEncoder.getInstance().encode(objSession.getLabel("MESSAGE_ERREUR_DOMAINE_ACTIVITE_OBLIGATOIRE"))%>';
-		if(typeDomaine==null || typeDomaine.length==0 || typeDomaine==""){
+		if(typeDomaine==null || typeDomaine=="null" || typeDomaine.length==0 || typeDomaine==""){
 			alert(msgErreur);
 			return;
 		}	
@@ -209,7 +209,6 @@ function init(){
 		$('#activiteAllocataire').val(val);
 		
 		$("#TypeDomaineAgriculteur").focus();
-		document.getElementById('dossierComplexModel.domaineMontagne').value = "true";		
 		document.getElementById('dossierAgricoleComplexModel.allocataireAgricoleComplexModel.agricoleModel.idAllocataire').value = document.getElementsByName('dossierComplexModel.dossierModel.idAllocataire')[0].value;
 		
 		updateActiviteAllocLink(this.value);
