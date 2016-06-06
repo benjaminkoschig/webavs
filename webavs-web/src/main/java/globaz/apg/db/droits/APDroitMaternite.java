@@ -71,93 +71,102 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
         // a faire en premier !!!
         int idDroitPrecedant = findIdDroitPrecedant(transaction);
 
-        // effacement des situations familiales
-        APSituationFamilialeMatManager mgr = new APSituationFamilialeMatManager();
+        APDroitLAPG apDroitPrecedant = new APDroitLAPG();
+        apDroitPrecedant.setIdDroit(String.valueOf(idDroitPrecedant));
+        apDroitPrecedant.setSession(getSession());
+        apDroitPrecedant.retrieve();
 
-        mgr.setSession(getSession());
-        mgr.setForIdDroitMaternite(getIdDroit());
-        mgr.find(transaction, BManager.SIZE_NOLIMIT);
+        if ((IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF.equals(apDroitPrecedant.getEtat()) || IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL
+                .equals(apDroitPrecedant.getEtat())) && idDroitPrecedant != 0) {
 
-        for (int idSitFam = 0; idSitFam < mgr.size(); ++idSitFam) {
-            APSituationFamilialeMat sitFam = (APSituationFamilialeMat) mgr.get(idSitFam);
-            sitFam.setSession(getSession());
-            sitFam.delete(transaction);
-        }
+            // effacement des situations familiales
+            APSituationFamilialeMatManager mgr = new APSituationFamilialeMatManager();
 
-        // effacement des enfants
-        APDroitMaterniteManager dMgr = new APDroitMaterniteManager();
-        dMgr.setSession(getSession());
-        dMgr.setForIdDroitParent(getIdDroit());
-        dMgr.find(transaction, BManager.SIZE_NOLIMIT);
+            mgr.setSession(getSession());
+            mgr.setForIdDroitMaternite(getIdDroit());
+            mgr.find(transaction, BManager.SIZE_NOLIMIT);
 
-        for (int idEnfant = 0; idEnfant < dMgr.size(); ++idEnfant) {
-            APDroitMaternite droitMat = (APDroitMaternite) dMgr.get(idEnfant);
-            droitMat.setSession(getSession());
-            droitMat.delete(transaction);
-        }
+            for (int idSitFam = 0; idSitFam < mgr.size(); ++idSitFam) {
+                APSituationFamilialeMat sitFam = (APSituationFamilialeMat) mgr.get(idSitFam);
+                sitFam.setSession(getSession());
+                sitFam.delete(transaction);
+            }
 
-        // repris depuis APDroitLAPG
-        // effacement des situations professionnelles
-        APSituationProfessionnelleManager mgrsp = new APSituationProfessionnelleManager();
+            // effacement des enfants
+            APDroitMaterniteManager dMgr = new APDroitMaterniteManager();
+            dMgr.setSession(getSession());
+            dMgr.setForIdDroitParent(getIdDroit());
+            dMgr.find(transaction, BManager.SIZE_NOLIMIT);
 
-        mgrsp.setSession(getSession());
-        mgrsp.setForIdDroit(getIdDroit());
-        mgrsp.find(transaction, BManager.SIZE_NOLIMIT);
+            for (int idEnfant = 0; idEnfant < dMgr.size(); ++idEnfant) {
+                APDroitMaternite droitMat = (APDroitMaternite) dMgr.get(idEnfant);
+                droitMat.setSession(getSession());
+                droitMat.delete(transaction);
+            }
 
-        for (int idSitPro = 0; idSitPro < mgrsp.size(); ++idSitPro) {
-            APSituationProfessionnelle sitPro = (APSituationProfessionnelle) mgrsp.get(idSitPro);
+            // repris depuis APDroitLAPG
+            // effacement des situations professionnelles
+            APSituationProfessionnelleManager mgrsp = new APSituationProfessionnelleManager();
 
-            sitPro.setSession(getSession());
-            sitPro.delete(transaction);
-        }
+            mgrsp.setSession(getSession());
+            mgrsp.setForIdDroit(getIdDroit());
+            mgrsp.find(transaction, BManager.SIZE_NOLIMIT);
 
-        // effacement des prestations
-        APPrestationManager pMgr = new APPrestationManager();
+            for (int idSitPro = 0; idSitPro < mgrsp.size(); ++idSitPro) {
+                APSituationProfessionnelle sitPro = (APSituationProfessionnelle) mgrsp.get(idSitPro);
 
-        pMgr.setSession(getSession());
-        pMgr.setForIdDroit(getIdDroit());
-        pMgr.find(transaction, BManager.SIZE_NOLIMIT);
+                sitPro.setSession(getSession());
+                sitPro.delete(transaction);
+            }
 
-        for (int idPrestation = 0; idPrestation < pMgr.size(); ++idPrestation) {
-            APPrestation prestation = (APPrestation) pMgr.get(idPrestation);
-            prestation.setSession(getSession());
-            prestation.delete(transaction);
-        }
-
-        // les prestations annulées du droit parent ou du frère doivent être mise dans
-        // l'etat valide
-        if (!JadeStringUtil.isBlankOrZero(getIdDroitParent())) {
-            pMgr = new APPrestationManager();
+            // effacement des prestations
+            APPrestationManager pMgr = new APPrestationManager();
 
             pMgr.setSession(getSession());
-            pMgr.setForIdDroit(getIdDroitParent());
-            if (idDroitPrecedant != 0) {
-                pMgr.setForIdDroit(String.valueOf(idDroitPrecedant));
-            }
-            pMgr.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_ANNULE);
+            pMgr.setForIdDroit(getIdDroit());
             pMgr.find(transaction, BManager.SIZE_NOLIMIT);
 
-            boolean foundPrestation = false;
             for (int idPrestation = 0; idPrestation < pMgr.size(); ++idPrestation) {
                 APPrestation prestation = (APPrestation) pMgr.get(idPrestation);
                 prestation.setSession(getSession());
-                prestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
-                prestation.update(transaction);
-                foundPrestation = true;
+                prestation.delete(transaction);
             }
-            // Dans ce cas, le droit parent doit être remis dans l'état
-            // 'PARTIEL'.
-            if (foundPrestation) {
-                APDroitLAPG parent = new APDroitLAPG();
-                parent.setSession(getSession());
-                parent.setIdDroit(getIdDroitParent());
+
+            // les prestations annulées du droit parent ou du frère doivent être mise dans
+            // l'etat valide
+            if (!JadeStringUtil.isBlankOrZero(getIdDroitParent())) {
+                pMgr = new APPrestationManager();
+
+                pMgr.setSession(getSession());
+                pMgr.setForIdDroit(getIdDroitParent());
                 if (idDroitPrecedant != 0) {
-                    parent.setIdDroit(String.valueOf(idDroitPrecedant));
+                    pMgr.setForIdDroit(String.valueOf(idDroitPrecedant));
                 }
-                parent.retrieve(transaction);
-                PRAssert.notIsNew(parent, null);
-                parent.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL);
-                parent.update(transaction);
+                pMgr.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_ANNULE);
+                pMgr.find(transaction, BManager.SIZE_NOLIMIT);
+
+                boolean foundPrestation = false;
+                for (int idPrestation = 0; idPrestation < pMgr.size(); ++idPrestation) {
+                    APPrestation prestation = (APPrestation) pMgr.get(idPrestation);
+                    prestation.setSession(getSession());
+                    prestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
+                    prestation.update(transaction);
+                    foundPrestation = true;
+                }
+                // Dans ce cas, le droit parent doit être remis dans l'état
+                // 'PARTIEL'.
+                if (foundPrestation) {
+                    APDroitLAPG parent = new APDroitLAPG();
+                    parent.setSession(getSession());
+                    parent.setIdDroit(getIdDroitParent());
+                    if (idDroitPrecedant != 0) {
+                        parent.setIdDroit(String.valueOf(idDroitPrecedant));
+                    }
+                    parent.retrieve(transaction);
+                    PRAssert.notIsNew(parent, null);
+                    parent.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL);
+                    parent.update(transaction);
+                }
             }
         }
 
@@ -167,8 +176,12 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
     private Integer findIdDroitPrecedant(BTransaction transaction) {
         if (!JadeStringUtil.isBlankOrZero(getIdDroitParent())) {
             return QueryWriterExecutor
-                    .query("select max(anciennePrestation.VHIDRO) from schema.APPRESP as nouvellePrestation inner join schema.APPRESP as anciennePrestation on anciennePrestation.VHIRST = nouvellePrestation.VHIPRS where nouvellePrestation.VHIDRO = ?",
-                            getIdDroit()).useTransaction(transaction).executeAggregateToInt();
+                    .query("select max(VAIDRO) from schema.APDROIP where VAIPAR = (select VAIPAR from schema.APDROIP where VAIDRO = ?) and schema.APDROIP.VAIDRO <> ?",
+                            getIdDroit(), getIdDroit()).useTransaction(transaction).executeAggregateToInt();
+
+            // return QueryWriterExecutor
+            // .query("select max(anciennePrestation.VHIDRO) from schema.APPRESP as nouvellePrestation inner join schema.APPRESP as anciennePrestation on anciennePrestation.VHIRST = nouvellePrestation.VHIPRS where nouvellePrestation.VHIDRO = ?",
+            // getIdDroit()).useTransaction(transaction).executeAggregateToInt();
         }
         return 0;
     }
