@@ -15,7 +15,6 @@ import globaz.corvus.itext.REListeRetenuesBlocages;
 import globaz.corvus.itext.RERecapitulationPaiementAdapter;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.framework.util.FWMessage;
-import globaz.framework.util.FWMessageFormat;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
@@ -152,22 +151,22 @@ public class REGenererListesVerificationProcess extends BProcess {
             if (getMemoryLog().hasErrors()) {
                 throw new Exception("Erreur dans la génération de la mise à jour du flag des retenues");
             }
-
-            startChrono();
-            List<RetenueMontantTotalCorrige> retenues = doUpdateRetenueIfNeeded(transaction);
-            stopChrono();
-
-            getMemoryLog().logMessage(
-                    FWMessageFormat.format(getSession().getLabel("LIST_VERIFICATION_RENTE_RETENUE_MODIFIER_INFO"),
-                            getChrono()), FWMessage.INFORMATION, "");
-            for (RetenueMontantTotalCorrige retenue : retenues) {
-
-                getMemoryLog().logMessage(
-                        FWMessageFormat.format(getSession().getLabel("LIST_VERIFICATION_RENTE_RETENUE_MODIFIER"),
-                                retenue.getNss() + " / " + retenue.getDesignation(), retenue.getMontantTotalARetenir(),
-                                retenue.getMontantTotaleAretenirCorriger(), retenue.getIdExterneRole(),
-                                retenue.getSection()), FWMessage.INFORMATION, "");
-            }
+            // Code commenté car le point a WEBAVS-1988 a du être retiré
+            // startChrono();
+            // List<RetenueMontantTotalCorrige> retenues = doUpdateRetenueIfNeeded(transaction);
+            // stopChrono();
+            //
+            // getMemoryLog().logMessage(
+            // FWMessageFormat.format(getSession().getLabel("LIST_VERIFICATION_RENTE_RETENUE_MODIFIER_INFO"),
+            // getChrono()), FWMessage.INFORMATION, "");
+            // for (RetenueMontantTotalCorrige retenue : retenues) {
+            //
+            // getMemoryLog().logMessage(
+            // FWMessageFormat.format(getSession().getLabel("LIST_VERIFICATION_RENTE_RETENUE_MODIFIER"),
+            // retenue.getNss() + " / " + retenue.getDesignation(), retenue.getMontantTotalARetenir(),
+            // retenue.getMontantTotaleAretenirCorriger(), retenue.getIdExterneRole(),
+            // retenue.getSection()), FWMessage.INFORMATION, "");
+            // }
 
             // ///////////////////////////////////////////////////////////////////////////////////////
             // Creation des documents de validation
