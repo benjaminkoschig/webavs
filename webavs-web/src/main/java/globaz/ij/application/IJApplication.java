@@ -94,6 +94,12 @@ public class IJApplication extends PRAbstractApplication {
     public static final String PROPERTY_DOC_CONFIDENTIEL = "documents.is.confidentiel";
 
     /**
+     * détermine si on enrichi le header avec la donnée Nom du collaborateur (mappé sur le template tag
+     * P_HEADER_NOM_COLLABORATEUR)
+     */
+    public static final String PROPERTY_DOC_NOMCOLABO = "documents.use.header.nom.collaborateur";
+
+    /**
      * Le nom de la propriété qui donne le code de genre de prestation pour Acor (importation des rentes en cours)
      */
     public static final String PROPERTY_GENRE_PRESTATION_ACOR = "genrePrestationRenteEnCoursAcor";

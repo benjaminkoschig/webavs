@@ -160,17 +160,20 @@ public class PRLettreEnTete extends FWIDocumentManager {
                         tierAdresse.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), getIdAffilie(), "519003");
 
             } else if (getDomaineLettreEnTete().equals(PRLettreEnTete.DOMAINE_IJAI)) {
+                BISession remoteSession = PRSession.connectSession(getSession(), "IJ");
 
-                // nom du collaborateur
-                crBean.setNomCollaborateur(getSession().getUserFullName());
-
+                if ("true".equals(((BSession) remoteSession).getApplication().getProperty(
+                        IJApplication.PROPERTY_DOC_NOMCOLABO))) {
+                    // nom du collaborateur
+                    crBean.setNomCollaborateur(getSession().getUserFullName());
+                }
                 adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(),
                         tierAdresse.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), getIdAffilie(), "519009");
 
                 // Ajoute le libelle CONFIDENTIEL dans l'adresse de l'entete du
                 // document
-                BISession remoteSession = PRSession.connectSession(getSession(), "IJ");
-                if ("true".equals(((BSession) remoteSession).getApplication().getProperty("documents.is.confidentiel"))) {
+                if ("true".equals(((BSession) remoteSession).getApplication().getProperty(
+                        IJApplication.PROPERTY_DOC_CONFIDENTIEL))) {
                     crBean.setConfidentiel(true);
                 }
 
