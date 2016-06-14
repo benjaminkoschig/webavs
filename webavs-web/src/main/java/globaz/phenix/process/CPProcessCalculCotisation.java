@@ -550,15 +550,10 @@ public final class CPProcessCalculCotisation extends BProcess {
                             valRevMax = (valRevMax / 12) * saveDureeDecision;
                         }
 
-                        int nbMois = 0;
-                        if (!JadeStringUtil.isBlankOrZero(decision.getNombreMoisTotalDecision())) {
-                            valRevMax = Double.parseDouble(JANumberFormatter.deQuote(varString));
-                            nbMois = Integer.parseInt(decision.getNombreMoisTotalDecision());
-                            if (nbMois != 0) {
-                                valRevMax = (valRevMax / 12) * nbMois;
-                            }
-                        }
-                        
+                        // K160601_002 - calcul erroné des cotisations AF différentielles
+                        valRevMax = determineRevenuMaxSuivantNombreDeMois(varString, valRevMax,
+                                decision.getNombreMoisTotalDecision());
+
                         double valRevenuCi = revenuCi;
                         if (valRevenuCi > valRevMax) {
                             revenuCi = (float) valRevMax;
@@ -620,6 +615,25 @@ public final class CPProcessCalculCotisation extends BProcess {
             this._addError(process.getTransaction(), e.getMessage() + " " + getDescriptionTiers());
             return;
         }
+    }
+
+    /**
+     * Permet de déterminer le revenu max suivant le nombre de mois si le nombre de mois est renseigné.
+     * 
+     * @param revenuMaximumParametre Le revenu maximum paramétré dans l'application
+     * @param nombreDeMois Le nombre de mois de la décision
+     * @return Le revenu calculé passé en paramètre si le nombre de mois est vide. Le nouveau revenu calculé sinon.
+     */
+    double determineRevenuMaxSuivantNombreDeMois(String revenuMaximumParametre, double revenuCalcule,
+            String nombreDeMois) {
+
+        if (!JadeStringUtil.isBlankOrZero(nombreDeMois)) {
+            revenuCalcule = Double.parseDouble(JANumberFormatter.deQuote(revenuMaximumParametre));
+            int nbMois = Integer.parseInt(nombreDeMois);
+            revenuCalcule = (revenuCalcule / 12) * nbMois;
+        }
+
+        return revenuCalcule;
     }
 
     /**
@@ -1373,6 +1387,11 @@ public final class CPProcessCalculCotisation extends BProcess {
                         if (saveDureeDecision != 0) {
                             valRevMax = (valRevMax / 12) * saveDureeDecision;
                         }
+
+                        // K160601_002 - calcul erroné des cotisations AF différentielles
+                        valRevMax = determineRevenuMaxSuivantNombreDeMois(varString, valRevMax,
+                                decision.getNombreMoisTotalDecision());
+
                         double valRevenuCi = revenuCi;
                         if (valRevenuCi > valRevMax) {
                             revenuCi = (float) valRevMax;
@@ -1478,6 +1497,11 @@ public final class CPProcessCalculCotisation extends BProcess {
                         if (saveDureeDecision != 0) {
                             valRevMax = (valRevMax / 12) * saveDureeDecision;
                         }
+
+                        // K160601_002 - calcul erroné des cotisations AF différentielles
+                        valRevMax = determineRevenuMaxSuivantNombreDeMois(varString, valRevMax,
+                                decision.getNombreMoisTotalDecision());
+
                         double valRevenuCi = revenuCi;
                         if (valRevenuCi > valRevMax) {
                             revenuCi = (float) valRevMax;
