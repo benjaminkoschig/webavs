@@ -469,7 +469,12 @@ function rebuildNoga(idCode) {
 		categorieCode.style.display='none';
 		categorie.selectedIndex = categorieSelected;
 	}
-
+	//redesign
+	categorie.style.width='40px';
+	oSelect.style.width='350px';
+	var motifFin = document.getElementById("motifFin");
+	motifFin.style.width='300px';
+	
 	for(i=0;i<optionsList.length;i++) {
 		if(optionsList[i].link==categorie.options[categorieSelected].value) {
 			var oOption = document.createElement("OPTION");
@@ -728,9 +733,9 @@ function maxLength(zone,max)
 									</script>
 																	
 								</TD>
-								<TD nowrap height="31" width="161">&nbsp;Activit&eacute;(s)</TD>
+								<TD nowrap>&nbsp;Activit&eacute;(s)</TD>
 								<td>
-									<TEXTAREA name="activite" rows="5" cols="50" onkeyup="maxLength(this, 254);"><%=viewBean.getActivite()%></TEXTAREA>
+									<TEXTAREA name="activite" rows="5" cols="40" onkeyup="maxLength(this, 254);"><%=viewBean.getActivite()%></TEXTAREA>
 									<INPUT type="hidden" name="confirmerAnnonceActivite" value="<%=viewBean.getConfirmerAnnonceActivite()%>"/>
 								</td>
 								
@@ -806,7 +811,7 @@ function maxLength(zone,max)
 									<INPUT type="checkbox" name="irrecouvrable" <%=(viewBean.isIrrecouvrable().booleanValue())? "checked" : ""%> >
 								</TD-->
 								<!--TD nowrap></TD-->
-								<TD nowrap colspan="2"> 
+								<TD nowrap colspan="3"> 
 									<INPUT type="checkbox" name="occasionnel" <%=(viewBean.isOccasionnel().booleanValue())? "checked" : ""%> >
 									Personnel occasionnel
 										<script>
@@ -820,7 +825,7 @@ function maxLength(zone,max)
 									<INPUT type="checkbox" name="exonerationGenerale" <%=(viewBean.isExonerationGenerale().booleanValue())? "checked" : ""%> >
 								</TD>
 								<!--TD nowrap></TD-->
-								<TD nowrap colspan="2"> 
+								<TD nowrap colspan="3"> 
 									<INPUT type="checkbox" name="traitement" <%=(viewBean.isTraitement().booleanValue())? "checked" : ""%> onclick="displayFieldIDEPassif()">
 									Affiliation provisoire
 								</TD>
@@ -929,7 +934,7 @@ function maxLength(zone,max)
 							
 							<tr>
 								<TD nowrap width="161" height="31"><ct:FWLabel key="NAOS_JSP_AFFILIATION_IDE_RAISON_SOCIALE"/></TD>
-								<td>
+								<td colspan="2">
 									<INPUT type="text" id="ideRaisonSociale" name="ideRaisonSociale" class="libelleLong10Disabled" readonly  value="<%=viewBean.getIdeRaisonSociale()%>">
 								</td>
 							</tr>
@@ -937,7 +942,7 @@ function maxLength(zone,max)
 								<TD nowrap width="161" height="31"><ct:FWLabel key="NAOS_JSP_AFFILIATION_IDE_NUMERO_STATUT"/></TD>
 								
 								
-								<TD>
+								<TD colspan="2">
 									<INPUT type="text" id="libelleStatutIde" name="libelleStatutIde" class="libelleLong10Disabled" readonly  value="<%=CodeSystem.getLibelle(viewBean.getSession(),viewBean.getIdeStatut())%>">
 									<INPUT type="hidden" id="ideStatut" name="ideStatut"  value="<%=viewBean.getIdeStatut()%>">
 								</TD>
