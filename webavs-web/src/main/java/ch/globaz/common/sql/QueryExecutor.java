@@ -325,14 +325,16 @@ public class QueryExecutor {
 
         if (!result.isEmpty()) {
             HashMap<String, Object> map = result.get(0);
-            Object value = map.get("1");
-            if (value != null) {
-                if (value instanceof Integer) {
-                    nb = BigDecimal.valueOf((Integer) value);
-                } else if (value instanceof BigDecimal) {
-                    nb = (BigDecimal) value;
-                } else if (value instanceof Float) {
-                    nb = BigDecimal.valueOf((Float) value);
+            if (!map.values().isEmpty()) {
+                Object value = map.values().iterator().next();
+                if (value != null) {
+                    if (value instanceof Integer) {
+                        nb = BigDecimal.valueOf((Integer) value);
+                    } else if (value instanceof BigDecimal) {
+                        nb = (BigDecimal) value;
+                    } else if (value instanceof Float) {
+                        nb = BigDecimal.valueOf((Float) value);
+                    }
                 }
             }
         }
