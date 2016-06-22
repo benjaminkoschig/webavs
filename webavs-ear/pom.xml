@@ -3,7 +3,7 @@
     <parent>
         <groupId>ch.globaz</groupId>
         <artifactId>webavs-parent</artifactId>
-        <version>1.16.0-SNAPSHOT</version>
+        <version>1.17.0-ALPHA-SNAPSHOT</version>
     </parent>
 
     <artifactId>webavs-ear</artifactId>
