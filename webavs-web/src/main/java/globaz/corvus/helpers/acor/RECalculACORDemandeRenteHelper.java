@@ -1752,6 +1752,20 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 }
             }
 
+            // BZ 10015
+            long idDemande = 0;
+            /*
+             * Si la demande à été copiée dans le traitement précédent, on travaille avec la copie de la demande
+             */
+            if (idCopieDemande != null) {
+                idDemande = idCopieDemande;
+            } else {
+                idDemande = Long.valueOf(demandeRente.getIdDemandeRente());
+            }
+
+            // Mise à jour de l'id demande dans le viewBean car la demande est peut-être une copie
+            caViewbean.setIdDemandeRente(String.valueOf(idDemande));
+
             // Inforom D0112 : recherche si des remarques particulières sont présentes dans la feuille de calcul
             traiterLesRemarquesParticulieresDeLaFeuilleDeCalculAcor(session, transaction, caViewbean);
 
@@ -1762,16 +1776,6 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
              * tort
              */
             if (idsRentesAccordeesNouveauDroit.size() > 0) {
-                // BZ 10015
-                long idDemande = 0;
-                /*
-                 * Si la demande à été copiée dans le traitement précédent, on travaille avec la copie de la demande
-                 */
-                if (idCopieDemande != null) {
-                    idDemande = idCopieDemande;
-                } else {
-                    idDemande = Long.valueOf(demandeRente.getIdDemandeRente());
-                }
                 calculerEtSauverRentesVerseesATort(session, (BTransaction) transaction, idDemande,
                         idsRentesAccordeesNouveauDroit);
             }
