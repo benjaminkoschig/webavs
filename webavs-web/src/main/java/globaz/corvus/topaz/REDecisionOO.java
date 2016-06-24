@@ -96,6 +96,12 @@ import ch.globaz.topaz.datajuicer.DocumentData;
  */
 public class REDecisionOO extends REAbstractJobOO {
 
+    private static final String API_INV = "API-INV";
+    private static final String API_AVS = "API-AVS";
+    private static final String AVS_EXT = "AVS-EXT";
+    private static final String AVS_ORD = "AVS-ORD";
+    private static final String INV_EXT = "INV-EXT";
+    private static final String INV_ORD = "INV-ORD";
     /**
      * 
      */
@@ -438,22 +444,22 @@ public class REDecisionOO extends REAbstractJobOO {
                         // Résolution du type de rente
                         // AI
                         if ((genrePrestation >= 50) && (genrePrestation <= 59)) {
-                            typeDecision = "INV-ORD";
+                            typeDecision = INV_ORD;
                         } else if ((genrePrestation >= 70) && (genrePrestation <= 79)) {
-                            typeDecision = "INV-EXT";
+                            typeDecision = INV_EXT;
                             // AVS
                         } else if (((genrePrestation >= 10) && (genrePrestation <= 19))
                                 || ((genrePrestation >= 30) && (genrePrestation <= 39))) {
-                            typeDecision = "AVS-ORD";
+                            typeDecision = AVS_ORD;
                         } else if (((genrePrestation >= 20) && (genrePrestation <= 29))
                                 || ((genrePrestation >= 40) && (genrePrestation <= 49))) {
-                            typeDecision = "AVS-EXT";
+                            typeDecision = AVS_EXT;
                             // API
                         } else if (((genrePrestation >= 85) && (genrePrestation <= 87))
                                 || ((genrePrestation >= 94) && (genrePrestation <= 97)) || (genrePrestation == 89)) {
-                            typeDecision = "API-AVS";
+                            typeDecision = API_AVS;
                         } else {
-                            typeDecision = "API-INV";
+                            typeDecision = API_INV;
                         }
 
                         // Inforom 529 : gestion du document type number en fonction du type de décision
@@ -508,7 +514,7 @@ public class REDecisionOO extends REAbstractJobOO {
 
         if (typeDecision.startsWith("API")) {
 
-            if (typeDecision.equals("API-INV")) {
+            if (typeDecision.equals(API_INV)) {
                 setCopieOAI(true);
             }
 
@@ -2406,10 +2412,29 @@ public class REDecisionOO extends REAbstractJobOO {
         // Moyens de droit
         if (!decision.getCsGenreDecision().equals(IREDecision.CS_GENRE_DECISION_COMMUNICATION)) {
 
-            // Trouver les données du tribunal (Tribunal du canton de domicile du bp)
-            // --> si BE, choisir celui dans la langue de l'assuré
-            String donnesTribunal = PRTiersHelper.getAdresseTribunalPourOfficeAI(getSession(), officeAI,
-                    tiers.getIdTiers(), decision.getDateDecision());
+            String donnesTribunal = null;
+
+            // La recherche du tribunal est différente dans le cas d'un décision AVS ou AI/API
+
+            // INV
+            if (INV_ORD.equals(typeDecision) || INV_EXT.equals(typeDecision)) {
+                donnesTribunal = PRTiersHelper.getAdresseTribunalPourOfficeAI(getSession(), officeAI,
+                        tiers.getIdTiers(), decision.getDateDecision());
+            }
+            // API
+            else if (API_AVS.equals(typeDecision) || API_INV.equals(typeDecision)) {
+                donnesTribunal = PRTiersHelper.getAdresseTribunalPourOfficeAI(getSession(), officeAI,
+                        tiers.getIdTiers(), decision.getDateDecision());
+            }
+            // AVS
+            else if (AVS_ORD.equals(typeDecision) || AVS_EXT.equals(typeDecision)) {
+                donnesTribunal = PRTiersHelper.getAdresseTribunalPourTiers(getSession(), tiers);
+            }
+            // La, ce n'est pas normal...
+            else {
+                String message = getSession().getLabel("IMPOSSIBLE_RETORUVER_TRIBUNAL_POUR_MOYEN_RECOURS");
+                throw new IllegalArgumentException(message);
+            }
 
             data.addData("TITRE_MOYENS_DROIT", getTexte(catalogeDeTexteDecision, 7, 20));
 
@@ -2442,14 +2467,14 @@ public class REDecisionOO extends REAbstractJobOO {
                 // si rentes API -->
                 if (!demandeApi.isNew()) {
                     // si api/ai --> 7.21
-                    if ("API-INV".equalsIgnoreCase(typeDecision)) {
+                    if (API_INV.equalsIgnoreCase(typeDecision)) {
 
                         buffer.append(PRStringUtils.replaceString(
                                 getTexte(catalogeDeTexteDecision, 7, 21).replaceAll("\\n", "") + "\r",
                                 "{donneesTribunal}", donnesTribunal));
 
                         // si api/avs --> 7.22
-                    } else if ("API-AVS".equalsIgnoreCase(typeDecision)) {
+                    } else if (API_AVS.equalsIgnoreCase(typeDecision)) {
 
                         buffer.append(getTexte(catalogeDeTexteDecision, 7, 22) + "\r");
 
@@ -2901,15 +2926,15 @@ public class REDecisionOO extends REAbstractJobOO {
                                 texteDebut += " " + getTexte(catalogeDeTexteDecision, 2, 13);
                             } else {
                                 // Modification de la remarque selon le genre de prestation
-                                if (typeDecision.equals("AVS-ORD")) {
+                                if (typeDecision.equals(AVS_ORD)) {
                                     texteDebut += " " + getTexte(catalogeDeTexteDecision, 2, 5);
-                                } else if (typeDecision.equals("AVS-EXT")) {
+                                } else if (typeDecision.equals(AVS_EXT)) {
                                     texteDebut += " " + getTexte(catalogeDeTexteDecision, 2, 6);
-                                } else if (typeDecision.equals("API-AVS")) {
+                                } else if (typeDecision.equals(API_AVS)) {
                                     texteDebut += " " + getTexte(catalogeDeTexteDecision, 2, 7);
-                                } else if (typeDecision.equals("INV-ORD")) {
+                                } else if (typeDecision.equals(INV_ORD)) {
                                     texteDebut += " " + getTexte(catalogeDeTexteDecision, 2, 9);
-                                } else if (typeDecision.equals("INV-EXT")) {
+                                } else if (typeDecision.equals(INV_EXT)) {
                                     texteDebut += " " + getTexte(catalogeDeTexteDecision, 2, 10);
                                 } else {
                                     texteDebut += " " + getTexte(catalogeDeTexteDecision, 2, 8);
@@ -3088,7 +3113,7 @@ public class REDecisionOO extends REAbstractJobOO {
             demRenteAPI.setIdDemandeRente(demandeRente.getIdDemandeRente());
             demRenteAPI.retrieve();
 
-            if ("API-AVS".equalsIgnoreCase(typeDecision)) {
+            if (API_AVS.equalsIgnoreCase(typeDecision)) {
                 isAPIAVS = true;
             }
 
