@@ -34,6 +34,7 @@ import globaz.hercule.service.CEDocumentItextService;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.job.client.JadeJobServerFacade;
 import globaz.jade.job.message.JadeJobInfo;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.publish.client.JadePublishServerFacade;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.message.JadePublishQueueInfo;
@@ -66,27 +67,97 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 /**
  * Permet de générer le document de pré-impression des déclarations de salaires
- * 
- * @author sda Pour changer le modèle de ce commentaire de type généré, allez à :
- *         Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code et commentaires
  */
 public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     private static final long serialVersionUID = -87417721244564777L;
-    public final static String CS_AMENDE = "125012";
-    public final static String CS_ATTESTATION = "125001";
-    public final static String CS_DOMAINE = "124001";
-    public final static String CS_PLAINTEPENALE = "125004";
-    public final static String CS_RAPPEL = "125002";
-    public final static String CS_RAPPEL_LTN = "125007";
-    public final static String CS_RAPPEL_E_BUSINESS = "125013";
-    public final static String CS_SOMMATION = "125003";
-    public final static String CS_SOMMATION_LTN = "125006";
-    public final static String DOC_AF_SEUL = "DRACO_PREIMP_DECSAL_AF";
-    public final static int NO_ERROR = 0;
+    public static final String CS_AMENDE = "125012";
+    public static final String CS_ATTESTATION = "125001";
+    public static final String CS_DOMAINE = "124001";
+    public static final String CS_PLAINTEPENALE = "125004";
+    public static final String CS_RAPPEL = "125002";
+    public static final String CS_RAPPEL_LTN = "125007";
+    public static final String CS_RAPPEL_E_BUSINESS = "125013";
+    public static final String CS_SOMMATION = "125003";
+    public static final String CS_SOMMATION_LTN = "125006";
+    public static final String DOC_AF_SEUL = "DRACO_PREIMP_DECSAL_AF";
+    public static final int NO_ERROR = 0;
     private static final String NUM_DOCUMENT = "088";
     private static final String NUM_DOCUMENT_LTN = "201";
-    public final static int ON_ERROR = 200;
+    public static final int ON_ERROR = 200;
+
+    AFAffiliation affDatePlusGrand = new AFAffiliation();
+
+    AFAffiliation affEnCours = new AFAffiliation();
+    String affiliationId = "";
+    private boolean affilieTous = false;
+    AFAffiliationForDSManager affManager = new AFAffiliationForDSManager();
+
+    private String annee = new String();
+    private String assuranceId = "";
+    private Boolean convertnnss = new Boolean(false);
+    private String dateValeur = JACalendar.todayJJsMMsAAAA();
+
+    // Pour savoir si on veut que l'impression soit inscrite dans LEO ou NON
+    private Boolean demarreSuivi = new Boolean(false);
+    ICTDocument[] document = null;
+    ICTDocument[] documentDe = null;
+    ICTDocument[] documentIt = null;
+    private String fromAffilies = new String();
+
+    // Indice permettant de parcourir les affiliés
+    private int i = 0;
+    private String idDocument = "";
+    protected String idDocumentDefaut = "";
+    // Pour savoir si on veut qu'une pré-impression de la déclaration de
+    // salaires soit imprimée
+    private Boolean imprimerDeclaration = new Boolean(false);
+
+    // Pour savoir si on veut qu'une lettre soit imprimée ou non
+    private Boolean imprimerLettre = new Boolean(false);
+    private Boolean imprimerReceptionnees = new Boolean(false);
+    private Boolean imprimerVide = new Boolean(false);
+    int ind = 0;
+    // Permet de savoir quand on peut passer à l'affilie suivant
+    //
+    private Boolean isAf = new Boolean(false);
+
+    private boolean isFirst = true;
+    // Permet de savoir quels documents on a imprimer
+    // false = aucun document n'a encore été imprimer
+    // true = le document de pré-impression des déclarations de salaire a été
+    // imprimé
+    private boolean isPasse = false;
+
+    private String langueIsoTiers = "";
+    JadePublishDocumentInfo lastAffilieDocumentInfo = null;
+    Doc1_PreImpr_DS manager = new Doc1_PreImpr_DS();
+    String MODEL_NAME = "";
+    int nbNiveaux = 0;
+    private String periodeDebutCotPeriode = "01.10.2011";
+    private String periodeFinCotPeriode = "31.12.2011";
+    private Boolean provientEcranPreImpression = new Boolean(false);
+
+    List publishDocuments = new LinkedList();
+    int size = 0;
+    private String typeAffiliation = "";
+    private String typeDeclaration = "";
+
+    private String untilAffilies = new String();
+
+    public Doc2_preImpressionDeclaration() throws Exception {
+        this(new BSession(DSApplication.DEFAULT_APPLICATION_DRACO));
+    }
+
+    public Doc2_preImpressionDeclaration(BProcess parent) throws Exception {
+        super(parent, DSApplication.DEFAULT_APPLICATION_ROOT, parent.getSession().getLabel("ENVOI_DECL_SALAIRE"));
+        super.setFileTitle(parent.getSession().getLabel("ENVOI_DECL_SALAIRE"));
+    }
+
+    public Doc2_preImpressionDeclaration(BSession session) throws Exception {
+        super(session, DSApplication.DEFAULT_APPLICATION_ROOT, session.getLabel("ENVOI_DECL_SALAIRE"));
+        super.setFileTitle(session.getLabel("ENVOI_DECL_SALAIRE"));
+    }
 
     public static void main(String[] args) {
         try {
@@ -184,79 +255,6 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
         }
         System.exit(Doc2_preImpressionDeclaration.NO_ERROR);
 
-    }
-
-    AFAffiliation affDatePlusGrand = new AFAffiliation();
-
-    AFAffiliation affEnCours = new AFAffiliation();
-    String affiliationId = "";
-    private boolean affilieTous = false;
-    AFAffiliationForDSManager affManager = new AFAffiliationForDSManager();
-
-    private String annee = new String();
-    private String assuranceId = "";
-    private Boolean convertnnss = new Boolean(false);
-    private String dateValeur = JACalendar.todayJJsMMsAAAA();
-
-    // Pour savoir si on veut que l'impression soit inscrite dans LEO ou NON
-    private Boolean demarreSuivi = new Boolean(false);
-    ICTDocument[] document = null;
-    ICTDocument[] documentDe = null;
-    ICTDocument[] documentIt = null;
-    private String fromAffilies = new String();
-
-    // Indice permettant de parcourir les affiliés
-    private int i = 0;
-    private String idDocument = "";
-    protected String idDocumentDefaut = "";
-    // Pour savoir si on veut qu'une pré-impression de la déclaration de
-    // salaires soit imprimée
-    private Boolean imprimerDeclaration = new Boolean(false);
-
-    // Pour savoir si on veut qu'une lettre soit imprimée ou non
-    private Boolean imprimerLettre = new Boolean(false);
-    private Boolean imprimerReceptionnees = new Boolean(false);
-    private Boolean imprimerVide = new Boolean(false);
-    int ind = 0;
-    // Permet de savoir quand on peut passer à l'affilie suivant
-    //
-    private Boolean isAf = new Boolean(false);
-
-    private boolean isFirst = true;
-    // Permet de savoir quels documents on a imprimer
-    // false = aucun document n'a encore été imprimer
-    // true = le document de pré-impression des déclarations de salaire a été
-    // imprimé
-    private boolean isPasse = false;
-
-    private String langueIsoTiers = "";
-    JadePublishDocumentInfo lastAffilieDocumentInfo = null;
-    Doc1_PreImpr_DS manager = new Doc1_PreImpr_DS();
-    String MODEL_NAME = "";
-    int nbNiveaux = 0;
-    private String periodeDebutCotPeriode = "01.10.2011";
-    private String periodeFinCotPeriode = "31.12.2011";
-    private Boolean provientEcranPreImpression = new Boolean(false);
-
-    List publishDocuments = new LinkedList();
-    int size = 0;
-    private String typeAffiliation = "";
-    private String typeDeclaration = "";
-
-    private String untilAffilies = new String();
-
-    public Doc2_preImpressionDeclaration() throws Exception {
-        this(new BSession(DSApplication.DEFAULT_APPLICATION_DRACO));
-    }
-
-    public Doc2_preImpressionDeclaration(BProcess parent) throws Exception {
-        super(parent, DSApplication.DEFAULT_APPLICATION_ROOT, parent.getSession().getLabel("ENVOI_DECL_SALAIRE"));
-        super.setFileTitle(parent.getSession().getLabel("ENVOI_DECL_SALAIRE"));
-    }
-
-    public Doc2_preImpressionDeclaration(BSession session) throws Exception {
-        super(session, DSApplication.DEFAULT_APPLICATION_ROOT, session.getLabel("ENVOI_DECL_SALAIRE"));
-        super.setFileTitle(session.getLabel("ENVOI_DECL_SALAIRE"));
     }
 
     protected void _footerText() throws Exception {
@@ -364,68 +362,8 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
                     getSession().getApplication().getLabel("ENVOI_PERIODE_DS", langueIsoTiers) + ": " + debutPeriode
                             + " - " + finPeriode);
 
-            TITiers tiersLPP = new TITiers();
-            AFSuiviCaisseAffiliationManager manLPP = new AFSuiviCaisseAffiliationManager();
-
-            manLPP.setSession(getSession());
-            manLPP.setForAffiliationId(affDatePlusGrand.getAffiliationId());
-            manLPP.setForGenreCaisse(CodeSystem.GENRE_CAISSE_LPP);
-            manLPP.setForAnneeActive(getAnnee());
-
-            manLPP.find(getTransaction());
-
-            AFSuiviCaisseAffiliation lpp = new AFSuiviCaisseAffiliation();
-            if (manLPP.size() != 0) {
-                lpp = (AFSuiviCaisseAffiliation) manLPP.getEntity(0);
-                tiersLPP = getDescriptionCaisse(lpp.getIdTiersCaisse());
-            }
-
-            // On regarde si la localité est vide afin de ne pas afficher une
-            // virgule sans rien après
-            if (tiersLPP.getLocalite().length() != 0) {
-                super.setParametres(
-                        Doc1_PreImp_Param.P_CAISSE,
-                        getSession().getApplication().getLabel("ENVOI_PREVOYANCE_LPP", langueIsoTiers) + ": "
-                                + tiersLPP.getDesignation1() + " " + tiersLPP.getDesignation2() + " "
-                                + tiersLPP.getDesignation3() + ", " + tiersLPP.getLocalite());
-            } else {
-                super.setParametres(
-                        Doc1_PreImp_Param.P_CAISSE,
-                        getSession().getApplication().getLabel("ENVOI_PREVOYANCE_LPP", langueIsoTiers) + ": "
-                                + tiersLPP.getDesignation1() + " " + tiersLPP.getDesignation2() + " "
-                                + tiersLPP.getDesignation3());
-            }
-
-            TITiers tiersLAA = new TITiers();
-            AFSuiviCaisseAffiliationManager manLAA = new AFSuiviCaisseAffiliationManager();
-
-            manLAA.setSession(getSession());
-            manLAA.setForAffiliationId(affDatePlusGrand.getAffiliationId());
-            manLAA.setForGenreCaisse(CodeSystem.GENRE_CAISSE_LAA);
-            manLAA.setForAnneeActive(getAnnee());
-
-            manLAA.find(getTransaction());
-
-            AFSuiviCaisseAffiliation laa = new AFSuiviCaisseAffiliation();
-            if (manLAA.size() != 0) {
-                laa = (AFSuiviCaisseAffiliation) manLAA.getEntity(0);
-                tiersLAA = getDescriptionCaisse(laa.getIdTiersCaisse());
-            }
-
-            // On regarde si la localité est vide afin de ne pas afficher une
-            // virgule sans rien après
-            if (tiersLAA.getLocalite().length() != 0) {
-                super.setParametres(
-                        Doc1_PreImp_Param.P_ASSURANCE,
-                        getSession().getApplication().getLabel("ENVOI_ASSUR_LAA", langueIsoTiers) + ": "
-                                + tiersLAA.getDesignation1() + " " + tiersLAA.getDesignation2() + ", "
-                                + tiersLAA.getLocalite());
-            } else {
-                super.setParametres(
-                        Doc1_PreImp_Param.P_ASSURANCE,
-                        getSession().getApplication().getLabel("ENVOI_ASSUR_LAA", langueIsoTiers) + ": "
-                                + tiersLAA.getDesignation1() + " " + tiersLAA.getDesignation2());
-            }
+            resolveHeaderCaisseLPP();
+            resolveHeaderCaisseLAA();
         }
 
         // Paramètres à setter si on imprime la lettre
@@ -437,6 +375,73 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
             if (!JadeStringUtil.isBlankOrZero(getTexte(4, langueIsoTiers))) {
                 super.setParametres(Doc1_PreImp_Param.P_AGENCE_COM, getTexte(4, langueIsoTiers));
             }
+        }
+    }
+
+    private void resolveHeaderCaisseLAA() throws Exception {
+        TITiers tiersLAA = new TITiers();
+        AFSuiviCaisseAffiliationManager manLAA = new AFSuiviCaisseAffiliationManager();
+
+        manLAA.setSession(getSession());
+        manLAA.setForAffiliationId(affDatePlusGrand.getAffiliationId());
+        manLAA.setForGenreCaisse(CodeSystem.GENRE_CAISSE_LAA);
+        manLAA.setForAnneeActive(getAnnee());
+
+        manLAA.find(getTransaction(), BManager.SIZE_USEDEFAULT);
+
+        AFSuiviCaisseAffiliation laa = new AFSuiviCaisseAffiliation();
+        if (manLAA.size() != 0) {
+            laa = (AFSuiviCaisseAffiliation) manLAA.getEntity(0);
+            tiersLAA = getDescriptionCaisse(laa.getIdTiersCaisse());
+        }
+
+        // On regarde si la localité est vide afin de ne pas afficher une
+        // virgule sans rien après
+        if (tiersLAA.getLocalite().length() != 0) {
+            super.setParametres(
+                    Doc1_PreImp_Param.P_ASSURANCE,
+                    getSession().getApplication().getLabel("ENVOI_ASSUR_LAA", langueIsoTiers) + ": "
+                            + tiersLAA.getDesignation1() + " " + tiersLAA.getDesignation2() + ", "
+                            + tiersLAA.getLocalite());
+        } else {
+            super.setParametres(
+                    Doc1_PreImp_Param.P_ASSURANCE,
+                    getSession().getApplication().getLabel("ENVOI_ASSUR_LAA", langueIsoTiers) + ": "
+                            + tiersLAA.getDesignation1() + " " + tiersLAA.getDesignation2());
+        }
+    }
+
+    private void resolveHeaderCaisseLPP() throws Exception {
+        TITiers tiersLPP = new TITiers();
+        AFSuiviCaisseAffiliationManager manLPP = new AFSuiviCaisseAffiliationManager();
+
+        manLPP.setSession(getSession());
+        manLPP.setForAffiliationId(affDatePlusGrand.getAffiliationId());
+        manLPP.setForGenreCaisse(CodeSystem.GENRE_CAISSE_LPP);
+        manLPP.setForAnneeActive(getAnnee());
+
+        manLPP.find(getTransaction(), BManager.SIZE_USEDEFAULT);
+
+        AFSuiviCaisseAffiliation lpp = new AFSuiviCaisseAffiliation();
+        if (manLPP.size() != 0) {
+            lpp = (AFSuiviCaisseAffiliation) manLPP.getEntity(0);
+            tiersLPP = getDescriptionCaisse(lpp.getIdTiersCaisse());
+        }
+
+        // On regarde si la localité est vide afin de ne pas afficher une
+        // virgule sans rien après
+        if (tiersLPP.getLocalite().length() != 0) {
+            super.setParametres(
+                    Doc1_PreImp_Param.P_CAISSE,
+                    getSession().getApplication().getLabel("ENVOI_PREVOYANCE_LPP", langueIsoTiers) + ": "
+                            + tiersLPP.getDesignation1() + " " + tiersLPP.getDesignation2() + " "
+                            + tiersLPP.getDesignation3() + ", " + tiersLPP.getLocalite());
+        } else {
+            super.setParametres(
+                    Doc1_PreImp_Param.P_CAISSE,
+                    getSession().getApplication().getLabel("ENVOI_PREVOYANCE_LPP", langueIsoTiers) + ": "
+                            + tiersLPP.getDesignation1() + " " + tiersLPP.getDesignation2() + " "
+                            + tiersLPP.getDesignation3());
         }
     }
 
@@ -842,6 +847,9 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
             nbDocument = ((DSApplication) getSession().getApplication())
                     .getProperty("nbDocumentPourFusion", nbDocument);
         } catch (Exception e) {
+            JadeLogger
+                    .warn(this,
+                            "Unabled to find the property \"nbDocumentPourFusion\". The default property set by the process is 100.");
             nbDocument = "100";
         }
 
@@ -902,7 +910,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
                         MODEL_NAME = getSession().getApplication().getProperty("modelDS");
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    JadeLogger.error(this, e);
                 }
 
                 // On set isPasse à true pour dire que la déclaration a été
@@ -931,7 +939,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
                     MODEL_NAME = getSession().getApplication().getProperty("modelDS");
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                JadeLogger.error(this, e);
             }
         } else {
             // Cas ou on veut uniquement imprimer la lettre
@@ -1003,7 +1011,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
                 affManager.setOrderBy("MALNAF, MADDEB");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            JadeLogger.error(this, e);
         }
 
         // On fixe la date de début et la date de fin
@@ -1063,6 +1071,15 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
             affManager.setForTypeDeclaration(getTypeDeclaration());
         }
 
+        // Si on a qu'un seul num affilié, on est en mode impression unitaire
+        // Donc on veut imprimer même si il est radié
+        if (fromAffilies.equals(untilAffilies)) {
+            affManager.setWantOnlyRadie(false);
+        } else {
+            // Sinon on imprime tout sauf les radiés.
+            affManager.setWantOnlyRadie(true);
+        }
+
         affManager.setWantProvisoire(false);
 
         try {
@@ -1109,6 +1126,8 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
                     && AFParticulariteAffiliation.existeParticularite(getTransaction(), affEnCours.getAffiliationId(),
                             CodeSystem.PARTIC_AFFILIE_SANS_PERSONNEL, "31.12." + annee)
                     && !CodeSystem.PERS_JURIDIQUE_SA.equals(affEnCours.getPersonnaliteJuridique())) {
+
+                affEnCours.isRadie();
                 if ((ind + 1) < affManager.getSize()) {
                     ind++;
                     size--;
@@ -1251,16 +1270,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
             getDocumentInfo().setPublishDocument(false);
             getDocumentInfo().setArchiveDocument(true);
 
-            IFormatData affilieFormater = ((AFApplication) GlobazServer.getCurrentSystem().getApplication(
-                    AFApplication.DEFAULT_APPLICATION_NAOS)).getAffileFormater();
-
-            String numAffNonFormatte = null;
-
-            try {
-                numAffNonFormatte = affilieFormater.unformat(affEnCours.getAffilieNumero());
-            } catch (Exception e) {
-                numAffNonFormatte = affEnCours.getAffilieNumero();
-            }
+            String numAffNonFormatte = formatNumAffilie(affEnCours.getAffilieNumero());
 
             getDocumentInfo().setDocumentProperty("numero.affilie.non.formatte", numAffNonFormatte);
             TIDocumentInfoHelper.fill(getDocumentInfo(), affEnCours.getIdTiers(), getSession(), ITIRole.CS_AFFILIE,
@@ -1302,7 +1312,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
                     getMemoryLog().logMessage(getSession().getLabel("ENVOI_ALREADY_EXISTS"), "", FWMessage.INFORMATION);
                 } else {
                     if (imprimerReceptionnees.booleanValue()) {
-                        if (!existsDSReceptionnnée(affEnCours.getAffiliationId(), annee)) {
+                        if (!existsDSReceptionnnee(affEnCours.getAffiliationId(), annee)) {
                             genererControle(affDatePlusGrand);
                         }
                     } else {
@@ -1364,9 +1374,22 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            JadeLogger.error(this, e);
         }
 
+    }
+
+    private String formatNumAffilie(String numAffilie) throws Exception {
+        String numAffNonFormatte;
+        IFormatData affilieFormater = ((AFApplication) GlobazServer.getCurrentSystem().getApplication(
+                AFApplication.DEFAULT_APPLICATION_NAOS)).getAffileFormater();
+
+        try {
+            numAffNonFormatte = affilieFormater.unformat(numAffilie);
+        } catch (Exception e) {
+            numAffNonFormatte = numAffilie;
+        }
+        return numAffNonFormatte;
     }
 
     // Permet de créer la lettre d'accompagnement
@@ -1403,7 +1426,6 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
                             + application.getHeaderGris());
         }
 
-        // TODO Doc1_PreImpLettre_DS plus utilisé à voir comment implémenter
         // différemment le createDataSource
         super.setDataSource(managerLettre.getCollectionData());
     }
@@ -1466,6 +1488,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
                 getTransaction().clearErrorBuffer();
             }
         } catch (Exception e) {
+            JadeLogger.error(this, e);
         } finally {
             statement.closeStatement();
         }
@@ -1478,7 +1501,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
      * @throws Exception
      */
     public boolean existeCotisationPeriode() throws Exception {
-        // FIXME uniquement pour l'année 2011
+        // Uniquement pour l'année 2011
         AFCotisationManager cotiMgr = new AFCotisationManager();
 
         cotiMgr.setSession(getSession());
@@ -1489,7 +1512,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
         return (cotiMgr.getCount() > 0) && "2011".equals(annee);
     }
 
-    private boolean existsDSReceptionnnée(String idAffilie, String annee) throws Exception {
+    private boolean existsDSReceptionnnee(String idAffilie, String annee) throws Exception {
         DSDeclarationListViewBean mgr = new DSDeclarationListViewBean();
 
         mgr.setSession(getSession());
@@ -1515,7 +1538,6 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
                 res += " " + anneeBig.toString();
                 i = i + 2;
             } else if (paragraphe.charAt(i + 1) == '3') {
-                // TODO Gestion des titres provisoires en attendant la gestion
                 // par les tiers !!
                 String titre = affEnCours.getTiers().getFormulePolitesse(affEnCours.getTiers().getLangue());
                 if (JadeStringUtil.isEmpty(titre)) {
@@ -1630,7 +1652,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     @Override
     protected String getEMailObject() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         if (isOnError() || isAborted()) {
             buffer.append(getSession().getLabel("ENVOI_IMPRE_ERREUR"));
@@ -1658,30 +1680,30 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     private ICTDocument[] getICTDocument(String langue) {
         ICTDocument res[] = null;
-        ICTDocument document = null;
+        ICTDocument ictDocument = null;
 
         try {
-            document = (ICTDocument) getSession().getAPIFor(ICTDocument.class);
+            ictDocument = (ICTDocument) getSession().getAPIFor(ICTDocument.class);
         } catch (Exception e) {
             getMemoryLog().logMessage(e.toString(), FWMessage.ERREUR, getSession().getLabel("ERROR_GETTING_API"));
         }
 
-        document.setISession(getSession());
+        ictDocument.setISession(getSession());
 
         if (!JadeStringUtil.isEmpty(getIdDocument())) {
-            document.setIdDocument(getIdDocument());
+            ictDocument.setIdDocument(getIdDocument());
         } else {
-            document.setIdDocument(getIdDocumentDefaut());
+            ictDocument.setIdDocument(getIdDocumentDefaut());
         }
 
-        document.setCsDomaine(Doc2_preImpressionDeclaration.CS_DOMAINE);
-        document.setCsTypeDocument(Doc2_preImpressionDeclaration.CS_ATTESTATION);
-        document.setCsDestinataire(ICTDocument.CS_EMPLOYEUR);
-        document.setCodeIsoLangue(langue);
-        document.setActif(new Boolean(true));
+        ictDocument.setCsDomaine(Doc2_preImpressionDeclaration.CS_DOMAINE);
+        ictDocument.setCsTypeDocument(Doc2_preImpressionDeclaration.CS_ATTESTATION);
+        ictDocument.setCsDestinataire(ICTDocument.CS_EMPLOYEUR);
+        ictDocument.setCodeIsoLangue(langue);
+        ictDocument.setActif(new Boolean(true));
 
         try {
-            res = document.load();
+            res = ictDocument.load();
         } catch (Exception e1) {
             getMemoryLog().logMessage(e1.toString(), FWMessage.ERREUR, getSession().getLabel("ERROR_GETTING_DOC"));
         }
@@ -1736,80 +1758,102 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     private String getTexte(int niveau, String langue) throws Exception {
         String resString = "";
-        ICTTexte texte = null;
 
-        if ((langue != null) && langue.equals("de")) {
-            if (documentDe == null) {
-                getMemoryLog().logMessage(getSession().getLabel("PAS_TEXTE_DEFAUT"), FWMessage.ERREUR, "");
-            } else {
-                ICTListeTextes listeTextes = null;
-
-                try {
-                    listeTextes = documentDe[0].getTextes(niveau);
-                } catch (Exception e3) {
-                    // getMemoryLog().logMessage(e3.toString(),FWMessage.ERREUR,getSession().getLabel("ERROR_GETTING_LIST_TEXT"));
-                }
-
-                if (listeTextes != null) {
-                    for (int i = 0; i < listeTextes.size(); i++) {
-                        texte = listeTextes.getTexte(i + 1);
-                        if ((i + 1) < listeTextes.size()) {
-                            resString = resString.concat(texte.getDescription() + "\n\n");
-                        } else {
-                            resString = resString.concat(texte.getDescription());
-                        }
-                    }
-                }
-            }
-        } else if ((langue != null) && langue.equals("it")) {
-            if (documentIt == null) {
-                getMemoryLog().logMessage(getSession().getLabel("PAS_TEXTE_DEFAUT"), FWMessage.ERREUR, "");
-            } else {
-                ICTListeTextes listeTextes = null;
-
-                try {
-                    listeTextes = documentIt[0].getTextes(niveau);
-                } catch (Exception e3) {
-                    // getMemoryLog().logMessage(e3.toString(),FWMessage.ERREUR,getSession().getLabel("ERROR_GETTING_LIST_TEXT"));
-                }
-
-                if (listeTextes != null) {
-                    for (int i = 0; i < listeTextes.size(); i++) {
-                        texte = listeTextes.getTexte(i + 1);
-                        if ((i + 1) < listeTextes.size()) {
-                            resString = resString.concat(texte.getDescription() + "\n\n");
-                        } else {
-                            resString = resString.concat(texte.getDescription());
-                        }
-                    }
-                }
-            }
+        if ((langue != null) && "de".equals(langue)) {
+            resString = getTexteAllemand(niveau);
+        } else if ((langue != null) && "it".equals(langue)) {
+            resString = getTexteItalien(niveau);
         } else {
-            if (document == null) {
-                getMemoryLog().logMessage(getSession().getLabel("PAS_TEXTE_DEFAUT"), FWMessage.ERREUR, "");
-            } else {
-                ICTListeTextes listeTextes = null;
+            resString = getTexteFrancais(niveau);
+        }
 
-                try {
-                    listeTextes = document[0].getTextes(niveau);
-                } catch (Exception e3) {
-                    // getMemoryLog().logMessage(e3.toString(),FWMessage.ERREUR,getSession().getLabel("ERROR_GETTING_LIST_TEXT"));
-                }
+        return format(resString);
+    }
 
-                if (listeTextes != null) {
-                    for (int i = 0; i < listeTextes.size(); i++) {
-                        texte = listeTextes.getTexte(i + 1);
-                        if ((i + 1) < listeTextes.size()) {
-                            resString = resString.concat(texte.getDescription() + "\n\n");
-                        } else {
-                            resString = resString.concat(texte.getDescription());
-                        }
-                    }
+    private String getTexteFrancais(int niveau) {
+
+        String resString = "";
+        if (document == null) {
+            getMemoryLog().logMessage(getSession().getLabel("PAS_TEXTE_DEFAUT"), FWMessage.ERREUR, "");
+            return resString;
+        }
+
+        ICTTexte texte;
+        ICTListeTextes listeTextes = null;
+        try {
+            listeTextes = document[0].getTextes(niveau);
+        } catch (Exception e) {
+            // JadeLogger.warn(this, e.getMessage());
+        }
+
+        if (listeTextes != null) {
+            for (int i = 0; i < listeTextes.size(); i++) {
+                texte = listeTextes.getTexte(i + 1);
+                if ((i + 1) < listeTextes.size()) {
+                    resString = resString.concat(texte.getDescription() + "\n\n");
+                } else {
+                    resString = resString.concat(texte.getDescription());
                 }
             }
         }
 
-        return format(resString);
+        return resString;
+    }
+
+    private String getTexteItalien(int niveau) {
+        ICTTexte texte;
+        String resString = "";
+        if (documentIt == null) {
+            getMemoryLog().logMessage(getSession().getLabel("PAS_TEXTE_DEFAUT"), FWMessage.ERREUR, "");
+        } else {
+            ICTListeTextes listeTextes = null;
+
+            try {
+                listeTextes = documentIt[0].getTextes(niveau);
+            } catch (Exception e) {
+                // JadeLogger.warn(this, e.getMessage());
+            }
+
+            if (listeTextes != null) {
+                for (int i = 0; i < listeTextes.size(); i++) {
+                    texte = listeTextes.getTexte(i + 1);
+                    if ((i + 1) < listeTextes.size()) {
+                        resString = resString.concat(texte.getDescription() + "\n\n");
+                    } else {
+                        resString = resString.concat(texte.getDescription());
+                    }
+                }
+            }
+        }
+        return resString;
+    }
+
+    private String getTexteAllemand(int niveau) {
+        ICTTexte texte;
+        String resString = "";
+        if (documentDe == null) {
+            getMemoryLog().logMessage(getSession().getLabel("PAS_TEXTE_DEFAUT"), FWMessage.ERREUR, "");
+        } else {
+            ICTListeTextes listeTextes = null;
+
+            try {
+                listeTextes = documentDe[0].getTextes(niveau);
+            } catch (Exception e) {
+                // JadeLogger.warn(this, e.getMessage());
+            }
+
+            if (listeTextes != null) {
+                for (int i = 0; i < listeTextes.size(); i++) {
+                    texte = listeTextes.getTexte(i + 1);
+                    if ((i + 1) < listeTextes.size()) {
+                        resString = resString.concat(texte.getDescription() + "\n\n");
+                    } else {
+                        resString = resString.concat(texte.getDescription());
+                    }
+                }
+            }
+        }
+        return resString;
     }
 
     public String getTypeAffiliation() {
@@ -1850,7 +1894,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
             viewBean.setForValeurCodeSysteme(ILEConstantes.CS_CATEGORIE_SUIVI_DS);
         }
 
-        viewBean.find(getTransaction());
+        viewBean.find(getTransaction(), BManager.SIZE_USEDEFAULT);
 
         // Si le viewBean retourne un enregistrement c'est que l'envoi a déjà
         // été journalisé donc on retourne true
@@ -1870,11 +1914,6 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
         return GlobazJobQueue.UPDATE_SHORT;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.framework.printing.itext.api.FWIDocumentInterface#next()
-     */
     @Override
     public boolean next() throws FWIException {
         // si First est à true on va au suivant sinon on s'arrête

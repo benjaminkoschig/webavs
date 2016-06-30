@@ -1,9 +1,3 @@
-/*
- * Créé le 25 avr. 05
- * 
- * Pour changer le modèle de ce fichier généré, allez à : Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code
- * et commentaires
- */
 package globaz.draco.db.preimpression;
 
 import globaz.babel.api.ICTDocument;
@@ -15,10 +9,6 @@ import java.util.Vector;
 /**
  * Permet de controler les valeurs entrées par l'utilisateur
  * 
- * @author sda
- * 
- *         Pour changer le modèle de ce commentaire de type généré, allez à :
- *         Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code et commentaires
  */
 public class DSPreImpressionDeclarationViewBean extends Doc2_preImpressionDeclaration implements FWViewBeanInterface {
     /**
@@ -31,6 +21,7 @@ public class DSPreImpressionDeclarationViewBean extends Doc2_preImpressionDeclar
     private String typeDefaut = CodeSystem.DECL_SAL_PRE_LISTE;
 
     public DSPreImpressionDeclarationViewBean() throws java.lang.Exception {
+        // Nothing
     }
 
     /**
@@ -44,7 +35,7 @@ public class DSPreImpressionDeclarationViewBean extends Doc2_preImpressionDeclar
         // Vector pour FWListSelectTag data
         Vector v = new Vector();
 
-        ICTDocument[] candidats = null;
+        ICTDocument[] candidats;
         ICTDocument loader = (ICTDocument) getSession().getAPIFor(ICTDocument.class);
         loader.setActif(Boolean.TRUE);
         loader.setCodeIsoLangue(getLangue());

@@ -9,9 +9,6 @@ import globaz.pyxis.db.alternate.TIPAvsAdrLienAdminManager;
 
 public class AFAffiliationForDSManager extends TIPAvsAdrLienAdminManager {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     private String forAssuranceSeule = "";
     private String forDateFin = "";
@@ -25,21 +22,20 @@ public class AFAffiliationForDSManager extends TIPAvsAdrLienAdminManager {
     private String toAffilieNumero = "";
     private boolean wantAssuranceSeule = false;
     private boolean wantProvisoire = true;
+    private boolean wantOnlyNonRadie = false;
 
     // Si on ne veut pas le tri par agence communale, on ne fait pas toutes les
     // jointures pour des raison de perf.
     private boolean wantTriAgenceCommunale = false;
 
     public AFAffiliationForDSManager() {
-        // TODO Auto-generated constructor stub
+        // nothing
     }
 
     @Override
     protected String _getFields(BStatement statement) {
         String fields = "";
-        /*
-         * if(wantTriAgenceCommunale){ fields = super._getFields(statement); fields += ", "; }
-         */
+
         fields += "*";
         return fields;
     }
@@ -183,6 +179,12 @@ public class AFAffiliationForDSManager extends TIPAvsAdrLienAdminManager {
                 sqlWhere += "(MADFIN > " + this._dbWriteDateAMJ(statement.getTransaction(), getFromDateFin())
                         + " OR MADFIN=0)";
             }
+            if (wantOnlyNonRadie) {
+                if (sqlWhere.length() != 0) {
+                    sqlWhere += " AND ";
+                }
+                sqlWhere += "MADFIN = 0";
+            }
             if (!JadeStringUtil.isEmpty(getForTypeAffiliation())) {
                 if (sqlWhere.length() != 0) {
                     sqlWhere += " AND ";
@@ -276,6 +278,10 @@ public class AFAffiliationForDSManager extends TIPAvsAdrLienAdminManager {
         return wantTriAgenceCommunale;
     }
 
+    public boolean isWantNonRadie() {
+        return wantProvisoire;
+    }
+
     /**
      * Tri pas agence communale Date de création : (21.05.2002 13:28:35)
      * 
@@ -337,5 +343,9 @@ public class AFAffiliationForDSManager extends TIPAvsAdrLienAdminManager {
 
     public void setWantTriAgenceCommunale(boolean wantTriAgenceCommunale) {
         this.wantTriAgenceCommunale = wantTriAgenceCommunale;
+    }
+
+    public void setWantOnlyRadie(boolean wantOnlyNonRadie) {
+        this.wantOnlyNonRadie = wantOnlyNonRadie;
     }
 }
