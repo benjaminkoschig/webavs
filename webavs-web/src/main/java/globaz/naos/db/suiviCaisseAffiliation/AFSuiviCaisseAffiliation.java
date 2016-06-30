@@ -1,6 +1,3 @@
-/*
- * Created on 01-Jul-05
- */
 package globaz.naos.db.suiviCaisseAffiliation;
 
 import globaz.framework.util.FWMessageFormat;
@@ -32,44 +29,9 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
-/**
- * La classe définissant l'entité SuiviCaisseAffiliation.
- * 
- * @author sau
- */
 public class AFSuiviCaisseAffiliation extends BEntity {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
-
-    public static List<AFSuiviCaisseAffiliation> listAllCaisse(String idAffiliation, BSession session) {
-        List<AFSuiviCaisseAffiliation> suiviCaisseList = new ArrayList<AFSuiviCaisseAffiliation>();
-        try {
-            if (!JadeStringUtil.isIntegerEmpty(idAffiliation)) {
-                AFSuiviCaisseAffiliationManager manager = new AFSuiviCaisseAffiliationManager();
-                manager.setSession(session);
-                manager.setWantAllCaisse(true);
-                manager.setForAffiliationId(idAffiliation);
-                manager.find();
-                String lastGenre = null;
-
-                for (int i = 0; i < manager.size(); i++) {
-                    AFSuiviCaisseAffiliation suiviCaisse = (AFSuiviCaisseAffiliation) manager.get(i);
-
-                    if ((lastGenre == null) || !lastGenre.equals(suiviCaisse.getGenreCaisse())
-                            || JadeStringUtil.isIntegerEmpty(suiviCaisse.getDateFin())) {
-                        suiviCaisseList.add(suiviCaisse);
-                        lastGenre = suiviCaisse.getGenreCaisse();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            return suiviCaisseList;
-        }
-        return suiviCaisseList;
-    }
 
     private TIAdministrationViewBean _administration = null;
     private AFAffiliation _affiliation = null;
@@ -99,6 +61,33 @@ public class AFSuiviCaisseAffiliation extends BEntity {
     public AFSuiviCaisseAffiliation() {
         super();
         setMethodsToLoad(IAFSuiviCaisseAffiliationHelper.METHODS_TO_LOAD);
+    }
+
+    public static List<AFSuiviCaisseAffiliation> listAllCaisse(String idAffiliation, BSession session) {
+        List<AFSuiviCaisseAffiliation> suiviCaisseList = new ArrayList<AFSuiviCaisseAffiliation>();
+        try {
+            if (!JadeStringUtil.isIntegerEmpty(idAffiliation)) {
+                AFSuiviCaisseAffiliationManager manager = new AFSuiviCaisseAffiliationManager();
+                manager.setSession(session);
+                manager.setWantAllCaisse(true);
+                manager.setForAffiliationId(idAffiliation);
+                manager.find();
+                String lastGenre = null;
+
+                for (int i = 0; i < manager.size(); i++) {
+                    AFSuiviCaisseAffiliation suiviCaisse = (AFSuiviCaisseAffiliation) manager.get(i);
+
+                    if ((lastGenre == null) || !lastGenre.equals(suiviCaisse.getGenreCaisse())
+                            || JadeStringUtil.isIntegerEmpty(suiviCaisse.getDateFin())) {
+                        suiviCaisseList.add(suiviCaisse);
+                        lastGenre = suiviCaisse.getGenreCaisse();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            return suiviCaisseList;
+        }
+        return suiviCaisseList;
     }
 
     /**
@@ -200,7 +189,7 @@ public class AFSuiviCaisseAffiliation extends BEntity {
             // Pas recu d'attestation IP
             if (!getAttestationIp().booleanValue()) {
 
-                if (journal == null) {
+                if (journal == null && !isNonSoumis()) {
                     AFSuiviAttestIP attestation = new AFSuiviAttestIP();
                     if (attestation.isAffiliationConcerne(getAffiliation())) {
                         attestation.setIdDestinataire(getIdTiersCaisse());
@@ -216,7 +205,12 @@ public class AFSuiviCaisseAffiliation extends BEntity {
                             sessionLeo, transaction);
                 }
             }
+
         }
+    }
+
+    private boolean isNonSoumis() {
+        return !JadeStringUtil.isEmpty(getMotif());
     }
 
     /**
@@ -317,16 +311,6 @@ public class AFSuiviCaisseAffiliation extends BEntity {
             checkValiditeSuivi(statement.getTransaction());
         }
     }
-
-    /*
-     * Control les dates de début et de fin du suivi d'assurance avec les autres suivi d'assurances.
-     * 
-     * @param transaction la transaction a utiliser
-     * 
-     * @return true - Si les dates sont valides
-     * 
-     * @throws Exception
-     */
 
     /**
      * Sauvegarde les valeurs des propriétés composant la clé primaire de l'entité.
@@ -430,7 +414,7 @@ public class AFSuiviCaisseAffiliation extends BEntity {
                 // Validité Date
                 validationOK &= _checkRealDate(statement.getTransaction(), getDateDebut(), getSession().getLabel("160"));
                 if (BSessionUtil.compareDateFirstLower(getSession(), getDateDebut(), getAffiliation().getDateDebut())) {
-                    // System.out.println("date début < date affiliation ("+getAffiliation().getDateDebut()+")");
+
                     _addError(statement.getTransaction(), FWMessageFormat.format(getSession().getLabel("1850"),
                             getDateDebut(), getAffiliation().getDateDebut()));
                     validationOK = false;
@@ -576,8 +560,7 @@ public class AFSuiviCaisseAffiliation extends BEntity {
             return null;
         }
 
-        if ((_affiliation == null)
-                || ((_affiliation != null) && !_affiliation.getAffiliationId().equals(getAffiliationId()))) {
+        if ((_affiliation == null) || !_affiliation.getAffiliationId().equals(getAffiliationId())) {
 
             _affiliation = new AFAffiliation();
             _affiliation.setSession(getSession());
