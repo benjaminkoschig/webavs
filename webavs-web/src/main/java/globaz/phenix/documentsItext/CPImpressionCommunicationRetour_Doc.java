@@ -40,11 +40,6 @@ import globaz.phenix.util.Constante;
 import globaz.phenix.util.DocumentInfoPhenix;
 import globaz.pyxis.db.tiers.TITiersViewBean;
 
-/**
- * Insérez la description du type ici. Date de création : (26.02.2003 16:54:19)
- * 
- * @author: Administrator
- */
 public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
 
     private static final long serialVersionUID = -6988686766450063847L;
@@ -94,24 +89,11 @@ public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
         super.setFileTitle(getSession().getLabel("CP_MSG_0192"));
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (26.02.2003 17:00:08)
-     * 
-     * @param session
-     *            globaz.globall.db.BSession
-     * @exception java.lang.Exception
-     *                La description de l'exception.
-     */
     public CPImpressionCommunicationRetour_Doc(BSession session) throws FWIException {
         super(session, CPApplication.APPLICATION_PHENIX_REP, "COMMUNICATION_FISCALE");
         super.setFileTitle(getSession().getLabel("CP_MSG_0192"));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.globall.db.BProcess#_executeCleanUp()
-     */
     @Override
     protected void _executeCleanUp() {
         if ((getTransaction() != null) && (getTransaction().isOpened())) {
@@ -126,12 +108,6 @@ public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
         super._executeCleanUp();
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (10.03.2003 10:44:29)
-     * 
-     * @exception java.lang.Exception
-     *                La description de l'exception.
-     */
     @Override
     protected void _validate() throws java.lang.Exception {
         // Contrôle du mail
@@ -146,11 +122,6 @@ public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
         if (!JadeStringUtil.isEmpty(getMessage())) {
             abort();
         }
-    }
-
-    @Override
-    public void afterBuildReport() {
-        super.afterBuildReport();
     }
 
     @Override
@@ -178,9 +149,6 @@ public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
         super.afterExecuteReport();
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (25.02.2003 10:18:15)
-     */
     @Override
     public void beforeBuildReport() {
         try {
@@ -287,7 +255,7 @@ public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
             super.setParametres(CPIListeCommunicationRetourParam.PARAM_REV_R, communication.getRevenuR());
             super.setParametres(CPIListeCommunicationRetourParam.PARAM_REV_NA, communication.getRevenuNA());
             super.setParametres(CPIListeCommunicationRetourParam.PARAM_REV_A, communication.getRevenuA());
-            if (communication.getJournalRetour().getCodeCanton().equalsIgnoreCase("SE")) {
+            if ("SE".equalsIgnoreCase(communication.getJournalRetour().getCodeCanton())) {
                 super.setParametres(CPIListeCommunicationRetourParam.PARAM_CAPITAL_ENTREPRISE, JANumberFormatter.fmt(
                         JANumberFormatter.deQuote(communication.getCapitalEntreprise()), true, false, false, 0));
             } else {
@@ -604,30 +572,10 @@ public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
             manager.setForStatus(getForStatus());
             manager.setForImpression(Boolean.TRUE);
             manager.setForWantMiseEnGed(getWantMiseEnGEd());
-            if ("ORDER_BY_CONTRIBUABLE".equals(getTri())) {
-                manager.orderByNumContribuable();
-                manager.orderByNumContribuableCjt();
-                manager.orderByNumIFD();
-            } else if ("ORDER_BY_GTAXATION".equals(getTri())) {
-                manager.orderByTaxation();
-                manager.orderByNumIFD();
-            } else if ("ORDER_BY_AFFILIE".equals(getTri())) {
-                manager.orderByNumAffilie();
-                manager.orderByNumAffilieCjt();
-                manager.orderByNumIFD();
-            } else if ("ORDER_BY_IFD".equals(getTri())) {
-                manager.orderByNumIFD();
-                manager.orderByNumContribuable();
-                manager.orderByNumContribuableCjt();
-            } else if ("ORDER_BY_AVS".equals(getTri())) {
-                manager.orderByNumAvs();
-                manager.orderByNumAvsCjt();
-                manager.orderByNumIFD();
-            } else { // Défaut
-                manager.orderByNumContribuable();
-                manager.orderByNumContribuableCjt();
-                manager.orderByNumIFD();
-            }
+
+            // Détermine le tri voulu
+            determineOrderBy();
+
             // ---------------------
             // Chargement des labels
             // ---------------------
@@ -702,11 +650,7 @@ public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
                 setProgressScaleValue(1);
             }
             statement = manager.cursorOpen(getTransaction());
-            if (nbCommunication == 0) {
-                // getMemoryLog().logMessage(getSession().getLabel("CP_MSG_0151"),
-                // globaz.framework.util.FWMessage.INFORMATION,
-                // getClass().getName());
-            }
+
         } catch (Exception e) {
             this._addError("false");
             getMemoryLog().logMessage(e.getMessage(), FWMessage.FATAL, this.getClass().getName());
@@ -724,21 +668,40 @@ public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
                     getMemoryLog().logMessage(g.getMessage(), FWMessage.FATAL, this.getClass().getName());
                 }
             }
-        } finally {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.framework.printing.itext.api.FWIDocumentInterface#beforePrintDocument ()
-     */
+    private void determineOrderBy() {
+        if ("ORDER_BY_CONTRIBUABLE".equals(getTri())) {
+            manager.orderByNumContribuable();
+            manager.orderByNumContribuableCjt();
+            manager.orderByNumIFD();
+        } else if ("ORDER_BY_GTAXATION".equals(getTri())) {
+            manager.orderByTaxation();
+            manager.orderByNumIFD();
+        } else if ("ORDER_BY_AFFILIE".equals(getTri())) {
+            manager.orderByNumAffilie();
+            manager.orderByNumAffilieCjt();
+            manager.orderByNumIFD();
+        } else if ("ORDER_BY_IFD".equals(getTri())) {
+            manager.orderByNumIFD();
+            manager.orderByNumContribuable();
+            manager.orderByNumContribuableCjt();
+        } else if ("ORDER_BY_AVS".equals(getTri())) {
+            manager.orderByNumAvs();
+            manager.orderByNumAvsCjt();
+            manager.orderByNumIFD();
+        } else { // Défaut
+            manager.orderByNumContribuable();
+            manager.orderByNumContribuableCjt();
+            manager.orderByNumIFD();
+        }
+    }
+
     @Override
     public boolean beforePrintDocument() {
         if ((size() == 0) || isAborted()) {
-            // getMemoryLog().logMessage(getSession().getLabel("CP_MSG_0151"),
-            // globaz.framework.util.FWMessage.INFORMATION,
-            // getClass().getName());
+
             // Permet l'affichage des données du processus
             setState(Constante.FWPROCESS_MGS_220);
             return false;
@@ -748,17 +711,12 @@ public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
         }
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (30.04.2003 14:07:16)
-     */
     @Override
     public void createDataSource() {
         try {
-            // CPApplication phenixApplication =
-            // (globaz.phenix.application.CPApplication)
-            // getSession().getApplication();
+
             super.setTemplateFile("PHENIX_VALIDATION_RETOUR_FISC");
-            // setDocumentTitle(entity.getNumffiliationTiers());
+
             if ("ORDER_BY_CONTRIBUABLE".equalsIgnoreCase(getTri())) {
                 setDocumentTitle(communication.getDescription(1) + " - " + entity.getAnnee1());
             } else if ("ORDER_BY_AFFILIE".equalsIgnoreCase(getTri()) || "ORDER_BY_GTAXATION".equalsIgnoreCase(getTri())) {
@@ -893,9 +851,6 @@ public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
         return tillNumAffilie;
     }
 
-    /**
-     * @return the traitementUnitaire
-     */
     public String getTraitementUnitaire() {
         return traitementUnitaire;
     }
@@ -908,9 +863,6 @@ public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
         return wantMiseEnGEd;
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#jobQueue()
-     */
     @Override
     public GlobazJobQueue jobQueue() {
         return GlobazJobQueue.READ_LONG;
@@ -957,13 +909,13 @@ public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
                 // On en prend que 10
                 int nbLogs = 10;
                 logs = "";
-                CPLienCommunicationsPlausiManager manager = new CPLienCommunicationsPlausiManager();
-                manager.setSession(getSession());
-                manager.setForIdCommunication(communication.getIdRetour());
-                manager.find();
-                for (int i = 0; i < manager.size(); i++) {
+                CPLienCommunicationsPlausiManager plausiManager = new CPLienCommunicationsPlausiManager();
+                plausiManager.setSession(getSession());
+                plausiManager.setForIdCommunication(communication.getIdRetour());
+                plausiManager.find();
+                for (int i = 0; i < plausiManager.size(); i++) {
                     if (nbLogs-- > 0) {
-                        CPLienCommunicationsPlausi lien = (CPLienCommunicationsPlausi) manager.get(i);
+                        CPLienCommunicationsPlausi lien = (CPLienCommunicationsPlausi) plausiManager.get(i);
                         // On va rechercher le message
                         CPParametrePlausibilite plausi = new CPParametrePlausibilite();
                         plausi.setSession(getSession());
@@ -994,9 +946,6 @@ public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
         return false;
     }
 
-    /*
-     * Insertion des infos pour la publication (GED)
-     */
     public void setDocumentInfo() throws FWIException {
         try {
             getDocumentInfo().setDocumentProperty(CTDocumentInfoHelper.TYPE_DOCUMENT_ID,
@@ -1124,9 +1073,6 @@ public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
         this.tri = tri;
     }
 
-    /**
-     * @param traitementUnitaire the traitementUnitaire to set
-     */
     public void setTraitementUnitaire(String traitementUnitaire) {
         this.traitementUnitaire = traitementUnitaire;
     }

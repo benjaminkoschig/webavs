@@ -1,9 +1,3 @@
-/*
- * Créé le 8 mai 06
- * 
- * Pour changer le modèle de ce fichier généré, allez à : Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code
- * et commentaires
- */
 package globaz.phenix.interfaces;
 
 import globaz.globall.api.BITransaction;
@@ -12,12 +6,6 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 
-/**
- * @author hna
- * 
- *         Pour changer le modèle de ce commentaire de type généré, allez à :
- *         Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code et commentaires
- */
 public interface ICommunicationrRetourManager {
     public abstract void cursorClose(BStatement statement) throws Exception;
 

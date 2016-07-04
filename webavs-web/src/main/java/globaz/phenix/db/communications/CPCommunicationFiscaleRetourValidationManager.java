@@ -6,9 +6,7 @@ import globaz.jade.client.util.JadeStringUtil;
 
 public class CPCommunicationFiscaleRetourValidationManager extends CPCommunicationFiscaleRetourManager implements
         java.io.Serializable {
-    /**
-     * 
-     */
+
     private static final long serialVersionUID = 1L;
     private String exceptGrpTaxation = "";
     private String forGrpExtraction = "";
@@ -67,6 +65,8 @@ public class CPCommunicationFiscaleRetourValidationManager extends CPCommunicati
                 + "CPVCCOP.ILIDEP)";
         from += " LEFT OUTER JOIN " + _getCollection() + table5 + " " + alias5 + " ON (" + alias5 + ".IAIDEC="
                 + "CPVCCOP.ILIDEP)";
+        from += " LEFT OUTER JOIN " + _getCollection() + "CPSECON CPSECON ON (CPSECON.IKIRET=CPCRETP.IKIRET)";
+
         return from;
     }
 
@@ -204,9 +204,6 @@ public class CPCommunicationFiscaleRetourValidationManager extends CPCommunicati
         return sqlWhere;
     }
 
-    /**
-     * new entity
-     */
     @Override
     protected globaz.globall.db.BEntity _newEntity() throws Exception {
         return new CPCommunicationFiscaleRetourValidation();
@@ -264,9 +261,6 @@ public class CPCommunicationFiscaleRetourValidationManager extends CPCommunicati
         return isDevalidation;
     }
 
-    /**
-     * @return
-     */
     @Override
     public java.lang.String getOrderBy() {
         return orderBy;
@@ -281,6 +275,15 @@ public class CPCommunicationFiscaleRetourValidationManager extends CPCommunicati
             setOrderBy("ILGPEV ASC, IKLTRI ASC");
         } else {
             setOrderBy(getOrderBy() + ", ILGPEV ASC, IKLTRI ASC");
+        }
+    }
+
+    @Override
+    public void orderByNumAvs() {
+        if (JadeStringUtil.isEmpty(getOrderBy())) {
+            setOrderBy("CPSECON.SEVNAVS ASC");
+        } else {
+            setOrderBy(getOrderBy() + ", CPSECON.SEVNAVS ASC");
         }
     }
 
@@ -356,9 +359,6 @@ public class CPCommunicationFiscaleRetourValidationManager extends CPCommunicati
         this.isDevalidation = isDevalidation;
     }
 
-    /**
-     * @param string
-     */
     @Override
     public void setOrderBy(java.lang.String string) {
         orderBy = string;
