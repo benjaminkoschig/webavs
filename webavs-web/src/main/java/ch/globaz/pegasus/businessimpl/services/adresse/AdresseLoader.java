@@ -92,9 +92,8 @@ public class AdresseLoader {
                 TIAdresseLoaderManager mgr = new TIAdresseLoaderManager();
                 mgr.setForIdsTiers(ids);
                 mgr.setOrderBy("tiersHTLDU1, tiersHTLDU2");
-                mgr.changeManagerSize(BManager.SIZE_NOLIMIT);
                 mgr.setForDateEntreDebutEtFin(JACalendar.todayJJsMMsAAAA());
-                mgr.find();
+                mgr.find(BManager.SIZE_NOLIMIT);
                 for (int j = 0; j < mgr.size(); j++) {
                     TIAbstractAdresseData entityData = (TIAbstractAdresseData) mgr.getEntity(j);
                     String idTiers = entityData.getIdTiers();
