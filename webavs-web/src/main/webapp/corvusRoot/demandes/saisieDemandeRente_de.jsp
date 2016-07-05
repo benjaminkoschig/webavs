@@ -191,6 +191,7 @@
 		document.getElementById("csNationaliteRequerantAffiche").disabled = true;
 		document.getElementById("csCantonDomicileRequerantAffiche").disabled = true;
 		document.getElementById("csEtat").disabled = true;
+		
 <%
 	if (!JadeStringUtil.isEmpty(viewBean.getIdDemandeRente())) {
 %>		document.getElementById("csTypeDemandeRente").disabled = true;
@@ -210,6 +211,15 @@
 		} else {
 			document.getElementById("isAccuseDeReception").disabled = true;
 		}
+		//K151030_003
+		if(document.forms[0].elements('_method').value == "upd" ||
+				document.forms[0].elements('_method').value == "add"){
+			document.getElementById("addPeriodeInvButton").disabled = false;
+			document.getElementById("boutonAjpouterPeriode").disabled = false;
+		}else{
+			document.getElementById("addPeriodeInvButton").disabled = true;
+			document.getElementById("boutonAjpouterPeriode").disabled = true;
+		}
 	}
 
 	function add() {
@@ -226,6 +236,9 @@
 		nssUpdateHiddenFields();
 		document.forms[0].elements('userAction').value = "<%=IREActions.ACTION_SAISIE_DEMANDE_RENTE%>.ajouterSaisieDemandeRente";
 
+		document.getElementById("addPeriodeInvButton").disabled = false;
+		document.getElementById("boutonAjpouterPeriode").disabled = false;
+		
 		document.getElementById("nomRequerantAffiche").disabled = true;
 		document.getElementById("prenomRequerantAffiche").disabled = true;
 		document.getElementById("csSexeRequerantAffiche").disabled = true;
@@ -1336,7 +1349,7 @@
 							<td>
 								<% if(hasRight){ %>
 								<input 	type="button" 
-										name="" 
+										name="addPeriodeInvButton" 
 										value="<ct:FWLabel key="JSP_AJOUTER" />" 
 										onclick="addPeriodeInv()" />
 										<% } %>
