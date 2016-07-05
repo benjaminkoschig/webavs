@@ -846,6 +846,12 @@ public class GECreationMiseajourDonnees {
             avoirAdresseEtude = tiers.findAvoirAdresse(IConstantes.CS_AVOIR_ADRESSE_COURRIER,
                     ICommonConstantes.CS_APPLICATION_COTISATION, "01.01." + annee);
 
+            // K141201_006
+            // Pyxis fait le fallback sur Domicile si Courrier est null, on ne veux pas de ce comportement
+            if (!avoirAdresseEtude.getTypeAdresse().equalsIgnoreCase(IConstantes.CS_AVOIR_ADRESSE_COURRIER)) {
+                avoirAdresseEtude = null;
+                return null;
+            }
             return avoirAdresseEtude;
         } else {
             return null;
