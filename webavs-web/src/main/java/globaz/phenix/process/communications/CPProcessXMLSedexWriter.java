@@ -27,15 +27,11 @@ import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <H1>Description</H1>
  * 
  * @author MAR
- *         <p>
- *         Cette classe écrit un fichier ASCII avec des informations sur des contribuables pour différents cantons
- *         </p>
  */
 
 public class CPProcessXMLSedexWriter extends BProcess {
@@ -43,80 +39,51 @@ public class CPProcessXMLSedexWriter extends BProcess {
     private static final long serialVersionUID = 7406014631735455424L;
 
     public static final int CS_ALLEMAND = 503002;
-
-    // private long progressCounter = -1;
-    // initialisation pour CS langue tiers (TITIERS)
     public static final int CS_FRANCAIS = 503001;
     public static final int CS_ITALIEN = 503004;
     public static final String NUMERO_CAISSE = "NUMEROCAISSE";
 
-    private static TIAdministrationViewBean rechercheCaisse(BSession session) {
-        try {
-            TIAdministrationManager tiAdminCaisseMgr = new TIAdministrationManager();
-            tiAdminCaisseMgr.setSession(session);
-            tiAdminCaisseMgr.setForCodeAdministration(CaisseHelperFactory.getInstance().getNoCaisseFormatee(
-                    session.getApplication()));
-            tiAdminCaisseMgr.setForGenreAdministration(CaisseHelperFactory.CS_CAISSE_COMPENSATION);
-            tiAdminCaisseMgr.find();
-
-            TIAdministrationViewBean tiAdminCaisse = (TIAdministrationViewBean) tiAdminCaisseMgr.getFirstEntity();
-
-            if (tiAdminCaisse != null) {
-                return tiAdminCaisse;
-            }
-            return null;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     private String anneeDecision = "";
     private boolean auMoinsUneErreur = false;
-    // private BStatement statement = null;
     private CPCommunicationFiscaleAffichageManager communicationFiscaleManager = null;
     private String dateEnvoi = "";
     private Boolean dateEnvoiVide = new Boolean(false);
     private Boolean demandeAnnulee = new Boolean(false);
     private Boolean donneesCommerciales = new Boolean(false);
     private Boolean donneesPrivees = new Boolean(false);
-    // Informations concernant l'envoi iméédiat
     private Boolean envoiImmediat = new Boolean(false);
     private boolean envoiIndividuel = false;
 
     private String forCanton = "";
-
     private String forGenreAffilie = "";
-
     private String idCommunication = "";
-
     private String idIfd = "";
-
     private Boolean lifd = new Boolean(false);
-
     private int nbCommunication = 0;
-
     private String numAffilie = "";
-
     private boolean sendMail = true;
-
     private Boolean withAnneeEnCours = new Boolean(false);
 
     /**
-	 * 
-	 */
+     * Constructeur par defaut.
+     */
     public CPProcessXMLSedexWriter() {
         super();
     }
 
     /**
-     * @param parent
+     * Constructeur defini.
+     * 
+     * @param parent process.
      */
     public CPProcessXMLSedexWriter(BProcess parent) {
         super(parent);
     }
 
     /**
-     * @param session
+     * Constructeur defini..
+     * 
+     * @param session Session.
      */
     public CPProcessXMLSedexWriter(BSession session) {
         super(session);
@@ -124,13 +91,8 @@ public class CPProcessXMLSedexWriter extends BProcess {
 
     @Override
     protected void _executeCleanUp() {
-        /*
-         * if ((this.getTransaction() != null) && (this.getTransaction().isOpened())) { try {
-         * this.getTransaction().closeTransaction(); } catch (Exception e) { JadeLogger.error(this, e); } }
-         */
         setState(Constante.FWPROCESS_MGS_220);
     }
-
 
     @Override
     protected boolean _executeProcess() {
@@ -138,7 +100,7 @@ public class CPProcessXMLSedexWriter extends BProcess {
         // initialisation des variable du processus
         initializeVariableProcess();
 
-        if (JadeStringUtil.isEmpty(getIdCommunication()) == false) {
+        if (!JadeStringUtil.isEmpty(getIdCommunication())) {
             // Cas où on fait de l'individuel depuis la gestion des demandes, on va rechercher la communication
             try {
                 CPCommunicationFiscaleAffichageManager commMng = new CPCommunicationFiscaleAffichageManager();
@@ -146,6 +108,7 @@ public class CPProcessXMLSedexWriter extends BProcess {
                 commMng.setForIdCommunication(getIdCommunication());
                 commMng.setWithAnneeEnCours(Boolean.TRUE);
                 commMng.find();
+
                 if (commMng.size() == 1) {
                     CPCommunicationFiscaleAffichage comm = (CPCommunicationFiscaleAffichage) commMng.getFirstEntity();
                     // Génération du fichier Sedex pour un envoi individuelle - Format XML
@@ -190,22 +153,32 @@ public class CPProcessXMLSedexWriter extends BProcess {
             _addError(getTransaction(), getSession().getLabel("CP_ENVOI_SEDEX"));
         }
 
-        if (IConstantes.CS_LOCALITE_CANTON_GENEVE.equalsIgnoreCase(getForCanton())) {
-            if (JadeStringUtil.isEmpty(getAnneeDecision())) {
-                // _addError(getTransaction(),
-                // "L'année est obligatoire pour le canton " +
-                // CodeSystem.getLibelle(getSession(), getForCanton()) + ". ");
-            }
+        // demande annulé, autorisé seulement pour GE et VD
+        if (Boolean.TRUE.equals(getDemandeAnnulee())
+                && !IConstantes.CS_LOCALITE_CANTON_GENEVE.equalsIgnoreCase(getForCanton())
+                && !IConstantes.CS_LOCALITE_CANTON_VAUD.equalsIgnoreCase(getForCanton())) {
+            this._addError(getTransaction(), getSession().getLabel("CP_MSG_0144"));
         }
-        // denamnde annulé, autorisé seulement pour GE et VD
-        if (Boolean.TRUE.equals(getDemandeAnnulee())) {
-            if (!IConstantes.CS_LOCALITE_CANTON_GENEVE.equalsIgnoreCase(getForCanton())
-                    && !IConstantes.CS_LOCALITE_CANTON_VAUD.equalsIgnoreCase(getForCanton())) {
-                this._addError(getTransaction(), getSession().getLabel("CP_MSG_0144"));
-            }
-        }
-        // setControleTransaction(true);
+    }
 
+    private static TIAdministrationViewBean rechercheCaisse(BSession session) {
+        try {
+            TIAdministrationManager tiAdminCaisseMgr = new TIAdministrationManager();
+            tiAdminCaisseMgr.setSession(session);
+            tiAdminCaisseMgr.setForCodeAdministration(CaisseHelperFactory.getInstance().getNoCaisseFormatee(
+                    session.getApplication()));
+            tiAdminCaisseMgr.setForGenreAdministration(CaisseHelperFactory.CS_CAISSE_COMPENSATION);
+            tiAdminCaisseMgr.find();
+
+            TIAdministrationViewBean tiAdminCaisse = (TIAdministrationViewBean) tiAdminCaisseMgr.getFirstEntity();
+
+            if (tiAdminCaisse != null) {
+                return tiAdminCaisse;
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     protected int caclulNumberOfFile(int nombreMaxParFichierEnvoi) {
@@ -221,16 +194,15 @@ public class CPProcessXMLSedexWriter extends BProcess {
         try {
             return ((CPApplication) getSession().getApplication()).nombreMaxEnvoiSedex();
         } catch (Exception e1) {
+            JadeLogger.warn(e1, e1.getMessage());
             return 250;
         }
     }
 
-    protected void genarateListExcelLCommunicationEnvoye(ArrayList<String> communicationEnErreur,
-            List<String> tempBuffer) throws Exception {
+    protected void genarateListExcelLCommunicationEnvoye(ArrayList<String> communicationEnErreur) throws Exception {
         // On créé la liste des envois produit
         CPListeCommunicationEnvoiProcess process = new CPListeCommunicationEnvoiProcess();
         process.setMemoryLog(getMemoryLog());
-        process.setErrors(tempBuffer);
         process.setSession(getSession());
         process.setAnnee(communicationFiscaleManager.getForAnneeDecision());
         process.setGenre(forGenreAffilie);
@@ -238,7 +210,7 @@ public class CPProcessXMLSedexWriter extends BProcess {
         process.setManager(communicationFiscaleManager);
         process.setEMailAddress(getEMailAddress());
         process.setParent(this);
-        if (communicationEnErreur.isEmpty() == false) {
+        if (!communicationEnErreur.isEmpty()) {
             // On passe les communications en erreurs pour ne pas les lister
             process.setCommunicationEnErreur(communicationEnErreur);
         }
@@ -265,7 +237,7 @@ public class CPProcessXMLSedexWriter extends BProcess {
         BTransaction managedTransaction = null;
         SedexResult sedexResult = null;
         // Chaque itération représente un lot de communication à traiter
-        for (int i = 0; (i < nombreIterations) && (isAborted() == false); i++) {
+        for (int i = 0; (i < nombreIterations) && (!isAborted()); i++) {
 
             // Création de la nouvelle transaction pour le lot courant
             managedTransaction = (BTransaction) getSession().newTransaction();
@@ -275,7 +247,7 @@ public class CPProcessXMLSedexWriter extends BProcess {
 
             if (nbCommunication >= (i + 1) * nombreMaxParFichierEnvoi) {
                 debutATraiter = i * nombreMaxParFichierEnvoi;
-                finATraiter = ((i + 1) * nombreMaxParFichierEnvoi);
+                finATraiter = (i + 1) * nombreMaxParFichierEnvoi;
             } else {
                 debutATraiter = i * nombreMaxParFichierEnvoi;
                 finATraiter = nbCommunication;
@@ -311,7 +283,7 @@ public class CPProcessXMLSedexWriter extends BProcess {
                 // Gestion des warning/informations non bloquants dans le mail pour ce lot
                 if (sedexResult.hasWarnings()) {
                     String msg = getSession().getLabel("WARNING_REMONTE_DANS_LOT_COMMUNICATION");
-                    msg = msg.replace("{0}", String.valueOf((i + 1)));
+                    msg = msg.replace("{0}", String.valueOf(i + 1));
                     msg = msg.replace("{1}", String.valueOf(nombreIterations));
                     msg = msg.replace("{2}", String.valueOf(debutATraiter));
                     msg = msg.replace("{3}", String.valueOf(finATraiter));
@@ -364,8 +336,7 @@ public class CPProcessXMLSedexWriter extends BProcess {
                     globaz.framework.util.FWMessage.INFORMATION, "");
         }
         // Génération de la liste excel des communications envoyées
-        List<String> tempBuffer = new ArrayList<String>();
-        genarateListExcelLCommunicationEnvoye(fichier.getCommunicationEnErreur(), tempBuffer);
+        genarateListExcelLCommunicationEnvoye(fichier.getCommunicationEnErreur());
 
         getMemoryLog().clear();
     }
@@ -380,16 +351,18 @@ public class CPProcessXMLSedexWriter extends BProcess {
         fichier.setDonneesCommerciales(getDonneesCommerciales().booleanValue());
         fichier.setDonneesPrivees(getDonneesPrivees().booleanValue());
         fichier.setLifd(getLifd().booleanValue());
+
         // Création du fichier XML
-        String error = "";
+        String error;
         if (JadeStringUtil.isBlankOrZero(communication.getCanton())
                 || IConstantes.CS_LOCALITE_ETRANGER.equalsIgnoreCase(communication.getCanton())) {
             error = getSession().getLabel("CP_MSG_0206");
         } else {
             error = fichier.createFileXMLSedex(transaction, communication).toString();
         }
+
         if (!JadeStringUtil.isEmpty(error)) {
-            getMemoryLog().logMessage(error.toString(), globaz.framework.util.FWMessage.ERREUR, "");
+            getMemoryLog().logMessage(error, globaz.framework.util.FWMessage.ERREUR, "");
             transaction.addErrors("");
             auMoinsUneErreur = true;
         }

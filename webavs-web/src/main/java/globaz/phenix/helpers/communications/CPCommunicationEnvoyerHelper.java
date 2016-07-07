@@ -20,6 +20,9 @@ import globaz.phenix.process.communications.CPProcessXMLSedexWriter;
  */
 public class CPCommunicationEnvoyerHelper extends FWHelper {
 
+    /**
+     * Constructeur par defaut.
+     */
     public CPCommunicationEnvoyerHelper() {
         super();
     }
@@ -33,7 +36,7 @@ public class CPCommunicationEnvoyerHelper extends FWHelper {
     protected void _start(FWViewBeanInterface viewBean, FWAction action, BISession session) {
         CPCommunicationEnvoyerViewBean vb = (CPCommunicationEnvoyerViewBean) viewBean;
         try {
-            if (!JadeStringUtil.isNull(vb.getThroughSedex()) && vb.getThroughSedex().equalsIgnoreCase("on")) {
+            if (!JadeStringUtil.isNull(vb.getThroughSedex()) && "on".equalsIgnoreCase(vb.getThroughSedex())) {
                 CPProcessXMLSedexWriter process = new CPProcessXMLSedexWriter();
                 process.setEMailAddress(vb.getEMailAddress());
                 process.setForGenreAffilie(vb.getGenreAffilie());
@@ -65,7 +68,7 @@ public class CPCommunicationEnvoyerHelper extends FWHelper {
                 BProcessLauncher.start(process);
             }
         } catch (Exception e) {
-            JadeLogger.warn(this, e.toString());
+            JadeLogger.warn(this, e);
         }
     }
 }

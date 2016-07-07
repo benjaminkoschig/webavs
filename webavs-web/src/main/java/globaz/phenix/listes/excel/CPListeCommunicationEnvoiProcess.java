@@ -4,7 +4,6 @@ import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
-import globaz.hercule.exception.HerculeException;
 import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.phenix.application.CPApplication;
@@ -13,6 +12,12 @@ import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Liste des communications fiscales en envois.
+ * 
+ * @author dcl
+ * 
+ */
 public class CPListeCommunicationEnvoiProcess extends BProcess implements FWViewBeanInterface {
 
     /**
@@ -21,17 +26,18 @@ public class CPListeCommunicationEnvoiProcess extends BProcess implements FWView
     private static final long serialVersionUID = 1L;
 
     // Constantes
-    public final static String MODEL_NAME = "communicationEnvoi.xml";
+    public static final String MODEL_NAME = "communicationEnvoi.xml";
 
-    public final static String NUMERO_INFOROM = "";
+    public static final String NUMERO_INFOROM = "";
     private String annee = "";
     private String canton = "";
-    public ArrayList<String> communicationEnErreur = new ArrayList<String>();
-    List<String> errorBuffer = null;
+    private List<String> communicationEnErreur = new ArrayList<String>();
     private String genre = "";
     CPCommunicationFiscaleAffichageManager manager;
 
-    // Constructeur
+    /**
+     * COnstructeur par defaut.
+     */
     public CPListeCommunicationEnvoiProcess() {
         super();
     }
@@ -41,15 +47,15 @@ public class CPListeCommunicationEnvoiProcess extends BProcess implements FWView
      */
     @Override
     protected void _executeCleanUp() {
+        // Nothing to do
     }
 
     /**
      * @see globaz.globall.db.BProcess#_executeProcess()
      */
     @Override
-    protected boolean _executeProcess() throws HerculeException, Exception {
+    protected boolean _executeProcess() throws Exception {
 
-        // this.manager.find();
         if (manager.size() >= 1) {
             return createDocument(manager);
         }
@@ -69,8 +75,7 @@ public class CPListeCommunicationEnvoiProcess extends BProcess implements FWView
         setSendMailOnError(true);
     }
 
-    private boolean createDocument(CPCommunicationFiscaleAffichageManager manager) throws HerculeException, Exception {
-        // manager.find(BManager.SIZE_NOLIMIT);
+    private boolean createDocument(CPCommunicationFiscaleAffichageManager manager) throws Exception {
         setProgressScaleValue(manager.size());
         CommonExcelmlContainer container = CPXmlmlMappingCommunicationEnvoiProcess.loadResults(manager, this);
 
@@ -102,7 +107,7 @@ public class CPListeCommunicationEnvoiProcess extends BProcess implements FWView
         return canton;
     }
 
-    public ArrayList<String> getCommunicationEnErreur() {
+    public List<String> getCommunicationEnErreur() {
         return communicationEnErreur;
     }
 
@@ -129,9 +134,9 @@ public class CPListeCommunicationEnvoiProcess extends BProcess implements FWView
     @Override
     public String getSubjectDetail() {
         StringBuilder builder = new StringBuilder();
-        String canton = JadeCodesSystemsUtil.getCodeLibelle(getSession(), getCanton());
+        String cantonString = JadeCodesSystemsUtil.getCodeLibelle(getSession(), getCanton());
         builder.append(getSession().getLabel("LISTE_COMM_FISC_CANTON"));
-        builder.append(canton);
+        builder.append(cantonString);
         builder.append("\n");
         for (Object s : getMemoryLog().getMessagesToVector()) {
             builder.append(((FWMessage) s).getMessageText());
@@ -156,13 +161,8 @@ public class CPListeCommunicationEnvoiProcess extends BProcess implements FWView
         this.canton = canton;
     }
 
-    public void setCommunicationEnErreur(ArrayList<String> communicationEnErreur) {
+    public void setCommunicationEnErreur(List<String> communicationEnErreur) {
         this.communicationEnErreur = communicationEnErreur;
-    }
-
-    public void setErrors(List<String> _errorBuffer) {
-        errorBuffer = _errorBuffer;
-
     }
 
     public void setGenre(String genre) {
