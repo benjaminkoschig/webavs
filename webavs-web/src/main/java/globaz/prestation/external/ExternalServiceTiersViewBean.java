@@ -42,7 +42,6 @@ import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.db.tiers.TITiersViewBean;
 import java.util.HashMap;
 import java.util.Map;
-import javassist.tools.rmi.ObjectNotFoundException;
 
 /**
  * @author HPE
@@ -811,12 +810,12 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
         return hasConditions;
     }
 
-    private String getMoisPaiement(BSession session) throws ObjectNotFoundException {
+    private String getMoisPaiement(BSession session) throws IllegalArgumentException {
         String moisPaiement = REPmtMensuel.getDateDernierPmt(session);
 
         if (REPmtMensuel.DATE_NON_TROUVEE_POUR_DERNIER_PAIEMENT.equals(moisPaiement)) {
             String message = session.getLabel("ERREUR_IMPOSSIBLE_RETROUVER_DATE_DERNIER_PAIEMENT");
-            throw new ObjectNotFoundException(message);
+            throw new IllegalArgumentException(message);
         }
 
         return moisPaiement;
