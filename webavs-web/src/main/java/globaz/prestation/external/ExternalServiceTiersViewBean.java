@@ -810,7 +810,7 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
         return hasConditions;
     }
 
-    private String getMoisPaiement(BSession session) throws IllegalArgumentException {
+    private String getMoisPaiement(BSession session) {
         String moisPaiement = REPmtMensuel.getDateDernierPmt(session);
 
         if (REPmtMensuel.DATE_NON_TROUVEE_POUR_DERNIER_PAIEMENT.equals(moisPaiement)) {
