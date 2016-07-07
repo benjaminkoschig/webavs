@@ -5,18 +5,27 @@
 package globaz.prestation.external;
 
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
+import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.application.REApplication;
+import globaz.corvus.db.demandes.REDemandeRenteJointDemande;
+import globaz.corvus.db.demandes.REDemandeRenteJointDemandeManager;
 import globaz.corvus.db.rentesaccordees.REPrestationAccordeeManager;
+import globaz.corvus.utils.REPmtMensuel;
 import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BAbstractEntityExternalService;
 import globaz.globall.db.BEntity;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.prof.JadeProfiler;
 import globaz.prestation.acor.PRACORConst;
+import globaz.prestation.beans.PRTiersDateTime;
 import globaz.prestation.db.demandes.PRDemandeManager;
+import globaz.prestation.db.infos.PRInfoCompl;
 import globaz.prestation.enums.codeprestation.type.PRCodePrestationAPI;
 import globaz.prestation.process.PRGenererModificationsTiersProcess;
 import globaz.prestation.process.TypeModificationsTiers;
@@ -32,6 +41,8 @@ import globaz.pyxis.db.adressecourrier.TIPays;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.db.tiers.TITiersViewBean;
 import java.util.HashMap;
+import java.util.Map;
+import javassist.NotFoundException;
 
 /**
  * @author HPE
@@ -42,7 +53,10 @@ import java.util.HashMap;
  */
 public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService {
 
-    private static String TIERS_AVANT_MODIFICATION = "ExternalServiceTiersViewBean_TiersAvantModification";
+    private static final String SEXE_HOMME_MODIFICATION_TIERS = "SEXE_HOMME_MODIFICATION_TIERS";
+    private static final String SEXE_FEMME_MODIFICATION_TIERS = "SEXE_FEMME_MODIFICATION_TIERS";
+    private static final String ALREADY_SENT_A_MAIL_FOR_TIERS = "alreadySentAMailForTiers";
+    private static final String TIERS_AVANT_MODIFICATION = "ExternalServiceTiersViewBean_TiersAvantModification";
 
     /**
      * Constructeur du type ExternalServiceTiersViewBean.
@@ -84,7 +98,7 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
                     typeModification = TypeModificationsTiers.MODIFICATION_ADRESSE;
                 }
 
-                TIAdresse nouvelleAdresse = null;
+                TIAdresse nouvelleAdresse;
                 if (entity instanceof TIAvoirAdresseViewBean) {
                     nouvelleAdresse = loadAdresse(sessionTiers, ((TIAvoirAdresseViewBean) entity).getIdAdresse());
                 } else {
@@ -95,7 +109,7 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
                 TILocalite nouvelleLocalite = loadLocalite(sessionTiers, nouvelleAdresse.getIdLocalite());
 
                 AdresseModificationsHandler modificationsAdresse = checkModificationAdresse(ancienneAdresse,
-                        nouvelleAdresse, ancienneLocalite, nouvelleLocalite, entity.getSession());
+                        nouvelleAdresse, ancienneLocalite, nouvelleLocalite);
 
                 if (modificationsAdresse.hasModifications()) {
                     BSession sessionCorvus = getSessionCorvus();
@@ -125,16 +139,42 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
                     process.setDateModification(JACalendar.todayJJsMMsAAAA());
                     process.setHeureModification(JACalendar.formatTime(JACalendar.now()));
 
-                    String idGroupe = sessionCorvus.getApplication().getProperty(
-                            REApplication.PROPERTY_GROUPE_COMMUNICATION_OAI_MODIFICATION_ADRESSE_TIERS);
+                    Map<String, PRTiersDateTime> mapsTiers = (Map<String, PRTiersDateTime>) entity.getSession()
+                            .getAttribute(ALREADY_SENT_A_MAIL_FOR_TIERS);
 
-                    process.setIdGroupeNotification(idGroupe);
+                    PRTiersDateTime tiersDateTime = getTiersDateTime(entity, idTiers, mapsTiers);
+
+                    // Si pas d'id tiers dans cette session, c est que l'on n'a pas fait de traitement dans
+                    // l'updateTiers ou qu'il s'est déjà passé plus de quelques secondes, alors nous pouvons envoyé un
+                    // mail de modification
+                    if (tiersDateTime == null || !tiersDateTime.isDateBetween0To5Seconds(JadeDateUtil.getCurrentTime())) {
+                        String idGroupe = sessionCorvus.getApplication().getProperty(
+                                REApplication.PROPERTY_GROUPE_COMMUNICATION_OAI_MODIFICATION_ADRESSE_TIERS);
+                        process.setIdGroupeNotification(idGroupe);
+
+                        setAttributeForMailSent(entity, tiersViewBean);
+                    }
 
                     entity.getSession().removeAttribute(ExternalServiceTiersViewBean.TIERS_AVANT_MODIFICATION);
                     process.start();
                 }
             }
         }
+    }
+
+    private PRTiersDateTime getTiersDateTime(BEntity entity, String idTiers, Map<String, PRTiersDateTime> mapsTiers) {
+        PRTiersDateTime data = null;
+
+        if (mapsTiers != null) {
+            data = mapsTiers.get(idTiers);
+
+            if (data != null) {
+                mapsTiers.remove(data);
+                entity.getSession().setAttribute(ALREADY_SENT_A_MAIL_FOR_TIERS, mapsTiers);
+            }
+        }
+
+        return data;
     }
 
     private void initTiersDataAddressChanges(TITiersViewBean tiersViewBean, PRGenererModificationsTiersProcess process) {
@@ -166,11 +206,11 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
         process.setNewNationalite(tiersViewBean.getPays());
 
         if (PRACORConst.CS_HOMME.equals(tiersViewBean.getSexe())) {
-            process.setSexe("SEXE_HOMME_MODIFICATION_TIERS");
-            process.setNewSexe("SEXE_HOMME_MODIFICATION_TIERS");
+            process.setSexe(SEXE_HOMME_MODIFICATION_TIERS);
+            process.setNewSexe(SEXE_HOMME_MODIFICATION_TIERS);
         } else {
-            process.setSexe("SEXE_FEMME_MODIFICATION_TIERS");
-            process.setNewSexe("SEXE_FEMME_MODIFICATION_TIERS");
+            process.setSexe(SEXE_FEMME_MODIFICATION_TIERS);
+            process.setNewSexe(SEXE_FEMME_MODIFICATION_TIERS);
         }
 
         process.setDateNaissance(tiersViewBean.getDateNaissance());
@@ -181,7 +221,7 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
     }
 
     private AdresseModificationsHandler checkModificationAdresse(TIAdresse ancienneAdresse, TIAdresse nouvelleAdresse,
-            TILocalite ancienneLocalite, TILocalite nouvelleLocalite, BSession session) throws Exception {
+            TILocalite ancienneLocalite, TILocalite nouvelleLocalite) throws Exception {
 
         AdresseModificationsHandler modificationsAdresse = new AdresseModificationsHandler();
 
@@ -239,114 +279,124 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
     @Override
     public void afterDelete(BEntity entity) throws Throwable {
 
-        if (entity instanceof TIAvoirAdresseViewBean) {
+        if (entity instanceof TIAvoirAdresseViewBean
+                && hasTiersDemandeApiInvaliditeEnCours(entity.getSession(),
+                        ((TIAvoirAdresseViewBean) entity).getIdTiers())) {
 
-            if (hasTiersDemandeApiInvaliditeEnCours(entity.getSession(), ((TIAvoirAdresseViewBean) entity).getIdTiers())) {
-                BSession sessionTiers = entity.getSession();
+            BSession sessionTiers = entity.getSession();
 
-                TIAdresse ancienneAdresse = loadAdresse(sessionTiers, ((TIAvoirAdresseViewBean) entity).getIdAdresse());
-                TIAdresse nouvelleAdresse = new TIAdresse();
+            TIAdresse ancienneAdresse = loadAdresse(sessionTiers, ((TIAvoirAdresseViewBean) entity).getIdAdresse());
+            TIAdresse nouvelleAdresse = new TIAdresse();
 
-                TILocalite ancienneLocalite = loadLocalite(sessionTiers, ancienneAdresse.getIdLocalite());
-                TILocalite nouvelleLocalite = new TILocalite();
+            TILocalite ancienneLocalite = loadLocalite(sessionTiers, ancienneAdresse.getIdLocalite());
+            TILocalite nouvelleLocalite = new TILocalite();
 
-                AdresseModificationsHandler modificationsAdresse = checkModificationAdresse(ancienneAdresse,
-                        nouvelleAdresse, ancienneLocalite, nouvelleLocalite, entity.getSession());
+            AdresseModificationsHandler modificationsAdresse = checkModificationAdresse(ancienneAdresse,
+                    nouvelleAdresse, ancienneLocalite, nouvelleLocalite);
 
-                if (modificationsAdresse.hasModifications()) {
-                    BSession sessionCorvus = getSessionCorvus();
+            if (modificationsAdresse.hasModifications()) {
+                BSession sessionCorvus = getSessionCorvus();
 
-                    TITiersViewBean tiersViewBean = loadTiers(sessionTiers,
-                            ((TIAvoirAdresseViewBean) entity).getIdTiers());
+                TITiersViewBean tiersViewBean = loadTiers(sessionTiers, ((TIAvoirAdresseViewBean) entity).getIdTiers());
 
-                    PRGenererModificationsTiersProcess process = new PRGenererModificationsTiersProcess();
-                    process.setSession(sessionCorvus);
+                PRGenererModificationsTiersProcess process = new PRGenererModificationsTiersProcess();
+                process.setSession(sessionCorvus);
 
-                    initTiersDataAddressChanges(tiersViewBean, process);
+                initTiersDataAddressChanges(tiersViewBean, process);
 
-                    process.setIdCantonDomicile(ancienneLocalite.getIdCanton());
-                    process.setNewIdCantonDomicile(nouvelleLocalite.getIdCanton());
+                process.setIdCantonDomicile(ancienneLocalite.getIdCanton());
+                process.setNewIdCantonDomicile(nouvelleLocalite.getIdCanton());
 
-                    TIPays paysAncienneLocalite = loadPays(sessionTiers, ancienneLocalite.getIdPays());
-                    process.setPaysDomicile(paysAncienneLocalite);
+                TIPays paysAncienneLocalite = loadPays(sessionTiers, ancienneLocalite.getIdPays());
+                process.setPaysDomicile(paysAncienneLocalite);
 
-                    TIPays paysNouvelleLocalite = loadPays(sessionTiers, nouvelleLocalite.getIdPays());
-                    process.setNewPaysDomicile(paysNouvelleLocalite);
+                TIPays paysNouvelleLocalite = loadPays(sessionTiers, nouvelleLocalite.getIdPays());
+                process.setNewPaysDomicile(paysNouvelleLocalite);
 
-                    process.setContainerModificationAdresse(modificationsAdresse);
+                process.setContainerModificationAdresse(modificationsAdresse);
 
-                    process.setCommunicationOAI(true);
-                    process.setTypeModification(TypeModificationsTiers.SUPPRESSION_ADRESSE);
-                    process.setIdTier(tiersViewBean.getIdTiers());
-                    process.setUser(entity.getSession().getUserFullName());
-                    process.setDateModification(JACalendar.todayJJsMMsAAAA());
-                    process.setHeureModification(JACalendar.formatTime(JACalendar.now()));
+                process.setCommunicationOAI(true);
+                process.setTypeModification(TypeModificationsTiers.SUPPRESSION_ADRESSE);
+                process.setIdTier(tiersViewBean.getIdTiers());
+                process.setUser(entity.getSession().getUserFullName());
+                process.setDateModification(JACalendar.todayJJsMMsAAAA());
+                process.setHeureModification(JACalendar.formatTime(JACalendar.now()));
 
-                    String idGroupe = sessionCorvus.getApplication().getProperty(
-                            REApplication.PROPERTY_GROUPE_COMMUNICATION_OAI_MODIFICATION_ADRESSE_TIERS);
+                String idGroupe = sessionCorvus.getApplication().getProperty(
+                        REApplication.PROPERTY_GROUPE_COMMUNICATION_OAI_MODIFICATION_ADRESSE_TIERS);
 
-                    process.setIdGroupeNotification(idGroupe);
+                process.setIdGroupeNotification(idGroupe);
 
-                    entity.getSession().removeAttribute(ExternalServiceTiersViewBean.TIERS_AVANT_MODIFICATION);
-                    process.start();
-                }
+                entity.getSession().removeAttribute(ExternalServiceTiersViewBean.TIERS_AVANT_MODIFICATION);
+                process.start();
             }
         }
     }
 
     @Override
     public void afterRetrieve(BEntity arg0) throws Throwable {
+        // Nothing to do
     }
 
     @Override
     public void afterUpdate(BEntity entity) throws Throwable {
 
-        // on s'assure que l'on ait le on viewBean
-        if (entity instanceof TITiersViewBean) {
+        // on s'assure que l'on ait le on viewBean and if is personne physique
+        if (entity instanceof TITiersViewBean
+                && getTiersViewBeanAvantModification(entity.getSession()).getPersonnePhysique()) {
 
-            // if is personne physique
-            if (getTiersViewBeanAvantModification(entity.getSession()).getPersonnePhysique()) {
+            TITiersViewBean tiersViewBean = (TITiersViewBean) entity;
 
-                TITiersViewBean tiersViewBean = (TITiersViewBean) entity;
+            if (hasTiersDemandeEnCours(tiersViewBean.getSession(), tiersViewBean.getIdTiers())) {
 
-                if (hasTiersDemandeEnCours(tiersViewBean.getSession(), tiersViewBean.getIdTiers())) {
+                BSession sessionCorvus = getSessionCorvus();
 
-                    BSession sessionCorvus = getSessionCorvus();
+                TIPays ancienPays = getAncienPays(tiersViewBean.getSession());
+                TIPays nouveauPays = getNouveauPays(tiersViewBean.getSession(), tiersViewBean);
 
-                    TIPays ancienPays = getAncienPays(tiersViewBean.getSession());
-                    TIPays nouveauPays = getNouveauPays(tiersViewBean.getSession(), tiersViewBean);
+                HashMap<String, String> modificationsMap = initModificationMap(tiersViewBean, ancienPays.getIdPays(),
+                        nouveauPays.getIdPays());
 
-                    HashMap<String, String> modificationsMap = initModificationMap(tiersViewBean,
-                            ancienPays.getIdPays(), nouveauPays.getIdPays());
+                if (modificationsMap.size() > 0) {
 
-                    if (modificationsMap.size() > 0) {
+                    PRGenererModificationsTiersProcess process = initProcess(tiersViewBean, sessionCorvus, ancienPays,
+                            nouveauPays, modificationsMap);
 
-                        PRGenererModificationsTiersProcess process = initProcess(tiersViewBean, sessionCorvus,
-                                ancienPays, nouveauPays, modificationsMap);
+                    process.setTypeModification(TypeModificationsTiers.MODIFICATION_TIERS);
 
-                        process.setTypeModification(TypeModificationsTiers.MODIFICATION_TIERS);
+                    String idGroupe = sessionCorvus.getApplication().getProperty("groupeNotification");
+                    process.setIdGroupeNotification(idGroupe);
+                    process.setCommunicationOAI(false);
 
-                        String idGroupe = sessionCorvus.getApplication().getProperty("groupeNotification");
+                    entity.getSession().removeAttribute(ExternalServiceTiersViewBean.TIERS_AVANT_MODIFICATION);
+                    process.start();
+
+                    // Si le tiers modifié a une demande de type API/Invalidité en cours, on envois un mail à un
+                    // autre groupe de notification
+                    if (hasTiersDemandeApiInvaliditeEnCours(tiersViewBean.getSession(), tiersViewBean.getIdTiers())) {
+                        idGroupe = sessionCorvus.getApplication().getProperty(
+                                REApplication.PROPERTY_GROUPE_COMMUNICATION_OAI_MODIFICATION_ADRESSE_TIERS);
                         process.setIdGroupeNotification(idGroupe);
-                        process.setCommunicationOAI(false);
-
-                        entity.getSession().removeAttribute(ExternalServiceTiersViewBean.TIERS_AVANT_MODIFICATION);
+                        process.setCommunicationOAI(true);
                         process.start();
 
-                        // Si le tiers modifié a une demande de type API/Invalidite en cours, on envois un mail à un
-                        // autre groupe de notification
-                        if (hasTiersDemandeApiInvaliditeEnCours(tiersViewBean.getSession(), tiersViewBean.getIdTiers())) {
-
-                            idGroupe = sessionCorvus.getApplication().getProperty(
-                                    REApplication.PROPERTY_GROUPE_COMMUNICATION_OAI_MODIFICATION_ADRESSE_TIERS);
-                            process.setIdGroupeNotification(idGroupe);
-                            process.setCommunicationOAI(true);
-                            process.start();
-                        }
+                        setAttributeForMailSent(entity, tiersViewBean);
                     }
                 }
             }
         }
+    }
+
+    private void setAttributeForMailSent(BEntity entity, TITiersViewBean tiersViewBean) {
+        Map<String, PRTiersDateTime> maps = (HashMap<String, PRTiersDateTime>) entity.getSession().getAttribute(
+                ALREADY_SENT_A_MAIL_FOR_TIERS);
+
+        if (maps == null) {
+            maps = new HashMap<String, PRTiersDateTime>();
+        }
+
+        maps.put(tiersViewBean.getIdTiers(), new PRTiersDateTime(tiersViewBean.getIdTiers()));
+        entity.getSession().setAttribute(ALREADY_SENT_A_MAIL_FOR_TIERS, maps);
     }
 
     private PRGenererModificationsTiersProcess initProcess(TITiersViewBean tiersViewBean, BSession sessionCorvus,
@@ -367,9 +417,9 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
         process.setIdCantonDomicile(tiersAvantModification.getIdCantonDomicile());
         process.setNationalite(tiersAvantModification.getPays());
         if (PRACORConst.CS_HOMME.equals(tiersAvantModification.getSexe())) {
-            process.setSexe("SEXE_HOMME_MODIFICATION_TIERS");
+            process.setSexe(SEXE_HOMME_MODIFICATION_TIERS);
         } else {
-            process.setSexe("SEXE_FEMME_MODIFICATION_TIERS");
+            process.setSexe(SEXE_FEMME_MODIFICATION_TIERS);
         }
         process.setDateNaissance(tiersAvantModification.getDateNaissance());
         process.setDateDeces(tiersAvantModification.getDateDeces());
@@ -387,9 +437,9 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
         process.setNewIdCantonDomicile(tiersViewBean.getIdCantonDomicile());
         process.setNewNSS(tiersViewBean.getNumAvsActuel());
         if (PRACORConst.CS_HOMME.equals(tiersViewBean.getSexe())) {
-            process.setNewSexe("SEXE_HOMME_MODIFICATION_TIERS");
+            process.setNewSexe(SEXE_HOMME_MODIFICATION_TIERS);
         } else {
-            process.setNewSexe("SEXE_FEMME_MODIFICATION_TIERS");
+            process.setNewSexe(SEXE_FEMME_MODIFICATION_TIERS);
         }
         process.setNewDateNaissance(tiersViewBean.getDateNaissance());
         process.setNewDateDeces(tiersViewBean.getDateDeces());
@@ -488,6 +538,7 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
         if (!tiersAvantModification.getDesignation1().equals(tiersViewBean.getDesignation1())) {
             hashMapModif.put("nom", "true");
         }
+
         if (!tiersAvantModification.getDesignation2().equals(tiersViewBean.getDesignation2())) {
             hashMapModif.put("prenom", "true");
         }
@@ -495,6 +546,7 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
         if (!tiersAvantModification.getDesignation3().equals(tiersViewBean.getDesignation3())) {
             hashMapModif.put("designation3", "true");
         }
+
         if (!tiersAvantModification.getDesignation4().equals(tiersViewBean.getDesignation4())) {
             hashMapModif.put("designation4", "true");
         }
@@ -554,6 +606,7 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
      */
     @Override
     public void beforeAdd(BEntity entity) throws Throwable {
+        // Nothing to do
 
     }
 
@@ -567,6 +620,7 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
      */
     @Override
     public void beforeDelete(BEntity arg0) throws Throwable {
+        // Nothing to do
     }
 
     /**
@@ -579,6 +633,7 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
      */
     @Override
     public void beforeRetrieve(BEntity arg0) throws Throwable {
+        // Nothing to do
     }
 
     /**
@@ -691,24 +746,116 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
     }
 
     /**
-     * Methode pour voir si une demande de type invalidite/API est en cours
+     * Methode pour savoir si le tiers a une rente de veuf/veuve en cours avec une demande de rente d'invalidité en état
+     * "Terminé" avec le motif "Rente de survivant perdure" OU que le tiers ait une rente invalidité/impotence en cours.
      * 
-     * @param session
-     * @param idTiers
-     * @return
-     * @throws Exception
+     * @param session session.
+     * @param idTiers l'id tiers.
+     * @return True si les conditions sont fournis.
+     * @throws Exception exceptions.
      */
     private boolean hasTiersDemandeApiInvaliditeEnCours(BSession session, String idTiers) throws Exception {
+        boolean hasRente = hasRenteInvaliditerImpotenceEnCours(session, idTiers);
 
-        REPrestationAccordeeManager prestationAccordeeManager = new REPrestationAccordeeManager();
-        prestationAccordeeManager.setSession(session);
-        prestationAccordeeManager.setForIdTiersBeneficiaire(idTiers);
-        prestationAccordeeManager.setForCodesPrestationsIn(buildForCodesPrestationInString());
-        prestationAccordeeManager.setForCsEtatIn(IREPrestationAccordee.CS_ETAT_VALIDE + ", "
+        if (!hasRente) {
+            hasRente = hasRenteVeuveEnCours(session, idTiers)
+                    && hasDemandeInvaliditeTerminerAvecMotifVeuve(session, idTiers);
+        }
+
+        return hasRente;
+    }
+
+    private boolean hasRenteInvaliditerImpotenceEnCours(BSession session, String idTiers) throws Exception {
+        boolean hasConditions = false;
+
+        // Recherche des rentes invalidités / API en cours.
+        REPrestationAccordeeManager prestationInvaliditeImpotenceEnCours = new REPrestationAccordeeManager();
+        prestationInvaliditeImpotenceEnCours.setSession(session);
+        prestationInvaliditeImpotenceEnCours.setForIdTiersBeneficiaire(idTiers);
+        prestationInvaliditeImpotenceEnCours.setForCodesPrestationsIn(buildForCodesPrestationInString());
+        prestationInvaliditeImpotenceEnCours.setForCsEtatIn(IREPrestationAccordee.CS_ETAT_VALIDE + ", "
                 + IREPrestationAccordee.CS_ETAT_DIMINUE + ", " + IREPrestationAccordee.CS_ETAT_PARTIEL);
-        prestationAccordeeManager.find();
 
-        return prestationAccordeeManager.size() > 0;
+        String moisPaiement = getMoisPaiement(session);
+
+        prestationInvaliditeImpotenceEnCours.setForEnCoursAtMois(moisPaiement);
+        prestationInvaliditeImpotenceEnCours.find(2);
+
+        if (prestationInvaliditeImpotenceEnCours.size() > 0) {
+            hasConditions = true;
+        }
+
+        return hasConditions;
+    }
+
+    private boolean hasRenteVeuveEnCours(BSession session, String idTiers) throws Exception {
+        boolean hasConditions = false;
+
+        // Recherche si le tiers contient une rente veuve/veuf en cours.
+        REPrestationAccordeeManager prestationVeuveEnCours = new REPrestationAccordeeManager();
+        prestationVeuveEnCours.setSession(session);
+        prestationVeuveEnCours.setForIdTiersBeneficiaire(idTiers);
+        prestationVeuveEnCours.setForCodesPrestationsIn("'13'");
+        prestationVeuveEnCours.setForCsEtatIn(IREPrestationAccordee.CS_ETAT_VALIDE + ", "
+                + IREPrestationAccordee.CS_ETAT_DIMINUE + ", " + IREPrestationAccordee.CS_ETAT_PARTIEL);
+
+        String moisPaiement = getMoisPaiement(session);
+
+        prestationVeuveEnCours.setForEnCoursAtMois(moisPaiement);
+        prestationVeuveEnCours.find(2);
+
+        if (prestationVeuveEnCours.size() > 0) {
+            hasConditions = true;
+        }
+
+        return hasConditions;
+    }
+
+    private String getMoisPaiement(BSession session) throws NotFoundException {
+        String moisPaiement = REPmtMensuel.getDateDernierPmt(session);
+
+        if (REPmtMensuel.DATE_NON_TROUVEE_POUR_DERNIER_PAIEMENT.equals(moisPaiement)) {
+            String message = session.getLabel("ERREUR_IMPOSSIBLE_RETROUVER_DATE_DERNIER_PAIEMENT");
+            throw new IllegalArgumentException(message);
+        }
+
+        return moisPaiement;
+    }
+
+    private boolean hasDemandeInvaliditeTerminerAvecMotifVeuve(BSession session, String idTiers) throws Exception {
+
+        boolean hasConditions = false;
+
+        // Recherche si le tiers contient au moins une demande de rente d'invalidité en état "TERMINER" qui a un motif
+        // de type
+        // "Rente de survivant perdure" dans les informations complémentaires
+        REDemandeRenteJointDemandeManager manager = new REDemandeRenteJointDemandeManager();
+        manager.setSession(session);
+        manager.setForCsEtatDemande(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_TERMINE);
+        manager.setForCsTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE);
+        manager.setForIdTiersRequ(idTiers);
+        manager.find(BManager.SIZE_NOLIMIT);
+
+        for (int i = 0; i < manager.size(); i++) {
+            REDemandeRenteJointDemande demandeRente = (REDemandeRenteJointDemande) manager.get(i);
+
+            if (!JadeStringUtil.isEmpty(demandeRente.getIdInfoComplementaire())) {
+                PRInfoCompl infoCompl = new PRInfoCompl();
+                infoCompl.setSession(session);
+                infoCompl.setIdInfoCompl(demandeRente.getIdInfoComplementaire());
+                infoCompl.retrieve();
+
+                // Si il contient le motif de type "rente de survivant perdure", alors nous remplissons la
+                // condition
+                if (IREDemandeRente.CS_TYPE_INFORMATION_COMPLEMENTAIRE_RENTE_VEUVE_PERDURE.equals(infoCompl
+                        .getTypeInfoCompl())) {
+                    hasConditions = true;
+                    break;
+                }
+            }
+        }
+
+        return hasConditions;
     }
 
     private String buildForCodesPrestationInString() {
@@ -717,8 +864,7 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
         for (PRCodePrestationAPI code : PRCodePrestationAPI.values()) {
             codesString.append("'").append(code.getCodePrestationAsString()).append("', ");
         }
-
-        codesString.append("'50', '13', '70'");
+        codesString.append("'50', '70'");
         return codesString.toString();
     }
 
@@ -732,6 +878,7 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
      */
     @Override
     public void init(BEntity arg0) throws Throwable {
+        // Nothing to do
     }
 
     /**
@@ -744,6 +891,7 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
      */
     @Override
     public void validate(BEntity arg0) throws Throwable {
+        // Nothing to do
     }
 
     private TITiersViewBean getTiersViewBeanAvantModification(BSession session) throws Exception {
