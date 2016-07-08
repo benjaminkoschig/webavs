@@ -59,7 +59,8 @@
 		</title>
 		<pageHeader>
 			<band height="225"  isSplitAllowed="true" >
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None">
+					<reportElement
 						mode="Transparent"
 						x="58"
 						y="118"
@@ -81,7 +82,8 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_DATE}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None">
+					<reportElement
 						mode="Transparent"
 						x="366"
 						y="118"
@@ -103,7 +105,8 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_ADRESSE}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None">
+					<reportElement
 						mode="Transparent"
 						x="58"
 						y="90"
@@ -125,7 +128,8 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_NOM_COLLABORATEUR}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None">
+					<reportElement
 						mode="Transparent"
 						x="58"
 						y="104"
@@ -147,7 +151,8 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_TEL_COLLABORATEUR}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None">
+					<reportElement
 						mode="Transparent"
 						x="366"
 						y="92"
@@ -169,7 +174,8 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_RECOMMANDEE}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None">
+					<reportElement
 						mode="Transparent"
 						x="366"
 						y="105"
@@ -191,7 +197,8 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_CONFIDENTIEL}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None">
+					<reportElement
 						mode="Opaque"
 						x="134"
 						y="133"
@@ -213,7 +220,8 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_DONNEES}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None">
+					<reportElement
 						mode="Opaque"
 						x="58"
 						y="133"
@@ -235,75 +243,13 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_LIBELLES}]]></textFieldExpression>
 				</textField>
-				<line direction="TopDown">
-					<reportElement
-						mode="Opaque"
-						x="58"
-						y="85"
-						width="506"
-						height="0"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="line-1"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
-				</line>
-				<staticText>
+				<image  scaleImage="RetainShape" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">
 					<reportElement
 						mode="Transparent"
-						x="55"
-						y="29"
-						width="527"
-						height="15"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-1"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Courier New" size="13" isBold="true"/>
-					</textElement>
-				<text><![CDATA[CAISSE DE COMPENSATION AVS AGRICOLE, VITICOLE ET RURALE "AGRIVIT"]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						mode="Transparent"
-						x="55"
-						y="44"
-						width="527"
-						height="11"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-2"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Courier New" pdfFontName="ARIAL.TTF" size="10"/>
-					</textElement>
-				<text><![CDATA[Pour adresse :	CAISSE CANTONALE VAUDOISE DE COMPENSATION AVS
-
-
-]]></text>
-				</staticText>
-				<image  scaleImage="RetainShape" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
-						mode="Transparent"
-						x="16"
-						y="29"
-						width="38"
-						height="37"
+						x="6"
+						y="9"
+						width="580"
+						height="66"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="image-1"
@@ -314,78 +260,10 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<graphicElement stretchType="NoStretch" pen="None" fill="Solid" />
-					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/agrivit_logo.gif"]]></imageExpression>				</image>
-				<staticText>
+					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/agrivit_logo.gif"]]></imageExpression>
+				</image>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None">
 					<reportElement
-						mode="Transparent"
-						x="55"
-						y="58"
-						width="78"
-						height="11"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-3"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="9"/>
-					</textElement>
-				<text><![CDATA[Rue des Moulins 3
-
-]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						mode="Transparent"
-						x="269"
-						y="58"
-						width="72"
-						height="11"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-4"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="9"/>
-					</textElement>
-				<text><![CDATA[1800 VEVEY
-
-]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						mode="Transparent"
-						x="481"
-						y="58"
-						width="81"
-						height="23"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-5"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="9"/>
-					</textElement>
-				<text><![CDATA[Tél. 021 964 12 11
-Fax 021 964 15 38
-
-]]></text>
-				</staticText>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="58"
 						y="177"
@@ -407,7 +285,8 @@ Fax 021 964 15 38
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_DEPARTEMENT}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None">
+					<reportElement
 						mode="Transparent"
 						x="58"
 						y="162"
@@ -429,7 +308,8 @@ Fax 021 964 15 38
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_NIP_LIB}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None">
+					<reportElement
 						mode="Transparent"
 						x="134"
 						y="162"

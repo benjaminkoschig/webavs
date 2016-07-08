@@ -42,6 +42,7 @@
 	<parameter name="P_HEADER_DONNEES" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="P_HEADER_LIBELLES" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="P_SIGNATURE_SERVICE" isForPrompting="false" class="java.lang.String"/>
+
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
@@ -51,125 +52,14 @@
 			</band>
 		</title>
 		<pageHeader>
-			<band height="55"  isSplitAllowed="true" >
-				<staticText>
+			<band height="75"  isSplitAllowed="true" >
+				<image  scaleImage="RetainShape" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">
 					<reportElement
 						mode="Transparent"
 						x="6"
-						y="0"
-						width="536"
-						height="19"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-5"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Courier New" size="17"/>
-					</textElement>
-				<text><![CDATA[CAISSE CANTONALE VAUDOISE DE COMPENSATION AVS
-]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						mode="Transparent"
-						x="46"
-						y="40"
-						width="78"
-						height="11"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-6"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="9"/>
-					</textElement>
-				<text><![CDATA[Rue des Moulins 3
-
-]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						mode="Transparent"
-						x="234"
-						y="38"
-						width="72"
-						height="11"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-7"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="9"/>
-					</textElement>
-				<text><![CDATA[1800 VEVEY
-
-]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						mode="Transparent"
-						x="371"
-						y="38"
-						width="202"
-						height="13"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-8"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="9"/>
-					</textElement>
-				<text><![CDATA[Tél. 021 964 12 11 / Fax 021 964 15 38
-
-]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						mode="Transparent"
-						x="47"
-						y="21"
-						width="527"
-						height="15"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-10"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Courier New" size="13" isBold="true"/>
-					</textElement>
-				<text><![CDATA[CAISSE DE COMPENSATION AVS AGRICOLE, VITICOLE ET RURALE "AGRIVIT"]]></text>
-				</staticText>
-				<image  scaleImage="RetainShape" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
-						mode="Transparent"
-						x="2"
-						y="17"
-						width="38"
-						height="37"
+						y="9"
+						width="580"
+						height="61"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="image-1"
@@ -180,7 +70,8 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<graphicElement stretchType="NoStretch" pen="None" fill="Solid" />
-					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/agrivit_logo.gif"]]></imageExpression>				</image>
+					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/agrivit_logo.gif"]]></imageExpression>
+				</image>
 			</band>
 		</pageHeader>
 		<columnHeader>
