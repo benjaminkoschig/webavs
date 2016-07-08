@@ -575,6 +575,10 @@ public class EBTreatPucsFiles extends BProcess {
 
         pubInfos.setDocumentProperty("annee", pucsFile.getAnneeDeclaration());
 
+        // K160113_002 - renseigner qqch pour les besoins du connecteur GED
+        pubInfos.setDocumentProperty("babel.type.id", "EBU");
+        pubInfos.setDocumentProperty("osiris.section.idExterne", pucsFile.getAnneeDeclaration());
+
         try {
             TIDocumentInfoHelper.fill(pubInfos, affiliation.getIdTiers(), getSession(), ITIRole.CS_AFFILIE,
                     pucsFile.getNumeroAffilie(),
