@@ -667,7 +667,10 @@ public class IJACORPrononceAdapter extends PRAbstractPlatAdapter {
         if (retValue == null) {
             try {
                 retValue = situationFamiliale(idTiersRequerant).getToutesRelationsConjoints(idM1, idM2, Boolean.FALSE);
-                relations.put(id, retValue);
+                retValue = filterTypeLiens(retValue);
+                if (retValue != null && retValue.length > 0) {
+                    relations.put(id, retValue);
+                }
             } catch (PRACORException e) {
                 throw e;
             } catch (Exception e) {
@@ -676,6 +679,26 @@ public class IJACORPrononceAdapter extends PRAbstractPlatAdapter {
         }
 
         return retValue;
+    }
+
+    /**
+     * Exclus les liens de type "enfant commun" car ACOR ne les supportes pas.
+     * 
+     * @param retValue
+     * @return
+     */
+    private ISFRelationFamiliale[] filterTypeLiens(ISFRelationFamiliale[] retValue) {
+        List<ISFRelationFamiliale> list = new LinkedList<ISFRelationFamiliale>();
+        if (retValue != null) {
+            for (ISFRelationFamiliale relation : retValue) {
+                if (!ISFSituationFamiliale.CS_REL_CONJ_ENFANT_COMMUN.equals(relation.getTypeRelation())) {
+                    list.add(relation);
+                }
+            }
+        }
+        ISFRelationFamiliale[] array = new ISFRelationFamiliale[list.size()];
+        list.toArray(array);
+        return array;
     }
 
     public ISFMembreFamille requerant() throws PRACORException {
