@@ -60,8 +60,6 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
     }
 
     private globaz.musca.application.FAApplication app = null;
-    public int AQUITTANCERNON = 2;
-    public int AQUITTANCEROUI = 1;
     private String dateFinAffiliation = "";
     private String dernierIdExterne = "";
     private String dernierNumAff = "";
@@ -69,16 +67,23 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
     private String idModuleFacturation = "";
     private String numAffilie = "";
 
-    public int PASCOMPENSATION = 3;
-
+    /**
+     * Constructeur par défaut.
+     */
     public FAPassageCompenserNewProcess() {
         super();
     }
 
+    /**
+     * Constructeur avec Bprocess.
+     */
     public FAPassageCompenserNewProcess(BProcess parent) throws Exception {
         super(parent);
     }
 
+    /**
+     * Constructeur avec BSession.
+     */
     public FAPassageCompenserNewProcess(globaz.globall.db.BSession session) {
         super(session);
     }
@@ -87,11 +92,10 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
      * Method _calculerIdExterneRubrique. Retourne la rubrique de compensation ou la rubrique pour montant minime
      * (ex.:+/- 2.-)
      * 
-     * @param entFacture
-     * @return String
+     * @param section La section.
+     * @return La rubrique de compensation ou montant minime.
      */
     public String _calculerIdExterneRubrique(APISection section) {
-        // Bug 5438
         if (section.getIdModeCompensation().equals(APISection.MODE_REPORT)
                 && (!CAUtil.isSoldeSectionLessOrEqualTaxes(section.getSolde(), section.getTaxes()))) {
             return getRubriqueCode(APIReferenceRubrique.COMPENSATION_REPORT_DE_SOLDE);
@@ -103,9 +107,11 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
     }
 
     /**
-     * Insert the method's description here. Creation date: (18.06.2003 08:23:52)
+     * Compensation des décomptes.
      * 
-     * @return boolean
+     * @param entManager Manager.
+     * @param indexMntPositifMin Index du montant positif minime.
+     * @return True si aucune erreurs.
      */
     public boolean _compenserDecompte(FAEnteteFactureManager entManager, int indexMntPositifMin) {
 
@@ -155,15 +161,14 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
     }
 
     /**
-     * Insert the method's description here. Creation date: (29.07.2003 14:18:12)
+     * Creation d'une facture pour la compensation d'annexe.
      * 
-     * @return boolean
-     * @param entFacture
-     *            globaz.musca.db.facturation.FAEnteteFacture
-     * @param sec
-     *            globaz.osiris.api.APISection
-     * @param montantFacture
-     *            String
+     * @param entFacture L entete de facture.
+     * @param sec La section.
+     * @param montantCompFacture Le montant a compenser.
+     * @param aQuittancer A quittancer ou non.
+     * @param remarque Une remarque.
+     * @return True si aucune erreurs.
      */
     public boolean _creerAfactCompensationAnnexe(FAEnteteFacture entFacture, APISection sec, String montantCompFacture,
             boolean aQuittancer, String remarque) {
@@ -171,9 +176,6 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
         // compenser à hauteur de la section
         FAAfact afactDeCompensation = new FAAfact();
         afactDeCompensation.setSession(getSession());
-
-        // mettre à jour les attributs pour l'afactDeCompensation
-        // ---------------------------------------------------------
 
         // afact non quittancé pour passage interne
         if (FAPassage.CS_TYPE_INTERNE.equalsIgnoreCase(passage.getIdTypeFacturation())) {
@@ -197,8 +199,10 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
 
         afactDeCompensation.setAQuittancer(new Boolean(aQuittancer));
         afactDeCompensation.setRemarque(remarque);
+
         try {
             afactDeCompensation.add(getTransaction());
+
             // Mise à jour de la section, on ajoute le numéro de passage
             // pour indiquer qu'elle a déjà été prise en compte
             if (sec.getIdModeCompensation().equals(APISection.MODE_REPORT)) {
@@ -212,47 +216,50 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
     }
 
     /**
-     * Insert the method's description here. Creation date: (28.07.2003 16:00:55)
+     * Compensation du compte annexe.
      * 
-     * @return boolean
-     * @param proposition_iterator
-     *            java.util.Iterator
+     * @param sections Les sections disponibles.
+     * @param enteteFacture L'entete de facture.
+     * @param compteAnnexe Le compte annexe.
+     * @return True si aucune erreurs.
      */
-
     protected boolean _doCompenserAnnexe(Collection sections, FAEnteteCompteAnnexe enteteFacture,
             CACompteAnnexe compteAnnexe) {
-        try {
 
+        try {
             FAEnteteFactureManager entManager = new FAEnteteFactureManager();
             entManager.setISession(getSession());
             entManager.setForIdPassage(getIdPassage());
             entManager.setForIdExterneRole(enteteFacture.getIdExterneRole());
             entManager.setForIdRole(enteteFacture.getIdRoles()); // PO 9130
-            BStatement statement = null;
-            FAEnteteFacture entFacture = null;
 
             FWCurrency totalFacture = new FWCurrency(enteteFacture.getTotalDecomptes());
-
             if (totalFacture.isNegative()) {
                 entManager.setOrderBy(" TOTALFACTURE ASC ");
             } else if (totalFacture.isPositive()) {
                 entManager.setOrderBy(" TOTALFACTURE DESC ");
             }
 
-            FWCurrency posMontantRestantFacture = null;
-            boolean isCompensationTotal, aQuittancer;
-            String remarque;
-
             FASectionsACompenserHelper sectHelper = new FASectionsACompenserHelper();
             sectHelper.initSectionsACompenser(sections);
-            statement = entManager.cursorOpen(getTransaction());
+
+            FWCurrency posMontantRestantFacture;
+            boolean isSectionCompenserTotalement;
+            boolean aQuittancer;
+            String remarque;
+            FAEnteteFacture entFacture;
+
             boolean passerAuSuivant = false;
+
             // prendre les entêtes de la facturation une à une et compenser
+            BStatement statement = entManager.cursorOpen(getTransaction());
             while (((entFacture = (FAEnteteFacture) entManager.cursorReadNext(statement)) != null)
                     && !entFacture.isNew()) {
+
                 if (passerAuSuivant) {
                     sectHelper.initSectionsACompenser(sections);
                 }
+
                 // Compenser la section et mise à jours dans le helper !!!
                 FWCurrency montantFacture = new FWCurrency(entFacture.getTotalFacture());
                 posMontantRestantFacture = new FWCurrency(montantFacture.toString());
@@ -260,7 +267,7 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
                 // On travaille en positif
                 posMontantRestantFacture.abs();
 
-                FASectionHelper sectionACompenser = null;
+                FASectionHelper sectionACompenser;
 
                 // Tant qu'il y a des sections à compenser....
                 while ((sectionACompenser = sectHelper.getNextSectionACompenser()) != null) {
@@ -268,24 +275,18 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
                         break;
                     }
 
-                    CASection section = new CASection();
-                    section = (CASection) sectionACompenser.getSection();
+                    CASection section = (CASection) sectionACompenser.getSection();
                     int typeSection = JadeStringUtil.parseInt(section.getIdTypeSection(), 0);
-                    if ((typeSection != 16) && (typeSection != 21) && (typeSection != 28) && (typeSection != 29)
-                            && (typeSection != 15)) {
-                        isCompensationTotal = false;
-                        aQuittancer = false;
-                        // Si la section est en mode report on ne la prend pas.
 
-                        if (APISection.MODE_REPORT.equals(section.getIdModeCompensation())
-                                || APISection.MODE_COMP_COMPLEMENTAIRE.equals(section.getIdModeCompensation())
-                                || APISection.MODE_COMP_CONT_EMPLOYEUR.equals(section.getIdModeCompensation())
-                                || APISection.MODE_COMP_COT_PERS.equals(section.getIdModeCompensation())
-                                || APISection.MODE_COMP_DEC_FINAL.equals(section.getIdModeCompensation())) {
-                            isCompensationTotal = true;
-                            sectionACompenser.setStatus(FASectionHelper.COMPENSEE);
-                            sectionACompenser.setMontantACompenser(new FWCurrency(0));
-                            sectHelper.updateSection(sectionACompenser);
+                    if (isBonTypedeSection(typeSection)) {
+                        isSectionCompenserTotalement = false;
+
+                        aQuittancer = false;
+
+                        // Si la section est en mode report on ne la prend pas.
+                        if (modeReport(section)) {
+                            isSectionCompenserTotalement = true;
+                            compenserTotalementSection(sectHelper, sectionACompenser);
                             continue;
                         }
 
@@ -294,28 +295,31 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
                         if (r == Result.AQUITTANCERNON) {
                             aQuittancer = false;
                         }
+
                         if (r == Result.AQUITTANCEROUI) {
                             aQuittancer = true;
                         }
+
                         if (r == Result.PASCOMPENSATION) {
                             // Comme on ne veut pas utiliser cette section pour
                             // compenser la facturation
                             // On la met dans le même état que si elle avait été
                             // compensé totalement.
-                            isCompensationTotal = true;
-                            sectionACompenser.setStatus(FASectionHelper.COMPENSEE);
-                            sectionACompenser.setMontantACompenser(new FWCurrency(0));
-                            sectHelper.updateSection(sectionACompenser);
+                            isSectionCompenserTotalement = true;
+                            compenserTotalementSection(sectHelper, sectionACompenser);
                             continue;
                         }
 
                         remarque = "";
+
                         FWCurrency montantSectionACompenser = new FWCurrency(sectionACompenser.getMontantACompenser()
                                 .toString());
 
                         FWCurrency soldeMontantACompenser = new FWCurrency(montantSectionACompenser.toString());
+
                         // Variable de travail
                         FWCurrency posMontantSection = new FWCurrency(montantSectionACompenser.toString());
+
                         // On travaille en positif
                         posMontantSection.abs();
 
@@ -325,13 +329,14 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
                         if (posMontantRestantFacture.isPositive()
                                 && (posMontantRestantFacture.compareTo(posMontantSection) >= 0)) {
                             montantACompenser = new FWCurrency(posMontantSection.toString());
-                            isCompensationTotal = true;
+                            isSectionCompenserTotalement = true;
                         }
                         // Compensation partielle
                         else if (posMontantRestantFacture.isPositive()
                                 && (posMontantRestantFacture.compareTo(posMontantSection) < 0)) {
+
                             montantACompenser = new FWCurrency(posMontantRestantFacture.toString());
-                            isCompensationTotal = false;
+                            isSectionCompenserTotalement = false;
                         }
 
                         // CAS montant facture > 0 --> montant sections < 0
@@ -344,27 +349,28 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
                         // contentieux bloqué et actif
                         // mettre une remarque pour information
                         if (montantSectionACompenser.isPositive()
-                                && compteAnnexe.isCompteBloqueEtActif(passage.getDateFacturation()))// bloqué
-                        {
+                                && compteAnnexe.isCompteBloqueEtActif(passage.getDateFacturation())) {
+
                             remarque = getSession().getLabel("COMPTEANNEXE_CONTENTIEUX_MOTIF")
                                     + CACodeSystem.getLibelle(getSession(), compteAnnexe.getIdContMotifBloque());
-                        }
-                        // Si le compte est a un solde positif avec une section
-                        // avec contentieux
-                        // mettre une remarque pour information
-                        else if (montantSectionACompenser.isPositive()) {
-                            Collection collec = compteAnnexe.propositionCompensation(APICompteAnnexe.PC_TYPE_MONTANT,
-                                    APICompteAnnexe.PC_ORDRE_PLUS_ANCIEN, entFacture.getTotalFacture(), false);
-                            Iterator it = collec.iterator();
+                        } else if (montantSectionACompenser.isPositive()) {
+                            // Si le compte est a un solde positif avec une section
+                            // avec contentieux
+                            // mettre une remarque pour information
+                            Collection<CASection> collec = compteAnnexe.propositionCompensation(
+                                    APICompteAnnexe.PC_TYPE_MONTANT, APICompteAnnexe.PC_ORDRE_PLUS_ANCIEN,
+                                    entFacture.getTotalFacture(), false);
+
+                            Iterator<CASection> it = collec.iterator();
                             while (it.hasNext()) {
-                                APISection sec = (APISection) it.next();
+                                APISection sec = it.next();
                                 if (sec.getContentieuxEstSuspendu().booleanValue()) {
                                     remarque = getSession().getLabel("SECTION_CONTENTIEUX");
                                     break;
                                 }
                             }
-
                         }
+
                         _creerAfactCompensationAnnexe(entFacture, sectionACompenser.getSection(),
                                 montantACompenser.toString(), aQuittancer, remarque);
 
@@ -374,20 +380,18 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
                         posMontantRestantFacture.sub(montantACompenser);
 
                         // Update de la section
-                        if (isCompensationTotal) {
+                        if (isSectionCompenserTotalement) {
                             sectionACompenser.setStatus(FASectionHelper.COMPENSEE);
                             sectionACompenser.setMontantACompenser(new FWCurrency(0));
                         } else {
                             sectionACompenser.setStatus(FASectionHelper.PARTIELLEMENT_COMPENSEE);
                             sectionACompenser.setMontantACompenser(soldeMontantACompenser);
-
                         }
+
                         sectHelper.updateSection(sectionACompenser);
                     } else {
-                        isCompensationTotal = true;
-                        sectionACompenser.setStatus(FASectionHelper.COMPENSEE);
-                        sectionACompenser.setMontantACompenser(new FWCurrency(0));
-                        sectHelper.updateSection(sectionACompenser);
+                        isSectionCompenserTotalement = true;
+                        compenserTotalementSection(sectHelper, sectionACompenser);
                         continue;
                     }
                 }
@@ -397,11 +401,42 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
             getMemoryLog().logMessage("Ne trouve pas d'entete de facture pour le tiers:" + enteteFacture.getIdTiers(),
                     FWMessage.AVERTISSEMENT, this.getClass().getName());
             // ****************ROLLBACK!!
-        } finally {
-            return (!getTransaction().hasErrors());
         }
+        return !getTransaction().hasErrors();
     }
 
+    protected void compenserTotalementSection(FASectionsACompenserHelper sectHelper, FASectionHelper sectionACompenser) {
+        sectionACompenser.setStatus(FASectionHelper.COMPENSEE);
+        sectionACompenser.setMontantACompenser(new FWCurrency(0));
+        sectHelper.updateSection(sectionACompenser);
+    }
+
+    protected boolean isBonTypedeSection(int typeSection) {
+        boolean isGoodType = typeSection != 16;
+        isGoodType &= typeSection != 21;
+        isGoodType &= typeSection != 28;
+        isGoodType &= typeSection != 29;
+        isGoodType &= typeSection != 15;
+        return isGoodType;
+    }
+
+    protected boolean modeReport(CASection section) {
+        boolean isModeReport = APISection.MODE_REPORT.equals(section.getIdModeCompensation());
+        isModeReport |= APISection.MODE_COMP_COMPLEMENTAIRE.equals(section.getIdModeCompensation());
+        isModeReport |= APISection.MODE_COMP_CONT_EMPLOYEUR.equals(section.getIdModeCompensation());
+        isModeReport |= APISection.MODE_COMP_COT_PERS.equals(section.getIdModeCompensation());
+        isModeReport |= APISection.MODE_COMP_DEC_FINAL.equals(section.getIdModeCompensation());
+
+        return isModeReport;
+    }
+
+    /**
+     * Compensation des décomptes.
+     * 
+     * @param entFactureNeg Entete de facturation négatif.
+     * @param entFacturePos Entete de facturation positif.
+     * @return True si aucune erreurs.
+     */
     public boolean _doCompenserDecompte(FAEnteteFacture entFactureNeg, FAEnteteFacture entFacturePos) {
 
         FAAfact afactDeCompensation = new FAAfact();
@@ -455,6 +490,7 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
             } else {
                 montantDeCompensation = montantNeg;
             }
+
             if (montantDeCompensation != null) {
                 afactDeCompensation.setMontantFacture(montantDeCompensation.toString());
                 FWCurrency nouveauMontantPourEntete = new FWCurrency(entFactureNeg.getTotalFacture());
@@ -462,6 +498,7 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
                 nouveauMontantPourEntete.add(montantDeCompensation);
                 entFactureNeg.setTotalFacture(nouveauMontantPourEntete.toString());
             }
+
             afactDeCompensation.setIdExterneFactureCompensation(entFacturePos.getIdExterneFacture());
             try {
                 // ajouter l'afact positif au décompte négatif
@@ -529,12 +566,10 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
                     for (int i = 0; i < sectionMana.size(); i++) {
                         CASection section = (CASection) sectionMana.getEntity(i);
                         numAffilie = entFacture.getIdExterneRole();
-                        // typeSection = section.getIdTypeSection();
                         idExterne = entFacture.getIdExterneFacture();
                         if (!entFacture.getIdExterneRole().equals(dernierNumAff)
                                 || !entFacture.getIdExterneFacture().equals(dernierIdExterne)) {
                             dernierNumAff = entFacture.getIdExterneRole();
-                            // dernierTypeSec = section.getIdTypeSection();
                             dernierIdExterne = entFacture.getIdExterneFacture();
                         }
                         String sousType = entFacture.getIdSousType();
@@ -545,21 +580,16 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
                             continue;
                         } else if (section.getIdModeCompensation().equals(APISection.MODE_COMP_COT_PERS)
                                 && !((type == 20) || (type == 22))) {
-
                             continue;
                         } else if (section.getIdModeCompensation().equals(APISection.MODE_COMP_CONT_EMPLOYEUR)
                                 && !(type == 17)) {
-
                             continue;
                         } else if (section.getIdModeCompensation().equals(APISection.MODE_COMP_COMPLEMENTAIRE)
                                 && !(type == 18)) {
-
                             continue;
                         }
 
-                        if (numAffilie.equals(dernierNumAff)
-                        // && typeSection.equals(dernierTypeSec)
-                                && idExterne.equals(dernierIdExterne)) {
+                        if (numAffilie.equals(dernierNumAff) && idExterne.equals(dernierIdExterne)) {
                             int typeSection = JadeStringUtil.parseInt(section.getIdTypeSection(), 0);
                             if ((typeSection != 16) && (typeSection != 21) && (typeSection != 28)
                                     && (typeSection != 29)) {
@@ -567,7 +597,6 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
                                 remarque = "";
 
                                 dernierNumAff = entFacture.getIdExterneRole();
-                                // dernierTypeSec = section.getIdTypeSection();
                                 dernierIdExterne = entFacture.getIdExterneFacture();
 
                                 // Si le numéro de passage est renseigné dans la
@@ -628,7 +657,6 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
             // initialiser le module de la comptabilité d'Osiris
             app = (FAApplication) getSession().getApplication();
 
-            // FAEnteteFacture entete = null;
             FAEnteteCompteAnnexe entete = null;
             int compt = 0;
             while ((!getTransaction().hasErrors())
@@ -739,12 +767,19 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
 
     }
 
+    /**
+     * Lancer le processus de compensation.
+     * 
+     * @param passage LE passage de facturation.
+     * @return True si aucune erreurs.
+     */
     public boolean _executeCompenserProcess(IFAPassage passage) {
         // test du passage
         if ((passage == null) || passage.isNew()) {
             passage = new FAPassage();
             passage.setIdPassage(getIdPassage());
             passage.setISession(getSession());
+
             try {
                 passage.retrieve(getTransaction());
             } catch (Exception e) {
@@ -752,7 +787,9 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
                         FWViewBeanInterface.ERROR, this.getClass().getName());
             }
         }
+
         boolean successful = false;
+
         try {
             this.setPassage((FAPassage) passage);
             FAEnteteFactureManager entManager = new FAEnteteFactureManager();
@@ -772,12 +809,6 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
             successful = _reporterMontantMinime(passage);
             // logger information dans l'email
             this.logInfo4Process(successful, "OBJEMAIL_FA_REPORT");
-
-            // mmo 29.06.2012
-            // hack pour éviter d'écraser les successful
-            // mais il faudra prendre le temps de revoir la gestion des exceptions
-            // même problème pour FAPassageCompenserAPGProcess, FAPassageCompenserProcess,
-            // FAPassageCompenserNewNoteCreditProcess
 
             if (successful) {
                 // appeler la méthode de compensation interne
@@ -825,11 +856,10 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
 
     @Override
     protected boolean _executeProcess() {
-
-        // prendre le passage en cours;
         passage = new FAPassage();
         passage.setIdPassage(getIdPassage());
         passage.setSession(getSession());
+
         try {
             passage.retrieve(getTransaction());
         } catch (Exception e) {
@@ -857,20 +887,24 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
             abort();
             return false;
         }
-        // return estCompense;
         return estCompense;
 
     }
 
+    /**
+     * Obtient l index du montant positif minimum.
+     * 
+     * @param entManager manager.
+     * @return l'index.
+     */
     public int _getIndexMontantPositifMin(FAEnteteFactureManager entManager) {
         // index dans le manager à calculer se référant au montant positif
         // minimum
         int indexMntPositifMin = 0;
         FWCurrency currentMontant;
 
-        FAEnteteFacture entFacture = new FAEnteteFacture();
         for (int i = 0; i < entManager.size(); i++) {
-            entFacture = (FAEnteteFacture) entManager.getEntity(i);
+            FAEnteteFacture entFacture = (FAEnteteFacture) entManager.getEntity(i);
             currentMontant = new FWCurrency(entFacture.getTotalFacture());
 
             /*
@@ -886,11 +920,15 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
         return indexMntPositifMin;
     }
 
+    /**
+     * 
+     * Report des montants minimes Prendre tous les décomptes du passage, les grouper par tiers (plus petit au plus
+     * grand) et par la somme des décomptes pour ce tiers (décomptes du plus grand au plus petit)
+     * 
+     * @param passage Le passage.
+     * @return True si aucune erreurs.
+     */
     private boolean _reporterMontantMinime(IFAPassage passage) {
-        /*
-         * Report des montants minimes Prendre tous les décomptes du passage, les grouper par tiers (plus petit au plus
-         * grand) et par la somme des décomptes pour ce tiers (décomptes du plus grand au plus petit)
-         */
 
         FAEnteteFactureManager entManager = new FAEnteteFactureManager();
         BStatement statement = null;
@@ -898,7 +936,6 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
             entManager.setUseManagerForCompensationAnnexe(true);
             entManager.setSession(getSession());
             entManager.setForIdPassage(passage.getIdPassage());
-            // entManager.setForTotalFactureNotBetween(true);
             entManager._setGroupBy(" IDTIERS, IDEXTERNEROLE, NONIMPRIMABLE, IDROLE, MODIMP ");
             entManager.setOrderBy(" IDEXTERNEROLE ASC, TOTALDECOMPTES DESC");
 
@@ -911,9 +948,11 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
             int compt = 0;
             while ((!getTransaction().hasErrors())
                     && ((enteteCompte = (FAEnteteCompteAnnexe) entManager.cursorReadNext(statement)) != null)) {
+
                 compt++;
                 setProgressDescription(enteteCompte.getIdExterneRole() + " <br>" + compt + "/" + entManager.size()
                         + "<br>");
+
                 if (isAborted()) {
                     setProgressDescription("Traitement interrompu<br> sur l'affilié : "
                             + enteteCompte.getIdExterneRole() + " <br>" + compt + "/" + entManager.size() + "<br>");
@@ -922,27 +961,20 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
                                 "Traitement interrompu<br> sur l'affilié : " + enteteCompte.getIdExterneRole()
                                         + " <br>" + compt + "/" + entManager.size() + "<br>");
                     }
+
                     break;
                 } else {
-                    /*
-                     * un fake entity qui calcule le somme des décomptes qui ont un montant de signe opposé dans la
-                     * compta annexe
-                     */
-                    // if (!enteteCompte.isNew() && (!(new FWCurrency(enteteCompte.getTotalDecomptes())).isZero())) {
                     if (!enteteCompte.isNew()) {
                         // utiliser la comptabilité annexe
                         try {
-
                             APICompteAnnexe cpt = null;
 
                             // Compte annexe
                             cpt = this.getCompteAnnexe(enteteCompte);
 
                             if ((cpt != null) && !cpt.isNew()) {
-
                                 _doReporterMontant(enteteCompte, (CACompteAnnexe) cpt);
                             }
-
                         } catch (Exception e) {
                             getMemoryLog().logMessage(e.getMessage(), globaz.framework.util.FWMessage.FATAL,
                                     this.getClass().getName());
@@ -1294,7 +1326,7 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
                 JADate dateSommation = new JADate(dateExecutionEtape);
                 dateSommation = cal.addDays(dateSommation, 15);
 
-                return (cal.compare(dateFactu, dateSommation) == JACalendar.COMPARE_FIRSTUPPER);
+                return cal.compare(dateFactu, dateSommation) == JACalendar.COMPARE_FIRSTUPPER;
             }
         }
         return false;
