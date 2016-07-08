@@ -2,15 +2,12 @@ package globaz.corvus.vb.demandes;
 
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.db.demandes.REDemandeRenteJointPrestationAccordee;
+import globaz.corvus.utils.decisions.REDecisionsUtil;
 import globaz.globall.db.BStatement;
-import globaz.globall.util.JACalendar;
-import globaz.globall.util.JACalendarGregorian;
-import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
-import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.nnss.PRNSSUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -139,48 +136,10 @@ public class REDemandeRenteJointPrestationAccordeeViewBean extends REDemandeRent
         }
     }
 
-    /**
-     * Méthode qui contrôle si la préparation de la décision peut s'effectuer
-     * 
-     * @return <strong><code>true</code></strong>Si la préparation est autorisée, sinon <strong><code>false</code>
-     *         </strong>
-     */
     public boolean isPreparationDecisionValide(String dateDernierPaiement) {
-
-        try {
-            JACalendar cal = new JACalendarGregorian();
-            JADate datePmtMensuel = null;
-
-            if (!JadeStringUtil.isBlankOrZero(dateDernierPaiement)) {
-                datePmtMensuel = new JADate(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dateDernierPaiement));
-            }
-
-            JADate dateDebutDroit = new JADate(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(getDateDebut()));
-            JADate dateTraitement = new JADate(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(getDateTraitement()));
-            JADate dateJour = JACalendar.today();
-            dateJour.setDay(1);
-
-            /**
-             * <pre>
-             *    Si    (Date de traitement >= date du jour && date de traitement == date du paiement mensuel)
-             *       ou (Date de traitement < date du jour && date de traitement < date du paiement mensuel && date de début du droit > date du paiement mensuel)
-             *    Alors la préparation de décision peut s'effectuer
-             * </pre>
-             */
-            if (datePmtMensuel != null) {
-                return (cal.compare(dateTraitement, dateJour) == JACalendar.COMPARE_FIRSTLOWER
-                        && cal.compare(dateTraitement, datePmtMensuel) == JACalendar.COMPARE_FIRSTLOWER && cal.compare(
-                        dateDebutDroit, datePmtMensuel) == JACalendar.COMPARE_FIRSTUPPER)
-                        || ((cal.compare(dateTraitement, dateJour) == JACalendar.COMPARE_EQUALS || cal.compare(
-                                dateTraitement, dateJour) == JACalendar.COMPARE_FIRSTUPPER) && cal.compare(
-                                dateTraitement, datePmtMensuel) == JACalendar.COMPARE_EQUALS);
-            } else {
-                return false;
-            }
-        } catch (Exception ex) {
-            return false;
-        }
+        return REDecisionsUtil.isPreparationDecisionAuthorise(getSession(), getIdDemandeRente());
     }
+
 
     public void setCodePrestations(List<String> codesPrestations) {
         this.codesPrestations.clear();

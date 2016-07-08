@@ -11,6 +11,7 @@ import globaz.corvus.db.rentesaccordees.REDecisionJointDemandeRenteManager;
 import globaz.corvus.db.rentesaccordees.REEnteteBlocage;
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
+import globaz.corvus.utils.decisions.REDecisionsUtil;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
@@ -778,51 +779,10 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
      * @return true or false
      */
     public boolean isPreparationDecisionValide(String dateDernierPaiement) {
-
-        if (isPreparationDecisionValide == null) {
-            try {
-                JACalendar cal = new JACalendarGregorian();
-                JADate datePmtMensuel = null;
-
-                if (!JadeStringUtil.isBlankOrZero(dateDernierPaiement)) {
-                    datePmtMensuel = new JADate(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dateDernierPaiement));
-                }
-
-                JADate dateDebutDroit = new JADate(
-                        PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(getDateDebutDemande()));
-                JADate dateTraitement = new JADate(
-                        PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(getDateTraitementDemande()));
-                JADate dateJour = JACalendar.today();
-                dateJour.setDay(1);
-
-                // Si (dt=dj et dt=dpmt) ou (dt<dj et dt<dpmt et ddeb > dpmt) ou
-                // (dt>dj && dt==dpmt) la préparation de la décision peut
-                // s'effectuer
-                if (datePmtMensuel != null) {
-                    isPreparationDecisionValide = new Boolean(
-                            ((cal.compare(dateTraitement, dateJour) == JACalendar.COMPARE_FIRSTLOWER)
-                                    && (cal.compare(dateTraitement, datePmtMensuel) == JACalendar.COMPARE_FIRSTLOWER) && (cal
-                                    .compare(dateDebutDroit, datePmtMensuel) == JACalendar.COMPARE_FIRSTUPPER))
-                                    ||
-
-                                    ((cal.compare(dateTraitement, dateJour) == JACalendar.COMPARE_EQUALS) && (cal
-                                            .compare(dateTraitement, datePmtMensuel) == JACalendar.COMPARE_EQUALS))
-                                    ||
-
-                                    ((cal.compare(dateTraitement, dateJour) == JACalendar.COMPARE_FIRSTUPPER) && (cal
-                                            .compare(dateTraitement, datePmtMensuel) == JACalendar.COMPARE_EQUALS)));
-                } else {
-                    isPreparationDecisionValide = Boolean.FALSE;
-                }
-
-            } catch (Exception e) {
-                isPreparationDecisionValide = Boolean.FALSE;
-            }
-        }
-
-        return isPreparationDecisionValide.booleanValue();
-
+        return REDecisionsUtil.isPreparationDecisionAuthorise(getSession(), getNoDemandeRente());
     }
+
+
 
     /**
      * @return

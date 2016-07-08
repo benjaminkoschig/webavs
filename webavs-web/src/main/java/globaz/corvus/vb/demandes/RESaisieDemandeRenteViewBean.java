@@ -9,13 +9,10 @@ import globaz.corvus.db.demandes.REDemandeRenteInvalidite;
 import globaz.corvus.db.demandes.REDemandeRenteSurvivant;
 import globaz.corvus.db.demandes.REDemandeRenteVieillesse;
 import globaz.corvus.utils.REGestionnaireHelper;
-import globaz.corvus.utils.REPmtMensuel;
+import globaz.corvus.utils.decisions.REDecisionsUtil;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
-import globaz.globall.util.JACalendar;
-import globaz.globall.util.JACalendarGregorian;
-import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.db.infos.PRInfoCompl;
 import globaz.prestation.interfaces.fx.PRGestionnaireHelper;
@@ -23,8 +20,6 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.interfaces.util.nss.INSSViewBean;
 import globaz.prestation.interfaces.util.nss.PRUtil;
-import globaz.prestation.tools.PRAssert;
-import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -785,54 +780,11 @@ public class RESaisieDemandeRenteViewBean extends PRAbstractViewBeanSupport impl
         return isPassageHera;
     }
 
-    /**
-     * Méthode qui contrôle si la préparation de la décision peut s'effectuer
-     * 
-     * @return true or false
-     */
     public boolean isPreparationDecisionValide() {
-
-        try {
-
-            // Recherche des dates dt,dj,dpmt,ddeb
-            REDemandeRente dem = new REDemandeRente();
-            dem.setSession(getSession());
-            dem.setIdDemandeRente(getIdDemandeRente());
-            dem.retrieve();
-            PRAssert.notIsNew(dem, "Entity not found");
-
-            JACalendar cal = new JACalendarGregorian();
-            JADate datePmtMensuel = null;
-
-            if (!JadeStringUtil.isBlankOrZero(REPmtMensuel.getDateDernierPmt(getSession()))) {
-                datePmtMensuel = new JADate(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(REPmtMensuel
-                        .getDateDernierPmt(getSession())));
-            }
-
-            JADate dateDebutDroit = new JADate(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dem.getDateDebut()));
-            JADate dateTraitement = new JADate(
-                    PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dem.getDateTraitement()));
-            JADate dateJour = JACalendar.today();
-            dateJour.setDay(1);
-
-            // Si (dt=dj et dt=dpmt) ou (dt<dj et dt<dpmt et ddeb > dpmt) la
-            // préparation de la décision peut s'effectuer
-            if (datePmtMensuel != null) {
-                return (((cal.compare(dateTraitement, dateJour) == JACalendar.COMPARE_FIRSTLOWER)
-                        && (cal.compare(dateTraitement, datePmtMensuel) == JACalendar.COMPARE_FIRSTLOWER) && (cal
-                            .compare(dateDebutDroit, datePmtMensuel) == JACalendar.COMPARE_FIRSTUPPER)) ||
-
-                ((cal.compare(dateTraitement, dateJour) == JACalendar.COMPARE_EQUALS) && (cal.compare(dateTraitement,
-                        datePmtMensuel) == JACalendar.COMPARE_EQUALS)));
-            } else {
-                return false;
-            }
-
-        } catch (Exception e) {
-            return false;
-        }
-
+        return REDecisionsUtil.isPreparationDecisionAuthorise(getSession(), getIdDemandeRente());
     }
+
+
 
     public boolean isTrouveDansCI() {
         return trouveDansCI;

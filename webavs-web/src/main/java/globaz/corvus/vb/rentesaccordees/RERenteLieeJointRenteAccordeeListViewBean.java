@@ -8,6 +8,7 @@ import globaz.corvus.application.REApplication;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.db.rentesaccordees.RERenteLieeJointPrestationAccordeeManager;
+import globaz.corvus.utils.REPmtMensuel;
 import globaz.framework.db.postit.FWNoteP;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
@@ -114,6 +115,10 @@ public class RERenteLieeJointRenteAccordeeListViewBean extends RERenteLieeJointP
 
     public void setHasPostitField(boolean hasPostitField) {
         this.hasPostitField = hasPostitField;
+    }
+
+    public String getDateDernierPaiement() {
+        return REPmtMensuel.getDateDernierPmt(getSession());
     }
 
 }

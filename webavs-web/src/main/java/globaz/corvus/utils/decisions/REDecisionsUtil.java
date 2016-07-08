@@ -2,6 +2,7 @@ package globaz.corvus.utils.decisions;
 
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.api.decisions.IREDecision;
+import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.api.lots.IRELot;
 import globaz.corvus.api.ordresversements.IREOrdresVersements;
 import globaz.corvus.api.prestations.IREPrestations;
@@ -23,6 +24,8 @@ import globaz.corvus.db.prestations.REPrestationsManager;
 import globaz.corvus.db.recap.access.RERecapInfo;
 import globaz.corvus.db.recap.access.RERecapInfoManager;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
+import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManager;
+import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDues;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisionsManager;
@@ -39,16 +42,20 @@ import globaz.corvus.vb.decisions.REPreValiderDecisionViewBean;
 import globaz.framework.controller.FWAction;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.api.BITransaction;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRDateFormater;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -118,12 +125,107 @@ public class REDecisionsUtil {
     }
 
     /**
+     * Méthode utilisée pour savoir si la préparation d'une décision peut-être réalisée sur une demande
+     */
+    public static boolean isPreparationDecisionAuthorise(BSession session, String idDemandeRente) {
+        try {
+            if (session == null) {
+                return false;
+            }
+            if (!JadeNumericUtil.isIntegerPositif(idDemandeRente)) {
+                return false;
+            }
+
+            REDemandeRente demandeRente = new REDemandeRente();
+            demandeRente.setSession(session);
+            demandeRente.setIdDemandeRente(idDemandeRente);
+            demandeRente.retrieve();
+
+            if (demandeRente.isNew()) {
+                return false;
+            }
+
+            String dateDernierPaiement = REPmtMensuel.getDateDernierPmt(session);
+
+            if (REPmtMensuel.DATE_NON_TROUVEE_POUR_DERNIER_PAIEMENT.equals(dateDernierPaiement)) {
+                String message = session.getLabel("ERREUR_IMPOSSIBLE_RETROUVER_DATE_DERNIER_PAIEMENT");
+                throw new Exception(message);
+            }
+
+            if (IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE.equals(demandeRente.getCsEtat())) {
+
+                SimpleDateFormat formater = new SimpleDateFormat("yyyyMM");
+
+                Date dateDernierPaiementMensuel = new SimpleDateFormat("MM.yyyy").parse(dateDernierPaiement);
+                String dateDernierPaiementMensuelFormate = formater.format(dateDernierPaiementMensuel);
+                int dateDernierPaiementInteger = Integer.valueOf(dateDernierPaiementMensuelFormate);
+
+                Date dateTraitement = new SimpleDateFormat("dd.MM.yyyy").parse(demandeRente.getDateTraitement());
+                String dateTraitementFormate = formater.format(dateTraitement);
+
+                /*
+                 * Si la date de traitement de la demande est dans le mois comptable on autorise la préparation des
+                 * décisions
+                 */
+                if (dateDernierPaiementMensuelFormate.equals(dateTraitementFormate)) {
+                    return true;
+                }
+
+                /*
+                 * Sinon on contrôle la date de début de toutes les rentes accordées de la demande soit dans le futur
+                 * par rapport à la date du dernier paiement
+                 */
+                else {
+                    SimpleDateFormat reader = new SimpleDateFormat("MM.yyyy");
+                    RERenteAccJoinTblTiersJoinDemRenteManager manager = new RERenteAccJoinTblTiersJoinDemRenteManager();
+                    manager.setSession(session);
+                    manager.setForNoDemandeRente(idDemandeRente);
+                    manager.find(BManager.SIZE_NOLIMIT);
+
+                    if (manager.getContainer().size() == 0) {
+                        // TODO à valider
+                        return false;
+                    } else {
+                        for (RERenteAccJoinTblTiersJoinDemandeRente rente : manager.getContainerAsList()) {
+                            String dateDebutRenteAccordee = rente.getDateDebutDroit();
+                            if (!JadeStringUtil.isBlankOrZero(dateDebutRenteAccordee)) {
+                                Date dateDebutTmp = reader.parse(dateDebutRenteAccordee);
+                                int dateDebutInteger = Integer.valueOf(formater.format(dateDebutTmp));
+                                // La date de début de la RA doit être plus grande que la date du dernier pmt mensuel
+                                if (dateDernierPaiementInteger >= dateDebutInteger) {
+                                    return false;
+                                }
+
+                            } else {
+                                // TODO à valider (cas anormal si pas de date de début...)
+                                return false;
+                            }
+
+                        }
+                        return true;
+                    }
+                }
+
+            }
+            // Si la demande est en courant validé, on affiche l'option
+            else if (IREDemandeRente.CS_ETAT_DEMANDE_RENTE_COURANT_VALIDE.equals(demandeRente.getCsEtat())) {
+                return true;
+            }
+
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
+    }
+
+    /**
      * Permet de savoir si la préparation de la décision peut s'effectuer
      * 
      * @param session
      * @param idDemandeRente
      * @return
      */
+    @Deprecated
     public static boolean isPreparationDecisionPossible(BSession session, String idDemandeRente) {
         try {
             // Recherche des dates

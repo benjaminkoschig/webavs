@@ -21,6 +21,8 @@
 
 	RERenteLieeJointRenteAccordeeListViewBean viewBean = (RERenteLieeJointRenteAccordeeListViewBean) request.getAttribute("viewBean");
 
+	String dateDernierPaiement = viewBean.getDateDernierPaiement();
+
 	size = viewBean.getSize ();
 
 	detailLink = "corvus?userAction=" + IREActions.ACTION_RENTE_ACCORDEE_JOINT_DEMANDE_RENTE+ ".afficher&selectedId=";
@@ -113,11 +115,13 @@
 %>					<ct:menuExcludeNode nodeId="annoncePonctuelle" />
 <%
 	}
-	if (courant.isDemandeValidee()) {
-%>					<ct:menuExcludeNode nodeId="preparerDecisionRA" />
-<%
-	}
-%>				</ct:menuPopup>
+	if (!courant.isPreparationDecisionValide()) {
+%>						<ct:menuExcludeNode nodeId="preparerDecisionRA" />
+<%		}
+	%>
+		
+
+</ct:menuPopup>
 			</td>
 <%
 	if (!JadeStringUtil.isBlankOrZero(courant.getIdCompteAnnexe()) && hasOsirisReadAccess) {

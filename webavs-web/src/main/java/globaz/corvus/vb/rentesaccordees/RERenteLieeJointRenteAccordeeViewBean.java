@@ -10,6 +10,7 @@ import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.db.basescalcul.REBasesCalcul;
 import globaz.corvus.db.demandes.REDemandeRente;
 import globaz.corvus.db.rentesaccordees.RERenteLieeJointPrestationAccordee;
+import globaz.corvus.utils.decisions.REDecisionsUtil;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BStatement;
@@ -66,6 +67,14 @@ public class RERenteLieeJointRenteAccordeeViewBean extends RERenteLieeJointPrest
     protected void _readProperties(BStatement statement) throws Exception {
         nbPostit = statement.dbReadNumeric(RERenteLieeJointRenteAccordeeListViewBean.FIELDNAME_COUNT_POSTIT);
         super._readProperties(statement);
+    }
+
+    public boolean isPreparationDecisionValide() {
+        try {
+            return REDecisionsUtil.isPreparationDecisionAuthorise(getSession(), getNoDemandeRente());
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**

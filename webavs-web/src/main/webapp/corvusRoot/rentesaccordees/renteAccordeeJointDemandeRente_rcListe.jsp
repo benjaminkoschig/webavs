@@ -163,10 +163,8 @@
 		if (!courant.isPreparationDecisionValide(dateDernierPaiement)) {
 %>						<ct:menuExcludeNode nodeId="preparerDecisionRA" />
 <%		}
-		if (IRERenteAccordee.CS_ETAT_VALIDE.equals(courant.getCsEtat())) {
-%>						<ct:menuExcludeNode nodeId="preparerDecisionRA" />
-<%
-		}
+		
+		
 		if ((IRERenteAccordee.CS_ETAT_VALIDE.equals(courant.getCsEtat())
 			|| IRERenteAccordee.CS_ETAT_PARTIEL.equals(courant.getCsEtat()))
 			&& globaz.jade.client.util.JadeStringUtil.isBlankOrZero(courant.getDateFinDroit())) {

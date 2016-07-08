@@ -83,10 +83,6 @@
 		<ct:menuActivateNode active="yes" nodeId="preparerDecisionRA"/>
 	<%} %>
 
-	<% if (IRERenteAccordee.CS_ETAT_VALIDE.equals(viewBean.getCsEtat())){%>
-		<ct:menuActivateNode active="no" nodeId="preparerDecisionRA"/>
-	<%} %>
-	
 	<% if ((IRERenteAccordee.CS_ETAT_VALIDE.equals(viewBean.getCsEtat())
 		    || IRERenteAccordee.CS_ETAT_PARTIEL.equals(viewBean.getCsEtat()))						    
 		  && globaz.jade.client.util.JadeStringUtil.isBlankOrZero(viewBean.getDateFinDroit())) { %>

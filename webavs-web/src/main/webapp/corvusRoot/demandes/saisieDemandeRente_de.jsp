@@ -126,15 +126,16 @@
 		}
 
 		if (viewBean.getCsEtat().equals(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_VALIDE)) {
-%>				<ct:menuActivateNode active="no" nodeId="preparerDecision" />
+%>				
 				<ct:menuActivateNode active="no" nodeId="prepIntMoratoires" />
 <%
-		} else {
-			if (!viewBean.isPreparationDecisionValide()) {
-%>				<ct:menuActivateNode active="no" nodeId="preparerDecision" />
-<%
-			}
-		}
+		} 
+		
+		if (!viewBean.isPreparationDecisionValide()) {%>			
+			<ct:menuActivateNode active="no" nodeId="preparerDecision" />
+		<%	} else {%>
+			<ct:menuActivateNode active="yes" nodeId="preparerDecision"/>
+	<%}
 
 		if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE.equals(viewBean.getCsTypeDemandeRente()) 
 			|| IREDemandeRente.CS_TYPE_DEMANDE_RENTE_SURVIVANT.equals(viewBean.getCsTypeDemandeRente())) {
