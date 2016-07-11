@@ -63,7 +63,7 @@ public class FAPassageCompenserNewNoteCreditProcess extends FAPassageCompenserNe
 
             FWCurrency posMontantRestantFacture;
             boolean aQuittancer;
-            boolean isSectionCompenserTotalement = false;
+            boolean isSectionCompenserTotalement;
             String remarque;
             FAEnteteFacture entFacture;
 
@@ -78,9 +78,9 @@ public class FAPassageCompenserNewNoteCreditProcess extends FAPassageCompenserNe
                     sectHelper.initSectionsACompenser(sections);
                 }
 
-                List<CASection> mapTri1 = new ArrayList<CASection>();
-                List<CASection> mapTri2 = new ArrayList<CASection>();
-                List<CASection> mapTri3 = new ArrayList<CASection>();
+                List<CASection> listSectionsNiveauPrioritees1 = new ArrayList<CASection>();
+                List<CASection> listSectionsNiveauPrioritees2 = new ArrayList<CASection>();
+                List<CASection> listSectionsNiveauPrioritees3 = new ArrayList<CASection>();
 
                 // Compenser la section et mise à jours dans le helper !!!
                 FWCurrency montantFacture = new FWCurrency(entFacture.getTotalFacture());
@@ -111,7 +111,7 @@ public class FAPassageCompenserNewNoteCreditProcess extends FAPassageCompenserNe
                                         getDateFinAffiliation())
                                         && (((type >= 1) && (type <= 12)) || ((type >= 40) && (type <= 46)))) {
 
-                                    mapTri1.add(section);
+                                    listSectionsNiveauPrioritees1.add(section);
 
                                     compenserTotalementSection(sectHelper, sectionACompenser);
                                     continue;
@@ -121,14 +121,14 @@ public class FAPassageCompenserNewNoteCreditProcess extends FAPassageCompenserNe
                                         + getDateFinAffiliation().substring(6), "31.12."
                                         + getDateFinAffiliation().substring(6), section.getDateFinPeriode())) {
 
-                                    mapTri2.add(section);
+                                    listSectionsNiveauPrioritees2.add(section);
 
                                     compenserTotalementSection(sectHelper, sectionACompenser);
                                     continue;
                                     // Et pour finir le reste dans l'ordre
                                     // décroissant.
                                 } else {
-                                    mapTri3.add(section);
+                                    listSectionsNiveauPrioritees3.add(section);
 
                                     compenserTotalementSection(sectHelper, sectionACompenser);
                                     continue;
@@ -140,9 +140,9 @@ public class FAPassageCompenserNewNoteCreditProcess extends FAPassageCompenserNe
                                 CASection section = (CASection) sectionACompenser.getSection();
                                 if (section.getIdExterne().substring(0, 4)
                                         .equals(entFacture.getIdExterneFacture().substring(0, 4))) {
-                                    mapTri1.add(section);
+                                    listSectionsNiveauPrioritees1.add(section);
                                 } else {
-                                    mapTri2.add(section);
+                                    listSectionsNiveauPrioritees2.add(section);
                                 }
 
                                 compenserTotalementSection(sectHelper, sectionACompenser);
@@ -153,7 +153,7 @@ public class FAPassageCompenserNewNoteCreditProcess extends FAPassageCompenserNe
                         while ((sectionACompenser = sectHelper.getNextSectionACompenser()) != null) {
 
                             CASection section = (CASection) sectionACompenser.getSection();
-                            mapTri1.add(section);
+                            listSectionsNiveauPrioritees1.add(section);
 
                             compenserTotalementSection(sectHelper, sectionACompenser);
                             continue;
@@ -163,16 +163,16 @@ public class FAPassageCompenserNewNoteCreditProcess extends FAPassageCompenserNe
                     while ((sectionACompenser = sectHelper.getNextSectionACompenser()) != null) {
 
                         CASection section = (CASection) sectionACompenser.getSection();
-                        mapTri1.add(section);
+                        listSectionsNiveauPrioritees1.add(section);
 
                         compenserTotalementSection(sectHelper, sectionACompenser);
                         continue;
                     }
                 }
 
-                mapTri1.addAll(mapTri2);
-                mapTri1.addAll(mapTri3);
-                sectHelper.initSectionsACompenser(mapTri1);
+                listSectionsNiveauPrioritees1.addAll(listSectionsNiveauPrioritees2);
+                listSectionsNiveauPrioritees1.addAll(listSectionsNiveauPrioritees3);
+                sectHelper.initSectionsACompenser(listSectionsNiveauPrioritees1);
 
                 // Tant qu'il y a des sections à compenser....
                 while ((sectionACompenser = sectHelper.getNextSectionACompenser()) != null) {
@@ -189,7 +189,7 @@ public class FAPassageCompenserNewNoteCreditProcess extends FAPassageCompenserNe
                         aQuittancer = false;
 
                         // Si la section est en mode report on ne la prend pas.
-                        if (modeReport(section)) {
+                        if (isModeCompensation(section)) {
                             isSectionCompenserTotalement = true;
                             compenserTotalementSection(sectHelper, sectionACompenser);
                             continue;
@@ -252,10 +252,10 @@ public class FAPassageCompenserNewNoteCreditProcess extends FAPassageCompenserNe
 
                             remarque = getSession().getLabel("COMPTEANNEXE_CONTENTIEUX_MOTIF")
                                     + CACodeSystem.getLibelle(getSession(), compteAnnexe.getIdContMotifBloque());
-                        } else if (montantSectionACompenser.isPositive()) {
-                            // Si le compte est a un solde positif avec une section
-                            // avec contentieux
-                            // mettre une remarque pour information
+                        }
+                        // Si le compte est a un solde positif avec une section avec contentieux mettre une remarque
+                        // pour information
+                        else if (montantSectionACompenser.isPositive()) {
                             Collection<CASection> collec = compteAnnexe.propositionCompensation(
                                     APICompteAnnexe.PC_TYPE_MONTANT, APICompteAnnexe.PC_ORDRE_PLUS_ANCIEN,
                                     entFacture.getTotalFacture(), false);
