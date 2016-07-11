@@ -284,7 +284,7 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
                         aQuittancer = false;
 
                         // Si la section est en mode report on ne la prend pas.
-                        if (modeReport(section)) {
+                        if (isModeCompensation(section)) {
                             isSectionCompenserTotalement = true;
                             compenserTotalementSection(sectHelper, sectionACompenser);
                             continue;
@@ -345,18 +345,17 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
                             montantACompenser.negate();
                         }
 
-                        // Si le compte est a un solde positif avec un motif de
-                        // contentieux bloqué et actif
-                        // mettre une remarque pour information
+                        // Si le compte est a un solde positif avec un motif de contentieux bloqué et actif mettre une
+                        // remarque pour information
                         if (montantSectionACompenser.isPositive()
                                 && compteAnnexe.isCompteBloqueEtActif(passage.getDateFacturation())) {
 
                             remarque = getSession().getLabel("COMPTEANNEXE_CONTENTIEUX_MOTIF")
                                     + CACodeSystem.getLibelle(getSession(), compteAnnexe.getIdContMotifBloque());
-                        } else if (montantSectionACompenser.isPositive()) {
-                            // Si le compte est a un solde positif avec une section
-                            // avec contentieux
-                            // mettre une remarque pour information
+                        }
+                        // Si le compte est a un solde positif avec une section avec contentieux mettre une remarque
+                        // pour information
+                        else if (montantSectionACompenser.isPositive()) {
                             Collection<CASection> collec = compteAnnexe.propositionCompensation(
                                     APICompteAnnexe.PC_TYPE_MONTANT, APICompteAnnexe.PC_ORDRE_PLUS_ANCIEN,
                                     entFacture.getTotalFacture(), false);
@@ -398,9 +397,9 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
             }
 
         } catch (Exception e) {
-            getMemoryLog().logMessage("Ne trouve pas d'entete de facture pour le tiers:" + enteteFacture.getIdTiers(),
+            getMemoryLog().logMessage(
+                    "Ne trouve pas d'entete de facture pour le tiers:" + enteteFacture.getIdTiers() + e,
                     FWMessage.AVERTISSEMENT, this.getClass().getName());
-            // ****************ROLLBACK!!
         }
         return !getTransaction().hasErrors();
     }
@@ -420,7 +419,7 @@ public class FAPassageCompenserNewProcess extends FAGenericProcess {
         return isGoodType;
     }
 
-    protected boolean modeReport(CASection section) {
+    protected boolean isModeCompensation(CASection section) {
         boolean isModeReport = APISection.MODE_REPORT.equals(section.getIdModeCompensation());
         isModeReport |= APISection.MODE_COMP_COMPLEMENTAIRE.equals(section.getIdModeCompensation());
         isModeReport |= APISection.MODE_COMP_CONT_EMPLOYEUR.equals(section.getIdModeCompensation());
