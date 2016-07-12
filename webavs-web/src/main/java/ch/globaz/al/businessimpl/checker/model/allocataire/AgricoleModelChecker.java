@@ -1,29 +1,30 @@
 /**
- * 
+ *
  */
 package ch.globaz.al.businessimpl.checker.model.allocataire;
 
+import ch.globaz.al.business.models.allocataire.AgricoleModel;
+import ch.globaz.al.business.models.allocataire.AllocataireSearchModel;
+import ch.globaz.al.businessimpl.checker.ALAbstractChecker;
+import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
-import ch.globaz.al.business.models.allocataire.AgricoleModel;
-import ch.globaz.al.business.models.allocataire.AllocataireSearchModel;
-import ch.globaz.al.businessimpl.checker.ALAbstractChecker;
-import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 
 /**
  * classe de validation des données de AgricoleModel
- * 
+ *
  * @author PTA
- * 
+ *
  */
 public abstract class AgricoleModelChecker extends ALAbstractChecker {
 
     /**
      * Vérifie l'intégrité métier des données
-     * 
+     * v
+     *
      * @param agricoleModel
      *            Modèle à valider
      * @throws JadePersistenceException
@@ -32,11 +33,15 @@ public abstract class AgricoleModelChecker extends ALAbstractChecker {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    private static void checkBusinessIntegrity(AgricoleModel agricoleModel) throws JadeApplicationException,
-            JadePersistenceException {
+    private static void checkBusinessIntegrity(AgricoleModel agricoleModel)
+            throws JadeApplicationException, JadePersistenceException {
 
         if (ALAbstractChecker.hasError()) {
             return;
+        }
+
+        if (agricoleModel==null && agricoleModel!=null) {
+            //
         }
 
         // on vérifie que l'id de l'allocataire fourni correspond bien à un
@@ -52,7 +57,7 @@ public abstract class AgricoleModelChecker extends ALAbstractChecker {
     /**
      * vérifie l'intégrité des données de la base de données de agricoleModel, si non respectée message sur l'intégrité
      * de la donnée
-     * 
+     *
      * @param agricoleModel
      *            Modèle à valider
      * @throws JadeApplicationException
@@ -61,8 +66,8 @@ public abstract class AgricoleModelChecker extends ALAbstractChecker {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    private static void checkDatabaseIntegrity(AgricoleModel agricoleModel) throws JadeApplicationException,
-            JadePersistenceException {
+    private static void checkDatabaseIntegrity(AgricoleModel agricoleModel)
+            throws JadeApplicationException, JadePersistenceException {
 
         if (ALAbstractChecker.hasError()) {
             return;
@@ -77,7 +82,7 @@ public abstract class AgricoleModelChecker extends ALAbstractChecker {
 
     /**
      * vérifie l'obligation des données de agricoleModel, si non respectée message sur l'obligation de la donnée
-     * 
+     *
      * @param agricoleModel
      *            Modèle à valider
      * @throws JadeApplicationException
@@ -100,7 +105,7 @@ public abstract class AgricoleModelChecker extends ALAbstractChecker {
 
     /**
      * valide l'intégrité et l'obligation des données de AgricoleModel
-     * 
+     *
      * @param agricoleModel
      *            Modèle à valider
      * @throws JadeApplicationException

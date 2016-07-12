@@ -1,12 +1,5 @@
 package ch.globaz.al.businessimpl.checker.model.adi;
 
-import globaz.jade.client.util.JadeCodesSystemsUtil;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
 import ch.globaz.al.business.constantes.ALCSPrestation;
 import ch.globaz.al.business.constantes.ALCSTiers;
 import ch.globaz.al.business.exceptions.model.adi.ALDecompteAdiModelException;
@@ -21,12 +14,19 @@ import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.utils.ALImportUtils;
 import ch.globaz.pyxis.business.model.AdministrationSearchComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
+import globaz.jade.client.util.JadeCodesSystemsUtil;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
 
 /**
  * classe de validation du modèle de décompte ADI
- * 
+ *
  * @author PTA
- * 
+ *
  */
 public class DecompteAdiModelChecker extends ALAbstractChecker {
 
@@ -35,7 +35,7 @@ public class DecompteAdiModelChecker extends ALAbstractChecker {
 
     /**
      * vérification des règles métier
-     * 
+     *
      * @param decompteAdiModel
      *            Modèle à valider
      * @throws JadePersistenceException
@@ -44,8 +44,8 @@ public class DecompteAdiModelChecker extends ALAbstractChecker {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    private static void checkBusinessIntegrity(DecompteAdiModel decompteAdiModel) throws JadePersistenceException,
-            JadeApplicationException {
+    private static void checkBusinessIntegrity(DecompteAdiModel decompteAdiModel)
+            throws JadePersistenceException, JadeApplicationException {
 
         if (ALAbstractChecker.hasError()) {
             return;
@@ -121,7 +121,7 @@ public class DecompteAdiModelChecker extends ALAbstractChecker {
 
     /**
      * Vérifie que les codes système appartiennent à la famille de code attendue
-     * 
+     *
      * @param model
      *            Modèle à valider
      * @throws JadeApplicationException
@@ -130,8 +130,8 @@ public class DecompteAdiModelChecker extends ALAbstractChecker {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    private static void checkCodesystemIntegrity(DecompteAdiModel model) throws JadeApplicationException,
-            JadePersistenceException {
+    private static void checkCodesystemIntegrity(DecompteAdiModel model)
+            throws JadeApplicationException, JadePersistenceException {
 
         if (ALAbstractChecker.hasError()) {
             return;
@@ -158,7 +158,7 @@ public class DecompteAdiModelChecker extends ALAbstractChecker {
 
     /**
      * vérification de l'intégrité des données relatives à la base
-     * 
+     *
      * @param model
      *            Modèle à valider
      */
@@ -245,7 +245,7 @@ public class DecompteAdiModelChecker extends ALAbstractChecker {
 
     /**
      * vérification pour la suppression
-     * 
+     *
      * @param decompteAdiModel
      *            Modèle à valider
      * @throws JadeApplicationException
@@ -254,8 +254,8 @@ public class DecompteAdiModelChecker extends ALAbstractChecker {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    private static void checkDeleteIntegrity(DecompteAdiModel decompteAdiModel) throws JadeApplicationException,
-            JadePersistenceException {
+    private static void checkDeleteIntegrity(DecompteAdiModel decompteAdiModel)
+            throws JadeApplicationException, JadePersistenceException {
         if (ALAbstractChecker.hasError()) {
             return;
         }
@@ -270,7 +270,7 @@ public class DecompteAdiModelChecker extends ALAbstractChecker {
 
     /**
      * vérification des paramètres requis
-     * 
+     *
      * @param model
      *            Modèle à valider
      */
@@ -313,8 +313,8 @@ public class DecompteAdiModelChecker extends ALAbstractChecker {
 
         // période de fin
         if (JadeStringUtil.isEmpty(model.getPeriodeFin())) {
-            JadeThread
-                    .logError(DecompteAdiModelChecker.class.getName(), "al.adi.decompteAdiModel.periodeFin.mandatory");
+            JadeThread.logError(DecompteAdiModelChecker.class.getName(),
+                    "al.adi.decompteAdiModel.periodeFin.mandatory");
         }
 
         // id du dossier
@@ -326,7 +326,7 @@ public class DecompteAdiModelChecker extends ALAbstractChecker {
     /**
      * Validation de l'obligation des données, de l'intégrité des données et des règles métier d'un modèle de décompte
      * ADI
-     * 
+     *
      * @param decompteAdiModel
      *            Modèle à valider
      * @throws JadePersistenceException
@@ -335,8 +335,8 @@ public class DecompteAdiModelChecker extends ALAbstractChecker {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public static void validate(DecompteAdiModel decompteAdiModel) throws JadePersistenceException,
-            JadeApplicationException {
+    public static void validate(DecompteAdiModel decompteAdiModel)
+            throws JadePersistenceException, JadeApplicationException {
         DecompteAdiModelChecker.checkMandatory(decompteAdiModel);
         DecompteAdiModelChecker.checkDatabaseIntegrity(decompteAdiModel);
         DecompteAdiModelChecker.checkCodesystemIntegrity(decompteAdiModel);
@@ -345,7 +345,7 @@ public class DecompteAdiModelChecker extends ALAbstractChecker {
 
     /**
      * Validation de la suppression des données d'un modèle de décompte ADI
-     * 
+     *
      * @param decompteAdiModel
      *            Modèle à valider
      * @throws JadeApplicationException
@@ -354,8 +354,8 @@ public class DecompteAdiModelChecker extends ALAbstractChecker {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    public static void validateForDelete(DecompteAdiModel decompteAdiModel) throws JadeApplicationException,
-            JadePersistenceException {
+    public static void validateForDelete(DecompteAdiModel decompteAdiModel)
+            throws JadeApplicationException, JadePersistenceException {
         DecompteAdiModelChecker.checkDeleteIntegrity(decompteAdiModel);
     }
 }
