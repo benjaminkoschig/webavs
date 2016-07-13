@@ -20,8 +20,10 @@ function TaxeJournaliereHome (container) {
 				.find('.idAssureurMaladie').val($data.find('idAssureurMaladie').text()).change().end()
 				.find('.idHome').val(idHome).change().end()
 				.find('.isParticipationLCA').attr('checked', $data.find('isParticipationLCA').text() == 'true').end()
+				.find('.isDeplafonner').attr('checked',$data.find('isDeplafonner').text()=='true').end()
 				.find('.montantJournalierLCA').val($data.find('montantJournalierLCA').text()).change().end()
 				.find('.primeAPayer').val($data.find('primeAPayer').text()).change().end()
+				.find('.montantFraisLongueDuree').val($data.find('montantFraisLongueDuree').text()).change().end()
 				.find('[name=dateDebut]').val($data.find('dateDebut').text()).end()
 				.find('[name=dateFin]').val($data.find('dateFin').text()).end()
 				.find('[name=dateEntreeHome]').val($data.find('dateEntreeHome').text()).end()
@@ -30,7 +32,15 @@ function TaxeJournaliereHome (container) {
 				.find('.libelleAssureurMaladie').val($data.find('libelleAssureurMaladie').text()).change().end()
 				.find('[name=idTypeChambre]').val(this.idTypeChambre).attr('disabled', 'disabled').end()
 				.find('.toHomeLink').attr('href', 'pegasus?userAction=pegasus.home.home.afficher&selectedId=' + idHome).end()
-				.find('.toChambreLink').attr('href', 'pegasus?userAction=pegasus.home.prixChambre.afficher&idHome=' + idHome + '&nomHome=' + $data.find('libelleHome').text() + '&idTypeChambre=' + this.idTypeChambre + '&designationTypeChambre='); // !!ATTENTION!!	
+				.find('.detailPrixChambres').attr('data-id-home',idHome).end()
+				.find('.detailPrixChambres').attr('data-g-desc-home',$data.find('libelleHome').text()).end()
+				.find('.detailPrixChambres').attr('data-id-chambre',this.idTypeChambre).end()
+				.find('.detailPrixChambres').attr('data-dateDebut',$data.find('dateDebut').text()).end()
+				.find('.detailPrixChambres').attr('data-dateFin',$data.find('dateFin').text()); 	
+		
+		
+	
+		
 		// champ.
 		this.idEntity = idEntity;
 	};
@@ -49,6 +59,8 @@ function TaxeJournaliereHome (container) {
 			'taxeJournaliereHome.simpleDonneeFinanciereHeader.dateDebut': this.detail.find('[name=dateDebut]').val(),
 			'taxeJournaliereHome.simpleDonneeFinanciereHeader.dateFin': this.detail.find('[name=dateFin]').val(),
 			'taxeJournaliereHome.simpleTaxeJournaliereHome.dateEntreeHome': this.detail.find('[name=dateEntreeHome]').val(),
+			'taxeJournaliereHome.simpleTaxeJournaliereHome.isDeplafonner' : this.detail.find('.isDeplafonner').prop('checked'),
+			'taxeJournaliereHome.simpleTaxeJournaliereHome.montantFraisLongueDuree' : this.detail.find('.montantFraisLongueDuree').val(),
 			'doAddPeriode': this.doAddPeriode,
 			'idDroitMembreFamille': this.membreId
 		};
@@ -57,7 +69,7 @@ function TaxeJournaliereHome (container) {
 	this.clearFields = function () {
 		this.detail.clearInputForm();
 		this.detail.find('.listTypechambre').children().remove();
-		this.detail.find('.toChambreLink').hide();
+		
 	};
 
 	this.addTypeChambre = function () {
@@ -95,12 +107,9 @@ function TaxeJournaliereHome (container) {
 
 						that.detail.find('.typeChambre').val(that.idTypeChambre);
 
-						var chambreLink = that.detail.find('.toChambreLink').attr('href');
+						
 						var re = new RegExp("designationTypeChambre=$");
-						if (chambreLink.match(re)) {
-							chambreLink += that.detail.find('.typeChambre').text();
-							that.detail.find('.toChambreLink').attr('href', chambreLink).show();
-						}
+						
 
 						if ($select.find('[particularite]').attr('particularite') != undefined) {
 
@@ -175,32 +184,49 @@ $(function () {
 		var zone = new TaxeJournaliereHome($that);
 		this.zone = zone;
 		zone.membreId = $(this).attr('idMembre');
-		// zone.addEnvent();
+		
+		
+		
+		
 		$that.find('.btnAjaxUpdate').click(function () {
 			zone.startEdition();
 			$that.find('.btnAjaxValidateNouvellePeriode').show();
-		}).end().find('.btnAjaxCancel').click(function () {
+		}).end()
+		.find('.btnAjaxCancel').click(function () {
 			zone.stopEdition();
-		}).end().find('.btnAjaxValidate').click(function () {
+		}).end()
+		.find('.btnAjaxValidate').click(function () {
 			zone.validateEdition();
-
-		}).end().find('.btnAjaxDelete').click(function () {
+		}).end()
+		.find('.btnAjaxDelete').click(function () {
 			zone.ajaxDeleteEntity(zone.selectedEntityId);
-		}).end().find('.btnAjaxAdd').click(function () {
+		}).end()
+		.find('.btnAjaxAdd').click(function () {
 			zone.stopEdition();
 			zone.startEdition();
-		}).end().find('.[name=csTypeLoyer]').change(function () {
+		}).end()
+		.find('.[name=csTypeLoyer]').change(function () {
 			zone.showOrHideDetail();
 		}).each(function () {
 			zone.showOrHideDetail();
-		}).end().find('.btnAjaxValidateNouvellePeriode').click(function () {
+		}).end()
+		.find('.btnAjaxValidateNouvellePeriode').click(function () {
 			zone.doAddPeriode = true;
 			zone.validateEdition();
-
+		}).end()
+		.find('.listTypechambre').change(function () {
+			
+			var idTypeChambre = $('.listTypechambre :selected').val();
+			var dateDebut = $('[name=dateDebut]').val();
+			var dateFin = $('[name=dateFin]').val();
+			
+			$that.find('.detailPrixChambres').attr('data-id-chambre',idTypeChambre);
+			$that.find('.detailPrixChambres').attr('data-dateDebut',dateDebut);
+			$that.find('.detailPrixChambres').attr('data-dateFin',dateFin);
+			
 		}).end();
 		zone.addTypeChambre();
 
-		// Validation date d'entre home
 
 	});
 });

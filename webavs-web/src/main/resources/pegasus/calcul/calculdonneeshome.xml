@@ -61,6 +61,10 @@
 			<select-field name="prixJournalier" field-ref="simplePrixChambre.prixJournalier"/>
 			<select-field name="dateDebutPrixChambre" field-ref="simplePrixChambre.dateDebut"/>
 			<select-field name="dateFinPrixChambre" field-ref="simplePrixChambre.dateFin"/>
+			<select-field name="isDeplafonner" field-ref="simpleTaxesJournaliereHome.isDeplafonner"/>
+			<select-field name="montantFraisLongueDuree" field-ref="simpleTaxesJournaliereHome.montantFraisLongueDuree"/>
+			
+			
 		</select-fields>
 		
 		<search-definition>

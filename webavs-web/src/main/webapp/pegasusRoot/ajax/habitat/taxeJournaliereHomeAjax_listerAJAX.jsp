@@ -39,12 +39,20 @@ globaz.globall.db.BSession objSession = (globaz.globall.db.BSession)controller.g
 				<tr idEntity="<%=donnee.getId() %>" idGroup="<%=donnee.getSimpleDonneeFinanciereHeader().getIdEntityGroup() %>" header="<%=idGroup==null?"true":"false"%>">
 					<td>&#160;</td>
 					<td><%=PCTaxeJournaliereHomeHandler.getLibelleHomeAvecChambre(donnee.getTypeChambre(),objSession)%></td>	
-					<td><%=PCTaxeJournaliereHomeHandler.getPrix(donnee,objSession) %></td>									
+					<td>
+						<img class="detailPrixChambres" style="float:left" src="images/aide.gif" 
+						data-id-chambre="<%= donnee.getTypeChambre().getId() %>" 
+						data-id-home="<%= donnee.getSimpleTaxeJournaliereHome().getIdHome() %>" 
+						data-dateDebut="<%= donnee.getSimpleDonneeFinanciereHeader().getDateDebut() %>" 
+						data-dateFin="<%= donnee.getSimpleDonneeFinanciereHeader().getDateFin() %>" 
+						data-g-bubble='text:tooltipTextLibelle,wantMarker:false,position:right'/>
+						<span style="float:right"><%=PCTaxeJournaliereHomeHandler.getPrix(donnee,objSession)%></span>
+					</td>									
 					<td><%=PCCommonHandler.getCurrencyFormtedDefault(donnee.getSimpleTaxeJournaliereHome().getMontantJournalierLCA()) %></td>		
 					<td><%=PCCommonHandler.getCurrencyFormtedDefault(donnee.getSimpleTaxeJournaliereHome().getPrimeAPayer()) %></td>		
 					<td><%=PCTaxeJournaliereHomeHandler.getLibelleAssurenceMaladie(donnee.getTiersAssurenceMaladie(),objSession)%></td>
 					<td><% if(donnee.getSimpleDonneeFinanciereHeader().getIsDessaisissementRevenu().booleanValue()){%>
-						<IMG src="<%=request.getContextPath()+"/images/ok.gif" %>"/>
+						<img src="<%=request.getContextPath()+"/images/ok.gif" %>"/>
 						<%} else {
 							%>&#160;<%
 						}%>

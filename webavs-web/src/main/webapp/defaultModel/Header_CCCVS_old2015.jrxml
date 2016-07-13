@@ -65,10 +65,10 @@
 			<band height="192"  isSplitAllowed="true" >
 				<image  scaleImage="RetainShape" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
 						mode="Transparent"
-						x="3"
+						x="1"
 						y="5"
-						width="224"
-						height="51"
+						width="287"
+						height="44"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="image"
@@ -79,11 +79,11 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<graphicElement stretchType="NoStretch" pen="None" fill="Solid" />
-					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/CCCvs_600dpi_2.png"]]></imageExpression>				</image>
+					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/CCCvs_600dpi_1.jpg"]]></imageExpression>				</image>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="4"
-						y="174"
+						x="2"
+						y="170"
 						width="256"
 						height="12"
 						forecolor="#000000"
@@ -96,14 +96,14 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF"/>
+						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="9"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_DATE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="297"
-						y="85"
+						x="303"
+						y="87"
 						width="274"
 						height="101"
 						forecolor="#000000"
@@ -124,8 +124,8 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="4"
-						y="112"
+						x="2"
+						y="106"
 						width="256"
 						height="10"
 						forecolor="#000000"
@@ -138,14 +138,14 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF"/>
+						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="9"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_NOM_COLLABORATEUR}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="4"
-						y="124"
+						x="2"
+						y="118"
 						width="256"
 						height="12"
 						forecolor="#000000"
@@ -158,14 +158,14 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF"/>
+						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="9"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_TEL_COLLABORATEUR}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="62"
-						y="137"
+						mode="Opaque"
+						x="76"
+						y="135"
 						width="181"
 						height="24"
 						forecolor="#000000"
@@ -178,14 +178,14 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" isBold="true"/>
+						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="9" isBold="true"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_DONNEES}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="4"
-						y="137"
+						mode="Opaque"
+						x="2"
+						y="135"
 						width="72"
 						height="24"
 						forecolor="#000000"
@@ -198,14 +198,14 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" isBold="true"/>
+						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="9" isBold="true"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_LIBELLES}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="3"
-						y="98"
+						x="38"
+						y="82"
 						width="171"
 						height="11"
 						forecolor="#000000"
@@ -220,14 +220,14 @@
 							<printWhenExpression><![CDATA[new Boolean($P{P_SIGNATURE_SERVICE}!=null)]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF"/>
+						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_SIGNATURE_SERVICE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="3"
-						y="61"
+						x="38"
+						y="52"
 						width="171"
 						height="27"
 						forecolor="#000000"
@@ -240,14 +240,14 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF"/>
+						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_ADRESSE_CAISSE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="297"
-						y="29"
+						x="303"
+						y="14"
 						width="16"
 						height="11"
 						forecolor="#000000"
@@ -260,14 +260,14 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF"/>
+						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_PREFIXE_TEL_ABREGE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="297"
-						y="39"
+						x="434"
+						y="14"
 						width="16"
 						height="11"
 						forecolor="#000000"
@@ -280,14 +280,14 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF"/>
+						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_PREFIXE_FAX_ABREGE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="313"
-						y="29"
+						x="319"
+						y="14"
 						width="94"
 						height="11"
 						forecolor="#000000"
@@ -300,14 +300,14 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF"/>
+						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_TEL_CAISSE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="402"
-						y="28"
+						x="303"
+						y="25"
 						width="110"
 						height="11"
 						forecolor="#000000"
@@ -320,14 +320,14 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF"/>
+						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_SITE_CAISSE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="402"
-						y="38"
+						x="434"
+						y="25"
 						width="129"
 						height="11"
 						forecolor="#000000"
@@ -340,15 +340,15 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF"/>
+						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_EMAIL_CAISSE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="313"
-						y="39"
-						width="110"
+						x="450"
+						y="14"
+						width="114"
 						height="11"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -360,14 +360,75 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF"/>
+						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_FAX_CAISSE}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="297"
-						y="70"
+						x="303"
+						y="36"
+						width="16"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-20"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_PREFIXE_CP_ABREGE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="319"
+						y="36"
+						width="100"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-21"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_BODY_CCP}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="303"
+						y="47"
+						width="192"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-1"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[IBAN CH81 0900 0000 1900 1945 7]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="303"
+						y="67"
 						width="273"
 						height="18"
 						forecolor="#000000"

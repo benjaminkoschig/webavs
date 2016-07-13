@@ -28,6 +28,25 @@
 				</search-group>
 			</search-group>
 		</search-definition>
+		
+		<search-definition name="forPrixInPeriod">
+			<search-group operator="AND">
+				<search-field name="forIdHome" operation="EQUALS" field-ref="typeChambre.simpleTypeChambre.idHome"/>
+				<search-field name="forIdTypeChambre" operation="EQUALS" field-ref="simplePrixChambre.idTypeChambre"/>
+				
+				<search-group operator="AND">
+					<search-field name="forDateFin" operation="LESS_OR_EQUALS" field-ref="simplePrixChambre.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="simplePrixChambre.dateFin"/>
+						<search-field name="forDateDebut" operation="NULL" field-ref="simplePrixChambre.dateFin"/>
+					</search-group>
+					
+					
+				</search-group>
+				
+			</search-group>
+		</search-definition>
+		
 		<search-definition name="withPrixInPeriode">
 			<search-group operator="AND">
 				<search-field name="forIdTypeChambre" operation="EQUALS" field-ref="simplePrixChambre.idTypeChambre"/>

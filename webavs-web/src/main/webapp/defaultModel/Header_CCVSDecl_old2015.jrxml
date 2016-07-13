@@ -77,16 +77,16 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF"/>
+						<font reportFont="Arial_Normal" fontName="Arial" pdfFontName="ARIAL.TTF" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_ADRESSE_CAISSE}]]></textFieldExpression>
 				</textField>
 				<image  scaleImage="RetainShape" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
 						mode="Transparent"
-						x="0"
-						y="2"
-						width="242"
-						height="45"
+						x="5"
+						y="3"
+						width="325"
+						height="44"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="image-1"
@@ -97,7 +97,7 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<graphicElement stretchType="NoStretch" pen="None" fill="Solid" />
-					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/CCCvs_600dpi_2.png"]]></imageExpression>				</image>
+					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/CCCvs_600dpi_1.jpg"]]></imageExpression>				</image>
 			</band>
 		</pageHeader>
 		<columnHeader>

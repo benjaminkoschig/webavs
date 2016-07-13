@@ -75,6 +75,9 @@
 			<select-field name="bienImmoPrincipalPartDenominateur" field-ref="simpleBienImmoPrincipal.partProprieteDenominateur"/>
 			<select-field name="bienImmoPrincipalPartNumerateur" field-ref="simpleBienImmoPrincipal.partProprieteNumerateur"/>
 			<select-field name="bienImmoPrincipalNombrePersonnes" field-ref="simpleBienImmoPrincipal.nombrePersonnes"/>
+
+			<select-field name="isBienImmoPrincipalDeMoinsDe10Ans" field-ref="simpleBienImmoPrincipal.isConstructionMoinsDixAns"/>
+			
 			<select-field name="bienImmoAnnexeMontantValeurLocative" field-ref="simpleBienImmoAnnexe.montantValeurLocative"/>
 			<select-field name="bienImmoAnnexeMontantValeurVenale" field-ref="simpleBienImmoAnnexe.valeurVenale"/>
 			<select-field name="bienImmoAnnexeMontantDetteHypothecaire" field-ref="simpleBienImmoAnnexe.montantDetteHypothecaire"/>

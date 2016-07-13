@@ -1,4 +1,5 @@
 <%-- tpl:insert page="/theme/detail_ajax.jtpl" --%>
+<%@page import="ch.globaz.pegasus.business.constantes.EPCProperties"%>
 <%@ page language="java" errorPage="/errorPage.jsp"
 	import="globaz.globall.http.*" 
 	contentType="text/html;charset=ISO-8859-1"%>
@@ -180,28 +181,66 @@
 							%>
 						</tbody>
 					</table>
+					
+					<!-- Détails de l'onglet : Bien immobilier servant d'habitation principale -->
 					<div class="areaDFDetail">
 						<table>
+						<!-- ligne 1 -->
 						<tr>
-							<td><ct:FWLabel key="JSP_PC_BIEN_IMMOBILIER_SERVANT_HABITATION_PRINCIPALE_D_PROPRIETE"/></td>
-							<td><ct:select styleClass="typePropriete"  name="champTypeDePropriete">
+							<td>
+							<ct:FWLabel key="JSP_PC_BIEN_IMMOBILIER_SERVANT_HABITATION_PRINCIPALE_D_PROPRIETE"/>
+							</td>
+							<td>
+								<ct:select styleClass="typePropriete"  name="champTypeDePropriete">
 									<ct:optionsCodesSystems csFamille="PCTYPPROP">						
 										<ct:excludeCode code="64009005"/>
 									</ct:optionsCodesSystems>
 								</ct:select>
 							 </td>
-							<td><ct:FWLabel key="JSP_PC_BIEN_IMMOBILIER_SERVANT_HABITATION_PRINCIPALE_D_PART"/></td>
-							<td  colspan="3"><input type="text" class="part" value="1/1" data-g-string="mandatory:true"/></td>
+							
+							<td>
+								<ct:FWLabel key="JSP_PC_BIEN_IMMOBILIER_SERVANT_HABITATION_PRINCIPALE_D_PART"/>
+							</td>
+							<td colspan="3">
+								<input type="text" class="part" value="1/1" data-g-string="mandatory:true"/>
+							</td>
 						</tr>
+						
+						<!-- ligne 2 -->
 						<tr>
 							<td><ct:FWLabel key="JSP_PC_BIEN_IMMOBILIER_SERVANT_HABITATION_PRINCIPALE_D_BIEN"/></td>
 							<td><ct:select styleClass="typeBien"  name="typeBien">
 									<ct:optionsCodesSystems csFamille="PCTYPBHA"/>					
 								</ct:select>
 							 </td>
+							 <%
+								 if(EPCProperties.BIEN_IMMOBILER_MOINS_10_ANS_ACTIF.getBooleanValue()){
+							 %>
+								<td><ct:FWLabel key="JSP_PC_BIEN_IMMOBILIER_SERVANT_HABITATION_PRINCIPALE_D_CONSTRUCTION_MOINS_10_ANS"/></td>
+								<td><input id="isConstructionMoinsDixAns" name="isConstructionMoinsDixAns" class="isConstructionMoinsDixAns" type="checkbox"/></td>
+							<%
+								 }
+							%>
+							
+							<!-- date échéance habitation plus de 10 ans --> 
+							<td><ct:FWLabel key="JSP_PC_BIEN_IMMOBILIER_SERVANT_HABITATION_PRINCIPALE_D_DATE_ECHEANCE"/></td>
+							<td>
+							<!-- TODO -->
+								<input id="dateEcheance" name="dateEcheance" value="" 
+													   data-g-echeance="idTiers: <%=viewBean.getIdTiersRequerant()%>,
+																	    idExterne: <%=viewBean.getDroit().getSimpleDroit().getIdDemandePC()%>,
+																	    csDomaine: <%=viewBean.getEcheanceDomainePegasus()%>,	   
+																	    type: <%=viewBean.getTypeEcheance()%>,
+																	    position: right,
+																	   	libelle:   "/>
+								
+							</td>
+							 
+							 <!-- Display : none -->
 							<td class="cacherAutres"><ct:FWLabel key="JSP_PC_BIEN_IMMOBILIER_SERVANT_HABITATION_PRINCIPALE_D_AUTRES"/></td>
 							<td class="cacherAutres"><input type="text" class="autres"/></td>				 						
 						</tr>
+						
 						<tr>			
 							<td><ct:FWLabel key="JSP_PC_BIEN_IMMOBILIER_SERVANT_HABITATION_PRINCIPALE_D_COMMUNE"/></td>
 							<td>

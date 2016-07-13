@@ -72,5 +72,9 @@
 					</search-group>
 			</search-group>
 		</search-definition>
+		<order-by name="orderByDateDebutDesc">
+			<order-field field-ref="dateDebut" order="DESC" />
+		</order-by>
+		
 	</simple-model>
 </model-mapping>

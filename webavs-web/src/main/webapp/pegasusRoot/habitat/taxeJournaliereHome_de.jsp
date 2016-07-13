@@ -11,7 +11,7 @@
 <%@page import="java.io.ObjectOutput"%>
 <%@page import="java.io.ObjectOutputStream"%>
 <%@page import="org.apache.commons.codec.binary.Hex"%>
-
+<%@page import="ch.globaz.pegasus.business.constantes.EPCLoiCantonaleProperty"%>
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <%@page import="globaz.pegasus.utils.PCGestionnaireHelper"%>
 <%@page import="globaz.framework.util.FWCurrency"%>
@@ -57,7 +57,9 @@
 		bButtonUpdate=false;
 		bButtonValidate=false;
 	}
-%>
+	
+	%>
+
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%>
 <%-- /tpl:put --%>
@@ -75,9 +77,21 @@
 	var ACTION_AJAX_DONNEE_FINANCIERE = "<%=IPCActions.ACTION_DROIT_TAXE_JOURNALIERE_HOME_AJAX%>";
 	var ACTION_AJAX_TYPE_CHAMBRE = "<%=IPCActions.ACTION_HOME_TYPE_CHAMBRE_AJAX%>";
 </script>
+<script>
 
+//libelles js
+var tooltipTextLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOME_D_JS_TOOLTIP_TEXT") %>';
+var dialogHomeLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOME_D_JS_DIALOG_HOME_TEXT") %>';
+var dialogTypeChambreLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOME_D_JS_DIALOG_TYPECHAMBRE_TEXT") %>';
+var dialogTitre = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOME_D_JS_DIALOG_TITLE_TEXT") %>';
+var dialogPeriodeLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOME_D_JS_DIALOG_PERIODE_TEXT") %>';
+var dialogPrixJourLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOME_D_JS_DIALOG_PRIX_JOURNALIER_TEXT") %>';
+var dialogMontantLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOME_D_JS_DIALOG_MONTANT_TEXT") %>';
+
+</script>
 <script type="text/javascript" src="<%=rootPath%>/scripts/habitat/TaxeJournaliereHome_MembrePart.js"/></script>
 <script type="text/javascript" src="<%=rootPath%>/scripts/habitat/TaxeJournaliereHome_de.js"/></script>
+
 
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail_ajax/bodyStart.jspf" %>
@@ -114,12 +128,14 @@
                                   </p>
 								</div>
 								
+								
+			
 								<table class="areaDFDataTable">
 									<thead>
 										<tr>
 											<th data-g-cellformatter="css:formatCellIcon">&nbsp;</th>
 											<th><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_L_HOME_CATEGORIE"/></th>
-											<th ><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_L_TAXE_JOURNALIERE"/></th>
+											<th><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_L_TAXE_JOURNALIERE"/></th>
 											<th data-g-amounformatter=" " ><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_L_MONTANT_JOURNALIER_LCA"/></th>
 											<th><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_L_PRIME_A_PAYER"/></th>
 											<th><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_L_ASSUREUR_MALADIE"/></th>
@@ -143,12 +159,22 @@
 										<tr idEntity="<%=donnee.getId() %>" idGroup="<%=dfHeader.getIdEntityGroup() %>" header="<%=idGroup==null?"true":"false"%>">
 											<td>&#160;</td>
 											<td><%=PCTaxeJournaliereHomeHandler.getLibelleHomeAvecChambre(donnee.getTypeChambre(),objSession)%></td>	
-											<td><%=viewBean.getPrix(donnee,objSession)%></td>									
+											
+											<td>
+												<img class="detailPrixChambres" style="float:left" src="images/aide.gif" 
+														data-id-chambre="<%= donnee.getTypeChambre().getId() %>" 
+														data-id-home="<%= donnee.getSimpleTaxeJournaliereHome().getIdHome() %>"
+														data-dateDebut="<%= donnee.getSimpleDonneeFinanciereHeader().getDateDebut() %>" 
+														data-dateFin="<%= donnee.getSimpleDonneeFinanciereHeader().getDateFin() %>" 
+														data-g-bubble='text:tooltipTextLibelle,wantMarker:false,position:right'/>
+														
+												<span style="float:right"><%=viewBean.getPrix(donnee,objSession)%></span>
+											</td>									
 											<td><%=PCCommonHandler.getCurrencyFormtedDefault(donnee.getSimpleTaxeJournaliereHome().getMontantJournalierLCA()) %></td>
 											<td><%=PCCommonHandler.getCurrencyFormtedDefault(donnee.getSimpleTaxeJournaliereHome().getPrimeAPayer()) %></td>
 											<td><%=PCTaxeJournaliereHomeHandler.getLibelleAssurenceMaladie(donnee.getTiersAssurenceMaladie(),objSession)%></td>
 											<td><% if(donnee.getSimpleDonneeFinanciereHeader().getIsDessaisissementRevenu().booleanValue()){%>
-												<IMG src="<%=request.getContextPath()+"/images/ok.gif" %>"/>
+												<img src="<%=request.getContextPath()+"/images/ok.gif" %>"/>
 												<%} else {
 													%>&nbsp;<%
 												}%>
@@ -184,6 +210,8 @@
 															function(element){
 																$(this).parents('.areaMembre').find('.idHome').val($(element).attr('simpleHome.id'));
 																$(this).parents('.areaMembre').find('.idHome').trigger(eventConstant.AJAX_CHANGE);
+																$(this).find('.detailPrixChambres').attr('data-id-home',$(element).attr('simpleHome.id'));
+																$(this).parents('.areaDFDetail').find('.detailPrixChambres').attr('data-id-home',$(element).attr('simpleHome.id'));
 																this.value=$(element).attr('simpleHome.numeroIdentification')+' '+$(element).attr('simpleHome.nomBatiment')+' '+$(element).attr('adresse.tiers.designation1')+' '+$(element).attr('adresse.tiers.designation2')+' '+$(element).attr('simpleHome.numeroIdentification');
 															}
 														</script>										
@@ -192,9 +220,29 @@
 											</ct:widget>
 									   </td>
 										<td><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_D_TYPE_CHAMBRE" /></td>
-										<td colspan="4" class="listTypechambre"> </td>
-										<td><a class="toChambreLink" href='#' ><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_D_LIEN_PRIX_CHAMBRE"/></a></td>
+										<td colspan="2" class="listTypechambre"> </td>
+										
+										<td><img class="detailPrixChambres" src="images/aide.gif" 
+											data-id-chambre="" 
+											data-id-home=""  
+											data-g-bubble='text:tooltipTextLibelle,wantMarker:false,position:right'/></td>
+										
+										<% if(EPCLoiCantonaleProperty.VALAIS.isLoiCantonPC()){%>
+										    <td><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_D_DEPLAFONNER"/></td>
+											<td><input type="checkbox" class="isDeplafonner" /></td>
+										<% }
+										
+										%>
+										
 									</tr>
+									
+									<% if(EPCLoiCantonaleProperty.VALAIS.isLoiCantonPC()){%>
+										<tr>
+											<td><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_D_FRAIS_LONGUE_DUREE" /></td>
+											<td><input type="text" class="montantFraisLongueDuree" data-g-amount="periodicity:D"/></td>	
+										</tr>
+									<%}%>
+									
 									<tr>
 										<td><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_D_PART_LCA"/></td>
 										<td><input type="checkbox" class="isParticipationLCA" 
@@ -254,6 +302,10 @@
 									</tr>
 									<%} %>
 									
+									
+									
+										
+									
 									<tr>
 										<td><ct:FWLabel key="JSP_PC_AUTRERENTE_D_DATE_DEBUT" /></td>
 										<td><input type="text" name="dateDebut" value="" data-g-calendar="mandatory:true,type:month"/></td>
@@ -274,6 +326,8 @@
 					</div>
 				</TD>
 			</TR>
+			
+			
 
 <%@ include file="/theme/detail_ajax/bodyButtons.jspf" %>
 				<%-- tpl:put name="zoneButtons" --%>

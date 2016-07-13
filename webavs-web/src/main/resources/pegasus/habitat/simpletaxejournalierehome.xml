@@ -17,6 +17,8 @@
 			<field name="dateEcheance" column="CSDECH" type="DATE"  mandatory="false"  comment="DATE_ECHANCE"/>
 			<field name="isParticipationLCA" column="CSBPLC" type="BOOLEAN"  mandatory="false"  comment="IS_PARTICIPATION_LCA"/>
 			<field name="dateEntreeHome" column="CSDENH" type="DATE"  mandatory="false"  comment="DATE_ENTREE_HOME"/>
+			<field name="isDeplafonner" column="CSBPLA" type="BOOLEAN"  mandatory="false"  comment="IS_DEPLAFONNER"/>
+			<field name="montantFraisLongueDuree" column="CSMFLD" type="NUMERIC"  dataType="NUMERIC(15,2)" mandatory="false"  comment="MONTANT_FRAIS_LONGUE_DUREE"/>
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

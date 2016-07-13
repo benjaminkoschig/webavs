@@ -24,6 +24,24 @@
 			</search-group>
 		</search-definition> -->
 		
+		<search-definition name="forVariablesInPeriod">
+			<search-group operator="AND">
+				<search-field name="forCsTypeVariableMetier"  operation="EQUALS" field-ref="simpleVariableMetier.csTypeVariableMetier"/>
+				<search-field name="forLangue" operation="EQUALS" field-ref="complexCodeSysteme.simpleTraduction.langue"/>
+				
+				<search-group operator="AND">
+					<search-field name="forDateFin" operation="LESS_OR_EQUALS" field-ref="simpleVariableMetier.dateDebut"/>
+					<search-group operator="OR">
+						<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleVariableMetier.dateFin"/>
+						<search-field name="forDateDebut" operation="NULL" field-ref="simpleVariableMetier.dateFin"/>
+					</search-group>
+					
+					
+				</search-group>
+				
+			</search-group>
+		</search-definition>
+		
 		<!-- Recherche les variableMetier valable pour la date donnee en parametre-->
 	    <search-definition name="withDateValable">
 			<search-group operator="AND">
