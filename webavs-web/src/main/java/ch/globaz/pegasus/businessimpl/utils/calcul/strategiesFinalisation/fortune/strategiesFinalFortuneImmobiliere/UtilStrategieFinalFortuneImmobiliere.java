@@ -2,7 +2,7 @@ package ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.fortu
 
 public class UtilStrategieFinalFortuneImmobiliere {
 
-    protected float plafonneValeurBiensImmoDeduit(float montant) {
+    protected static float plafonneValeurBiensImmoDeduit(float montant) {
 
         if (montant < 0f) {
             return 0f;

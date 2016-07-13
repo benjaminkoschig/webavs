@@ -36,7 +36,8 @@ public class PCGroupeDepensesHandler extends PCGroupeAbstractHandler {
 
     /************************ FIN CONSTANTES CATEGORIE ***********************************************/
     String[] DEP_PRIMES_MOY_ASS_MALADIE = { IPCValeursPlanCalcul.CLE_TOTAL_PRIMEMAL_TOTAL };
-    String[] DEP_TAXES_JOURNALIERE_HOME = { IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL };
+    String[] DEP_TAXES_JOURNALIERE_HOME = { IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL,
+            IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_LONGUE_DUREE };
     String[] DEP_TOTAL_DEPENSES_RECONNUES = { IPCValeursPlanCalcul.CLE_DEPEN_DEP_RECO_TOTAL };
 
     /**

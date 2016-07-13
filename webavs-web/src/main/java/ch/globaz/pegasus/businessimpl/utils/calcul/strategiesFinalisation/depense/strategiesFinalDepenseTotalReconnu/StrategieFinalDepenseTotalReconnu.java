@@ -5,7 +5,6 @@ import java.util.Date;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
-import ch.globaz.pegasus.businessimpl.utils.calcul.ArgentDePocheHomeResolver;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext.Attribut;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
@@ -17,11 +16,12 @@ public class StrategieFinalDepenseTotalReconnu implements StrategieCalculFinalis
     private final static String[] champs = { IPCValeursPlanCalcul.CLE_DEPEN_BES_VITA_TOTAL,
             IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL, IPCValeursPlanCalcul.CLE_DEPEN_PENSVERS_TOTAL,
             IPCValeursPlanCalcul.CLE_DEPEN_COT_PSAL_TOTAL, IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_TOTAL,
-            IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL };
+            IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL, IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_LONGUE_DUREE };
 
     private final static String[] champsWithRevenuAgricole = { IPCValeursPlanCalcul.CLE_DEPEN_BES_VITA_TOTAL,
             IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL, IPCValeursPlanCalcul.CLE_DEPEN_PENSVERS_TOTAL,
-            IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_TOTAL, IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL };
+            IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_TOTAL, IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL,
+            IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_LONGUE_DUREE };
 
     @Override
     public void calcule(TupleDonneeRapport donnee, CalculContext context, Date dateDebut) throws CalculException {
@@ -37,7 +37,7 @@ public class StrategieFinalDepenseTotalReconnu implements StrategieCalculFinalis
         } else {
 
             // calcul de l'argent de poche/dépense personnelle
-            float depensesPersonnees = calculeDepensesPersonnelles(context, donnee) * 12;
+            float depensesPersonnees = calculeDepensesPersonnelles(context, donnee);
             donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL,
                     depensesPersonnees));
         }
@@ -109,7 +109,7 @@ public class StrategieFinalDepenseTotalReconnu implements StrategieCalculFinalis
         return result;
     }
 
-    private float calculeDepensesPersonnelles(CalculContext context, TupleDonneeRapport donnee) throws CalculException {
+    float calculeDepensesPersonnelles(CalculContext context, TupleDonneeRapport donnee) throws CalculException {
         String csTypeChambre = null;
         try {
             csTypeChambre = donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_DEPENSE_CS_TYPE_CHAMBRE);
@@ -131,7 +131,7 @@ public class StrategieFinalDepenseTotalReconnu implements StrategieCalculFinalis
                     "pegasus.calcul.strategie.final.depenseTotalReconnu.csTypeChambre.integrity", csTypeChambre,
                     (String) context.get(Attribut.DATE_DEBUT_PERIODE));
         }
-        return depensesPersonnelles;
+        return depensesPersonnelles * 12;
     }
 
 }

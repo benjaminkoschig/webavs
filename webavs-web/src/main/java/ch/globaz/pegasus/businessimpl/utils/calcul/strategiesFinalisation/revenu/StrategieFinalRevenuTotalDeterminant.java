@@ -108,46 +108,65 @@ public class StrategieFinalRevenuTotalDeterminant implements StrategieCalculFina
             throw new CalculException("TypeRenteRequerant should not be null");
         }
 
+        // D0173
+        int nbPersonnes = (Integer) context.get(Attribut.NB_PARENTS);
+        float nbHomes = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_NOMBRE_CHAMBRES);
+        boolean isAllHome = ((int) nbHomes >= nbPersonnes);
+
         // détermination de la fraction pour
         Float fractionFortune = null;
 
         if ((Boolean) context.get(Attribut.IS_FRATRIE)) {
-            fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
-                    .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE)).getValeurCourante());
-            legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE;
-
+            if (isAllHome) {
+                fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
+                        .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME)).getValeurCourante());
+                legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME;
+            } else {
+                fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
+                        .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON)).getValeurCourante());
+                legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON;
+            }
         } else {
 
             if (TypeRenteMap.listeCsRenteSurvivant.contains(typeRenteRequerant)
                     || TypeRenteMap.listeCsRenteInvalidite.contains(typeRenteRequerant)) {
                 // rente survivant ou invalidite
-                fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
-                        .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE)).getValeurCourante());
-                legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE;
+                if (isAllHome) {
+                    fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
+                            .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME)).getValeurCourante());
+                    legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME;
+                } else {
+                    fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
+                            .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON)).getValeurCourante());
+                    legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON;
+                }
             } else if (TypeRenteMap.listeCsRenteVieillesse.contains(typeRenteRequerant)) {
                 // rente vieillesse
 
-                int nbPersonnes = (Integer) context.get(Attribut.NB_PARENTS);
-                float nbHomes = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_NOMBRE_CHAMBRES);
-
-                if ((int) nbHomes >= nbPersonnes) {
-                    if (TypeRenteMap.listeCsRenteInvalidite.contains(typeRenteConjoint)) {
+                if (TypeRenteMap.listeCsRenteInvalidite.contains(typeRenteConjoint)) {
+                    if (isAllHome) {
                         fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
-                                .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE)).getValeurCourante());
-                        legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE;
+                                .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME)).getValeurCourante());
+                        legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME;
                     } else {
+                        fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
+                                .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON)).getValeurCourante());
+                        legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON;
+                    }
+                } else {
+                    if (isAllHome) {
                         fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
                                 .get(Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME)).getValeurCourante());
                         legende = Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME;
+                    } else {
+                        fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
+                                .get(Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON)).getValeurCourante());
+                        legende = Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON;
                     }
-                } else {
-                    fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
-                            .get(Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON)).getValeurCourante());
-                    legende = Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON;
                 }
-
             } else {
                 // sans rente
+
                 fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
                         .get(Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME)).getValeurCourante());
                 legende = Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME;
@@ -158,16 +177,18 @@ public class StrategieFinalRevenuTotalDeterminant implements StrategieCalculFina
             Float fractionFortuneConjoint = 0f;
             Attribut legendeConjoint = null;
             if (PegasusCalculUtil.isRentesPrincipalesCoupleADom(context)) {
+
                 if (TypeRenteMap.listeCsRenteSurvivant.contains(typeRenteConjoint)
                         || TypeRenteMap.listeCsRenteInvalidite.contains(typeRenteConjoint)) {
                     fractionFortuneConjoint = Float.parseFloat(((ControlleurVariablesMetier) context
-                            .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE)).getValeurCourante());
-                    legendeConjoint = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE;
+                            .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON)).getValeurCourante());
+                    legendeConjoint = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON;
                 } else if (TypeRenteMap.listeCsRenteVieillesse.contains(typeRenteConjoint)) {
                     if (donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_NOMBRE_CHAMBRES) == 0) {
+                        // correction de Home en Maison (découvert dans le cadre de D0173)
                         fractionFortuneConjoint = Float.parseFloat(((ControlleurVariablesMetier) context
-                                .get(Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME)).getValeurCourante());
-                        legendeConjoint = Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME;
+                                .get(Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON)).getValeurCourante());
+                        legendeConjoint = Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON;
                     }
                 }
 

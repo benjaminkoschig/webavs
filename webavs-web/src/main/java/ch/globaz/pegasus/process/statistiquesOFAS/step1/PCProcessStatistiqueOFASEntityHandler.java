@@ -18,10 +18,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import ch.globaz.common.domaine.Checkers;
+import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.jade.process.business.bean.JadeProcessEntity;
 import ch.globaz.jade.process.business.interfaceProcess.entity.JadeProcessEntityInterface;
 import ch.globaz.jade.process.business.interfaceProcess.entity.JadeProcessEntityNeedProperties;
 import ch.globaz.jade.process.business.interfaceProcess.entity.JadeProcessEntityPropertySavable;
+import ch.globaz.pegasus.business.constantes.EPCLoiCantonaleProperty;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
 import ch.globaz.pegasus.business.constantes.IPCRenteijapi;
@@ -387,7 +389,7 @@ public class PCProcessStatistiqueOFASEntityHandler implements JadeProcessEntityI
     private StatistiquesOFAData mapData(TupleDonneeRapport tupleRoot,
             PlanCalculeDemandeDroitMembreFamilleSearch search, PCAccordee pcAccordee) throws PCAccordeeException,
             StatistiquesOFASException, JadeApplicationServiceNotAvailableException, JadePersistenceException,
-            RenteAvsAiException {
+            RenteAvsAiException, PropertiesException {
         StatistiquesOFAData data = new StatistiquesOFAData();
 
         if (search.getSearchResults()[0] != null) {
@@ -418,7 +420,7 @@ public class PCProcessStatistiqueOFASEntityHandler implements JadeProcessEntityI
         return data;
     }
 
-    private StatistiquesOFASDepense mapDepense(TupleDonneeRapport tupleRoot) {
+    private StatistiquesOFASDepense mapDepense(TupleDonneeRapport tupleRoot) throws PropertiesException {
         StatistiquesOFASDepense depense = new StatistiquesOFASDepense();
 
         depense.setLoyer(tupleRoot.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_TOTAL_NON_PLAFONNE));
@@ -426,10 +428,19 @@ public class PCProcessStatistiqueOFASEntityHandler implements JadeProcessEntityI
 
         // taxe journalier home que si au home
         if (IPCPCAccordee.CS_GENRE_PC_HOME.equals(csGenrePc)) {
-            // si les deux conjoints sont au home, on divise le montant par 2
-            depense.setTaxeHome(tupleRoot.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL));
 
-            depense.setTaxeHomeCompte(depense.getTaxeHome());
+            float taxHome = tupleRoot.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL);
+
+            if (EPCLoiCantonaleProperty.VALAIS.isLoiCantonPC()) {
+                float fraisSoinLongueDuree = tupleRoot
+                        .getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_LONGUE_DUREE);
+
+                taxHome += fraisSoinLongueDuree;
+            }
+
+            // si les deux conjoints sont au home, on divise le montant par 2
+            depense.setTaxeHome(taxHome);
+            depense.setTaxeHomeCompte(taxHome);
         } else {
             depense.setTaxeHome(0);
             depense.setTaxeHomeCompte(0);

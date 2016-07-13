@@ -9,8 +9,7 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVariablesMetier;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.StrategieCalculFinalisation;
 
-public class StrategieFinalFortuneImmobiliere201101 extends UtilStrategieFinalFortuneImmobiliere implements
-        StrategieCalculFinalisation {
+public class StrategieFinalFortuneImmobiliere201101 implements StrategieCalculFinalisation {
 
     @Override
     public void calcule(TupleDonneeRapport donnee, CalculContext context, Date dateDebut) throws CalculException {
@@ -48,9 +47,9 @@ public class StrategieFinalFortuneImmobiliere201101 extends UtilStrategieFinalFo
         }
 
         donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_BIENS_PRINCIPAL_DEDUIT,
-                plafonneValeurBiensImmoDeduit(somme)));
+                UtilStrategieFinalFortuneImmobiliere.plafonneValeurBiensImmoDeduit(somme)));
 
-        somme = plafonneValeurBiensImmoDeduit(somme);
+        somme = UtilStrategieFinalFortuneImmobiliere.plafonneValeurBiensImmoDeduit(somme);
         somme += donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_BIENS_NON_HABIT_PRINCIPALE);
         // somme += donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_BIENS_PRINCIPAL_DEDUIT);
 

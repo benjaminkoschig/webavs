@@ -258,10 +258,18 @@ public class PCPlanCalculHandler {
                             || ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE)) {
                         lib[0] = lib[0].replace("{fraction}", ligne.getLegende());
                     }
+
+                    if (ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_DEPEN_FRAISIMM_FRAIS_ENTRETIEN_IMMEUBLE)) {
+                        lib[0] = lib[0].replace("{fraction}", ligne.getLegende());
+                    }
+
                     if (ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PLAFOND)) {
                         lib[0] = lib[0].replace("{montant}", new FWCurrency(ligne.getLegende()).toStringFormat());
                     }
-                    // Gestion autre rentes txexte libre
+                    if (ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL)) {
+                        lib[0] = lib[0].replace("{montant}", new FWCurrency(ligne.getLegende()).toStringFormat());
+                    }
+                    // Gestion autre rentes texte libre
                     if (ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_REVEN_RENAUTRE_AUTRE_RENTE)) {
                         @SuppressWarnings("rawtypes")
                         Map listeEnfants = tupleRoot.getOrCreateEnfant(ligne.getCsCode()).getEnfants();
