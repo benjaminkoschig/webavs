@@ -12,30 +12,10 @@ import ch.globaz.common.properties.CommonProperties;
 
 public class PRRubriqueComptableResolver {
 
-    // this.put(REGenresPrestations.PC_SOUS_TYPE_AI_COTISATION_AVS, "1");
-    // this.put(REGenresPrestations.PC_SOUS_TYPE_AI_DOMICILE, APIReferenceRubrique.PC_AI_A_RESTITUER);
-    // this.put(REGenresPrestations.PC_SOUS_TYPE_AI_HOME_SASH, APIReferenceRubrique.PC_AI_EN_HOME_SASH);
-    // this.put(REGenresPrestations.PC_SOUS_TYPE_AI_HOME_SASH_HORS_CANTON,
-    // APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_SASH);
-    // this.put(REGenresPrestations.PC_SOUS_TYPE_AI_HOME_SPAS, APIReferenceRubrique.PC_AI_EN_HOME_SPAS);
-    // this.put(REGenresPrestations.PC_SOUS_TYPE_AI_HOME_SPAS_HORS_CANTON,
-    // APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_SPAS);
-    //
-    // this.put(REGenresPrestations.PC_SOUS_TYPE_AVS_DOMICILE, APIReferenceRubrique.PC_AVS_A_RESTITUER);
-    // this.put(REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_SASH, APIReferenceRubrique.PC_AVS_RESTITUTION_EN_HOME_SASH);
-    // this.put(REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_SASH_HORS_CANTON,
-    // APIReferenceRubrique.PC_AI_RESTITUTION_EN_HOME_HORS_CANTON_SASH);
-    // this.put(REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_SPAS, APIReferenceRubrique.PC_AI_EN_HOME_SPAS);
-    // this.put(REGenresPrestations.PC_SOUS_TYPE_AVS_HOME_SPAS_HORS_CANTON,
-    // APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_SPAS);
-    //
     /**
      * Map de mapping entre les prestations PC et les rubriques comptables relatives
      */
     private static Map<String, String> mapRubriquePC = new HashMap<String, String>() {
-        /**
-         * 
-         */
         private static final long serialVersionUID = 1L;
 
         {
@@ -55,6 +35,9 @@ public class PRRubriqueComptableResolver {
             put(PRSousTypeCodePrestationPC.PC_AVS_104.getSousTypeCodePrestationAsString(),
                     APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_SPAS);
 
+            put(PRSousTypeCodePrestationPC.PC_AVS_114.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_EN_HOME);
+
             // PC AI
             put(PRSousTypeCodePrestationPC.PC_AI_106.getSousTypeCodePrestationAsString(),
                     APIReferenceRubrique.PC_AI_A_DOMICILE_ORDINAIRES_ESPECES);
@@ -71,15 +54,14 @@ public class PRRubriqueComptableResolver {
             put(PRSousTypeCodePrestationPC.PC_AI_110.getSousTypeCodePrestationAsString(),
                     APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_SPAS);
 
+            put(PRSousTypeCodePrestationPC.PC_AI_112.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AI_EN_HOME);
+
         }
     };
 
-    private static Map<String, String> mapRubriqueRestituionPC = new HashMap<String, String>() {
-        /**
-         * 
-         */
+    private static Map<String, String> mapRubriqueRestitutionPC = new HashMap<String, String>() {
         private static final long serialVersionUID = 1L;
-
         {
             // PC AVS
             put(PRSousTypeCodePrestationPC.PC_AVS_100.getSousTypeCodePrestationAsString(),
@@ -97,6 +79,9 @@ public class PRRubriqueComptableResolver {
             put(PRSousTypeCodePrestationPC.PC_AVS_104.getSousTypeCodePrestationAsString(),
                     APIReferenceRubrique.PC_AVS_RESTITUTION_EN_HOME_HORS_CANTON_SPAS);
 
+            put(PRSousTypeCodePrestationPC.PC_AVS_114.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AVS_RESTITUTION_EN_HOME);
+
             // PC AI
             put(PRSousTypeCodePrestationPC.PC_AI_106.getSousTypeCodePrestationAsString(),
                     APIReferenceRubrique.PC_AI_A_RESTITUER);
@@ -112,6 +97,9 @@ public class PRRubriqueComptableResolver {
 
             put(PRSousTypeCodePrestationPC.PC_AI_110.getSousTypeCodePrestationAsString(),
                     APIReferenceRubrique.PC_AI_RESTITUTION_EN_HOME_HORS_CANTON_SPAS);
+
+            put(PRSousTypeCodePrestationPC.PC_AI_112.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.PC_AI_RESTITUTION_EN_HOME);
         }
     };
 
@@ -119,9 +107,6 @@ public class PRRubriqueComptableResolver {
      * Map de mapping entre les prestations RFM et les rubriques comptables relatives
      */
     private static Map<String, String> mapRubriqueRestiutionRFM = new HashMap<String, String>() {
-        /**
-         * 
-         */
         private static final long serialVersionUID = 1L;
 
         {
@@ -194,7 +179,7 @@ public class PRRubriqueComptableResolver {
             throws Exception {
 
         return PRRubriqueComptableResolver.getCSRubrique(codePrestation, sousTypeCodePrestation,
-                PRRubriqueComptableResolver.mapRubriqueRestituionPC,
+                PRRubriqueComptableResolver.mapRubriqueRestitutionPC,
                 PRRubriqueComptableResolver.mapRubriqueRestiutionRFM, true);
     }
 

@@ -170,6 +170,10 @@ public abstract class PCAbstractRequerantDonneeFinanciereViewBean extends BJadeP
         return PCDroitHandler.getInfoHtmlRequerant(droit, requerant);
     }
 
+    public String getIdTiersRequerant() {
+        return requerant.getMembreFamille().getSimpleMembreFamille().getIdTiers();
+    }
+
     @Override
     public BSpy getSpy() {
 

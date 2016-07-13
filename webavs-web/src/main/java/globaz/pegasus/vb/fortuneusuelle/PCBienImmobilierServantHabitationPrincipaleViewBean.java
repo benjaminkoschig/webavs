@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import ch.globaz.common.domaine.Echeance.EcheanceType;
 import ch.globaz.pegasus.business.models.droit.MembreFamilleEtendu;
 import ch.globaz.pegasus.business.models.fortuneusuelle.BienImmobilierServantHabitationPrincipale;
 import ch.globaz.pegasus.business.models.fortuneusuelle.FortuneUsuelle;
@@ -24,6 +25,10 @@ public class PCBienImmobilierServantHabitationPrincipaleViewBean extends PCAbstr
      * 
      */
     private static final long serialVersionUID = 1L;
+
+    public String getTypeEcheance() {
+        return EcheanceType.BIEN_IMMOBILIER_HABITATION_PRINCIPALE.toString();
+    }
 
     /*
      * (non-Javadoc)

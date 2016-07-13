@@ -12,17 +12,15 @@ public enum PRSousTypeCodePrestationPC {
     PC_AI_108("108", 108, PRDomainDePrestation.AI),
     PC_AI_109("109", 109, PRDomainDePrestation.AI),
     PC_AI_110("110", 110, PRDomainDePrestation.AI),
+    PC_AI_112("112", 112, PRDomainDePrestation.AI),
 
     // Sous types PC AVS
     PC_AVS_100("100", 100, PRDomainDePrestation.AVS),
     PC_AVS_101("101", 101, PRDomainDePrestation.AVS),
     PC_AVS_102("102", 102, PRDomainDePrestation.AVS),
     PC_AVS_103("103", 103, PRDomainDePrestation.AVS),
-    PC_AVS_104("104", 104, PRDomainDePrestation.AVS);
-    // PC_AVS_105(
-    // "105",
-    // 105,
-    // PRTypeDePrestation.AVS);
+    PC_AVS_104("104", 104, PRDomainDePrestation.AVS),
+    PC_AVS_114("114", 114, PRDomainDePrestation.AVS);
 
     private static PRSousTypeCodePrestationPC[] convert(List<PRSousTypeCodePrestationPC> list) {
         PRSousTypeCodePrestationPC[] array = new PRSousTypeCodePrestationPC[list.size()];

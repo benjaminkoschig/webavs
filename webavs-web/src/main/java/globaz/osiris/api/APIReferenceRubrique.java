@@ -128,15 +128,16 @@ public interface APIReferenceRubrique {
     public final static String PC_AI_EN_HOME_HORS_CANTON_SPAS = "237210";
     public final static String PC_AI_EN_HOME_SASH = "237207";
     public final static String PC_AI_EN_HOME_SPAS = "237209";
+    public final static String PC_AI_EN_HOME = "237304";
     public final static String PC_AI_RESTITUTION_A_DOMICILE_ORDINAIRES_ESPECES = "237212";
     public final static String PC_AI_RESTITUTION_EN_HOME_HORS_CANTON_SASH = "237214";
     public final static String PC_AI_RESTITUTION_EN_HOME_HORS_CANTON_SPAS = "237216";
     public final static String PC_AI_RESTITUTION_EN_HOME_SASH = "237213";
     public final static String PC_AI_RESTITUTION_EN_HOME_SPAS = "237215";
-
-    public final static String PC_AVS = "237113";
+    public final static String PC_AI_RESTITUTION_EN_HOME = "237306";
 
     // Rubrique PC_AVS :
+    public final static String PC_AVS = "237113";
     public final static String PC_AVS_A_DOMICILE_ORDINAIRES_ESPECES = "237217";
     public final static String PC_AVS_A_RESTITUER = "237117";
     public final static String PC_AVS_ALLOCATIONS_DE_NOEL = "237205";
@@ -144,12 +145,14 @@ public interface APIReferenceRubrique {
     public final static String PC_AVS_EN_HOME_HORS_CANTON_SPAS = "237221";
     public final static String PC_AVS_EN_HOME_SASH = "237218";
     public final static String PC_AVS_EN_HOME_SPAS = "237220";
+    public final static String PC_AVS_EN_HOME = "237303";
     public final static String PC_AVS_RESTITUTION_A_DOMICILE_ORDINAIRES_ESPECES = "237222";
-    // N'est pas utilisé !!! public final static String PC_AVS_RESTITUTION_ALLOCATIONS_DE_NOEL = "237211";
     public final static String PC_AVS_RESTITUTION_EN_HOME_HORS_CANTON_SASH = "237224";
     public final static String PC_AVS_RESTITUTION_EN_HOME_HORS_CANTON_SPAS = "237226";
     public final static String PC_AVS_RESTITUTION_EN_HOME_SASH = "237223";
     public final static String PC_AVS_RESTITUTION_EN_HOME_SPAS = "237225";
+    public final static String PC_AVS_RESTITUTION_EN_HOME = "237305";
+
     // Clé alternée
     public final static String PC_COMPTE_COURANT_BLOCAGE = "237233";
     public final static String PCF_A_RESTITUER = "237142";
