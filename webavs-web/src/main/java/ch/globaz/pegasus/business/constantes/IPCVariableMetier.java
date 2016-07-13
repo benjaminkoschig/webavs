@@ -6,6 +6,9 @@ public interface IPCVariableMetier {
     public static final String CS_AMORTISSEMENT_ANNUEL_DESSAISISSEMENT_FORTUNE = "64008034";
     public static final String CS_ARGENT_POCHE_MEDICALISE = "64008001";
     public static final String CS_ARGENT_POCHE_NON_MEDICALISE = "64008002";
+    public static final String CS_PLAFOND_ANNUEL_HOME = "64008048";
+    public static final String CS_ARGENT_POCHE_HOME_AVS_ANNUEL = "64008046";
+    public static final String CS_ARGENT_POCHE_HOME_AI_ANNUEL = "64008047";
 
     public static final String CS_CATEGORIE_ARGENT_POCHE_LVPC_ESE_HANDICAP_PHYSIQUE = "64008043";
     public static final String CS_CATEGORIE_ARGENT_POCHE_LVPC_EMS_NONMED_PSY = "64008044";
@@ -27,6 +30,9 @@ public interface IPCVariableMetier {
     public final static String CS_FRACTION = "3";
     public static final String CS_FRACTION_REVENUS_PRIVILEGIES = "64008021";
     public static final String CS_FRACTIONS_FORTUNE_NON_VIEILLESSE = "64008022";
+
+    public static final String CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME = "64008049";
+    public static final String CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON = "64008050";
     public static final String CS_FRACTIONS_FORTUNE_VIEILLESSE_ENFANT = "64008023";
     public static final String CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME = "64008024";
     public static final String CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON = "64008025";
@@ -37,6 +43,10 @@ public interface IPCVariableMetier {
     public static final String CS_TAUX_IMPUTATION_LOYER_FRAIS_ACQUISITION = "64008041";
     public static final String CS_TAUX_IMPUTATION_SOUSLOCATIONS_FRAIS_ACUISITION = "64008042";
     public static final String CS_TAUX_PENSION_NON_RECONNUE = "64008035";
+
+    public static final String CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE = "64008014";
+    public static final String CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS = "64008051";
+
     public static final String DEPENSE_LOYER_PLAFOND_CELIBATAIRE = "64008031";
     public static final String DEPENSE_LOYER_PLAFOND_COUPLE = "64008032";
     public static final String DEPENSE_LOYER_PLAFOND_FAUTEUIL_ROULANT = "64008036";

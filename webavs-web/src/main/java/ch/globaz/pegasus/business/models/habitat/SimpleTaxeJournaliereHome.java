@@ -22,6 +22,16 @@ public class SimpleTaxeJournaliereHome extends JadeSimpleModel {
     private Boolean isParticipationLCA = Boolean.FALSE;
     private String montantJournalierLCA = null;
     private String primeAPayer = null;
+    private Boolean isDeplafonner = null;
+    private String montantFraisLongueDuree = null;
+
+    public Boolean getIsDeplafonner() {
+        return isDeplafonner;
+    }
+
+    public void setIsDeplafonner(Boolean isDeplafonner) {
+        this.isDeplafonner = isDeplafonner;
+    }
 
     public String getCsDestinationSortie() {
         return csDestinationSortie;
@@ -182,6 +192,14 @@ public class SimpleTaxeJournaliereHome extends JadeSimpleModel {
      */
     public void setPrimeAPayer(String primeAPayer) {
         this.primeAPayer = primeAPayer;
+    }
+
+    public String getMontantFraisLongueDuree() {
+        return montantFraisLongueDuree;
+    }
+
+    public void setMontantFraisLongueDuree(String montantFraisLongueDuree) {
+        this.montantFraisLongueDuree = montantFraisLongueDuree;
     }
 
 }

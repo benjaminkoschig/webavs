@@ -34,6 +34,9 @@ public class CalculDonneesHome extends JadeComplexModel {
     private Boolean isHorsCanton = null;
     private String numeroIdentification = null;
     private String csCategorieArgentPoche = null;
+    private String prixJournalier = null;
+    private Boolean isDeplafonner = null;
+    private String montantFraisLongueDuree = null;
 
     public String getCsCategorieArgentPoche() {
         return csCategorieArgentPoche;
@@ -42,8 +45,6 @@ public class CalculDonneesHome extends JadeComplexModel {
     public void setCsCategorieArgentPoche(String csCategorieArgentPoche) {
         this.csCategorieArgentPoche = csCategorieArgentPoche;
     }
-
-    private String prixJournalier = null;
 
     public String getCsServiceEtatPeriode() {
         return csServiceEtatPeriode;
@@ -228,6 +229,22 @@ public class CalculDonneesHome extends JadeComplexModel {
 
     public void setPrixJournalier(String prixJournalier) {
         this.prixJournalier = prixJournalier;
+    }
+
+    public Boolean getIsDeplafonner() {
+        return isDeplafonner;
+    }
+
+    public void setIsDeplafonner(Boolean isDeplafonner) {
+        this.isDeplafonner = isDeplafonner;
+    }
+
+    public String getMontantFraisLongueDuree() {
+        return montantFraisLongueDuree;
+    }
+
+    public void setMontantFraisLongueDuree(String montantFraisLongueDuree) {
+        this.montantFraisLongueDuree = montantFraisLongueDuree;
     }
 
     /*

@@ -26,6 +26,7 @@ public class SimpleBienImmobilierServantHabitationPrincipale extends JadeSimpleM
     private String nomCompagnie = null;
     private String partProprieteDenominateur = null;
     private String partProprieteNumerateur = null;
+    private Boolean isConstructionMoinsDixAns = Boolean.FALSE;
 
     public String getAutresTypeBien() {
         return autresTypeBien;
@@ -179,6 +180,24 @@ public class SimpleBienImmobilierServantHabitationPrincipale extends JadeSimpleM
 
     public void setPartProprieteNumerateur(String partProprieteNumerateur) {
         this.partProprieteNumerateur = partProprieteNumerateur;
+    }
+
+    /**
+     * Retourne une valeur booléenne permettant de savoir si l'habitation principale à moins de 10 ans
+     * 
+     * @return une valeur booléenne permettant de savoir si l'habitation principale à moins de 10 ans
+     */
+    public Boolean getIsConstructionMoinsDixAns() {
+        return isConstructionMoinsDixAns;
+    }
+
+    /**
+     * Définit à l'aide d'une valeur booléenne permettant de savoir si l'habitation principale à moins de 10 ans
+     * 
+     * @param constructionMoinsDixAns valeur booléenne permettant de savoir si l'habitation principale à moins de 10 ans
+     */
+    public void setIsConstructionMoinsDixAns(Boolean isConstructionMoinsDixAns) {
+        this.isConstructionMoinsDixAns = isConstructionMoinsDixAns;
     }
 
 }

@@ -79,6 +79,9 @@ public class CalculDonneesCC extends JadeComplexModel {
     private String bienImmoPrincipalNombrePersonnes = null;
     private String bienImmoPrincipalPartDenominateur = null;
     private String bienImmoPrincipalPartNumerateur = null;
+
+    private Boolean isBienImmoPrincipalDeMoinsDe10Ans;
+
     private String capitalLPPCsTypePropriete = null;
     private String capitalLPPFractionDenominateur = null;
     private String capitalLPPFractionNumerateur = null;
@@ -2163,6 +2166,15 @@ public class CalculDonneesCC extends JadeComplexModel {
      */
     public void setVehiculeMontant(String vehiculeMontant) {
         this.vehiculeMontant = vehiculeMontant;
+    }
+
+
+    public Boolean getIsBienImmoPrincipalDeMoinsDe10Ans() {
+        return isBienImmoPrincipalDeMoinsDe10Ans;
+    }
+
+    public void setIsBienImmoPrincipalDeMoinsDe10Ans(Boolean bienImmoPrincipalDeMoinsDe10Ans) {
+        this.isBienImmoPrincipalDeMoinsDe10Ans = bienImmoPrincipalDeMoinsDe10Ans;
     }
 
     /*

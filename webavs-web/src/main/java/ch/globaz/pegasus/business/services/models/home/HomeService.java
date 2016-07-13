@@ -3,6 +3,7 @@ package ch.globaz.pegasus.business.services.models.home;
 import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
+import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.pegasus.business.exceptions.models.home.ChambreMedicaliseeException;
 import ch.globaz.pegasus.business.exceptions.models.home.HomeException;
 import ch.globaz.pegasus.business.exceptions.models.home.MembreFamilleHomeException;
@@ -19,6 +20,7 @@ import ch.globaz.pegasus.business.models.home.PrixChambreSearch;
 import ch.globaz.pegasus.business.models.home.SimpleHome;
 import ch.globaz.pegasus.business.models.home.TypeChambre;
 import ch.globaz.pegasus.business.models.home.TypeChambreSearch;
+import ch.globaz.pegasus.businessimpl.services.models.home.PeriodesPrixChambre;
 
 public interface HomeService extends JadeApplicationService {
     /**
@@ -530,5 +532,8 @@ public interface HomeService extends JadeApplicationService {
      */
     public TypeChambre updateTypeChambre(TypeChambre typeChambre) throws TypeChambreException,
             JadePersistenceException, HomeException;
+
+    PeriodesPrixChambre getListePrixChambres(String idHome, String idTypeChambre, String dateDebut, String dateFin)
+            throws PrixChambreException, JadePersistenceException, HomeException, PropertiesException;
 
 }
