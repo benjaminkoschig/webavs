@@ -7,10 +7,16 @@ import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import java.util.ArrayList;
+import java.util.List;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.pegasus.business.constantes.EPCLoiCantonaleProperty;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCHomes;
+import ch.globaz.pegasus.business.constantes.IPCVariableMetier;
 import ch.globaz.pegasus.business.exceptions.models.home.ChambreMedicaliseeException;
 import ch.globaz.pegasus.business.exceptions.models.home.HomeException;
 import ch.globaz.pegasus.business.exceptions.models.home.MembreFamilleHomeException;
@@ -29,6 +35,8 @@ import ch.globaz.pegasus.business.models.home.PrixChambreSearch;
 import ch.globaz.pegasus.business.models.home.SimpleHome;
 import ch.globaz.pegasus.business.models.home.TypeChambre;
 import ch.globaz.pegasus.business.models.home.TypeChambreSearch;
+import ch.globaz.pegasus.business.models.variablemetier.VariableMetier;
+import ch.globaz.pegasus.business.models.variablemetier.VariableMetierSearch;
 import ch.globaz.pegasus.business.services.models.home.HomeService;
 import ch.globaz.pegasus.businessimpl.checkers.home.HomeChecker;
 import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
@@ -279,6 +287,73 @@ public class HomeServiceImpl extends PegasusAbstractServiceImpl implements HomeS
         prixChambreSearch.setForIdHome(home.getId());
 
         return this.findPrixChambre(prixChambreSearch);
+    }
+
+    @Override
+    public PeriodesPrixChambre getListePrixChambres(String idHome, String idTypeChambre, String dateDebut,
+            String dateFin) throws PrixChambreException, JadePersistenceException, HomeException, PropertiesException {
+
+        PeriodesPrixChambre returnObject = null;
+
+        // VS --> Plaffonement du prix des homes, liste de smontants admis en plus
+        if (EPCLoiCantonaleProperty.VALAIS.isLoiCantonPC()) {
+            returnObject = PeriodesPrixChambre.forPrixChambrewithMontantPlafond(
+                    getPrixChambreAsList(idTypeChambre, idHome, dateDebut, dateFin),
+                    getMontantsPlafondsAdmis(idTypeChambre, idHome, dateDebut, dateFin));
+        } else {
+            returnObject = PeriodesPrixChambre.forPrixChambreOnly(getPrixChambreAsList(idTypeChambre, idHome,
+                    dateDebut, dateFin));
+        }
+
+        return returnObject;
+
+    }
+
+    private List<PrixChambre> getPrixChambreAsList(String idTypeChambre, String idHome, String dateDebut, String dateFin)
+            throws JadePersistenceException {
+
+        PrixChambreSearch p = new PrixChambreSearch();
+        p.setForIdTypeChambre(idTypeChambre);
+
+        p.setForIdTypeChambre(String.valueOf(idTypeChambre));
+        p.setForDateDebut(dateDebut);
+
+        if (!dateFin.equals("0")) {
+            p.setForDateFin(dateFin);
+        }
+        p.setForIdHome(idHome);
+        p.setWhereKey("forPrixInPeriod");
+
+        List<PrixChambre> listeEnRetour = new ArrayList<PrixChambre>();
+
+        for (JadeAbstractModel model : JadePersistenceManager.search(p).getSearchResults()) {
+            listeEnRetour.add((PrixChambre) model);
+        }
+
+        return listeEnRetour;
+    }
+
+    private List<VariableMetier> getMontantsPlafondsAdmis(String idTypeChambre, String idHome, String dateDebut,
+            String dateFin) throws JadePersistenceException {
+
+        VariableMetierSearch vmSearch = new VariableMetierSearch();
+        vmSearch.setForCsTypeVariableMetier(IPCVariableMetier.CS_PLAFOND_ANNUEL_HOME);
+        vmSearch.setForDateDebut(dateDebut);
+
+        if (!dateFin.equals("0")) {
+            vmSearch.setForDateFin(dateFin);
+        }
+
+        vmSearch.setForLangue("F");
+        vmSearch.setWhereKey("forVariablesInPeriod");
+
+        List<VariableMetier> listeEnRetour = new ArrayList<VariableMetier>();
+
+        for (JadeAbstractModel model : JadePersistenceManager.search(vmSearch).getSearchResults()) {
+            listeEnRetour.add((VariableMetier) model);
+        }
+
+        return listeEnRetour;
     }
 
     /*

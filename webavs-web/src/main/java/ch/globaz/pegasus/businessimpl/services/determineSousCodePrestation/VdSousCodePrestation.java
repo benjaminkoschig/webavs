@@ -14,13 +14,12 @@ import ch.globaz.pegasus.business.constantes.IPCHomes;
 import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
-import ch.globaz.pegasus.business.exceptions.models.lot.ComptabiliserLotException;
 import ch.globaz.pegasus.business.models.calcul.CalculDonneesHome;
 import ch.globaz.pegasus.business.models.home.SimpleHome;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pegasus.businessimpl.utils.calcul.PeriodePCAccordee;
 
-public class VdSousCodePrestation extends DetermineSousCodePreation {
+public class VdSousCodePrestation extends DetermineSousCodePrestation {
 
     private String descriptionHome(CalculDonneesHome home) {
         String descriptionHome = "N�:" + home.getNumeroIdentification();
@@ -30,25 +29,17 @@ public class VdSousCodePrestation extends DetermineSousCodePreation {
             descriptionHome = descriptionHome + " - " + simpleHome.getNomBatiment();
 
         } catch (JadeApplicationServiceNotAvailableException e) {
-            JadeCodingUtil.catchException(this, "detetrmineSousCode", e);
+            JadeCodingUtil.catchException(this, "determineSousCode", e);
         } catch (JadePersistenceException e) {
-            JadeCodingUtil.catchException(this, "detetrmineSousCode", e);
+            JadeCodingUtil.catchException(this, "determineSousCode", e);
         } catch (JadeApplicationException e) {
-            JadeCodingUtil.catchException(this, "detetrmineSousCode", e);
+            JadeCodingUtil.catchException(this, "determineSousCode", e);
         }
         return descriptionHome;
     }
 
-    /**
-     * Permet de trouver le code système de la rubrique de restitution à utilisé.
-     * 
-     * @param ovRestitution
-     * @return code system qui définit la rubrique
-     * @throws ComptabiliserLotException
-     */
-
     @Override
-    public String detetrmineSousCode(PeriodePCAccordee periode, boolean isConjoint) throws CalculException {
+    public String determineSousCode(PeriodePCAccordee periode, boolean isConjoint) throws CalculException {
         final String csRoleBeneficiaire = (isConjoint ? IPCDroits.CS_ROLE_FAMILLE_CONJOINT
                 : IPCDroits.CS_ROLE_FAMILLE_REQUERANT);
 

@@ -93,6 +93,10 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
         {
             put(IPCVariableMetier.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE,
                     Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_LEGENDE);
+            put(IPCVariableMetier.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME,
+                    Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME_LEGENDE);
+            put(IPCVariableMetier.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON,
+                    Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON_LEGENDE);
             put(IPCVariableMetier.CS_FRACTIONS_FORTUNE_VIEILLESSE_ENFANT,
                     Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_ENFANT_LEGENDE);
             put(IPCVariableMetier.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME,
@@ -100,6 +104,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             put(IPCVariableMetier.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON,
                     Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON_LEGENDE);
             put(IPCVariableMetier.CS_FRACTION_REVENUS_PRIVILEGIES, Attribut.CS_FRACTION_REVENUS_PRIVILEGIES_LEGENDE);
+            put(IPCVariableMetier.CS_PLAFOND_ANNUEL_HOME, Attribut.CS_PLAFOND_ANNUEL_HOME);
         }
     };
 
@@ -119,8 +124,12 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
                     Attribut.CS_TAUX_IMPUTATION_LOYER_FRAIS_ACQUISITION);
             put(IPCVariableMetier.CS_TAUX_IMPUTATION_SOUSLOCATIONS_FRAIS_ACUISITION,
                     Attribut.CS_TAUX_IMPUTATION_SOUSLOCATIONS_FRAIS_ACUISITION);
+            put(IPCVariableMetier.CS_PLAFOND_ANNUEL_HOME, Attribut.CS_PLAFOND_ANNUEL_HOME);
+            put(IPCVariableMetier.CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE, Attribut.FRAIS_ENTRETIEN_IMMEUBLE);
+            put(IPCVariableMetier.CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS,
+                    Attribut.FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS);
         }
-    };;
+    };
     private final static Map<String, Attribut> mappageVarMetFinalisation = new HashMap<String, Attribut>() {
         /**
          * 
@@ -136,6 +145,10 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             put(IPCVariableMetier.CS_DEDUCTION_FORAITAIRE_FORTUNE_COUPLES, Attribut.CS_DEDUCTION_FORTUNE_COUPLE);
             put(IPCVariableMetier.CS_DEDUCTION_FORAITAIRE_FORTUNE_ENFANTS, Attribut.CS_DEDUCTION_FORTUNE_ENFANT);
             put(IPCVariableMetier.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE, Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE);
+            put(IPCVariableMetier.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME,
+                    Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME);
+            put(IPCVariableMetier.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON,
+                    Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON);
             put(IPCVariableMetier.CS_FRACTIONS_FORTUNE_VIEILLESSE_ENFANT,
                     Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_ENFANT);
             put(IPCVariableMetier.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME, Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME);
@@ -158,6 +171,8 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             put(IPCVariableMetier.CS_BESOINS_VITAUX_COUPLES, Attribut.CS_BESOINS_VITAUX_COUPLES);
             put(IPCVariableMetier.CS_ARGENT_POCHE_MEDICALISE, Attribut.CS_ARGENT_POCHE_MEDICALISE);
             put(IPCVariableMetier.CS_ARGENT_POCHE_NON_MEDICALISE, Attribut.CS_ARGENT_POCHE_NON_MEDICALISE);
+            put(IPCVariableMetier.CS_ARGENT_POCHE_HOME_AVS_ANNUEL, Attribut.CS_ARGENT_POCHE_HOME_AVS_ANNUEL);
+            put(IPCVariableMetier.CS_ARGENT_POCHE_HOME_AI_ANNUEL, Attribut.CS_ARGENT_POCHE_HOME_AI_ANNUEL);
             put(IPCVariableMetier.CS_FRACTION_REVENUS_PRIVILEGIES, Attribut.CS_FRACTION_REVENUS_PRIVILEGIES);
             put(IPCVariableMetier.CS_FORFAIT_CHARGES, Attribut.CS_FORFAIT_CHARGES);
             put(IPCVariableMetier.DEPENSE_LOYER_PLAFOND_COUPLE, Attribut.DEPENSE_LOYER_PLAFOND_COUPLE);
@@ -173,6 +188,12 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             put(IPCVariableMetier.MENSUALISATION_IJ_CHOMAGE, Attribut.MENSUALISATION_IJ_CHOMAGE);
             put(IPCVariableMetier.CS_TAUX_IMPUTATION_SOUSLOCATIONS_FRAIS_ACUISITION,
                     Attribut.CS_TAUX_IMPUTATION_SOUSLOCATIONS_FRAIS_ACUISITION);
+            put(IPCVariableMetier.CS_PLAFOND_ANNUEL_HOME, Attribut.CS_PLAFOND_ANNUEL_HOME);
+            put(IPCVariableMetier.CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE, Attribut.FRAIS_ENTRETIEN_IMMEUBLE);
+
+            put(IPCVariableMetier.CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS,
+                    Attribut.FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS);
+
         }
     };
 
@@ -696,25 +717,6 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
                 }
 
-                // if (donnee.getIsDessaisissementRevenu()) {
-                // // traitement en cas de dessaisissement auto de revenu
-                // StrategieCalcul strategie = StrategiesFactory.getStrategieDessaisissementRevenu();
-                // strategie.calcule(donnee, context, tupleRoot);
-                // } else if (donnee.getIsDessaisissementFortune()) {
-                // // traitement en cas de dessaisissement auto de fortune
-                // StrategieCalcul strategie = StrategiesFactory.getStrategieDessaisissementFortune();
-                // strategie.calcule(donnee, context, tupleRoot);
-                // } else {
-                //
-                // for (StrategiesFactory factory : PeriodePCAccordee.factories) {
-                //
-                // StrategieCalcul strategie = factory.getStrategie(donnee.getCsTypeDonneeFinanciere(),
-                // this.getStrDateDebut());
-                // if (strategie != null) {
-                // strategie.calcule(donnee, context, tupleRoot);
-                // }
-                // }
-                // }
             }
             // ON set le homme pour la période --Ce qui va définir le type de séparation
             if (tupleRoot.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_NOMBRE_CHAMBRES) > 0) {
@@ -800,38 +802,6 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
                     setCCRetenuByContainer(listeCC.get(IPCValeursPlanCalcul.STATUS_REFUS));
                 }
 
-                // CalculComparatif ccRetenu = null;
-                // float somme = -1f;
-                // Set<CalculComparatif> ccEgaux = new HashSet<CalculComparatif>();
-                // // chercher le(s) cc avec le montant le plus favorable
-                // for (CalculComparatif cc : this.calculsComparatifs) {
-                //
-                // float ccSomme = Float.parseFloat(cc.getMontantPCMensuel());
-                // if ((ccRetenu == null) || (ccSomme > somme)) {
-                // ccRetenu = cc;
-                // somme = ccSomme;
-                // ccEgaux.clear();
-                // ccEgaux.add(cc);
-                // } else if ((ccSomme == somme) && !this.containsCcConjoint(ccEgaux, cc)) {
-                // ccEgaux.add(cc);
-                // }
-                // }
-                //
-                // // si plusieurs cc retenus ont le même montant, choisir celui dont les enfants sont les plus jeunes
-                // if (ccEgaux.size() > 1) {
-                // ccRetenu = this.chercheCCCadet(ccEgaux);
-                //
-                // }
-                //
-                // if (ccRetenu != null) {
-                // ccRetenu.setPlanRetenu(true);
-                // if (ccRetenu.getCcConjoint() != null) {
-                // ccRetenu.getCcConjoint().setPlanRetenu(true);
-                // }
-                // } else {
-                // throw new CalculException(
-                // "Error happened while trying to find best calcul comparatif! None of them was choosen.");
-                // }
                 break;
         }
     }

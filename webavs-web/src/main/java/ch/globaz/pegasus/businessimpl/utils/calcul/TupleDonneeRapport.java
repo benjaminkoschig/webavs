@@ -255,4 +255,36 @@ public class TupleDonneeRapport implements Serializable {
         }
         return "(" + label + "{" + libelle + " ; " + legende + "}=" + valeur + ")" + enfants.values();
     }
+
+    /**
+     * Convertis une valeur booléenne vers une valeur pouvant être stockées dans les tuples</br> <code>true</code> sera
+     * convertis vers la valeur String '1' et <code>false</code> sera convertis vers la valeur String '0'
+     * 
+     * @param value la valeur booléenne à convertir
+     * @return La valeur booléenne convertie
+     */
+    public static float writeBoolean(boolean value) {
+        if (value) {
+            return 1.0f;
+        } else {
+            return 0.0f;
+        }
+    }
+
+    /**
+     * Lis une valeur booléen stockée dans les tuples...
+     * Oui, les valeurs booléenne sont stockées '0' ou '1' dans les tuples de données
+     * 
+     * @param value la valeur booléenne sous forme de string ('1' ou '0')
+     * @return <code>true</code> si <code>value</code> vaut '1', <code>false</code> si <code>value</code> vaut '0'. Dans
+     *         tous les autres cas une <code></code> sera lancée
+     */
+    public static boolean readBoolean(float value) {
+        if (Float.compare(value, 0.5f) > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

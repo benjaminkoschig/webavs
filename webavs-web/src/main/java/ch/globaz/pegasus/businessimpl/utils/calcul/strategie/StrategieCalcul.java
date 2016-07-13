@@ -199,6 +199,27 @@ public abstract class StrategieCalcul {
     }
 
     /**
+     * Récupère le tuple associé à la clé/valeur. Si la clé n'existe pas,
+     * elle est créé avec comme valeur '0' qui représente <code>false</code>.
+     * 
+     * @param base
+     * @param cle
+     * @param value
+     * @return
+     * @throws CalculException
+     */
+    protected TupleDonneeRapport getOrCreateChild(TupleDonneeRapport base, String cle, boolean value)
+            throws CalculException {
+        TupleDonneeRapport result = base.getEnfants().get(cle);
+        if (result == null) {
+            result = new TupleDonneeRapport(cle, 0);
+            base.getEnfants().put(cle, result);
+        }
+        this.ajouteSomme(result, cle, TupleDonneeRapport.writeBoolean(value));
+        return result;
+    }
+
+    /**
      * Récupère le tuple associé à une clé et ajoute au montant existant la somme en paramètre. Si la clé n'existe pas,
      * elle est créé avec comme montant initial la somme en paramètre.
      * 

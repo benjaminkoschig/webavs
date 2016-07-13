@@ -111,40 +111,54 @@ public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFus
             throw new CalculException("TypeRenteRequerant should not be null");
         }
 
+        // D0173
+        int nbPersonnes = (Integer) context.get(Attribut.NB_PARENTS);
+        float nbHomes = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_NOMBRE_CHAMBRES);
+        boolean isAllHome = ((int) nbHomes >= nbPersonnes);
+
         Float fractionFortune = null;
 
         if (TypeRenteMap.listeCsRenteSurvivant.contains(typeRenteRequerant)
                 || TypeRenteMap.listeCsRenteInvalidite.contains(typeRenteRequerant)) {
             // rente survivant ou invalidite
-            fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
-                    .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE)).getValeurCourante());
-            legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE;
+            if (isAllHome) {
+                fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
+                        .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME)).getValeurCourante());
+                legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME;
+            } else {
+                fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
+                        .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON)).getValeurCourante());
+                legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON;
+            }
         } else if (TypeRenteMap.listeCsRenteVieillesse.contains(typeRenteRequerant)) {
             // rente vieillesse
 
-            int nbPersonnes = (Integer) context.get(Attribut.NB_PARENTS);
-            float nbHomes = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_NOMBRE_CHAMBRES);
-
-            if ((int) nbHomes >= nbPersonnes) {
-                if (TypeRenteMap.listeCsRenteInvalidite.contains(typeRenteConjoint)) {
+            if (TypeRenteMap.listeCsRenteInvalidite.contains(typeRenteConjoint)) {
+                if (isAllHome) {
                     fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
-                            .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE)).getValeurCourante());
-                    legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE;
+                            .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME)).getValeurCourante());
+                    legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME;
                 } else {
+                    fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
+                            .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON)).getValeurCourante());
+                    legende = Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON;
+                }
+            } else {
+                if (isAllHome) {
                     fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
                             .get(Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME)).getValeurCourante());
                     legende = Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME;
+                } else {
+                    fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
+                            .get(Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON)).getValeurCourante());
+                    legende = Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON;
                 }
-            } else {
-                fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
-                        .get(Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON)).getValeurCourante());
-                legende = Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON;
             }
-
         } else {
             // sans rente
+
             fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
-                    .get(Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME)).getLegendeCourante());
+                    .get(Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME)).getValeurCourante());
             legende = Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME;
         }
 

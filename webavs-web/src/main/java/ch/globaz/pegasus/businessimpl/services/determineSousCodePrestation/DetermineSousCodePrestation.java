@@ -7,31 +7,30 @@ import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.businessimpl.utils.calcul.PeriodePCAccordee;
 
-public abstract class DetermineSousCodePreation {
+public abstract class DetermineSousCodePrestation {
+
+    private static final String PACKAGE = "ch.globaz.pegasus.businessimpl.services.determineSousCodePrestation.";
 
     /**
-     * Permet de trouve la class qui vas être utilisé pour définir les sous type genre de prestation. Si la propriété
-     * common.prestation.sousTypesGenrePrestationActif est à false on ne devrait pas utiliser cette class. Sinon on va
-     * déterminer le nom de la class a utiliser en ce basant sur cette propriété pegasus.pegasus.cantonCaisse. Ce qui
-     * veut dire que lorsque la propriété common.prestation.sousTypesGenrePrestationActif est a true il faut créer un
-     * class spécifique.
+     * Retourne une instance de la classe à utiliser pour définir les sous types genre de prestation. Si la
+     * propriété common.prestation.sousTypesGenrePrestationActif est à false on ne devrait pas utiliser cette classe.
+     * Sinon on va déterminer le nom de la class à utiliser en se basant sur la propriété pegasus.pegasus.cantonCaisse.
+     * En résumé, lorsque la propriété common.prestation.sousTypesGenrePrestationActif est a true il faut créer une
+     * classe spécifique.
      * 
-     * @return la Class qui doit définir le sous type genre de prestation
+     * @return la Classe qui doit définir le sous type genre de prestation
      * @throws JadeApplicationException
      */
-    public static DetermineSousCodePreation factory() throws JadeApplicationException {
+    public static DetermineSousCodePrestation factory() throws JadeApplicationException {
         String nameClass = null;
-        DetermineSousCodePreation sousCode = null;
+        DetermineSousCodePrestation sousCode = null;
         String cantonCaisse = EPCProperties.CANTON_CAISSE.getValue();
         if (CommonProperties.SOUS_TYPE_GENRE_PRESTATION_ACTIF.getBooleanValue()) {
-
             try {
                 nameClass = JadeStringUtil.firstLetterToUpperCase(cantonCaisse.toLowerCase()) + "SousCodePrestation";
-                sousCode = (DetermineSousCodePreation) Class.forName(
-                        "ch.globaz.pegasus.businessimpl.services.determineSousCodePrestation." + nameClass)
-                        .newInstance();
+                sousCode = (DetermineSousCodePrestation) Class.forName(PACKAGE + nameClass).newInstance();
             } catch (InstantiationException e) {
-                throw new CalculException("Unable to insantiat the class: " + nameClass + " ");
+                throw new CalculException("Unable to instantiate the class: " + nameClass + " ");
             } catch (IllegalAccessException e) {
                 throw new CalculException("IllegalAcess to this class: " + nameClass + " ");
             } catch (ClassNotFoundException e) {
@@ -45,11 +44,19 @@ public abstract class DetermineSousCodePreation {
         } else {
             throw new CalculException("The properties: "
                     + CommonProperties.SOUS_TYPE_GENRE_PRESTATION_ACTIF.getPropertyName() + "is false and this class("
-                    + DetermineSousCodePreation.class.getName() + ") must not be used");
+                    + DetermineSousCodePrestation.class.getName() + ") must not be used");
         }
         return sousCode;
     }
 
-    public abstract String detetrmineSousCode(PeriodePCAccordee periode, boolean isConjoint)
+    /**
+     * Permet de déterminer le code système de la rubrique de restitution à  utiliser.
+     * 
+     * @param periode
+     * @param isConjoint
+     * @return
+     * @throws JadeApplicationException
+     */
+    public abstract String determineSousCode(PeriodePCAccordee periode, boolean isConjoint)
             throws JadeApplicationException;
 }

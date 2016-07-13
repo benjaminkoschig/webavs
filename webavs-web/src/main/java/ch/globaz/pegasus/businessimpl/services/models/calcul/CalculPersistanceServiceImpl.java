@@ -60,7 +60,7 @@ import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.business.services.models.calcul.CalculPersistanceService;
 import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
-import ch.globaz.pegasus.businessimpl.services.determineSousCodePrestation.DetermineSousCodePreation;
+import ch.globaz.pegasus.businessimpl.services.determineSousCodePrestation.DetermineSousCodePrestation;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculComparatif;
 import ch.globaz.pegasus.businessimpl.utils.calcul.ICalculComparatif;
 import ch.globaz.pegasus.businessimpl.utils.calcul.PeriodePCAccordee;
@@ -409,11 +409,10 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
     private String determineSousTypeGenre(PeriodePCAccordee periode, boolean isConjoint)
             throws JadeApplicationException {
         String sousTypeGenrePrestation = null;
-        // On ne sauvegarde pas de sous code si cela n'est pas définit
+        // On ne sauvegarde pas de sous code si cela n'est pas définit via la propriété
         if (CommonProperties.SOUS_TYPE_GENRE_PRESTATION_ACTIF.getBooleanValue()) {
-
-            DetermineSousCodePreation sousCode = DetermineSousCodePreation.factory();
-            sousTypeGenrePrestation = sousCode.detetrmineSousCode(periode, isConjoint);
+            DetermineSousCodePrestation sousCode = DetermineSousCodePrestation.factory();
+            sousTypeGenrePrestation = sousCode.determineSousCode(periode, isConjoint);
 
             if (sousTypeGenrePrestation == null) {
                 throw new CalculException("Unable to find the sousCodeGenrePresation");

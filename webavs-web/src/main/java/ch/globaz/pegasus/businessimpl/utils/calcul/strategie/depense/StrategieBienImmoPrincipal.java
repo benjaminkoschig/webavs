@@ -32,6 +32,11 @@ public class StrategieBienImmoPrincipal extends StrategieCalculDepense {
             TupleDonneeRapport tupleHabitatPrincipal = this.getOrCreateChild(resultatExistant,
                     IPCValeursPlanCalcul.CLE_INTER_HABITATION_PRINCIPALE, 0.0f);
 
+            // L'habitation principale à t'elle moins de 10 ans
+            this.getOrCreateChild(resultatExistant,
+                    IPCValeursPlanCalcul.CLE_INTER_BIEN_IMMOBILIER_HABITATION_PRINCIPALE_MOINS_DE_10_ANS,
+                    donnee.getIsBienImmoPrincipalDeMoinsDe10Ans());
+
             float fraction = checkAmoutAndParseAsFloat(donnee.getBienImmoPrincipalPartNumerateur())
                     / checkAmoutAndParseAsFloat(donnee.getBienImmoPrincipalPartDenominateur());
 

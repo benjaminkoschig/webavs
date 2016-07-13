@@ -16,12 +16,13 @@ public class StrategieFinalDepenseHome implements StrategieCalculFinalisation {
     @Override
     public void calcule(TupleDonneeRapport donnee, CalculContext context, Date dateDebut) throws CalculException {
 
+        String legende = "";
         float somme = 0;
         for (String champ : StrategieFinalDepenseHome.champs) {
             somme += donnee.getValeurEnfant(champ);
+            legende += donnee.getLegendeEnfant(champ);
         }
 
-        donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL, somme));
-
+        donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL, somme, legende));
     }
 }
