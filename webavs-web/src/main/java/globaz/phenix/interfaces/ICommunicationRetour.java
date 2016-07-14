@@ -268,4 +268,12 @@ public interface ICommunicationRetour extends BIEntity {
     public abstract void updateCas(BTransaction transaction) throws Exception;
 
     public void wantCallValidate(boolean newBoolean);
+
+    public String getMontantTotalRenteAVS();
+
+    public String getMessageRenteAVS();
+
+    public void setMontantTotalRenteAVS(String montantTotalRenteAVS);
+
+    public void setMessageRenteAVS(String messageRenteAVS);
 }

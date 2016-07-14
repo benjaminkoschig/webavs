@@ -25,138 +25,52 @@ import globaz.pyxis.db.tiers.TITiersViewBean;
 import java.util.Hashtable;
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Communication fiscale en retour.
+ * 
+ * @author dcl
+ * 
+ */
 public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEntity implements ICommunicationRetour,
         java.io.Serializable, FWViewBeanInterface {
 
     private static final long serialVersionUID = 1L;
-    public final static String CS_A_CONTROLER = "612001";
-    public final static String CS_ABANDONNE = "612005";
-    // changement de genre
-    public final static String CS_AFI_IND = "619001";
-
-    public final static String CS_AVERTISSEMENT = "612008";
-
-    public final static String CS_COMPTABILISE = "612007";
-
-    public final static String CS_ENQUETE = "612009";
-
-    public final static String CS_ERREUR = "612003";
-
-    public final static String CS_IND_AFI = "619002";
-
-    public final static String CS_RECEPTIONNE = "612002";
-
-    // code systeme
-    // EtatCommunicationsFiscalesRetour
-    public final static String CS_SANS_ANOMALIE = "612006";
-
-    public final static String CS_VALIDE = "612004";
-
-    public final static String defaultMenu = "CommunicationFiscaleRetour-default";
-
-    public final static String LOG_SOURCE_COMPTABILISATION = "1003";
-
-    public final static String LOG_SOURCE_GENERATION = "1002";
-
-    public final static String LOG_SOURCE_RECEPTION = "1000";
-
-    public final static String LOG_SOURCE_VALIDATION = "1001";
-
-    /**
-     * Renvoie le nom du menu a appelé en fonction de l'état du journal
-     * 
-     * @return
-     */
-    private final static Hashtable<String, String> menuTable = new Hashtable<String, String>();
-
-    static public String getMenuName(String statusCom) {
-        if (CPCommunicationFiscaleRetourViewBean.menuTable.isEmpty()) {
-            CPCommunicationFiscaleRetourViewBean.menuTable.put(CPCommunicationFiscaleRetourViewBean.CS_A_CONTROLER,
-                    CPCommunicationFiscaleRetourViewBean.defaultMenu);
-            CPCommunicationFiscaleRetourViewBean.menuTable.put(CPCommunicationFiscaleRetourViewBean.CS_RECEPTIONNE,
-                    CPCommunicationFiscaleRetourViewBean.defaultMenu);
-            // Si menu dynamique
-            // menuTable.put(CPCommunicationFiscaleRetourViewBean.CS_ERREUR,
-            // "Communications-communicationFiscaleRetour-Abandonner");
-            CPCommunicationFiscaleRetourViewBean.menuTable.put(CPCommunicationFiscaleRetourViewBean.CS_ERREUR,
-                    CPCommunicationFiscaleRetourViewBean.defaultMenu);
-            CPCommunicationFiscaleRetourViewBean.menuTable.put(CPCommunicationFiscaleRetourViewBean.CS_ABANDONNE,
-                    CPCommunicationFiscaleRetourViewBean.defaultMenu);
-            CPCommunicationFiscaleRetourViewBean.menuTable.put(CPCommunicationFiscaleRetourViewBean.CS_SANS_ANOMALIE,
-                    CPCommunicationFiscaleRetourViewBean.defaultMenu);
-            CPCommunicationFiscaleRetourViewBean.menuTable.put(CPCommunicationFiscaleRetourViewBean.CS_AVERTISSEMENT,
-                    CPCommunicationFiscaleRetourViewBean.defaultMenu);
-            CPCommunicationFiscaleRetourViewBean.menuTable.put(CPCommunicationFiscaleRetourViewBean.CS_COMPTABILISE,
-                    CPCommunicationFiscaleRetourViewBean.defaultMenu);
-        }
-        String dynamicMenu = CPCommunicationFiscaleRetourViewBean.menuTable.get(statusCom);
-        if (dynamicMenu == null) {
-            return CPCommunicationFiscaleRetourViewBean.defaultMenu;
-        } else {
-            return dynamicMenu;
-        }
-
-    }
+    public static final String CS_A_CONTROLER = "612001";
+    public static final String CS_ABANDONNE = "612005";
+    public static final String CS_AFI_IND = "619001";
+    public static final String CS_AVERTISSEMENT = "612008";
+    public static final String CS_COMPTABILISE = "612007";
+    public static final String CS_ENQUETE = "612009";
+    public static final String CS_ERREUR = "612003";
+    public static final String CS_IND_AFI = "619002";
+    public static final String CS_RECEPTIONNE = "612002";
+    public static final String CS_SANS_ANOMALIE = "612006";
+    public static final String CS_VALIDE = "612004";
+    public static final String defaultMenu = "CommunicationFiscaleRetour-default";
+    public static final String LOG_SOURCE_COMPTABILISATION = "1003";
+    public static final String LOG_SOURCE_GENERATION = "1002";
+    public static final String LOG_SOURCE_RECEPTION = "1000";
+    public static final String LOG_SOURCE_VALIDATION = "1001";
 
     private AFAffiliation affiliation = null;
-
     private AFAffiliation affiliationConjoint = null;
-
-    // public String getNumIfd() {
-    // String numIfd = "";
-    // if (getAnnee1() != null||getAnnee1() != ""){
-    // try {
-    // CPPeriodeFiscaleManager periode = new CPPeriodeFiscaleManager();
-    // periode.setSession(getSession());
-    // periode.setForAnneeDecisionDebut(getAnnee1());
-    // periode.find();
-    // if(periode.size()>0){
-    // numIfd = ((CPPeriodeFiscale)periode.getFirstEntity()).getNumIfd();
-    // }
-    // } catch (Exception e) {
-    // JadeLogger.error(this, e);
-    // }
-    // }else{
-    // if (getTiers() != null) {
-    // return getPeriodeFiscale().getNumIfd();
-    // }
-    // }
-    // return numIfd;
-    // }
-
-    private java.lang.String annee1 = "";
-
+    private String annee1 = "";
     private String annee2 = "";
-
     private String autreRevenu = "";
-
     private String canton = "";
-
     // Zone de travail
     private String cantonJournal = "";
-
     private String cantonJournalBk = "";
-
     private String capital = "";
-
     private String changementGenre = "";
-
     private String changementGenreConjoint = "";
-
     private String codeSexe = "";
-
     private ICommunicationRetour commFiscaleFils;
-
     private CPCommunicationFiscale communicationFiscale = null;
-
     private TITiersViewBean conjoint = null;
-
     private String cotisation1 = "";
-
     private String cotisation2 = "";
-
     private String dateFortune = "";
-
     private String dateRetour = "";
     private String debutExercice1 = "";
     private String debutExercice2 = "";
@@ -168,7 +82,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     private String etatCivil = "";
     private String finExercice1 = "";
     private String finExercice2 = "";
-    private java.lang.String fortune = "";
+    private String fortune = "";
     private Boolean generation = new Boolean(false);
     private String geNom = "";
     private String genreAffilie = "";
@@ -181,12 +95,12 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     private String idAffiliationConjoint = "";
     private String idCommunication = "";
     private String idConjoint = "";
-    private java.lang.String idIfd = "";
+    private String idIfd = "";
     private String idJournalRetour = "";
     private String idLog = "";
     private String idParametrePlausi = "";
     private String idRetour = "";
-    private java.lang.String idTiers = "";
+    private String idTiers = "";
     private String impression = "";
     private boolean isForBackup = false;
     private boolean isForRetourOriginale = false;
@@ -197,15 +111,17 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     private String lastUser = "";
     private String[] listIdRetour = null;
     private String majNumContribuable = "";
+    private String messageRenteAVS = "";
+    private String montantTotalRenteAVS = "";
     private String neNumContribuable = "";
     private String nom = "";
     private String numAffilie = "";
     private String numAffilieRecu = "";
     private String numAvs = "";
     private String numAvsFisc = "";
-    private java.lang.String numContribuable = "";
-    private java.lang.String numContribuableRecu = "";
-    private java.lang.String numIfd = "";
+    private String numContribuable = "";
+    private String numContribuableRecu = "";
+    private String numIfd = "";
     private CPPeriodeFiscale periodeFiscale = null;
     private String prenom = "";
     private String rachatLpp = "";
@@ -226,14 +142,12 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     private String vsNomPrenomCjt = "";
     private String vsNumAffilie = "";
     private String vsNumContribuable = "";
+
     private boolean wantAfterRetrieve = false;
     private boolean wantControleSpy = true;
     private Boolean wantDetail = Boolean.FALSE;
-
     private boolean wantDonneeBase = false;
-
     private boolean wantDonneeContribuable = false;
-
     private boolean wantMajBackup = false;
     private boolean wantPlausibilite = true;
     private boolean wantUpdateJournal = false;
@@ -243,6 +157,39 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
      */
     public CPCommunicationFiscaleRetourViewBean() {
         super();
+    }
+
+    /**
+     * Renvoie le nom du menu a appelé en fonction de l'état du journal
+     * 
+     * @return
+     */
+    private static final Hashtable<String, String> menuTable = new Hashtable<String, String>();
+
+    public static String getMenuName(String statusCom) {
+        if (CPCommunicationFiscaleRetourViewBean.menuTable.isEmpty()) {
+            CPCommunicationFiscaleRetourViewBean.menuTable.put(CPCommunicationFiscaleRetourViewBean.CS_A_CONTROLER,
+                    CPCommunicationFiscaleRetourViewBean.defaultMenu);
+            CPCommunicationFiscaleRetourViewBean.menuTable.put(CPCommunicationFiscaleRetourViewBean.CS_RECEPTIONNE,
+                    CPCommunicationFiscaleRetourViewBean.defaultMenu);
+            CPCommunicationFiscaleRetourViewBean.menuTable.put(CPCommunicationFiscaleRetourViewBean.CS_ERREUR,
+                    CPCommunicationFiscaleRetourViewBean.defaultMenu);
+            CPCommunicationFiscaleRetourViewBean.menuTable.put(CPCommunicationFiscaleRetourViewBean.CS_ABANDONNE,
+                    CPCommunicationFiscaleRetourViewBean.defaultMenu);
+            CPCommunicationFiscaleRetourViewBean.menuTable.put(CPCommunicationFiscaleRetourViewBean.CS_SANS_ANOMALIE,
+                    CPCommunicationFiscaleRetourViewBean.defaultMenu);
+            CPCommunicationFiscaleRetourViewBean.menuTable.put(CPCommunicationFiscaleRetourViewBean.CS_AVERTISSEMENT,
+                    CPCommunicationFiscaleRetourViewBean.defaultMenu);
+            CPCommunicationFiscaleRetourViewBean.menuTable.put(CPCommunicationFiscaleRetourViewBean.CS_COMPTABILISE,
+                    CPCommunicationFiscaleRetourViewBean.defaultMenu);
+        }
+        String dynamicMenu = CPCommunicationFiscaleRetourViewBean.menuTable.get(statusCom);
+        if (dynamicMenu == null) {
+            return CPCommunicationFiscaleRetourViewBean.defaultMenu;
+        } else {
+            return dynamicMenu;
+        }
+
     }
 
     @Override
@@ -296,6 +243,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
             getPeriodeFiscaleAffichage();
             numAffilie = getAffiliation().getAffilieNumero();
         }
+
         // Si la demande est comptabilisée => recherche si une plus récente
         if (!JadeStringUtil.isBlankOrZero(getIdCommunication())) {
             CPCommunicationFiscale cf = new CPCommunicationFiscale();
@@ -309,12 +257,6 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.globall.db.BEntity#_beforeDelete(globaz.globall.db.BTransaction) On efface les messages de logs
-     * générés
-     */
     @Override
     protected void _afterUpdate(BTransaction transaction) throws Exception {
         if (CPCommunicationFiscaleRetourViewBean.CS_COMPTABILISE.equalsIgnoreCase(getStatus())) {
@@ -325,12 +267,6 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.globall.db.BEntity#_beforeDelete(globaz.globall.db.BTransaction) On efface les messages de logs
-     * générés
-     */
     @Override
     protected void _beforeDelete(BTransaction transaction) throws Exception {
         _suppressionDecision(transaction, "");
@@ -340,7 +276,6 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
 
     @Override
     protected void _copyPointersFromEntity(BEntity entity) throws Exception {
-        // TODO checker si entity est du bon type avant de caster
         setForBackup(((CPCommunicationFiscaleRetourViewBean) entity).isForBackup());
         setForRetourOriginale(((CPCommunicationFiscaleRetourViewBean) entity).isForRetourOriginale());
         super._copyPointersFromEntity(entity);
@@ -354,7 +289,6 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
         if (!isForBackup()) {
             return "CPCRETP";
         } else {
-            // isForBackup = false;
             return "CPCRETB";
         }
     }
@@ -409,6 +343,8 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
         dateRetour = statement.dbReadDateAMJ("IKDRET");
         annee1 = statement.dbReadNumeric("IKANN1");
         revenuAnnee1 = statement.dbReadNumeric("IKREV1", 2);
+        montantTotalRenteAVS = statement.dbReadNumeric("IKMTRA", 2);
+        messageRenteAVS = statement.dbReadString("IKMREA");
         debutExercice1 = statement.dbReadDateAMJ("IKDDE1");
         finExercice1 = statement.dbReadDateAMJ("IKDFI1");
         revenuAnnee2 = statement.dbReadNumeric("IKREV2", 2);
@@ -443,13 +379,6 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
         changementGenreConjoint = statement.dbReadNumeric("IKTCHC");
         genreConjoint = statement.dbReadNumeric("IKTGCJ");
         reportType = statement.dbReadNumeric("IKRETY");
-        // Inforom 550 - Ajout champ pour conjoint
-        /*
-         * this.revenuAnnee1Cjt = statement.dbReadNumeric("IKRV1C", 2); this.debutExerciceCjt =
-         * statement.dbReadDateAMJ("IKDEXC"); this.finExerciceCjt = statement.dbReadDateAMJ("IKFEXC");
-         * this.revenuAnnee2Cjt = statement.dbReadNumeric("IKRV2C", 2); this.capitalCjt =
-         * statement.dbReadNumeric("IKCAPC", 2); this.fortuneCjt = statement.dbReadNumeric("IKFORC", 2);
-         */
     }
 
     public void _suppressionCommentaire(BTransaction transaction) throws Exception {
@@ -567,6 +496,10 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
         statement.writeField("IKDRET", this._dbWriteDateAMJ(statement.getTransaction(), getDateRetour(), "dateRetour"));
         statement.writeField("IKANN1", this._dbWriteNumeric(statement.getTransaction(), getAnnee1(), "annee1"));
         statement.writeField("IKREV1", this._dbWriteNumeric(statement.getTransaction(), getRevenu1(), "revenu1"));
+        statement.writeField("IKMTRA",
+                this._dbWriteNumeric(statement.getTransaction(), getMontantTotalRenteAVS(), "montantTotalRenteAVS"));
+        statement.writeField("IKMREA",
+                this._dbWriteString(statement.getTransaction(), getMessageRenteAVS(), "messageRenteAVS"));
         statement.writeField("IKDDE1",
                 this._dbWriteDateAMJ(statement.getTransaction(), getDebutExercice1(), "debutExercice1"));
         statement.writeField("IKDFI1",
@@ -683,15 +616,15 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     /**
      * Returns the annee.
      * 
-     * @return java.lang.String
+     * @return String
      */
     @Override
-    public java.lang.String getAnnee1() {
+    public String getAnnee1() {
         return annee1;
     }
 
     @Override
-    public java.lang.String getAnnee2() {
+    public String getAnnee2() {
         return annee2;
     }
 
@@ -719,7 +652,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
      */
     public String getCantonJournal() {
         try {
-            if (cantonJournal.equals("") || !cantonJournalBk.equals(cantonJournal)) {
+            if ("".equals(cantonJournal) || !cantonJournalBk.equals(cantonJournal)) {
                 CPJournalRetour journal = new CPJournalRetour();
                 journal.setSession(getSession());
                 journal.setIdJournalRetour(getIdJournalRetour());
@@ -735,7 +668,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     }
 
     @Override
-    public java.lang.String getCapital() {
+    public String getCapital() {
         if (!JadeStringUtil.isEmpty(capital)) {
             float capi = Float.valueOf(capital);
             return JANumberFormatter.fmt(String.valueOf(capi), true, false, true, 0);
@@ -862,17 +795,17 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     }
 
     @Override
-    public java.lang.String getCotisation1() {
+    public String getCotisation1() {
         return JANumberFormatter.fmt(cotisation1, true, false, true, 0);
     }
 
     @Override
-    public java.lang.String getCotisation2() {
+    public String getCotisation2() {
         return JANumberFormatter.fmt(cotisation2, true, false, true, 0);
     }
 
     @Override
-    public java.lang.String getDateFortune() {
+    public String getDateFortune() {
         return dateFortune;
     }
 
@@ -886,20 +819,20 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     /**
      * Returns the dateRetour.
      * 
-     * @return java.lang.String
+     * @return String
      */
     @Override
-    public java.lang.String getDateRetour() {
+    public String getDateRetour() {
         return dateRetour;
     }
 
     @Override
-    public java.lang.String getDebutExercice1() {
+    public String getDebutExercice1() {
         return debutExercice1;
     }
 
     @Override
-    public java.lang.String getDebutExercice2() {
+    public String getDebutExercice2() {
         return debutExercice2;
     }
 
@@ -944,17 +877,17 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     }
 
     @Override
-    public java.lang.String getFinExercice1() {
+    public String getFinExercice1() {
         return finExercice1;
     }
 
     @Override
-    public java.lang.String getFinExercice2() {
+    public String getFinExercice2() {
         return finExercice2;
     }
 
     @Override
-    public java.lang.String getFortune() {
+    public String getFortune() {
         try {
             if (!JadeStringUtil.isBlankOrZero(fortune)) {
                 return JANumberFormatter.fmt(fortune, true, false, true, 0);
@@ -983,10 +916,10 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     /**
      * Insérez la description de la méthode ici. Date de création : (06.03.2003 14:25:35)
      * 
-     * @return java.lang.String
+     * @return String
      */
     @Override
-    public java.lang.String getGenreAffilie() {
+    public String getGenreAffilie() {
         return genreAffilie;
     }
 
@@ -996,7 +929,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     }
 
     @Override
-    public java.lang.String getGenreTaxation() {
+    public String getGenreTaxation() {
         return genreTaxation;
     }
 
@@ -1029,7 +962,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
      * Getter
      */
     @Override
-    public java.lang.String getIdCommunication() {
+    public String getIdCommunication() {
         return idCommunication;
     }
 
@@ -1041,10 +974,10 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     /**
      * Insérez la description de la méthode ici. Date de création : (06.03.2003 14:22:04)
      * 
-     * @return java.lang.String
+     * @return String
      */
     @Override
-    public java.lang.String getIdIfd() {
+    public String getIdIfd() {
         return idIfd;
     }
 
@@ -1052,17 +985,17 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
      * @return
      */
     @Override
-    public java.lang.String getIdJournalRetour() {
+    public String getIdJournalRetour() {
         return idJournalRetour;
     }
 
     /**
      * Returns the idLog.
      * 
-     * @return java.lang.String
+     * @return String
      */
     @Override
-    public java.lang.String getIdLog() {
+    public String getIdLog() {
         return idLog;
     }
 
@@ -1074,20 +1007,20 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     /**
      * Returns the idRetour.
      * 
-     * @return java.lang.String
+     * @return String
      */
     @Override
-    public java.lang.String getIdRetour() {
+    public String getIdRetour() {
         return idRetour;
     }
 
     /**
      * Insérez la description de la méthode ici. Date de création : (06.03.2003 14:22:41)
      * 
-     * @return java.lang.String
+     * @return String
      */
     @Override
-    public java.lang.String getIdTiers() {
+    public String getIdTiers() {
         return idTiers;
     }
 
@@ -1209,7 +1142,6 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
             } else {
                 String idAff = idAffiliation;
                 if (JadeStringUtil.isBlankOrZero(idAff)) {
-                    // idAff = this.idAffiliationConjoint;
                 }
                 if (!JadeStringUtil.isBlankOrZero(idAff)) {
                     AFAffiliation aff = new AFAffiliation();
@@ -1272,7 +1204,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
         return numAvsFisc;
     }
 
-    public java.lang.String getNumContribuable() {
+    public String getNumContribuable() {
         if (JadeStringUtil.isEmpty(numContribuable)) {
             if (!JadeStringUtil.isEmpty(getVdNumContribuable())) {
                 return getVdNumContribuable();
@@ -1296,7 +1228,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     }
 
     @Override
-    public java.lang.String getNumContribuableRecu() {
+    public String getNumContribuableRecu() {
         return numContribuableRecu;
     }
 
@@ -1313,7 +1245,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     }
 
     @Override
-    public java.lang.String getNumIfd() {
+    public String getNumIfd() {
         return numIfd;
     }
 
@@ -1383,18 +1315,32 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     }
 
     @Override
-    public java.lang.String getRevenu1() {
+    public String getRevenu1() {
         if (!JadeStringUtil.isEmpty(revenuAnnee1)) {
             float revenu1 = Float.valueOf(revenuAnnee1);
             return JANumberFormatter.fmt(String.valueOf(revenu1), true, false, true, 0);
         } else {
             return "0";
         }
-
     }
 
     @Override
-    public java.lang.String getRevenu2() {
+    public String getMessageRenteAVS() {
+        return messageRenteAVS;
+    }
+
+    @Override
+    public String getMontantTotalRenteAVS() {
+        if (!JadeStringUtil.isEmpty(montantTotalRenteAVS)) {
+            float montantTotal = Float.valueOf(montantTotalRenteAVS);
+            return JANumberFormatter.fmt(String.valueOf(montantTotal), true, false, true, 0);
+        } else {
+            return "0";
+        }
+    }
+
+    @Override
+    public String getRevenu2() {
         if (!JadeStringUtil.isEmpty(revenuAnnee2)) {
             float revenu2 = Float.valueOf(revenuAnnee2);
             return JANumberFormatter.fmt(String.valueOf(revenu2), true, false, true, 0);
@@ -1466,10 +1412,10 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     /**
      * Returns the status.
      * 
-     * @return java.lang.String
+     * @return String
      */
     @Override
-    public java.lang.String getStatus() {
+    public String getStatus() {
         return status;
     }
 
@@ -1700,12 +1646,12 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
      *            The annee to set
      */
     @Override
-    public void setAnnee1(java.lang.String annee) {
+    public void setAnnee1(String annee) {
         annee1 = annee;
     }
 
     @Override
-    public void setAnnee2(java.lang.String string) {
+    public void setAnnee2(String string) {
         annee2 = string;
     }
 
@@ -1714,7 +1660,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     }
 
     @Override
-    public void setCapital(java.lang.String newCapital) {
+    public void setCapital(String newCapital) {
         capital = JANumberFormatter.deQuote(newCapital);
     }
 
@@ -1748,16 +1694,16 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     }
 
     @Override
-    public void setCotisation1(java.lang.String newCotisation1) {
+    public void setCotisation1(String newCotisation1) {
         cotisation1 = JANumberFormatter.deQuote(newCotisation1);
     }
 
-    public void setCotisation2(java.lang.String newCotisation2) {
+    public void setCotisation2(String newCotisation2) {
         cotisation2 = JANumberFormatter.deQuote(newCotisation2);
     }
 
     @Override
-    public void setDateFortune(java.lang.String newDateFortune) {
+    public void setDateFortune(String newDateFortune) {
         dateFortune = newDateFortune;
     }
 
@@ -1768,17 +1714,17 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
      *            The dateRetour to set
      */
     @Override
-    public void setDateRetour(java.lang.String dateRetour) {
+    public void setDateRetour(String dateRetour) {
         this.dateRetour = dateRetour;
     }
 
     @Override
-    public void setDebutExercice1(java.lang.String newDebutExercice1) {
+    public void setDebutExercice1(String newDebutExercice1) {
         debutExercice1 = newDebutExercice1;
     }
 
     @Override
-    public void setDebutExercice2(java.lang.String newDebutExercice2) {
+    public void setDebutExercice2(String newDebutExercice2) {
         debutExercice2 = newDebutExercice2;
     }
 
@@ -1801,12 +1747,12 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     }
 
     @Override
-    public void setFinExercice1(java.lang.String newFinExercice1) {
+    public void setFinExercice1(String newFinExercice1) {
         finExercice1 = newFinExercice1;
     }
 
     @Override
-    public void setFinExercice2(java.lang.String newFinExercice2) {
+    public void setFinExercice2(String newFinExercice2) {
         finExercice2 = newFinExercice2;
     }
 
@@ -1820,7 +1766,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     }
 
     @Override
-    public void setFortune(java.lang.String newFortuneTotale) {
+    public void setFortune(String newFortuneTotale) {
         fortune = JANumberFormatter.deQuote(newFortuneTotale);
     }
 
@@ -1843,10 +1789,10 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
      * Insérez la description de la méthode ici. Date de création : (06.03.2003 14:25:35)
      * 
      * @param newGenreAffilie
-     *            java.lang.String
+     *            String
      */
     @Override
-    public void setGenreAffilie(java.lang.String newGenreAffilie) {
+    public void setGenreAffilie(String newGenreAffilie) {
         genreAffilie = newGenreAffilie;
     }
 
@@ -1859,7 +1805,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
      * Setter
      */
     @Override
-    public void setGenreTaxation(java.lang.String newGenreTaxation) {
+    public void setGenreTaxation(String newGenreTaxation) {
         genreTaxation = newGenreTaxation;
     }
 
@@ -1892,7 +1838,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
      * Setter
      */
     @Override
-    public void setIdCommunication(java.lang.String newIdCommunication) {
+    public void setIdCommunication(String newIdCommunication) {
         idCommunication = newIdCommunication;
     }
 
@@ -1905,10 +1851,10 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
      * Insérez la description de la méthode ici. Date de création : (06.03.2003 14:22:04)
      * 
      * @param newIdIfd
-     *            java.lang.String
+     *            String
      */
     @Override
-    public void setIdIfd(java.lang.String newIdIfd) {
+    public void setIdIfd(String newIdIfd) {
         idIfd = newIdIfd;
     }
 
@@ -1916,7 +1862,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
      * @param string
      */
     @Override
-    public void setIdJournalRetour(java.lang.String string) {
+    public void setIdJournalRetour(String string) {
         idJournalRetour = string;
     }
 
@@ -1927,7 +1873,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
      *            The idLog to set
      */
     @Override
-    public void setIdLog(java.lang.String idLog) {
+    public void setIdLog(String idLog) {
         this.idLog = idLog;
     }
 
@@ -1943,7 +1889,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
      *            The idRetour to set
      */
     @Override
-    public void setIdRetour(java.lang.String idRetour) {
+    public void setIdRetour(String idRetour) {
         this.idRetour = idRetour;
     }
 
@@ -1951,10 +1897,10 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
      * Insérez la description de la méthode ici. Date de création : (06.03.2003 14:22:41)
      * 
      * @param newIdTiers
-     *            java.lang.String
+     *            String
      */
     @Override
-    public void setIdTiers(java.lang.String newIdTiers) {
+    public void setIdTiers(String newIdTiers) {
         idTiers = newIdTiers;
     }
 
@@ -1997,7 +1943,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     }
 
     @Override
-    public void setNumAffilie(java.lang.String newNumAffilie) {
+    public void setNumAffilie(String newNumAffilie) {
         numAffilie = newNumAffilie;
     }
 
@@ -2008,16 +1954,16 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     /**
      * @param string
      */
-    public void setNumContribuable(java.lang.String string) {
+    public void setNumContribuable(String string) {
         numContribuable = string;
     }
 
-    public void setNumContribuableRecu(java.lang.String numContribuableRecu) {
+    public void setNumContribuableRecu(String numContribuableRecu) {
         this.numContribuableRecu = numContribuableRecu;
     }
 
     @Override
-    public void setNumIfd(java.lang.String string) {
+    public void setNumIfd(String string) {
         numIfd = string;
     }
 
@@ -2034,20 +1980,30 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     }
 
     @Override
-    public void setRevenu1(java.lang.String newRevenu1) {
+    public void setRevenu1(String newRevenu1) {
         revenuAnnee1 = JANumberFormatter.deQuote(newRevenu1);
     }
 
     @Override
-    public void setRevenu2(java.lang.String newRevenu2) {
+    public void setRevenu2(String newRevenu2) {
         revenuAnnee2 = JANumberFormatter.deQuote(newRevenu2);
     }
 
-    public void setRevenuAnnee1(java.lang.String string) {
+    @Override
+    public void setMessageRenteAVS(String messageRenteAVS) {
+        this.messageRenteAVS = messageRenteAVS;
+    }
+
+    @Override
+    public void setMontantTotalRenteAVS(String montantTotalRenteAVS) {
+        this.montantTotalRenteAVS = JANumberFormatter.deQuote(montantTotalRenteAVS);
+    }
+
+    public void setRevenuAnnee1(String string) {
         revenuAnnee1 = string;
     }
 
-    public void setRevenuAnnee2(java.lang.String string) {
+    public void setRevenuAnnee2(String string) {
         revenuAnnee2 = string;
     }
 
@@ -2066,7 +2022,7 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
      *            The status to set
      */
     @Override
-    public void setStatus(java.lang.String codeErreur) {
+    public void setStatus(String codeErreur) {
         status = codeErreur;
     }
 

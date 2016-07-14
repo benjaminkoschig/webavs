@@ -343,8 +343,11 @@ public class CPApplication extends globaz.globall.db.BApplication {
                 FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("phenix.communications.apercuCommunicationFiscaleRetour.lister",
                 FWSecureConstants.READ);
+        FWAction.registerActionCustom("phenix.communications.apercuCommunicationFiscaleRetour.afficherRenteAVSWIRR",
+                FWSecureConstants.READ);
+        FWAction.registerActionCustom("phenix.communications.apercuCommunicationFiscaleRetour.afficherRenteAVSWIRRBCK",
+                FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("phenix.suivis.NouvelleAffiliation.afficher", FWSecureConstants.UPDATE);
-
         FWAction.registerActionCustom("phenix.suivis.NouvelleAffiliation.executer", FWSecureConstants.UPDATE);
         // même s'il s'agit d'une action afficher, il n'y a pas de raison d'aller sur cet écran sans droit de maj...
         FWAction.registerActionCustom("phenix.suivis.RadiationAffiliation.afficher", FWSecureConstants.UPDATE);

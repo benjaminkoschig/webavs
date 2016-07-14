@@ -93,6 +93,10 @@ function afficherConjoint() {
 		document.forms[0].elements('userAction').value="phenix.communications.apercuCommunicationFiscaleRetour.afficherConjoint";
 		document.forms[0].submit();
 }
+function afficherRenteAVSWIRR() {
+	document.forms[0].elements('userAction').value="phenix.communications.apercuCommunicationFiscaleRetour.afficherRenteAVSWIRR";
+	document.forms[0].submit();
+}
 function init(){}
 /*
 */
@@ -110,6 +114,7 @@ function init(){}
   			<li><a  onclick="afficherDonneesPrivees()" href="#">Données privées</a></li>
   			<li><a  onclick="afficherDonneesCommerciales()" href="#">Données commerciales</a></li>
   			<li><a  class="selected">Conjoint</a></li>
+  			<li><a onclick="afficherRenteAVSWIRR()" href="#">Rente(s) AVS</a></li> 		
 		</ul>
 		</div>
 		

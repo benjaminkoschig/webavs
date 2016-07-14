@@ -99,6 +99,10 @@ function retourOriginale() {
 		document.forms[0].elements('userAction').value="phenix.communications.apercuCommunicationFiscaleRetour.retournerOriginale";
 		document.forms[0].submit();
 }
+function afficherRenteAVSWIRR() {
+	document.forms[0].elements('userAction').value="phenix.communications.apercuCommunicationFiscaleRetour.afficherRenteAVSWIRR";
+	document.forms[0].submit();
+}
 function init(){}
 /*
 */
@@ -122,11 +126,12 @@ function init(){}
 		<div id="tabs"> 
 		<ul>
   			<li><a class="selected">Données communication</a></li>
-  			<li><a  onclick="afficherContribuable()" href="#">Contribuable</a></li>
-  			<li><a  onclick="afficherDonneesBase()" href="#">Données de base</a></li>
+  			<li><a onclick="afficherContribuable()" href="#">Contribuable</a></li>
+  			<li><a onclick="afficherDonneesBase()" href="#">Données de base</a></li>
   			<li><a onclick="afficherDonneesPrivees()" href="#">Données privées</a></li>
-  			<li><a  onclick="afficherDonneesCommerciales()" href="#">Données commerciales</a></li>
-  			<li><a  onclick="afficherConjoint()" href="#">Conjoint</a></li>
+  			<li><a onclick="afficherDonneesCommerciales()" href="#">Données commerciales</a></li>
+  			<li><a onclick="afficherConjoint()" href="#">Conjoint</a></li>
+  			<li><a onclick="afficherRenteAVSWIRR()" href="#">Rente(s) AVS</a></li> 		
 		</ul>
 		</div>
 		<TR>

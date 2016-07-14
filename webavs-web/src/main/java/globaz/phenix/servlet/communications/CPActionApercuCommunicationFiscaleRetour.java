@@ -16,6 +16,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.http.JSPUtils;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.phenix.db.communications.CPApercuCommunicationFiscaleRetourListViewBean;
 import globaz.phenix.db.communications.CPCommunicationFiscaleRetourGEViewBean;
 import globaz.phenix.db.communications.CPCommunicationFiscaleRetourJUViewBean;
@@ -95,10 +96,6 @@ public class CPActionApercuCommunicationFiscaleRetour extends FWDefaultServletAc
         String idJrn = (String) session.getAttribute("idJournalRetour");
         servlet.getServletContext().getRequestDispatcher(getActionFullURL() + ".chercher&idJournalRetour=" + idJrn)
                 .forward(request, response);
-        /*
-         * this.servlet .getServletContext() .getRequestDispatcher( this.getActionFullURL() +
-         * ".chercher&idJournalRetour=" + viewBean.getIdJournalRetour()) .forward(request, response);
-         */
     }
 
     /**
@@ -252,6 +249,62 @@ public class CPActionApercuCommunicationFiscaleRetour extends FWDefaultServletAc
         /*
          * redirection vers la destination
          */
+        servlet.getServletContext().getRequestDispatcher(_destination).forward(request, response);
+    }
+
+    protected void _actionAfficherRenteAVSWIRR(HttpSession session, HttpServletRequest request,
+            HttpServletResponse response, FWDispatcher mainDispatcher) throws javax.servlet.ServletException,
+            java.io.IOException {
+
+        String _destination = "";
+        FWAction _action = FWAction.newInstance(request.getParameter("userAction"));
+
+        try {
+            /*
+             * pour compatibilité : si on a le parametre _method=add, c'est que l'on a une action nouveau
+             */
+            String method = request.getParameter("_method");
+            String backup = request.getParameter("isForBackup");
+            if ((method != null) && (method.equalsIgnoreCase("ADD"))) {
+                _action.changeActionPart(FWAction.ACTION_NOUVEAU);
+            }
+
+            globaz.globall.api.BISession bSession = globaz.phenix.translation.CodeSystem.getSession(session);
+
+            String idRetour = request.getParameter("idRetour");
+            if (JadeStringUtil.isEmpty(idRetour)) {
+                idRetour = (String) session.getAttribute("idRetour");
+            }
+            session.setAttribute("idRetour", idRetour);
+
+            CPCommunicationFiscaleRetourViewBean vb = new CPCommunicationFiscaleRetourViewBean();
+            vb.setIdRetour(idRetour);
+
+            if ((backup != null) && "true".equalsIgnoreCase(backup)) {
+                vb.setForBackup(true);
+            }
+
+            vb.setSession((BSession) bSession);
+            vb.retrieve();
+
+            mainDispatcher.dispatch(vb, getAction());
+            session.removeAttribute("viewBean");
+            session.setAttribute("viewBean", vb);
+            request.setAttribute(FWServlet.VIEWBEAN, vb);
+
+            if (vb.getMsgType().equals(FWViewBeanInterface.ERROR) == true) {
+                _destination = FWDefaultServletAction.ERROR_PAGE;
+            } else {
+                if (vb.isForBackup()) {
+                    _destination = getRelativeURL(request, session) + "SE" + "RenteAVSBCK_de.jsp";
+                } else {
+                    _destination = getRelativeURL(request, session) + "SE" + "RenteAVS_de.jsp";
+                }
+            }
+        } catch (Exception e) {
+            _destination = FWDefaultServletAction.ERROR_PAGE;
+        }
+
         servlet.getServletContext().getRequestDispatcher(_destination).forward(request, response);
     }
 
@@ -610,8 +663,6 @@ public class CPActionApercuCommunicationFiscaleRetour extends FWDefaultServletAc
 
             setSessionAttribute(session, "viewBean", viewBean);
 
-            // destination = getRelativeURLwithoutClassPart(request, session) +
-            // "processEnqueterEnMasse_de.jsp";
             destination += "&process=launched";
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -754,10 +805,6 @@ public class CPActionApercuCommunicationFiscaleRetour extends FWDefaultServletAc
             _destination = FWDefaultServletAction.ERROR_PAGE;
         }
 
-        /*
-         * affiche la prochaine page
-         */
-        // response.sendRedirect(request.getContextPath() + _destination);
         goSendRedirect(_destination, request, response);
 
     }
@@ -848,7 +895,6 @@ public class CPActionApercuCommunicationFiscaleRetour extends FWDefaultServletAc
             CPCommunicationFiscaleRetourViewBean retour = new CPCommunicationFiscaleRetourViewBean();
             retour.setISession(dispatcher.getSession());
             retour.setIdRetour(idRetour);
-            // journal.retrieve();
             dispatcher.dispatch(retour, getAction());
 
             session.setAttribute("viewBean", retour);
@@ -954,6 +1000,7 @@ public class CPActionApercuCommunicationFiscaleRetour extends FWDefaultServletAc
 
                     globaz.globall.http.JSPUtils.setBeanProperties(request, viewBeanPourUpdate);
                     viewBeanPourUpdate.update();
+
                     _destination = getRelativeURL(request, session) + "SE" + "DonneesCommerciales_de.jsp?allComm=yes";
                 }
                 if (CPSedexConjoint.class.isAssignableFrom(viewBean.getClass())) {
@@ -965,6 +1012,17 @@ public class CPActionApercuCommunicationFiscaleRetour extends FWDefaultServletAc
                     globaz.globall.http.JSPUtils.setBeanProperties(request, viewBeanPourUpdate);
                     viewBeanPourUpdate.update();
                     _destination = getRelativeURL(request, session) + "SE" + "Conjoint_de.jsp?allComm=yes";
+                }
+                if (CPCommunicationFiscaleRetourViewBean.class.isAssignableFrom(viewBean.getClass())) {
+                    CPCommunicationFiscaleRetourViewBean viewBeanPourUpdate = new CPCommunicationFiscaleRetourViewBean();
+                    viewBeanPourUpdate.setSession((BSession) mainDispatcher.getSession());
+                    viewBeanPourUpdate.setIdRetour(idRetour);
+                    viewBeanPourUpdate.retrieve();
+
+                    globaz.globall.http.JSPUtils.setBeanProperties(request, viewBeanPourUpdate);
+                    viewBeanPourUpdate.update();
+
+                    _destination = getRelativeURL(request, session) + "SE" + "RenteAVS_de.jsp?allComm=yes";
                 }
 
             }
@@ -988,23 +1046,9 @@ public class CPActionApercuCommunicationFiscaleRetour extends FWDefaultServletAc
              * choix de la destination _valid=fail : revient en mode edition
              */
             servlet.getServletContext().getRequestDispatcher(_destination).forward(request, response);
-            boolean goesToSuccessDest = !viewBean.getMsgType().equals(FWViewBeanInterface.ERROR);
-            if (goesToSuccessDest) {
-                // this._destination = this._getDestModifierSucces(session,
-                // request, response, viewBean);
-            } else {
-                // this._destination = this._getDestModifierEchec(session,
-                // request, response, viewBean);
-            }
-
         } catch (Exception e) {
-            // this._destination = ERROR_PAGE;
+            JadeLogger.warn(e, e.getMessage());
         }
-
-        /*
-         * redirection vers la destination
-         */
-        // this.goSendRedirect(this._destination, request, response);
     }
 
     /**
@@ -1029,29 +1073,12 @@ public class CPActionApercuCommunicationFiscaleRetour extends FWDefaultServletAc
             JSPUtils.setBeanProperties(request, viewBean);
             globaz.globall.api.BISession bSession = globaz.phenix.translation.CodeSystem.getSession(session);
             viewBean.setSession((globaz.globall.db.BSession) bSession);
-            // if (viewBean.getSession().hasRight(getAction().toString(),
-            // globaz.framework.secure.FWSecureConstants.UPDATE)) {
-            // viewBean.setSession((globaz.globall.db.BSession) bSession);
-
-            // CPProcessReceptionGenererDecision processGeneration = new
-            // CPProcessReceptionGenererDecision();
-            // processGeneration.setIdRetour(idRetour);
-            // processGeneration.setISession((globaz.globall.db.BSession)
-            // bSession);
-            // processGeneration.setEMailAddress(request.getParameter("eMailAddress"));
-            // processGeneration.start();
             session.setAttribute("viewBean", viewBean);
             dispatcher.dispatch(viewBean, getAction());
-            // } else {
-            // viewBean.setMsgType(FWViewBeanInterface.ERROR);
-            // }
         } catch (Exception e) {
             viewBean.setMessage(e.getMessage());
             viewBean.setMsgType(FWViewBeanInterface.ERROR);
         }
-        // servlet.getServletContext().getRequestDispatcher("/phenix?userAction=phenix.communications.apercuCommunicationFiscaleRetour.chercher").forward(request,
-        // response);
-        // super.actionChercher(session, request, response, dispatcher);
         String idJrn = (String) session.getAttribute("idJournalRetour");
         servlet.getServletContext().getRequestDispatcher(getActionFullURL() + ".chercher&idJournalRetour=" + idJrn)
                 .forward(request, response);
@@ -1471,6 +1498,8 @@ public class CPActionApercuCommunicationFiscaleRetour extends FWDefaultServletAc
             _actionAfficherContribuable(session, request, response, mainDispatcher);
         } else if ("afficherConjoint".equals(getAction().getActionPart())) {
             _actionAfficherConjoint(session, request, response, mainDispatcher);
+        } else if ("afficherRenteAVSWIRR".equals(getAction().getActionPart())) {
+            _actionAfficherRenteAVSWIRR(session, request, response, mainDispatcher);
         } else if ("afficherDonneesPrivees".equals(getAction().getActionPart())) {
             _actionAfficherDonneesPrivees(session, request, response, mainDispatcher);
         } else if ("afficherEnqueterEnMasse".equals(getAction().getActionPart())) {

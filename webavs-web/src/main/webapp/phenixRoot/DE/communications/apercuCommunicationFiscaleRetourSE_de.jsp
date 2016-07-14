@@ -98,6 +98,10 @@ function afficherConjoint() {
 		document.forms[0].elements('userAction').value="phenix.communications.apercuCommunicationFiscaleRetour.afficherConjoint";
 		document.forms[0].submit();
 }
+function afficherRenteAVSWIRR() {
+	document.forms[0].elements('userAction').value="phenix.communications.apercuCommunicationFiscaleRetour.afficherRenteAVSWIRR";
+	document.forms[0].submit();
+}
 function init(){}
 /*
 */
@@ -127,12 +131,12 @@ function init(){}
 		<div id="tabs"> 
 		<ul>
   			<li><a class="selected">Steuermeldungsdaten</a></li>
-  			<li><a  onclick="afficherContribuable()" href="#">Steuer</a></li>
-  			<li><a  onclick="afficherDonneesBase()" href="#">Basisdaten</a></li>
-  			<li><a  onclick="afficherDonneesPrivees()" href="#">Privatdaten</a></li>
-  			<li><a  onclick="afficherDonneesCommerciales()" href="#">Geschaeftsdaten</a></li>
-  			<li><a  onclick="afficherConjoint()" href="#">Ehepartner</a></li>
-  			
+  			<li><a onclick="afficherContribuable()" href="#">Steuer</a></li>
+  			<li><a onclick="afficherDonneesBase()" href="#">Basisdaten</a></li>
+  			<li><a onclick="afficherDonneesPrivees()" href="#">Privatdaten</a></li>
+  			<li><a onclick="afficherDonneesCommerciales()" href="#">Geschaeftsdaten</a></li>
+  			<li><a onclick="afficherConjoint()" href="#">Ehepartner</a></li>
+  			<li><a onclick="afficherRenteAVSWIRR()" href="#">Rente(s) AVS</a></li> 	
 		</ul>
 		</div>
 		

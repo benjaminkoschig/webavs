@@ -92,6 +92,10 @@ function afficherConjoint() {
 		document.forms[0].elements('userAction').value="phenix.communications.apercuCommunicationFiscaleRetour.afficherConjoint";
 		document.forms[0].submit();
 }
+function afficherRenteAVSWIRR() {
+	document.forms[0].elements('userAction').value="phenix.communications.apercuCommunicationFiscaleRetour.afficherRenteAVSWIRR";
+	document.forms[0].submit();
+}
 function init(){}
 /*
 */
@@ -103,12 +107,13 @@ function init(){}
 						<%-- tpl:put name="zoneMain" --%>
 		<div id="tabs"> 
 		<ul>
-  			<li><a  onclick="afficherDonneesCommunication()" href="#">Steuermeldungsdaten</a></li>
-  			<li><a  onclick="afficherContribuable()" href="#">Steuer</a></li>
-  			<li><a  onclick="afficherDonneesBase()" href="#">Basisdaten</a></li>
-  			<li><a  onclick="afficherDonneesPrivees()" href="#">Privatdaten</a></li>
-  			<li><a  class="selected">Geschaeftsdaten</a></li>
-  			<li><a  onclick="afficherConjoint()" href="#">Ehepartner</a></li>
+  			<li><a onclick="afficherDonneesCommunication()" href="#">Steuermeldungsdaten</a></li>
+  			<li><a onclick="afficherContribuable()" href="#">Steuer</a></li>
+  			<li><a onclick="afficherDonneesBase()" href="#">Basisdaten</a></li>
+  			<li><a onclick="afficherDonneesPrivees()" href="#">Privatdaten</a></li>
+  			<li><a class="selected">Geschaeftsdaten</a></li>
+  			<li><a onclick="afficherConjoint()" href="#">Ehepartner</a></li>
+  			<li><a onclick="afficherRenteAVSWIRR()" href="#">Rente(s) AVS</a></li> 	
 		</ul>
 		</div>
 		<TR style="font-size : 14px;">

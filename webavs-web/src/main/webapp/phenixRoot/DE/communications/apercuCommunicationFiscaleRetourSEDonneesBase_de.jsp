@@ -93,6 +93,10 @@ function afficherConjoint() {
 		document.forms[0].elements('userAction').value="phenix.communications.apercuCommunicationFiscaleRetour.afficherConjoint";
 		document.forms[0].submit();
 }
+function afficherRenteAVSWIRR() {
+	document.forms[0].elements('userAction').value="phenix.communications.apercuCommunicationFiscaleRetour.afficherRenteAVSWIRR";
+	document.forms[0].submit();
+}
 function init(){}
 
 window.onload = document.write("<span id='infobulle' style='position:absolute;visibility:hidden;padding:3px;'>&nbsp;</span>");
@@ -129,12 +133,13 @@ function infobulle_cache(){
 						<%-- tpl:put name="zoneMain" --%>
 		<div id="tabs"> 
 		<ul>
-  			<li><a  onclick="afficherDonneesCommunication()" href="#">Steuermeldungsdaten</a></li>
-  			<li><a  onclick="afficherContribuable()" href="#">Steuer</a></li>
-  			<li><a  class="selected">Basisdaten</a></li>
-  			<li><a  onclick="afficherDonneesPrivees()" href="#">Privatdaten</a></li>
-  			<li><a  onclick="afficherDonneesCommerciales()" href="#">Geschaeftsdaten</a></li>
-  			<li><a  onclick="afficherConjoint()" href="#">Ehepartner</a></li>
+  			<li><a onclick="afficherDonneesCommunication()" href="#">Steuermeldungsdaten</a></li>
+  			<li><a onclick="afficherContribuable()" href="#">Steuer</a></li>
+  			<li><a class="selected">Basisdaten</a></li>
+  			<li><a onclick="afficherDonneesPrivees()" href="#">Privatdaten</a></li>
+  			<li><a onclick="afficherDonneesCommerciales()" href="#">Geschaeftsdaten</a></li>
+  			<li><a onclick="afficherConjoint()" href="#">Ehepartner</a></li>
+  			<li><a onclick="afficherRenteAVSWIRR()" href="#">Rente(s) AVS</a></li> 	
 		</ul>
 		</div>
 	

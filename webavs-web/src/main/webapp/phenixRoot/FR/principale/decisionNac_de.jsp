@@ -282,6 +282,10 @@ function hide(inputToHide) {
             <TD id="nbMoisEx2" nowrap width="110"> pour <INPUT name="nbMoisExercice2" type="text" value="<%=viewBean.getNbMoisExercice2()%>" size="2" maxlength="2"> mois
            	</TD>
           </TR>
+          <TR>
+          	<TD nowrap width="157">Revenu rente(s) AVS</TD>
+          	<TD nowrap width="96" colspan="6"><INPUT name="montantTotalRenteAVS" type="text" value="<%=viewBean.getMontantTotalRenteAVS()%>" class="montant" style="width : 2.45cm;"></TD>
+          </TR>
           <TR id="ligneRevenuAutre">
             <TD nowrap width="157">Revenu autre</TD>
             <TD nowrap width="96"><INPUT name="revenuAutre1" type="text" value="<%=viewBean.getRevenuAutre1()%>" class="montant" style="width : 2.45cm;"></TD>

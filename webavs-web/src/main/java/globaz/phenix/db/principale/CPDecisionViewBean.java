@@ -53,17 +53,7 @@ import java.util.Vector;
  * @author: Administrator
  */
 public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterface {
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
-
-    /*
-     * Liste les plans de passage
-     */
-    public static Vector<?> getUserList(javax.servlet.http.HttpSession httpSession) {
-        return CPUtil.getUserList(httpSession);
-    }
 
     private String action;
     private java.lang.String anneeRevenuDebut = "";
@@ -104,6 +94,7 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
     private java.lang.String montantImmobilier2 = "";
     private java.lang.String montantImmobilier3 = "";
     private java.lang.String montantImmobilier4 = "";
+    private java.lang.String montantTotalRenteAVS = "";
     private java.lang.String nbMoisExercice1 = "";
     private java.lang.String nbMoisExercice2 = "";
     private java.lang.String nbMoisRevenuAutre1 = "";
@@ -132,6 +123,13 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
     private String wantWarning = "";
     private String warningMessage = "";
 
+    /*
+     * Liste les plans de passage
+     */
+    public static Vector<?> getUserList(javax.servlet.http.HttpSession httpSession) {
+        return CPUtil.getUserList(httpSession);
+    }
+
     @Override
     public void _afterAdd(BTransaction transaction) throws Exception {
         // Mise à jour des données encodées
@@ -140,6 +138,7 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
             donnees.setSession(getSession());
             donnees.setIdDecision(getIdDecision());
             donnees.setRevenu1(getRevenu1());
+            donnees.setMontantTotalRenteAVS(getMontantTotalRenteAVS());
             donnees.setRevenuAutre1(getRevenuAutre1());
             donnees.setSourceInformation(getSourceInformation());
             String coti = JANumberFormatter.deQuote(getCotisation1());
@@ -179,23 +178,6 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
                     }
                     donnees.setCotisation2("");
                     donnees.setCapital("");
-                    // Si calcul de la fortune détaillée
-                    /*
-                     * if ((((CPApplication) this.getSession().getApplication()).isCPCALCIMMO()) &&
-                     * this.isProvisoireMetier()) { CPFortune fortune = new CPFortune();
-                     * fortune.setSession(this.getSession()); try { fortune.setIdDecision(this.getIdDecision());
-                     * fortune.setMontantImmobilier1(this.getMontantImmobilier1());
-                     * fortune.setMontantImmobilier2(this.getMontantImmobilier2());
-                     * fortune.setMontantImmobilier3(this.getMontantImmobilier3());
-                     * fortune.setMontantImmobilier4(this.getMontantImmobilier4());
-                     * fortune.setCanton1(this.getCanton1()); fortune.setCanton2(this.getCanton2());
-                     * fortune.setCanton3(this.getCanton3()); fortune.setCanton4(this.getCanton4());
-                     * fortune.setTypeTerrain1(this.getTypeTerrain1()); fortune.setTypeTerrain2(this.getTypeTerrain2());
-                     * fortune.setTypeTerrain3(this.getTypeTerrain3()); fortune.setTypeTerrain4(this.getTypeTerrain4());
-                     * fortune.setDette(this.getDette()); fortune.setAutreFortune(this.getAutreFortune());
-                     * fortune.add(transaction); } catch (Exception e) { this._addError(transaction,
-                     * this.getSession().getLabel("CP_MSG_0044")); this._addError(transaction, e.getMessage()); } }
-                     */
                     if (getTaxation().equalsIgnoreCase("A")) {
                         donnees.setDebutExercice2("");
                         donnees.setFinExercice2("");
@@ -246,7 +228,6 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
                 sortieManager.setForAnnee(getAnneeDecision());
                 // PO 5265
                 sortieManager.setForIdAffiliation(getIdAffiliation());
-                // PO PO 5265 - sortieManager.setForNoAffilie(this.loadAffiliation().getAffilieNumero());
                 // Effacer les montants cot pers et CI de sortie
                 sortieManager.find(transaction);
                 for (int k = 0; k < sortieManager.size(); k++) {
@@ -263,13 +244,13 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
     @Override
     public void _afterRetrieve(BTransaction transaction) throws Exception {
         try {
-            // -------- Recherche des données de l'affilié --------
+            // Recherche des données de l'affilié
             TITiersViewBean persAvs = new TITiersViewBean();
             persAvs.setSession(getSession());
             persAvs.setIdTiers(getIdTiers());
             persAvs.retrieve();
             setTiers(persAvs);
-            // -------- Recherche des données de base pour l'encodage --------
+            // Recherche des données de base pour l'encodage
             if (!JadeStringUtil.isIntegerEmpty(getIdDecision())) {
                 CPDonneesBase donBase = new CPDonneesBase();
                 donBase.setSession(getSession());
@@ -277,6 +258,7 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
                 donBase.retrieve();
                 setRevenu1(donBase.getRevenu1());
                 setRevenu2(donBase.getRevenu2());
+                setMontantTotalRenteAVS(donBase.getMontantTotalRenteAVS());
                 setRevenuAutre1(donBase.getRevenuAutre1());
                 setRevenuAutre2(donBase.getRevenuAutre2());
                 setDebutExercice1(donBase.getDebutExercice1());
@@ -326,23 +308,8 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
                 }
                 setRevenuCiForce(donBase.getRevenuCiForce());
                 setRevenuCiForce0(donBase.isRevenuCiForce0());
-                /*
-                 * if ((((CPApplication) this.getSession().getApplication()).isCPCALCIMMO()) && (this.isNonActif())) {
-                 * CPFortune fortune = new CPFortune(); fortune.setSession(this.getSession());
-                 * fortune.setIdDecision(this.getIdDecision()); fortune.retrieve();
-                 * this.setMontantImmobilier1(fortune.getMontantImmobilier1());
-                 * this.setMontantImmobilier2(fortune.getMontantImmobilier2());
-                 * this.setMontantImmobilier3(fortune.getMontantImmobilier3());
-                 * this.setMontantImmobilier4(fortune.getMontantImmobilier4()); this.setCanton1(fortune.getCanton1());
-                 * this.setCanton2(fortune.getCanton2()); this.setCanton3(fortune.getCanton3());
-                 * this.setCanton4(fortune.getCanton4()); this.setTypeTerrain1(fortune.getTypeTerrain1());
-                 * this.setTypeTerrain2(fortune.getTypeTerrain2()); this.setTypeTerrain3(fortune.getTypeTerrain3());
-                 * this.setTypeTerrain4(fortune.getTypeTerrain4()); this.setDette(fortune.getDette());
-                 * this.setAutreFortune(fortune.getAutreFortune()); }
-                 */
             }
-            // -------- Recherche des données de la période fiscale --------
-            // IFD définitif (de base)
+            // Recherche des données de la période fiscale IFD définitif (de base)
             CPPeriodeFiscale perFis = new CPPeriodeFiscale();
             perFis.setSession(getSession());
             perFis.setIdIfd(getIdIfdDefinitif());
@@ -353,10 +320,10 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
             perFis.retrieve();
             setAnneeRevenuDebut(perFis.getAnneeRevenuDebut());
             setAnneeRevenuFin(perFis.getAnneeRevenuFin());
-            // -------- Recherche dernier état de la décision --------
+            // Recherche dernier état de la décision
             setEtatDecision(globaz.phenix.translation.CodeSystem.getLibelle(getSession(), getDernierEtat()));
             setCodeEtatDecision(getDernierEtat());
-            // -------- Recherche periode de facturation --------
+            // Recherche periode de facturation
             setPeriodicite(globaz.phenix.translation.CodeSystem.getLibelle(getSession(), (loadAffiliation()
                     ._getDerniereAffiliation().getPeriodicite())));
             // Recherche du revenu déterminant
@@ -365,7 +332,7 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
             setRevenuDeterminant(donnee.getMontant(getIdDecision(), CPDonneesCalcul.CS_REV_NET));
             // Recherche de la fortune déterminante
             setFortuneDeterminante(donnee.getMontant(getIdDecision(), CPDonneesCalcul.CS_FORTUNE_TOTALE));
-            // -------- Recherche du conjoint --------
+            // Recherche du conjoint
             if (!JadeStringUtil.isIntegerEmpty(getIdConjoint())) {
                 TITiersViewBean conjoint = new TITiersViewBean();
                 conjoint.setSession(getSession());
@@ -418,6 +385,7 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
             donnees.setSession(getSession());
             donnees.setIdDecision(getIdDecision());
             donnees.setRevenu1(getRevenu1());
+            donnees.setMontantTotalRenteAVS(getMontantTotalRenteAVS());
             donnees.setRevenuAutre1(getRevenuAutre1());
             donnees.setSourceInformation(getSourceInformation());
             String coti = JANumberFormatter.deQuote(getCotisation1());
@@ -483,7 +451,7 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
                             _addError(transaction, e.getMessage());
                         }
                     }
-                    if (getTaxation().equalsIgnoreCase("A")) {
+                    if ("A".equalsIgnoreCase(getTaxation())) {
                         donnees.setDebutExercice2("");
                         donnees.setFinExercice2("");
                         donnees.setNbMoisExercice2(getNbMoisExercice2());
@@ -509,7 +477,7 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
                     donnees.setCapital(getCapital());
                     donnees.setDateFortune("");
                     donnees.setFortuneTotale("");
-                    if (getTaxation().equalsIgnoreCase("A")) {
+                    if ("A".equalsIgnoreCase(getTaxation())) {
                         donnees.setCotisation2(JANumberFormatter.fmt(getCotisation2(), true, false, true, 0));
                         donnees.setDebutExercice2(getDebutExercice2());
                         donnees.setFinExercice2(getFinExercice2());
@@ -679,17 +647,6 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
                                 }
                             }
                         }
-                        // // Si type de décision = remise ou réduction => il
-                        // doit y avoir les particularités "Réfugié" ou
-                        // "Assisté" etc..
-                        // // pour l'année de décision
-                        // if(CPDecision.CS_REMISE.equalsIgnoreCase(getTypeDecision())
-                        // ||CPDecision.CS_REDUCTION.equalsIgnoreCase(getTypeDecision())){
-                        // if(!CPToolBox.isAffilieAssiste(transaction,affiliation,
-                        // getAnneeDecision()))
-                        // _addError(transaction,
-                        // "Il n'y pas de particularité d'affiliation qui permette ce genre de décision. ");
-                        // }
                     } else {
                         _addError(transaction, getSession().getLabel("CP_MSG_0056"));
                     }
@@ -713,9 +670,6 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
             } catch (Exception e) {
                 _addError(transaction, getSession().getLabel("CP_MSG_0060"));
             }
-            // Test si le type de décision est valide (Ex: une provisoire ne
-            // peut être faite qu'une fois par année...)
-            // _ctrlTypeDecision(transaction);
         } catch (Exception e) {
             _addError(transaction, getSession().getLabel("CP_MSG_0061") + " " + e.toString());
         }
@@ -761,8 +715,7 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
             histoManager.setForIdTiers("");
             histoManager.find(transaction);
             if (histoManager.size() == 1) {
-                AFAffiliation histo = new AFAffiliation();
-                histo = (AFAffiliation) histoManager.getEntity(0);
+                AFAffiliation histo = (AFAffiliation) histoManager.getEntity(0);
                 return (histo.getIdTiers());
             } else if (histoManager.size() > 1) {
                 _addError(transaction, getSession().getLabel("CP_MSG_0063"));
@@ -797,9 +750,6 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
                     decisManager.find(transaction);
                 }
                 if (decisManager.getSize() > 0) {
-                    // _addError(
-                    // transaction,
-                    // "Il existe déjà une provisoire pour cette année et cet affilié. ");
                 }
             }
         } catch (Exception e) {
@@ -886,15 +836,14 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
             // on se base alors sur la période d'affiliation
             int anneeDebut = 0;
             int anneeFin = 0;
-            AFCotisation cotiAvs = new AFCotisation();
             try {
-                setPeriodicite(globaz.phenix.translation.CodeSystem.getLibelle(getSession(), (loadAffiliation()
-                        ._getDerniereAffiliation().getPeriodicite())));
+                setPeriodicite(globaz.phenix.translation.CodeSystem.getLibelle(getSession(), loadAffiliation()
+                        ._getDerniereAffiliation().getPeriodicite()));
             } catch (Exception e) {
                 setPeriodicite("");
             }
             // Recherche assurance AVS/AI/APG
-            cotiAvs = new AFCotisation();
+            AFCotisation cotiAvs = new AFCotisation();
             cotiAvs.setSession(getSession());
             cotiAvs = cotiAvs._retourCotisation(null, loadAffiliation().getAffiliationId(), getAnneeDecision(),
                     globaz.naos.translation.CodeSystem.GENRE_ASS_PERSONNEL,
@@ -1089,10 +1038,6 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
                             setConjoint(conjoint.getNumAvsActuel() + " - " + conjoint.getNom());
                             setIdConjoint(conjoint.getIdTiers());
                             setSelectionCjt(affiCjt.getAffilieNumero());
-
-                            // } else
-                            // if("515002".equalsIgnoreCase(persAvs.getEtatCivil())){
-                            // MODIF le 05.02.09
                         } else {
                             // Ex ceux qui ont étaient marié puis divorcé ou
                             // veuf.. et dont le conjoint est inconnu
@@ -1509,12 +1454,11 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
         // Contrôle du conjoint
         if (getProcessExterne().equals(new Boolean(false))) {
             try {
-                String idCjt = "";
                 if (JadeStringUtil.isIntegerEmpty(selectionCjt)) {
                     setIdConjoint("");
                     setConjoint("");
                 } else {
-                    idCjt = _ctrlCodeSaisi(statement.getTransaction(), getIdConjoint(), selectionCjt);
+                    String idCjt = _ctrlCodeSaisi(statement.getTransaction(), getIdConjoint(), selectionCjt);
                     if (!JadeStringUtil.isIntegerEmpty(idCjt)) {
                         TITiersViewBean cjt = new TITiersViewBean();
                         cjt.setIdTiers(idCjt);
@@ -1534,21 +1478,6 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
                 _addError(statement.getTransaction(), getSession().getLabel("CP_MSG_0070"));
             }
         }
-        // PO 7257 - Test si clôture CI pendant la période de décision
-        // Suppression Po pour 1-13-2
-        /*
-         * if (!JadeStringUtil.isBlankOrZero(this.getIdTiers())) { CICompteIndividuel ci = CICompteIndividuel.loadCI(
-         * JAStringFormatter.deformatAvs(this.tiers.getNumAvsActuel()), statement.getTransaction()); if (ci != null) {
-         * CIRassemblementOuverture rass = ci.getDerniereBCloture(statement.getTransaction()); if (rass != null) { int
-         * moisFinCloture = new JACalendarGregorian().daysInMonth( JACalendar.getMonth(rass.getDateCloture()),
-         * JACalendar.getYear(rass.getDateCloture())); String varDate = moisFinCloture + "." +
-         * rass.getDateClotureFormat(); if (BSessionUtil.compareDateBetween(this.getSession(), this.getDebutDecision(),
-         * this.getFinDecision(), varDate)) { String error = this.getSession().getLabel("CP_MSG_0200") + " " +
-         * rass.getDateCloture() + ". "; error = error + this.getSession().getLabel("CP_MSG_0201"); error = error + " ("
-         * + this.getDebutDecision() + " - " + varDate + ") "; error = error + "(" + new
-         * JACalendarGregorian().addDays(varDate, 1) + " - " + this.getFinDecision() + ").";
-         * this._addError(statement.getTransaction(), error); } } } }
-         */
         // Contrôle de la commune (pour les remises)
         if (CPDecision.CS_REMISE.equalsIgnoreCase(getTypeDecision())) {
             if (JadeStringUtil.isEmpty(getWantWarning())) {
@@ -1578,7 +1507,6 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
                 setWarningMessage("");
             }
             try {
-                String idComm = "";
                 if (JadeStringUtil.isIntegerEmpty(communeCode)) {
                     setCommuneCode("");
                     setCommuneLibelle("");
@@ -1586,7 +1514,7 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
                 } else {
                     TILocalite loca = new TILocalite();
                     loca.setSession(getSession());
-                    idComm = loca._ctrlCodeSaisi(statement.getTransaction(), getIdCommune(), communeCode);
+                    String idComm = loca._ctrlCodeSaisi(statement.getTransaction(), getIdCommune(), communeCode);
                     if (!JadeStringUtil.isIntegerEmpty(idComm)) {
                         loca.setIdLocalite(idComm);
                         loca.retrieve(statement.getTransaction());
@@ -2295,6 +2223,24 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
      */
     public java.lang.String getNbMoisExercice2() {
         return nbMoisExercice2;
+    }
+
+    /**
+     * Getter de base pour le montant de rente AVS.
+     * 
+     * @return Le montant.
+     */
+    public java.lang.String getMontantTotalRenteAVS() {
+        return montantTotalRenteAVS;
+    }
+
+    /**
+     * Setter de base pour montant rente avs.
+     * 
+     * @param montantTotalRenteAVS Le montant.
+     */
+    public void setMontantTotalRenteAVS(java.lang.String montantTotalRenteAVS) {
+        this.montantTotalRenteAVS = montantTotalRenteAVS;
     }
 
     /**
