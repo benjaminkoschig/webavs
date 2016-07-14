@@ -1,5 +1,6 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecriture;
 
+import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -248,6 +249,14 @@ public class PrestationOvDecompte {
 
     public String resolveReferencePaiementRequerant() {
         return infosConjoint.getNss() + " " + infosConjoint.getNom() + " " + infosConjoint.getPrenom();
+    }
+
+    public String concatRefPaiement() {
+        return getNssRequerant() + " " + getNomRequerant() + " " + getPrenomRequerant() + " "
+                + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001") + " " + getDateDebut() + " - "
+                + getDateFin() + " "
+                + BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_DECISION_DU") + " "
+                + getDateDecision();
     }
 
 }

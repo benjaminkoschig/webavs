@@ -1,6 +1,5 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process;
 
-import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeListUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import java.math.BigDecimal;
@@ -160,12 +159,7 @@ public class GeneratePerstationPeriodeDecompte {
             montant = ov.getMontantDetteModifier();
         }
 
-        String refPaiement = decompte.getNssRequerant() + " " + decompte.getNomRequerant() + " "
-                + decompte.getPrenomRequerant() + " "
-                + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001") + " " + decompte.getDateDebut()
-                + " - " + decompte.getDateFin() + " "
-                + BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_DECISION_DU") + " "
-                + decompte.getDateDecision();
+        String refPaiement = decompte.concatRefPaiement();
         return new OrdreVersement(ov.getId(), ov.getCsType(), ov.getCsTypeDomaine(), ov.getIdSectionDetteEnCompta(),
                 ov.getIdTiers(), ov.getIdTiersAdressePaiement(), ov.getIdTiersAdressePaiementConjoint(),
                 ov.getIdTiersOwnerDetteCreance(), montant, ov.getSousTypeGenrePrestation(),
@@ -173,9 +167,14 @@ public class GeneratePerstationPeriodeDecompte {
                 refPaiement);
     }
 
-    public static PrestationOvDecompte generatePersationPeriode(List<OrdreVersementForList> listOv)
-            throws ComptabiliserLotException {
-        PrestationOvDecompte decompte = new PrestationOvDecompte();
+    static PrestationOvDecompte generatePersationPeriode(List<OrdreVersementForList> listOv,
+            PrestationOvDecompte decompteInit) throws ComptabiliserLotException {
+        PrestationOvDecompte decompte;
+        if (decompteInit != null) {
+            decompte = decompteInit;
+        } else {
+            decompte = new PrestationOvDecompte();
+        }
         // A fair en premier
         GeneratePerstationPeriodeDecompte.setIdTiersAndCompteAnnexeAndInfo(listOv, decompte);
 
@@ -191,6 +190,11 @@ public class GeneratePerstationPeriodeDecompte {
             decompte.setPrestationAmount(new BigDecimal(listOv.get(0).getMontantPresation()));
         }
         return decompte;
+    }
+
+    public static PrestationOvDecompte generatePersationPeriode(List<OrdreVersementForList> listOv)
+            throws ComptabiliserLotException {
+        return generatePersationPeriode(listOv, null);
     }
 
     private static Map<String, List<OrdreVersementForList>> groupByNoGroupePeriode(List<OrdreVersementForList> ovs) {
