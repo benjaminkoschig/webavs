@@ -1,5 +1,6 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process;
 
+import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeListUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import java.math.BigDecimal;
@@ -27,11 +28,11 @@ import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecrit
  */
 public class GeneratePerstationPeriodeDecompte {
 
-    private static void addAllocationNoel(List<OrdreVersementForList> listOv, PrestationOvDecompte decompt) {
+    private static void addAllocationNoel(List<OrdreVersementForList> listOv, PrestationOvDecompte decompte) {
         for (OrdreVersementForList ov : listOv) {
             if (OrdreVersementTypeResolver.isAllocationNoel(ov.getSimpleOrdreVersement())) {
-                decompt.getAllocationsNoel().add(
-                        GeneratePerstationPeriodeDecompte.generateOv(ov.getSimpleOrdreVersement()));
+                decompte.getAllocationsNoel().add(
+                        GeneratePerstationPeriodeDecompte.generateOv(ov.getSimpleOrdreVersement(), decompte));
             }
         }
     }
@@ -39,16 +40,17 @@ public class GeneratePerstationPeriodeDecompte {
     private static void addCreancier(List<OrdreVersementForList> listOv, PrestationOvDecompte decompte) {
         for (OrdreVersementForList ov : listOv) {
             if (OrdreVersementTypeResolver.isCreancier(ov.getSimpleOrdreVersement())) {
-                decompte.getCreanciers()
-                        .add(GeneratePerstationPeriodeDecompte.generateOv(ov.getSimpleOrdreVersement()));
+                decompte.getCreanciers().add(
+                        GeneratePerstationPeriodeDecompte.generateOv(ov.getSimpleOrdreVersement(), decompte));
             }
         }
     }
 
-    private static void addDettesInDecompte(List<OrdreVersementForList> listOv, PrestationOvDecompte decompt) {
+    private static void addDettesInDecompte(List<OrdreVersementForList> listOv, PrestationOvDecompte decompte) {
         for (OrdreVersementForList ov : listOv) {
             if (OrdreVersementTypeResolver.isDette(ov.getSimpleOrdreVersement())) {
-                decompt.getDettes().add(GeneratePerstationPeriodeDecompte.generateOv(ov.getSimpleOrdreVersement()));
+                decompte.getDettes().add(
+                        GeneratePerstationPeriodeDecompte.generateOv(ov.getSimpleOrdreVersement(), decompte));
             }
         }
     }
@@ -57,7 +59,7 @@ public class GeneratePerstationPeriodeDecompte {
         for (OrdreVersementForList ov : listOv) {
             if (OrdreVersementTypeResolver.isJoursAppoint(ov.getSimpleOrdreVersement())) {
                 decompt.getJoursAppoint().add(
-                        GeneratePerstationPeriodeDecompte.generateOv(ov.getSimpleOrdreVersement()));
+                        GeneratePerstationPeriodeDecompte.generateOv(ov.getSimpleOrdreVersement(), decompt));
             }
         }
     }
@@ -90,12 +92,12 @@ public class GeneratePerstationPeriodeDecompte {
         for (Entry<String, List<OrdreVersementForList>> entry : map.entrySet()) {
             PrestationPeriode prestationPeriode = new PrestationPeriode();
             for (OrdreVersementForList ov : entry.getValue()) {
-                GeneratePerstationPeriodeDecompte.fillPeriode(entry.getKey(), prestationPeriode, ov);
-
+                GeneratePerstationPeriodeDecompte.fillPeriode(entry.getKey(), prestationPeriode, ov, decompt);
             }
             if (prestationPeriode.getNoGroupePeriode() != null) {
                 periodes.add(prestationPeriode);
             }
+
         }
         GeneratePerstationPeriodeDecompte.addMontantDisponibleRequeantConjoint(periodes);
         decompt.setPrestationsPeriodes(periodes);
@@ -113,7 +115,7 @@ public class GeneratePerstationPeriodeDecompte {
     }
 
     private static OrdreVersementPeriode fillOvPeriodeAndGenerateIfIsNull(OrdreVersementForList ov,
-            OrdreVersementPeriode ovPeriode, String idCompteAnnexe) {
+            OrdreVersementPeriode ovPeriode, String idCompteAnnexe, PrestationOvDecompte decompt) {
 
         if (JadeStringUtil.isBlankOrZero(idCompteAnnexe)) {
             throw new IllegalArgumentException(
@@ -125,7 +127,7 @@ public class GeneratePerstationPeriodeDecompte {
             ovPeriode.setIdCompteAnnexe(idCompteAnnexe);
         }
 
-        OrdreVersement ovGen = GeneratePerstationPeriodeDecompte.generateOv(ov.getSimpleOrdreVersement());
+        OrdreVersement ovGen = GeneratePerstationPeriodeDecompte.generateOv(ov.getSimpleOrdreVersement(), decompt);
         if (OrdreVersementTypeResolver.isBeneficiarePrincipal(ov.getSimpleOrdreVersement())) {
             ovPeriode.setBeneficiaire(ovGen);
         } else if (OrdreVersementTypeResolver.isRestitution(ov.getSimpleOrdreVersement())) {
@@ -134,21 +136,22 @@ public class GeneratePerstationPeriodeDecompte {
         return ovPeriode;
     }
 
-    private static void fillPeriode(String noGroupe, PrestationPeriode prestationPeriode, OrdreVersementForList ov) {
+    private static void fillPeriode(String noGroupe, PrestationPeriode prestationPeriode, OrdreVersementForList ov,
+            PrestationOvDecompte decompt) {
         SimpleOrdreVersement sOv = ov.getSimpleOrdreVersement();
         if (OrdreVersementTypeResolver.isRestitution(sOv) || OrdreVersementTypeResolver.isBeneficiarePrincipal(sOv)) {
             if (GeneratePerstationPeriodeDecompte.isRequerant(ov)) {
                 prestationPeriode.setRequerant(GeneratePerstationPeriodeDecompte.fillOvPeriodeAndGenerateIfIsNull(ov,
-                        prestationPeriode.getRequerant(), ov.getIdCompteAnnexeRequerant()));
+                        prestationPeriode.getRequerant(), ov.getIdCompteAnnexeRequerant(), decompt));
             } else {
                 prestationPeriode.setConjoint(GeneratePerstationPeriodeDecompte.fillOvPeriodeAndGenerateIfIsNull(ov,
-                        prestationPeriode.getConjoint(), ov.getIdCompteAnnexeConjoint()));
+                        prestationPeriode.getConjoint(), ov.getIdCompteAnnexeConjoint(), decompt));
             }
             prestationPeriode.setNoGroupePeriode(Integer.valueOf(noGroupe));
         }
     }
 
-    private static OrdreVersement generateOv(SimpleOrdreVersement ov) {
+    private static OrdreVersement generateOv(SimpleOrdreVersement ov, PrestationOvDecompte decompte) {
 
         String montant = null;
         if (JadeStringUtil.isBlankOrZero((ov.getMontantDetteModifier()))) {
@@ -157,15 +160,25 @@ public class GeneratePerstationPeriodeDecompte {
             montant = ov.getMontantDetteModifier();
         }
 
+        String refPaiement = decompte.getNssRequerant() + " " + decompte.getNomRequerant() + " "
+                + decompte.getPrenomRequerant() + " "
+                + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001") + " " + decompte.getDateDebut()
+                + " - " + decompte.getDateFin() + " "
+                + BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_DECISION_DU") + " "
+                + decompte.getDateDecision();
         return new OrdreVersement(ov.getId(), ov.getCsType(), ov.getCsTypeDomaine(), ov.getIdSectionDetteEnCompta(),
                 ov.getIdTiers(), ov.getIdTiersAdressePaiement(), ov.getIdTiersAdressePaiementConjoint(),
                 ov.getIdTiersOwnerDetteCreance(), montant, ov.getSousTypeGenrePrestation(),
-                ov.getIdDomaineApplication(), ov.getIdDomaineApplicationConjoint(), ov.getIdTiersConjoint());
+                ov.getIdDomaineApplication(), ov.getIdDomaineApplicationConjoint(), ov.getIdTiersConjoint(),
+                refPaiement);
     }
 
     public static PrestationOvDecompte generatePersationPeriode(List<OrdreVersementForList> listOv)
             throws ComptabiliserLotException {
         PrestationOvDecompte decompte = new PrestationOvDecompte();
+        // A fair en premier
+        GeneratePerstationPeriodeDecompte.setIdTiersAndCompteAnnexeAndInfo(listOv, decompte);
+
         GeneratePerstationPeriodeDecompte.addDettesInDecompte(listOv, decompte);
         GeneratePerstationPeriodeDecompte.addCreancier(listOv, decompte);
 
@@ -173,7 +186,7 @@ public class GeneratePerstationPeriodeDecompte {
         // GeneratePerstationPeriodeDecompte.addJoursAppoint(listOv, decompte);
         GeneratePerstationPeriodeDecompte.addAllocationNoel(listOv, decompte);
         GeneratePerstationPeriodeDecompte.sortByNoGroupe(decompte.getPrestationsPeriodes());
-        GeneratePerstationPeriodeDecompte.setIdTiersAndCompteAnnexe(listOv, decompte);
+
         if (listOv.size() > 0) {
             decompte.setPrestationAmount(new BigDecimal(listOv.get(0).getMontantPresation()));
         }
@@ -202,8 +215,8 @@ public class GeneratePerstationPeriodeDecompte {
         }
     }
 
-    private static void setIdTiersAndCompteAnnexe(List<OrdreVersementForList> listOv, PrestationOvDecompte decompte)
-            throws ComptabiliserLotException {
+    private static void setIdTiersAndCompteAnnexeAndInfo(List<OrdreVersementForList> listOv,
+            PrestationOvDecompte decompte) throws ComptabiliserLotException {
         // On fait un sort pour avoir la l'ordre de versement liée à la pca la plus récente.
         GeneratePerstationPeriodeDecompte.sortByNoGroupeDesc(listOv);
         for (OrdreVersementForList ov : listOv) {
@@ -211,6 +224,12 @@ public class GeneratePerstationPeriodeDecompte {
             if ((OrdreVersementTypeResolver.isBeneficiarePrincipal(ov.getSimpleOrdreVersement()) || OrdreVersementTypeResolver
                     .isRestitution(ov.getSimpleOrdreVersement()))) {
                 SimpleOrdreVersement sov = ov.getSimpleOrdreVersement();
+
+                decompte.setDateDecision(ov.getDateDecision());
+                decompte.setDateDebut(ov.getDateDebut());
+                decompte.setDateFin(ov.getDateFin());
+                decompte.setRefPaiement(ov.getRefPaiement());
+
                 if (GeneratePerstationPeriodeDecompte.isRequerant(ov)) {
                     if (JadeStringUtil.isBlankOrZero(decompte.getIdCompteAnnexeRequerant())) {
                         decompte.setIdTiersRequerant(ov.getIdTiersRequerant());
@@ -218,6 +237,9 @@ public class GeneratePerstationPeriodeDecompte {
                                 .getIdCompteAnnexeRequerant()));
                         decompte.setIdTiersAddressePaiementRequerant(sov.getIdTiersAdressePaiement());
                         decompte.setIdDomaineApplicationRequerant(sov.getIdDomaineApplication());
+                        decompte.setNomRequerant(ov.getDesignationRequerant1());
+                        decompte.setPrenomRequerant(ov.getDesignationRequerant2());
+                        decompte.setNssRequerant(ov.getNumAvs());
                     }
                     if (JadeStringUtil.isBlankOrZero(decompte.getIdTiersConjoint())) {
                         decompte.setIdTiersConjoint(sov.getIdTiersConjoint());

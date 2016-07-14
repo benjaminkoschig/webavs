@@ -49,7 +49,7 @@ public class GeneratePrestationOperations {
      */
     public List<PrestationOperations> generateAllOperationsPrestations(List<OrdreVersementForList> ovs,
             List<SectionSimpleModel> sections, List<CompteAnnexeSimpleModel> comptesAnnexes, String dateForOv,
-            PCLotTypeOperationFactory operation) throws JadeApplicationException {
+            String dateEcheance, PCLotTypeOperationFactory operation) throws JadeApplicationException {
 
         if (ovs == null) {
             throw new ComptabiliserLotException("Unable to generateAllPrestationsEcriturs the ovs passed is null!");
@@ -75,7 +75,8 @@ public class GeneratePrestationOperations {
             Map<String, List<OrdreVersementForList>> prestationsOvs = groupByPresation(ovs);
             CompteAnnexeResolver.addComptesAnnexes(comptesAnnexes);
             for (Entry<String, List<OrdreVersementForList>> entry : prestationsOvs.entrySet()) {
-                prestationsOperations.add(generatePresationOperation(entry, sections, dateForOv, operation));
+                prestationsOperations.add(generatePresationOperation(entry, sections, dateForOv, dateEcheance,
+                        operation));
             }
         } finally {
             CompteAnnexeResolver.clear();
@@ -84,14 +85,14 @@ public class GeneratePrestationOperations {
     }
 
     protected Operations generateOperations(List<OrdreVersementForList> ovs, List<SectionSimpleModel> sections,
-            String dateForOv, PCLotTypeOperationFactory operation) throws JadeApplicationException {
-        return operation.getTreatImplementation().generateAllOperations(ovs, sections, dateForOv);
+            String dateForOv, String dateEcheance, PCLotTypeOperationFactory operation) throws JadeApplicationException {
+        return operation.getTreatImplementation().generateAllOperations(ovs, sections, dateForOv, dateEcheance);
     }
 
     private PrestationOperations generatePresationOperation(Entry<String, List<OrdreVersementForList>> entry,
-            List<SectionSimpleModel> sections, String dateForOv, PCLotTypeOperationFactory operation)
-            throws JadeApplicationException {
-        Operations operations = generateOperations(entry.getValue(), sections, dateForOv, operation);
+            List<SectionSimpleModel> sections, String dateForOv, String dateEcheance,
+            PCLotTypeOperationFactory operation) throws JadeApplicationException {
+        Operations operations = generateOperations(entry.getValue(), sections, dateForOv, dateEcheance, operation);
         PrestationOperations prestationEcritures = new PrestationOperations();
 
         addNomPrenomNumAvsIdPrestation(entry, prestationEcritures);

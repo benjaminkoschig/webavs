@@ -106,14 +106,15 @@ class ComptabilisationPersister {
 
             if (idAressePaimentUnique != null) {
 
+                String refPaiement = ov.getReferencePaiement();
+                if (refPaiement != null && refPaiement.length() > 140) {
+                    refPaiement = refPaiement.substring(0, 140);
+                }
+
                 conteneur.addOrdreVersement(conteneur.getJournalModel().getIdJournal(), ov.getCompteAnnexe()
                         .getIdCompteAnnexe(), section.getIdSection(), idAressePaimentUnique,
                         conteneur.getDateEchance(), ov.getMontant().toString(), "CHF", "CHF",
-                        APIOperationOrdreVersement.VIREMENT, CAOrdreGroupe.NATURE_RENTES_AVS_AI, ov.getCompteAnnexe()
-                                .getIdExterneRole()
-                                + " Prestation complémentaire du "
-                                + conteneur.getDateEchance()
-                                + " - " + ov.getCompteAnnexe().getDescription());
+                        APIOperationOrdreVersement.VIREMENT, CAOrdreGroupe.NATURE_RENTES_AVS_AI, refPaiement);
 
             } else {
                 PersonneEtendueComplexModel tiers = TIBusinessServiceLocator.getPersonneEtendueService().read(

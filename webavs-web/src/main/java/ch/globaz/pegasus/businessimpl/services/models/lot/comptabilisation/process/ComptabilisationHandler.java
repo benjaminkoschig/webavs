@@ -19,10 +19,9 @@ public class ComptabilisationHandler {
         String times = "";
         if (time != null) {
             times = "Loader: " + time.getLoad() + "ms\n\rChecker: " + time.getCheck() + "ms\n\rThreat: "
-                    + time.getHandle() + "ms\n\rPersister: " + time.getOut() + "ms\n\rnbPresation: "
-                    + time.getNombre() + "\n\rAverage: "
-                    + ((time.getLoad() + time.getCheck() + time.getHandle() + time.getOut()) / time.getNombre())
-                    + "ms";
+                    + time.getHandle() + "ms\n\rPersister: " + time.getOut() + "ms\n\rnbPresation: " + time.getNombre()
+                    + "\n\rAverage: "
+                    + ((time.getLoad() + time.getCheck() + time.getHandle() + time.getOut()) / time.getNombre()) + "ms";
         }
         return times;
     }
@@ -60,8 +59,8 @@ public class ComptabilisationHandler {
         persister.persit(comptatService);
         time.addOut();
         time.stop();
-
         JadeThread.currentContext().storeTemporaryObject(ComptabilisationHandler.NAME_OBJECT_TIME_IN_THE_THREAD, time);
+
         return data;
     }
 

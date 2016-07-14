@@ -70,11 +70,11 @@ public class GenerateOvComptaAndGroupe {
 
     public void addOvCompta(CompteAnnexeSimpleModel compteAnnexe, String idAdressePaiement,
             String idDomaineApplication, BigDecimal montant, SectionPegasus section, String idTiers, String csTypeOv,
-            String csRoleFamille) {
+            String csRoleFamille, String referencePaiement) {
         // On regroupe le ov par compte annexe et adresse de paiement.
         if (!ordresVersementCompta.containsKey(generateKeyForOv(idAdressePaiement, compteAnnexe))) {
             OrdreVersementCompta ovCompta = new OrdreVersementCompta(compteAnnexe, idAdressePaiement,
-                    idDomaineApplication, montant, section, idTiers, csTypeOv, csRoleFamille);
+                    idDomaineApplication, montant, section, idTiers, csTypeOv, csRoleFamille, referencePaiement);
             ordresVersementCompta.put(generateKeyForOv(idAdressePaiement, compteAnnexe), ovCompta);
         } else {
             OrdreVersementCompta ovCompta = ordresVersementCompta

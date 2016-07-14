@@ -7,9 +7,12 @@ import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.util.JadePersistenceUtil;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees;
@@ -256,7 +259,28 @@ public class ValiderDecisionAcTreat {
     private SimplePrestation generatePrestation(DecomptePca decomptePca) throws PCAccordeeException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException {
 
+        String refPaiement = null;
+        Comparator<PcaForDecompte> comparator = new Comparator<PcaForDecompte>() {
+            @Override
+            public int compare(PcaForDecompte o1, PcaForDecompte o2) {
+                Integer date1 = Integer.parseInt(JadePersistenceUtil.parseMonthYearToSql(o1.getSimplePCAccordee()
+                        .getDateDebut()));
+                Integer date2 = Integer.parseInt(JadePersistenceUtil.parseMonthYearToSql(o2.getSimplePCAccordee()
+                        .getDateDebut()));
+                return -1 * date1.compareTo(date2);
+            }
+        };
+        Collections.sort(data.getPcasNew(), comparator);
+
+        for (PcaForDecompte pca : data.getPcasNew()) {
+            if (refPaiement == null || JadeStringUtil.isBlankOrZero(refPaiement)) {
+                refPaiement = pca.getSimplePrestationsAccordees().getReferencePmt();
+            }
+        }
+
         SimplePrestation simplePrestation = new SimplePrestation();
+
+        simplePrestation.setRefPaiement(refPaiement);
 
         simplePrestation.setIdTiersBeneficiaire(decomptePca.getPeriodesPca().get(0).getPcaRequerantNew()
                 .getIdTiersBeneficiaire());
@@ -282,6 +306,8 @@ public class ValiderDecisionAcTreat {
         montantRetro = sumAllocationNoel.setScale(0).add(montantRetro.setScale(0));
 
         simplePrestation.setMontantTotal(montantRetro.toString());
+
+        simplePrestation.setDateDecision(data.getDateDecision());
 
         return simplePrestation;
     }

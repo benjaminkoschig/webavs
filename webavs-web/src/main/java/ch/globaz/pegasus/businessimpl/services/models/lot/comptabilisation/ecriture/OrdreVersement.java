@@ -18,6 +18,15 @@ public class OrdreVersement {
     private String idTiersOwnerDetteCreance = null;
     private BigDecimal montant = null;
     private String sousTypeGenrePrestation = null;
+    private String refPaiement;
+
+    public String getRefPaiement() {
+        return refPaiement;
+    }
+
+    public void setRefPaiement(String refPaiement) {
+        this.refPaiement = refPaiement;
+    }
 
     public OrdreVersement() {
 
@@ -26,7 +35,7 @@ public class OrdreVersement {
     public OrdreVersement(String id, String csType, String csTypeDomaine, String idSectionDetteEnCompta,
             String idTiers, String idTiersAdressePaiement, String idTiersAdressePaiementConjoint,
             String idTiersOwnerDetteCreance, String montant, String sousTypeGenrePrestation,
-            String idDomaineApplication, String idDomaineApplicationConjoint, String idTiersConjoint) {
+            String idDomaineApplication, String idDomaineApplicationConjoint, String idTiersConjoint, String refPaiement) {
         super();
         this.csType = csType;
         this.csTypeDomaine = csTypeDomaine;
@@ -41,6 +50,7 @@ public class OrdreVersement {
         this.idDomaineApplication = idDomaineApplication;
         this.idDomaineApplicationConjoint = idDomaineApplicationConjoint;
         this.idTiersConjoint = idTiersConjoint;
+        this.refPaiement = refPaiement;
     }
 
     public String getCsType() {

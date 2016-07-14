@@ -31,6 +31,7 @@
 			<field name="noGroupePeriode"  column="CZNOGR" type="NUMERIC" mandatory="true" comment="NO_GROUPE_PERIODE"/>
 			
 			<field name="sousTypeGenrePrestation" column="CZNSTG" type="NUMERIC" mandatory="true" comment="SOUS_TYPE_GENRE_PRESTATION"/>
+			<field name="refPaiement" column="CZREFP" type="STRING" mandatory="false" comment="REFERENCE_PAIEMENT"/>
 			
 		</fields>
 		<search-definition>

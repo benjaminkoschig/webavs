@@ -73,6 +73,7 @@ public class LibererBlocage {
                     SimpleOrdreVersement simpleOrdreVersement = LibererBlocage.newOrdreVersement(deblocage);
                     simpleOrdreVersement.setIdPca(pcAccordee.getId());
                     simpleOrdreVersement.setIdSection(sectionDeblocage.getIdSection());
+                    simpleOrdreVersement.setRefPaiement(deblocage.getRefPaiement());
                     if (EPCTypeDeblocage.CS_CREANCIER.equals(entry.getKey())) {
                         simpleOrdreVersement.setCsType(IREOrdresVersements.CS_TYPE_TIERS);
                         simpleOrdreVersement.setIdDomaineApplication(deblocage.getIdApplicationAdressePaiement());

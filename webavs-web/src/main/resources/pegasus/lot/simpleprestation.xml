@@ -16,6 +16,8 @@
 			<field name="dateFin"  column="PRDFPC" type="MONTH_YEAR"  mandatory="false" comment="DATE_FIN" />
 			<field name="montantTotal" column="PRMTOT" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="MONTANT_TOTAL"/>
 			<field name="moisAn" column="PRDMAN" type="DATE" mandatory="false" comment="MOIS_ANNEE"/>
+			<field name="dateDecision" column="PRDDECI" type="DATE" mandatory="false" comment="DATE_DECISION"/>
+			<field name="refPaiement" column="PRREFP" type="STRING" mandatory="false" comment="REF_PAIEMENT"/>
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

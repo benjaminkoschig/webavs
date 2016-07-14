@@ -50,7 +50,7 @@ class ComptabilisationTreat {
 
         GeneratePrestationOperations generateOperations = new GeneratePrestationOperations();
         return generateOperations.generateAllOperationsPrestations(data.getListOV(), data.getSections(),
-                data.getComptesAnnexes(), data.getDateValeur().toStr("."), operation);
+                data.getComptesAnnexes(), data.getDateValeur().toStr("."), data.getDateEchance().toStr("."), operation);
     }
 
     public boolean hasError() {

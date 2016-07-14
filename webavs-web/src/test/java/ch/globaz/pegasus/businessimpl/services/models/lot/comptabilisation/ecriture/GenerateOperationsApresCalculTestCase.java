@@ -30,7 +30,7 @@ public class GenerateOperationsApresCalculTestCase {
         sections.get(0).setIdSection("2020");
         sections.get(0).setIdCompteAnnexe("555");
         GenerateOperations generateOperations = newGenerateOperations();
-        Operations operations = generateOperations.generateAllOperations(ovs, sections, "01.01.2012");
+        Operations operations = generateOperations.generateAllOperations(ovs, sections, "01.01.2012", "03.01.2012");
         return operations;
     }
 

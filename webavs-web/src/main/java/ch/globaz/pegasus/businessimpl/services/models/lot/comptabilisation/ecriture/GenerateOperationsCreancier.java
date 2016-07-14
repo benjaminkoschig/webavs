@@ -27,7 +27,7 @@ class GenerateOperationsCreancier extends GenerateEcrituresDispatcher {
         // TypeEcriture.CREANCIER, ov));
 
         generateOvCompta.addOvCompta(compteAnnexe, ov.getIdTiersAdressePaiement(), ov.getIdDomaineApplication(),
-                montant, SectionPegasus.DECISION_PC, ov.getIdTiers(), ov.getCsType(), null);
+                montant, SectionPegasus.DECISION_PC, ov.getIdTiers(), ov.getCsType(), null, ov.getRefPaiement());
     }
 
     public List<OrdreVersementCompta> getOrdresVersementCompta() {

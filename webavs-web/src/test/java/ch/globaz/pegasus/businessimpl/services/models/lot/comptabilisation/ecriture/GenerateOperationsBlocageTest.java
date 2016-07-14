@@ -64,7 +64,7 @@ public class GenerateOperationsBlocageTest {
         sections.get(1).setIdCompteAnnexe(CompteAnnexeFactory.COMPTE_ANNEXE_REQUERANT);
 
         GenerateOperations generateOperations = newGenerateOperations();
-        Operations operations = generateOperations.generateAllOperations(ovs, sections, "01.01.2012");
+        Operations operations = generateOperations.generateAllOperations(ovs, sections, "01.01.2012", "01.03.2012");
         return operations;
     }
 

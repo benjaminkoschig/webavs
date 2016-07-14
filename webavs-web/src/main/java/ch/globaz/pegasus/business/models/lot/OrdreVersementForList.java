@@ -16,6 +16,34 @@ public class OrdreVersementForList extends JadeComplexModel {
     private String montantPresation = null;
     private String numAvs = null;
     private SimpleOrdreVersement simpleOrdreVersement = null;
+    private String dateDecision;
+    private String dateDebut;
+    private String dateFin;
+    private String refPaiement;
+
+    public String getRefPaiement() {
+        return refPaiement;
+    }
+
+    public void setRefPaiement(String refPaiement) {
+        this.refPaiement = refPaiement;
+    }
+
+    public String getDateDebut() {
+        return dateDebut;
+    }
+
+    public void setDateDebut(String dateDebut) {
+        this.dateDebut = dateDebut;
+    }
+
+    public String getDateFin() {
+        return dateFin;
+    }
+
+    public void setDateFin(String dateFin) {
+        this.dateFin = dateFin;
+    }
 
     public OrdreVersementForList() {
         super();
@@ -112,6 +140,14 @@ public class OrdreVersementForList extends JadeComplexModel {
                 + ", idCompteAnnexeRequerant=" + idCompteAnnexeRequerant + ", idTiersRequerant=" + idTiersRequerant
                 + ", montantPresation=" + montantPresation + ", numAvs=" + numAvs + ", simpleOrdreVersement="
                 + simpleOrdreVersement + "]";
+    }
+
+    public String getDateDecision() {
+        return dateDecision;
+    }
+
+    public void setDateDecision(String dateDecision) {
+        this.dateDecision = dateDecision;
     }
 
 }

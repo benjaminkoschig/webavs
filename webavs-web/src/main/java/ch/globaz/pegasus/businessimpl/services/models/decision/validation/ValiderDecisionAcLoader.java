@@ -390,7 +390,7 @@ public class ValiderDecisionAcLoader extends AbstractValiderDecision {
 
         List<String> idsPca = new ArrayList<String>();
         for (PcaForDecompte pca : list) {
-            idsPca.add(pca.getSimplePCAccordee().getIdPCAccordee());
+            idsPca.add(pca.getSimplePCAccordee().getIdPrestationAccordee());
         }
         SimpleRetenuePayementSearch search = new SimpleRetenuePayementSearch();
         search.setInIdsRente(idsPca);

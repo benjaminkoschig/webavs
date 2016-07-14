@@ -16,6 +16,42 @@ public class PrestationOvDecompte {
     private List<OrdreVersement> joursAppoint = new ArrayList<OrdreVersement>();
     private BigDecimal prestationAmount = new BigDecimal(0);
     private List<PrestationPeriode> prestationsPeriodes = new ArrayList<PrestationPeriode>();
+    private String dateDecision;
+    private String dateDebut;
+    private String dateFin;
+    private String refPaiement;
+
+    public String getRefPaiement() {
+        return refPaiement;
+    }
+
+    public void setRefPaiement(String refPaiement) {
+        this.refPaiement = refPaiement;
+    }
+
+    public String getDateDebut() {
+        return dateDebut;
+    }
+
+    public void setDateDebut(String dateDebut) {
+        this.dateDebut = dateDebut;
+    }
+
+    public String getDateFin() {
+        return dateFin;
+    }
+
+    public void setDateFin(String dateFin) {
+        this.dateFin = dateFin;
+    }
+
+    public String getDateDecision() {
+        return dateDecision;
+    }
+
+    public void setDateDecision(String dateDecision) {
+        this.dateDecision = dateDecision;
+    }
 
     public List<OrdreVersement> getAllocationsNoel() {
         return allocationsNoel;
@@ -130,6 +166,54 @@ public class PrestationOvDecompte {
         infosRequerant.setIdTiersAddressePaiement(idTiersAddressePaiementRequerant);
     }
 
+    public String getNssConjoint() {
+        return infosConjoint.getNss();
+    }
+
+    public void setNssConjoint(String nss) {
+        infosConjoint.setNss(nss);
+    }
+
+    public String getNomConjoint() {
+        return infosConjoint.getNom();
+    }
+
+    public void setNomConjoint(String nom) {
+        infosConjoint.setNom(nom);
+    }
+
+    public String getPrenomConjoint() {
+        return infosConjoint.getPrenom();
+    }
+
+    public void setPrenomConjoint(String prenom) {
+        infosConjoint.setPrenom(prenom);
+    }
+
+    public String getNssRequerant() {
+        return infosRequerant.getNss();
+    }
+
+    public void setNssRequerant(String nss) {
+        infosRequerant.setNss(nss);
+    }
+
+    public String getNomRequerant() {
+        return infosRequerant.getNom();
+    }
+
+    public void setNomRequerant(String nom) {
+        infosRequerant.setNom(nom);
+    }
+
+    public String getPrenomRequerant() {
+        return infosRequerant.getPrenom();
+    }
+
+    public void setPrenomRequerant(String prenom) {
+        infosRequerant.setPrenom(prenom);
+    }
+
     public void setIdTiersConjoint(String idTiersConjoint) {
         infosConjoint.setIdTiers(idTiersConjoint);
     }
@@ -156,6 +240,14 @@ public class PrestationOvDecompte {
 
     public void setPrestationsPeriodes(List<PrestationPeriode> prestationsPeriodes) {
         this.prestationsPeriodes = prestationsPeriodes;
+    }
+
+    public String resolveReferencePaiementConjoint() {
+        return infosConjoint.getNss() + " " + infosConjoint.getNom() + " " + infosConjoint.getPrenom();
+    }
+
+    public String resolveReferencePaiementRequerant() {
+        return infosConjoint.getNss() + " " + infosConjoint.getNom() + " " + infosConjoint.getPrenom();
     }
 
 }

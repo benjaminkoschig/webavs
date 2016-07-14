@@ -184,6 +184,9 @@ class ComptabilisationLoader {
                 if (!JadeStringUtil.isBlankOrZero(ov.getSimpleOrdreVersement().getIdTiers())) {
                     idsTiers.add(ov.getSimpleOrdreVersement().getIdTiers());
                 }
+                if (!JadeStringUtil.isBlankOrZero(ov.getSimpleOrdreVersement().getIdTiersConjoint())) {
+                    idsTiers.add(ov.getSimpleOrdreVersement().getIdTiersConjoint());
+                }
             } else if (OrdreVersementTypeResolver.isCreancier(ov.getSimpleOrdreVersement())) {
                 idsTiers.add(ov.getSimpleOrdreVersement().getIdTiers());
             }

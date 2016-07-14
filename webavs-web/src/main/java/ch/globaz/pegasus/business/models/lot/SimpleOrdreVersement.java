@@ -35,6 +35,7 @@ public class SimpleOrdreVersement extends JadeSimpleModel {
     private String montantDetteModifier = null;
     private String noGroupePeriode = null;
     private String sousTypeGenrePrestation = null;
+    private String refPaiement; // seulement utilisé pour les créanciers
 
     public String getCsType() {
         return csType;
@@ -239,5 +240,13 @@ public class SimpleOrdreVersement extends JadeSimpleModel {
                 + ", idTiersAdressePaiementConjoint=" + idTiersAdressePaiementConjoint + ", isCompense=" + isCompense
                 + ", montant=" + montant + ", montantDetteModifier=" + montantDetteModifier + ", noGroupePeriode="
                 + noGroupePeriode + ", sousTypeGenrePrestation=" + sousTypeGenrePrestation + "]";
+    }
+
+    public String getRefPaiement() {
+        return refPaiement;
+    }
+
+    public void setRefPaiement(String refPaiement) {
+        this.refPaiement = refPaiement;
     }
 }

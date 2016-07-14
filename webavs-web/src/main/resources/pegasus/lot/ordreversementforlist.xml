@@ -12,6 +12,10 @@
 			<select-field name="designationRequerant1" field-ref="tiers.designation1" />
 			<select-field name="designationRequerant2" field-ref="tiers.designation2" />
 			<select-field name="montantPresation" field-ref="simplePrestation.montantTotal" />
+			<select-field name="dateDecision" field-ref="simplePrestation.dateDecision" />
+			<select-field name="dateDebut" field-ref="simplePrestation.dateDebut" />
+			<select-field name="dateFin" field-ref="simplePrestation.dateFin" />
+			<select-field name="refPaiement" field-ref="simplePrestation.refPaiement" />
 		</select-fields> 
 
 		<linked-model name="simplePrestation" model-ref="ch.globaz.pegasus.business.models.lot.SimplePrestation" join-type="INNER" select-fields="false">
@@ -31,6 +35,20 @@
 				<join-field name="idTiers" operation="EQUALS" field-ref="tiers.idTiers"/>
 			</join-group>
 		</linked-model>	
+				
+		<linked-model name="tiersConjoint" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" join-type="INNER" select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="simplePrestation.idTiersBeneficiaire"/>
+			</join-group>
+		</linked-model>	
+		
+		<linked-model name="personneEtenduConjoint" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueSimpleModel" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idTiers" operation="EQUALS" field-ref="tiers.idTiers"/>
+			</join-group>
+		</linked-model>			
+				
+				
 				
 		<search-definition>
 			<search-group operator="AND">

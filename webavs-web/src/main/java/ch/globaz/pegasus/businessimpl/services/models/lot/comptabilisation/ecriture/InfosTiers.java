@@ -7,21 +7,39 @@ public class InfosTiers {
     private String idDomaineApplication;
     private String idTiers;
     private String idTiersAddressePaiement;
+    private String nss;
+    private String nom;
+    private String prenom;
 
     public InfosTiers() {
     }
 
-    public InfosTiers(CompteAnnexeSimpleModel compteAnnexe, String idDomaineApplication, String idTiers,
-            String idTiersAddressePaiement) {
-        super();
-        this.compteAnnexe = compteAnnexe;
-        this.idDomaineApplication = idDomaineApplication;
-        this.idTiers = idTiers;
-        this.idTiersAddressePaiement = idTiersAddressePaiement;
-    }
-
     public CompteAnnexeSimpleModel getCompteAnnexe() {
         return compteAnnexe;
+    }
+
+    public String getNss() {
+        return nss;
+    }
+
+    public void setNss(String nss) {
+        this.nss = nss;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public String getPrenom() {
+        return prenom;
+    }
+
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
     }
 
     public String getIdCompteAnnexe() {

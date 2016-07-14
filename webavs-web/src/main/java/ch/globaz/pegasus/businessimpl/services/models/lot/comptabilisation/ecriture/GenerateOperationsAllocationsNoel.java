@@ -1,5 +1,6 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecriture;
 
+import globaz.globall.db.BSessionUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.osiris.external.IntRole;
 import java.math.BigDecimal;
@@ -37,9 +38,12 @@ class GenerateOperationsAllocationsNoel extends GenerateOperationBasic {
         ecritures.add(generateEcritureCredit(SectionPegasus.DECISION_PC, montant, compteAnnexe.getIdCompteAnnexe(),
                 TypeEcriture.ALLOCATION_NOEL, ov));
 
+        String refPaiement = infosTiers.getNss() + " " + infosTiers.getNom() + " " + infosTiers.getPrenom() + " "
+                + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001");
+
         ordreVersementCompta.add(new OrdreVersementCompta(compteAnnexe, infosTiers.getIdTiersAddressePaiement(),
                 infosTiers.getIdDomaineApplication(), montant, SectionPegasus.DECISION_PC, infosTiers.getIdTiers(), ov
-                        .getCsType(), csRoleFamille));
+                        .getCsType(), csRoleFamille, refPaiement));
     }
 
     public List<Ecriture> getEcritures() {

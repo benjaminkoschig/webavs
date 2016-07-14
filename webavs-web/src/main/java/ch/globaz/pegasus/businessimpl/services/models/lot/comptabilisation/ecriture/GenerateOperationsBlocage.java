@@ -1,6 +1,8 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecriture;
 
 import globaz.corvus.api.ordresversements.IREOrdresVersements;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.osiris.api.APIEcriture;
@@ -24,12 +26,12 @@ import ch.globaz.pegasus.business.models.lot.SimpleOrdreVersement;
  */
 public class GenerateOperationsBlocage extends GenerateOperationBasic implements GenerateOperations {
 
-    private static OrdreVersement generateOv(SimpleOrdreVersement ov) {
+    private static OrdreVersement generateOv(SimpleOrdreVersement ov, String refPaiement) {
 
         return new OrdreVersement(ov.getId(), ov.getCsType(), ov.getCsTypeDomaine(), ov.getIdSectionDetteEnCompta(),
                 ov.getIdTiers(), ov.getIdTiersAdressePaiement(), ov.getIdTiersAdressePaiementConjoint(),
                 ov.getIdTiersOwnerDetteCreance(), ov.getMontant(), ov.getSousTypeGenrePrestation(),
-                ov.getIdDomaineApplication(), ov.getIdDomaineApplicationConjoint(), null);
+                ov.getIdDomaineApplication(), ov.getIdDomaineApplicationConjoint(), null, refPaiement);
     }
 
     /**
@@ -60,7 +62,8 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
 
     @Override
     public Operations generateAllOperations(List<OrdreVersementForList> ovs, List<SectionSimpleModel> sections,
-            String dateForOv) throws OrdreVersementException, JadeApplicationServiceNotAvailableException {
+            String dateForOv, String dateEcheance) throws OrdreVersementException,
+            JadeApplicationServiceNotAvailableException {
         ecritures = new ArrayList<Ecriture>();
         ovsCompta = new ArrayList<OrdreVersementCompta>();
 
@@ -77,6 +80,17 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
                             + ov.getSimpleOrdreVersement().getIdTiers());
                 }
 
+                String refPaiementOv = "";
+                if (!JadeStringUtil.isBlankOrZero(ov.getSimpleOrdreVersement().getRefPaiement())) {
+                    refPaiementOv = ov.getSimpleOrdreVersement().getRefPaiement() + " ";
+                }
+
+                String refPaiement = ov.getNumAvs() + " " + ov.getDesignationRequerant1() + " "
+                        + ov.getDesignationRequerant2() + " "
+                        + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001") + " " + refPaiementOv
+                        + BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_VERSEMENT_DU")
+                        + " " + dateEcheance;
+
                 // versement beneficiaire --> ecriture au credit
                 if (csTypeOv.equals(IREOrdresVersements.CS_TYPE_BENEFICIAIRE_PRINCIPAL)) {
                     CompteAnnexeSimpleModel compteAnnexe = resolvedCompteAnnexe(ov);
@@ -84,7 +98,7 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
                             .getIdTiersAdressePaiement(), ov.getSimpleOrdreVersement().getIdDomaineApplication(),
                             new BigDecimal(ov.getSimpleOrdreVersement().getMontant()), sectionBlocage, ov
                                     .getIdTiersRequerant(), csTypeOv, GenerateOperationsBlocage.getCsRoleFamille(
-                                    ov.getIdTiersRequerant(), ov.getSimpleOrdreVersement().getIdTiers())));
+                                    ov.getIdTiersRequerant(), ov.getSimpleOrdreVersement().getIdTiers()), refPaiement));
 
                 }
                 // creancier ecriture au credit
@@ -95,7 +109,7 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
                             new BigDecimal(ov.getSimpleOrdreVersement().getMontant()), sectionBlocage, ov
                                     .getSimpleOrdreVersement().getIdTiers(), csTypeOv, GenerateOperationsBlocage
                                     .getCsRoleFamille(ov.getIdTiersRequerant(), ov.getSimpleOrdreVersement()
-                                            .getIdTiers())));
+                                            .getIdTiers()), refPaiement));
 
                 }
                 // dette ecriture au credit, ecriture au debit
@@ -111,12 +125,13 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
                     ecritures.add(this.generateEcriture(null, APIEcriture.DEBIT,
                             APIReferenceRubrique.COMPENSATION_RENTES, new BigDecimal(ov.getSimpleOrdreVersement()
                                     .getMontant()), sectionBlocage, sectionBlocage.getIdCompteAnnexe(),
-                            TypeEcriture.DETTE, GenerateOperationsBlocage.generateOv(ov.getSimpleOrdreVersement())));
+                            TypeEcriture.DETTE, GenerateOperationsBlocage.generateOv(ov.getSimpleOrdreVersement(),
+                                    refPaiement)));
 
                     ecritures.add(this.generateEcriture(null, APIEcriture.CREDIT,
                             APIReferenceRubrique.COMPENSATION_RENTES, new BigDecimal(ov.getSimpleOrdreVersement()
                                     .getMontant()), sectionDette, sectionDette.getIdCompteAnnexe(), TypeEcriture.DETTE,
-                            GenerateOperationsBlocage.generateOv(ov.getSimpleOrdreVersement())));
+                            GenerateOperationsBlocage.generateOv(ov.getSimpleOrdreVersement(), refPaiement)));
 
                 }
 

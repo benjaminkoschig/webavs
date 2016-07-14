@@ -11,7 +11,8 @@ public class OrdreVersementFactory {
 
     public static OrdreVersement generateAllocationNoel(String montant, String idTiers) {
         OrdreVersement ov = new OrdreVersement("3", IREOrdresVersements.CS_TYPE_ALLOCATION_NOEL,
-                IPCOrdresVersements.CS_DOMAINE_AI, null, idTiers, "1234", null, null, montant, null, "13", null, null);
+                IPCOrdresVersements.CS_DOMAINE_AI, null, idTiers, "1234", null, null, montant, null, "13", null, null,
+                "refPaiemnt");
         return ov;
     }
 
@@ -24,25 +25,27 @@ public class OrdreVersementFactory {
 
     public static OrdreVersement generateBeneficiaire(String montant, String idTiers) {
         OrdreVersement ov = new OrdreVersement("2", IREOrdresVersements.CS_TYPE_BENEFICIAIRE_PRINCIPAL,
-                IPCOrdresVersements.CS_DOMAINE_AI, null, idTiers, "1234", null, null, montant, null, "13", null, null);
+                IPCOrdresVersements.CS_DOMAINE_AI, null, idTiers, "1234", null, null, montant, null, "13", null, null,
+                "refPaiemnt");
         return ov;
     }
 
     public static OrdreVersement generateBeneficiaireConjoint(String montant, String idTiers) {
         OrdreVersement ov = new OrdreVersement("3", IREOrdresVersements.CS_TYPE_BENEFICIAIRE_PRINCIPAL,
-                IPCOrdresVersements.CS_DOMAINE_AI, null, idTiers, "1234", null, null, montant, null, "13", null, null);
+                IPCOrdresVersements.CS_DOMAINE_AI, null, idTiers, "1234", null, null, montant, null, "13", null, null,
+                "refPaiemnt");
         return ov;
     }
 
     public static OrdreVersement generateCreancier(String montant, String idTiers, String idTiersOwnerDetteCreance) {
         OrdreVersement ov = new OrdreVersement("15", IREOrdresVersements.CS_TYPE_TIERS, null, null, idTiers, null,
-                null, idTiersOwnerDetteCreance, montant, null, "13", null, null);
+                null, idTiersOwnerDetteCreance, montant, null, "13", null, null, "refPaiemnt");
         return ov;
     }
 
     public static OrdreVersement generateDette(String montant, String idSection, String idTiersOwnerDetteCreance) {
         OrdreVersement ov = new OrdreVersement("2", IREOrdresVersements.CS_TYPE_DETTE, null, idSection, null, null,
-                null, idTiersOwnerDetteCreance, montant, null, "13", null, null);
+                null, idTiersOwnerDetteCreance, montant, null, "13", null, null, "refPaiemnt");
 
         return ov;
     }
@@ -191,13 +194,13 @@ public class OrdreVersementFactory {
 
     public static OrdreVersement generateRestitution(String montant, String idTiers) {
         OrdreVersement ov = new OrdreVersement("10", IREOrdresVersements.CS_TYPE_DETTE_RENTE_RESTITUTION, null, null,
-                idTiers, "222", null, null, montant, null, "13", null, null);
+                idTiers, "222", null, null, montant, null, "13", null, null, "refPaiemnt");
         return ov;
     }
 
     public static OrdreVersement generateRestitutionConjoint(String montant, String idTiers) {
         OrdreVersement ov = new OrdreVersement("20", IREOrdresVersements.CS_TYPE_DETTE_RENTE_RESTITUTION, null, null,
-                idTiers, "222", null, null, montant, null, "13", null, null);
+                idTiers, "222", null, null, montant, null, "13", null, null, "refPaiemnt");
         return ov;
     }
 

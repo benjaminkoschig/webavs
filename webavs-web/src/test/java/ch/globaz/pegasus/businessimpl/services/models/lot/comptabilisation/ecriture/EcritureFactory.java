@@ -20,7 +20,7 @@ public class EcritureFactory {
         e.setSection(SectionPegasus.DECISION_PC);
         e.setTypeEcriture(TypeEcriture.STANDARD);
         e.setOrdreVersement(new OrdreVersement(null, IREOrdresVersements.CS_TYPE_BENEFICIAIRE_PRINCIPAL, null, null,
-                null, null, null, null, "0", null, "13", null, null));
+                null, null, null, null, "0", null, "13", null, null, "refPaiemnt"));
         e.setCompteAnnexe((new CompteAnnexeSimpleModel()));
         e.getCompteAnnexe().setId(idCompteAnnexe);
         return e;
@@ -33,7 +33,7 @@ public class EcritureFactory {
         e.setTypeEcriture(TypeEcriture.DETTE);
         e.setCodeDebitCredit(APIEcriture.CREDIT);
         e.setOrdreVersement(new OrdreVersement(null, IREOrdresVersements.CS_TYPE_DETTE, null, null, null, null, null,
-                null, "0", null, "13", null, null));
+                null, "0", null, "13", null, null, "refPaiemnt"));
         e.setCompteAnnexe((new CompteAnnexeSimpleModel()));
         return e;
     }
@@ -45,7 +45,7 @@ public class EcritureFactory {
         e.setSection(SectionPegasus.RESTIUTION);
         e.setTypeEcriture(TypeEcriture.DETTE);
         e.setOrdreVersement(new OrdreVersement(null, IREOrdresVersements.CS_TYPE_DETTE, null, null, null, null, null,
-                null, "0", null, "13", null, null));
+                null, "0", null, "13", null, null, "refPaiemnt"));
         e.setCompteAnnexe((new CompteAnnexeSimpleModel()));
         e.getCompteAnnexe().setId(idCompteAnnexe);
         return e;
@@ -58,7 +58,7 @@ public class EcritureFactory {
         e.setSection(SectionPegasus.RESTIUTION);
         e.setTypeEcriture(TypeEcriture.STANDARD);
         e.setOrdreVersement(new OrdreVersement(null, IREOrdresVersements.CS_TYPE_DETTE_RENTE_RESTITUTION, null, null,
-                null, null, null, null, "0", null, "13", null, null));
+                null, null, null, null, "0", null, "13", null, null, "refPaiemnt"));
         e.setCompteAnnexe((new CompteAnnexeSimpleModel()));
         e.getCompteAnnexe().setId(idCompteAnnexe);
         return e;

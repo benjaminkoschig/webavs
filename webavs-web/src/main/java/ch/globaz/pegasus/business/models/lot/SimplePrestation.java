@@ -28,6 +28,24 @@ public class SimplePrestation extends JadeSimpleModel {
     private String idVersionDroit = null;
     private String moisAn = null;
     private String montantTotal = null;
+    private String dateDecision;
+    private String refPaiement;
+
+    public String getRefPaiement() {
+        return refPaiement;
+    }
+
+    public void setRefPaiement(String refPaiement) {
+        this.refPaiement = refPaiement;
+    }
+
+    public String getDateDecision() {
+        return dateDecision;
+    }
+
+    public void setDateDecision(String dateDecision) {
+        this.dateDecision = dateDecision;
+    }
 
     /**
      * @return the csEtat

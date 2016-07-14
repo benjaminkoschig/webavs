@@ -8,19 +8,25 @@ import ch.globaz.pegasus.business.constantes.IPCDroits;
 
 public class OrdreVersementCompta {
 
-    private CompteAnnexeSimpleModel compteAnnexe;
-    private String csRoleFamille;
-    private String csTypeOv;
-    private String idDomaineApplication;
-    private String idTiers;
-    private String idTiersAdressePaiement;
+    private final CompteAnnexeSimpleModel compteAnnexe;
+    private final String csRoleFamille;
+    private final String csTypeOv;
+    private final String idDomaineApplication;
+    private final String idTiers;
+    private final String idTiersAdressePaiement;
+    private final String referencePaiement;
+
+    public String getReferencePaiement() {
+        return referencePaiement;
+    }
+
     private BigDecimal montant;
     private SectionPegasus section;
     private SectionSimpleModel simpleSection;
 
     public OrdreVersementCompta(CompteAnnexeSimpleModel compteAnnexeSimpleModel, String idAdressePaiement,
             String idDomaineApplication, BigDecimal montant, SectionPegasus section, String idTiers, String csTypeOv,
-            String csRoleFamille) {
+            String csRoleFamille, String referencePaiement) {
         super();
         compteAnnexe = compteAnnexeSimpleModel;
         idTiersAdressePaiement = idAdressePaiement;
@@ -30,11 +36,12 @@ public class OrdreVersementCompta {
         this.idTiers = idTiers;
         this.csTypeOv = csTypeOv;
         this.csRoleFamille = csRoleFamille;
+        this.referencePaiement = referencePaiement;
     }
 
     public OrdreVersementCompta(CompteAnnexeSimpleModel compteAnnexeSimpleModel, String idAdressePaiement,
             String idDomaineApplication, BigDecimal montant, SectionSimpleModel section, String idTiers,
-            String csTypeOv, String csRoleFamille) {
+            String csTypeOv, String csRoleFamille, String referencePaiement) {
         super();
         compteAnnexe = compteAnnexeSimpleModel;
         idTiersAdressePaiement = idAdressePaiement;
@@ -44,6 +51,7 @@ public class OrdreVersementCompta {
         this.idTiers = idTiers;
         this.csTypeOv = csTypeOv;
         this.csRoleFamille = csRoleFamille;
+        this.referencePaiement = referencePaiement;
     }
 
     public CompteAnnexeSimpleModel getCompteAnnexe() {
