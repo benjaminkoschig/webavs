@@ -2755,6 +2755,7 @@ public final class CPProcessCalculCotisation extends BProcess {
         // et nombre de mois de l'exercie = nombre de mois exercice1 +
         // nombre de mois exercice 2
         float revenu1;
+        float montantTotalRenteAVS;
         float revenu2;
         float revenuAutre1;
         float revenuAutre2;
@@ -2770,6 +2771,23 @@ public final class CPProcessCalculCotisation extends BProcess {
             revenu1 = (float) JANumberFormatter.round(montant, 1, 0, JANumberFormatter.SUP);
             revenuBrut = revenu1;
         }
+
+        nbMois = 12;
+        if (!JadeStringUtil.isBlank(getDonneeBase().getMontantTotalRenteAVS())) {
+            montantTotalRenteAVS = Float.parseFloat(JANumberFormatter
+                    .deQuote(getDonneeBase().getMontantTotalRenteAVS()));
+
+            if (!JadeStringUtil.isIntegerEmpty(getDonneeBase().getNbMoisExercice1())) {
+                nbMois = Integer.parseInt(getDonneeBase().getNbMoisExercice1());
+            }
+
+            FWCurrency varTemp = new FWCurrency(montantTotalRenteAVS);
+            double montant = 0;
+            montant = (varTemp.doubleValue() / nbMois) * 12;
+            montantTotalRenteAVS = (float) JANumberFormatter.round(montant, 1, 0, JANumberFormatter.SUP);
+            revenuBrut = revenuBrut + montantTotalRenteAVS;
+        }
+
         nbMois = 12;
         if (!JadeStringUtil.isBlank(getDonneeBase().getRevenuAutre1())) {
             revenuAutre1 = Float.parseFloat(JANumberFormatter.deQuote(getDonneeBase().getRevenuAutre1()));
