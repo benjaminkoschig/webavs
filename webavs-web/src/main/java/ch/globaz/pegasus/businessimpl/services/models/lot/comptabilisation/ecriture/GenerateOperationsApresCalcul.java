@@ -48,6 +48,31 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
         return operations;
     }
 
+    @Override
+    public Operations generateAllOperations(List<OrdreVersementForList> ovs, List<SectionSimpleModel> sections,
+            String dateForOv, String dateEcheance, PrestationOvDecompte decompteIni) throws JadeApplicationException {
+        operations = new Operations();
+        MontantDispo montantDispo = null;
+
+        PrestationOvDecompte decompte = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteIni);
+
+        GenerateEcrituresResitutionBeneficiareForDecisionAc ac = gernerateEcrituresStandard(decompte);
+
+        montantDispo = generateEcrituresCompensation(ac, decompte);
+
+        montantDispo = generateEcrituresDettes(sections, decompte, montantDispo);
+
+        montantDispo = generateOperationsCreanciers(decompte, montantDispo, dateForOv);
+
+        generateOvs(montantDispo, decompte);
+
+        generateOperationAllocationNoel(dateForOv, decompte);
+
+        computControlAmount(decompte.getPrestationAmount());
+
+        return operations;
+    }
+
     private MontantDispo generateEcrituresCompensation(GenerateEcrituresResitutionBeneficiareForDecisionAc ac,
             PrestationOvDecompte decompte) throws ComptabiliserLotException {
 

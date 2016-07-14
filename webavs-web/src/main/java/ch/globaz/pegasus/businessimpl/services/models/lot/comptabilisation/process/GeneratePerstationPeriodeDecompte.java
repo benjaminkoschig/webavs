@@ -159,7 +159,7 @@ public class GeneratePerstationPeriodeDecompte {
             montant = ov.getMontantDetteModifier();
         }
 
-        String refPaiement = decompte.concatRefPaiement();
+        String refPaiement = decompte.concatRefPaiement(null);
         return new OrdreVersement(ov.getId(), ov.getCsType(), ov.getCsTypeDomaine(), ov.getIdSectionDetteEnCompta(),
                 ov.getIdTiers(), ov.getIdTiersAdressePaiement(), ov.getIdTiersAdressePaiementConjoint(),
                 ov.getIdTiersOwnerDetteCreance(), montant, ov.getSousTypeGenrePrestation(),
@@ -167,7 +167,14 @@ public class GeneratePerstationPeriodeDecompte {
                 refPaiement);
     }
 
-    static PrestationOvDecompte generatePersationPeriode(List<OrdreVersementForList> listOv,
+    /**
+     * 
+     * @param listOv
+     * @param decompteInit décompte initialisé (utilisé pour mocker l'objet dans les unitTest)
+     * @return
+     * @throws ComptabiliserLotException
+     */
+    public static PrestationOvDecompte generatePersationPeriode(List<OrdreVersementForList> listOv,
             PrestationOvDecompte decompteInit) throws ComptabiliserLotException {
         PrestationOvDecompte decompte;
         if (decompteInit != null) {

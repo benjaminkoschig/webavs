@@ -16,4 +16,7 @@ import ch.globaz.pegasus.business.models.lot.OrdreVersementForList;
 public interface GenerateOperations {
     public Operations generateAllOperations(List<OrdreVersementForList> ovs, List<SectionSimpleModel> sections,
             String dateForOv, String dateEcheance) throws JadeApplicationException;
+
+    Operations generateAllOperations(List<OrdreVersementForList> ovs, List<SectionSimpleModel> sections,
+            String dateForOv, String dateEcheance, PrestationOvDecompte decompte) throws JadeApplicationException;
 }

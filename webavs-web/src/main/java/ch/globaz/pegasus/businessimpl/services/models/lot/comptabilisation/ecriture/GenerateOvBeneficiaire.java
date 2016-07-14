@@ -1,7 +1,6 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecriture;
 
 import globaz.corvus.api.ordresversements.IREOrdresVersements;
-import globaz.globall.db.BSessionUtil;
 import java.util.List;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 
@@ -14,10 +13,11 @@ class GenerateOvBeneficiaire {
 
     private void generateForConjoint(final MontantDispo montantDispo, final PrestationOvDecompte decompte) {
         if (montantDispo.hasMontantDispoConjont()) {
-            String refPaiement = decompte.getNssConjoint() + " " + decompte.getNomConjoint() + " "
-                    + decompte.getPrenomConjoint() + " PC " + decompte.getDateDebut() + " - " + decompte.getDateFin()
-                    + " " + BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_DECISION_DU")
-                    + " " + decompte.getDateDecision();
+            String refPaiement = decompte.concatRefPaiement("PC");
+            // decompte.getNssConjoint() + " " + decompte.getNomConjoint() + " "
+            // + decompte.getPrenomConjoint() + " PC " + decompte.getDateDebut() + " - " + decompte.getDateFin()
+            // + " " + BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_DECISION_DU")
+            // + " " + decompte.getDateDecision();
             if (montantDispo.hasMontantDispoDom2RConjoint()) {
                 generateOvComptaAndGroupe.addOvCompta(decompte.getCompteAnnexeRequerant(),
                         decompte.getIdTiersAddressePaiementConjoint(), decompte.getIdDomaineApplicationConjoint(),
@@ -52,12 +52,13 @@ class GenerateOvBeneficiaire {
     private void generateRequerant(final MontantDispo montantDispo, final PrestationOvDecompte decompte) {
 
         if (montantDispo.hasMontantDispoRequerant()) {
-            String refPaiement = decompte.getNssRequerant() + " " + decompte.getNomRequerant() + " "
-                    + decompte.getPrenomRequerant() + " "
-                    + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001") + " "
-                    + decompte.getRefPaiement() + " " + decompte.getDateDebut() + " - " + decompte.getDateFin() + " "
-                    + BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_DECISION_DU") + " "
-                    + decompte.getDateDecision();
+            String refPaiement = decompte.concatRefPaiement(decompte.getRefPaiement());
+            // decompte.getNssRequerant() + " " + decompte.getNomRequerant() + " "
+            // + decompte.getPrenomRequerant() + " "
+            // + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001") + " "
+            // + decompte.getRefPaiement() + " " + decompte.getDateDebut() + " - " + decompte.getDateFin() + " "
+            // + BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_DECISION_DU") + " "
+            // + decompte.getDateDecision();
             if (montantDispo.hasMontantDispoDom2RRequerant()) {
                 generateOvComptaAndGroupe.addOvCompta(decompte.getCompteAnnexeRequerant(),
                         decompte.getIdTiersAddressePaiementRequerant(), decompte.getIdDomaineApplicationRequerant(),

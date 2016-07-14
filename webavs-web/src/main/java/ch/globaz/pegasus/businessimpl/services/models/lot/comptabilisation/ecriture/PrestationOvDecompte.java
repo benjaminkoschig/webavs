@@ -251,10 +251,10 @@ public class PrestationOvDecompte {
         return infosConjoint.getNss() + " " + infosConjoint.getNom() + " " + infosConjoint.getPrenom();
     }
 
-    public String concatRefPaiement() {
+    public String concatRefPaiement(String addon) {
         return getNssRequerant() + " " + getNomRequerant() + " " + getPrenomRequerant() + " "
-                + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001") + " " + getDateDebut() + " - "
-                + getDateFin() + " "
+                + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001") + " "
+                + (addon != null ? addon + " " : "") + getDateDebut() + " - " + getDateFin() + " "
                 + BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_DECISION_DU") + " "
                 + getDateDecision();
     }

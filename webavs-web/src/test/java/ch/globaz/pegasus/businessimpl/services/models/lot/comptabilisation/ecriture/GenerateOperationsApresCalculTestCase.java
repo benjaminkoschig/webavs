@@ -1,5 +1,7 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecriture;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 import globaz.jade.client.util.JadeListUtil;
 import globaz.jade.exception.JadeApplicationException;
 import java.math.BigDecimal;
@@ -7,10 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import ch.globaz.osiris.business.model.SectionSimpleModel;
 import ch.globaz.pegasus.business.models.lot.OrdreVersementForList;
 import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process.ComptabilisationTreatTestCase;
@@ -19,18 +24,29 @@ import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.proce
 
 public class GenerateOperationsApresCalculTestCase {
 
+    @Spy
+    private PrestationOvDecompte decompteMock;
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        doReturn("Mock RefPaiement").when(decompteMock).concatRefPaiement(any(String.class));
+    }
+
     @BeforeClass
     public static void before() {
         CompteAnnexeResolver.addComptesAnnexes(CompteAnnexeFactory.generateComptesAnnexes());
     }
 
-    private Operations generateOperations(List<OrdreVersementForList> ovs) throws JadeApplicationException {
+    private Operations generateOperations(List<OrdreVersementForList> ovs, PrestationOvDecompte decompteMock)
+            throws JadeApplicationException {
         List<SectionSimpleModel> sections = new ArrayList<SectionSimpleModel>();
         sections.add(new SectionSimpleModel());
         sections.get(0).setIdSection("2020");
         sections.get(0).setIdCompteAnnexe("555");
         GenerateOperations generateOperations = newGenerateOperations();
-        Operations operations = generateOperations.generateAllOperations(ovs, sections, "01.01.2012", "03.01.2012");
+        Operations operations = generateOperations.generateAllOperations(ovs, sections, "01.01.2012", "03.01.2012",
+                decompteMock);
         return operations;
     }
 
@@ -57,7 +73,7 @@ public class GenerateOperationsApresCalculTestCase {
         for (OrdreVersementForList ov : ovs) {
             ov.setMontantPresation("500");
         }
-        Operations operations = generateOperations(ovs);
+        Operations operations = generateOperations(ovs, decompteMock);
         Assert.assertEquals(new BigDecimal("500"), operations.getControlAmount());
     }
 
@@ -71,7 +87,7 @@ public class GenerateOperationsApresCalculTestCase {
         for (OrdreVersementForList ov : ovs) {
             ov.setMontantPresation("500");
         }
-        Operations operations = generateOperations(ovs);
+        Operations operations = generateOperations(ovs, decompteMock);
         Assert.assertEquals(new BigDecimal("500"), operations.getControlAmount());
     }
 
@@ -80,7 +96,7 @@ public class GenerateOperationsApresCalculTestCase {
         List<OrdreVersementForList> ovs = new ArrayList<OrdreVersementForList>();
         ovs.add(OrdreVersementFactory.generateOvListBeneficiaire("1", "2000"));
         ovs.add(OrdreVersementFactory.generateOvListRestitution("1", "1500"));
-        Operations operations = generateOperations(ovs);
+        Operations operations = generateOperations(ovs, decompteMock);
         List<Ecriture> ecritures = operations.getEcritures();
         List<OrdreVersementCompta> ovsCompta = operations.getOrdresVersements();
         Map<String, List<Ecriture>> map = JadeListUtil.groupBy(ecritures, new JadeListUtil.Key<Ecriture>() {
@@ -103,7 +119,7 @@ public class GenerateOperationsApresCalculTestCase {
         ovs.add(OrdreVersementFactory.generateOvListRestitution("1", "1500"));
         ovs.add(OrdreVersementFactory.generateOvListConjointBeneficiaire("1", "500"));
         ovs.add(OrdreVersementFactory.generateOvListConjointRestitution("1", "450"));
-        Operations operations = generateOperations(ovs);
+        Operations operations = generateOperations(ovs, decompteMock);
         List<Ecriture> ecritures = operations.getEcritures();
         List<OrdreVersementCompta> ovsCompta = operations.getOrdresVersements();
         Map<String, List<Ecriture>> map = JadeListUtil.groupBy(ecritures, new JadeListUtil.Key<Ecriture>() {
@@ -130,7 +146,7 @@ public class GenerateOperationsApresCalculTestCase {
         ovs.add(OrdreVersementFactory.generateOvListRestitution("1", "1500"));
         ovs.add(OrdreVersementFactory.generateOvListCreancier("150", "1245", "1"));
         ovs.add(OrdreVersementFactory.generateOvListDette("100", "2020", "1"));
-        Operations operations = generateOperations(ovs);
+        Operations operations = generateOperations(ovs, decompteMock);
         List<Ecriture> ecritures = operations.getEcritures();
         List<OrdreVersementCompta> ovsCompta = operations.getOrdresVersements();
         Map<String, List<Ecriture>> map = JadeListUtil.groupBy(ecritures, new JadeListUtil.Key<Ecriture>() {
@@ -153,7 +169,7 @@ public class GenerateOperationsApresCalculTestCase {
     public void testGenerateOnlyWihtRestitution() throws JadeApplicationException {
         List<OrdreVersementForList> ovs = new ArrayList<OrdreVersementForList>();
         ovs.add(OrdreVersementFactory.generateOvListRestitution("1", "1500"));
-        Operations operations = generateOperations(ovs);
+        Operations operations = generateOperations(ovs, decompteMock);
         Assert.assertEquals(0, operations.getOrdresVersements().size());
         Assert.assertEquals(1, operations.getEcritures().size());
     }
@@ -166,7 +182,7 @@ public class GenerateOperationsApresCalculTestCase {
         for (OrdreVersementForList ov : ovs) {
             ov.getSimpleOrdreVersement().setIdTiersAdressePaiementConjoint("20");
         }
-        Operations operations = generateOperations(ovs);
+        Operations operations = generateOperations(ovs, decompteMock);
         List<Ecriture> ecritures = operations.getEcritures();
         List<OrdreVersementCompta> ovsCompta = operations.getOrdresVersements();
         Map<String, List<Ecriture>> map = JadeListUtil.groupBy(ecritures, new JadeListUtil.Key<Ecriture>() {
@@ -211,7 +227,7 @@ public class GenerateOperationsApresCalculTestCase {
         // this.createOvBeneficiaire(prestation, "150", "3");
         // this.createOvRestitution(prestation, "200", "3");
 
-        Operations operations = generateOperations(ovs);
+        Operations operations = generateOperations(ovs, decompteMock);
         List<OrdreVersementCompta> ovsCompta = operations.getOrdresVersements();
         Assert.assertEquals(1, ovsCompta.size());
         Assert.assertEquals(new BigDecimal(220), ovsCompta.get(0).getMontant());
