@@ -1,12 +1,16 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process;
 
+import static org.mockito.Mockito.*;
 import globaz.corvus.api.ordresversements.IREOrdresVersements;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import ch.globaz.pegasus.business.exceptions.models.lot.ComptabiliserLotException;
 import ch.globaz.pegasus.business.exceptions.models.lot.OrdreVersementException;
 import ch.globaz.pegasus.business.models.lot.OrdreVersementForList;
@@ -15,9 +19,19 @@ import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecrit
 
 public class GeneratePerstationPeriodeDecompteTestCase {
 
+    @Spy
+    private PrestationOvDecompte decompteMock;
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        doReturn("Mock RefPaiement").when(decompteMock).concatRefPaiement();
+    }
+
     @BeforeClass
     public static void before() {
         CompteAnnexeResolver.addComptesAnnexes(CompteAnnexeFactory.generateComptesAnnexes());
+
     }
 
     // @Test(expected)
@@ -51,7 +65,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
         ovs.add(OrdreVersementFactory.generateOvListRestitutionSpecifiedIdPca("3", "10"));
         ovs.add(OrdreVersementFactory.generateOvListRestitutionSpecifiedIdPca("4", "20"));
 
-        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs);
+        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteMock);
 
         Assert.assertEquals(4, decomtpe.getPrestationsPeriodes().size());
 
@@ -74,7 +88,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
         ovs.add(ovListConjoint);
         ovs.add(OrdreVersementFactory.generateOvListCreancier("250", "25041856", "1"));
 
-        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs);
+        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteMock);
         Assert.assertEquals(ovList.getIdTiersRequerant(), decomtpe.getIdTiersRequerant());
         Assert.assertEquals(ovList.getIdCompteAnnexeRequerant(), decomtpe.getIdCompteAnnexeRequerant());
         Assert.assertEquals(ovListConjoint.getSimpleOrdreVersement().getIdTiers(), decomtpe.getIdTiersConjoint());
@@ -84,7 +98,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
     @Test
     public void testGeneratePresationPeriode() throws OrdreVersementException, ComptabiliserLotException {
         List<OrdreVersementForList> ovs = new ArrayList<OrdreVersementForList>();
-        GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs);
+        GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteMock);
     }
 
     @Test
@@ -92,7 +106,8 @@ public class GeneratePerstationPeriodeDecompteTestCase {
         List<OrdreVersementForList> ovs = new ArrayList<OrdreVersementForList>();
         ovs.add(OrdreVersementFactory.generateOvAllocationNoel(null));
         ovs.add(OrdreVersementFactory.generateOvAllocationNoel(null));
-        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs);
+
+        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteMock);
         Assert.assertEquals(2, decomtpe.getAllocationsNoel().size());
         Assert.assertEquals(0, decomtpe.getDettes().size());
         Assert.assertEquals(0, decomtpe.getJoursAppoint().size());
@@ -105,7 +120,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
     public void testGeneratePresationPeriodeCreancier() throws OrdreVersementException, ComptabiliserLotException {
         List<OrdreVersementForList> ovs = new ArrayList<OrdreVersementForList>();
         ovs.add(OrdreVersementFactory.generateOvListCreancier("100", "1454", "1"));
-        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs);
+        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteMock);
         Assert.assertEquals(0, decomtpe.getAllocationsNoel().size());
         Assert.assertEquals(0, decomtpe.getDettes().size());
         Assert.assertEquals(1, decomtpe.getCreanciers().size());
@@ -124,7 +139,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
 
         BigDecimal sum = new BigDecimal(beneficiaire.getSimpleOrdreVersement().getMontant()).add(new BigDecimal(152));
 
-        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs);
+        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteMock);
         Assert.assertEquals(0, decomtpe.getAllocationsNoel().size());
         Assert.assertEquals(0, decomtpe.getDettes().size());
         // Assert.assertEquals(1, decomtpe.getJoursAppoint().size());
@@ -137,7 +152,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
         List<OrdreVersementForList> ovs = new ArrayList<OrdreVersementForList>();
         OrdreVersementForList ovList = OrdreVersementFactory.generateOvListBeneficiaire("1");
         ovs.add(ovList);
-        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs);
+        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteMock);
         Assert.assertEquals(0, decomtpe.getAllocationsNoel().size());
         Assert.assertEquals(0, decomtpe.getDettes().size());
         Assert.assertEquals(0, decomtpe.getCreanciers().size());
@@ -155,7 +170,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
         ovs.add(OrdreVersementFactory.generateOvListBeneficiaire("2"));
         ovs.add(OrdreVersementFactory.generateOvListBeneficiaire("3"));
         ovs.add(OrdreVersementFactory.generateOvListBeneficiaire("4"));
-        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs);
+        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteMock);
         Assert.assertEquals(0, decomtpe.getAllocationsNoel().size());
         Assert.assertEquals(0, decomtpe.getDettes().size());
         Assert.assertEquals(0, decomtpe.getJoursAppoint().size());
@@ -175,7 +190,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
         ovs.add(OrdreVersementFactory.generateOvListBeneficiaire("2"));
         ovs.add(OrdreVersementFactory.generateOvListConjoint("1"));
         ovs.add(OrdreVersementFactory.generateOvListBeneficiaire("1"));
-        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs);
+        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteMock);
         Assert.assertEquals(0, decomtpe.getAllocationsNoel().size());
         Assert.assertEquals(0, decomtpe.getDettes().size());
         Assert.assertEquals(0, decomtpe.getCreanciers().size());
@@ -201,7 +216,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
         ovs.add(OrdreVersementFactory.generateOvListRestitutionConjoint("2"));
         ovs.add(OrdreVersementFactory.generateOvListConjoint("1"));
         ovs.add(OrdreVersementFactory.generateOvListBeneficiaire("1"));
-        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs);
+        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteMock);
         Assert.assertEquals(0, decomtpe.getAllocationsNoel().size());
         Assert.assertEquals(0, decomtpe.getDettes().size());
         Assert.assertEquals(0, decomtpe.getCreanciers().size());
@@ -234,7 +249,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
         ovs.add(OrdreVersementFactory.generateOvListConjoint("1"));
         ovs.add(OrdreVersementFactory.generateOvListConjoint("2"));
 
-        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs);
+        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteMock);
 
         Assert.assertEquals(ovList.getSimpleOrdreVersement().getIdTiersAdressePaiement(),
                 decomtpe.getIdTiersAddressePaiementRequerant());
@@ -261,7 +276,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
         ovList.getSimpleOrdreVersement().setIdDomaineApplication("111");
         ovs.add(ovList);
 
-        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs);
+        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteMock);
 
         Assert.assertEquals("11", decomtpe.getIdTiersAddressePaiementRequerant());
         Assert.assertEquals(ovList.getSimpleOrdreVersement().getIdDomaineApplication(),
@@ -293,7 +308,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
         ovs.add(OrdreVersementFactory.generateOvListBeneficiaire("2"));
         ovs.add(OrdreVersementFactory.generateOvListBeneficiaire("1"));
 
-        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs);
+        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteMock);
 
         Assert.assertEquals(ovList.getSimpleOrdreVersement().getIdTiersAdressePaiement(),
                 decomtpe.getIdTiersAddressePaiementRequerant());
@@ -320,7 +335,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
         ovs.add(ovListConjoint);
         ovs.add(OrdreVersementFactory.generateOvListCreancier("250", "25041856", "1"));
 
-        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs);
+        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteMock);
         Assert.assertEquals(ovList.getIdTiersRequerant(), decomtpe.getIdTiersRequerant());
         Assert.assertEquals(ovList.getIdCompteAnnexeRequerant(), decomtpe.getIdCompteAnnexeRequerant());
         Assert.assertEquals(ovList.getSimpleOrdreVersement().getIdTiersAdressePaiement(),
@@ -355,7 +370,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
 
         ovs.add(OrdreVersementFactory.generateOvListCreancier("250", "25041856", "1"));
 
-        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs);
+        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteMock);
 
         Assert.assertEquals(ovList.getIdCompteAnnexeRequerant(), decomtpe.getIdCompteAnnexeRequerant());
         Assert.assertEquals(ovListConjoint.getIdCompteAnnexeConjoint(), decomtpe.getIdCompteAnnexeConjoint());
@@ -365,7 +380,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
     public void testOrdreVersement() throws OrdreVersementException, ComptabiliserLotException {
         List<OrdreVersementForList> ovs = new ArrayList<OrdreVersementForList>();
         ovs.add(OrdreVersementFactory.generateOvListBeneficiaire("1"));
-        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs);
+        PrestationOvDecompte decomtpe = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteMock);
         Assert.assertEquals(IREOrdresVersements.CS_TYPE_BENEFICIAIRE_PRINCIPAL, decomtpe.getPrestationsPeriodes()
                 .get(0).getRequerant().getBeneficiaire().getCsType());
 
@@ -378,7 +393,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
     // ovs.add(OrdreVersementFactory.generateOvList("2", "1500"));
     // ovs.add(OrdreVersementFactory.generateOvList("3", "1350"));
     //
-    // PrestationOvDecompte decomtpe = GeneratePerstationPeriode.generatePersationPeriode(ovs);
+    // PrestationOvDecompte decomtpe = GeneratePerstationPeriode.generatePersationPeriode(ovs, decompteMock);
     // Assert.assertEquals(new BigDecimal(3850), decomtpe.getMontantRequerant());
     // }
 
@@ -392,7 +407,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
     // ovs.add(OrdreVersementFactory.generateOvList("3", "1350"));
     // ovs.add(OrdreVersementFactory.generateOvListConjoint("3", "350"));
     //
-    // PrestationOvDecompte decomtpe = GeneratePerstationPeriode.generatePersationPeriode(ovs);
+    // PrestationOvDecompte decomtpe = GeneratePerstationPeriode.generatePersationPeriode(ovs, decompteMock);
     // Assert.assertEquals(new BigDecimal(3850), decomtpe.getMontantRequerant());
     // Assert.assertEquals(new BigDecimal(1250), decomtpe.getMontantConjoint());
     //
