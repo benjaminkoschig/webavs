@@ -38,6 +38,15 @@ public class CPDonneesBase extends globaz.globall.db.BEntity implements java.io.
     private java.lang.String revenuCiForce = "";
     private Boolean revenuCiForce0 = new Boolean(false);
     private java.lang.String sourceInformation = "";
+    private String montantTotalRenteAVS = "";
+
+    public String getMontantTotalRenteAVS() {
+        return montantTotalRenteAVS;
+    }
+
+    public void setMontantTotalRenteAVS(String montantTotalRenteAVS) {
+        this.montantTotalRenteAVS = montantTotalRenteAVS;
+    }
 
     /**
      * Commentaire relatif au constructeur CPDonneesBase
