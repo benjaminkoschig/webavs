@@ -1530,6 +1530,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
         newDecision.setRevenu2("");
         newDecision.setRevenuAutre1(retour.getRevenu2());
         newDecision.setRevenuAutre2("");
+        newDecision.setMontantTotalRenteAVS("");
         // VS -> comme dans la communication, il y a aussi le revenu du conjoint
         // => pour les conjoints indépendants, il faut prendre les revenus
         // distincts de chaque personne
