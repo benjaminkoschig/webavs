@@ -7,6 +7,9 @@ public class CPDonneesBase extends globaz.globall.db.BEntity implements java.io.
     /**
      * 
      */
+
+    public static final String FIELDNAME_MONTANT_TOTAL_RENTE_AVS = "IDMAVS";
+
     private static final long serialVersionUID = 1L;
     public final static String CS_BENEFICE_CAP = "613006";
     public final static String CS_FISC = "613004";
@@ -41,11 +44,14 @@ public class CPDonneesBase extends globaz.globall.db.BEntity implements java.io.
     private String montantTotalRenteAVS = "";
 
     public String getMontantTotalRenteAVS() {
-        return montantTotalRenteAVS;
+
+        return JANumberFormatter.fmt(montantTotalRenteAVS, true, false, true, 2);
+
     }
 
     public void setMontantTotalRenteAVS(String montantTotalRenteAVS) {
-        this.montantTotalRenteAVS = montantTotalRenteAVS;
+
+        this.montantTotalRenteAVS = JANumberFormatter.deQuote(montantTotalRenteAVS);
     }
 
     /**
@@ -70,6 +76,7 @@ public class CPDonneesBase extends globaz.globall.db.BEntity implements java.io.
     protected void _readProperties(globaz.globall.db.BStatement statement) throws Exception {
         idDecision = statement.dbReadNumeric("IAIDEC");
         revenu1 = statement.dbReadNumeric("IDREV1", 2);
+        montantTotalRenteAVS = statement.dbReadNumeric(FIELDNAME_MONTANT_TOTAL_RENTE_AVS, 2);
         debutExercice1 = statement.dbReadDateAMJ("IDDDE1");
         finExercice1 = statement.dbReadDateAMJ("IDDFI1");
         revenu2 = statement.dbReadNumeric("IDREV2", 2);
@@ -115,6 +122,8 @@ public class CPDonneesBase extends globaz.globall.db.BEntity implements java.io.
     protected void _writeProperties(globaz.globall.db.BStatement statement) throws Exception {
         statement.writeField("IAIDEC", this._dbWriteNumeric(statement.getTransaction(), getIdDecision(), "idDecision"));
         statement.writeField("IDREV1", this._dbWriteNumeric(statement.getTransaction(), getRevenu1(), "revenu1"));
+        statement.writeField(FIELDNAME_MONTANT_TOTAL_RENTE_AVS,
+                this._dbWriteNumeric(statement.getTransaction(), getMontantTotalRenteAVS(), "montantTotalRenteAVS"));
         statement.writeField("IDDDE1",
                 this._dbWriteDateAMJ(statement.getTransaction(), getDebutExercice1(), "debutExercice1"));
         statement.writeField("IDDFI1",
