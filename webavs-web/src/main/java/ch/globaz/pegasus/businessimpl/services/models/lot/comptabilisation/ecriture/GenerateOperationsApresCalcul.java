@@ -26,26 +26,7 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
     @Override
     public Operations generateAllOperations(List<OrdreVersementForList> ovs, List<SectionSimpleModel> sections,
             String dateForOv, String dateEcheance) throws JadeApplicationException {
-        operations = new Operations();
-        MontantDispo montantDispo = null;
-
-        PrestationOvDecompte decompte = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs);
-
-        GenerateEcrituresResitutionBeneficiareForDecisionAc ac = gernerateEcrituresStandard(decompte);
-
-        montantDispo = generateEcrituresCompensation(ac, decompte);
-
-        montantDispo = generateEcrituresDettes(sections, decompte, montantDispo);
-
-        montantDispo = generateOperationsCreanciers(decompte, montantDispo, dateForOv);
-
-        generateOvs(montantDispo, decompte);
-
-        generateOperationAllocationNoel(dateForOv, decompte);
-
-        computControlAmount(decompte.getPrestationAmount());
-
-        return operations;
+        return generateAllOperations(ovs, sections, dateForOv, dateEcheance, null);
     }
 
     @Override

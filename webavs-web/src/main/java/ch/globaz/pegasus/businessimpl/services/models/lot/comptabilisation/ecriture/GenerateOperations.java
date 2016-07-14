@@ -17,6 +17,9 @@ public interface GenerateOperations {
     public Operations generateAllOperations(List<OrdreVersementForList> ovs, List<SectionSimpleModel> sections,
             String dateForOv, String dateEcheance) throws JadeApplicationException;
 
+    /**
+     * @param decompte (décompte pré initialisé: utilisé par les unit test pour mocker son comportement)
+     */
     Operations generateAllOperations(List<OrdreVersementForList> ovs, List<SectionSimpleModel> sections,
-            String dateForOv, String dateEcheance, PrestationOvDecompte decompte) throws JadeApplicationException;
+            String dateForOv, String dateEcheance, PrestationOvDecompte decompteInit) throws JadeApplicationException;
 }

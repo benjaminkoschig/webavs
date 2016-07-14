@@ -62,7 +62,7 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
 
     @Override
     public Operations generateAllOperations(List<OrdreVersementForList> ovs, List<SectionSimpleModel> sections,
-            String dateForOv, String dateEcheance) throws OrdreVersementException,
+            String dateForOv, String dateEcheance, PrestationOvDecompte decompteInit) throws OrdreVersementException,
             JadeApplicationServiceNotAvailableException {
         ecritures = new ArrayList<Ecriture>();
         ovsCompta = new ArrayList<OrdreVersementCompta>();
@@ -208,6 +208,12 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
 
     private CompteAnnexeSimpleModel resolvedCompteAnnexe(OrdreVersementForList ov) throws ComptabiliserLotException {
         return CompteAnnexeResolver.resolveByIdCompteAnnexe(ov.getIdCompteAnnexeRequerant());
+    }
+
+    @Override
+    public Operations generateAllOperations(List<OrdreVersementForList> ovs, List<SectionSimpleModel> sections,
+            String dateForOv, String dateEcheance) throws JadeApplicationException {
+        return generateAllOperations(ovs, sections, dateForOv, dateEcheance, null);
     }
 
 }
