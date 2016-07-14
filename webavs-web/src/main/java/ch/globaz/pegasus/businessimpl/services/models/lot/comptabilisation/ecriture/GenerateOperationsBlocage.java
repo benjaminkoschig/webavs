@@ -85,12 +85,22 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
                     refPaiementOv = ov.getSimpleOrdreVersement().getRefPaiement() + " ";
                 }
 
-                String refPaiement = ov.getNumAvs() + " " + ov.getDesignationRequerant1() + " "
-                        + ov.getDesignationRequerant2() + " "
-                        + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001") + " " + refPaiementOv
-                        + BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_VERSEMENT_DU")
-                        + " " + dateEcheance;
-
+                String refPaiement;
+                if (decompteInit != null) {
+                    refPaiement = decompteInit.concatRefPaiement(null);
+                } else {
+                    refPaiement = ov.getNumAvs()
+                            + " "
+                            + ov.getDesignationRequerant1()
+                            + " "
+                            + ov.getDesignationRequerant2()
+                            + " "
+                            + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001")
+                            + " "
+                            + refPaiementOv
+                            + BSessionUtil.getSessionFromThreadContext().getLabel(
+                                    "PEGASUS_COMPTABILISATION_VERSEMENT_DU") + " " + dateEcheance;
+                }
                 // versement beneficiaire --> ecriture au credit
                 if (csTypeOv.equals(IREOrdresVersements.CS_TYPE_BENEFICIAIRE_PRINCIPAL)) {
                     CompteAnnexeSimpleModel compteAnnexe = resolvedCompteAnnexe(ov);
