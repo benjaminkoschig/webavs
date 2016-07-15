@@ -60,7 +60,8 @@ public class CPCommunicationFiscaleRetourManager extends globaz.globall.db.BMana
     protected String _getFields(BStatement statement) {
         String fields = "CPCRETP.IKIRET, CPCRETP.HTITIE, IKICON, IKIACJ, IKILOG, CPCRETP.ICIIFD, IKTGAF, CPCRETP.IBIDCF, IWRJOU,";
         fields += " CPCRETP.MAIAFF, IKDRET, IKANN1, IKREV1, IKDDE1, IKDFI1, IKREV2, IKDDE2, IKDFI2, IKCOT1, IKCOT2,";
-        fields += " IKLTRI, IKCAPI, IKFORT, IKDFOR, IKTGTA, IKBGEN, IKTSTA, CPCRETP.IXIDPA, CPCRETP.PSPY, IKAREV, IKICON, IKIACJ, IKTCHC, IKTGCJ, IKRETY";
+        fields += " IKLTRI, IKCAPI, IKFORT, IKDFOR, IKTGTA, IKBGEN, IKTSTA, CPCRETP.IXIDPA, CPCRETP.PSPY, IKAREV, IKICON, IKIACJ, IKTCHC, IKTGCJ, IKRETY,";
+        fields += " IKMTRA, IKMREA";
         if (isWhitPavsAffilie()) {
             fields += ", PAVSAF.HXNAVS HXNAVS, PAVSAF.HXNCON HXNCON";
         }

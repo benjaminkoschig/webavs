@@ -453,6 +453,7 @@ public class CPProcessValiderPlausibilite extends BProcess {
                     entity.setFinExercice1(getCommunicationRetour().getFinExercice1());
                     entity.setRevenu1(getCommunicationRetour().getRevenu1());
                     entity.setRevenu2(getCommunicationRetour().getRevenu2());
+                    entity.setMontantTotalRenteAVS(getCommunicationRetour().getMontantTotalRenteAVS());
                     entity.setAnnee1(getCommunicationRetour().getAnnee1());
                     entity.setCapital(getCommunicationRetour().getCapital());
                     entity.setTri(getCommunicationRetour().getTri());
