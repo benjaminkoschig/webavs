@@ -231,6 +231,11 @@ var dialogMontantLibelle = '<%= objSession.getLabel("JSP_PC_TAXE_JOURNALIERE_HOM
 										    <td><ct:FWLabel key="JSP_PC_TAXE_JOURNALIERE_HOME_D_DEPLAFONNER"/></td>
 											<td><input type="checkbox" class="isDeplafonner" /></td>
 										<% }
+										else {
+										    %>
+										    <td><input type="checkbox" class="isDeplafonner" hidden="hidden"/></td>
+										    <%
+										}
 										
 										%>
 										
