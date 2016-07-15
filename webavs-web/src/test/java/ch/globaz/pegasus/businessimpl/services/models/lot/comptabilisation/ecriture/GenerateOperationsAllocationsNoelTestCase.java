@@ -10,7 +10,6 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -20,12 +19,12 @@ import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.proce
 public class GenerateOperationsAllocationsNoelTestCase {
 
     @Spy
-    private PrestationOvDecompte decompteMock;
+    private GenerateOperationsAllocationsNoel allocationsNoelMock;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        doReturn("Mock RefPaiement").when(decompteMock).concatRefPaiement(any(String.class));
+        doReturn("Mock RefPaiement").when(allocationsNoelMock).concatRefPaiement(any(InfosTiers.class));
     }
 
     @BeforeClass
@@ -46,20 +45,16 @@ public class GenerateOperationsAllocationsNoelTestCase {
         return ovs;
     }
 
-    @Ignore
-    // KO lors du build Jenkins pb de démarrage du FW
     @Test
     public void testGenerateAllOperation() throws JadeApplicationException {
-        GenerateOperationsAllocationsNoel allocationsNoel = new GenerateOperationsAllocationsNoel();
+        // GenerateOperationsAllocationsNoel allocationsNoel = new GenerateOperationsAllocationsNoel();
         List<OrdreVersement> ovs = generateList();
-        generate(allocationsNoel, ovs);
+        generate(allocationsNoelMock, ovs);
     }
 
-    @Ignore
-    // KO lors du build Jenkins pb de démarrage du FW
     @Test
     public void testGetEcritures() throws JadeApplicationException {
-        GenerateOperationsAllocationsNoel allocationsNoel = new GenerateOperationsAllocationsNoel();
+        GenerateOperationsAllocationsNoel allocationsNoel = allocationsNoelMock;
         List<OrdreVersement> ovs = generateList();
         generate(allocationsNoel, ovs);
         Assert.assertEquals(APIEcriture.CREDIT, allocationsNoel.getEcritures().get(0).getCodeDebitCredit());
@@ -70,11 +65,9 @@ public class GenerateOperationsAllocationsNoelTestCase {
         Assert.assertNotNull(allocationsNoel.getEcritures().get(0).getIdRefRubrique());
     }
 
-    @Ignore
-    // KO lors du build Jenkins pb de démarrage du FW
     @Test
     public void testGetOrdreVersementCompt() throws JadeApplicationException {
-        GenerateOperationsAllocationsNoel allocationsNoel = new GenerateOperationsAllocationsNoel();
+        GenerateOperationsAllocationsNoel allocationsNoel = allocationsNoelMock;
         List<OrdreVersement> ovs = generateList();
         generate(allocationsNoel, ovs);
         Assert.assertEquals(new BigDecimal(200), allocationsNoel.getOrdreVersementCompta().get(0).getMontant());

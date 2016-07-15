@@ -1,6 +1,5 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecriture;
 
-import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.osiris.external.IntRole;
@@ -39,14 +38,16 @@ class GenerateOperationsAllocationsNoel extends GenerateOperationBasic {
         ecritures.add(generateEcritureCredit(SectionPegasus.DECISION_PC, montant, compteAnnexe.getIdCompteAnnexe(),
                 TypeEcriture.ALLOCATION_NOEL, ov));
 
-        BSession session = BSessionUtil.getSessionFromThreadContext();
-
-        String refPaiement = infosTiers.getNss() + " " + infosTiers.getNom() + " " + infosTiers.getPrenom() + " "
-                + (session != null ? BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001") : "");
+        String refPaiement = concatRefPaiement(infosTiers);
 
         ordreVersementCompta.add(new OrdreVersementCompta(compteAnnexe, infosTiers.getIdTiersAddressePaiement(),
                 infosTiers.getIdDomaineApplication(), montant, SectionPegasus.DECISION_PC, infosTiers.getIdTiers(), ov
                         .getCsType(), csRoleFamille, refPaiement));
+    }
+
+    String concatRefPaiement(InfosTiers infosTiers) {
+        return infosTiers.getNss() + " " + infosTiers.getNom() + " " + infosTiers.getPrenom() + " "
+                + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001");
     }
 
     public List<Ecriture> getEcritures() {
