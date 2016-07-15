@@ -130,6 +130,7 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
             copyDecision.setCapital(donneeBase.getCapital());
             copyDecision.setDebutExercice1(donneeBase.getDebutExercice1());
             copyDecision.setFinExercice1(donneeBase.getFinExercice1());
+            copyDecision.setMontantTotalRenteAVS(donneeBase.getMontantTotalRenteAVS());
             // Calcul des cotisations
             calculerCotisation(copyDecision, revAf, donneeBase);
         } catch (Exception e) {
