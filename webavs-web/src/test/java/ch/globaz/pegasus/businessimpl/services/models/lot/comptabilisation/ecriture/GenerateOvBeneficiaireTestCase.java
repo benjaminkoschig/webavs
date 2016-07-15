@@ -1,18 +1,32 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecriture;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process.CompteAnnexeFactory;
 
 public class GenerateOvBeneficiaireTestCase {
+
+    @Spy
+    private PrestationOvDecompte decompteMock;
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        doReturn("Mock RefPaiement").when(decompteMock).concatRefPaiement(any(String.class));
+    }
 
     private List<OrdreVersementCompta> generateOvs(int dom2rRequerant, int dom2rConjoint, int standardRequerant,
             int standardConjoint) {
         GenerateOvBeneficiaire generate = newGenerateOvBeneficiaire();
         MontantDispo montantDispo = new MontantDispo(dom2rRequerant, dom2rConjoint, standardRequerant, standardConjoint);
-        PrestationOvDecompte decompte = DecompteFactory.generateDecompteRequerantConjoint();
+        PrestationOvDecompte decompte = DecompteFactory.generateDecompteRequerantConjoint(decompteMock);
 
         List<OrdreVersementCompta> ovs = generate.generateOvComptaBeneficiare(montantDispo, decompte);
         return ovs;

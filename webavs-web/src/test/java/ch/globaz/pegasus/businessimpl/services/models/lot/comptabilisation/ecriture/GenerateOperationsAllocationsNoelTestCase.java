@@ -1,17 +1,31 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecriture;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.osiris.api.APIEcriture;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process.CompteAnnexeFactory;
 import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process.OrdreVersementFactory;
 
 public class GenerateOperationsAllocationsNoelTestCase {
+
+    @Spy
+    private PrestationOvDecompte decompteMock;
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        doReturn("Mock RefPaiement").when(decompteMock).concatRefPaiement(any(String.class));
+    }
 
     @BeforeClass
     public static void before() {

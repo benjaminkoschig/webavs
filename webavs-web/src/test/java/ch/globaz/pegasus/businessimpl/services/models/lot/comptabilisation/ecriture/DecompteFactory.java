@@ -13,7 +13,17 @@ public class DecompteFactory {
     }
 
     public static PrestationOvDecompte generateDecompteRequerantConjoint() {
-        PrestationOvDecompte decompte = new PrestationOvDecompte();
+        return generateDecompteRequerantConjoint(null);
+    }
+
+    public static PrestationOvDecompte generateDecompteRequerantConjoint(PrestationOvDecompte decompteInit) {
+        PrestationOvDecompte decompte;
+        if (decompteInit == null) {
+            decompte = new PrestationOvDecompte();
+        } else {
+            decompte = decompteInit;
+        }
+
         decompte.setCompteAnnexeRequerant(CompteAnnexeFactory.generateRequerant());
         decompte.setIdTiersAddressePaiementRequerant(CompteAnnexeFactory.ID_TIERS_ADRESSE_PAIEMENT_REQUERANT);
         decompte.setIdDomaineApplicationRequerant(CompteAnnexeFactory.ID_TIERS_DOMMAINE_APPLICATION_REQUERANT);
