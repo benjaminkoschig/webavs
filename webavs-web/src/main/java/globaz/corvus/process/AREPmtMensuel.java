@@ -34,6 +34,7 @@ import globaz.prestation.tools.PRSession;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import ch.globaz.common.util.prestations.MotifVersementUtil;
 
 /**
  * @author SCR
@@ -317,30 +318,9 @@ public abstract class AREPmtMensuel extends PRAbstractProcess {
             String genrePrestation) {
 
         try {
-            String motifVersement = nss;
-            motifVersement += " " + datePmt;
-            motifVersement += " " + nom + " " + prenom;
-            motifVersement += " " + AREModuleComptable.getLibelleRubrique(getSession(), genrePrestation);
-            motifVersement += " " + refPmt;
-
-            if ((motifVersement != null) && (motifVersement.length() > 140)) {
-                String mot1 = nss;
-                mot1 += " " + datePmt;
-
-                String mot2 = " " + nom + " " + prenom;
-                if ((mot2 != null) && (mot2.length() > 35)) {
-                    mot2 = mot2.substring(0, 34);
-                }
-                String mot3 = " " + AREModuleComptable.getLibelleRubrique(getSession(), genrePrestation);
-
-                String mot4 = " " + refPmt;
-                if ((mot4 != null) && (mot4.length() > 35)) {
-                    mot4 = mot4.substring(0, 34);
-                }
-                return mot1 + mot2 + mot3 + mot4;
-            } else {
-                return motifVersement;
-            }
+            String nonPrenom = nom + " " + prenom;
+            String strGenrePrest = AREModuleComptable.getLibelleRubrique(getSession(), genrePrestation);
+            return MotifVersementUtil.formatPaiementMensuel(nss, nonPrenom, refPmt, strGenrePrest, datePmt);
         } catch (Exception e) {
             return null;
         }

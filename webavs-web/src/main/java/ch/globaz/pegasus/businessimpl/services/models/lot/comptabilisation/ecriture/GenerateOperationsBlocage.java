@@ -213,9 +213,6 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
         return CompteAnnexeResolver.resolveByIdCompteAnnexe(ov.getIdCompteAnnexeRequerant());
     }
 
-    /**
-     * caution, don't use decompteInit
-     */
     @Override
     public Operations generateAllOperations(List<OrdreVersementForList> ovs, List<SectionSimpleModel> sections,
             String dateForOv, String dateEcheance, PrestationOvDecompte decompteInit) throws JadeApplicationException {
