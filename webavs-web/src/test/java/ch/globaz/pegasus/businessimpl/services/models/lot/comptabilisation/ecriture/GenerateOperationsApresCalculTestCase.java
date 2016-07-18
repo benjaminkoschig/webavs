@@ -1,6 +1,5 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecriture;
 
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 import globaz.jade.client.util.JadeListUtil;
 import globaz.jade.exception.JadeApplicationException;
@@ -30,7 +29,7 @@ public class GenerateOperationsApresCalculTestCase {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        doReturn("Mock RefPaiement").when(decompteMock).concatRefPaiement(any(String.class));
+        doReturn("Mock MotifVersement Decision").when(decompteMock).formatDecision();
     }
 
     @BeforeClass

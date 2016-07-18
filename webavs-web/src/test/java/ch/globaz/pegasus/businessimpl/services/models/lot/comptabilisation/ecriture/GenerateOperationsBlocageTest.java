@@ -12,14 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import junit.framework.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import ch.globaz.osiris.business.model.SectionSimpleModel;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
@@ -35,15 +32,6 @@ import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.proce
 @RunWith(MockitoJUnitRunner.class)
 public class GenerateOperationsBlocageTest {
     public static final String ID_SECTION_BLOCAGE = "1050";
-
-    @Spy
-    private PrestationOvDecompte decompteMock;
-
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        doReturn("Mock RefPaiement").when(decompteMock).concatRefPaiement(any(String.class));
-    }
 
     @BeforeClass
     public static void before() {
@@ -78,8 +66,7 @@ public class GenerateOperationsBlocageTest {
         sections.get(1).setIdCompteAnnexe(CompteAnnexeFactory.COMPTE_ANNEXE_REQUERANT);
 
         GenerateOperations generateOperations = newGenerateOperations();
-        Operations operations = generateOperations.generateAllOperations(ovs, sections, "01.01.2012", "01.03.2012",
-                decompteMock);
+        Operations operations = generateOperations.generateAllOperations(ovs, sections, "01.01.2012", "01.03.2012");
         return operations;
     }
 
@@ -149,6 +136,7 @@ public class GenerateOperationsBlocageTest {
     private GenerateOperations newGenerateOperations() throws JadeApplicationException {
         GenerateOperationsBlocage generate = new GenerateOperationsBlocage();
         GenerateOperationsBlocage spy = Mockito.spy(generate);
+        doReturn("Mock RefPaiement").when(spy).formatDeblocage(any(OrdreVersementForList.class), any(String.class));
         Mockito.doReturn(newGenerateEcritures()).when(spy).newEcritureBasic();
         return spy;
     }

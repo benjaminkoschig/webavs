@@ -1,6 +1,5 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process;
 
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 import globaz.corvus.api.ordresversements.IREOrdresVersements;
 import java.math.BigDecimal;
@@ -26,7 +25,7 @@ public class GeneratePerstationPeriodeDecompteTestCase {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        doReturn("Mock RefPaiement").when(decompteMock).concatRefPaiement(any(String.class));
+        doReturn("Mock MotifVersement Decision").when(decompteMock).formatDecision();
     }
 
     @BeforeClass

@@ -62,7 +62,7 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
 
     @Override
     public Operations generateAllOperations(List<OrdreVersementForList> ovs, List<SectionSimpleModel> sections,
-            String dateForOv, String dateEcheance, PrestationOvDecompte decompteInit) throws OrdreVersementException,
+            String dateForOv, String dateEcheance) throws OrdreVersementException,
             JadeApplicationServiceNotAvailableException {
         ecritures = new ArrayList<Ecriture>();
         ovsCompta = new ArrayList<OrdreVersementCompta>();
@@ -80,27 +80,8 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
                             + ov.getSimpleOrdreVersement().getIdTiers());
                 }
 
-                String refPaiementOv = "";
-                if (!JadeStringUtil.isBlankOrZero(ov.getSimpleOrdreVersement().getRefPaiement())) {
-                    refPaiementOv = ov.getSimpleOrdreVersement().getRefPaiement() + " ";
-                }
+                String refPaiement = formatDeblocage(ov, dateEcheance);
 
-                String refPaiement;
-                if (decompteInit != null) {
-                    refPaiement = decompteInit.concatRefPaiement(null);
-                } else {
-                    refPaiement = ov.getNumAvs()
-                            + " "
-                            + ov.getDesignationRequerant1()
-                            + " "
-                            + ov.getDesignationRequerant2()
-                            + " "
-                            + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001")
-                            + " "
-                            + refPaiementOv
-                            + BSessionUtil.getSessionFromThreadContext().getLabel(
-                                    "PEGASUS_COMPTABILISATION_VERSEMENT_DU") + " " + dateEcheance;
-                }
                 // versement beneficiaire --> ecriture au credit
                 if (csTypeOv.equals(IREOrdresVersements.CS_TYPE_BENEFICIAIRE_PRINCIPAL)) {
                     CompteAnnexeSimpleModel compteAnnexe = resolvedCompteAnnexe(ov);
@@ -156,6 +137,18 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
         } catch (JadeApplicationException e) {
             throw new OrdreVersementException("An exception occured during generation blocage operations", e);
         }
+    }
+
+    String formatDeblocage(OrdreVersementForList ov, String dateEcheance) {
+        String refPaiementOv = "";
+        if (!JadeStringUtil.isBlankOrZero(ov.getSimpleOrdreVersement().getRefPaiement())) {
+            refPaiementOv = ov.getSimpleOrdreVersement().getRefPaiement() + " ";
+        }
+
+        return ov.getNumAvs() + " " + ov.getDesignationRequerant1() + " " + ov.getDesignationRequerant2() + " "
+                + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001") + " " + refPaiementOv
+                + BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_VERSEMENT_DU") + " "
+                + dateEcheance;
     }
 
     private SectionSimpleModel getSectionObjectFromList(String idSection, List<SectionSimpleModel> sectionsDette) {
@@ -220,10 +213,13 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
         return CompteAnnexeResolver.resolveByIdCompteAnnexe(ov.getIdCompteAnnexeRequerant());
     }
 
+    /**
+     * caution, don't use decompteInit
+     */
     @Override
     public Operations generateAllOperations(List<OrdreVersementForList> ovs, List<SectionSimpleModel> sections,
-            String dateForOv, String dateEcheance) throws JadeApplicationException {
-        return generateAllOperations(ovs, sections, dateForOv, dateEcheance, null);
+            String dateForOv, String dateEcheance, PrestationOvDecompte decompteInit) throws JadeApplicationException {
+        return generateAllOperations(ovs, sections, dateForOv, dateEcheance);
     }
 
 }

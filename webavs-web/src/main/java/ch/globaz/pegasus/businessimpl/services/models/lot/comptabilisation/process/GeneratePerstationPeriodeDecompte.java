@@ -159,7 +159,7 @@ public class GeneratePerstationPeriodeDecompte {
             montant = ov.getMontantDetteModifier();
         }
 
-        String refPaiement = decompte.concatRefPaiement(null);
+        String refPaiement = decompte.formatDecision();
         return new OrdreVersement(ov.getId(), ov.getCsType(), ov.getCsTypeDomaine(), ov.getIdSectionDetteEnCompta(),
                 ov.getIdTiers(), ov.getIdTiersAdressePaiement(), ov.getIdTiersAdressePaiementConjoint(),
                 ov.getIdTiersOwnerDetteCreance(), montant, ov.getSousTypeGenrePrestation(),

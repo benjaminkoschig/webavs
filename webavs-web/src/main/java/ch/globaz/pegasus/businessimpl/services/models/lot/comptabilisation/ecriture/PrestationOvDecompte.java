@@ -5,6 +5,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import ch.globaz.common.util.prestations.MotifVersementUtil;
 import ch.globaz.osiris.business.model.CompteAnnexeSimpleModel;
 import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process.PrestationPeriode;
 
@@ -251,12 +252,17 @@ public class PrestationOvDecompte {
         return infosConjoint.getNss() + " " + infosConjoint.getNom() + " " + infosConjoint.getPrenom();
     }
 
-    public String concatRefPaiement(String addon) {
-        return getNssRequerant() + " " + getNomRequerant() + " " + getPrenomRequerant() + " "
-                + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001") + " "
-                + (addon != null ? addon + " " : "") + getDateDebut() + " - " + getDateFin() + " "
-                + BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_DECISION_DU") + " "
-                + getDateDecision();
+    /**
+     * call the utils MotifVersement formater
+     * 
+     * @return
+     */
+    public String formatDecision() {
+        return MotifVersementUtil.formatDecision(getNssRequerant(), getNomRequerant() + " " + getPrenomRequerant(),
+                getRefPaiement(), BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001"), getDateDebut()
+                        + " - " + getDateFin(),
+                BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_DECISION_DU") + " "
+                        + getDateDecision());
     }
 
 }

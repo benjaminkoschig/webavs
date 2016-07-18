@@ -13,7 +13,7 @@ class GenerateOvBeneficiaire {
 
     private void generateForConjoint(final MontantDispo montantDispo, final PrestationOvDecompte decompte) {
         if (montantDispo.hasMontantDispoConjont()) {
-            String refPaiement = decompte.concatRefPaiement("PC");
+            String refPaiement = decompte.formatDecision();
             // decompte.getNssConjoint() + " " + decompte.getNomConjoint() + " "
             // + decompte.getPrenomConjoint() + " PC " + decompte.getDateDebut() + " - " + decompte.getDateFin()
             // + " " + BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_DECISION_DU")
@@ -52,7 +52,7 @@ class GenerateOvBeneficiaire {
     private void generateRequerant(final MontantDispo montantDispo, final PrestationOvDecompte decompte) {
 
         if (montantDispo.hasMontantDispoRequerant()) {
-            String refPaiement = decompte.concatRefPaiement(decompte.getRefPaiement());
+            String refPaiement = decompte.formatDecision();
             // decompte.getNssRequerant() + " " + decompte.getNomRequerant() + " "
             // + decompte.getPrenomRequerant() + " "
             // + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001") + " "

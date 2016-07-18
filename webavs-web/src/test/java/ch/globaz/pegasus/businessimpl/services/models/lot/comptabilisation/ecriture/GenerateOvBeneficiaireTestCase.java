@@ -1,6 +1,5 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecriture;
 
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,7 +18,8 @@ public class GenerateOvBeneficiaireTestCase {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        doReturn("Mock RefPaiement").when(decompteMock).concatRefPaiement(any(String.class));
+        doReturn("Mock MotifVersement Decision").when(decompteMock).formatDecision();
+        // doReturn("Mock RefPaiement").when(decompteMock).concatRefPaiement(any(String.class));
     }
 
     private List<OrdreVersementCompta> generateOvs(int dom2rRequerant, int dom2rConjoint, int standardRequerant,
