@@ -155,6 +155,8 @@
 	<parameter name="P_COTISATION" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_COTISATION_ENCOURS" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_DIF_COTISATION" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="L_REV_RAVS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_REV_RAVS" isForPrompting="true" class="java.lang.String"/>
 	<field name="LIBELLE_LOG" class="java.lang.String"/>
 	<variable name="IMAGE_LOGO" class="java.lang.String" resetType="Report" calculation="Nothing">
 		<variableExpression><![CDATA[$P{MODEL_PATH}+"cfc_logo.gif"]]></variableExpression>
@@ -179,7 +181,7 @@
 			</band>
 		</title>
 		<pageHeader>
-			<band height="783"  isSplitAllowed="false" >
+			<band height="795"  isSplitAllowed="false" >
 				<rectangle radius="0" >
 					<reportElement
 						mode="Transparent"
@@ -738,7 +740,7 @@
 						x="13"
 						y="218"
 						width="526"
-						height="166"
+						height="186"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="rectangle-20"
@@ -756,7 +758,7 @@
 						x="223"
 						y="218"
 						width="0"
-						height="165"
+						height="185"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-1"
@@ -950,7 +952,7 @@
 						x="381"
 						y="320"
 						width="0"
-						height="63"
+						height="83"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-5"
@@ -1278,7 +1280,7 @@
 					<reportElement
 						mode="Transparent"
 						x="84"
-						y="484"
+						y="505"
 						width="456"
 						height="68"
 						forecolor="#000000"
@@ -1296,7 +1298,7 @@
 					<reportElement
 						mode="Opaque"
 						x="86"
-						y="527"
+						y="548"
 						width="453"
 						height="0"
 						forecolor="#000000"
@@ -1313,7 +1315,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="13"
-						y="532"
+						y="553"
 						width="70"
 						height="15"
 						forecolor="#000000"
@@ -1333,7 +1335,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="13"
-						y="508"
+						y="529"
 						width="70"
 						height="15"
 						forecolor="#000000"
@@ -1353,7 +1355,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="157"
-						y="447"
+						y="468"
 						width="50"
 						height="34"
 						forecolor="#000000"
@@ -1373,7 +1375,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="212"
-						y="447"
+						y="468"
 						width="50"
 						height="34"
 						forecolor="#000000"
@@ -1393,7 +1395,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="266"
-						y="447"
+						y="468"
 						width="50"
 						height="34"
 						forecolor="#000000"
@@ -1413,7 +1415,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="371"
-						y="447"
+						y="468"
 						width="55"
 						height="34"
 						forecolor="#000000"
@@ -1433,7 +1435,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="430"
-						y="447"
+						y="468"
 						width="52"
 						height="34"
 						forecolor="#000000"
@@ -1453,7 +1455,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="485"
-						y="447"
+						y="468"
 						width="56"
 						height="34"
 						forecolor="#000000"
@@ -1474,7 +1476,7 @@
 					<reportElement
 						mode="Opaque"
 						x="210"
-						y="484"
+						y="505"
 						width="0"
 						height="67"
 						forecolor="#000000"
@@ -1492,7 +1494,7 @@
 					<reportElement
 						mode="Opaque"
 						x="265"
-						y="484"
+						y="505"
 						width="0"
 						height="67"
 						forecolor="#000000"
@@ -1510,7 +1512,7 @@
 					<reportElement
 						mode="Opaque"
 						x="371"
-						y="484"
+						y="505"
 						width="0"
 						height="67"
 						forecolor="#000000"
@@ -1528,7 +1530,7 @@
 					<reportElement
 						mode="Opaque"
 						x="429"
-						y="484"
+						y="505"
 						width="0"
 						height="67"
 						forecolor="#000000"
@@ -1546,7 +1548,7 @@
 					<reportElement
 						mode="Opaque"
 						x="484"
-						y="484"
+						y="505"
 						width="0"
 						height="67"
 						forecolor="#000000"
@@ -1563,7 +1565,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="157"
-						y="530"
+						y="551"
 						width="50"
 						height="19"
 						forecolor="#000000"
@@ -1583,7 +1585,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="212"
-						y="530"
+						y="551"
 						width="50"
 						height="19"
 						forecolor="#000000"
@@ -1603,7 +1605,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="266"
-						y="530"
+						y="551"
 						width="50"
 						height="19"
 						forecolor="#000000"
@@ -1623,7 +1625,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="372"
-						y="530"
+						y="551"
 						width="55"
 						height="19"
 						forecolor="#000000"
@@ -1643,7 +1645,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="430"
-						y="530"
+						y="551"
 						width="52"
 						height="19"
 						forecolor="#000000"
@@ -1663,7 +1665,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="486"
-						y="530"
+						y="551"
 						width="52"
 						height="19"
 						forecolor="#000000"
@@ -1683,7 +1685,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="157"
-						y="506"
+						y="527"
 						width="50"
 						height="19"
 						forecolor="#000000"
@@ -1703,7 +1705,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="212"
-						y="506"
+						y="527"
 						width="50"
 						height="19"
 						forecolor="#000000"
@@ -1723,7 +1725,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="266"
-						y="506"
+						y="527"
 						width="50"
 						height="19"
 						forecolor="#000000"
@@ -1743,7 +1745,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="372"
-						y="506"
+						y="527"
 						width="55"
 						height="19"
 						forecolor="#000000"
@@ -1763,7 +1765,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="430"
-						y="506"
+						y="527"
 						width="52"
 						height="19"
 						forecolor="#000000"
@@ -1783,7 +1785,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="486"
-						y="506"
+						y="527"
 						width="52"
 						height="19"
 						forecolor="#000000"
@@ -1883,7 +1885,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="14"
-						y="571"
+						y="592"
 						width="526"
 						height="110"
 						forecolor="#000000"
@@ -1903,7 +1905,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="14"
-						y="554"
+						y="575"
 						width="257"
 						height="15"
 						forecolor="#000000"
@@ -1924,7 +1926,7 @@
 					<reportElement
 						mode="Opaque"
 						x="85"
-						y="503"
+						y="524"
 						width="453"
 						height="0"
 						forecolor="#000000"
@@ -1942,7 +1944,7 @@
 					<reportElement
 						mode="Opaque"
 						x="155"
-						y="484"
+						y="505"
 						width="0"
 						height="67"
 						forecolor="#000000"
@@ -1959,7 +1961,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="86"
-						y="506"
+						y="527"
 						width="65"
 						height="19"
 						forecolor="#000000"
@@ -1979,7 +1981,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="86"
-						y="530"
+						y="551"
 						width="65"
 						height="19"
 						forecolor="#000000"
@@ -1999,7 +2001,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="86"
-						y="447"
+						y="468"
 						width="65"
 						height="34"
 						forecolor="#000000"
@@ -2019,7 +2021,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="86"
-						y="486"
+						y="507"
 						width="65"
 						height="15"
 						forecolor="#000000"
@@ -2039,7 +2041,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="157"
-						y="486"
+						y="507"
 						width="50"
 						height="15"
 						forecolor="#000000"
@@ -2059,7 +2061,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="212"
-						y="486"
+						y="507"
 						width="50"
 						height="15"
 						forecolor="#000000"
@@ -2079,7 +2081,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="266"
-						y="486"
+						y="507"
 						width="50"
 						height="15"
 						forecolor="#000000"
@@ -2099,7 +2101,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="372"
-						y="486"
+						y="507"
 						width="55"
 						height="15"
 						forecolor="#000000"
@@ -2119,7 +2121,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="431"
-						y="486"
+						y="507"
 						width="52"
 						height="15"
 						forecolor="#000000"
@@ -2139,7 +2141,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="486"
-						y="486"
+						y="507"
 						width="52"
 						height="15"
 						forecolor="#000000"
@@ -2220,7 +2222,7 @@
 					<reportElement
 						mode="Transparent"
 						x="13"
-						y="688"
+						y="709"
 						width="526"
 						height="81"
 						forecolor="#000000"
@@ -2237,7 +2239,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="19"
-						y="694"
+						y="715"
 						width="196"
 						height="13"
 						forecolor="#000000"
@@ -2257,7 +2259,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="40"
-						y="710"
+						y="731"
 						width="196"
 						height="13"
 						forecolor="#000000"
@@ -2277,7 +2279,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="40"
-						y="723"
+						y="744"
 						width="196"
 						height="13"
 						forecolor="#000000"
@@ -2297,7 +2299,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="40"
-						y="736"
+						y="757"
 						width="196"
 						height="13"
 						forecolor="#000000"
@@ -2317,7 +2319,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="40"
-						y="749"
+						y="770"
 						width="196"
 						height="13"
 						forecolor="#000000"
@@ -2453,7 +2455,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="13"
-						y="388"
+						y="409"
 						width="257"
 						height="15"
 						forecolor="#000000"
@@ -2473,7 +2475,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="13"
-						y="404"
+						y="425"
 						width="526"
 						height="42"
 						forecolor="#000000"
@@ -2493,7 +2495,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="319"
-						y="447"
+						y="468"
 						width="50"
 						height="34"
 						forecolor="#000000"
@@ -2513,7 +2515,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="319"
-						y="486"
+						y="507"
 						width="50"
 						height="15"
 						forecolor="#000000"
@@ -2534,7 +2536,7 @@
 					<reportElement
 						mode="Opaque"
 						x="318"
-						y="484"
+						y="505"
 						width="0"
 						height="67"
 						forecolor="#000000"
@@ -2551,7 +2553,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="319"
-						y="506"
+						y="527"
 						width="50"
 						height="19"
 						forecolor="#000000"
@@ -2571,7 +2573,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="319"
-						y="530"
+						y="551"
 						width="50"
 						height="19"
 						forecolor="#000000"
@@ -2588,6 +2590,64 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_COTISATION}]]></textFieldExpression>
 				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="15"
+						y="385"
+						width="197"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-120"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="10" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_REV_RAVS}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="227"
+						y="385"
+						width="145"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-121"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL_BOLD" fontName="ARIALBD.TTF" size="10" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_REV_RAVS}]]></textFieldExpression>
+				</textField>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="13"
+						y="381"
+						width="526"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-20"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
 			</band>
 		</pageHeader>
 		<columnHeader>
@@ -2607,7 +2667,7 @@
 			</band>
 		</pageFooter>
 		<summary>
-			<band height="24"  isSplitAllowed="false" >
+			<band height="20"  isSplitAllowed="false" >
 			</band>
 		</summary>
 </jasperReport>
