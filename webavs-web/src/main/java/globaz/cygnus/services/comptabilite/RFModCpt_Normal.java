@@ -538,6 +538,7 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
         String nss = "";
         String nom = "";
         String prenom = "";
+        String refPaiement = "";
         String idTiersAdressePaiement = "";
         String idDomaineApplication = "";
         String idPrestationGroupees = "";
@@ -590,6 +591,7 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
                     if (!isBeneficiarePrincipalInitialise) {
                         nss = ov.getNssTiers();
                         nom = ov.getNomTiers();
+                        refPaiement = ov.getRefPaiement();
                         prenom = ov.getPrenomTiers();
                         idTiersAdressePaiement = ov.getIdTiersAdressePaiement();
                         idTiersBeneficiairePrincipal = ov.getIdTiers();
@@ -707,11 +709,10 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
                     idPrestationGroupees, process);
             compteAnnexe = (APICompteAnnexe) compteAnnexeSectionNormaleObj[0];
             sectionNormale = (APISection) compteAnnexeSectionNormaleObj[1];
-            memoryLog
-                    .logMessage(preparerOrdreVersement(nss, nom, prenom, idTiersAdressePaiement, idDomaineApplication,
-                            isAVS, isAI, datesPrestations, compteAnnexe, sectionNormale, sessionOsiris, transaction,
-                            compta, dateComptable, process.getIdOrganeExecution(), montantOrdreVersementBigDec,
-                            rfmLogger, isLotAVASAD));
+            memoryLog.logMessage(preparerOrdreVersement(nss, nom, prenom, idTiersAdressePaiement, idDomaineApplication,
+                    isAVS, isAI, datesPrestations, compteAnnexe, sectionNormale, sessionOsiris, transaction, compta,
+                    dateComptable, process.getIdOrganeExecution(), montantOrdreVersementBigDec, rfmLogger, isLotAVASAD,
+                    refPaiement));
 
         }
 
@@ -813,13 +814,10 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
             String idDomaineApplication, boolean isAVS, boolean isAI, Set<String> datesPrestations,
             APICompteAnnexe compteAnnexe, APISection sectionNormale, BSession session, BTransaction transaction,
             APIGestionComptabiliteExterne compta, String dateComptable, String idOrganeExecution,
-            BigDecimal montantOrdreDeVersementBigDec, RFLogToDB rfmLogger, boolean isLotAVASAD) throws Exception {
+            BigDecimal montantOrdreDeVersementBigDec, RFLogToDB rfmLogger, boolean isLotAVASAD, String refPaiement)
+            throws Exception {
 
-        BIMessage message = null;
-
-        String refPmt = nss + " " + nom + " " + prenom;
-
-        String motifVersement = getMotifVersement(session, nss, nom, prenom, refPmt, isAVS, isAI, datesPrestations);
+        String motifVersement = getMotifVersement(session, nss, nom, prenom, refPaiement, isAVS, isAI, datesPrestations);
         TIAdressePaiementData adrPaiementData = loadAdressePaiement(session, transaction, dateComptable,
                 idTiersAdressePaiement, idDomaineApplication);
         if (isLotAVASAD) {
@@ -829,7 +827,7 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
         }
         ErrorDriller ed = new ErrorDriller().lookInThreadContext().add(session);
         List<DrilledError> errors = ed.drill();
-        if (errors.size() > 0) {
+        if (!errors.isEmpty()) {
             // oups, des méchantes erreurs... on les log et on fait tout péter, pour éviter des données incohérentes
             // plus loin
             String exceptionMessage = "ErrorDriller: errors found: " + errors.size();
@@ -839,11 +837,11 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
             }
             throw new Exception("RFModCpt_Normal.preparerOrdreVersement before doOV. " + exceptionMessage, null);
         }
-        message = doOrdreVersement(session, compta, compteAnnexe.getIdCompteAnnexe(), sectionNormale.getIdSection(),
-                montantOrdreDeVersementBigDec.toString(), adrPaiementData.getIdAvoirPaiementUnique(), motifVersement,
-                dateComptable, false, idOrganeExecution);
+        BIMessage message = doOrdreVersement(session, compta, compteAnnexe.getIdCompteAnnexe(),
+                sectionNormale.getIdSection(), montantOrdreDeVersementBigDec.toString(),
+                adrPaiementData.getIdAvoirPaiementUnique(), motifVersement, dateComptable, false, idOrganeExecution);
         errors = ed.drill();
-        if (errors.size() > 0) {
+        if (!errors.isEmpty()) {
             // oups, des méchantes erreurs... on les log et on fait tout péter, pour éviter des données incohérentes
             // plus loin
             String exceptionMessage = "ErrorDriller: errors found: " + errors.size();

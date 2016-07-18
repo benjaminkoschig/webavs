@@ -25,12 +25,13 @@ public class RFOrdreVersementData {
     private String numeroFacture = "";
     private String prenomTiers = "";
     private String typeOrdreVersement = "";
+    private String refPaiement;
 
     public RFOrdreVersementData(String idOrdreVersement, String typeOrdreVersement, String numeroFacture,
             String idExterne, String csRole, String idDomaineApplication, String idTiersAdressePaiement,
             String idTiers, String montantOrdreVersement, String idRole, String idTypeSoin, Boolean isForcerPayement,
             String nssTiers, String nomTiers, String prenomTiers, String montantDepassementQD, Boolean isImportation,
-            Boolean isCompense, String idSousTypeSoin, String idSectionDette) {
+            Boolean isCompense, String idSousTypeSoin, String idSectionDette, String refPaiement) {
         super();
         this.idOrdreVersement = idOrdreVersement;
         this.typeOrdreVersement = typeOrdreVersement;
@@ -52,6 +53,7 @@ public class RFOrdreVersementData {
         this.isCompense = isCompense;
         this.idSousTypeSoin = idSousTypeSoin;
         this.idSectionDette = idSectionDette;
+        this.refPaiement = refPaiement;
     }
 
     public String getCsRole() {
@@ -212,6 +214,14 @@ public class RFOrdreVersementData {
 
     public void setTypeOrdreVersement(String typeOrdreVersement) {
         this.typeOrdreVersement = typeOrdreVersement;
+    }
+
+    public String getRefPaiement() {
+        return refPaiement;
+    }
+
+    public void setRefPaiement(String refPaiement) {
+        this.refPaiement = refPaiement;
     }
 
 }

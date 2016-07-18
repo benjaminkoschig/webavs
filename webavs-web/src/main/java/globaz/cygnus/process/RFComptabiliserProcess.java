@@ -69,8 +69,7 @@ public class RFComptabiliserProcess extends BProcess {
 
     @Override
     protected void _executeCleanUp() {
-        // TODO Auto-generated method stub
-
+        // RIEN A FAIRE
     }
 
     @Override
@@ -222,7 +221,7 @@ public class RFComptabiliserProcess extends BProcess {
                         itLotJointPrestationJointOV.getMontantDepassementQD(), itLotJointPrestationJointOV
                                 .getIsImportation(), itLotJointPrestationJointOV.getIsCompense(),
                         itLotJointPrestationJointOV.getIdSousTypeDeSoin(), itLotJointPrestationJointOV
-                                .getIdSectionOrdreVersement()));
+                                .getIdSectionOrdreVersement(), itLotJointPrestationJointOV.getReferencePaiement()));
 
             } else if (currentIdPrestation.equals(itLotJointPrestationJointOV.getIdPrestation())) { // mm prestation
                 // ajout d'une nouvelle OV au tableau courant d'OVs
@@ -238,7 +237,7 @@ public class RFComptabiliserProcess extends BProcess {
                         itLotJointPrestationJointOV.getMontantDepassementQD(), itLotJointPrestationJointOV
                                 .getIsImportation(), itLotJointPrestationJointOV.getIsCompense(),
                         itLotJointPrestationJointOV.getIdSousTypeDeSoin(), itLotJointPrestationJointOV
-                                .getIdSectionOrdreVersement()));
+                                .getIdSectionOrdreVersement(), itLotJointPrestationJointOV.getReferencePaiement()));
 
             } else { // nouvelle prestation
                 // on ajoute la tableau d'OV à l'ancienne prestation
@@ -276,7 +275,7 @@ public class RFComptabiliserProcess extends BProcess {
                         itLotJointPrestationJointOV.getMontantDepassementQD(), itLotJointPrestationJointOV
                                 .getIsImportation(), itLotJointPrestationJointOV.getIsCompense(),
                         itLotJointPrestationJointOV.getIdSousTypeDeSoin(), itLotJointPrestationJointOV
-                                .getIdSectionOrdreVersement()));
+                                .getIdSectionOrdreVersement(), itLotJointPrestationJointOV.getReferencePaiement()));
             }
             i++;
         }
@@ -291,15 +290,6 @@ public class RFComptabiliserProcess extends BProcess {
                     itLotJointPrestationJointOV.getIsLAPRAMS(), itLotJointPrestationJointOV.getIdAdressePaiement(),
                     itLotJointPrestationJointOV.getIdTiersBeneficiaire()));
         }
-
-        // affichage des resultats dans la console
-        /*
-         * for (RFPrestationData prest : this.prestationsSet) { System.out.println("id prestation : " +
-         * prest.getIdPrestation() + "id adresse paiement: " + prest.getIdAdresseDePaiement()); for
-         * (RFOrdreVersementData ov : prest.getOrdresVersement()) { System.out.println("id OV : " +
-         * ov.getIdOrdreVersement()); } }
-         */
-
     }
 
     public RFComptabiliserDecisionService getComptabiliser() {
@@ -320,7 +310,6 @@ public class RFComptabiliserProcess extends BProcess {
 
     @Override
     protected String getEMailObject() {
-        // TODO: selon le cas mettre échec de la compta
         if (JadeStringUtil.isEmpty(EMailObject)) {
             return getSession().getLabel("PROCESS_COMPTABILISER");
         } else {

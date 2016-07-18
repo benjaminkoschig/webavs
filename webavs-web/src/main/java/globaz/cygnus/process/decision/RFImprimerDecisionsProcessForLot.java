@@ -40,18 +40,16 @@ public class RFImprimerDecisionsProcessForLot extends AbstractJadeJob {
 
     private static final long serialVersionUID = 8731586547381408153L;
     /* Liste d'identifiant effectivement à traiter */
-    List<String> identifiantDeLotsATraiter = new ArrayList<String>();
+    private List<String> identifiantDeLotsATraiter = new ArrayList<String>();
     /* paramètre passé en ligne de commande, format possible: un entier, ou x,x,x, */
     private String idLot = null;
 
     private String idGestionnaire;
-    // gfdkjshglkjdfhgkjsdf
 
     private String mail;
 
-    BISession sessionCygnus = null;
+    private BISession sessionCygnus = null;
 
-    //
     public String getIdLot() {
         return idLot;
     }
@@ -77,9 +75,8 @@ public class RFImprimerDecisionsProcessForLot extends AbstractJadeJob {
 
             initParameters();
 
-            for (String idLot : identifiantDeLotsATraiter) {
-                generateDecisionForLot(idLot);
-                // sadas
+            for (String idDuLot : identifiantDeLotsATraiter) {
+                generateDecisionForLot(idDuLot);
             }
 
         } catch (Exception e) {
@@ -111,7 +108,7 @@ public class RFImprimerDecisionsProcessForLot extends AbstractJadeJob {
      */
     private void validateParameters() throws DecisionException {
 
-        if (identifiantDeLotsATraiter.size() == 0) {
+        if (identifiantDeLotsATraiter.isEmpty()) {
             throw new DecisionException("The id(s) passed must is(are) not valid integer id(s)");
         }
 
@@ -182,8 +179,6 @@ public class RFImprimerDecisionsProcessForLot extends AbstractJadeJob {
         Iterator<RFLotJointPrestationJointOV> it = lotJointPrestationJointOVManager.iterator(); it.hasNext();) {
 
             itLotJointPrestationJointOV = it.next();
-            // on set l'idLot que l'on traite
-            // idLot = itLotJointPrestationJointOV.getIdLot();
             // tant que c'est la même prestation
             if (JadeStringUtil.isEmpty(currentIdPrestation)) {
 
@@ -201,7 +196,7 @@ public class RFImprimerDecisionsProcessForLot extends AbstractJadeJob {
                         itLotJointPrestationJointOV.getMontantDepassementQD(), itLotJointPrestationJointOV
                                 .getIsImportation(), itLotJointPrestationJointOV.getIsCompense(),
                         itLotJointPrestationJointOV.getIdSousTypeDeSoin(), itLotJointPrestationJointOV
-                                .getIdSectionOrdreVersement()));
+                                .getIdSectionOrdreVersement(), itLotJointPrestationJointOV.getReferencePaiement()));
 
             } else if (currentIdPrestation.equals(itLotJointPrestationJointOV.getIdPrestation())) { // mm prestation
                 // ajout d'une nouvelle OV au tableau courant d'OVs
@@ -217,7 +212,7 @@ public class RFImprimerDecisionsProcessForLot extends AbstractJadeJob {
                         itLotJointPrestationJointOV.getMontantDepassementQD(), itLotJointPrestationJointOV
                                 .getIsImportation(), itLotJointPrestationJointOV.getIsCompense(),
                         itLotJointPrestationJointOV.getIdSousTypeDeSoin(), itLotJointPrestationJointOV
-                                .getIdSectionOrdreVersement()));
+                                .getIdSectionOrdreVersement(), itLotJointPrestationJointOV.getReferencePaiement()));
 
             } else { // nouvelle prestation
                 // on ajoute la tableau d'OV à l'ancienne prestation
@@ -255,7 +250,7 @@ public class RFImprimerDecisionsProcessForLot extends AbstractJadeJob {
                         itLotJointPrestationJointOV.getMontantDepassementQD(), itLotJointPrestationJointOV
                                 .getIsImportation(), itLotJointPrestationJointOV.getIsCompense(),
                         itLotJointPrestationJointOV.getIdSousTypeDeSoin(), itLotJointPrestationJointOV
-                                .getIdSectionOrdreVersement()));
+                                .getIdSectionOrdreVersement(), itLotJointPrestationJointOV.getReferencePaiement()));
             }
             i++;
         }
