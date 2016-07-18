@@ -695,12 +695,18 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
              */
             if (!detailCalcul) {
                 donneeBase.setRevenu1("");
+                donneeBase.setMontantTotalRenteAVS("");
                 donneeBase.setRevenuAutre1("");
                 donneeBase.setFortuneTotale(orgDecision.getFortuneDeterminante());
             } else {
                 donneeBase.setRevenu1(CPToolBox.annualisationRevenu(orgDecision.getDebutDecision(),
                         orgDecision.getFinDecision(), copyDecision.getDebutDecision(), copyDecision.getFinDecision(),
                         orgDecision.getRevenu1(), orgDecision.getNbMoisExercice1()));
+
+                donneeBase.setMontantTotalRenteAVS(CPToolBox.annualisationRevenu(orgDecision.getDebutDecision(),
+                        orgDecision.getFinDecision(), copyDecision.getDebutDecision(), copyDecision.getFinDecision(),
+                        orgDecision.getMontantTotalRenteAVS(), orgDecision.getNbMoisExercice1()));
+
                 donneeBase.setRevenuAutre1(CPToolBox.annualisationRevenu(orgDecision.getDebutDecision(),
                         orgDecision.getFinDecision(), copyDecision.getDebutDecision(), copyDecision.getFinDecision(),
                         orgDecision.getRevenuAutre1(), orgDecision.getNbMoisRevenuAutre1()));
