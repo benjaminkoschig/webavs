@@ -1527,10 +1527,12 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
     private void initRevenu(CPDecisionViewBean newDecision, ICommunicationRetour retour) throws Exception {
         newDecision.setRevenu1(retour.getRevenu1());
+        if (newDecision.isNonActif()) {
+            newDecision.setMontantTotalRenteAVS(retour.getMontantTotalRenteAVS());
+        }
         newDecision.setRevenu2("");
         newDecision.setRevenuAutre1(retour.getRevenu2());
         newDecision.setRevenuAutre2("");
-        newDecision.setMontantTotalRenteAVS("");
         // VS -> comme dans la communication, il y a aussi le revenu du conjoint
         // => pour les conjoints indépendants, il faut prendre les revenus
         // distincts de chaque personne
