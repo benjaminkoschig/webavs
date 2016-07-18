@@ -4,6 +4,9 @@ import globaz.framework.printing.itext.fill.FWIImportParametre;
 
 public class CPIListeCommunicationRetourParam extends FWIImportParametre {
 
+    public static final String LABEL_REVENU_RENTE_AVS = "L_REV_RAVS";
+    public static final String PARAM_REVENU_RENTE_AVS = "P_REV_RAVS";
+
     public static final String LABEL_AFFILIE = "L_AFFILIE";
     public static final String LABEL_AUTRE_REV = "L_AUTRE_REV";
     public static final String LABEL_CAPITAL = "L_CAPITAL";

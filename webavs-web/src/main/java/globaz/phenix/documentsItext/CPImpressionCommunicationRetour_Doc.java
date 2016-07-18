@@ -252,6 +252,8 @@ public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
             }
             // Zone des revenus
             // if (entity.isNonActif()) {
+            super.setParametres(CPIListeCommunicationRetourParam.PARAM_REVENU_RENTE_AVS,
+                    communication.getMontantTotalRenteAVS());
             super.setParametres(CPIListeCommunicationRetourParam.PARAM_REV_R, communication.getRevenuR());
             super.setParametres(CPIListeCommunicationRetourParam.PARAM_REV_NA, communication.getRevenuNA());
             super.setParametres(CPIListeCommunicationRetourParam.PARAM_REV_A, communication.getRevenuA());
@@ -599,6 +601,8 @@ public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
                 libelleRevenu = getSession().getLabel("REVENU_ANNUEL");
                 libelleRevenuAutre = getSession().getLabel("REVENU_AUTRE");
             }
+            super.setParametres(CPIListeCommunicationRetourParam.LABEL_REVENU_RENTE_AVS,
+                    getSession().getLabel("DOCUMENT_0133CCP_REVENU_AVS"));
             super.setParametres(CPIListeCommunicationRetourParam.LABEL_REV_NA, libelleRevenu);
             super.setParametres(CPIListeCommunicationRetourParam.LABEL_REV_A, libelleRevenuAutre);
             super.setParametres(CPIListeCommunicationRetourParam.LABEL_REV_R, libelleRevenuRente);
