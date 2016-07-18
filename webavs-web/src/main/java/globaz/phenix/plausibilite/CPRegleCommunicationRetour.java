@@ -53,8 +53,6 @@ import globaz.phenix.db.principale.CPDonneesBase;
 import globaz.phenix.process.communications.plausibiliteImpl.CPGenericReglePlausibilite;
 import globaz.phenix.toolbox.CPToolBox;
 import globaz.phenix.util.CPUtil;
-import globaz.phenix.util.WIRRDataBean;
-import globaz.phenix.util.WIRRServiceCallUtil;
 import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.application.TIApplication;
@@ -4556,23 +4554,23 @@ public class CPRegleCommunicationRetour extends CPGenericReglePlausibilite {
         }
     }
 
-    public String isRenteWIRR(String niveauMsg, String idParam, String description) throws Exception {
-
-        WIRRDataBean wirrDataBean = new WIRRDataBean();
-
-        wirrDataBean.setNss(getSedexContribuable().getVn());
-
-        wirrDataBean = WIRRServiceCallUtil.searchRenteWIRR(wirrDataBean, WIRRServiceCallUtil.initService());
-
-        // TODO faut encore mettre le message dans le nouvel onglet
-        if (wirrDataBean.isHasRenteWIRRFounded()) {
-            ajouterErreur(idParam);
-            return niveauMsg;
-        }
-
-        return "";
-
-    }
+    // public String isRenteWIRR(String niveauMsg, String idParam, String description) throws Exception {
+    //
+    // WIRRDataBean wirrDataBean = new WIRRDataBean();
+    //
+    // wirrDataBean.setNss(getSedexContribuable().getVn());
+    //
+    // wirrDataBean = WIRRServiceCallUtil.searchRenteWIRR(wirrDataBean, WIRRServiceCallUtil.initService());
+    //
+    // // TODO faut encore mettre le message dans le nouvel onglet
+    // if (wirrDataBean.isHasRenteWIRRFounded()) {
+    // ajouterErreur(idParam);
+    // return niveauMsg;
+    // }
+    //
+    // return "";
+    //
+    // }
 
     public String isSedexConditionDeBase(String niveauMsg, String idParam, String description) throws Exception {
         AFAffiliation affiliation = null;
