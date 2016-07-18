@@ -22,6 +22,7 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import java.util.Comparator;
 import java.util.Set;
+import ch.globaz.common.util.prestations.MotifVersementUtil;
 import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
 
 /**
@@ -715,42 +716,30 @@ public class ARFModuleComptable implements Comparator {
     protected String getMotifVersement(BSession session, String nss, String nom, String prenom, String refPmt,
             boolean isAVS, boolean isAI, Set<String> datesPrestations) throws Exception {
 
-        String motifVersement = "";
-        if (refPmt != null) {
-            refPmt = refPmt.trim();
-        }
-        if (!JadeStringUtil.isBlankOrZero(refPmt)) {
-            motifVersement += " " + refPmt;
-        } else {
-            motifVersement += " " + nom + " " + prenom;
-        }
+        final String nomPrenom = nom + " " + prenom;
+        final StringBuilder genrePrestation = new StringBuilder();
 
         if (isAVS) {
-            motifVersement += " " + ARFModuleComptable.getLibelleRubrique(session, IPCPCAccordee.CS_TYPE_PC_SURVIVANT);
+            genrePrestation.append(ARFModuleComptable.getLibelleRubrique(session, IPCPCAccordee.CS_TYPE_PC_SURVIVANT));
         }
 
         if (isAI) {
-            if (isAVS) {
-                motifVersement += "/"
-                        + ARFModuleComptable.getLibelleRubrique(session, IPCPCAccordee.CS_TYPE_PC_INVALIDITE);
-            } else {
-                motifVersement += " "
-                        + ARFModuleComptable.getLibelleRubrique(session, IPCPCAccordee.CS_TYPE_PC_INVALIDITE);
-            }
+            genrePrestation.append(isAVS ? "/" : " ");
+            genrePrestation.append(ARFModuleComptable.getLibelleRubrique(session, IPCPCAccordee.CS_TYPE_PC_INVALIDITE));
         }
 
-        motifVersement += " - " + session.getLabel("PMT_MENS_DECISION_DU") + " ";
+        final StringBuilder msgDecision = new StringBuilder(session.getLabel("PMT_MENS_DECISION_DU")).append(" ");
         boolean premierPassage = true;
         for (String dateCourante : datesPrestations) {
-            if (premierPassage) {
-                motifVersement += dateCourante;
-                premierPassage = false;
-            } else {
-                motifVersement += "," + dateCourante;
+            if (!premierPassage) {
+                msgDecision.append(",");
             }
+            msgDecision.append(dateCourante);
+            premierPassage = false;
         }
 
-        return motifVersement;
+        return MotifVersementUtil.formatDecision(nss, nomPrenom, refPmt.trim(), genrePrestation.toString(), "",
+                msgDecision.toString());
     }
 
     /**

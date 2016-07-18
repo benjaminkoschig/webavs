@@ -47,6 +47,7 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import ch.globaz.common.util.prestations.MotifVersementUtil;
 import ch.globaz.corvus.domaine.Decision;
 import ch.globaz.corvus.domaine.RenteAccordee;
 import ch.globaz.pyxis.domaine.PersonneAVS;
@@ -1035,46 +1036,28 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
     protected String getMotifVersement(final BSession session, final String refPmt, final Decision decision)
             throws Exception {
 
-        StringBuilder motifVersement = new StringBuilder();
-
         PersonneAVS beneficiairePrincipal = decision.getBeneficiairePrincipal();
         RenteAccordee renteAccordeePrincipale = decision.getRenteAccordeePrincipale();
 
-        motifVersement.append(beneficiairePrincipal.getNss()).append(" ");
+        final String nss = beneficiairePrincipal.getNss().toString();
+        final String nomPrenom = beneficiairePrincipal.getNom() + " " + beneficiairePrincipal.getPrenom();
+        final String prestation = AREModuleComptable.getLibelleRubrique(session,
+                Integer.toString(renteAccordeePrincipale.getCodePrestation().getCodePrestation()));
+        final String periode = renteAccordeePrincipale.getMoisDebut() + " - " + renteAccordeePrincipale.getMoisFin();
+        final String msgDecision = session.getLabel("PMT_MENS_DECISION_DU") + " " + decision.getDateDecision();
 
-        String referencePourLePaiement = refPmt;
-        referencePourLePaiement = referencePourLePaiement.trim();
-
-        if (!JadeStringUtil.isBlankOrZero(referencePourLePaiement)) {
-            motifVersement.append(referencePourLePaiement);
-        } else {
-            motifVersement.append(beneficiairePrincipal.getNom()).append(" ").append(beneficiairePrincipal.getPrenom());
-        }
-
-        motifVersement.append(" ").append(
-                AREModuleComptable.getLibelleRubrique(session, ""
-                        + renteAccordeePrincipale.getCodePrestation().getCodePrestation()));
-        motifVersement.append(" - ").append(session.getLabel("PMT_MENS_DECISION_DU")).append(" ")
-                .append(decision.getDateDecision());
-
-        return motifVersement.toString();
+        return MotifVersementUtil.formatDecision(nss, nomPrenom, refPmt, prestation, periode, msgDecision);
     }
 
     protected String getMotifVersementDeblocage(final BSession session, final PRTiersWrapper tw, final String refPmt,
             final String genrePrestation) throws Exception {
 
-        String motifVersement = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-        if (!JadeStringUtil.isBlankOrZero(refPmt)) {
-            motifVersement += " " + refPmt;
-        } else {
-            motifVersement += " " + tw.getProperty(PRTiersWrapper.PROPERTY_NOM + " " + PRTiersWrapper.PROPERTY_PRENOM);
-        }
+        final String nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+        final String nomPrenom = tw.getProperty(PRTiersWrapper.PROPERTY_NOM + " " + PRTiersWrapper.PROPERTY_PRENOM);
+        final String prestation = AREModuleComptable.getLibelleRubrique(session, genrePrestation);
 
-        motifVersement += " " + AREModuleComptable.getLibelleRubrique(session, genrePrestation);
-
-        motifVersement += " - " + session.getLabel("DEBLOCAGE_VERSEMENT_DU");
-
-        return motifVersement;
+        return MotifVersementUtil.formatDeblocage(nss, nomPrenom, refPmt, prestation,
+                session.getLabel("DEBLOCAGE_VERSEMENT_DU"));
     }
 
     /**

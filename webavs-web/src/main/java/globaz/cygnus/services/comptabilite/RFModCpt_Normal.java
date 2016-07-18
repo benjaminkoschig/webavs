@@ -52,8 +52,6 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
 
     private BIMessageLog memoryLog = null;
 
-    // private RFPrestationData prestation = null;
-
     private BSession sessionOsiris = null;
     private BTransaction transaction = null;
 
@@ -178,7 +176,6 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
         BIMessage message = null;
         APIRubrique rubriqueDeppassementQd = null;
         boolean isSpas = isSpas(prestation);
-        // boolean isSash = this.isSash(prestation);
         String idTypeSoin = ov.getIdTypeSoin();
         String idSousTypeSoin = ov.getIdSousTypeSoin();
 
@@ -472,8 +469,8 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
             APICompteAnnexe compteAnnexe = compta.getCompteAnnexeByRole(idTiers, IntRole.ROLE_RENTIER, idExterneRole);
 
             if (compteAnnexe == null) {
-                memoryLog.logMessage(sessionOsiris.getLabel("ERREUR_CREATION_COMPTE_ANNEXE"), new Integer(
-                        JadeBusinessMessageLevels.ERROR).toString(),
+                memoryLog.logMessage(sessionOsiris.getLabel("ERREUR_CREATION_COMPTE_ANNEXE"),
+                        Integer.toString(JadeBusinessMessageLevels.ERROR),
                         "RFModCpt_Normal:compteAnnexeAndSectionNormaleBeneficiaire");
                 throw new Exception(sessionOsiris.getLabel("ERREUR_CREATION_COMPTE_ANNEXE"));
             }
@@ -484,8 +481,8 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
             return new Object[] { compteAnnexe, sectionNormale };
 
         } else {
-            memoryLog.logMessage(sessionOsiris.getLabel("ERREUR_CREATION_COMPTE_ANNEXE"), new Integer(
-                    JadeBusinessMessageLevels.ERROR).toString(),
+            memoryLog.logMessage(sessionOsiris.getLabel("ERREUR_CREATION_COMPTE_ANNEXE"),
+                    Integer.toString(JadeBusinessMessageLevels.ERROR),
                     "RFModCpt_Normal:compteAnnexeAndSectionNormaleBeneficiaire");
             throw new Exception(sessionOsiris.getLabel("ERREUR_CREATION_COMPTE_ANNEXE"));
         }
@@ -506,8 +503,8 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
             APICompteAnnexe compteAnnexe = compta.getCompteAnnexeByRole(idTiers, IntRole.ROLE_RENTIER, idExterneRole);
 
             if (compteAnnexe == null) {
-                memoryLog.logMessage(sessionOsiris.getLabel("ERREUR_CREATION_COMPTE_ANNEXE"), new Integer(
-                        JadeBusinessMessageLevels.ERROR).toString(),
+                memoryLog.logMessage(sessionOsiris.getLabel("ERREUR_CREATION_COMPTE_ANNEXE"),
+                        Integer.toString(JadeBusinessMessageLevels.ERROR),
                         "RFModCpt_Normal:compteAnnexeAndSectionRestitution");
                 throw new Exception(sessionOsiris.getLabel("ERREUR_CREATION_COMPTE_ANNEXE"));
             }
@@ -518,8 +515,9 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
             return new Object[] { compteAnnexe, sectionNormale };
 
         } else {
-            memoryLog.logMessage(sessionOsiris.getLabel("ERREUR_CREATION_COMPTE_ANNEXE"), new Integer(
-                    JadeBusinessMessageLevels.ERROR).toString(), "RFModCpt_Normal:compteAnnexeAndSectionRestitution");
+            memoryLog.logMessage(sessionOsiris.getLabel("ERREUR_CREATION_COMPTE_ANNEXE"),
+                    Integer.toString(JadeBusinessMessageLevels.ERROR),
+                    "RFModCpt_Normal:compteAnnexeAndSectionRestitution");
             throw new Exception(sessionOsiris.getLabel("ERREUR_CREATION_COMPTE_ANNEXE"));
         }
     }
@@ -544,7 +542,6 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
         String idDomaineApplication = "";
         String idPrestationGroupees = "";
         String idTiersBeneficiairePrincipal = "";
-        // String typeDeSoin = "";
         boolean isBeneficiarePrincipalInitialise = false;
         boolean isAVS = false;
         boolean isAI = false;
@@ -598,7 +595,6 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
                         idTiersBeneficiairePrincipal = ov.getIdTiers();
                         idDomaineApplication = ov.getIdDomaineApplication();
                         isBeneficiarePrincipalInitialise = true;
-                        // typeDeSoin = ov.getIdTypeSoin();
                     }
 
                 } else if (ov.getTypeOrdreVersement().equals(IRFOrdresVersements.CS_TYPE_RESTITUTION)) {
@@ -651,8 +647,8 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
                         sectionNormale = (APISection) compteAnnexeSectionNormaleObj[1];
 
                         if (compteAnnexe == null) {
-                            memoryLog.logMessage(sessionOsiris.getLabel("ERREUR_CREATION_COMPTE_ANNEXE"), new Integer(
-                                    JadeBusinessMessageLevels.ERROR).toString(),
+                            memoryLog.logMessage(sessionOsiris.getLabel("ERREUR_CREATION_COMPTE_ANNEXE"),
+                                    Integer.toString(JadeBusinessMessageLevels.ERROR),
                                     "RFModCpt_Normal:compteAnnexeAndSectionNormaleBeneficiaire");
                             throw new Exception(sessionOsiris.getLabel("ERREUR_CREATION_COMPTE_ANNEXE"));
                         }
@@ -696,11 +692,7 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
                                 : sectionDette.getIdSection(), "", false, ov, prestationCourante));
 
                     }
-
-                    // System.out.println("this.sectionNormale.getIdSection(): " + sectionNormale.getIdSection()+
-                    // " idPrestation: " + prestationCourante.getIdPrestation() + "\n");
                 }
-
             }
         }
 
@@ -744,8 +736,9 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
 
         if (JadeStringUtil.isBlankOrZero(ordreVersement.getIdTiers())) {
             memoryLog.logMessage(sessionOsiris.getLabel("PROCESS_VALIDER_DECISION_BENEFICIAIRE_NON_TROUVE")
-                    + "idOrdreVersement=" + ordreVersement.getIdOrdreVersement(), new Integer(
-                    JadeBusinessMessageLevels.ERROR).toString(), "RFModCpt_Normal::getIdTiersBeneficiairePrincipal");
+                    + "idOrdreVersement=" + ordreVersement.getIdOrdreVersement(),
+                    Integer.toString(JadeBusinessMessageLevels.ERROR),
+                    "RFModCpt_Normal::getIdTiersBeneficiairePrincipal");
             throw new Exception("Aucun bénéficiaire principal trouvé dans les OV pour idOrdreVersement = "
                     + ordreVersement.getIdOrdreVersement());
         } else {
@@ -757,8 +750,8 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
     protected String getIdTiersCaisse(RFOrdreVersementData ordreVersement, BTransaction transaction) throws Exception {
         if (JadeStringUtil.isBlankOrZero(ordreVersement.getIdTiers())) {
             memoryLog.logMessage(sessionOsiris.getLabel("PROCESS_VALIDER_DECISION_CAISSE_NON_TROUVE")
-                    + "idOrdreVersement=" + ordreVersement.getIdOrdreVersement(), new Integer(
-                    JadeBusinessMessageLevels.ERROR).toString(), "RFModCpt_Normal::getIdTiersCaisse");
+                    + "idOrdreVersement=" + ordreVersement.getIdOrdreVersement(),
+                    Integer.toString(JadeBusinessMessageLevels.ERROR), "RFModCpt_Normal::getIdTiersCaisse");
             throw new Exception("Aucune caisse trouvé dans les OV pour idOrdreVersement = "
                     + ordreVersement.getIdOrdreVersement());
         } else {
@@ -812,11 +805,6 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
         return montantTotalOvNonCompenseBigDec.compareTo(new BigDecimal("0")) == -1;
     }
 
-    /*
-     * private boolean isSash(RFPrestationData prestation) { return
-     * prestation.getRemboursementRequerant().equals(IRFQd.CS_TYPE_REMBOURSEMENT_SASH); }
-     */
-
     private boolean isSpas(RFPrestationData prestation) {
         return prestation.getRemboursementRequerant().equals(IRFQd.CS_TYPE_REMBOURSEMENT_SPAS);
     }
@@ -834,7 +822,6 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
         String motifVersement = getMotifVersement(session, nss, nom, prenom, refPmt, isAVS, isAI, datesPrestations);
         TIAdressePaiementData adrPaiementData = loadAdressePaiement(session, transaction, dateComptable,
                 idTiersAdressePaiement, idDomaineApplication);
-        // adresse already checked in RFComptabiliserDecisionService.lancerComptabilisation
         if (isLotAVASAD) {
             String logSource = this.getClass().getName() + " - preparerOrdreVersement";
             rfmLogger.logInfoToDB("idAdressePaiement: " + adrPaiementData.getIdAdressePaiement(), logSource);

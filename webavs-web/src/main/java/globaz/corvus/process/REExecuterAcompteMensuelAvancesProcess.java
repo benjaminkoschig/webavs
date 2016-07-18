@@ -32,6 +32,7 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRSession;
+import ch.globaz.common.util.prestations.MotifVersementUtil;
 
 /**
  * 
@@ -309,7 +310,7 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
     private void dealPaiementAvances() throws Exception {
 
         JACalendar cal = new JACalendarGregorian();
-        String dateValeurComptable = getDateEcheancePaiement();// this.getDateValeurComptable(this.getSession(), cal);
+        String dateValeurComptable = getDateEcheancePaiement();
 
         for (Object oAvance : manager.getContainer()) {
 
@@ -339,15 +340,18 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
         // Création de l'ov
         PRTiersWrapper tw = PRTiersHelper.getTiersParId(getSession(), avance.getIdTiersBeneficiaire());
 
-        // Constrcution description OV
-        String ovDesc = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + " "
-                + getOvDescriptionForDomaine(avance.getCsDomaineAvance());
+        final String nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+        final String nomPrenom = tw.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
+                + tw.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
+        final String msgAvance = getOvDescriptionForDomaine(avance.getCsDomaineAvance());
+
+        final String motifVersement = MotifVersementUtil.formatAvance(nss, nomPrenom, msgAvance);
 
         // paiement des avances
         getMemoryLog().logMessage(
                 REModuleComptablePmtAvance.getInstance(sessionOsiris).payerAvance(this, getSession(), transaction,
                         compta, avance.getIdTiersBeneficiaire(), avance.getIdTiersAdrPmt(), avance.getCsDomaine(),
-                        new FWCurrency(avance.getMontantMensuel()), ovDesc, dateValeurComptable,
+                        new FWCurrency(avance.getMontantMensuel()), motifVersement, dateValeurComptable,
                         avance.getCsDomaineAvance()));
 
     }

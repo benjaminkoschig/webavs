@@ -27,6 +27,7 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRSession;
 import globaz.prestation.tools.PRStringUtils;
+import ch.globaz.common.util.prestations.MotifVersementUtil;
 
 /**
  * 
@@ -70,7 +71,6 @@ public class REExecuter1erAcompteAvancesProcess extends BProcess {
             // non annulé
             REAvanceManager mgr = new REAvanceManager();
             mgr.setSession(getSession());
-            // mgr.setForCsEtat1erAcomptesDifferentDe(IREAvances.CS_ETAT_1ER_ACOMPTE_TERMINE);
             String inCsEtatDifferentDe = IREAvances.CS_ETAT_1ER_ACOMPTE_TERMINE + ","
                     + IREAvances.CS_ETAT_1ER_ACOMPTE_ANNULE;
             mgr.setForCsEtat1erAcomptesDifferentDeIn(inCsEtatDifferentDe);
@@ -99,30 +99,18 @@ public class REExecuter1erAcompteAvancesProcess extends BProcess {
 
                 PRTiersWrapper tw = PRTiersHelper.getTiersParId(getSession(), avance.getIdTiersBeneficiaire());
 
-                // Création de l'ov !!!
-                // this.getMemoryLog().logMessage(
-                // REModuleComptablePmtAvance.getInstance(sessionOsiris).payerAvance(
-                // this,
-                // this.getSession(),
-                // (BTransaction) transaction,
-                // compta,
-                // avance.getIdTiersBeneficiaire(),
-                // avance.getIdTiersAdrPmt(),
-                // avance.getCsDomaine(),
-                // new FWCurrency(avance.getMontant1erAcompte()),
-                // tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + " "
-                // + this.getSession().getLabel("AVANCE_RENTE"), dateValeurComptable,
-                // this.csDomaineApplicatif));
+                final String nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+                final String nomPrenom = tw.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
+                        + tw.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
+                final String msgAvance = getOvDescriptionForDomaine(avance.getCsDomaineAvance());
 
-                // Constrcution desc OV
-                String ovDesc = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + " "
-                        + getOvDescriptionForDomaine(avance.getCsDomaineAvance());
+                final String motifVersement = MotifVersementUtil.formatAvance(nss, nomPrenom, msgAvance);
 
                 getMemoryLog().logMessage(
                         REModuleComptablePmtAvance.getInstance(sessionOsiris).payerAvance(this, getSession(),
                                 (BTransaction) transaction, compta, avance.getIdTiersBeneficiaire(),
                                 avance.getIdTiersAdrPmt(), avance.getCsDomaine(),
-                                new FWCurrency(avance.getMontant1erAcompte()), ovDesc, dateValeurComptable,
+                                new FWCurrency(avance.getMontant1erAcompte()), motifVersement, dateValeurComptable,
                                 avance.getCsDomaineAvance()));
             }
 
@@ -344,10 +332,9 @@ public class REExecuter1erAcompteAvancesProcess extends BProcess {
 
     private APIGestionComptabiliteExterne initCompta(BProcess process, BSession sessionOsiris,
             BTransaction transaction, JACalendar cal) throws Exception {
-        APIGestionComptabiliteExterne compta = null;
-
         // instanciation du processus de compta
-        compta = (APIGestionComptabiliteExterne) sessionOsiris.getAPIFor(APIGestionComptabiliteExterne.class);
+        APIGestionComptabiliteExterne compta = (APIGestionComptabiliteExterne) sessionOsiris
+                .getAPIFor(APIGestionComptabiliteExterne.class);
         String dateValeurComptable = getDateValeurComptable(getSession(), cal);
         compta.setDateValeur(dateValeurComptable);
         compta.setEMailAddress(process.getEMailAddress());
