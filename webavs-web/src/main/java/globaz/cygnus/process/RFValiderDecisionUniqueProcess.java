@@ -17,9 +17,6 @@ import ch.globaz.topaz.datajuicer.DocumentData;
  */
 public class RFValiderDecisionUniqueProcess extends AbstractJadeJob {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     private String dateSurDocument = "";
     private DocumentData docData = new DocumentData();
@@ -31,30 +28,12 @@ public class RFValiderDecisionUniqueProcess extends AbstractJadeJob {
     private String numeroDecision = "";
     private StringBuffer pdfDecisionURL = new StringBuffer("null");
 
-    /*
-     * private JadePublishDocumentInfo createDocInfoDecompte() {
-     * 
-     * JadePublishDocumentInfo documentInfo = JadePublishDocumentInfoProvider.newInstance(this);
-     * documentInfo.setOwnerEmail(this.getEmailAdresse());
-     * documentInfo.setPublishProperty(JadePublishDocumentInfo.MAIL_TO, this.getEmailAdresse());
-     * documentInfo.setDocumentTitle(this.getSession().getLabel("PROCESS_SIMULER_VALIDATION_DECISION"));
-     * documentInfo.setArchiveDocument(false); documentInfo.setPublishDocument(false);
-     * documentInfo.setDocumentSubject(this.getSession().getLabel("PROCESS_SIMULER_VALIDATION_DECISION"));
-     * 
-     * return documentInfo; }
-     */
-
-    /*
-     * private String getBodyMail() { return this.getSession().getLabel("MAIL_RF_VALIDER_PIECE_JOINTE"); }
-     */
-
     public String getDateSurDocument() {
         return dateSurDocument;
     }
 
     @Override
     public String getDescription() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -84,21 +63,12 @@ public class RFValiderDecisionUniqueProcess extends AbstractJadeJob {
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public String getNumeroDecision() {
         return numeroDecision;
     }
-
-    /*
-     * private String getObjetMail() {
-     * 
-     * if (this.getMemoryLog().hasErrors()) { return this.getSession().getLabel("PROCESS_VALIDER_DECISIONS_FAILED"); }
-     * else { return this.getSession().getLabel("MAIL_RF_VALIDER_SUCCESSFUL_DEBUT") + " " + this.getNumeroDecision() +
-     * " " + this.getSession().getLabel("MAIL_RF_VALIDER_SUCCESSFUL_FIN"); } }
-     */
 
     public StringBuffer getPdfDecisionURL() {
         return pdfDecisionURL;
