@@ -32,6 +32,7 @@ import globaz.osiris.externe.CAGestionComptabiliteExterne;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Iterator;
+import ch.globaz.common.util.prestations.MotifVersementUtil;
 
 /**
  * Insérez la description du type ici. Date de création : (25.02.2002 13:41:13)
@@ -334,30 +335,31 @@ public class CAProcessComptabiliserRetours extends BProcess {
                                 ordreVersement.setNatureOrdre(retour.getCsNatureOrdre());
                             }
 
-                            String motif = "";
+                            String nss = "";
                             // pour les rentes on ajoute le NSS
                             if (CAOrdreGroupe.NATURE_RENTES_AVS_AI.equals(ordreVersement.getNatureOrdre())) {
                                 CACompteAnnexe ca = retour.getCompteAnnexe();
-                                motif = ca.getIdExterneRole() + " ";
+                                nss = ca.getIdExterneRole();
                             }
-                            motif = motif + getSession().getCodeLibelle(retour.getCsMotifRetour());
+                            String motifTexte = getSession().getCodeLibelle(retour.getCsMotifRetour());
                             if (!JadeStringUtil.isEmpty(retour.getLibelleRetour())) {
-                                motif += " - " + retour.getLibelleRetour();
+                                motifTexte += " - " + retour.getLibelleRetour();
                             }
+                            String nomPrenom = "";
+                            // TODO pending de la jira WEBAVS-1740
 
+                            String motif = MotifVersementUtil.formatRetour(nss, nomPrenom, motifTexte);
                             // tester motif vide. Bug 5780
                             if (!JadeStringUtil.isBlank(motif)) {
-                                ordreVersement.setMotif(JadeStringUtil.substring(motif, 0, 80));
+                                ordreVersement.setMotif(motif);
                             }
 
-                            getMemoryLog()
-                                    .logMessage(
-                                            MessageFormat
-                                                    .format(getSession().getLabel("INFO_PROCESS_COMPTABILISATION_OV"),
-                                                            new Object[] {
-                                                                    lir.getMontant().toString(),
-                                                                    lir.getIdAvoirPaiementUniqueLigneRetourSurAdressePaiementAdresse() }),
-                                            FWMessage.INFORMATION, this.getClass().getName());
+                            getMemoryLog().logMessage(
+                                    MessageFormat.format(
+                                            getSession().getLabel("INFO_PROCESS_COMPTABILISATION_OV"),
+                                            new Object[] { lir.getMontant().toString(),
+                                                    ordreVersement.getIdAdressePaiement() }), FWMessage.INFORMATION,
+                                    this.getClass().getName());
 
                             comptaBis.addOperation(ordreVersement);
 

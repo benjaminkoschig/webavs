@@ -13,7 +13,7 @@ class GenerateOvBeneficiaire {
 
     private void generateForConjoint(final MontantDispo montantDispo, final PrestationOvDecompte decompte) {
         if (montantDispo.hasMontantDispoConjont()) {
-            String refPaiement = decompte.formatDecision();
+            String motifVersement = decompte.formatDecision();
             // decompte.getNssConjoint() + " " + decompte.getNomConjoint() + " "
             // + decompte.getPrenomConjoint() + " PC " + decompte.getDateDebut() + " - " + decompte.getDateFin()
             // + " " + BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_DECISION_DU")
@@ -23,7 +23,7 @@ class GenerateOvBeneficiaire {
                         decompte.getIdTiersAddressePaiementConjoint(), decompte.getIdDomaineApplicationConjoint(),
                         montantDispo.getDom2RConjoint(), SectionPegasus.DECISION_PC, decompte.getIdTiersConjoint(),
                         IREOrdresVersements.CS_TYPE_BENEFICIAIRE_PRINCIPAL, IPCDroits.CS_ROLE_FAMILLE_CONJOINT,
-                        refPaiement);
+                        motifVersement);
 
             }
             if (montantDispo.hasMontantStandardDisoConjoint()) {
@@ -31,7 +31,7 @@ class GenerateOvBeneficiaire {
                         decompte.getIdTiersAddressePaiementConjoint(), decompte.getIdDomaineApplicationConjoint(),
                         montantDispo.getStandarConjoint(), SectionPegasus.DECISION_PC, decompte.getIdTiersConjoint(),
                         IREOrdresVersements.CS_TYPE_BENEFICIAIRE_PRINCIPAL, IPCDroits.CS_ROLE_FAMILLE_CONJOINT,
-                        refPaiement);
+                        motifVersement);
             }
         }
     }
@@ -52,7 +52,7 @@ class GenerateOvBeneficiaire {
     private void generateRequerant(final MontantDispo montantDispo, final PrestationOvDecompte decompte) {
 
         if (montantDispo.hasMontantDispoRequerant()) {
-            String refPaiement = decompte.formatDecision();
+            String motifVersement = decompte.formatDecision();
             // decompte.getNssRequerant() + " " + decompte.getNomRequerant() + " "
             // + decompte.getPrenomRequerant() + " "
             // + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001") + " "
@@ -64,7 +64,7 @@ class GenerateOvBeneficiaire {
                         decompte.getIdTiersAddressePaiementRequerant(), decompte.getIdDomaineApplicationRequerant(),
                         montantDispo.getDom2RRequerant(), SectionPegasus.DECISION_PC, decompte.getIdTiersRequerant(),
                         IREOrdresVersements.CS_TYPE_BENEFICIAIRE_PRINCIPAL, IPCDroits.CS_ROLE_FAMILLE_REQUERANT,
-                        refPaiement);
+                        motifVersement);
             }
             if (montantDispo.hasMontantStandardDispoRequerant()) {
 
@@ -72,7 +72,7 @@ class GenerateOvBeneficiaire {
                         decompte.getIdTiersAddressePaiementRequerant(), decompte.getIdDomaineApplicationRequerant(),
                         montantDispo.getStandardRequerant(), SectionPegasus.DECISION_PC,
                         decompte.getIdTiersRequerant(), IREOrdresVersements.CS_TYPE_BENEFICIAIRE_PRINCIPAL,
-                        IPCDroits.CS_ROLE_FAMILLE_REQUERANT, refPaiement);
+                        IPCDroits.CS_ROLE_FAMILLE_REQUERANT, motifVersement);
 
             }
         }

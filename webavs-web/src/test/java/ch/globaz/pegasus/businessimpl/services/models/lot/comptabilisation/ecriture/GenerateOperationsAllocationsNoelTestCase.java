@@ -24,7 +24,8 @@ public class GenerateOperationsAllocationsNoelTestCase {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        doReturn("Mock RefPaiement").when(allocationsNoelMock).concatRefPaiement(any(InfosTiers.class));
+        doReturn("Mock RefPaiement").when(allocationsNoelMock).concatRefPaiement(any(InfosTiers.class),
+                any(String.class), any(String.class), any(String.class));
     }
 
     @BeforeClass
@@ -36,7 +37,7 @@ public class GenerateOperationsAllocationsNoelTestCase {
             throws JadeApplicationException {
 
         allocationsNoel.generateAllOperation(ovs, CompteAnnexeFactory.getInfosRequerant(),
-                CompteAnnexeFactory.getInfosConjoint());
+                CompteAnnexeFactory.getInfosConjoint(), "strPeriode", "strDecision");
     }
 
     private List<OrdreVersement> generateList() {

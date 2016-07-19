@@ -1,5 +1,6 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecriture;
 
+import globaz.globall.db.BSessionUtil;
 import globaz.jade.exception.JadeApplicationException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -79,9 +80,13 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
     private void generateOperationAllocationNoel(String dateForOv, PrestationOvDecompte decompte)
             throws JadeApplicationException {
         if (decompte.getAllocationsNoel().size() > 0) {
+            String strPeriode = decompte.getDateDebut() + " - " + decompte.getDateFin();
+            String strDecision = BSessionUtil.getSessionFromThreadContext().getLabel(
+                    "PEGASUS_COMPTABILISATION_DECISION_DU")
+                    + " " + decompte.getDateDecision();
             GenerateOperationsAllocationsNoel allocationsNoel = new GenerateOperationsAllocationsNoel();
             allocationsNoel.generateAllOperation(decompte.getAllocationsNoel(), decompte.getInfosRequerant(),
-                    decompte.getInfosConjoint());
+                    decompte.getInfosConjoint(), strPeriode, strDecision);
             operations.addAllEcritures(allocationsNoel.getEcritures());
             operations.addAllOVs(allocationsNoel.getOrdreVersementCompta());
         }

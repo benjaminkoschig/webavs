@@ -2,7 +2,6 @@ package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecri
 
 import globaz.corvus.api.ordresversements.IREOrdresVersements;
 import globaz.globall.db.BSessionUtil;
-import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.osiris.api.APIEcriture;
@@ -10,6 +9,7 @@ import globaz.osiris.api.APIReferenceRubrique;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import ch.globaz.common.util.prestations.MotifVersementUtil;
 import ch.globaz.osiris.business.model.CompteAnnexeSimpleModel;
 import ch.globaz.osiris.business.model.SectionSimpleModel;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
@@ -80,7 +80,7 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
                             + ov.getSimpleOrdreVersement().getIdTiers());
                 }
 
-                String refPaiement = formatDeblocage(ov, dateEcheance);
+                String motifVersement = formatDeblocage(ov, dateEcheance);
 
                 // versement beneficiaire --> ecriture au credit
                 if (csTypeOv.equals(IREOrdresVersements.CS_TYPE_BENEFICIAIRE_PRINCIPAL)) {
@@ -89,7 +89,8 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
                             .getIdTiersAdressePaiement(), ov.getSimpleOrdreVersement().getIdDomaineApplication(),
                             new BigDecimal(ov.getSimpleOrdreVersement().getMontant()), sectionBlocage, ov
                                     .getIdTiersRequerant(), csTypeOv, GenerateOperationsBlocage.getCsRoleFamille(
-                                    ov.getIdTiersRequerant(), ov.getSimpleOrdreVersement().getIdTiers()), refPaiement));
+                                    ov.getIdTiersRequerant(), ov.getSimpleOrdreVersement().getIdTiers()),
+                            motifVersement));
 
                 }
                 // creancier ecriture au credit
@@ -100,7 +101,7 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
                             new BigDecimal(ov.getSimpleOrdreVersement().getMontant()), sectionBlocage, ov
                                     .getSimpleOrdreVersement().getIdTiers(), csTypeOv, GenerateOperationsBlocage
                                     .getCsRoleFamille(ov.getIdTiersRequerant(), ov.getSimpleOrdreVersement()
-                                            .getIdTiers()), refPaiement));
+                                            .getIdTiers()), motifVersement));
 
                 }
                 // dette ecriture au credit, ecriture au debit
@@ -117,12 +118,12 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
                             APIReferenceRubrique.COMPENSATION_RENTES, new BigDecimal(ov.getSimpleOrdreVersement()
                                     .getMontant()), sectionBlocage, sectionBlocage.getIdCompteAnnexe(),
                             TypeEcriture.DETTE, GenerateOperationsBlocage.generateOv(ov.getSimpleOrdreVersement(),
-                                    refPaiement)));
+                                    motifVersement)));
 
                     ecritures.add(this.generateEcriture(null, APIEcriture.CREDIT,
                             APIReferenceRubrique.COMPENSATION_RENTES, new BigDecimal(ov.getSimpleOrdreVersement()
                                     .getMontant()), sectionDette, sectionDette.getIdCompteAnnexe(), TypeEcriture.DETTE,
-                            GenerateOperationsBlocage.generateOv(ov.getSimpleOrdreVersement(), refPaiement)));
+                            GenerateOperationsBlocage.generateOv(ov.getSimpleOrdreVersement(), motifVersement)));
 
                 }
 
@@ -140,15 +141,11 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
     }
 
     String formatDeblocage(OrdreVersementForList ov, String dateEcheance) {
-        String refPaiementOv = "";
-        if (!JadeStringUtil.isBlankOrZero(ov.getSimpleOrdreVersement().getRefPaiement())) {
-            refPaiementOv = ov.getSimpleOrdreVersement().getRefPaiement() + " ";
-        }
-
-        return ov.getNumAvs() + " " + ov.getDesignationRequerant1() + " " + ov.getDesignationRequerant2() + " "
-                + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001") + " " + refPaiementOv
-                + BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_VERSEMENT_DU") + " "
-                + dateEcheance;
+        return MotifVersementUtil.formatDeblocage(ov.getNumAvs(),
+                ov.getDesignationRequerant1() + " " + ov.getDesignationRequerant2(), ov.getSimpleOrdreVersement()
+                        .getRefPaiement(), BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001"),
+                BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_VERSEMENT_DU") + " "
+                        + dateEcheance);
     }
 
     private SectionSimpleModel getSectionObjectFromList(String idSection, List<SectionSimpleModel> sectionsDette) {

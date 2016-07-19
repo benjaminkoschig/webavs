@@ -6,6 +6,7 @@ import globaz.osiris.external.IntRole;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import ch.globaz.common.util.prestations.MotifVersementUtil;
 import ch.globaz.osiris.business.model.CompteAnnexeSimpleModel;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.exceptions.models.lot.ComptabiliserLotException;
@@ -15,22 +16,22 @@ class GenerateOperationsAllocationsNoel extends GenerateOperationBasic {
     List<Ecriture> ecritures = new ArrayList<Ecriture>();
     List<OrdreVersementCompta> ordreVersementCompta = new ArrayList<OrdreVersementCompta>();
 
-    public void generateAllOperation(List<OrdreVersement> ovs, InfosTiers infosRequerant, InfosTiers infosConjoint)
-            throws JadeApplicationException {
+    public void generateAllOperation(List<OrdreVersement> ovs, InfosTiers infosRequerant, InfosTiers infosConjoint,
+            String strPeriode, String strDecision) throws JadeApplicationException {
 
         for (OrdreVersement ov : ovs) {
             if (ov.isDom2R()) {
                 BigDecimal montant = ov.getMontant().divide(new BigDecimal(2));
-                generateOperations(infosRequerant, ov, montant);
-                generateOperations(infosConjoint, ov, montant);
+                generateOperations(infosRequerant, ov, montant, strPeriode, strDecision);
+                generateOperations(infosConjoint, ov, montant, strPeriode, strDecision);
             } else {
-                generateOperations(infosRequerant, ov, ov.getMontant());
+                generateOperations(infosRequerant, ov, ov.getMontant(), strPeriode, strDecision);
             }
         }
     }
 
-    private void generateOperations(InfosTiers infosTiers, OrdreVersement ov, BigDecimal montant)
-            throws ComptabiliserLotException, JadeApplicationException {
+    private void generateOperations(InfosTiers infosTiers, OrdreVersement ov, BigDecimal montant, String strPeriode,
+            String strDecision) throws ComptabiliserLotException, JadeApplicationException {
         CompteAnnexeSimpleModel compteAnnexe = resolvedCompteAnnexe(ov);
 
         String csRoleFamille = resolveCsRoleFamille(infosTiers.getIdTiers(), ov);
@@ -38,16 +39,17 @@ class GenerateOperationsAllocationsNoel extends GenerateOperationBasic {
         ecritures.add(generateEcritureCredit(SectionPegasus.DECISION_PC, montant, compteAnnexe.getIdCompteAnnexe(),
                 TypeEcriture.ALLOCATION_NOEL, ov));
 
-        String refPaiement = concatRefPaiement(infosTiers);
+        String motifVersement = concatRefPaiement(infosTiers, ov.getRefPaiement(), strPeriode, strDecision);
 
         ordreVersementCompta.add(new OrdreVersementCompta(compteAnnexe, infosTiers.getIdTiersAddressePaiement(),
                 infosTiers.getIdDomaineApplication(), montant, SectionPegasus.DECISION_PC, infosTiers.getIdTiers(), ov
-                        .getCsType(), csRoleFamille, refPaiement));
+                        .getCsType(), csRoleFamille, motifVersement));
     }
 
-    String concatRefPaiement(InfosTiers infosTiers) {
-        return infosTiers.getNss() + " " + infosTiers.getNom() + " " + infosTiers.getPrenom() + " "
-                + BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001");
+    String concatRefPaiement(InfosTiers infosTiers, String refPaiement, String strPeriode, String strDecision) {
+        return MotifVersementUtil.formatDecision(infosTiers.getNss(),
+                infosTiers.getNom() + " " + infosTiers.getPrenom(), refPaiement, BSessionUtil
+                        .getSessionFromThreadContext().getCodeLibelle("64055001"), strPeriode, strDecision);
     }
 
     public List<Ecriture> getEcritures() {
