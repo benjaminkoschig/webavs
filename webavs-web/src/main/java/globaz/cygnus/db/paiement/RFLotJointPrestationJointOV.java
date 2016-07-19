@@ -11,15 +11,36 @@ import globaz.globall.db.BStatement;
  */
 public class RFLotJointPrestationJointOV extends RFPrestation {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
 
     public static final String FIELDNAME_NOM = "HTLDE1";
-
     public static final String FIELDNAME_NUM_AVS = "HXNAVS";
     public static final String FIELDNAME_PRENOM = "HTLDE2";
+
+    private String csRole = "";
+    private transient String fromClause = null;
+    private String idDomaineApplication = "";
+    private String idExterne = "";
+    private String idLot = "";
+    private String idOrdreVersement = "";
+    private String idPrestation = "";
+    private String idRole = "";
+    private String idSectionOrdreVersement = "";
+    private String idSousTypeDeSoin = "";
+    private String idTiers = "";
+    private String idTiersAdressePaiement = "";
+    private String idTypeDeSoin = "";
+    private Boolean isCompense = Boolean.FALSE;
+    private Boolean isForcerPayement = Boolean.FALSE;
+    private Boolean isImportation = Boolean.FALSE;
+    private String montantDepassementQD = "";
+    private String montantOrdreVersement = "";
+    private String nom = "";
+    private String nss = "";
+    private String numeroFacture = "";
+    private String prenom = "";
+    private String typeVersement = "";
+    private String refPaiement = "";
 
     /**
      * Génération de la clause from pour la requête > Jointure depuis les dossiers jusque dans les tiers (Nom et AVS)
@@ -85,22 +106,6 @@ public class RFLotJointPrestationJointOV extends RFPrestation {
         fromClauseBuffer.append(point);
         fromClauseBuffer.append(RFPrestation.FIELDNAME_ID_PRESTATION);
 
-        // ////////////
-        // // jointure entre la table des prestations et la table des decisions
-        // fromClauseBuffer.append(leftJoin);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(RFDecision.TABLE_NAME);
-        // fromClauseBuffer.append(on);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(RFDecision.TABLE_NAME);
-        // fromClauseBuffer.append(point);
-        // fromClauseBuffer.append(RFDecision.FIELDNAME_ID_DECISION);
-        // fromClauseBuffer.append(egal);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(RFPrestation.TABLE_NAME_PREST);
-        // fromClauseBuffer.append(point);
-        // fromClauseBuffer.append(RFPrestation.FIELDNAME_ID_DECISION);
-
         // jointure entre la table OV (prestation) et la table des personnes
         fromClauseBuffer.append(innerJoin);
         fromClauseBuffer.append(schema);
@@ -115,66 +120,6 @@ public class RFLotJointPrestationJointOV extends RFPrestation {
         fromClauseBuffer.append(RFOrdresVersements.TABLE_NAME_ORVER);
         fromClauseBuffer.append(point);
         fromClauseBuffer.append(RFOrdresVersements.FIELDNAME_ID_TIERS);
-
-        // // jointure entre la table des décisions et la table association dossiers-décisions
-        // fromClauseBuffer.append(leftJoin);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(RFAssDossierDecision.TABLE_NAME);
-        // fromClauseBuffer.append(on);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(RFAssDossierDecision.TABLE_NAME);
-        // fromClauseBuffer.append(point);
-        // fromClauseBuffer.append(RFAssDossierDecision.FIELDNAME_ID_DECISION);
-        // fromClauseBuffer.append(egal);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(RFDecision.TABLE_NAME);
-        // fromClauseBuffer.append(point);
-        // fromClauseBuffer.append(RFDecision.FIELDNAME_ID_DECISION);
-        //
-        // // jointure entre la table association dossiers-décisions et la table dossiers
-        // fromClauseBuffer.append(leftJoin);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(RFDossier.TABLE_NAME);
-        // fromClauseBuffer.append(on);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(RFDossier.TABLE_NAME);
-        // fromClauseBuffer.append(point);
-        // fromClauseBuffer.append(RFDossier.FIELDNAME_ID_DOSSIER);
-        // fromClauseBuffer.append(egal);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(RFAssDossierDecision.TABLE_NAME);
-        // fromClauseBuffer.append(point);
-        // fromClauseBuffer.append(RFAssDossierDecision.FIELDNAME_ID_DOSSIER);
-        //
-        // // jointure entre la table des dossiers et la table des demandes prestation
-        // fromClauseBuffer.append(leftJoin);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(PRDemande.TABLE_NAME);
-        // fromClauseBuffer.append(on);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(PRDemande.TABLE_NAME);
-        // fromClauseBuffer.append(point);
-        // fromClauseBuffer.append(PRDemande.FIELDNAME_IDDEMANDE);
-        // fromClauseBuffer.append(egal);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(RFDossier.TABLE_NAME);
-        // fromClauseBuffer.append(point);
-        // fromClauseBuffer.append(RFDossier.FIELDNAME_ID_PRDEM);
-        //
-        // // jointure entre la table des demandes et la table des numeros AVS
-        // fromClauseBuffer.append(leftJoin);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(RFDecisionJointDemandeJointMotifRefusJointTiersValidation.TABLE_AVS);
-        // fromClauseBuffer.append(on);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(PRDemande.TABLE_NAME);
-        // fromClauseBuffer.append(point);
-        // fromClauseBuffer.append(PRDemande.FIELDNAME_IDTIERS);
-        // fromClauseBuffer.append(egal);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(RFDecisionJointDemandeJointMotifRefusJointTiersValidation.TABLE_AVS);
-        // fromClauseBuffer.append(point);
-        // fromClauseBuffer.append(RFDecisionJointDemandeJointMotifRefusJointTiersValidation.FIELDNAME_ID_TIERS_TI);
 
         // jointure entre la table des numeros AVS et la table des personnes
         fromClauseBuffer.append(leftJoin);
@@ -206,58 +151,8 @@ public class RFLotJointPrestationJointOV extends RFPrestation {
         fromClauseBuffer.append(point);
         fromClauseBuffer.append(RFDecisionJointDemandeJointMotifRefusJointTiersValidation.FIELDNAME_ID_TIERS_TI);
 
-        // jointure entre la table des dossiers et la table des gestionnaires
-        // fromClauseBuffer.append(leftJoin);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(RFDecisionJointDemandeJointMotifRefusJointTiersValidation.TABLE_GESTIONNAIRES);
-        // fromClauseBuffer.append(on);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(RFDossier.TABLE_NAME);
-        // fromClauseBuffer.append(point);
-        // fromClauseBuffer.append(RFDossier.FIELDNAME_ID_GESTIONNAIRE);
-        // fromClauseBuffer.append(egal);
-        // fromClauseBuffer.append(schema);
-        // fromClauseBuffer.append(RFDecisionJointDemandeJointMotifRefusJointTiersValidation.TABLE_GESTIONNAIRES);
-        // fromClauseBuffer.append(point);
-        // fromClauseBuffer.append(RFDecisionJointDemandeJointMotifRefusJointTiersValidation.FIELDNAME_ID_GESTIONNAIRE);
-        // /////////////////////
-
         return fromClauseBuffer.toString();
     }
-
-    // ~ Instance fields
-    // ------------------------------------------------------------------------------------------------
-    private String csRole = "";
-    private transient String fromClause = null;
-    private String idDomaineApplication = "";
-    private String idExterne = "";
-    // ~ Instance fields
-    // ------------------------------------------------------------------------------------------------
-    private String idLot = "";
-    private String idOrdreVersement = "";
-    private String idPrestation = "";
-    private String idRole = "";
-    private String idSectionOrdreVersement = "";
-    private String idSousTypeDeSoin = "";
-    private String idTiers = "";
-    private String idTiersAdressePaiement = "";
-    private String idTypeDeSoin = "";
-    private Boolean isCompense = Boolean.FALSE;
-    private Boolean isForcerPayement = Boolean.FALSE;
-    private Boolean isImportation = Boolean.FALSE;
-    private String montantDepassementQD = "";
-
-    private String montantOrdreVersement = "";
-
-    private String nom = "";
-    private String nss = "";
-    private String numeroFacture = "";
-    private String prenom = "";
-
-    // ~ Methods
-    // --------------------------------------------------------------------------------------------------------
-
-    private String typeVersement = "";
 
     @Override
     protected String _getFrom(BStatement statement) {
@@ -278,6 +173,7 @@ public class RFLotJointPrestationJointOV extends RFPrestation {
 
         idLot = statement.dbReadNumeric(RELot.FIELDNAME_ID_LOT);
         idPrestation = statement.dbReadNumeric(RFPrestation.FIELDNAME_ID_PRESTATION);
+        refPaiement = statement.dbReadString(RFPrestation.FIELDNAME_REFERENCE_PAIEMENT);
         idOrdreVersement = statement.dbReadNumeric(RFOrdresVersements.FIELDNAME_ID_ORDRE_VERSEMENT);
         montantOrdreVersement = statement.dbReadNumeric(RFOrdresVersements.FIELDNAME_MONTANT);
         montantDepassementQD = statement.dbReadNumeric(RFOrdresVersements.FIELDNAME_MONTANT_DEPASSEMENT_QD);
@@ -298,7 +194,6 @@ public class RFLotJointPrestationJointOV extends RFPrestation {
         isImportation = statement.dbReadBoolean(RFOrdresVersements.FIELDNAME_IS_IMPORTATION);
         isCompense = statement.dbReadBoolean(RFOrdresVersements.FIELDNAME_IS_COMPENSE);
         idSectionOrdreVersement = statement.dbReadNumeric(RFOrdresVersements.FIELDNAME_ID_SECTION_DETTE);
-
     }
 
     public String getCsRole() {
@@ -489,4 +384,11 @@ public class RFLotJointPrestationJointOV extends RFPrestation {
         this.typeVersement = typeVersement;
     }
 
+    public String getRefPaiement() {
+        return refPaiement;
+    }
+
+    public void setRefPaiement(String refPaiement) {
+        this.refPaiement = refPaiement;
+    }
 }
