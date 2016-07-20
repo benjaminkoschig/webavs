@@ -2261,7 +2261,7 @@ public final class CPProcessCalculCotisation extends BProcess {
             if (!perte) {
                 if (((revenuMin > revenuDet) && decision.getPremiereAssurance().equals(new Boolean(true))
                         && decision.getTaxation().equalsIgnoreCase("N") && periodeIncomplete)
-                        || ((revenuMin > revenuDet) && !isDepartEtrangerOuDeces
+                        || ((revenuMin > revenuDet) && isDepartEtrangerOuDeces
                                 && (2004 <= Integer.parseInt(decision.getAnneeDecision())) && periodeIncomplete)
                         || casProrataRentier
                         || (decision.getTaxation().equalsIgnoreCase("A") && ((moisDebutDecision != 01) || (moisFinDecision != 12)))
@@ -2270,6 +2270,14 @@ public final class CPProcessCalculCotisation extends BProcess {
                     prorataCi = true;
                 }
             }
+
+            // K141029_001 - Ne pas proratiser à double un rentier avec motif depart etranger ou décès avec un revenu
+            // minimum supérieur au revenu déterminant.
+            if (CPDecision.CS_RENTIER.equalsIgnoreCase(decision.getGenreAffilie()) && isDepartEtrangerOuDeces
+                    && (revenuMin > revenuDet)) {
+                prorataCi = false;
+            }
+
             // Si rentier pendant l'année de décision et cotisation minimum et
             // calcul praenumerando
             // => période de décision dure jusqu'à lâge AVS
