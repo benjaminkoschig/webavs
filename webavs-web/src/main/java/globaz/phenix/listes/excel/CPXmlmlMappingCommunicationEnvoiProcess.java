@@ -12,6 +12,8 @@ import globaz.webavs.common.CommonExcelmlContainer;
  */
 public class CPXmlmlMappingCommunicationEnvoiProcess {
 
+    public static final String CONCAT_ID_COMMUNICATION = "idcommunication:";
+
     private CPXmlmlMappingCommunicationEnvoiProcess() {
         // Nothing to do
     }
@@ -70,11 +72,11 @@ public class CPXmlmlMappingCommunicationEnvoiProcess {
         for (int i = 0; (i < manager.size()) && !process.isAborted(); i++) {
             CPCommunicationFiscaleAffichage entity = (CPCommunicationFiscaleAffichage) manager.getEntity(i);
 
-            String status = process.getSession().getLabel("COMMUNICATION_FISCALE_OK");
+            String status = process.getSession().getLabel("COMMUNICATION_FISCALE_ENVOYE");
             String commentaire = "";
 
-            if (process.getCommunicationEnErreur().contains(entity.getIdCommunication())) {
-                status = process.getSession().getLabel("COMMUNICATION_FISCALE_ERREUR");
+            if (isEnErreur(process, entity)) {
+                status = process.getSession().getLabel("COMMUNICATION_FISCALE_NON_ENVOYE");
                 commentaire = getCommentaireFromErreur(entity.getIdCommunication(), process);
             }
 
@@ -84,16 +86,62 @@ public class CPXmlmlMappingCommunicationEnvoiProcess {
         return container;
     }
 
-    private static String getCommentaireFromErreur(String idCommunication, CPListeCommunicationEnvoiProcess process) {
-        String commentaire = "";
+    private static boolean isEnErreur(CPListeCommunicationEnvoiProcess process, CPCommunicationFiscaleAffichage entity) {
+        boolean isEnErreur = false;
+        // Le process contient la communication dans la liste en erreur
+        isEnErreur |= process.getCommunicationEnErreur().contains(entity.getIdCommunication());
+        // OU Dans les commentaires des erreurs contient le numéro de la communication
+        isEnErreur |= !getCommentaireFromErreur(entity.getIdCommunication(), process).isEmpty();
+        return isEnErreur;
+    }
 
-        for (int i = 0; i < process.getMemoryLog().size(); i++) {
-            if (process.getMemoryLog().getMessage(i).getComplement().contains(idCommunication)) {
-                commentaire = process.getMemoryLog().getMessage(i).getComplement();
-                break;
-            }
+    private static String getCommentaireFromErreur(String idCommunication, CPListeCommunicationEnvoiProcess process) {
+        String commentaire = extractMemoryLog(idCommunication, process);
+
+        if (commentaire == null || commentaire.isEmpty()) {
+            commentaire = extractError(idCommunication, process);
+        }
+
+        if (commentaire == null || commentaire.isEmpty()) {
+            commentaire = extractWarning(idCommunication, process);
         }
 
         return commentaire;
+    }
+
+    private static String extractMemoryLog(String idCommunication, CPListeCommunicationEnvoiProcess process) {
+        for (int i = 0; i < process.getMemoryLog().size(); i++) {
+            // Attention au factoring de l'append de l id communication, sans vérifié ou est utiliser la
+            // constante car on l'utilise avec une recherche contains.
+            if (process.getMemoryLog().getMessage(i).getComplement()
+                    .contains(CONCAT_ID_COMMUNICATION + idCommunication)) {
+                return process.getMemoryLog().getMessage(i).getComplement();
+            }
+        }
+
+        return "";
+    }
+
+    private static String extractError(String idCommunication, CPListeCommunicationEnvoiProcess process) {
+        for (int i = 0; i < process.getResults().getErrors().size(); i++) {
+            // Attention au factoring de l'append de l id communication, sans vérifié ou est utiliser la
+            // constante car on l'utilise avec une recherche contains.
+            if (process.getResults().getErrors().get(i).contains(CONCAT_ID_COMMUNICATION + idCommunication)) {
+                return process.getResults().getErrors().get(i);
+            }
+        }
+
+        return "";
+    }
+
+    private static String extractWarning(String idCommunication, CPListeCommunicationEnvoiProcess process) {
+        for (int i = 0; i < process.getResults().getWarnings().size(); i++) {
+            // Attention au factoring de l'append de l id communication, sans vérifié ou est utiliser la
+            // constante car on l'utilise avec une recherche contains.
+            if (process.getResults().getWarnings().get(i).contains(CONCAT_ID_COMMUNICATION + idCommunication)) {
+                return process.getResults().getWarnings().get(i);
+            }
+        }
+        return "";
     }
 }

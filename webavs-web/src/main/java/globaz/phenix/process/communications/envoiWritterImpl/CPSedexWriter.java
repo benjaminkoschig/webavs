@@ -28,6 +28,7 @@ import globaz.phenix.db.communications.CPRejetsManager;
 import globaz.phenix.db.divers.CPParametreCanton;
 import globaz.phenix.db.principale.CPDecision;
 import globaz.phenix.db.principale.CPDecisionManager;
+import globaz.phenix.listes.excel.CPXmlmlMappingCommunicationEnvoiProcess;
 import globaz.phenix.toolbox.CPToolBox;
 import globaz.phenix.util.CPUtil;
 import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
@@ -619,7 +620,7 @@ public class CPSedexWriter {
                 numAvs = NSUtil.unFormatAVS(entity.getNumAvsActuel());
                 if (numAvs.length() < 13) {
                     // Il n'existe pas de NAVS13 pour cet affilié
-                    if (!JadeStringUtil.isEmpty(affiliation.getAffilieNumero())) {
+                    if (affiliation != null && !JadeStringUtil.isEmpty(affiliation.getAffilieNumero())) {
                         transaction.addErrors(session.getLabel("CP_SEDEX_MSG12") + " - "
                                 + affiliation.getAffilieNumero());
                     } else {
@@ -631,7 +632,7 @@ public class CPSedexWriter {
                 }
             } else {
                 // Il n'existe pas de NAVS13 et de num avs pour cet affilié
-                if (!JadeStringUtil.isEmpty(affiliation.getAffilieNumero())) {
+                if (affiliation != null && !JadeStringUtil.isEmpty(affiliation.getAffilieNumero())) {
                     transaction.addErrors(session.getLabel("CP_SEDEX_MSG18") + " - " + affiliation.getAffilieNumero());
                 } else {
                     transaction.addErrors(session.getLabel("CP_SEDEX_MSG18") + " - id Tiers : " + entity.getIdTiers());
@@ -639,9 +640,17 @@ public class CPSedexWriter {
             }
 
         } catch (Exception e) {
+            String numInformation = "";
+            if (entity != null) {
+                numInformation = " - id Tiers : " + entity.getIdTiers();
+            }
+
+            if (affiliation != null) {
+                numInformation = " - " + affiliation.getAffilieNumero();
+            }
+
             // Problème lors de la recherche du n°avs
-            transaction.addErrors(session.getLabel("CP_SEDEX_MSG11") + " " + e.toString() + " - "
-                    + affiliation.getAffilieNumero());
+            transaction.addErrors(session.getLabel("CP_SEDEX_MSG11") + " " + e.toString() + numInformation);
         }
 
     }
@@ -658,7 +667,7 @@ public class CPSedexWriter {
         // Vn
         if (JadeStringUtil.isEmpty(conjoint.getNumAvsActuel())) {
             // Il n'existe pas de NAV et de num avs pour cet affilié
-            if (!JadeStringUtil.isEmpty(affConjoint.getAffilieNumero())) {
+            if (affConjoint != null && !JadeStringUtil.isEmpty(affConjoint.getAffilieNumero())) {
                 transaction.addErrors(session.getLabel("CP_SEDEX_MSG18") + " - " + affConjoint.getAffilieNumero());
             } else {
                 transaction.addErrors(session.getLabel("CP_SEDEX_MSG18") + " - id Tiers : " + conjoint.getIdTiers());
@@ -712,7 +721,7 @@ public class CPSedexWriter {
         // Vn
         if (JadeStringUtil.isEmpty(tiers.getNumAvsActuel())) {
             // Il n'existe pas de NAV et de num avs pour cet affilié
-            if (!JadeStringUtil.isEmpty(affiliation.getAffilieNumero())) {
+            if ((affiliation != null) && !JadeStringUtil.isEmpty(affiliation.getAffilieNumero())) {
                 transaction.addErrors(session.getLabel("CP_SEDEX_MSG18") + " - " + affiliation.getAffilieNumero());
             } else {
                 transaction.addErrors(session.getLabel("CP_SEDEX_MSG18") + " - id Tiers : " + tiers.getIdTiers());
@@ -1071,7 +1080,7 @@ public class CPSedexWriter {
                     String messageId = creationDemande(objFac101, objFac102, message101, message102, transaction,
                             entity, tiers, affiliation, conjoint, affiliationConjoint, isMaried);
                     // Mise à jour de la date d'envoi
-                    if (transaction.hasErrors() == false) {
+                    if (!transaction.hasErrors()) {
                         // Si il n'y a pas d'erreurs on ajoute le message 101 au 102
                         message102.getContent().getMessage().add(message101);
                         // sauvegarde de la date d'envoi et création du lien entre la communication et le message
@@ -1113,7 +1122,11 @@ public class CPSedexWriter {
                                 formatedMessage.append(". ");
                             }
                         }
-                        result.addWarning(formatedMessage.toString());
+                        // Attention au factoring de l'append de l id communication, sans vérifié ou est utiliser la
+                        // constante car on l'utilise avec une recherche contains.
+                        result.addWarning(formatedMessage.toString() + ", "
+                                + CPXmlmlMappingCommunicationEnvoiProcess.CONCAT_ID_COMMUNICATION
+                                + entity.getIdCommunication());
                     } catch (Exception e) {
                         JadeLogger.error(this, e);
                     }
@@ -1158,7 +1171,19 @@ public class CPSedexWriter {
                 infoSupplementaire.append(entity.getNumAffilie());
                 infoSupplementaire.append("] : ");
                 infoSupplementaire.append(e.toString());
+                infoSupplementaire.append(", ");
+                // Attention au factoring de l'append de l id communication, sans vérifié ou est utiliser la
+                // constante car on l'utilise avec une recherche contains.
+                infoSupplementaire.append(CPXmlmlMappingCommunicationEnvoiProcess.CONCAT_ID_COMMUNICATION
+                        + entity.getIdCommunication());
                 JadeLogger.error(this, new Exception(infoSupplementaire.toString(), e));
+
+                // On met toutes les entités du lot en erreur, quand une erreur global a peter.
+                for (int i = debutATraiter; i < finATraiter; i++) {
+                    CPCommunicationFiscaleAffichage entityLocal = (CPCommunicationFiscaleAffichage) manager
+                            .getEntity(i);
+                    communicationEnErreur.add(entityLocal.getIdCommunication());
+                }
             } else {
                 JadeLogger.error(this, e);
             }
@@ -1548,9 +1573,6 @@ public class CPSedexWriter {
         ch.eahv_iv.xmlns.eahv_iv_2011_000102._3.HeaderType headerType102 = message102.getHeader();
 
         setHeaderMessage102(message101, messageId, headerType102);
-
-        // Information sur la caisse de compensation
-        // this.setInfoCaisse(message101.getHeader());
     }
 
     private void setHeaderMessage101(BSession session, ObjectFactory objFac101, Message message101, String messageId,

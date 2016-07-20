@@ -8,6 +8,7 @@ import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.phenix.application.CPApplication;
 import globaz.phenix.db.communications.CPCommunicationFiscaleAffichageManager;
+import globaz.phenix.process.communications.envoiWritterImpl.SedexResult;
 import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ public class CPListeCommunicationEnvoiProcess extends BProcess implements FWView
     private String annee = "";
     private String canton = "";
     private List<String> communicationEnErreur = new ArrayList<String>();
+    private SedexResult results = new SedexResult();
     private String genre = "";
     CPCommunicationFiscaleAffichageManager manager;
 
@@ -111,6 +113,10 @@ public class CPListeCommunicationEnvoiProcess extends BProcess implements FWView
         return communicationEnErreur;
     }
 
+    public SedexResult getResults() {
+        return results;
+    }
+
     /**
      * @see globaz.globall.db.BProcess#getEMailObject()
      */
@@ -165,13 +171,14 @@ public class CPListeCommunicationEnvoiProcess extends BProcess implements FWView
         this.communicationEnErreur = communicationEnErreur;
     }
 
+    public void setResults(SedexResult results) {
+        this.results = results;
+    }
+
     public void setGenre(String genre) {
         this.genre = genre;
     }
 
-    /**
-     * setter
-     */
     public void setManager(CPCommunicationFiscaleAffichageManager manager) {
         this.manager = manager;
     }

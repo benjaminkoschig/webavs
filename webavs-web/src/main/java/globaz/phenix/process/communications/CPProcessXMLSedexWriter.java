@@ -199,7 +199,7 @@ public class CPProcessXMLSedexWriter extends BProcess {
         }
     }
 
-    protected void genarateListExcelLCommunicationEnvoye(ArrayList<String> communicationEnErreur) throws Exception {
+    protected void genarateListExcelLCommunicationEnvoye(ArrayList<String> communicationEnErreur, SedexResult results) throws Exception {
         // On créé la liste des envois produit
         CPListeCommunicationEnvoiProcess process = new CPListeCommunicationEnvoiProcess();
         process.setMemoryLog(getMemoryLog());
@@ -208,6 +208,7 @@ public class CPProcessXMLSedexWriter extends BProcess {
         process.setGenre(forGenreAffilie);
         process.setCanton(communicationFiscaleManager.getForCanton());
         process.setManager(communicationFiscaleManager);
+        process.setResults(results);
         process.setEMailAddress(getEMailAddress());
         process.setParent(this);
         if (!communicationEnErreur.isEmpty()) {
@@ -336,7 +337,7 @@ public class CPProcessXMLSedexWriter extends BProcess {
                     globaz.framework.util.FWMessage.INFORMATION, "");
         }
         // Génération de la liste excel des communications envoyées
-        genarateListExcelLCommunicationEnvoye(fichier.getCommunicationEnErreur());
+        genarateListExcelLCommunicationEnvoye(fichier.getCommunicationEnErreur(), sedexResult);
 
         getMemoryLog().clear();
     }

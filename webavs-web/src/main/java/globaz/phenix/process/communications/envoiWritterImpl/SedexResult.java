@@ -1,6 +1,7 @@
 package globaz.phenix.process.communications.envoiWritterImpl;
 
 import globaz.phenix.process.communications.CPProcessXMLSedexWriter;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,9 @@ import java.util.List;
  * @author lga
  * 
  */
-public class SedexResult {
+public class SedexResult implements Serializable {
+
+    private static final long serialVersionUID = -218058592701461609L;
 
     /**
      * Représente les infos qui doivent être remontées depuis le traitement du lot
