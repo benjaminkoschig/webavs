@@ -26,6 +26,7 @@ public class APDroitMaterniteManager extends PRAbstractManager {
      */
     private static final long serialVersionUID = 1L;
     private String forIdDroitParent = "";
+    private String idDroitAExclure;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -44,6 +45,15 @@ public class APDroitMaterniteManager extends PRAbstractManager {
 
             sqlWhere += APDroitLAPG.FIELDNAME_IDDROIT_LAPG_PARENT + "="
                     + _dbWriteNumeric(statement.getTransaction(), forIdDroitParent);
+        }
+
+        if (!JadeStringUtil.isIntegerEmpty(idDroitAExclure)) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+
+            sqlWhere += APDroitLAPG.FIELDNAME_IDDROIT_LAPG + " <> "
+                    + _dbWriteNumeric(statement.getTransaction(), idDroitAExclure);
         }
 
         return sqlWhere;
@@ -75,7 +85,7 @@ public class APDroitMaterniteManager extends PRAbstractManager {
      */
     @Override
     public String getOrderByDefaut() {
-        return APDroitMaternite.FIELDNAME_IDDROIT_MAT;
+        return APDroitMaternite.FIELDNAME_IDDROIT_MAT + " DESC";
     }
 
     /**
@@ -87,4 +97,14 @@ public class APDroitMaterniteManager extends PRAbstractManager {
     public void setForIdDroitParent(String string) {
         forIdDroitParent = string;
     }
+
+    /**
+     * Définit un id de droit qui doit être exclus de la recherche
+     * 
+     * @param idDroitAExclure
+     */
+    public void setIdDroitAExclure(String idDroitAExclure) {
+        this.idDroitAExclure = idDroitAExclure;
+    }
+
 }

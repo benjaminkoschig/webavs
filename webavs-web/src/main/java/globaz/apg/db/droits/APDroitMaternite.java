@@ -20,10 +20,8 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.application.PRAbstractApplication;
 import globaz.prestation.clone.factory.IPRCloneable;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
-import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.constantes.IConstantes;
-import ch.globaz.common.sql.QueryWriterExecutor;
 
 /**
  * BEntity représentant un droit maternité Créé le 9 mai 05
@@ -68,122 +66,112 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
      */
     @Override
     protected void _afterDelete(BTransaction transaction) throws Exception {
-        // a faire en premier !!!
-        int idDroitPrecedant = findIdDroitPrecedant(transaction);
 
-        APDroitLAPG apDroitPrecedant = new APDroitLAPG();
-        apDroitPrecedant.setIdDroit(String.valueOf(idDroitPrecedant));
-        apDroitPrecedant.setSession(getSession());
-        apDroitPrecedant.retrieve();
+        // effacement des situations familiales
+        APSituationFamilialeMatManager mgr = new APSituationFamilialeMatManager();
+        mgr.setSession(getSession());
+        mgr.setForIdDroitMaternite(getIdDroit());
+        mgr.find(transaction, BManager.SIZE_NOLIMIT);
 
-        if ((IAPDroitLAPG.CS_ETAT_DROIT_DEFINITIF.equals(apDroitPrecedant.getEtat()) || IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL
-                .equals(apDroitPrecedant.getEtat())) && idDroitPrecedant != 0) {
+        for (int idSitFam = 0; idSitFam < mgr.size(); ++idSitFam) {
+            APSituationFamilialeMat sitFam = (APSituationFamilialeMat) mgr.get(idSitFam);
+            sitFam.setSession(getSession());
+            sitFam.delete(transaction);
+        }
 
-            // effacement des situations familiales
-            APSituationFamilialeMatManager mgr = new APSituationFamilialeMatManager();
+        // effacement des enfants du droit -> code inutile
+        APDroitMaterniteManager dMgr = new APDroitMaterniteManager();
+        dMgr.setSession(getSession());
+        dMgr.setForIdDroitParent(getIdDroit());
+        dMgr.find(transaction, BManager.SIZE_NOLIMIT);
 
-            mgr.setSession(getSession());
-            mgr.setForIdDroitMaternite(getIdDroit());
-            mgr.find(transaction, BManager.SIZE_NOLIMIT);
+        for (int idEnfant = 0; idEnfant < dMgr.size(); ++idEnfant) {
+            APDroitMaternite droitMat = (APDroitMaternite) dMgr.get(idEnfant);
+            droitMat.setSession(getSession());
+            droitMat.delete(transaction);
+        }
+        // fin du code inutile
 
-            for (int idSitFam = 0; idSitFam < mgr.size(); ++idSitFam) {
-                APSituationFamilialeMat sitFam = (APSituationFamilialeMat) mgr.get(idSitFam);
-                sitFam.setSession(getSession());
-                sitFam.delete(transaction);
-            }
+        // effacement des situations professionnelles
+        APSituationProfessionnelleManager mgrsp = new APSituationProfessionnelleManager();
 
-            // effacement des enfants
-            APDroitMaterniteManager dMgr = new APDroitMaterniteManager();
-            dMgr.setSession(getSession());
-            dMgr.setForIdDroitParent(getIdDroit());
-            dMgr.find(transaction, BManager.SIZE_NOLIMIT);
+        mgrsp.setSession(getSession());
+        mgrsp.setForIdDroit(getIdDroit());
+        mgrsp.find(transaction, BManager.SIZE_NOLIMIT);
 
-            for (int idEnfant = 0; idEnfant < dMgr.size(); ++idEnfant) {
-                APDroitMaternite droitMat = (APDroitMaternite) dMgr.get(idEnfant);
-                droitMat.setSession(getSession());
-                droitMat.delete(transaction);
-            }
+        for (int idSitPro = 0; idSitPro < mgrsp.size(); ++idSitPro) {
+            APSituationProfessionnelle sitPro = (APSituationProfessionnelle) mgrsp.get(idSitPro);
+            sitPro.setSession(getSession());
+            sitPro.delete(transaction);
+        }
 
-            // repris depuis APDroitLAPG
-            // effacement des situations professionnelles
-            APSituationProfessionnelleManager mgrsp = new APSituationProfessionnelleManager();
+        // effacement des prestations
+        APPrestationManager pMgr = new APPrestationManager();
+        pMgr.setSession(getSession());
+        pMgr.setForIdDroit(getIdDroit());
+        pMgr.find(transaction, BManager.SIZE_NOLIMIT);
 
-            mgrsp.setSession(getSession());
-            mgrsp.setForIdDroit(getIdDroit());
-            mgrsp.find(transaction, BManager.SIZE_NOLIMIT);
-
-            for (int idSitPro = 0; idSitPro < mgrsp.size(); ++idSitPro) {
-                APSituationProfessionnelle sitPro = (APSituationProfessionnelle) mgrsp.get(idSitPro);
-
-                sitPro.setSession(getSession());
-                sitPro.delete(transaction);
-            }
-
-            // effacement des prestations
-            APPrestationManager pMgr = new APPrestationManager();
-
-            pMgr.setSession(getSession());
-            pMgr.setForIdDroit(getIdDroit());
-            pMgr.find(transaction, BManager.SIZE_NOLIMIT);
-
-            for (int idPrestation = 0; idPrestation < pMgr.size(); ++idPrestation) {
-                APPrestation prestation = (APPrestation) pMgr.get(idPrestation);
-                prestation.setSession(getSession());
-                prestation.delete(transaction);
-            }
-
-            // les prestations annulées du droit parent ou du frère doivent être mise dans
-            // l'etat valide
-            if (!JadeStringUtil.isBlankOrZero(getIdDroitParent())) {
-                pMgr = new APPrestationManager();
-
-                pMgr.setSession(getSession());
-                pMgr.setForIdDroit(getIdDroitParent());
-                if (idDroitPrecedant != 0) {
-                    pMgr.setForIdDroit(String.valueOf(idDroitPrecedant));
-                }
-                pMgr.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_ANNULE);
-                pMgr.find(transaction, BManager.SIZE_NOLIMIT);
-
-                boolean foundPrestation = false;
-                for (int idPrestation = 0; idPrestation < pMgr.size(); ++idPrestation) {
-                    APPrestation prestation = (APPrestation) pMgr.get(idPrestation);
-                    prestation.setSession(getSession());
-                    prestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
-                    prestation.update(transaction);
-                    foundPrestation = true;
-                }
-                // Dans ce cas, le droit parent doit être remis dans l'état
-                // 'PARTIEL'.
-                if (foundPrestation) {
-                    APDroitLAPG parent = new APDroitLAPG();
-                    parent.setSession(getSession());
-                    parent.setIdDroit(getIdDroitParent());
-                    if (idDroitPrecedant != 0) {
-                        parent.setIdDroit(String.valueOf(idDroitPrecedant));
-                    }
-                    parent.retrieve(transaction);
-                    PRAssert.notIsNew(parent, null);
-                    parent.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL);
-                    parent.update(transaction);
-                }
-            }
+        for (int idPrestation = 0; idPrestation < pMgr.size(); ++idPrestation) {
+            APPrestation prestation = (APPrestation) pMgr.get(idPrestation);
+            prestation.setSession(getSession());
+            prestation.delete(transaction);
+        }
+        if (!JadeStringUtil.isBlankOrZero(getIdDroitParent())) {
+            reactiverDroitParent(getSession(), transaction, getIdDroitParent());
         }
 
         super._afterDelete(transaction);
     }
 
-    private Integer findIdDroitPrecedant(BTransaction transaction) {
-        if (!JadeStringUtil.isBlankOrZero(getIdDroitParent())) {
-            return QueryWriterExecutor
-                    .query("select max(VAIDRO) from schema.APDROIP where VAIPAR = (select VAIPAR from schema.APDROIP where VAIDRO = ?) and schema.APDROIP.VAIDRO <> ?",
-                            getIdDroit(), getIdDroit()).useTransaction(transaction).executeAggregateToInt();
+    private void reactiverDroitParent(final BSession session, final BTransaction transaction, final String idDroitParent)
+            throws Exception {
+        /*
+         * Recherche du droit parent, plusieurs droit peuvent avoir le même idDroitParent, il faut les ordonner par
+         * idDroit afin de retrouver le parent direct
+         * C'est le rôle du manager de bien les ordonner
+         */
+        APDroitMaterniteManager manager = new APDroitMaterniteManager();
+        manager.setSession(session);
+        manager.setForIdDroitParent(idDroitParent);
+        manager.setIdDroitAExclure(getIdDroit());
+        manager.find(transaction, BManager.SIZE_NOLIMIT);
 
-            // return QueryWriterExecutor
-            // .query("select max(anciennePrestation.VHIDRO) from schema.APPRESP as nouvellePrestation inner join schema.APPRESP as anciennePrestation on anciennePrestation.VHIRST = nouvellePrestation.VHIPRS where nouvellePrestation.VHIDRO = ?",
-            // getIdDroit()).useTransaction(transaction).executeAggregateToInt();
+        if (manager.getContainer().size() > 0) {
+            Object o = manager.getContainer().get(0);
+            APDroitMaternite droitMat = (APDroitMaternite) o;
+
+            mettrePrestationEnValide(transaction, droitMat.getIdDroit());
+        } else {
+            APDroitMaternite dm = new APDroitMaternite();
+            dm.setSession(getSession());
+            dm.setIdDroit(idDroitParent);
+            dm.retrieve(transaction);
+            if (!dm.isNew()) {
+                mettrePrestationEnValide(transaction, dm.getIdDroit());
+            }
         }
-        return 0;
+    }
+
+    /**
+     * Récupère toutes les prestations du droit maternité en état ANNULE et les remets en état VALIDE
+     * 
+     * @param transaction
+     * @param idDroitMat
+     * @throws Exception
+     */
+    private void mettrePrestationEnValide(final BTransaction transaction, String idDroitMat) throws Exception {
+        APPrestationManager pMgr = new APPrestationManager();
+        pMgr.setSession(getSession());
+        pMgr.setForIdDroit(idDroitMat);
+        pMgr.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_ANNULE);
+        pMgr.find(transaction, BManager.SIZE_NOLIMIT);
+
+        for (Object prest : pMgr.getContainer()) {
+            APPrestation prestation = (APPrestation) prest;
+            prestation.setSession(getSession());
+            prestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
+            prestation.update(transaction);
+        }
     }
 
     @Override
