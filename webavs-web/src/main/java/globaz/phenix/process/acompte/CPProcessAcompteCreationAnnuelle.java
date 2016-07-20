@@ -45,6 +45,8 @@ import java.util.List;
  * @author: Administrator
  */
 public class CPProcessAcompteCreationAnnuelle extends BProcess {
+    private static final String DATE_FIN_ANNEE = "31.12.";
+    private static final String DATE_DEBUT_ANNEE = "01.01.";
     /**
      * 
      */
@@ -116,8 +118,9 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
     /**
      * Calcul des cotisations de reprise pour un non actif Date de création : (25.02.2002 12:58:23)
      * 
-     * @param process
-     *            BProcess le processus d'exécution
+     * @param orgDecision La décision de base.
+     * @param copyDecision La copie de décision.
+     * @param revAf True si révision AF ?.
      */
     public void _calculReprise(CPDecisionViewBean orgDecision, CPDecisionViewBean copyDecision, boolean revAf) {
 
@@ -134,10 +137,16 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
             // Calcul des cotisations
             calculerCotisation(copyDecision, revAf, donneeBase);
         } catch (Exception e) {
-
+            // NOTHING TO DO
         }
     }
 
+    /**
+     * Execution en boucle pour la reprise.
+     * 
+     * @param deciManager Le décision manager.
+     * @return True si tout s'est bien passé.
+     */
     public boolean _executeBoucleReprise(CPDecisionManager deciManager) {
         BStatement statement = null;
         try {
@@ -169,7 +178,6 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
                 // Pour les cas de plusieurs décisions dans l'année -> si même
                 // idAffiliation-> ne rien faire
                 if (!savIdAffiliation.equalsIgnoreCase(decisionReprise.getIdAffiliation()) && aTraite) {
-                    // if (!savIdAffiliation.equalsIgnoreCase(decisionReprise.getIdAffiliation())) {
                     // charger la vraie décision à partir du fake entity
                     decision.setAffiliation(null);
                     decision.setIdDecision(decisionReprise.getIdDecision());
@@ -246,6 +254,7 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
      */
     @Override
     protected void _executeCleanUp() {
+        // NOTHING TO DO
     }
 
     /**
@@ -258,7 +267,7 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
 
         try {
             // type de revenu depuis les properties
-            String typeRevenu = ((CPApplication) getSession().getApplication()).getTypeRevenu();
+            String typeRevenuString = ((CPApplication) getSession().getApplication()).getTypeRevenu();
             detailCalcul = ((CPApplication) getSession().getApplication()).isAcompteDetailCalcul();
             String modeCalcul = "";
             try {
@@ -271,7 +280,7 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
             } else {
                 acompteSeBasantSurDerniereDecision = false;
             }
-            setTypeRevenu(typeRevenu);
+            setTypeRevenu(typeRevenuString);
             // recherche période IFD définitive correspondant à l'année de l'acompte
             CPPeriodeFiscaleManager perFis = new CPPeriodeFiscaleManager();
             perFis.setSession(getSession());
@@ -294,14 +303,8 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
 
         }
 
-        // Annulé par le PO 8518
-        // - Tél de Mr Burki - Mettre la date de fortune au 31.12 de
-        // l'année précédant l'acompte
-        // int anneeFortune = Integer.parseInt(this.getForAnneeReprise()) - 1;
-        // this.saveDateFortune = "31.12." + anneeFortune;
-        //
         // PO 8518 : Mettre au 31.12. de l'année de l'acompte (idem encodage mabuel)
-        saveDateFortune = "31.12." + getForAnneeReprise();
+        saveDateFortune = DATE_FIN_ANNEE + getForAnneeReprise();
 
         /*
          * rechercher toutes les décisions dont les affiliations sont actives (date affiliation vide ou date de fin
@@ -309,8 +312,7 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
          */
         if (!CPDecision.CS_INDEPENDANT.equalsIgnoreCase(forGenreAffilie)) {
             // -----------------------------------------------------------------------------------
-            // 1ere partie : Non Actif (reprise cas normaux) - sans mise en
-            // compte
+            // 1ere partie : Non Actif reprise cas normaux - sans mise en compte
             // ----------------------------------------------------------------------------------
             traitementIndependant = false;
             CPDecisionManager deciManager = initManagerForNonActif();
@@ -337,11 +339,16 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
         return !isOnError();
     }
 
+    /**
+     * Execution du processus par décision.
+     * 
+     * @param orgDecision La décision.
+     * @param decisionReprise La décision reprise.
+     * @param revAf Révision AF ?.
+     * @return true si tout s'est bien passé.
+     */
     public boolean _executeProcessParDecision(CPDecisionViewBean orgDecision,
             CPAcompteCreationAnnuelle decisionReprise, boolean revAf) {
-
-        // setIdDecision(orgDecision.getIdDecision());
-
         CPDecisionViewBean copyDecision = null;
 
         // Copier la décision
@@ -351,12 +358,12 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
             AFAffiliation aff = new AFAffiliation();
             aff.setSession(getSession());
             setCotiAf(aff._cotisation(getTransaction(), copyDecision.getIdAffiliation(),
-                    CodeSystem.GENRE_ASS_PERSONNEL, CodeSystem.TYPE_ASS_COTISATION_AVS_AI, "01.01."
-                            + getForAnneeReprise(), "31.12." + getForAnneeReprise(), 1));
+                    CodeSystem.GENRE_ASS_PERSONNEL, CodeSystem.TYPE_ASS_COTISATION_AVS_AI, DATE_DEBUT_ANNEE
+                            + getForAnneeReprise(), DATE_FIN_ANNEE + getForAnneeReprise(), 1));
             // PO 9183 - Prendre en compte les affiliés qui n'ont pas l'AVS
             if (getCotiAf() == null) {
                 setCotiAf(aff._cotisation(getTransaction(), copyDecision.getIdAffiliation(),
-                        CodeSystem.GENRE_ASS_PERSONNEL, "", "01.01." + getForAnneeReprise(), "31.12."
+                        CodeSystem.GENRE_ASS_PERSONNEL, "", DATE_DEBUT_ANNEE + getForAnneeReprise(), DATE_FIN_ANNEE
                                 + getForAnneeReprise(), 1));
             }
             // Test sur la périodicité et non dans le manager pour les assurances qui auraient une périodicité
@@ -406,8 +413,12 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
         return true;
     }
 
-    /*
-     * Cette méthode est équivalente à CPDecisionViewBean _initEcran
+    /**
+     * Initialise la décision.
+     * 
+     * @param copyDecision LA copie de la décision de base.
+     * @param decisionReprise La décision reprise.
+     * @return
      */
     public CPDecisionViewBean _initDecision(CPDecisionViewBean copyDecision, CPAcompteCreationAnnuelle decisionReprise) {
 
@@ -415,7 +426,7 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
             copyDecision.setImpression(Boolean.TRUE);
             copyDecision.setFacturation(Boolean.TRUE);
             copyDecision.setAnneeDecision(getForAnneeReprise());
-            copyDecision.setDebutDecision("01.01." + getForAnneeReprise());
+            copyDecision.setDebutDecision(DATE_DEBUT_ANNEE + getForAnneeReprise());
             copyDecision.setNumIfdDefinitif(saveNumIfd);
             copyDecision.setIdIfdDefinitif(saveIdIfd);
             copyDecision.setIdIfdProvisoire(saveIdIfd);
@@ -429,10 +440,10 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
             // d'année
             if (!JadeStringUtil.isIntegerEmpty(copyDecision.getAffiliation().getDateFin())
                     && BSessionUtil.compareDateFirstLower(getSession(), copyDecision.getAffiliation().getDateFin(),
-                            "31.12." + getForAnneeReprise())) {
+                            DATE_FIN_ANNEE + getForAnneeReprise())) {
                 copyDecision.setFinDecision(copyDecision.getAffiliation().getDateFin());
             } else {
-                copyDecision.setFinDecision("31.12." + getForAnneeReprise());
+                copyDecision.setFinDecision(DATE_FIN_ANNEE + getForAnneeReprise());
             }
             // Mettre date max à l'âge avs pour les non actifs.
             if ((anneeAvs == anneeDec) && copyDecision.isNonActif()
@@ -454,7 +465,7 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
      */
     @Override
     protected void _validate() throws java.lang.Exception {
-        if ((getEMailAddress() == null) || getEMailAddress().equals("")) {
+        if ((getEMailAddress() == null) || "".equals(getEMailAddress())) {
             this._addError(getTransaction(), getSession().getLabel("CP_MSG_0101"));
         }
         if (JadeStringUtil.isIntegerEmpty(getIdPassage())) {
@@ -507,7 +518,7 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
         boolean exerciceSur2Annee = false;
         float mFranchise = Float.parseFloat(FWFindParameter.findParameter(getTransaction(), "10500030", "FRANCHISE",
                 orgDecision.getDebutDecision(), "", 0));
-        if (orgDecision.getTaxation().equalsIgnoreCase("A")) {
+        if ("A".equalsIgnoreCase(orgDecision.getTaxation())) {
             mFranchise = mFranchise * 12;
         } else {
             // Recherche de l'âge AVS
@@ -515,7 +526,7 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
             int moisFin = 0;
             int anneeDebutExercice = JACalendar.getYear(orgDecision.getDebutExercice1());
             int anneeFinExercice = JACalendar.getYear(orgDecision.getFinExercice1());
-            if ((anneeDebutExercice != anneeFinExercice) && orgDecision.getTaxation().equalsIgnoreCase("N")
+            if ((anneeDebutExercice != anneeFinExercice) && "N".equalsIgnoreCase(orgDecision.getTaxation())
                     && orgDecision.getDebutActivite().equals(new Boolean(true))) {
                 exerciceSur2Annee = true;
             }
@@ -559,11 +570,7 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
         // Si il ny a pas d'assurance AVS, se baser sur l'affiliation
         // Ex: Cas de la FER qui n'a que l'AF (médecin vaudois qui paye sa
         // cotisation à la caisse des médecins)
-        // if (cotiAf == null) {
-        // aff.setAffiliationId(copyDecision.getIdAffiliation());
-        // aff.retrieve();
         processCalcul.setAffiliation(copyDecision.loadAffiliation());
-        // }
         // Détermination de la fortune - Test si fortune détaillée (ex: CFC)
         processCalcul.setISession(getSession());
         processCalcul.setTransaction(getTransaction());
@@ -582,7 +589,7 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
         if (copyDecision.getTypeDecision().equalsIgnoreCase(CPDecision.CS_IMPUTATION)) {
             processCalcul.calculBonifMiseEnCompte(processCalcul);
             // Pas la peine de lancer le calcul si l'idCoti vela est vide
-        } else { // if (cotiAf != null) {
+        } else {
             if (copyDecision.isNonActif()) {
                 processCalcul.calculNonActif(processCalcul);
             } else if (copyDecision.getGenreAffilie().equalsIgnoreCase(CPDecision.CS_INDEPENDANT)
@@ -668,6 +675,8 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
         copyDecision.setRevenuCiForce0(new Boolean(false));
         copyDecision.setNombreMoisTotalDecision("0");
         copyDecision.setComplementaire(Boolean.FALSE);
+        //Aucune volonté de reprendre le booléen DIN 1181 avec une nouvelle décision
+        copyDecision.setCotiMinimumPayeEnSalarie(Boolean.FALSE);
         if (!copyDecision.isNonActif()) {
             copyDecision.setDebutExercice1(copyDecision.getDebutDecision());
             copyDecision.setFinExercice1(copyDecision.getFinDecision());
@@ -717,8 +726,8 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
             donneeBase.setDateFortune(saveDateFortune);
             // PO 3829
             if ("Periode".equalsIgnoreCase(typeRevenu)
-                    || (((JACalendar.getYear(dateAvs) == JACalendar.getYear(copyDecision.getFinDecision())) && copyDecision
-                            .isNonActif()))) {
+                    || ((JACalendar.getYear(dateAvs) == JACalendar.getYear(copyDecision.getFinDecision())) && copyDecision
+                            .isNonActif())) {
                 int dureeDecision = JACalendar.getMonth(copyDecision.getFinDecision())
                         - JACalendar.getMonth(copyDecision.getDebutDecision()) + 1;
                 donneeBase.setNbMoisExercice1(Integer.toString(dureeDecision));
@@ -731,8 +740,6 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
             // Annualisation des données si exercice à cheval sur 2 ans
             int moisD = JACalendar.getMonth(orgDecision.getDebutExercice1());
             int moisF = JACalendar.getMonth(orgDecision.getFinExercice1());
-            // if
-            // ("1".equalsIgnoreCase(orgDecision.getProrata())||"3".equalsIgnoreCase(orgDecision.getProrata())){
             if ((moisD != 1) || (moisF != 12) || "1".equalsIgnoreCase(orgDecision.getProrata())
                     || "3".equalsIgnoreCase(orgDecision.getProrata())) {
                 donneeBase.setRevenu1(CPToolBox.annualisationRevenu(orgDecision.getDebutExercice1(),
@@ -817,15 +824,10 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
      */
     @Override
     protected String getEMailObject() {
-        // Déterminer l'objet du message en fonction du code erreur
-        String obj = "";
         if (errorProcess) {
-            obj = getSession().getLabel("SUJET_EMAIL_ACOMPTE_CREATION_FAILED");
-        } else {
-            obj = getSession().getLabel("SUJET_EMAIL_ACOMPTE_CREATION");
+            return getSession().getLabel("SUJET_EMAIL_ACOMPTE_CREATION_FAILED");
         }
-        // Restituer l'objet
-        return obj;
+        return getSession().getLabel("SUJET_EMAIL_ACOMPTE_CREATION");
     }
 
     /**
@@ -948,7 +950,7 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
         }
         deciManager2.setForAnneeDecision(getForAnneeReprise());
         deciManager2.setForFinAffiliation("0");
-        deciManager2.setFromFinAffiliation("01.01." + getForAnneeReprise());
+        deciManager2.setFromFinAffiliation(DATE_DEBUT_ANNEE + getForAnneeReprise());
         if (!JadeStringUtil.isEmpty(getFromAffilieDebut())) {
             deciManager2.setFromNoAffilie(getFromAffilieDebut());
         }
@@ -973,7 +975,7 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
         deciManager.setForGenreAffilie(getForGenreAffilie());
         deciManager.setForAnneeDecision(getForAnneeReprise());
         deciManager.setForFinAffiliation("0");
-        deciManager.setFromFinAffiliation("01.01." + getForAnneeReprise());
+        deciManager.setFromFinAffiliation(DATE_DEBUT_ANNEE + getForAnneeReprise());
         if (!JadeStringUtil.isEmpty(getFromAffilieDebut())) {
             deciManager.setFromNoAffilie(getFromAffilieDebut());
         }
@@ -1078,8 +1080,9 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
 
     protected void setMontantMinimumIndependant() {
         try {
-            cotiIndMinimum = CPTableIndependant.getCotisationMinimum(getTransaction(), "01.01." + getForAnneeReprise());
-            cotiAfiMinimum = CPTableAFI.getCotisationMinimum(getTransaction(), "01.01." + getForAnneeReprise());
+            cotiIndMinimum = CPTableIndependant.getCotisationMinimum(getTransaction(), DATE_DEBUT_ANNEE
+                    + getForAnneeReprise());
+            cotiAfiMinimum = CPTableAFI.getCotisationMinimum(getTransaction(), DATE_DEBUT_ANNEE + getForAnneeReprise());
         } catch (Exception e) {
             JadeLogger.error(this, e);
             this._addError(getTransaction(), getSession().getLabel("CP_MSG_0129"));
@@ -1089,8 +1092,7 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
 
     protected void setMontantMinimumNonActif() {
         try {
-            cotiNEAnnuelleMin = new Float(CPTableNonActif.getRevenuMin(getSession(), getForAnneeReprise()))
-                    .floatValue();
+            cotiNEAnnuelleMin = Float.parseFloat(CPTableNonActif.getRevenuMin(getSession(), getForAnneeReprise()));
             cotiNacMinimum = CPTableNonActif.getCotisationMin(getSession(), getForAnneeReprise());
         } catch (Exception e) {
             JadeLogger.error(this, e);
