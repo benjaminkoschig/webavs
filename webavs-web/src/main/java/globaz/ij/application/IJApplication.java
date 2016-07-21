@@ -37,8 +37,6 @@ public class IJApplication extends PRAbstractApplication {
     /** Le préfixe de l'application. */
     public static final String APPLICATION_PREFIX = "IJ";
 
-    /** 
-     */
     public static final String CS_DOMAINE_ADRESSE_IJAI = "519009";
 
     /** Le nom de l'application. */
@@ -60,10 +58,14 @@ public class IJApplication extends PRAbstractApplication {
     public static final String KEY_POSTIT_PRESTATIONS = "globaz.ij.prestations";
     /** la cle utilisee pour les postit sur les prononce */
     public static final String KEY_POSTIT_PRONONCES = "globaz.ij.prononces";
+
     /** Le no de la caisse CCJU */
     public static final String NO_CAISSE_CCJU = "150";
+    /** Le no de la caisse CICICAM */
+    public static final String NO_CAISSE_CICICAM = "059";
     /** Le no de la caisse CVCI */
     public static final String NO_CAISSE_CVCI = "109";
+
     public static final String PROPERTY_ACOR_FACTORY = "acor.ij.factory.class";
     public static final String PROPERTY_CLONE_BASE_COR = "clone.ij.baseindemnisation.correction";
     public static final String PROPERTY_CLONE_DEFINITION = "clone.ij.definition";

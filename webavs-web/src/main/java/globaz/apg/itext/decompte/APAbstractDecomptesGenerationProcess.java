@@ -291,11 +291,11 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                         // Correction BZ 10007
                         // afin de se prémunir contre 22, 022 on transforme les valeurs en integer
-                        int caisseCourante = Integer.valueOf(PRAbstractApplication.getApplication(
+                        int caisseCourante = Integer.parseInt(PRAbstractApplication.getApplication(
                                 APApplication.DEFAULT_APPLICATION_APG).getProperty(CommonProperties.KEY_NO_CAISSE));
 
-                        int ccvdConstante = Integer.valueOf(APApplication.NO_CAISSE_CCVD);
-                        int agrivitConstante = Integer.valueOf(APApplication.NO_CAISSE_AGRIVIT);
+                        int ccvdConstante = Integer.parseInt(APApplication.NO_CAISSE_CCVD);
+                        int agrivitConstante = Integer.parseInt(APApplication.NO_CAISSE_AGRIVIT);
 
                         boolean isCCVD = ccvdConstante == caisseCourante;
                         boolean isAGRIVIT = agrivitConstante == caisseCourante;
@@ -319,8 +319,10 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 }
             }
 
-            // pour la CCJU, les documents envoyés aux employeurs doivent être indexés uniquement avec le n° d'affilié
-            if (isCaisse(APApplication.NO_CAISSE_CCJU) && IntRole.ROLE_AFFILIE.equals(rolePourLaGed)) {
+            // pour la CCJU OU CICICAM, les documents envoyés aux employeurs doivent être indexés uniquement avec le n°
+            // d'affilié
+            if ((isCaisse(APApplication.NO_CAISSE_CCJU) || isCaisse(APApplication.NO_CAISSE_CICICAM))
+                    && IntRole.ROLE_AFFILIE.equals(rolePourLaGed)) {
                 docInfo = PRBlankBNumberFormater.fillEmptyNss(getSession().getApplication(), docInfo);
             }
 
@@ -956,7 +958,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                 // Récupération de l'idDomaine pour sélectionner la bonne adresse de paiement dans
                 // getAdressePaiementAffilie()
-                domaineDePaiement = repartition.getIdDomaineAdressePaiement().toString();
+                domaineDePaiement = repartition.getIdDomaineAdressePaiement();
 
                 // 1. le n°AVS et le nom de l'assure
                 droit = ApgServiceLocator.getEntityService().getDroitLAPG(getSession(), getTransaction(),
@@ -1050,7 +1052,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     }
 
                     else {
-                        final int idExterneCoti = Integer.valueOf(apCot.getIdExterne());
+                        final int idExterneCoti = Integer.parseInt(apCot.getIdExterne());
 
                         if (idExterneCoti == getIdAssuranceFneParitaire()) {
                             // Le montant des coti FNE n'est pas cumulé avec les autres cotis
@@ -1108,7 +1110,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     totalCotisations.add(totalMontantCotisation.toString());
                 }
 
-                // TODO CHANGES
                 // afficher Cotisations FNE sur une nouvelle ligne si le montant est supérieur à 0
                 if (!cotisationsFNE.isZero()) {
                     champs.put(APAbstractDecomptesGenerationProcess.DETAIL_COTISATIONS_FNE, document.getTextes(3)
@@ -1401,7 +1402,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             champs.put("FIELD_MONTANT_FINAL", PRStringUtils.replaceString(document.getTextes(3).getTexte(27)
                     .getDescription(), "{montantFinal}", JANumberFormatter.formatNoRound(grandTotal.toString())));
 
-            // Insertion de l'addresse de paiement, si non ventillé
+            // Insertion de l'addresse de paiement, si non ventilé
             if ((grandTotal.compareTo(new FWCurrency(0)) > 0)) {
                 // Récupération de l'addresse de paiement
                 final String adressePaiement = getAdressePaiementAffilie(getSession(), decompteCourant.getIdTiers(),
@@ -1436,7 +1437,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                             champs.put("FIELD_ADRESSE_PAIEMENT", PRStringUtils.replaceString(document.getTextes(3)
                                     .getTexte(48).getDescription(), "{adressePaiement}", adressePaiement.trim()));
                         } catch (Exception e) {
-                            // TODO pas top... a voir si une exception devrait être lancée plus loin ?!
                             JadeLogger.error(this.getClass().getName(), e);
                         }
                     }
@@ -1605,7 +1605,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             } else if (!JadeStringUtil.isEmpty(yy)) {
                 annee = yy;
             } else {
-                annee = JADate.getYear(JACalendar.todayJJsMMsAAAA().toString()).toString();
+                annee = JADate.getYear(JACalendar.todayJJsMMsAAAA()).toString();
             }
             docInfo.setDocumentProperty("annee", annee);
 
@@ -1614,8 +1614,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             // on défini les propriétés du DocInfo pour l'archivage
             if (decompteCourant.getIsPaiementEmployeur()) {
 
-                // Dans JadeClientServiceLocator;
-                // globaz.apg.itext.APDecomptesAss ou
+                // Dans JadeClientServiceLocator, globaz.apg.itext.APDecomptesAss ou
                 // globaz.apg.itext.APDecomptesAff pour respectivement
                 // L'assure ou l'affilie. 2 entrées différentes pour différencier le type de document (DTID)
                 docInfo.setDocumentType("globaz.apg.itext.APAbstractDecomptesGenerationProcess" + "Aff");
@@ -1623,7 +1622,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 if (!JadeStringUtil.isIntegerEmpty(decompteCourant.getIdAffilie())) {
 
                     // Employeur affilie --> rôle AFFILIE
-
                     final IFormatData affilieFormatter = ((AFApplication) GlobazServer.getCurrentSystem()
                             .getApplication(AFApplication.DEFAULT_APPLICATION_NAOS)).getAffileFormater();
 
@@ -1641,14 +1639,11 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     }
 
                     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    // pour la CCJU, les documents envoyés aux employeurs doivent être indexés uniquement avec le n°
-                    // d'affilié
+                    // pour la CCJU OU CICICAM, les documents envoyés aux employeurs doivent être indexés uniquement
+                    // avec le n° d'affilié
                     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    if (APApplication.NO_CAISSE_CCJU.equals(PRAbstractApplication.getApplication(
-                            APApplication.DEFAULT_APPLICATION_APG).getProperty(CommonProperties.KEY_NO_CAISSE))) {
-
+                    if (isCaisse(APApplication.NO_CAISSE_CCJU) || isCaisse(APApplication.NO_CAISSE_CICICAM)) {
                         docInfo = PRBlankBNumberFormater.fillEmptyNss(getSession().getApplication(), docInfo);
-
                     }
 
                 } else {
@@ -1662,9 +1657,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             } else {
                 // Assuré --> rôle APG
-
-                // final PRTiersWrapper tierWrapper = PRTiersHelper.getTiersParId(this.getSession(),
-                // this.decompteCourant.getIdTiers());
 
                 String noAff = PRBlankBNumberFormater.getEmptyNoAffilieFormatte();
                 String noAffNonFormatte = PRAbstractApplication.getAffileFormater().unformat(noAff);
@@ -1711,8 +1703,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 final FWIImportManager im = getImporter();
                 final File sourceFile = new File(im.getImportPath() + im.getDocumentTemplate()
                         + FWITemplateType.TEMPLATE_JASPER.toString());
-                if ((sourceFile != null) && sourceFile.exists()) {
-                    ;
+                if (sourceFile != null && sourceFile.exists()) {
+                    // NOTHING TO DO
                 } else {
                     setTemplateFile(APAbstractDecomptesGenerationProcess.FICHIER_MODELE);
                 }
@@ -1744,10 +1736,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 }
 
                 if (null != tiersWrapper) {
-
-                    // final String adrPaiementNom = tiersWrapper.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
-                    // + tiersWrapper.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
-
                     if (JadeStringUtil.isBlankOrZero(idAffilie)) {
                         idAffilie = "";
                     }
@@ -1812,13 +1800,13 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
         try {
 
             // Recupération du nombre de jours soldés
-            final int nbJours = Integer.valueOf(repartition.getNbJoursSoldes());
+            final int nbJours = Integer.parseInt(repartition.getNbJoursSoldes());
 
             if (nbJours != 0) {
                 // Récupération du montant brut
                 final Double montantBrut = Double.valueOf(repartition.getMontantBrut());
                 // Division du montant brut par le nombre de jours
-                BigDecimal montantJournalier = new BigDecimal(montantBrut / nbJours);
+                BigDecimal montantJournalier = BigDecimal.valueOf(montantBrut / nbJours);
                 // Arrondi du montant brut à 2 décimal
                 montantJournalier = montantJournalier.setScale(2, BigDecimal.ROUND_HALF_UP);
 
@@ -1845,14 +1833,14 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
     @Override
     protected String getEMailObject() {
-        final StringBuffer buffer = new StringBuffer("L'impression du document");
+        final StringBuilder builder = new StringBuilder("L'impression du document");
 
         if (isOnError()) {
-            buffer.append(" s'est terminée en erreur");
+            builder.append(" s'est terminée en erreur");
         } else {
-            buffer.append(" s'est terminée avec succès");
+            builder.append(" s'est terminée avec succès");
         }
-        return buffer.toString();
+        return builder.toString();
     }
 
     public abstract int getIdAssuranceAcParitaire();
@@ -1981,8 +1969,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         final IPRAffilie aff = PRAffiliationHelper.getEmployeurParIdAffilie(getSession(),
                                 getTransaction(), affiliecourant.getIdAffilie(), affiliecourant.getIdTiers());
 
-                        // Dans JadeClientServiceLocator;
-                        // globaz.apg.itext.APDecomptesAss ou
+                        // Dans JadeClientServiceLocator, globaz.apg.itext.APDecomptesAss ou
                         // globaz.apg.itext.APDecomptesAff pour respectivement l'assuré ou l'affilié.
                         // 2 entrées différentes pour différencier le type de document (DTID)
                         docInfo.setDocumentType("globaz.apg.itext.APAbstractDecomptesGenerationProcess" + "Aff");

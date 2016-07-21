@@ -57,6 +57,9 @@ public class APApplication extends PRAbstractApplication {
     /** Le no de la caisse CCJU */
     public static final String NO_CAISSE_CCJU = "150";
 
+    /** Le no de la caisse CICICAM */
+    public static final String NO_CAISSE_CICICAM = "059";
+
     /** Le no de la caisse CVCI */
     public static final String NO_CAISSE_CVCI = "109";
 

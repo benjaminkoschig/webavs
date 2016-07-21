@@ -404,8 +404,10 @@ public class IJDecomptes extends FWIDocumentManager {
                 }
             }
 
-            // pour la CCJU, les documents envoyés aux employeurs doivent être indexés uniquement avec le n° d'affilié
-            if (isCaisse(IJApplication.NO_CAISSE_CCJU) && IntRole.ROLE_AFFILIE.equals(rolePourLaGed)) {
+            // pour la CCJU OU CICICAM, les documents envoyés aux employeurs doivent être indexés uniquement avec le n°
+            // d'affilié
+            if ((isCaisse(IJApplication.NO_CAISSE_CCJU) || isCaisse(IJApplication.NO_CAISSE_CICICAM))
+                    && IntRole.ROLE_AFFILIE.equals(rolePourLaGed)) {
                 docInfo = PRBlankBNumberFormater.fillEmptyNss(getSession().getApplication(), docInfo);
             }
 
@@ -764,8 +766,8 @@ public class IJDecomptes extends FWIDocumentManager {
                 FWIImportManager im = getImporter();
                 File sourceFile = new File(im.getImportPath() + im.getDocumentTemplate()
                         + FWITemplateType.TEMPLATE_JASPER.toString());
-                if ((sourceFile != null) && sourceFile.exists()) {
-                    ;
+                if (sourceFile != null && sourceFile.exists()) {
+                    // NOTHING TO DO
                 } else {
                     setTemplateFile(IJDecomptes.FICHIER_MODELE);
                 }
@@ -791,7 +793,7 @@ public class IJDecomptes extends FWIDocumentManager {
             deleteAllDocument();
             return false;
         } else {
-            return true && super.beforePrintDocument();
+            return super.beforePrintDocument();
         }
     }
 
@@ -888,7 +890,7 @@ public class IJDecomptes extends FWIDocumentManager {
                     throw new FWIException("impossible de charger le catalogue de texte");
                 }
 
-                if ((candidats != null) && (candidats.length > 0)) {
+                if (candidats != null && candidats.length > 0) {
                     document = candidats[0];
                     documents.put(cle, document);
                 }
@@ -1275,11 +1277,11 @@ public class IJDecomptes extends FWIDocumentManager {
                     IJCotisation ijCot = (IJCotisation) ijCotMan.getEntity(i);
 
                     if (ijCot.getIsImpotSource().booleanValue() == true) {
-                        totalMontantImpotSource.add((ijCot.getMontant()));
+                        totalMontantImpotSource.add(ijCot.getMontant());
                     }
 
                     else {
-                        totalMontantCotisation.add((ijCot.getMontant()));
+                        totalMontantCotisation.add(ijCot.getMontant());
 
                         String AVSPAR = PRAffiliationHelper.GENRE_AVS_AI.getIdAssurance(
                                 IJApplication.DEFAULT_APPLICATION_IJ, PRAffiliationHelper.TYPE_PARITAIRE);
@@ -1757,11 +1759,11 @@ public class IJDecomptes extends FWIDocumentManager {
                 }
 
                 // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                // pour la CCJU, les documents envoyés aux employeurs doivent être indexés uniquement avec le n°
+                // pour la CCJU OU CICICAM, les documents envoyés aux employeurs doivent être indexés uniquement avec le
+                // n°
                 // d'affilié
                 // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                if (IJApplication.NO_CAISSE_CCJU.equals(PRAbstractApplication.getApplication(
-                        IJApplication.DEFAULT_APPLICATION_IJ).getProperty(CommonProperties.KEY_NO_CAISSE))) {
+                if (isCaisse(IJApplication.NO_CAISSE_CCJU) || isCaisse(IJApplication.NO_CAISSE_CICICAM)) {
                     docInfo = PRBlankBNumberFormater.fillEmptyNss(getSession().getApplication(), docInfo);
                 }
 
