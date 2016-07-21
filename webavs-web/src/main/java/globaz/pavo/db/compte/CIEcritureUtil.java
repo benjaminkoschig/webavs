@@ -1,5 +1,6 @@
 package globaz.pavo.db.compte;
 
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazServer;
@@ -486,7 +487,7 @@ public class CIEcritureUtil {
                 || CIEcriture.CS_CI_SUSPENS.equals(ecriture.getIdTypeCompte())) {
             ecrMgr.setForIdTypeCompteCompta("true");
         }
-        ecrMgr.find(transaction);
+        ecrMgr.find(transaction, BManager.SIZE_NOLIMIT);
         if (ecrMgr.size() == 0) {
             return false;
         } else {
@@ -509,7 +510,7 @@ public class CIEcritureUtil {
         ciMgr.setForRegistre(CICompteIndividuel.CS_REGISTRE_ASSURES);
         ciMgr.setSession(ecriture.getSession());
         ciMgr.setForNumeroAvs(numeroAvs);
-        ciMgr.find();
+        ciMgr.find(BManager.SIZE_USEDEFAULT);
         if (ciMgr.size() == 0) {
             return false;
         }
@@ -518,8 +519,8 @@ public class CIEcritureUtil {
         ecrMgr.setForAnnee(ecriture.getAnnee());
         ecrMgr.setForCompteIndividuelId(((CICompteIndividuel) ciMgr.getFirstEntity()).getCompteIndividuelId());
         ecrMgr.setForAffilie(employeur);
-        // ecrMgr.setForIdTypeCompteCompta("true");
-        ecrMgr.find(transaction);
+
+        ecrMgr.find(transaction, BManager.SIZE_NOLIMIT);
         if (ecrMgr.size() == 0) {
             return false;
         } else {
