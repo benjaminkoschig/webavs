@@ -6,59 +6,58 @@ import java.util.List;
 import org.junit.Test;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
-import ch.globaz.common.domaine.Periode;
 
 public class EmployeeTest {
 
     @Test
     public void testResolveAf() throws Exception {
         Employee e = buildEmployee();
-        List<SalaryCaf> salaryCaf = new ArrayList<SalaryCaf>();
-        SalaryAvs salaryAvs = buildSalarayAvs(1, "01.01.2015", "31.5.2015");
-        SalaryCaf caf = buildSalarayCaf(1, "01.01.2015", "31.5.2015");
-        salaryCaf.add(caf);
-        salaryCaf.add(buildSalarayCaf(1, "01.06.2015", "31.8.2015"));
-        e.setSalariesCaf(new SalariesCaf(salaryCaf));
+        List<SalaryCaf> salariesCaf = new ArrayList<SalaryCaf>();
+        SalaryAvs salaryAvs = buildSalarayAvs(1, "2015-01-01", "2015-05-31");
+        SalaryCaf caf = buildSalarayCaf(1, "2015-01-01", "2015-05-31");
+        salariesCaf.add(caf);
+        salariesCaf.add(buildSalarayCaf(1, "2015-06-01", "2015-08-31"));
+        e.setSalariesCaf(new SalariesCaf(salariesCaf));
         assertEquals(caf, e.resolveAf(salaryAvs));
     }
 
     @Test
     public void testResolveAfNotFound() throws Exception {
+
+        SalaryAvs salaryAvs = buildSalarayAvs(1, "2015-01-01", "2015-05-31");
+
+        List<SalaryCaf> salariesCaf = new ArrayList<SalaryCaf>();
+        salariesCaf.add(buildSalarayCaf(1, "2015-02-01", "2015-05-31"));
+        salariesCaf.add(buildSalarayCaf(1, "2015-06-01", "2015-08-31"));
+
         Employee e = buildEmployee();
-        List<SalaryCaf> salaryCaf = new ArrayList<SalaryCaf>();
-        SalaryAvs salaryAvs = buildSalarayAvs(1, "01.01.2015", "31.5.2015");
-        SalaryCaf caf = buildSalarayCaf(1, "01.02.2015", "31.5.2015");
-        salaryCaf.add(caf);
-        salaryCaf.add(buildSalarayCaf(1, "01.06.2015", "31.8.2015"));
-        e.setSalariesCaf(new SalariesCaf(salaryCaf));
-        assertNull(e.resolveAf(salaryAvs).getCanton());
+        e.setSalariesCaf(new SalariesCaf(salariesCaf));
+
+        assertNull(e.resolveAf(salaryAvs));
+    }
+
+    private PeriodeSalary buildPeriode(String dateDebut, String dateFin) {
+        return new PeriodeSalary.PeriodeSalaryBuilder().dateDebut(dateDebut).dateFin(dateFin).build();
     }
 
     private SalaryCaf buildSalarayCaf(int montant, String dateDebut, String dateFin) {
-        SalaryCaf s = new SalaryCaf();
-        s.setMontant(new Montant(montant));
-        s.setPeriode(new Periode(dateDebut, dateFin));
-        s.setCanton("canton");
-        return s;
+        return new SalaryCaf.SalaryCafBuilder().canton("canton").periode(buildPeriode(dateDebut, dateFin))
+                .montant(new Montant(montant)).build();
     }
 
     private SalaryAvs buildSalarayAvs(int montant, String dateDebut, String dateFin) {
-        SalaryAvs s = new SalaryAvs();
-        s.setMontantAc1(new Montant(montant / 2));
-        s.setMontantAc2(new Montant(montant / 10));
-        s.setMontantAvs(new Montant(montant));
-        s.setPeriode(new Periode(dateDebut, dateFin));
-        return s;
+        return new SalaryAvs.SalaryAvsBuilder().montantAc1(new Montant(montant / 2))
+                .montantAc2(new Montant(montant / 10)).montantAvs(new Montant(montant))
+                .periode(buildPeriode(dateDebut, dateFin)).build();
     }
 
     private Employee buildEmployee() {
         Employee e = new Employee();
         e.setDateNaissance(new Date());
         e.setNom("nom");
-        e.setPrenom("prnome");
+        e.setPrenom("prenom");
         e.setSexe("sexe");
         e.setWorkPlaceCanton("canton");
         return e;
     }
-
 }

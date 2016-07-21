@@ -2,19 +2,19 @@ package ch.globaz.orion.businessimpl.services.pucs;
 
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
-import ch.globaz.common.domaine.Periode;
 import ch.globaz.common.listoutput.converterImplemented.DateSwissFormatConverter;
 import ch.globaz.common.listoutput.converterImplemented.MontantConverter;
 import ch.globaz.common.listoutput.converterImplemented.NssConverter;
-import ch.globaz.common.listoutput.converterImplemented.PeriodeConverter;
 import ch.globaz.common.listoutput.converterImplemented.SexeHFConverter;
+import ch.globaz.orion.business.domaine.pucs.PeriodeSalary;
+import ch.globaz.orion.business.domaine.pucs.PeriodeSalaryConverter;
 import ch.globaz.simpleoutputlist.annotation.Column;
 import ch.globaz.simpleoutputlist.annotation.ColumnValueConverter;
 import ch.globaz.simpleoutputlist.annotation.NullValue;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
 import ch.globaz.simpleoutputlist.annotation.style.ColumnStyle;
 
-@ColumnValueConverter({ PeriodeConverter.class, DateSwissFormatConverter.class, MontantConverter.class })
+@ColumnValueConverter({ PeriodeSalaryConverter.class, DateSwissFormatConverter.class, MontantConverter.class })
 public interface SalaryForListInterface {
 
     @ColumnStyle(width = "9.7%")
@@ -36,7 +36,7 @@ public interface SalaryForListInterface {
 
     @ColumnStyle(width = "13%", align = Align.CENTER)
     @Column(name = "Periode", order = 5)
-    public Periode getPeriode();
+    public PeriodeSalary getPeriode();
 
     @ColumnStyle(width = "5%", align = Align.CENTER)
     @Column(name = "Canton", order = 6)

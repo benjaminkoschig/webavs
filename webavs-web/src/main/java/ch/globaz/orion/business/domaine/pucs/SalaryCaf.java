@@ -1,35 +1,28 @@
 package ch.globaz.orion.business.domaine.pucs;
 
 import ch.globaz.common.domaine.Montant;
-import ch.globaz.common.domaine.Periode;
 
 public class SalaryCaf {
-    private Periode periode;
-    private Montant montant;
-    private String canton;
+    private final PeriodeSalary periode;
+    private final Montant montant;
+    private final String canton;
 
-    public Periode getPeriode() {
-        return periode;
+    private SalaryCaf(SalaryCafBuilder builder) {
+        periode = builder.periode;
+        montant = builder.montant;
+        canton = builder.canton;
     }
 
-    public void setPeriode(Periode periode) {
-        this.periode = periode;
+    public PeriodeSalary getPeriode() {
+        return periode;
     }
 
     public Montant getMontant() {
         return montant;
     }
 
-    public void setMontant(Montant montant) {
-        this.montant = montant;
-    }
-
     public String getCanton() {
         return canton;
-    }
-
-    public void setCanton(String canton) {
-        this.canton = canton;
     }
 
     @Override
@@ -37,4 +30,28 @@ public class SalaryCaf {
         return "SalaryCaf [periode=" + periode + ", montant=" + montant + ", canton=" + canton + "]";
     }
 
+    public static class SalaryCafBuilder {
+        private PeriodeSalary periode;
+        private Montant montant;
+        private String canton;
+
+        public SalaryCafBuilder periode(PeriodeSalary periode) {
+            this.periode = periode;
+            return this;
+        }
+
+        public SalaryCafBuilder montant(Montant montant) {
+            this.montant = montant;
+            return this;
+        }
+
+        public SalaryCafBuilder canton(String canton) {
+            this.canton = canton;
+            return this;
+        }
+
+        public SalaryCaf build() {
+            return new SalaryCaf(this);
+        }
+    }
 }

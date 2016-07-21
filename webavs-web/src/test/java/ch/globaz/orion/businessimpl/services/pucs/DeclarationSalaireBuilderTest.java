@@ -7,12 +7,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import org.junit.Test;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
-import ch.globaz.common.domaine.Periode;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.Employee;
+import ch.globaz.orion.business.domaine.pucs.PeriodeSalary;
 import ch.globaz.orion.business.domaine.pucs.SalariesAvs;
 import ch.globaz.orion.business.domaine.pucs.SalariesCaf;
 import ch.globaz.orion.business.domaine.pucs.SalaryAvs;
@@ -34,8 +37,8 @@ public class DeclarationSalaireBuilderTest {
         assertEquals(new Montant(11784), ds.getMontantAc2());
         assertEquals(new Montant(280851.2), ds.getMontantAvs());
         assertEquals(new Montant(280851.20), ds.getMontantCaf());
-        assertEquals(new Date("02.01.2013"), ds.getTransmissionDate());
-        assertEquals(new Date("02.01.2013"), ds.getTransmissionDate());
+        assertEquals(buildDate("2013-01-02"), ds.getTransmissionDate());
+        assertEquals(buildDate("2013-01-02"), ds.getTransmissionDate());
         assertEquals("072.631-00", ds.getNumeroAffilie());
         assertEquals("JLG SARL", ds.getNom());
         assertEquals(4, ds.getEmployees().size());
@@ -44,13 +47,13 @@ public class DeclarationSalaireBuilderTest {
         assertEquals("JEAN-BERNARD", employee.getPrenom());
         assertEquals("7565177696249", employee.getNss());
         assertEquals("M", employee.getSexe());
-        assertEquals(new Date("23.10.1947"), employee.getDateNaissance());
+        assertEquals(buildDate("1947-10-23"), employee.getDateNaissance());
         assertEquals(2, employee.getSalariesAvs().size());
         SalaryAvs salaryAvs = employee.getSalariesAvs().get(0);
         assertEquals(new Montant(81000), salaryAvs.getMontantAc1());
         assertEquals(new Montant(0), salaryAvs.getMontantAc2());
         assertEquals(new Montant(81000), salaryAvs.getMontantAvs());
-        assertEquals(new Periode("01.02.2012", "30.10.2012"), salaryAvs.getPeriode());
+        assertEquals(buildPeriode("2012-02-01", "2012-10-30"), salaryAvs.getPeriode());
         assertFalse(ds.isAfSeul());
         assertFalse(ds.isTest());
     }
@@ -87,7 +90,7 @@ public class DeclarationSalaireBuilderTest {
         assertEquals(new Montant(0), ds.getMontantAc2());
         assertEquals(new Montant(0), ds.getMontantAvs());
         assertEquals(new Montant(32500.00), ds.getMontantCaf());
-        assertEquals(new Date("02.10.2014"), ds.getTransmissionDate());
+        assertEquals(buildDate("2014-10-02"), ds.getTransmissionDate());
         assertEquals("124.1195", ds.getNumeroAffilie());
         assertEquals("ICHAG - AF SEULE", ds.getNom());
         assertEquals(1, ds.getEmployees().size());
@@ -96,13 +99,13 @@ public class DeclarationSalaireBuilderTest {
         assertEquals("Fredi", employee.getPrenom());
         assertEquals("756.1848.4786.64", employee.getNss());
         assertEquals("M", employee.getSexe());
-        assertEquals(new Date("16.03.1945"), employee.getDateNaissance());
+        assertEquals(buildDate("1945-03-16"), employee.getDateNaissance());
         assertEquals(0, employee.getSalariesAvs().size());
         assertEquals(1, employee.getSalariesCaf().size());
         SalaryCaf salaryAvs = employee.getSalariesCaf().get(0);
         assertTrue(ds.isAfSeul());
         assertEquals(new Montant(65000), salaryAvs.getMontant());
-        assertEquals(new Periode("01.01.2014", "30.06.2014"), salaryAvs.getPeriode());
+        assertEquals(buildPeriode("2014-01-01", "2014-06-30"), salaryAvs.getPeriode());
         assertTrue(ds.isTest());
     }
 
@@ -128,9 +131,9 @@ public class DeclarationSalaireBuilderTest {
         List<Employee> employees = new ArrayList<Employee>();
         Employee e = buildEmployee();
         List<SalaryAvs> salaryAvs = new ArrayList<SalaryAvs>();
-        salaryAvs.add(buildSalarayAvs(1, "01.01.2015", "31.5.2015"));
-        salaryAvs.add(buildSalarayAvs(2, "01.06.2015", "31.10.2015"));
-        salaryAvs.add(buildSalarayAvs(3, "01.11.2015", "31.12.2015"));
+        salaryAvs.add(buildSalarayAvs(1, "2015-01-01", "2015-05-31"));
+        salaryAvs.add(buildSalarayAvs(2, "2015-06-01", "2015-10-31"));
+        salaryAvs.add(buildSalarayAvs(3, "2015-11-01", "2015-12-31"));
 
         SalariesAvs salariesAvs = new SalariesAvs(salaryAvs);
         e.setSalariesAvs(salariesAvs);
@@ -144,9 +147,9 @@ public class DeclarationSalaireBuilderTest {
         List<Employee> employees = new ArrayList<Employee>();
         Employee e = buildEmployee();
         List<SalaryCaf> salaryCaf = new ArrayList<SalaryCaf>();
-        salaryCaf.add(buildSalarayCaf(1, "01.01.2015", "31.5.2015"));
-        salaryCaf.add(buildSalarayCaf(2, "01.06.2015", "31.10.2015"));
-        salaryCaf.add(buildSalarayCaf(3, "01.11.2015", "31.12.2015"));
+        salaryCaf.add(buildSalarayCaf(1, "2015-01-01", "2015-05-31"));
+        salaryCaf.add(buildSalarayCaf(2, "2015-06-01", "2015-10-31"));
+        salaryCaf.add(buildSalarayCaf(3, "2015-11-01", "2015-12-31"));
 
         e.setSalariesAvs(new SalariesAvs(new ArrayList<SalaryAvs>()));
         e.setSalariesCaf(new SalariesCaf(salaryCaf));
@@ -160,15 +163,15 @@ public class DeclarationSalaireBuilderTest {
         List<Employee> employees = new ArrayList<Employee>();
         Employee e = buildEmployee();
         List<SalaryAvs> salaryAvs = new ArrayList<SalaryAvs>();
-        salaryAvs.add(buildSalarayAvs(1, "01.01.2015", "31.05.2015"));
-        salaryAvs.add(buildSalarayAvs(2, "01.06.2015", "31.10.2015"));
-        salaryAvs.add(buildSalarayAvs(3, "01.11.2015", "31.12.2015"));
+        salaryAvs.add(buildSalarayAvs(1, "2015-01-01", "2015-05-31"));
+        salaryAvs.add(buildSalarayAvs(2, "2015-06-01", "2015-10-31"));
+        salaryAvs.add(buildSalarayAvs(3, "2015-11-01", "2015-12-31"));
 
         SalariesAvs salariesAvs = new SalariesAvs(salaryAvs);
         List<SalaryCaf> salaryCaf = new ArrayList<SalaryCaf>();
-        salaryCaf.add(buildSalarayCaf(3, "01.01.2015", "31.03.2015"));
-        salaryCaf.add(buildSalarayCaf(2, "01.04.2015", "31.05.2015"));
-        salaryCaf.add(buildSalarayCaf(1, "01.06.2015", "31.12.2015"));
+        salaryCaf.add(buildSalarayCaf(3, "2015-01-01", "2015-03-31"));
+        salaryCaf.add(buildSalarayCaf(2, "2015-04-01", "2015-05-31"));
+        salaryCaf.add(buildSalarayCaf(1, "2015-06-01", "2015-12-31"));
         SalariesCaf salariesCaf = new SalariesCaf(salaryCaf);
         e.setSalariesAvs(salariesAvs);
         e.setSalariesCaf(salariesCaf);
@@ -188,15 +191,15 @@ public class DeclarationSalaireBuilderTest {
         List<Employee> employees = new ArrayList<Employee>();
         Employee e = buildEmployee();
         List<SalaryAvs> salaryAvs = new ArrayList<SalaryAvs>();
-        salaryAvs.add(buildSalarayAvs(1, "01.01.2015", "31.5.2015"));
-        salaryAvs.add(buildSalarayAvs(2, "01.06.2015", "31.10.2015"));
-        salaryAvs.add(buildSalarayAvs(3, "01.11.2015", "31.12.2015"));
+        salaryAvs.add(buildSalarayAvs(1, "2015-01-01", "2015-05-31"));
+        salaryAvs.add(buildSalarayAvs(2, "2015-06-01", "2015-10-31"));
+        salaryAvs.add(buildSalarayAvs(3, "2015-11-01", "2015-12-31"));
 
         SalariesAvs salariesAvs = new SalariesAvs(salaryAvs);
         List<SalaryCaf> salaryCaf = new ArrayList<SalaryCaf>();
-        salaryCaf.add(buildSalarayCaf(3, "01.01.2015", "31.5.2015"));
-        salaryCaf.add(buildSalarayCaf(2, "01.06.2015", "31.10.2015"));
-        salaryCaf.add(buildSalarayCaf(1, "01.11.2015", "31.12.2015"));
+        salaryCaf.add(buildSalarayCaf(3, "2015-01-01", "2015-05-31"));
+        salaryCaf.add(buildSalarayCaf(2, "2015-06-01", "2015-10-31"));
+        salaryCaf.add(buildSalarayCaf(1, "2015-11-01", "2015-12-31"));
         SalariesCaf salariesCaf = new SalariesCaf(salaryCaf);
         e.setSalariesAvs(salariesAvs);
         e.setSalariesCaf(salariesCaf);
@@ -209,20 +212,32 @@ public class DeclarationSalaireBuilderTest {
     }
 
     private SalaryCaf buildSalarayCaf(int montant, String dateDebut, String dateFin) {
-        SalaryCaf s = new SalaryCaf();
-        s.setMontant(new Montant(montant));
-        s.setPeriode(new Periode(dateDebut, dateFin));
-        s.setCanton("canton");
-        return s;
+        return new SalaryCaf.SalaryCafBuilder().canton("canton").periode(buildPeriode(dateDebut, dateFin))
+                .montant(new Montant(montant)).build();
+    }
+
+    private PeriodeSalary buildPeriode(String dateDebut, String dateFin) {
+        return new PeriodeSalary.PeriodeSalaryBuilder().dateDebut(dateDebut).dateFin(dateFin).build();
     }
 
     private SalaryAvs buildSalarayAvs(int montant, String dateDebut, String dateFin) {
-        SalaryAvs s = new SalaryAvs();
-        s.setMontantAc1(new Montant(montant / 2));
-        s.setMontantAc2(new Montant(montant / 10));
-        s.setMontantAvs(new Montant(montant));
-        s.setPeriode(new Periode(dateDebut, dateFin));
-        return s;
+        return new SalaryAvs.SalaryAvsBuilder().montantAc1(new Montant(montant / 2))
+                .montantAc2(new Montant(montant / 10)).montantAvs(new Montant(montant))
+                .periode(buildPeriode(dateDebut, dateFin)).build();
+
+    }
+
+    private Date buildDate(String date) {
+
+        if (date != null && date.trim().length() > 0) {
+            try {
+                XMLGregorianCalendar dateXml = DatatypeFactory.newInstance().newXMLGregorianCalendar(date);
+                return new Date(dateXml.toGregorianCalendar().getTime());
+            } catch (DatatypeConfigurationException e) {
+                throw new RuntimeException("Error parasing date", e);
+            }
+        }
+        return null;
     }
 
     private Employee buildEmployee() {

@@ -82,10 +82,10 @@ public class Employee {
 
     public SalaryCaf resolveAf(SalaryAvs salaryAvs) {
         for (SalaryCaf caf : salariesCaf) {
-            if (salaryAvs.getPeriode().equals(caf.getPeriode())) {
+            if (salaryAvs.getPeriode().compareTo(caf.getPeriode()) == 0) {
                 return caf;
             }
         }
-        return new SalaryCaf();
+        return null;
     }
 }

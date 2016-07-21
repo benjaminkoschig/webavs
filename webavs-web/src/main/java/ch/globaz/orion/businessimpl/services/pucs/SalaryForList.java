@@ -2,8 +2,8 @@ package ch.globaz.orion.businessimpl.services.pucs;
 
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
-import ch.globaz.common.domaine.Periode;
 import ch.globaz.common.listoutput.converterImplemented.LabelTranslater;
+import ch.globaz.orion.business.domaine.pucs.PeriodeSalary;
 import ch.globaz.simpleoutputlist.annotation.Translater;
 
 @Translater(identifier = "DS_PUCS", value = LabelTranslater.class)
@@ -13,7 +13,7 @@ public class SalaryForList implements SalaryForListInterface {
     private String nomPrenom;
     private Date dateNaissance;
     private String sexe;
-    private Periode periode;
+    private PeriodeSalary periode;
     private String canton;
     private Montant slaire;
     private Montant ac1;
@@ -58,11 +58,11 @@ public class SalaryForList implements SalaryForListInterface {
     }
 
     @Override
-    public Periode getPeriode() {
+    public PeriodeSalary getPeriode() {
         return periode;
     }
 
-    public void setPeriode(Periode periode) {
+    public void setPeriode(PeriodeSalary periode) {
         this.periode = periode;
     }
 

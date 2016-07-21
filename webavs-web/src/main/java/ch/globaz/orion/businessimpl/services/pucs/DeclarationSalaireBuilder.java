@@ -9,12 +9,12 @@ import ch.globaz.common.dom.ElementsDomParser;
 import ch.globaz.common.dom.Function;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
-import ch.globaz.common.domaine.Periode;
 import ch.globaz.orion.business.domaine.pucs.Adresse;
 import ch.globaz.orion.business.domaine.pucs.Contact;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.domaine.pucs.Employee;
+import ch.globaz.orion.business.domaine.pucs.PeriodeSalary;
 import ch.globaz.orion.business.domaine.pucs.SalariesAvs;
 import ch.globaz.orion.business.domaine.pucs.SalariesCaf;
 import ch.globaz.orion.business.domaine.pucs.SalaryAvs;
@@ -22,6 +22,10 @@ import ch.globaz.orion.business.domaine.pucs.SalaryCaf;
 import ch.globaz.orion.ws.service.AppAffiliationService;
 
 public class DeclarationSalaireBuilder {
+
+    private DeclarationSalaireBuilder() {
+        throw new IllegalAccessError("Builder class");
+    }
 
     public static DeclarationSalaire build(String path) {
         IFormatData formater = AppAffiliationService.resolveNumAffilieFormater();
@@ -121,8 +125,7 @@ public class DeclarationSalaireBuilder {
     }
 
     static List<SalaryForList> buildForList(DeclarationSalaire ds) {
-        List<SalaryForList> list = buildForList(ds.getEmployees());
-        return list;
+        return buildForList(ds.getEmployees());
     }
 
     static List<SalaryForList> buildForList(List<Employee> employees) {
@@ -134,10 +137,12 @@ public class DeclarationSalaireBuilder {
                 salaryForList.setAc1(salaryAvs.getMontantAc1());
                 salaryForList.setAc2(salaryAvs.getMontantAc2());
                 SalaryCaf caf = employee.resolveAf(salaryAvs);
-                cafs.add(caf);
-                salaryForList.setAf(caf.getMontant());
+                if (caf != null) {
+                    cafs.add(caf);
+                    salaryForList.setAf(caf.getMontant());
+                    salaryForList.setCantonAf(caf.getCanton());
+                }
                 salaryForList.setCanton(employee.getWorkPlaceCanton());
-                salaryForList.setCantonAf(caf.getCanton());
                 salaryForList.setDateNaissance(employee.getDateNaissance());
                 salaryForList.setNomPrenom(employee.getNom() + " " + employee.getPrenom());
                 salaryForList.setNss(employee.getNss());
@@ -176,7 +181,7 @@ public class DeclarationSalaireBuilder {
     private static List<Employee> buildEmployees(ElementsDomParser parser) {
         ElementsDomParser staffParser = parser.find("Person");
 
-        List<Employee> list = staffParser.createList(new Function<Employee>() {
+        return staffParser.createList(new Function<Employee>() {
             @Override
             public Employee convert(ElementsDomParser p) {
                 Employee employee = new Employee();
@@ -196,53 +201,49 @@ public class DeclarationSalaireBuilder {
                 return employee;
             }
         });
-        return list;
     }
 
     private static List<SalaryAvs> buildSalariesAvs(ElementsDomParser parser) {
         ElementsDomParser salariesParser = parser.find("AHV-AVS-Salaries AHV-AVS-Salary");
-        List<SalaryAvs> list = salariesParser.createList(new Function<SalaryAvs>() {
+        return salariesParser.createList(new Function<SalaryAvs>() {
             @Override
             public SalaryAvs convert(ElementsDomParser p) {
-                SalaryAvs salary = new SalaryAvs();
-                salary.setMontantAvs(p.findValueAsMontant("AHV-AVS-Income"));
-                salary.setMontantAc1(p.findValueAsMontant("ALV-AC-Income"));
-                salary.setMontantAc2(p.findValueAsMontant("ALVZ-ACS-Income"));
-                salary.setPeriode(buildPeriode(p, "AccountingTime from", "AccountingTime until"));
-                return salary;
+                return new SalaryAvs.SalaryAvsBuilder().montantAc1(p.findValueAsMontant("ALV-AC-Income"))
+                        .montantAc2(p.findValueAsMontant("ALVZ-ACS-Income"))
+                        .montantAvs(p.findValueAsMontant("AHV-AVS-Income"))
+                        .periode(buildPeriode(p, "AccountingTime from", "AccountingTime until")).build();
+
             }
         });
-        return list;
     }
 
     private static List<SalaryCaf> buildSalariesCaf(ElementsDomParser parser) {
         ElementsDomParser salariesParser = parser.find("FAK-CAF-Salaries FAK-CAF-Salary");
-        List<SalaryCaf> list = salariesParser.createList(new Function<SalaryCaf>() {
+        return salariesParser.createList(new Function<SalaryCaf>() {
             @Override
             public SalaryCaf convert(ElementsDomParser p) {
-                Periode periode = buildPeriode(p, "FAK-CAF-Period from", "FAK-CAF-Period until");
+                PeriodeSalary periode = buildPeriode(p, "FAK-CAF-Period from", "FAK-CAF-Period until");
                 Montant montant = p.findValueAsMontant("FAK-CAF-ContributorySalary");
-                if (periode.isEmpty() && montant.isZero()) {
+                if (periode == null && montant.isZero()) {
                     return null;
                 }
-                SalaryCaf salary = new SalaryCaf();
-                salary.setMontant(montant);
-                salary.setCanton(p.findValue("FAK-CAF-WorkplaceCanton"));
-                salary.setPeriode(periode);
-                return salary;
+
+                String canton = p.findValue("FAK-CAF-WorkplaceCanton");
+
+                return new SalaryCaf.SalaryCafBuilder().montant(montant).canton(canton).periode(periode).build();
             }
         });
-        return list;
+
     }
 
-    private static Periode buildPeriode(ElementsDomParser p, String pahtDebut, String pahtFin) {
+    private static PeriodeSalary buildPeriode(ElementsDomParser p, String pahtDebut, String pahtFin) {
 
-        Date dateDebut = p.findValueAsDateAndCorrectItIfNeed(pahtDebut);
-        Date dateFin = p.findValueAsDateAndCorrectItIfNeed(pahtFin);
+        String dateDebut = p.findValue(pahtDebut);
+        String dateFin = p.findValue(pahtFin);
         if (pahtDebut != null && dateFin != null) {
-            return new Periode(dateDebut.getSwissValue(), dateFin.getSwissValue());
+            return new PeriodeSalary.PeriodeSalaryBuilder().dateDebut(dateDebut).dateFin(dateFin).build();
         } else {
-            return Periode.EMPTY;
+            return null;
         }
     }
 
