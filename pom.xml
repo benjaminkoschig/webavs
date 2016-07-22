@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>ch.globaz</groupId>
@@ -29,7 +30,7 @@
 		<wiki.parent>WebAVS RN</wiki.parent>
 		<!-- SCM ATTRIBUTES -->
 		<scm.path>webavs-repos</scm.path>
-		
+
 		<scm.tags>${scm.protocol}://${scm.base}/tags</scm.tags>
 		<scm.url>${scm.protocol}://${scm.base}/${scm.branch}/webavs-parent</scm.url>
 		<scm.weburl>http://${scm.base}/${scm.branch}/webavs-parent</scm.weburl>
@@ -39,7 +40,7 @@
 		<!-- since we are building with JDK 1.6, we need to override some plugin's 
 			version -->
 		<buildhelper.version>1.9.1</buildhelper.version>
-		
+
 		<confluence-reporting.version>4.5</confluence-reporting.version>
 
 		<httpclient.version>4.4.1</httpclient.version>
@@ -52,9 +53,9 @@
 		<pyxis.version>1.23.0</pyxis.version>
 		<simple-output-list.version>1.1.3</simple-output-list.version>
 		<op.version>5.0.3</op.version>
-		
+
 		<globaz-external-xsd.version>1.1.12-SNAPSHOT</globaz-external-xsd.version>
-		
+
 
 		<!-- CONTINUOUS INTEGRATION -->
 		<ci.url>http://ci-devtools.ju.globaz.ch:8080/jenkins</ci.url>
@@ -67,6 +68,21 @@
 		<module>webavs-configuration</module>
 		<module>webavs-sql</module>
 	</modules>
+
+	<profiles>
+		<profile>
+			<id>release</id>
+			<activation>
+				<property>
+					<name>release</name>
+				</property>
+			</activation>
+			<properties>
+				<buildNumber.doCheck>false</buildNumber.doCheck>
+				<buildNumber.doUpdate>false</buildNumber.doUpdate>
+			</properties>
+		</profile>
+	</profiles>
 
 	<developers>
 		<developer>
@@ -206,13 +222,13 @@
 				<artifactId>httpclient</artifactId>
 				<version>${httpclient.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>fluent-hc</artifactId>
 				<version>${fluent-hc.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpasyncclient</artifactId>
@@ -225,14 +241,14 @@
 				<version>2.0</version>
 				<scope>provided</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>servlet-api</artifactId>
 				<version>2.5</version>
 				<scope>provided</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>jstl</artifactId>
@@ -252,7 +268,7 @@
 				<version>2.5.1</version>
 				<scope>test</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.hamcrest</groupId>
 				<artifactId>hamcrest-all</artifactId>
@@ -281,7 +297,7 @@
 				<artifactId>alpha-externalservices</artifactId>
 				<version>0.0.1</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>jade</artifactId>
@@ -293,7 +309,7 @@
 				<artifactId>pyxis-services</artifactId>
 				<version>${pyxis.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>pyxis-services-impl</artifactId>
@@ -305,25 +321,25 @@
 				<artifactId>uidwse</artifactId>
 				<version>0.0.1</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>ebback-api</artifactId>
 				<version>7.0.1</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>envoi</artifactId>
 				<version>0.0.1</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>gcom</artifactId>
 				<version>1.0.13</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>globaz-external-xsd</artifactId>
@@ -335,13 +351,13 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>stax</groupId>
 				<artifactId>stax-api</artifactId>
 				<version>1.0.1</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>journalisation</artifactId>
@@ -353,13 +369,13 @@
 				<artifactId>sunanda</artifactId>
 				<version>1.3.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>reprise-ctx</artifactId>
 				<version>0.0.1</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>rafam-e-delegue</artifactId>
@@ -377,7 +393,7 @@
 				<artifactId>op</artifactId>
 				<version>${op.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>globaz-services</artifactId>
@@ -406,7 +422,7 @@
 				<artifactId>jep</artifactId>
 				<version>2.23</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>javax.resource</groupId>
 				<artifactId>connector-api</artifactId>
@@ -418,49 +434,49 @@
 				<artifactId>oro</artifactId>
 				<version>2.0.8</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>javax.xml</groupId>
 				<artifactId>jaxrpc-api</artifactId>
 				<version>1.1</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.apache.axis</groupId>
 				<artifactId>axis-jaxrpc</artifactId>
 				<version>1.4</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.google.code.gson</groupId>
 				<artifactId>gson</artifactId>
 				<version>2.1</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>commons-lang</groupId>
 				<artifactId>commons-lang</artifactId>
 				<version>2.5</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
 				<version>2.1</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.apache.axis</groupId>
 				<artifactId>axis-ant</artifactId>
 				<version>1.4</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>commons-collections</groupId>
 				<artifactId>commons-collections</artifactId>
 				<version>3.2.1</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>concurrent</groupId>
 				<artifactId>concurrent</artifactId>
@@ -473,13 +489,13 @@
 				<artifactId>Anakin</artifactId>
 				<version>0.0.1</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>ch.admin.ofit.anakin</groupId>
 				<artifactId>Arena</artifactId>
 				<version>1.1.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>ch.admin.ofit</groupId>
 				<artifactId>Augmentation</artifactId>
@@ -492,13 +508,13 @@
 				<artifactId>db2java</artifactId>
 				<version>1.0.581</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.ibm</groupId>
 				<artifactId>jt400</artifactId>
 				<version>5.3.0.2</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>javax.transaction</groupId>
 				<artifactId>jta</artifactId>
@@ -545,13 +561,13 @@
 				<artifactId>mysql-connector-java</artifactId>
 				<version>3.1.11</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>colt</groupId>
 				<artifactId>colt</artifactId>
 				<version>1.0.3</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>javax.xml</groupId>
 				<artifactId>jsr173</artifactId>
@@ -569,7 +585,7 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>itucana</artifactId>
