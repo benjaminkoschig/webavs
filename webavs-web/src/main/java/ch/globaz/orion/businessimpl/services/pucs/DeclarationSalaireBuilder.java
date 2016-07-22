@@ -24,7 +24,7 @@ import ch.globaz.orion.ws.service.AppAffiliationService;
 public class DeclarationSalaireBuilder {
 
     private DeclarationSalaireBuilder() {
-        throw new IllegalAccessError("Builder class");
+        throw new UnsupportedOperationException("Build class");
     }
 
     public static DeclarationSalaire build(String path) {
