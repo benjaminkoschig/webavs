@@ -39,6 +39,8 @@
 		<!-- since we are building with JDK 1.6, we need to override some plugin's 
 			version -->
 		<buildhelper.version>1.9.1</buildhelper.version>
+		
+		<confluence-reporting.version>4.5</confluence-reporting.version>
 
 		<httpclient.version>4.4.1</httpclient.version>
 		<fluent-hc.version>4.4.1</fluent-hc.version>
