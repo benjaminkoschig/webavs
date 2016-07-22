@@ -148,10 +148,10 @@
 						<%=line.getDateDebut()+" - "+line.getDateFin()%>&nbsp;
 					</td>
 					<td align="right" class="mtd" onClick="<%=actionDetail%>" width="" nowrap>
-						<%=JANumberFormatter.fmt(line.getMontantBrut(), true, true, true, 2)%>&nbsp;
+						<%=JANumberFormatter.fmt(line.getMontantBrut(), true, true, false, 2)%>&nbsp;
 					</td>
 					<td align="right" class="mtd" onClick="<%=actionDetail%>" width="" nowrap>
-						<%=JANumberFormatter.fmt(line.getMontantNet(), true, true, true, 2)%>&nbsp;
+						<%=JANumberFormatter.fmt(line.getMontantNet(), true, true, false, 2)%>&nbsp;
 					</td>
 					<td class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>">
 						<%=line.getNoLot()%>&nbsp;

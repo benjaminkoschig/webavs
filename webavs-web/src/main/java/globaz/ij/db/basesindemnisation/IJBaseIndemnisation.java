@@ -354,10 +354,13 @@ public class IJBaseIndemnisation extends BEntity implements PRHierarchique, IPRC
             setNombreJoursCouverts(String.valueOf(nbrJoursCouvert));
         }
 
-        if (JadeStringUtil.isIntegerEmpty(getNombreJoursExterne())
-                && JadeStringUtil.isIntegerEmpty(getNombreJoursInterne()) && (nbrJoursCouvert == 0)) {
-            _addError(statement.getTransaction(), getSession().getLabel("JSP_BASE_IND_AUCUN_JOURS_ATTESTE"));
-        }
+        /*
+         * D0118 : possibilité des saisir des BI avec 0 jours interne et externes
+         */
+        // if (JadeStringUtil.isIntegerEmpty(getNombreJoursExterne())
+        // && JadeStringUtil.isIntegerEmpty(getNombreJoursInterne()) && (nbrJoursCouvert == 0)) {
+        // _addError(statement.getTransaction(), getSession().getLabel("JSP_BASE_IND_AUCUN_JOURS_ATTESTE"));
+        // }
 
         // la base ne doit pas recouvrir une autre base
         IJBaseIndemnisationManager bases = new IJBaseIndemnisationManager();

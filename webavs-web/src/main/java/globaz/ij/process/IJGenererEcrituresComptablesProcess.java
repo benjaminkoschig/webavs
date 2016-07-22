@@ -269,10 +269,33 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
      */
     @Override
     protected boolean _executeProcess() {
+
         FWMemoryLog comptaMemoryLog = new FWMemoryLog();
         boolean noErrorBeforeClose = false;
 
         try {
+
+            IJLot lot = new IJLot();
+            lot.setSession(getSession());
+            lot.setIdLot(idLot);
+            lot.retrieve(getTransaction());
+
+            /*
+             * D0113
+             * En 1er lieu on contrôle qu'il y ait un montant (positif ou négatif) avant de lancer le process de compta
+             * Ceci dans le cas ou le lot ne contiendrais que des prestations à 0.-
+             */
+            IJRepartJointCotJointPrestJointEmployeurManager manager = createManagerRechercheRepartition();
+            manager.find(BManager.SIZE_NOLIMIT);
+
+            for (Object object : manager.getContainer()) {
+                IJRepartJointCotJointPrestJointEmployeur repartition = (IJRepartJointCotJointPrestJointEmployeur) object;
+                if (!new FWCurrency(repartition.getMontantBrut()).isZero()) {
+                    break;
+                }
+                return true;
+            }
+
             // instanciation du processus de compta
             BISession sessionOsiris = PRSession.connectSession(getSession(), "OSIRIS");
             APIGestionComptabiliteExterne compta = (APIGestionComptabiliteExterne) sessionOsiris
@@ -286,13 +309,6 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
             compta.setSendCompletionMail(false);
             compta.setTransaction(getTransaction());
             compta.setProcess(this);
-
-            // récupération du lot pour savoir pour la suite si c'est un lot
-            // maternité ou apg
-            IJLot lot = new IJLot();
-            lot.setSession(getSession());
-            lot.setIdLot(idLot);
-            lot.retrieve(getTransaction());
 
             if (lot != null) {
                 compta.setLibelle(lot.getDescription());
@@ -1390,11 +1406,7 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
      *             </p>
      */
     private Map getMapRepartitions() throws Exception {
-        IJRepartJointCotJointPrestJointEmployeurManager repartJointCotJointPrestManager = new IJRepartJointCotJointPrestJointEmployeurManager();
-        repartJointCotJointPrestManager.setSession(getSession());
-        repartJointCotJointPrestManager.setForIdLot(idLot);
-        repartJointCotJointPrestManager.setForParentOnly(true);
-        repartJointCotJointPrestManager.setOrderBy(IJCotisation.FIELDNAME_IDREPARTITIONPAIEMENTS);
+        IJRepartJointCotJointPrestJointEmployeurManager repartJointCotJointPrestManager = createManagerRechercheRepartition();
 
         BStatement statement = repartJointCotJointPrestManager.cursorOpen(getTransaction());
 
@@ -1576,6 +1588,18 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
         }
 
         return repartitions;
+    }
+
+    /**
+     * @return
+     */
+    private IJRepartJointCotJointPrestJointEmployeurManager createManagerRechercheRepartition() {
+        IJRepartJointCotJointPrestJointEmployeurManager repartJointCotJointPrestManager = new IJRepartJointCotJointPrestJointEmployeurManager();
+        repartJointCotJointPrestManager.setSession(getSession());
+        repartJointCotJointPrestManager.setForIdLot(idLot);
+        repartJointCotJointPrestManager.setForParentOnly(true);
+        repartJointCotJointPrestManager.setOrderBy(IJCotisation.FIELDNAME_IDREPARTITIONPAIEMENTS);
+        return repartJointCotJointPrestManager;
     }
 
     /**

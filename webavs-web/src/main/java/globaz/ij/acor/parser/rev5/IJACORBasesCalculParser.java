@@ -49,6 +49,8 @@ import org.w3c.dom.NodeList;
  */
 public class IJACORBasesCalculParser extends IJACORAbstractXMLFileParser {
 
+    private static final String ZERO = "0";
+
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
 
@@ -259,9 +261,9 @@ public class IJACORBasesCalculParser extends IJACORAbstractXMLFileParser {
      * @throws PRACORException
      *             DOCUMENT ME!
      */
-    public static final List parse(BSession session, BTransaction transaction, IJPrononce prononce, Reader reader)
-            throws PRACORException {
-        LinkedList retValue = new LinkedList();
+    public static final List<IJIJCalculee> parse(BSession session, BTransaction transaction, IJPrononce prononce,
+            Reader reader) throws PRACORException {
+        LinkedList<IJIJCalculee> retValue = new LinkedList<IJIJCalculee>();
 
         // les fichiers de retour en xml ne sont jamais bien gros donc on les
         // charge en memoire
@@ -370,12 +372,13 @@ public class IJACORBasesCalculParser extends IJACORAbstractXMLFileParser {
 
                     // ajouter aux resultats
                     retValue.add(ijCalculee);
-
+                    boolean indemniteJournaliereTrouve = false;
                     // extraire les indemnites journalieres
                     for (int idIJ = 0; idIJ < bc.getChildNodes().getLength(); ++idIJ) {
                         Node ij = bc.getChildNodes().item(idIJ);
 
                         if (ij.getNodeName().equals("ij")) {
+                            indemniteJournaliereTrouve = true;
                             Map ijNodes = childrenMap(ij);
                             IJIndemniteJournaliere indemniteJournaliere = new IJIndemniteJournaliere();
 
@@ -407,6 +410,20 @@ public class IJACORBasesCalculParser extends IJACORAbstractXMLFileParser {
                             // insertion dans la base
                             indemniteJournaliere.setIdIJCalculee(ijCalculee.getIdIJCalculee());
                             save(session, transaction, indemniteJournaliere);
+                        }
+                    }
+
+                    /*
+                     * Si aucune indemnisation, c'edst que le balise <ij> n'est pas présente dans la feuille de calcul
+                     * ACOR
+                     * Dans ce cas on créé des indemnités journalières (interne et externe) à 0.-
+                     */
+                    if (!indemniteJournaliereTrouve) {
+
+                        try {
+                            creerIJIndemniteJournaliere(ijCalculee.getIdIJCalculee(), session);
+                        } catch (Exception e) {
+                            throw new PRACORException(e.toString(), e);
                         }
                     }
                 }
@@ -595,6 +612,63 @@ public class IJACORBasesCalculParser extends IJACORAbstractXMLFileParser {
         }
 
         return retValue;
+    }
+
+    /**
+     * @param session
+     * @param ijCalculee
+     * @throws Exception
+     */
+    private static void creerIJIndemniteJournaliere(String idIJCalculee, BSession session) throws Exception {
+        IJIndemniteJournaliere indemniteJournaliere = null;
+        // ------------------------------------------//
+
+        // 1ère IJ de type interne
+        indemniteJournaliere = creerIndemniteJournaliereSansType();
+        indemniteJournaliere.setSession(session);
+        indemniteJournaliere.setIdIJCalculee(idIJCalculee);
+        // IJINDJRN.XWTTIN
+        indemniteJournaliere.setCsTypeIndemnisation(IIJMesure.CS_INTERNE);
+        indemniteJournaliere.add();
+        // ------------------------------------------//
+
+        // 2ème IJ de type externe
+        indemniteJournaliere = creerIndemniteJournaliereSansType();
+        indemniteJournaliere.setSession(session);
+        indemniteJournaliere.setIdIJCalculee(idIJCalculee);
+        // IJINDJRN.XWTTIN
+        indemniteJournaliere.setCsTypeIndemnisation(IIJMesure.CS_EXTERNE);
+        indemniteJournaliere.add();
+    }
+
+    /**
+     * @param indemniteJournaliere
+     */
+    private static IJIndemniteJournaliere creerIndemniteJournaliereSansType() {
+        IJIndemniteJournaliere indemniteJournaliere = new IJIndemniteJournaliere();
+        // IJINDJRN.XWMDRA
+        indemniteJournaliere.setDeductionRenteAI(ZERO);
+        // IJINDJRN.XWMFRR
+        indemniteJournaliere.setFractionReductionSiRevenuAvantReadaptation(ZERO);
+        // IJINDJRN.XWMIAR
+        indemniteJournaliere.setIndemniteAvantReduction(ZERO);
+        // IJINDJRN.XWMMCO
+        indemniteJournaliere.setMontantComplet(ZERO);
+        // IJINDJRN.XWMGNR
+        indemniteJournaliere.setMontantGarantiAANonReduit(ZERO);
+        // IJINDJRN.XWMGAR
+        indemniteJournaliere.setMontantGarantiAAReduit(ZERO);
+        // IJINDJRN.XWMMJI
+        indemniteJournaliere.setMontantJournalierIndemnite(ZERO);
+        // IJINDJRN.XWMMPL
+        indemniteJournaliere.setMontantPlafonne(ZERO);
+        // IJINDJRN.XWMMPM
+        indemniteJournaliere.setMontantPlafonneMinimum(ZERO);
+        // IJINDJRN.XWMMRR
+        indemniteJournaliere.setMontantReductionSiRevenuAvantReadaptation(ZERO);
+        // IJINDJRN.XWMMSR
+        indemniteJournaliere.setMontantSupplementaireReadaptation(ZERO);
+        return indemniteJournaliere;
     }
 
     /**

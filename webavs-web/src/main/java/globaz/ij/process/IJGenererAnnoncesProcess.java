@@ -21,6 +21,7 @@ import globaz.ij.db.annonces.IJPeriodeAnnonce;
 import globaz.ij.db.prestations.IJIndemniteJournaliere;
 import globaz.ij.db.prestations.IJPrestation;
 import globaz.ij.utils.IJUtils;
+import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 
@@ -124,6 +125,11 @@ public class IJGenererAnnoncesProcess extends BProcess {
                         ;
                     }
                 } // fin bloc
+
+                // D0103 ne pas créer d'annonce si décompte avec montant à 0.-
+                if (JadeNumericUtil.isEmptyOrZero(generationAnnonce.getMontantBrutPrestation())) {
+                    continue;
+                }
 
                 IJAnnonce annonceACreer = new IJAnnonce();
                 annonceACreer.setSession(getSession());
