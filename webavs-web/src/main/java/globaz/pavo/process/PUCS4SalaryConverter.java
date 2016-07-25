@@ -30,6 +30,7 @@ import ch.swissdec.schema.sd._20130514.salarydeclaration.PersonsType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.SalaryCountersType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.SalaryDeclarationType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.TimePeriodType;
+import ch.swissdec.schema.sd._20130514.salarydeclaration.TotalFAKCAFPerCantonType;
 import ch.swissdec.schema.sd._20130514.salarydeclarationconsumercontainer.DeclareSalaryConsumerType;
 import ch.swissdec.schema.sd._20130514.salarydeclarationcontainer.SalaryDeclarationRequestType;
 
@@ -78,13 +79,14 @@ public class PUCS4SalaryConverter {
         for (PersonType person : staff.getPerson()) {
             ParticularsType particulars = person.getParticulars();
 
-            Employee e = new Employee();
-            e.setDateNaissance(new Date(particulars.getDateOfBirth().toGregorianCalendar().getTime()));
-            e.setNom(particulars.getLastname());
-            e.setPrenom(particulars.getFirstname());
-            e.setNss(particulars.getSocialInsuranceIdentification().getSVASNumber());
-            e.setSexe(particulars.getSex().value());
-            e.setWorkPlaceCanton(particulars.getResidenceCanton().value()); // FIXME workplace vs residence wtf?
+            Employee targetEmployee = new Employee();
+            targetEmployee.setDateNaissance(new Date(particulars.getDateOfBirth().toGregorianCalendar().getTime()));
+            targetEmployee.setNom(particulars.getLastname());
+            targetEmployee.setPrenom(particulars.getFirstname());
+            targetEmployee.setNss(particulars.getSocialInsuranceIdentification().getSVASNumber());
+            targetEmployee.setSexe(particulars.getSex().value());
+            targetEmployee.setWorkPlaceCanton(particulars.getResidenceCanton().value()); // FIXME workplace vs residence
+                                                                                         // wtf?
 
             // AHVAVS -------------
             if (person.getAHVAVSSalaries() == null) {
@@ -101,7 +103,7 @@ public class PUCS4SalaryConverter {
                     salaries.add(targetSalary);
                 }
 
-                e.setSalariesAvs(new SalariesAvs(salaries));
+                targetEmployee.setSalariesAvs(new SalariesAvs(salaries));
             }
 
             // FAKCAF -------------
@@ -118,7 +120,7 @@ public class PUCS4SalaryConverter {
                     salaries.add(targetSalary);
                 }
 
-                e.setSalariesCaf(new SalariesCaf(salaries));
+                targetEmployee.setSalariesCaf(new SalariesCaf(salaries));
             }
 
             /*
@@ -145,7 +147,7 @@ public class PUCS4SalaryConverter {
              * }
              */
 
-            result.getEmployees().add(e);
+            result.getEmployees().add(targetEmployee);
         }
 
         /*
@@ -174,7 +176,11 @@ public class PUCS4SalaryConverter {
             throw new UnsupportedOperationException("found " + fakcaf.size() + " nodes!");
         } else if (!fakcaf.isEmpty()) {
             FAKCAFTotalsType totalCaf = fakcaf.get(0);
-            // FIXME result.setMontantCaf(Montant.valueOf(totalCaf.getTotalFAKCAFPerCanton()));
+
+            for (TotalFAKCAFPerCantonType canton : totalCaf.getTotalFAKCAFPerCanton()) {
+                result.setMontantCaf(canton.getCanton().value(),
+                        Montant.valueOf(canton.getTotalFAKCAFContributorySalary()));
+            }
         }
 
         SalaryCountersType salaryCounters = company.getSalaryCounters();
@@ -193,6 +199,14 @@ public class PUCS4SalaryConverter {
         return result;
     }
 
+    private PeriodeSalary buildPeriodeSalary(TimePeriodType period) {
+        XMLGregorianCalendar from = period.getFrom();
+        XMLGregorianCalendar until = period.getUntil();
+
+        return new PeriodeSalary.PeriodeSalaryBuilder().dateDebut(from == null ? null : from.toXMLFormat())
+                .dateFin(until == null ? null : until.toXMLFormat()).build();
+    }
+
     private void checkAllPlausi(DeclarationSalaire salaire) {
         for (Plausi plausi : ALL_CHECKS) {
             PlausiResult result = plausi.checkPlausi(salaire);
@@ -208,15 +222,13 @@ public class PUCS4SalaryConverter {
         }
     }
 
-    private PeriodeSalary buildPeriodeSalary(TimePeriodType period) {
-        XMLGregorianCalendar from = period.getFrom();
-        XMLGregorianCalendar until = period.getUntil();
+    // ---------------------------------------------------------------
 
-        return new PeriodeSalary.PeriodeSalaryBuilder().dateDebut(from == null ? null : from.toXMLFormat())
-                .dateFin(until == null ? null : until.toXMLFormat()).build();
+    static interface Plausi {
+        PlausiResult checkPlausi(DeclarationSalaire salaire);
     }
 
-    static enum PlausiStatus {
+    enum PlausiStatus {
         OK,
         WARN,
         KO;
@@ -225,10 +237,6 @@ public class PUCS4SalaryConverter {
     static class PlausiResult {
         PlausiStatus status;
         String message;
-    }
-
-    interface Plausi {
-        PlausiResult checkPlausi(DeclarationSalaire salaire);
     }
 
     static class NoopPlausi implements Plausi {
