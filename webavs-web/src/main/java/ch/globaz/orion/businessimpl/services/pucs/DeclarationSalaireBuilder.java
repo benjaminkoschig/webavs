@@ -21,6 +21,7 @@ import ch.globaz.orion.business.domaine.pucs.SalaryCaf;
 import ch.globaz.orion.ws.service.AppAffiliationService;
 import globaz.globall.format.IFormatData;
 
+// FIXME les parseurs maison (cf. ElementsDomParser) c'est LE MAL ABSOLU!!!
 public class DeclarationSalaireBuilder {
 
     private DeclarationSalaireBuilder() {

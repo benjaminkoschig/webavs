@@ -4,12 +4,14 @@ import ch.globaz.common.domaine.Date;
 
 /**
  * @author dma
- * 
+ *
  */
 public class Employee {
     private String nss;
     private String nom;
     private String prenom;
+    // FIXME comme on peut travailler une même année sur plusieurs cantons, comment modéliser ça???!
+    // et même si on ajoutait la notion de residence, elle peut aussi être à cheval sur plusieurs cantons non???
     private String workPlaceCanton;
     private String sexe;
     private Date dateNaissance;

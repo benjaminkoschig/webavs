@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+import ch.globaz.common.domaine.Montant;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.Employee;
 import ch.swissdec.schema.sd._20130514.salarydeclarationconsumercontainer.DeclareSalaryConsumerType;
@@ -33,6 +34,9 @@ public class PUCS4SalaryConverterTest extends WebServicesTestBase {
     @Test
     public void testConvert() throws Exception {
         DeclarationSalaire converted = parseAndDisplay("/globaz/pavo/process/268.1083-Commune de Bure-AF_SEUL_1.xml");
+        assertThat(converted.getMontantCaf()).isEqualTo(Montant.valueOf(10248505.5));
+        assertThat(converted.getMontantCaf("SG")).isEqualTo(Montant.valueOf(10248505.5));
+        assertThat(converted.getMontantCaf("JU")).isNull();
         System.out.println(converted);
 
         converted = parseAndDisplay("/globaz/pavo/process/FICHIER TEST-701.1054_Paloba SA_1.xml");
