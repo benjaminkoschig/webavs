@@ -38,14 +38,14 @@ public class PUCS4SalaryConverterTest extends WebServicesTestBase {
 
         DeclarationSalaire converted = test.convert(value);
 
-        /*
-         * for (Employee employe : converted.getEmployees()) {
-         * System.out.println(employe.getDateNaissance());
-         * System.out.println(employe.getNss());
-         * }
-         */
+        for (Employee employe : converted.getEmployees()) {
+            System.out.println(employe.getDateNaissance());
+            System.out.println(employe.getNss());
+        }
 
-        // System.out.println(converted);
+        System.out.println(converted);
+
+        // ---------------------------------------------------------------
 
         value = unmarshallDeclareSalaryConsumerTypeFromSoapBody(
                 "/globaz/pavo/process/FICHIER TEST-701.1054_Paloba SA_1.xml");
