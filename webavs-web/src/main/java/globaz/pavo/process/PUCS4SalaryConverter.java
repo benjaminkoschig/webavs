@@ -1,10 +1,8 @@
 package globaz.pavo.process;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +23,7 @@ import ch.swissdec.schema.sd._20130514.salarydeclaration.AddressType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.CompanyDescriptionType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.CompanyType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.FAKCAFSalaryType;
+import ch.swissdec.schema.sd._20130514.salarydeclaration.FAKCAFTotalsType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.ParticularsType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.PersonType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.PersonsType;
@@ -40,6 +39,12 @@ import ch.swissdec.schema.sd._20130514.salarydeclarationcontainer.SalaryDeclarat
  */
 public class PUCS4SalaryConverter {
     private static final Logger LOG = LoggerFactory.getLogger(PUCS4SalaryConverter.class);
+    private static final List<Plausi> ALL_CHECKS;
+    static {
+        List<Plausi> plausies = new ArrayList<Plausi>();
+        plausies.add(new NoopPlausi());
+        ALL_CHECKS = Collections.unmodifiableList(plausies);
+    }
 
     public DeclarationSalaire convert(DeclareSalaryConsumerType param) {
         if (param == null) {
@@ -90,10 +95,9 @@ public class PUCS4SalaryConverter {
                 for (AHVAVSSalaryType salary : person.getAHVAVSSalaries().getAHVAVSSalary()) {
                     SalaryAvs targetSalary = new SalaryAvs.SalaryAvsBuilder()
                             .montantAc1(Montant.valueOf(salary.getALVACIncome()))
+                            .montantAc2(Montant.valueOf(salary.getALVZACSIncome()))
                             .montantAvs(Montant.valueOf(salary.getAHVAVSIncome()))
                             .periode(buildPeriodeSalary(salary.getAccountingTime())).build();
-
-                    // FIXME et le canton?
                     salaries.add(targetSalary);
                 }
 
@@ -108,7 +112,7 @@ public class PUCS4SalaryConverter {
 
                 for (FAKCAFSalaryType salary : person.getFAKCAFSalaries().getFAKCAFSalary()) {
                     SalaryCaf targetSalary = new SalaryCaf.SalaryCafBuilder()
-                            .montant(Montant.valueOf(salary.getFAKCAFContributorySalary())) // FIXME ?
+                            .montant(Montant.valueOf(salary.getFAKCAFContributorySalary()))
                             .canton(salary.getFAKCAFWorkplaceCanton().value())
                             .periode(buildPeriodeSalary(salary.getFAKCAFPeriod())).build();
                     salaries.add(targetSalary);
@@ -117,28 +121,29 @@ public class PUCS4SalaryConverter {
                 e.setSalariesCaf(new SalariesCaf(salaries));
             }
 
-            // FIXME on fout quoi de ces infos???
-            if (person.getBVGLPPSalaries() != null) {
-                LOG.warn("je sais pas du tout quoi faire avec ce noeud: " + "getBVGLPPSalaries");
-            }
-            if (person.getKTGAMCSalaries() != null) {
-                LOG.warn("je sais pas du tout quoi faire avec ce noeud: " + "getKTGAMCSalaries");
-            }
-            if (person.getTaxSalaries() != null) {
-                LOG.warn("je sais pas du tout quoi faire avec ce noeud: " + "getTaxSalaries");
-            }
-            if (person.getTaxAtSourceSalaries() != null) {
-                LOG.warn("je sais pas du tout quoi faire avec ce noeud: " + "getTaxAtSourceSalaries");
-            }
-            if (person.getStatisticSalaries() != null) {
-                LOG.warn("je sais pas du tout quoi faire avec ce noeud: " + "getStatisticSalaries");
-            }
-            if (person.getUVGLAASalaries() != null) {
-                LOG.warn("je sais pas du tout quoi faire avec ce noeud: " + "getUVGLAASalaries");
-            }
-            if (person.getUVGZLAACSalaries() != null) {
-                LOG.warn("je sais pas du tout quoi faire avec ce noeud: " + "getUVGZLAACSalaries");
-            }
+            /*
+             * if (person.getBVGLPPSalaries() != null) {
+             * LOG.warn("je sais pas du tout quoi faire avec ce noeud: " + "getBVGLPPSalaries");
+             * }
+             * if (person.getKTGAMCSalaries() != null) {
+             * LOG.warn("je sais pas du tout quoi faire avec ce noeud: " + "getKTGAMCSalaries");
+             * }
+             * if (person.getTaxSalaries() != null) {
+             * LOG.warn("je sais pas du tout quoi faire avec ce noeud: " + "getTaxSalaries");
+             * }
+             * if (person.getTaxAtSourceSalaries() != null) {
+             * LOG.warn("je sais pas du tout quoi faire avec ce noeud: " + "getTaxAtSourceSalaries");
+             * }
+             * if (person.getStatisticSalaries() != null) {
+             * LOG.warn("je sais pas du tout quoi faire avec ce noeud: " + "getStatisticSalaries");
+             * }
+             * if (person.getUVGLAASalaries() != null) {
+             * LOG.warn("je sais pas du tout quoi faire avec ce noeud: " + "getUVGLAASalaries");
+             * }
+             * if (person.getUVGZLAACSalaries() != null) {
+             * LOG.warn("je sais pas du tout quoi faire avec ce noeud: " + "getUVGZLAACSalaries");
+             * }
+             */
 
             result.getEmployees().add(e);
         }
@@ -149,11 +154,26 @@ public class PUCS4SalaryConverter {
          * result.setMontantAc2(x);
          * result.setMontantCaf(x);
          */
-        Map<String, BigDecimal> allTotals = new TreeMap<String, BigDecimal>();
-        for (AHVAVSTotalsType total : company.getSalaryTotals().getAHVAVSTotals()) {
-            allTotals.put(total.getInstitutionIDRef(), total.getTotalAHVAVSIncomes());
-            result.setMontantAvs(Montant.valueOf(total.getTotalAHVAVSIncomes()));
+        // -----------------------
+        List<AHVAVSTotalsType> ahvavs = company.getSalaryTotals().getAHVAVSTotals();
+        if (ahvavs.size() != 1) {
+            throw new UnsupportedOperationException();
         }
+        AHVAVSTotalsType totalAvs = ahvavs.get(0);
+        result.setMontantAvs(Montant.valueOf(totalAvs.getTotalAHVAVSIncomes()));
+
+        /*
+         * FIXME
+         * result.montantAc1(Montant.valueOf(salary.getALVACIncome()));
+         * result.montantAc2(Montant.valueOf(salary.getALVZACSIncome()));
+         */
+        // -----------------------
+        List<FAKCAFTotalsType> fakcaf = company.getSalaryTotals().getFAKCAFTotals();
+        if (fakcaf.size() != 1) {
+            throw new UnsupportedOperationException();
+        }
+        FAKCAFTotalsType totalCaf = fakcaf.get(0);
+        // FIXME result.setMontantCaf(Montant.valueOf(totalCaf.getTotalFAKCAFPerCanton()));
 
         // allTotals.
 
@@ -168,7 +188,24 @@ public class PUCS4SalaryConverter {
         Adresse adresse = new Adresse(null /* FIXME ... */, sourceAddress.getZIPCode(), sourceAddress.getCity());
         result.setAdresse(adresse);
 
+        checkAllPlausi(result);
+
         return result;
+    }
+
+    private void checkAllPlausi(DeclarationSalaire salaire) {
+        for (Plausi plausi : ALL_CHECKS) {
+            PlausiResult result = plausi.checkPlausi(salaire);
+
+            switch (result.status) {
+                case OK:
+                    break;
+                case WARN:
+                    break;
+                case KO:
+                    throw new IllegalArgumentException("could not validate plausi: " + result.message);
+            }
+        }
     }
 
     private PeriodeSalary buildPeriodeSalary(TimePeriodType period) {
@@ -177,5 +214,30 @@ public class PUCS4SalaryConverter {
 
         return new PeriodeSalary.PeriodeSalaryBuilder().dateDebut(from == null ? null : from.toXMLFormat())
                 .dateFin(until == null ? null : until.toXMLFormat()).build();
+    }
+
+    static enum PlausiStatus {
+        OK,
+        WARN,
+        KO;
+    }
+
+    static class PlausiResult {
+        PlausiStatus status;
+        String message;
+    }
+
+    interface Plausi {
+        PlausiResult checkPlausi(DeclarationSalaire salaire);
+    }
+
+    static class NoopPlausi implements Plausi {
+        @Override
+        public PlausiResult checkPlausi(DeclarationSalaire salaire) {
+            PlausiResult result = new PlausiResult();
+            result.status = PlausiStatus.OK;
+            result.message = "";
+            return result;
+        }
     }
 }
