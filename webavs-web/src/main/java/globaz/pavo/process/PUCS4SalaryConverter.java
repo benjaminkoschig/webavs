@@ -1,6 +1,5 @@
 package globaz.pavo.process;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -178,16 +177,10 @@ public class PUCS4SalaryConverter {
         } else if (!fakcaf.isEmpty()) {
             FAKCAFTotalsType totalCaf = fakcaf.get(0);
 
-            BigDecimal aggregatedTotals = BigDecimal.valueOf(0);
             for (TotalFAKCAFPerCantonType canton : totalCaf.getTotalFAKCAFPerCanton()) {
-                BigDecimal totalFAKCAFContributorySalary = canton.getTotalFAKCAFContributorySalary();
-
-                if (totalFAKCAFContributorySalary != null) {
-                    aggregatedTotals = aggregatedTotals.add(totalFAKCAFContributorySalary);
-                }
+                result.setMontantCaf(canton.getCanton().value(),
+                        Montant.valueOf(canton.getTotalFAKCAFContributorySalary()));
             }
-
-            result.setMontantCaf(Montant.valueOf(aggregatedTotals));
         }
 
         SalaryCountersType salaryCounters = company.getSalaryCounters();
@@ -231,19 +224,27 @@ public class PUCS4SalaryConverter {
 
     // ---------------------------------------------------------------
 
-    static interface Plausi {
+    public static interface Plausi {
         PlausiResult checkPlausi(DeclarationSalaire salaire);
     }
 
-    enum PlausiStatus {
+    public enum PlausiStatus {
         OK,
         WARN,
         KO;
     }
 
-    static class PlausiResult {
-        PlausiStatus status;
-        String message;
+    public static class PlausiResult {
+        private PlausiStatus status;
+        private String message;
+
+        public String getMessage() {
+            return message;
+        }
+
+        public PlausiStatus getStatus() {
+            return status;
+        }
     }
 
     static class NoopPlausi implements Plausi {

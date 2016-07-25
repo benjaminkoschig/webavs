@@ -1,8 +1,11 @@
 package ch.globaz.orion.business.domaine.pucs;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import ch.globaz.common.domaine.Date;
@@ -19,7 +22,7 @@ public class DeclarationSalaire {
     private Montant montantAvs = Montant.ZERO;
     private Montant montantAc1 = Montant.ZERO;
     private Montant montantAc2 = Montant.ZERO;
-    private Montant montantCaf = Montant.ZERO;
+    private Map<String, Montant> montantCaf = new HashMap<String, Montant>();
     private DeclarationSalaireProvenance provenance;
     private Date transmissionDate;
     private List<Employee> employees = new ArrayList<Employee>();
@@ -101,12 +104,23 @@ public class DeclarationSalaire {
         this.montantAc2 = montantAc2;
     }
 
-    public Montant getMontantCaf() {
-        return montantCaf;
+    public Montant getMontantCaf(String canton) {
+        return montantCaf.get(canton);
     }
 
-    public void setMontantCaf(Montant montantCaf) {
-        this.montantCaf = montantCaf;
+    // produit la somme de tous les cantons
+    public Montant getMontantCaf() {
+        BigDecimal montant = BigDecimal.valueOf(0);
+
+        for (Montant m : montantCaf.values()) {
+            montant = montant.add(m.getBigDecimalValue());
+        }
+
+        return Montant.valueOf(montant);
+    }
+
+    public void setMontantCaf(String canton, Montant montantCaf) {
+        this.montantCaf.put(canton, montantCaf);
     }
 
     public List<Employee> getEmployees() {

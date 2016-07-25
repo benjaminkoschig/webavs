@@ -1,6 +1,5 @@
 package ch.globaz.orion.businessimpl.services.pucs;
 
-import globaz.globall.format.IFormatData;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,6 +19,7 @@ import ch.globaz.orion.business.domaine.pucs.SalariesCaf;
 import ch.globaz.orion.business.domaine.pucs.SalaryAvs;
 import ch.globaz.orion.business.domaine.pucs.SalaryCaf;
 import ch.globaz.orion.ws.service.AppAffiliationService;
+import globaz.globall.format.IFormatData;
 
 public class DeclarationSalaireBuilder {
 
@@ -96,7 +96,7 @@ public class DeclarationSalaireBuilder {
         ds.setMontantAc1(montantAc1);
         ds.setMontantAc2(montantAc2);
         ds.setMontantAvs(montantAvs);
-        ds.setMontantCaf(montantCaf);
+        // FIXME SPI SCO passer en mode multicanton! ds.setMontantCaf(montantCaf);
         ds.setNom(name);
 
         Adresse adresse = new Adresse(parser.findValue("Company CompanyDescription Address Street"),
