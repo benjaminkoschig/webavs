@@ -32,8 +32,19 @@ public class PUCS4SalaryConverterTest extends WebServicesTestBase {
 
     @Test
     public void testConvert() throws Exception {
-        DeclareSalaryConsumerType value = unmarshallDeclareSalaryConsumerTypeFromSoapBody(
-                "/globaz/pavo/process/268.1083-Commune de Bure-AF_SEUL_1.xml");
+        DeclarationSalaire converted = parseAndDisplay("/globaz/pavo/process/268.1083-Commune de Bure-AF_SEUL_1.xml");
+        System.out.println(converted);
+
+        converted = parseAndDisplay("/globaz/pavo/process/FICHIER TEST-701.1054_Paloba SA_1.xml");
+        System.out.println(converted);
+
+        converted = parseAndDisplay("/globaz/pavo/process/MIXD-2451002-1450788697373_201606011132206641_1.xml");
+        System.out.println(converted);
+    }
+
+    private DeclarationSalaire parseAndDisplay(String file)
+            throws SAXException, IOException, ParserConfigurationException, JAXBException {
+        DeclareSalaryConsumerType value = unmarshallDeclareSalaryConsumerTypeFromSoapBody(file);
         assertThat(value).isNotNull();
 
         DeclarationSalaire converted = test.convert(value);
@@ -43,22 +54,7 @@ public class PUCS4SalaryConverterTest extends WebServicesTestBase {
             System.out.println(employe.getNss());
         }
 
-        System.out.println(converted);
-
-        // ---------------------------------------------------------------
-
-        value = unmarshallDeclareSalaryConsumerTypeFromSoapBody(
-                "/globaz/pavo/process/FICHIER TEST-701.1054_Paloba SA_1.xml");
-        assertThat(value).isNotNull();
-
-        converted = test.convert(value);
-
-        for (Employee employe : converted.getEmployees()) {
-            System.out.println(employe.getDateNaissance());
-            System.out.println(employe.getNss());
-        }
-
-        System.out.println(converted);
+        return converted;
     }
 
 }

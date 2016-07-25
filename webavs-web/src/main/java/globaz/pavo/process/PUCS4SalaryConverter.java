@@ -156,11 +156,12 @@ public class PUCS4SalaryConverter {
          */
         // -----------------------
         List<AHVAVSTotalsType> ahvavs = company.getSalaryTotals().getAHVAVSTotals();
-        if (ahvavs.size() != 1) {
-            throw new UnsupportedOperationException();
+        if (ahvavs.size() > 1) {
+            throw new UnsupportedOperationException("found " + ahvavs.size() + " nodes!");
+        } else if (!ahvavs.isEmpty()) {
+            AHVAVSTotalsType totalAvs = ahvavs.get(0);
+            result.setMontantAvs(Montant.valueOf(totalAvs.getTotalAHVAVSIncomes()));
         }
-        AHVAVSTotalsType totalAvs = ahvavs.get(0);
-        result.setMontantAvs(Montant.valueOf(totalAvs.getTotalAHVAVSIncomes()));
 
         /*
          * FIXME
@@ -169,13 +170,12 @@ public class PUCS4SalaryConverter {
          */
         // -----------------------
         List<FAKCAFTotalsType> fakcaf = company.getSalaryTotals().getFAKCAFTotals();
-        if (fakcaf.size() != 1) {
-            throw new UnsupportedOperationException();
+        if (fakcaf.size() > 1) {
+            throw new UnsupportedOperationException("found " + fakcaf.size() + " nodes!");
+        } else if (!fakcaf.isEmpty()) {
+            FAKCAFTotalsType totalCaf = fakcaf.get(0);
+            // FIXME result.setMontantCaf(Montant.valueOf(totalCaf.getTotalFAKCAFPerCanton()));
         }
-        FAKCAFTotalsType totalCaf = fakcaf.get(0);
-        // FIXME result.setMontantCaf(Montant.valueOf(totalCaf.getTotalFAKCAFPerCanton()));
-
-        // allTotals.
 
         SalaryCountersType salaryCounters = company.getSalaryCounters();
         Long numberOfAHVAVSSalaryTags = salaryCounters.getNumberOfAHVAVSSalaryTags();
