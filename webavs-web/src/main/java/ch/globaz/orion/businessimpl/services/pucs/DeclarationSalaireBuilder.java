@@ -86,9 +86,13 @@ public class DeclarationSalaireBuilder {
         Montant montantAc2 = totalParser.find("Total-ALVZ-ACS-Incomes").getValueAsMontant(); // to verify
         Montant montantAvs = totalParser.find("Total-AHV-AVS-Incomes").getValueAsMontant();
         Montant montantCaf = parser.find("Total-FAK-CAF-Incomes").getValueAsMontant();
+        String montantCafCanton = parser.findValue("Canton");
 
         if (ifForAfSeul) {
+            // FIXME ça risque pas de marcher en mode multi canton...
             montantCaf = parser.find("SalaryTotals Total-FAK-CAF-ContributorySalary").getValueAsMontant();
+            montantCafCanton = parser.find("SalaryTotals Canton").getFirstValue();
+
             ds.setAfSeul(true);
         }
         ds.setTest(parser.find("TestCase").exist());
@@ -96,7 +100,9 @@ public class DeclarationSalaireBuilder {
         ds.setMontantAc1(montantAc1);
         ds.setMontantAc2(montantAc2);
         ds.setMontantAvs(montantAvs);
-        // FIXME SPI SCO passer en mode multicanton! ds.setMontantCaf(montantCaf);
+        // FIXME SPI SCO checker le passage en multi canton!!!
+        ds.setMontantCaf(montantCafCanton, montantCaf);
+
         ds.setNom(name);
 
         Adresse adresse = new Adresse(parser.findValue("Company CompanyDescription Address Street"),
