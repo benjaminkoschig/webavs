@@ -1,5 +1,6 @@
 package globaz.pavo.process;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -177,10 +178,16 @@ public class PUCS4SalaryConverter {
         } else if (!fakcaf.isEmpty()) {
             FAKCAFTotalsType totalCaf = fakcaf.get(0);
 
+            BigDecimal aggregatedTotals = BigDecimal.valueOf(0);
             for (TotalFAKCAFPerCantonType canton : totalCaf.getTotalFAKCAFPerCanton()) {
-                result.setMontantCaf(canton.getCanton().value(),
-                        Montant.valueOf(canton.getTotalFAKCAFContributorySalary()));
+                BigDecimal totalFAKCAFContributorySalary = canton.getTotalFAKCAFContributorySalary();
+
+                if (totalFAKCAFContributorySalary != null) {
+                    aggregatedTotals = aggregatedTotals.add(totalFAKCAFContributorySalary);
+                }
             }
+
+            result.setMontantCaf(Montant.valueOf(aggregatedTotals));
         }
 
         SalaryCountersType salaryCounters = company.getSalaryCounters();

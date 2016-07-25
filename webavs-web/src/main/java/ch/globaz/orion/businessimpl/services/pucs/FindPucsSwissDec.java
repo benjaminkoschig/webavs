@@ -1,15 +1,5 @@
 package ch.globaz.orion.businessimpl.services.pucs;
 
-import globaz.globall.db.BSession;
-import globaz.jade.client.util.JadeFilenameUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.common.JadeClassCastException;
-import globaz.jade.fs.JadeFsFacade;
-import globaz.jade.fs.message.JadeFsFileInfo;
-import globaz.jade.service.exception.JadeServiceActivatorException;
-import globaz.jade.service.exception.JadeServiceLocatorException;
-import globaz.naos.db.affiliation.AFAffiliation;
-import globaz.naos.services.AFAffiliationServices;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -27,6 +17,16 @@ import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.models.pucs.PucsFile;
+import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadeFilenameUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.JadeClassCastException;
+import globaz.jade.fs.JadeFsFacade;
+import globaz.jade.fs.message.JadeFsFileInfo;
+import globaz.jade.service.exception.JadeServiceActivatorException;
+import globaz.jade.service.exception.JadeServiceLocatorException;
+import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.services.AFAffiliationServices;
 
 /**
  * Service de recherche des fichiers SwissDec
@@ -42,7 +42,7 @@ public class FindPucsSwissDec {
 
     /**
      * Permet de lire les fichiers swissdec dans le répertoire "a valider"
-     * 
+     *
      * @return La liste de fichier du répertoire
      * @throws JadeServiceLocatorException
      * @throws JadeServiceActivatorException
@@ -58,7 +58,7 @@ public class FindPucsSwissDec {
 
     /**
      * Permet de lire les fichiers swissdec dans le répertoire "a valider"
-     * 
+     *
      * @return La liste de fichier du répertoire
      * @throws JadeServiceLocatorException
      * @throws JadeServiceActivatorException
@@ -74,7 +74,7 @@ public class FindPucsSwissDec {
 
     /**
      * Permet de lire les fichiers swissdec dans le répertoire "a traiter"
-     * 
+     *
      * @return La liste de fichier du répertoire
      * @throws JadeServiceLocatorException
      * @throws JadeServiceActivatorException
@@ -88,9 +88,9 @@ public class FindPucsSwissDec {
         return loadPucsSwissDec(EBProperties.PUCS_SWISS_DEC_DIRECTORY.getValue());
     }
 
-    private List<PucsFile> loadPucsSwissDec(String uri) throws JadeServiceLocatorException,
-            JadeServiceActivatorException, NullPointerException, ClassCastException, JadeClassCastException,
-            PropertiesException {
+    private List<PucsFile> loadPucsSwissDec(String uri)
+            throws JadeServiceLocatorException, JadeServiceActivatorException, NullPointerException, ClassCastException,
+            JadeClassCastException, PropertiesException {
         // on accepte que l'URI soit vide car certains clients n'utilisent pas la fonctionnalité SwissDec.
         if (JadeStringUtil.isBlank(uri)) {
             return new ArrayList<PucsFile>();
@@ -105,8 +105,8 @@ public class FindPucsSwissDec {
 
         final List<String> listRemotePucsFileUri = JadeFsFacade.getFolderChildren(uri);
 
-        final List<PucsFile> pucsFiles = Collections.synchronizedList(new ArrayList<PucsFile>(listRemotePucsFileUri
-                .size()));
+        final List<PucsFile> pucsFiles = Collections
+                .synchronizedList(new ArrayList<PucsFile>(listRemotePucsFileUri.size()));
 
         ExecutorService threadExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
         for (String remotePucsFileUri : listRemotePucsFileUri) {
@@ -156,7 +156,7 @@ public class FindPucsSwissDec {
 
     /**
      * Permet de charger un fichier Pucs en passant l'adresse et le nom de celui-ci
-     * 
+     *
      * @param remotePucsFileUri Une chemin vers le fichier du type ftp://login:pass/pucs/atraiter/monfichier.xml
      * @return Objet représentant les caractéristique du fichier
      * @throws JadeServiceLocatorException
@@ -203,8 +203,8 @@ public class FindPucsSwissDec {
             pucsFile.setForTest(ds.isTest());
             pucsFile.setDuplicate(ds.isDuplicate());
 
-            List<AFAffiliation> affiliations = AFAffiliationServices.searchAffiliationByNumeros(
-                    Arrays.asList(pucsFile.getNumeroAffilie().trim()), session);
+            List<AFAffiliation> affiliations = AFAffiliationServices
+                    .searchAffiliationByNumeros(Arrays.asList(pucsFile.getNumeroAffilie().trim()), session);
             if (affiliations.isEmpty()) {
                 pucsFile.setLock(true);
                 pucsFile.setIsAffiliationExistante(false);
