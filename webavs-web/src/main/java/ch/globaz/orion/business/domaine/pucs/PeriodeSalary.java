@@ -3,6 +3,7 @@ package ch.globaz.orion.business.domaine.pucs;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import org.apache.commons.lang.StringUtils;
 import ch.globaz.common.domaine.Date;
 
 public class PeriodeSalary implements Comparable<PeriodeSalary> {
@@ -42,12 +43,12 @@ public class PeriodeSalary implements Comparable<PeriodeSalary> {
         }
 
         private static Date convertAsDate(String value) {
-            if (value != null && value.trim().length() > 0) {
+            if (StringUtils.isNotBlank(value)) {
                 try {
                     XMLGregorianCalendar dateXml = DatatypeFactory.newInstance().newXMLGregorianCalendar(value);
                     return new Date(dateXml.toGregorianCalendar().getTime());
                 } catch (DatatypeConfigurationException e) {
-                    throw new RuntimeException("Error parasing date", e);
+                    throw new RuntimeException("Error parsing date", e);
                 }
             }
             return null;

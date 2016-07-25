@@ -28,6 +28,7 @@ import ch.swissdec.schema.sd._20130514.salarydeclaration.FAKCAFSalaryType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.ParticularsType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.PersonType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.PersonsType;
+import ch.swissdec.schema.sd._20130514.salarydeclaration.SalaryCountersType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.SalaryDeclarationType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.TimePeriodType;
 import ch.swissdec.schema.sd._20130514.salarydeclarationconsumercontainer.DeclareSalaryConsumerType;
@@ -156,7 +157,11 @@ public class PUCS4SalaryConverter {
 
         // allTotals.
 
-        result.setNbSalaire(company.getSalaryCounters().getNumberOfAHVAVSSalaryTags().intValue());
+        SalaryCountersType salaryCounters = company.getSalaryCounters();
+        Long numberOfAHVAVSSalaryTags = salaryCounters.getNumberOfAHVAVSSalaryTags();
+        if (numberOfAHVAVSSalaryTags != null) {
+            result.setNbSalaire(numberOfAHVAVSSalaryTags.intValue());
+        }
 
         CompanyDescriptionType companyDescription = company.getCompanyDescription();
         AddressType sourceAddress = companyDescription.getAddress();
