@@ -32,6 +32,7 @@ import ch.swissdec.schema.sd._20130514.salarydeclaration.SalaryDeclarationType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.TimePeriodType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.TotalFAKCAFPerCantonType;
 import ch.swissdec.schema.sd._20130514.salarydeclarationconsumercontainer.DeclareSalaryConsumerType;
+import ch.swissdec.schema.sd._20130514.salarydeclarationconsumercontainer.DistributorRequestContextType;
 import ch.swissdec.schema.sd._20130514.salarydeclarationcontainer.SalaryDeclarationRequestType;
 import globaz.pavo.process.PUCS4SalaryConverter.PlausiResult.PlausiStatus;
 
@@ -55,9 +56,15 @@ public class PUCS4SalaryConverter {
 
         DeclarationSalaire result = new DeclarationSalaire();
         result.setProvenance(DeclarationSalaireProvenance.SWISS_DEC);
+        DistributorRequestContextType distributorRequestContext = param.getDistributorRequestContext();
+
         result.setTransmissionDate(
-                new Date(param.getDistributorRequestContext().getTransmissionDate().toGregorianCalendar().getTime()));
+                new Date(distributorRequestContext.getTransmissionDate().toGregorianCalendar().getTime()));
         result.setAnnee(1234); // FIXME le year ne veut rien dire... on peut être à cheval sur plusieurs années...
+
+        result.setTest(distributorRequestContext.getTestCase() != null);
+        result.setDuplicate(distributorRequestContext.getDuplicate() != null);
+        result.setSubstitution(distributorRequestContext.getSubstitutionMapping() != null);
 
         /*
          * FIXME comment mapper tout ça?
@@ -65,11 +72,6 @@ public class PUCS4SalaryConverter {
          * result.setNumeroAffilie(numeroAffilie);
          * result.setNumeroIde(numeroIde);
          * result.setContact(contact);
-         * result.setNbSalaire(nbSalaire);
-         * result.setDuplicate(duplicate);
-         * result.setSubstitution(substitution);
-         * result.setTest(test);
-         *
          */
 
         SalaryDeclarationRequestType declareSalary = param.getDeclareSalary();
@@ -160,8 +162,6 @@ public class PUCS4SalaryConverter {
 
         /*
          * result.setMontantAvs(x);
-         * result.setMontantAc1(x);
-         * result.setMontantAc2(x);
          * result.setMontantCaf(x);
          */
         // -----------------------
@@ -193,23 +193,23 @@ public class PUCS4SalaryConverter {
             }
         }
 
-        boolean found = false;
+        boolean foundNbSalaire = false;
 
         SalaryCountersType salaryCounters = company.getSalaryCounters();
         Long numberOfAHVAVSSalaryTags = salaryCounters.getNumberOfAHVAVSSalaryTags();
         if (numberOfAHVAVSSalaryTags != null) {
-            if (found) {
+            if (foundNbSalaire) {
                 throw new IllegalStateException(
                         "nbSalaire has already been defined. This version of document is not supported (must define at max. 1 node with a number of salaries)");
             }
             result.setNbSalaire(numberOfAHVAVSSalaryTags.intValue());
-            found = true;
+            foundNbSalaire = true;
         }
 
         Long numberOfFAKCAFSalaryTags = salaryCounters.getNumberOfFAKCAFSalaryTags();
         if (numberOfFAKCAFSalaryTags != null) {
             // FIXME on fait quoi dans ce cas là?
-            if (found) {
+            if (foundNbSalaire) {
                 throw new IllegalStateException(
                         "nbSalaire has already been defined. This version of document is not supported (must define at max. 1 node with a number of salaries)");
             }
