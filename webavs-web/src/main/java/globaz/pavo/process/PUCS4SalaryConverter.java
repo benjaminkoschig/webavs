@@ -33,6 +33,7 @@ import ch.swissdec.schema.sd._20130514.salarydeclaration.TimePeriodType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.TotalFAKCAFPerCantonType;
 import ch.swissdec.schema.sd._20130514.salarydeclarationconsumercontainer.DeclareSalaryConsumerType;
 import ch.swissdec.schema.sd._20130514.salarydeclarationcontainer.SalaryDeclarationRequestType;
+import globaz.pavo.process.PUCS4SalaryConverter.PlausiResult.PlausiStatus;
 
 /**
  * Convertit un objet issu du webservice PUCS v4 (cf. {@link DeclareSalaryConsumerType}) vers des objets métiers
@@ -56,6 +57,7 @@ public class PUCS4SalaryConverter {
         result.setProvenance(DeclarationSalaireProvenance.SWISS_DEC);
         result.setTransmissionDate(
                 new Date(param.getDistributorRequestContext().getTransmissionDate().toGregorianCalendar().getTime()));
+        result.setAnnee(1234); // FIXME le year ne veut rien dire... on peut être à cheval sur plusieurs années...
 
         /*
          * FIXME comment mapper tout ça?
@@ -161,6 +163,7 @@ public class PUCS4SalaryConverter {
         if (ahvavs.size() > 1) {
             throw new UnsupportedOperationException("found " + ahvavs.size() + " nodes!");
         } else if (!ahvavs.isEmpty()) {
+            // FIXME on fait quoi quand il y a plusieurs noeuds?
             AHVAVSTotalsType totalAvs = ahvavs.get(0);
             result.setMontantAvs(Montant.valueOf(totalAvs.getTotalAHVAVSIncomes()));
         }
@@ -175,6 +178,7 @@ public class PUCS4SalaryConverter {
         if (fakcaf.size() > 1) {
             throw new UnsupportedOperationException("found " + fakcaf.size() + " nodes!");
         } else if (!fakcaf.isEmpty()) {
+            // FIXME on fait quoi quand il y a plusieurs noeuds?
             FAKCAFTotalsType totalCaf = fakcaf.get(0);
 
             for (TotalFAKCAFPerCantonType canton : totalCaf.getTotalFAKCAFPerCanton()) {
@@ -183,10 +187,27 @@ public class PUCS4SalaryConverter {
             }
         }
 
+        boolean found = false;
+
         SalaryCountersType salaryCounters = company.getSalaryCounters();
         Long numberOfAHVAVSSalaryTags = salaryCounters.getNumberOfAHVAVSSalaryTags();
         if (numberOfAHVAVSSalaryTags != null) {
+            if (found) {
+                throw new IllegalStateException(
+                        "nbSalaire has already been defined. This version of document is not supported (must define at max. 1 node with a number of salaries)");
+            }
             result.setNbSalaire(numberOfAHVAVSSalaryTags.intValue());
+            found = true;
+        }
+
+        Long numberOfFAKCAFSalaryTags = salaryCounters.getNumberOfFAKCAFSalaryTags();
+        if (numberOfFAKCAFSalaryTags != null) {
+            // FIXME on fait quoi dans ce cas là?
+            if (found) {
+                throw new IllegalStateException(
+                        "nbSalaire has already been defined. This version of document is not supported (must define at max. 1 node with a number of salaries)");
+            }
+            result.setNbSalaire(numberOfFAKCAFSalaryTags.intValue());
         }
 
         CompanyDescriptionType companyDescription = company.getCompanyDescription();
@@ -228,13 +249,13 @@ public class PUCS4SalaryConverter {
         PlausiResult checkPlausi(DeclarationSalaire salaire);
     }
 
-    public enum PlausiStatus {
-        OK,
-        WARN,
-        KO;
-    }
+    public static final class PlausiResult {
+        public enum PlausiStatus {
+            OK,
+            WARN,
+            KO;
+        }
 
-    public static class PlausiResult {
         private PlausiStatus status;
         private String message;
 

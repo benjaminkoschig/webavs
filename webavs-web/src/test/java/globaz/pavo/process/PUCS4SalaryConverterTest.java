@@ -37,12 +37,14 @@ public class PUCS4SalaryConverterTest extends WebServicesTestBase {
         assertThat(converted.getMontantCaf()).isEqualTo(Montant.valueOf(10248505.5));
         assertThat(converted.getMontantCaf("SG")).isEqualTo(Montant.valueOf(10248505.5));
         assertThat(converted.getMontantCaf("JU")).isNull();
+
         System.out.println(converted);
 
         converted = parseAndDisplay("/globaz/pavo/process/FICHIER TEST-701.1054_Paloba SA_1.xml");
         System.out.println(converted);
 
         converted = parseAndDisplay("/globaz/pavo/process/MIXD-2451002-1450788697373_201606011132206641_1.xml");
+        assertThat(converted.getNbSalaire()).isEqualTo(389);
         System.out.println(converted);
     }
 

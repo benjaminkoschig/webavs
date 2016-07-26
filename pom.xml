@@ -10,6 +10,8 @@
 	<artifactId>webavs-parent</artifactId>
 	<version>1.17.0-ALPHA-SNAPSHOT</version>
 	<packaging>pom</packaging>
+	<name>WebAVS Parent</name>
+	<description>WebAVS system</description>
 	<url>http://javadoc.ju.globaz.ch/webavs/${project.version}</url>
 
 	<scm>
