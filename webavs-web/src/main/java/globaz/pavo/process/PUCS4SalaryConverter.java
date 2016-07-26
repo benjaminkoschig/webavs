@@ -65,12 +65,11 @@ public class PUCS4SalaryConverter {
          * result.setNumeroAffilie(numeroAffilie);
          * result.setNumeroIde(numeroIde);
          * result.setContact(contact);
-         * result.setAnnee(annee);
          * result.setNbSalaire(nbSalaire);
          * result.setDuplicate(duplicate);
          * result.setSubstitution(substitution);
          * result.setTest(test);
-         * result.setAfSeul(isAfSeul);
+         *
          */
 
         SalaryDeclarationRequestType declareSalary = param.getDeclareSalary();
@@ -78,6 +77,9 @@ public class PUCS4SalaryConverter {
         CompanyType company = salaryDeclaration.getCompany();
 
         PersonsType staff = company.getStaff();
+
+        boolean isAfSeul = true;
+
         for (PersonType person : staff.getPerson()) {
             ParticularsType particulars = person.getParticulars();
 
@@ -115,6 +117,8 @@ public class PUCS4SalaryConverter {
                 List<SalaryCaf> salaries = new ArrayList<SalaryCaf>();
 
                 for (FAKCAFSalaryType salary : person.getFAKCAFSalaries().getFAKCAFSalary()) {
+                    isAfSeul = false;
+
                     SalaryCaf targetSalary = new SalaryCaf.SalaryCafBuilder()
                             .montant(Montant.valueOf(salary.getFAKCAFContributorySalary()))
                             .canton(salary.getFAKCAFWorkplaceCanton().value())
@@ -151,6 +155,8 @@ public class PUCS4SalaryConverter {
 
             result.getEmployees().add(targetEmployee);
         }
+
+        result.setAfSeul(isAfSeul);
 
         /*
          * result.setMontantAvs(x);
