@@ -58,10 +58,9 @@ public class PUCS4SalaryConverter {
         result.setProvenance(DeclarationSalaireProvenance.SWISS_DEC);
         DistributorRequestContextType distributorRequestContext = param.getDistributorRequestContext();
 
+        result.setAnnee(1234); // FIXME le year ne veut rien dire... on peut être à cheval sur plusieurs années...
         result.setTransmissionDate(
                 new Date(distributorRequestContext.getTransmissionDate().toGregorianCalendar().getTime()));
-        result.setAnnee(1234); // FIXME le year ne veut rien dire... on peut être à cheval sur plusieurs années...
-
         result.setTest(distributorRequestContext.getTestCase() != null);
         result.setDuplicate(distributorRequestContext.getDuplicate() != null);
         result.setSubstitution(distributorRequestContext.getSubstitutionMapping() != null);
