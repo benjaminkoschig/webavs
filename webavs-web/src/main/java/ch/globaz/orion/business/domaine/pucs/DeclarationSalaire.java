@@ -13,8 +13,8 @@ import ch.globaz.common.domaine.Montant;
 
 public class DeclarationSalaire {
     private String numeroAffilie;
-    private int nbSalaire = 0;
-    private int annee = 0;
+    private int nbSalaire;
+    private int annee;
     private String nom;
     private String numeroIde;
     private Contact contact;
@@ -29,8 +29,8 @@ public class DeclarationSalaire {
     private boolean isAfSeul;
     private boolean test; // premet de savoir si la déclaration de salaire est pour le test(Utilisé pour les
                           // swissDec)
-    private boolean duplicate = false;
-    private boolean substitution = false;
+    private boolean duplicate;
+    private boolean substitution;
 
     public boolean isAfSeul() {
         return isAfSeul;
