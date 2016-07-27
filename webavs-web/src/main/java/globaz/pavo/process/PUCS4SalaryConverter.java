@@ -77,8 +77,75 @@ public class PUCS4SalaryConverter {
         SalaryDeclarationType salaryDeclaration = declareSalary.getSalaryDeclaration();
         CompanyType company = salaryDeclaration.getCompany();
 
-        PersonsType staff = company.getStaff();
+        convertEmployeesAndSetIsAfSeulFlag(result, company.getStaff());
 
+        /*
+         * result.setMontantAvs(x);
+         * result.setMontantCaf(x);
+         */
+        // -----------------------
+        List<AHVAVSTotalsType> ahvavs = company.getSalaryTotals().getAHVAVSTotals();
+        if (ahvavs.size() > 1) {
+            throw new UnsupportedOperationException("found " + ahvavs.size() + " nodes!");
+        } else if (!ahvavs.isEmpty()) {
+            // FIXME on fait quoi quand il y a plusieurs noeuds?
+            AHVAVSTotalsType totalAvs = ahvavs.get(0);
+            result.setMontantAvs(Montant.valueOf(totalAvs.getTotalAHVAVSIncomes()));
+        }
+
+        /*
+         * FIXME
+         * result.montantAc1(Montant.valueOf(salary.getALVACIncome()));
+         * result.montantAc2(Montant.valueOf(salary.getALVZACSIncome()));
+         */
+        // -----------------------
+        List<FAKCAFTotalsType> fakcaf = company.getSalaryTotals().getFAKCAFTotals();
+        if (fakcaf.size() > 1) {
+            throw new UnsupportedOperationException("found " + fakcaf.size() + " nodes!");
+        } else if (!fakcaf.isEmpty()) {
+            // FIXME on fait quoi quand il y a plusieurs noeuds?
+            FAKCAFTotalsType totalCaf = fakcaf.get(0);
+
+            for (TotalFAKCAFPerCantonType canton : totalCaf.getTotalFAKCAFPerCanton()) {
+                result.setMontantCaf(canton.getCanton().value(),
+                        Montant.valueOf(canton.getTotalFAKCAFContributorySalary()));
+            }
+        }
+
+        boolean foundNbSalaire = false;
+
+        SalaryCountersType salaryCounters = company.getSalaryCounters();
+        Long numberOfAHVAVSSalaryTags = salaryCounters.getNumberOfAHVAVSSalaryTags();
+        if (numberOfAHVAVSSalaryTags != null) {
+            if (foundNbSalaire) {
+                throw new IllegalStateException(
+                        "nbSalaire has already been defined. This version of document is not supported (must define at max. 1 node with a number of salaries)");
+            }
+            result.setNbSalaire(numberOfAHVAVSSalaryTags.intValue());
+            foundNbSalaire = true;
+        }
+
+        Long numberOfFAKCAFSalaryTags = salaryCounters.getNumberOfFAKCAFSalaryTags();
+        if (numberOfFAKCAFSalaryTags != null) {
+            // FIXME on fait quoi dans ce cas là?
+            if (foundNbSalaire) {
+                throw new IllegalStateException(
+                        "nbSalaire has already been defined. This version of document is not supported (must define at max. 1 node with a number of salaries)");
+            }
+            result.setNbSalaire(numberOfFAKCAFSalaryTags.intValue());
+        }
+
+        CompanyDescriptionType companyDescription = company.getCompanyDescription();
+        AddressType sourceAddress = companyDescription.getAddress();
+        Adresse adresse = new Adresse(null /* FIXME ... */, sourceAddress.getZIPCode(), sourceAddress.getCity());
+        result.setAdresse(adresse);
+
+        checkAllPlausi(result);
+
+        return result;
+    }
+
+    private void convertEmployeesAndSetIsAfSeulFlag(DeclarationSalaire result, PersonsType staff) {
         boolean isAfSeul = true;
 
         for (PersonType person : staff.getPerson()) {
@@ -158,71 +225,6 @@ public class PUCS4SalaryConverter {
         }
 
         result.setAfSeul(isAfSeul);
-
-        /*
-         * result.setMontantAvs(x);
-         * result.setMontantCaf(x);
-         */
-        // -----------------------
-        List<AHVAVSTotalsType> ahvavs = company.getSalaryTotals().getAHVAVSTotals();
-        if (ahvavs.size() > 1) {
-            throw new UnsupportedOperationException("found " + ahvavs.size() + " nodes!");
-        } else if (!ahvavs.isEmpty()) {
-            // FIXME on fait quoi quand il y a plusieurs noeuds?
-            AHVAVSTotalsType totalAvs = ahvavs.get(0);
-            result.setMontantAvs(Montant.valueOf(totalAvs.getTotalAHVAVSIncomes()));
-        }
-
-        /*
-         * FIXME
-         * result.montantAc1(Montant.valueOf(salary.getALVACIncome()));
-         * result.montantAc2(Montant.valueOf(salary.getALVZACSIncome()));
-         */
-        // -----------------------
-        List<FAKCAFTotalsType> fakcaf = company.getSalaryTotals().getFAKCAFTotals();
-        if (fakcaf.size() > 1) {
-            throw new UnsupportedOperationException("found " + fakcaf.size() + " nodes!");
-        } else if (!fakcaf.isEmpty()) {
-            // FIXME on fait quoi quand il y a plusieurs noeuds?
-            FAKCAFTotalsType totalCaf = fakcaf.get(0);
-
-            for (TotalFAKCAFPerCantonType canton : totalCaf.getTotalFAKCAFPerCanton()) {
-                result.setMontantCaf(canton.getCanton().value(),
-                        Montant.valueOf(canton.getTotalFAKCAFContributorySalary()));
-            }
-        }
-
-        boolean foundNbSalaire = false;
-
-        SalaryCountersType salaryCounters = company.getSalaryCounters();
-        Long numberOfAHVAVSSalaryTags = salaryCounters.getNumberOfAHVAVSSalaryTags();
-        if (numberOfAHVAVSSalaryTags != null) {
-            if (foundNbSalaire) {
-                throw new IllegalStateException(
-                        "nbSalaire has already been defined. This version of document is not supported (must define at max. 1 node with a number of salaries)");
-            }
-            result.setNbSalaire(numberOfAHVAVSSalaryTags.intValue());
-            foundNbSalaire = true;
-        }
-
-        Long numberOfFAKCAFSalaryTags = salaryCounters.getNumberOfFAKCAFSalaryTags();
-        if (numberOfFAKCAFSalaryTags != null) {
-            // FIXME on fait quoi dans ce cas là?
-            if (foundNbSalaire) {
-                throw new IllegalStateException(
-                        "nbSalaire has already been defined. This version of document is not supported (must define at max. 1 node with a number of salaries)");
-            }
-            result.setNbSalaire(numberOfFAKCAFSalaryTags.intValue());
-        }
-
-        CompanyDescriptionType companyDescription = company.getCompanyDescription();
-        AddressType sourceAddress = companyDescription.getAddress();
-        Adresse adresse = new Adresse(null /* FIXME ... */, sourceAddress.getZIPCode(), sourceAddress.getCity());
-        result.setAdresse(adresse);
-
-        checkAllPlausi(result);
-
-        return result;
     }
 
     private PeriodeSalary buildPeriodeSalary(TimePeriodType period) {
