@@ -46,6 +46,7 @@ import globaz.prestation.db.tauxImposition.PRTauxImposition;
 import globaz.prestation.db.tauxImposition.PRTauxImpositionManager;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.prestation.tauxImposition.api.IPRTauxImposition;
 import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRDateFormater;
@@ -377,7 +378,8 @@ public class REGroupOperationCAUtil {
                 } else if (IRERetenues.CS_TYPE_ADRESSE_PMT.equals(riu.getCsTypeRetenue())) {
 
                     // Le versement...
-
+                    String codeIsoLangue = session.getCode(tw.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+                    codeIsoLangue = PRUtil.getISOLangueTiers(codeIsoLangue);
                     doOrdreVersement(
                             session,
                             process.initComptaExterne(transaction, true),
@@ -390,7 +392,7 @@ public class REGroupOperationCAUtil {
                                     tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), datePmtEnCours,
                                     tw.getProperty(PRTiersWrapper.PROPERTY_NOM),
                                     tw.getProperty(PRTiersWrapper.PROPERTY_PRENOM), retenue.getReferenceInterne(),
-                                    ra.getCodePrestation()), dateEcheance);
+                                    ra.getCodePrestation(), codeIsoLangue), dateEcheance);
 
                     cppr = new RECumulPrstParRubrique();
                     cppr.setType(RECumulPrstParRubrique.TYPE_BLOCAGE_RETENUE);
@@ -868,14 +870,15 @@ public class REGroupOperationCAUtil {
                  * Ordre de versement
                  */
                 if ((ov.montant != null) && ov.montant.isPositive()) {
-
+                    String codeIsoLangue = session.getCode(tw.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+                    codeIsoLangue = PRUtil.getISOLangueTiers(codeIsoLangue);
                     doOrdreVersement(session, process.initComptaExterne(transaction, true),
                             compteAnnexe.getIdCompteAnnexe(), sectionStandard.getIdSection(), ov.montant.toString(),
                             ov.idAdrPmt, process.getMotifVersement(
                                     tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), datePmtEnCours,
                                     tw.getProperty(PRTiersWrapper.PROPERTY_NOM),
                                     tw.getProperty(PRTiersWrapper.PROPERTY_PRENOM), ra.getReferencePmt(),
-                                    ra.getCodePrestation()), process.getDateEcheancePaiement());
+                                    ra.getCodePrestation(), codeIsoLangue), process.getDateEcheancePaiement());
 
                     result = this.cumulParRubrique(result, RECumulPrstParRubrique.TYPE_STANDARD,
                             RECumulPrstParRubrique.RUBRIQUE_FICTIVE_OV_PMT_BLOCAGE_RETENUE, ov.montant);

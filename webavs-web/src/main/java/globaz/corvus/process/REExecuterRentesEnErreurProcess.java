@@ -9,6 +9,7 @@ import globaz.corvus.db.lots.RELot;
 import globaz.corvus.db.lots.RELotManager;
 import globaz.corvus.db.rentesaccordees.REPaiementRentes;
 import globaz.corvus.db.rentesaccordees.REPaiementRentesManager;
+import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.module.compta.AREModuleComptable;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.pmt.mensuel.RECumulPrstParRubrique;
@@ -32,6 +33,9 @@ import globaz.osiris.api.APIRubrique;
 import globaz.osiris.api.APISection;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRSession;
 import java.util.HashMap;
@@ -315,6 +319,21 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
                         isErreursDetectee = true;
                         continue;
                     }
+                    PRTiersWrapper tiers;
+                    String idTiersPrincipal = "";
+                    idTiersPrincipal = rente.getIdTiersBeneficiaire();
+                    try {
+                        tiers = PRTiersHelper.getTiersParId(getSession(), idTiersPrincipal);
+
+                        if (null == tiers) {
+                            tiers = PRTiersHelper.getAdministrationParId(getSession(), idTiersPrincipal);
+                        }
+                    } catch (Exception ex) {
+                        throw new RETechnicalException(ex);
+                    }
+
+                    String codeIsoLangue = getSession().getCode(tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+                    codeIsoLangue = PRUtil.getISOLangueTiers(codeIsoLangue);
 
                     // 1ère écriture...
                     if (previousKey == null) {
@@ -323,7 +342,7 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
                         // écriture trouvée pour
                         // chaque groupe d'opération, car trié par groupe
                         motifVersement = getMotifVersement(rente.getNssTBE(), getMoisPaiement(), rente.getNomTBE(),
-                                rente.getPrenomTBE(), rente.getReferencePmt(), rente.getCodePrestation());
+                                rente.getPrenomTBE(), rente.getReferencePmt(), rente.getCodePrestation(), codeIsoLangue);
 
                         nomCache = getNomCache(rente);
 
@@ -394,7 +413,7 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
                         // écriture trouvée pour
                         // chaque groupe d'opération, car trié par groupe
                         motifVersement = getMotifVersement(rente.getNssTBE(), getMoisPaiement(), rente.getNomTBE(),
-                                rente.getPrenomTBE(), rente.getReferencePmt(), rente.getCodePrestation());
+                                rente.getPrenomTBE(), rente.getReferencePmt(), rente.getCodePrestation(), codeIsoLangue);
 
                         nomCache = getNomCache(rente);
 
@@ -407,7 +426,7 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
                     // Utilisé pour le traitement du dernier groupe d'opération.
                     // On ne stocke que les info utiles
                     motifVersement = getMotifVersement(rente.getNssTBE(), getMoisPaiement(), rente.getNomTBE(),
-                            rente.getPrenomTBE(), rente.getReferencePmt(), rente.getCodePrestation());
+                            rente.getPrenomTBE(), rente.getReferencePmt(), rente.getCodePrestation(), codeIsoLangue);
 
                     nomCache = getNomCache(rente);
                 } catch (Exception e) {

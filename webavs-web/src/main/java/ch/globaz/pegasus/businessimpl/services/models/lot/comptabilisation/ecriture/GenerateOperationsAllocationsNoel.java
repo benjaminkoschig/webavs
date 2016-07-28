@@ -39,14 +39,14 @@ class GenerateOperationsAllocationsNoel extends GenerateOperationBasic {
         ecritures.add(generateEcritureCredit(SectionPegasus.DECISION_PC, montant, compteAnnexe.getIdCompteAnnexe(),
                 TypeEcriture.ALLOCATION_NOEL, ov));
 
-        String motifVersement = concatRefPaiement(infosTiers, ov.getRefPaiement(), strPeriode, strDecision);
+        String motifVersement = formatMotifVersement(infosTiers, ov.getRefPaiement(), strPeriode, strDecision);
 
         ordreVersementCompta.add(new OrdreVersementCompta(compteAnnexe, infosTiers.getIdTiersAddressePaiement(),
                 infosTiers.getIdDomaineApplication(), montant, SectionPegasus.DECISION_PC, infosTiers.getIdTiers(), ov
                         .getCsType(), csRoleFamille, motifVersement));
     }
 
-    String concatRefPaiement(InfosTiers infosTiers, String refPaiement, String strPeriode, String strDecision) {
+    String formatMotifVersement(InfosTiers infosTiers, String refPaiement, String strPeriode, String strDecision) {
         return MotifVersementUtil.formatDecision(infosTiers.getNss(),
                 infosTiers.getNom() + " " + infosTiers.getPrenom(), refPaiement, BSessionUtil
                         .getSessionFromThreadContext().getCodeLibelle("64055001"), strPeriode, strDecision);

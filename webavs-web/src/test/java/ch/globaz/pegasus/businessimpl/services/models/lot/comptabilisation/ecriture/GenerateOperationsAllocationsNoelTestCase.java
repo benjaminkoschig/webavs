@@ -24,7 +24,7 @@ public class GenerateOperationsAllocationsNoelTestCase {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        doReturn("Mock RefPaiement").when(allocationsNoelMock).concatRefPaiement(any(InfosTiers.class),
+        doReturn("Mock RefPaiement").when(allocationsNoelMock).formatMotifVersement(any(InfosTiers.class),
                 any(String.class), any(String.class), any(String.class));
     }
 

@@ -12,6 +12,7 @@ import globaz.corvus.db.rentesaccordees.REDecisionJointDemandeRenteManager;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisions;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisionsManager;
+import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.enumere.genre.prestations.REGenrePrestationEnum;
 import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
@@ -41,6 +42,7 @@ import globaz.prestation.enums.codeprestation.PRCodePrestationPC;
 import globaz.prestation.enums.codeprestation.PRCodePrestationRFM;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.utils.compta.PRRubriqueComptableResolver;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
@@ -294,8 +296,8 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
 
     }
 
-    public synchronized static String getLibelleRubrique(final BSession session, final String genrePrestation)
-            throws Exception {
+    public synchronized static String getLibelleRubrique(final BSession session, final String genrePrestation,
+            String isoLangue) throws Exception {
 
         if (!REGenrePrestationEnum.groupe1.contains(genrePrestation)
                 && !REGenrePrestationEnum.groupe2.contains(genrePrestation)
@@ -304,7 +306,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
                 && !REGenrePrestationEnum.groupe5.contains(genrePrestation)
                 && !REGenrePrestationEnum.groupe6.contains(genrePrestation)) {
 
-            throw new Exception(session.getLabel("GENRE_PREST_INCONNU") + genrePrestation);
+            throw new Exception(session.getApplication().getLabel("GENRE_PREST_INCONNU", isoLangue) + genrePrestation);
         }
 
         if (REGenresPrestations.GENRE_10.equals(genrePrestation)
@@ -1038,23 +1040,40 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
 
         PersonneAVS beneficiairePrincipal = decision.getBeneficiairePrincipal();
         RenteAccordee renteAccordeePrincipale = decision.getRenteAccordeePrincipale();
+        PRTiersWrapper tiers;
+        String idTiersPrincipal = "";
+        idTiersPrincipal = decision.getTiersCorrespondance().getId().toString();
+        try {
+            tiers = PRTiersHelper.getTiersParId(session, idTiersPrincipal);
+
+            if (null == tiers) {
+                tiers = PRTiersHelper.getAdministrationParId(session, idTiersPrincipal);
+            }
+        } catch (Exception ex) {
+            throw new RETechnicalException(ex);
+        }
+
+        String codeIsoLangue = session.getCode(tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+        codeIsoLangue = PRUtil.getISOLangueTiers(codeIsoLangue);
 
         final String nss = beneficiairePrincipal.getNss().toString();
         final String nomPrenom = beneficiairePrincipal.getNom() + " " + beneficiairePrincipal.getPrenom();
         final String prestation = AREModuleComptable.getLibelleRubrique(session,
-                Integer.toString(renteAccordeePrincipale.getCodePrestation().getCodePrestation()));
+                Integer.toString(renteAccordeePrincipale.getCodePrestation().getCodePrestation()), codeIsoLangue);
         final String periode = renteAccordeePrincipale.getMoisDebut() + " - " + renteAccordeePrincipale.getMoisFin();
-        final String msgDecision = session.getLabel("PMT_MENS_DECISION_DU") + " " + decision.getDateDecision();
+        final String msgDecision = session.getApplication().getLabel("PMT_MENS_DECISION_DU", codeIsoLangue) + " "
+                + decision.getDateDecision();
 
         return MotifVersementUtil.formatDecision(nss, nomPrenom, refPmt, prestation, periode, msgDecision);
     }
 
     protected String getMotifVersementDeblocage(final BSession session, final PRTiersWrapper tw, final String refPmt,
             final String genrePrestation) throws Exception {
-
+        String codeIsoLangue = session.getCode(tw.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+        codeIsoLangue = PRUtil.getISOLangueTiers(codeIsoLangue);
         final String nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
         final String nomPrenom = tw.getProperty(PRTiersWrapper.PROPERTY_NOM + " " + PRTiersWrapper.PROPERTY_PRENOM);
-        final String prestation = AREModuleComptable.getLibelleRubrique(session, genrePrestation);
+        final String prestation = AREModuleComptable.getLibelleRubrique(session, genrePrestation, codeIsoLangue);
 
         return MotifVersementUtil.formatDeblocage(nss, nomPrenom, refPmt, prestation,
                 session.getLabel("DEBLOCAGE_VERSEMENT_DU"));

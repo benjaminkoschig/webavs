@@ -315,11 +315,11 @@ public abstract class AREPmtMensuel extends PRAbstractProcess {
      * @return null si aucun libelle trouvé pour le genre de prestation
      */
     public String getMotifVersement(String nss, String datePmt, String nom, String prenom, String refPmt,
-            String genrePrestation) {
+            String genrePrestation, String codeISOLangue) {
 
         try {
             String nonPrenom = nom + " " + prenom;
-            String strGenrePrest = AREModuleComptable.getLibelleRubrique(getSession(), genrePrestation);
+            String strGenrePrest = AREModuleComptable.getLibelleRubrique(getSession(), genrePrestation, codeISOLangue);
             return MotifVersementUtil.formatPaiementMensuel(nss, nonPrenom, refPmt, strGenrePrest, datePmt);
         } catch (Exception e) {
             return null;
