@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+(C) Copyright 2010, SKSF, www.sksf.ch
+
+Anregungen und Fragen zu diesem Dokument können an das jeweilige Finanzinstitut gerichtet werden. 
+Allgemeine Anregungen können auch bei der SIX Interbank Clearing AG unter folgender Adresse angebracht werden: 
+pm@six-group.com
+-->
+<Document xmlns="http://www.six-interbank-clearing.com/de/pain.002.001.03.ch.02.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.six-interbank-clearing.com/de/pain.002.001.03.ch.02.xsd pain.002.001.03.ch.02.xsd">
+	<CstmrPmtStsRpt>
+		<GrpHdr>
+			<MsgId>MSG-SIX-01</MsgId>
+			<CreDtTm>2010-02-15T09:30:47</CreDtTm>
+			<InitgPty>
+				<Id>
+					<OrgId>
+						<BICOrBEI>TKZHCHZZXXX</BICOrBEI>
+					</OrgId>
+				</Id>
+			</InitgPty>
+		</GrpHdr>
+		<OrgnlGrpInfAndSts>
+			<OrgnlMsgId>MSG-01</OrgnlMsgId>
+			<OrgnlMsgNmId>pain.001.01.03</OrgnlMsgNmId>
+			<GrpSts>ACCP</GrpSts>
+		</OrgnlGrpInfAndSts>
+	</CstmrPmtStsRpt>
+</Document>
