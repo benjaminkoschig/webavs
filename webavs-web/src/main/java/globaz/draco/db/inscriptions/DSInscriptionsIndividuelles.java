@@ -63,6 +63,8 @@ public class DSInscriptionsIndividuelles extends BEntity {
     HashMap mapCodeParamAF = new HashMap();
     private String moisDebut = "";
     private String moisFin = "";
+    private String moisDebutAF = "";
+    private String moisFinAF = "";
     private String montant = "";
     private String montantAf = "";
     private String nbJour = "";
@@ -458,6 +460,8 @@ public class DSInscriptionsIndividuelles extends BEntity {
         idPlan = statement.dbReadNumeric("TFID");
         jourDebut = statement.dbReadNumeric("TENJOD");
         jourFin = statement.dbReadNumeric("TENJOF");
+        moisDebutAF = statement.dbReadNumeric("TENMOD");
+        moisFinAF = statement.dbReadNumeric("TENMOF");
         codeCanton = statement.dbReadNumeric("TETCAN");
         aCI = statement.dbReadNumeric("TEMAI", 2);
         aCII = statement.dbReadNumeric("TEMAII", 2);
@@ -574,9 +578,14 @@ public class DSInscriptionsIndividuelles extends BEntity {
         statement.writeField("TFID", this._dbWriteNumeric(statement.getTransaction(), idPlan, "idPlan"));
         statement.writeField("TENJOD", this._dbWriteNumeric(statement.getTransaction(), jourDebut, "jourDebut"));
         statement.writeField("TENJOF", this._dbWriteNumeric(statement.getTransaction(), jourFin, "jourFin"));
+
+        statement.writeField("TENMOD", this._dbWriteNumeric(statement.getTransaction(), moisDebutAF, "moisDebutAF"));
+        statement.writeField("TENMOF", this._dbWriteNumeric(statement.getTransaction(), moisFinAF, "moisFinAF"));
+
         statement.writeField("TEMAI", this._dbWriteNumeric(statement.getTransaction(), aCI, "acI"));
         statement.writeField("TEMAII", this._dbWriteNumeric(statement.getTransaction(), aCII, "acII"));
         statement.writeField("TEMAF", this._dbWriteNumeric(statement.getTransaction(), montantAf, "AF"));
+
         statement.writeField("KAIIND",
                 this._dbWriteNumeric(statement.getTransaction(), compteIndividuelId, "idCompteIndividuel"));
         statement.writeField("TENNBJ", this._dbWriteNumeric(statement.getTransaction(), nbJour, "nombreDeJours"));
@@ -1154,6 +1163,19 @@ public class DSInscriptionsIndividuelles extends BEntity {
         return JadeStringUtil.isIntegerEmpty(moisRetour) ? "" : moisRetour;
     }
 
+    /**
+     * @return
+     */
+    public String getPeriodeDebutAF() {
+        String moisRetour = "";
+        if (JadeStringUtil.isIntegerEmpty(moisDebutAF)) {
+            return "";
+        }
+        moisRetour = JadeStringUtil.rightJustifyInteger(jourDebut, 2) + "."
+                + JadeStringUtil.rightJustifyInteger(moisDebutAF, 2);
+        return JadeStringUtil.isIntegerEmpty(moisRetour) ? "" : moisRetour;
+    }
+
     private long getPeriodeDebutForCompare() {
         return Long.parseLong(JadeStringUtil.rightJustifyInteger(moisDebut, 2)
                 + JadeStringUtil.rightJustifyInteger(jourDebut, 2));
@@ -1169,6 +1191,16 @@ public class DSInscriptionsIndividuelles extends BEntity {
         }
         moisRetour = JadeStringUtil.rightJustifyInteger(jourFin, 2) + "."
                 + JadeStringUtil.rightJustifyInteger(moisFin, 2);
+        return JadeStringUtil.isIntegerEmpty(moisRetour) ? "" : moisRetour;
+    }
+
+    public String getPeriodeFinAF() {
+        String moisRetour = "";
+        if (JadeStringUtil.isIntegerEmpty(moisFinAF)) {
+            return "";
+        }
+        moisRetour = JadeStringUtil.rightJustifyInteger(jourFin, 2) + "."
+                + JadeStringUtil.rightJustifyInteger(moisFinAF, 2);
         return JadeStringUtil.isIntegerEmpty(moisRetour) ? "" : moisRetour;
     }
 
@@ -1313,6 +1345,7 @@ public class DSInscriptionsIndividuelles extends BEntity {
                 moisFin = periodeFin;
             }
             moisFin = JadeStringUtil.rightJustifyInteger(moisFin, 2);
+
             jourFin = determineJourFin();
         }
         int indexPointDebut = periodeDebut.indexOf(".");
@@ -1329,6 +1362,10 @@ public class DSInscriptionsIndividuelles extends BEntity {
 
             }
             jourDebut = "01";
+        }
+        if (JadeStringUtil.isIntegerEmpty(montant)) {
+            moisFinAF = moisFin;
+            moisDebutAF = moisDebut;
         }
     }
 

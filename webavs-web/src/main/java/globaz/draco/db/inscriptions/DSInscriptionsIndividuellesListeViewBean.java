@@ -190,8 +190,9 @@ public class DSInscriptionsIndividuellesListeViewBean extends DSDeclarationViewB
                     saveAF.add(new FWCurrency(insc.getMontantAf()).toStringFormat());
                     saveSoumis.add(insc.getSoumis().booleanValue() ? "true" : "false");
                     savePeriodeDebut.add(!JadeStringUtil.isIntegerEmpty(insc.getMontant()) ? insc.getPeriodeDebut()
-                            : "");
-                    savePeriodeFin.add(!JadeStringUtil.isIntegerEmpty(insc.getMontant()) ? insc.getPeriodeFin() : "");
+                            : insc.getPeriodeDebutAF());
+                    savePeriodeFin.add(!JadeStringUtil.isIntegerEmpty(insc.getMontant()) ? insc.getPeriodeFin() : insc
+                            .getPeriodeFinAF());
                     saveIdInscription.add(insc.getIdInscription());
                     saveCasSpecial.add(insc.getCasSpecial().booleanValue() ? "true" : "false");
                     saveNomPrenom.add(insc.getNomPrenom());
@@ -297,8 +298,9 @@ public class DSInscriptionsIndividuellesListeViewBean extends DSDeclarationViewB
                     // saveSoumis.add((String)((ArrayList)soumis).get(i));
                     saveSoumis.add(insc.getSoumis().booleanValue() ? "true" : "false");
                     savePeriodeDebut.add(!JadeStringUtil.isIntegerEmpty(insc.getMontant()) ? insc.getPeriodeDebut()
-                            : "");
-                    savePeriodeFin.add(!JadeStringUtil.isIntegerEmpty(insc.getMontant()) ? insc.getPeriodeFin() : "");
+                            : insc.getPeriodeDebutAF());
+                    savePeriodeFin.add(!JadeStringUtil.isIntegerEmpty(insc.getMontant()) ? insc.getPeriodeFin() : insc
+                            .getPeriodeFinAF());
                     saveIdInscription.add(insc.getIdInscription());
                     saveCasSpecial.add(insc.getCasSpecial().booleanValue() ? "true" : "false");
                     saveNomPrenom.add(insc.getNomPrenom());
