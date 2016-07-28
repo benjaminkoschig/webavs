@@ -17,11 +17,14 @@ import ch.globaz.orion.business.domaine.pucs.SalariesAvs;
 import ch.globaz.orion.business.domaine.pucs.SalariesCaf;
 import ch.globaz.orion.business.domaine.pucs.SalaryAvs;
 import ch.globaz.orion.business.domaine.pucs.SalaryCaf;
+import ch.swissdec.schema.sd._20130514.salarydeclaration.AHVAVSCustomerIdentificationType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.AHVAVSSalaryType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.AHVAVSTotalsType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.AddressType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.CompanyDescriptionType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.CompanyType;
+import ch.swissdec.schema.sd._20130514.salarydeclaration.CustomerIdentificationType;
+import ch.swissdec.schema.sd._20130514.salarydeclaration.FAKCAFCustomerIdentificationType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.FAKCAFSalaryType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.FAKCAFTotalsType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.ParticularsType;
@@ -68,7 +71,6 @@ public class PUCS4SalaryConverter {
         /*
          * FIXME comment mapper tout ça?
          * result.setNom(nom);
-         * result.setNumeroAffilie(numeroAffilie);
          * result.setNumeroIde(numeroIde);
          * result.setContact(contact);
          */
@@ -78,6 +80,22 @@ public class PUCS4SalaryConverter {
         CompanyType company = salaryDeclaration.getCompany();
 
         convertEmployeesAndSetIsAfSeulFlag(result, company.getStaff());
+
+        String numAff = null;
+        CustomerIdentificationType institutions = company.getInstitutions();
+        List<AHVAVSCustomerIdentificationType> institAhvavs = institutions.getAHVAVS();
+        if (institAhvavs != null && !institAhvavs.isEmpty()) {
+            // FIXME on fait quoi quand il y a plusieurs AHVAVSCustomerIdentificationType?
+            numAff = institAhvavs.get(0).getAKCCCustomerNumber();
+        } else {
+            List<FAKCAFCustomerIdentificationType> institFakcaf = institutions.getFAKCAF();
+            if (institFakcaf != null && !institFakcaf.isEmpty()) {
+                // FIXME on fait quoi quand il y a plusieurs FAKCAFCustomerIdentificationType?
+                numAff = institFakcaf.get(0).getFAKCAFCustomerNumber();
+            }
+        }
+
+        result.setNumeroAffilie(numAff);
 
         /*
          * result.setMontantAvs(x);
