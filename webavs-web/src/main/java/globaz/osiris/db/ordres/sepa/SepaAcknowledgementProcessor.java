@@ -35,7 +35,7 @@ import globaz.osiris.db.ordres.CAOrdreVersement;
 import globaz.osiris.db.ordres.CAOrdreVersementManager;
 
 @ThreadSafe
-public class SepaAcknowledgementProcessor {
+public class SepaAcknowledgementProcessor extends AbstractSepa {
     private static final Logger LOG = LoggerFactory.getLogger(SepaAcknowledgementProcessor.class);
 
     public static final String NAMESPACE_PAIN002 = "http://www.six-interbank-clearing.com/de/pain.002.001.03.ch.02.xsd";
@@ -55,31 +55,6 @@ public class SepaAcknowledgementProcessor {
         OK,
         MESSAGE_NOT_FOUND,
         MESSAGE_ALREADY_CONFIRMED;
-    }
-
-    public static /* final */ class SepaException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
-
-        public SepaException() {
-            super();
-        }
-
-        public SepaException(String message, Throwable cause) {
-            super(message, cause);
-        }
-
-        public SepaException(String message) {
-            super(message);
-        }
-
-        public SepaException(Throwable cause) {
-            super(cause);
-        }
-    }
-
-    private <T> T unmarshallToClass(InputStream source, Class<? extends T> clazz) {
-        Document doc = parseDocument(source);
-        return unmarshall(doc, clazz);
     }
 
     private Document parseDocument(InputStream source) {
@@ -103,8 +78,7 @@ public class SepaAcknowledgementProcessor {
     private <T> T unmarshall(Document doc, Class<? extends T> clazz) {
         Unmarshaller unmarshaller;
         try {
-            JAXBContext jc = JAXBContext
-                    .newInstance(com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document.class);
+            JAXBContext jc = JAXBContext.newInstance(clazz);
 
             unmarshaller = jc.createUnmarshaller();
             unmarshaller.setEventHandler(new DefaultValidationEventHandler());
