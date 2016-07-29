@@ -581,8 +581,10 @@ public class DSInscriptionsIndividuellesListeViewBean extends DSDeclarationViewB
                 }
                 idInscription.add(insc.getIdInscription());
                 idDepart.add(insc.getIdInscription());
-                periodeDebut.add(insc.getPeriodeDebut());
-                periodeFin.add(insc.getPeriodeFin());
+                periodeDebut.add(JadeStringUtil.isIntegerEmpty(insc.getMontant()) ? insc.getPeriodeDebutAF() : insc
+                        .getPeriodeDebut());
+                periodeFin.add(JadeStringUtil.isIntegerEmpty(insc.getMontant()) ? insc.getPeriodeFinAF() : insc
+                        .getPeriodeFin());
                 numeroAvs.add(insc.getNssFormateWithoutPrefix());
                 numeroAvsNNSS.add(insc.getNumeroAvsNNSS());
                 nnss.add(insc.getNumeroAvsNNSS());
