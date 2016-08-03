@@ -94,6 +94,7 @@ public class CIApplication extends globaz.globall.db.BApplication {
     public final static String WANT_UPI_DAILY = "wantUpiDaily";
     public final static String WANTED_TO_COMPARE = "anomalieCompare";
     public final static String WANTED_TO_CORRECT = "anomalieCorrige";
+    public static final String PROPERTY_ACTIVER_PARSING_PUCS_4 = "activerParsingPUCS4";
 
     // le format du numéro d'affilié
     private IFormatData affileFormater = null;
@@ -863,6 +864,15 @@ public class CIApplication extends globaz.globall.db.BApplication {
      */
     public String getCaisseInterne() {
         return this.getProperty(CIApplication.CODE_CAISSE);
+    }
+
+    /**
+     * Retourne la valeur de la propriété indiquant si le parsing pucs 4 est activé
+     * 
+     * @return la valeur de la propriété PROPERTY_ACTIVER_PARSING_PUCS_4 (false par défaut)
+     */
+    public String getPropertyActiverParsingPUCS4() {
+        return this.getProperty(CIApplication.PROPERTY_ACTIVER_PARSING_PUCS_4, "false");
     }
 
     public ArrayList<String> getChampsAffiche() {
