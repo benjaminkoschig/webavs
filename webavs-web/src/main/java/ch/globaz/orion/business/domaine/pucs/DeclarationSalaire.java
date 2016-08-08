@@ -8,10 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
 
 public class DeclarationSalaire {
+    private static final Logger LOG = LoggerFactory.getLogger(DeclarationSalaire.class);
+
     private String numeroAffilie;
     private int nbSalaire;
     private int annee;
@@ -57,9 +61,12 @@ public class DeclarationSalaire {
         this.test = test;
     }
 
+    /**
+     * @deprecated Le champ afSeul est maintenant calculé en fonction du contenu de l'objet courant.
+     */
+    @Deprecated
     public void setAfSeul(boolean isAfSeul) {
-        throw new AssertionError("should not have been invoked... afSeul is a calculated field");
-        // this.isAfSeul = isAfSeul;
+        LOG.error("invoking a deprecated NO-OP method. Consider changing your call.");
     }
 
     public DeclarationSalaireProvenance getProvenance() {
