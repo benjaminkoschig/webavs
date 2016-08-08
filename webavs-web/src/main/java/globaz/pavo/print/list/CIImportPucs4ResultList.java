@@ -4,9 +4,13 @@ import globaz.aquila.print.list.COAbstractListExcel;
 import globaz.globall.db.BSession;
 import globaz.pavo.db.inscriptions.declaration.CIImportPucs4DetailResultBean;
 import globaz.pavo.db.inscriptions.declaration.CIImportPucs4DetailResultInscriptionBean;
+import globaz.pavo.db.inscriptions.declaration.CIImportPucs4ResumeBean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.util.Region;
 
 /**
  * Crée la liste des rentiers et irrécouvrables
@@ -16,6 +20,8 @@ import java.util.Map.Entry;
 public class CIImportPucs4ResultList extends COAbstractListExcel {
 
     private CIImportPucs4DetailResultBean detailResultBean;
+    private HSSFFont fontRed;
+    private HSSFCellStyle styleRedAlignLeft;
 
     // créé la feuille xls
     public CIImportPucs4ResultList(BSession session, CIImportPucs4DetailResultBean detailResultBean) {
@@ -31,19 +37,30 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
 
     public void createResultList() {
 
-        initDocument();
-        createTitleRow();
-
         for (Entry<String, List<CIImportPucs4DetailResultInscriptionBean>> entryAnneeListInscriptions : detailResultBean
                 .getMapAnneeListInscriptions().entrySet()) {
-            createContentRows(entryAnneeListInscriptions.getValue());
+
+            String sheetName = getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_SHEET_NAME") + "_"
+                    + detailResultBean.getNumeroAffilie() + "_" + entryAnneeListInscriptions.getKey();
+            String sheetTitle = getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_SHEET_TITLE") + " : "
+                    + detailResultBean.getNumeroAffilie() + " - " + entryAnneeListInscriptions.getKey();
+            createSheetDetail(sheetName, sheetTitle, entryAnneeListInscriptions.getValue());
+        }
+
+        for (Entry<String, CIImportPucs4ResumeBean> entryAnneeResume : detailResultBean.getMapAnneeResume().entrySet()) {
+            String sheetName = getSession().getLabel("IMPORT_PUCS_4_RESUME_RESULT_LIST_SHEET_NAME") + "_"
+                    + detailResultBean.getNumeroAffilie() + "_" + entryAnneeResume.getKey();
+            String sheetTitle = getSession().getLabel("IMPORT_PUCS_4_RESUME_RESULT_LIST_SHEET_TITLE") + " : "
+                    + detailResultBean.getNumeroAffilie() + " - " + entryAnneeResume.getKey();
+            createSheetResume(sheetName, sheetTitle, entryAnneeResume.getValue());
         }
 
     }
 
-    private void initDocument() {
+    private void createSheetDetail(String sheetName, String sheetTitle,
+            List<CIImportPucs4DetailResultInscriptionBean> listDetailResultInscriptionBean) {
 
-        createSheet("TODO");
+        createSheet(sheetName);
         initPage(false);
         createHeader();
         createFooter("TODO");
@@ -56,9 +73,10 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
         currentSheet.setColumnWidth((short) numCol++, (short) 5000);
         currentSheet.setColumnWidth((short) numCol++, (short) 5000);
 
-    }
-
-    private void createTitleRow() {
+        createRow();
+        createRow();
+        currentSheet.addMergedRegion(new Region(1, (short) 0, 1, (short) 1));
+        createCell(sheetTitle, getStyleListTitleLeft());
 
         ArrayList<String> colTitles = new ArrayList<String>();
         colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_NSS"));
@@ -72,9 +90,63 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
 
         initTitleRow(colTitles);
 
+        createContentRowsDetail(listDetailResultInscriptionBean);
+
     }
 
-    private void createContentRows(List<CIImportPucs4DetailResultInscriptionBean> listDetailResultInscriptionBean) {
+    private HSSFFont getFontRed() {
+
+        if (fontRed == null) {
+            fontRed = getWorkbook().createFont();
+            fontRed.setColor(HSSFFont.COLOR_RED);
+        }
+
+        return fontRed;
+
+    }
+
+    private HSSFCellStyle getStyleRedAlignLeft() {
+
+        if (styleRedAlignLeft == null) {
+
+            styleRedAlignLeft = getWorkbook().createCellStyle();
+            styleRedAlignLeft.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+            styleRedAlignLeft.setFont(getFontRed());
+            styleRedAlignLeft.setWrapText(true); // La largeur de la cellule s'adapte au contenu
+        }
+
+        return styleRedAlignLeft;
+    }
+
+    private void createSheetResume(String sheetName, String sheetTitle, CIImportPucs4ResumeBean resumeBean) {
+
+        createSheet(sheetName);
+        initPage(false);
+        createHeader();
+        createFooter("TODO");
+
+        int numCol = 0;
+        currentSheet.setColumnWidth((short) numCol++, (short) 14000);
+        currentSheet.setColumnWidth((short) numCol++, (short) 5000);
+        currentSheet.setColumnWidth((short) numCol++, (short) 5000);
+
+        createRow();
+        createRow();
+        currentSheet.addMergedRegion(new Region(1, (short) 0, 1, (short) 1));
+        createCell(sheetTitle, getStyleListTitleLeft());
+
+        ArrayList<String> colTitles = new ArrayList<String>();
+        colTitles.add(getSession().getLabel("IMPORT_PUCS_4_RESUME_RESULT_LIST_LIBELLE"));
+        colTitles.add(getSession().getLabel("IMPORT_PUCS_4_RESUME_RESULT_LIST_NOMBRE"));
+        colTitles.add(getSession().getLabel("IMPORT_PUCS_4_RESUME_RESULT_LIST_MONTANT"));
+
+        initTitleRow(colTitles);
+
+        createContentRowsResume(resumeBean);
+
+    }
+
+    private void createContentRowsDetail(List<CIImportPucs4DetailResultInscriptionBean> listDetailResultInscriptionBean) {
 
         for (CIImportPucs4DetailResultInscriptionBean aDetailResultInscriptionBean : listDetailResultInscriptionBean) {
             createRow();
@@ -87,8 +159,9 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
 
             for (String aErreur : aDetailResultInscriptionBean.getErrors()) {
                 createRow();
-                createCell(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_ERREUR") + " : ");
-                createCell(aErreur);
+                createCell(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_ERREUR") + " : ",
+                        getStyleRedAlignLeft());
+                createCell(aErreur, getStyleRedAlignLeft());
             }
 
             for (String aInfo : aDetailResultInscriptionBean.getInfos()) {
@@ -97,6 +170,25 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
                 createCell(aInfo);
             }
         }
+
+    }
+
+    private void createContentRowsResume(CIImportPucs4ResumeBean resumeBean) {
+
+        createRow();
+        createCell(getSession().getLabel("IMPORT_PUCS_4_RESUME_RESULT_LIST_INSCRIPTION_ERREUR"));
+        createCell(String.valueOf(resumeBean.getNbrInscriptionsErreur()));
+        createCell(String.valueOf(resumeBean.getMontantInscriptionsErreur()));
+
+        createRow();
+        createCell(getSession().getLabel("IMPORT_PUCS_4_RESUME_RESULT_LIST_INSCRIPTION_SUSPENS"));
+        createCell(String.valueOf(resumeBean.getNbrInscriptionsSuspens()));
+        createCell(String.valueOf(resumeBean.getMontantInscriptionsSuspens()));
+
+        createRow();
+        createCell(getSession().getLabel("IMPORT_PUCS_4_RESUME_RESULT_LIST_INSCRIPTION_CI"));
+        createCell(String.valueOf(resumeBean.getNbrInscriptionsCI()));
+        createCell(String.valueOf(resumeBean.getMontantInscriptionsCI()));
 
     }
 

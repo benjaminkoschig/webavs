@@ -9,6 +9,15 @@ public class CIImportPucs4DetailResultBean {
     private String numeroAffilie = "";
     private String designationAffilie = "";
     private Map<String, List<CIImportPucs4DetailResultInscriptionBean>> mapAnneeListInscriptions = new HashMap<String, List<CIImportPucs4DetailResultInscriptionBean>>();
+    private Map<String, CIImportPucs4ResumeBean> mapAnneeResume = new HashMap<String, CIImportPucs4ResumeBean>();
+
+    public Map<String, CIImportPucs4ResumeBean> getMapAnneeResume() {
+        return mapAnneeResume;
+    }
+
+    public void setMapAnneeResume(Map<String, CIImportPucs4ResumeBean> mapAnneeResume) {
+        this.mapAnneeResume = mapAnneeResume;
+    }
 
     public String getNumeroAffilie() {
         return numeroAffilie;
