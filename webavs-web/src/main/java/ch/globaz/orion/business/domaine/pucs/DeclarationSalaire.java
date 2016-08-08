@@ -30,27 +30,14 @@ public class DeclarationSalaire {
     private DeclarationSalaireProvenance provenance;
     private Date transmissionDate;
     private List<Employee> employees = new ArrayList<Employee>();
-    // private boolean isAfSeul;
+    private boolean isAfSeul;
     private boolean test; // premet de savoir si la déclaration de salaire est pour le test(Utilisé pour les
                           // swissDec)
     private boolean duplicate;
     private boolean substitution;
 
     public boolean isAfSeul() {
-        Boolean afSeul = false;
-
-        for (Employee emp : employees) {
-            if (emp.getSalariesCaf().size() > 0) {
-                afSeul = true;
-            }
-
-            if (emp.getSalariesAvs().size() > 0) {
-                afSeul = false;
-                break; // no need to check remaining data
-            }
-        }
-
-        return afSeul;
+        return isAfSeul;
     }
 
     public boolean isTest() {
@@ -61,13 +48,8 @@ public class DeclarationSalaire {
         this.test = test;
     }
 
-    /**
-     * @deprecated Le champ afSeul est maintenant calculé en fonction du contenu de l'objet courant. Invoquer cette
-     *             méthode ne fera que produire un message de log au niveau ERROR.
-     */
-    @Deprecated
     public void setAfSeul(boolean isAfSeul) {
-        LOG.error("invoking a deprecated NO-OP method. Consider changing your call.");
+        this.isAfSeul = isAfSeul;
     }
 
     public DeclarationSalaireProvenance getProvenance() {
