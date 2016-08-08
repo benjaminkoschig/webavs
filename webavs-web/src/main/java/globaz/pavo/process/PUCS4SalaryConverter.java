@@ -78,6 +78,7 @@ public class PUCS4SalaryConverter {
         SalaryDeclarationRequestType declareSalary = param.getDeclareSalary();
         SalaryDeclarationType salaryDeclaration = declareSalary.getSalaryDeclaration();
         CompanyType company = salaryDeclaration.getCompany();
+        result.setAdresse(adresse);
 
         convertEmployeesAndSetIsAfSeulFlag(result, company.getStaff());
 
@@ -154,8 +155,10 @@ public class PUCS4SalaryConverter {
         }
 
         CompanyDescriptionType companyDescription = company.getCompanyDescription();
+        result.setNom(companyDescription.getName().getHRRCName());
+
         AddressType sourceAddress = companyDescription.getAddress();
-        Adresse adresse = new Adresse(null /* FIXME ... */, sourceAddress.getZIPCode(), sourceAddress.getCity());
+        Adresse adresse = new Adresse(sourceAddress.getStreet(), sourceAddress.getZIPCode(), sourceAddress.getCity());
         result.setAdresse(adresse);
 
         checkAllPlausi(result);
