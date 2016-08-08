@@ -46,7 +46,7 @@ public class DeclarationSalaire {
 
             if (emp.getSalariesAvs().size() > 0) {
                 afSeul = false;
-                break;
+                break; // no need to check remaining data
             }
         }
 
@@ -62,7 +62,8 @@ public class DeclarationSalaire {
     }
 
     /**
-     * @deprecated Le champ afSeul est maintenant calculé en fonction du contenu de l'objet courant.
+     * @deprecated Le champ afSeul est maintenant calculé en fonction du contenu de l'objet courant. Invoquer cette
+     *             méthode ne fera que produire un message de log au niveau ERROR.
      */
     @Deprecated
     public void setAfSeul(boolean isAfSeul) {
