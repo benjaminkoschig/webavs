@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.orion.business.domaine.pucs.Adresse;
+import ch.globaz.orion.business.domaine.pucs.Contact;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.domaine.pucs.Employee;
@@ -23,6 +24,7 @@ import ch.swissdec.schema.sd._20130514.salarydeclaration.AHVAVSTotalsType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.AddressType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.CompanyDescriptionType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.CompanyType;
+import ch.swissdec.schema.sd._20130514.salarydeclaration.ContactPersonType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.CustomerIdentificationType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.FAKCAFCustomerIdentificationType;
 import ch.swissdec.schema.sd._20130514.salarydeclaration.FAKCAFSalaryType;
@@ -70,15 +72,12 @@ public class PUCS4SalaryConverter {
 
         /*
          * FIXME comment mapper tout ça?
-         * result.setNom(nom);
          * result.setNumeroIde(numeroIde);
-         * result.setContact(contact);
          */
 
         SalaryDeclarationRequestType declareSalary = param.getDeclareSalary();
         SalaryDeclarationType salaryDeclaration = declareSalary.getSalaryDeclaration();
         CompanyType company = salaryDeclaration.getCompany();
-        result.setAdresse(adresse);
 
         convertEmployeesAndSetIsAfSeulFlag(result, company.getStaff());
 
@@ -155,11 +154,15 @@ public class PUCS4SalaryConverter {
         }
 
         CompanyDescriptionType companyDescription = company.getCompanyDescription();
+
         result.setNom(companyDescription.getName().getHRRCName());
 
         AddressType sourceAddress = companyDescription.getAddress();
         Adresse adresse = new Adresse(sourceAddress.getStreet(), sourceAddress.getZIPCode(), sourceAddress.getCity());
         result.setAdresse(adresse);
+
+        ContactPersonType contact = salaryDeclaration.getGeneralSalaryDeclarationDescription().getContactPerson();
+        result.setContact(new Contact(contact.getName(), contact.getPhoneNumber(), contact.getEmailAddress()));
 
         checkAllPlausi(result);
 
