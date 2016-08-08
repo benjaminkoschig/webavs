@@ -1,5 +1,6 @@
 package globaz.pavo.process;
 
+import globaz.pavo.process.PUCS4SalaryConverter.PlausiResult.PlausiStatus;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +40,6 @@ import ch.swissdec.schema.sd._20130514.salarydeclaration.TotalFAKCAFPerCantonTyp
 import ch.swissdec.schema.sd._20130514.salarydeclarationconsumercontainer.DeclareSalaryConsumerType;
 import ch.swissdec.schema.sd._20130514.salarydeclarationconsumercontainer.DistributorRequestContextType;
 import ch.swissdec.schema.sd._20130514.salarydeclarationcontainer.SalaryDeclarationRequestType;
-import globaz.pavo.process.PUCS4SalaryConverter.PlausiResult.PlausiStatus;
 
 /**
  * Convertit un objet issu du webservice PUCS v4 (cf. {@link DeclareSalaryConsumerType}) vers des objets métiers
@@ -64,8 +64,8 @@ public class PUCS4SalaryConverter {
         DistributorRequestContextType distributorRequestContext = param.getDistributorRequestContext();
 
         result.setAnnee(1234); // FIXME le year ne veut rien dire... on peut être à cheval sur plusieurs années...
-        result.setTransmissionDate(
-                new Date(distributorRequestContext.getTransmissionDate().toGregorianCalendar().getTime()));
+        result.setTransmissionDate(new Date(distributorRequestContext.getTransmissionDate().toGregorianCalendar()
+                .getTime()));
         result.setTest(distributorRequestContext.getTestCase() != null);
         result.setDuplicate(distributorRequestContext.getDuplicate() != null);
         result.setSubstitution(distributorRequestContext.getSubstitutionMapping() != null);
@@ -170,7 +170,9 @@ public class PUCS4SalaryConverter {
     }
 
     private void convertEmployeesAndSetIsAfSeulFlag(DeclarationSalaire result, PersonsType staff) {
-        boolean isAfSeul = true;
+
+        int nombreCAFInscriptionInFile = 0;
+        int nombreAVSInscriptionInFile = 0;
 
         for (PersonType person : staff.getPerson()) {
             ParticularsType particulars = person.getParticulars();
@@ -197,6 +199,7 @@ public class PUCS4SalaryConverter {
                             .montantAvs(Montant.valueOf(salary.getAHVAVSIncome()))
                             .periode(buildPeriodeSalary(salary.getAccountingTime())).build();
                     salaries.add(targetSalary);
+                    nombreAVSInscriptionInFile++;
                 }
 
                 targetEmployee.setSalariesAvs(new SalariesAvs(salaries));
@@ -209,13 +212,13 @@ public class PUCS4SalaryConverter {
                 List<SalaryCaf> salaries = new ArrayList<SalaryCaf>();
 
                 for (FAKCAFSalaryType salary : person.getFAKCAFSalaries().getFAKCAFSalary()) {
-                    isAfSeul = false;
 
                     SalaryCaf targetSalary = new SalaryCaf.SalaryCafBuilder()
                             .montant(Montant.valueOf(salary.getFAKCAFContributorySalary()))
                             .canton(salary.getFAKCAFWorkplaceCanton().value())
                             .periode(buildPeriodeSalary(salary.getFAKCAFPeriod())).build();
                     salaries.add(targetSalary);
+                    nombreCAFInscriptionInFile++;
                 }
 
                 targetEmployee.setSalariesCaf(new SalariesCaf(salaries));
@@ -246,9 +249,11 @@ public class PUCS4SalaryConverter {
              */
 
             result.getEmployees().add(targetEmployee);
+
         }
 
-        result.setAfSeul(isAfSeul);
+        result.setAfSeul(nombreAVSInscriptionInFile == 0 && nombreCAFInscriptionInFile >= 1);
+
     }
 
     private PeriodeSalary buildPeriodeSalary(TimePeriodType period) {
