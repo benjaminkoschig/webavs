@@ -1,9 +1,11 @@
 package globaz.osiris.db.ordres.sepa;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.net.ftp.FTPClient;
 import org.apache.http.annotation.ThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import com.six_interbank_clearing.de.pain_002_001_03_ch_02.StatusReason6Choice;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.StatusReasonInformation8CH;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.TransactionGroupStatus3Code;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.TransactionIndividualStatus3CodeCH;
+import globaz.globall.db.BApplication;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BTransaction;
@@ -29,10 +32,6 @@ import globaz.osiris.db.ordres.CAOrdreVersementManager;
 public class SepaAcknowledgementProcessor extends AbstractSepa {
     private static final Logger LOG = LoggerFactory.getLogger(SepaAcknowledgementProcessor.class);
 
-    private static final String SEPA_FTP_HOST = "sepa.ftp.host";
-    private static final String SEPA_FTP_PORT = "sepa.ftp.port";
-    private static final String SEPA_FTP_USER = "sepa.ftp.user";
-    private static final String SEPA_FTP_PASS = "sepa.ftp.pass";
     private static final String SEPA_FTP_FOLDER = "sepa.ftp.ack.folder";
 
     public static final String NAMESPACE_PAIN002 = "http://www.six-interbank-clearing.com/de/pain.002.001.03.ch.02.xsd";
@@ -52,6 +51,48 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         OK,
         MESSAGE_NOT_FOUND,
         MESSAGE_ALREADY_CONFIRMED;
+    }
+
+    /** Connecte sur le ftp cible, dans le folder adapté à l'envoi de messages SEPA. */
+    private FTPClient connect(BSession session) {
+        // try fetching configuration from database
+        String login = null;
+        String password = null;
+        String folder = null;
+        String uri = null;
+
+        try {
+            BApplication app = session.getApplication();
+            String host = app.getProperty(SEPA_FTP_HOST);
+            String sport = app.getProperty(SEPA_FTP_PORT);
+            Integer port = null;
+
+            if (StringUtils.isNotBlank(sport)) {
+                port = Integer.parseInt(sport);
+            }
+
+            login = app.getProperty(SEPA_FTP_USER);
+            password = app.getProperty(SEPA_FTP_PASS);
+            folder = app.getProperty(SEPA_FTP_FOLDER);
+            uri = host + (port == null ? "" : ":" + port);
+        } catch (Exception e) {
+            throw new SepaException("unable to retrieve ftp config: " + e, e);
+        }
+
+        // go connect
+        FTPClient client = connect(uri, login, password);
+
+        if (StringUtils.isNotBlank(folder)) {
+            try {
+                if (!client.changeWorkingDirectory(folder)) {
+                    throw new SepaException("unable to move to directoy " + folder);
+                }
+            } catch (IOException e) {
+                throw new SepaException("unable to move to directoy " + folder + ": " + e, e);
+            }
+        }
+
+        return client;
     }
 
     /**

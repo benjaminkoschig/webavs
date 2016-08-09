@@ -44,12 +44,14 @@ public class SepaSendOrderProcessor extends AbstractSepa {
 
         // go connect
         FTPClient client = connect(uri, login, password);
-        try {
-            if (!client.changeWorkingDirectory(folder)) {
-                throw new SepaException("unable to move to directoy " + folder);
+        if (StringUtils.isNotBlank(folder)) {
+            try {
+                if (!client.changeWorkingDirectory(folder)) {
+                    throw new SepaException("unable to move to directoy " + folder);
+                }
+            } catch (IOException e) {
+                throw new SepaException("unable to move to directoy " + folder + ": " + e, e);
             }
-        } catch (IOException e) {
-            throw new SepaException("unable to move to directoy " + folder + ": " + e, e);
         }
 
         return client;
