@@ -1,22 +1,13 @@
 package globaz.osiris.db.ordres.sepa;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.helpers.DefaultValidationEventHandler;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.annotation.ThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.CustomerPaymentStatusReportV03CH;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.OriginalGroupInformation20CH;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.OriginalPaymentInformation1CH;
@@ -38,6 +29,12 @@ import globaz.osiris.db.ordres.CAOrdreVersementManager;
 public class SepaAcknowledgementProcessor extends AbstractSepa {
     private static final Logger LOG = LoggerFactory.getLogger(SepaAcknowledgementProcessor.class);
 
+    private static final String SEPA_FTP_HOST = "sepa.ftp.host";
+    private static final String SEPA_FTP_PORT = "sepa.ftp.port";
+    private static final String SEPA_FTP_USER = "sepa.ftp.user";
+    private static final String SEPA_FTP_PASS = "sepa.ftp.pass";
+    private static final String SEPA_FTP_FOLDER = "sepa.ftp.ack.folder";
+
     public static final String NAMESPACE_PAIN002 = "http://www.six-interbank-clearing.com/de/pain.002.001.03.ch.02.xsd";
 
     public static final String CONFIRMED = "CONFIRMED"; // TODO créer la valeur + mettre le bon code système
@@ -55,39 +52,6 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         OK,
         MESSAGE_NOT_FOUND,
         MESSAGE_ALREADY_CONFIRMED;
-    }
-
-    private Document parseDocument(InputStream source) {
-        Document doc;
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(true);
-            DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
-            doc = documentBuilder.parse(source);
-        } catch (ParserConfigurationException e) {
-            throw new SepaException("XML Parser error: " + e, e);
-        } catch (SAXException e) {
-            throw new SepaException("XML Error: " + e, e);
-        } catch (IOException e) {
-            throw new SepaException("IO error trying to parse source stream: " + e, e);
-        }
-        return doc;
-    }
-
-    // how to convert xml document/node/elements into java objects
-    private <T> T unmarshall(Document doc, Class<? extends T> clazz) {
-        Unmarshaller unmarshaller;
-        try {
-            JAXBContext jc = JAXBContext.newInstance(clazz);
-
-            unmarshaller = jc.createUnmarshaller();
-            unmarshaller.setEventHandler(new DefaultValidationEventHandler());
-
-            return unmarshaller.unmarshal(doc, clazz).getValue();
-        } catch (JAXBException e) {
-            throw new SepaException(
-                    "unable to convert xml document to java object of class " + clazz.getName() + ": " + e, e);
-        }
     }
 
     /**
