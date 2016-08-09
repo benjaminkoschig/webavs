@@ -1669,4 +1669,9 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
     public void setIdTypeTraitementOG(String idTypeTraitementOG) {
         this.idTypeTraitementOG = idTypeTraitementOG;
     }
+
+    @Override
+    public String getCSTypeTraitementOG() {
+        return getIdTypeTraitementOG();
+    }
 }

@@ -62,21 +62,11 @@ public class TIAdresseCourrierOSI implements IntAdresseCourrier {
         return adresse.getLigneAdresse1();
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (28.11.2001 07:34:28)
-     * 
-     * @return java.lang.String
-     */
     @Override
     public String getCasePostale() {
         return adresse.getCasePostale();
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (14.06.2002 09:59:49)
-     * 
-     * @return java.lang.String
-     */
     @Override
     public String getCivilite() {
         if (JadeStringUtil.isIntegerEmpty(adresse.getTitreAdresse())) {
@@ -118,11 +108,6 @@ public class TIAdresseCourrierOSI implements IntAdresseCourrier {
         return adresse.getId();
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (28.11.2001 07:32:25)
-     * 
-     * @return java.lang.String
-     */
     @Override
     public String getIdAdresseCourrier() {
         return adresse.getIdAdresse();

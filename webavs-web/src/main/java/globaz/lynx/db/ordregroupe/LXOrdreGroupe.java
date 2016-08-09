@@ -555,4 +555,22 @@ public class LXOrdreGroupe extends BEntity implements APIOrdreGroupe {
     public void setProprietaire(String proprietaire) {
         this.proprietaire = proprietaire;
     }
+
+    @Override
+    public String getNumLivraison() {
+        // not use in lynx, for iso/sepa in CA
+        return null;
+    }
+
+    @Override
+    public String getTypeAvis() {
+        // not use in lynx, for iso/sepa in CA
+        return null;
+    }
+
+    @Override
+    public String getIsoHighPriority() {
+        // not use in lynx, for iso/sepa in CA
+        return null;
+    }
 }

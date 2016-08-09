@@ -2,9 +2,13 @@ package globaz.osiris.process;
 
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
+import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.osiris.db.ordres.exception.CAOGRegroupISODepassement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Gérer l'attachement d'un ordre de Date de création : (22.02.2002 09:08:40)
@@ -13,6 +17,7 @@ import globaz.osiris.db.ordres.CAOrdreGroupe;
  * @revision SCO 19 mars 2010
  */
 public class CAProcessAttacherOrdre extends BProcess {
+    private final static Logger logger = LoggerFactory.getLogger(CAProcessAttacherOrdre.class);
     /**
      * 
      */
@@ -20,6 +25,9 @@ public class CAProcessAttacherOrdre extends BProcess {
     private String idJournalSource = null;
     private String idOrdreGroupe = "";
     private CAOrdreGroupe ordreGroupe = null;
+    // private List<String> listOg = new ArrayList<String>();
+
+    private boolean isNotLast;
 
     /**
      * Commentaire relatif au constructeur CAProcessAttacherOrdre.
@@ -57,62 +65,78 @@ public class CAProcessAttacherOrdre extends BProcess {
         if (JadeStringUtil.isIntegerEmpty(getIdOrdreGroupe())) {
             getMemoryLog().logMessage("5200", null, FWMessage.FATAL, this.getClass().getName());
             return false;
+        } else {
+            isNotLast = true;
         }
 
         // Sous controle d'exceptions
         try {
 
-            // Charger l'ordre
-            ordreGroupe = getOrdreGroupe();
-            if (ordreGroupe == null) {
-                getMemoryLog().logStringBuffer(getTransaction().getErrors(), ordreGroupe.getClass().getName());
-                getMemoryLog().logMessage("5205", null, FWMessage.FATAL, this.getClass().getName());
-                return false;
-            }
+            while (isNotLast) {
+                // Charger l'ordre
+                ordreGroupe = getOrdreGroupe();
 
-            // Partager le log
-            ordreGroupe.setMemoryLog(getMemoryLog());
+                if (ordreGroupe == null) {
+                    getMemoryLog().logStringBuffer(getTransaction().getErrors(), ordreGroupe.getClass().getName());
+                    getMemoryLog().logMessage("5205", null, FWMessage.FATAL, this.getClass().getName());
+                    return false;
+                }
 
-            // Indiquer que l'on démarre la création d'un ordre
-            ordreGroupe.beforeExecuteAttacherOrdre(this);
+                // Partager le log
+                ordreGroupe.setMemoryLog(getMemoryLog());
 
-            // Sortie si abort
-            if (isAborted()) {
-                return false;
-            }
+                // Indiquer que l'on démarre la création d'un ordre
+                ordreGroupe.beforeExecuteAttacherOrdre(this);
 
-            // Mise à jour
-            ordreGroupe.update(getTransaction());
-            if (ordreGroupe.isNew() || ordreGroupe.hasErrors()) {
-                getMemoryLog().logStringBuffer(getTransaction().getErrors(), ordreGroupe.getClass().getName());
-                getMemoryLog().logMessage("5205", null, FWMessage.FATAL, this.getClass().getName());
-                return false;
-            }
+                // Sortie si abort
+                if (isAborted()) {
+                    return false;
+                }
 
-            // Sortie si abort
-            if (isAborted()) {
-                return false;
-            }
+                // Mise à jour
+                ordreGroupe.update(getTransaction());
+                if (ordreGroupe.isNew() || ordreGroupe.hasErrors()) {
+                    getMemoryLog().logStringBuffer(getTransaction().getErrors(), ordreGroupe.getClass().getName());
+                    getMemoryLog().logMessage("5205", null, FWMessage.FATAL, this.getClass().getName());
+                    return false;
+                }
 
-            // Exécuter l'attachement de l'ordre groupé
-            ordreGroupe.executeAttacherOrdre(this, idJournalSource);
-            if (ordreGroupe.isNew() || ordreGroupe.hasErrors()) {
-                getMemoryLog().logStringBuffer(getTransaction().getErrors(), ordreGroupe.getClass().getName());
-                getMemoryLog().logMessage("5205", null, FWMessage.FATAL, this.getClass().getName());
-                return false;
-            }
+                // Sortie si abort
+                if (isAborted()) {
+                    return false;
+                }
 
-            // Sortie si abort
-            if (isAborted()) {
-                return false;
-            }
+                // Exécuter l'attachement de l'ordre groupé
+                isNotLast = false;
+                try {
+                    ordreGroupe.executeAttacherOrdre(this, idJournalSource);
+                } catch (CAOGRegroupISODepassement e) {
+                    isNotLast = true;
+                }
+                if (ordreGroupe.isNew() || ordreGroupe.hasErrors()) {
+                    getMemoryLog().logStringBuffer(getTransaction().getErrors(), ordreGroupe.getClass().getName());
+                    getMemoryLog().logMessage("5205", null, FWMessage.FATAL, this.getClass().getName());
+                    return false;
+                }
 
-            // Mise à jour
-            ordreGroupe.update(getTransaction());
-            if (ordreGroupe.isNew() || ordreGroupe.hasErrors()) {
-                getMemoryLog().logStringBuffer(getTransaction().getErrors(), ordreGroupe.getClass().getName());
-                getMemoryLog().logMessage("5205", null, FWMessage.FATAL, this.getClass().getName());
-                return false;
+                // Sortie si abort
+                if (isAborted()) {
+                    return false;
+                }
+
+                // Mise à jour
+                ordreGroupe.update(getTransaction());
+                if (ordreGroupe.isNew() || ordreGroupe.hasErrors()) {
+                    getMemoryLog().logStringBuffer(getTransaction().getErrors(), ordreGroupe.getClass().getName());
+                    getMemoryLog().logMessage("5205", null, FWMessage.FATAL, this.getClass().getName());
+                    return false;
+                }
+                if (isNotLast) {
+                    prepareForNext(getTransaction());
+                    // getMemoryLog().logMessage("SEPA_ADDITIONNAL_ORDRE_GROUPE", ordreGroupe.getIsoNumLivraison(),
+                    // FWMessage.AVERTISSEMENT, this.getClass().getName());
+                    // listOg.add(ordreGroupe.getIsoNumLivraison());
+                }
             }
 
             // Récupérer les exceptions
@@ -122,6 +146,37 @@ public class CAProcessAttacherOrdre extends BProcess {
 
         // Fin de la procédure
         return !isOnError();
+
+    }
+
+    private void prepareForNext(BTransaction transaction) throws Exception {
+
+        CAOrdreGroupe newOrdreGroupe = new CAOrdreGroupe();
+        newOrdreGroupe.setSession(getSession());
+        newOrdreGroupe.setIdOrganeExecution(ordreGroupe.getIdOrganeExecution());
+        newOrdreGroupe.setNumeroOG(ordreGroupe.getNumeroOG());
+        newOrdreGroupe.setDateEcheance(ordreGroupe.getDateEcheance());
+        newOrdreGroupe.setTypeOrdreGroupe(ordreGroupe.getTypeOrdreGroupe());
+        newOrdreGroupe.setNatureOrdresLivres(ordreGroupe.getNatureOrdresLivres());
+        newOrdreGroupe.setIsoCsTypeAvis(ordreGroupe.getIsoCsTypeAvis());
+        newOrdreGroupe.setIsoGestionnaire(ordreGroupe.getIsoGestionnaire());
+        newOrdreGroupe.setIsoHighPriority(ordreGroupe.getIsoHighPriority());
+        newOrdreGroupe.setMotif(ordreGroupe.getMotif());
+
+        try {
+            newOrdreGroupe.add(transaction);
+
+            if (newOrdreGroupe.hasErrors()) {
+                getMemoryLog().logStringBuffer(transaction.getErrors(), CAOrdreGroupe.class.getName());
+                getMemoryLog().logMessage("POG_ADD_ORDRE_GROUPE", null, FWMessage.FATAL, this.getClass().getName());
+            }
+
+        } catch (Exception e) {
+            getMemoryLog().logMessage("5002", "Error in ordreGroupe.add - " + e.getMessage(), FWMessage.FATAL,
+                    this.getClass().getName());
+            throw e;
+        }
+        ordreGroupe = newOrdreGroupe;
 
     }
 

@@ -14,6 +14,7 @@ public interface APIOrganeExecution {
     public final static String LSV_BANQUE = "212003";
     public final static String OG_AUCUN = "258001";
     public final static String OG_OPAE_DTA = "258002";
+    public final static String OG_ISO_20022 = "258003";
 
     public final static String LSV_POSTE = "212002";
     public final static String POSTE = "206001";
@@ -37,4 +38,6 @@ public interface APIOrganeExecution {
     public String getNom();
 
     public String getNumInterneLsv();
+
+    public String getCSTypeTraitementOG();
 }

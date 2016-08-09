@@ -382,4 +382,10 @@ public class LXOrganeExecution extends BEntity implements APIOrganeExecution {
         this.numeroAdherentBVR = numeroAdherentBVR;
     }
 
+    @Override
+    public String getCSTypeTraitementOG() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

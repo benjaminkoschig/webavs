@@ -71,7 +71,8 @@ public class CAOrganeExecutionManager extends BManager implements Serializable {
             if (sqlWhere.length() != 0) {
                 sqlWhere += " AND ";
             }
-            sqlWhere += "IDTYPETRAITEMENTOG = " + APIOrganeExecution.OG_OPAE_DTA;
+            sqlWhere += "IDTYPETRAITEMENTOG IN (" + APIOrganeExecution.OG_OPAE_DTA + ","
+                    + APIOrganeExecution.OG_ISO_20022 + ")";
         }
         return sqlWhere;
 

@@ -2,6 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
+
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
 <%idEcran = "GCA0043"; %>
@@ -73,6 +74,7 @@ function del() {
     }
 }
 function init(){
+	selectChangeISO20022(document.getElementById("idOrganeExecution"));
 }
 function changeAffichage(){
 	if (document.getElementById("typeOrdreGroupe").value==207002){
@@ -83,7 +85,16 @@ function changeAffichage(){
 		document.getElementById("tdVersement").style.display="none";			
 	}
 }
-
+function selectChangeISO20022(s) {
+	changeAffichageISO20022(s[s.selectedIndex].id);
+}
+function changeAffichageISO20022(cs) {
+	if(cs==258003){ // 258003 traitement ISO20022
+		$('.classIso').css('display', 'block'); $('.classNonIso').css('display', 'none');
+	} else {
+		$('.classNonIso').css('display', 'block'); $('.classIso').css('display', 'none');
+	} 
+}
 
 // stop hiding -->
 </SCRIPT>
@@ -149,13 +160,14 @@ function changeAffichage(){
 				_CsOrganeExecution.setForIdTypeTraitementOG(true);
 				_CsOrganeExecution.setSession(objSession);
 				_CsOrganeExecution.find(); %>
-              <select name="idOrganeExecution">
+              <select name="idOrganeExecution" onchange="selectChangeISO20022(this)">
                 <%	for (int i=0; i < _CsOrganeExecution.size(); i++) {
 				_organeExecution = (CAOrganeExecution) _CsOrganeExecution.getEntity(i);
 				if (_organeExecution .getIdOrganeExecution().equalsIgnoreCase(viewBean.getIdOrganeExecution())) { %>
-	                <option selected value="<%=_organeExecution .getIdOrganeExecution()%>"><%=_organeExecution.getNom()%></option>
+	                <option selected value="<%=_organeExecution .getIdOrganeExecution()%>" id="<%=_organeExecution.getIdTypeTraitementOG()%>"><%=_organeExecution.getNom()%></option>
+	                
 	                <%	} else { %>
-	                <option value="<%=_organeExecution .getIdOrganeExecution()%>"><%=_organeExecution .getNom()%></option>
+	                <option value="<%=_organeExecution .getIdOrganeExecution()%>" id="<%=_organeExecution.getIdTypeTraitementOG()%>"><%=_organeExecution .getNom()%></option>
 	                <%	}
 				} %>
               </select>
@@ -212,7 +224,7 @@ function changeAffichage(){
             <TD width="123" height="31">&nbsp;</TD>
             <TD width="139" height="31"></TD>
           </TR>
-          <TR>
+          <TR class="classNonIso">
             <TD width="153">Num&eacute;ro OG</TD>
             <TD width="10"></TD>
             <TD nowrap width="289">
@@ -221,6 +233,50 @@ function changeAffichage(){
             <TD width="123">Nom du support</TD>
             <TD width="139">
               <input type="text" name="nomSupport" value="<%=viewBean.getNomSupport()%>" size="15" maxlength="15">
+            </TD>
+          </TR>
+          <TR class="classIso">
+            <TD width="153">Num&eacute;ro de livraison</TD>
+            <TD width="10"></TD>
+            <TD nowrap width="289">
+              <input type="text" name="isoNumLivraison" value="<%=viewBean.getIsoNumLivraison()%>" size="35" maxlength="35" class="inputDisabled" readonly>
+            </TD>
+            <TD width="123">Gestionnaire</TD>
+            <TD width="139">
+              <input type="text" name="isoGestionnaire" value="<%=viewBean.getIsoGestionnaire()%>" maxlength="25">
+            </TD>
+          </TR>
+          <TR class="classIso">
+            <TD width="153">Priorit&eacute; d'ex&eacute;cution</TD>
+            <TD width="10"></TD>
+            <TD nowrap width="289">
+              <select id="isoHighPriority" name="isoHighPriority">
+               <%			
+				if ("1".equalsIgnoreCase(viewBean.getIsoHighPriority())){
+%>
+				<OPTION value="0">normale</OPTION>
+                <OPTION selected value="1">haute</OPTION>
+                <%	} else { %>
+                <OPTION selected value="0">normale</OPTION>
+                <OPTION value="1">haute</OPTION>
+                <%}%>
+              </select>
+            </TD>
+            <TD width="123">Type d'avis</TD>
+            <TD width="139">
+				<ct:FWCodeSelectTag name="isoCsTypeAvis" defaut="<%=viewBean.getIsoCsTypeAvis()%>" codeType="OSIOGTYA" />
+            </TD>
+          </TR>
+          <TR class="classIso">
+            <TD width="153">Statut d'ex&eacute;cution de l'ordre</TD>
+            <TD width="10"></TD>
+            <TD nowrap width="289">
+            	
+             <input type="text" name="hrIsoCsOrdreStatutExec" value="<%=viewBean.getHRIsoCsOrdreStatutExec()%>" class="inputDisabled" readonly>
+            </TD>
+            <TD width="123">Statut d'ex&eacute;cution de la transaction</TD>
+            <TD width="139">
+             <input type="text" name="htIsoCsTransmissionStatutExec" value="<%=viewBean.getHRIsoCsTransmissionStatutExec()%>" class="inputDisabled" readonly>
             </TD>
           </TR>
           <TR>

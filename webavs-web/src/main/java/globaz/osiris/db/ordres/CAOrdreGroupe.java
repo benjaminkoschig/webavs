@@ -30,12 +30,15 @@ import globaz.osiris.db.comptes.CAOperationOrdreRecouvrement;
 import globaz.osiris.db.comptes.CAOperationOrdreRecouvrementManager;
 import globaz.osiris.db.comptes.CAOperationOrdreVersement;
 import globaz.osiris.db.comptes.CAOperationOrdreVersementManager;
+import globaz.osiris.db.ordres.exception.CAOGRegroupISODepassement;
 import globaz.osiris.db.ordres.format.CAOrdreFormateur;
 import globaz.osiris.db.ordres.format.CAProcessFormatOrdreDTA;
 import globaz.osiris.db.ordres.format.CAProcessFormatOrdreLSV;
 import globaz.osiris.db.ordres.format.CAProcessFormatOrdreLSVBanque;
 import globaz.osiris.db.ordres.format.CAProcessFormatOrdreOPAE;
 import globaz.osiris.db.ordres.format.opt.CAProcessFormatOrdreOPAELite;
+import globaz.osiris.db.ordres.sepa.CAProcessFormatOrdreSEPA;
+import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.osiris.db.ordres.utils.CAOrdreGroupeFtpUtils;
 import globaz.osiris.external.IntAdressePaiement;
 import globaz.osiris.process.CAProcessAnnulerOrdre;
@@ -83,6 +86,14 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     public static final String FIELD_TOTAL = "TOTAL";
     public static final String FIELD_TYPEORDREGROUPE = "TYPEORDREGROUPE";
+
+    public static final String FIELD_ISOTYPEAVIS = "ISOTYPEAVIS";
+    public static final String FIELD_ISONUMLIVR = "ISONUMLIVR";
+    public static final String FIELD_ISOHAUTEPRIO = "ISOHAUTEPRIO";
+    public static final String FIELD_ISOGEST = "ISOGEST";
+    public static final String FIELD_ISOORDRESTAT = "ISOORDRESTAT";
+    public static final String FIELD_ISOTRANSACSTAT = "ISOTRANSACSTAT";
+
     public static final String GENERE = "208005";
     public final static String NATURE_ALFA_ACM = "209008";
     public final static String NATURE_ASSURANCE_MATERNITE = "209004";
@@ -171,6 +182,12 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
     private String typeOrdreGroupe = "";
     private FWParametersUserCode ucEtat = null;
 
+    // private String isoNumLivraison = "";
+    private String isoHighPriority = "";
+    private String isoCsTypeAvis = "";
+    private String isoGestionnaire = "";
+    private String isoCsOrdreStatutExec = "";
+    private String isoCsTransmissionStatutExec = "";
     // Création des codes systèmes
     private FWParametersUserCode ucNatureOrdresLivres = null;
 
@@ -188,6 +205,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
      */
     @Override
     protected void _afterAdd(BTransaction transaction) {
+
     }
 
     /**
@@ -283,6 +301,13 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
         total = statement.dbReadNumeric(CAOrdreGroupe.FIELD_TOTAL, 2);
         typeOrdreGroupe = statement.dbReadNumeric(CAOrdreGroupe.FIELD_TYPEORDREGROUPE);
         etat = statement.dbReadNumeric(CAOrdreGroupe.FIELD_ETAT);
+
+        // isoNumLivraison = statement.dbReadString(CAOrdreGroupe.FIELD_ISONUMLIVR);
+        isoGestionnaire = statement.dbReadString(CAOrdreGroupe.FIELD_ISOGEST);
+        isoHighPriority = statement.dbReadString(CAOrdreGroupe.FIELD_ISOHAUTEPRIO);
+        isoCsTypeAvis = statement.dbReadNumeric(CAOrdreGroupe.FIELD_ISOTYPEAVIS);
+        isoCsOrdreStatutExec = statement.dbReadNumeric(CAOrdreGroupe.FIELD_ISOORDRESTAT);
+        isoCsTransmissionStatutExec = statement.dbReadNumeric(CAOrdreGroupe.FIELD_ISOTRANSACSTAT);
     }
 
     /**
@@ -320,9 +345,11 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
         // Si organe exécution = POSTE, numéro OG obligatoire, sinon le champ
         // doit être nul
+        // D0180 - ISO20022, le num OG est obigatoire seulement pour les poste OPAE, pas les POSTE ISO20022
         try {
             if (getOrganeExecution() != null) {
-                if (getOrganeExecution().getGenre().equals(globaz.osiris.api.ordre.APIOrganeExecution.POSTE)) {
+                if (getOrganeExecution().getGenre().equals(globaz.osiris.api.ordre.APIOrganeExecution.POSTE)
+                        && getOrganeExecution().getCSTypeTraitementOG().equals(APIOrganeExecution.OG_OPAE_DTA)) {
                     _propertyMandatory(statement.getTransaction(), getNumeroOG(), getSession().getLabel("7246"));
                     if (getNumeroOG().length() > 2) {
                         _addError(statement.getTransaction(), getSession().getLabel("7247"));
@@ -349,6 +376,21 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
         FWCurrency cTrans = new FWCurrency(getNombreTransactions());
         if (cTrans.isNegative()) {
             _addError(statement.getTransaction(), getSession().getLabel("7250"));
+        }
+
+        // D0180 - ISO20022, validation des champs ISO
+        try {
+            if (getOrganeExecution() != null) {
+                if (getOrganeExecution().getGenre().equals(globaz.osiris.api.ordre.APIOrganeExecution.POSTE)
+                        && getOrganeExecution().getCSTypeTraitementOG().equals(APIOrganeExecution.OG_ISO_20022)) {
+                    _propertyMandatory(statement.getTransaction(), getIsoGestionnaire(),
+                            getSession().getLabel("OG_VALIDATE_GESTIONNAIRE_MANDATORY"));
+                }
+            } else {
+                _addError(statement.getTransaction(), getSession().getLabel("5178"));
+            }
+        } catch (Exception e) {
+            _addError(statement.getTransaction(), e.toString());
         }
     }
 
@@ -400,6 +442,20 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                 this._dbWriteNumeric(statement.getTransaction(), getTypeOrdreGroupe(), "typeOrdreGroupe"));
         statement.writeField(CAOrdreGroupe.FIELD_ETAT,
                 this._dbWriteNumeric(statement.getTransaction(), getEtat(), "etat de l'ordre groupé"));
+
+        statement.writeField(CAOrdreGroupe.FIELD_ISOTYPEAVIS,
+                this._dbWriteNumeric(statement.getTransaction(), getIsoCsTypeAvis(), "type d'avis de l'ordre groupé"));
+        statement.writeField(CAOrdreGroupe.FIELD_ISOORDRESTAT, this._dbWriteNumeric(statement.getTransaction(),
+                getIsoCsOrdreStatutExec(), "statut d'exe de l'ordre groupé"));
+        statement.writeField(CAOrdreGroupe.FIELD_ISOTRANSACSTAT, this._dbWriteNumeric(statement.getTransaction(),
+                getIsoCsTransmissionStatutExec(), "statut d'exe de la transaction l'ordre groupé"));
+        statement.writeField(CAOrdreGroupe.FIELD_ISOHAUTEPRIO,
+                this._dbWriteString(statement.getTransaction(), getIsoHighPriority(), "priorité d'exécution"));
+        statement.writeField(CAOrdreGroupe.FIELD_ISOGEST,
+                this._dbWriteString(statement.getTransaction(), getIsoGestionnaire(), "gestionnaire"));
+        // statement.writeField(CAOrdreGroupe.FIELD_ISONUMLIVR,
+        // this._dbWriteString(statement.getTransaction(), getIsoNumLivraison(), "numero de livraison"));
+
     }
 
     /**
@@ -705,7 +761,9 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
      * @param param
      *            CAProcessAttacherOrdre
      */
-    public void executeAttacherOrdre(CAProcessAttacherOrdre context, String idJournalSource) {
+    public void executeAttacherOrdre(CAProcessAttacherOrdre context, String idJournalSource)
+            throws CAOGRegroupISODepassement {
+
         // On accèpte si l'ordre est en traiement
         if (!getEtat().equals(CAOrdreGroupe.TRAITEMENT)) {
             _addError(null, getSession().getLabel("5222"));
@@ -723,6 +781,12 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                 executeAttacherOrdreRecouvrement(context);
             }
 
+        } catch (CAOGRegroupISODepassement depassement) {
+            throw depassement;
+            // Récupérer les exceptions
+        } catch (Exception e) {
+            _addError(null, e.getMessage());
+        } finally {
             // Si aucune transaction, on donne un message d'erreur
             if (JadeStringUtil.isIntegerEmpty(getNombreTransactions())) {
                 getMemoryLog().logMessage("5404", null, FWMessage.ERREUR, this.getClass().getName());
@@ -733,10 +797,6 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                 setEtat(CAOrdreGroupe.OUVERT);
                 setDateCreation(JACalendar.format(JACalendar.today(), JACalendar.FORMAT_DDsMMsYYYY));
             }
-
-            // Récupérer les exceptions
-        } catch (Exception e) {
-            _addError(null, e.getMessage());
         }
 
         // Fin de la procédure
@@ -872,15 +932,17 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
      * @param context
      *            CAProcessAttacherOrdre
      */
-    private void executeAttacherOrdreVersement(CAProcessAttacherOrdre context, String idJournalSource) {
+    private void executeAttacherOrdreVersement(CAProcessAttacherOrdre context, String idJournalSource)
+            throws CAOGRegroupISODepassement {
 
         // Initialiser
         FWCurrency cTotal = new FWCurrency();
         long lNTransactions = 0;
         String lastIdOperation = "0";
-
+        long maxOVforThisOG = Long.MAX_VALUE;
         // Sous contrôle d'exception
         try {
+            maxOVforThisOG = CASepaCommonUtils.getOvMaxByOG(this);
             // Instancier un manager
             CAOperationOrdreVersementManager mgr = new CAOperationOrdreVersementManager();
             mgr.setSession(context.getSession());
@@ -929,7 +991,9 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
                 // Parcourir les ordres
                 for (int i = 0; i < mgr.size(); i++) {
-
+                    if (lNTransactions == maxOVforThisOG) {
+                        throw new CAOGRegroupISODepassement();
+                    }
                     // Vérifier condition de sortie
                     if (context.isAborted()) {
                         return;
@@ -967,6 +1031,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
                             // Totaux
                             lNTransactions++;
+
                             cTotal.add(oper.getMontant());
                         }
 
@@ -977,21 +1042,26 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                         }
 
                     }
+
                 }
 
                 // Prochain numéro
                 mgr.setAfterIdOperation(lastIdOperation);
 
             }
-
-            // Stocker le nombre total de transactions et le montant versé
-            setTotal(cTotal.toString());
-            setNombreTransactions(String.valueOf(lNTransactions));
+            // Si on a atteint la limite d'ov par og
+        } catch (CAOGRegroupISODepassement dep) {
+            throw dep;
 
             // Piéger les exception
         } catch (Exception e) {
             _addError(context.getTransaction(), e.getMessage());
             return;
+        } finally {
+            // Stocker le nombre total de transactions et le montant versé
+            setTotal(cTotal.toString());
+            setNombreTransactions(String.valueOf(lNTransactions));
+
         }
 
     }
@@ -1023,33 +1093,37 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
             CAOrdreFormateur of = null;
 
             if (getTypeOrdreGroupe().equals(CAOrdreGroupe.VERSEMENT)) {
+
                 // Bug 6504
                 // Bug 3972
                 traitementJournalCommit(context);
-                if (getOrganeExecution().getGenre().equals(APIOrganeExecution.BANQUE)) {
-                    of = new CAProcessFormatOrdreDTA();
-                } else if (getOrganeExecution().getGenre().equals(APIOrganeExecution.POSTE)) {
+                if (getOrganeExecution().getCSTypeTraitementOG().equals(APIOrganeExecution.OG_ISO_20022)) {
+                    of = new CAProcessFormatOrdreSEPA();
+                } else {
+                    if (getOrganeExecution().getGenre().equals(APIOrganeExecution.BANQUE)) {
+                        of = new CAProcessFormatOrdreDTA();
+                    } else if (getOrganeExecution().getGenre().equals(APIOrganeExecution.POSTE)) {
+                        if (CAOrdreGroupe.isForceOPAEV1(getSession()) || (getJournal() == null)
+                                || !getJournal().getEtat().equals(CAJournal.COMPTABILISE)) {
+                            /*
+                             * Si le journal associé a l'ordre groupé n'est pas encore comptabilisé, ou que l'on force
+                             * l'utilisation de la première implémentation.
+                             */
+                            of = new CAProcessFormatOrdreOPAE();
+                        } else {
+                            /*
+                             * Dans le cas ou le journal associé a l'ordre groupé est déjà comptabilisé, on peut donc
+                             * utiliser le formateur OPAE "lite" qui ne fait que sortir le fichier OPAE, sans aucune
+                             * opération comptable. La version lite ne traite que les transaction 22 (poste suisse),
+                             * 24(mandat suisse) et 27 (banque suisse).
+                             * 
+                             * A noter également que les transactions 28 ne sont par supportées pour le moment.
+                             */
+                            of = new CAProcessFormatOrdreOPAELite();
 
-                    if (CAOrdreGroupe.isForceOPAEV1(getSession()) || (getJournal() == null)
-                            || !getJournal().getEtat().equals(CAJournal.COMPTABILISE)) {
-                        /*
-                         * Si le journal associé a l'ordre groupé n'est pas encore comptabilisé, ou que l'on force
-                         * l'utilisation de la première implémentation.
-                         */
-                        of = new CAProcessFormatOrdreOPAE();
-                    } else {
-                        /*
-                         * Dans le cas ou le journal associé a l'ordre groupé est déjà comptabilisé, on peut donc
-                         * utiliser le formateur OPAE "lite" qui ne fait que sortir le fichier OPAE, sans aucune
-                         * opération comptable. La version lite ne traite que les transaction 22 (poste suisse),
-                         * 24(mandat suisse) et 27 (banque suisse).
-                         * 
-                         * A noter également que les transactions 28 ne sont par supportées pour le moment.
-                         */
-                        of = new CAProcessFormatOrdreOPAELite();
+                        }
 
                     }
-
                 }
             } else if (getTypeOrdreGroupe().equals(CAOrdreGroupe.RECOUVREMENT)) {
                 context.setComptabiliserOrdre(false);
@@ -1177,8 +1251,16 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                 }
 
                 if (context.getGenererFichierEchange()) {
-                    CAOrdreGroupeFtpUtils
-                            .sendOrRegisterFile(context, this, getOrganeExecution(), context.getFileName());
+                    if (getOrganeExecution().getCSTypeTraitementOG().equals(APIOrganeExecution.OG_OPAE_DTA)) {
+                        CAOrdreGroupeFtpUtils.sendOrRegisterFile(context, this, getOrganeExecution(),
+                                context.getFileName());
+                    } else if (getOrganeExecution().getCSTypeTraitementOG().equals(APIOrganeExecution.OG_ISO_20022)) {
+                        // TODO new FTP file location, adapt or develop?
+                        CAOrdreGroupeFtpUtils.sendOrRegisterFile(context, this, getOrganeExecution(),
+                                context.getFileName());
+                        // SepaSendOrderProcessor sendProcessor = new SepaSendOrderProcessor();
+                        // sendProcessor.sendOrdreGroupe(this);
+                    }
                 }
             }
 
@@ -1615,6 +1697,33 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
         return numeroOG;
     }
 
+    public String getIsoNumLivraison() {
+        return "OG-" + getId();
+    }
+
+    @Override
+    public String getIsoHighPriority() {
+        return isoHighPriority;
+    }
+
+    public String getIsoCsTypeAvis() {
+        return (JadeStringUtil.isEmpty(isoCsTypeAvis) ? APIOrdreGroupe.ISO_TYPE_AVIS_COLLECT_SANS : isoCsTypeAvis);
+    }
+
+    public String getIsoGestionnaire() {
+        return (JadeStringUtil.isEmpty(isoGestionnaire) ? getSession().getUserName() : isoGestionnaire);
+    }
+
+    public String getIsoCsOrdreStatutExec() {
+        return (JadeStringUtil.isEmpty(isoCsOrdreStatutExec) ? APIOrdreGroupe.ISO_ORDRE_STATUS_A_TRANSMETTRE
+                : isoCsOrdreStatutExec);
+    }
+
+    public String getIsoCsTransmissionStatutExec() {
+        return (JadeStringUtil.isEmpty(isoCsTransmissionStatutExec) ? APIOrdreGroupe.ISO_TRANSAC_STATUS_AUCUNE
+                : isoCsTransmissionStatutExec);
+    }
+
     /**
      * Insérez la description de la méthode ici. Date de création : (21.03.2002 15:45:13)
      * 
@@ -1893,6 +2002,30 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
         typeOrdreGroupe = newTypeOrdreGroupe;
     }
 
+    public void setIsoHighPriority(String isoHighPriority) {
+        this.isoHighPriority = isoHighPriority;
+    }
+
+    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
+        this.isoCsTypeAvis = isoCsTypeAvis;
+    }
+
+    public void setIsoGestionnaire(String isoGestionnaire) {
+        this.isoGestionnaire = isoGestionnaire;
+    }
+
+    public void setIsoCsOrdreStatutExec(String isoCsOrdreStatutExec) {
+        this.isoCsOrdreStatutExec = isoCsOrdreStatutExec;
+    }
+
+    public void setIsoCsTransmissionStatutExec(String isoCsTransmissionStatutExec) {
+        this.isoCsTransmissionStatutExec = isoCsTransmissionStatutExec;
+    }
+
+    // public void setIsoNumLivraison(String isoNumLivraison) {
+    // this.isoNumLivraison = isoNumLivraison;
+    // }
+
     // *******************************************************
     // Getter pour exécution de l'ordre groupé
     // *******************************************************
@@ -1942,6 +2075,16 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                 getMemoryLog().logMessage("5230", null, FWMessage.AVERTISSEMENT, this.getClass().getName());
             }
         }
+    }
+
+    @Override
+    public String getNumLivraison() {
+        return getIsoNumLivraison();
+    }
+
+    @Override
+    public String getTypeAvis() {
+        return getIsoCsTypeAvis();
     }
 
 }
