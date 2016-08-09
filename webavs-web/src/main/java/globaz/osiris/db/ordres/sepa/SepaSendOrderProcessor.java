@@ -2,7 +2,7 @@ package globaz.osiris.db.ordres.sepa;
 
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.CustomerCreditTransferInitiationV03CH;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.Document;
