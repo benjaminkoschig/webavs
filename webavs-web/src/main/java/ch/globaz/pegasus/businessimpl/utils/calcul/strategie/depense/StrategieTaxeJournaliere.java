@@ -24,27 +24,38 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVa
  */
 public class StrategieTaxeJournaliere extends StrategieCalculDepense {
 
-    private boolean isSupPlafond(String loyer, String plafond) {
+    // Determine si le prix d ela chambre est plus élevé que le pafond
+    private boolean isPrixJournalierSuperieurPlafond(String loyer, String plafond) {
         return Float.parseFloat(loyer) > Float.parseFloat(plafond);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense. StrategieCalculDepense
-     * #calculeDepense(ch.globaz.pegasus.business.models.calcul.CalculDonneesCC,
-     * ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext,
-     * ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport)
-     */
+    // Retourne le sinformations du home (plus psécifiquement du type d echambre) correspondant à celui de la donnée
+    // financière
+    private CalculDonneesHome getHomeForTypeChambre(List<CalculDonneesHome> donneesHomes, String idTypeChambre) {
+
+        for (CalculDonneesHome home : donneesHomes) {
+            if (idTypeChambre.equals(home.getIdTypeChambre())) {
+                return home;
+            }
+        }
+        // home pas trouvé
+        return null;
+    }
+
     @Override
     protected TupleDonneeRapport calculeDepense(CalculDonneesCC donnee, CalculContext context,
             TupleDonneeRapport resultatExistant) throws CalculException {
 
+        // données des homes servant à récupérer des informations génériques liés au calcul de la taxe journalière
         List<CalculDonneesHome> donneesHomes = (List<CalculDonneesHome>) context.get(Attribut.DONNEES_HOMES);
 
-        // stocke temporairement le type de chambre pour la strategie finale qui
-        // calcule les dépenses personnelles
+        // plafond pour le home
+        String plafond = (((ControlleurVariablesMetier) context.get(Attribut.CS_PLAFOND_ANNUEL_HOME))
+                .getValeurCourante());
+
+        // stocke temporairement le type de chambre pour la strategie finale qui calcule les dépenses personnelles
         String idTypeChambre = donnee.getTaxeJournaliereIdTypeChambre();
+
         String csTypeChambre = null;
         String csCategorieTypeChambre = null;
         String idHome = null;
@@ -52,32 +63,15 @@ public class StrategieTaxeJournaliere extends StrategieCalculDepense {
         String csMbrFamille = donnee.getCsRoleFamille();
         String strFraisLongueDuree = null;
 
-        String plafond = (((ControlleurVariablesMetier) context.get(Attribut.CS_PLAFOND_ANNUEL_HOME))
-                .getValeurCourante());
+        CalculDonneesHome homeCalcul = getHomeForTypeChambre(donneesHomes, idTypeChambre);
 
-        // recherche du home concerné
-        for (CalculDonneesHome home : donneesHomes) {
-            if (idTypeChambre.equals(home.getIdTypeChambre())) {
-
-                strPrixChambre = home.getPrixJournalier();
-                // D0173
-                try {
-                    if (EPCLoiCantonaleProperty.VALAIS.isLoiCantonPC()) {
-                        if (!home.getIsDeplafonner() && isSupPlafond(home.getPrixJournalier(), plafond)) {
-                            strPrixChambre = plafond;
-
-                        }
-                        // S160429 frais longue durée (spécifique VS)
-                        strFraisLongueDuree = home.getMontantFraisLongueDuree();
-                    }
-                } catch (PropertiesException e) {
-                    throw new CalculException(e.getMessage(), e);
-                }
-                csTypeChambre = home.getCsTypeChambre();
-                csCategorieTypeChambre = home.getCsCategorieArgentPoche();
-                idHome = home.getIdHome();
-                break;
-            }
+        if (null == homeCalcul) {
+            throw new CalculBusinessException("pegasus.calcul.strategie.taxeJournaliere.home.integrity");
+        } else {
+            strPrixChambre = homeCalcul.getPrixJournalier();
+            csTypeChambre = homeCalcul.getCsTypeChambre();
+            csCategorieTypeChambre = homeCalcul.getCsCategorieArgentPoche();
+            idHome = homeCalcul.getIdHome();
         }
 
         if (null == csTypeChambre) {
@@ -92,6 +86,21 @@ public class StrategieTaxeJournaliere extends StrategieCalculDepense {
                     "The field prix journalier of taxeJournaliere du home must be a valid positive number!");
         }
 
+        // plafonnement du home, ou pas
+        try {
+            if (EPCLoiCantonaleProperty.VALAIS.isLoiCantonPC()) {
+                if (!donnee.getTaxeJournaliereIsDeplafonner()
+                        && isPrixJournalierSuperieurPlafond(strPrixChambre, plafond)) {
+                    strPrixChambre = plafond;
+
+                }
+                // S160429 frais longue durée (spécifique VS)
+                strFraisLongueDuree = donnee.getTaxeJournaliereMontantFraisLongueDuree();
+            }
+        } catch (PropertiesException e) {
+            throw new CalculException(e.getMessage(), e);
+        }
+
         float prixChambre = Float.parseFloat(strPrixChambre) * (Integer) context.get(Attribut.DUREE_ANNEE);
 
         TupleDonneeRapport tupleLoyer = this.getOrCreateChild(resultatExistant,
@@ -100,7 +109,6 @@ public class StrategieTaxeJournaliere extends StrategieCalculDepense {
         tupleLoyer.setLegende(strPrixChambre);
 
         // si frais longue durée renseigné et dif. de zero
-
         if (strFraisLongueDuree != null) {
             float fraisLongueDuree = Float.parseFloat(strFraisLongueDuree);
             if (fraisLongueDuree > 0) {

@@ -138,6 +138,16 @@ public class CalculDonneesCC extends JadeComplexModel {
     private Boolean loyerIsTenueMenage = null;
     private String loyerMontant = null;
 
+    private String taxeJournaliereMontantFraisLongueDuree = null;
+
+    public String getTaxeJournaliereMontantFraisLongueDuree() {
+        return taxeJournaliereMontantFraisLongueDuree;
+    }
+
+    public void setTaxeJournaliereMontantFraisLongueDuree(String taxeJournaliereMontantFraisLongueDuree) {
+        this.taxeJournaliereMontantFraisLongueDuree = taxeJournaliereMontantFraisLongueDuree;
+    }
+
     private String loyerMontantCharges = null;
 
     private String loyerMontantSousLocations = null;
@@ -228,6 +238,16 @@ public class CalculDonneesCC extends JadeComplexModel {
     private String taxeJournalierePrimeAPayer = null;
 
     private String titreCsTypePropriete = null;
+
+    private Boolean taxeJournaliereIsDeplafonner = null;
+
+    public Boolean getTaxeJournaliereIsDeplafonner() {
+        return taxeJournaliereIsDeplafonner;
+    }
+
+    public void setTaxeJournaliereIsDeplafonner(Boolean taxeJournaliereIsDeplafonner) {
+        this.taxeJournaliereIsDeplafonner = taxeJournaliereIsDeplafonner;
+    }
 
     private String titreDroitGarde = null;
 
@@ -2168,13 +2188,12 @@ public class CalculDonneesCC extends JadeComplexModel {
         this.vehiculeMontant = vehiculeMontant;
     }
 
-
     public Boolean getIsBienImmoPrincipalDeMoinsDe10Ans() {
         return isBienImmoPrincipalDeMoinsDe10Ans;
     }
 
     public void setIsBienImmoPrincipalDeMoinsDe10Ans(Boolean bienImmoPrincipalDeMoinsDe10Ans) {
-        this.isBienImmoPrincipalDeMoinsDe10Ans = bienImmoPrincipalDeMoinsDe10Ans;
+        isBienImmoPrincipalDeMoinsDe10Ans = bienImmoPrincipalDeMoinsDe10Ans;
     }
 
     /*
