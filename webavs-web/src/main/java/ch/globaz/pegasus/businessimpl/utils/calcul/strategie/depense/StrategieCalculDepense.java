@@ -3,6 +3,8 @@
  */
 package ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense;
 
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.pegasus.business.constantes.EPCLoiCantonaleProperty;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.models.calcul.CalculDonneesCC;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
@@ -31,5 +33,19 @@ public abstract class StrategieCalculDepense extends StrategieCalcul {
 
     protected abstract TupleDonneeRapport calculeDepense(CalculDonneesCC donnee, CalculContext context,
             TupleDonneeRapport resultatExistant) throws CalculException;
+
+    /**
+     * Encapsulation du test de la propriété si valais
+     * 
+     * @return si la propriété vs est a true
+     * @throws CalculException
+     */
+    protected boolean isVs() throws CalculException {
+        try {
+            return EPCLoiCantonaleProperty.VALAIS.isLoiCantonPC();
+        } catch (PropertiesException e) {
+            throw new CalculException(e.getMessage(), e);
+        }
+    }
 
 }

@@ -6,8 +6,6 @@ package ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import java.util.List;
-import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.pegasus.business.constantes.EPCLoiCantonaleProperty;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
@@ -49,10 +47,6 @@ public class StrategieTaxeJournaliere extends StrategieCalculDepense {
         // données des homes servant à récupérer des informations génériques liés au calcul de la taxe journalière
         List<CalculDonneesHome> donneesHomes = (List<CalculDonneesHome>) context.get(Attribut.DONNEES_HOMES);
 
-        // plafond pour le home
-        String plafond = (((ControlleurVariablesMetier) context.get(Attribut.CS_PLAFOND_ANNUEL_HOME))
-                .getValeurCourante());
-
         // stocke temporairement le type de chambre pour la strategie finale qui calcule les dépenses personnelles
         String idTypeChambre = donnee.getTaxeJournaliereIdTypeChambre();
 
@@ -86,19 +80,18 @@ public class StrategieTaxeJournaliere extends StrategieCalculDepense {
                     "The field prix journalier of taxeJournaliere du home must be a valid positive number!");
         }
 
-        // plafonnement du home, ou pas
-        try {
-            if (EPCLoiCantonaleProperty.VALAIS.isLoiCantonPC()) {
-                if (!donnee.getTaxeJournaliereIsDeplafonner()
-                        && isPrixJournalierSuperieurPlafond(strPrixChambre, plafond)) {
-                    strPrixChambre = plafond;
+        // spécifique valais
+        if (isVs()) {
+            // plafond pour le home
+            String plafond = (((ControlleurVariablesMetier) context.get(Attribut.CS_PLAFOND_ANNUEL_HOME))
+                    .getValeurCourante());
 
-                }
-                // S160429 frais longue durée (spécifique VS)
-                strFraisLongueDuree = donnee.getTaxeJournaliereMontantFraisLongueDuree();
+            if (!donnee.getTaxeJournaliereIsDeplafonner() && isPrixJournalierSuperieurPlafond(strPrixChambre, plafond)) {
+                strPrixChambre = plafond;
             }
-        } catch (PropertiesException e) {
-            throw new CalculException(e.getMessage(), e);
+
+            // S160429 frais longue durée (spécifique VS)
+            strFraisLongueDuree = donnee.getTaxeJournaliereMontantFraisLongueDuree();
         }
 
         float prixChambre = Float.parseFloat(strPrixChambre) * (Integer) context.get(Attribut.DUREE_ANNEE);

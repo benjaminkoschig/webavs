@@ -47,12 +47,13 @@ public class StrategieFinalDepenseFraisImmobilier implements StrategieCalculFina
 
             // Récupération du flag booléen pour savoir si le bine à moins de 10ans
             boolean isConstructionMoinsDixAns = false;
+
             if (donnee.getEnfants().get(
                     IPCValeursPlanCalcul.CLE_INTER_BIEN_IMMOBILIER_HABITATION_PRINCIPALE_MOINS_DE_10_ANS) != null) {
-                float valeurALaCon = donnee.getEnfants()
+                float floatAsBoolean = donnee.getEnfants()
                         .get(IPCValeursPlanCalcul.CLE_INTER_BIEN_IMMOBILIER_HABITATION_PRINCIPALE_MOINS_DE_10_ANS)
                         .getValeur();
-                isConstructionMoinsDixAns = TupleDonneeRapport.readBoolean(valeurALaCon);
+                isConstructionMoinsDixAns = TupleDonneeRapport.readBoolean(floatAsBoolean);
             }
 
             Attribut attribut = null;
