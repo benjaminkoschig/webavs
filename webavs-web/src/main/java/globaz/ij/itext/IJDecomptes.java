@@ -350,6 +350,7 @@ public class IJDecomptes extends FWIDocumentManager {
             String idTiersPourLaGED = "";
             String noAffiliePourLaGED = "";
 
+            // EMPLOYEUR
             if (decompteCourant.isEmployeur()) {
 
                 docInfo.setDocumentType(docInfo.getDocumentType() + "Aff");
@@ -363,11 +364,16 @@ public class IJDecomptes extends FWIDocumentManager {
                 } else {
                     // Employeur non affilié --> rôle NON_AFFILIE
                     rolePourLaGed = IPRConstantesExternes.OSIRIS_IDEXATION_GED_ROLE_NON_AFFILIE;
-                    idTiersPourLaGED = decompteCourant.getIdTiers();
-                    noAffiliePourLaGED = "";
+
+                    // Pour la CICICAM, on va rechercher le premier assuré dans ce décompte si employeur non affilié
+                    if (isCaisse(IJApplication.NO_CAISSE_CICICAM)) {
+                        tiers = PRTiersHelper.getTiersParId(getSession(), decompteCourant.getIdTiers());
+                        idTiersPourLaGED = chercherIdTiersPourLigneTechinqueVersementATier(tiers);
+                    } else {
+                        idTiersPourLaGED = decompteCourant.getIdTiers();
+                    }
                 }
-            } else {
-                // Assuré --> rôle IJAI
+            } else { // ASSURÉ
 
                 if (isCaisse(IJApplication.NO_CAISSE_CVCI)) {
 
@@ -380,7 +386,6 @@ public class IJDecomptes extends FWIDocumentManager {
                 } else {
 
                     rolePourLaGed = IntRole.ROLE_IJAI;
-
                     docInfo.setDocumentType(docInfo.getDocumentType() + "Aff");
                     docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_IJ);
 
@@ -390,27 +395,24 @@ public class IJDecomptes extends FWIDocumentManager {
 
                         idTiersPourLaGED = decompteCourant.getIdTiers();
 
-                        if (JadeStringUtil.isBlank(affilie.getNumAffilie())) {
-                            noAffiliePourLaGED = "";
-                        } else {
+                        if (!JadeStringUtil.isBlank(affilie.getNumAffilie())) {
                             noAffiliePourLaGED = affilie.getNumAffilie();
                         }
-
                     } else {
-                        // versement à tiers
+                        // on va rechercher le premier assuré dans ce décompte si employeur non affilié
                         idTiersPourLaGED = chercherIdTiersPourLigneTechinqueVersementATier(tiers);
-                        noAffiliePourLaGED = "";
                     }
                 }
             }
 
-            // pour la CCJU OU CICICAM, les documents envoyés aux employeurs doivent être indexés uniquement avec le n°
+            // CCJU OU CICICAM, les documents envoyés aux employeurs affilié doivent être indexés uniquement avec le n°
             // d'affilié
             if ((isCaisse(IJApplication.NO_CAISSE_CCJU) || isCaisse(IJApplication.NO_CAISSE_CICICAM))
                     && IntRole.ROLE_AFFILIE.equals(rolePourLaGed)) {
                 docInfo = PRBlankBNumberFormater.fillEmptyNss(getSession().getApplication(), docInfo);
             }
 
+            // Tous sauf CVCI
             if (!isCaisse(IJApplication.NO_CAISSE_CVCI)) {
                 // on ajoute au doc info le critère de tri pour les impressions ORDER_PRINTING_BY
                 docInfo.setDocumentProperty(IJDecomptes.ORDER_PRINTING_BY,
@@ -430,63 +432,35 @@ public class IJDecomptes extends FWIDocumentManager {
                 }
             }
 
+            // On ajoute le type de document
             docInfo.setDocumentProperty(CTDocumentInfoHelper.TYPE_DOCUMENT_ID, documentHelper.getCsTypeDocument());
 
-            // on ajoute au doc info le critère de tri pour les impressions ORDER_PRINTING_BY
+            // On ajoute au doc info le critère de tri pour les impressions ORDER_PRINTING_BY
             docInfo.setDocumentProperty(IJDecomptes.ORDER_PRINTING_BY,
                     buildOrderPrintingByKey(decompteCourant.getIdAffilie(), decompteCourant.getIdTiers()));
 
             // La gestion du NSS est différente selon la caisse, pour la mise en GED.
             // Création d'une propriété pour les caisses qui veulent le NSS vide lors de la mise en GED
             // Par défaut, l'absence de propriété ou si la propriété est à FALSE, le NSS sera remplacé par
-            // 000.00.000.000
-            boolean propertyNssBlank = false;
-
-            try {
-                propertyNssBlank = IJProperties.BLANK_INDEX_GED_NSS_A_ZERO.getBooleanValue();
-            } catch (PropertiesException e) {
-                // Résultat de l'absence de propriété.
-                JadeSmtpClient.getInstance().sendMail(getEMailAddress(),
-                        getSession().getLabel("SUBJECT_MAIL_PARAM_GED_PROPERTY_INCOMPLETE"),
-                        getSession().getLabel("BODY_MAIL_PARAM_GED_PROPERTY_NSS_MANQUANTE"), null);
-                throw new PropertiesException(e
-                        + " : "
-                        + FWMessageFormat.format(getSession().getLabel("ERREUR_PROPRIETE_INEXISTANTE"),
-                                IJProperties.BLANK_INDEX_GED_NSS_A_ZERO.getPropertyName()));
-            }
-
-            if (!propertyNssBlank) {
+            // des zéros
+            if (!isNssForcePasAZero()) {
                 String avsnf = docInfo.getDocumentProperty(TIDocumentInfoHelper.TIERS_NUMERO_AVS_NON_FORMATTE);
                 String avsf = docInfo.getDocumentProperty(TIDocumentInfoHelper.TIERS_NUMERO_AVS_FORMATTE);
-
                 if (JadeStringUtil.isBlank(avsnf) || JadeStringUtil.isBlank(avsf) || (avsnf == "00000000000")) {
-                    // Si n°AVS est vide, le remplacer par des '0'
                     docInfo = PRBlankBNumberFormater.fillEmptyNss(getSession().getApplication(), docInfo);
                 }
             }
 
-            boolean proprieteNumeroAffilieForceAZeroSiVide = false;
-            try {
-                proprieteNumeroAffilieForceAZeroSiVide = IJProperties.NUMERO_AFFILIE_POUR_LA_GED_FORCES_A_ZERO_SI_VIDE
-                        .getBooleanValue();
-            } catch (PropertiesException e) {
-                JadeSmtpClient.getInstance().sendMail(getEMailAddress(),
-                        getSession().getLabel("SUBJECT_MAIL_PARAM_GED_PROPERTY_INCOMPLETE"),
-                        getSession().getLabel("BODY_MAIL_PARAM_GED_PROPERTY_NAFF_MANQUANTE"), null);
-                throw new PropertiesException(e
-                        + " : "
-                        + FWMessageFormat.format(getSession().getLabel("ERREUR_PROPRIETE_INEXISTANTE"),
-                                IJProperties.NUMERO_AFFILIE_POUR_LA_GED_FORCES_A_ZERO_SI_VIDE.getPropertyName()));
-            }
-
-            if (proprieteNumeroAffilieForceAZeroSiVide) {
+            // La gestion du N° affilié est différente selon la caisse, pour la mise en GED.
+            // Création d'une propriété pour les caisses qui veulent le N° affilié vide lors de la mise en GED
+            // Par défaut, l'absence de propriété ou si la propriété est à TRUE, le N° affilié sera remplacé par des
+            // zéros
+            if (isNumAffilieForceAZero()) {
                 String noAffilie = docInfo.getDocumentProperty(TIDocumentInfoHelper.NUMERO_ROLE_FORMATTE);
-
                 if (JadeStringUtil.isBlank(noAffilie)) {
                     docInfo = PRBlankBNumberFormater.fillEmptyNoAffilie(docInfo);
                 }
             }
-
         } catch (RemoteException e) {
             e.printStackTrace();
             getMemoryLog().logMessage("IJDecompte afterPrintDocument():" + e.getMessage(), FWMessage.ERREUR,
@@ -496,6 +470,42 @@ public class IJDecomptes extends FWIDocumentManager {
             getMemoryLog().logMessage("IJDecompte afterPrintDocument():" + e.getMessage(), FWMessage.ERREUR,
                     "IJDecomptes");
         }
+    }
+
+    private boolean isNssForcePasAZero() throws Exception, PropertiesException {
+        boolean propertyNssBlank = false;
+
+        try {
+            propertyNssBlank = IJProperties.BLANK_INDEX_GED_NSS_A_ZERO.getBooleanValue();
+        } catch (PropertiesException e) {
+            // Résultat de l'absence de propriété.
+            JadeSmtpClient.getInstance().sendMail(getEMailAddress(),
+                    getSession().getLabel("SUBJECT_MAIL_PARAM_GED_PROPERTY_INCOMPLETE"),
+                    getSession().getLabel("BODY_MAIL_PARAM_GED_PROPERTY_NSS_MANQUANTE"), null);
+            throw new PropertiesException(e
+                    + " : "
+                    + FWMessageFormat.format(getSession().getLabel("ERREUR_PROPRIETE_INEXISTANTE"),
+                            IJProperties.BLANK_INDEX_GED_NSS_A_ZERO.getPropertyName()));
+        }
+        return propertyNssBlank;
+    }
+
+    private boolean isNumAffilieForceAZero() throws Exception, PropertiesException {
+        boolean proprieteNumeroAffilieForceAZeroSiVide = false;
+
+        try {
+            proprieteNumeroAffilieForceAZeroSiVide = IJProperties.NUMERO_AFFILIE_POUR_LA_GED_FORCES_A_ZERO_SI_VIDE
+                    .getBooleanValue();
+        } catch (PropertiesException e) {
+            JadeSmtpClient.getInstance().sendMail(getEMailAddress(),
+                    getSession().getLabel("SUBJECT_MAIL_PARAM_GED_PROPERTY_INCOMPLETE"),
+                    getSession().getLabel("BODY_MAIL_PARAM_GED_PROPERTY_NAFF_MANQUANTE"), null);
+            throw new PropertiesException(e
+                    + " : "
+                    + FWMessageFormat.format(getSession().getLabel("ERREUR_PROPRIETE_INEXISTANTE"),
+                            IJProperties.NUMERO_AFFILIE_POUR_LA_GED_FORCES_A_ZERO_SI_VIDE.getPropertyName()));
+        }
+        return proprieteNumeroAffilieForceAZeroSiVide;
     }
 
     @Override

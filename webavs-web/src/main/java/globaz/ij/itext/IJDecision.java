@@ -342,6 +342,8 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
     private PRTiersWrapper tiersCopieEnTete;
     private PRTiersWrapper tiersCopieImpression;
 
+    private JadePublishDocumentInfo documentInfoForCopy = null;
+
     private String adresseCourrierMiseEnForme(TIAdressePaiementData adressePaiementData) {
 
         if ((adressePaiementData == null) || adressePaiementData.isNew()) {
@@ -2622,7 +2624,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
             docInfo.setDocumentProperty("allocataire.tiers.id", demande.getIdTiers());
             docInfo.setDocumentProperty("numero.decision", numeroDeDecisionAI);
 
-            TIDocumentInfoHelper.fill(docInfo, demande.getIdTiers(), getSession(), IntRole.ROLE_IJAI, null, null);
+            TIDocumentInfoHelper.fill(docInfo, demande.getIdTiers(), getSession(), IntRole.ROLE_IJAI, "", "");
         } catch (Exception e) {
             e.printStackTrace();
             getMemoryLog()
@@ -2635,7 +2637,15 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
             docInfo.setArchiveDocument(false);
         }
 
+        // Utiliser pour le process IJGenererDecisionProcess afin de fusionner 
+        // les moyens de droits avec les docInfo de la décision
+        documentInfoForCopy = docInfo.createCopy();
+
         super.afterExecuteReport();
+    }
+
+    public JadePublishDocumentInfo getDocumentInfoForCopy() {
+        return documentInfoForCopy;
     }
 
     public ICaisseReportHelper getCaisseHelper() {

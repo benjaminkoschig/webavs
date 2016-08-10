@@ -139,6 +139,10 @@ public class IJGenererDecisionProcess extends BProcess implements ICTScalableDoc
                 // 1c. Créer les moyens de droit
                 createMoyensDroit(p);
 
+                // 1d. Fusionne tous les documents physiquement ci-dessus pour mettre en GED la décision fusionné avec
+                // les moyens de droits
+                fusionneDocumentsGED(decisionOriginale);
+
                 // 2. Créer les copies
                 while (iteratorDestinataireCopie.hasNext()) {
                     intervenantCopie = (ICTScalableDocumentCopie) iteratorDestinataireCopie.next();
@@ -152,6 +156,7 @@ public class IJGenererDecisionProcess extends BProcess implements ICTScalableDoc
                     }
 
                     isCopieDocument = true;
+
                     // 2b. Créer la décision
                     createDecisionCopie();
 
@@ -159,7 +164,8 @@ public class IJGenererDecisionProcess extends BProcess implements ICTScalableDoc
                     createMoyensDroit(p);
                 }
 
-                fusionneDocuments(); // Fusionne les documents ci-dessus
+                // 3. Fusionne tous les documents physiquement ci-dessus pour la publication
+                fusionneDocumentsPRINT();
 
                 documentProperties.removeCopie(copieOfficeAiPron);
 
@@ -177,6 +183,13 @@ public class IJGenererDecisionProcess extends BProcess implements ICTScalableDoc
         }
 
         return true;
+    }
+
+    private void fusionneDocumentsGED(IJDecision decisionOriginale) throws Exception {
+        JadePublishDocumentInfo createCopy = decisionOriginale.getDocumentInfoForCopy();
+        createCopy.setPublishDocument(false);
+        createCopy.setArchiveDocument(true);
+        this.mergePDF(createCopy, true, 500, false, null);
     }
 
     private IJDecision createDecisionCopie() throws FWIException, Exception {
@@ -453,7 +466,7 @@ public class IJGenererDecisionProcess extends BProcess implements ICTScalableDoc
 
     }
 
-    private void fusionneDocuments() throws Exception {
+    private void fusionneDocumentsPRINT() throws Exception {
         JadePublishDocumentInfo info = createDocumentInfo();
         info.setPublishDocument(true);
         info.setArchiveDocument(false);
