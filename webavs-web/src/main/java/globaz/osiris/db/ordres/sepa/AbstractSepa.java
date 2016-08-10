@@ -25,7 +25,7 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFile;
@@ -162,7 +162,7 @@ abstract class AbstractSepa {
      */
     protected void sendData(InputStream source, FTPClient client, String pathname) {
         try {
-            String filename = cdToAppropriateFolder(client, pathname);
+            String filename = gotoParentFolder(client, pathname);
 
             if (!client.storeFile(filename, source)) {
                 LOG.info("unable to store file in ftp: last reply was: {}", client.getReplyString());
@@ -184,7 +184,7 @@ abstract class AbstractSepa {
      * @return le nom du fichier à utiliser, extrait du paramètre pathname. ex. si pathname vaut "/path/to/a/file.xls",
      *         alors cette méthode va retourner "file.xls".
      */
-    private String cdToAppropriateFolder(FTPClient client, String pathname) throws IOException {
+    private String gotoParentFolder(FTPClient client, String pathname) throws IOException {
         String folder = null;
         String name = pathname;
 
@@ -212,9 +212,19 @@ abstract class AbstractSepa {
         return name;
     }
 
+    protected void renameFile(FTPClient client, String oldFileName, String newFileName) {
+        try {
+            if (!client.rename(oldFileName, newFileName)) {
+                throw new SepaException("unable to rename the file " + oldFileName + " to " + newFileName);
+            }
+        } catch (IOException e) {
+            throw new SepaException("unable to rename the file " + oldFileName + " to " + newFileName + ": " + e, e);
+        }
+    }
+
     protected String[] listFiles(FTPClient client, String foldername) {
         try {
-            cdToAppropriateFolder(client, foldername + "/foobar.txt");
+            gotoParentFolder(client, foldername + "/foobar.txt");
 
             List<String> found = new ArrayList<String>();
             for (FTPFile file : client.listFiles()) {
