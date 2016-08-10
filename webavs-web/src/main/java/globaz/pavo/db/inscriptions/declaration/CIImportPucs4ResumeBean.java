@@ -5,7 +5,7 @@ import globaz.framework.util.FWCurrency;
 public class CIImportPucs4ResumeBean {
 
     private long nbrInscriptionsTraites = 0;
-    private FWCurrency montantInscritionsTraites = new FWCurrency();
+    private FWCurrency montantInscriptionsTraites = new FWCurrency();
     private long nbrInscriptionsErreur = 0;
     private FWCurrency montantInscriptionsErreur = new FWCurrency();
     private long nbrInscriptionsSuspens = 0;
@@ -17,20 +17,20 @@ public class CIImportPucs4ResumeBean {
     private long nbrInscriptionsTotalControle = 0;
     private FWCurrency montantTotalControle = new FWCurrency();
 
+    public FWCurrency getMontantInscriptionsTraites() {
+        return montantInscriptionsTraites;
+    }
+
+    public void setMontantInscriptionsTraites(FWCurrency montantInscriptionsTraites) {
+        this.montantInscriptionsTraites = montantInscriptionsTraites;
+    }
+
     public long getNbrInscriptionsTraites() {
         return nbrInscriptionsTraites;
     }
 
     public void setNbrInscriptionsTraites(long nbrInscriptionsTraites) {
         this.nbrInscriptionsTraites = nbrInscriptionsTraites;
-    }
-
-    public FWCurrency getMontantInscritionsTraites() {
-        return montantInscritionsTraites;
-    }
-
-    public void setMontantInscritionsTraites(FWCurrency montantInscritionsTraites) {
-        this.montantInscritionsTraites = montantInscritionsTraites;
     }
 
     public long getNbrInscriptionsErreur() {

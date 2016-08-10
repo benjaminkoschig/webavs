@@ -12,18 +12,12 @@ import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.util.Region;
 
-/**
- * Crée la liste des rentiers et irrécouvrables
- * 
- * @author SEL
- */
 public class CIImportPucs4ResultList extends COAbstractListExcel {
 
     private CIImportPucs4DetailResultBean detailResultBean;
     private HSSFFont fontRed;
     private HSSFCellStyle styleRedAlignLeft;
 
-    // créé la feuille xls
     public CIImportPucs4ResultList(BSession session, CIImportPucs4DetailResultBean detailResultBean) {
         super(session, session.getLabel("IMPORT_PUCS_4_PROCESS_ROOT_FILE_NAME"), session
                 .getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_TITLE"));
@@ -189,6 +183,16 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
         createCell(getSession().getLabel("IMPORT_PUCS_4_RESUME_RESULT_LIST_INSCRIPTION_CI"));
         createCell(String.valueOf(resumeBean.getNbrInscriptionsCI()));
         createCell(String.valueOf(resumeBean.getMontantInscriptionsCI()));
+
+        createRow();
+        createCell(getSession().getLabel("IMPORT_PUCS_4_RESUME_RESULT_LIST_INSCRIPTION_TRAITE"));
+        createCell(String.valueOf(resumeBean.getNbrInscriptionsTraites()));
+        createCell(String.valueOf(resumeBean.getMontantInscriptionsTraites()));
+
+        createRow();
+        createCell(getSession().getLabel("IMPORT_PUCS_4_RESUME_RESULT_LIST_INSCRIPTION_NEGATIVE"));
+        createCell(String.valueOf(resumeBean.getNbrInscriptionsNegatives()));
+        createCell(String.valueOf(resumeBean.getMontantInscriptionsNegatives()));
 
     }
 
