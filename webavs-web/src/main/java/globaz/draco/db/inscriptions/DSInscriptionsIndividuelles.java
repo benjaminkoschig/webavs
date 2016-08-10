@@ -84,6 +84,16 @@ public class DSInscriptionsIndividuelles extends BEntity {
 
     private boolean wantSubstringNomPrenom = true;
 
+    private boolean isMontantCAFToSetWithMontantAVS = true;
+
+    public boolean isMontantCAFToSetWithMontantAVS() {
+        return isMontantCAFToSetWithMontantAVS;
+    }
+
+    public void setMontantCAFToSetWithMontantAVS(boolean isMontantCAFToSetWithMontantAVS) {
+        this.isMontantCAFToSetWithMontantAVS = isMontantCAFToSetWithMontantAVS;
+    }
+
     public DSInscriptionsIndividuelles() {
         super();
     }
@@ -190,7 +200,8 @@ public class DSInscriptionsIndividuelles extends BEntity {
             if (JadeStringUtil.isIntegerEmpty(getGenreEcriture())) {
                 genreEcriture = "01";
             }
-            if (JadeStringUtil.isIntegerEmpty(montantAf) && !mapCodeParamAF.containsKey(categoriePerso)) {
+            if (isMontantCAFToSetWithMontantAVS && JadeStringUtil.isIntegerEmpty(montantAf)
+                    && !mapCodeParamAF.containsKey(categoriePerso)) {
                 if ("1".equals(getGenreEcriture().substring(0, 1))) {
                     montantAf = "-" + montant;
                 } else {
@@ -335,7 +346,7 @@ public class DSInscriptionsIndividuelles extends BEntity {
                     // declaration.setIdJournal(journal.getIdJournal());
                 }
                 genreEcriture = ecritureCi.getGreFormat();
-                if (!mapCodeParamAF.containsKey(categoriePerso)) {
+                if (isMontantCAFToSetWithMontantAVS && !mapCodeParamAF.containsKey(categoriePerso)) {
                     if ("1".equals(getGenreEcriture().substring(0, 1))) {
                         montantAf = "-" + montant;
                     } else {
