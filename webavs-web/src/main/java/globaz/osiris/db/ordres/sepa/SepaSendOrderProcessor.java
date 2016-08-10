@@ -1,12 +1,8 @@
 package globaz.osiris.db.ordres.sepa;
 
 import java.io.IOException;
-import javax.xml.bind.JAXBElement;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
-import com.six_interbank_clearing.de.pain_001_001_03_ch_02.CustomerCreditTransferInitiationV03CH;
-import com.six_interbank_clearing.de.pain_001_001_03_ch_02.Document;
-import com.six_interbank_clearing.de.pain_001_001_03_ch_02.ObjectFactory;
 import globaz.globall.db.BApplication;
 import globaz.globall.db.BSession;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
@@ -15,6 +11,8 @@ public class SepaSendOrderProcessor extends AbstractSepa {
     public static final String NAMESPACE_PAIN001 = "http://www.six-interbank-clearing.com/de/pain.001.001.03.ch.02.xsd";
 
     private static final String SEPA_FTP_FOLDER = "sepa.ftp.folder";
+
+    private static final String STATUS_TRANSMIS = "STATUS_TRANSMIS";
 
     /** Connecte sur le ftp cible, dans le folder adapté à l'envoi de messages SEPA. */
     private FTPClient connect(BSession session) {
@@ -57,24 +55,7 @@ public class SepaSendOrderProcessor extends AbstractSepa {
         return client;
     }
 
-    private JAXBElement<Document> convertOrdreGroupe(CAOrdreGroupe ordreGroupe) {
-        ObjectFactory of = new ObjectFactory();
-
-        Document document = of.createDocument();
-
-        CustomerCreditTransferInitiationV03CH ccti = of.createCustomerCreditTransferInitiationV03CH();
-        ccti.setGrpHdr(of.createGroupHeader32CH());
-
-        // for(String xxx : ordreGroupe.get)
-
-        ccti.getPmtInf().add(of.createPaymentInstructionInformation3CH());
-
-        document.setCstmrCdtTrfInitn(ccti);
-
-        return of.createDocument(document);
-    }
-
-    public void sendOrdreGroupe(BSession session, CAOrdreGroupe ordreGroupe) {
+    public void sendOrdreGroupeByFtp(BSession session, CAOrdreGroupe ordreGroupe) {
         org.w3c.dom.Document xmlDoc = marshall(convertOrdreGroupe(ordreGroupe));
 
         FTPClient client = null;
@@ -83,8 +64,20 @@ public class SepaSendOrderProcessor extends AbstractSepa {
             sendData(toInputStream(xmlDoc), client,
                     /* FIXME faut-il un nom de fichier particulier? */ ordreGroupe.getId() + "_"
                             + System.currentTimeMillis() + ".xml");
+            ordreGroupe.setEtat(STATUS_TRANSMIS);
         } finally {
             disconnectQuietly(client);
         }
+    }
+
+    private Object convertOrdreGroupe(CAOrdreGroupe ordreGroupe) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void sendOrdreGroupeByMail(CAOrdreGroupe ordreGroupe) {
+        org.w3c.dom.Document xmlDoc = marshall(convertOrdreGroupe(ordreGroupe));
+        throw new AssertionError("not implemented yet...");
+        // TODO sendEmail();
     }
 }

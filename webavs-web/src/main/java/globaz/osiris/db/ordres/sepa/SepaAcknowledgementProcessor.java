@@ -1,11 +1,15 @@
 package globaz.osiris.db.ordres.sepa;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.http.annotation.ThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,12 +50,13 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                                                      // autre constante venant d'ailleurs?
 
     private static final String TRANSACTION_PREFIX = "TR-";
-
-    public enum SepaAcknoledgementProcessingStatus {
-        OK,
-        MESSAGE_NOT_FOUND,
-        MESSAGE_ALREADY_CONFIRMED;
-    }
+    /*
+     * public enum SepaAcknoledgementProcessingStatus {
+     * OK,
+     * MESSAGE_NOT_FOUND,
+     * MESSAGE_ALREADY_CONFIRMED;
+     * }
+     */
 
     /** Connecte sur le ftp cible, dans le folder adapté à l'envoi de messages SEPA. */
     private FTPClient connect(BSession session) {
@@ -95,6 +100,47 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         return client;
     }
 
+    public void findAndProcessAllAcknowledgements() {
+        BSession session = null; // FIXME trouver une session, on fait comment?
+
+        FTPClient client = connect(session);
+        FTPFile[] listFiles;
+
+        try {
+            listFiles = client.listFiles();
+        } catch (IOException e) {
+            throw new SepaException("could not list remote files: " + e, e);
+        }
+
+        for (FTPFile file : listFiles) {
+            String originalFilename = file.getName();
+
+            if (!originalFilename.toLowerCase().endsWith(".xml")) {
+                LOG.debug("skipped non xml file: {}", originalFilename);
+                continue;
+            }
+
+            LOG.info("processing file with name {}", originalFilename);
+            ByteArrayOutputStream baos = null;
+            ByteArrayInputStream bais = null;
+
+            try {
+                baos = new ByteArrayOutputStream();
+                retrieveData(client, originalFilename, baos);
+
+                bais = new ByteArrayInputStream(baos.toByteArray());
+                processAcknowledgement(bais);
+
+                renameFile(client, originalFilename, originalFilename + ".archived");
+            } catch (Exception e) {
+                LOG.error("an error occured when processing the file {}: {}", originalFilename, e, e);
+            } finally {
+                IOUtils.closeQuietly(baos);
+                IOUtils.closeQuietly(bais);
+            }
+        }
+    }
+
     /**
      * Traite une "quittance" SEPA (aka Acknowledgement) qui informe de la bonne acceptation d'un ordre envoyé
      * précédemment.
@@ -116,9 +162,7 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                 com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document.class);
 
         List<String> warnings = new ArrayList<String>();
-
-        // TODO status needed?
-        SepaAcknoledgementProcessingStatus status = processAck(ack, warnings);
+        processAck(ack, warnings);
 
         if (!warnings.isEmpty()) {
             sendAlertEmail("Alertes concernant l'ordre groupé " + ack.getCstmrPmtStsRpt().getGrpHdr().getMsgId(),
@@ -133,8 +177,8 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         LOG.info("Body:\n{}", body);
     }
 
-    private SepaAcknoledgementProcessingStatus processAck(
-            com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document acknowledgement, List<String> warnings) {
+    private void processAck(com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document acknowledgement,
+            List<String> warnings) {
         CustomerPaymentStatusReportV03CH paymentStatusReport = acknowledgement.getCstmrPmtStsRpt();
 
         OriginalGroupInformation20CH orgnlGrpInfAndSts = paymentStatusReport.getOrgnlGrpInfAndSts();
@@ -145,13 +189,13 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
 
         // 05. A
         if (ordre == null) {
-            return SepaAcknoledgementProcessingStatus.MESSAGE_NOT_FOUND;
+            return;
         }
 
         // 05. B
         if (CONFIRMED.equals(ordre.getEtat())) {
             // envoyer un mail d'alerte... le status était déjà confirmé, on a reçu un doublon?
-            return SepaAcknoledgementProcessingStatus.MESSAGE_ALREADY_CONFIRMED;
+            return;
         }
 
         // 05. C
@@ -210,8 +254,6 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
             default:
                 throw new AssertionError("could not process status code: " + grpSts);
         }
-
-        return SepaAcknoledgementProcessingStatus.OK;
     }
 
     // 07. Traiter la quittance B-Level (quittance par genre de transaction)
