@@ -1029,7 +1029,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
             datedebut.setMonth(01);
             anneedebut = datedebut.toString();
 
-            datefin.setYear(anneeDeclaration - 1);
+            datefin.setYear(anneeDeclaration);
             datefin.setDay(31);
             datefin.setMonth(12);
             anneeFin = datefin.toString();
@@ -1055,9 +1055,9 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
             }
         }
         // Si le processus a été lancé depuis la préimpression avec un seul affilié
-        if (provientEcranPreImpression && fromAffilies.equals(untilAffilies)) {
+        if (provientEcranPreImpression && fromAffilies.equals(untilAffilies) && !JadeStringUtil.isEmpty(fromAffilies)) {
             if (!JadeStringUtil.isBlankOrZero(getAnnee())) {
-                affManager.setFromDateFin(anneeFin);
+                affManager.setWantOnlyNonRadie(false);
             }
         }
 
@@ -1069,15 +1069,6 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
         if (!JadeStringUtil.isEmpty(getTypeDeclaration())) {
             affManager.setForTypeDeclaration(getTypeDeclaration());
-        }
-
-        // Si on a qu'un seul num affilié, on est en mode impression unitaire
-        // Donc on veut imprimer même si il est radié
-        if (fromAffilies.equals(untilAffilies)) {
-            affManager.setWantOnlyRadie(false);
-        } else {
-            // Sinon on imprime tout sauf les radiés.
-            affManager.setWantOnlyRadie(true);
         }
 
         affManager.setWantProvisoire(false);

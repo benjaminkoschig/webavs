@@ -22,7 +22,7 @@ public class AFAffiliationForDSManager extends TIPAvsAdrLienAdminManager {
     private String toAffilieNumero = "";
     private boolean wantAssuranceSeule = false;
     private boolean wantProvisoire = true;
-    private boolean wantOnlyNonRadie = false;
+    private boolean wantOnlyNonRadie = true;
 
     // Si on ne veut pas le tri par agence communale, on ne fait pas toutes les
     // jointures pour des raison de perf.
@@ -172,18 +172,12 @@ public class AFAffiliationForDSManager extends TIPAvsAdrLienAdminManager {
                 }
                 sqlWhere += " MADDEB < " + this._dbWriteDateAMJ(statement.getTransaction(), getForTillDateDebut());
             }
-            if (!JadeStringUtil.isEmpty(getFromDateFin())) {
+            if (!JadeStringUtil.isEmpty(getFromDateFin()) && isWantOnlyNonRadie()) {
                 if (sqlWhere.length() != 0) {
                     sqlWhere += " AND ";
                 }
                 sqlWhere += "(MADFIN > " + this._dbWriteDateAMJ(statement.getTransaction(), getFromDateFin())
                         + " OR MADFIN=0)";
-            }
-            if (wantOnlyNonRadie) {
-                if (sqlWhere.length() != 0) {
-                    sqlWhere += " AND ";
-                }
-                sqlWhere += "MADFIN = 0";
             }
             if (!JadeStringUtil.isEmpty(getForTypeAffiliation())) {
                 if (sqlWhere.length() != 0) {
@@ -278,8 +272,8 @@ public class AFAffiliationForDSManager extends TIPAvsAdrLienAdminManager {
         return wantTriAgenceCommunale;
     }
 
-    public boolean isWantNonRadie() {
-        return wantProvisoire;
+    public boolean isWantOnlyNonRadie() {
+        return wantOnlyNonRadie;
     }
 
     /**
@@ -345,7 +339,7 @@ public class AFAffiliationForDSManager extends TIPAvsAdrLienAdminManager {
         this.wantTriAgenceCommunale = wantTriAgenceCommunale;
     }
 
-    public void setWantOnlyRadie(boolean wantOnlyNonRadie) {
+    public void setWantOnlyNonRadie(boolean wantOnlyNonRadie) {
         this.wantOnlyNonRadie = wantOnlyNonRadie;
     }
 }
