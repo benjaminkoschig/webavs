@@ -15,7 +15,7 @@ import globaz.aquila.db.access.poursuite.COHistorique;
 import globaz.aquila.db.access.traitspec.COTraitementSpecifique;
 import globaz.aquila.db.access.traitspec.COTraitementSpecifiqueManager;
 import globaz.aquila.print.list.COListParOPException;
-import globaz.aquila.process.batch.utils.COImprimerJournalContentieuxExcelml;
+import globaz.aquila.process.batch.utils.COAbstractJournalContentieuxExcelml;
 import globaz.aquila.process.batch.utils.COImprimerListPourOP;
 import globaz.aquila.process.batch.utils.COImprimerListeDeclenchement;
 import globaz.aquila.process.batch.utils.COJournalAdapterBatch;
@@ -64,7 +64,7 @@ public class COEffectuerTransitions {
 
     private COJournalAdapterBatch journalAdapterBatch;
 
-    private COImprimerJournalContentieuxExcelml journalContentieuxExcelml;
+    private COAbstractJournalContentieuxExcelml journalContentieuxExcelml;
     private HashMap journauxTraitementSpecifique = null;
 
     private COImprimerListeDeclenchement listeDeclenchement;
@@ -383,7 +383,7 @@ public class COEffectuerTransitions {
         return journalAdapterBatch;
     }
 
-    public COImprimerJournalContentieuxExcelml getJournalContentieuxExcelml() {
+    public COAbstractJournalContentieuxExcelml getJournalContentieuxExcelml() {
         return journalContentieuxExcelml;
     }
 
@@ -742,7 +742,7 @@ public class COEffectuerTransitions {
         journalAdapterBatch = journalBatch;
     }
 
-    public void setJournalContentieuxExcelml(COImprimerJournalContentieuxExcelml journalContentieuxExcelml) {
+    public void setJournalContentieuxExcelml(COAbstractJournalContentieuxExcelml journalContentieuxExcelml) {
         this.journalContentieuxExcelml = journalContentieuxExcelml;
     }
 

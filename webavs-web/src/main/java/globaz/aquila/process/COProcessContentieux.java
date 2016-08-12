@@ -13,7 +13,9 @@ import globaz.aquila.print.list.COListParOP;
 import globaz.aquila.process.batch.COAmorcerContentieux;
 import globaz.aquila.process.batch.COBloquerSectionsBN;
 import globaz.aquila.process.batch.COEffectuerTransitions;
+import globaz.aquila.process.batch.utils.COAbstractJournalContentieuxExcelml;
 import globaz.aquila.process.batch.utils.COImprimerJournalContentieuxExcelml;
+import globaz.aquila.process.batch.utils.COImprimerJournalContentieuxInfoComplementaireExcelml;
 import globaz.aquila.process.batch.utils.COImprimerListPourOP;
 import globaz.aquila.process.batch.utils.COImprimerListeDeclenchement;
 import globaz.aquila.process.batch.utils.COJournalAdapterBatch;
@@ -167,8 +169,18 @@ public class COProcessContentieux extends BProcess {
             COImprimerListPourOP listePourOP = new COImprimerListPourOP(this, getDateSurDocument(), getDateReference(),
                     getPrevisionnel().booleanValue());
 
-            COImprimerJournalContentieuxExcelml journalContentieuxExcelml = new COImprimerJournalContentieuxExcelml(
-                    getDateReference(), getDateSurDocument(), getPrevisionnel().booleanValue(), getRoles());
+            COAbstractJournalContentieuxExcelml journalContentieuxExcelml = null;
+
+            // TODO : A chercher la propriété pour l'activation du journal avec info complémentaire
+            boolean isJournalContentieuxComplementaireActive = false;
+            // TODO : A faire les trois conditions pour instancier le bon journal
+            if (imprimerJournalContentieuxExcelml && isJournalContentieuxComplementaireActive) {
+                journalContentieuxExcelml = new COImprimerJournalContentieuxInfoComplementaireExcelml(
+                        getDateReference(), getDateSurDocument(), getPrevisionnel().booleanValue(), getRoles());
+            } else {
+                journalContentieuxExcelml = new COImprimerJournalContentieuxExcelml(getDateReference(),
+                        getDateSurDocument(), getPrevisionnel().booleanValue(), getRoles());
+            }
 
             if (isAborted()) {
                 return false;
@@ -230,7 +242,7 @@ public class COProcessContentieux extends BProcess {
      * @throws Exception
      */
     private void amorcerContentieux(COJournalAdapterBatch journal, COImprimerListeDeclenchement listeDeclenchement,
-            COImprimerListPourOP listePourOP, COImprimerJournalContentieuxExcelml journalContentieuxExcelml)
+            COImprimerListPourOP listePourOP, COAbstractJournalContentieuxExcelml journalContentieuxExcelml)
             throws Exception {
         COAmorcerContentieux amorcer = new COAmorcerContentieux();
 
@@ -289,7 +301,7 @@ public class COProcessContentieux extends BProcess {
      * @throws Exception
      */
     private void creerDocumentsListes(COImprimerListeDeclenchement listeDeclenchement,
-            COImprimerListPourOP listePourOP, COImprimerJournalContentieuxExcelml journalContentieuxExcelml)
+            COImprimerListPourOP listePourOP, COAbstractJournalContentieuxExcelml journalContentieuxExcelml)
             throws Exception {
         setState(getSession().getLabel("AQUILA_CREE_DOCS_RECAP"));
 
@@ -333,7 +345,7 @@ public class COProcessContentieux extends BProcess {
             journalContentieuxExcelml.addHeaderInExcelml(getSession());
             String journalContentieuxExcelmlFilePath = journalContentieuxExcelml
                     .createFileJournalContentieuxExcelml(getSession());
-            registerFileJournalContentieuxExcelml(journalContentieuxExcelmlFilePath);
+            registerFileJournalContentieuxExcelml(journalContentieuxExcelmlFilePath, journalContentieuxExcelml);
         }
 
     }
@@ -347,7 +359,7 @@ public class COProcessContentieux extends BProcess {
      * @throws Exception
      */
     private void effectuerTransitions(COJournalAdapterBatch journal, COImprimerListeDeclenchement listeDeclenchement,
-            COImprimerListPourOP listePourOP, COImprimerJournalContentieuxExcelml journalContentieuxExcelml)
+            COImprimerListPourOP listePourOP, COAbstractJournalContentieuxExcelml journalContentieuxExcelml)
             throws Exception {
         COEffectuerTransitions effectuer = new COEffectuerTransitions();
 
@@ -648,13 +660,14 @@ public class COProcessContentieux extends BProcess {
         this.mergePDF(docInfo, false, 500, false, null, null);
     }
 
-    private void registerFileJournalContentieuxExcelml(String docPath) throws Exception {
+    private void registerFileJournalContentieuxExcelml(String docPath, COAbstractJournalContentieuxExcelml journal)
+            throws Exception {
 
         JadePublishDocumentInfo docInfoExcel = createDocumentInfo();
         docInfoExcel.setApplicationDomain(ICOApplication.DEFAULT_APPLICATION_AQUILA);
-        docInfoExcel.setDocumentTitle(COImprimerJournalContentieuxExcelml.EXCELML_JOURNAL_CONTENTIEUX_OUTPUT_FILE_NAME);
+        docInfoExcel.setDocumentTitle(journal.getModelNameOutput());
         docInfoExcel
-                .setDocumentTypeNumber(COImprimerJournalContentieuxExcelml.EXCELML_JOURNAL_CONTENTIEUX_NUMERO_INFOROM);
+                .setDocumentTypeNumber(COAbstractJournalContentieuxExcelml.EXCELML_JOURNAL_CONTENTIEUX_NUMERO_INFOROM);
         docInfoExcel.setPublishDocument(true);
         docInfoExcel.setArchiveDocument(false);
         this.registerAttachedDocument(docInfoExcel, docPath);

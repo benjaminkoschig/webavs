@@ -6,7 +6,7 @@ import globaz.aquila.db.access.batch.transition.COTransitionException;
 import globaz.aquila.db.access.poursuite.COContentieux;
 import globaz.aquila.db.process.COContentieuxInfoManager;
 import globaz.aquila.db.process.COProcessContentieuxInfo;
-import globaz.aquila.process.batch.utils.COImprimerJournalContentieuxExcelml;
+import globaz.aquila.process.batch.utils.COAbstractJournalContentieuxExcelml;
 import globaz.aquila.process.batch.utils.COImprimerListPourOP;
 import globaz.aquila.process.batch.utils.COImprimerListeDeclenchement;
 import globaz.aquila.process.batch.utils.COJournalAdapterBatch;
@@ -51,7 +51,7 @@ public class COAmorcerContentieux {
     private boolean imprimerListePourOP = false;
     private COJournalAdapterBatch journalAdapterBatch;
 
-    private COImprimerJournalContentieuxExcelml journalContentieuxExcelml;
+    private COAbstractJournalContentieuxExcelml journalContentieuxExcelml;
 
     private COImprimerListeDeclenchement listeDeclenchement;
 
@@ -352,7 +352,7 @@ public class COAmorcerContentieux {
         return journalAdapterBatch;
     }
 
-    public COImprimerJournalContentieuxExcelml getJournalContentieuxExcelml() {
+    public COAbstractJournalContentieuxExcelml getJournalContentieuxExcelml() {
         return journalContentieuxExcelml;
     }
 
@@ -530,7 +530,7 @@ public class COAmorcerContentieux {
         journalAdapterBatch = journalBatch;
     }
 
-    public void setJournalContentieuxExcelml(COImprimerJournalContentieuxExcelml journalContentieuxExcelml) {
+    public void setJournalContentieuxExcelml(COAbstractJournalContentieuxExcelml journalContentieuxExcelml) {
         this.journalContentieuxExcelml = journalContentieuxExcelml;
     }
 
