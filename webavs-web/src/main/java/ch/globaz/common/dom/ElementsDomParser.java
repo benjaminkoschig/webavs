@@ -212,7 +212,7 @@ public class ElementsDomParser {
                 throw new RuntimeException("Error parasing date", e);
             } catch (IllegalArgumentException e) {
                 String[] s = value.split("-");
-                if ("31".equals(s[2]) && "02".equals(s[1])) {
+                if (s.length >= 3 && "31".equals(s[2]) && "02".equals(s[1])) {
                     Date date = new Date("01." + s[1] + "." + s[0]);
                     return date.getLastDayOfMonth();
                 }
