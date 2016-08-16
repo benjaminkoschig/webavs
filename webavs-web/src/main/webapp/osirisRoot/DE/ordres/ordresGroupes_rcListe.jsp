@@ -36,22 +36,32 @@ detailLink ="osiris?userAction=osiris.ordres.ordresGroupes.afficher&selectedId="
     	actionDetail = "parent.location.href='"+detailLink+_ordre.getIdOrdreGroupe()+"'";
     %>
 
-	 <%
-	 String image = "";
-	 if (!_ordre.getEtat().equals(globaz.osiris.db.ordres.CAOrdreGroupe.OUVERT)) {
-	 	if (_ordre.getEtat().equals(globaz.osiris.db.ordres.CAOrdreGroupe.TRANSMIS)) {
-			image = "<img title=\"" + _ordre.getUcEtat().getLibelle() + "\" style=\"float:right\" src=\"" + request.getContextPath()+"/images/envoye.gif\">";
-		} else if (_ordre.getEtat().equals(globaz.osiris.db.ordres.CAOrdreGroupe.GENERE)) {
-			image = "<img title=\"" + _ordre.getUcEtat().getLibelle() + "\" style=\"float:right\" src=\"" + request.getContextPath()+"/images/envoye.gif\">";
-		} else if (_ordre.getEtat().equals(globaz.osiris.db.ordres.CAOrdreGroupe.TRAITEMENT)) {
-			image = "<img title=\"" + _ordre.getUcEtat().getLibelle() + "\" style=\"float:right\" src=\"" + request.getContextPath()+"/images/avertissement.gif\">";
-		} else if (_ordre.getEtat().equals(globaz.osiris.db.ordres.CAOrdreGroupe.ANNULE)) {
-			image = "<img title=\"" + _ordre.getUcEtat().getLibelle() + "\" style=\"float:right\" src=\"" + request.getContextPath()+"/images/avertissement2.gif\">";
-		} else if (_ordre.getEtat().equals(globaz.osiris.db.ordres.CAOrdreGroupe.ERREUR)) {
-			image = "<img title=\"" + _ordre.getUcEtat().getLibelle() + "\" style=\"float:right\" src=\"" + request.getContextPath()+"/images/erreur.gif\">";
-		} else if (_ordre.getEtat().equals(globaz.osiris.db.ordres.CAOrdreGroupe.ERREUR_PREPARATION)) {
-			image = "<img title=\"" + _ordre.getUcEtat().getLibelle() + "\" style=\"float:right\" src=\"" + request.getContextPath()+"/images/erreur.gif\">";
-		}
+	 	<%
+	String image = "";
+	if (_ordre.getOrganeExecution().getCSTypeTraitementOG().equals(_ordre.getOrganeExecution().OG_ISO_20022)) {
+			if (_ordre.getIsoCsTransmissionStatutExec().equals(globaz.osiris.db.ordres.CAOrdreGroupe.ISO_TRANSAC_STATUS_PARTIEL)) {
+				image = "<img title=\"" + _ordre.getSession().getCodeLibelle(_ordre.getIsoCsTransmissionStatutExec()) + "\" style=\"float:right\" src=\"" + request.getContextPath()+"/images/contrast-16-orange.gif\">";
+			} else if (_ordre.getIsoCsTransmissionStatutExec().equals(globaz.osiris.db.ordres.CAOrdreGroupe.ISO_TRANSAC_STATUS_REJETE)) {
+				image = "<img title=\"" + _ordre.getSession().getCodeLibelle(_ordre.getIsoCsTransmissionStatutExec()) + "\" style=\"float:right\" src=\"" + request.getContextPath()+"/images/circle-16-red.gif\">";
+			} else if (_ordre.getIsoCsTransmissionStatutExec().equals(globaz.osiris.db.ordres.CAOrdreGroupe.ISO_TRANSAC_STATUS_COMPLET)) {
+				image = "<img title=\"" + _ordre.getSession().getCodeLibelle(_ordre.getIsoCsTransmissionStatutExec()) + "\" style=\"float:right\" src=\"" + request.getContextPath()+"/images/circle-16-green.gif\">";
+			}
+		}else
+		 if (!_ordre.getEtat().equals(globaz.osiris.db.ordres.CAOrdreGroupe.OUVERT)) {
+		 	if (_ordre.getEtat().equals(globaz.osiris.db.ordres.CAOrdreGroupe.TRANSMIS)) {
+				image = "<img title=\"" + _ordre.getUcEtat().getLibelle() + "\" style=\"float:right\" src=\"" + request.getContextPath()+"/images/envoye.gif\">";
+			} else if (_ordre.getEtat().equals(globaz.osiris.db.ordres.CAOrdreGroupe.GENERE)) {
+				image = "<img title=\"" + _ordre.getUcEtat().getLibelle() + "\" style=\"float:right\" src=\"" + request.getContextPath()+"/images/envoye.gif\">";
+			} else if (_ordre.getEtat().equals(globaz.osiris.db.ordres.CAOrdreGroupe.TRAITEMENT)) {
+				image = "<img title=\"" + _ordre.getUcEtat().getLibelle() + "\" style=\"float:right\" src=\"" + request.getContextPath()+"/images/avertissement.gif\">";
+			} else if (_ordre.getEtat().equals(globaz.osiris.db.ordres.CAOrdreGroupe.ANNULE)) {
+				image = "<img title=\"" + _ordre.getUcEtat().getLibelle() + "\" style=\"float:right\" src=\"" + request.getContextPath()+"/images/avertissement2.gif\">";
+			} else if (_ordre.getEtat().equals(globaz.osiris.db.ordres.CAOrdreGroupe.ERREUR)) {
+				image = "<img title=\"" + _ordre.getUcEtat().getLibelle() + "\" style=\"float:right\" src=\"" + request.getContextPath()+"/images/erreur.gif\">";
+			} else if (_ordre.getEtat().equals(globaz.osiris.db.ordres.CAOrdreGroupe.ERREUR_PREPARATION)) {
+				image = "<img title=\"" + _ordre.getUcEtat().getLibelle() + "\" style=\"float:right\" src=\"" + request.getContextPath()+"/images/erreur.gif\">";
+			}
+		 }
 	 }
 	 %>
 
