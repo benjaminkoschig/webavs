@@ -94,6 +94,10 @@ public class RETraiterLotDecisionsProcess extends BProcess {
     private String numeroOG = "";
     private BISession sessionOsiris = null;
 
+    private String isoCsTypeAvis = "";
+    private String isoGestionnaire = "";
+    private String isoHightPriority = "";
+
     public RETraiterLotDecisionsProcess() {
         super();
     }
@@ -571,7 +575,7 @@ public class RETraiterLotDecisionsProcess extends BProcess {
                 libelleOG = "OPAE " + n + "-" + libelleOG;
             }
             compta.preparerOrdreGroupe(idOG, String.valueOf(n), dateEcheancePaiement, CAOrdreGroupe.VERSEMENT,
-                    CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG);
+                    CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG, isoCsTypeAvis, isoGestionnaire, isoHightPriority);
         }
     }
 
@@ -707,6 +711,30 @@ public class RETraiterLotDecisionsProcess extends BProcess {
 
     public void setNumeroOG(String numeroOG) {
         this.numeroOG = numeroOG;
+    }
+
+    public String getIsoCsTypeAvis() {
+        return isoCsTypeAvis;
+    }
+
+    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
+        this.isoCsTypeAvis = isoCsTypeAvis;
+    }
+
+    public String getIsoGestionnaire() {
+        return isoGestionnaire;
+    }
+
+    public void setIsoGestionnaire(String isoGestionnaire) {
+        this.isoGestionnaire = isoGestionnaire;
+    }
+
+    public String getIsoHightPriority() {
+        return isoHightPriority;
+    }
+
+    public void setIsoHightPriority(String isoHightPriority) {
+        this.isoHightPriority = isoHightPriority;
     }
 
 }

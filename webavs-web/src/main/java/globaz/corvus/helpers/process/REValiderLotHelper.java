@@ -78,6 +78,9 @@ public class REValiderLotHelper extends PRAbstractHelper {
         process.setIdOrganeExecution(vb.getIdOrganeExecution());
         process.setNumeroOG(vb.getNumeroOG());
         process.setDateEcheancePaiement(vb.getDateEcheancePaiement());
+        process.setIsoCsTypeAvis(vb.getIsoCsTypeAvis());
+        process.setIsoGestionnaire(vb.getIsoGestionnaire());
+        process.setIsoHightPriority(vb.getIsoHightPriority());
         process.start();
     }
 
