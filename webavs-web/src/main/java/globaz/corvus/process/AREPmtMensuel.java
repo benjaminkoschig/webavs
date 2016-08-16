@@ -112,6 +112,11 @@ public abstract class AREPmtMensuel extends PRAbstractProcess {
     private String numeroOG = "";
     private BISession sessionOsiris = null;
 
+    // SEPA iso20002
+    private String isoCsTypeAvis = "";
+    private String isoGestionnaire = "";
+    private String isoHighPriority = "";
+
     public AREPmtMensuel() {
         super();
     }
@@ -603,6 +608,30 @@ public abstract class AREPmtMensuel extends PRAbstractProcess {
 
     public void setNumeroOG(String numeroOG) {
         this.numeroOG = numeroOG;
+    }
+
+    public String getIsoCsTypeAvis() {
+        return isoCsTypeAvis;
+    }
+
+    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
+        this.isoCsTypeAvis = isoCsTypeAvis;
+    }
+
+    public String getIsoGestionnaire() {
+        return isoGestionnaire;
+    }
+
+    public void setIsoGestionnaire(String isoGestionnaire) {
+        this.isoGestionnaire = isoGestionnaire;
+    }
+
+    public String getIsoHighPriority() {
+        return isoHighPriority;
+    }
+
+    public void setIsoHighPriority(String isoHighPriority) {
+        this.isoHighPriority = isoHighPriority;
     }
 
     protected void validationPmt(BSession session, APIGestionRentesExterne comptaFast,

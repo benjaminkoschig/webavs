@@ -4,6 +4,7 @@ import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
+import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.ordres.CAOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import java.rmi.RemoteException;
@@ -18,6 +19,11 @@ public class PCExecuterAvancesViewBean extends BJadePersistentObjectViewBean {
     private String idOrganeExecution = null;
     private String noOg = null;
     private String typeTraitement = null;
+
+    // SEPA iso20002
+    private String isoCsTypeAvis = APIOrdreGroupe.ISO_TYPE_AVIS_COLLECT_SANS;
+    private String isoGestionnaire = ((BSession) getISession()).getUserName();
+    private String isoHightPriority;
 
     @Override
     public void add() throws Exception {
@@ -86,13 +92,15 @@ public class PCExecuterAvancesViewBean extends BJadePersistentObjectViewBean {
             if ((idOrganeExecutionPmtRentes != null) && organeExecution.getId().equals(idOrganeExecutionPmtRentes)) {
                 organeExecutionDefaut = organeExecution;
             } else {
-                result.add(new String[] { organeExecution.getIdOrganeExecution(), organeExecution.getNom() });
+                result.add(new String[] { organeExecution.getIdOrganeExecution(), organeExecution.getNom(),
+                        organeExecution.getCSTypeTraitementOG() });
             }
+
         }
         // ajout du defaut en position 1, si pas null
         if (organeExecutionDefaut != null) {
-            result.add(0,
-                    (new String[] { organeExecutionDefaut.getIdOrganeExecution(), organeExecutionDefaut.getNom() }));
+            result.add(0, (new String[] { organeExecutionDefaut.getIdOrganeExecution(), organeExecutionDefaut.getNom(),
+                    organeExecution.getCSTypeTraitementOG() }));
         }
         return result;
     }
@@ -137,6 +145,30 @@ public class PCExecuterAvancesViewBean extends BJadePersistentObjectViewBean {
 
     public void setTypeTraitement(String typeTraitement) {
         this.typeTraitement = typeTraitement;
+    }
+
+    public String getIsoCsTypeAvis() {
+        return isoCsTypeAvis;
+    }
+
+    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
+        this.isoCsTypeAvis = isoCsTypeAvis;
+    }
+
+    public String getIsoGestionnaire() {
+        return isoGestionnaire;
+    }
+
+    public void setIsoGestionnaire(String isoGestionnaire) {
+        this.isoGestionnaire = isoGestionnaire;
+    }
+
+    public String getIsoHightPriority() {
+        return isoHightPriority;
+    }
+
+    public void setIsoHightPriority(String isoHightPriority) {
+        this.isoHightPriority = isoHightPriority;
     }
 
     @Override

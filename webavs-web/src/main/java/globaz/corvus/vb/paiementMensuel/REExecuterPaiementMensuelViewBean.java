@@ -10,11 +10,13 @@ import globaz.corvus.db.lots.RELotManager;
 import globaz.corvus.properties.REProperties;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.ordres.CAOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import globaz.prestation.tools.PRDateFormater;
@@ -40,6 +42,11 @@ public class REExecuterPaiementMensuelViewBean extends PRAbstractViewBeanSupport
     private String idOrganeExecution = "";
     private Boolean isActiverTraitementPrstErreurs = Boolean.FALSE;
     private String numeroOG = "";
+
+    // SEPA iso20002
+    private String isoCsTypeAvis = APIOrdreGroupe.ISO_TYPE_AVIS_COLLECT_SANS;
+    private String isoGestionnaire = "";
+    private String isoHighPriority = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -166,14 +173,16 @@ public class REExecuterPaiementMensuelViewBean extends PRAbstractViewBeanSupport
         for (CAOrganeExecution caorgane : listIdOrgane) {
 
             if (idOrgane.equals(caorgane.getIdOrganeExecution())) {
-                result.add(new String[] { caorgane.getIdOrganeExecution(), caorgane.getNom() });
+                result.add(new String[] { caorgane.getIdOrganeExecution(), caorgane.getNom(),
+                        caorgane.getIdTypeTraitementOG() });
                 listIdOrgane.remove(caorgane);
                 break;
             }
         }
 
         for (CAOrganeExecution caorgane : listIdOrgane) {
-            result.add(new String[] { caorgane.getIdOrganeExecution(), caorgane.getNom() });
+            result.add(new String[] { caorgane.getIdOrganeExecution(), caorgane.getNom(),
+                    caorgane.getIdTypeTraitementOG() });
         }
 
         return result;
@@ -246,6 +255,33 @@ public class REExecuterPaiementMensuelViewBean extends PRAbstractViewBeanSupport
 
     public void setNumeroOG(String numeroOG) {
         this.numeroOG = numeroOG;
+    }
+
+    public String getIsoCsTypeAvis() {
+        return isoCsTypeAvis;
+    }
+
+    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
+        this.isoCsTypeAvis = isoCsTypeAvis;
+    }
+
+    public String getIsoGestionnaire() {
+        if (isoGestionnaire.isEmpty()) {
+            return ((BSession) getISession()).getUserName();
+        }
+        return isoGestionnaire;
+    }
+
+    public void setIsoGestionnaire(String isoGestionnaire) {
+        this.isoGestionnaire = isoGestionnaire;
+    }
+
+    public String getIsoHighPriority() {
+        return isoHighPriority;
+    }
+
+    public void setIsoHighPriority(String isoHightPriority) {
+        this.isoHighPriority = isoHightPriority;
     }
 
     /*

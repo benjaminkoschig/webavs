@@ -11,6 +11,7 @@ import globaz.jade.context.JadeThread;
 import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.osiris.api.APIOperation;
+import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CAJournal;
 import globaz.osiris.db.comptes.CAOperationOrdreManager;
@@ -26,7 +27,8 @@ public class OrdreGroupeServiceImpl implements OrdreGroupeService {
 
     @Override
     public void createOrdreGroupeeAndPrepare(String idJournal, String idOrganeExecution, String numeroOG,
-            String dateEcheance, String typeOrdre, String natureOrdre) throws OsirisException {
+            String dateEcheance, String typeOrdre, String natureOrdre, String isoCsTypeAvis, String isoGestionnaire,
+            String isoHighPriority) throws OsirisException {
 
         if (!JadeThread.logHasMessagesOfLevel(JadeBusinessMessageLevels.ERROR)) {
             checkOrganeExecution(idOrganeExecution);
@@ -67,6 +69,11 @@ public class OrdreGroupeServiceImpl implements OrdreGroupeService {
             ordreGroupe.setTypeOrdreGroupe(typeOrdre);
             ordreGroupe.setNatureOrdresLivres(natureOrdre);
             ordreGroupe.setMotif(journal.getIdJournal() + " " + journal.getLibelle());
+            ordreGroupe.setIsoCsOrdreStatutExec(APIOrdreGroupe.ISO_TRANSAC_STATUS_AUCUNE);
+            ordreGroupe.setIsoCsTransmissionStatutExec(APIOrdreGroupe.ISO_TRANSAC_STATUS_AUCUNE);
+            ordreGroupe.setIsoCsTypeAvis(isoCsTypeAvis);
+            ordreGroupe.setIsoGestionnaire(isoGestionnaire);
+            ordreGroupe.setIsoHighPriority(isoHighPriority);
 
             try {
                 ordreGroupe.add();

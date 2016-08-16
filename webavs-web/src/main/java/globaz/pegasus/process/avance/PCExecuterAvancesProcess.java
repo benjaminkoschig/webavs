@@ -17,6 +17,11 @@ public class PCExecuterAvancesProcess extends PCAbstractJob {
     private String noNog = null;
     private String typeTraitement = null;
 
+    // SEPA iso20002
+    private String isoCsTypeAvis;
+    private String isoGestionnaire;
+    private String isoHightPriority;
+
     public String getDateEchance() {
         return dateEchance;
     }
@@ -61,6 +66,9 @@ public class PCExecuterAvancesProcess extends PCAbstractJob {
             process.setNoOg(getNoNog());
             process.setIdOrganeExecution(getIdOrganeExecution());
             process.setDateEcheance(getDateEchance());
+            process.setIsoCsTypeAvis(isoCsTypeAvis);
+            process.setIsoGestionnaire(isoGestionnaire);
+            process.setIsoHightPriority(isoHightPriority);
             process.start();
         } else if (typeTraitement.equals(IREAvances.CS_TYPE_LISTES)) {
             REGenererAvancesProcess process = new REGenererAvancesProcess();
@@ -89,6 +97,30 @@ public class PCExecuterAvancesProcess extends PCAbstractJob {
 
     public void setTypeTraitement(String typeTraitement) {
         this.typeTraitement = typeTraitement;
+    }
+
+    public String getIsoCsTypeAvis() {
+        return isoCsTypeAvis;
+    }
+
+    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
+        this.isoCsTypeAvis = isoCsTypeAvis;
+    }
+
+    public String getIsoGestionnaire() {
+        return isoGestionnaire;
+    }
+
+    public void setIsoGestionnaire(String isoGestionnaire) {
+        this.isoGestionnaire = isoGestionnaire;
+    }
+
+    public String getIsoHightPriority() {
+        return isoHightPriority;
+    }
+
+    public void setIsoHightPriority(String isoHightPriority) {
+        this.isoHightPriority = isoHightPriority;
     }
 
 }

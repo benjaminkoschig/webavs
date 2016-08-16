@@ -2,6 +2,7 @@ package globaz.pegasus.process.lot;
 
 import globaz.corvus.api.lots.IRELot;
 import globaz.globall.db.BProcessLauncher;
+import globaz.globall.db.BSession;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -12,7 +13,10 @@ import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.osiris.db.ordres.CAOrganeExecution;
+import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import globaz.pegasus.process.PCAbstractJob;
 import globaz.pegasus.process.decision.PCImprimerDecisionsProcess;
 import globaz.pegasus.process.lot.ComptabiliserProcessMailHandler.PROCESS_TYPE;
@@ -59,6 +63,11 @@ public class PCComptabiliserProcess extends PCAbstractJob {
     private String idOrganeExecution = "";
     private String numeroOG = "";
 
+    // SEPA iso20002
+    private String isoCsTypeAvis = "";
+    private String isoGestionnaire = "";
+    private String isoHightPriority = "";
+
     /**
      * Méthode appelé après le finnaly du process en lui même Test si le process n'est pas en erreur, et si c'est ok
      * lance la suite du traitement En l'occurence la mise en GED auto des décisions du lot
@@ -102,7 +111,7 @@ public class PCComptabiliserProcess extends PCAbstractJob {
      * 
      * @throws ComptabiliserLotException
      */
-    public void checkMandatoryParams() throws ComptabiliserLotException {
+    public void checkMandatoryParams(BSession session) throws ComptabiliserLotException {
         if (idLot == null) {
             throw new ComptabiliserLotException("Unable to comptabliserLot the idLot is null!");
         }
@@ -118,11 +127,27 @@ public class PCComptabiliserProcess extends PCAbstractJob {
         if (JadeStringUtil.isEmpty(idOrganeExecution)) {
             throw new ComptabiliserLotException("L'idOrganeExecution est obligatoire !");
         }
+        if (!isIso20022(idOrganeExecution, session)) {
+            if (JadeStringUtil.isEmpty(numeroOG)) {
+                throw new ComptabiliserLotException("le numero OG est obligatoire !");
+            }
+        }
+    }
 
-        if (JadeStringUtil.isEmpty(numeroOG)) {
-            throw new ComptabiliserLotException("le numero OG est obligatoire !");
+    private boolean isIso20022(String idOrganeExecution, BSession session) throws ComptabiliserLotException {
+        CAOrganeExecutionManager mgr = new CAOrganeExecutionManager();
+        mgr.setSession(session);
+        mgr.setForIdOrganeExecution(idOrganeExecution);
+        try {
+            mgr.find();
+            if (mgr.size() != 1) {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            throw new ComptabiliserLotException("L'idOrganeExecution est inconnu !");
         }
 
+        return ((CAOrganeExecution) mgr.getEntity(0)).getIdTypeTraitementOG().equals(APIOrganeExecution.OG_ISO_20022);
     }
 
     public String getAdresseMail() {
@@ -239,7 +264,8 @@ public class PCComptabiliserProcess extends PCAbstractJob {
             if (totalJournal.signum() == -1) {
                 CABusinessServiceLocator.getOrdreGroupeService().createOrdreGroupeeAndPrepare(
                         data.getJournalConteneur().getJournalModel().getId(), idOrganeExecution, numeroOG,
-                        dateEcheancePaiement, CAOrdreGroupe.VERSEMENT, CAOrdreGroupe.NATURE_RENTES_AVS_AI);
+                        dateEcheancePaiement, CAOrdreGroupe.VERSEMENT, CAOrdreGroupe.NATURE_RENTES_AVS_AI,
+                        isoCsTypeAvis, isoGestionnaire, isoHightPriority);
             }
         } catch (Exception e) {
             this.addError(e);
@@ -298,6 +324,30 @@ public class PCComptabiliserProcess extends PCAbstractJob {
 
     public void setNumeroOG(String numeroOG) {
         this.numeroOG = numeroOG;
+    }
+
+    public String getIsoCsTypeAvis() {
+        return isoCsTypeAvis;
+    }
+
+    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
+        this.isoCsTypeAvis = isoCsTypeAvis;
+    }
+
+    public String getIsoGestionnaire() {
+        return isoGestionnaire;
+    }
+
+    public void setIsoGestionnaire(String isoGestionnaire) {
+        this.isoGestionnaire = isoGestionnaire;
+    }
+
+    public String getIsoHightPriority() {
+        return isoHightPriority;
+    }
+
+    public void setIsoHightPriority(String isoHightPriority) {
+        this.isoHightPriority = isoHightPriority;
     }
 
 }

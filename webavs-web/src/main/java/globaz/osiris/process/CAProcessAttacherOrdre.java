@@ -7,8 +7,11 @@ import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
 import globaz.osiris.db.ordres.exception.CAOGRegroupISODepassement;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ch.globaz.osiris.business.constantes.CAProperties;
 
 /**
  * Gérer l'attachement d'un ordre de Date de création : (22.02.2002 09:08:40)
@@ -25,7 +28,7 @@ public class CAProcessAttacherOrdre extends BProcess {
     private String idJournalSource = null;
     private String idOrdreGroupe = "";
     private CAOrdreGroupe ordreGroupe = null;
-    // private List<String> listOg = new ArrayList<String>();
+    private List<String> listOg = new ArrayList<String>();
 
     private boolean isNotLast;
 
@@ -135,7 +138,7 @@ public class CAProcessAttacherOrdre extends BProcess {
                     prepareForNext(getTransaction());
                     // getMemoryLog().logMessage("SEPA_ADDITIONNAL_ORDRE_GROUPE", ordreGroupe.getIsoNumLivraison(),
                     // FWMessage.AVERTISSEMENT, this.getClass().getName());
-                    // listOg.add(ordreGroupe.getIsoNumLivraison());
+                    listOg.add(ordreGroupe.getIsoNumLivraison());
                 }
             }
 
@@ -150,6 +153,11 @@ public class CAProcessAttacherOrdre extends BProcess {
     }
 
     private void prepareForNext(BTransaction transaction) throws Exception {
+
+        if ((1 + listOg.size()) >= Integer.parseInt(CAProperties.ISO_SEPA_MAX_MULTIOG.getValue())) {
+            getMemoryLog().logMessage("SEPA_PREPARATION_MAX_MULTI_OG", CAProperties.ISO_SEPA_MAX_MULTIOG.getValue(),
+                    FWMessage.FATAL, this.getClass().getName());
+        }
 
         CAOrdreGroupe newOrdreGroupe = new CAOrdreGroupe();
         newOrdreGroupe.setSession(getSession());

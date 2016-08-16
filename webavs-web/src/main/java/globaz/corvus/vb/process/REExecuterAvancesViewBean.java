@@ -3,8 +3,10 @@
  */
 package globaz.corvus.vb.process;
 
+import globaz.corvus.api.avances.IREAvances;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
+import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.ordres.CAOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
@@ -18,12 +20,17 @@ import java.util.Vector;
 
 public class REExecuterAvancesViewBean extends PRAbstractViewBeanSupport {
 
-    private String csTypeAvance = "";
+    private String csTypeAvance = IREAvances.CS_TYPE_ACOMPTES_UNIQUE;
     private String dateEcheance = null;
     private String datePaiement = "";
     private String eMailAddress = "";
     private String idOrganeExecution = null;
     private String noOg = null;
+
+    // SEPA iso20002
+    private String isoCsTypeAvis = APIOrdreGroupe.ISO_TYPE_AVIS_COLLECT_SANS;
+    private String isoGestionnaire = "";
+    private String isoHightPriority = "";
 
     public String getCsTypeAvance() {
         return csTypeAvance;
@@ -85,13 +92,14 @@ public class REExecuterAvancesViewBean extends PRAbstractViewBeanSupport {
             if ((idOrganeExecutionPmtRentes != null) && organeExecution.getId().equals(idOrganeExecutionPmtRentes)) {
                 organeExecutionDefaut = organeExecution;
             } else {
-                result.add(new String[] { organeExecution.getIdOrganeExecution(), organeExecution.getNom() });
+                result.add(new String[] { organeExecution.getIdOrganeExecution(), organeExecution.getNom(),
+                        organeExecution.getCSTypeTraitementOG() });
             }
         }
         // ajout du defaut en position 1, si pas null
         if (organeExecutionDefaut != null) {
-            result.add(0,
-                    (new String[] { organeExecutionDefaut.getIdOrganeExecution(), organeExecutionDefaut.getNom() }));
+            result.add(0, (new String[] { organeExecutionDefaut.getIdOrganeExecution(), organeExecutionDefaut.getNom(),
+                    organeExecution.getCSTypeTraitementOG() }));
         }
 
         return result;
@@ -119,6 +127,33 @@ public class REExecuterAvancesViewBean extends PRAbstractViewBeanSupport {
 
     public void setNoOg(String noOg) {
         this.noOg = noOg;
+    }
+
+    public String getIsoCsTypeAvis() {
+        return isoCsTypeAvis;
+    }
+
+    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
+        this.isoCsTypeAvis = isoCsTypeAvis;
+    }
+
+    public String getIsoGestionnaire() {
+        if (isoGestionnaire.isEmpty()) {
+            return getSession().getUserName();
+        }
+        return isoGestionnaire;
+    }
+
+    public void setIsoGestionnaire(String isoGestionnaire) {
+        this.isoGestionnaire = isoGestionnaire;
+    }
+
+    public String getIsoHightPriority() {
+        return isoHightPriority;
+    }
+
+    public void setIsoHightPriority(String isoHightPriority) {
+        this.isoHightPriority = isoHightPriority;
     }
 
     @Override

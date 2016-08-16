@@ -7,6 +7,7 @@
 <%@page import="globaz.framework.bean.FWViewBeanInterface"%>
 <%@page import="globaz.cygnus.vb.process.RFComptabiliserViewBean"%>
 <%@page import="globaz.cygnus.application.RFApplication"%>
+<%@page import="java.util.Vector"%>
 <%@page import="globaz.cygnus.api.decisions.IRFDecisions"%>
 <%-- tpl:put name="zoneInit" --%>
 <%
@@ -25,8 +26,23 @@
 <%-- tpl:put name="zoneScripts" --%>
 <script type="text/javascript">
 
+function selectChangeISO20022(s) {
+	changeAffichageISO20022(s[s.selectedIndex].id);
+}
+
+function changeAffichageISO20022(cs) {
+	if(cs==258003){ // 258003 traitement ISO20022
+		$('.classIso').css('display', 'block'); $('.classNonIso').css('display', 'none');
+	} else {
+		$('.classNonIso').css('display', 'block'); $('.classIso').css('display', 'none');
+	} 
+}
+
+
 function init(){
 
+	
+	
 	<%-- $("#radioCreationDecision").click(function() {
 		$(".hiddenSometimes").removeAttr("style");
 	});
@@ -40,8 +56,13 @@ function init(){
 	errorObj.text="";
 	<%}%>				
 	
+	
 }	
 
+$(document).ready(function() {
+	//ne prend pas l'init! pourquoi? 
+	selectChangeISO20022(document.getElementById("idOrganeExecution"));
+});
 	<%-- $(function(){
 		<if("validationReelle".equals(viewBean.getTypeValidation())){%>
 			$("#radioCreationDecision").attr('checked','checked');
@@ -121,14 +142,46 @@ function init(){
 						<TR>
 							<TD class="hiddenSometimes"><LABEL for="idOrganeExecution"><ct:FWLabel key="JSP_EPM_ORGANE_EXECUTION"/></LABEL></TD>
 							<TD class="hiddenSometimes">
-								<ct:FWListSelectTag name="idOrganeExecution" data="<%=viewBean.getOrganesExecution()%>" defaut='<%=JadeStringUtil.isEmpty(viewBean.getIdOrganeExecution())?"":viewBean.getIdOrganeExecution()%>'/>
+<%-- 								<ct:FWListSelectTag name="idOrganeExecution" data="<%=viewBean.getOrganesExecution()%>" defaut='<%=JadeStringUtil.isEmpty(viewBean.getIdOrganeExecution())?"":viewBean.getIdOrganeExecution()%>'/> --%>
+									<% 	Vector<String[]> _CsOrganeExecution = viewBean.getOrganesExecution();%> 
+									<select id="idOrganeExecution" name="idOrganeExecution" onchange="selectChangeISO20022(this)">
+								    <%for (int i=0; i < _CsOrganeExecution.size(); i++) {
+										String[] _organeExecution = _CsOrganeExecution.get(i);
+										if (_organeExecution[0].equalsIgnoreCase(viewBean.getIdOrganeExecution())) { %>
+	               							<option selected value="<%=_organeExecution[0]%>" id="<%=_organeExecution[2]%>"><%=_organeExecution[1]%></option>
+	                
+	             					<%} else { %>			
+									  		<option value="<%=_organeExecution[0]%>" id="<%=_organeExecution[2]%>"><%=_organeExecution[1]%></option>
+									<%} 
+									}%>
 							</TD>													
 						</TR>		
 
-						<TR>
+						<TR class="classNonIso">
 							<TD class="hiddenSometimes"><LABEL for="numeroOG"><ct:FWLabel key="JSP_EPM_NUMERO_OG"/></LABEL></TD>
 							<TD class="hiddenSometimes">
 								<INPUT type="text" name="numeroOG" value="<%=viewBean.getNumeroOG()%>" class="libelleShort"/>
+							</TD>													
+						</TR>
+						<TR class="classIso">
+							<TD class="hiddenSometimes"><LABEL for="isoGestionnaire"><ct:FWLabel key="JSP_EPM_ISO_GEST"/></LABEL></TD>
+							<TD class="hiddenSometimes">
+								<INPUT type="text" name="isoGestionnaire" value="<%=viewBean.getIsoGestionnaire()%>" class="libelleShort"/>
+							</TD>													
+						</TR>
+						<TR class="classIso">
+							<TD class="hiddenSometimes"><LABEL for="isoHighPriority"><ct:FWLabel key="JSP_EPM_ISO_PRIO"/></LABEL></TD>
+							<TD class="hiddenSometimes">
+											<select id="isoHighPriority" name="isoHighPriority">
+								                <OPTION selected value="0">normale</OPTION>
+								                <OPTION value="1">haute</OPTION>
+							              	</select>
+							</TD>													
+						</TR>
+						<TR class="classIso">
+							<TD class="hiddenSometimes"><LABEL for=isoCsTypeAvis><ct:FWLabel key="JSP_EPM_ISO_TYPE_AVIS"/></LABEL></TD>
+							<TD class="hiddenSometimes">
+								<ct:FWCodeSelectTag name="isoCsTypeAvis" defaut="<%=viewBean.getIsoCsTypeAvis()%>" codeType="OSIOGTYA" />
 							</TD>													
 						</TR>
 						<TR><TD class="hiddenSometimes" colspan="6">&nbsp;</TD></TR>											

@@ -10,6 +10,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import ch.globaz.osiris.business.constantes.CAProperties;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.GenericAccountIdentification1CH;
 
 public class CASepaCommonUtils {
@@ -121,7 +122,7 @@ public class CASepaCommonUtils {
 
     public static Long getOvMaxByOG(CAOrdreGroupe caOrdreGroupe) throws Exception {
         if (caOrdreGroupe.getOrganeExecution().getCSTypeTraitementOG().equals(APIOrganeExecution.OG_ISO_20022)) {
-            return 99000L;
+            return Long.parseLong(CAProperties.ISO_SEPA_MAX_OVPAROG.getValue(), 10);
         }
         return Long.MAX_VALUE;
     }

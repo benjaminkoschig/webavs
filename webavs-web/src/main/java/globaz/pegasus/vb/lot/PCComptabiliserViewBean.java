@@ -5,6 +5,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.util.JACalendar;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
+import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.ordres.CAOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import java.util.Vector;
@@ -21,6 +22,11 @@ public class PCComptabiliserViewBean extends BJadePersistentObjectViewBean {
     private String idLot = "";
     private String idOrganeExecution = "";
     private String numeroOG = "";
+
+    // SEPA iso20002
+    private String isoCsTypeAvis = APIOrdreGroupe.ISO_TYPE_AVIS_COLLECT_SANS;
+    private String isoGestionnaire = "";
+    private String isoHightPriority = "";
 
     public PCComptabiliserViewBean() throws PropertiesException {
         setIdOrganeExecution(getOrganeExecProperty());
@@ -101,7 +107,8 @@ public class PCComptabiliserViewBean extends BJadePersistentObjectViewBean {
 
         for (int i = 0; i < mgr.size(); i++) {
             organeExecution = (CAOrganeExecution) mgr.getEntity(i);
-            result.add(new String[] { organeExecution.getIdOrganeExecution(), organeExecution.getNom() });
+            result.add(new String[] { organeExecution.getIdOrganeExecution(), organeExecution.getNom(),
+                    organeExecution.getCSTypeTraitementOG() });
         }
         return result;
     }
@@ -158,6 +165,33 @@ public class PCComptabiliserViewBean extends BJadePersistentObjectViewBean {
 
     public void setNumeroOG(String numeroOG) {
         this.numeroOG = numeroOG;
+    }
+
+    public String getIsoCsTypeAvis() {
+        return isoCsTypeAvis;
+    }
+
+    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
+        this.isoCsTypeAvis = isoCsTypeAvis;
+    }
+
+    public String getIsoGestionnaire() {
+        if (isoGestionnaire.isEmpty()) {
+            return ((BSession) getISession()).getUserName();
+        }
+        return isoGestionnaire;
+    }
+
+    public void setIsoGestionnaire(String isoGestionnaire) {
+        this.isoGestionnaire = isoGestionnaire;
+    }
+
+    public String getIsoHightPriority() {
+        return isoHightPriority;
+    }
+
+    public void setIsoHightPriority(String isoHightPriority) {
+        this.isoHightPriority = isoHightPriority;
     }
 
     @Override

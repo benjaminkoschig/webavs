@@ -5,6 +5,7 @@
 <%@ page import="globaz.corvus.servlet.IREActions"%>
 <%@ page import="globaz.corvus.vb.process.REValiderLotViewBean"%>
 <%@ page import="globaz.jade.client.util.JadeStringUtil"%>
+<%@page import="java.util.Vector"%>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/process/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -46,23 +47,48 @@
 	var $boutonOk;
 	var $dateEcheancePaiement;
 
-	function validerBoutonOk(){
-		if($numeroOG.val() && $dateEcheancePaiement.val()){
+	function validerBoutonOk(champ){
+		if(	champ.val() != '' 
+			&& $dateEcheancePaiement.val() != ''){
 			$boutonOk.removeAttr('disabled');
 		} else {
 			$boutonOk.attr('disabled', 'true');
 		}
 	}
+	function validerOGorGest(){
+		s=document.getElementById("idOrganeExecution");
+		if(s[s.selectedIndex].id==258003){
+			validerBoutonOk($('#isoGestionnaire'));
+		}else{
+			validerBoutonOk($('#numeroOG'));
+		}
+	}	
+	function selectChangeISO20022(s) {
+		changeAffichageISO20022(s[s.selectedIndex].id);
+	}
 
+	function changeAffichageISO20022(cs) {
+		if(cs==258003){ // 258003 traitement ISO20022
+			$('.classIso').css('display', 'block'); $('.classNonIso').css('display', 'none');
+		} else {
+			$('.classNonIso').css('display', 'block'); $('.classIso').css('display', 'none');
+		} 
+		validerOGorGest();
+	}
+	
 	$(document).ready(function(){
+		
+		
 		$numeroOG = $('#numeroOG');
 		$boutonOk = $('#btnOk');
+		$isoGest = $('#isoGestionnaire');
 		$dateEcheancePaiement = $('#dateEcheancePaiement');
 
-		$numeroOG.keyup(validerBoutonOk);
-		$dateEcheancePaiement.change(validerBoutonOk);
-
-		validerBoutonOk();
+		$numeroOG.keyup(validerOGorGest);
+		$dateEcheancePaiement.change(validerOGorGest);
+		//init affichage selon OE
+		selectChangeISO20022(document.getElementById("idOrganeExecution"));
+		validerOGorGest();
 	});
 </script>
 <%-- /tpl:put --%>
@@ -146,12 +172,19 @@
 								</label>
 							</td>
 							<td>
-								<ct:FWListSelectTag	name="idOrganeExecution" 
-													data="<%=viewBean.getOrganesExecution()%>" 
-													defaut="" />
+<%-- 								<ct:FWListSelectTag	name="idOrganeExecution"  --%>
+<%-- 													data="<%=viewBean.getOrganesExecution()%>"  --%>
+<%-- 													defaut="" /> --%>
+													<% 	Vector<String[]> _CsOrganeExecution = viewBean.getOrganesExecution();%> 
+												<select id="idOrganeExecution" name="idOrganeExecution" onchange="selectChangeISO20022(this)">
+								                <%for (int i=0; i < _CsOrganeExecution.size(); i++) {
+													String[] _organeExecution = _CsOrganeExecution.get(i);%>
+													
+									                <option value="<%=_organeExecution[0]%>" id="<%=_organeExecution[2]%>"><%=_organeExecution[1]%></option>
+									           	<%} %>
 							</td>
 						</tr>
-						<tr>
+						<tr class="classNonIso">
 							<td>
 								<label for="numeroOG">
 									<ct:FWLabel key="JSP_EPM_NUMERO_OG" />
@@ -166,6 +199,23 @@
 										class="libelleShort" 
 										size="2" />
 							</td>
+						</tr>
+						<tr class="classIso">
+							<TD><ct:FWLabel key="JSP_VALID_LOT_ISO_GEST"/>&nbsp;</TD>
+							<TD><input type="text" name="isoGestionnaire" id="isoGestionnaire" value="<%=viewBean.getIsoGestionnaire()%>" /></TD>
+						</tr>
+						<tr class="classIso">
+							<TD><ct:FWLabel key="JSP_VALID_LOT_ISO_PRIO"/>&nbsp;</TD>
+							<td>
+								<select id="isoHighPriority" name="isoHighPriority">
+					                <OPTION selected value="0">normale</OPTION>
+					                <OPTION value="1">haute</OPTION>
+				              	</select>
+							</td>
+						</tr>
+						<tr class="classIso">
+							<TD><ct:FWLabel key="JSP_VALID_LOT_ISO_TYPE_AVIS"/>&nbsp;</TD>
+							<TD><ct:FWCodeSelectTag name="isoCsTypeAvis" defaut="<%=viewBean.getIsoCsTypeAvis()%>" codeType="OSIOGTYA" /></TD>
 						</tr>
 						<%-- /tpl:put --%>
 <%@ include file="/theme/process/footer.jspf" %>

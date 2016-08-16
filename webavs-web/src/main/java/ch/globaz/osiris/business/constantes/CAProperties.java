@@ -7,7 +7,9 @@ import ch.globaz.common.properties.IProperties;
 import ch.globaz.common.properties.PropertiesException;
 
 public enum CAProperties implements IProperties {
-    RUBRIQUE_SANS_EXTOURNE("rubrique.sansExtourne", "Liste des rubriques pour lesquelles on extourne par les écritures");
+    RUBRIQUE_SANS_EXTOURNE("rubrique.sansExtourne", "Liste des rubriques pour lesquelles on extourne par les écritures"),
+    ISO_SEPA_MAX_MULTIOG("iso.sepa.nbmax.multiog", "nombre max d'OG créé à la préparation"),
+    ISO_SEPA_MAX_OVPAROG("iso.sepa.nbmax.ovparog", "nombre max d'OV par OG à la préparation");
 
     private String description;
     private String propertyName;

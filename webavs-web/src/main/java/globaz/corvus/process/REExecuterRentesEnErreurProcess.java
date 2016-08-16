@@ -524,7 +524,8 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
                     libelleOG = "OPAE" + n + " - " + libelleOG;
                 }
                 comptaExt.preparerOrdreGroupe(getIdOrganeExecution(), String.valueOf(n), getDateEcheancePaiement(),
-                        CAOrdreGroupe.VERSEMENT, CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG);
+                        CAOrdreGroupe.VERSEMENT, CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG, getIsoCsTypeAvis(),
+                        getIsoGestionnaire(), getIsoHighPriority());
 
             }
 

@@ -52,6 +52,9 @@ public class REExecuterAvancesHelper extends PRAbstractHelper {
             process.setNoOg(vb.getNoOg());
             process.setIdOrganeExecution(vb.getIdOrganeExecution());
             process.setDateEcheancePaiement(vb.getDateEcheance());
+            process.setIsoCsTypeAvis(vb.getIsoCsTypeAvis());
+            process.setIsoGestionnaire(vb.getIsoGestionnaire());
+            process.setIsoHightPriority(vb.getIsoHightPriority());
             process.start();
         } else if (IREAvances.CS_TYPE_ACOMPTES_UNIQUE.equals(vb.getCsTypeAvance())) {
             // Paiment des avances unique,
@@ -61,6 +64,9 @@ public class REExecuterAvancesHelper extends PRAbstractHelper {
             process.setNoOg(vb.getNoOg());
             process.setIdOrganeExecution(vb.getIdOrganeExecution());
             process.setDateEcheance(vb.getDateEcheance());
+            process.setIsoCsTypeAvis(vb.getIsoCsTypeAvis());
+            process.setIsoGestionnaire(vb.getIsoGestionnaire());
+            process.setIsoHightPriority(vb.getIsoHightPriority());
             process.start();
         } else if (IREAvances.CS_TYPE_LISTES.equals(vb.getCsTypeAvance())) {
             // Génération du fichier excel, liste de toutes les avances

@@ -16,6 +16,9 @@ import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
+import globaz.osiris.api.ordre.APIOrganeExecution;
+import globaz.osiris.db.ordres.CAOrganeExecution;
+import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import globaz.prestation.helpers.PRAbstractHelper;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +51,7 @@ public class RFComptabiliserHelper extends PRAbstractHelper {
 
             RFComptabiliserProcess process = new RFComptabiliserProcess();
 
-            if (!hasErreur(vb)) {
+            if (!hasErreur(vb, (BSession) session)) {
                 initialiserProcessValidationDecision(process, vb, (BSession) session);
                 BProcessLauncher.start(process, false);
             } else {
@@ -88,27 +91,44 @@ public class RFComptabiliserHelper extends PRAbstractHelper {
      * @param vb
      * @return boolean
      */
-    private Boolean hasErreur(RFComptabiliserViewBean vb) {
+    private Boolean hasErreur(RFComptabiliserViewBean vb, BSession session) {
 
-        if (paramsIsErreur(vb)) {
+        if (JadeStringUtil.isEmpty(vb.getDateEcheancePaiement())
+                || !JadeDateUtil.isGlobazDate(vb.getDateEcheancePaiement())
+                || isDatePassee(vb.getDateEcheancePaiement())) {
+            listeMessagesErreurs.add("ERREUR_RF_VALIDER_DECISION_DATE_ECHEANCE");
+        }
 
-            if (JadeStringUtil.isEmpty(vb.getDateEcheancePaiement())
-                    || !JadeDateUtil.isGlobazDate(vb.getDateEcheancePaiement())
-                    || isDatePassee(vb.getDateEcheancePaiement())) {
-                listeMessagesErreurs.add("ERREUR_RF_VALIDER_DECISION_DATE_ECHEANCE");
+        if (JadeStringUtil.isEmpty(vb.getIdOrganeExecution())) {
+            listeMessagesErreurs.add("ERREUR_RF_VALIDER_DECISION_ORGANE_EXECUTION");
+        }
+        if (isIso20022(vb.getIdOrganeExecution(), session)) {
+            if (JadeStringUtil.isEmpty(vb.getIsoGestionnaire())) {
+                listeMessagesErreurs.add("ERREUR_RF_VALIDER_DECISION_ISO_GESTIONNAIRE");
             }
-
-            if (JadeStringUtil.isEmpty(vb.getIdOrganeExecution())) {
-                listeMessagesErreurs.add("ERREUR_RF_VALIDER_DECISION_ORGANE_EXECUTION");
-            }
-
+        } else {
             if (!JadeNumericUtil.isInteger(vb.getNumeroOG()) || (JadeStringUtil.toLong(vb.getNumeroOG()) >= 100)) {
                 listeMessagesErreurs.add("ERREUR_RF_VALIDER_DECISION_NUMERO_OG");
             }
-            return true;
         }
 
-        return false;
+        return !listeMessagesErreurs.isEmpty();
+    }
+
+    private boolean isIso20022(String idOrganeExecutionm, BSession session) {
+        CAOrganeExecutionManager mgr = new CAOrganeExecutionManager();
+        mgr.setSession(session);
+        mgr.setForIdOrganeExecution(idOrganeExecutionm);
+        try {
+            mgr.find();
+            if (mgr.size() != 1) {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            listeMessagesErreurs.add("ERREUR_RF_VALIDER_DECISION_ORGANE_EXECUTION_UNKNOW");
+        }
+
+        return ((CAOrganeExecution) mgr.getEntity(0)).getIdTypeTraitementOG().equals(APIOrganeExecution.OG_ISO_20022);
     }
 
     /**
@@ -132,6 +152,9 @@ public class RFComptabiliserHelper extends PRAbstractHelper {
         process.setDateComptable(vb.getDateComptable());
         process.setEMailAddress(vb.getEMailAddress());
         process.setIdLot(vb.getIdLot());
+        process.setIsoCsTypeAvis(vb.getIsoCsTypeAvis());
+        process.setIsoGestionnaire(vb.getIsoGestionnaire());
+        process.setIsoHighPriority(vb.getIsoHightPriority());
     }
 
     /**

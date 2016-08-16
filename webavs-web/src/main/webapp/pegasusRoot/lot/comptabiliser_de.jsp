@@ -4,6 +4,7 @@
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@page import="globaz.pegasus.vb.lot.PCComptabiliserViewBean"%>
+<%@page import="java.util.Vector"%>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="/theme/process/header.jspf" %>
@@ -20,6 +21,31 @@
 	userActionValue = IPCActions.ACTION_LOT_COMPTABILISER + ".executer";
 	
 %>
+<%@ include file="/theme/process/javascripts.jspf" %>
+<script type="text/javascript">
+
+function selectChangeISO20022(s) {
+	changeAffichageISO20022(s[s.selectedIndex].id);
+}
+
+function changeAffichageISO20022(cs) {
+	if(cs==258003){ // 258003 traitement ISO20022
+		$('.classIso').css('display', 'block'); $('.classNonIso').css('display', 'none');
+	} else {
+		$('.classNonIso').css('display', 'block'); $('.classIso').css('display', 'none');
+	} 
+}
+function init(){}
+
+$(document).ready(function() {
+	//ne prend pas l'init! pourquoi? 
+	selectChangeISO20022(document.getElementById("idOrganeExecution"));
+});
+</script>
+
+
+
+
 
 <c:if test="${empty viewBean.idLot}">
     <c:set target="${viewBean}" property="idLot" value="${param['selectedId']}"/>
@@ -80,19 +106,47 @@
 								</label>
 							</td>
 							<td>
-								<ct:FWListSelectTag	name="idOrganeExecution" 
-													data="<%=viewBean.getOrganesExecution()%>" 
-													defaut="<%=viewBean.getIdOrganeExecution()%>" />
+<%-- 								<ct:FWListSelectTag	name="idOrganeExecution"  --%>
+<%-- 													data="<%=viewBean.getOrganesExecution()%>"  --%>
+<%-- 													defaut="<%=viewBean.getIdOrganeExecution()%>" /> --%>
+								<% 	Vector<String[]> _CsOrganeExecution = viewBean.getOrganesExecution();%> 
+									<select id="idOrganeExecution" name="idOrganeExecution" onchange="selectChangeISO20022(this)">
+								    <%for (int i=0; i < _CsOrganeExecution.size(); i++) {
+										String[] _organeExecution = _CsOrganeExecution.get(i);
+										if (_organeExecution[0].equalsIgnoreCase(viewBean.getIdOrganeExecution())) { %>
+	               							<option selected value="<%=_organeExecution[0]%>" id="<%=_organeExecution[2]%>"><%=_organeExecution[1]%></option>
+	                
+	             						<%} else { %>			
+									  		<option value="<%=_organeExecution[0]%>" id="<%=_organeExecution[2]%>"><%=_organeExecution[1]%></option>
+										<%} 
+									}%>
 							</td>
 						</tr>
 
 
-						<TR>
+						<TR class="classNonIso">
 							<TD><LABEL for="numeroOG"><ct:FWLabel key="JSP_EPM_NUMERO_OG"/></LABEL></TD>
 							<TD>
 								<INPUT 	data-g-integer="sizeMax:2,mandatory:true"  type="text" name="numeroOG" value="" class="libelleShort" size="2" />
 							</TD>													
-						</TR>		
+						</TR>	
+						<tr class="classIso">
+							<TD><ct:FWLabel key="JSP_VALID_LOT_ISO_GEST"/>&nbsp;</TD>
+							<TD><input type="text" name="isoGestionnaire" id="isoGestionnaire" value="<%=viewBean.getIsoGestionnaire()%>" /></TD>
+						</tr>
+						<tr class="classIso">
+							<TD><ct:FWLabel key="JSP_VALID_LOT_ISO_PRIO"/>&nbsp;</TD>
+							<td>
+								<select id="isoHighPriority" name="isoHighPriority">
+					                <OPTION selected value="0">normale</OPTION>
+					                <OPTION value="1">haute</OPTION>
+				              	</select>
+							</td>
+						</tr>
+						<tr class="classIso">
+							<TD><ct:FWLabel key="JSP_VALID_LOT_ISO_TYPE_AVIS"/>&nbsp;</TD>
+							<TD><ct:FWCodeSelectTag name="isoCsTypeAvis" defaut="<%=viewBean.getIsoCsTypeAvis()%>" codeType="OSIOGTYA" /></TD>
+						</tr>	
 						<INPUT type="hidden" name="idLot" value="${viewBean.idLot}"/>
 						<INPUT type="hidden" name="descriptionLot" value="${param['descriptionLot']}"/>
 

@@ -49,6 +49,11 @@ public class REExecuter1erAcompteAvancesProcess extends BProcess {
 
     private String noOg = null;
 
+    // SEPA iso20002
+    private String isoCsTypeAvis;
+    private String isoGestionnaire;
+    private String isoHightPriority;
+
     @Override
     protected void _executeCleanUp() {
     }
@@ -187,7 +192,7 @@ public class REExecuter1erAcompteAvancesProcess extends BProcess {
     }
 
     // Préparation de l'OG...
-    private void doPreparerOG(String idOG, String numeroOG, String dateEcheancePaiement, String csDomaineApplicatif,
+    private void doPreparerOG(String idOE, String numeroOG, String dateEcheancePaiement, String csDomaineApplicatif,
             APIGestionComptabiliteExterne compta, String desc) throws Exception {
 
         if (compta != null) {
@@ -195,8 +200,8 @@ public class REExecuter1erAcompteAvancesProcess extends BProcess {
                     FWMessage.INFORMATION, "");
             int n = Integer.parseInt(numeroOG);
 
-            compta.preparerOrdreGroupe(idOG, String.valueOf(n), dateEcheancePaiement, CAOrdreGroupe.VERSEMENT,
-                    CAOrdreGroupe.NATURE_RENTES_AVS_AI, desc);
+            compta.preparerOrdreGroupe(idOE, String.valueOf(n), dateEcheancePaiement, CAOrdreGroupe.VERSEMENT,
+                    CAOrdreGroupe.NATURE_RENTES_AVS_AI, desc, isoCsTypeAvis, isoGestionnaire, isoHightPriority);
         }
     }
 
@@ -378,6 +383,30 @@ public class REExecuter1erAcompteAvancesProcess extends BProcess {
 
     public void setNoOg(String noOg) {
         this.noOg = noOg;
+    }
+
+    public String getIsoCsTypeAvis() {
+        return isoCsTypeAvis;
+    }
+
+    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
+        this.isoCsTypeAvis = isoCsTypeAvis;
+    }
+
+    public String getIsoGestionnaire() {
+        return isoGestionnaire;
+    }
+
+    public void setIsoGestionnaire(String isoGestionnaire) {
+        this.isoGestionnaire = isoGestionnaire;
+    }
+
+    public String getIsoHightPriority() {
+        return isoHightPriority;
+    }
+
+    public void setIsoHightPriority(String isoHightPriority) {
+        this.isoHightPriority = isoHightPriority;
     }
 
 }

@@ -12,6 +12,7 @@
 <%@page import="ch.globaz.pegasus.business.models.droit.Droit"%>
 <%@page import="globaz.pegasus.vb.avance.PCExecuterAvancesViewBean"%>
 <%@page import="globaz.pegasus.utils.PCUserHelper"%>
+<%@page import="java.util.Vector"%>
 <%@ include file="/theme/detail_ajax/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
 
@@ -77,9 +78,20 @@ function validate() {
     return state;
 }
 
+function selectChangeISO20022(s) {
+	changeAffichageISO20022(s[s.selectedIndex].id);
+}
 
+function changeAffichageISO20022(cs) {
+	if(cs==258003){ // 258003 traitement ISO20022
+		$('.classIso').css('display', 'block'); $('.classNonIso').css('display', 'none');
+	} else {
+		$('.classNonIso').css('display', 'block'); $('.classIso').css('display', 'none');
+	} 
+}
 
 function init () {
+	selectChangeISO20022(document.getElementById("idOrganeExecution"));
 	processOk = <%= processOk %>;
 	fromProcess = <%= fromProcess %>;
 	lblProcessOk = "<%= objSession.getLabel("JSP_PC_PC_AVANCES_EXECUTER_D_PROCESS_FINISH") %>";
@@ -88,7 +100,6 @@ function init () {
 		dealInputEvents();
 		dealGui();
 	});
-	
 };
 
 function add () {
@@ -99,6 +110,8 @@ function add () {
 function upd () {
 	alert('upd');
 };
+
+
 
 </script>
 
@@ -168,17 +181,56 @@ function upd () {
 					<span id="lblOrganeExecution" class="lbl"><ct:FWLabel key="JSP_PC_AVANCES_EXECUTER_D_ORGANE_EX"/></span>
 				</div>
 				<div class="span2">
-					<ct:FWListSelectTag	name="idOrganeExecution" data="<%=viewBean.getOrganesExecution()%>" defaut="" />
+<%-- 					<ct:FWListSelectTag	name="idOrganeExecution" data="<%=viewBean.getOrganesExecution()%>" defaut="" /> --%>
+				<% 	Vector<String[]> _CsOrganeExecution = viewBean.getOrganesExecution();%> 
+				<select id="idOrganeExecution" name="idOrganeExecution" onchange="selectChangeISO20022(this)">
+                <%for (int i=0; i < _CsOrganeExecution.size(); i++) {
+					String[] _organeExecution = _CsOrganeExecution.get(i);%>
+					
+	                <option value="<%=_organeExecution[0]%>" id="<%=_organeExecution[2]%>"><%=_organeExecution[1]%></option>
+	           	<%} %>
+              </select>
 				</div>
 			</div>
 			
 			<!--  zone numéro ordre -->
-			<div class="row-fluid">
-				<div class="span2">
-					<span id="lblNoOg" class="lbl"><ct:FWLabel key="JSP_PC_AVANCES_EXECUTER_D_NO_OG"/></span>
+			<div class="classNonIso">
+				<div class="row-fluid">
+					<div class="span2">
+						<span id="lblNoOg" class="lbl"><ct:FWLabel key="JSP_PC_AVANCES_EXECUTER_D_NO_OG"/></span>
+					</div>
+					<div class="span2">
+						<input type="text" data-g-integer="mandatory:true, sizeMax:2, autoFit:true" name="noOg" id="noOg" />
+					</div>
 				</div>
-				<div class="span2">
-					<input type="text" data-g-integer="mandatory:true, sizeMax:2, autoFit:true" name="noOg" id="noOg" />
+			</div>
+			<div class="classIso">
+				<div class="row-fluid">
+					<div class="span2">
+						<span id="lblGest" class="lbl"><ct:FWLabel key="JSP_PC_AVANCES_EXECUTER_D_ISO_GEST"/></span>
+					</div>
+					<div class="span2">
+						<input type="text" name="isoGestionnaire" id="isoGestionnaire" value="<%=viewBean.getIsoGestionnaire()%>" data-g-string="mandatory:true" />
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span2">
+						<span id="lblPrio" class="lbl"><ct:FWLabel key="JSP_PC_AVANCES_EXECUTER_D_ISO_PRIO"/></span>
+					</div>
+					<div class="span2">
+						<select id="isoHighPriority" name="isoHighPriority">
+			                <OPTION selected value="0">normale</OPTION>
+			                <OPTION value="1">haute</OPTION>
+		              	</select>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span2">
+						<span id="lblTypeAvis" class="lbl"><ct:FWLabel key="JSP_PC_AVANCES_EXECUTER_D_ISO_TYPE_AVIS"/></span>
+					</div>
+					<div class="span2">
+						<ct:FWCodeSelectTag name="isoCsTypeAvis" defaut="<%=viewBean.getIsoCsTypeAvis()%>" codeType="OSIOGTYA" />
+					</div>
 				</div>
 			</div>
 		</div>

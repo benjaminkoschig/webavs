@@ -13,6 +13,9 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.osiris.api.ordre.APIOrganeExecution;
+import globaz.osiris.db.ordres.CAOrganeExecution;
+import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import ch.globaz.common.domaine.Checkers;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.properties.PropertiesException;
@@ -55,8 +58,10 @@ public class LotServiceImpl extends PegasusAbstractServiceImpl implements LotSer
             throw new ComptabiliserLotException("L'idOrganeExecution est obligatoire !");
         }
 
-        if (JadeStringUtil.isEmpty(numeroOG)) {
-            throw new ComptabiliserLotException("le numero OG est obligatoire !");
+        if (!isIso20022(idOrganeExecution)) {
+            if (JadeStringUtil.isEmpty(numeroOG)) {
+                throw new ComptabiliserLotException("le numero OG est obligatoire !");
+            }
         }
 
         try {
@@ -77,6 +82,21 @@ public class LotServiceImpl extends PegasusAbstractServiceImpl implements LotSer
         } catch (JadeApplicationException e) {
             throw new ComptabiliserLotException("Unable to access create the journal and operation", e);
         }
+    }
+
+    private boolean isIso20022(String idOrganeExecution) throws ComptabiliserLotException {
+        CAOrganeExecutionManager mgr = new CAOrganeExecutionManager();
+        mgr.setForIdOrganeExecution(idOrganeExecution);
+        try {
+            mgr.find();
+            if (mgr.size() != 1) {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            throw new ComptabiliserLotException("L'idOrganeExecution est inconnu !");
+        }
+
+        return ((CAOrganeExecution) mgr.getEntity(0)).getIdTypeTraitementOG().equals(APIOrganeExecution.OG_ISO_20022);
     }
 
     @Override

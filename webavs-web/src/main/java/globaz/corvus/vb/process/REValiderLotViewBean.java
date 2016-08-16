@@ -10,6 +10,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeNumericUtil;
+import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.ordres.CAOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
@@ -31,6 +32,11 @@ public class REValiderLotViewBean extends PRAbstractViewBeanSupport {
     private String idLot = "";
     private String idOrganeExecution = "";
     private String numeroOG = "";
+
+    // SEPA iso20002
+    private String isoCsTypeAvis = APIOrdreGroupe.ISO_TYPE_AVIS_COLLECT_SANS;
+    private String isoGestionnaire = "";
+    private String isoHightPriority = "";
 
     public String getCsEtatLot() {
         return csEtatLot;
@@ -75,9 +81,9 @@ public class REValiderLotViewBean extends PRAbstractViewBeanSupport {
 
     /**
      * Retourne le vecteur de tableaux a 2 entrées {idOrganeExecution, description} défini pour ce view bean.
+     * ajout du idTypeExecutionOg utile pour identifier els traitements ISO et afficher les champ en conséquence
      * 
-     * 
-     * @return Vecteur de tableau à 2 entrées {idOrganeExecution, description}
+     * @return Vecteur de tableau à 3 entrées {idOrganeExecution, description, idTypeExecutionOG}
      * @throws Exception
      */
     public Vector getOrganesExecution() throws Exception {
@@ -107,14 +113,16 @@ public class REValiderLotViewBean extends PRAbstractViewBeanSupport {
         for (CAOrganeExecution caorgane : listIdOrgane) {
 
             if (idOrgane.equals(caorgane.getIdOrganeExecution())) {
-                result.add(new String[] { caorgane.getIdOrganeExecution(), caorgane.getNom() });
+                result.add(new String[] { caorgane.getIdOrganeExecution(), caorgane.getNom(),
+                        caorgane.getIdTypeTraitementOG() });
                 listIdOrgane.remove(caorgane);
                 break;
             }
         }
 
         for (CAOrganeExecution caorgane : listIdOrgane) {
-            result.add(new String[] { caorgane.getIdOrganeExecution(), caorgane.getNom() });
+            result.add(new String[] { caorgane.getIdOrganeExecution(), caorgane.getNom(),
+                    caorgane.getIdTypeTraitementOG() });
         }
 
         return result;
@@ -154,6 +162,33 @@ public class REValiderLotViewBean extends PRAbstractViewBeanSupport {
 
     public void setNumeroOG(String numeroOG) {
         this.numeroOG = numeroOG;
+    }
+
+    public String getIsoCsTypeAvis() {
+        return isoCsTypeAvis;
+    }
+
+    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
+        this.isoCsTypeAvis = isoCsTypeAvis;
+    }
+
+    public String getIsoGestionnaire() {
+        if (isoGestionnaire.isEmpty()) {
+            return getSession().getUserName();
+        }
+        return isoGestionnaire;
+    }
+
+    public void setIsoGestionnaire(String isoGestionnaire) {
+        this.isoGestionnaire = isoGestionnaire;
+    }
+
+    public String getIsoHightPriority() {
+        return isoHightPriority;
+    }
+
+    public void setIsoHightPriority(String isoHightPriority) {
+        this.isoHightPriority = isoHightPriority;
     }
 
     @Override

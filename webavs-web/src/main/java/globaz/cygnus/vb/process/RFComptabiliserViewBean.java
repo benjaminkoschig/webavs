@@ -4,6 +4,7 @@
 package globaz.cygnus.vb.process;
 
 import globaz.corvus.properties.REProperties;
+import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.ordres.CAOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
@@ -36,6 +37,11 @@ public class RFComptabiliserViewBean extends PRAbstractViewBeanSupport {
     private String radioCreationDecision = "";
     private String radioSimulationCreationDecision = "";
     private String typeValidation = "";
+
+    // SEPA iso20002
+    private String isoCsTypeAvis = APIOrdreGroupe.ISO_TYPE_AVIS_COLLECT_SANS;
+    private String isoGestionnaire = "";
+    private String isoHightPriority = "";
 
     public RFComptabiliserViewBean() throws PropertiesException {
         setIdOrganeExecution(getOrganeExecProperty());
@@ -107,7 +113,8 @@ public class RFComptabiliserViewBean extends PRAbstractViewBeanSupport {
         for (int i = 0; i < mgr.size(); i++) {
             organeExecution = (CAOrganeExecution) mgr.getEntity(i);
 
-            result.add(new String[] { organeExecution.getIdOrganeExecution(), organeExecution.getNom() });
+            result.add(new String[] { organeExecution.getIdOrganeExecution(), organeExecution.getNom(),
+                    organeExecution.getCSTypeTraitementOG() });
         }
         return result;
     }
@@ -186,6 +193,33 @@ public class RFComptabiliserViewBean extends PRAbstractViewBeanSupport {
 
     public void setTypeValidation(String typeValidation) {
         this.typeValidation = typeValidation;
+    }
+
+    public String getIsoCsTypeAvis() {
+        return isoCsTypeAvis;
+    }
+
+    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
+        this.isoCsTypeAvis = isoCsTypeAvis;
+    }
+
+    public String getIsoGestionnaire() {
+        if (isoGestionnaire.isEmpty()) {
+            return getSession().getUserName();
+        }
+        return isoGestionnaire;
+    }
+
+    public void setIsoGestionnaire(String isoGestionnaire) {
+        this.isoGestionnaire = isoGestionnaire;
+    }
+
+    public String getIsoHightPriority() {
+        return isoHightPriority;
+    }
+
+    public void setIsoHightPriority(String isoHightPriority) {
+        this.isoHightPriority = isoHightPriority;
     }
 
     /*

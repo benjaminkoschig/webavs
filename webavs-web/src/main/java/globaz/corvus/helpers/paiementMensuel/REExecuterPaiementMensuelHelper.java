@@ -57,7 +57,9 @@ public class REExecuterPaiementMensuelHelper extends PRAbstractHelper {
         process.setDateEcheancePaiement(epmViewBean.getDateEcheancePaiement());
         process.setIdOrganeExecution(epmViewBean.getIdOrganeExecution());
         process.setNumeroOG(epmViewBean.getNumeroOG());
-
+        process.setIsoCsTypeAvis(epmViewBean.getIsoCsTypeAvis());
+        process.setIsoGestionnaire(epmViewBean.getIsoGestionnaire());
+        process.setIsoHighPriority(epmViewBean.getIsoHighPriority());
         process.start();
     }
 

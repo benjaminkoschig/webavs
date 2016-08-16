@@ -51,6 +51,11 @@ public class RFComptabiliserDecisionService {
     private String numeroOG = "";
     private int numeroPDF;
 
+    // SEPA iso20002
+    private String isoCsTypeAvis;
+    private String isoGestionnaire;
+    private String isoHighPriority;
+
     // private RFPrestationData prestation = null;
     private Set<RFPrestationData> prestationsSet = null;
     private BISession session = null;
@@ -70,7 +75,7 @@ public class RFComptabiliserDecisionService {
                 libelleOG = "RFM - Pmt journalier/hebdo. " + n + "-" + libelleOG;
             }
             compta.preparerOrdreGroupe(idOG, String.valueOf(n), dateEcheancePaiement, CAOrdreGroupe.VERSEMENT,
-                    CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG);
+                    CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG, isoCsTypeAvis, isoGestionnaire, isoHighPriority);
         }
     }
 
@@ -447,6 +452,30 @@ public class RFComptabiliserDecisionService {
 
     public void setTypePaiement(String typePaiement) {
         this.typePaiement = typePaiement;
+    }
+
+    public String getIsoCsTypeAvis() {
+        return isoCsTypeAvis;
+    }
+
+    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
+        this.isoCsTypeAvis = isoCsTypeAvis;
+    }
+
+    public String getIsoGestionnaire() {
+        return isoGestionnaire;
+    }
+
+    public void setIsoGestionnaire(String isoGestionnaire) {
+        this.isoGestionnaire = isoGestionnaire;
+    }
+
+    public String getIsoHighPriority() {
+        return isoHighPriority;
+    }
+
+    public void setIsoHighPriority(String isoHightPriority) {
+        isoHighPriority = isoHightPriority;
     }
 
 }

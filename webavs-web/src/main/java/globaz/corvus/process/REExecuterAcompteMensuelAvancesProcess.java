@@ -26,8 +26,11 @@ import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.osiris.api.APIGestionComptabiliteExterne;
+import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.osiris.db.ordres.CAOrganeExecution;
+import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
@@ -82,6 +85,11 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
     private boolean processOnSuccess = true;
     /** Date de fin fictive pour les test sur les dates */
     private static final String DATE_FIN = "31.12.2999";
+    // SEPA iso20002
+    private String isoCsTypeAvis;
+    private String isoGestionnaire;
+    private String isoHightPriority;
+    private Boolean isIso = null;
 
     /**
      * Validation des paramètres non null
@@ -98,8 +106,10 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
             getSession().addError("PMT_AVANCE_EMAIL_NULL");
         }
 
-        if (noOg == null) {
-            getSession().addError("PMT_AVANCE_NOOG_NULL");
+        if (!isIso20022(idOrganeExecution, getSession())) {
+            if (noOg == null) {
+                getSession().addError("PMT_AVANCE_NOOG_NULL");
+            }
         }
 
         if (idOrganeExecution == null) {
@@ -110,6 +120,26 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
             getSession().addError("PMT_AVANCE_DATEECHEANCE_NULL");
         }
 
+    }
+
+    private boolean isIso20022(String idOrganeExecution, BSession session) {
+        if (isIso == null) {
+            CAOrganeExecutionManager mgr = new CAOrganeExecutionManager();
+            mgr.setSession(session);
+            mgr.setForIdOrganeExecution(idOrganeExecution);
+            try {
+                mgr.find();
+                if (mgr.size() != 1) {
+                    throw new Exception();
+                }
+            } catch (Exception e) {
+                getSession().addError("PMT_AVANCE_IDORGANEEXEC_NULL");
+            }
+
+            isIso = ((CAOrganeExecution) mgr.getEntity(0)).getIdTypeTraitementOG().equals(
+                    APIOrganeExecution.OG_ISO_20022);
+        }
+        return isIso.booleanValue();
     }
 
     @Override
@@ -431,8 +461,10 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
      */
     private void validateMandatoryParameters() {
         // Check noOg
-        if (JadeStringUtil.isBlank(getNoOg())) {
-            getSession().addError(getSession().getLabel("PMT_AVANCE_NOOG_VIDE"));
+        if (!isIso20022(idOrganeExecution, getSession())) {
+            if (JadeStringUtil.isBlank(getNoOg())) {
+                getSession().addError(getSession().getLabel("PMT_AVANCE_NOOG_VIDE"));
+            }
         }
         // check idOrganeexecution
         if (JadeStringUtil.isBlank(getIdOrganeExecution())) {
@@ -463,7 +495,8 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
             String libelleOG = getSession().getLabel("PMT_AVANCE_MENSUEL_RENTE_DESC_OG") + noOg;
 
             compta.preparerOrdreGroupe(idOrganeExecution, String.valueOf(noOg), dateEcheancePaiement,
-                    CAOrdreGroupe.VERSEMENT, CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG);
+                    CAOrdreGroupe.VERSEMENT, CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG, isoCsTypeAvis,
+                    isoGestionnaire, isoHightPriority);
         }
     }
 
@@ -585,6 +618,30 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
 
     public void setDateEcheancePaiement(String dateEcheance) {
         dateEcheancePaiement = dateEcheance;
+    }
+
+    public String getIsoCsTypeAvis() {
+        return isoCsTypeAvis;
+    }
+
+    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
+        this.isoCsTypeAvis = isoCsTypeAvis;
+    }
+
+    public String getIsoGestionnaire() {
+        return isoGestionnaire;
+    }
+
+    public void setIsoGestionnaire(String isoGestionnaire) {
+        this.isoGestionnaire = isoGestionnaire;
+    }
+
+    public String getIsoHightPriority() {
+        return isoHightPriority;
+    }
+
+    public void setIsoHightPriority(String isoHightPriority) {
+        this.isoHightPriority = isoHightPriority;
     }
 
 }

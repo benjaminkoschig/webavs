@@ -742,12 +742,12 @@ public class CAOperationOrdreVersement extends CAOperation implements APIOperati
     public String getMotifFormatOPAE() {
         String motif = removeBlankLines(getMotif());
         ;
-
-        if (motif.length() >= 13) {
+        // revue pour NSS
+        if (motif.length() >= 16) {
             // Contrôler que le début du numéro ressemble au format AVS
-            String d = motif.substring(0, 13);
+            String d = motif.substring(0, 16);
             // Si c'est le cas on prend le motif tel quel
-            if ((d.charAt(3) == '.') && (d.charAt(6) == '.')) {
+            if ((d.charAt(3) == '.') && (d.charAt(8) == '.')) {
                 return motif;
             } else {
                 return getMotifFormatOPAEBloc2();

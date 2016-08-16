@@ -21,6 +21,7 @@ import globaz.osiris.api.APIOperation;
 import globaz.osiris.api.APIOperationOrdreRecouvrement;
 import globaz.osiris.api.APIOperationOrdreVersement;
 import globaz.osiris.api.APISection;
+import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CAEcriture;
 import globaz.osiris.db.comptes.CAJournal;
@@ -811,26 +812,13 @@ public final class CAGestionComptabiliteExterne implements APIGestionComptabilit
         return new CAUtilsJournal().isPeriodeComptableOuverte(session, transaction, dateValeurCG);
     }
 
-    /**
-     * Création de l'ordre groupé correspondant au journal.<BR>
-     * <BR>
-     * - Création d'un ordre groupé avec les ordres du journal spécifié<BR>
-     * - Préparation de l'ordre groupé<BR>
-     * <BR>
-     * 
-     * @param idOrganeExecution
-     * @param numeroOG
-     * @param dateEcheance
-     * @param typeOrdre
-     * @param natureOrdre
-     * @paran libelleOG
-     */
     @Override
     public void preparerOrdreGroupe(String idOrganeExecution, String numeroOG, String dateEcheance, String typeOrdre,
-            String natureOrdre, String libelleOG) {
+            String natureOrdre, String libelleOG, String isoCsTypeAvis, String isoGestionnaire, String isoHighPriority) {
 
         boolean continu = true;
-
+        // type de traitement OG sepa?
+        boolean isTraitementSepa = false;
         // Vérification d'usage
         // ------------------------------------------------------------------------
         // - Validité de l'organe d'execution
@@ -849,6 +837,8 @@ public final class CAGestionComptabiliteExterne implements APIGestionComptabilit
                     log.logStringBuffer(transaction.getErrors(), this.getClass().getName());
                     log.logMessage("POG_RETRIEVE_ORGANE_EXECUTION", null, FWMessage.FATAL, this.getClass().getName());
                     continu = false;
+                } else {
+                    isTraitementSepa = organeExecution.getCSTypeTraitementOG().equals(APIOrganeExecution.OG_ISO_20022);
                 }
             } catch (Exception e) {
                 log.logMessage("5002", "Error in organeExecution.retrieve - " + e.getMessage(), FWMessage.FATAL, this
@@ -902,10 +892,16 @@ public final class CAGestionComptabiliteExterne implements APIGestionComptabilit
         CAOrdreGroupe ordreGroupe = new CAOrdreGroupe();
         ordreGroupe.setSession(getSession());
         ordreGroupe.setIdOrganeExecution(idOrganeExecution);
-        ordreGroupe.setNumeroOG(numeroOG);
         ordreGroupe.setDateEcheance(dateEcheance);
         ordreGroupe.setTypeOrdreGroupe(typeOrdre);
         ordreGroupe.setNatureOrdresLivres(natureOrdre);
+        if (isTraitementSepa) {
+            ordreGroupe.setIsoCsTypeAvis(isoCsTypeAvis);
+            ordreGroupe.setIsoGestionnaire(isoGestionnaire);
+            ordreGroupe.setIsoHighPriority(isoHighPriority);
+        } else {
+            ordreGroupe.setNumeroOG(numeroOG);
+        }
         if (!JadeStringUtil.isEmpty(libelleOG)) {
 
             // BUG 5038, libelle trop long

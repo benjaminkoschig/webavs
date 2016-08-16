@@ -53,12 +53,29 @@ function validate () {
 	
     return state;
 }
+
+function selectChangeISO20022(s) {
+	changeAffichageISO20022(s[s.selectedIndex].id);
+}
+
+function changeAffichageISO20022(cs) {
+	if(cs==258003){ // 258003 traitement ISO20022
+		$('.classIso').css('display', 'block'); $('.classNonIso').css('display', 'none');
+	} else {
+		$('.classNonIso').css('display', 'block'); $('.classIso').css('display', 'none');
+	} 
+}
+
+
 $(function () {
 	
 	//init variable
 	$blockDatePaiement = $('#blockDatePaiement');
 	$selectTypeTraitement = $('#selectTypeTraitement');
 	$blocOg = $('#blocOg');
+	
+	//init affichage selon OE
+	selectChangeISO20022(document.getElementById("idOrganeExecution"));
 	
 	//on cache le bloc date valeur, par défaut, car le type de traitement par defaut est paiement unique
 	$blockDatePaiement.hide();
@@ -85,7 +102,7 @@ $(function () {
 <%@ include file="/theme/process/bodyStart.jspf" %>
 			<%-- tpl:put name="zoneTitle" --%>		
 <%@page import="globaz.cygnus.vb.process.RFExecuterAvancesViewBean"%>
-
+<%@page import="java.util.Vector"%>
 <%@page import="globaz.corvus.utils.REPmtMensuel"%><ct:FWLabel key="JSP_AVANCE_RFM_E_TITLE"/> <%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart2.jspf" %>
 						<%-- tpl:put name="zoneMain" --%>
@@ -139,14 +156,38 @@ $(function () {
 									<tr>
 										<TD><ct:FWLabel key="JSP_AVANCE_RFM_E_ORGANE_EXECUTION"/>&nbsp;</TD>
 										<TD>
-											<ct:FWListSelectTag	name="idOrganeExecution" data="<%=viewBean.getOrganesExecution()%>" defaut="" />
+<%-- 											<ct:FWListSelectTag	name="idOrganeExecution" data="<%=viewBean.getOrganesExecution()%>" defaut="" /> --%>
+												<% 	Vector<String[]> _CsOrganeExecution = viewBean.getOrganesExecution();%> 
+												<select id="idOrganeExecution" name="idOrganeExecution" onchange="selectChangeISO20022(this)">
+								                <%for (int i=0; i < _CsOrganeExecution.size(); i++) {
+													String[] _organeExecution = _CsOrganeExecution.get(i);%>
+													
+									                <option value="<%=_organeExecution[0]%>" id="<%=_organeExecution[2]%>"><%=_organeExecution[1]%></option>
+									           	<%} %>
 										</TD>
 									</tr>
 									
 									<!--  ligne choix numéro OG -->
-									<tr>
+									<tr class="classNonIso">
 										<TD><ct:FWLabel key="JSP_AVANCE_RFM_E_NO_OG"/>&nbsp;</TD>
 										<TD><input type="text" style="width:25px;" name="noOg" data-g-integer="mandatory:true, sizeMax:2"></TD>
+									</tr>
+									<tr class="classIso">
+										<TD><ct:FWLabel key="JSP_AVANCE_RFM_E_ISO_GEST"/>&nbsp;</TD>
+										<TD><input type="text" name="isoGestionnaire" id="isoGestionnaire" value="<%=viewBean.getIsoGestionnaire()%>" data-g-string="mandatory:true" /></TD>
+									</tr>
+									<tr class="classIso">
+										<TD><ct:FWLabel key="JSP_AVANCE_RFM_E_ISO_PRIO"/>&nbsp;</TD>
+										<td>
+											<select id="isoHighPriority" name="isoHighPriority">
+								                <OPTION selected value="0">normale</OPTION>
+								                <OPTION value="1">haute</OPTION>
+							              	</select>
+										</td>
+									</tr>
+									<tr class="classIso">
+										<TD><ct:FWLabel key="JSP_AVANCE_RFM_E_ISO_TYPE_AVIS"/>&nbsp;</TD>
+										<TD><ct:FWCodeSelectTag name="isoCsTypeAvis" defaut="<%=viewBean.getIsoCsTypeAvis()%>" codeType="OSIOGTYA" /></TD>
 									</tr>
 								</tbody>					
 								</TABLE>

@@ -67,6 +67,11 @@ public class RFComptabiliserProcess extends BProcess {
     private String numeroOG = "";
     private Set<RFPrestationData> prestationsSet = null;
 
+    // SEPA iso20002
+    private String isoCsTypeAvis;
+    private String isoGestionnaire;
+    private String isoHighPriority;
+
     @Override
     protected void _executeCleanUp() {
         // RIEN A FAIRE
@@ -426,6 +431,9 @@ public class RFComptabiliserProcess extends BProcess {
         comptabiliser.setDescriptionLot(getDescriptionLot());
         comptabiliser
                 .setAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome(isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome);
+        comptabiliser.setIsoCsTypeAvis(getIsoCsTypeAvis());
+        comptabiliser.setIsoGestionnaire(getIsoGestionnaire());
+        comptabiliser.setIsoHighPriority(getIsoHighPriority());
 
         return comptabiliser;
     }
@@ -531,6 +539,30 @@ public class RFComptabiliserProcess extends BProcess {
 
     public void setPrestationsSet(Set<RFPrestationData> prestationsSet) {
         this.prestationsSet = prestationsSet;
+    }
+
+    public String getIsoCsTypeAvis() {
+        return isoCsTypeAvis;
+    }
+
+    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
+        this.isoCsTypeAvis = isoCsTypeAvis;
+    }
+
+    public String getIsoGestionnaire() {
+        return isoGestionnaire;
+    }
+
+    public void setIsoGestionnaire(String isoGestionnaire) {
+        this.isoGestionnaire = isoGestionnaire;
+    }
+
+    public String getIsoHighPriority() {
+        return isoHighPriority;
+    }
+
+    public void setIsoHighPriority(String isoHightPriority) {
+        isoHighPriority = isoHightPriority;
     }
 
     private void updateLot(String idJournalCA) throws Exception {

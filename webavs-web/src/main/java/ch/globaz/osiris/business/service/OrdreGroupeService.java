@@ -18,6 +18,7 @@ public interface OrdreGroupeService extends JadeApplicationService {
      * @throws OsirisException
      */
     public void createOrdreGroupeeAndPrepare(String idJournal, String idOrganeExecution, String numeroOG,
-            String dateEcheance, String typeOrdre, String natureOrdre) throws OsirisException;
+            String dateEcheance, String typeOrdre, String natureOrdre, String isoCsTypeAvis, String isoGestionnaire,
+            String isoHighPriority) throws OsirisException;
 
 }

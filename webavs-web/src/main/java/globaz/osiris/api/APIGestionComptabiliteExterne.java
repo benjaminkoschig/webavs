@@ -211,10 +211,14 @@ public interface APIGestionComptabiliteExterne {
      * @param dateEcheance
      * @param typeOrdre
      * @param natureOrdre
-     * @paran libelleOG
+     * @param libelleOG <br/>
+     *            {params si le traitement OG de l'OE est de type ISO20022}
+     * @param isoCsTypeAvis Cs du type d'avis ISO20022
+     * @param isoGestionnaire nom du gestionnaire pour le traitement 20022
+     * @param isoHighPriority (globaz boolean string [1-true/0-2 false])
      */
     public void preparerOrdreGroupe(String idOrganeExecution, String numeroOG, String dateEcheance, String typeOrdre,
-            String natureOrdre, String libelleOG);
+            String natureOrdre, String libelleOG, String isoCsTypeAvis, String isoGestionnaire, String isoHighPriority);
 
     /**
      * Insérez la description de la méthode ici. Date de création : (15.01.2002 13:41:01)

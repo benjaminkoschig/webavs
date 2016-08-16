@@ -137,3 +137,7 @@ ALTER TABLE SCHEMA.CAORGRP ADD ISONUMLIVR VARCHAR(35);
 
 reorg table SCHEMA.CAORGRP allow read access;
 
+--prop pour ISO/SEPA
+insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.nbmax.multiog','2');
+insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.nbmax.ovparog','99000');
+

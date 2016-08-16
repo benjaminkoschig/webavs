@@ -148,6 +148,9 @@ public class CAOrganeExecutionManager extends BManager implements Serializable {
     }
 
     /**
+     * warning, this is missnamed function, this take boolean to know if must select only OE with specified
+     * TypeTraitement or all
+     * 
      * @param forIdTypeTraitementOG the forIdTypeTraitementOG to set
      */
     public void setForIdTypeTraitementOG(boolean forIdTypeTraitementOG) {
