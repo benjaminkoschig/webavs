@@ -273,7 +273,7 @@ public class IJListePrestationsLot extends FWIAbstractManagerDocumentList {
                     beneficiare.add(benef);
                     totalVentilations.add(new FWCurrency(entity.getMontantVentile()));
                 }// une cotisation
-                else if (JadeStringUtil.toDouble(entity.getMontantBrut()) != 0) {
+                else {
 
                     this.addMontant(entity.getGenreCotisation(), entity.getMontantCotisation(), totauxMap);
                     this.addMontant(entity.getGenreCotisation(), entity.getMontantCotisation(), finalTotauxMap,
