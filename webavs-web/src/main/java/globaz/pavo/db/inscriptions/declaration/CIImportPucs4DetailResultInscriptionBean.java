@@ -11,10 +11,27 @@ public class CIImportPucs4DetailResultInscriptionBean {
     private String moisFin = "";
     private String annee = "";
     private String genre = "";
-    private String revenu = "";
+    private String revenuAVS = "";
+    private String revenuCAF = "";
     private List<String> ciAdd = new ArrayList<String>();
     private List<String> errors = new ArrayList<String>();
     private List<String> infos = new ArrayList<String>();
+
+    public String getRevenuAVS() {
+        return revenuAVS;
+    }
+
+    public void setRevenuAVS(String revenuAVS) {
+        this.revenuAVS = revenuAVS;
+    }
+
+    public String getRevenuCAF() {
+        return revenuCAF;
+    }
+
+    public void setRevenuCAF(String revenuCAF) {
+        this.revenuCAF = revenuCAF;
+    }
 
     public String getAnnee() {
         return annee;
@@ -62,14 +79,6 @@ public class CIImportPucs4DetailResultInscriptionBean {
 
     public void setGenre(String genre) {
         this.genre = genre;
-    }
-
-    public String getRevenu() {
-        return revenu;
-    }
-
-    public void setRevenu(String revenu) {
-        this.revenu = revenu;
     }
 
     public List<String> getCiAdd() {

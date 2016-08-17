@@ -144,12 +144,8 @@ public class PUCS4SalaryConverter {
         }
 
         Long numberOfFAKCAFSalaryTags = salaryCounters.getNumberOfFAKCAFSalaryTags();
-        if (numberOfFAKCAFSalaryTags != null) {
-            // FIXME on fait quoi dans ce cas là?
-            if (foundNbSalaire) {
-                throw new IllegalStateException(
-                        "nbSalaire has already been defined. This version of document is not supported (must define at max. 1 node with a number of salaries)");
-            }
+        if (!foundNbSalaire && numberOfFAKCAFSalaryTags != null) {
+
             result.setNbSalaire(numberOfFAKCAFSalaryTags.intValue());
         }
 
@@ -162,7 +158,12 @@ public class PUCS4SalaryConverter {
         result.setAdresse(adresse);
 
         ContactPersonType contact = salaryDeclaration.getGeneralSalaryDeclarationDescription().getContactPerson();
-        result.setContact(new Contact(contact.getName(), contact.getPhoneNumber(), contact.getEmailAddress()));
+
+        if (contact != null) {
+            result.setContact(new Contact(contact.getName(), contact.getPhoneNumber(), contact.getEmailAddress()));
+        } else {
+            result.setContact(new Contact("", "", ""));
+        }
 
         checkAllPlausi(result);
 

@@ -7,6 +7,7 @@ import java.util.Map;
 public class CIImportPucs4DetailResultBean {
 
     private String numeroAffilie = "";
+    private boolean isAFSeul = false;
     private String designationAffilie = "";
     private Map<String, List<CIImportPucs4DetailResultInscriptionBean>> mapAnneeListInscriptions = new HashMap<String, List<CIImportPucs4DetailResultInscriptionBean>>();
     private Map<String, CIImportPucs4ResumeBean> mapAnneeResume = new HashMap<String, CIImportPucs4ResumeBean>();
@@ -42,6 +43,14 @@ public class CIImportPucs4DetailResultBean {
     public void setMapAnneeListInscriptions(
             Map<String, List<CIImportPucs4DetailResultInscriptionBean>> mapAnneeListInscriptions) {
         this.mapAnneeListInscriptions = mapAnneeListInscriptions;
+    }
+
+    public boolean isAFSeul() {
+        return isAFSeul;
+    }
+
+    public void setAFSeul(boolean isAFSeul) {
+        this.isAFSeul = isAFSeul;
     }
 
 }

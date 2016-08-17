@@ -15,6 +15,7 @@ import globaz.globall.db.FWFindParameter;
 import globaz.globall.db.FWFindParameterManager;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.parameters.FWParametersSystemCodeManager;
+import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -523,6 +524,12 @@ public class DSInscriptionsIndividuelles extends BEntity {
         }
         try {
             parsePeriode();
+
+            if (Integer.parseInt(jourFin) > Integer.parseInt(determineJourFin())) {
+
+                _addError(statement.getTransaction(), getSession().getLabel("PERIODE_INVALIDE"));
+            }
+
         } catch (Exception e) {
             _addError(statement.getTransaction(), getSession().getLabel("PERIODE_INVALIDE"));
         }
@@ -881,6 +888,15 @@ public class DSInscriptionsIndividuelles extends BEntity {
                 || moisFin.trim().equals("12")) {
             return "31";
         } else if (moisFin.trim().equals("02")) {
+
+            try {
+                if (new JACalendarGregorian().isLeapYear(Integer.parseInt(getAnneeInsc()))) {
+                    return "29";
+                }
+            } catch (Exception e) {
+                return "28";
+            }
+
             return "28";
         } else {
             return "30";

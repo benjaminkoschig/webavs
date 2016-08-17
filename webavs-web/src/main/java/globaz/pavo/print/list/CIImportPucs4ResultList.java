@@ -14,6 +14,8 @@ import org.apache.poi.hssf.util.Region;
 
 public class CIImportPucs4ResultList extends COAbstractListExcel {
 
+    private static final String NUMERO_INFOROM = "0319CCI";
+
     private CIImportPucs4DetailResultBean detailResultBean;
     private HSSFFont fontRed;
     private HSSFCellStyle styleRedAlignLeft;
@@ -26,7 +28,7 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
 
     @Override
     public String getNumeroInforom() {
-        return "TODO";
+        return CIImportPucs4ResultList.NUMERO_INFOROM;
     }
 
     public void createResultList() {
@@ -38,6 +40,10 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
                     + detailResultBean.getNumeroAffilie() + "_" + entryAnneeListInscriptions.getKey();
             String sheetTitle = getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_SHEET_TITLE") + " : "
                     + detailResultBean.getNumeroAffilie() + " - " + entryAnneeListInscriptions.getKey();
+            if (detailResultBean.isAFSeul()) {
+                sheetTitle = sheetTitle + " (" + getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_AF_SEUL")
+                        + ")";
+            }
             createSheetDetail(sheetName, sheetTitle, entryAnneeListInscriptions.getValue());
         }
 
@@ -57,7 +63,7 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
         createSheet(sheetName);
         initPage(false);
         createHeader();
-        createFooter("TODO");
+        createFooter(CIImportPucs4ResultList.NUMERO_INFOROM);
 
         int numCol = 0;
         currentSheet.setColumnWidth((short) numCol++, (short) 5000);
@@ -66,8 +72,10 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
         currentSheet.setColumnWidth((short) numCol++, (short) 5000);
         currentSheet.setColumnWidth((short) numCol++, (short) 5000);
         currentSheet.setColumnWidth((short) numCol++, (short) 5000);
+        currentSheet.setColumnWidth((short) numCol++, (short) 5000);
 
         createRow();
+        createCell(CIImportPucs4ResultList.NUMERO_INFOROM, getStyleListCenter());
         createRow();
         currentSheet.addMergedRegion(new Region(1, (short) 0, 1, (short) 1));
         createCell(sheetTitle, getStyleListTitleLeft());
@@ -80,7 +88,8 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
                 + getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_MM"));
         colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_ANNEE"));
         colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_CC"));
-        colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_REVENU"));
+        colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_REVENU_AVS"));
+        colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_REVENU_CAF"));
 
         initTitleRow(colTitles);
 
@@ -149,7 +158,8 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
             createCell(aDetailResultInscriptionBean.getMoisDebut() + "-" + aDetailResultInscriptionBean.getMoisFin());
             createCell(aDetailResultInscriptionBean.getAnnee());
             createCell(aDetailResultInscriptionBean.getGenre());
-            createCell(aDetailResultInscriptionBean.getRevenu());
+            createCell(aDetailResultInscriptionBean.getRevenuAVS());
+            createCell(aDetailResultInscriptionBean.getRevenuCAF());
 
             for (String aErreur : aDetailResultInscriptionBean.getErrors()) {
                 createRow();
