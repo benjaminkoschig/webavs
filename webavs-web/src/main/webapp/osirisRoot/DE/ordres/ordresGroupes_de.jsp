@@ -234,24 +234,24 @@ function changeAffichageISO20022(cs) {
             </TD>
           </TR>
            <TR class="classIso">
-            <TD width="153">[de]Num&eacute;ro de livraison</TD>
+            <TD width="153">Lieferungsnummer</TD>
             <TD width="10"></TD>
             <TD nowrap width="289">
               <input type="text" name="isoNumLivraison" value="<%=viewBean.getIsoNumLivraison()%>" size="35" maxlength="35" class="inputDisabled" readonly>
             </TD>
-            <TD width="123">[de]Gestionnaire</TD>
+            <TD width="123">Sachbearbeiter</TD>
             <TD width="139">
               <input type="text" name="isoGestionnaire" value="<%=viewBean.getIsoGestionnaire()%>" maxlength="25">
             </TD>
           </TR>
           <TR class="classIso">
-            <TD width="153">[de]Priorit&eacute; d'ex&eacute;cution</TD>
+            <TD width="153">Ausführungspriorität</TD>
             <TD width="10"></TD>
             <TD nowrap width="289">
               <select id="isoHighPriority" name="isoHighPriority">
                <%			
 				if ("1".equalsIgnoreCase(viewBean.getIsoHighPriority())){
-%>
+				%>
 				<OPTION value="0">normale</OPTION>
                 <OPTION selected value="1">haute</OPTION>
                 <%	} else { %>
@@ -260,19 +260,19 @@ function changeAffichageISO20022(cs) {
                 <%}%>
               </select>
             </TD>
-            <TD width="123">[de]Type d'avis</TD>
+            <TD width="123">Meldungstyp</TD>
             <TD width="139">
 				<ct:FWCodeSelectTag name="isoCsTypeAvis" defaut="<%=viewBean.getIsoCsTypeAvis()%>" codeType="OSIOGTYA" />
             </TD>
           </TR>
           <TR class="classIso">
-            <TD width="153">[de]Statut d'ex&eacute;cution de l'ordre</TD>
+            <TD width="153">Ausführungsstatus des Auftrags</TD>
             <TD width="10"></TD>
             <TD nowrap width="289">
             	
              <input type="text" name="hrIsoCsOrdreStatutExec" value="<%=viewBean.getHRIsoCsOrdreStatutExec()%>" class="inputDisabled" readonly>
             </TD>
-            <TD width="123">[de]Statut d'ex&eacute;cution de la transaction</TD>
+            <TD width="123">Ausführungsstatus der Transaktion</TD>
             <TD width="139">
              <input type="text" name="htIsoCsTransmissionStatutExec" value="<%=viewBean.getHRIsoCsTransmissionStatutExec()%>" class="inputDisabled" readonly>
             </TD>
