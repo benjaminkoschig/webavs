@@ -57,19 +57,19 @@ insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (10200060,'I
 
 
 insert into schema.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (260001,'OSIOGSET',1,1,0,0,'aucune',2, 2,2,2,2,2,10200060,0,'20160727120000globaz');
-insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (260001,'D','','[de]aucune','20160727120000globaz');
+insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (260001,'D','','keine','20160727120000globaz');
 insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (260001,'F','','aucune','20160727120000globaz');
 
 insert into schema.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (260002,'OSIOGSET',2,1,0,0,'complet',2, 2,2,2,2,2,10200060,0,'20160727120000globaz');
-insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (260002,'D','','[de]complet','20160727120000globaz');
+insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (260002,'D','','vollständig','20160727120000globaz');
 insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (260002,'F','','complet','20160727120000globaz');
 
 insert into schema.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (260003,'OSIOGSET',3,1,0,0,'partiel',2, 2,2,2,2,2,10200060,0,'20160727120000globaz');
-insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (260003,'D','','[de]partiel','20160727120000globaz');
+insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (260003,'D','','teilweise','20160727120000globaz');
 insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (260003,'F','','partiel','20160727120000globaz');
 
 insert into schema.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (260004,'OSIOGSET',4,1,0,0,'rejeté',2, 2,2,2,2,2,10200060,0,'20160727120000globaz');
-insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (260004,'D','','[de]rejeté','20160727120000globaz');
+insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (260004,'D','','abgelehnt','20160727120000globaz');
 insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (260004,'F','','rejeté','20160727120000globaz');
 
 
@@ -86,19 +86,19 @@ insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (10200061,'I
 
 
 insert into schema.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (261001,'OSIOGTYA',1,1,0,0,'aucun',2, 2,2,2,2,2,10200061,0,'20160727120000globaz');
-insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (261001,'D','','[de]aucun','20160727120000globaz');
+insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (261001,'D','','kein','20160727120000globaz');
 insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (261001,'F','','aucun','20160727120000globaz');
 
 insert into schema.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (261002,'OSIOGTYA',2,1,0,0,'detaillé',2, 2,2,2,2,2,10200061,0,'20160727120000globaz');
-insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (261002,'D','','[de]detaillé','20160727120000globaz');
+insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (261002,'D','','detailliert','20160727120000globaz');
 insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (261002,'F','','detaillé','20160727120000globaz');
 
 insert into schema.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (261003,'OSIOGTYA',3,1,0,0,'collectif sans detail',2, 2,2,2,2,2,10200061,0,'20160727120000globaz');
-insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (261003,'D','','[de]collectif sans detail','20160727120000globaz');
+insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (261003,'D','','kollektiv ohne Detail','20160727120000globaz');
 insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (261003,'F','','collectif sans detail','20160727120000globaz');
 
 insert into schema.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (261004,'OSIOGTYA',4,1,0,0,'collectif avec detail',2, 2,2,2,2,2,10200061,0,'20160727120000globaz');
-insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (261004,'D','','[de]collectif avec detail','20160727120000globaz');
+insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (261004,'D','','kollektiv mit Detail','20160727120000globaz');
 insert into schema.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (261004,'F','','collectif avec detail','20160727120000globaz');
 
 
