@@ -1269,9 +1269,6 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
                         // TODO c'est quoi le switch qui fait passer en ftp ou en mail?
                         SepaSendOrderProcessor sendProcessor = new SepaSendOrderProcessor();
-
-                        // getDefaultFilename()
-
                         InputStream is = null;
 
                         try {
