@@ -223,8 +223,53 @@ public class CIDeclaration extends BProcess {
     protected void _executeCleanUp() {
     }
 
+    private boolean isFilePUCS4() {
+        return true;
+
+    }
+
+    private boolean executeImportPucs4Process() throws Exception {
+
+        CIImportPucs4Process importPucs4Process = new CIImportPucs4Process();
+        importPucs4Process.setSession(getSession());
+        importPucs4Process.setEMailAddress(getEMailAddress());
+
+        if (!isBatch.booleanValue()) {
+            importPucs4Process.setFilename(Jade.getInstance().getHomeDir() + "work/" + getFilename());
+        } else {
+            importPucs4Process.setFilename(getFilename());
+        }
+
+        importPucs4Process.setSimulation(getSimulation());
+        importPucs4Process.setProvenance(getProvenance());
+        importPucs4Process.setAccepteAnneeEnCours(getAccepteAnneeEnCours());
+        importPucs4Process.setAccepteEcrituresNegatives(getAccepteEcrituresNegatives());
+        importPucs4Process.setAccepteLienDraco(getAccepteLienDraco());
+        importPucs4Process.setLauncherImportPucsFileProcess(getLauncherImportPucsFileProcess());
+        importPucs4Process.setTotalControle(getTotalControle());
+        importPucs4Process.setNombreInscriptions(getNombreInscriptions());
+        importPucs4Process.setNumAffilieBase(getNumAffilieBase());
+        importPucs4Process.setType(getType());
+        importPucs4Process.setIdsPucsFile(getIdsPucsFile());
+
+        CIImportPucs4Process.initEbusinessAccessInstance(ebusinessAccessInstance);
+
+        importPucs4Process.executeProcess();
+
+        hasDifferenceAc = importPucs4Process.hasDifferenceAc();
+        declaration = importPucs4Process.getDeclaration();
+        setNumAffilieBase(importPucs4Process.getNumAffilieBase());
+
+        setSendCompletionMail(false);
+        setSendMailOnError(false);
+
+        return true;
+
+    }
+
     @Override
     protected boolean _executeProcess() throws Exception {
+
         CIJournal journalCotPersRetro = null;
         CIJournal journalCotPersAnneeEnCours = null;
 
@@ -249,6 +294,15 @@ public class CIDeclaration extends BProcess {
                 getMemoryLog().logMessage(getSession().getLabel("DT_MODE_SIMULATION"), FWMessage.INFORMATION, titreLog);
             }
             try {
+
+                CIApplication app = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
+                        CIApplication.DEFAULT_APPLICATION_PAVO);
+
+                if ("true".equalsIgnoreCase(app.getPropertyActiverParsingPUCS4())
+                        && CIDeclaration.CS_PUCS_II.equalsIgnoreCase(getType()) && isFilePUCS4()) {
+                    return executeImportPucs4Process();
+                }
+
                 String forNumeroAffilieSansPoint = CIUtil.UnFormatNumeroAffilie(getSession(), getForNumeroAffilie());
                 ICIDeclarationIterator itDec = null;
                 if (CIDeclaration.CS_PUCS.equals(Type) || CIDeclaration.CS_PUCS_II.equals(Type)
@@ -308,13 +362,14 @@ public class CIDeclaration extends BProcess {
                     ArrayList<String> info = new ArrayList<String>();
                     ArrayList<String> ciAdd = new ArrayList<String>();
 
-                    CIApplication app = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                            CIApplication.DEFAULT_APPLICATION_PAVO);
                     affilie = app.getAffilieByNo(getSession(),
                             CIUtil.formatNumeroAffilie(getSession(), rec.getNumeroAffilie()), true, false, "", "",
                             rec.getAnnee(), "", "");
                     if (rec.getCategorieAffilie().equalsIgnoreCase("AF")) {
-                        launcherImportPucsFileProcess.setTraitementAFSeul(true);
+                        if (launcherImportPucsFileProcess != null) {
+                            launcherImportPucsFileProcess.setTraitementAFSeul(true);
+                        }
+
                         traitementAFSeul = true;
                         if (affilie != null) {
                             // Cumul par canton
@@ -327,10 +382,13 @@ public class CIDeclaration extends BProcess {
                                 totalParCanton.put(rec.getCodeCanton(), rec.getMontantAf());
                             }
                         } else {
-                            launcherImportPucsFileProcess.getMemoryLog().logMessage(
-                                    getSession().getLabel("MSG_AFFILIE_NON_VALIDE") + " - Affilié  "
-                                            + rec.getNumeroAffilie() + " - Année " + rec.getAnnee(), FWMessage.ERREUR,
-                                    "");
+                            if (launcherImportPucsFileProcess != null) {
+                                launcherImportPucsFileProcess.getMemoryLog().logMessage(
+                                        getSession().getLabel("MSG_AFFILIE_NON_VALIDE") + " - Affilié  "
+                                                + rec.getNumeroAffilie() + " - Année " + rec.getAnnee(),
+                                        FWMessage.ERREUR, "");
+                            }
+
                         }
                     }
                     if (CIDeclaration.CS_PUCS_II.equals(Type) || CIDeclaration.CS_PUCS_CCJU.equals(Type)) {
