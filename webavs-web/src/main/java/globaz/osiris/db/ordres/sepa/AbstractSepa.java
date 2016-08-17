@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-abstract class AbstractSepa {
+public abstract class AbstractSepa {
     public static /* final */ class SepaException extends RuntimeException {
         private static final long serialVersionUID = 1L;
 
