@@ -1,5 +1,36 @@
 package globaz.pavo.process;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.lang.StringUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import com.google.common.base.Splitter;
+import ch.globaz.common.domaine.Montant;
+import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
+import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.globaz.orion.business.domaine.pucs.Employee;
+import ch.globaz.orion.business.domaine.pucs.PeriodeSalary;
+import ch.globaz.orion.business.domaine.pucs.SalaryAvs;
+import ch.globaz.orion.business.domaine.pucs.SalaryCaf;
+import ch.swissdec.schema.sd._20130514.salarydeclarationconsumercontainer.DeclareSalaryConsumerType;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.commons.nss.NSUtil;
 import globaz.draco.db.declaration.DSDeclarationListViewBean;
@@ -53,36 +84,6 @@ import globaz.pavo.print.list.CIImportPucs4ResultList;
 import globaz.pavo.service.ebusiness.CIEbusinessAccessInterface;
 import globaz.pavo.util.CIUtil;
 import globaz.webavs.common.CommonExcelmlContainer;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import ch.globaz.common.domaine.Montant;
-import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
-import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
-import ch.globaz.orion.business.domaine.pucs.Employee;
-import ch.globaz.orion.business.domaine.pucs.PeriodeSalary;
-import ch.globaz.orion.business.domaine.pucs.SalaryAvs;
-import ch.globaz.orion.business.domaine.pucs.SalaryCaf;
-import ch.swissdec.schema.sd._20130514.salarydeclarationconsumercontainer.DeclareSalaryConsumerType;
-import com.google.common.base.Splitter;
 
 /**
  * @author MMO 25.07.2016
@@ -169,6 +170,8 @@ public class CIImportPucs4Process extends BProcess {
     private static final String VALUE_TO_SET_IN_RESUME_BEAN_MONTANT_INSCRIPTION_NEGATIVE = "MONTANT_INSCRIPTION_NEGATIVE";
     private static final String VALUE_TO_SET_IN_RESUME_BEAN_MONTANT_INSCRIPTION_TRAITE = "MONTANT_INSCRIPTION_TRAITE";
 
+    private static final String PUCS4_NAMESPACE = "http://www.swissdec.ch/schema/sd/20130514/SalaryDeclaration";
+
     private TreeMap<String, Object> hMontantInscriptionsCI = new TreeMap<String, Object>();
     private TreeMap<String, Object> hMontantInscriptionsErreur = new TreeMap<String, Object>();
     private TreeMap<String, Object> hMontantInscriptionsNegatives = new TreeMap<String, Object>();
@@ -190,8 +193,8 @@ public class CIImportPucs4Process extends BProcess {
     // null.
     private final TreeMap<String, Object> tableJournaux = new TreeMap<String, Object>();
 
-    protected Element getSoapBodyPayloadElement(String filePath) throws SAXException, IOException,
-            ParserConfigurationException {
+    protected Element getSoapBodyPayloadElement(String filePath)
+            throws SAXException, IOException, ParserConfigurationException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
 
@@ -254,9 +257,9 @@ public class CIImportPucs4Process extends BProcess {
             theContainerRapportExcelmlImportedPucsFile.put("COL_NOM_AFFILIE", declarationDraco.getDesignation1());
             // info si swissDec
             if (DSDeclarationViewBean.PROVENANCE_SWISSDEC.equalsIgnoreCase(getProvenance())) {
-                theContainerRapportExcelmlImportedPucsFile.put("COL_INFO_AFFILIE_TRANSMIS", declarationSalaire.getNom()
-                        + "\n" + declarationSalaire.getAdresseStreet() + "\n" + declarationSalaire.getAdresseZipCode()
-                        + " " + declarationSalaire.getAdresseCity());
+                theContainerRapportExcelmlImportedPucsFile.put("COL_INFO_AFFILIE_TRANSMIS",
+                        declarationSalaire.getNom() + "\n" + declarationSalaire.getAdresseStreet() + "\n"
+                                + declarationSalaire.getAdresseZipCode() + " " + declarationSalaire.getAdresseCity());
                 theContainerRapportExcelmlImportedPucsFile.put("COL_INFO_CONTACT_TRANSMIS",
                         declarationSalaire.getContactName() + "\n" + declarationSalaire.getContactMail() + "\n"
                                 + declarationSalaire.getContactPhone());
@@ -326,18 +329,18 @@ public class CIImportPucs4Process extends BProcess {
         }
     }
 
-    private DeclareSalaryConsumerType unmarshallDeclareSalaryConsumerTypeFromSoapBody(String path) throws SAXException,
-            IOException, ParserConfigurationException, JAXBException {
+    private DeclareSalaryConsumerType unmarshallDeclareSalaryConsumerTypeFromSoapBody(String path)
+            throws SAXException, IOException, ParserConfigurationException, JAXBException {
         Element element = getSoapBodyPayloadElement(path);
+
         JAXBContext jc = JAXBContext.newInstance(DeclareSalaryConsumerType.class);
         DeclareSalaryConsumerType value = jc.createUnmarshaller().unmarshal(element, DeclareSalaryConsumerType.class)
                 .getValue();
         return value;
     }
 
-    private void convertPucs4FileToDeclarationSalaire() throws SAXException, IOException, ParserConfigurationException,
-            JAXBException {
-
+    private void convertPucs4FileToDeclarationSalaire()
+            throws SAXException, IOException, ParserConfigurationException, JAXBException {
         DeclareSalaryConsumerType value = unmarshallDeclareSalaryConsumerTypeFromSoapBody(filename);
         PUCS4SalaryConverter salaryConverterPUCS4 = new PUCS4SalaryConverter();
 
@@ -633,11 +636,10 @@ public class CIImportPucs4Process extends BProcess {
 
             } else {
                 if (launcherImportPucsFileProcess != null) {
-                    launcherImportPucsFileProcess.getMemoryLog()
-                            .logMessage(
-                                    getSession().getLabel("MSG_AFFILIE_NON_VALIDE") + " - Affilié  "
-                                            + declarationSalaire.getNumeroAffilie() + " - Année " + annee,
-                                    FWMessage.ERREUR, "");
+                    launcherImportPucsFileProcess.getMemoryLog().logMessage(
+                            getSession().getLabel("MSG_AFFILIE_NON_VALIDE") + " - Affilié  "
+                                    + declarationSalaire.getNumeroAffilie() + " - Année " + annee,
+                            FWMessage.ERREUR, "");
                 }
 
             }
@@ -677,9 +679,8 @@ public class CIImportPucs4Process extends BProcess {
         if (journal == null && !declarationSalaire.isAfSeul()) {
 
             // Erreur, ce journal existe déjà avant ce traitement
-            hJournalExisteDeja.put(key,
-                    getSession().getLabel("DT_JOURNAL_NON_CREE") + " " + declarationSalaire.getNumeroAffilie() + "/"
-                            + annee);
+            hJournalExisteDeja.put(key, getSession().getLabel("DT_JOURNAL_NON_CREE") + " "
+                    + declarationSalaire.getNumeroAffilie() + "/" + annee);
         } else {
 
             ecriture.setAnnee(annee);
@@ -715,7 +716,7 @@ public class CIImportPucs4Process extends BProcess {
             /************************************************************
              * Modif. 03.05.2006 Plus de plausi sur le nom, car on insère plus la virgule
              * automatiquement
-             * */
+             */
             int anneeNaissance = determineAnneeNaissance(numeroAVS, ecriture);
 
             if (!JadeStringUtil.isBlankOrZero(montantAVS.getValue())
@@ -757,8 +758,8 @@ public class CIImportPucs4Process extends BProcess {
             if (declarationSalaire.isAfSeul()) {
                 breakTests = true;
             } else if ("true".equalsIgnoreCase(accepteEcrituresNegatives) && !montantPositif) {
-                if (CICompteIndividuel.CS_REGISTRE_PROVISOIRE.equals(ecriture.getCI(getTransaction(), false)
-                        .getRegistre())) {
+                if (CICompteIndividuel.CS_REGISTRE_PROVISOIRE
+                        .equals(ecriture.getCI(getTransaction(), false).getRegistre())) {
                     errors.add(getSession().getLabel("MSG_DT_INCONNU_ET_NEG"));
                 } else {
 
@@ -779,8 +780,8 @@ public class CIImportPucs4Process extends BProcess {
             }
 
             if (!breakTests && !JadeStringUtil.isBlankOrZero(montantAVS.getValue())) {
-                if (CICompteIndividuel.CS_REGISTRE_PROVISOIRE.equals(ecriture.getCI(getTransaction(), false)
-                        .getRegistre())) {
+                if (CICompteIndividuel.CS_REGISTRE_PROVISOIRE
+                        .equals(ecriture.getCI(getTransaction(), false).getRegistre())) {
                     // CI Provisoire
                     traitementSiRegistreProvisoire(annee, moisDebut, moisFin, ecriture, errors, info,
                             declarationSalaire.getNumeroAffilie(), noAvs);
@@ -790,7 +791,8 @@ public class CIImportPucs4Process extends BProcess {
                     ecrMgr.setSession(getSession());
                     ecrMgr.setForAnnee(annee);
                     ecrMgr.setForCompteIndividuelId(ecriture.getCI(getTransaction(), false).getCompteIndividuelId());
-                    ecrMgr.setForAffilie(CIUtil.formatNumeroAffilie(getSession(), declarationSalaire.getNumeroAffilie()));
+                    ecrMgr.setForAffilie(
+                            CIUtil.formatNumeroAffilie(getSession(), declarationSalaire.getNumeroAffilie()));
                     ecrMgr.find(getTransaction(), BManager.SIZE_NOLIMIT);
                     for (int i = 0; i < ecrMgr.size(); i++) {
                         CIEcriture ecr = (CIEcriture) ecrMgr.getEntity(i);
@@ -799,12 +801,11 @@ public class CIImportPucs4Process extends BProcess {
                             errors.add(getSession().getLabel("DT_INSCR_PROV"));
                             break;
                         }
-                        if ((ecr.getMoisDebut().equals(moisDebut + ""))
-                                && (ecr.getMoisFin().equals(moisFin + ""))
+                        if ((ecr.getMoisDebut().equals(moisDebut + "")) && (ecr.getMoisFin().equals(moisFin + ""))
                                 && ("01".equals(ecr.getGreFormat()) || "11".equals(ecr.getGreFormat())
                                         || "07".equals(ecr.getGreFormat()) || "17".equals(ecr.getGreFormat()))
-                                && ((ecr.getMontant().substring(0, ecr.getMontant().length() - 3)).equals(ecriture
-                                        .getMontant().substring(0, ecriture.getMontant().length() - 3)))) {
+                                && ((ecr.getMontant().substring(0, ecr.getMontant().length() - 3)).equals(
+                                        ecriture.getMontant().substring(0, ecriture.getMontant().length() - 3)))) {
 
                             if ((JadeStringUtil.isEmpty(ecriture.getExtourne()) && "0".equals(ecr.getExtourne()))
                                     || ecr.getExtourne().equals(ecriture.getExtourne())) {
@@ -1119,8 +1120,8 @@ public class CIImportPucs4Process extends BProcess {
                 insc.add(getTransaction());
                 getMemoryLog().logMessage(
                         "Le numéro : " + JAStringFormatter.formatAVS(ecrCI.getAvs())
-                                + " a été réaffecté à la déclaration", FWMessage.INFORMATION,
-                        "Pré-remplissage de la déclaration");
+                                + " a été réaffecté à la déclaration",
+                        FWMessage.INFORMATION, "Pré-remplissage de la déclaration");
                 if (!getTransaction().hasErrors()) {
                     declaration.retrieve(getTransaction());
                     declaration.setIdJournal(insc.donneIdJournal(getTransaction()));
@@ -1165,9 +1166,10 @@ public class CIImportPucs4Process extends BProcess {
             if (CodeSystem.ETATS_RELEVE_SAISIE.equalsIgnoreCase(releve.getEtat())
                     || CodeSystem.ETATS_RELEVE_FACTURER.equalsIgnoreCase(releve.getEtat())) {
 
-                _addError(getTransaction(), getSession().getLabel("AFSEUL_RELEVE_EXISTANT") + " - "
-                        + getSession().getLabel("DEC_AFFILIE") + " " + affilie.getAffilieNumero() + " - "
-                        + getSession().getLabel("DEC_ANNEE") + " " + annee);
+                _addError(getTransaction(),
+                        getSession().getLabel("AFSEUL_RELEVE_EXISTANT") + " - " + getSession().getLabel("DEC_AFFILIE")
+                                + " " + affilie.getAffilieNumero() + " - " + getSession().getLabel("DEC_ANNEE") + " "
+                                + annee);
                 totalErreur++;
                 break;
             }
@@ -1175,8 +1177,8 @@ public class CIImportPucs4Process extends BProcess {
         if (totalErreur == 0) {
             // Vérifier en compta s'il n'existe pas déjà un décompte => cas du traitement manuel
             if (CodeSystem.TYPE_RELEVE_DECOMP_FINAL_COMPTA.equalsIgnoreCase(typeReleve)) {
-                String role = (CaisseHelperFactory.getInstance().getRoleForAffilieParitaire(getSession()
-                        .getApplication()));
+                String role = (CaisseHelperFactory.getInstance()
+                        .getRoleForAffilieParitaire(getSession().getApplication()));
                 // Récupérer le compte annexe
                 CACompteAnnexe ca = new CACompteAnnexe();
                 ca.setISession(getSession());
@@ -1235,9 +1237,10 @@ public class CIImportPucs4Process extends BProcess {
                     String csCanton = CIUtil.codeUtilisateurToCodeSysteme(getTransaction(), mapKey, "PYCANTON",
                             getSession());
                     if (JadeStringUtil.isEmpty(csCanton)) {
-                        _addError(getTransaction(), getSession().getLabel("AFSEUL_CANTON_ERRONE") + " (" + mapKey + ")"
-                                + " - " + getSession().getLabel("DEC_AFFILIE") + " " + affilie.getAffilieNumero()
-                                + " - " + getSession().getLabel("DEC_ANNEE") + " " + annee);
+                        _addError(getTransaction(),
+                                getSession().getLabel("AFSEUL_CANTON_ERRONE") + " (" + mapKey + ")" + " - "
+                                        + getSession().getLabel("DEC_AFFILIE") + " " + affilie.getAffilieNumero()
+                                        + " - " + getSession().getLabel("DEC_ANNEE") + " " + annee);
                         return;
                     }
                     // Recherche coti AF pour le canton concerné
@@ -1282,8 +1285,8 @@ public class CIImportPucs4Process extends BProcess {
         //
         montant.setMasse(AFUtil.plafonneMasse(totalParCanton, releve.getType(), cotisation.getAssuranceId(),
                 releve.getDateDebut(), getSession(), ""));
-        float taux = Float.parseFloat(JANumberFormatter.deQuote(cotisation.getTaux(releve.getDateFin(),
-                montant.getMasse())));
+        float taux = Float
+                .parseFloat(JANumberFormatter.deQuote(cotisation.getTaux(releve.getDateFin(), montant.getMasse())));
         float cotiAnnuelleBrut = (Float.parseFloat(montant.getMasse()) * taux) / 100;
         cotiAnnuelleBrut = JANumberFormatter.round(cotiAnnuelleBrut, 0.05, 2, JANumberFormatter.NEAR);
 
@@ -1411,14 +1414,13 @@ public class CIImportPucs4Process extends BProcess {
                 ecrMgr.find(getTransaction(), BManager.SIZE_NOLIMIT);
                 for (int i = 0; i < ecrMgr.size(); i++) {
                     CIEcriture ecr = (CIEcriture) ecrMgr.getEntity(i);
-                    if ((ecr.getMoisDebut().equals(moisDebut + ""))
-                            && (ecr.getMoisFin().equals(moisFin + ""))
+                    if ((ecr.getMoisDebut().equals(moisDebut + "")) && (ecr.getMoisFin().equals(moisFin + ""))
                             && ("01".equals(ecr.getGreFormat()) || "11".equals(ecr.getGreFormat())
                                     || "07".equals(ecr.getGreFormat()) || "17".equals(ecr.getGreFormat()))
 
                             // && (ecr.getMontant().equals(ecriture.getMontant()))) {
-                            && ((ecr.getMontant().substring(0, ecr.getMontant().length() - 3)).equals(ecriture
-                                    .getMontant().substring(0, ecriture.getMontant().length() - 3)))) {
+                            && ((ecr.getMontant().substring(0, ecr.getMontant().length() - 3))
+                                    .equals(ecriture.getMontant().substring(0, ecriture.getMontant().length() - 3)))) {
 
                         if ((JadeStringUtil.isEmpty(ecriture.getExtourne()) && "0".equals(ecr.getExtourne()))
                                 || ecr.getExtourne().equals(ecriture.getExtourne())) {
@@ -1836,8 +1838,8 @@ public class CIImportPucs4Process extends BProcess {
                         DSInscriptionsIndividuellesListeViewBean declarationDraco = (DSInscriptionsIndividuellesListeViewBean) decMgr
                                 .getFirstEntity();
                         declarationDraco.calculeTotauxAcAf();
-                        String numAffilieNonFormate = CIUtil.UnFormatNumeroAffilie(getSession(), declarationDraco
-                                .getAffiliation().getAffilieNumero());
+                        String numAffilieNonFormate = CIUtil.UnFormatNumeroAffilie(getSession(),
+                                declarationDraco.getAffiliation().getAffilieNumero());
                         String keyDec = declarationDraco.getAnnee() + numAffilieNonFormate;
 
                         // Pour la FPV, il est possible que le n° d'affilié dans la DS soit sans les premiers 0
@@ -1894,8 +1896,7 @@ public class CIImportPucs4Process extends BProcess {
                                 // le calcul des masses doit envoyer un mail qu'en cas d'erreurs
                                 // le mode synchrone ne gère pas l'envoi de mails
                                 // c'est pourquoi l'envoi est fait manuellement dans ce process
-                                JadeSmtpClient.getInstance().sendMail(
-                                        theCalculMasseProcess.getEMailAddress(),
+                                JadeSmtpClient.getInstance().sendMail(theCalculMasseProcess.getEMailAddress(),
                                         declarationDraco.getNumeroAffilie() + " - " + declarationDraco.getAnnee()
                                                 + " - " + theCalculMasseProcess.getSubject(),
                                         theCalculMasseProcess.getSubjectDetail(), new String[0]);
@@ -1996,7 +1997,8 @@ public class CIImportPucs4Process extends BProcess {
 
     private void prepareDataForResumePartInResultList() {
 
-        prepareDataForResumePartInResultList(hMontantInscriptionsCI, VALUE_TO_SET_IN_RESUME_BEAN_MONTANT_INSCRIPTION_CI);
+        prepareDataForResumePartInResultList(hMontantInscriptionsCI,
+                VALUE_TO_SET_IN_RESUME_BEAN_MONTANT_INSCRIPTION_CI);
         prepareDataForResumePartInResultList(hMontantInscriptionsErreur,
                 VALUE_TO_SET_IN_RESUME_BEAN_MONTANT_INSCRIPTION_ERREUR);
         prepareDataForResumePartInResultList(hMontantInscriptionsSuspens,
@@ -2007,7 +2009,8 @@ public class CIImportPucs4Process extends BProcess {
                 VALUE_TO_SET_IN_RESUME_BEAN_MONTANT_INSCRIPTION_TRAITE);
 
         prepareDataForResumePartInResultList(hNbrInscriptionsCI, VALUE_TO_SET_IN_RESUME_BEAN_NBR_INSCRIPTION_CI);
-        prepareDataForResumePartInResultList(hNbrInscriptionsErreur, VALUE_TO_SET_IN_RESUME_BEAN_NBR_INSCRIPTION_ERREUR);
+        prepareDataForResumePartInResultList(hNbrInscriptionsErreur,
+                VALUE_TO_SET_IN_RESUME_BEAN_NBR_INSCRIPTION_ERREUR);
         prepareDataForResumePartInResultList(hNbrInscriptionsSuspens,
                 VALUE_TO_SET_IN_RESUME_BEAN_NBR_INSCRIPTION_SUSPENS);
         prepareDataForResumePartInResultList(hNbrInscriptionsNegatives,
@@ -2034,14 +2037,17 @@ public class CIImportPucs4Process extends BProcess {
 
             if (VALUE_TO_SET_IN_RESUME_BEAN_MONTANT_INSCRIPTION_CI.equalsIgnoreCase(valueToSetInResumeBean)) {
                 resumeBean.setMontantInscriptionsCI((FWCurrency) entry.getValue());
-            } else if (VALUE_TO_SET_IN_RESUME_BEAN_MONTANT_INSCRIPTION_ERREUR.equalsIgnoreCase(valueToSetInResumeBean)) {
+            } else if (VALUE_TO_SET_IN_RESUME_BEAN_MONTANT_INSCRIPTION_ERREUR
+                    .equalsIgnoreCase(valueToSetInResumeBean)) {
                 resumeBean.setMontantInscriptionsErreur((FWCurrency) entry.getValue());
-            } else if (VALUE_TO_SET_IN_RESUME_BEAN_MONTANT_INSCRIPTION_SUSPENS.equalsIgnoreCase(valueToSetInResumeBean)) {
+            } else if (VALUE_TO_SET_IN_RESUME_BEAN_MONTANT_INSCRIPTION_SUSPENS
+                    .equalsIgnoreCase(valueToSetInResumeBean)) {
                 resumeBean.setMontantInscriptionsSuspens((FWCurrency) entry.getValue());
             } else if (VALUE_TO_SET_IN_RESUME_BEAN_MONTANT_INSCRIPTION_NEGATIVE
                     .equalsIgnoreCase(valueToSetInResumeBean)) {
                 resumeBean.setMontantInscriptionsNegatives((FWCurrency) entry.getValue());
-            } else if (VALUE_TO_SET_IN_RESUME_BEAN_MONTANT_INSCRIPTION_TRAITE.equalsIgnoreCase(valueToSetInResumeBean)) {
+            } else if (VALUE_TO_SET_IN_RESUME_BEAN_MONTANT_INSCRIPTION_TRAITE
+                    .equalsIgnoreCase(valueToSetInResumeBean)) {
                 resumeBean.setMontantInscriptionsTraites((FWCurrency) entry.getValue());
             }
 
@@ -2098,7 +2104,14 @@ public class CIImportPucs4Process extends BProcess {
 
         try {
             initProcess();
-            convertPucs4FileToDeclarationSalaire();
+
+            Element element = getSoapBodyPayloadElement(filename);
+
+            // TODO MMO check this
+            if (StringUtils.equals(element.getNamespaceURI(), PUCS4_NAMESPACE)) {
+                convertPucs4FileToDeclarationSalaire();
+            }
+
             initResultBean();
 
             for (Employee employe : declarationSalaire.getEmployees()) {
