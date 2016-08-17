@@ -16,7 +16,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -169,8 +168,6 @@ public class CIImportPucs4Process extends BProcess {
     private static final String VALUE_TO_SET_IN_RESUME_BEAN_MONTANT_INSCRIPTION_SUSPENS = "MONTANT_INSCRIPTION_SUSPENS";
     private static final String VALUE_TO_SET_IN_RESUME_BEAN_MONTANT_INSCRIPTION_NEGATIVE = "MONTANT_INSCRIPTION_NEGATIVE";
     private static final String VALUE_TO_SET_IN_RESUME_BEAN_MONTANT_INSCRIPTION_TRAITE = "MONTANT_INSCRIPTION_TRAITE";
-
-    private static final String PUCS4_NAMESPACE = "http://www.swissdec.ch/schema/sd/20130514/SalaryDeclaration";
 
     private TreeMap<String, Object> hMontantInscriptionsCI = new TreeMap<String, Object>();
     private TreeMap<String, Object> hMontantInscriptionsErreur = new TreeMap<String, Object>();
@@ -2104,13 +2101,7 @@ public class CIImportPucs4Process extends BProcess {
 
         try {
             initProcess();
-
-            Element element = getSoapBodyPayloadElement(filename);
-
-            // TODO MMO check this
-            if (StringUtils.equals(element.getNamespaceURI(), PUCS4_NAMESPACE)) {
-                convertPucs4FileToDeclarationSalaire();
-            }
+            convertPucs4FileToDeclarationSalaire();
 
             initResultBean();
 
