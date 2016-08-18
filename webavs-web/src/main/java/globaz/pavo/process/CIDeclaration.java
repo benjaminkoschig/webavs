@@ -62,6 +62,7 @@ import globaz.pavo.db.inscriptions.declaration.ICIDeclarationOutput;
 import globaz.pavo.service.ebusiness.CIEbusinessAccessInterface;
 import globaz.pavo.util.CIUtil;
 import globaz.webavs.common.CommonExcelmlContainer;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -72,10 +73,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.lang.StringUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.swissdec.schema.sd._20130514.salarydeclarationconsumercontainer.DeclareSalaryConsumerType;
 import com.google.common.base.Splitter;
 
 public class CIDeclaration extends BProcess {
+
+    private static final String PUCS4_NAMESPACE = "http://www.swissdec.ch/schema/sd/20130514";
+
     private static final long serialVersionUID = 8208343321214530414L;
     public static String CS_AC = "327003";
     public static String CS_AMI = "327002";
@@ -224,7 +240,72 @@ public class CIDeclaration extends BProcess {
     }
 
     private boolean isFilePUCS4() {
-        return true;
+
+        try {
+
+            Element element = getSoapBodyPayloadElement(resolveFileName());
+
+            return StringUtils.startsWith(element.getNamespaceURI(), PUCS4_NAMESPACE);
+
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
+
+    protected Element getSoapBodyPayloadElement(String filePath) throws SAXException, IOException,
+            ParserConfigurationException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = new FileInputStream(filePath);
+            Document doc = dbf.newDocumentBuilder().parse(fileInputStream);
+
+            NodeList nodes = doc.getElementsByTagNameNS("http://schemas.xmlsoap.org/soap/envelope/", "Body");
+            nodes = nodes.item(0).getChildNodes();
+
+            for (int i = 0; i < nodes.getLength(); i++) {
+                if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                    return (Element) nodes.item(i);
+                }
+            }
+        } finally {
+            if (fileInputStream != null) {
+                fileInputStream.close();
+            }
+
+        }
+
+        return null;
+    }
+
+    private DeclareSalaryConsumerType unmarshallDeclareSalaryConsumerTypeFromSoapBody(String path) throws SAXException,
+            IOException, ParserConfigurationException, JAXBException {
+        Element element = getSoapBodyPayloadElement(path);
+        JAXBContext jc = JAXBContext.newInstance(DeclareSalaryConsumerType.class);
+        DeclareSalaryConsumerType value = jc.createUnmarshaller().unmarshal(element, DeclareSalaryConsumerType.class)
+                .getValue();
+        return value;
+    }
+
+    private DeclarationSalaire convertPucs4FileToDeclarationSalaire() throws SAXException, IOException,
+            ParserConfigurationException, JAXBException {
+
+        DeclareSalaryConsumerType value = unmarshallDeclareSalaryConsumerTypeFromSoapBody(resolveFileName());
+        PUCS4SalaryConverter salaryConverterPUCS4 = new PUCS4SalaryConverter();
+
+        return salaryConverterPUCS4.convert(value);
+
+    }
+
+    private String resolveFileName() {
+
+        if (!isBatch) {
+            return Jade.getInstance().getHomeDir() + "work/" + getFilename();
+        }
+        return getFilename();
 
     }
 
@@ -233,12 +314,9 @@ public class CIDeclaration extends BProcess {
         CIImportPucs4Process importPucs4Process = new CIImportPucs4Process();
         importPucs4Process.setSession(getSession());
         importPucs4Process.setEMailAddress(getEMailAddress());
+        importPucs4Process.setDeclarationSalaire(convertPucs4FileToDeclarationSalaire());
 
-        if (!isBatch.booleanValue()) {
-            importPucs4Process.setFilename(Jade.getInstance().getHomeDir() + "work/" + getFilename());
-        } else {
-            importPucs4Process.setFilename(getFilename());
-        }
+        importPucs4Process.setFilename(resolveFileName());
 
         importPucs4Process.setSimulation(getSimulation());
         importPucs4Process.setProvenance(getProvenance());
@@ -262,6 +340,11 @@ public class CIDeclaration extends BProcess {
 
         setSendCompletionMail(false);
         setSendMailOnError(false);
+
+        if (isAborted()) {
+            return executeAnnulationTraitement(JadeStringUtil.isBlankOrZero(getSimulation()),
+                    importPucs4Process.getTableJournaux());
+        }
 
         return true;
 
@@ -1541,8 +1624,14 @@ public class CIDeclaration extends BProcess {
     }
 
     private boolean executeAnnulationTraitement(boolean modeInscription) throws Exception {
+        return executeAnnulationTraitement(modeInscription, tableJournaux);
+    }
+
+    private boolean executeAnnulationTraitement(boolean modeInscription, TreeMap<String, Object> mapJournaux)
+            throws Exception {
+
         if (modeInscription) {
-            Iterator<Object> jourIt = tableJournaux.values().iterator();
+            Iterator<Object> jourIt = mapJournaux.values().iterator();
 
             while (jourIt.hasNext()) {
                 if (!"true".equalsIgnoreCase(accepteLienDraco)) {

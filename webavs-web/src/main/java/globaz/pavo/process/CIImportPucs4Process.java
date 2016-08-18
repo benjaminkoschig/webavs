@@ -54,7 +54,6 @@ import globaz.pavo.print.list.CIImportPucs4ResultList;
 import globaz.pavo.service.ebusiness.CIEbusinessAccessInterface;
 import globaz.pavo.util.CIUtil;
 import globaz.webavs.common.CommonExcelmlContainer;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -66,15 +65,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
@@ -82,7 +72,6 @@ import ch.globaz.orion.business.domaine.pucs.Employee;
 import ch.globaz.orion.business.domaine.pucs.PeriodeSalary;
 import ch.globaz.orion.business.domaine.pucs.SalaryAvs;
 import ch.globaz.orion.business.domaine.pucs.SalaryCaf;
-import ch.swissdec.schema.sd._20130514.salarydeclarationconsumercontainer.DeclareSalaryConsumerType;
 import com.google.common.base.Splitter;
 
 /**
@@ -95,6 +84,19 @@ public class CIImportPucs4Process extends BProcess {
 
     CIImportPucs4DetailResultBean detailResultBean;
     private CIImportPucsFileProcess launcherImportPucsFileProcess = null;
+
+    public TreeMap<String, Object> getTableJournaux() {
+        return tableJournaux;
+    }
+
+    public DeclarationSalaire getDeclarationSalaire() {
+        return declarationSalaire;
+    }
+
+    public void setDeclarationSalaire(DeclarationSalaire declarationSalaire) {
+        this.declarationSalaire = declarationSalaire;
+    }
+
     private DeclarationSalaire declarationSalaire;
     private CIApplication appCI;
 
@@ -189,34 +191,6 @@ public class CIImportPucs4Process extends BProcess {
     // si le journal existait déjà avant le traitement, la clé est quand même mise dans cette table et la valeur sera
     // null.
     private final TreeMap<String, Object> tableJournaux = new TreeMap<String, Object>();
-
-    protected Element getSoapBodyPayloadElement(String filePath) throws SAXException, IOException,
-            ParserConfigurationException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-
-        FileInputStream fileInputStream = null;
-        try {
-            fileInputStream = new FileInputStream(filePath);
-            Document doc = dbf.newDocumentBuilder().parse(fileInputStream);
-
-            NodeList nodes = doc.getElementsByTagNameNS("http://schemas.xmlsoap.org/soap/envelope/", "Body");
-            nodes = nodes.item(0).getChildNodes();
-
-            for (int i = 0; i < nodes.getLength(); i++) {
-                if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                    return (Element) nodes.item(i);
-                }
-            }
-        } finally {
-            if (fileInputStream != null) {
-                fileInputStream.close();
-            }
-
-        }
-
-        return null;
-    }
 
     public String getNombreInscriptions() {
         return nombreInscriptions;
@@ -324,25 +298,6 @@ public class CIImportPucs4Process extends BProcess {
                 launcherImportPucsFileProcess.setImportStatutAFile(CIImportPucsFileProcess.IMPORT_STATUT_KO);
             }
         }
-    }
-
-    private DeclareSalaryConsumerType unmarshallDeclareSalaryConsumerTypeFromSoapBody(String path) throws SAXException,
-            IOException, ParserConfigurationException, JAXBException {
-        Element element = getSoapBodyPayloadElement(path);
-        JAXBContext jc = JAXBContext.newInstance(DeclareSalaryConsumerType.class);
-        DeclareSalaryConsumerType value = jc.createUnmarshaller().unmarshal(element, DeclareSalaryConsumerType.class)
-                .getValue();
-        return value;
-    }
-
-    private void convertPucs4FileToDeclarationSalaire() throws SAXException, IOException, ParserConfigurationException,
-            JAXBException {
-
-        DeclareSalaryConsumerType value = unmarshallDeclareSalaryConsumerTypeFromSoapBody(filename);
-        PUCS4SalaryConverter salaryConverterPUCS4 = new PUCS4SalaryConverter();
-
-        declarationSalaire = salaryConverterPUCS4.convert(value);
-
     }
 
     public String getAccepteLienDraco() {
@@ -533,35 +488,6 @@ public class CIImportPucs4Process extends BProcess {
         } // fin nombre d'inscriptions
     }
 
-    private boolean executeAnnulationTraitement() throws Exception {
-        if (modeInscription) {
-            Iterator<Object> jourIt = tableJournaux.values().iterator();
-
-            while (jourIt.hasNext()) {
-                if (!"true".equalsIgnoreCase(accepteLienDraco)) {
-                    ((CIJournal) jourIt.next()).delete(getTransaction());
-                } else {
-                    CIJournal jour = new CIJournal();
-                    jour = (CIJournal) jourIt.next();
-                    DSDeclarationListViewBean dsMgr = new DSDeclarationListViewBean();
-                    dsMgr.setSession((BSession) getSessionDS(getSession()));
-                    dsMgr.setForIdJournal(jour.getIdJournal());
-                    dsMgr.find(getTransaction(), BManager.SIZE_NOLIMIT);
-                    if ((dsMgr.size() > 0) && !JadeStringUtil.isBlankOrZero(jour.getIdJournal())) {
-                        DSDeclarationViewBean ds = (DSDeclarationViewBean) dsMgr.getFirstEntity();
-                        ds.delete(getTransaction());
-                    }
-
-                }
-            }
-        }
-        if (!getTransaction().hasErrors()) {
-            getTransaction().commit();
-        }
-        getMemoryLog().logMessage(getSession().getLabel("MSG_PROCESSUS_ANNULE"), FWMessage.ERREUR, titreLog);
-        return false;
-    }
-
     private void createInscription(String numeroAVS, String nom, String prenom, PeriodeSalary periode,
             Montant montantAVS, Montant montantCAF, Montant montantAC, Montant montantAC2, String canton,
             boolean isEmployeWithCAF) throws Exception {
@@ -570,10 +496,6 @@ public class CIImportPucs4Process extends BProcess {
             if (JadeStringUtil.isBlank(numAffilieBase)) {
                 numAffilieBase = CIUtil.formatNumeroAffilie(getSession(), declarationSalaire.getNumeroAffilie());
             }
-        }
-
-        if (isAborted()) {
-            // return executeAnnulationTraitement();
         }
 
         montantAVS = initMontantTo0IfNull(montantAVS);
@@ -2136,7 +2058,6 @@ public class CIImportPucs4Process extends BProcess {
 
         try {
             initProcess();
-            convertPucs4FileToDeclarationSalaire();
             initResultBean();
 
             for (Employee employe : declarationSalaire.getEmployees()) {
