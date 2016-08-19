@@ -23,6 +23,16 @@ public class PersonnePCAccordee implements Serializable {
     private Boolean isHome = null;
     final private TupleDonneeRapport rootDonneesConsolidees;
 
+    private String typeRenteRequerant = null;
+
+    public String getTypeRenteRequerant() {
+        return typeRenteRequerant;
+    }
+
+    public void setTypeRenteRequerant(String typeRenteRequerant) {
+        this.typeRenteRequerant = typeRenteRequerant;
+    }
+
     /**
      * @param idPersonne
      */

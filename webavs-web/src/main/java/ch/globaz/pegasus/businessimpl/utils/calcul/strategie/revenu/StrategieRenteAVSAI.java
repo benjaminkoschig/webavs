@@ -11,6 +11,7 @@ import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRenteAvsAi;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.models.calcul.CalculDonneesCC;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
+import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext.Attribut;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 
 /**
@@ -64,6 +65,13 @@ public class StrategieRenteAVSAI extends StrategieCalculRevenu {
             }
 
             TupleDonneeRapport tuple = this.getOrCreateChild(resultatExistant, clePersonneRente, 0f);
+
+            // ajout du type de la rente du requérant dans le contexte de calcul afin de le propager dans les startégies
+            // finales
+            if (clePersonneRente.equals(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_REQUERANT)) {
+                context.put(Attribut.TYPE_RENTE_REQUERANT, csTypeRente);
+            }
+
             // le code system est mis dans la légende car le montant étant un flottant, il se produit une perte de
             // précision qui change le code system
             tuple.setLegende(csTypeRente);

@@ -34,6 +34,11 @@ public class StrategieFinalDepenseTotalReconnuVS extends StrategieFinalDepenseTo
             // fallback sur le conjoint
             if (csTypeRentePC == null) {
                 csTypeRentePC = donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_CONJOINT);
+
+                if (null == csTypeRentePC) {
+                    // Si toujours null, on va rechercher le type de rente du requérant dans le contete
+                    csTypeRentePC = (String) context.get(Attribut.TYPE_RENTE_REQUERANT);
+                }
             }
         } catch (NullPointerException e) {
             JadeLogger.info(this,

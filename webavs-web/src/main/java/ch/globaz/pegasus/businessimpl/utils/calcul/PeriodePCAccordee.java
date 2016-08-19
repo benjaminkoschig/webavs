@@ -726,6 +726,11 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             }
             // set le home pour la personne, ce qui va déterminer le type de pc
             personne.setIsHome(tupleRoot.getValeurEnfant(IPCValeursPlanCalcul.CLE_INTER_NOMBRE_CHAMBRES) > 0);
+
+            // set le type de rente du requérant venant du contexte afin de le récupérer et de pouvoir le redéfinir dans
+            // le contexte des stratégies finales
+            personne.setTypeRenteRequerant((String) context.get(Attribut.TYPE_RENTE_REQUERANT));
+
         }
 
     }
@@ -854,6 +859,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
         // initialise contexte
         CalculContext context = CalculContext.getNewInstance();
 
+        context.put(Attribut.TYPE_RENTE_REQUERANT, getTypeRenteRequerant());
         // Si fratrie
         context.put(Attribut.IS_FRATRIE, droit.getDemande().getSimpleDemande().getIsFratrie());
 
@@ -873,6 +879,28 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             calculeStrategiesFinales(enfants, parents, context);
         }
 
+    }
+
+    /**
+     * Recherche le type de rente du requérant.
+     * Nécessaire car plan de calcul retenu non disponible
+     * 
+     * @return le type de rente du requérant, un code système
+     */
+    private String getTypeRenteRequerant() {
+
+        String typeRenteRequerant = null;
+
+        for (PersonnePCAccordee personne : personnes.values()) {
+            typeRenteRequerant = personne.getTypeRenteRequerant();
+
+            if (null != typeRenteRequerant) {
+                break;
+            }
+
+        }
+
+        return typeRenteRequerant;
     }
 
     /**

@@ -8,6 +8,7 @@ import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.models.calcul.CalculDonneesCC;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
+import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext.Attribut;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategie.StrategieCalcul;
 
@@ -49,6 +50,13 @@ public class StrategieAllocationImpotent extends StrategieCalculRevenu {
         if (clePersonneRente != null) {
             String csTypeRente = donnee.getAPIAVSCsType();
             TupleDonneeRapport tuple = this.getOrCreateChild(resultatExistant, clePersonneRente, csTypeRente);
+
+            // ajout du type de la rente du requérant dans le contexte de calcul afin de le propager dans les startégies
+            // finales
+            if (clePersonneRente.equals(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_REQUERANT)) {
+                context.put(Attribut.TYPE_RENTE_REQUERANT, csTypeRente);
+            }
+
             tuple.setLegende(csTypeRente);
         }
 
