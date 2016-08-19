@@ -84,8 +84,7 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
         colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_NSS"));
         colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_NOM") + " / "
                 + getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_MESSAGE"));
-        colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_MM") + "-"
-                + getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_MM"));
+        colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_MM"));
         colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_ANNEE"));
         colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_CC"));
         colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_REVENU_AVS"));
