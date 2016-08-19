@@ -34,6 +34,8 @@ import ch.globaz.common.sql.CodeSystemQueryExecutor;
 import ch.globaz.jade.JadeBusinessServiceLocator;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
+import ch.globaz.osiris.businessimpl.service.SectionServiceImpl;
+import ch.globaz.osiris.exception.OsirisException;
 import ch.globaz.pegasus.business.constantes.EPCCodeAmal;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.constantes.IPCCatalogueTextes;
@@ -673,7 +675,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         }
     }
 
-    private void buildDetteEnComptaForDecompte(DocumentData data, DecompteTotalPcVO decompte) {
+    private void buildDetteEnComptaForDecompte(DocumentData data, DecompteTotalPcVO decompte) throws OsirisException {
         // Si dettes, on traite
         if (decompte.getDettesCompta().getList().size() > 0) {
             data.addData("hasBlocDettes", "TRUE");
@@ -682,10 +684,14 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
             Collection table = new Collection("tabDettes");
 
+            String langueTiers = dacOO.getDecisionHeader().getPersonneEtendue().getTiers().getLangue();
+            String isoLangueTiers = PRUtil.getISOLangueTiers(langueTiers);
+
             // Iteration sur les Dettes
             for (DetteEnComptaVO detteVO : decompte.getDettesCompta().getList()) {
                 DataList ligne = new DataList("ligneStandard");
-                ligne.addData("LIBELLE", detteVO.getDescription());
+                ligne.addData("LIBELLE", new SectionServiceImpl().findDescription(detteVO.getDette()
+                        .getIdSectionDetteEnCompta(), isoLangueTiers));
                 ligne.addData("CHF", "CHF");
                 ligne.addData("TOTAL", new FWCurrency(detteVO.getDette().getMontant()).toStringFormat());
                 table.add(ligne);

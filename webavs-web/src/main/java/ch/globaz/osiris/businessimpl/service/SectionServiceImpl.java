@@ -83,6 +83,11 @@ public class SectionServiceImpl implements SectionService {
 
     @Override
     public String findDescription(String idSection) throws OsirisException {
+        return findDescription(idSection, null);
+    }
+
+    @Override
+    public String findDescription(String idSection, String isoLangue) throws OsirisException {
         // Verification des parametres
         if (JadeStringUtil.isBlankOrZero(idSection)) {
             throw new OsirisException("Unable to read the section, the idSection passed is empty");
@@ -101,7 +106,11 @@ public class SectionServiceImpl implements SectionService {
         }
         if (mgr.size() == 1) {
             CASection section = (CASection) mgr.getFirstEntity();
-            return section.getDescription();
+            if (JadeStringUtil.isEmpty(isoLangue)) {
+                return section.getDescription();
+            } else {
+                return section.getDescription(isoLangue);
+            }
         } else if (mgr.size() == 0) {
             return null;
         } else {

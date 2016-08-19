@@ -67,6 +67,16 @@ public interface SectionService extends JadeApplicationService {
     public String findDescription(String idSection) throws JadeApplicationException;
 
     /**
+     * Retrouve la description de la section en DB selon la langue donnée.
+     * 
+     * @param idSection
+     * @param isoLangue
+     * @return la description de la section
+     * @throws JadeApplicationException
+     */
+    public String findDescription(String idSection, String isoLangue) throws JadeApplicationException;
+
+    /**
      * Service de récupération d'une section.
      * 
      * @param idCompteAnnexe
