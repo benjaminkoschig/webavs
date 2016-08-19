@@ -178,20 +178,23 @@ public class CIImportPucsFileProcess extends BProcess {
                     theDeclarationCreator.setLauncherImportPucsFileProcess(this);
                     theDeclarationCreator.executeProcess();
 
-                    Object[] attachedDocumentArray = theDeclarationCreator.getAttachedDocuments().toArray();
-                    String[] attachedDocumentLocationArray = null;
-                    if (attachedDocumentArray != null) {
-                        int nbElem = attachedDocumentArray.length;
-                        attachedDocumentLocationArray = new String[nbElem];
-                        for (int k = 0; k < nbElem; k++) {
-                            attachedDocumentLocationArray[k] = ((JadePublishDocument) attachedDocumentArray[k])
-                                    .getDocumentLocation();
+                    if (!theDeclarationCreator.isPUCS4()) {
+                        Object[] attachedDocumentArray = theDeclarationCreator.getAttachedDocuments().toArray();
+                        String[] attachedDocumentLocationArray = null;
+                        if (attachedDocumentArray != null) {
+                            int nbElem = attachedDocumentArray.length;
+                            attachedDocumentLocationArray = new String[nbElem];
+                            for (int k = 0; k < nbElem; k++) {
+                                attachedDocumentLocationArray[k] = ((JadePublishDocument) attachedDocumentArray[k])
+                                        .getDocumentLocation();
+                            }
                         }
-                    }
 
-                    JadeSmtpClient.getInstance().sendMail(theDeclarationCreator.getEMailAddress(),
-                            theDeclarationCreator.getEMailObject(), theDeclarationCreator.getSubjectDetail(),
-                            attachedDocumentLocationArray);
+                        JadeSmtpClient.getInstance().sendMail(theDeclarationCreator.getEMailAddress(),
+                                theDeclarationCreator.getEMailObject(), theDeclarationCreator.getSubjectDetail(),
+                                attachedDocumentLocationArray);
+
+                    }
 
                     if (CIImportPucsFileProcess.IMPORT_STATUT_KO.equalsIgnoreCase(importStatutAFile)) {
                         processExecutionStatut = CIImportPucsFileProcess.IMPORT_STATUT_KO;

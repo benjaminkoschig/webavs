@@ -459,7 +459,10 @@ public class EBTreatPucsFiles extends BProcess {
                         hasError = declaration.isOnError() || declaration.getSession().hasErrors()
                                 || (declaration.getDeclaration() != null && declaration.getDeclaration().hasErrors())
                                 || (declaration.getMemoryLog() != null && declaration.getMemoryLog().hasErrors());
-                        recuperDcoumentEtEnvoiMail(declaration, declaration.getEMailObject());
+
+                        if (!declaration.isPUCS4()) {
+                            recuperDcoumentEtEnvoiMail(declaration, declaration.getEMailObject());
+                        }
 
                         // on fait le fichier avant car cela notifiy e-business et met le cas en traitement.
 

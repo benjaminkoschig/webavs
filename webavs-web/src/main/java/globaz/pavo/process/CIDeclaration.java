@@ -153,6 +153,16 @@ public class CIDeclaration extends BProcess {
         return false;
     }
 
+    private boolean isPUCS4 = false;
+
+    public boolean isPUCS4() {
+        return isPUCS4;
+    }
+
+    public void setPUCS4(boolean isPUCS4) {
+        this.isPUCS4 = isPUCS4;
+    }
+
     private String accepteAnneeEnCours = "";
 
     private String accepteEcrituresNegatives = "";
@@ -239,16 +249,16 @@ public class CIDeclaration extends BProcess {
     protected void _executeCleanUp() {
     }
 
-    private boolean isFilePUCS4() {
+    private void setIsPUCS4AttributeReadingFileNamespace() {
 
         try {
 
             Element element = getSoapBodyPayloadElement(resolveFileName());
 
-            return StringUtils.startsWith(element.getNamespaceURI(), PUCS4_NAMESPACE);
+            isPUCS4 = StringUtils.startsWith(element.getNamespaceURI(), PUCS4_NAMESPACE);
 
         } catch (Exception e) {
-            return false;
+            isPUCS4 = false;
         }
 
     }
@@ -318,6 +328,7 @@ public class CIDeclaration extends BProcess {
 
         importPucs4Process.setFilename(resolveFileName());
 
+        importPucs4Process.setDateReceptionForced(getDateReceptionForced());
         importPucs4Process.setSimulation(getSimulation());
         importPucs4Process.setProvenance(getProvenance());
         importPucs4Process.setAccepteAnneeEnCours(getAccepteAnneeEnCours());
@@ -382,8 +393,13 @@ public class CIDeclaration extends BProcess {
                         CIApplication.DEFAULT_APPLICATION_PAVO);
 
                 if ("true".equalsIgnoreCase(app.getPropertyActiverParsingPUCS4())
-                        && CIDeclaration.CS_PUCS_II.equalsIgnoreCase(getType()) && isFilePUCS4()) {
-                    return executeImportPucs4Process();
+                        && CIDeclaration.CS_PUCS_II.equalsIgnoreCase(getType())) {
+
+                    setIsPUCS4AttributeReadingFileNamespace();
+                    if (isPUCS4) {
+                        return executeImportPucs4Process();
+                    }
+
                 }
 
                 String forNumeroAffilieSansPoint = CIUtil.UnFormatNumeroAffilie(getSession(), getForNumeroAffilie());

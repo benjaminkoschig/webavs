@@ -133,6 +133,14 @@ public class CIImportPucs4Process extends BProcess {
     private String numAffilieBase = "";
     private String Type = "";
 
+    public String getDateReceptionForced() {
+        return dateReceptionForced;
+    }
+
+    public void setDateReceptionForced(String dateReceptionForced) {
+        this.dateReceptionForced = dateReceptionForced;
+    }
+
     public String getType() {
         return Type;
     }
@@ -488,6 +496,14 @@ public class CIImportPucs4Process extends BProcess {
         } // fin nombre d'inscriptions
     }
 
+    private void logAffilieNull(String numeroAffilie, String annee) {
+        getMemoryLog()
+                .logMessage(
+                        numeroAffilie + "/" + annee + " : "
+                                + getSession().getLabel("IMPORT_PUCS_4_AUCUNE_AFFILIATION_TROUVEE"), FWMessage.ERREUR,
+                        this.getClass().getName());
+    }
+
     private void createInscription(String numeroAVS, String nom, String prenom, PeriodeSalary periode,
             Montant montantAVS, Montant montantCAF, Montant montantAC, Montant montantAC2, String canton,
             boolean isEmployeWithCAF) throws Exception {
@@ -536,13 +552,17 @@ public class CIImportPucs4Process extends BProcess {
         AFAffiliation affilie = appCI.getAffilieByNo(getSession(),
                 CIUtil.formatNumeroAffilie(getSession(), declarationSalaire.getNumeroAffilie()), true, false, "", "",
                 annee, "", "");
+
+        if (affilie == null) {
+            logAffilieNull(declarationSalaire.getNumeroAffilie(), annee);
+            return;
+        }
+
         String dateDebutAffiliation = null;
         String dateFinAffiliation = null;
-        if (affilie != null) {
-            dateDebutAffiliation = affilie.getDateDebut();
-            dateFinAffiliation = affilie.getDateFin();
 
-        }
+        dateDebutAffiliation = affilie.getDateDebut();
+        dateFinAffiliation = affilie.getDateFin();
 
         CIImportPucs4DetailResultInscriptionBean aDetailResultInscriptionBean = new CIImportPucs4DetailResultInscriptionBean();
         aDetailResultInscriptionBean.setNss(numeroAVS);
@@ -1710,7 +1730,15 @@ public class CIImportPucs4Process extends BProcess {
 
     private void initProcess() throws Exception {
         appCI = (CIApplication) GlobazServer.getCurrentSystem().getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
-        dateReceptionForced = JACalendar.todayJJsMMsAAAA();
+
+        if (JadeStringUtil.isBlankOrZero(dateReceptionForced) && declarationSalaire.getTransmissionDate() != null) {
+            dateReceptionForced = declarationSalaire.getTransmissionDate().getSwissValue();
+        }
+
+        if (JadeStringUtil.isBlankOrZero(dateReceptionForced)) {
+            dateReceptionForced = JACalendar.todayJJsMMsAAAA();
+        }
+
         titreLog = getSession().getLabel("IMPORT_PUCS_4_PROCESS_TITRE_LOG");
         modeInscription = JadeStringUtil.isBlankOrZero(getSimulation());
     }

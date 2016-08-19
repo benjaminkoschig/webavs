@@ -182,27 +182,27 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
         createRow();
         createCell(getSession().getLabel("IMPORT_PUCS_4_RESUME_RESULT_LIST_INSCRIPTION_ERREUR"));
         createCell(String.valueOf(resumeBean.getNbrInscriptionsErreur()));
-        createCell(String.valueOf(resumeBean.getMontantInscriptionsErreur()));
+        createCell(String.valueOf(resumeBean.getMontantInscriptionsErreur().toStringFormat()));
 
         createRow();
         createCell(getSession().getLabel("IMPORT_PUCS_4_RESUME_RESULT_LIST_INSCRIPTION_SUSPENS"));
         createCell(String.valueOf(resumeBean.getNbrInscriptionsSuspens()));
-        createCell(String.valueOf(resumeBean.getMontantInscriptionsSuspens()));
+        createCell(String.valueOf(resumeBean.getMontantInscriptionsSuspens().toStringFormat()));
 
         createRow();
         createCell(getSession().getLabel("IMPORT_PUCS_4_RESUME_RESULT_LIST_INSCRIPTION_CI"));
         createCell(String.valueOf(resumeBean.getNbrInscriptionsCI()));
-        createCell(String.valueOf(resumeBean.getMontantInscriptionsCI()));
+        createCell(String.valueOf(resumeBean.getMontantInscriptionsCI().toStringFormat()));
 
         createRow();
         createCell(getSession().getLabel("IMPORT_PUCS_4_RESUME_RESULT_LIST_INSCRIPTION_TRAITE"));
         createCell(String.valueOf(resumeBean.getNbrInscriptionsTraites()));
-        createCell(String.valueOf(resumeBean.getMontantInscriptionsTraites()));
+        createCell(String.valueOf(resumeBean.getMontantInscriptionsTraites().toStringFormat()));
 
         createRow();
         createCell(getSession().getLabel("IMPORT_PUCS_4_RESUME_RESULT_LIST_INSCRIPTION_NEGATIVE"));
         createCell(String.valueOf(resumeBean.getNbrInscriptionsNegatives()));
-        createCell(String.valueOf(resumeBean.getMontantInscriptionsNegatives()));
+        createCell(String.valueOf(resumeBean.getMontantInscriptionsNegatives().toStringFormat()));
 
     }
 
