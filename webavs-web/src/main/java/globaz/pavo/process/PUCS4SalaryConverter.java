@@ -1,6 +1,5 @@
 package globaz.pavo.process;
 
-import globaz.pavo.process.PUCS4SalaryConverter.PlausiResult.PlausiStatus;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +39,7 @@ import ch.swissdec.schema.sd._20130514.salarydeclaration.TotalFAKCAFPerCantonTyp
 import ch.swissdec.schema.sd._20130514.salarydeclarationconsumercontainer.DeclareSalaryConsumerType;
 import ch.swissdec.schema.sd._20130514.salarydeclarationconsumercontainer.DistributorRequestContextType;
 import ch.swissdec.schema.sd._20130514.salarydeclarationcontainer.SalaryDeclarationRequestType;
+import globaz.pavo.process.PUCS4SalaryConverter.PlausiResult.PlausiStatus;
 
 /**
  * Convertit un objet issu du webservice PUCS v4 (cf. {@link DeclareSalaryConsumerType}) vers des objets métiers
@@ -63,9 +63,10 @@ public class PUCS4SalaryConverter {
         result.setProvenance(DeclarationSalaireProvenance.SWISS_DEC);
         DistributorRequestContextType distributorRequestContext = param.getDistributorRequestContext();
 
-        result.setAnnee(1234); // FIXME le year ne veut rien dire... on peut être à cheval sur plusieurs années...
-        result.setTransmissionDate(new Date(distributorRequestContext.getTransmissionDate().toGregorianCalendar()
-                .getTime()));
+        result.setAnnee(param.getDeclareSalary().getSalaryDeclaration().getGeneralSalaryDeclarationDescription()
+                .getAccountingPeriod().getYear());
+        result.setTransmissionDate(
+                new Date(distributorRequestContext.getTransmissionDate().toGregorianCalendar().getTime()));
         result.setTest(distributorRequestContext.getTestCase() != null);
         result.setDuplicate(distributorRequestContext.getDuplicate() != null);
         result.setSubstitution(distributorRequestContext.getSubstitutionMapping() != null);
