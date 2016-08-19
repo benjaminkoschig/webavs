@@ -378,32 +378,41 @@ public class CIImportPucs4Process extends BProcess {
 
     }
 
-    private void testPeriode(String annee, int moisDebut, int moisFin, String numeroAVS, CIEcriture ecriture,
-            ArrayList<String> errors, String numeroAffilie) {
+    private void testPeriode(String annee, int moisDebut, int moisFin, int jourDebut, int jourFin, String numeroAVS,
+            CIEcriture ecriture, ArrayList<String> errors, String numeroAffilie) {
 
         // Plausi période
         try {
 
+            if (jourDebut < 0 || jourDebut > 31) {
+                errors.add(getSession().getLabel("ERREUR_DATE_DEBUT"));
+            } else {
+                ecriture.setJourDebut("" + jourDebut);
+            }
+
+            if (jourFin < 0 || jourFin > 31) {
+                errors.add(getSession().getLabel("ERREUR_DATE_FIN"));
+            } else {
+                ecriture.setJourFin("" + jourFin);
+            }
+
             if (((moisDebut < 1) || (moisDebut > 12)) && (99 != moisDebut) && (66 != moisDebut)) {
                 errors.add(getSession().getLabel("DT_MOIS_DEBUT_INVALIDE"));
-
             } else {
-
                 ecriture.setMoisDebut("" + moisDebut);
-
             }
 
             if ((moisFin < 1) || ((moisFin > 12) && (99 != moisFin) && (66 != moisFin))) {
                 errors.add(getSession().getLabel("DT_MOIS_FIN_INVALIDE"));
-
             } else {
-
                 ecriture.setMoisFin("" + moisFin);
             }
+
             if (moisDebut > moisFin) {
                 errors.add(getSession().getLabel("DT_MOIS_DEBUT_PLUS_GRAND"));
 
             }
+
             if ((99 == moisDebut) && (99 == moisFin)) {
                 if (!ecriture.getWrapperUtil().rechercheEcritureSemblablesDt(getTransaction(),
                         CIUtil.formatNumeroAffilie(getSession(), numeroAffilie), numeroAVS)) {
@@ -412,7 +421,6 @@ public class CIImportPucs4Process extends BProcess {
             }
 
             // année en cours et future sont interdites
-
             if (!"true".equalsIgnoreCase(accepteAnneeEnCours)) {
                 if (Integer.parseInt(annee) >= JACalendar.today().getYear()) {
                     errors.add(getSession().getLabel("DT_ANNEE_TROP_GRANDE"));
@@ -550,8 +558,9 @@ public class CIImportPucs4Process extends BProcess {
         int jourFin = Integer.parseInt(periode.getDateFin().getJour());
 
         AFAffiliation affilie = appCI.getAffilieByNo(getSession(),
-                CIUtil.formatNumeroAffilie(getSession(), declarationSalaire.getNumeroAffilie()), true, false, "", "",
-                annee, "", "");
+                CIUtil.formatNumeroAffilie(getSession(), declarationSalaire.getNumeroAffilie()), true, false,
+                String.valueOf(moisDebut), String.valueOf(moisFin), annee, String.valueOf(jourDebut),
+                String.valueOf(jourFin));
 
         if (affilie == null) {
             logAffilieNull(declarationSalaire.getNumeroAffilie(), annee);
@@ -660,7 +669,8 @@ public class CIImportPucs4Process extends BProcess {
             boolean breakTests = false;
 
             // Plausi période
-            testPeriode(annee, moisDebut, moisFin, numeroAVS, ecriture, errors, declarationSalaire.getNumeroAffilie());
+            testPeriode(annee, moisDebut, moisFin, jourDebut, jourFin, numeroAVS, ecriture, errors,
+                    declarationSalaire.getNumeroAffilie());
 
             // Plausi montant
             boolean montantPositif = montantAVS.isPositive() || montantAVS.isZero();

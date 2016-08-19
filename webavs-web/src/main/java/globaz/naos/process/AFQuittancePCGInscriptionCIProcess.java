@@ -21,7 +21,6 @@ import globaz.pavo.db.compte.CIEcriture;
 import globaz.pavo.db.inscriptions.CIJournal;
 import globaz.pavo.db.inscriptions.CIJournalManager;
 import globaz.pavo.util.CIUtil;
-import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -66,20 +65,10 @@ public class AFQuittancePCGInscriptionCIProcess extends AFQuittancePCGProcess {
         super(session);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.globall.db.BProcess#_executeCleanUp()
-     */
     @Override
     protected void _executeCleanUp() {
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.globall.db.BProcess#_executeProcess()
-     */
     @Override
     protected boolean _executeProcess() throws Exception {
         int nbCasATraiter = 0;
@@ -204,9 +193,6 @@ public class AFQuittancePCGInscriptionCIProcess extends AFQuittancePCGProcess {
                 if (quittance.getMontantEffectif().length() > 0) {
                     FWCurrency montant = new FWCurrency(quittance.getMontantEffectif());
                     if (montant.isNegative()) {
-                        // if
-                        // ("-".equals(quittance.getTotalVerse().trim().substring(0,
-                        // 1))) {
                         ecriture.setExtourne(CIEcriture.CS_EXTOURNE_1);
                         montant.negate();
                         quittance.setMontantCI(montant.toString());
@@ -215,16 +201,18 @@ public class AFQuittancePCGInscriptionCIProcess extends AFQuittancePCGProcess {
                 if (!JadeStringUtil.isEmpty(getAffiliationLue().getBrancheEconomique())) {
                     ecriture.setBrancheEconomique(getAffiliationLue().getBrancheEconomique());
                 }
+
                 ecriture.setGenreEcriture(CIEcriture.CS_CIGENRE_1);
                 ecriture.setGre("01");
                 ecriture.setEmployeur(getAffiliationLue().getAffiliationId());
                 ecriture.setMontant(quittance.getMontantEffectif());
                 ecriture.setMoisDebut(quittance.getDateDebut());
                 ecriture.setMoisFin(quittance.getDateFin());
+                ecriture.setJourDebut(quittance.getJourDebut());
+                ecriture.setJourFin(quittance.getJourFin());
                 ecriture.setAnnee(quittance.getAnnee());
                 ecriture.setIdJournal(idJournal);
                 ecriture.setIdTypeCompte(CIEcriture.CS_TEMPORAIRE);
-                // ecriture.setCodeSpecial(codeSpecial);
                 ecriture.setNoSumNeeded(true);
                 //
                 if (quittance.getNumAvsAideMenage().length() == 13) {
@@ -232,22 +220,14 @@ public class AFQuittancePCGInscriptionCIProcess extends AFQuittancePCGProcess {
                 } else {
                     ecriture.setNumeroavsNNSS("false");
                 }
-                // ecriture.setEcritureId(toto);
-                // TODO ajouter transaction après TESTS
                 ecriture.add(transaction);
                 masse.add(quittance.getMontantEffectif());
-            } else {
-                // TODO : signaler que pour cette aide de ménage, ce n'est pas
-                // soumis.
             }
-            // TODO enlever après TESTS
-            // getTransaction().commit();
         } catch (Exception e) {
             this._addError(getTransaction(), "creation écritures CI : " + e.getMessage());
         }
         MassesDec massesDec = new MassesDec();
         massesDec.masseAVS = masse.toString();
-        // TODO : calculer la masse AC correctement
         massesDec.masseAC = masse.toString();
         return massesDec;
     }
@@ -289,27 +269,6 @@ public class AFQuittancePCGInscriptionCIProcess extends AFQuittancePCGProcess {
         return comptabilisationCi;
     }
 
-    /**
-     * Cette fonction return true, si la periode1 == periode2+1 c'est à dire si la période1, continue la période2
-     * exemple : période1 : 1.10.2007 période2 : 30.09.2007 -> comme 30.09.2007 + 1 jours == 1.10.2007 -> return True
-     * 
-     * @param periode1
-     * @param periode2
-     * @return boolean
-     * @throws ParseException
-     */
-    /*
-     * private static boolean continuiteDate(String periode1, String periode2) throws ParseException { int mois1 =
-     * Integer.valueOf(periode1.substring(3, 5)).intValue(); int mois2 = Integer.valueOf(periode2.substring(3,
-     * 5)).intValue(); if (mois1 == mois2 || (mois1 + 1) == mois2 || mois1 == (mois2 + 1)) return true; else return
-     * false; }
-     */
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.globall.db.BProcess#getEMailObject()
-     */
     @Override
     protected String getEMailObject() {
         return "Inscription CI des quittances PCG";
@@ -340,56 +299,7 @@ public class AFQuittancePCGInscriptionCIProcess extends AFQuittancePCGProcess {
         return manager;
     }
 
-    /*
-     * private coti creationCotisation() { // MassesDec masses = creationEcrituresCI(journal.getIdJournal(), vecteur);
-     * DSFacturationHandler.coti cotisation = null; AFCotisation coti; // String tauxAssurance =
-     * coti.getAssurance().getTaux("31.12"+"2007").getValeurTotal(); // String fractionAssurance =
-     * coti.getAssurance().getTaux("31.12"+"2007").getFraction(); // String idAssurance =
-     * coti.getAssurance().getAssuranceId(); // idRubrique d'après idAssurance // String montantDeclaration : /
-     * _bCotisation =new BigDecimal( AFCalculAssurance.calculResultatAssurance( dateDebut, dateFin,
-     * //getCotisation().getTauxList(dateFin), getCotisation().findTaux(dateFin,getMontantDeclaration()), new
-     * Double(JANumberFormatter.deQuote(montantDec)).doubleValue(), getSession()));
-     */
-    // DSLigneDeclarationViewBean... getMontantFacture
-    /*
-     * String montantFacture; String masseFacture; return cotisation; }
-     */
-
-    /*
-     * private void creationDeclarationSalaire(AFQuittance quittance, MassesDec masses) throws Exception {
-     * DSDeclarationViewBean ds = new DSDeclarationViewBean(); ds.setSession(getSession());
-     * ds.setAffiliationId(quittance.getIdAffBeneficiaire()); ds.setMasseSalTotal(masses.masseAVS);
-     * ds.setMasseACTotal(masses.masseAC); // TODO set annee des quittances // ds.setDateRetourDes(JOUR DU TRAITEMENT);
-     * // ds.setAnnee(ANNEE QUITTANCE) // ds.setSoumisInteret(EXEMPTE) ds.add(getTransaction()); validerDS(ds); }
-     */
-
-    /*
-     * private void validerDS(DSDeclarationViewBean ds) throws Exception { DSProcessValidation process = new
-     * DSProcessValidation(); process.setEMailAddress(getEMailAddress()); process.setSession(getSession());
-     * process.setIdDeclaration(ds.getIdDeclaration()); process.executeProcess(); }
-     */
-
-    /**
-     * Cette fonction return true, si la periode1 == periode2+1 c'est à dire si la période1, continue la période2
-     * exemple : période1 : 1.10.2007 période2 : 30.09.2007 -> comme 30.09.2007 + 1 jours == 1.10.2007 -> return True
-     * 
-     * @param periode1
-     * @param periode2
-     * @return boolean
-     * @throws ParseException
-     */
-    /*
-     * private static boolean continuiteDate(String periode1, String periode2) throws ParseException { SimpleDateFormat
-     * dateFormat = new SimpleDateFormat("dd.MM.yyyy"); Date date1 = dateFormat.parse(periode1); Date date2 =
-     * dateFormat.parse(periode2); Calendar calendar1 = Calendar.getInstance(); calendar1.setTime(date1); Calendar
-     * calendar2 = Calendar.getInstance(); calendar2.setTime(date2); // On regarde si le jour calendar2+1 est egal à
-     * calendar1 calendar2.set(calendar2.get(Calendar.YEAR), calendar2.get(Calendar.MONTH),
-     * calendar2.get(Calendar.DAY_OF_MONTH) + 1); if (calendar1.getTime().equals(calendar2.getTime())) return true; else
-     * return false; }
-     */
-
     private boolean isSoumis() {
-        // TODO Auto-generated method stub
         return true;
     }
 

@@ -139,8 +139,6 @@ public class CIEcriture extends BEntity {
     private String categoriePersonnel = new String();
     /** (KBBIMP) */
     private Boolean certificat = new Boolean(false);
-    // private String moisFinJour = new String ();
-    // private String moisDebutJour = new String ();
     // ci assuré
     CICompteIndividuel ci = null;
     /** (KBTCOD) */
@@ -168,7 +166,6 @@ public class CIEcriture extends BEntity {
     /** (KBITIE) */
     private String employeur = new String();
     // Un identifiant du partenaire ou de l'affilié, suivant le genre cf.
-    // _validate()
     private String employeurPartenaire = new String();
     private String espionSaisie = new String();
     /** (KBLSUP) */
@@ -199,6 +196,10 @@ public class CIEcriture extends BEntity {
     private boolean isFromFacturationCompta = false;
     private Boolean isNNSS = new Boolean(false);
     private Boolean isNNSSConjoint = new Boolean(false);
+
+    private String jourDebut = "";
+    private String jourFin = "";
+
     // journal de l'écriture
     private CIJournal journal = null;
     private String libelleAff = "";
@@ -302,19 +303,6 @@ public class CIEcriture extends BEntity {
                 journal = null;
             }
         }
-        // Dans le cas d'un add on ne met à jour les données du CI que si elles
-        // sont remplies.
-        /*
-         * CIEcriture bufferEcriture = (CIEcriture)clone(); // retrieve nécessaire sinon les données du CI sont
-         * écrasées. retrieve(transaction); if (!JAUtil.isStringEmpty(bufferEcriture.getNomPrenom())) {
-         * setNomPrenom(bufferEcriture.getNomPrenom()); } if (!JAUtil.isStringEmpty(bufferEcriture.getSexe())) {
-         * setSexe(bufferEcriture.getSexe()); } if (!JAUtil.isStringEmpty(bufferEcriture.getDateDeNaissance())) {
-         * setDateDeNaissance(bufferEcriture.getDateDeNaissance()); } if
-         * (!JAUtil.isStringEmpty(bufferEcriture.getPaysOrigine())) { setPaysOrigine(bufferEcriture.getPaysOrigine()); }
-         */
-        // Test empêchant la saisie d'une période fausse avant 1979
-        // (ex:00-03-1978)
-
     }
 
     @Override
@@ -336,14 +324,8 @@ public class CIEcriture extends BEntity {
                 _addError(transaction, getSession().getLabel("MSG_JOURNAL_INSCRIT"));
 
             }
-            // test du total avec les écriture de l'année et du même employeur
-            /*
-             * if (!rechercheEcritureEmp(transaction, ci)) { // montant total pour cet employeur et cette année négatif!
-             * _addError(transaction, getSession().getLabel("MSG_ECRITURE_SUMEMP")); }
-             */
         }
-        // le ci est peut-être maintenant vide
-        // oldCI = getCI(transaction,false);
+
         if (ci != null) {
             ci.deleteIfEmpty(transaction, true);
         }
@@ -385,12 +367,6 @@ public class CIEcriture extends BEntity {
             ci.setEtatEntity(CICompteIndividuel.FROM_JOIN);
             ci.read(statement);
         }
-        // Depuis l'id de log on récupère les messages :todo
-        /*
-         * if (!JAUtil.isIntegerEmpty(getIdLog())) { FWLog log = new FWLog(); log.setIdLog(getIdLog());
-         * //log.retrieve(); //if (!transaction.hasErrors() && (!log.isNew())) { setMessages(log.getMessagesToString());
-         * //} }
-         */
     }
 
     @Override
@@ -489,19 +465,8 @@ public class CIEcriture extends BEntity {
             }
 
             if (!simpleProcess) {
-                // Retrieve du journal correspondant
-                // CIJournal journal = getJournal(transaction, false);
-                // if (!journal.isNew()) {
                 // Valeurs par defaut
                 valeursDefaut(transaction);
-                /*
-                 * // Ajout impossible si le journal correspondant n'est pas ouvert. if (JAUtil.isStringEmpty(getAvs()))
-                 * { _addError(transaction, getSession().getLabel("MSG_ECRITURE_AVS")); return; } if
-                 * (!JAUtil.isIntegerEmpty(getCompteIndividuelId())) { // ajout unique if
-                 * (!ci.isCiOuvert().booleanValue()) { // todo: tester si après clotures -> SUSPENS // si ok
-                 * idTypeCompte = CS_CI; } } else { // ajout de masse rechercheCI(transaction); idTypeCompte =
-                 * CS_PROVISOIRE; }
-                 */
             }
         }
         setUpdating(true);
@@ -586,13 +551,6 @@ public class CIEcriture extends BEntity {
                 + "CIINDIPPA.KALNOM as PARTENAIRE_KALNOM, " + "CIINDIPPA.KABNNS as PARTENAIRE_KABNNS, "
                 + _getCollection() + "CIREMAP.*, " + _getCollection() + "CIRAOUP.KKDCLO, " + _getCollection()
                 + "CIRAOUP.KKDORD, " + _getCollection() + "CIRAOUP.KKTARC";
-        /*
-         * ECR.KBIECR AS KBIECR, ECR.KAIIND AS KAIIND, KKIRAO, ECR.KCID AS KCID, ECR.KIIREM AS KIIREM, KBIERE, KBITIE,
-         * KBIPAR, KBTEXT, KBTGEN, " +
-         * "KBTPAR, KBNBTA, KBTSPE, KBNMOD, KBNMOF, KBNANN, KBMMON, KBTCOD, KBTBRA, KBTCPT, KBDCEN, KBICHO, " +
-         * "KBTCAT, KBDADD, KBIDLO, KBLESP, ECR.PSPY AS PSPY, CI.KALNOM AS KALNOM, CI.KATSEX AS KATSEX, CI.KADNAI AS KADNAI, CI.KAIPAY AS KAIPAY, CI.KANAVS AS KANAVS, HXNAFF, HTLDE1 , HTLDE2, PARTNER.KANAVS as PARTENAIRE_KANAVS, PARTNER.KALNOM as PARTENAIRE_KALNOM, KILTEX"
-         * ;
-         */
     }
 
     /**
@@ -670,12 +628,7 @@ public class CIEcriture extends BEntity {
         espionSaisie = statement.dbReadString("KBLESP");
         espionSaisieSup = statement.dbReadString("KBLSUP");
         caisseTenantCI = statement.dbReadNumeric("KBCAIT");
-        // Données du CI
-        // nomPrenom = statement.dbReadString("KALNOM");
-        // sexe = statement.dbReadString("KATSEX");
-        // dateDeNaissance = statement.dbReadDateAMJ("KADNAI");
-        // paysOrigine = statement.dbReadNumeric("KAIPAY");
-        // avs = statement.dbReadString("KANAVS");
+
         // Données du tiers
         idAffilie = statement.dbReadString("MALNAF");
         nomTiers = statement.dbReadString("HTLDE1");
@@ -723,7 +676,7 @@ public class CIEcriture extends BEntity {
             if (getGenreEcriture().equalsIgnoreCase(CIEcriture.CS_CIGENRE_5) == false) {
                 CIApplication app = (CIApplication) getSession().getApplication();
                 AFAffiliation aff = app.getAffilieByNo(getSession(), employeurPartenaire, forAffilieParitaire,
-                        forAffiliePersonnel, getMoisDebut(), getMoisFin(), getAnnee(), "", "");
+                        forAffiliePersonnel, getMoisDebut(), getMoisFin(), getAnnee(), getJourDebut(), getJourFin());
                 if ((aff == null) || (aff.isNew())) {
                     _addError(statement.getTransaction(), getSession().getLabel("MSG_ECRITURE_AFFILIE"));
                 } else {
@@ -794,24 +747,10 @@ public class CIEcriture extends BEntity {
             if (!(((0 <= moisDebutPla) && (moisDebutPla <= 12)) || (moisDebutPla == 66) || (moisDebutPla == 77) || (moisDebutPla == 99))) {
                 _addError(statement.getTransaction(), getSession().getLabel("MSG_ECRITURE_DATEDEB"));
             }
-            // Si après 1969 et genre de cotisation différent de 8, le mois de
-            // début est obligatoire
-            /*
-             * if ((annee >= 1969) && (!CS_CIGENRE_8.equals(getGenreEcriture()))) { _propertyMandatory(
-             * statement.getTransaction(), getMoisDebut(), getSession().getLabel("MSG_ECRITURE_DATEDEB_MANDAT")); }
-             */
             // Verification du format du mois de fin
             if (!(((0 <= moisFinPla) && (moisFinPla <= 12)) || (moisFinPla == 66) || (moisFinPla == 77) || (moisFinPla == 99))) {
                 _addError(statement.getTransaction(), getSession().getLabel("MSG_ECRITURE_DATEFIN"));
             }
-            // Si après 1969 et genre de cotisation différent de 8, le mois de
-            // fin est obligatoire
-            /*
-             * if ((annee >= 1969) && (!CS_CIGENRE_8.equals(getGenreEcriture()))) { _propertyMandatory(
-             * statement.getTransaction(), getMoisFin(), getSession().getLabel("MSG_ECRITURE_DATEFIN_MANDAT"));
-             * 
-             * }
-             */
 
             // Le mois de fin doit être postérieur au mois de début
             if (moisDebutPla > moisFinPla) {
@@ -847,26 +786,7 @@ public class CIEcriture extends BEntity {
             if (!JadeStringUtil.isIntegerEmpty(getCaisseChomage())) {
                 setIdAffilie("");
             }
-            /*
-             * if (getGre().equals("0") || getGre().equals("00")) { setGenreEcriture(CS_CIGENRE_0); }
-             */
-            /***************************************************************************************
-             * PARSER LE MOIS *
-             **********************************************************************************/
-            /*
-             * if(moisDebutJour.indexOf(".")>=0){ if(moisDebutJour.trim().length()>2){ if(moisDebutJour.indexOf(".")!=2
-             * && moisDebutJour.indexOf(".")!=1){ _addError(statement.getTransaction(),
-             * getSession().getLabel("MSG_FORMATAGE_MOIS_DEBUT_JOUR_INCORRECT" )); }else{ int indexPoint =
-             * moisDebutJour.indexOf("."); jourDebut = moisDebutJour.substring(0,indexPoint); moisDebut =
-             * moisDebutJour.substring(indexPoint +1); } } }else{ ///Le jour n'est pas renseigné, mais on vient quand
-             * même des journaux if(!JAUtil.isIntegerEmpty(moisDebutJour)){ moisDebut = moisDebutJour; } }
-             * if(moisFinJour.indexOf(".")>=0){ if(moisFinJour.trim().length()>2){ if(moisFinJour.indexOf(".")!=2 &&
-             * moisFinJour.indexOf(".")!=1){ _addError(statement.getTransaction(),
-             * getSession().getLabel("MSG_FORMATAGE_MOIS_FIN_JOUR_INCORRECT")); }else{ int indexPoint =
-             * moisFinJour.indexOf("."); jourFin = moisFinJour.substring(0,indexPoint); moisFin =
-             * moisFinJour.substring(indexPoint +1); } } }else{ //Le jour n'est pas renseigné, mais on vient quand même
-             * des journaux if(!JAUtil.isIntegerEmpty(moisFinJour)){ moisFin = moisFinJour; } }
-             */
+
             // PARSER LE GRE
             parserGre(statement);
             // CONVERSION DES CODES UTILISATEURS
@@ -927,24 +847,10 @@ public class CIEcriture extends BEntity {
              * Initialisation des jours de début et de fin pour plausi
              */
 
-            // Si après 1969 et genre de cotisation différent de 8, le mois de
-            // début est obligatoire
-            /*
-             * if ((annee >= 1969) && (!CS_CIGENRE_8.equals(getGenreEcriture()))) { _propertyMandatory(
-             * statement.getTransaction(), getMoisDebut(), getSession().getLabel("MSG_ECRITURE_DATEDEB_MANDAT")); }
-             */
             // Verification du format du mois de fin
             if (!(((0 <= moisFin) && (moisFin <= 12)) || (moisFin == 66) || (moisFin == 77) || (moisFin == 99))) {
                 _addError(statement.getTransaction(), getSession().getLabel("MSG_ECRITURE_DATEFIN"));
             }
-            // Si après 1969 et genre de cotisation différent de 8, le mois de
-            // fin est obligatoire
-            /*
-             * if ((annee >= 1969) && (!CS_CIGENRE_8.equals(getGenreEcriture()))) { _propertyMandatory(
-             * statement.getTransaction(), getMoisFin(), getSession().getLabel("MSG_ECRITURE_DATEFIN_MANDAT"));
-             * 
-             * }
-             */
 
             // Le mois de fin doit être postérieur au mois de début
             if (moisDebut > moisFin) {
@@ -995,37 +901,13 @@ public class CIEcriture extends BEntity {
                     .equals(getParticulier()))) {
                 _addError(statement.getTransaction(), getSession().getLabel("MSG_ECRITURE_PARTIC_NOT"));
             } // Si genre cotisation est 0 pas de part Bta
-            /*
-             * if ((!CS_CIGENRE_0.equals(getGenreEcriture())) && (!JAUtil.isIntegerEmpty(getPartBta()))) {
-             * _addError(statement.getTransaction(), getSession().getLabel("MSG_ECRITURE_PARTBTA")); } // Code spéciale
-             * // Cas d'un genre 7 /* if (CS_CIGENRE_7.equals(getGenreEcriture())) { // Après 1997, doit valoir 02 ou 03
-             * if (annee >= 1997) { if (!(CS_NONFORMATTEUR_INDEPENDANT.equals(getCodeSpecial()) ||
-             * CS_NONFORMATTEUR_SALARIE.equals(getCodeSpecial()))) { //_addError(statement.getTransaction(),
-             * getSession().getLabel("MSG_ECRITURE_CODSPE7")); // est obtenu par l'affilié plus tard... } } else if
-             * (!JAUtil.isIntegerEmpty(getCodeSpecial())) { // Avant 1997 _addError(statement.getTransaction(),
-             * getSession().getLabel("MSG_ECRITURE_CODSPE7_NOT")); } } // Cas d'un genre 4, doit valoir 01 ou être
-             * zéro/blanc else
-             */
-            // on regarde s'il existe une ecriture provisore pour la même année
-            /*
-             * if(existeEcritureProvisoireSemblable(statement.getTransaction())){ _addError(statement.getTransaction(),
-             * getSession().getLabel("MSG_ECRITURE_PROVISOIRE_EXISTANTE")); }
-             */
+
             if (CIEcriture.CS_CIGENRE_4.equals(getGenreEcriture())) {
                 if (!JadeStringUtil.isIntegerEmpty(getCodeSpecial())
                         && !(CIEcriture.CS_COTISATION_MINIMALE.equals(getCodeSpecial()))) {
                     _addError(statement.getTransaction(), getSession().getLabel("MSG_ECRITURE_CODSPE4"));
                 }
-                /*
-                 * if (new FWCurrency(this.getMontant()).compareTo(new FWCurrency(100000)) == 1) { // montant supérieur
-                 * à 100'000 impossible pour les // non-actifs this._addError(statement.getTransaction(),
-                 * this.getSession() .getLabel("MSG_ECRITURE_GENRE4_MONTANT")); }
-                 */
             }
-            /*
-             * else if (!JAUtil.isIntegerEmpty(getCodeSpecial())) { _addError(statement.getTransaction(),
-             * getSession().getLabel("MSG_ECRITURE_CODSPE7_NOT")); }
-             */
             // Code irrécouvrable
             // Valeurs permises: blanc, A, D, S, P
             // BTC: PERMETTRE AUSSI LES MISES EN COMPTES
@@ -1036,15 +918,7 @@ public class CIEcriture extends BEntity {
                         .equals(getCode())))) {
                 _addError(statement.getTransaction(), getSession().getLabel("MSG_ECRITURE_CODE_VAL"));
             }
-            // code A -> seulement pour extourne -> non aussi possible en
-            // positif
-            // if (CS_CODE_AMORTISSEMENT.equals(getCode())
-            // && (JAUtil.isIntegerEmpty(getExtourne()) ||
-            // "311006".equals(getExtourne()) ||
-            // "311008".equals(getExtourne()))) {
-            // _addError(statement.getTransaction(),
-            // getSession().getLabel("MSG_ECRITURE_CODE_A"));
-            // }
+
             // Pour une écriture de genre 4,0 et 7 seul D est autorisé
             if (!CIEcriture.CS_CIGENRE_4.equals(getGenreEcriture())
                     && !CIEcriture.CS_CIGENRE_7.equals(getGenreEcriture())
@@ -1211,13 +1085,10 @@ public class CIEcriture extends BEntity {
                         // A appeler seulement en mode ajout
                         // On vérifie qu'il existe un affilié
                         CIApplication app = (CIApplication) getSession().getApplication();
-                        /*
-                         * ITIPersonneAvs personneAvs = app.getTiersByAffilie( statement.getTransaction(),
-                         * getIdAffilie(), new String[] { "getIdTiers", "getDesignation1", "getDesignation2",
-                         * "getNumAffilieActuel" });
-                         */
+
                         aff = app.getAffilieByNo(getSession(), getIdAffilie(), forAffilieParitaire,
-                                forAffiliePersonnel, getMoisDebut(), getMoisFin(), getAnnee(), "", "");
+                                forAffiliePersonnel, getMoisDebut(), getMoisFin(), getAnnee(), getJourDebut(),
+                                getJourFin());
                         if ((aff == null) || (aff.isNew())) {
                             _addError(statement.getTransaction(), getSession().getLabel("MSG_ECRITURE_AFFILIE"));
                             return;
@@ -1225,28 +1096,18 @@ public class CIEcriture extends BEntity {
                             /****************************************************************************/
                             // ATTENTION: ON STOCKE L'ID DU TIERS, SON NOM,
                             // PRENOM ou SA RAISON SOCIALE
-                            // setIdAffilie(aff.getNumAffilieActuel());
                             setNomTiers(aff.getTiers().getDesignation1());
                             setPrenomTiers(aff.getTiers().getDesignation2());
-                            // if (JAUtil.isIntegerEmpty(getEmployeur())) {
                             setEmployeur(aff.getAffiliationId());
-                            // }
                         }
                     } else if (!JadeStringUtil.isIntegerEmpty(getEmployeur())) {
                         // On récupère les infos de l'employeur (on ne passe que
                         // dans le cas d'utilisation de la valeur par défaut)
                         // On vérifie qu 'il existe un affilié
                         CIApplication app = (CIApplication) getSession().getApplication();
-                        /*
-                         * ITIPersonneAvs personneAvs = app.getTiers( statement.getTransaction(), getEmployeur(), new
-                         * String[] { "getDesignation1", "getDesignation2", "getNumAffilieActuel" }); if ((personneAvs
-                         * == null) || (personneAvs.isNew())) { _addError(statement.getTransaction(),
-                         * getSession().getLabel("MSG_ECRITURE_AFFILIE"));
-                         */
+
                         aff = app.getAffilie(statement.getTransaction(), getEmployeur(), null);
-                        // aff = app.getAffilieByNo(getSession(),
-                        // getIdAffilie(), getMoisDebut(), getMoisFin(),
-                        // getAnnee());
+
                         if ((aff == null) || (aff.isNew())) {
                             _addError(statement.getTransaction(), getSession().getLabel("MSG_ECRITURE_AFFILIE"));
                         } else {
@@ -1261,11 +1122,7 @@ public class CIEcriture extends BEntity {
 
                     // si l'affilié existe, faire des tests dessus
                     if ((aff != null) && (!aff.isNew())) {
-                        // test période avec affiliation
-                        /*
-                         * if (!getWrapperUtil().checkPerdiodeAff(aff.getDateDebut (), aff.getDateFin())) {
-                         * _addError(statement.getTransaction(), getSession().getLabel("MSG_ECRITURE_AFF_PERIODE")); }
-                         */
+
                         // plus nécessaire, le test n'est fait qu'en mode ajout
                         // Branche économique: obligatoire pour genre 1, 2, 3,
                         // 4, 6, 7, 9 avant 1969
@@ -1300,15 +1157,7 @@ public class CIEcriture extends BEntity {
                         && JadeStringUtil.isIntegerEmpty(getBrancheEconomique())) {
                     _addError(statement.getTransaction(), getSession().getLabel("MSG_ECRITURE_DATEFIN_NOT"));
                 }
-                // Compte
-                // Si le cotisation GENRE 6, le type de compte est GENRE_6 ou
-                // PROVISOIRE
-                // if ((CS_CIGENRE_6.equals(getGenreEcriture()))
-                // && !((CS_GENRE_6.equals(getIdTypeCompte()))
-                // || (CS_PROVISOIRE.equals(getIdTypeCompte())))) {
-                // _addError(statement.getTransaction(),
-                // getSession().getLabel("getSession().getLabel("getSession().getLabel("MSG_ECRITURE_GRE")6")"));
-                // } else {
+
                 if (!this.rechercheCI(statement.getTransaction())) {
                     if (statement.getTransaction().hasErrors() && !needNewDateCompta) {
                         idTypeCompte = CIEcriture.CS_CI_SUSPENS;
@@ -1337,43 +1186,14 @@ public class CIEcriture extends BEntity {
                             "L'affilié ne doit pas être renseigné s'il d'agit d'une déclataration de chômage");
                     setIdAffilie("");
                 }
-                /*
-                 * // comparer avec les écriture de l'année et du même employeur if
-                 * (!rechercheEcritureEmp(statement.getTransaction(), ci)) { // montant total pour cet employeur et
-                 * cette année négatif! _addError(statement.getTransaction(),
-                 * getSession().getLabel("MSG_ECRITURE_SUMEMP")); }
-                 */
 
-                // tester si le chiffre clé est 07 et le CI non cloturé,
-                // remplacer le chiffre par 01
-                /*
-                 * if (CS_CIGENRE_7.equals(getGenreEcriture()) && !isGenreSeptPossible(annee, getAvs())) {
-                 * setGenreEcriture(CS_CIGENRE_1); }
-                 */
                 // montant
                 double mnt = Double.parseDouble(getMontant());
                 if ((mnt != 0) && (mnt < 1)) {
                     // montant inférieur à 1 fr
                     _addError(statement.getTransaction(), getSession().getLabel("MSG_ECRITURE_MONINF"));
                 }
-                /*
-                 * String derniereCloture = JADate.getYear(ci.getDerniereCloture()).toString(); // L'inscription a lieu
-                 * dans une période clôturée: inscription PROVISOIRE ou CI if (new Integer(getAnnee()).intValue() <= new
-                 * Integer(derniereCloture).intValue()) { if (!CS_CI.equals(getIdTypeCompte()) &&
-                 * !CS_PROVISOIRE.equals(getIdTypeCompte()) && !CS_CORRECTION.equals(getIdTypeCompte())) {
-                 * _addError(statement.getTransaction(), getSession().getLabel("getSession().getLabel("
-                 * MSG_ECRITURE_CLOT")")); } } else if (ciRA.isCiOuvert().booleanValue()) { // Si genre 7 avant 1997:
-                 * inscription PROVISOIRE ou GENRE 7 if (CS_CIGENRE_7.equals(getGenreEcriture()) && (new
-                 * Integer(getAnnee()).intValue() < 1997)) { if (!CS_GENRE_7.equals(getIdTypeCompte()) &&
-                 * !CS_PROVISOIRE.equals(getIdTypeCompte())) { _addError(statement.getTransaction(),
-                 * getSession().getLabel("getSession().getLabel(" MSG_ECRITURE_TYPECOM2")")); } } else { // Sinon:
-                 * inscription PROVISOIRE ou CI if (!CS_CI.equals(getIdTypeCompte()) &&
-                 * !CS_PROVISOIRE.equals(getIdTypeCompte())) { _addError(statement.getTransaction(),
-                 * getSession().getLabel("getSession().getLabel(" MSG_ECRITURE_TYPECOM1")")); } } } else // Le CI n'est
-                 * pas ouvert: inscription SUSPENS if (!CS_SUSPENS.equals(getIdTypeCompte())) { _addError(
-                 * statement.getTransaction(), getSession().getLabel("getSession().getLabel(" MSG_ECRITURE_CI_CLOSED")")
-                 * + getCompteIndividuelId()); } }
-                 */
+
                 int anneeInt;
                 anneeInt = new Integer(getAnnee().trim()).intValue();
 
@@ -1438,7 +1258,6 @@ public class CIEcriture extends BEntity {
                                 // année négatif!
                                 _addError(statement.getTransaction(), getSession().getLabel("MSG_ECRITURE_SUMEMP"));
                             }
-
                         }
                     }
                 } else if (CIJournal.CS_APG.equals(journal.getIdTypeInscription())
@@ -1479,9 +1298,6 @@ public class CIEcriture extends BEntity {
                     if (!CIEcriture.CS_CIGENRE_7.equals(getGenreEcriture())) {
                         if (JadeStringUtil.isBlankOrZero(partBta)) {
                             // doit être genre 7
-                            // solution: erreur ou changement automatique?
-                            // _addError(statement.getTransaction(),
-                            // getSession().getLabel("MSG_ECRITURE_PAS_GENRE7"));
                             setGenreEcriture(CIEcriture.CS_CIGENRE_7);
                         }
                     }
@@ -1597,8 +1413,6 @@ public class CIEcriture extends BEntity {
                 this._dbWriteNumeric(statement.getTransaction(), getCaisseTenantCI(), "caisseTenantCI"));
         statement.writeField("KBBIMP", this._dbWriteBoolean(statement.getTransaction(), isCertificat(),
                 BConstants.DB_TYPE_BOOLEAN_CHAR, "certificat"));
-        // statement.writeField("KBTCAN",
-        // _dbWriteNumeric(statement.getTransaction(), cantonAF,"cantonAf"));
         statement.writeField("KBBATT", this._dbWriteBoolean(statement.getTransaction(), getWantForDeclaration(),
                 BConstants.DB_TYPE_BOOLEAN_CHAR, "declarationSuivante"));
         statement.writeField("KBLIB", this._dbWriteString(statement.getTransaction(), getLibelleAff(), "libelle"));
@@ -2029,13 +1843,6 @@ public class CIEcriture extends BEntity {
                 transaction.openTransaction();
                 createTransaction = true;
             }
-            // Si l'idTypeCompte n'est pas PROVISOIRE la comptabilisation est
-            // refusée
-            /*
-             * if (!CS_PROVISOIRE.equals(getIdTypeCompte())) { _addError(
-             * transaction,getSession().getLabel("getSession().getLabel(" MSG_ECRITURE_COMPT_TYPECOMPT")") +
-             * getEcritureId()); }
-             */
             // Si la cotisation est GENRE 6, l'idTypeCompte devient GENRE_6
             String registre = getCI(transaction, false).getRegistre();
             if (CICompteIndividuel.CS_REGISTRE_GENRES_6.equals(registre)) {
@@ -2084,18 +1891,9 @@ public class CIEcriture extends BEntity {
             }
             // ci additionnel si nécessaire
             if (testCIAdditionnel) {
-                /*
-                 * if(ecrSlitting!=null&&ecrSlitting.size()>1) { // l'écriture a été splittée ArrayList ecrs = new
-                 * ArrayList(); ecrs.add(this); ecrs.add(ecrSlitting.get(0)); // ci additionnel de l'assuré
-                 * getCI(transaction, false).annonceCIAdditionnel(transaction, ecrs); // ci additionnel du conjoint ->
-                 * effectué dans addEcriture de CIPeriodeSplitting
-                 * //((CIEcriture)ecrSlitting.get(1)).annonceCIAdditionnel (transaction); } else { // pas splittée
-                 * annonceCIAdditionnel(transaction); }
-                 */
                 getCI(transaction, false).annonceCIAdditionnel(transaction, this);
             }
-            // if (testSplitting &&
-            // JAUtil.isIntegerEmpty(getRassemblementOuvertureId())) {
+
             // test les période de splitting si demandé et si non clôturé
             if (testSplitting) {
                 getWrapperUtil().checkPeriode(transaction);
@@ -2198,6 +1996,8 @@ public class CIEcriture extends BEntity {
         setParticulier(ecr.getParticulier());
         setMoisDebut(ecr.getMoisDebut());
         setMoisFin(ecr.getMoisFin());
+        setJourDebut(ecr.getJourDebut());
+        setJourFin(ecr.getJourFin());
         setAnnee(ecr.getAnnee());
         setMontant(ecr.getMontant());
         setCode(ecr.getCode());
@@ -2241,6 +2041,8 @@ public class CIEcriture extends BEntity {
         setParticulier(ecr.getParticulier());
         setMoisDebut(ecr.getMoisDebut());
         setMoisFin(ecr.getMoisFin());
+        setJourDebut(ecr.getJourDebut());
+        setJourFin(ecr.getJourFin());
         setAnnee(ecr.getAnnee());
         setMontant(ecr.getMontant());
         setCode(ecr.getCode());
@@ -2317,10 +2119,7 @@ public class CIEcriture extends BEntity {
         copieFin.setEcritureId("");
         copieFin.setEcritureReference(getEcritureId());
         copieFin.setIdTypeCompte(CIEcriture.CS_CORRECTION);
-        // pour passer les tests
-        // copieFin.setAvs(getAvs());
-        // copieFin.setEmployeurPartenaire(getEmployeurPartenaire());
-        // copieFin.wantCallValidate(false);
+
         copieFin.simpleAdd(transaction);
         CIEcriture ecritureDebut = new CIEcriture();
         ecritureDebut.setSession(getSession());
@@ -2331,30 +2130,11 @@ public class CIEcriture extends BEntity {
         if (CIEcriture.CS_CI_SUSPENS.equals(ecritureDebut.getIdTypeCompte())) {
             ecritureDebut.setIdTypeCompte(CIEcriture.CS_CI);
         }
-        // pour passer les tests
-        // ecritureDebut.setAvs(getAvs());
-        // ecritureDebut.setEmployeurPartenaire(getEmployeurPartenaire());
-        // ecritureDebut.wantCallValidate(false);
+
         ecritureDebut.simpleAdd(transaction);
-        // CIEcriture copieDebut = new CIEcriture();
-        // copieDebut.setSession(getSession());
-        // copyDataToEntity(copieDebut);
-        // copieDebut.setEcritureId("");
-        // copieDebut.setEcritureReference(ecritureDebut.getEcritureId());
-        // copieDebut.setIdTypeCompte(CS_CORRECTION);
-        // pour passer les tests
-        // copieDebut.setAvs(getAvs());
-        // copieDebut.setEmployeurPartenaire(getEmployeurPartenaire());
-        // copieDebut.wantCallValidate(false);
-        // copieDebut.simpleAdd(transaction);
+
         setMontant(String.valueOf(montantFin));
         setMoisDebut(String.valueOf(dateCloture.getMonth() + 1));
-        // if(CS_CI.equals(getIdTypeCompte())) {
-        // setIdTypeCompte(CS_CI_SUSPENS);
-        // } else {
-        // setIdTypeCompte(CS_TEMPORAIRE_SUSPENS);
-        // }
-        // wantCallValidate(false);
         if (!isUpdating()) {
             this.update(transaction);
         }
@@ -2958,7 +2738,6 @@ public class CIEcriture extends BEntity {
         if (!CIEcriture.CS_MANDAT_NORMAL.equals(getParticulier())) {
             greCourant += CodeSystem.getCodeUtilisateur(getParticulier(), getSession());
         }
-        // JANumberFormatter.formatZeroValues(greCourant,false,true);
         return greCourant;
     }
 
@@ -3893,42 +3672,28 @@ public class CIEcriture extends BEntity {
         if (transaction.hasErrors()) {
             return false;
         }
-        /*
-         * if (JAUtil.isStringEmpty(getAvs()) && !CS_CIGENRE_6.equals(getGenreEcriture())) { _addError(transaction,
-         * getSession().getLabel("MSG_ECRITURE_AVS")); return false; }
-         */
+
         CICompteIndividuel ciTemp;
         CICompteIndividuelManager ciMng = new CICompteIndividuelManager();
         ciMng.setSession(getSession());
         ciMng.orderByAvs(false);
-        // ciMng.setForNumeroAvsNNSS(getNumeroavsNNSS());
         ciMng.setForNumeroAvs(getAvs());
         if (CIEcriture.CS_CIGENRE_6.equals(getGenreEcriture())) {
             ciMng.setForNomPrenom(getNomPrenom());
             ciMng.setForRegistre(CICompteIndividuel.CS_REGISTRE_GENRES_6);
             ciMng.find(transaction);
-            // } else if (CS_CIGENRE_7.equals(getGenreEcriture()) &&
-            // Integer.parseInt(getAnnee()) < 1997) {
-            // ciMng.setForNomPrenom(getNomPrenom());
-            // ciMng.setForRegistre(CICompteIndividuel.CS_REGISTRE_GENRES_7);
         } else {
             ciMng.setForRegistre(CICompteIndividuel.CS_REGISTRE_ASSURES);
             if (!JadeStringUtil.isBlank(getAvs())) {
                 ciMng.find(transaction);
             }
         }
-        // ciMng.find(transaction);
+
         if (!transaction.hasErrors() && (ciMng.getSize() > 0)) {
             // Si il existe un CI on s'accroche à celui-là
             // pour un ci au ra, tester si l'écriture n'est pas après une
             // clôture et que le ci est fermé
             ci = (CICompteIndividuel) ciMng.getEntity(0);
-            /*
-             * if (!ciTemp.isCiOuvert().booleanValue() && BSessionUtil.compareDateFirstLower( getSession(),
-             * ciTemp.getDerniereCloture(), "01." + (JAUtil.isIntegerEmpty(getMoisFin()) ? "12" : getMoisFin()) + "." +
-             * getAnnee())) { // l'écriture est après la dernière clôture d'un ci fermé -> SUSPENS
-             * setIdTypeCompte(CS_SUSPENS); } ci = ciTemp;
-             */
             setCompteIndividuelId(ci.getCompteIndividuelId());
             return true;
         }
@@ -4602,7 +4367,6 @@ public class CIEcriture extends BEntity {
     }
 
     private void updateInscription(BTransaction transaction) throws Exception {
-        // if (!simpleProcess) {
         // s'il s'agit d'une zuordnung et qu'il y a des erreurs => pas de
         // comptabilisation
         if (transaction.hasErrors() && !needNewDateCompta) {
@@ -4828,12 +4592,6 @@ public class CIEcriture extends BEntity {
             if (JadeStringUtil.isBlank(getPartBta())) {
                 setPartBta("");
             }
-            // Code spécial = vide
-            /*
-             * // cette partie est traitée dans determineCodeSpecial() if (JAUtil.isStringEmpty(getCodeSpecial())) { if
-             * (CS_CIGENRE_7.equals(getGenreEcriture())) { if (1997 < new Integer(getAnnee()).intValue()) { // todo
-             * setCodeSpecial(CS_NONFORMATTEUR_INDEPENDANT); } } else { setCodeSpecial(""); } }
-             */
             // Branche économique = vide
             if (JadeStringUtil.isBlank(getBrancheEconomique())) {
                 setBrancheEconomique("");
@@ -4852,6 +4610,22 @@ public class CIEcriture extends BEntity {
                 setIdTypeCompte(journal.getIdTypeCompte());
             }
         }
+    }
+
+    public String getJourDebut() {
+        return jourDebut;
+    }
+
+    public void setJourDebut(String jourDebut) {
+        this.jourDebut = jourDebut;
+    }
+
+    public String getJourFin() {
+        return jourFin;
+    }
+
+    public void setJourFin(String jourFin) {
+        this.jourFin = jourFin;
     }
 
 }

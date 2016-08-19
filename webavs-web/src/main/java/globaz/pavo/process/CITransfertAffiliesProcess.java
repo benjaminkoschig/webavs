@@ -64,8 +64,9 @@ public class CITransfertAffiliesProcess extends BProcess {
         affilieSrc = (ciapp.getAffilieByNoIncludeRadie(getSession(), numeroAffilieSrc, true, false,
                 String.valueOf(dateJa.getYear())));
 
-        affilieDst = (ciapp.getAffilieByNo(getSession(), numeroAffilieDst, true, false, "", "",
-                String.valueOf(dateJa.getYear()), "", ""));
+        affilieDst = (ciapp.getAffilieByNo(getSession(), numeroAffilieDst, true, false,
+                String.valueOf(dateJa.getMonth()), "", String.valueOf(dateJa.getYear()),
+                String.valueOf(dateJa.getDay()), ""));
 
         mgrDs.setForAffiliesNumero(affilieSrc.getAffiliationId());
         mgrDs.setAnnee(String.valueOf(dateJa.getYear()));

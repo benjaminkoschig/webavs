@@ -369,6 +369,24 @@ public class AFQuittance extends BEntity implements Serializable {
         }
     }
 
+    public String getJourDebut() {
+        try {
+            JADate date = new JADate(getPeriodeDebut());
+            return String.valueOf(date.getDay());
+        } catch (JAException e) {
+            return "";
+        }
+    }
+
+    public String getJourFin() {
+        try {
+            JADate date = new JADate(getPeriodeFin());
+            return String.valueOf(date.getDay());
+        } catch (JAException e) {
+            return "";
+        }
+    }
+
     public String getDateFin() {
         try {
             JADate date = new JADate(getPeriodeFin());
@@ -730,12 +748,6 @@ public class AFQuittance extends BEntity implements Serializable {
         this.etatQuittance = etatQuittance;
     }
 
-    /*
-     * public void setIdAffBeneficiaire(String numAffilie) { AFAffiliationManager affiliation = new
-     * AFAffiliationManager(); affiliation.setSession(getSession()); affiliation.setForAffilieNumero(numAffilie); try {
-     * affiliation.find(); AFAffiliation aff = (AFAffiliation) affiliation.getFirstEntity(); this.idAffBeneficiaire =
-     * aff.getAffiliationId(); } catch (Exception e) { idAffBeneficiaire = ""; } }
-     */
     public void setIdAffBeneficiaire(String numAffilie) {
         try {
             BSession sessionPavo = new BSession(CIApplication.DEFAULT_APPLICATION_PAVO);
@@ -746,7 +758,8 @@ public class AFQuittance extends BEntity implements Serializable {
                 setAnnee(String.valueOf(date.getYear()));
             }
             AFAffiliation aff = app.getAffilieByNo(getSession(), numAffilie, true, false,
-                    getPeriodeDebut().substring(3, 5), getPeriodeFin().substring(3, 5), getAnnee(), "", "");
+                    getPeriodeDebut().substring(3, 5), getPeriodeFin().substring(3, 5), getAnnee(), getJourDebut(),
+                    getJourFin());
             idAffBeneficiaire = aff.getAffiliationId();
         } catch (Exception e) {
             idAffBeneficiaire = "";

@@ -275,8 +275,9 @@ public class CIDeclarationPUCS4 extends BProcess {
                     CIApplication app = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
                             CIApplication.DEFAULT_APPLICATION_PAVO);
                     affilie = app.getAffilieByNo(getSession(),
-                            CIUtil.formatNumeroAffilie(getSession(), rec.getNumeroAffilie()), true, false, "", "",
-                            rec.getAnnee(), "", "");
+                            CIUtil.formatNumeroAffilie(getSession(), rec.getNumeroAffilie()), true, false,
+                            String.valueOf(rec.getMoisDebut()), String.valueOf(rec.getMoisFin()), rec.getAnnee(),
+                            String.valueOf(rec.getJourDebut()), String.valueOf(rec.getJourFin()));
                     if (rec.getCategorieAffilie().equalsIgnoreCase("AF")) {
                         launcherImportPucsFileProcess.setTraitementAFSeul(true);
                         traitementAFSeul = true;
@@ -1397,27 +1398,36 @@ public class CIDeclarationPUCS4 extends BProcess {
             String numeroAffilie) {
         // Plausi période
         try {
+            int jourDebut = rec.getJourDebut();
+            if (jourDebut < 0 || jourDebut > 31) {
+                errors.add(getSession().getLabel("ERREUR_DATE_DEBUT"));
+            } else {
+                ecriture.setJourDebut("" + rec.getJourDebut());
+            }
+
+            int jourFin = rec.getJourFin();
+            if (jourFin < 0 || jourFin > 31) {
+                errors.add(getSession().getLabel("ERREUR_DATE_FIN"));
+            } else {
+                ecriture.setJourFin("" + rec.getJourFin());
+            }
+
             int moisDebut = rec.getMoisDebut();
             if (((moisDebut < 1) || (moisDebut > 12)) && (99 != moisDebut) && (66 != moisDebut)) {
                 errors.add(getSession().getLabel("DT_MOIS_DEBUT_INVALIDE"));
-
-                // breakTests = true;
             } else {
-
                 ecriture.setMoisDebut("" + rec.getMoisDebut());
-
             }
+
             int moisFin = rec.getMoisFin();
             if ((moisFin < 1) || ((moisFin > 12) && (99 != moisFin) && (66 != moisFin))) {
                 errors.add(getSession().getLabel("DT_MOIS_FIN_INVALIDE"));
-                // breakTests = true;
             } else {
-
                 ecriture.setMoisFin("" + rec.getMoisFin());
             }
+
             if (moisDebut > moisFin) {
                 errors.add(getSession().getLabel("DT_MOIS_DEBUT_PLUS_GRAND"));
-                // breakTests = true;
             }
             if ((99 == moisDebut) && (99 == moisFin)) {
                 if (!ecriture.getWrapperUtil().rechercheEcritureSemblablesDt(getTransaction(),
@@ -1432,17 +1442,14 @@ public class CIDeclarationPUCS4 extends BProcess {
             if (!"true".equalsIgnoreCase(accepteAnneeEnCours)) {
                 if (Integer.parseInt(rec.getAnnee()) >= annee) {
                     errors.add(getSession().getLabel("DT_ANNEE_TROP_GRANDE"));
-                    // breakTests = true;
                 }
             } else {
                 if (Integer.parseInt(rec.getAnnee()) > annee) {
                     errors.add(getSession().getLabel("DT_ANNEE_TROP_GRANDE"));
-                    // breakTests = true;
                 }
             }
         } catch (Exception ex) {
             errors.add(getSession().getLabel("DT_MOIS_INVALIDE"));
-            // breakTests = true;
         }
     }
 

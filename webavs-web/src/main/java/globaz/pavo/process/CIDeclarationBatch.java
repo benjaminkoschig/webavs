@@ -382,15 +382,26 @@ public class CIDeclarationBatch extends BProcess {
                                 // Plausi période
                                 // if(!modeInscription) {
                                 try {
+
+                                    int jourDebut = rec.getJourDebut();
+                                    if (jourDebut < 0 || jourDebut > 31) {
+                                        errors.add(getSession().getLabel("ERREUR_DATE_DEBUT"));
+                                    } else {
+                                        ecriture.setJourDebut("" + rec.getJourDebut());
+                                    }
+
+                                    int jourFin = rec.getJourFin();
+                                    if (jourFin < 0 || jourFin > 31) {
+                                        errors.add(getSession().getLabel("ERREUR_DATE_FIN"));
+                                    } else {
+                                        ecriture.setJourFin("" + rec.getJourFin());
+                                    }
+
                                     int moisDebut = rec.getMoisDebut();
                                     if (((moisDebut < 1) || (moisDebut > 12)) && (99 != moisDebut) && (66 != moisDebut)) {
                                         errors.add(getSession().getLabel("DT_MOIS_DEBUT_INVALIDE"));
-
-                                        // breakTests = true;
                                     } else {
-
                                         ecriture.setMoisDebut("" + rec.getMoisDebut());
-
                                     }
                                     int moisFin = rec.getMoisFin();
                                     if ((moisFin < 1) || ((moisFin > 12) && (99 != moisFin) && (66 != moisFin))) {
@@ -417,17 +428,14 @@ public class CIDeclarationBatch extends BProcess {
                                     if (!"True".equals(accepteAnneeEnCours)) {
                                         if (Integer.parseInt(rec.getAnnee()) >= annee) {
                                             errors.add(getSession().getLabel("DT_ANNEE_TROP_GRANDE"));
-                                            // breakTests = true;
                                         }
                                     } else {
                                         if (Integer.parseInt(rec.getAnnee()) > annee) {
                                             errors.add(getSession().getLabel("DT_ANNEE_TROP_GRANDE"));
-                                            // breakTests = true;
                                         }
                                     }
                                 } catch (Exception ex) {
                                     errors.add(getSession().getLabel("DT_MOIS_INVALIDE"));
-                                    // breakTests = true;
                                 }
                                 // }
                                 // Plausi montant
@@ -439,7 +447,6 @@ public class CIDeclarationBatch extends BProcess {
                                         if (cur.compareTo(new FWCurrency("1")) == -1) {
                                             errors.add(getSession().getLabel("DT_MONTANT_INF_1CHF"));
                                             ecriture.setMontant(montantEcr);
-                                            // breakTests = true;
                                         } else {
                                             ecriture.setGre("01");
                                             ecriture.setMontant(cur.toStringFormat());
@@ -447,7 +454,6 @@ public class CIDeclarationBatch extends BProcess {
                                     } catch (Exception inex) {
                                         errors.add(getSession().getLabel("DT_MONTANT_INVALIDE"));
                                         montantEcr = "        0.00";
-                                        // breakTests = true;
                                     }
                                 } else {
                                     nbrInscriptionsNegatives++;
@@ -464,7 +470,6 @@ public class CIDeclarationBatch extends BProcess {
                                             FWCurrency cur = new FWCurrency(montantEcr);
                                             if (cur.compareTo(new FWCurrency("1")) == -1) {
                                                 errors.add(getSession().getLabel("DT_MONTANT_INF_1CHF"));
-                                                // breakTests = true;
                                             } else {
                                                 ecriture.setGre("11");
                                                 ecriture.setExtourne(CIEcriture.CS_EXTOURNE_1);
@@ -473,7 +478,6 @@ public class CIDeclarationBatch extends BProcess {
                                         } catch (Exception inex) {
                                             errors.add(getSession().getLabel("DT_MONTANT_INVALIDE"));
                                             montantEcr = "        0.00";
-                                            // breakTests = true;
                                         }
                                     }
                                 }
@@ -482,7 +486,6 @@ public class CIDeclarationBatch extends BProcess {
                                     // Les dates ne correspondent pas avec la
                                     // période d'affiliation
                                     errors.add(getSession().getLabel("DT_ERR_DATE_AFFILIATION"));
-                                    // breakTests = true;
                                 }
                                 // Plausi no avs
                                 String noAvs = rec.getNumeroAvs().trim();

@@ -172,6 +172,8 @@ public class DSInscriptionsIndividuelles extends BEntity {
             ecritureCi.setMontant(montant);
             ecritureCi.setAnnee(getAnneeInsc());
             ecritureCi.setMoisDebut(moisDebut);
+            ecritureCi.setJourDebut(jourDebut);
+            ecritureCi.setJourFin(jourFin);
             ecritureCi.setMoisFin(moisFin);
             ecritureCi.setIdTypeCompte(CIEcriture.CS_TEMPORAIRE);
             ecritureCi.setCodeSpecial("");
@@ -317,8 +319,9 @@ public class DSInscriptionsIndividuelles extends BEntity {
                 // ecritureCi.setIdTypeCompte(CIEcriture.CS_TEMPORAIRE);
                 ecritureCi.setMontant(montant);
                 ecritureCi.setAnnee(getAnneeInsc());
-                // TODO : parser la période pour déterminer le jours de début et
-                // de fin
+                ecritureCi.setJourDebut(jourDebut);
+                ecritureCi.setJourFin(jourFin);
+
                 ecritureCi.setMoisDebut(moisDebut);
                 ecritureCi.setMoisFin(moisFin);
                 ecritureCi.setIdTypeCompte(CIEcriture.CS_TEMPORAIRE);
@@ -366,8 +369,9 @@ public class DSInscriptionsIndividuelles extends BEntity {
                 // ecritureCi.setIdTypeCompte(CIEcriture.CS_TEMPORAIRE);
                 ecritureCi.setMontant(montant);
                 ecritureCi.setAnnee(getAnneeInsc());
-                // TODO : parser la période pour déterminer le jours de début et
-                // de fin
+                ecritureCi.setJourDebut(jourDebut);
+                ecritureCi.setJourFin(jourFin);
+
                 ecritureCi.setMoisDebut(moisDebut);
                 ecritureCi.setMoisFin(moisFin);
                 // ecritureCi.setIdTypeCompte(CIEcriture.CS_TEMPORAIRE);
