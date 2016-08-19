@@ -13,6 +13,7 @@ import globaz.pyxis.db.tiers.TITiers;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import ch.globaz.common.business.language.LanguageResolver;
 import ch.globaz.common.document.TextMerger;
 import ch.globaz.common.document.babel.BabelTextDefinition;
 import ch.globaz.common.document.babel.TextMergerBabelTopaz;
@@ -99,7 +100,7 @@ public class PCPlanCalculHandlerOO {
         TITiers tiers = loadTiers(idTiersBeneficiaire);
         textMerger.getTextGiver().setLangue(tiers.getLangueIso());
         createLibelleHome(textMerger, dacOO, tupleRoot);
-        createLibelleGeneraux(data);
+        createLibelleGeneraux(data, tiers);
         // Bloc fortune
         createBloc(data, planCalcul.getBlocFortune(), TypeBloc.FORTUNE);
         // Bloc revenu
@@ -335,9 +336,9 @@ public class PCPlanCalculHandlerOO {
         return data;
     }
 
-    private DocumentData createLibelleGeneraux(DocumentData data) throws PersonneDansPlanCalculException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException, DecisionException {
-
+    private DocumentData createLibelleGeneraux(DocumentData data, TITiers tiers)
+            throws PersonneDansPlanCalculException, JadeApplicationServiceNotAvailableException,
+            JadePersistenceException, DecisionException {
         // Requerant infos et mebre famille
 
         String toAppendToPcalHeader = "";
@@ -360,6 +361,10 @@ public class PCPlanCalculHandlerOO {
                             PCPlanCalculHandlerOO.DATE_FIN, PegasusDateUtil.getLastDayOfMonth(month - 1, year) + "."
                                     + dacOO.getDecisionHeader().getSimpleDecisionHeader().getDateFinDecision());
         }
+
+        // PAGE
+        data.addData("PAGE_NUMERO",
+                LanguageResolver.resolveLibelleFromLabel(tiers.getLangueIso(), "PAGE", getSession()));
 
         data.addData(
                 "PCAL_HEADER",

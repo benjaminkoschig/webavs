@@ -4,7 +4,6 @@ import globaz.babel.api.ICTDocument;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.util.FWCurrency;
-import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JACalendar;
 import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.client.util.JadeStringUtil;
@@ -25,11 +24,13 @@ import java.util.Map;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.business.language.LanguageResolver;
 import ch.globaz.common.business.models.CTDocumentImpl;
+import ch.globaz.common.codesystem.CodeSystem;
 import ch.globaz.common.constantes.CommonConstLangue;
 import ch.globaz.common.document.TextGiver;
 import ch.globaz.common.document.babel.BabelTextDefinition;
 import ch.globaz.common.document.babel.TextGiverBabel;
 import ch.globaz.common.domaine.Checkers;
+import ch.globaz.common.sql.CodeSystemQueryExecutor;
 import ch.globaz.jade.JadeBusinessServiceLocator;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
@@ -775,6 +776,10 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         data.addData("NSS", PRStringUtils.replaceString(babelDoc.getTextes(1).getTexte(30).getDescription(),
                 SingleDACBuilder.NSS, dacOO.getDecisionHeader().getPersonneEtendue().getPersonneEtendue()
                         .getNumAvsActuel()));
+        // PAGE
+        data.addData("PAGE_NUMERO",
+                LanguageResolver.resolveLibelleFromLabel(tiersBeneficiaire.getLangueIso(), "PAGE", getSession()));
+
         // Ayant droit
         data.addData("AYANT_DROIT", PRStringUtils.replaceString(babelDoc.getTextes(1).getTexte(40).getDescription(),
                 SingleDACBuilder.AYANT_DROIT, dacOO.getDecisionHeader().getPersonneEtendue().getTiers()
@@ -783,6 +788,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
         String dateDecision = PegasusDateUtil.getLitteralDateByTiersLanguage(dacOO.getDecisionHeader()
                 .getSimpleDecisionHeader().getDateDecision(), tiersBeneficiaire.getLangue());
+
         // Decision du
         if (isProforma()) {
 
@@ -1153,6 +1159,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
 
         String dateFinDecompte = pcaForPeriode.getDateFinPeriode();
         String dateDebutDecompte = pcaForPeriode.getDateDebutPeriode();
+        String langueTiers = dacOO.getDecisionHeader().getPersonneEtendue().getTiers().getLangue();
 
         Integer nbreMois = pcaForPeriode.getNbreMois();
 
@@ -1174,9 +1181,11 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
             // ligne standard decompte
             String libelleForLineStandard = getLibelleForLigneStandardForDecompte(mDeb, mFin, an);
             if (dealPcaCSType) {
-                libelleForLineStandard += " ("
-                        + BSessionUtil.getSessionFromThreadContext().getCodeLibelle(pcaForPeriode.getCsGenrePca())
-                        + ")";
+                CodeSystem codeSystemGenrePca = CodeSystemQueryExecutor.searchCodeSystemTraduction(
+                        pcaForPeriode.getCsGenrePca(), getSession(),
+                        LanguageResolver.resolveCodeSystemFromLanguage(langueTiers));
+                libelleForLineStandard += " (" + codeSystemGenrePca.getTraduction() + ")";
+
             }
             // Ajoute de la designation du ou des beneficiaires
             libelleForLineStandard += SingleDACBuilder.CRLF + pcaForPeriode.getDescTiers();
@@ -1354,9 +1363,8 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
      * @return
      */
     private String getMonthName(int month) {
-
-        return JACalendar.getMonthName(month, BSessionUtil.getSessionFromThreadContext().getIdLangue());
-
+        String langueTiers = dacOO.getDecisionHeader().getPersonneEtendue().getTiers().getLangue();
+        return JACalendar.getMonthName(month, PRUtil.getISOLangueTiers(langueTiers));
     }
 
     private Boolean isConjointDom2R() {
