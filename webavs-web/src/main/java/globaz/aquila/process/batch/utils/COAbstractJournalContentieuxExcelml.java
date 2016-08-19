@@ -105,33 +105,33 @@ public abstract class COAbstractJournalContentieuxExcelml {
     }
 
     /**
-     * @param theSession
-     * @param theContentieux
-     * @param theEtape
+     * @param session
+     * @param contentieux
+     * @param etape
      */
-    public void addRowInExcelml(BSession theSession, COContentieux theContentieux, COEtape theEtape) {
-        CASection theSection = theContentieux.getSection();
-        CACompteAnnexe theCompteAnnexe = (CACompteAnnexe) theSection.getCompteAnnexe();
+    public void addRowInExcelml(BSession session, COContentieux contentieux, COEtape etape) {
+        CASection section = contentieux.getSection();
+        CACompteAnnexe compteAnnexe = (CACompteAnnexe) section.getCompteAnnexe();
 
-        String numeroAffilie = theCompteAnnexe.getIdExterneRole();
-        String nomAffilie = theCompteAnnexe.getDescription();
-        String role = theCompteAnnexe.getCARole().getDescription();
-        String numeroSection = theSection.getIdExterne();
-        String dateFacture = theSection.getDateSection();
+        String numeroAffilie = compteAnnexe.getIdExterneRole();
+        String nomAffilie = compteAnnexe.getDescription();
+        String role = compteAnnexe.getCARole().getDescription();
+        String numeroSection = section.getIdExterne();
+        String dateFacture = section.getDateSection();
         // Bug 8619
         String montantInitialSection;
         try {
-            montantInitialSection = CORequisitionPoursuiteUtil.getSoldeSectionInitial(theSession,
-                    theContentieux.getIdSection())[0];
+            montantInitialSection = CORequisitionPoursuiteUtil.getSoldeSectionInitial(session,
+                    contentieux.getIdSection())[0];
         } catch (Exception e1) {
             montantInitialSection = "0";
         }
-        String soldeSection = theSection.getSolde();
-        String soldeCompteAnnexe = theCompteAnnexe.getSolde();
-        String etapeContentieuxLibelle = theEtape.getLibEtapeLibelle();
+        String soldeSection = section.getSolde();
+        String soldeCompteAnnexe = compteAnnexe.getSolde();
+        String etapeContentieuxLibelle = etape.getLibEtapeLibelle();
 
         AdresseJournalContentieuxExcelmlPojo adresseJournalContentieuxExcelmlPojo = construitJournalContentieuxExcelmlPojo(
-                theSession, theCompteAnnexe.getTiers(), theContentieux, theEtape, dateDocument);
+                session, compteAnnexe.getTiers(), contentieux, etape, dateDocument);
 
         containerJournalContentieuxExcelml.put(
                 COAbstractJournalContentieuxExcelml.EXCELML_MODEL_COL_NAME_NUMERO_AFFILIE, numeroAffilie);
@@ -174,7 +174,7 @@ public abstract class COAbstractJournalContentieuxExcelml {
                 COAbstractJournalContentieuxExcelml.EXCELML_MODEL_COL_NAME_CANTON_ADRESSE_COURRIER,
                 adresseJournalContentieuxExcelmlPojo.getCantonAdresseCourrier());
 
-        addRowInExcelmlInfoComplementaire(theSession, theContentieux, theEtape);
+        addRowInExcelmlInfoComplementaire(session, contentieux, etape);
     }
 
     /**

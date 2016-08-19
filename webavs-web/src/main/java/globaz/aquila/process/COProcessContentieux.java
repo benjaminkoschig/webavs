@@ -7,6 +7,9 @@
 package globaz.aquila.process;
 
 import globaz.aquila.api.ICOApplication;
+import globaz.aquila.api.ICOEtape;
+import globaz.aquila.application.COProperties;
+import globaz.aquila.db.access.batch.COEtape;
 import globaz.aquila.print.CO00CSommationPaiement;
 import globaz.aquila.print.COJournalContentieux_Doc;
 import globaz.aquila.print.list.COListParOP;
@@ -171,10 +174,7 @@ public class COProcessContentieux extends BProcess {
 
             COAbstractJournalContentieuxExcelml journalContentieuxExcelml = null;
 
-            // TODO : A chercher la propriété pour l'activation du journal avec info complémentaire
-            boolean isJournalContentieuxComplementaireActive = false;
-            // TODO : A faire les trois conditions pour instancier le bon journal
-            if (imprimerJournalContentieuxExcelml && isJournalContentieuxComplementaireActive) {
+            if (hasConditionPourImprimerInfosSupp()) {
                 journalContentieuxExcelml = new COImprimerJournalContentieuxInfoComplementaireExcelml(
                         getDateReference(), getDateSurDocument(), getPrevisionnel().booleanValue(), getRoles());
             } else {
@@ -222,6 +222,58 @@ public class COProcessContentieux extends BProcess {
             COCacheCatalogueFacade.getInstance().releaseCache(this);
         }
         return true;
+    }
+
+    /**
+     * Test les conditions pour imprimer les infos supplémentaires pour la liste prévisionnelle des poursuites
+     * On imprime si
+     * - "Imprimer fichier de travail Excel" est selectionné
+     * - Etape "Envoyer requisition de puorsuite" selectionnée
+     * - La propriété "aquila.ajout.infos.liste.provisionnelle.poursuites" positionné à true
+     * 
+     * @return
+     * @throws Exception
+     */
+    private boolean hasConditionPourImprimerInfosSupp() throws Exception {
+        // S150902_002 - Propriété pour l'activation du journal avec info complémentaire
+        boolean isJournalContentieuxComplementaireActive = COProperties.AJOUT_INFOS_LISTE_PROVISIONNELLE_POURSUITES
+                .getBooleanValue();
+
+        return imprimerJournalContentieuxExcelml && isJournalContentieuxComplementaireActive
+                && hasRequesitionPoursuiteSelection();
+
+    }
+
+    /**
+     * Permet de savoir si la réquisition de poursuite de la séquence AVS a été selectionnée
+     * 
+     * @param selection
+     * @return
+     * @throws Exception
+     */
+    private boolean hasRequesitionPoursuiteSelection() throws Exception {
+        COSelection selection = getSelections().get("1");
+
+        // si une et une seule selection a été faite
+        if (selection != null && selection.getDetailEtapes().size() == 1) {
+
+            // On récupère l'étape selectionné
+            String idEtape = (String) selection.getDetailEtapes().get(0);
+
+            // On va rechercher son code en base de donnée
+            COEtape etape = new COEtape();
+            etape.setIdEtape(idEtape);
+            etape.setIdSequence("1");
+            etape.retrieve(getTransaction());
+
+            if (!etape.isNew()) {
+
+                // Si c'est bien l'étape voule, on return true; false sinon
+                return ICOEtape.CS_REQUISITION_DE_POURSUITE_ENVOYEE.equals(etape.getLibEtape());
+            }
+        }
+
+        return false;
     }
 
     /*

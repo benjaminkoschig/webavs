@@ -206,6 +206,16 @@
     ss:Bold="1"/>
    <NumberFormat ss:Format="Standard"/>
   </Style>
+  <Style ss:ID="s96">
+   <Alignment ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000"/>
+  </Style>
  </Styles>
  <Names>
   <NamedRange ss:Name="CELL_DATE_DOCUMENT" ss:RefersTo="=Feuil1!R4C2"/>
@@ -389,10 +399,9 @@
     <Cell ss:StyleID="s90"><NamedCell ss:Name="COL_DECOMPTE_FINAL"/></Cell>
     <Cell ss:StyleID="s93"><NamedCell ss:Name="COL_NBRE_PO_ENCOURS"/></Cell>
     <Cell ss:StyleID="s90"><NamedCell ss:Name="COL_SECT_RECENTE_PAYE"/></Cell>
-    <Cell ss:StyleID="s91"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="COL_CREDIT_EXISTANT"/></Cell>
+    <Cell ss:StyleID="s90"><NamedCell ss:Name="COL_CREDIT_EXISTANT"/></Cell>
     <Cell ss:StyleID="s90"><NamedCell ss:Name="COL_DATE_RADIATION"/></Cell>
-    <Cell ss:StyleID="s90"><NamedCell ss:Name="COL_POSTIT_CA"/></Cell>
+    <Cell ss:StyleID="s96"><NamedCell ss:Name="COL_POSTIT_CA"/></Cell>
    </Row>
    <Row ss:Index="13" ss:AutoFitHeight="0">
     <Cell ss:StyleID="s94"/>
@@ -419,12 +428,10 @@
    </Print>
    <Zoom>85</Zoom>
    <Selected/>
-   <LeftColumnVisible>9</LeftColumnVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>18</ActiveRow>
-     <ActiveCol>17</ActiveCol>
+     <ActiveRow>8</ActiveRow>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
