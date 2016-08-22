@@ -10,6 +10,7 @@ import globaz.draco.db.inscriptions.DSInscriptionsIndividuellesListeViewBean;
 import globaz.draco.db.inscriptions.DSValideMontantDeclarationProcess;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
+import globaz.framework.util.FWMessageFormat;
 import globaz.globall.api.BISession;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BManager;
@@ -504,14 +505,6 @@ public class CIImportPucs4Process extends BProcess {
         } // fin nombre d'inscriptions
     }
 
-    private void logAffilieNull(String numeroAffilie, String annee) {
-        getMemoryLog()
-                .logMessage(
-                        numeroAffilie + "/" + annee + " : "
-                                + getSession().getLabel("IMPORT_PUCS_4_AUCUNE_AFFILIATION_TROUVEE"), FWMessage.ERREUR,
-                        this.getClass().getName());
-    }
-
     private void createInscription(String numeroAVS, String nom, String prenom, PeriodeSalary periode,
             Montant montantAVS, Montant montantCAF, Montant montantAC, Montant montantAC2, String canton,
             boolean isEmployeWithCAF) throws Exception {
@@ -563,7 +556,13 @@ public class CIImportPucs4Process extends BProcess {
                 String.valueOf(jourFin));
 
         if (affilie == null) {
-            logAffilieNull(declarationSalaire.getNumeroAffilie(), annee);
+
+            String periodeForMessage = moisDebut + "-" + moisFin + " " + annee;
+            String message = FWMessageFormat.format(getSession().getLabel("IMPORT_PUCS_4_AUCUNE_AFFILIATION_TROUVEE"),
+                    declarationSalaire.getNumeroAffilie(), numeroAVS, periodeForMessage, montantAVS.toStringFormat(),
+                    montantCAF.toStringFormat());
+            getMemoryLog().logMessage(message, FWMessage.ERREUR, this.getClass().getName());
+
             return;
         }
 
