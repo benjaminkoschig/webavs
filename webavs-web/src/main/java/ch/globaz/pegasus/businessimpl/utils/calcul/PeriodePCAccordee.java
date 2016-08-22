@@ -729,7 +729,9 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
             // set le type de rente du requérant venant du contexte afin de le récupérer et de pouvoir le redéfinir dans
             // le contexte des stratégies finales
-            personne.setTypeRenteRequerant((String) context.get(Attribut.TYPE_RENTE_REQUERANT));
+            if (context.keyAlreadyExist(Attribut.TYPE_RENTE_REQUERANT)) {
+                personne.setTypeRenteRequerant((String) context.get(Attribut.TYPE_RENTE_REQUERANT));
+            }
 
         }
 

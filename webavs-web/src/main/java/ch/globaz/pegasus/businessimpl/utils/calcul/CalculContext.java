@@ -94,6 +94,10 @@ public class CalculContext {
         return attributs.containsKey(key);
     }
 
+    public boolean keyAlreadyExist(Attribut key) {
+        return attributs.containsKey(key);
+    }
+
     public Object get(Attribut key) throws CalculException {
         if (attributs.containsKey(key)) {
             return attributs.get(key);
