@@ -10,16 +10,9 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.ij.acor.IJACORBatchFilePrinter;
-import globaz.ij.api.prestations.IIJIJCalculee;
-import globaz.ij.api.prestations.IIJPetiteIJCalculee;
-import globaz.ij.api.prononces.IIJMesure;
 import globaz.ij.api.prononces.IIJPrononce;
-import globaz.ij.db.prestations.IJGrandeIJCalculee;
 import globaz.ij.db.prestations.IJIJCalculee;
 import globaz.ij.db.prestations.IJIndemniteJournaliere;
-import globaz.ij.db.prestations.IJPetiteIJCalculee;
-import globaz.ij.db.prononces.IJGrandeIJ;
-import globaz.ij.db.prononces.IJPetiteIJ;
 import globaz.ij.db.prononces.IJPrononce;
 import globaz.ij.db.prononces.IJPrononceAit;
 import globaz.ij.regles.IJPrononceRegles;
@@ -28,9 +21,7 @@ import globaz.ij.vb.prononces.IJSituationProfessionnelleViewBean;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRAcorFileContent;
-import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.helpers.PRAbstractHelper;
-import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
 import java.io.StringReader;
@@ -317,189 +308,6 @@ public class IJCalculACORIJHelper extends PRAbstractHelper {
         }
 
         return viewBean;
-    }
-
-    private IJIJCalculee creerIJcaluleeA0(BSession session, IJPrononce prononce) throws Exception {
-        IJIJCalculee ijCalculee = new IJIJCalculee();
-        ijCalculee.setSession(session);
-
-        String typeIJ = prononce.getCsTypeIJ();
-        if (JadeStringUtil.isBlankOrZero(typeIJ)) {
-            throw new IllegalArgumentException("Le type d'IJ est invlaide [" + typeIJ + "]");
-        }
-
-        // IJCALCUL.XNTGRE -> IJPRONAI.XBTGEN
-        ijCalculee.setCsGenreReadaptation(prononce.getCsGenre());
-        // IJCALCUL.XNTSTA -> IJPRONAI.
-        ijCalculee.setCsStatutProfessionnel(prononce.getCsStatutProfessionnel());
-        // IJCALCUL.XNTTBA -> IJPRONAI.
-        ijCalculee.setCsTypeBase(prononce.getCsTypeHebergement());
-        // IJCALCUL.XNTTIJ -> IJPRONAI.
-        ijCalculee.setCsTypeIJ(typeIJ);
-        // IJCALCUL.XNDDEB -> IJPRONAI.
-        ijCalculee.setDateDebutDroit(prononce.getDateDebutPrononce());
-        // IJCALCUL.XNDFIN -> IJPRONAI.
-        ijCalculee.setDateFinDroit(prononce.getDateFinPrononce());
-        // IJCALCUL.XNDPRO -> IJPRONAI.
-        ijCalculee.setDatePrononce(prononce.getDatePrononce());
-        // IJCALCUL.XNIPAI ->
-        ijCalculee.setIdPrononce(prononce.getIdPrononce());
-        // IJCALCUL.XNLOAI -> IJPRONAI.XBNOAI
-        ijCalculee.setOfficeAI(prononce.getOfficeAI());
-
-        // IJCALCUL.XNDREV -> IJPRONAI.
-        ijCalculee.setDateRevenu(ZERO);
-        // IJCALCUL.XNMDRE -> IJPRONAI.
-        ijCalculee.setDifferenceRevenu(ZERO);
-        // IJCALCUL.XNBDPE -> IJPRONAI.
-        ijCalculee.setIsDroitPrestationPourEnfant(false);
-        // IJCALCUL.XNMMBA -> IJPRONAI.
-        ijCalculee.setMontantBase(ZERO);
-        // IJCALCUL.XNLNOR -> IJPRONAI.
-        ijCalculee.setNoRevision("5");
-        // IJCALCUL.XNMINP -> IJPRONAI.
-        ijCalculee.setPourcentDegreIncapaciteTravail(ZERO);
-        // IJCALCUL.XNMRED -> IJPRONAI.
-        ijCalculee.setRevenuDeterminant(ZERO);
-        // IJCALCUL.XNMRJR -> IJPRONAI.
-        ijCalculee.setRevenuJournalierReadaptation(ZERO);
-        // IJCALCUL.XNMSPS -> IJPRONAI.
-        ijCalculee.setSupplementPersonneSeule(ZERO);
-        // IJCALCUL.XNMDIJ -> IJPRONAI.
-        ijCalculee.setDemiIJACBrut(ZERO);
-
-        PRDemande demande = new PRDemande();
-        demande.setSession(session);
-        demande.setIdDemande(prononce.getIdDemande());
-        demande.retrieve();
-        if (demande.isNew()) {
-            throw new IllegalArgumentException("Unable to find the PRDemande with id [" + prononce.getIdDemande() + "]");
-        }
-
-        PRTiersWrapper tiers = PRTiersHelper.getTiersById(session, demande.getIdTiers());
-        if (tiers == null) {
-            throw new IllegalArgumentException("Unable to find the PRTiers with id [" + demande.getIdTiers() + "]");
-        }
-        // IJCALCUL.XNNAVS -> IJPRONAI.
-        // TODO doit ne pas être formaté 756923283421
-        ijCalculee.setNoAVS(tiers.getNSS());
-
-        ijCalculee.add();
-
-        // --------------------------------//
-        if (IIJIJCalculee.CS_TYPE_GRANDE_IJ.equals(typeIJ)) {
-            creerGrandeIJ(ijCalculee.getIdIJCalculee(), session);
-        } else if (IIJIJCalculee.CS_TYPE_PETITE_IJ.equals(typeIJ)) {
-            creerPetiteIJ(ijCalculee.getIdIJCalculee(), session);
-        }
-        // ------------------------------//
-
-        creerIJIndemniteJournaliere(ijCalculee.getIdIJCalculee(), session);
-
-        return ijCalculee;
-
-    }
-
-    /**
-     * @param session
-     * @param ijCalculee
-     * @throws Exception
-     */
-    private void creerIJIndemniteJournaliere(String idIJCalculee, BSession session) throws Exception {
-        IJIndemniteJournaliere indemniteJournaliere = null;
-        // ------------------------------------------//
-
-        // 1ère IJ de type interne
-        indemniteJournaliere = creerIndemniteJournaliereSansType();
-        indemniteJournaliere.setSession(session);
-        indemniteJournaliere.setIdIJCalculee(idIJCalculee);
-        // IJINDJRN.XWTTIN
-        indemniteJournaliere.setCsTypeIndemnisation(IIJMesure.CS_INTERNE);
-        indemniteJournaliere.add();
-        // ------------------------------------------//
-
-        // 2ème IJ de type externe
-        indemniteJournaliere = creerIndemniteJournaliereSansType();
-        indemniteJournaliere.setSession(session);
-        indemniteJournaliere.setIdIJCalculee(idIJCalculee);
-        // IJINDJRN.XWTTIN
-        indemniteJournaliere.setCsTypeIndemnisation(IIJMesure.CS_EXTERNE);
-        indemniteJournaliere.add();
-    }
-
-    /**
-     * @param indemniteJournaliere
-     */
-    private IJIndemniteJournaliere creerIndemniteJournaliereSansType() {
-        IJIndemniteJournaliere indemniteJournaliere = new IJIndemniteJournaliere();
-        // IJINDJRN.XWMDRA
-        indemniteJournaliere.setDeductionRenteAI(ZERO);
-        // IJINDJRN.XWMFRR
-        indemniteJournaliere.setFractionReductionSiRevenuAvantReadaptation(ZERO);
-        // IJINDJRN.XWMIAR
-        indemniteJournaliere.setIndemniteAvantReduction(ZERO);
-        // IJINDJRN.XWMMCO
-        indemniteJournaliere.setMontantComplet(ZERO);
-        // IJINDJRN.XWMGNR
-        indemniteJournaliere.setMontantGarantiAANonReduit(ZERO);
-        // IJINDJRN.XWMGAR
-        indemniteJournaliere.setMontantGarantiAAReduit(ZERO);
-        // IJINDJRN.XWMMJI
-        indemniteJournaliere.setMontantJournalierIndemnite(ZERO);
-        // IJINDJRN.XWMMPL
-        indemniteJournaliere.setMontantPlafonne(ZERO);
-        // IJINDJRN.XWMMPM
-        indemniteJournaliere.setMontantPlafonneMinimum(ZERO);
-        // IJINDJRN.XWMMRR
-        indemniteJournaliere.setMontantReductionSiRevenuAvantReadaptation(ZERO);
-        // IJINDJRN.XWMMSR
-        indemniteJournaliere.setMontantSupplementaireReadaptation(ZERO);
-        return indemniteJournaliere;
-    }
-
-    private void creerGrandeIJ(String idIJCalculee, BSession session) throws Exception {
-        IJGrandeIJCalculee grandeIJ = new IJGrandeIJCalculee();
-        grandeIJ.setSession(session);
-        // IJGIJCAL.XUIIJC
-        grandeIJ.setIdIJCalculee(idIJCalculee);
-        // IJGIJCAL.XUMMIA
-        grandeIJ.setMontantIndemniteAssistance(ZERO);
-        // IJGIJCAL.XUMMIE
-        grandeIJ.setMontantIndemniteEnfant(ZERO);
-        // IJGIJCAL.XUMMEX
-        grandeIJ.setMontantIndemniteExploitation(ZERO);
-        // IJGIJCAL.XUNNBE
-        grandeIJ.setNbEnfants(ZERO);
-
-        grandeIJ.add();
-    }
-
-    private void creerPetiteIJ(String idIJCalculee, BSession session) throws Exception {
-        IJPetiteIJCalculee petiteIJ = new IJPetiteIJCalculee();
-        petiteIJ.setSession(session);
-        // IJPIJCAL.XTIIJC
-        petiteIJ.setIdIJCalculee(idIJCalculee);
-        // TODO
-        // IJPIJCAL.XTTMCA --> IIJPetiteIJCalculee.CS_????
-        petiteIJ.setCsModeCalcul(IIJPetiteIJCalculee.CS_ECOLE_SPECIALE);
-        // ---------------------------------//
-
-        petiteIJ.add();
-    }
-
-    private IJPetiteIJ creerPetiteIJ(BSession session) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    private IJGrandeIJ creerGrandeIJ(BSession session) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    private boolean hasIJCalculee() {
-        // TODO Auto-generated method stub
-        return true;
     }
 
     /**

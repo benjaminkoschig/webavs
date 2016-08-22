@@ -273,7 +273,7 @@ public class IJListePrestationsLot extends FWIAbstractManagerDocumentList {
                     beneficiare.add(benef);
                     totalVentilations.add(new FWCurrency(entity.getMontantVentile()));
                 }// une cotisation
-                else {
+                else if (JadeStringUtil.toDouble(entity.getMontantBrut()) != 0) {
 
                     this.addMontant(entity.getGenreCotisation(), entity.getMontantCotisation(), totauxMap);
                     this.addMontant(entity.getGenreCotisation(), entity.getMontantCotisation(), finalTotauxMap,
@@ -290,6 +290,31 @@ public class IJListePrestationsLot extends FWIAbstractManagerDocumentList {
                         FWCurrency montantNet = new FWCurrency(entity.getMontantNet());
                         montantNet.sub(totalVentilations);
                         benef.add(montantNet.toStringFormat());
+                        beneficiare.add(benef);
+                        this.addMontant(getSession().getLabel("LIST_CTRL_INDEMNITE_BRUTE"), entity.getMontantBrut(),
+                                finalTotauxMap, entity.isBeneficiaireEmployeur());
+                        this.addMontant(getSession().getLabel("LIST_CTRL_MONTANT_TOT"), entity.getMontantNet(),
+                                finalTotauxMap, entity.isBeneficiaireEmployeur());
+                        lastBenef = entity.getIdRepartitionPaiement();
+                    }
+                } else if (JadeStringUtil.toDouble(entity.getMontantBrut()) == 0) {
+                    this.addMontant(entity.getGenreCotisation(), entity.getMontantCotisation(), totauxMap);
+                    this.addMontant(entity.getGenreCotisation(), entity.getMontantCotisation(), finalTotauxMap,
+                            entity.isBeneficiaireEmployeur());
+                    // Beneficiare
+                    if (!lastBenef.equals(entity.getIdRepartitionPaiement())) {
+                        if (ajouterCommunePolitique) {
+                            benef.add("");
+                        }
+                        benef.add("");
+                        benef.add(getPaiementAdresseBeneficiaireFormate(entity.loadAdressePaiement(null)));
+                        benef.add("");
+                        benef.add("");
+                        benef.add("");
+                        // benef.add(getSession().getCodeLibelle(entity.getTypePaiement()));
+                        // FWCurrency montantNet = new FWCurrency(entity.getMontantNet());
+                        // montantNet.sub(totalVentilations);
+                        // benef.add(montantNet.toStringFormat());
                         beneficiare.add(benef);
                         this.addMontant(getSession().getLabel("LIST_CTRL_INDEMNITE_BRUTE"), entity.getMontantBrut(),
                                 finalTotauxMap, entity.isBeneficiaireEmployeur());

@@ -326,7 +326,7 @@ public class IJACORBasesCalculParser extends IJACORAbstractXMLFileParser {
 
         // iterer sur toutes bases de calcul
         list = document.getElementsByTagName("cycle");
-
+        Node baseDeCalculNode = null;
         for (int idItem = 0; idItem < list.getLength(); ++idItem) {
             Node cycle = list.item(idItem);
 
@@ -335,9 +335,9 @@ public class IJACORBasesCalculParser extends IJACORAbstractXMLFileParser {
                 Node bc = cycle.getChildNodes().item(idBC);
                 // On récupère toutes les bases de calculs
                 if (bc.getNodeName().equals("bases_calcul")) {
-
+                    baseDeCalculNode = bc;
                     String noRevision = bc.getAttributes().getNamedItem("revision").getNodeValue();
-                    Map bcNodes = childrenMap(bc);
+                    Map<String, Node> bcNodes = childrenMap(bc);
                     IJIJCalculee ijCalculee = nouvelleIJCalculee(session, transaction, prononce, bcNodes, demande, nss,
                             noRevision);
 
@@ -419,9 +419,22 @@ public class IJACORBasesCalculParser extends IJACORAbstractXMLFileParser {
                      * Dans ce cas on créé des indemnités journalières (interne et externe) à 0.-
                      */
                     if (!indemniteJournaliereTrouve) {
-
+                        String reduction_AI = null;
                         try {
-                            creerIJIndemniteJournaliere(ijCalculee.getIdIJCalculee(), session);
+                            if (bc != null) {
+                                Node n = null;
+                                for (int ctr = 0; ctr < baseDeCalculNode.getChildNodes().getLength(); ctr++) {
+                                    n = baseDeCalculNode.getChildNodes().item(ctr);
+                                    if (n.getNodeName().equals("rentes_ai")) {
+                                        reduction_AI = rechercherMontantJournalier(n);
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            JadeLogger.error(IJACORBasesCalculParser.class, e);
+                        }
+                        try {
+                            creerIJIndemniteJournaliere(ijCalculee.getIdIJCalculee(), session, reduction_AI);
                         } catch (Exception e) {
                             throw new PRACORException(e.toString(), e);
                         }
@@ -615,11 +628,27 @@ public class IJACORBasesCalculParser extends IJACORAbstractXMLFileParser {
     }
 
     /**
+     * @param n
+     */
+    private static String rechercherMontantJournalier(Node n) {
+        NodeList rentes_ai = n.getChildNodes();
+        for (int ctr2 = 0; ctr2 < rentes_ai.getLength(); ctr2++) {
+            Node n2 = rentes_ai.item(ctr2);
+            if (n2.getNodeName().equals("montant_journalier")) {
+                return getNodeValue(n2);
+            }
+        }
+        return null;
+    }
+
+
+    /**
      * @param session
      * @param ijCalculee
      * @throws Exception
      */
-    private static void creerIJIndemniteJournaliere(String idIJCalculee, BSession session) throws Exception {
+    private static void creerIJIndemniteJournaliere(String idIJCalculee, BSession session, String reductionAi)
+            throws Exception {
         IJIndemniteJournaliere indemniteJournaliere = null;
         // ------------------------------------------//
 
@@ -627,6 +656,7 @@ public class IJACORBasesCalculParser extends IJACORAbstractXMLFileParser {
         indemniteJournaliere = creerIndemniteJournaliereSansType();
         indemniteJournaliere.setSession(session);
         indemniteJournaliere.setIdIJCalculee(idIJCalculee);
+        indemniteJournaliere.setDeductionRenteAI(reductionAi);
         // IJINDJRN.XWTTIN
         indemniteJournaliere.setCsTypeIndemnisation(IIJMesure.CS_INTERNE);
         indemniteJournaliere.add();
@@ -636,6 +666,7 @@ public class IJACORBasesCalculParser extends IJACORAbstractXMLFileParser {
         indemniteJournaliere = creerIndemniteJournaliereSansType();
         indemniteJournaliere.setSession(session);
         indemniteJournaliere.setIdIJCalculee(idIJCalculee);
+        indemniteJournaliere.setDeductionRenteAI(reductionAi);
         // IJINDJRN.XWTTIN
         indemniteJournaliere.setCsTypeIndemnisation(IIJMesure.CS_EXTERNE);
         indemniteJournaliere.add();
