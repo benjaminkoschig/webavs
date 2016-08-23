@@ -12,7 +12,6 @@ import globaz.corvus.db.rentesaccordees.REDecisionJointDemandeRenteManager;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisions;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisionsManager;
-import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.enumere.genre.prestations.REGenrePrestationEnum;
 import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
@@ -42,7 +41,6 @@ import globaz.prestation.enums.codeprestation.PRCodePrestationPC;
 import globaz.prestation.enums.codeprestation.PRCodePrestationRFM;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
-import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.utils.compta.PRRubriqueComptableResolver;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
@@ -299,6 +297,8 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
     public synchronized static String getLibelleRubrique(final BSession session, final String genrePrestation,
             String isoLangue) throws Exception {
 
+        String labelId = "";
+
         if (!REGenrePrestationEnum.groupe1.contains(genrePrestation)
                 && !REGenrePrestationEnum.groupe2.contains(genrePrestation)
                 && !REGenrePrestationEnum.groupe3.contains(genrePrestation)
@@ -318,37 +318,28 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
                 || REGenresPrestations.GENRE_34.equals(genrePrestation)
                 || REGenresPrestations.GENRE_35.equals(genrePrestation)
                 || REGenresPrestations.GENRE_36.equals(genrePrestation)) {
-
-            return session.getLabel("RENTE_AVS");
-
+            labelId = "RENTE_AVS";
         } else if (REGenresPrestations.GENRE_20.equals(genrePrestation)
                 || REGenresPrestations.GENRE_23.equals(genrePrestation)
                 || REGenresPrestations.GENRE_24.equals(genrePrestation)
                 || REGenresPrestations.GENRE_25.equals(genrePrestation)
                 || REGenresPrestations.GENRE_26.equals(genrePrestation)
                 || REGenresPrestations.GENRE_45.equals(genrePrestation)) {
-            return session.getLabel("RENTE_AVS");
-
-        }
-
-        else if (REGenresPrestations.GENRE_50.equals(genrePrestation)
+            labelId = "RENTE_AVS";
+        } else if (REGenresPrestations.GENRE_50.equals(genrePrestation)
                 || REGenresPrestations.GENRE_53.equals(genrePrestation)
                 || REGenresPrestations.GENRE_54.equals(genrePrestation)
                 || REGenresPrestations.GENRE_55.equals(genrePrestation)
                 || REGenresPrestations.GENRE_56.equals(genrePrestation)) {
-            return session.getLabel("RENTE_AI");
-        }
-
-        else if (REGenresPrestations.GENRE_70.equals(genrePrestation)
+            labelId = "RENTE_AI";
+        } else if (REGenresPrestations.GENRE_70.equals(genrePrestation)
                 || REGenresPrestations.GENRE_72.equals(genrePrestation)
                 || REGenresPrestations.GENRE_73.equals(genrePrestation)
                 || REGenresPrestations.GENRE_74.equals(genrePrestation)
                 || REGenresPrestations.GENRE_75.equals(genrePrestation)
                 || REGenresPrestations.GENRE_76.equals(genrePrestation)) {
-            return session.getLabel("RENTE_AI");
-        }
-
-        else if (REGenresPrestations.GENRE_85.equals(genrePrestation)
+            labelId = "RENTE_AI";
+        } else if (REGenresPrestations.GENRE_85.equals(genrePrestation)
                 || REGenresPrestations.GENRE_86.equals(genrePrestation)
                 || REGenresPrestations.GENRE_87.equals(genrePrestation)
                 || REGenresPrestations.GENRE_89.equals(genrePrestation)
@@ -356,10 +347,8 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
                 || REGenresPrestations.GENRE_95.equals(genrePrestation)
                 || REGenresPrestations.GENRE_96.equals(genrePrestation)
                 || REGenresPrestations.GENRE_97.equals(genrePrestation)) {
-            return session.getLabel("RENTE_API_AVS");
-        }
-
-        else if (REGenresPrestations.GENRE_81.equals(genrePrestation)
+            labelId = "RENTE_API_AVS";
+        } else if (REGenresPrestations.GENRE_81.equals(genrePrestation)
                 || REGenresPrestations.GENRE_82.equals(genrePrestation)
                 || REGenresPrestations.GENRE_83.equals(genrePrestation)
                 || REGenresPrestations.GENRE_84.equals(genrePrestation)
@@ -367,23 +356,22 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
                 || REGenresPrestations.GENRE_91.equals(genrePrestation)
                 || REGenresPrestations.GENRE_92.equals(genrePrestation)
                 || REGenresPrestations.GENRE_93.equals(genrePrestation)) {
-            return session.getLabel("RENTE_API_AI");
+            labelId = "RENTE_API_AI";
         } else if (REGenresPrestations.GENRE_110.equals(genrePrestation)
                 || REGenresPrestations.GENRE_113.equals(genrePrestation)) {
-            return session.getLabel("RENTE_PC_AVS");
+            labelId = "RENTE_PC_AVS";
         } else if (REGenresPrestations.GENRE_150.equals(genrePrestation)) {
-            return session.getLabel("RENTE_PC_AI");
+            labelId = "RENTE_PC_AI";
         } else if (REGenresPrestations.GENRE_210.equals(genrePrestation)
                 || REGenresPrestations.GENRE_213.equals(genrePrestation)) {
-            return session.getLabel("RENTE_RFM_AVS");
+            labelId = "RENTE_RFM_AVS";
         } else if (REGenresPrestations.GENRE_250.equals(genrePrestation)) {
-            return session.getLabel("RENTE_RFM_AI");
-        }
-
-        else {
+            labelId = "RENTE_RFM_AI";
+        } else {
             return null;
         }
 
+        return MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangue, labelId, session);
     }
 
     /**
@@ -1040,43 +1028,47 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
 
         PersonneAVS beneficiairePrincipal = decision.getBeneficiairePrincipal();
         RenteAccordee renteAccordeePrincipale = decision.getRenteAccordeePrincipale();
-        PRTiersWrapper tiers;
-        String idTiersPrincipal = "";
-        idTiersPrincipal = decision.getTiersCorrespondance().getId().toString();
-        try {
-            tiers = PRTiersHelper.getTiersParId(session, idTiersPrincipal);
 
-            if (null == tiers) {
-                tiers = PRTiersHelper.getAdministrationParId(session, idTiersPrincipal);
-            }
-        } catch (Exception ex) {
-            throw new RETechnicalException(ex);
+        String idTiersPrincipal = decision.getTiersCorrespondance().getId().toString();
+
+        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+            idTiersPrincipal = decision.getBeneficiairePrincipal().getId().toString();
         }
 
-        String codeIsoLangue = session.getCode(tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
-        codeIsoLangue = PRUtil.getISOLangueTiers(codeIsoLangue);
+        String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(session, idTiersPrincipal);
+
+        String msgDecision = MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangFromIdTiers,
+                "PMT_MENS_DECISION_DU", session);
+        msgDecision += " " + decision.getDateDecision();
 
         final String nss = beneficiairePrincipal.getNss().toString();
         final String nomPrenom = beneficiairePrincipal.getNom() + " " + beneficiairePrincipal.getPrenom();
-        final String prestation = AREModuleComptable.getLibelleRubrique(session,
-                Integer.toString(renteAccordeePrincipale.getCodePrestation().getCodePrestation()), codeIsoLangue);
-        final String periode = renteAccordeePrincipale.getMoisDebut() + " - " + renteAccordeePrincipale.getMoisFin();
-        final String msgDecision = session.getApplication().getLabel("PMT_MENS_DECISION_DU", codeIsoLangue) + " "
-                + decision.getDateDecision();
 
+        final String periode = renteAccordeePrincipale.getMoisDebut() + " - " + renteAccordeePrincipale.getMoisFin();
+        final String prestation = AREModuleComptable.getLibelleRubrique(session,
+                Integer.toString(renteAccordeePrincipale.getCodePrestation().getCodePrestation()), isoLangFromIdTiers);
         return MotifVersementUtil.formatDecision(nss, nomPrenom, refPmt, prestation, periode, msgDecision);
     }
 
     protected String getMotifVersementDeblocage(final BSession session, final PRTiersWrapper tw, final String refPmt,
-            final String genrePrestation) throws Exception {
-        String codeIsoLangue = session.getCode(tw.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
-        codeIsoLangue = PRUtil.getISOLangueTiers(codeIsoLangue);
+            final String genrePrestation, final String idTiersAdrPmt) throws Exception {
+
+        String idTiersPrincipal = idTiersAdrPmt;
+
+        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+            idTiersPrincipal = tw.getIdTiers();
+        }
+
+        String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(session, idTiersPrincipal);
+
+        String versementMsg = MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangFromIdTiers,
+                "DEBLOCAGE_VERSEMENT_DU", session);
+
         final String nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
         final String nomPrenom = tw.getProperty(PRTiersWrapper.PROPERTY_NOM + " " + PRTiersWrapper.PROPERTY_PRENOM);
-        final String prestation = AREModuleComptable.getLibelleRubrique(session, genrePrestation, codeIsoLangue);
+        final String prestation = AREModuleComptable.getLibelleRubrique(session, genrePrestation, isoLangFromIdTiers);
 
-        return MotifVersementUtil.formatDeblocage(nss, nomPrenom, refPmt, prestation,
-                session.getLabel("DEBLOCAGE_VERSEMENT_DU"));
+        return MotifVersementUtil.formatDeblocage(nss, nomPrenom, refPmt, prestation, versementMsg);
     }
 
     /**

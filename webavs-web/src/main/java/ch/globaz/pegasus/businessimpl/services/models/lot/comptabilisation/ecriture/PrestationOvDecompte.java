@@ -2,9 +2,13 @@ package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecri
 
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import ch.globaz.common.codesystem.CodeSystem;
+import ch.globaz.common.codesystem.CodeSystemUtils;
 import ch.globaz.common.util.prestations.MotifVersementUtil;
 import ch.globaz.osiris.business.model.CompteAnnexeSimpleModel;
 import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process.PrestationPeriode;
@@ -258,11 +262,30 @@ public class PrestationOvDecompte {
      * @return
      */
     public String formatDecision() {
+        String idTiersPrincipal = getIdTiersAddressePaiementRequerant();
+
+        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+            idTiersPrincipal = getIdTiersRequerant();
+        }
+
+        String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(BSessionUtil.getSessionFromThreadContext(),
+                idTiersPrincipal);
+
+        String message = MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangFromIdTiers,
+                "PEGASUS_COMPTABILISATION_DECISION_DU", BSessionUtil.getSessionFromThreadContext());
+
+        String libelle = "";
+        try {
+            CodeSystem csLibelle = CodeSystemUtils.searchCodeSystemTraduction("64055001",
+                    BSessionUtil.getSessionFromThreadContext(), isoLangFromIdTiers);
+            libelle = csLibelle.getTraduction();
+        } catch (Exception e) {
+            JadeLogger.warn(e, e.getMessage());
+            libelle = BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001");
+        }
+
         return MotifVersementUtil.formatDecision(getNssRequerant(), getNomRequerant() + " " + getPrenomRequerant(),
-                getRefPaiement(), BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001"), getDateDebut()
-                        + " - " + getDateFin(),
-                BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_DECISION_DU") + " "
-                        + getDateDecision());
+                getRefPaiement(), libelle, getDateDebut() + " - " + getDateFin(), message + " " + getDateDecision());
     }
 
 }

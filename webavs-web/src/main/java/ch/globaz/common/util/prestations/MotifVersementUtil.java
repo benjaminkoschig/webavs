@@ -1,5 +1,11 @@
 package ch.globaz.common.util.prestations;
 
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
+
 /**
  * Permet de formatter les motifs de versements.
  * 
@@ -207,6 +213,55 @@ public class MotifVersementUtil {
         }
 
         return motifDeRetour.toString();
+    }
+
+    public static String getTranslatedLabelFromTiers(final String idTiersPrincipale, final String idTiersAuxiliaire,
+            String labelID, BSession session) {
+        String idTiersToWork = idTiersPrincipale;
+
+        if (JadeStringUtil.isBlankOrZero(idTiersToWork)) {
+            idTiersToWork = idTiersAuxiliaire;
+        }
+        String message = "";
+        try {
+            // Chercher la langue ISO du tiers
+            String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(BSessionUtil.getSessionFromThreadContext(),
+                    idTiersToWork);
+
+            // Chercher le label selon la langue
+            message = session.getApplication().getLabel(labelID, isoLangFromIdTiers);
+
+            // Si le label n'existe pas (soit langue inexistante, inconnu ou labelID inconnu.
+            if (message.toString().startsWith("LABEL_") || message.toString().contains("label not found")) {
+                // On fait pêter pour qu'il traduise par la langue de l'utilisateur
+                throw new IllegalArgumentException("Label not found");
+            }
+        } catch (Exception e) {
+            JadeLogger.warn(e, e.getMessage());
+            message = session.getLabel(labelID);
+        }
+
+        return message;
+    }
+
+    public static String getTranslatedLabelFromIsolangue(final String isoLangue, String labelID, BSession session) {
+
+        String message = "";
+        try {
+            // Chercher le label selon la langue
+            message = session.getApplication().getLabel(labelID, isoLangue);
+
+            // Si le label n'existe pas (soit langue inexistante, inconnu ou labelID inconnu.
+            if (message.toString().startsWith("LABEL_") || message.toString().contains("label not found")) {
+                // On fait pêter pour qu'il traduise par la langue de l'utilisateur
+                throw new IllegalArgumentException("Label not found");
+            }
+        } catch (Exception e) {
+            JadeLogger.warn(e, e.getMessage());
+            message = session.getLabel(labelID);
+        }
+
+        return message;
     }
 
     private static String appendSeparator(final String chaine) {

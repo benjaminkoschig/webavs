@@ -6,9 +6,11 @@ import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
+import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.osiris.api.APIEcriture;
 import globaz.osiris.api.APIOperationOrdreVersement;
 import globaz.osiris.api.APIReferenceRubrique;
@@ -29,9 +31,12 @@ import globaz.osiris.db.retours.CARetoursJointLotsRetoursManager;
 import globaz.osiris.db.retours.CARetoursManager;
 import globaz.osiris.db.retours.CARetoursViewBean;
 import globaz.osiris.externe.CAGestionComptabiliteExterne;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Iterator;
+import ch.globaz.common.codesystem.CodeSystem;
+import ch.globaz.common.codesystem.CodeSystemUtils;
 import ch.globaz.common.util.prestations.MotifVersementUtil;
 
 /**
@@ -341,14 +346,37 @@ public class CAProcessComptabiliserRetours extends BProcess {
                                 CACompteAnnexe ca = retour.getCompteAnnexe();
                                 nss = ca.getIdExterneRole();
                             }
-                            String motifTexte = getSession().getCodeLibelle(retour.getCsMotifRetour());
+
+                            String idTiersPrincipal = retour.getIdTiersLigneRetourSurAdressePaiement();
+
+                            if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+                                idTiersPrincipal = lir.getIdTiers();
+                            }
+
+                            String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(
+                                    BSessionUtil.getSessionFromThreadContext(), idTiersPrincipal);
+
+                            String motifTexte = "";
+
+                            try {
+                                CodeSystem codeSystem = CodeSystemUtils.searchCodeSystemTraduction(
+                                        retour.getCsMotifRetour(), getSession(), isoLangFromIdTiers);
+
+                                motifTexte = codeSystem.getTraduction();
+                            } catch (Exception e) {
+                                JadeLogger.warn(e, e.getMessage());
+                                motifTexte = getSession().getCodeLibelle(retour.getCsMotifRetour());
+                            }
+
                             if (!JadeStringUtil.isEmpty(retour.getLibelleRetour())) {
                                 motifTexte += " - " + retour.getLibelleRetour();
                             }
+
                             String nomPrenom = "";
                             // TODO pending de la jira WEBAVS-1740
 
                             String motif = MotifVersementUtil.formatRetour(nss, nomPrenom, motifTexte);
+
                             // tester motif vide. Bug 5780
                             if (!JadeStringUtil.isBlank(motif)) {
                                 ordreVersement.setMotif(motif);

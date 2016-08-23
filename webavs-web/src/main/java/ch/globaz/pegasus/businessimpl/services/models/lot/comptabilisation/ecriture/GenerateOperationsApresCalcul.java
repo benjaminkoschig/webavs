@@ -4,6 +4,7 @@ import globaz.globall.db.BSessionUtil;
 import globaz.jade.exception.JadeApplicationException;
 import java.math.BigDecimal;
 import java.util.List;
+import ch.globaz.common.util.prestations.MotifVersementUtil;
 import ch.globaz.osiris.business.model.SectionSimpleModel;
 import ch.globaz.pegasus.business.exceptions.models.lot.ComptabiliserLotException;
 import ch.globaz.pegasus.business.models.lot.OrdreVersementForList;
@@ -81,9 +82,12 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
             throws JadeApplicationException {
         if (decompte.getAllocationsNoel().size() > 0) {
             String strPeriode = decompte.getDateDebut() + " - " + decompte.getDateFin();
-            String strDecision = BSessionUtil.getSessionFromThreadContext().getLabel(
-                    "PEGASUS_COMPTABILISATION_DECISION_DU")
-                    + " " + decompte.getDateDecision();
+
+            String strDecision = MotifVersementUtil.getTranslatedLabelFromTiers(
+                    decompte.getIdTiersAddressePaiementRequerant(), decompte.getIdTiersRequerant(),
+                    "PEGASUS_COMPTABILISATION_DECISION_DU", BSessionUtil.getSessionFromThreadContext());
+            strDecision += " " + decompte.getDateDecision();
+
             GenerateOperationsAllocationsNoel allocationsNoel = new GenerateOperationsAllocationsNoel();
             allocationsNoel.generateAllOperation(decompte.getAllocationsNoel(), decompte.getInfosRequerant(),
                     decompte.getInfosConjoint(), strPeriode, strDecision);

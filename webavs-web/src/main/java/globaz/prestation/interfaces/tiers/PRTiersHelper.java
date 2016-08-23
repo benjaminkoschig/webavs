@@ -1,5 +1,6 @@
 package globaz.prestation.interfaces.tiers;
 
+import globaz.corvus.exceptions.RETechnicalException;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.translation.FWTranslation;
 import globaz.globall.api.BIEntity;
@@ -24,6 +25,7 @@ import globaz.osiris.external.IntRole;
 import globaz.prestation.enums.CommunePolitique;
 import globaz.prestation.interfaces.af.IPRAffilie;
 import globaz.prestation.interfaces.af.PRAffiliationHelper;
+import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.prestation.tools.PRSession;
 import globaz.pyxis.adresse.formater.ITIAdresseFormater;
 import globaz.pyxis.adresse.formater.TIAdresseFormater;
@@ -376,6 +378,30 @@ public class PRTiersHelper {
         } else {
             return new PRTiersWrapper((GlobazValueObject) result[0], PRTiersWrapper.TI_PERSONNE_AVS);
         }
+    }
+
+    /**
+     * Va chercher dans les tiers standard, puis les administrations si non trouvé afin de retourner la langue de l'id
+     * tiers passé en paramètre.
+     * 
+     * @param session La session.
+     * @param idTiers L'id tiers que l'on souhaite chercher sa langue.
+     * @return La langue ISO.
+     */
+    public static final String getIsoLangFromIdTiers(final BSession session, final String idTiers) {
+        PRTiersWrapper tiers;
+        try {
+            tiers = PRTiersHelper.getTiersParId(session, idTiers);
+
+            if (null == tiers) {
+                tiers = PRTiersHelper.getAdministrationParId(session, idTiers);
+            }
+        } catch (Exception ex) {
+            throw new RETechnicalException(ex);
+        }
+
+        String codeIsoLangue = session.getCode(tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+        return PRUtil.getISOLangueTiers(codeIsoLangue);
     }
 
     /**

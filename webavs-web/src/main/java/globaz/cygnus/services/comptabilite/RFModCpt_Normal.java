@@ -712,7 +712,7 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
             memoryLog.logMessage(preparerOrdreVersement(nss, nom, prenom, idTiersAdressePaiement, idDomaineApplication,
                     isAVS, isAI, datesPrestations, compteAnnexe, sectionNormale, sessionOsiris, transaction, compta,
                     dateComptable, process.getIdOrganeExecution(), montantOrdreVersementBigDec, rfmLogger, isLotAVASAD,
-                    refPaiement));
+                    refPaiement, idTiersBeneficiairePrincipal));
 
         }
 
@@ -814,10 +814,19 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
             String idDomaineApplication, boolean isAVS, boolean isAI, Set<String> datesPrestations,
             APICompteAnnexe compteAnnexe, APISection sectionNormale, BSession session, BTransaction transaction,
             APIGestionComptabiliteExterne compta, String dateComptable, String idOrganeExecution,
-            BigDecimal montantOrdreDeVersementBigDec, RFLogToDB rfmLogger, boolean isLotAVASAD, String refPaiement)
-            throws Exception {
+            BigDecimal montantOrdreDeVersementBigDec, RFLogToDB rfmLogger, boolean isLotAVASAD, String refPaiement,
+            final String idTiersBeneficiairePrincipal) throws Exception {
 
-        String motifVersement = getMotifVersement(session, nss, nom, prenom, refPaiement, isAVS, isAI, datesPrestations);
+        String idTiersPrincipal = idTiersAdressePaiement;
+
+        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+            idTiersPrincipal = idTiersBeneficiairePrincipal;
+        }
+
+        String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(getSession(), idTiersPrincipal);
+
+        String motifVersement = getMotifVersement(session, nss, nom, prenom, refPaiement, isAVS, isAI,
+                datesPrestations, isoLangFromIdTiers);
         TIAdressePaiementData adrPaiementData = loadAdressePaiement(session, transaction, dateComptable,
                 idTiersAdressePaiement, idDomaineApplication);
         if (isLotAVASAD) {

@@ -11,7 +11,6 @@ import globaz.corvus.db.rentesaccordees.REPaiementRentes;
 import globaz.corvus.db.rentesaccordees.REPaiementRentesManager;
 import globaz.corvus.db.rentesaccordees.REPrestationAccordeeManager;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
-import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.itext.REListeRecapitulativePaiement;
 import globaz.corvus.itext.REListeRecapitulativePaiementPC_RFM;
 import globaz.corvus.itext.REListeRetenuesBlocages;
@@ -44,8 +43,6 @@ import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CARubrique;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
-import globaz.prestation.interfaces.tiers.PRTiersWrapper;
-import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRSession;
 import globaz.prestation.utils.PRStringFormatter;
@@ -575,22 +572,13 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                 messageRente = new StringBuilder(getMessageRenteEntete());
             }
             while ((rente = (REPaiementRentes) mgr.cursorReadNext(statement)) != null) {
+                String idTiersPrincipal = rente.getIdTiersAdressePmt();
 
-                PRTiersWrapper tiers;
-                String idTiersPrincipal = "";
-                idTiersPrincipal = rente.getIdTiersBeneficiaire();
-                try {
-                    tiers = PRTiersHelper.getTiersParId(getSession(), idTiersPrincipal);
-
-                    if (null == tiers) {
-                        tiers = PRTiersHelper.getAdministrationParId(getSession(), idTiersPrincipal);
-                    }
-                } catch (Exception ex) {
-                    throw new RETechnicalException(ex);
+                if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+                    idTiersPrincipal = rente.getIdTiersBeneficiaire();
                 }
 
-                String codeIsoLangue = getSession().getCode(tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
-                codeIsoLangue = PRUtil.getISOLangueTiers(codeIsoLangue);
+                String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(getSession(), idTiersPrincipal);
 
                 // Ecriture du message pour la rente précédente
                 if (DEBUG_MODE) {
@@ -654,7 +642,8 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                         // Le motif de versement est généré par rapport à la 1ère écriture
                         // trouvée pour chaque groupe d'opération, car trié par groupe
                         motifVersement = getMotifVersement(rente.getNssTBE(), getMoisPaiement(), rente.getNomTBE(),
-                                rente.getPrenomTBE(), rente.getReferencePmt(), rente.getCodePrestation(), codeIsoLangue);
+                                rente.getPrenomTBE(), rente.getReferencePmt(), rente.getCodePrestation(),
+                                isoLangFromIdTiers);
 
                         nomCache = getNomCache(rente);
                         getMemoryLog().logMessage(
@@ -729,7 +718,8 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                         // écriture trouvée pour
                         // chaque groupe d'opération, car trié par groupe
                         motifVersement = getMotifVersement(rente.getNssTBE(), getMoisPaiement(), rente.getNomTBE(),
-                                rente.getPrenomTBE(), rente.getReferencePmt(), rente.getCodePrestation(), codeIsoLangue);
+                                rente.getPrenomTBE(), rente.getReferencePmt(), rente.getCodePrestation(),
+                                isoLangFromIdTiers);
 
                         nomCache = getNomCache(rente);
                         traiterRente(rente, grpOP, increment);

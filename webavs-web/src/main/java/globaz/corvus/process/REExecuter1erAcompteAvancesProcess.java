@@ -19,6 +19,7 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.globall.util.JATime;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.APIGestionComptabiliteExterne;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
@@ -107,7 +108,16 @@ public class REExecuter1erAcompteAvancesProcess extends BProcess {
                 final String nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
                 final String nomPrenom = tw.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
                         + tw.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
-                final String msgAvance = getOvDescriptionForDomaine(avance.getCsDomaineAvance());
+
+                String idTiersPrincipal = avance.getIdTiersAdrPmt();
+
+                if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+                    idTiersPrincipal = avance.getIdTiersBeneficiaire();
+                }
+
+                String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(getSession(), idTiersPrincipal);
+
+                final String msgAvance = getOvDescriptionForDomaine(avance.getCsDomaineAvance(), isoLangFromIdTiers);
 
                 final String motifVersement = MotifVersementUtil.formatAvance(nss, nomPrenom, msgAvance);
 
@@ -318,21 +328,23 @@ public class REExecuter1erAcompteAvancesProcess extends BProcess {
      * @param csDomaineApplicatifAvance
      * @return
      */
-    private String getOvDescriptionForDomaine(String csDomaineApplicatifAvance) {
+    private String getOvDescriptionForDomaine(String csDomaineApplicatifAvance, String isoLangFromIdTiers) {
+        String idMessage = "";
 
         // si le domaine est différent de null, sinon on met la description rente par defaut
         if (csDomaineApplicatifAvance != null) {
             if (csDomaineApplicatifAvance.equals(IREAvances.CS_DOMAINE_AVANCE_PC)) {
-                return getSession().getLabel("AVANCE_PC");
+                idMessage = "AVANCE_PC";
             } else if (csDomaineApplicatifAvance.equals(IREAvances.CS_DOMAINE_AVANCE_RENTE)) {
-                return getSession().getLabel("AVANCE_RENTE");
+                idMessage = "AVANCE_RENTE";
             } else {
-                return getSession().getLabel("AVANCE_RFM");
+                idMessage = "AVANCE_RFM";
             }
         } else {
-            return getSession().getLabel("AVANCE_RENTE");
+            idMessage = "AVANCE_RENTE";
         }
 
+        return MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangFromIdTiers, idMessage, getSession());
     }
 
     private APIGestionComptabiliteExterne initCompta(BProcess process, BSession sessionOsiris,

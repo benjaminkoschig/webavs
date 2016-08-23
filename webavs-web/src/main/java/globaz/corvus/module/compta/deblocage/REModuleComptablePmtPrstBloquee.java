@@ -167,7 +167,8 @@ public class REModuleComptablePmtPrstBloquee extends AREModuleComptable {
             montant = montantADebloquer.toString();
         }
 
-        String motifVersement = getMotifVersementDeblocage((BSession) session, tw, refPmt, ra.getCodePrestation());
+        String motifVersement = getMotifVersementDeblocage((BSession) session, tw, refPmt, ra.getCodePrestation(),
+                idTiersAdrPmt);
         String dateValeurComptable = getDateValeurComptable((BSession) session, cal);
 
         if (doOV) {

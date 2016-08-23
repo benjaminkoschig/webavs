@@ -373,7 +373,16 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
         final String nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
         final String nomPrenom = tw.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
                 + tw.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
-        final String msgAvance = getOvDescriptionForDomaine(avance.getCsDomaineAvance());
+
+        String idTiersPrincipal = avance.getIdTiersAdrPmt();
+
+        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+            idTiersPrincipal = avance.getIdTiersBeneficiaire();
+        }
+
+        String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(getSession(), idTiersPrincipal);
+
+        final String msgAvance = getOvDescriptionForDomaine(avance.getCsDomaineAvance(), isoLangFromIdTiers);
 
         final String motifVersement = MotifVersementUtil.formatAvance(nss, nomPrenom, msgAvance);
 
@@ -551,21 +560,23 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
      * @param csDomaineApplicatifAvance
      * @return
      */
-    private String getOvDescriptionForDomaine(String csDomaineApplicatifAvance) {
+    private String getOvDescriptionForDomaine(String csDomaineApplicatifAvance, String isoLangue) {
+        String idMessage = "";
 
         // si le domaine est différent de null, sinon on met la description rente par defaut
         if (csDomaineApplicatifAvance != null) {
             if (csDomaineApplicatifAvance.equals(IREAvances.CS_DOMAINE_AVANCE_PC)) {
-                return getSession().getLabel("AVANCE_PC");
+                idMessage = "AVANCE_PC";
             } else if (csDomaineApplicatifAvance.equals(IREAvances.CS_DOMAINE_AVANCE_RENTE)) {
-                return getSession().getLabel("AVANCE_RENTE");
+                idMessage = "AVANCE_PC";
             } else {
-                return getSession().getLabel("AVANCE_RFM");
+                idMessage = "AVANCE_RFM";
             }
         } else {
-            return getSession().getLabel("AVANCE_RENTE");
+            idMessage = "AVANCE_RENTE";
         }
 
+        return MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangue, idMessage, getSession());
     }
 
     /**

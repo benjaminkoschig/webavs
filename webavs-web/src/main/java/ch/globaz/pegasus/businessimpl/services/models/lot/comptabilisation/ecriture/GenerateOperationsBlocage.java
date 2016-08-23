@@ -2,13 +2,18 @@ package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecri
 
 import globaz.corvus.api.ordresversements.IREOrdresVersements;
 import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.osiris.api.APIEcriture;
 import globaz.osiris.api.APIReferenceRubrique;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import ch.globaz.common.codesystem.CodeSystem;
+import ch.globaz.common.codesystem.CodeSystemUtils;
 import ch.globaz.common.util.prestations.MotifVersementUtil;
 import ch.globaz.osiris.business.model.CompteAnnexeSimpleModel;
 import ch.globaz.osiris.business.model.SectionSimpleModel;
@@ -141,11 +146,31 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
     }
 
     String formatDeblocage(OrdreVersementForList ov, String dateEcheance) {
+        String idTiersPrincipal = ov.getSimpleOrdreVersement().getIdTiersAdressePaiement();
+
+        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+            idTiersPrincipal = ov.getSimpleOrdreVersement().getIdTiersOwnerDetteCreance();
+        }
+
+        String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(BSessionUtil.getSessionFromThreadContext(),
+                idTiersPrincipal);
+
+        String message = MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangFromIdTiers,
+                "PEGASUS_COMPTABILISATION_VERSEMENT_DU", BSessionUtil.getSessionFromThreadContext());
+
+        String libelle = "";
+        try {
+            CodeSystem csLibelle = CodeSystemUtils.searchCodeSystemTraduction("64055001",
+                    BSessionUtil.getSessionFromThreadContext(), isoLangFromIdTiers);
+            libelle = csLibelle.getTraduction();
+        } catch (Exception e) {
+            JadeLogger.warn(e, e.getMessage());
+            libelle = BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001");
+        }
+
         return MotifVersementUtil.formatDeblocage(ov.getNumAvs(),
                 ov.getDesignationRequerant1() + " " + ov.getDesignationRequerant2(), ov.getSimpleOrdreVersement()
-                        .getRefPaiement(), BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001"),
-                BSessionUtil.getSessionFromThreadContext().getLabel("PEGASUS_COMPTABILISATION_VERSEMENT_DU") + " "
-                        + dateEcheance);
+                        .getRefPaiement(), libelle, message + " " + dateEcheance);
     }
 
     private SectionSimpleModel getSectionObjectFromList(String idSection, List<SectionSimpleModel> sectionsDette) {

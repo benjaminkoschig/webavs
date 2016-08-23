@@ -37,17 +37,20 @@ public class ARFModuleComptable implements Comparator {
     public static final int TYPE_RUBRIQUE_RESTITUTION = 1400;
     public static final int TYPE_RUBRIQUE_RETROACTIF = 1200;
 
-    public static String getLibelleRubrique(BSession session, String typePrestation) throws Exception {
+    public static String getLibelleRubrique(BSession session, String typePrestation, String isoLangue) throws Exception {
+        String labelId = "";
 
         if (IPCPCAccordee.CS_TYPE_PC_SURVIVANT.equals(typePrestation)
                 || IPCPCAccordee.CS_TYPE_PC_VIELLESSE.equals(typePrestation)) {
-            return session.getLabel("PROCESS_COMPTABILISER_RFM_AVS");
+            labelId = "PROCESS_COMPTABILISER_RFM_AVS";
         } else if (IPCPCAccordee.CS_TYPE_PC_INVALIDITE.equals(typePrestation)) {
-            return session.getLabel("PROCESS_COMPTABILISER_RFM_AI");
+            labelId = "PROCESS_COMPTABILISER_RFM_AI";
         } else {
             throw new Exception("ARFModuleComptable::getLibelleRubrique: genrePrestation null ou inconnu : "
                     + typePrestation);
         }
+
+        return MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangue, labelId, session);
     }
 
     /**
@@ -714,26 +717,31 @@ public class ARFModuleComptable implements Comparator {
     }
 
     protected String getMotifVersement(BSession session, String nss, String nom, String prenom, String refPmt,
-            boolean isAVS, boolean isAI, Set<String> datesPrestations) throws Exception {
+            boolean isAVS, boolean isAI, Set<String> datesPrestations, final String isoLangue) throws Exception {
 
         final String nomPrenom = nom + " " + prenom;
         final StringBuilder genrePrestation = new StringBuilder();
 
         if (isAVS) {
-            genrePrestation.append(ARFModuleComptable.getLibelleRubrique(session, IPCPCAccordee.CS_TYPE_PC_SURVIVANT));
+            genrePrestation.append(ARFModuleComptable.getLibelleRubrique(session, IPCPCAccordee.CS_TYPE_PC_SURVIVANT,
+                    isoLangue));
         }
 
         if (isAI) {
             genrePrestation.append(isAVS ? "/" : " ");
-            genrePrestation.append(ARFModuleComptable.getLibelleRubrique(session, IPCPCAccordee.CS_TYPE_PC_INVALIDITE));
+            genrePrestation.append(ARFModuleComptable.getLibelleRubrique(session, IPCPCAccordee.CS_TYPE_PC_INVALIDITE,
+                    isoLangue));
         }
 
-        final StringBuilder msgDecision = new StringBuilder(session.getLabel("PMT_MENS_DECISION_DU")).append(" ");
+        final StringBuilder msgDecision = new StringBuilder(MotifVersementUtil.getTranslatedLabelFromIsolangue(
+                isoLangue, "PMT_MENS_DECISION_DU", session));
+
         boolean premierPassage = true;
         for (String dateCourante : datesPrestations) {
             if (!premierPassage) {
                 msgDecision.append(",");
             }
+
             msgDecision.append(dateCourante);
             premierPassage = false;
         }
