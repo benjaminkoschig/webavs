@@ -26,6 +26,7 @@ import globaz.globall.db.BApplication;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BTransaction;
+import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
 import globaz.osiris.db.ordres.CAOrdreGroupeManager;
 import globaz.osiris.db.ordres.CAOrdreRejete;
@@ -35,28 +36,10 @@ import globaz.osiris.db.ordres.CAOrdreVersementManager;
 @ThreadSafe
 public class SepaAcknowledgementProcessor extends AbstractSepa {
     private static final Logger LOG = LoggerFactory.getLogger(SepaAcknowledgementProcessor.class);
-
     private static final String SEPA_FTP_FOLDER = "sepa.ftp.ack.folder";
-
     public static final String NAMESPACE_PAIN002 = "http://www.six-interbank-clearing.com/de/pain.002.001.03.ch.02.xsd";
 
-    public static final String CONFIRMED = "CONFIRMED"; // TODO créer la valeur + mettre le bon code système
-
-    private static final String COMPLETED = "COMPLETED"; // TODO mettre le bon code système, éventuellement référencer
-                                                         // une autre constante venant d'ailleurs?
-    private static final String REJECTED = "REJECTED"; // TODO mettre le bon code système, éventuellement référencer une
-                                                       // autre constante venant d'ailleurs?
-    private static final String PARTIAL = "PARTIAL"; // TODO mettre le bon code système, éventuellement référencer une
-                                                     // autre constante venant d'ailleurs?
-
     private static final String TRANSACTION_PREFIX = "TR-";
-    /*
-     * public enum SepaAcknoledgementProcessingStatus {
-     * OK,
-     * MESSAGE_NOT_FOUND,
-     * MESSAGE_ALREADY_CONFIRMED;
-     * }
-     */
 
     /** Connecte sur le ftp cible, dans le folder adapté à l'envoi de messages SEPA. */
     private FTPClient connect(BSession session) {
@@ -193,7 +176,7 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         }
 
         // 05. B
-        if (CONFIRMED.equals(ordre.getEtat())) {
+        if (APIOrdreGroupe.ISO_ORDRE_STATUS_CONFIRME.equals(ordre.getEtat())) {
             // envoyer un mail d'alerte... le status était déjà confirmé, on a reçu un doublon?
             return;
         }
@@ -218,12 +201,12 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                 // "L'ordre est techniquement accepté" -> même comportement que ses ptits copains // TODO comprendre ce
                 // que cela veut dire!
                 markOrdreGroupeConfirmed(ordre);
-                markAllTransactions(ordre, COMPLETED);
+                markAllTransactions(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_COMPLET);
                 break;
             case RJCT:
                 // "Rejeté" entièrement
                 markOrdreGroupeConfirmed(ordre);
-                markAllTransactions(ordre, REJECTED);
+                markAllTransactions(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_REJETE);
                 warnings.add("Ordre Groupé " + messageId + " - Entièrement Rejeté\n" + "L'Ordre Groupé " + messageId
                         + " - " + ordre.getMotif()
                         + " a été refusé par l'organisme financier. Les messages d'information suivants ont été inclus dans la réponse:\n\n  -"
@@ -233,7 +216,7 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
             case PART:
                 // "Accepté partiellement"
                 markOrdreGroupeConfirmed(ordre);
-                markAllTransactions(ordre, PARTIAL);
+                markAllTransactions(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_PARTIEL);
                 warnings.add("Ordre Groupé " + messageId + " - Partiellement Exécuté\n" + "L'Ordre Groupé " + messageId
                         + " - " + ordre.getMotif()
                         + " a été partiellement exécuté par l'organisme financier. Les messages d'information suivants ont été inclus dans la réponse:\n\n  -"
@@ -455,7 +438,7 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
     }
 
     private void markOrdreGroupeConfirmed(CAOrdreGroupe ordre) {
-        ordre.setEtat(CONFIRMED);
+        ordre.setEtat(APIOrdreGroupe.ISO_ORDRE_STATUS_CONFIRME);
 
         try {
             ordre.save(); // TODO save à chaque fois?

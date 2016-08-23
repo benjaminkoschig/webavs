@@ -1275,7 +1275,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                             is = new FileInputStream(sLocalFilename);
                             sendProcessor.sendOrdreGroupeByFtp(getSession(), is,
                                     "ordreGroupe" + getIdOrdreGroupe() + ".xml");
-                            setEtat(TRANSMIS);
+                            setEtat(ISO_ORDRE_STATUS_TRANSMIS);
                         } catch (SepaException e) {
                             JadeLogger.info(this, "could not send the data to ftp: " + e);
                             JadeLogger.info(this, e);
