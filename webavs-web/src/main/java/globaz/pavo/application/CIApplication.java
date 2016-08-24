@@ -637,79 +637,151 @@ public class CIApplication extends globaz.globall.db.BApplication {
      * @param moisF
      * @param annee
      * @param jourDebut
-     * @param JourFin
+     * @param jourFin
      * @return
      */
     public AFAffiliation getAffilieByNo(BSession session, String numeroAffilie, boolean forParitaire,
-            boolean forPersonnel, String moisD, String moisF, String annee, String jourDebut, String JourFin) {
-        AFAffiliationManager affMgr = new AFAffiliationManager();
-        AFAffiliation aff = null;
+            boolean forPersonnel, String moisD, String moisF, String annee, String jourDebut, String jourFin) {
+
         try {
+            // Recherche des affiliations selon critères
+            AFAffiliationManager affMgr = new AFAffiliationManager();
             affMgr.setSession(session);
             affMgr.setForAffilieNumero(numeroAffilie);
+
+            // Pour les paritaires
             if (forParitaire) {
                 affMgr.setForTypeFacturation(AFAffiliationManager.PARITAIRE);
                 affMgr.setForTypesAffParitaires();
             }
+
+            // Pour les personnelles
             if (forPersonnel) {
                 affMgr.setForTypesAffPersonelles();
             }
 
             affMgr.find();
+
+            // Si année non rempli, nous donnons la première affiliation
             if (JadeStringUtil.isEmpty(annee) || "0".equals(annee)) {
                 return (AFAffiliation) affMgr.getFirstEntity();
             }
+
+            AFAffiliation aff = null;
+            // Boucle sur chaque affiliation afin de rechercher le bon selon les dates données
             for (int i = 0; i < affMgr.size(); i++) {
                 aff = (AFAffiliation) affMgr.getEntity(i);
-                if ((moisD == null) || "66".equals(moisD) || "77".equals(moisD) || "99".equals(moisD)
-                        || JadeStringUtil.isIntegerEmpty(moisD)) {
-                    // pas d'info sur les mois, tester uniquement l'année
+
+                // Si nous avons l'année, mais pas le mois de début
+                if (JadeStringUtil.isIntegerEmpty(moisD) || "66".equals(moisD) || "77".equals(moisD)
+                        || "99".equals(moisD)) {
+
                     int anneeInt = Integer.parseInt(annee);
                     int anneeDebutAff = Integer.parseInt(aff.getDateDebut().substring(6));
+
+                    // Si année début donnée plus petite que l'année de début de l'affiliation, on passe au suivant
                     if (anneeInt < anneeDebutAff) {
                         continue;
                     }
+
+                    // Si une date de fin à l'affiliation
                     if (!JAUtil.isDateEmpty(aff.getDateFin())) {
                         int anneeFinAff = Integer.parseInt(aff.getDateFin().substring(6));
+                        // Si année fin donnée plus grande que l'année de fin de l'affiliation, on passe au suivant
                         if (anneeInt > anneeFinAff) {
                             continue;
                         }
                     }
+
                     return aff;
+
+                    // Si nous avons l'année et le mois de début, mais pas le jour de début
+                } else if (!JadeStringUtil.isIntegerEmpty(moisD) && JadeStringUtil.isBlankOrZero(jourDebut)) {
+
+                    final String moisAnneeDebutAff = aff.getDateDebut().substring(3);
+                    final String moisAnneeDebutDonnee = JadeStringUtil.rightJustifyInteger(moisD, 2) + "." + annee;
+
+                    // Vrai si la date début (mois.annee) de l'affiliation est plus petite ou égale avec la date de
+                    // début (mois.année) donnée
+                    final boolean resultDebut = BSessionUtil.compareDateFirstLowerOrEqual(session, moisAnneeDebutAff,
+                            CIUtil.padDate(moisAnneeDebutDonnee));
+
+                    // Si Faux, on passe au suivant
+                    if (!resultDebut) {
+                        continue;
+                    }
+
+                    // Si une date de fin à l'affiliation
+                    if (!JAUtil.isDateEmpty(aff.getDateFin())) {
+
+                        if (JadeStringUtil.isIntegerEmpty(moisF)) {
+                            moisF = "12";
+                        }
+
+                        final String moisAnneeFinAff = aff.getDateFin().substring(3);
+                        final String moisAnneeFinDonnee = JadeStringUtil.rightJustifyInteger(moisF, 2) + "." + annee;
+
+                        // Vrai si la date de fin (mois.année) de l'affiliation est plus grande ou égale avec la date de
+                        // fin (mois.année) donnée
+                        final boolean resultFin = BSessionUtil.compareDateFirstGreaterOrEqual(session, moisAnneeFinAff,
+                                CIUtil.padDate(moisAnneeFinDonnee));
+
+                        // Si Faux, on passe au suivant
+                        if (!resultFin) {
+                            continue;
+                        }
+                    }
+
+                    return aff;
+
+                    // Si nous avons l'année, le mois de début et le jour de début
                 } else {
-                    if (JadeStringUtil.isIntegerEmpty(moisD)) {
-                        moisD = "01";
-                    }
-                    if (JadeStringUtil.isBlankOrZero(jourDebut)) {
-                        jourDebut = "01";
-                    }
-                    boolean result = BSessionUtil.compareDateFirstLowerOrEqual(session, aff.getDateDebut(),
-                            CIUtil.padDate(jourDebut + "." + moisD + "." + annee));
-                    if (!result) {
+
+                    final String jourMoisAnneeDebutAff = aff.getDateDebut();
+                    final String jourMoisAnneeDebutDonnee = JadeStringUtil.rightJustifyInteger(jourDebut, 2) + "."
+                            + JadeStringUtil.rightJustifyInteger(moisD, 2) + "." + annee;
+
+                    // Vrai si la date de début (jour.mois.année) de l'affiliation est plus petite ou égale avec la date
+                    // de début (jour.mois.année) donnée
+                    final boolean resultDebut = BSessionUtil.compareDateFirstLowerOrEqual(session,
+                            jourMoisAnneeDebutAff, CIUtil.padDate(jourMoisAnneeDebutDonnee));
+
+                    // Si Faux, on passe au suivant
+                    if (!resultDebut) {
                         continue;
                     }
-                    if (JAUtil.isDateEmpty(aff.getDateFin())) {
-                        return aff;
+
+                    if (!JAUtil.isDateEmpty(aff.getDateFin())) {
+
+                        if (JadeStringUtil.isIntegerEmpty(moisF)) {
+                            moisF = "12";
+                        }
+
+                        if (JadeStringUtil.isBlankOrZero(jourFin)) {
+                            jourFin = returnJourFinSelonMois(moisF);
+                        }
+
+                        final String jourMoisAnneeFinAff = aff.getDateFin();
+                        final String jourMoisAnneeFinDonnee = JadeStringUtil.rightJustifyInteger(jourFin, 2) + "."
+                                + JadeStringUtil.rightJustifyInteger(moisF, 2) + "." + annee;
+
+                        // Vrai si la date de fin (jour.mois.année) de l'affiliation est plus grande ou égale avec la
+                        // date de fin (jour.mois.année) donnée
+                        final boolean resultFin = BSessionUtil.compareDateFirstGreaterOrEqual(session,
+                                jourMoisAnneeFinAff, CIUtil.padDate(jourMoisAnneeFinDonnee));
+                        if (!resultFin) {
+                            continue;
+                        }
                     }
-                    if (JadeStringUtil.isIntegerEmpty(moisF)) {
-                        moisF = "12";
-                    }
-                    if (JadeStringUtil.isBlankOrZero(JourFin)) {
-                        JourFin = returnJourFinSelonMois(moisF);
-                    }
-                    result = BSessionUtil.compareDateFirstGreaterOrEqual(session, aff.getDateFin(),
-                            CIUtil.padDate(JourFin + "." + moisF + "." + annee));
-                    if (!result) {
-                        continue;
-                    } else {
-                        return aff;
-                    }
+
+                    return aff;
                 }
             }
-        } catch (Exception ex) {
+        } catch (Exception e) {
+            JadeLogger.info(e, e.getMessage());
         }
-        return null;
 
+        return null;
     }
 
     /**
