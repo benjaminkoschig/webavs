@@ -188,8 +188,9 @@ public class CITransfertAffiliesProcess extends BProcess {
             return;
         }
 
-        affilieDst = (app.getAffilieByNo(getSession(), numeroAffilieDst, true, false, "", "",
-                String.valueOf(dateJa.getYear()), "", ""));
+        affilieDst = (app.getAffilieByNo(getSession(), numeroAffilieDst, true, false,
+                String.valueOf(dateJa.getMonth()), "", String.valueOf(dateJa.getYear()),
+                String.valueOf(dateJa.getDay()), ""));
         if (affilieDst == null) {
             this._addError(getSession().getLabel("TRANSF_AFFILIE_DEST") + " " + numeroAffilieDst + " "
                     + getSession().getLabel("TRANSF_AFFILIE_DEST_INVALIDE"));
