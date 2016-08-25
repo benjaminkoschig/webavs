@@ -73,6 +73,8 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
         currentSheet.setColumnWidth((short) numCol++, (short) 5000);
         currentSheet.setColumnWidth((short) numCol++, (short) 5000);
         currentSheet.setColumnWidth((short) numCol++, (short) 5000);
+        currentSheet.setColumnWidth((short) numCol++, (short) 5000);
+        currentSheet.setColumnWidth((short) numCol++, (short) 14000);
 
         createRow();
         createCell(CIImportPucs4ResultList.NUMERO_INFOROM, getStyleListCenter());
@@ -82,13 +84,14 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
 
         ArrayList<String> colTitles = new ArrayList<String>();
         colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_NSS"));
-        colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_NOM") + " / "
-                + getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_MESSAGE"));
+        colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_NOM"));
         colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_MM"));
         colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_ANNEE"));
         colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_CC"));
         colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_REVENU_AVS"));
         colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_REVENU_CAF"));
+        colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_TYPE_MESSAGE"));
+        colTitles.add(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_MESSAGE"));
 
         initTitleRow(colTitles);
 
@@ -148,29 +151,45 @@ public class CIImportPucs4ResultList extends COAbstractListExcel {
 
     }
 
+    private void createContentRowsDetailCommon(CIImportPucs4DetailResultInscriptionBean aDetailResultInscriptionBean) {
+        createRow();
+        createCell(aDetailResultInscriptionBean.getNss());
+        createCell(aDetailResultInscriptionBean.getNom());
+        createCell(aDetailResultInscriptionBean.getMoisDebut() + "-" + aDetailResultInscriptionBean.getMoisFin());
+        createCell(aDetailResultInscriptionBean.getAnnee());
+        createCell(aDetailResultInscriptionBean.getGenre());
+        createCell(aDetailResultInscriptionBean.getRevenuAVS());
+        createCell(aDetailResultInscriptionBean.getRevenuCAF());
+    }
+
     private void createContentRowsDetail(List<CIImportPucs4DetailResultInscriptionBean> listDetailResultInscriptionBean) {
 
         for (CIImportPucs4DetailResultInscriptionBean aDetailResultInscriptionBean : listDetailResultInscriptionBean) {
-            createRow();
-            createCell(aDetailResultInscriptionBean.getNss());
-            createCell(aDetailResultInscriptionBean.getNom());
-            createCell(aDetailResultInscriptionBean.getMoisDebut() + "-" + aDetailResultInscriptionBean.getMoisFin());
-            createCell(aDetailResultInscriptionBean.getAnnee());
-            createCell(aDetailResultInscriptionBean.getGenre());
-            createCell(aDetailResultInscriptionBean.getRevenuAVS());
-            createCell(aDetailResultInscriptionBean.getRevenuCAF());
+
+            boolean isContentRowsDetailCommonToDuplicate = false;
+            createContentRowsDetailCommon(aDetailResultInscriptionBean);
 
             for (String aErreur : aDetailResultInscriptionBean.getErrors()) {
-                createRow();
+
+                if (isContentRowsDetailCommonToDuplicate) {
+                    createContentRowsDetailCommon(aDetailResultInscriptionBean);
+                }
+
                 createCell(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_ERREUR") + " : ",
                         getStyleRedAlignLeft());
                 createCell(aErreur, getStyleRedAlignLeft());
+                isContentRowsDetailCommonToDuplicate = true;
             }
 
             for (String aInfo : aDetailResultInscriptionBean.getInfos()) {
-                createRow();
+
+                if (isContentRowsDetailCommonToDuplicate) {
+                    createContentRowsDetailCommon(aDetailResultInscriptionBean);
+                }
+
                 createCell(getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_LIST_AVERTISSEMENT") + " : ");
                 createCell(aInfo);
+                isContentRowsDetailCommonToDuplicate = true;
             }
         }
 

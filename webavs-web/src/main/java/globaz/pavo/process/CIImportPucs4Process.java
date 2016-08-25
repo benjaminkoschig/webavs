@@ -1650,7 +1650,7 @@ public class CIImportPucs4Process extends BProcess {
                                 declaration.setProvenance(getProvenance());
 
                                 declaration.setIdPucsFile(idsPucsFile);
-                                declaration.update(getTransaction());
+                                declaration.update(transactionJournalDS);
                             } else {
                                 declaration = new DSDeclarationViewBean();
                                 declaration.setAffiliationId(journal.getIdAffiliation());
