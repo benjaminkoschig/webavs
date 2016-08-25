@@ -305,7 +305,7 @@ public class COImprimerJournalContentieuxInfoComplementaireExcelml extends COAbs
      */
     private String resolveDateFinAffiliation(AFAffiliation affiliation) {
 
-        if (affiliation != null && affiliation.isNew() && !JadeStringUtil.isBlankOrZero(affiliation.getDateFin())) {
+        if (affiliation != null && !affiliation.isNew() && !JadeStringUtil.isBlankOrZero(affiliation.getDateFin())) {
             return affiliation.getDateFin();
         }
 
