@@ -192,6 +192,7 @@ public class FAPassageCompenserNewNoteCreditProcess extends FAPassageCompenserNe
                         if (isModeCompensation(section)) {
                             isSectionCompenserTotalement = true;
                             compenserTotalementSection(sectHelper, sectionACompenser);
+                            ((CASection) sectionACompenser.getSection()).setSolde("0");
                             continue;
                         }
 
@@ -206,6 +207,7 @@ public class FAPassageCompenserNewNoteCreditProcess extends FAPassageCompenserNe
                             // compensé totalement.
                             isSectionCompenserTotalement = true;
                             compenserTotalementSection(sectHelper, sectionACompenser);
+                            ((CASection) sectionACompenser.getSection()).setSolde("0");
                             continue;
                         }
 
@@ -282,15 +284,18 @@ public class FAPassageCompenserNewNoteCreditProcess extends FAPassageCompenserNe
                         if (isSectionCompenserTotalement) {
                             sectionACompenser.setStatus(FASectionHelper.COMPENSEE);
                             sectionACompenser.setMontantACompenser(new FWCurrency(0));
+                            ((CASection) sectionACompenser.getSection()).setSolde("0");
                         } else {
                             sectionACompenser.setStatus(FASectionHelper.PARTIELLEMENT_COMPENSEE);
                             sectionACompenser.setMontantACompenser(soldeMontantACompenser);
+                            ((CASection) sectionACompenser.getSection()).setSolde(soldeMontantACompenser.toString());
                         }
 
                         sectHelper.updateSection(sectionACompenser);
                     } else {
                         isSectionCompenserTotalement = true;
                         compenserTotalementSection(sectHelper, sectionACompenser);
+                        ((CASection) sectionACompenser.getSection()).setSolde("0");
                         continue;
                     }
                 }
