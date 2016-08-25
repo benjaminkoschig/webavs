@@ -288,11 +288,17 @@ public class IJGenererEcrituresComptablesProcess extends BProcess {
             IJRepartJointCotJointPrestJointEmployeurManager manager = createManagerRechercheRepartition();
             manager.find(BManager.SIZE_NOLIMIT);
 
+            boolean hasPrestationAvecMontantDiffenrentDeZero = false;
             for (Object object : manager.getContainer()) {
                 IJRepartJointCotJointPrestJointEmployeur repartition = (IJRepartJointCotJointPrestJointEmployeur) object;
                 if (!new FWCurrency(repartition.getMontantBrut()).isZero()) {
+                    hasPrestationAvecMontantDiffenrentDeZero = true;
                     break;
                 }
+
+            }
+
+            if (!hasPrestationAvecMontantDiffenrentDeZero) {
                 return true;
             }
 
