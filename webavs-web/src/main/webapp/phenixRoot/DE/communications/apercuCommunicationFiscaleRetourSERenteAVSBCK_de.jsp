@@ -104,16 +104,16 @@ function init(){}
   			<li><a onclick="afficherDonneesPrivees()" href="#">Privatdaten</a></li>
   			<li><a onclick="afficherDonneesCommerciales()" href="#">Geschaeftsdaten</a></li>
   			<li><a onclick="afficherConjoint()" href="#">Ehepartner</a></li>
-  			<li><a  class="selected">Rente(s) AVS</a></li>
+  			<li><a  class="selected">AHV Einkommen</a></li>
 		</ul>
 		</div>
 
         <TR>
-			<TD>Montant total des rentes AVS</TD>
+			<TD>Gesamtbetrag der AHV Renten</TD>
 			<TD><INPUT name="montantTotalRenteAVS" type="text" value="<%=viewBean.getMontantTotalRenteAVS()%>" class="montantDisabled" readonly="readonly" style="width : 2.45cm;"></TD>
 	     </TR>
 	     <TR>
-			<TD>Message du WebService</TD>
+			<TD>Meldung des WebService</TD>
 			<TD><INPUT name="messageRenteAVS" type="text" value="<%=viewBean.getMessageRenteAVS()%>" class="libelleLongDisabled" readonly="readonly"></TD>
 	     </TR>
 	     

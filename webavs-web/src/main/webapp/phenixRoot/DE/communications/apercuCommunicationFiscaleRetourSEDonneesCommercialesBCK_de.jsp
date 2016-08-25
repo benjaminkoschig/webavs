@@ -109,7 +109,7 @@ function init(){}
   			<li><a onclick="afficherDonneesPrivees()" href="#">Privatdaten</a></li>
   			<li><a class="selected">Geschaeftsdaten</a></li>
   			<li><a onclick="afficherConjoint()" href="#">Ehepartner</a></li>
-  			<li><a onclick="afficherRenteAVSWIRR()" href="#">Rente(s) AVS</a></li> 	
+  			<li><a onclick="afficherRenteAVSWIRR()" href="#">AHV Einkommen</a></li> 	
 		</ul>
 		</div>
 		<TR style="font-size : 14px;">
