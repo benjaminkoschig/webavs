@@ -39,7 +39,7 @@ function BienImmobilierHabitationNonPrincipalePart(container){
 			.find('[name=dateDebut]').val($data.find('dateDebut').text()).end()
 			.find('[name=dateFin]').val($data.find('dateFin').text()).end()
 			.find('.selecteurCommune').val($data.find('nomCommune').text()).end()
-			.find('.sousLocation').val($data.find('sousLocation')).end()
+			.find('.sousLocation').val($data.find('sousLocation').text()).end()
 			.find('.loyersEncaisses').val($data.find('loyersEncaisses').text()).end();
 		 this.detail.find('.lblCompagnie').text($data.find('nomCompagnie').text());
 		 requirements(this.detail);
