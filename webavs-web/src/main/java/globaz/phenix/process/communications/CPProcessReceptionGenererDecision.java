@@ -29,6 +29,7 @@ import globaz.phenix.db.communications.CPJournalRetour;
 import globaz.phenix.db.communications.CPReglePlausibilite;
 import globaz.phenix.db.communications.CPSedexContribuable;
 import globaz.phenix.db.communications.CPSedexDonneesBase;
+import globaz.phenix.db.communications.CPSedexDonneesCommerciales;
 import globaz.phenix.db.communications.CPValidationCalculCommunication;
 import globaz.phenix.db.communications.CPValidationCalculCommunicationManager;
 import globaz.phenix.db.communications.CPValidationJournalRetourViewBean;
@@ -54,6 +55,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
+import ch.globaz.common.domaine.Date;
 
 /**
  * @author btc
@@ -802,22 +804,8 @@ public class CPProcessReceptionGenererDecision extends BProcess {
             if (JadeStringUtil.isBlankOrZero(newDecision.getCapital())) {
                 newDecision.setCapital(retour.getCapital());
             }
-            if (!JAUtil.isDateEmpty(retour.getDebutExercice1())) {
-                newDecision.setDebutExercice1(retour.getDebutExercice1());
-            } else {
-                newDecision.setDebutExercice1("01.01." + retour.getAnnee1());
-            }
-            if (!JAUtil.isDateEmpty(retour.getDebutExercice2())) {
-                newDecision.setDebutExercice2(retour.getDebutExercice2());
-            }
-            if (!JAUtil.isDateEmpty(retour.getFinExercice1())) {
-                newDecision.setFinExercice1(retour.getFinExercice1());
-            } else {
-                newDecision.setFinExercice1("31.12." + retour.getAnnee1());
-            }
-            if (!JAUtil.isDateEmpty(retour.getFinExercice2())) {
-                newDecision.setFinExercice2(retour.getFinExercice2());
-            }
+
+            findDateExercice(newDecision, retour);
         }
         initRevenu(newDecision, retour);
         if ((CodeSystem.TYPE_AFFILI_INDEP.equalsIgnoreCase(newDecision.getAffiliation().getTypeAffiliation()) || CodeSystem.TYPE_AFFILI_INDEP_EMPLOY
@@ -864,6 +852,85 @@ public class CPProcessReceptionGenererDecision extends BProcess {
             newDecision.setSourceInformation(CPDonneesBase.CS_TAX_OFFICE);
         } else {
             newDecision.setSourceInformation(CPDonneesBase.CS_FISC);
+        }
+    }
+
+    protected void defineDateExercice1(CPDecisionViewBean newDecision, String annee, CPSedexDonneesCommerciales doco,
+            AFAffiliation affiliation) {
+
+        String formatDateDoco = "yyyy-MM-dd";
+
+        Date dateDebutDefault = new Date("01.01." + annee);
+        Date dateFinDefault = new Date("31.12." + annee);
+
+        Date dateDebutExerciceFromFisc = null;
+        Date dateFinExerciceFromFisc = null;
+
+        if (doco != null && !doco.isNew()) {
+            if (!JadeStringUtil.isBlankOrZero(doco.getCommencementOfSelfEmployment())) {
+                dateDebutExerciceFromFisc = new Date(doco.getCommencementOfSelfEmployment(), formatDateDoco);
+            }
+            if (!JadeStringUtil.isBlankOrZero(doco.getEndOfSelfEmployment())) {
+                dateFinExerciceFromFisc = new Date(doco.getEndOfSelfEmployment(), formatDateDoco);
+            }
+        }
+
+        Date dateDebutExerciceFromAffiliation = null;
+        Date dateFinExerciceFromAffiliation = null;
+
+        if (affiliation != null && !affiliation.isNew() && !JadeStringUtil.isEmpty(affiliation.getDateDebut())) {
+            dateDebutExerciceFromAffiliation = new Date(affiliation.getDateDebut());
+
+        }
+        if (affiliation != null && !affiliation.isNew() && !JadeStringUtil.isEmpty(affiliation.getDateFin())) {
+            dateFinExerciceFromAffiliation = new Date(affiliation.getDateFin());
+        }
+
+        // Définition de la date que l'on doit prendre
+        // ------------
+        // Date de début
+        if (dateDebutExerciceFromFisc != null) {
+            newDecision.setDebutExercice1(dateDebutExerciceFromFisc.getSwissValue());
+        } else if (dateDebutExerciceFromAffiliation != null && dateDebutExerciceFromAffiliation.after(dateDebutDefault)
+                && dateDebutExerciceFromAffiliation.before(dateFinDefault)) {
+            newDecision.setDebutExercice1(dateDebutExerciceFromAffiliation.getSwissValue());
+        } else {
+            newDecision.setDebutExercice1(dateDebutDefault.getSwissValue());
+        }
+
+        // Date de fin
+        if (dateFinExerciceFromFisc != null) {
+            newDecision.setFinExercice1(dateFinExerciceFromFisc.getSwissValue());
+        } else if (dateFinExerciceFromAffiliation != null && dateFinExerciceFromAffiliation.before(dateFinDefault)
+                && dateFinExerciceFromAffiliation.after(dateDebutDefault)) {
+            newDecision.setFinExercice1(dateFinExerciceFromAffiliation.getSwissValue());
+        } else {
+            newDecision.setFinExercice1(dateFinDefault.getSwissValue());
+        }
+    }
+
+    private void findDateExercice(CPDecisionViewBean newDecision, ICommunicationRetour retour) throws Exception {
+
+        // Recherche si infos dans les données du fisc
+        CPSedexDonneesCommerciales doco = new CPSedexDonneesCommerciales();
+        doco.setIdRetour(retour.getIdRetour());
+        doco.setSession(getSession());
+
+        try {
+            doco.retrieve();
+        } catch (Exception e) {
+            JadeLogger.warn(e, "Unabled to retrieve données commerciales of idRetour : " + idRetour);
+        }
+
+        defineDateExercice1(newDecision, retour.getAnnee1(), doco, newDecision.getAffiliation());
+
+        // -------------
+        // Exercice 2
+        if (!JAUtil.isDateEmpty(retour.getDebutExercice2())) {
+            newDecision.setDebutExercice2(retour.getDebutExercice2());
+        }
+        if (!JAUtil.isDateEmpty(retour.getFinExercice2())) {
+            newDecision.setFinExercice2(retour.getFinExercice2());
         }
     }
 
