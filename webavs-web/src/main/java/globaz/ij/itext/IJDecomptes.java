@@ -796,17 +796,7 @@ public class IJDecomptes extends FWIDocumentManager {
     public boolean beforePrintDocument() {
 
         getDocumentInfo().setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_IJ);
-
-        // D0118 possibilité de générer des décomptes à 0.-
-        // if (grandTotalEgalZero) {
-        // grandTotalEgalZero = false;
-        // // possible car on imprime un PDF par décompte
-        // deleteAllDocument();
-        // return false;
-        // } else {
-        // return true && super.beforePrintDocument();
-        // }
-        return super.beforePrintDocument();
+        return true && super.beforePrintDocument();
     }
 
     private String buildOrderPrintingByKey(String idAffilie, String idTiers) throws Exception {
@@ -1873,15 +1863,6 @@ public class IJDecomptes extends FWIDocumentManager {
                 IJRepartitionJointPrestation repartition = (IJRepartitionJointPrestation) repartitionsMgr
                         .get(idRepartition);
 
-                // D0113 : il doit être possible de générer des décomptes a 0.-
-                /*
-                 * // Il est possible que le montant brut à verser au bénéficiaire principal soit égal à zéro.
-                 * // Dans ce cas, on ne l'imprime pas sur le décompte, et on passe à l'itération suivante.
-                 * if (JadeStringUtil.isIntegerEmpty(repartition.getMontantBrut())
-                 * && JadeStringUtil.isIntegerEmpty(repartition.getMontantVentile())) {
-                 * continue;
-                 * }
-                 */
                 Decompte decompte = getDecompte(repartitions, repartition);
 
                 // ajouter la repartition courante.
