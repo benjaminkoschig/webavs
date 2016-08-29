@@ -54,7 +54,7 @@ class GenerateOperationsAllocationsNoel extends GenerateOperationBasic {
     String formatMotifVersement(InfosTiers infosTiers, String refPaiement, String strPeriode, String strDecision) {
         String idTiersPrincipal = infosTiers.getIdTiersAddressePaiement();
 
-        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal) || Long.parseLong(idTiersPrincipal) < 0) {
             idTiersPrincipal = infosTiers.getIdTiers();
         }
 

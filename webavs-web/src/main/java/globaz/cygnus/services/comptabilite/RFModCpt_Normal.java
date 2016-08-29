@@ -819,7 +819,7 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
 
         String idTiersPrincipal = idTiersAdressePaiement;
 
-        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal) || Long.parseLong(idTiersPrincipal) < 0) {
             idTiersPrincipal = idTiersBeneficiairePrincipal;
         }
 

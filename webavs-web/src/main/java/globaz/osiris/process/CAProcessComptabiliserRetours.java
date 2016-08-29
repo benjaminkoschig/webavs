@@ -349,7 +349,7 @@ public class CAProcessComptabiliserRetours extends BProcess {
 
                             String idTiersPrincipal = retour.getIdTiersLigneRetourSurAdressePaiement();
 
-                            if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+                            if (JadeStringUtil.isBlankOrZero(idTiersPrincipal) || Long.parseLong(idTiersPrincipal) < 0) {
                                 idTiersPrincipal = lir.getIdTiers();
                             }
 

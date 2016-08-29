@@ -574,7 +574,7 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
             while ((rente = (REPaiementRentes) mgr.cursorReadNext(statement)) != null) {
                 String idTiersPrincipal = rente.getIdTiersAdressePmt();
 
-                if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+                if (JadeStringUtil.isBlankOrZero(idTiersPrincipal) || Long.parseLong(idTiersPrincipal) < 0) {
                     idTiersPrincipal = rente.getIdTiersBeneficiaire();
                 }
 

@@ -219,7 +219,7 @@ public class MotifVersementUtil {
             String labelID, BSession session) {
         String idTiersToWork = idTiersPrincipale;
 
-        if (JadeStringUtil.isBlankOrZero(idTiersToWork)) {
+        if (JadeStringUtil.isBlankOrZero(idTiersToWork) || Long.parseLong(idTiersToWork) < 0) {
             idTiersToWork = idTiersAuxiliaire;
         }
         String message = "";

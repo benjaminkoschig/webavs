@@ -319,7 +319,7 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
 
                     String idTiersPrincipal = rente.getIdTiersAdressePmt();
 
-                    if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+                    if (JadeStringUtil.isBlankOrZero(idTiersPrincipal) || Long.parseLong(idTiersPrincipal) < 0) {
                         idTiersPrincipal = rente.getIdTiersBeneficiaire();
                     }
 

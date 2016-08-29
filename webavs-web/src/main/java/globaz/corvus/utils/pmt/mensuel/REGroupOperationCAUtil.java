@@ -379,7 +379,7 @@ public class REGroupOperationCAUtil {
                     // Le versement...
                     String idTiersPrincipal = idTiersAdrPmt;
 
-                    if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+                    if (JadeStringUtil.isBlankOrZero(idTiersPrincipal) || Long.parseLong(idTiersPrincipal) < 0) {
                         idTiersPrincipal = idTiersBeneficiaire;
                     }
 
@@ -878,7 +878,7 @@ public class REGroupOperationCAUtil {
                     // Le versement...
                     String idTiersPrincipal = idTiersAdrPmt;
 
-                    if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+                    if (JadeStringUtil.isBlankOrZero(idTiersPrincipal) || Long.parseLong(idTiersPrincipal) < 0) {
                         idTiersPrincipal = idTiersBeneficiaire;
                     }
 

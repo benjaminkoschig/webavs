@@ -148,7 +148,7 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
     String formatDeblocage(OrdreVersementForList ov, String dateEcheance) {
         String idTiersPrincipal = ov.getSimpleOrdreVersement().getIdTiersAdressePaiement();
 
-        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal) || Long.parseLong(idTiersPrincipal) < 0) {
             idTiersPrincipal = ov.getSimpleOrdreVersement().getIdTiersOwnerDetteCreance();
         }
 

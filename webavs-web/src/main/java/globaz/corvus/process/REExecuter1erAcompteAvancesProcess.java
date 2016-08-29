@@ -111,7 +111,7 @@ public class REExecuter1erAcompteAvancesProcess extends BProcess {
 
                 String idTiersPrincipal = avance.getIdTiersAdrPmt();
 
-                if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+                if (JadeStringUtil.isBlankOrZero(idTiersPrincipal) || Long.parseLong(idTiersPrincipal) < 0) {
                     idTiersPrincipal = avance.getIdTiersBeneficiaire();
                 }
 

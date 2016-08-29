@@ -1031,7 +1031,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
 
         String idTiersPrincipal = decision.getTiersCorrespondance().getId().toString();
 
-        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal) || Long.parseLong(idTiersPrincipal) < 0) {
             idTiersPrincipal = decision.getBeneficiairePrincipal().getId().toString();
         }
 
@@ -1055,7 +1055,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
 
         String idTiersPrincipal = idTiersAdrPmt;
 
-        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal) || Long.parseLong(idTiersPrincipal) < 0) {
             idTiersPrincipal = tw.getIdTiers();
         }
 

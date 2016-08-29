@@ -264,7 +264,7 @@ public class PrestationOvDecompte {
     public String formatDecision() {
         String idTiersPrincipal = getIdTiersAddressePaiementRequerant();
 
-        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal)) {
+        if (JadeStringUtil.isBlankOrZero(idTiersPrincipal) || Long.parseLong(idTiersPrincipal) < 0) {
             idTiersPrincipal = getIdTiersRequerant();
         }
 
