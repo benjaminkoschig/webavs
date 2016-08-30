@@ -12,6 +12,9 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.pegasus.process.annonce.transfertdossier.PCDemandeTransfertDossierProcess;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import globaz.prestation.interfaces.util.nss.PRUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -129,19 +132,40 @@ public class TransfertDossierPCProviderServiceImpl extends AbstractPegasusBuilde
             final ICTDocument babelDoc;
             Map<Langues, CTDocumentImpl> documentsBabel;
             try {
+
                 documentsBabel = BabelServiceLocator.getPCCatalogueTexteService().searchForTransfertDossierPC(
                         TransfertDossierBuilderType.DEMANDE_EN_COURS);
-                // récupérer l'énuméré de la langue en fonction du codeISO
-                Langues langueTiers = Langues.getLangueDepuisCodeIso(decisionSuppression.getDecisionHeader()
-                        .getPersonneEtendue().getTiers().getLangue());
 
-                if (null == langueTiers) {
-                    langueTiers = Langues.getLangueDepuisCodeIso(BSessionUtil.getSessionFromThreadContext()
-                            .getUserInfo().getLanguage());
+                // Connaître l'id tiers
+                String idTiersForLangue = decisionSuppression.getDecisionHeader().getSimpleDecisionHeader()
+                        .getIdTiersBeneficiaire();
+
+                Langues langueDepuisCodeIso = null;
+
+                if (JadeStringUtil.isBlankOrZero(idTiersForLangue) || Long.parseLong(idTiersForLangue) < 0) {
+                    idTiersForLangue = decisionSuppression.getDecisionHeader().getSimpleDecisionHeader()
+                            .getIdTiersCourrier();
                 }
 
-                babelDoc = documentsBabel.get(langueTiers);
+                // Si aucun id tiers trouvé en cascade, alors nous allons prendre la langue de la session
+                if (JadeStringUtil.isBlankOrZero(idTiersForLangue) || Long.parseLong(idTiersForLangue) < 0) {
+                    langueDepuisCodeIso = Langues.getLangueDepuisCodeIso(BSessionUtil.getSessionFromThreadContext()
+                            .getUserInfo().getLanguage());
+                } else {
+                    // Si un id tiers est trouvé, alors nous recherchons sa langue
+                    PRTiersWrapper tiersById = PRTiersHelper.getTiersById(BSessionUtil.getSessionFromThreadContext(),
+                            idTiersForLangue);
 
+                    String isoLangue = PRUtil.getISOLangueTiers(tiersById.getLangue());
+                    langueDepuisCodeIso = Langues.getLangueDepuisCodeIso(isoLangue);
+
+                    if (langueDepuisCodeIso == null) {
+                        langueDepuisCodeIso = Langues.getLangueDepuisCodeIso(BSessionUtil.getSessionFromThreadContext()
+                                .getUserInfo().getLanguage());
+                    }
+                }
+
+                babelDoc = documentsBabel.get(langueDepuisCodeIso);
             } catch (Exception e) {
                 throw new TransfertDossierException("Error while loading catalogue Babel!", e);
             }
