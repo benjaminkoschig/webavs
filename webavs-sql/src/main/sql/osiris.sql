@@ -140,4 +140,13 @@ reorg table SCHEMA.CAORGRP allow read access;
 --prop pour ISO/SEPA
 insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.nbmax.multiog','2');
 insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.nbmax.ovparog','99000');
+insert into SCHEMA.jadeprop (propname, propval) values ('osiris.sepa.ftp.host','fdsbc.post.ch');
+insert into SCHEMA.jadeprop (propname, propval) values ('osiris.sepa.ftp.port','22');
+insert into SCHEMA.jadeprop (propname, propval) values ('osiris.sepa.ftp.user','');
+insert into SCHEMA.jadeprop (propname, propval) values ('osiris.sepa.ftp.pass','');
 
+--trad de CS pour D0048
+update SCHEMA.FWCOUP set PCOLUT = 'EL' where PCOSID = 64055001 and PLAIDE = 'D';
+update SCHEMA.FWCOUP set PCOLUT = 'EL Invalidität' where PCOSID = 64027003 and PLAIDE = 'D';
+update SCHEMA.FWCOUP set PCOLUT = 'EL Hinterlassene' where PCOSID = 64027002 and PLAIDE = 'D';
+update SCHEMA.FWCOUP set PCOLUT = 'EL Alter' where PCOSID = 64027001 and PLAIDE = 'D';
