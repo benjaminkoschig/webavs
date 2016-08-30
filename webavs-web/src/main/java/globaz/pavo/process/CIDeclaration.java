@@ -609,7 +609,10 @@ public class CIDeclaration extends BProcess {
                                     montantEcr = testAndSetPourMontantNegatif(rec, ecriture, errors, montantEcr);
                                 }
                                 // Période affiliation
-                                if (!_isInPeriodeAffiliation(rec)) {
+                                if (!app.isInAffiliation(getSession(), rec.getDebutAffiliation(),
+                                        rec.getFinAffiliation(), String.valueOf(rec.getJourDebut()),
+                                        String.valueOf(rec.getJourFin()), String.valueOf(rec.getMoisDebut()),
+                                        String.valueOf(rec.getMoisFin()), rec.getAnnee())) {
                                     // Les dates ne correspondent pas avec la période d'affiliation
                                     if (!CIDeclaration.CS_COT_PERS.equals(getType())) {
                                         errors.add(getSession().getLabel("DT_ERR_DATE_AFFILIATION"));
