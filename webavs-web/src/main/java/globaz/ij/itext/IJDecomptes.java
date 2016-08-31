@@ -1866,6 +1866,19 @@ public class IJDecomptes extends FWIDocumentManager {
                 IJRepartitionJointPrestation repartition = (IJRepartitionJointPrestation) repartitionsMgr
                         .get(idRepartition);
 
+                /*
+                 * Afin d'éviter d'éditer un décompte pour une répartition à 0.- avec une prestation qui n'est pas à 0.
+                 * Cela signifie que c'est une paiement à l'employeur.
+                 * En gros;
+                 * - si prestation == 0.- et repartition = 0 on édite le décompte
+                 * - si prestation != 0.- et repartition = 0 on édite PAS le décompte
+                 */
+                if (new FWCurrency(repartition.getMontantBrut()).isZero()) {
+                    if (!new FWCurrency(repartition.getMontantBrutPrestation()).isZero()) {
+                        continue;
+                    }
+                }
+
                 Decompte decompte = getDecompte(repartitions, repartition);
 
                 // ajouter la repartition courante.
