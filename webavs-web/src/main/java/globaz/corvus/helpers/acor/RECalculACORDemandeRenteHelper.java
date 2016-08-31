@@ -950,6 +950,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
             String previousGenreDroitApi = "";
             String currentTypePrestations = "";
             String currentGenreDroitApi = "";
+            String currentIdPeriode = "";
+            String previousIdPeriode = "";
 
             // On crée une nouvelle RA pour chaque nouveau type(genre) de
             // prestation.
@@ -1099,99 +1101,200 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
                 currentTypePrestations = montantsPrstAPI[i].getTypePrestation();
                 currentGenreDroitApi = montantsPrstAPI[i].getCsGenreDroitApi();
+                currentIdPeriode = montantsPrstAPI[i].getIdPeriode();
 
                 REPrestationDue prstDue = null;
+                // Nouveau type de prestation
 
-                // ne plus faire de regroupement K141201_006
+                JADate dfP1 = new JADate(montantsPrstAPI[i].getDateFin());
+                JADate ddP2 = new JADate("31.12.2999");
 
-                montantTotalRetro = new BigDecimal(0);
-                ddRetro = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMM(montantsPrstAPI[i].getDateDebut());
+                JADate ddP1 = new JADate(montantsPrstAPI[i].getDateDebut());
+                JADate dfP0 = new JADate(DATE_FIN_DEMANDE);
 
-                ra = new RERenteAccordee();
-                ra.setSession(session);
-                ra.setIdBaseCalcul(idBaseCalcul);
-                ra.setIdTiersBeneficiaire(caViewBean.getIdTiers());
-                ra.setCsEtat(IREPrestationAccordee.CS_ETAT_CALCULE);
-                // Les rentes accordées de type API ne doivent pas être
-                // envoyées à ACOR, car ACOR ne les calculs pas.
-                ra.setCsGenreDroitApi(currentGenreDroitApi);
-                ra.setCodePrestation(currentTypePrestations);
-                ra.setCodeCasSpeciaux1(montantsPrstAPI[i].getCodeCasSpecial());
+                if (i > 0) {
+                    dfP0 = new JADate(montantsPrstAPI[i - 1].getDateFin());
+                }
 
-                // Voir dans la situation familiale pour setter le NSS de
-                // son épouse ou ex épouse dans le champ nss complémentaire
-                // 1
+                if (!(i == (montantsPrstAPI.length - 1))) {
+                    ddP2 = new JADate(montantsPrstAPI[i + 1].getDateDebut());
+                }
 
-                // 1. Reprendre la situation familiale
-                ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(session,
-                        ISFSituationFamiliale.CS_DOMAINE_RENTES, ra.getIdTiersBeneficiaire());
+                dfP1 = cal.addDays(dfP1, 1);
+                dfP0 = cal.addDays(dfP0, 1);
+                boolean isNextPeriodeContigue = false;
+                boolean isPreviousPeriodeContigue = false;
+                if (cal.compare(dfP1, ddP2) == JACalendar.COMPARE_EQUALS) {
+                    isNextPeriodeContigue = true;
+                }
 
-                // 2. Reprendre les relations familiales
-                ISFRelationFamiliale[] rfs = sf.getRelationsConjoints(ra.getIdTiersBeneficiaire(),
-                        JACalendar.todayJJsMMsAAAA());
+                if (cal.compare(dfP0, ddP1) == JACalendar.COMPARE_EQUALS) {
+                    isPreviousPeriodeContigue = true;
+                }
 
-                // 3. Parcourir toutes les relations et setter les données
-                // nécessaires
-                for (int j = 0; (rfs != null) && (j < rfs.length); j++) {
-                    ISFRelationFamiliale rf = rfs[j];
+                boolean isPreviousTypePrestationEqualCurrentTypePrestation = currentTypePrestations
+                        .equalsIgnoreCase(previousTypePrestations);
+                boolean isPreviousGenreDroitApiEqualCurrentGenreDroitApi = currentGenreDroitApi
+                        .equalsIgnoreCase(previousGenreDroitApi);
+                boolean isPreviousIdPeriodeEquals = currentIdPeriode.equalsIgnoreCase(previousIdPeriode);
 
-                    String idMbrFamille1 = rf.getIdMembreFamilleHomme();
-                    ISFMembreFamille mf1 = sf.getMembreFamille(idMbrFamille1);
-                    String idTiers1 = mf1.getIdTiers();
+                boolean isLastMontantPrstApiForCurrentRenteAccordee = (i == (montantsPrstAPI.length - 1));
+                isLastMontantPrstApiForCurrentRenteAccordee = isLastMontantPrstApiForCurrentRenteAccordee
+                        || !currentTypePrestations.equalsIgnoreCase(montantsPrstAPI[i + 1].getTypePrestation());
+                isLastMontantPrstApiForCurrentRenteAccordee = isLastMontantPrstApiForCurrentRenteAccordee
+                        || !currentGenreDroitApi.equalsIgnoreCase(montantsPrstAPI[i + 1].getCsGenreDroitApi());
+                isLastMontantPrstApiForCurrentRenteAccordee = isLastMontantPrstApiForCurrentRenteAccordee
+                        || !isNextPeriodeContigue;
+                isLastMontantPrstApiForCurrentRenteAccordee = isLastMontantPrstApiForCurrentRenteAccordee
+                        || !currentIdPeriode.equalsIgnoreCase(montantsPrstAPI[i + 1].getIdPeriode());
 
-                    if (!idTiers1.equals(ra.getIdTiersBeneficiaire())) {
-                        ra.setIdTiersComplementaire1(idTiers1);
-                    } else {
-                        String idMbrFamille2 = rf.getIdMembreFamilleFemme();
-                        ISFMembreFamille mf2 = sf.getMembreFamille(idMbrFamille2);
-                        String idTiers2 = mf2.getIdTiers();
+                if (!isPreviousTypePrestationEqualCurrentTypePrestation
+                        || !isPreviousGenreDroitApiEqualCurrentGenreDroitApi || !isPreviousPeriodeContigue
+                        || !isPreviousIdPeriodeEquals) {
 
-                        if (!idTiers2.equals(ra.getIdTiersBeneficiaire())) {
-                            ra.setIdTiersComplementaire1(idTiers2);
+                    montantTotalRetro = new BigDecimal(0);
+                    ddRetro = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMM(montantsPrstAPI[i].getDateDebut());
+
+                    ra = new RERenteAccordee();
+                    ra.setSession(session);
+                    ra.setIdBaseCalcul(idBaseCalcul);
+                    ra.setIdTiersBeneficiaire(caViewBean.getIdTiers());
+                    ra.setCsEtat(IREPrestationAccordee.CS_ETAT_CALCULE);
+                    // Les rentes accordées de type API ne doivent pas être
+                    // envoyées à ACOR, car ACOR ne les calculs pas.
+                    ra.setCsGenreDroitApi(currentGenreDroitApi);
+                    ra.setCodePrestation(currentTypePrestations);
+                    ra.setCodeCasSpeciaux1(montantsPrstAPI[i].getCodeCasSpecial());
+
+                    // Voir dans la situation familiale pour setter le NSS de
+                    // son épouse ou ex épouse dans le champ nss complémentaire
+                    // 1
+
+                    // 1. Reprendre la situation familiale
+                    ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(session,
+                            ISFSituationFamiliale.CS_DOMAINE_RENTES, ra.getIdTiersBeneficiaire());
+
+                    // 2. Reprendre les relations familiales
+                    ISFRelationFamiliale[] rfs = sf.getRelationsConjoints(ra.getIdTiersBeneficiaire(),
+                            JACalendar.todayJJsMMsAAAA());
+
+                    // 3. Parcourir toutes les relations et setter les données
+                    // nécessaires
+                    for (int j = 0; (rfs != null) && (j < rfs.length); j++) {
+                        ISFRelationFamiliale rf = rfs[j];
+
+                        String idMbrFamille1 = rf.getIdMembreFamilleHomme();
+                        ISFMembreFamille mf1 = sf.getMembreFamille(idMbrFamille1);
+                        String idTiers1 = mf1.getIdTiers();
+
+                        if (!idTiers1.equals(ra.getIdTiersBeneficiaire())) {
+                            ra.setIdTiersComplementaire1(idTiers1);
+                        } else {
+                            String idMbrFamille2 = rf.getIdMembreFamilleFemme();
+                            ISFMembreFamille mf2 = sf.getMembreFamille(idMbrFamille2);
+                            String idTiers2 = mf2.getIdTiers();
+
+                            if (!idTiers2.equals(ra.getIdTiersBeneficiaire())) {
+                                ra.setIdTiersComplementaire1(idTiers2);
+                            }
                         }
+                        // BZ 9926
+                        break;
+
                     }
-                    // BZ 9926
-                    break;
+
+                    // On ajoute la rente accordée, sans le montant
+
+                    ra.setAnneeMontantRAM(String.valueOf(JACalendar.getYear(JACalendar.todayJJsMMsAAAA())));
+
+                    idsRA.add(Long.parseLong(REAddRenteAccordee.addRenteAccordeeCascade_noCommit(session, transaction,
+                            ra, IREValidationLevel.VALIDATION_LEVEL_NONE)));
+
+                    // On ajoute la prestation due
+                    prstDue = new REPrestationDue();
+                    prstDue.setSession(session);
+
+                    prstDue.setDateDebutPaiement(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i]
+                            .getDateDebut()));
+                    prstDue.setDateFinPaiement(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i]
+                            .getDateFin()));
+
+                    // Derniere période pour ce type de prestation, en fait la
+                    // seule et unique
+                    // La dernière correspond au montant courant.
+
+                    if (isLastMontantPrstApiForCurrentRenteAccordee) {
+
+                        // MAJ du montant de la rente accordée
+                        ra.retrieve(transaction);
+                        ra.setMontantPrestation(montantsPrstAPI[i].getMontant().toString());
+                        ra.update(transaction);
+
+                        isLastPeriodeForRA = true;
+
+                        dfRetro = montantsPrstAPI[i].getDateFin();
+
+                        if (JadeStringUtil.isBlankOrZero(dfRetro)) {
+                            dfRetro = lastPmtjjmmaaaa;
+                        } else if (BSessionUtil.compareDateFirstGreater(session, dfRetro, lastPmtjjmmaaaa)) {
+                            dfRetro = lastPmtjjmmaaaa;
+                        }
+                        nombreMoisRetro = getNombreMois(new JADate(montantsPrstAPI[i].getDateDebut()), new JADate(
+                                dfRetro));
+
+                    } else {
+                        nombreMoisRetro = getNombreMois(new JADate(montantsPrstAPI[i].getDateDebut()), new JADate(
+                                montantsPrstAPI[i].getDateFin()));
+                        isLastPeriodeForRA = false;
+                    }
+                    montantRetroPeriode = montantsPrstAPI[i].getMontant().multiply(new BigDecimal(nombreMoisRetro));
+                    montantTotalRetro = montantTotalRetro.add(montantRetroPeriode);
+
+                    // Date début
+                    ddRetro = montantsPrstAPI[i].getDateDebut();
 
                 }
 
-                // On ajoute la rente accordée, sans le montant
+                // Dans le même type de prestation
+                else {
+                    isLastPeriodeForRA = false;
 
-                ra.setAnneeMontantRAM(String.valueOf(JACalendar.getYear(JACalendar.todayJJsMMsAAAA())));
+                    // On ajoute la prestation due
+                    prstDue = new REPrestationDue();
+                    prstDue.setSession(session);
 
-                idsRA.add(Long.parseLong(REAddRenteAccordee.addRenteAccordeeCascade_noCommit(session, transaction, ra,
-                        IREValidationLevel.VALIDATION_LEVEL_NONE)));
+                    prstDue.setDateDebutPaiement(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i]
+                            .getDateDebut()));
+                    prstDue.setDateFinPaiement(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i]
+                            .getDateFin()));
 
-                // On ajoute la prestation due
-                prstDue = new REPrestationDue();
-                prstDue.setSession(session);
+                    if (isLastMontantPrstApiForCurrentRenteAccordee) {
 
-                prstDue.setDateDebutPaiement(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i]
-                        .getDateDebut()));
-                prstDue.setDateFinPaiement(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i]
-                        .getDateFin()));
+                        isLastPeriodeForRA = true;
+                        // MAJ du montant de la rente accordée
+                        ra.retrieve(transaction);
+                        ra.setMontantPrestation(montantsPrstAPI[i].getMontant().toString());
+                        ra.update(transaction);
 
-                // MAJ du montant de la rente accordée
-                ra.retrieve(transaction);
-                ra.setMontantPrestation(montantsPrstAPI[i].getMontant().toString());
-                ra.update(transaction);
+                        dfRetro = montantsPrstAPI[i].getDateFin();
+                        if (JadeStringUtil.isBlankOrZero(dfRetro)) {
+                            dfRetro = lastPmtjjmmaaaa;
+                        } else if (BSessionUtil.compareDateFirstGreater(session, dfRetro, lastPmtjjmmaaaa)) {
+                            dfRetro = lastPmtjjmmaaaa;
+                        }
+                        nombreMoisRetro = getNombreMois(new JADate(montantsPrstAPI[i].getDateDebut()), new JADate(
+                                dfRetro));
 
-                isLastPeriodeForRA = true;
+                    } else {
+                        isLastPeriodeForRA = false;
 
-                dfRetro = montantsPrstAPI[i].getDateFin();
+                        nombreMoisRetro = getNombreMois(new JADate(montantsPrstAPI[i].getDateDebut()), new JADate(
+                                montantsPrstAPI[i].getDateFin()));
+                    }
+                    montantRetroPeriode = montantsPrstAPI[i].getMontant().multiply(new BigDecimal(nombreMoisRetro));
+                    montantTotalRetro = montantTotalRetro.add(montantRetroPeriode);
 
-                if (JadeStringUtil.isBlankOrZero(dfRetro)) {
-                    dfRetro = lastPmtjjmmaaaa;
-                } else if (BSessionUtil.compareDateFirstGreater(session, dfRetro, lastPmtjjmmaaaa)) {
-                    dfRetro = lastPmtjjmmaaaa;
                 }
-                nombreMoisRetro = getNombreMois(new JADate(montantsPrstAPI[i].getDateDebut()), new JADate(dfRetro));
-
-                montantRetroPeriode = montantsPrstAPI[i].getMontant().multiply(new BigDecimal(nombreMoisRetro));
-                montantTotalRetro = montantTotalRetro.add(montantRetroPeriode);
-
-                // Date début
-                ddRetro = montantsPrstAPI[i].getDateDebut();
 
                 prstDue.setCsType(IREPrestationDue.CS_TYPE_PMT_MENS);
                 prstDue.setCsEtat(IREPrestationDue.CS_ETAT_ATTENTE);
@@ -1351,6 +1454,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 prstDue.add(transaction);
                 previousTypePrestations = currentTypePrestations;
                 previousGenreDroitApi = currentGenreDroitApi;
+                previousIdPeriode = currentIdPeriode;
             }
 
             api.setCsEtat(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE);
@@ -1656,20 +1760,6 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 }
             }
 
-            // BZ 10015
-            long idDemande = 0;
-            /*
-             * Si la demande à été copiée dans le traitement précédent, on travaille avec la copie de la demande
-             */
-            if (idCopieDemande != null) {
-                idDemande = idCopieDemande;
-            } else {
-                idDemande = Long.valueOf(demandeRente.getIdDemandeRente());
-            }
-
-            // Mise à jour de l'id demande dans le viewBean car la demande est peut-être une copie
-            caViewbean.setIdDemandeRente(String.valueOf(idDemande));
-
             // Inforom D0112 : recherche si des remarques particulières sont présentes dans la feuille de calcul
             traiterLesRemarquesParticulieresDeLaFeuilleDeCalculAcor(session, transaction, caViewbean);
 
@@ -1680,6 +1770,16 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
              * tort
              */
             if (idsRentesAccordeesNouveauDroit.size() > 0) {
+                // BZ 10015
+                long idDemande = 0;
+                /*
+                 * Si la demande à été copiée dans le traitement précédent, on travaille avec la copie de la demande
+                 */
+                if (idCopieDemande != null) {
+                    idDemande = idCopieDemande;
+                } else {
+                    idDemande = Long.valueOf(demandeRente.getIdDemandeRente());
+                }
                 calculerEtSauverRentesVerseesATort(session, (BTransaction) transaction, idDemande,
                         idsRentesAccordeesNouveauDroit);
             }
