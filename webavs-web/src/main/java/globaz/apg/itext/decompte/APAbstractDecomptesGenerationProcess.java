@@ -266,6 +266,12 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     // Employeur non affilié --> rôle NON_AFFILIE
                     rolePourLaGed = IPRConstantesExternes.OSIRIS_IDEXATION_GED_ROLE_NON_AFFILIE;
                     noAffiliePourLaGED = "";
+
+                    // Pour la CICICAM, on va rechercher le premier assuré dans ce décompte si employeur non affilié
+                    if (isCaisse(APApplication.NO_CAISSE_CICICAM)) {
+                        tiers = PRTiersHelper.getTiersParId(getSession(), decompteCourant.getIdTiers());
+                        idTiersPourLaGED = chercherIdTiersPourLigneTechinqueVersementATier(tiers);
+                    }
                 }
             } else {
                 // Assure --> rôle APG

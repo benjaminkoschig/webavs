@@ -397,6 +397,9 @@ public class IJDecomptes extends FWIDocumentManager {
 
                         if (!JadeStringUtil.isBlank(affilie.getNumAffilie())) {
                             noAffiliePourLaGED = affilie.getNumAffilie();
+                            if (isCaisse(IJApplication.NO_CAISSE_CICICAM)) {
+                                idTiersPourLaGED = "";
+                            }
                         }
                     } else {
                         // on va rechercher le premier assuré dans ce décompte si employeur non affilié
