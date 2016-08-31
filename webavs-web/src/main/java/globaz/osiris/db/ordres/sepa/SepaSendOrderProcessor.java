@@ -1,11 +1,11 @@
 package globaz.osiris.db.ordres.sepa;
 
+import globaz.globall.db.BApplication;
+import globaz.globall.db.BSession;
 import java.io.IOException;
 import java.io.InputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
-import globaz.globall.db.BApplication;
-import globaz.globall.db.BSession;
 
 public class SepaSendOrderProcessor extends AbstractSepa {
     public static final String NAMESPACE_PAIN001 = "http://www.six-interbank-clearing.com/de/pain.001.001.03.ch.02.xsd";
@@ -18,13 +18,13 @@ public class SepaSendOrderProcessor extends AbstractSepa {
         String login = null;
         String password = null;
         String folder = null;
-        String uri = null;
+        String host = null;
+        Integer port = null;
 
         try {
             BApplication app = session.getApplication();
-            String host = app.getProperty(SEPA_FTP_HOST);
+            host = app.getProperty(SEPA_FTP_HOST);
             String sport = app.getProperty(SEPA_FTP_PORT);
-            Integer port = null;
 
             if (StringUtils.isNotBlank(sport)) {
                 port = Integer.parseInt(sport);
@@ -33,13 +33,12 @@ public class SepaSendOrderProcessor extends AbstractSepa {
             login = app.getProperty(SEPA_FTP_USER);
             password = app.getProperty(SEPA_FTP_PASS);
             folder = app.getProperty(SEPA_FTP_FOLDER);
-            uri = host + (port == null ? "" : ":" + port);
         } catch (Exception e) {
             throw new SepaException("unable to retrieve ftp config: " + e, e);
         }
 
         // go connect
-        FTPClient client = connect(uri, login, password);
+        FTPClient client = connect(host, port, login, password);
         if (StringUtils.isNotBlank(folder)) {
             try {
                 if (!client.changeWorkingDirectory(folder)) {
@@ -61,11 +60,5 @@ public class SepaSendOrderProcessor extends AbstractSepa {
         } finally {
             disconnectQuietly(client);
         }
-    }
-
-    public void sendOrdreGroupeByMail(InputStream is) {
-        // org.w3c.dom.Document xmlDoc = marshall(convertOrdreGroupe(ordreGroupe));
-        throw new AssertionError("not implemented yet...");
-        // TODO sendEmail();
     }
 }
