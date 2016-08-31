@@ -186,8 +186,20 @@ public class CASepaOVConverterUtils {
     }
 
     public static String getCreditorName70(APICommonOdreVersement ov) throws Exception {
-        String name = ov.getAdressePaiement().getNomTiersAdrPmt();
-        logger.debug("getCreditorName70 - {}", name);
+
+        String name;
+        if (!JadeStringUtil.isBlank(ov.getAdressePaiement().getAdresseCourrier().getAutreNom())) {
+            name = ov.getAdressePaiement().getAdresseCourrier().getAutreNom();
+        } else {
+            name = ov.getAdressePaiement().getNomTiersAdrPmt();
+        }
+
+        if (name.isEmpty()) {
+            logger.error("CreditorName cannot be null or empty for OV {} , transaction {}", ov.getIdOperation(),
+                    ov.getNumTransaction());
+        } else {
+            logger.debug("getCreditorName70 - {}", name);
+        }
         return CASepaCommonUtils.limit70(name);
     }
 
@@ -217,7 +229,7 @@ public class CASepaOVConverterUtils {
         if (motif.length() > 140) {
             motif = motif.substring(0, 139);
         }
-        return motif;
+        return CASepaCommonUtils.escapeInvalidBasicTextCH(motif);
     }
 
     public static boolean isBVR(APICommonOdreVersement ov) throws Exception {
@@ -225,7 +237,7 @@ public class CASepaOVConverterUtils {
     }
 
     public static String getCbtrAgtBIC(APICommonOdreVersement ov) throws Exception {
-        String bic = CASepaCommonUtils.getAgtBIC(ov.getAdressePaiement());
+        String bic = CASepaCommonUtils.getAdpBIC(ov.getAdressePaiement());
         if (bic != null && !bic.isEmpty()) {
             return bic;
         }

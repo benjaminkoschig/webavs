@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
@@ -30,13 +31,14 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
+import org.apache.commons.net.ftp.FTPSClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 public abstract class AbstractSepa {
-    public static /* final */ class SepaException extends RuntimeException {
+    public static/* final */class SepaException extends RuntimeException {
         private static final long serialVersionUID = 1L;
 
         public SepaException() {
@@ -111,8 +113,8 @@ public abstract class AbstractSepa {
 
             return unmarshaller.unmarshal(doc, clazz).getValue();
         } catch (JAXBException e) {
-            throw new SepaException(
-                    "unable to convert xml document to java object of class " + clazz.getName() + ": " + e, e);
+            throw new SepaException("unable to convert xml document to java object of class " + clazz.getName() + ": "
+                    + e, e);
         }
     }
 
@@ -136,13 +138,22 @@ public abstract class AbstractSepa {
     // FTP -------------------------------------------
 
     /** @throws SepaException en cas d'erreur de connexion au FTP. */
-    protected FTPClient connect(String server, String user, String password) {
-        FTPClient ftp = new FTPClient();
+    protected FTPClient connect(String server, Integer port, String user, String password) {
+        FTPClient ftp;
+        try {
+            ftp = new FTPSClient();
+        } catch (NoSuchAlgorithmException e1) {
+            throw new AssertionError("could not initialize sftp client: " + e1);
+        }
         FTPClientConfig config = new FTPClientConfig();
         ftp.configure(config);
 
         try {
-            ftp.connect(server);
+            if (port == null) {
+                ftp.connect(server);
+            } else {
+                ftp.connect(server, port);
+            }
             LOG.trace("FTP Answer after connecting: {}", ftp.getReplyString());
             dieIfUnsuccessfull(ftp);
 
@@ -176,7 +187,7 @@ public abstract class AbstractSepa {
     /**
      * Déplace la session ftp dans le répertoire absolu passé en paramètre, et retourne le "restant" du chemin, aka le
      * "nom du fichier".
-     *
+     * 
      * @param client Client
      * @param pathname Chemin (absolu par rapport à la racine du FTP, ou relatif par rapport au répertoire courant) de
      *            la resource référencée. Le dernier segment

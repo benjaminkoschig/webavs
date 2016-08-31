@@ -127,13 +127,23 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
         creditor.setNm(CASepaOVConverterUtils.getCreditorName70(ov));
         // +Postal Adr
         PostalAddress6CH postalAdr = factory.createPostalAddress6CH();
-        postalAdr.setStrtNm(ov.getAdressePaiement().getAdresseCourrier().getRue());
-        postalAdr.setBldgNb(null);
-        postalAdr.setPstCd(ov.getAdressePaiement().getAdresseCourrier().getNumPostal());
-        postalAdr.setTwnNm(ov.getAdressePaiement().getAdresseCourrier().getLocalite());
-        postalAdr.setCtry(ov.getAdressePaiement().getAdresseCourrier().getPaysISO());
-        logger.debug("clevel adress : {} {}, NPA : {} {} {}", postalAdr.getStrtNm(), postalAdr.getBldgNb(),
-                postalAdr.getPstCd(), postalAdr.getTwnNm(), postalAdr.getCtry());
+        // FIXME, need interface update
+        // String rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRueSansNum());
+        // String numeroRue = CASepaCommonUtils.limit16(ov.getAdressePaiement().getAdresseCourrier().getNumeroRue());
+        // postalAdr.setStrtNm((rue.isEmpty() ? null : rue));
+        // postalAdr.setBldgNb((numeroRue.isEmpty() ? null : numeroRue));
+        // postalAdr.setPstCd(CASepaCommonUtils.limit16(ov.getAdressePaiement().getAdresseCourrier().getNumPostal()));
+        // postalAdr.setTwnNm(CASepaCommonUtils.limit35(ov.getAdressePaiement().getAdresseCourrier().getLocalite()));
+        // postalAdr.setCtry(ov.getAdressePaiement().getAdresseCourrier().getPaysISO());
+        postalAdr.getAdrLine().add(ov.getAdressePaiement().getAdresseCourrier().getRue());
+
+        postalAdr.getAdrLine().add(
+                ov.getAdressePaiement().getAdresseCourrier().getPaysISO() + "-"
+                        + ov.getAdressePaiement().getAdresseCourrier().getNumPostal() + " "
+                        + ov.getAdressePaiement().getAdresseCourrier().getLocalite());
+
+        // logger.debug("clevel adress : {} {}, NPA : {} {} {}", postalAdr.getStrtNm(), postalAdr.getBldgNb(),
+        // postalAdr.getPstCd(), postalAdr.getTwnNm(), postalAdr.getCtry());
         creditor.setPstlAdr(postalAdr);
 
         cLevelData.setCdtr(creditor);
@@ -155,7 +165,7 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
         } else {
             StructuredRemittanceInformation7 strd = factory.createStructuredRemittanceInformation7();
             CreditorReferenceInformation2 cdtrRefInf = factory.createCreditorReferenceInformation2();
-            cdtrRefInf.setRef(ov.getReferenceBVR());
+            cdtrRefInf.setRef(CASepaCommonUtils.limit35(ov.getReferenceBVR()));
             strd.setCdtrRefInf(cdtrRefInf);
             rmtInf.setStrd(strd);
         }
@@ -202,9 +212,9 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
         // set validation fields
         grpHeader.setNbOfTxs(og.getNbTransactions());
         grpHeader.setCtrlSum(new BigDecimal(og.getTotal()));
-        grpHeader.setMsgId("TODO determiner l'id");
+        grpHeader.setMsgId(og.getNumLivraison());
         PartyIdentification32CHNameAndId initPty = factory.createPartyIdentification32CHNameAndId();
-        initPty.setNm(nomCaisse);
+        initPty.setNm(CASepaCommonUtils.limit70(nomCaisse));
         ContactDetails2CH ctctDtls = factory.createContactDetails2CH();
         ctctDtls.setNm(CASepaCommonUtils.getAppName());
         ctctDtls.setOthr(CASepaCommonUtils.getVersion());
@@ -217,7 +227,7 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
 
         XMLGregorianCalendar reqdExctmDt = CASepaOGConverterUtils.getReqdExctnDt(og);
         PartyIdentification32CH dbtr = factory.createPartyIdentification32CH();
-        dbtr.setNm(nomCaisse);
+        dbtr.setNm(CASepaCommonUtils.limit70(nomCaisse));
         CashAccount16CHIdTpCcy dbtrAcct = factory.createCashAccount16CHIdTpCcy();
         AccountIdentification4ChoiceCH id = factory.createAccountIdentification4ChoiceCH();
         id.setIBAN(CASepaOGConverterUtils.getDbtrIBAN(og));

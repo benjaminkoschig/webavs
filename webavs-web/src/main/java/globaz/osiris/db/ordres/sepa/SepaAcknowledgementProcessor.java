@@ -1,5 +1,15 @@
 package globaz.osiris.db.ordres.sepa;
 
+import globaz.globall.db.BApplication;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.BTransaction;
+import globaz.osiris.api.ordre.APIOrdreGroupe;
+import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.osiris.db.ordres.CAOrdreGroupeManager;
+import globaz.osiris.db.ordres.CAOrdreRejete;
+import globaz.osiris.db.ordres.CAOrdreVersement;
+import globaz.osiris.db.ordres.CAOrdreVersementManager;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,16 +32,6 @@ import com.six_interbank_clearing.de.pain_002_001_03_ch_02.StatusReason6Choice;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.StatusReasonInformation8CH;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.TransactionGroupStatus3Code;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.TransactionIndividualStatus3CodeCH;
-import globaz.globall.db.BApplication;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BTransaction;
-import globaz.osiris.api.ordre.APIOrdreGroupe;
-import globaz.osiris.db.ordres.CAOrdreGroupe;
-import globaz.osiris.db.ordres.CAOrdreGroupeManager;
-import globaz.osiris.db.ordres.CAOrdreRejete;
-import globaz.osiris.db.ordres.CAOrdreVersement;
-import globaz.osiris.db.ordres.CAOrdreVersementManager;
 
 @ThreadSafe
 public class SepaAcknowledgementProcessor extends AbstractSepa {
@@ -47,13 +47,12 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         String login = null;
         String password = null;
         String folder = null;
-        String uri = null;
-
+        Integer port = null;
+        String host = null;
         try {
             BApplication app = session.getApplication();
-            String host = app.getProperty(SEPA_FTP_HOST);
+            host = app.getProperty(SEPA_FTP_HOST);
             String sport = app.getProperty(SEPA_FTP_PORT);
-            Integer port = null;
 
             if (StringUtils.isNotBlank(sport)) {
                 port = Integer.parseInt(sport);
@@ -62,13 +61,12 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
             login = app.getProperty(SEPA_FTP_USER);
             password = app.getProperty(SEPA_FTP_PASS);
             folder = app.getProperty(SEPA_FTP_FOLDER);
-            uri = host + (port == null ? "" : ":" + port);
         } catch (Exception e) {
             throw new SepaException("unable to retrieve ftp config: " + e, e);
         }
 
         // go connect
-        FTPClient client = connect(uri, login, password);
+        FTPClient client = connect(host, port, login, password);
 
         if (StringUtils.isNotBlank(folder)) {
             try {
@@ -83,8 +81,8 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         return client;
     }
 
-    public void findAndProcessAllAcknowledgements() {
-        BSession session = null; // FIXME trouver une session, on fait comment?
+    public void findAndProcessAllAcknowledgements(BSession session) {
+        // BSession session = null; // FIXME trouver une session, on fait comment?
 
         FTPClient client = connect(session);
         FTPFile[] listFiles;
@@ -127,9 +125,9 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
     /**
      * Traite une "quittance" SEPA (aka Acknowledgement) qui informe de la bonne acceptation d'un ordre envoyé
      * précédemment.
-     *
+     * 
      * @throws SepaException en cas de souci lors du traitement.
-     *
+     * 
      * @see com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document
      */
     public void processAcknowledgement(InputStream source) {
@@ -207,8 +205,13 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                 // "Rejeté" entièrement
                 markOrdreGroupeConfirmed(ordre);
                 markAllTransactions(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_REJETE);
-                warnings.add("Ordre Groupé " + messageId + " - Entièrement Rejeté\n" + "L'Ordre Groupé " + messageId
-                        + " - " + ordre.getMotif()
+                warnings.add("Ordre Groupé "
+                        + messageId
+                        + " - Entièrement Rejeté\n"
+                        + "L'Ordre Groupé "
+                        + messageId
+                        + " - "
+                        + ordre.getMotif()
                         + " a été refusé par l'organisme financier. Les messages d'information suivants ont été inclus dans la réponse:\n\n  -"
                         + StringUtils.join(comments.toArray(), "\n  -"));
                 handleBLevel(paymentStatusReport, ordre, warnings);
@@ -217,8 +220,13 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                 // "Accepté partiellement"
                 markOrdreGroupeConfirmed(ordre);
                 markAllTransactions(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_PARTIEL);
-                warnings.add("Ordre Groupé " + messageId + " - Partiellement Exécuté\n" + "L'Ordre Groupé " + messageId
-                        + " - " + ordre.getMotif()
+                warnings.add("Ordre Groupé "
+                        + messageId
+                        + " - Partiellement Exécuté\n"
+                        + "L'Ordre Groupé "
+                        + messageId
+                        + " - "
+                        + ordre.getMotif()
                         + " a été partiellement exécuté par l'organisme financier. Les messages d'information suivants ont été inclus dans la réponse:\n\n  -"
                         + StringUtils.join(comments.toArray(), "\n  -"));
                 handleBLevel(paymentStatusReport, ordre, warnings);

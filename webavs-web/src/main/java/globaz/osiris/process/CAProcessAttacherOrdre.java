@@ -136,6 +136,7 @@ public class CAProcessAttacherOrdre extends BProcess {
                 }
                 if (isNotLast) {
                     prepareForNext(getTransaction());
+                    // TODO remonter l'info sans que ca fasse peter le process (transaction KO si dans le memory log)
                     // getMemoryLog().logMessage("SEPA_ADDITIONNAL_ORDRE_GROUPE", ordreGroupe.getIsoNumLivraison(),
                     // FWMessage.AVERTISSEMENT, this.getClass().getName());
                     listOg.add(ordreGroupe.getIsoNumLivraison());

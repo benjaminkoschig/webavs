@@ -374,4 +374,15 @@ public class TIAdresseCourrierOSI implements IntAdresseCourrier {
         adresse.setISession(newSession);
         localite.setISession(newSession);
     }
+
+    // TODO waiting for SEPA
+    // @Override
+    // public String getRueSansNum() {
+    // return adresse.getRue();
+    // }
+    //
+    // @Override
+    // public String getNumeroRue() {
+    // return adresse.getNumeroRue();
+    // }
 }

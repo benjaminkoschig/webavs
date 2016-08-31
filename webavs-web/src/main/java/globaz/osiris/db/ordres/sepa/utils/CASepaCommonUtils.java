@@ -1,29 +1,36 @@
 package globaz.osiris.db.ordres.sepa.utils;
 
+import globaz.globall.util.JACCP;
 import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
 import globaz.osiris.db.utils.CAAdressePaiementFormatter;
 import globaz.osiris.external.IntAdressePaiement;
+import globaz.pyxis.util.TIIbanFormater;
 import globaz.webavs.common.WebavsDocumentionLocator;
 import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.osiris.business.constantes.CAProperties;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.GenericAccountIdentification1CH;
 
 public class CASepaCommonUtils {
 
-    public static final String TYPE_VIREMENT_BANCAIRE = "bank";
-    public static final String TYPE_VIREMENT_POSTAL = "ccp";
+    private final static Logger logger = LoggerFactory.getLogger(CASepaCommonUtils.class);
+    // since the have to be regroup
+    public static final String TYPE_VIREMENT_BANCAIRE = "bank/ccp";
+    public static final String TYPE_VIREMENT_POSTAL = "bank/ccp";
     public static final String TYPE_VIREMENT_MANDAT = "mandat";
 
     /**
      * La longueur max autorisÈ par les XSD pour le numÈro de version de l'application
      */
     private static final int VERSION_LENGTH = 35;
-    private static final int NAME_LENGTH = 70;
+    private static TIIbanFormater formater = new TIIbanFormater();
 
     /**
      * Retourne la version de WebAvs, la longueur sera 10 caractËres max (contrainte XSD) -> la version peut donc Ítre
@@ -33,18 +40,12 @@ public class CASepaCommonUtils {
      */
     public static String getVersion() {
         String version = WebavsDocumentionLocator.getVersion();
-        if (version.length() > VERSION_LENGTH) {
-            version = version.substring(0, VERSION_LENGTH - 1);
-        }
-        return version;
+        return limit35(version);
     }
 
     public static String getAppName() {
         String name = WebavsDocumentionLocator.getName();
-        if (name.length() > NAME_LENGTH) {
-            name = name.substring(0, NAME_LENGTH - 1);
-        }
-        return name;
+        return limit70(name);
     }
 
     /**
@@ -64,15 +65,42 @@ public class CASepaCommonUtils {
         return returnCalendar;
     }
 
-    public static String getAgtBIC(IntAdressePaiement adressePaiement) {
+    /**
+     * obtenir la valeur BIC de l'adresse de paiement
+     * 
+     * @param adressePaiement
+     * @return CodeSwiftWithoutSpaces
+     */
+    public static String getAdpBIC(IntAdressePaiement adressePaiement) {
         return adressePaiement.getBanque().getCodeSwiftWithoutSpaces();
     }
 
+    /**
+     * rÈpond ‡ la contrainte de la xsd pain001 MaxText16 BasicTextCH
+     */
+    public static String limit16(String name) {
+        return limit(16, name);
+    }
+
+    /**
+     * rÈpond ‡ la contrainte de la xsd pain001 MaxText35 BasicTextCH
+     */
+    public static String limit35(String name) {
+        return limit(35, name);
+    }
+
+    /**
+     * rÈpond ‡ la contrainte de la xsd pain001 MaxText70 BasicTextCH
+     */
     public static String limit70(String name) {
-        if (name.length() > 70) {
-            name = name.substring(0, 69);
+        return limit(70, name);
+    }
+
+    protected static String limit(int max, String name) {
+        if (name.length() > max) {
+            name = name.substring(0, max - 1);
         }
-        return name;
+        return escapeInvalidBasicTextCH(name);
     }
 
     public static XMLGregorianCalendar getCurrentTime() throws DatatypeConfigurationException {
@@ -81,6 +109,14 @@ public class CASepaCommonUtils {
         return returnCalendar;
     }
 
+    /**
+     * type une adresse de payement des diffÈrents types pris en charge en pain001
+     * utilisÈ par la mÈthode de regroupement.
+     * 
+     * @param adp
+     * @return variable statique de la classe utilitaire
+     * @throws Exception
+     */
     public static String getTypeVirement(CAAdressePaiementFormatter adp) throws Exception {
         if (adp.getTypeAdresse().equals(IntAdressePaiement.CCP)) {
             return TYPE_VIREMENT_POSTAL;
@@ -102,25 +138,65 @@ public class CASepaCommonUtils {
     }
 
     protected static String getIntAdressePaiementIBAN(IntAdressePaiement adp) {
-        // FIXME isCompteIBAN est il fiable? CCP = IBAN??? wtf?
-        if (adp.isCompteIBAN() && false) {
-            // TODO unformat?
-            return adp.getNumCompte();
+        if (isValidIban(adp.getNumCompte())) {
+            return formater.unformat(adp.getNumCompte());
         }
         return null;
     }
 
     protected static GenericAccountIdentification1CH getNotIban(IntAdressePaiement adp) {
-        if (!adp.isCompteIBAN() || true) {
-            // TODO unformat?
+        if (!isValidIban(adp.getNumCompte())) {
             GenericAccountIdentification1CH other = new GenericAccountIdentification1CH();
-            other.setId(adp.getNumCompte());
+            try {
+                other.setId(JACCP.formatNoDash(adp.getNumCompte()));
+            } catch (Exception e) {
+                logger.warn("cannot unformat this as a CCP:" + adp.getNumCompte(), e);
+                other.setId(adp.getNumCompte());
+            }
             return other;
         }
         return null;
     }
 
-    public static Long getOvMaxByOG(CAOrdreGroupe caOrdreGroupe) throws Exception {
+    /**
+     * use fw formatter to validate IBAN format
+     * 
+     * @param ibanStr
+     * @return
+     */
+    protected static boolean isValidIban(String ibanStr) {
+        try {
+            formater.check(ibanStr);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    protected static String escapeInvalidBasicTextCH(String txt) {
+        String escStr = txt
+                .replaceAll(
+                        "(?!([a-zA-Z0-9\\.,;:'\\+\\-/\\(\\)?\\*\\[\\]\\{\\}\\\\`¥~ ]|[!&quot;#%&amp;&lt;&gt;˜=@_$£]|[‡·‚‰ÁËÈÍÎÏÌÓÔÒÚÛÙˆ˘˙˚¸˝ﬂ¿¡¬ƒ«»… ÀÃÕŒœ“”‘÷Ÿ⁄€‹—])).",
+                        " ");
+        if (!escStr.equals(txt)) {
+            logger.warn("escaped char from this string {} - {}", txt, escStr);
+        }
+        return escStr;
+
+    }
+
+    //
+    /**
+     * utility to provide the value of property who set the max number of OV in one OG
+     * 
+     * @param caOrdreGroupe
+     * @return the value of property, if not set, return Long.MAX_VALUE
+     * @throws PropertiesException (jade exception as prop does not exist)
+     * @throws NumberFormatException (parsing the prop value to Long)
+     * @throws Exception (jade exception)
+     */
+    public static Long getOvMaxByOG(CAOrdreGroupe caOrdreGroupe) throws NumberFormatException, PropertiesException,
+            Exception {
         if (caOrdreGroupe.getOrganeExecution().getCSTypeTraitementOG().equals(APIOrganeExecution.OG_ISO_20022)) {
             return Long.parseLong(CAProperties.ISO_SEPA_MAX_OVPAROG.getValue(), 10);
         }

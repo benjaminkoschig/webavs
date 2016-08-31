@@ -20,8 +20,10 @@ public class CASepaOGConverterUtils {
     public static final String DEBTORACCOUNT_TYPE_PRTRY_COLLECTIVE_ADVICE_NO_DETAILS = "CND";
     public static final String DEBTORACCOUNT_TYPE_PRTRY_COLLECTIVE_ADVICE_W_DETAILS = "CWD";
 
+    public static final String POST_FINANCE_BIC = "POFICHBEXXX";
+
     /**
-     * type d'avis determinée au niveau de l'OG pour les blevels
+     * type d'avis déterminée au niveau de l'OG pour les blevels
      * 
      * @param og
      * @return
@@ -36,7 +38,7 @@ public class CASepaOGConverterUtils {
     }
 
     /**
-     * priorité determinée au niveau de l'OG pour les blevels
+     * priorité déterminée au niveau de l'OG pour les blevels
      * 
      * @param og
      * @return
@@ -61,15 +63,36 @@ public class CASepaOGConverterUtils {
         return returnCalendar;
     }
 
+    /**
+     * remonter le nom de la caisse depuis d'adresse de paiement de l'OG au format de la xsd (max70)
+     * 
+     * @param og
+     * @return
+     * @throws Exception
+     */
     public static String getNomCaisse70(APIOrdreGroupe og) throws Exception {
         String name = og.getOrganeExecution().getAdressePaiement().getNomTiersAdrPmt();
         return CASepaCommonUtils.limit70(name);
     }
 
+    /**
+     * retourne l'IBAN du débiteur de l'OG si l'info est de type IBAN
+     * 
+     * @param og
+     * @return l'iban format électronique ou null
+     * @throws Exception
+     */
     public static String getDbtrIBAN(APIOrdreGroupe og) throws Exception {
         return getIntAdressePaiementIBAN(og.getOrganeExecution().getAdressePaiement());
     }
 
+    /**
+     * retourne l'IBAN du débit-taxe de l'OG si l'info est de type IBAN
+     * 
+     * @param og
+     * @return l'iban format électronique ou null
+     * @throws Exception
+     */
     public static String getChrgsIBAN(APIOrdreGroupe og) throws Exception {
         return getIntAdressePaiementIBAN(og.getOrganeExecution().getAdresseDebitTaxes());
     }
@@ -78,15 +101,23 @@ public class CASepaOGConverterUtils {
         return CASepaCommonUtils.getIntAdressePaiementIBAN(adp);
     }
 
+    /**
+     * @return l'objet de la xsd pour les comptes format hors IBAN, null si iban
+     * @throws Exception
+     */
     public static GenericAccountIdentification1CH getDbtrNotIBAN(APIOrdreGroupe og) throws Exception {
         return getNotIban(og.getOrganeExecution().getAdressePaiement());
     }
 
+    /**
+     * @return l'objet de la xsd pour les comptes format hors IBAN, null si iban
+     * @throws Exception
+     */
     public static GenericAccountIdentification1CH getChrgsNotIBAN(APIOrdreGroupe og) throws Exception {
         return getNotIban(og.getOrganeExecution().getAdresseDebitTaxes());
     }
 
-    private static GenericAccountIdentification1CH getNotIban(IntAdressePaiement adp) {
+    private static GenericAccountIdentification1CH getNotIban(IntAdressePaiement adp) throws Exception {
         return CASepaCommonUtils.getNotIban(adp);
     }
 
@@ -103,15 +134,21 @@ public class CASepaOGConverterUtils {
         return null;
     }
 
+    /**
+     * obtenir la valeur du BIC du débiteur de l'OG (si compte postal, retourne la valeur connue POFICHBEXXX).
+     * 
+     * @param og
+     * @return
+     * @throws Exception
+     */
     public static String getDbtrAgtBIC(APIOrdreGroupe og) throws Exception {
         CAAdressePaiementFormatter adp = new CAAdressePaiementFormatter();
         adp.setAdressePaiement(og.getOrganeExecution().getAdressePaiement());
-        if (CASepaCommonUtils.getTypeVirement(adp).equals(CASepaCommonUtils.TYPE_VIREMENT_POSTAL)) {
-            return "POFICHBEXXX";
+        if (adp.getTypeAdresse().equals(IntAdressePaiement.CCP)) {
+            return POST_FINANCE_BIC;
         } else {
-            return CASepaCommonUtils.getAgtBIC(og.getOrganeExecution().getAdressePaiement());
+            return CASepaCommonUtils.getAdpBIC(og.getOrganeExecution().getAdressePaiement());
         }
-
     }
 
     public static CashAccount16CHIdAndCurrency getChrgsAcct(APIOrdreGroupe og) throws Exception {
