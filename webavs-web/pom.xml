@@ -42,14 +42,6 @@
 					<include>webavs.version</include>
 				</includes>
 			</resource>
-
-			<resource>
-				<directory>src/main/resources</directory>
-				<excludes>
-					<exclude>**/logback.xml</exclude>
-				</excludes>
-			</resource>
-
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>false</filtering>
@@ -183,13 +175,6 @@
 						in dev mode -->
 					<resource>
 						<directory>src/main/properties</directory>
-					</resource>
-
-					<resource>
-						<directory>src/main/resources</directory>
-						<includes>
-							<include>**/logback.xml</include>
-						</includes>
 					</resource>
 				</resources>
 			</build>
