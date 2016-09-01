@@ -739,7 +739,9 @@ public class ARFModuleComptable implements Comparator {
         boolean premierPassage = true;
         for (String dateCourante : datesPrestations) {
             if (!premierPassage) {
-                msgDecision.append(",");
+                msgDecision.append(", ");
+            } else {
+                msgDecision.append(" ");
             }
 
             msgDecision.append(dateCourante);
