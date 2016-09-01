@@ -39,6 +39,7 @@ import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.print.server.JadePrintDocumentContainer;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
@@ -3619,8 +3620,18 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
 
             // Titre tiers
             PRTiersWrapper tiersWrapperTitre = PRTiersHelper.getTiersParId(getSessionCygnus(), getIdTiers());
-            data.addData(IRFGenererDocumentDecision.CAT_TEXTE_TITRE,
-                    sessionCygnus.getCodeLibelle(tiersWrapperTitre.getTitre()));
+            String titreTraduit = "";
+            try {
+                CodeSystem codeSystem = CodeSystemUtils.searchTiersLanguageAndCodeSystemTraduction(
+                        tiersWrapperTitre.getTitre(), sessionCygnus, getIdTiers());
+
+                titreTraduit = codeSystem.getTraduction();
+            } catch (Exception e) {
+                JadeLogger.info(e, e.getMessage());
+                titreTraduit = getSession().getCodeLibelle(tiersWrapperTitre.getTitre());
+            }
+
+            data.addData(IRFGenererDocumentDecision.CAT_TEXTE_TITRE, titreTraduit);
 
             // paragraphe 1
             rfGenererDecisionRestitutionService.loadDateDebutQds(decisionDocument, getSession());

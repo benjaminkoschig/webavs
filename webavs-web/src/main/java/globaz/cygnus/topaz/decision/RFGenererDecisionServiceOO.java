@@ -185,6 +185,7 @@ public class RFGenererDecisionServiceOO {
         // CHARGEMENT DU CATALOGUE DE TEXTES FR/DE/IT POUR LES DECISIONS DE RESTITUTIONS
         documentHelper.setCsTypeDocument(IRFCatalogueTexte.CS_DECISION_RESTITUTION);
         // Restitution en français
+        documentHelper.setCodeIsoLangue(IRFCodesIsoLangue.LANGUE_ISO_FR);
         documentsFr = documentHelper.load();
         if ((documentsFr == null) || (documentsFr.length == 0)) {
             throw new Exception(getSession().getLabel("ERREUR_CHARGEMENT_CAT_TEXTE"));
@@ -193,6 +194,7 @@ public class RFGenererDecisionServiceOO {
                     documentsFr[0]);
         }
         // Restitution en allemand
+        documentHelper.setCodeIsoLangue(IRFCodesIsoLangue.LANGUE_ISO_DE);
         documentsDe = documentHelper.load();
         if ((documentsDe == null) || (documentsDe.length == 0)) {
             throw new Exception(getSession().getLabel("ERREUR_CHARGEMENT_CAT_TEXTE"));
@@ -201,6 +203,7 @@ public class RFGenererDecisionServiceOO {
                     documentsDe[0]);
         }
         // Restitution en italien
+        documentHelper.setCodeIsoLangue(IRFCodesIsoLangue.LANGUE_ISO_IT);
         documentsIt = documentHelper.load();
         if ((documentsIt == null) || (documentsIt.length == 0)) {
             throw new Exception(getSession().getLabel("ERREUR_CHARGEMENT_CAT_TEXTE"));
