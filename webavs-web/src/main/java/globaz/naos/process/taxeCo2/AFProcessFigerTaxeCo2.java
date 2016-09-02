@@ -1,6 +1,7 @@
 package globaz.naos.process.taxeCo2;
 
 import globaz.framework.util.FWMessage;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
@@ -13,53 +14,29 @@ import globaz.naos.db.taxeCo2.AFFigerTaxeCo2Manager;
 import globaz.naos.db.taxeCo2.AFTaxeCo2;
 import globaz.naos.db.taxeCo2.AFTaxeCo2Manager;
 import globaz.naos.translation.CodeSystem;
-
-/**
- * Process pour
- * 
- * @author:
- */
+import java.util.ArrayList;
+import java.util.List;
 
 public final class AFProcessFigerTaxeCo2 extends BProcess {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     private String anneeMasse = null;
     private String anneeRedistribution = null;
     private String idAffiliation = null;
     private Boolean reinitialiser = new Boolean(false);
 
-    /**
-     * Constructeur de AFProcessFacturation.
-     */
     public AFProcessFigerTaxeCo2() {
         super();
     }
 
-    /**
-     * Constructeur de AFProcessFacturation.
-     * 
-     * @param parent
-     *            globaz.framework.process.FWProcess
-     */
     public AFProcessFigerTaxeCo2(BProcess parent) {
         super(parent);
     }
 
-    /**
-     * Nettoyage après erreur ou exécution.
-     */
     @Override
     protected void _executeCleanUp() {
     }
 
-    /**
-     * Process de Facturation.
-     * 
-     * @return boolean
-     */
     @Override
     protected boolean _executeProcess() {
 
@@ -69,18 +46,19 @@ public final class AFProcessFigerTaxeCo2 extends BProcess {
             this._addError(getTransaction(), getSession().getLabel("PROCESS_FIGER_ERREUR_DATE"));
             return false;
         }
+
         try {
             AFTaxeCo2Manager manager = new AFTaxeCo2Manager();
-            AFTaxeCo2 taxe = new AFTaxeCo2();
             manager.setSession(getSession());
             manager.setForAnneeMasse(getAnneeMasse());
             manager.setOrder("MAIAFF DESC");
-            manager.find();
+            manager.find(BManager.SIZE_NOLIMIT);
 
             if (manager.size() > 0) {
                 if (getReinitialiser().booleanValue()) {
                     deleteTaxeCO2(manager);
                 } else {
+                    AFTaxeCo2 taxe = new AFTaxeCo2();
                     taxe = (AFTaxeCo2) manager.getFirstEntity();
                     if (taxe.getAnneeMasse().equals(getAnneeMasse())) {
                         setIdAffiliation(taxe.getAffiliationId());
@@ -94,6 +72,7 @@ public final class AFProcessFigerTaxeCo2 extends BProcess {
             getTransaction().addErrors(e.getMessage());
             JadeLogger.error(this, e);
         }
+
         return !isOnError();
     }
 
@@ -158,6 +137,9 @@ public final class AFProcessFigerTaxeCo2 extends BProcess {
         BTransaction cursorTransaction = null;
         BStatement statement = null;
 
+        // Permet de creer que des lignes de taxes CO2 par année, par rubrique et par affilié
+        List<String> keys = new ArrayList<String>();
+
         try {
             manager = new AFFigerTaxeCo2Manager();
             manager.setSession(getSession());
@@ -167,7 +149,7 @@ public final class AFProcessFigerTaxeCo2 extends BProcess {
             // ************************************************************
 
             manager.setForAnneeMasse(getAnneeMasse());
-
+            // manager.setForAffiliationId("232190");
             if (!JadeStringUtil.isEmpty(getIdAffiliation())) {
                 manager.setFromAffiliationId(getIdAffiliation());
             }
@@ -184,7 +166,6 @@ public final class AFProcessFigerTaxeCo2 extends BProcess {
             // ************************************************************
             AFFigerTaxeCo2 donneesFiger = null;
 
-            int nbLineToAdd = 0;
             int progressCounter = manager.getCount();
             // setProgressScaleValue(progressCounter);
             int cpt = 0;
@@ -205,24 +186,31 @@ public final class AFProcessFigerTaxeCo2 extends BProcess {
                     }
                     break;
                 } else {
-                    AFTaxeCo2 ligneTaxe = new AFTaxeCo2();
-                    ligneTaxe.setSession(getSession());
-                    ligneTaxe.setAffiliationId(donneesFiger.getAffiliationId());
-                    ligneTaxe.setAnneeMasse(donneesFiger.getAnnee());
-                    ligneTaxe.setAnneeRedistribution(getAnneeRedistribution());
-                    ligneTaxe.setMasse(donneesFiger.getMasse());
-                    ligneTaxe.setMotifFin(donneesFiger.getMotifFin());
-                    ligneTaxe.setIdRubrique(donneesFiger.getIdRubrique());
-                    ligneTaxe.setEtat(CodeSystem.ETAT_TAXE_CO2_A_TRAITER);
-                    ligneTaxe.add(getTransaction());
-                    nbLineToAdd++;
-                    if (!getTransaction().hasErrors()) {
-                        getTransaction().commit();
-                    } else {
-                        getMemoryLog().logMessage(getTransaction().getErrors().toString(), FWMessage.FATAL,
-                                donneesFiger.getNumAffilie());
-                        getTransaction().rollback();
-                        break;
+
+                    String key = donneesFiger.getNumAffilie() + ";" + donneesFiger.getAnnee() + ";"
+                            + donneesFiger.getIdRubrique();
+
+                    if (!keys.contains(key)) {
+                        AFTaxeCo2 ligneTaxe = new AFTaxeCo2();
+                        ligneTaxe.setSession(getSession());
+                        ligneTaxe.setAffiliationId(donneesFiger.getAffiliationId());
+                        ligneTaxe.setAnneeMasse(donneesFiger.getAnnee());
+                        ligneTaxe.setAnneeRedistribution(getAnneeRedistribution());
+                        ligneTaxe.setMasse(donneesFiger.getMasse());
+                        ligneTaxe.setMotifFin(donneesFiger.getMotifFin());
+                        ligneTaxe.setIdRubrique(donneesFiger.getIdRubrique());
+                        ligneTaxe.setEtat(CodeSystem.ETAT_TAXE_CO2_A_TRAITER);
+                        ligneTaxe.add(getTransaction());
+
+                        if (!getTransaction().hasErrors()) {
+                            getTransaction().commit();
+                            keys.add(key);
+                        } else {
+                            getMemoryLog().logMessage(getTransaction().getErrors().toString(), FWMessage.FATAL,
+                                    donneesFiger.getNumAffilie());
+                            getTransaction().rollback();
+                            break;
+                        }
                     }
                 }
             }
