@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
@@ -26,16 +25,17 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPClientConfig;
-import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.ftp.FTPReply;
-import org.apache.commons.net.ftp.FTPSClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.ChannelSftp.LsEntry;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
 
 public abstract class AbstractSepa {
     public static/* final */class SepaException extends RuntimeException {
@@ -138,143 +138,72 @@ public abstract class AbstractSepa {
     // FTP -------------------------------------------
 
     /** @throws SepaException en cas d'erreur de connexion au FTP. */
-    protected FTPClient connect(String server, Integer port, String user, String password) {
-        FTPClient ftp;
+    protected ChannelSftp connect(String server, Integer port, String user, String password) {
+        JSch jsch = new JSch();
+        Session session;
         try {
-            ftp = new FTPSClient();
-        } catch (NoSuchAlgorithmException e1) {
-            throw new AssertionError("could not initialize sftp client: " + e1);
+            session = jsch.getSession(user, server, port);
+
+            session.setPassword(password);
+
+            session.setConfig("StrictHostKeyChecking", "no");
+            session.connect();
+            LOG.info("Connected to {}", server);
+
+            Channel channel = session.openChannel("sftp");
+            channel.connect();
+            return (ChannelSftp) channel;
+        } catch (JSchException e) {
+            throw new SepaException("unable to connect to ftp: " + e, e);
         }
-        FTPClientConfig config = new FTPClientConfig();
-        ftp.configure(config);
-
-        try {
-            if (port == null) {
-                ftp.connect(server);
-            } else {
-                ftp.connect(server, port);
-            }
-            LOG.trace("FTP Answer after connecting: {}", ftp.getReplyString());
-            dieIfUnsuccessfull(ftp);
-
-            if (!ftp.login(user, password)) {
-                throw new IOException("unable to connect with the provided credentials: " + ftp.getReplyString());
-            }
-            LOG.trace("FTP Answer after login: {}", ftp.getReplyString());
-        } catch (IOException e) {
-            throw new SepaException("FTP Error: " + e, e);
-        }
-
-        return ftp;
     }
 
     /**
      * @param pathname Une arborescence de chemin terminés par un nom de fichiers, relatifs par rapport à la racine.
      */
-    protected void sendData(InputStream source, FTPClient client, String pathname) {
+    protected void sendData(InputStream source, ChannelSftp client, String pathname) {
         try {
-            String filename = gotoParentFolder(client, pathname);
-
-            if (!client.storeFile(filename, source)) {
-                LOG.info("unable to store file in ftp: last reply was: {}", client.getReplyString());
-                throw new SepaException("unable to store file in ftp: last reply code was " + client.getReplyCode());
-            }
-        } catch (IOException e) {
+            client.put(source, pathname);
+        } catch (SftpException e) {
             throw new SepaException("unable to store file in ftp: " + e, e);
         }
     }
 
-    /**
-     * Déplace la session ftp dans le répertoire absolu passé en paramètre, et retourne le "restant" du chemin, aka le
-     * "nom du fichier".
-     * 
-     * @param client Client
-     * @param pathname Chemin (absolu par rapport à la racine du FTP, ou relatif par rapport au répertoire courant) de
-     *            la resource référencée. Le dernier segment
-     *            contient le nom du fichier.
-     * @return le nom du fichier à utiliser, extrait du paramètre pathname. ex. si pathname vaut "/path/to/a/file.xls",
-     *         alors cette méthode va retourner "file.xls".
-     */
-    private String gotoParentFolder(FTPClient client, String pathname) throws IOException {
-        String folder = null;
-        String name = pathname;
-
-        if (pathname.contains("/")) {
-            int lastSlash = pathname.lastIndexOf('/');
-            folder = pathname.substring(0, lastSlash);
-            name = pathname.substring(lastSlash + 1);
-        }
-
-        if (StringUtils.isNotBlank(folder)) {
-            // make sure absolute file
-            String newFolder = folder;
-            if (!folder.startsWith("/")) {
-                newFolder = "/" + newFolder;
-            }
-
-            if (!client.changeWorkingDirectory(folder)) {
-                LOG.info("unable to move to directory " + folder + " in ftp: last reply was: {}",
-                        client.getReplyString());
-                throw new SepaException("unable to move to directory " + folder + " in ftp: last reply code was "
-                        + client.getReplyCode());
-            }
-        }
-
-        return name;
-    }
-
-    protected void renameFile(FTPClient client, String oldFileName, String newFileName) {
+    protected void renameFile(ChannelSftp client, String oldFileName, String newFileName) {
         try {
-            if (!client.rename(oldFileName, newFileName)) {
-                throw new SepaException("unable to rename the file " + oldFileName + " to " + newFileName);
-            }
-        } catch (IOException e) {
+            client.rename(oldFileName, newFileName);
+        } catch (SftpException e) {
             throw new SepaException("unable to rename the file " + oldFileName + " to " + newFileName + ": " + e, e);
         }
     }
 
-    protected String[] listFiles(FTPClient client, String foldername) {
+    protected String[] listFiles(ChannelSftp client, String foldername) {
         try {
-            gotoParentFolder(client, foldername + "/foobar.txt");
-
-            List<String> found = new ArrayList<String>();
-            for (FTPFile file : client.listFiles()) {
-                found.add(file.getName());
+            List<String> result = new ArrayList<String>();
+            List<LsEntry> found = new ArrayList<LsEntry>(client.ls(foldername));
+            for (LsEntry entry : found) {
+                result.add(entry.getFilename());
             }
 
-            return found.toArray(new String[found.size()]);
-        } catch (IOException e) {
+            return result.toArray(new String[result.size()]);
+        } catch (SftpException e) {
             throw new SepaException("unable to list files from ftp: " + e, e);
         }
     }
 
-    protected void retrieveData(FTPClient client, String filename, OutputStream target) {
+    protected void retrieveData(ChannelSftp client, String filename, OutputStream target) {
+
         try {
-            if (!client.retrieveFile(filename, target)) {
-                LOG.info("unable to get file from ftp: last reply was: {}", client.getReplyString());
-                throw new SepaException("unable to get file from ftp: last reply code was " + client.getReplyCode());
-            }
-        } catch (IOException e) {
+            client.get(filename, target);
+        } catch (SftpException e) {
             throw new SepaException("unable to get file from ftp: " + e, e);
         }
+
     }
 
-    protected void dieIfUnsuccessfull(FTPClient client) throws IOException {
-        int replyCode = client.getReplyCode();
-
-        if (!FTPReply.isPositiveCompletion(replyCode)) {
-            disconnectQuietly(client);
-            throw new IOException("FTP server replyed with code " + replyCode);
-        }
-    }
-
-    protected void disconnectQuietly(FTPClient ftp) {
+    protected void disconnectQuietly(ChannelSftp ftp) {
         if (ftp != null) {
-            try {
-                ftp.disconnect();
-            } catch (IOException e) {
-                LOG.trace("exception during disconnect: " + e, e);
-            }
+            ftp.disconnect();
         }
     }
 }

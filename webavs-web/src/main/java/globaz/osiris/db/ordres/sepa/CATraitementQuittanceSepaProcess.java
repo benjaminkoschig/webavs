@@ -33,8 +33,7 @@ public class CATraitementQuittanceSepaProcess extends BProcess {
 
     @Override
     public GlobazJobQueue jobQueue() {
-        // TODO Auto-generated method stub
-        return null;
+        return GlobazJobQueue.READ_LONG;
     }
 
 }

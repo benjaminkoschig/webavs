@@ -145,8 +145,19 @@ insert into SCHEMA.jadeprop (propname, propval) values ('osiris.sepa.ftp.port','
 insert into SCHEMA.jadeprop (propname, propval) values ('osiris.sepa.ftp.user','');
 insert into SCHEMA.jadeprop (propname, propval) values ('osiris.sepa.ftp.pass','');
 
+--table des rejet OSIRIS
+CREATE TABLE SCHEMA.CAORREJ (
+	ID NUMERIC(9,0) primary key not null,
+	IDORDRE NUMERIC(9,0) not null,
+	CODE VARCHAR(32),
+	PROPRI VARCHAR(255),
+	ADDITI VARCHAR(255)
+	);
+
 --trad de CS pour D0048
 update SCHEMA.FWCOUP set PCOLUT = 'EL' where PCOSID = 64055001 and PLAIDE = 'D';
 update SCHEMA.FWCOUP set PCOLUT = 'EL Invalidität' where PCOSID = 64027003 and PLAIDE = 'D';
 update SCHEMA.FWCOUP set PCOLUT = 'EL Hinterlassene' where PCOSID = 64027002 and PLAIDE = 'D';
 update SCHEMA.FWCOUP set PCOLUT = 'EL Alter' where PCOSID = 64027001 and PLAIDE = 'D';
+
+

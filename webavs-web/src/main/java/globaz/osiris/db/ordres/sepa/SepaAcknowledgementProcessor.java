@@ -11,19 +11,17 @@ import globaz.osiris.db.ordres.CAOrdreRejete;
 import globaz.osiris.db.ordres.CAOrdreVersement;
 import globaz.osiris.db.ordres.CAOrdreVersementManager;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
 import org.apache.http.annotation.ThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import com.jcraft.jsch.ChannelSftp;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.CustomerPaymentStatusReportV03CH;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.OriginalGroupInformation20CH;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.OriginalPaymentInformation1CH;
@@ -42,7 +40,7 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
     private static final String TRANSACTION_PREFIX = "TR-";
 
     /** Connecte sur le ftp cible, dans le folder adapté à l'envoi de messages SEPA. */
-    private FTPClient connect(BSession session) {
+    private ChannelSftp connect(BSession session) {
         // try fetching configuration from database
         String login = null;
         String password = null;
@@ -66,17 +64,7 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         }
 
         // go connect
-        FTPClient client = connect(host, port, login, password);
-
-        if (StringUtils.isNotBlank(folder)) {
-            try {
-                if (!client.changeWorkingDirectory(folder)) {
-                    throw new SepaException("unable to move to directoy " + folder);
-                }
-            } catch (IOException e) {
-                throw new SepaException("unable to move to directoy " + folder + ": " + e, e);
-            }
-        }
+        ChannelSftp client = connect(host, port, login, password);
 
         return client;
     }
@@ -84,17 +72,16 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
     public void findAndProcessAllAcknowledgements(BSession session) {
         // BSession session = null; // FIXME trouver une session, on fait comment?
 
-        FTPClient client = connect(session);
-        FTPFile[] listFiles;
+        ChannelSftp client = connect(session);
+        String[] listFiles;
 
-        try {
-            listFiles = client.listFiles();
-        } catch (IOException e) {
-            throw new SepaException("could not list remote files: " + e, e);
-        }
+        listFiles = listFiles(client, ".");
 
-        for (FTPFile file : listFiles) {
-            String originalFilename = file.getName();
+        for (String file : listFiles) {
+            String originalFilename = file;
+            if (false) { // tester si nous somme sur la plateforme isotest.postfinance pour les zip
+
+            }
 
             if (!originalFilename.toLowerCase().endsWith(".xml")) {
                 LOG.debug("skipped non xml file: {}", originalFilename);
@@ -351,7 +338,11 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                             rejected.setProprietary(rsn.getPrtry());
                             rejected.setAdditionalInformations(StringUtils.join(xxx.getAddtlInf(), '\n'));
 
-                            rejected.save();
+                            try {
+                                rejected.add();
+                            } catch (Exception e) {
+                                throw new SepaException("could not save CAOrdreRejete.", e);
+                            }
                         }
                     }
                 } else {
@@ -440,8 +431,8 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
 
         List<CAOrdreVersement> orders = m.toList();
         for (CAOrdreVersement order : orders) {
-            // order.set
-            // TODO ?
+            // TODO
+            // order.set();
         }
     }
 
@@ -449,7 +440,7 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         ordre.setEtat(APIOrdreGroupe.ISO_ORDRE_STATUS_CONFIRME);
 
         try {
-            ordre.save(); // TODO save à chaque fois?
+            ordre.update();
         } catch (Exception e) {
             throw new SepaException("could not save order: " + ordre.getId() + ": " + e, e);
         }
@@ -460,7 +451,7 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         CAOrdreGroupeManager manager = new CAOrdreGroupeManager();
         manager.setSession(BSessionUtil.getSessionFromThreadContext());
 
-        manager.setForIdOrdreGroupe(messageId);
+        manager.setForIdOrdreGroupe(messageId.substring(CAOrdreGroupe.NUM_LIVRAISON_PERFIX.length()));
 
         try {
             manager.find();

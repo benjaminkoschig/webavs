@@ -68,6 +68,7 @@ import org.apache.commons.io.IOUtils;
  * @revision SCO 19 mars 2010
  */
 public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGroupe {
+    public static final String NUM_LIVRAISON_PERFIX = "OG-";
     /**
      *
      */
@@ -1746,7 +1747,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
     }
 
     public String getIsoNumLivraison() {
-        return "OG-" + getId();
+        return NUM_LIVRAISON_PERFIX + getId();
     }
 
     @Override
