@@ -643,6 +643,10 @@ public class CIApplication extends globaz.globall.db.BApplication {
     public AFAffiliation getAffilieByNo(BSession session, String numeroAffilie, boolean forParitaire,
             boolean forPersonnel, String moisD, String moisF, String annee, String jourDebut, String jourFin) {
 
+        if (JadeStringUtil.isBlankOrZero(numeroAffilie)) {
+            return null;
+        }
+
         try {
             // Recherche des affiliations selon critères
             AFAffiliationManager affMgr = new AFAffiliationManager();

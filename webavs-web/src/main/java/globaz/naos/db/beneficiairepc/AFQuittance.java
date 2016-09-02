@@ -196,22 +196,49 @@ public class AFQuittance extends BEntity implements Serializable {
     @Override
     protected void _validate(BStatement statement) throws Exception {
         if (wantValidate.booleanValue()) {
-            // On va setter l'idAffiliation
-            // AFAffiliationManager affManager = new AFAffiliationManager();
-            // affManager.setSession(getSession());
-            // affManager.setForAffilieNumero(getIdAffBeneficiaire());
-            // affManager.find();
-            // On regarde si l'affilié est affilié avec comme mention :
-            // déclaration de salaire : "bénéficiaire PC"
-            AFAffiliation aff = new AFAffiliation();
-            aff.setSession(getSession());
-            aff.setAffiliationId(getIdAffBeneficiaire());
-            aff.retrieve();
-            if (aff.isNew() == true) {
-                _addError(statement.getTransaction(), getSession().getLabel("BENEFICIAIRE_PC_ERREUR"));
-            }
-            if (!(aff.getDeclarationSalaire().equals(CodeSystem.BENEFICIAIRE_PC))) {
-                _addError(statement.getTransaction(), getSession().getLabel("BENEFICIAIRE_PC_ERREUR"));
+
+            if (JadeStringUtil.isEmpty(getIdAffBeneficiaire()) && JadeStringUtil.isBlankOrZero(numAffilie)) {
+                _addError(statement.getTransaction(), getSession().getLabel("BENEFICIAIRE_NUM_AFF_BENEFICIAIRE_ERREUR"));
+            } else {
+                
+                BSession sessionPavo = new BSession(CIApplication.DEFAULT_APPLICATION_PAVO);
+                getSession().connectSession(sessionPavo);
+                CIApplication app = (CIApplication) sessionPavo.getApplication();
+
+                AFAffiliation aff = null;
+                if (JadeStringUtil.isBlankOrZero(getIdAffBeneficiaire())) {
+                    aff = app.getAffilieByNo(getSession(), numAffilie, true, false, getDateDebut(), getDateFin(),
+                            getAnnee(), getJourDebut(), getJourFin());
+                } else {
+                    aff = new AFAffiliation();
+                    aff.setSession(getSession());
+                    aff.setAffiliationId(getIdAffBeneficiaire());
+                    aff.retrieve();
+
+                    // On contrôle que l'affilié est bien actif durant la période
+                    // concernée
+                    String idAff = aff._retourIdAffiliation(statement.getTransaction(), aff.getAffilieNumero(),
+                            getPeriodeDebut(), getPeriodeFin(), aff.getTypeAffiliation());
+
+                    if (JadeStringUtil.isBlankOrZero(idAff)) {
+                        aff = null;
+                        idAffBeneficiaire = "";
+                        setIdAffBeneficiaireBrut("");
+                    }
+                }
+
+                if (aff == null || JadeStringUtil.isEmpty(aff.getId())) {
+                    _addError(statement.getTransaction(), getSession().getLabel("BENEFICIAIRE_PERIODE_AFF_ERREUR"));
+                } else {
+                    idAffBeneficiaire = aff.getId();
+                    setIdAffBeneficiaireBrut(idAffBeneficiaire);
+                    if (aff.isNew() == true) {
+                        _addError(statement.getTransaction(), getSession().getLabel("BENEFICIAIRE_PC_ERREUR"));
+                    }
+                    if (!(aff.getDeclarationSalaire().equals(CodeSystem.BENEFICIAIRE_PC))) {
+                        _addError(statement.getTransaction(), getSession().getLabel("BENEFICIAIRE_PC_ERREUR"));
+                    }
+                }
             }
             boolean validationOK = true;
             // Test validité des dates
@@ -232,9 +259,6 @@ public class AFQuittance extends BEntity implements Serializable {
                     getSession().getLabel("BENEFICIAIRE_DATE_FIN_ERREUR"));
             if (JadeStringUtil.isEmpty(getNumAvsAideMenage())) {
                 _addError(statement.getTransaction(), getSession().getLabel("BENEFICIAIRE_AIDE_MENAGE_ERREUR"));
-            }
-            if (JadeStringUtil.isEmpty(getIdAffBeneficiaire())) {
-                _addError(statement.getTransaction(), getSession().getLabel("BENEFICIAIRE_NUM_AFF_BENEFICIAIRE_ERREUR"));
             }
             if (JadeStringUtil.isEmpty(getTotalVerse())) {
                 _addError(statement.getTransaction(), getSession().getLabel("BENEFICIAIRE_TOTAL_VERSE_ERREUR"));
@@ -265,13 +289,6 @@ public class AFQuittance extends BEntity implements Serializable {
             ci.find();
             if (ci.size() <= 0) {
                 _addError(statement.getTransaction(), getSession().getLabel("BENEFICIAIRE_CI_ERREUR"));
-            }
-            // On contrôle que l'affilié est bien actif durant la période
-            // concernée
-            String idAff = aff._retourIdAffiliation(statement.getTransaction(), aff.getAffilieNumero(),
-                    getPeriodeDebut(), getPeriodeFin(), aff.getTypeAffiliation());
-            if (JadeStringUtil.isEmpty(idAff)) {
-                _addError(statement.getTransaction(), getSession().getLabel("BENEFICIAIRE_PERIODE_AFF_ERREUR"));
             }
             // On contrôle que la période soit bien dans l'année.
             AFJournalQuittance jrnQuittance = new AFJournalQuittance();
@@ -749,6 +766,8 @@ public class AFQuittance extends BEntity implements Serializable {
     }
 
     public void setIdAffBeneficiaire(String numAffilie) {
+
+        this.numAffilie = numAffilie;
         try {
             BSession sessionPavo = new BSession(CIApplication.DEFAULT_APPLICATION_PAVO);
             getSession().connectSession(sessionPavo);
@@ -757,9 +776,8 @@ public class AFQuittance extends BEntity implements Serializable {
                 JADate date = new JADate(getPeriodeDebut());
                 setAnnee(String.valueOf(date.getYear()));
             }
-            AFAffiliation aff = app.getAffilieByNo(getSession(), numAffilie, true, false,
-                    getPeriodeDebut().substring(3, 5), getPeriodeFin().substring(3, 5), getAnnee(), getJourDebut(),
-                    getJourFin());
+            AFAffiliation aff = app.getAffilieByNo(getSession(), numAffilie, true, false, getDateDebut(), getDateFin(),
+                    getAnnee(), getJourDebut(), getJourFin());
             idAffBeneficiaire = aff.getAffiliationId();
         } catch (Exception e) {
             idAffBeneficiaire = "";
