@@ -1029,7 +1029,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
         PersonneAVS beneficiairePrincipal = decision.getBeneficiairePrincipal();
         RenteAccordee renteAccordeePrincipale = decision.getRenteAccordeePrincipale();
 
-        String idTiersPrincipal = renteAccordeePrincipale.getIdTiersAdressePaiement().toString();
+        String idTiersPrincipal = renteAccordeePrincipale.getAdresseDePaiement().getId().toString();
 
         if (JadeStringUtil.isBlankOrZero(idTiersPrincipal) || Long.parseLong(idTiersPrincipal) < 0) {
             idTiersPrincipal = decision.getBeneficiairePrincipal().getId().toString();
