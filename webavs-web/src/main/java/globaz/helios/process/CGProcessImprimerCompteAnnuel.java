@@ -177,6 +177,9 @@ public class CGProcessImprimerCompteAnnuel extends BProcess {
                 getSession().getLabel("IMPRESSION_RELEVEAVS_PASSIF"));
         countLine++;
 
+        FWCurrency totalGlobalActifs = new FWCurrency();
+        FWCurrency totalGlobalPassifs = new FWCurrency();
+
         FWCurrency totalActifs = new FWCurrency();
         FWCurrency totalPassifs = new FWCurrency();
 
@@ -192,27 +195,39 @@ public class CGProcessImprimerCompteAnnuel extends BProcess {
                     countLine++;
                 }
 
-                addRowContent(wb, sheet, countLine, line.getIdExterne(), line.getLibelle(), line.getSoldeActif(),
-                        line.getSoldePassif());
+                if (line.getLibelle().equals(getSession().getLabel("PARSER_TOTAUX"))) {
+                    addRowContent(wb, sheet, countLine, line.getIdExterne(), line.getLibelle(), totalActifs.toString(),
+                            totalPassifs.toString());
+
+                    totalActifs = new FWCurrency();
+                    totalPassifs = new FWCurrency();
+                } else {
+                    addRowContent(wb, sheet, countLine, line.getIdExterne(), line.getLibelle(), line.getSoldeActif(),
+                            line.getSoldePassif());
+                }
 
                 if (!JadeStringUtil.isBlank(line.getIdExterne())) {
                     if (!JadeStringUtil.isBlankOrZero(line.getSoldeActif())) {
                         FWCurrency soldeActif = new FWCurrency(line.getSoldeActif());
                         if (soldeActif.isPositive()) {
+                            totalGlobalActifs.add(JANumberFormatter.deQuote(soldeActif.toString()));
                             totalActifs.add(JANumberFormatter.deQuote(soldeActif.toString()));
                         } else {
                             FWCurrency soldeActifAbs = new FWCurrency(soldeActif.toString());
                             soldeActifAbs.abs();
+                            totalGlobalPassifs.add(JANumberFormatter.deQuote(soldeActifAbs.toString()));
                             totalPassifs.add(JANumberFormatter.deQuote(soldeActifAbs.toString()));
                         }
                     }
                     if (!JadeStringUtil.isBlankOrZero(line.getSoldePassif())) {
                         FWCurrency soldePassif = new FWCurrency(line.getSoldePassif());
                         if (soldePassif.isPositive()) {
+                            totalGlobalPassifs.add(JANumberFormatter.deQuote(soldePassif.toString()));
                             totalPassifs.add(JANumberFormatter.deQuote(soldePassif.toString()));
                         } else {
                             FWCurrency soldePassifAbs = new FWCurrency(soldePassif.toString());
                             soldePassifAbs.abs();
+                            totalGlobalActifs.add(JANumberFormatter.deQuote(soldePassifAbs.toString()));
                             totalActifs.add(JANumberFormatter.deQuote(soldePassifAbs.toString()));
                         }
                     }
@@ -229,7 +244,7 @@ public class CGProcessImprimerCompteAnnuel extends BProcess {
             }
         }
 
-        addRowContentTotal(wb, sheet, countLine, totalActifs.toString(), totalPassifs.toString());
+        addRowContentTotal(wb, sheet, countLine, totalGlobalActifs.toString(), totalGlobalPassifs.toString());
     }
 
     /**
@@ -267,6 +282,9 @@ public class CGProcessImprimerCompteAnnuel extends BProcess {
                 .getLabel("IMPRESSION_RELEVEAVS_CHARGE"), getSession().getLabel("IMPRESSION_RELEVEAVS_PRODUIT"));
         countLine++;
 
+        FWCurrency totalGlobalCharges = new FWCurrency();
+        FWCurrency totalGlobalProduits = new FWCurrency();
+
         FWCurrency totalCharges = new FWCurrency();
         FWCurrency totalProduits = new FWCurrency();
 
@@ -282,12 +300,42 @@ public class CGProcessImprimerCompteAnnuel extends BProcess {
                     countLine++;
                 }
 
-                addRowContent(wb, sheet, countLine, line.getIdExterne(), line.getLibelle(), line.getSoldeCharges(),
-                        line.getSoldeProduits());
+                if (line.getLibelle().equals(getSession().getLabel("PARSER_TOTAUX"))) {
+                    addRowContent(wb, sheet, countLine, line.getIdExterne(), line.getLibelle(),
+                            totalCharges.toString(), totalProduits.toString());
+
+                    totalCharges = new FWCurrency();
+                    totalProduits = new FWCurrency();
+                } else {
+                    addRowContent(wb, sheet, countLine, line.getIdExterne(), line.getLibelle(), line.getSoldeCharges(),
+                            line.getSoldeProduits());
+                }
 
                 if (!JadeStringUtil.isBlank(line.getIdExterne())) {
-                    totalCharges.add(JANumberFormatter.deQuote(line.getSoldeCharges()));
-                    totalProduits.add(JANumberFormatter.deQuote(line.getSoldeProduits()));
+                    if (!JadeStringUtil.isBlankOrZero(line.getSoldeCharges())) {
+                        FWCurrency soldeCharges = new FWCurrency(line.getSoldeCharges());
+                        if (soldeCharges.isPositive()) {
+                            totalGlobalCharges.add(JANumberFormatter.deQuote(soldeCharges.toString()));
+                            totalCharges.add(JANumberFormatter.deQuote(soldeCharges.toString()));
+                        } else {
+                            FWCurrency soldeChargesAbs = new FWCurrency(soldeCharges.toString());
+                            soldeChargesAbs.abs();
+                            totalGlobalProduits.add(JANumberFormatter.deQuote(soldeChargesAbs.toString()));
+                            totalProduits.add(JANumberFormatter.deQuote(soldeChargesAbs.toString()));
+                        }
+                    }
+                    if (!JadeStringUtil.isBlankOrZero(line.getSoldeProduits())) {
+                        FWCurrency soldeProduits = new FWCurrency(line.getSoldeProduits());
+                        if (soldeProduits.isPositive()) {
+                            totalGlobalProduits.add(JANumberFormatter.deQuote(soldeProduits.toString()));
+                            totalProduits.add(JANumberFormatter.deQuote(soldeProduits.toString()));
+                        } else {
+                            FWCurrency soldeProduitsAbs = new FWCurrency(soldeProduits.toString());
+                            soldeProduitsAbs.abs();
+                            totalGlobalCharges.add(JANumberFormatter.deQuote(soldeProduitsAbs.toString()));
+                            totalCharges.add(JANumberFormatter.deQuote(soldeProduitsAbs.toString()));
+                        }
+                    }
                 }
 
                 if (JadeStringUtil.isBlank(line.getIdExterne())
@@ -300,7 +348,7 @@ public class CGProcessImprimerCompteAnnuel extends BProcess {
             }
         }
 
-        addRowContentTotal(wb, sheet, countLine, totalCharges.toString(), totalProduits.toString());
+        addRowContentTotal(wb, sheet, countLine, totalGlobalCharges.toString(), totalGlobalProduits.toString());
     }
 
     /**
