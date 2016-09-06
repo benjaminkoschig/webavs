@@ -100,7 +100,7 @@ public class PCExecuterAvancesViewBean extends BJadePersistentObjectViewBean {
         // ajout du defaut en position 1, si pas null
         if (organeExecutionDefaut != null) {
             result.add(0, (new String[] { organeExecutionDefaut.getIdOrganeExecution(), organeExecutionDefaut.getNom(),
-                    organeExecution.getCSTypeTraitementOG() }));
+                    organeExecutionDefaut.getCSTypeTraitementOG() }));
         }
         return result;
     }
