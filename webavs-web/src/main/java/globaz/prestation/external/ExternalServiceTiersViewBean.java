@@ -168,7 +168,7 @@ public class ExternalServiceTiersViewBean extends BAbstractEntityExternalService
             data = mapsTiers.get(idTiers);
 
             if (data != null) {
-                mapsTiers.remove(data);
+                mapsTiers.remove(idTiers);
                 entity.getSession().setAttribute(ALREADY_SENT_A_MAIL_FOR_TIERS, mapsTiers);
             }
         }
