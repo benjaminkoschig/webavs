@@ -243,9 +243,7 @@
 											</label>
 										</td>
 										<td colspan="2">
-											<textarea name="refPmt" cols="50" rows="2">
-												<%=viewBean.getRefPmt()%>
-											</textarea>
+											<textarea name="refPmt" cols="50" rows="2"><%=viewBean.getRefPmt()%></textarea>
 										</td>
 									</tr>
 									<tr>
