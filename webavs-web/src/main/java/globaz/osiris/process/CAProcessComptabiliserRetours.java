@@ -6,7 +6,6 @@ import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
-import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
@@ -32,6 +31,8 @@ import globaz.osiris.db.retours.CARetoursManager;
 import globaz.osiris.db.retours.CARetoursViewBean;
 import globaz.osiris.externe.CAGestionComptabiliteExterne;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import globaz.prestation.interfaces.util.nss.PRUtil;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Iterator;
@@ -353,12 +354,17 @@ public class CAProcessComptabiliserRetours extends BProcess {
                                 idTiersPrincipal = lir.getIdTiers();
                             }
 
-                            String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(
-                                    BSessionUtil.getSessionFromThreadContext(), idTiersPrincipal);
-
+                            String nomPrenom = "";
                             String motifTexte = "";
 
                             try {
+                                PRTiersWrapper tiers;
+                                tiers = PRTiersHelper.getTiersParId(getSession(), idTiersPrincipal);
+                                nomPrenom = tiers.getNom() + " " + tiers.getPrenom();
+                                String codeIsoLangue = getSession().getCode(
+                                        tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+                                String isoLangFromIdTiers = PRUtil.getISOLangueTiers(codeIsoLangue);
+
                                 CodeSystem codeSystem = CodeSystemUtils.searchCodeSystemTraduction(
                                         retour.getCsMotifRetour(), getSession(), isoLangFromIdTiers);
 
@@ -371,9 +377,6 @@ public class CAProcessComptabiliserRetours extends BProcess {
                             if (!JadeStringUtil.isEmpty(retour.getLibelleRetour())) {
                                 motifTexte += " - " + retour.getLibelleRetour();
                             }
-
-                            String nomPrenom = "";
-                            // TODO pending de la jira WEBAVS-1740
 
                             String motif = MotifVersementUtil.formatRetour(nss, nomPrenom, motifTexte);
 
