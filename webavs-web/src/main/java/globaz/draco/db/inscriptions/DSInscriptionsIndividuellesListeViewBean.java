@@ -232,8 +232,14 @@ public class DSInscriptionsIndividuellesListeViewBean extends DSDeclarationViewB
                         }
                         numeroAvs = null;
                         numeroAvs = saveNumWithoutPrefixe;
+
+                        String information = insc.getNssFormate();
+                        if (JadeStringUtil.isBlankOrZero(information)) {
+                            information = ((ArrayList<String>) nomPrenom).get(i);
+                        }
+
                         StringBuffer errs = new StringBuffer();
-                        errs.append(insc.getNssFormate() + ":");
+                        errs.append(information + ":");
                         errs.append("\n");
                         errs.append(transaction.getErrors());
                         transaction.clearErrorBuffer();
@@ -340,8 +346,14 @@ public class DSInscriptionsIndividuellesListeViewBean extends DSDeclarationViewB
                         }
                         numeroAvs = null;
                         numeroAvs = saveNumWithoutPrefixe;
+
+                        String information = insc.getNssFormate();
+                        if (JadeStringUtil.isBlankOrZero(information)) {
+                            information = ((ArrayList<String>) nomPrenom).get(i);
+                        }
+
                         StringBuffer errs = new StringBuffer();
-                        errs.append(insc.getNssFormate() + ":");
+                        errs.append(information + ":");
                         errs.append("\n");
                         errs.append(transaction.getErrors());
                         transaction.clearErrorBuffer();

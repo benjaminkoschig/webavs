@@ -13,15 +13,18 @@ import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.globall.db.FWFindParameter;
 import globaz.globall.db.FWFindParameterManager;
+import globaz.globall.db.GlobazServer;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.parameters.FWParametersSystemCodeManager;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.assurance.AFAssurance;
 import globaz.naos.db.cotisation.AFCotisation;
 import globaz.naos.db.cotisation.AFCotisationManager;
+import globaz.pavo.application.CIApplication;
 import globaz.pavo.db.compte.CICompteIndividuel;
 import globaz.pavo.db.compte.CICompteIndividuelManager;
 import globaz.pavo.db.compte.CIEcriture;
@@ -522,6 +525,7 @@ public class DSInscriptionsIndividuelles extends BEntity {
                 }
             }
         }
+
         setCasSpecial(new Boolean(false));
         if (JadeStringUtil.isIntegerEmpty(periodeFin) && !isNew()) {
             sortie = false;
@@ -537,6 +541,7 @@ public class DSInscriptionsIndividuelles extends BEntity {
         } catch (Exception e) {
             _addError(statement.getTransaction(), getSession().getLabel("PERIODE_INVALIDE"));
         }
+
         if (JadeStringUtil.isIntegerEmpty(codeCanton)) {
             codeCanton = declaration.getCodeCantonAF();
         }
@@ -580,6 +585,20 @@ public class DSInscriptionsIndividuelles extends BEntity {
                 } else {
                     _addError(statement.getTransaction(), getSession().getLabel("NSS_OBLIGATOIRE"));
                 }
+            }
+        }
+
+        // Vérification pour les inscriptions uniquement AF
+        if (JadeStringUtil.isBlankOrZero(getMontant()) && !JadeStringUtil.isBlankOrZero(getMontantAf())) {
+            CIApplication application = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
+                    CIApplication.DEFAULT_APPLICATION_PAVO);
+            AFAffiliation aff = application.getAffilieByNo(getSession(), getDeclaration().getAffilieNumero(), true,
+                    false, moisDebutAF, moisFinAF, getAnneeInsc(), jourDebut, jourFin);
+            if ((aff == null) || (aff.isNew())) {
+                String message = getPeriodeDebutAF() + "." + getAnneeInsc() + " - " + getPeriodeFinAF() + "."
+                        + getAnneeInsc();
+                _addError(statement.getTransaction(), getSession().getLabel("DT_ERR_DATE_AFFILIATION") + " : "
+                        + message);
             }
         }
     }
