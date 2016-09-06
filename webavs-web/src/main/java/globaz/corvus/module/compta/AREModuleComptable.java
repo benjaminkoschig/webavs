@@ -41,6 +41,7 @@ import globaz.prestation.enums.codeprestation.PRCodePrestationPC;
 import globaz.prestation.enums.codeprestation.PRCodePrestationRFM;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.utils.compta.PRRubriqueComptableResolver;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
@@ -358,9 +359,11 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
                 || REGenresPrestations.GENRE_93.equals(genrePrestation)) {
             labelId = "RENTE_API_AI";
         } else if (REGenresPrestations.GENRE_110.equals(genrePrestation)
-                || REGenresPrestations.GENRE_113.equals(genrePrestation)) {
+                || REGenresPrestations.GENRE_113.equals(genrePrestation)
+                || PRCodePrestationPC._118.equals(genrePrestation) || PRCodePrestationPC._119.equals(genrePrestation)) {
             labelId = "RENTE_PC_AVS";
-        } else if (REGenresPrestations.GENRE_150.equals(genrePrestation)) {
+        } else if (REGenresPrestations.GENRE_150.equals(genrePrestation)
+                || PRCodePrestationPC._158.equals(genrePrestation) || PRCodePrestationPC._159.equals(genrePrestation)) {
             labelId = "RENTE_PC_AI";
         } else if (REGenresPrestations.GENRE_210.equals(genrePrestation)
                 || REGenresPrestations.GENRE_213.equals(genrePrestation)) {
@@ -1059,13 +1062,15 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
             idTiersPrincipal = tw.getIdTiers();
         }
 
-        String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(session, idTiersPrincipal);
+        String codeIsoLangue = session.getCode(tw.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+        String isoLangFromIdTiers = PRUtil.getISOLangueTiers(codeIsoLangue);
 
         String versementMsg = MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangFromIdTiers,
                 "DEBLOCAGE_VERSEMENT_DU", session);
 
         final String nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-        final String nomPrenom = tw.getProperty(PRTiersWrapper.PROPERTY_NOM + " " + PRTiersWrapper.PROPERTY_PRENOM);
+        final String nomPrenom = tw.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
+                + tw.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
         final String prestation = AREModuleComptable.getLibelleRubrique(session, genrePrestation, isoLangFromIdTiers);
 
         return MotifVersementUtil.formatDeblocage(nss, nomPrenom, refPmt, prestation, versementMsg);
