@@ -235,6 +235,55 @@ public class CIUtil {
     }
 
     /**
+     * On met la date début affiliation si celle ci est plus grande que la date défaut
+     * Si pas de date début affiliation (ça devrait pas arrivé), alors on met la date défaut
+     * Exemple 1 : début affiliation : 15.02.2016 est plus grande que 01.01.2016, > on met la date affiliation
+     * Exemple 2 : début affiliation : 10.01.2015 est plus petite que 01.01.2016, > on met la date défaut
+     * 
+     * @param dateDebutDefaut La date de fin par défaut à comparer.
+     * @param dateDebutAffiliation Date de début de l'affiliation.
+     * @return La date affiliation si plus grande que date par défaut, sinon la date défaut.
+     * @throws Exception Une exception.
+     */
+    public static String giveDateDebutGreater(BSession session, final String dateDebutDefaut,
+            final String dateDebutAffiliation) throws Exception {
+
+        String dateDebut = dateDebutDefaut;
+
+        if (!JadeStringUtil.isBlankOrZero(dateDebutAffiliation)) {
+            boolean isDateDebutAffGreater = BSessionUtil.compareDateFirstGreater(session, dateDebutAffiliation,
+                    dateDebutDefaut);
+            dateDebut = (isDateDebutAffGreater) ? dateDebutAffiliation : dateDebutDefaut;
+        }
+
+        return dateDebut;
+    }
+
+    /**
+     * On met la date fin affiliation si celle ci est plus grande que la date défaut
+     * Si pas de date fin affiliation (ça devrait pas arrivé), alors on met la date défaut
+     * Exemple 1 : fin affiliation : 20.11.2016 est plus petite que 31.12.2016, > on met la date affiliation
+     * Exemple 2 : fin affiliation : 10.01.2017 est plus grande que 31.12.2016, > on met la date défaut
+     * 
+     * @param dateFinDefaut La date de fin par défaut à comparer.
+     * @param dateFinAffiliation Date de fin de l'affiliation.
+     * @return La date affiliation si plus petite que date par défaut, sinon la date défaut.
+     * @throws Exception Une exception.
+     */
+    public static String giveDateFinLower(BSession session, final String dateFinDefaut, final String dateFinAffiliation)
+            throws Exception {
+
+        String dateFin = dateFinDefaut;
+
+        if (!JadeStringUtil.isBlankOrZero(dateFinAffiliation)) {
+            boolean isDateFinAffLower = BSessionUtil.compareDateFirstLower(session, dateFinAffiliation, dateFinDefaut);
+            dateFin = (isDateFinAffLower) ? dateFinAffiliation : dateFinDefaut;
+        }
+
+        return dateFin;
+    }
+
+    /**
      * Renvoie une date jj.mm.aaaa en jjmmaa. Date de création : (14.03.2003 10:38:25)
      * 
      * @return java.lang.String

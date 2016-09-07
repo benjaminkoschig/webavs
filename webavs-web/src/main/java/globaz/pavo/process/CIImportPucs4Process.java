@@ -1173,8 +1173,10 @@ public class CIImportPucs4Process extends BProcess {
             // Recherche id tiers
             releve.setIdTiers(affilie.getIdTiers());
             releve.setType(typeReleve);
-            releve.setDateDebut("01.01." + annee);
-            releve.setDateFin("31.12." + annee);
+
+            releve.setDateDebut(CIUtil.giveDateDebutGreater(getSession(), "01.01." + annee, affilie.getDateDebut()));
+            releve.setDateFin(CIUtil.giveDateFinLower(getSession(), "31.12." + annee, affilie.getDateFin()));
+
             releve.setInterets(CodeSystem.INTERET_MORATOIRE_AUTOMATIQUE);
             releve.setDateReception(dateReceptionForced);
             releve.setNewEtat(CodeSystem.ETATS_RELEVE_SAISIE);

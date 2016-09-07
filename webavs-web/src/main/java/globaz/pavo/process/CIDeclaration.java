@@ -1908,22 +1908,6 @@ public class CIDeclaration extends BProcess {
 
     private void creationReleve(CIDeclarationRecord rec, AFAffiliation affilie, Map<String, String> sommeParCanton)
             throws Exception {
-        String moisDebut = Integer.toString(rec.getMoisDebut());
-        String moisFin = Integer.toString(rec.getMoisFin());
-        String jourDeb = Integer.toString(rec.getJourDebut());
-        String jourFin = Integer.toString(rec.getJourFin());
-        if (rec.getJourDebut() < 9) {
-            jourDeb = "0" + jourDeb;
-        }
-        if (rec.getJourFin() < 9) {
-            jourFin = "0" + jourFin;
-        }
-        if (rec.getMoisDebut() < 9) {
-            moisDebut = "0" + moisDebut;
-        }
-        if (rec.getMoisFin() < 9) {
-            moisFin = "0" + moisFin;
-        }
 
         String typeReleve = CodeSystem.TYPE_RELEVE_DECOMP_FINAL_COMPTA;
 
@@ -1986,8 +1970,11 @@ public class CIDeclaration extends BProcess {
             // Recherche id tiers
             releve.setIdTiers(affilie.getIdTiers());
             releve.setType(typeReleve);
-            releve.setDateDebut(jourDeb + "." + moisDebut + "." + rec.getAnnee());
-            releve.setDateFin(jourFin + "." + moisFin + "." + rec.getAnnee());
+
+            releve.setDateDebut(CIUtil.giveDateDebutGreater(getSession(), "01.01." + rec.getAnnee(),
+                    affilie.getDateDebut()));
+            releve.setDateFin(CIUtil.giveDateFinLower(getSession(), "31.12." + rec.getAnnee(), affilie.getDateFin()));
+
             releve.setInterets(CodeSystem.INTERET_MORATOIRE_AUTOMATIQUE);
             releve.setDateReception(dateReceptionForced);
             releve.setNewEtat(CodeSystem.ETATS_RELEVE_SAISIE);
