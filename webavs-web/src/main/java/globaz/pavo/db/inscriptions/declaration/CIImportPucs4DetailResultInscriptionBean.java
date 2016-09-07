@@ -2,6 +2,7 @@ package globaz.pavo.db.inscriptions.declaration;
 
 import java.util.ArrayList;
 import java.util.List;
+import ch.globaz.common.domaine.Montant;
 
 public class CIImportPucs4DetailResultInscriptionBean {
 
@@ -11,25 +12,25 @@ public class CIImportPucs4DetailResultInscriptionBean {
     private String moisFin = "";
     private String annee = "";
     private String genre = "";
-    private String revenuAVS = "";
-    private String revenuCAF = "";
+    private Montant revenuAVS = Montant.ZERO;
+    private Montant revenuCAF = Montant.ZERO;
     private List<String> ciAdd = new ArrayList<String>();
     private List<String> errors = new ArrayList<String>();
     private List<String> infos = new ArrayList<String>();
 
-    public String getRevenuAVS() {
+    public Montant getRevenuAVS() {
         return revenuAVS;
     }
 
-    public void setRevenuAVS(String revenuAVS) {
+    public void setRevenuAVS(Montant revenuAVS) {
         this.revenuAVS = revenuAVS;
     }
 
-    public String getRevenuCAF() {
+    public Montant getRevenuCAF() {
         return revenuCAF;
     }
 
-    public void setRevenuCAF(String revenuCAF) {
+    public void setRevenuCAF(Montant revenuCAF) {
         this.revenuCAF = revenuCAF;
     }
 

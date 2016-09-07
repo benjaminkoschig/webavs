@@ -579,9 +579,9 @@ public class CIImportPucs4Process extends BProcess {
         aDetailResultInscriptionBean.setMoisFin(periode.getDateFin().getMois());
         aDetailResultInscriptionBean.setAnnee(annee);
 
-        aDetailResultInscriptionBean.setRevenuAVS(montantAVS.toStringFormat());
+        aDetailResultInscriptionBean.setRevenuAVS(montantAVS);
 
-        aDetailResultInscriptionBean.setRevenuCAF(montantCAF.toStringFormat());
+        aDetailResultInscriptionBean.setRevenuCAF(montantCAF);
 
         numeroAVS = CIUtil.unFormatAVS(numeroAVS);
 
