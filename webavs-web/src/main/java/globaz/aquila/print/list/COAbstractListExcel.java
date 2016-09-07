@@ -42,6 +42,7 @@ public abstract class COAbstractListExcel {
     private static final String FILE_TYPE = ".xls";
     /** Format : "#,##0.00" */
     protected static final short FORMAT_MONTANT = (short) 4;
+    protected static final short FORMAT_NOMBRE = (short) 1;
     protected static final double LEFT_MARGIN = 0.4;
     /** Nombre maximum de ligne par feuille */
     private static final int NUMBER_MAX_ROW = 65535;
@@ -81,11 +82,17 @@ public abstract class COAbstractListExcel {
     private HSSFCellStyle styleListTitleLeft = null;
     private HSSFCellStyle styleListTitleRight = null;
     private HSSFCellStyle styleMontant = null;
+    private HSSFCellStyle styleLeftWithoutBorder = null;
+
     // Les styles doivent être globaux pour éviter des problèmes avec Excel
     private HSSFCellStyle styleNeutre = null;
     private HSSFCellStyle styleRight = null;
     private HSSFCellStyle styleTitreCreance = null;
     private HSSFCellStyle styleTotal = null;
+
+    private HSSFCellStyle styleNombreWithoutMontant = null;
+    private HSSFCellStyle styleMontantWithoutBorder = null;
+
     /** Workbook, classeur d'Excel */
     private HSSFWorkbook wb;
 
@@ -444,6 +451,15 @@ public abstract class COAbstractListExcel {
         return styleLeft;
     }
 
+    protected HSSFCellStyle getStyleLeftWihtoutBorder() {
+        if (styleLeftWithoutBorder == null) {
+            styleLeftWithoutBorder = wb.createCellStyle();
+            styleLeftWithoutBorder.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+            styleLeftWithoutBorder.setWrapText(true); // La largeur de la cellule s'adapte au contenu
+        }
+        return styleLeftWithoutBorder;
+    }
+
     /**
      * droite; encadré(thin); wrap
      * 
@@ -553,6 +569,18 @@ public abstract class COAbstractListExcel {
         return styleMontant;
     }
 
+    protected HSSFCellStyle getStyleMontantWithoutBorder() {
+        if (styleMontantWithoutBorder == null) {
+            styleMontantWithoutBorder = wb.createCellStyle();
+            // setDataFormat(wb.createDataFormat().getFormat("#,##0.00")) == setDataFormat((short) 4)
+            styleMontantWithoutBorder.setDataFormat(COAbstractListExcel.FORMAT_MONTANT);
+            styleMontantWithoutBorder.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+
+            styleMontantWithoutBorder.setWrapText(true); // La largeur de la cellule s'adapte au contenu
+        }
+        return styleMontantWithoutBorder;
+    }
+
     /**
      * Total : droite; gras; encadré(medium); Wrap; format #,##0.00
      * 
@@ -574,6 +602,18 @@ public abstract class COAbstractListExcel {
             styleTotal.setWrapText(true); // La cellule s'adapte au contenu
         }
         return styleTotal;
+    }
+
+    protected HSSFCellStyle getStyleNombreWithoutBorder() {
+        if (styleNombreWithoutMontant == null) {
+            styleNombreWithoutMontant = wb.createCellStyle();
+            // setDataFormat(wb.createDataFormat().getFormat("#,##0.00")) == setDataFormat((short) 4)
+            styleNombreWithoutMontant.setDataFormat(FORMAT_NOMBRE);
+            styleNombreWithoutMontant.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+
+            styleNombreWithoutMontant.setWrapText(true); // La largeur de la cellule s'adapte au contenu
+        }
+        return styleNombreWithoutMontant;
     }
 
     /**
