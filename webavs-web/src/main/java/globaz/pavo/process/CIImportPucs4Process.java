@@ -2026,7 +2026,7 @@ public class CIImportPucs4Process extends BProcess {
             }
 
             detailResultBean.getMapAnneeResume().put(annee, resumeBean);
-
+            detailResultBean.setSimulation(!JadeStringUtil.isBlankOrZero(getSimulation()));
         }
 
     }
