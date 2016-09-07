@@ -591,38 +591,25 @@ public class CIImportPucs4Process extends BProcess {
                 launcherImportPucsFileProcess.setTraitementAFSeul(true);
             }
 
-            if (affilie != null) {
-                if (!JadeStringUtil.isBlankOrZero(canton)) {
+            if (!JadeStringUtil.isBlankOrZero(canton)) {
 
-                    Map<String, String> mapTotalParCanton = mapAnneeMapTotalParCanton.get(annee);
-                    if (mapTotalParCanton == null) {
-                        mapTotalParCanton = new HashMap<String, String>();
-                    }
-                    // Cumul par canton
-                    if (mapTotalParCanton.containsKey(canton)) {
-                        // Cumul du montant
-                        FWCurrency cumul = new FWCurrency(mapTotalParCanton.get(canton));
-                        cumul.add(montantCAF.getValue());
-                        mapTotalParCanton.put(canton, cumul.toString());
-                    } else {
-                        mapTotalParCanton.put(canton, montantCAF.getValue());
-                    }
-
-                    mapAnneeMapTotalParCanton.put(annee, mapTotalParCanton);
-
+                Map<String, String> mapTotalParCanton = mapAnneeMapTotalParCanton.get(annee);
+                if (mapTotalParCanton == null) {
+                    mapTotalParCanton = new HashMap<String, String>();
+                }
+                // Cumul par canton
+                if (mapTotalParCanton.containsKey(canton)) {
+                    // Cumul du montant
+                    FWCurrency cumul = new FWCurrency(mapTotalParCanton.get(canton));
+                    cumul.add(montantCAF.getValue());
+                    mapTotalParCanton.put(canton, cumul.toString());
+                } else {
+                    mapTotalParCanton.put(canton, montantCAF.getValue());
                 }
 
-            } else {
-                if (launcherImportPucsFileProcess != null) {
-                    launcherImportPucsFileProcess.getMemoryLog()
-                            .logMessage(
-                                    getSession().getLabel("MSG_AFFILIE_NON_VALIDE") + " - Affilié  "
-                                            + declarationSalaire.getNumeroAffilie() + " - Année " + annee,
-                                    FWMessage.ERREUR, "");
-                }
+                mapAnneeMapTotalParCanton.put(annee, mapTotalParCanton);
 
             }
-
         }
 
         CIEcriture ecriture = new CIEcriture();
