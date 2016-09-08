@@ -1692,7 +1692,7 @@ public class CIImportPucs4Process extends BProcess {
                         getTransaction().clearErrorBuffer();
                     }
 
-                    if (transactionJournalDS.isRollbackOnly()) {
+                    if (transactionJournalDS.isRollbackOnly() || transactionJournalDS.hasErrors()) {
                         transactionJournalDS.rollback();
                     } else {
                         transactionJournalDS.commit();

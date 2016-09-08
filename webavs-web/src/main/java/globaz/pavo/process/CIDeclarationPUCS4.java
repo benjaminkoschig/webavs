@@ -1655,6 +1655,9 @@ public class CIDeclarationPUCS4 extends BProcess {
                                     declaration.setDateRetourEff(dateReceptionForced);
                                 }
                                 declaration.add(getTransaction());
+                                if (declaration.isNew() && !journal.isNew()) {
+                                    journal.delete(getTransaction());
+                                }
 
                             }
                         }
