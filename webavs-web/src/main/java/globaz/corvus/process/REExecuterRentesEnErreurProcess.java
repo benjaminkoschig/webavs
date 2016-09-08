@@ -13,6 +13,7 @@ import globaz.corvus.module.compta.AREModuleComptable;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.pmt.mensuel.RECumulPrstParRubrique;
 import globaz.corvus.utils.pmt.mensuel.REGroupOperationCAUtil;
+import globaz.corvus.utils.pmt.mensuel.REGroupOperationMotifUtil;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.globall.api.BISession;
@@ -249,7 +250,7 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
             String idRubriqueOV = getIdRubriquePourVersement(getSession(), innerTransaction);
 
             REGroupOperationCAUtil grpOP = null;
-            String motifVersement = null;
+            REGroupOperationMotifUtil motifVersement = null;
             String nomCache = null;
 
             if (innerTransaction.hasErrors() || getSession().hasErrors()) {
@@ -331,9 +332,9 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
                         // Le motif de versement est généré par rapport à la 1ère
                         // écriture trouvée pour
                         // chaque groupe d'opération, car trié par groupe
-                        motifVersement = getMotifVersement(rente.getNssTBE(), getMoisPaiement(), rente.getNomTBE(),
-                                rente.getPrenomTBE(), rente.getReferencePmt(), rente.getCodePrestation(),
-                                isoLangFromIdTiers);
+                        motifVersement = new REGroupOperationMotifUtil(rente.getNssTBE(), getMoisPaiement(),
+                                rente.getNomTBE(), rente.getPrenomTBE(), rente.getReferencePmt(),
+                                rente.getCodePrestation(), isoLangFromIdTiers);
 
                         nomCache = getNomCache(rente);
 
@@ -349,6 +350,7 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
                     }
                     // Les clé sont identiques -> toujours dans la même adresse
                     else if (currentKey.equals(previousKey)) {
+                        motifVersement.addCodePrest(rente.getCodePrestation());
                         traiterRente(rente, grpOP, increment);
                     }
                     // Nouvelle adresse de paiement
@@ -372,9 +374,9 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
 
                             counterTransaction++;
                             RECumulPrstParRubrique[] array = grpOP.doTraitementComptable(this, getSession(),
-                                    innerTransaction, compta, motifVersement, incrEcritureTypeVersement, incOV,
-                                    incrementSection, datePmtEnCours, nomCache, noSectionIncrement,
-                                    getDateEcheancePaiement());
+                                    innerTransaction, compta, motifVersement.getMotif(getSession()),
+                                    incrEcritureTypeVersement, incOV, incrementSection, datePmtEnCours, nomCache,
+                                    noSectionIncrement, getDateEcheancePaiement());
 
                             for (RECumulPrstParRubrique element : array) {
                                 mapCumulPrstParGenreRentes = grpOP
@@ -403,9 +405,9 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
                         // Le motif de versement est généré par rapport à la 1ère
                         // écriture trouvée pour
                         // chaque groupe d'opération, car trié par groupe
-                        motifVersement = getMotifVersement(rente.getNssTBE(), getMoisPaiement(), rente.getNomTBE(),
-                                rente.getPrenomTBE(), rente.getReferencePmt(), rente.getCodePrestation(),
-                                isoLangFromIdTiers);
+                        motifVersement = new REGroupOperationMotifUtil(rente.getNssTBE(), getMoisPaiement(),
+                                rente.getNomTBE(), rente.getPrenomTBE(), rente.getReferencePmt(),
+                                rente.getCodePrestation(), isoLangFromIdTiers);
 
                         nomCache = getNomCache(rente);
 
@@ -417,9 +419,9 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
 
                     // Utilisé pour le traitement du dernier groupe d'opération.
                     // On ne stocke que les info utiles
-                    motifVersement = getMotifVersement(rente.getNssTBE(), getMoisPaiement(), rente.getNomTBE(),
-                            rente.getPrenomTBE(), rente.getReferencePmt(), rente.getCodePrestation(),
-                            isoLangFromIdTiers);
+                    motifVersement = new REGroupOperationMotifUtil(rente.getNssTBE(), getMoisPaiement(),
+                            rente.getNomTBE(), rente.getPrenomTBE(), rente.getReferencePmt(),
+                            rente.getCodePrestation(), isoLangFromIdTiers);
 
                     nomCache = getNomCache(rente);
                 } catch (Exception e) {
@@ -436,8 +438,8 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
                 // Génère les écritures comptables pour le dernier groupe...
                 try {
                     RECumulPrstParRubrique[] array = grpOP.doTraitementComptable(this, getSession(), innerTransaction,
-                            compta, motifVersement, increment, ++increment, incrementSection, datePmtEnCours, nomCache,
-                            0, getDateEcheancePaiement());
+                            compta, motifVersement.getMotif(getSession()), increment, ++increment, incrementSection,
+                            datePmtEnCours, nomCache, 0, getDateEcheancePaiement());
 
                     for (RECumulPrstParRubrique element : array) {
                         mapCumulPrstParGenreRentes = grpOP.cumulParRubrique(mapCumulPrstParGenreRentes, element);
