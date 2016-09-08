@@ -31,8 +31,6 @@ import globaz.osiris.db.retours.CARetoursManager;
 import globaz.osiris.db.retours.CARetoursViewBean;
 import globaz.osiris.externe.CAGestionComptabiliteExterne;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
-import globaz.prestation.interfaces.tiers.PRTiersWrapper;
-import globaz.prestation.interfaces.util.nss.PRUtil;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Iterator;
@@ -342,10 +340,12 @@ public class CAProcessComptabiliserRetours extends BProcess {
                             }
 
                             String nss = "";
+                            String nomPrenom = "";
                             // pour les rentes on ajoute le NSS
                             if (CAOrdreGroupe.NATURE_RENTES_AVS_AI.equals(ordreVersement.getNatureOrdre())) {
                                 CACompteAnnexe ca = retour.getCompteAnnexe();
                                 nss = ca.getIdExterneRole();
+                                nomPrenom = ca.getDescription();
                             }
 
                             String idTiersPrincipal = retour.getIdTiersLigneRetourSurAdressePaiement();
@@ -354,19 +354,14 @@ public class CAProcessComptabiliserRetours extends BProcess {
                                 idTiersPrincipal = lir.getIdTiers();
                             }
 
-                            String nomPrenom = "";
                             String motifTexte = "";
 
                             try {
-                                PRTiersWrapper tiers;
-                                tiers = PRTiersHelper.getTiersParId(getSession(), idTiersPrincipal);
-                                nomPrenom = tiers.getNom() + " " + tiers.getPrenom();
-                                String codeIsoLangue = getSession().getCode(
-                                        tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
-                                String isoLangFromIdTiers = PRUtil.getISOLangueTiers(codeIsoLangue);
+                                String isoLangFromIdTiersDest = PRTiersHelper.getIsoLangFromIdTiers(getSession(),
+                                        idTiersPrincipal);
 
                                 CodeSystem codeSystem = CodeSystemUtils.searchCodeSystemTraduction(
-                                        retour.getCsMotifRetour(), getSession(), isoLangFromIdTiers);
+                                        retour.getCsMotifRetour(), getSession(), isoLangFromIdTiersDest);
 
                                 motifTexte = codeSystem.getTraduction();
                             } catch (Exception e) {
