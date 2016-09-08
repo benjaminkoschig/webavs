@@ -1073,6 +1073,20 @@ public class DSInscriptionsIndividuelles extends BEntity {
     /**
      * @return
      */
+    public String getMoisDebutAF() {
+        return moisDebutAF;
+    }
+
+    /**
+     * @return
+     */
+    public String getMoisFinAF() {
+        return moisFinAF;
+    }
+
+    /**
+     * @return
+     */
     public String getMontant() {
         return montant;
     }
