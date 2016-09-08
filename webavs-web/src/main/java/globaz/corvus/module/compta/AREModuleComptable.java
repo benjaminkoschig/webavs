@@ -41,7 +41,6 @@ import globaz.prestation.enums.codeprestation.PRCodePrestationPC;
 import globaz.prestation.enums.codeprestation.PRCodePrestationRFM;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
-import globaz.prestation.interfaces.util.nss.PRUtil;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.utils.compta.PRRubriqueComptableResolver;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
@@ -1062,8 +1061,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
             idTiersPrincipal = tw.getIdTiers();
         }
 
-        String codeIsoLangue = session.getCode(tw.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
-        String isoLangFromIdTiers = PRUtil.getISOLangueTiers(codeIsoLangue);
+        String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(session, idTiersPrincipal);
 
         String versementMsg = MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangFromIdTiers,
                 "DEBLOCAGE_VERSEMENT_DU", session);
