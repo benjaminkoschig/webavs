@@ -242,18 +242,22 @@ public class Doc1_Remplissage extends DSInscriptionsIndividuellesManager {
                 return entity.getNomPrenom();
             }
             if (fieldName.equals("COL_3")) {
-                if (!JadeStringUtil.isBlankOrZero(entity.getMoisDebut())) {
+                if (!JadeStringUtil.isBlankOrZero(entity.getMoisDebut())
+                        || !JadeStringUtil.isBlankOrZero(entity.getMoisDebutAF())) {
                     return entity.getJourDebut();
                 } else {
                     return "";
                 }
-
             }
             if (fieldName.equals("COL_4")) {
-                return entity.getMoisDebut();
+                if (!JadeStringUtil.isBlankOrZero(entity.getMoisDebut())) {
+                    return entity.getMoisDebut();
+                }
+                return entity.getMoisDebutAF();
             }
             if (fieldName.equals("COL_5")) {
-                if (!JadeStringUtil.isBlankOrZero(entity.getMoisFin())) {
+                if (!JadeStringUtil.isBlankOrZero(entity.getMoisFin())
+                        || !JadeStringUtil.isBlankOrZero(entity.getMoisFinAF())) {
                     return entity.getJourFin();
                 } else {
                     return "";
@@ -261,7 +265,10 @@ public class Doc1_Remplissage extends DSInscriptionsIndividuellesManager {
 
             }
             if (fieldName.equals("COL_6")) {
-                return entity.getMoisFin();
+                if (!JadeStringUtil.isBlankOrZero(entity.getMoisFin())) {
+                    return entity.getMoisFin();
+                }
+                return entity.getMoisFinAF();
             }
             if (((DSApplication) getSession().getApplication()).isCategoriePersonne()
                     && ((DSApplication) getSession().getApplication()).isCanton()) {
