@@ -588,17 +588,17 @@ public class DSInscriptionsIndividuelles extends BEntity {
             }
         }
 
-        // Vérification pour les inscriptions uniquement AF
+        // Vérification pour les inscriptions uniquement AF Seul
         if (JadeStringUtil.isBlankOrZero(getMontant()) && !JadeStringUtil.isBlankOrZero(getMontantAf())) {
+
             CIApplication application = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
                     CIApplication.DEFAULT_APPLICATION_PAVO);
+
             AFAffiliation aff = application.getAffilieByNo(getSession(), getDeclaration().getAffilieNumero(), true,
                     false, moisDebutAF, moisFinAF, getAnneeInsc(), jourDebut, jourFin);
+
             if ((aff == null) || (aff.isNew())) {
-                String message = getPeriodeDebutAF() + "." + getAnneeInsc() + " - " + getPeriodeFinAF() + "."
-                        + getAnneeInsc();
-                _addError(statement.getTransaction(), getSession().getLabel("DT_ERR_DATE_AFFILIATION") + " : "
-                        + message);
+                _addError(statement.getTransaction(), getSession().getLabel("DT_ERR_DATE_AFFILIATION"));
             }
         }
     }
