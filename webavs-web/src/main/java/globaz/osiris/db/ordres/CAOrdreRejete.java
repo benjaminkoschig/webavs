@@ -2,11 +2,12 @@ package globaz.osiris.db.ordres;
 
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
+import globaz.globall.db.BTransaction;
 
 // TODO en faire un BEntity et l'intégrer dans JADE......
 public class CAOrdreRejete extends BEntity {
 
-    public static final String FIELD_ID = "ID";
+    public static final String FIELD_ID = "IDORER";
     public static final String FIELD_IDORDRE = "IDORDR";
     public static final String FIELD_CODE = "CODE";
     public static final String FIELD_PROPRIETARY = "PROPRI";
@@ -89,6 +90,15 @@ public class CAOrdreRejete extends BEntity {
     protected void _writePrimaryKey(BStatement statement) throws Exception {
         statement.writeKey(CAOrdreRejete.FIELD_ID,
                 this._dbWriteNumeric(statement.getTransaction(), getIdOrdreRejete(), ""));
+    }
+
+    @Override
+    protected void _beforeAdd(BTransaction transaction) throws Exception {
+        // incrémente le prochain numéro
+        setIdOrdreRejete(this._incCounter(transaction, idOrdreRejete));
+
+        // type d'ordre groupé = versement par défaut
+        // sch--- setTypeOrdreGroupe(this.VERSEMENT);
     }
 
     @Override

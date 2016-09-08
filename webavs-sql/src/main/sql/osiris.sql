@@ -140,18 +140,23 @@ reorg table SCHEMA.CAORGRP allow read access;
 --prop pour ISO/SEPA
 insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.nbmax.multiog','2');
 insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.nbmax.ovparog','99000');
-insert into SCHEMA.jadeprop (propname, propval) values ('osiris.sepa.ftp.host','fdsbc.post.ch');
-insert into SCHEMA.jadeprop (propname, propval) values ('osiris.sepa.ftp.port','22');
-insert into SCHEMA.jadeprop (propname, propval) values ('osiris.sepa.ftp.user','');
-insert into SCHEMA.jadeprop (propname, propval) values ('osiris.sepa.ftp.pass','');
+insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.ftp.host','fdsbc.post.ch');
+insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.ftp.port','22');
+insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.ftp.user','');
+insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.ftp.pass','');
+insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.ftp.ack.folder','');
+insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.ftp.post.folder','');
+
 
 --table des rejet OSIRIS
-CREATE TABLE SCHEMA.CAORREJ (
-	ID NUMERIC(9,0) primary key not null,
-	IDORDRE NUMERIC(9,0) not null,
+DROP TABLE SCHEMA.CAORREJ;
+CREATE TABLE CCJUWEB.CAORREJ (
+	IDORRE NUMERIC(9,0) primary key not null,
+	IDORDR NUMERIC(9,0) not null,
 	CODE VARCHAR(32),
 	PROPRI VARCHAR(255),
-	ADDITI VARCHAR(255)
+	ADDITI VARCHAR(255),
+	PSPY CHAR(24)
 	);
 
 --trad de CS pour D0048

@@ -60,11 +60,6 @@ public abstract class AbstractSepa {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractSepa.class);
 
-    protected static final String SEPA_FTP_HOST = "sepa.ftp.host";
-    protected static final String SEPA_FTP_PORT = "sepa.ftp.port";
-    protected static final String SEPA_FTP_USER = "sepa.ftp.user";
-    protected static final String SEPA_FTP_PASS = "sepa.ftp.pass";
-
     // XML ---------------------------------------------------------
 
     protected InputStream toInputStream(Document doc) {

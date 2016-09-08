@@ -9,7 +9,13 @@ import ch.globaz.common.properties.PropertiesException;
 public enum CAProperties implements IProperties {
     RUBRIQUE_SANS_EXTOURNE("rubrique.sansExtourne", "Liste des rubriques pour lesquelles on extourne par les écritures"),
     ISO_SEPA_MAX_MULTIOG("iso.sepa.nbmax.multiog", "nombre max d'OG créé à la préparation"),
-    ISO_SEPA_MAX_OVPAROG("iso.sepa.nbmax.ovparog", "nombre max d'OV par OG à la préparation");
+    ISO_SEPA_MAX_OVPAROG("iso.sepa.nbmax.ovparog", "nombre max d'OV par OG à la préparation"),
+    ISO_SEPA_FTP_HOST("iso.sepa.ftp.host", "host sftp pour les transmission ISO20022"),
+    ISO_SEPA_FTP_PORT("iso.sepa.ftp.port", "port sftp pour les transmission ISO20022"),
+    ISO_SEPA_FTP_USER("iso.sepa.ftp.user", "user sftp pour les transmission ISO20022"),
+    ISO_SEPA_FTP_PASS("iso.sepa.ftp.pass", "pass sftp pour les transmission ISO20022 (pour la plateforme de test)"),
+    ISO_SEPA_FTP_002_FOLDER("iso.sepa.ftp.ack.folder", "nom du folder de quittance pour les transmission ISO20022"),
+    ISO_SEPA_FTP_001_FOLDER("iso.sepa.ftp.post.folder", "nom du folder de post pain001 pour les transmission ISO20022");
 
     private String description;
     private String propertyName;

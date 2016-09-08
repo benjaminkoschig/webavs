@@ -2,8 +2,6 @@ package globaz.osiris.db.ordres.sepa;
 
 import globaz.globall.db.BApplication;
 import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BTransaction;
 import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
 import globaz.osiris.db.ordres.CAOrdreGroupeManager;
@@ -21,6 +19,8 @@ import org.apache.http.annotation.ThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.osiris.business.constantes.CAProperties;
 import com.jcraft.jsch.ChannelSftp;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.CustomerPaymentStatusReportV03CH;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.OriginalGroupInformation20CH;
@@ -34,31 +34,33 @@ import com.six_interbank_clearing.de.pain_002_001_03_ch_02.TransactionIndividual
 @ThreadSafe
 public class SepaAcknowledgementProcessor extends AbstractSepa {
     private static final Logger LOG = LoggerFactory.getLogger(SepaAcknowledgementProcessor.class);
-    private static final String SEPA_FTP_FOLDER = "sepa.ftp.ack.folder";
+
     public static final String NAMESPACE_PAIN002 = "http://www.six-interbank-clearing.com/de/pain.002.001.03.ch.02.xsd";
 
-    private static final String TRANSACTION_PREFIX = "TR-";
+    private static final String TRANSACTION_PREFIX = "OV-";
+    private BSession session;
+    private String title;
+    private String body;
 
     /** Connecte sur le ftp cible, dans le folder adapté à l'envoi de messages SEPA. */
     private ChannelSftp connect(BSession session) {
         // try fetching configuration from database
         String login = null;
         String password = null;
-        String folder = null;
         Integer port = null;
         String host = null;
         try {
             BApplication app = session.getApplication();
-            host = app.getProperty(SEPA_FTP_HOST);
-            String sport = app.getProperty(SEPA_FTP_PORT);
+            host = CAProperties.ISO_SEPA_FTP_HOST.getValue();
+            String sport = CAProperties.ISO_SEPA_FTP_PORT.getValue();
 
             if (StringUtils.isNotBlank(sport)) {
                 port = Integer.parseInt(sport);
             }
 
-            login = app.getProperty(SEPA_FTP_USER);
-            password = app.getProperty(SEPA_FTP_PASS);
-            folder = app.getProperty(SEPA_FTP_FOLDER);
+            login = CAProperties.ISO_SEPA_FTP_USER.getValue();
+            password = CAProperties.ISO_SEPA_FTP_PASS.getValue();
+
         } catch (Exception e) {
             throw new SepaException("unable to retrieve ftp config: " + e, e);
         }
@@ -69,25 +71,37 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         return client;
     }
 
-    public void findAndProcessAllAcknowledgements(BSession session) {
-        // BSession session = null; // FIXME trouver une session, on fait comment?
+    public void findAndProcessAllAcknowledgements(BSession session) throws PropertiesException {
 
         ChannelSftp client = connect(session);
         String[] listFiles;
 
-        listFiles = listFiles(client, ".");
+        String folder = CAProperties.ISO_SEPA_FTP_002_FOLDER.getValue();
+        String foldername = null;
+        if (!folder.isEmpty()) {
+            foldername = "./" + folder;
+        } else {
+            foldername = ".";
+        }
+
+        listFiles = listFiles(client, foldername);
 
         for (String file : listFiles) {
             String originalFilename = file;
-            if (false) { // tester si nous somme sur la plateforme isotest.postfinance pour les zip
+            // tester si nous somme sur la // plateforme isotest.postfinance // pour les zip
+            if (CAProperties.ISO_SEPA_FTP_HOST.getValue().startsWith("isotest")) {
+                if (!originalFilename.toLowerCase().endsWith(".zip")) {
+                    LOG.debug("skipped non xml file: {}", originalFilename);
+                    continue;
+                }
 
+            } else {
+
+                if (!originalFilename.toLowerCase().endsWith(".xml")) {
+                    LOG.debug("skipped non xml file: {}", originalFilename);
+                    continue;
+                }
             }
-
-            if (!originalFilename.toLowerCase().endsWith(".xml")) {
-                LOG.debug("skipped non xml file: {}", originalFilename);
-                continue;
-            }
-
             LOG.info("processing file with name {}", originalFilename);
             ByteArrayOutputStream baos = null;
             ByteArrayInputStream bais = null;
@@ -133,7 +147,8 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         processAck(ack, warnings);
 
         if (!warnings.isEmpty()) {
-            sendAlertEmail("Alertes concernant l'ordre groupé " + ack.getCstmrPmtStsRpt().getGrpHdr().getMsgId(),
+            sendAlertEmail("Alertes concernant l'ordre groupé "
+                    + ack.getCstmrPmtStsRpt().getOrgnlGrpInfAndSts().getOrgnlMsgId(),
                     StringUtils.join(warnings, "\n\n"));
         }
     }
@@ -141,8 +156,26 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
     private void sendAlertEmail(String title, String body) {
         // TODO implémenter l'envoi d'un mail
         LOG.info("MAIL TO SEND:");
+        this.title = title;
         LOG.info("Title: {}", title);
+        this.body = body;
         LOG.info("Body:\n{}", body);
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
     }
 
     private void processAck(com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document acknowledgement,
@@ -161,7 +194,10 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         }
 
         // 05. B
-        if (APIOrdreGroupe.ISO_ORDRE_STATUS_CONFIRME.equals(ordre.getEtat())) {
+        if (APIOrdreGroupe.ISO_ORDRE_STATUS_CONFIRME.equals(ordre.getIsoCsOrdreStatutExec())) {
+            warnings.add("Ordre Groupé " + messageId + " - déjà confirmé\n" + "Une quittance pour l'Ordre Groupé "
+                    + messageId + " - " + ordre.getMotif()
+                    + " a déjà été traitée. Le status d'execution de l'ordre est à CONFIRME");
             // envoyer un mail d'alerte... le status était déjà confirmé, on a reçu un doublon?
             return;
         }
@@ -185,12 +221,12 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
             case ACTC:
                 // "L'ordre est techniquement accepté" -> même comportement que ses ptits copains // TODO comprendre ce
                 // que cela veut dire!
-                markOrdreGroupeConfirmed(ordre);
+                markOrdreGroupeConfirmed(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_COMPLET);
                 markAllTransactions(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_COMPLET);
                 break;
             case RJCT:
                 // "Rejeté" entièrement
-                markOrdreGroupeConfirmed(ordre);
+                markOrdreGroupeConfirmed(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_REJETE);
                 markAllTransactions(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_REJETE);
                 warnings.add("Ordre Groupé "
                         + messageId
@@ -205,7 +241,7 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                 break;
             case PART:
                 // "Accepté partiellement"
-                markOrdreGroupeConfirmed(ordre);
+                markOrdreGroupeConfirmed(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_PARTIEL);
                 markAllTransactions(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_PARTIEL);
                 warnings.add("Ordre Groupé "
                         + messageId
@@ -246,7 +282,11 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
              * aussi présente, toutes les transactions du même genre doivent être
              * invalidées (étape 08)
              */
-            if (status == TransactionGroupStatus3Code.RJCT) {
+            List<TransactionGroupStatus3Code> waitedStatus = new ArrayList<TransactionGroupStatus3Code>();
+            waitedStatus.add(TransactionGroupStatus3Code.RJCT);
+            waitedStatus.add(TransactionGroupStatus3Code.PART);
+
+            if (waitedStatus.contains(status)) {
                 if (reasons != null && !reasons.isEmpty()) {
                     /*
                      * Si < PmtInfSts > contient la valeur RJCT et que la balise <StsRsnInf> est aussi présente, toutes
@@ -278,9 +318,15 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                     }
 
                     for (Object o : selectedTransactions) {
-                        // ??
+                        // TODO persist as OrdreRejete
                     }
 
+                } else {
+                    /*
+                     * Si < PmtInfSts > contient la valeur RJCT et qu’il n’y a pas de balise <StsRsnInf>, cela signifie
+                     * que les rejets sont décrits au niveau des transactions. Dans ce cas, on passe simplement à
+                     * l’étape 09.
+                     */
                     // 09. Traiter la quittance C-Level (quittance par transaction individuelle)
                     for (PaymentTransactionInformation25CH transactionInformations : blevel.getTxInfAndSts()) {
                         // Seuls les rejets seront traités. Le code ACWC (accepté avec changements) est ignoré.
@@ -317,11 +363,13 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                         }
 
                         /* - La transaction est trouvée mais n’appartient pas à cet ordre groupé */
-                        if (!StringUtils.equals(ordreGroupe.getId(), ordre.getOrdreGroupe().getId())) {
+                        if (!StringUtils.equals(ordreGroupe.getIdOrdreGroupe(), ordre.getOrdreGroupe()
+                                .getIdOrdreGroupe())) {
                             // TODO décider du comportement si la transaction n'est pas trouvée!
                             warnings.add("Transaction Rejetée - " + transactionId + "/" + orderTxId + "\n"
                                     + "La transaction " + transactionId + " n'appartient pas à l'ordre groupé "
-                                    + ordreGroupe.getId() + ", mais à " + ordre.getOrdreGroupe().getId());
+                                    + ordreGroupe.getIdOrdreGroupe() + ", mais à "
+                                    + ordre.getOrdreGroupe().getIdOrdreGroupe());
                             continue;
                         }
 
@@ -331,7 +379,8 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                         List<StatusReasonInformation8CH> cLevelReasons = transactionInformations.getStsRsnInf();
                         for (StatusReasonInformation8CH xxx : cLevelReasons) {
                             CAOrdreRejete rejected = new CAOrdreRejete();
-                            rejected.setIdOrdre(ordre.getId());
+                            rejected.setSession(getSession());
+                            rejected.setIdOrdre(ordre.getIdOrdre());
 
                             StatusReason6Choice rsn = xxx.getRsn();
                             rejected.setCode(rsn.getCd());
@@ -345,12 +394,6 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                             }
                         }
                     }
-                } else {
-                    /*
-                     * Si < PmtInfSts > contient la valeur RJCT et qu’il n’y a pas de balise <StsRsnInf>, cela signifie
-                     * que les rejets sont décrits au niveau des transactions. Dans ce cas, on passe simplement à
-                     * l’étape 09.
-                     */
                 }
             } else if (status == TransactionGroupStatus3Code.ACCP || status == TransactionGroupStatus3Code.ACWC) {
                 /*
@@ -366,19 +409,13 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
 
     private CAOrdreVersement getOrdreVersement(String transactionIdNoPrefix) {
         // FIXME code-review de ce morceau par un expert JADE pleazzz
-        BSession session = BSessionUtil.getSessionFromThreadContext();
-        BTransaction tx = session.getCurrentThreadTransaction();
 
         CAOrdreVersement ordreVersement = new CAOrdreVersement();
-        ordreVersement.setSession(session);
+        ordreVersement.setSession(getSession());
         ordreVersement.setIdOrdre(transactionIdNoPrefix);
 
         try {
-            ordreVersement.retrieve(tx);
-            if (tx.hasErrors()) {
-                // _addError(tx, session.getLabel("????"));
-                throw new SepaException(tx.getErrors().toString());
-            }
+            ordreVersement.retrieve();
             return ordreVersement;
         } catch (Exception e) {
             // _addError(tx, e.getMessage());
@@ -420,36 +457,37 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         // FIXME code-review de ce morceau par un expert JADE pleazzz
 
         CAOrdreVersementManager m = new CAOrdreVersementManager();
-        m.setSession(BSessionUtil.getSessionFromThreadContext());
+        m.setSession(getSession());
 
-        m.setForIdOrdreGroupe(ordre.getId());
+        m.setForIdOrdreGroupe(ordre.getIdOrdreGroupe());
         try {
             m.find();
         } catch (Exception e) {
-            throw new SepaException("could not search for transactions: " + ordre.getId() + ": " + e, e);
+            throw new SepaException("could not search for transactions: " + ordre.getIdOrdreGroupe() + ": " + e, e);
         }
 
         List<CAOrdreVersement> orders = m.toList();
-        for (CAOrdreVersement order : orders) {
+        for (CAOrdreVersement ov : orders) {
             // TODO
             // order.set();
         }
     }
 
-    private void markOrdreGroupeConfirmed(CAOrdreGroupe ordre) {
-        ordre.setEtat(APIOrdreGroupe.ISO_ORDRE_STATUS_CONFIRME);
-
+    private void markOrdreGroupeConfirmed(CAOrdreGroupe ordre, String newStatus) {
+        ordre.setIsoCsOrdreStatutExec(APIOrdreGroupe.ISO_ORDRE_STATUS_CONFIRME);
+        if (newStatus != null && !newStatus.isEmpty()) {
+            ordre.setIsoCsTransmissionStatutExec(newStatus);
+        }
         try {
             ordre.update();
         } catch (Exception e) {
-            throw new SepaException("could not save order: " + ordre.getId() + ": " + e, e);
+            throw new SepaException("could not save order: " + ordre.getIdOrdreGroupe() + ": " + e, e);
         }
     }
 
     private CAOrdreGroupe findOrdreGroupeById(String messageId) {
-        // FIXME code-review de ce morceau par un expert JADE pleazzz
         CAOrdreGroupeManager manager = new CAOrdreGroupeManager();
-        manager.setSession(BSessionUtil.getSessionFromThreadContext());
+        manager.setSession(getSession());
 
         manager.setForIdOrdreGroupe(messageId.substring(CAOrdreGroupe.NUM_LIVRAISON_PERFIX.length()));
 
@@ -462,5 +500,13 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         CAOrdreGroupe ordre = (CAOrdreGroupe) manager.getFirstEntity();
 
         return ordre;
+    }
+
+    public BSession getSession() {
+        return session;
+    }
+
+    public void setSession(BSession session) {
+        this.session = session;
     }
 }
