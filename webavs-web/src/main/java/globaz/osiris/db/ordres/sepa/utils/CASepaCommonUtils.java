@@ -22,8 +22,8 @@ public class CASepaCommonUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(CASepaCommonUtils.class);
     // since the have to be regroup
-    public static final String TYPE_VIREMENT_BANCAIRE = "bank/ccp";
-    public static final String TYPE_VIREMENT_POSTAL = "bank/ccp";
+    public static final String TYPE_VIREMENT_BANCAIRE = "bankANDccp";
+    public static final String TYPE_VIREMENT_POSTAL = "bankANDccp";
     public static final String TYPE_VIREMENT_MANDAT = "mandat";
 
     /**

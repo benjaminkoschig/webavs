@@ -128,20 +128,32 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
         // +Postal Adr
         PostalAddress6CH postalAdr = factory.createPostalAddress6CH();
         // FIXME, need interface update
-        // String rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRueSansNum());
-        // String numeroRue = CASepaCommonUtils.limit16(ov.getAdressePaiement().getAdresseCourrier().getNumeroRue());
-        // postalAdr.setStrtNm((rue.isEmpty() ? null : rue));
-        // postalAdr.setBldgNb((numeroRue.isEmpty() ? null : numeroRue));
-        // postalAdr.setPstCd(CASepaCommonUtils.limit16(ov.getAdressePaiement().getAdresseCourrier().getNumPostal()));
-        // postalAdr.setTwnNm(CASepaCommonUtils.limit35(ov.getAdressePaiement().getAdresseCourrier().getLocalite()));
-        // postalAdr.setCtry(ov.getAdressePaiement().getAdresseCourrier().getPaysISO());
-        postalAdr.getAdrLine().add(ov.getAdressePaiement().getAdresseCourrier().getRue());
+        if (CASepaCommonUtils.TYPE_VIREMENT_MANDAT.equals(CASepaOVConverterUtils.getTypeVirement(ov))) {
+            // adrLine interdit pour les type mandat
+            String rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRue());
+            postalAdr.setStrtNm((rue.isEmpty() ? null : rue));
+            // postalAdr.setBldgNb((numeroRue.isEmpty() ? null : numeroRue));
+            postalAdr.setPstCd(CASepaCommonUtils.limit16(ov.getAdressePaiement().getAdresseCourrier().getNumPostal()));
+            postalAdr.setTwnNm(CASepaCommonUtils.limit35(ov.getAdressePaiement().getAdresseCourrier().getLocalite()));
+            postalAdr.setCtry(ov.getAdressePaiement().getAdresseCourrier().getPaysISO());
+        } else {
+            // String rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRueSansNum());
+            // String numeroRue =
+            // CASepaCommonUtils.limit16(ov.getAdressePaiement().getAdresseCourrier().getNumeroRue());
+            // postalAdr.setStrtNm((rue.isEmpty() ? null : rue));
+            // postalAdr.setBldgNb((numeroRue.isEmpty() ? null : numeroRue));
+            // postalAdr.setPstCd(CASepaCommonUtils.limit16(ov.getAdressePaiement().getAdresseCourrier().getNumPostal()));
+            // postalAdr.setTwnNm(CASepaCommonUtils.limit35(ov.getAdressePaiement().getAdresseCourrier().getLocalite()));
+            // postalAdr.setCtry(ov.getAdressePaiement().getAdresseCourrier().getPaysISO());
+            postalAdr.getAdrLine()
+                    .add(CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRue()));
 
-        postalAdr.getAdrLine().add(
-                ov.getAdressePaiement().getAdresseCourrier().getPaysISO() + "-"
-                        + ov.getAdressePaiement().getAdresseCourrier().getNumPostal() + " "
-                        + ov.getAdressePaiement().getAdresseCourrier().getLocalite());
+            postalAdr.getAdrLine().add(
+                    CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getPaysISO() + "-"
+                            + ov.getAdressePaiement().getAdresseCourrier().getNumPostal() + " "
+                            + ov.getAdressePaiement().getAdresseCourrier().getLocalite()));
 
+        }
         // logger.debug("clevel adress : {} {}, NPA : {} {} {}", postalAdr.getStrtNm(), postalAdr.getBldgNb(),
         // postalAdr.getPstCd(), postalAdr.getTwnNm(), postalAdr.getCtry());
         creditor.setPstlAdr(postalAdr);
@@ -175,7 +187,7 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
 
             // init Blevel
             PaymentInstructionInformation3CH bLevelData = factory.createPaymentInstructionInformation3CH();
-            bLevelData.setPmtInfId(CASepaOVConverterUtils.getPmtInfId(ov));
+            bLevelData.setPmtInfId(key.toString());
             bLevelData.setPmtMtd(CASepaOVConverterUtils.getPmtMtd(ov));
             bLevelData.setBtchBookg(null); // from OG --> will be set at aggregate
             PaymentTypeInformation19CH pmtTpInfB = factory.createPaymentTypeInformation19CH();

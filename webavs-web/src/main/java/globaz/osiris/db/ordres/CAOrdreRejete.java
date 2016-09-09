@@ -7,7 +7,7 @@ import globaz.globall.db.BTransaction;
 // TODO en faire un BEntity et l'intégrer dans JADE......
 public class CAOrdreRejete extends BEntity {
 
-    public static final String FIELD_ID = "IDORER";
+    public static final String FIELD_ID = "IDORRE";
     public static final String FIELD_IDORDRE = "IDORDR";
     public static final String FIELD_CODE = "CODE";
     public static final String FIELD_PROPRIETARY = "PROPRI";

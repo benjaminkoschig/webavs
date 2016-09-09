@@ -1,5 +1,6 @@
 package globaz.osiris.db.ordres.sepa.utils;
 
+import globaz.osiris.api.ordre.APICommonOdreVersement;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.PaymentInstructionInformation3CH;
 
 /**
@@ -19,6 +20,11 @@ public class CASepaGroupeOGKey {
     // B-level info
     private com.six_interbank_clearing.de.pain_001_001_03_ch_02.PaymentInstructionInformation3CH bLevel;
 
+    public CASepaGroupeOGKey(APICommonOdreVersement ov) throws Exception {
+        this(ov.getCodeISOMonnaieBonification(), CASepaOVConverterUtils.getTypeVersement(ov), CASepaOVConverterUtils
+                .getTypeVirement(ov), CASepaOVConverterUtils.getPaysDestination(ov));
+    }
+
     public CASepaGroupeOGKey(String monnaieISO, String typeOrdre, String typeVirement, String paysDest) {
         super();
         this.monnaieISO = monnaieISO;
@@ -27,6 +33,11 @@ public class CASepaGroupeOGKey {
         this.paysDest = paysDest;
     }
 
+    /**
+     * wrapper de bLevel header avec la clé de regroupement des Clevel
+     * 
+     * @param bLevel
+     */
     public void setbLevel(com.six_interbank_clearing.de.pain_001_001_03_ch_02.PaymentInstructionInformation3CH bLevel) {
         this.bLevel = bLevel;
     }
