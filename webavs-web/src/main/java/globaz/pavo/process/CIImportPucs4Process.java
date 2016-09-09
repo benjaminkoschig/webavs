@@ -508,6 +508,10 @@ public class CIImportPucs4Process extends BProcess {
             Montant montantAVS, Montant montantCAF, Montant montantAC, Montant montantAC2, String canton,
             boolean isEmployeWithCAF) throws Exception {
 
+        if (numeroAVS == null) {
+            numeroAVS = "00000000000";
+        }
+
         if (CIDeclaration.CS_PUCS_II.equals(Type) || CIDeclaration.CS_PUCS_CCJU.equals(Type)) {
             if (JadeStringUtil.isBlank(numAffilieBase)) {
                 numAffilieBase = CIUtil.formatNumeroAffilie(getSession(), declarationSalaire.getNumeroAffilie());
@@ -1440,7 +1444,9 @@ public class CIImportPucs4Process extends BProcess {
 
     private String testEndSetInfoPourNumAvs(String numeroAVS, String nomPrenom, CIEcriture ecriture,
             ArrayList<String> errors) {
+
         String noAvs = numeroAVS.trim();
+
         // Modif v4.12 => dans pucs, le no peut être vide, pour avoir un identiant, on set le no
         if (JadeStringUtil.isBlank(noAvs)) {
             noAvs = "00000000000";
