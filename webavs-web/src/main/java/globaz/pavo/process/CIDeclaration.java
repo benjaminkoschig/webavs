@@ -1782,6 +1782,7 @@ public class CIDeclaration extends BProcess {
         } else {
             // on a pas encore eu à traité ce journal.
             // si il existe dejà dans la DB, on génère une erreur
+            // BTransaction transactionJournalDS;
             CIJournalManager jrnMgr = new CIJournalManager();
             jrnMgr.setSession(getSession());
             jrnMgr.setForAnneeCotisation(rec.getAnnee());
@@ -1806,6 +1807,9 @@ public class CIDeclaration extends BProcess {
             }
             try {
                 if (modeInscription) {
+
+                    // transactionJournalDS = new BTransaction(getSession());
+                    // transactionJournalDS.openTransaction();
 
                     // mode inscription
                     journal.add(getTransaction());
@@ -1857,7 +1861,17 @@ public class CIDeclaration extends BProcess {
                                 }
                                 declaration.add(getTransaction());
 
+                                if (getTransaction().isRollbackOnly()) {
+
+                                    getMemoryLog().logMessage(
+                                            "Erreur transaction:" + getTransaction().getErrors().toString(),
+                                            FWMessage.INFORMATION, "Importation CI");
+                                    getTransaction().rollback();
+                                    return null;
+
+                                }
                             }
+
                         }
                     }
                     // Maj type de déclaration de salaire swissdec
@@ -1883,6 +1897,7 @@ public class CIDeclaration extends BProcess {
                         // Pour éviter de logger dans le mail et d'ajouter une erreur dans la transaction alors que le
                         // cas est géré
                         getTransaction().clearErrorBuffer();
+
                     }
                 }
             } catch (Exception e) {
@@ -1908,6 +1923,7 @@ public class CIDeclaration extends BProcess {
 
     private void creationReleve(CIDeclarationRecord rec, AFAffiliation affilie, Map<String, String> sommeParCanton)
             throws Exception {
+
 
         String typeReleve = CodeSystem.TYPE_RELEVE_DECOMP_FINAL_COMPTA;
 
