@@ -1,8 +1,8 @@
 package globaz.corvus.utils.pmt.mensuel;
 
-import globaz.corvus.utils.codeprestation.enums.RECodePrestationResolver;
 import globaz.globall.db.BSession;
 import globaz.prestation.enums.codeprestation.PRTypeCodePrestation;
+import globaz.prestation.utils.codeprestation.PRCodePrestationResolver;
 import java.util.HashSet;
 import java.util.Set;
 import ch.globaz.common.util.prestations.MotifVersementUtil;
@@ -71,7 +71,8 @@ public class REGroupOperationMotifUtil {
     }
 
     public void addCodePrest(String codePrestation) {
-        multiGenres.add(RECodePrestationResolver.getGenreDePrestation(codePrestation));
+        multiGenres.add(PRCodePrestationResolver.getGenreDePrestation(codePrestation));
+
     }
 
 }
