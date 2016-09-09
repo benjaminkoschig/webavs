@@ -29,6 +29,8 @@ import globaz.corvus.db.rentesaccordees.REPrestationDue;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.corvus.db.rentesaccordees.REPrestationsDuesManager;
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteJoinAjourManager;
+import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManager;
+import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeFamille;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeFamilleManager;
@@ -61,6 +63,7 @@ import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
+import globaz.globall.util.JAException;
 import globaz.globall.util.JAUtil;
 import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFSituationFamiliale;
@@ -2055,146 +2058,272 @@ public class RESaisieDemandeRenteHelper extends PRAbstractHelper {
     private FWViewBeanInterface doMAJPeriodeDemandeRente(BSession session, BTransaction transaction,
             RESaisieDemandeRenteViewBean vb) throws Exception {
 
-        if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE.equals(vb.getCsTypeDemandeRente())) {
-            REDemandeRenteInvalidite dem = new REDemandeRenteInvalidite();
+        RERenteAccJoinTblTiersJoinDemRenteManager managerRenteAcc = new RERenteAccJoinTblTiersJoinDemRenteManager();
+        managerRenteAcc.setSession(session);
+        managerRenteAcc.setForNoDemandeRente(vb.getIdDemandeRente());
+        managerRenteAcc.find(BManager.SIZE_USEDEFAULT);
+
+        boolean hasFoundRenteAcc = false;
+        JADate dateDebutFinal = null;
+        JADate dateFinFinal = null;
+        REDemandeRente dem = null;
+
+        JACalendar cal = new JACalendarGregorian();
+
+        /**
+         * RECHERCHE DES RENTES ACCORDÉES, SI ON TROUVE AU MOINS 1, ON NE FAIT RIEN D'AUTRE QUE PRENDRE LES DATES
+         * LIMITES.
+         */
+        if (managerRenteAcc.size() > 0) {
+            boolean hasFoundDateSansFin = false;
+            for (int i = 0; i < managerRenteAcc.size(); i++) {
+                RERenteAccJoinTblTiersJoinDemandeRente renteAccordee = (RERenteAccJoinTblTiersJoinDemandeRente) managerRenteAcc
+                        .get(i);
+
+                JADate dateDebutCurrent = null;
+                JADate datefinCurrent = null;
+
+                // Gestion de la date de début
+                if (!JadeStringUtil.isBlankOrZero(renteAccordee.getDateDebutDroit())) {
+                    dateDebutCurrent = new JADate(renteAccordee.getDateDebutDroit());
+                    dateDebutFinal = takeLowerDateDebut(dateDebutFinal, cal, dateDebutCurrent);
+                }
+
+                // Gestion de la date de fin, si au moins une fois une date de fin vide alors on la prend comme
+                // référence
+                if (!JadeStringUtil.isBlankOrZero(renteAccordee.getDateFinDroit()) && !hasFoundDateSansFin) {
+                    datefinCurrent = new JADate(renteAccordee.getDateFinDroit());
+                    dateFinFinal = takeUpperDateFin(dateFinFinal, cal, datefinCurrent);
+                } else {
+                    hasFoundDateSansFin = true;
+                    dateFinFinal = null;
+                }
+            }
+
+            hasFoundRenteAcc = true;
+        }
+
+        PRTiersWrapper tiers = PRTiersHelper.getTiersParId(session, vb.getIdTiers());
+        String dateDecesTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_DATE_DECES);
+
+        /**
+         * DEMANDE RENTE INVALIDITÉ
+         */
+        if (isSameTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE, vb.getCsTypeDemandeRente())) {
+            dem = new REDemandeRenteInvalidite();
             dem.setSession(session);
             dem.setIdDemandeRente(vb.getIdDemandeRente());
             dem.retrieve(transaction);
 
-            REPeriodeInvaliditeManager mgr = new REPeriodeInvaliditeManager();
-            mgr.setSession(session);
-            mgr.setForIdDemandeRente(dem.getIdDemandeRente());
-            mgr.find(transaction);
+            // Si aucune rentes accordées trouvées, on se base sur les périodes d'invalidités pour les dates limites
+            if (!hasFoundRenteAcc) {
+                REPeriodeInvaliditeManager mgr = new REPeriodeInvaliditeManager();
+                mgr.setSession(session);
+                mgr.setForIdDemandeRente(dem.getIdDemandeRente());
+                mgr.find(transaction, BManager.SIZE_USEDEFAULT);
 
-            JADate dd = null;
-            JADate df = null;
-            JACalendar cal = new JACalendarGregorian();
+                boolean hasFoundDateSansFin = false;
+                for (int i = 0; i < mgr.size(); i++) {
+                    JADate dateDebutCurrent = null;
+                    JADate datefinCurrent = null;
 
-            for (int i = 0; i < mgr.size(); i++) {
-                JADate idd = null;
-                JADate idf = null;
+                    REPeriodeInvalidite periode = (REPeriodeInvalidite) mgr.get(i);
 
-                REPeriodeInvalidite p = (REPeriodeInvalidite) mgr.get(i);
-                if (!JadeStringUtil.isBlankOrZero(p.getDateDebutInvalidite())) {
-                    idd = new JADate(p.getDateDebutInvalidite());
-                }
-                if (!JadeStringUtil.isBlankOrZero(p.getDateFinInvalidite())) {
-                    idf = new JADate(p.getDateFinInvalidite());
-                }
-
-                // On set date debut du droit avec la plus petite date de début
-                // des périodes du droit.
-                if ((dd == null) && (idd != null)) {
-                    dd = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(idd.toStrAMJ()));
-                } else if (dd != null) {
-                    if (idd != null) {
-                        if (cal.compare(dd, idd) == JACalendar.COMPARE_SECONDLOWER) {
-                            dd = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(idd.toStrAMJ()));
-                        }
+                    // Gestion de la date de début
+                    if (!JadeStringUtil.isBlankOrZero(periode.getDateDebutInvalidite())) {
+                        dateDebutCurrent = new JADate(periode.getDateDebutInvalidite());
+                        dateDebutFinal = takeLowerDateDebut(dateDebutFinal, cal, dateDebutCurrent);
                     }
-                }
 
-                // On set date fin du droit avec la plus grande date de fin des
-                // périodes du droit.
-                if ((df == null) && (idf != null)) {
-                    df = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(idf.toStrAMJ()));
-                } else if (df != null) {
-                    if (idf == null) {
-                        df = new JADate("31.12.2099");
+                    // Gestion de la date de fin, si au moins une fois une date de fin vide alors on la prend comme
+                    // référence
+                    if (!JadeStringUtil.isBlankOrZero(periode.getDateFinInvalidite()) && !hasFoundDateSansFin) {
+                        datefinCurrent = new JADate(periode.getDateFinInvalidite());
+                        dateFinFinal = takeUpperDateFin(dateFinFinal, cal, datefinCurrent);
                     } else {
-                        if (cal.compare(df, idf) == JACalendar.COMPARE_SECONDUPPER) {
-                            df = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(idf.toStrAMJ()));
-                        }
+                        hasFoundDateSansFin = true;
+                        dateFinFinal = null;
                     }
-                }
-            }
-            if (dd != null) {
-                dem.setDateDebut(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dd.toStrAMJ()));
-            }
 
-            if ((df == null) || (cal.compare(df, new JADate("31.12.2099")) == JACalendar.COMPARE_EQUALS)) {
-                dem.setDateFin("");
-            } else {
-                dem.setDateFin(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(df.toStrAMJ()));
-            }
-            dem.update(transaction);
-
-        } else if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_API.equals(vb.getCsTypeDemandeRente())) {
-            REDemandeRenteAPI dem = new REDemandeRenteAPI();
-            dem.setSession(session);
-            dem.setIdDemandeRente(vb.getIdDemandeRente());
-            dem.retrieve(transaction);
-
-            REPeriodeAPIManager mgr = new REPeriodeAPIManager();
-            mgr.setSession(session);
-            mgr.setForIdDemandeRente(dem.getIdDemandeRente());
-            mgr.find(transaction);
-
-            PRTiersWrapper tiers = PRTiersHelper.getTiersParId(session, vb.getIdTiers());
-            String dateDecesTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_DATE_DECES);
-
-            JADate dd = null;
-            JADate df = null;
-            JACalendar cal = new JACalendarGregorian();
-
-            for (int i = 0; i < mgr.size(); i++) {
-                JADate idd = null;
-                JADate idf = null;
-
-                REPeriodeAPI p = (REPeriodeAPI) mgr.get(i);
-                if (!JadeStringUtil.isBlankOrZero(p.getDateDebutInvalidite())) {
-                    idd = new JADate(p.getDateDebutInvalidite());
-                }
-                if (!JadeStringUtil.isBlankOrZero(p.getDateFinInvalidite())) {
-                    idf = new JADate(p.getDateFinInvalidite());
                 }
 
-                // On set date debut du droit avec la plus petite date de début
-                // des périodes du droit.
-                if ((dd == null) && (idd != null)) {
-                    dd = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(idd.toStrAMJ()));
-                } else if (dd != null) {
-                    if (idd != null) {
-                        if (cal.compare(dd, idd) == JACalendar.COMPARE_SECONDLOWER) {
-                            dd = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(idd.toStrAMJ()));
-                        }
-                    }
-                }
-
-                // BZ 5431
-                // La date de fin de droit est la date de décès s'il y en a une, sinon la plus grande date de fin des
-                // périodes du droit
+                // La date de décès fait foi
                 if (JadeDateUtil.isGlobazDate(dateDecesTiers)) {
-                    if (df == null) {
-                        df = new JADate(dateDecesTiers);
-                    }
-                } else if ((df == null) && (idf != null)) {
-                    df = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(idf.toStrAMJ()));
-                } else if (df != null) {
-                    if (idf == null) {
-                        df = new JADate("31.12.2099");
-                    } else {
-                        if (cal.compare(df, idf) == JACalendar.COMPARE_SECONDUPPER) {
-                            df = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(idf.toStrAMJ()));
-                        }
-                    }
+                    dateFinFinal = new JADate(JadeDateUtil.getLastDateOfMonth(dateDecesTiers));
                 }
             }
 
-            if (dd != null) {
-                dem.setDateDebut(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dd.toStrAMJ()));
+            /**
+             * DEMANDE RENTE API
+             */
+        } else if (isSameTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_API, vb.getCsTypeDemandeRente())) {
+            dem = new REDemandeRenteAPI();
+            dem.setSession(session);
+            dem.setIdDemandeRente(vb.getIdDemandeRente());
+            dem.retrieve(transaction);
+
+            // Si aucune rentes accordées trouvées, on se base sur les périodes API pour les dates limites
+            if (!hasFoundRenteAcc) {
+
+                REPeriodeAPIManager mgr = new REPeriodeAPIManager();
+                mgr.setSession(session);
+                mgr.setForIdDemandeRente(dem.getIdDemandeRente());
+                mgr.find(transaction, BManager.SIZE_USEDEFAULT);
+
+                boolean hasFoundDateSansFin = false;
+                // Recherche de la limite de la date début la plus petite et la date de fin la plus grande des périodes
+                for (int i = 0; i < mgr.size(); i++) {
+                    JADate idd = null;
+                    JADate idf = null;
+
+                    REPeriodeAPI p = (REPeriodeAPI) mgr.get(i);
+
+                    // Gestion de la date de début
+                    if (!JadeStringUtil.isBlankOrZero(p.getDateDebutInvalidite())) {
+                        idd = new JADate(p.getDateDebutInvalidite());
+                        dateDebutFinal = takeLowerDateDebut(dateDebutFinal, cal, idd);
+                    }
+
+                    // Gestion de la date de fin, si au moins une fois une date de fin vide alors on la prend comme
+                    // référence
+                    if (!JadeStringUtil.isBlankOrZero(p.getDateFinInvalidite()) && !hasFoundDateSansFin) {
+                        idf = new JADate(p.getDateFinInvalidite());
+                        dateFinFinal = takeUpperDateFin(dateFinFinal, cal, idf);
+                    } else {
+                        hasFoundDateSansFin = true;
+                        dateFinFinal = null;
+                    }
+                }
+
+                // La date de décès fait foi
+                if (JadeDateUtil.isGlobazDate(dateDecesTiers)) {
+                    // On prend le dernier jour du mois de son décès
+                    dateFinFinal = new JADate(JadeDateUtil.getLastDateOfMonth(dateDecesTiers));
+                }
             }
 
-            if ((df == null) || (cal.compare(df, new JADate("31.12.2099")) == JACalendar.COMPARE_EQUALS)) {
+            /**
+             * DEMANDE RENTE SURVIVANT
+             */
+        } else if (isSameTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_SURVIVANT, vb.getCsTypeDemandeRente())) {
+            dem = new REDemandeRenteSurvivant();
+            dem.setSession(session);
+            dem.setIdDemandeRente(vb.getIdDemandeRente());
+            dem.retrieve(transaction);
+
+            // Si aucune rentes accordées trouvées, on se base sur la date de décès du requérant
+            if (!hasFoundRenteAcc) {
+                // Prendre le premier jour du mois suivant de la date de décès pour le début de la demande
+                String decesAuPremierDuMoisSuivant = JadeDateUtil.addMonths(dateDecesTiers, 1);
+                decesAuPremierDuMoisSuivant = JadeDateUtil.getFirstDateOfMonth(decesAuPremierDuMoisSuivant);
+
+                if (!JadeStringUtil.isBlankOrZero(decesAuPremierDuMoisSuivant)) {
+                    dateDebutFinal = new JADate(decesAuPremierDuMoisSuivant);
+                }
+            }
+
+            /**
+             * DEMANDE RENTE VIEILLESSE
+             */
+        } else if (isSameTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE, vb.getCsTypeDemandeRente())) {
+            dem = new REDemandeRenteVieillesse();
+            dem.setSession(session);
+            dem.setIdDemandeRente(vb.getIdDemandeRente());
+            dem.retrieve(transaction);
+
+            // Si aucune rentes accordées trouvées, alors on se base sur le calcul de la date de la retraite du
+            // requérant
+            if (!hasFoundRenteAcc) {
+                // Si la date est non valide selon date globaz, (possible) car c'est un requérant que l'on connait que
+                // l'année mais par forcément le jour ou le mois, alors nous lui affectons 01.07.ANNEE
+                String dateNaissance = majDateNaissanceIfNoValid(vb.getDateNaissanceRequerant());
+
+                // On calcule la date de la retraite pour le mettre dans la date de début
+                final String dateRetraite = calculDateRetraite(vb, new JADate(dateNaissance));
+
+                if (!JadeStringUtil.isBlankOrZero(dateRetraite)) {
+                    dateDebutFinal = new JADate(dateRetraite);
+                }
+            }
+        }
+
+        // Si la demande est null, c'est que l'on n'a pas passé par un des 4 types de rentes
+        if (dem != null) {
+            if (dateDebutFinal != null) {
+                dem.setDateDebut(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dateDebutFinal.toStrAMJ()));
+            }
+
+            if ((dateFinFinal == null)
+                    || (cal.compare(dateFinFinal, new JADate("31.12.2099")) == JACalendar.COMPARE_EQUALS)) {
                 dem.setDateFin("");
             } else {
-                dem.setDateFin(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(df.toStrAMJ()));
+                dem.setDateFin(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dateFinFinal.toStrAMJ()));
             }
-            dem.update(transaction);
 
+            dem.update(transaction);
         }
 
         return vb;
+    }
+
+    private String majDateNaissanceIfNoValid(final String dateNaissance) {
+        String dateNaissanceUpdated = dateNaissance;
+
+        if (!JadeDateUtil.isGlobazDate(dateNaissanceUpdated)) {
+            if (dateNaissanceUpdated.length() == 10) {
+                String jour = dateNaissanceUpdated.substring(0, 2);
+                jour = Long.valueOf(jour) < 1L || Long.valueOf(jour) > 31L ? "01" : jour;
+
+                String mois = dateNaissanceUpdated.substring(3, 5);
+                mois = Long.valueOf(mois) < 1L || Long.valueOf(mois) > 12L ? "07" : mois;
+
+                String annee = dateNaissanceUpdated.substring(6, 10);
+
+                dateNaissanceUpdated = jour + "." + mois + "." + annee;
+            }
+        }
+
+        return dateNaissanceUpdated;
+    }
+
+    private JADate takeUpperDateFin(JADate firstDateFin, JACalendar cal, JADate secondDateFin) throws JAException {
+        JADate dateToReturn = firstDateFin;
+        // On set date fin du droit avec la plus grande date de fin des périodes du droit.
+        if ((firstDateFin == null) && (secondDateFin != null)) {
+            dateToReturn = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(secondDateFin.toStrAMJ()));
+        } else if (firstDateFin != null) {
+            if (secondDateFin == null) {
+                dateToReturn = new JADate("31.12.2099");
+            } else {
+                if (cal.compare(firstDateFin, secondDateFin) == JACalendar.COMPARE_SECONDUPPER) {
+                    dateToReturn = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(secondDateFin
+                            .toStrAMJ()));
+                }
+            }
+        }
+        return dateToReturn;
+    }
+
+    private JADate takeLowerDateDebut(final JADate firstDateDebut, final JACalendar cal, final JADate secondDateDebut)
+            throws JAException {
+        JADate dateToReturn = firstDateDebut;
+
+        // On set date debut du droit avec la plus petite date de début des périodes du droit.
+        if ((firstDateDebut == null) && (secondDateDebut != null)) {
+
+            dateToReturn = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(secondDateDebut.toStrAMJ()));
+        } else if (firstDateDebut != null && secondDateDebut != null) {
+
+            if (cal.compare(firstDateDebut, secondDateDebut) == JACalendar.COMPARE_SECONDLOWER) {
+                dateToReturn = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(secondDateDebut.toStrAMJ()));
+            }
+        }
+
+        return dateToReturn;
+    }
+
+    private boolean isSameTypeDemande(final String typeConstante, final String typeDemande) {
+        return typeConstante.equals(typeDemande);
     }
 
     /**
@@ -2523,57 +2652,10 @@ public class RESaisieDemandeRenteHelper extends PRAbstractHelper {
             if (IREDemandeRente.CS_ETAT_DEMANDE_RENTE_ENREGISTRE.equals(saisieDemandeRenteVB.getCsEtat())) {
                 if (JadeStringUtil.isEmpty(saisieDemandeRenteVB.getDateFin())) {
 
-                    // Calcul de la periode de début de droit (age de la
-                    // retraite du tiers)
+                    // Calcul de la periode de début de droit (age de la retraite du tiers)
                     String dateNaissance = saisieDemandeRenteVB.getDateNaissanceRequerant();
-                    JADate jdate = new JADate(dateNaissance);
-                    jdate.setDay(01);
-                    String dateRetraite = "";
-                    JACalendarGregorian jacal = new JACalendarGregorian();
 
-                    if (PRACORConst.CS_HOMME.equals(saisieDemandeRenteVB.getCsSexeRequerant())) {
-                        if (JadeStringUtil.isEmpty(saisieDemandeRenteVB.getCsAnneeAnticipationVie())
-                                || IREDemandeRente.CS_ANNEE_ANTICIPATION_AGE_LEGAL.equals(saisieDemandeRenteVB
-                                        .getCsAnneeAnticipationVie())
-                                || Boolean.TRUE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
-                            jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_HOMME);
-                            jdate = jacal.addMonths(jdate, 1);
-                            dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
-                        } else if (IREDemandeRente.CS_ANNEE_ANTICIPATION_1ANNEE.equals(saisieDemandeRenteVB
-                                .getCsAnneeAnticipationVie())
-                                && Boolean.FALSE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
-                            jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_HOMME - 1);
-                            jdate = jacal.addMonths(jdate, 1);
-                            dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
-                        } else if (IREDemandeRente.CS_ANNEE_ANTICIPATION_2ANNEES.equals(saisieDemandeRenteVB
-                                .getCsAnneeAnticipationVie())
-                                && Boolean.FALSE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
-                            jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_HOMME - 2);
-                            jdate = jacal.addMonths(jdate, 1);
-                            dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
-                        }
-                    } else {
-                        if (JadeStringUtil.isEmpty(saisieDemandeRenteVB.getCsAnneeAnticipationVie())
-                                || IREDemandeRente.CS_ANNEE_ANTICIPATION_AGE_LEGAL.equals(saisieDemandeRenteVB
-                                        .getCsAnneeAnticipationVie())
-                                || Boolean.TRUE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
-                            jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_FEMME);
-                            jdate = jacal.addMonths(jdate, 1);
-                            dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
-                        } else if (IREDemandeRente.CS_ANNEE_ANTICIPATION_1ANNEE.equals(saisieDemandeRenteVB
-                                .getCsAnneeAnticipationVie())
-                                && Boolean.FALSE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
-                            jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_FEMME - 1);
-                            jdate = jacal.addMonths(jdate, 1);
-                            dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
-                        } else if (IREDemandeRente.CS_ANNEE_ANTICIPATION_2ANNEES.equals(saisieDemandeRenteVB
-                                .getCsAnneeAnticipationVie())
-                                && Boolean.FALSE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
-                            jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_FEMME - 2);
-                            jdate = jacal.addMonths(jdate, 1);
-                            dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
-                        }
-                    }
+                    String dateRetraite = calculDateRetraite(saisieDemandeRenteVB, new JADate(dateNaissance));
                     renteVieillesse.setDateDebut(dateRetraite);
                 }
             }
@@ -2957,57 +3039,10 @@ public class RESaisieDemandeRenteHelper extends PRAbstractHelper {
             if (IREDemandeRente.CS_ETAT_DEMANDE_RENTE_ENREGISTRE.equals(saisieDemandeRenteVB.getCsEtat())) {
                 if (JadeStringUtil.isEmpty(saisieDemandeRenteVB.getDateFin())) {
 
-                    // Calcul de la periode de début de droit (age de la
-                    // retraite du tiers)
+                    // Calcul de la periode de début de droit (age de la retraite du tiers)
                     String dateNaissance = saisieDemandeRenteVB.getDateNaissanceRequerant();
-                    JADate jdate = new JADate(dateNaissance);
-                    jdate.setDay(01);
-                    String dateRetraite = "";
-                    JACalendarGregorian jacal = new JACalendarGregorian();
 
-                    if (PRACORConst.CS_HOMME.equals(saisieDemandeRenteVB.getCsSexeRequerant())) {
-                        if (JadeStringUtil.isEmpty(saisieDemandeRenteVB.getCsAnneeAnticipationVie())
-                                || IREDemandeRente.CS_ANNEE_ANTICIPATION_AGE_LEGAL.equals(saisieDemandeRenteVB
-                                        .getCsAnneeAnticipationVie())
-                                || Boolean.TRUE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
-                            jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_HOMME);
-                            jdate = jacal.addMonths(jdate, 1);
-                            dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
-                        } else if (IREDemandeRente.CS_ANNEE_ANTICIPATION_1ANNEE.equals(saisieDemandeRenteVB
-                                .getCsAnneeAnticipationVie())
-                                && Boolean.FALSE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
-                            jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_HOMME - 1);
-                            jdate = jacal.addMonths(jdate, 1);
-                            dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
-                        } else if (IREDemandeRente.CS_ANNEE_ANTICIPATION_2ANNEES.equals(saisieDemandeRenteVB
-                                .getCsAnneeAnticipationVie())
-                                && Boolean.FALSE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
-                            jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_HOMME - 2);
-                            jdate = jacal.addMonths(jdate, 1);
-                            dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
-                        }
-                    } else {
-                        if (JadeStringUtil.isEmpty(saisieDemandeRenteVB.getCsAnneeAnticipationVie())
-                                || IREDemandeRente.CS_ANNEE_ANTICIPATION_AGE_LEGAL.equals(saisieDemandeRenteVB
-                                        .getCsAnneeAnticipationVie())
-                                || Boolean.TRUE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
-                            jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_FEMME);
-                            jdate = jacal.addMonths(jdate, 1);
-                            dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
-                        } else if (IREDemandeRente.CS_ANNEE_ANTICIPATION_1ANNEE.equals(saisieDemandeRenteVB
-                                .getCsAnneeAnticipationVie())
-                                && Boolean.FALSE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
-                            jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_FEMME - 1);
-                            jdate = jacal.addMonths(jdate, 1);
-                            dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
-                        } else if (IREDemandeRente.CS_ANNEE_ANTICIPATION_2ANNEES.equals(saisieDemandeRenteVB
-                                .getCsAnneeAnticipationVie())
-                                && Boolean.FALSE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
-                            jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_FEMME - 2);
-                            jdate = jacal.addMonths(jdate, 1);
-                            dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
-                        }
-                    }
+                    String dateRetraite = calculDateRetraite(saisieDemandeRenteVB, new JADate(dateNaissance));
                     renteVieillesse.setDateDebut(dateRetraite);
                 }
             }
@@ -3567,6 +3602,85 @@ public class RESaisieDemandeRenteHelper extends PRAbstractHelper {
         }
 
         return saisieDemandeRenteVB;
+    }
+
+    private String calculDateRetraite(RESaisieDemandeRenteViewBean saisieDemandeRenteVB, JADate jdate)
+            throws JAException {
+
+        jdate.setDay(01);
+
+        JACalendarGregorian jacal = new JACalendarGregorian();
+
+        String dateRetraite = "";
+
+        /** HOMME */
+        if (PRACORConst.CS_HOMME.equals(saisieDemandeRenteVB.getCsSexeRequerant())) {
+            /** SANS ANTICIPATION */
+            if (JadeStringUtil.isEmpty(saisieDemandeRenteVB.getCsAnneeAnticipationVie())
+                    || IREDemandeRente.CS_ANNEE_ANTICIPATION_AGE_LEGAL.equals(saisieDemandeRenteVB
+                            .getCsAnneeAnticipationVie())
+                    || Boolean.TRUE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
+
+                jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_HOMME);
+                jdate = jacal.addMonths(jdate, 1);
+
+                dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
+
+                /** 1 ANNEE ANTICIPATION */
+            } else if (IREDemandeRente.CS_ANNEE_ANTICIPATION_1ANNEE.equals(saisieDemandeRenteVB
+                    .getCsAnneeAnticipationVie())
+                    && Boolean.FALSE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
+
+                jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_HOMME - 1);
+                jdate = jacal.addMonths(jdate, 1);
+
+                dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
+
+                /** 2 ANNEE ANTICIPATION */
+            } else if (IREDemandeRente.CS_ANNEE_ANTICIPATION_2ANNEES.equals(saisieDemandeRenteVB
+                    .getCsAnneeAnticipationVie())
+                    && Boolean.FALSE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
+
+                jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_HOMME - 2);
+                jdate = jacal.addMonths(jdate, 1);
+
+                dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
+            }
+            /** FEMME */
+        } else {
+            /** SANS ANTICIPATION */
+            if (JadeStringUtil.isEmpty(saisieDemandeRenteVB.getCsAnneeAnticipationVie())
+                    || IREDemandeRente.CS_ANNEE_ANTICIPATION_AGE_LEGAL.equals(saisieDemandeRenteVB
+                            .getCsAnneeAnticipationVie())
+                    || Boolean.TRUE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
+
+                jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_FEMME);
+                jdate = jacal.addMonths(jdate, 1);
+
+                dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
+
+                /** 1 ANNEE ANTICIPATION */
+            } else if (IREDemandeRente.CS_ANNEE_ANTICIPATION_1ANNEE.equals(saisieDemandeRenteVB
+                    .getCsAnneeAnticipationVie())
+                    && Boolean.FALSE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
+
+                jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_FEMME - 1);
+                jdate = jacal.addMonths(jdate, 1);
+
+                dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
+
+                /** 2 ANNEE ANTICIPATION */
+            } else if (IREDemandeRente.CS_ANNEE_ANTICIPATION_2ANNEES.equals(saisieDemandeRenteVB
+                    .getCsAnneeAnticipationVie())
+                    && Boolean.FALSE.equals(saisieDemandeRenteVB.getIsAjournementRequerantVie())) {
+
+                jdate = jacal.addYears(jdate, RESaisieDemandeRenteHelper.AGE_AVS_FEMME - 2);
+                jdate = jacal.addMonths(jdate, 1);
+
+                dateRetraite = JACalendar.format(jdate, JACalendar.FORMAT_DDsMMsYYYY);
+            }
+        }
+        return dateRetraite;
     }
 
     private void validate(BTransaction transaction, RESaisieDemandeRenteViewBean viewBean, BSession session,
