@@ -29,8 +29,6 @@ import globaz.corvus.db.rentesaccordees.REPrestationDue;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.corvus.db.rentesaccordees.REPrestationsDuesManager;
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteJoinAjourManager;
-import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManager;
-import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeFamille;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeFamilleManager;
@@ -63,7 +61,6 @@ import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
-import globaz.globall.util.JAException;
 import globaz.globall.util.JAUtil;
 import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFSituationFamiliale;
@@ -2058,195 +2055,146 @@ public class RESaisieDemandeRenteHelper extends PRAbstractHelper {
     private FWViewBeanInterface doMAJPeriodeDemandeRente(BSession session, BTransaction transaction,
             RESaisieDemandeRenteViewBean vb) throws Exception {
 
-        RERenteAccJoinTblTiersJoinDemRenteManager managerRenteAcc = new RERenteAccJoinTblTiersJoinDemRenteManager();
-        managerRenteAcc.setSession(session);
-        managerRenteAcc.setForNoDemandeRente(vb.getIdDemandeRente());
-        managerRenteAcc.find(BManager.SIZE_USEDEFAULT);
+        if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE.equals(vb.getCsTypeDemandeRente())) {
+            REDemandeRenteInvalidite dem = new REDemandeRenteInvalidite();
+            dem.setSession(session);
+            dem.setIdDemandeRente(vb.getIdDemandeRente());
+            dem.retrieve(transaction);
 
-        boolean hasFoundRenteAcc = false;
-        JADate dateDebutFinal = null;
-        JADate dateFinFinal = null;
-        REDemandeRente dem = null;
+            REPeriodeInvaliditeManager mgr = new REPeriodeInvaliditeManager();
+            mgr.setSession(session);
+            mgr.setForIdDemandeRente(dem.getIdDemandeRente());
+            mgr.find(transaction);
 
-        JACalendar cal = new JACalendarGregorian();
+            JADate dd = null;
+            JADate df = null;
+            JACalendar cal = new JACalendarGregorian();
 
-        // Recherche des rentes accordées de la demande
-        if (managerRenteAcc.size() > 0) {
-            for (int i = 0; i < managerRenteAcc.size(); i++) {
-                RERenteAccJoinTblTiersJoinDemandeRente renteAccordee = (RERenteAccJoinTblTiersJoinDemandeRente) managerRenteAcc
-                        .get(i);
+            for (int i = 0; i < mgr.size(); i++) {
+                JADate idd = null;
+                JADate idf = null;
 
-                JADate dateDebutCurrent = null;
-                JADate datefinCurrent = null;
-
-                if (!JadeStringUtil.isBlankOrZero(renteAccordee.getDateDebutDroit())) {
-                    dateDebutCurrent = new JADate(renteAccordee.getDateDebutDroit());
+                REPeriodeInvalidite p = (REPeriodeInvalidite) mgr.get(i);
+                if (!JadeStringUtil.isBlankOrZero(p.getDateDebutInvalidite())) {
+                    idd = new JADate(p.getDateDebutInvalidite());
                 }
-                if (!JadeStringUtil.isBlankOrZero(renteAccordee.getDateFinDroit())) {
-                    datefinCurrent = new JADate(renteAccordee.getDateFinDroit());
+                if (!JadeStringUtil.isBlankOrZero(p.getDateFinInvalidite())) {
+                    idf = new JADate(p.getDateFinInvalidite());
                 }
 
-                dateDebutFinal = takeLowerDateDebut(dateDebutFinal, cal, dateDebutCurrent);
-                dateFinFinal = takeUpperDateFin(dateFinFinal, cal, datefinCurrent);
+                // On set date debut du droit avec la plus petite date de début
+                // des périodes du droit.
+                if ((dd == null) && (idd != null)) {
+                    dd = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(idd.toStrAMJ()));
+                } else if (dd != null) {
+                    if (idd != null) {
+                        if (cal.compare(dd, idd) == JACalendar.COMPARE_SECONDLOWER) {
+                            dd = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(idd.toStrAMJ()));
+                        }
+                    }
+                }
+
+                // On set date fin du droit avec la plus grande date de fin des
+                // périodes du droit.
+                if ((df == null) && (idf != null)) {
+                    df = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(idf.toStrAMJ()));
+                } else if (df != null) {
+                    if (idf == null) {
+                        df = new JADate("31.12.2099");
+                    } else {
+                        if (cal.compare(df, idf) == JACalendar.COMPARE_SECONDUPPER) {
+                            df = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(idf.toStrAMJ()));
+                        }
+                    }
+                }
             }
-            hasFoundRenteAcc = true;
-        }
+            if (dd != null) {
+                dem.setDateDebut(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dd.toStrAMJ()));
+            }
 
-        // Si aucune rentes accordées trouvées
-        if (!hasFoundRenteAcc) {
+            if ((df == null) || (cal.compare(df, new JADate("31.12.2099")) == JACalendar.COMPARE_EQUALS)) {
+                dem.setDateFin("");
+            } else {
+                dem.setDateFin(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(df.toStrAMJ()));
+            }
+            dem.update(transaction);
+
+        } else if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_API.equals(vb.getCsTypeDemandeRente())) {
+            REDemandeRenteAPI dem = new REDemandeRenteAPI();
+            dem.setSession(session);
+            dem.setIdDemandeRente(vb.getIdDemandeRente());
+            dem.retrieve(transaction);
+
+            REPeriodeAPIManager mgr = new REPeriodeAPIManager();
+            mgr.setSession(session);
+            mgr.setForIdDemandeRente(dem.getIdDemandeRente());
+            mgr.find(transaction);
 
             PRTiersWrapper tiers = PRTiersHelper.getTiersParId(session, vb.getIdTiers());
             String dateDecesTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_DATE_DECES);
 
-            /** DEMANDE RENTE INVALIDITÉ */
-            if (isSameTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE, vb.getCsTypeDemandeRente())) {
-                dem = new REDemandeRenteInvalidite();
-                dem.setSession(session);
-                dem.setIdDemandeRente(vb.getIdDemandeRente());
-                dem.retrieve(transaction);
+            JADate dd = null;
+            JADate df = null;
+            JACalendar cal = new JACalendarGregorian();
 
-                REPeriodeInvaliditeManager mgr = new REPeriodeInvaliditeManager();
-                mgr.setSession(session);
-                mgr.setForIdDemandeRente(dem.getIdDemandeRente());
-                mgr.find(transaction, BManager.SIZE_USEDEFAULT);
+            for (int i = 0; i < mgr.size(); i++) {
+                JADate idd = null;
+                JADate idf = null;
 
-                // Recherche de la limite de la date début la plus petite et la date de fin la plus grande des périodes
-                for (int i = 0; i < mgr.size(); i++) {
-                    JADate dateDebutCurrent = null;
-                    JADate datefinCurrent = null;
-
-                    REPeriodeInvalidite periode = (REPeriodeInvalidite) mgr.get(i);
-                    if (!JadeStringUtil.isBlankOrZero(periode.getDateDebutInvalidite())) {
-                        dateDebutCurrent = new JADate(periode.getDateDebutInvalidite());
-                    }
-                    if (!JadeStringUtil.isBlankOrZero(periode.getDateFinInvalidite())) {
-                        datefinCurrent = new JADate(periode.getDateFinInvalidite());
-                    }
-
-                    dateDebutFinal = takeLowerDateDebut(dateDebutFinal, cal, dateDebutCurrent);
-                    dateFinFinal = takeUpperDateFin(dateFinFinal, cal, datefinCurrent);
+                REPeriodeAPI p = (REPeriodeAPI) mgr.get(i);
+                if (!JadeStringUtil.isBlankOrZero(p.getDateDebutInvalidite())) {
+                    idd = new JADate(p.getDateDebutInvalidite());
+                }
+                if (!JadeStringUtil.isBlankOrZero(p.getDateFinInvalidite())) {
+                    idf = new JADate(p.getDateFinInvalidite());
                 }
 
-                if (!JadeDateUtil.isGlobazDate(dateDecesTiers)) {
-                    // On prend le dernier jour du mois de son décès
-                    dateFinFinal = new JADate(JadeDateUtil.getLastDateOfMonth(dateDecesTiers));
-                }
-
-                /** DEMANDE RENTE API */
-            } else if (isSameTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_API, vb.getCsTypeDemandeRente())) {
-                dem = new REDemandeRenteAPI();
-                dem.setSession(session);
-                dem.setIdDemandeRente(vb.getIdDemandeRente());
-                dem.retrieve(transaction);
-
-                REPeriodeAPIManager mgr = new REPeriodeAPIManager();
-                mgr.setSession(session);
-                mgr.setForIdDemandeRente(dem.getIdDemandeRente());
-                mgr.find(transaction, BManager.SIZE_USEDEFAULT);
-
-                // Recherche de la limite de la date début la plus petite et la date de fin la plus grande des périodes
-                for (int i = 0; i < mgr.size(); i++) {
-                    JADate idd = null;
-                    JADate idf = null;
-
-                    REPeriodeAPI p = (REPeriodeAPI) mgr.get(i);
-                    if (!JadeStringUtil.isBlankOrZero(p.getDateDebutInvalidite())) {
-                        idd = new JADate(p.getDateDebutInvalidite());
+                // On set date debut du droit avec la plus petite date de début
+                // des périodes du droit.
+                if ((dd == null) && (idd != null)) {
+                    dd = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(idd.toStrAMJ()));
+                } else if (dd != null) {
+                    if (idd != null) {
+                        if (cal.compare(dd, idd) == JACalendar.COMPARE_SECONDLOWER) {
+                            dd = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(idd.toStrAMJ()));
+                        }
                     }
-                    if (!JadeStringUtil.isBlankOrZero(p.getDateFinInvalidite())) {
-                        idf = new JADate(p.getDateFinInvalidite());
+                }
+
+                // BZ 5431
+                // La date de fin de droit est la date de décès s'il y en a une, sinon la plus grande date de fin des
+                // périodes du droit
+                if (JadeDateUtil.isGlobazDate(dateDecesTiers)) {
+                    if (df == null) {
+                        df = new JADate(dateDecesTiers);
                     }
-
-                    dateDebutFinal = takeLowerDateDebut(dateDebutFinal, cal, idd);
-                    dateFinFinal = takeUpperDateFin(dateFinFinal, cal, idf);
+                } else if ((df == null) && (idf != null)) {
+                    df = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(idf.toStrAMJ()));
+                } else if (df != null) {
+                    if (idf == null) {
+                        df = new JADate("31.12.2099");
+                    } else {
+                        if (cal.compare(df, idf) == JACalendar.COMPARE_SECONDUPPER) {
+                            df = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(idf.toStrAMJ()));
+                        }
+                    }
                 }
-
-                if (!JadeDateUtil.isGlobazDate(dateDecesTiers)) {
-                    // On prend le dernier jour du mois de son décès
-                    dateFinFinal = new JADate(JadeDateUtil.getLastDateOfMonth(dateDecesTiers));
-                }
-
-                /** DEMANDE RENTE SURVIVANT */
-            } else if (isSameTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_SURVIVANT, vb.getCsTypeDemandeRente())) {
-                dem = new REDemandeRenteSurvivant();
-                dem.setSession(session);
-                dem.setIdDemandeRente(vb.getIdDemandeRente());
-                dem.retrieve(transaction);
-
-                // Prendre le premier jour du mois suivant selon la date de décès
-                String decesAuPremierDuMoisSuivant = JadeDateUtil.addMonths(dateDecesTiers, 1);
-                decesAuPremierDuMoisSuivant = JadeDateUtil.getFirstDateOfMonth(decesAuPremierDuMoisSuivant);
-                dateDebutFinal = new JADate(decesAuPremierDuMoisSuivant);
-
-                /** DEMANDE RENTE VIEILLESSE */
-            } else if (isSameTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE, vb.getCsTypeDemandeRente())) {
-                dem = new REDemandeRenteVieillesse();
-                dem.setSession(session);
-                dem.setIdDemandeRente(vb.getIdDemandeRente());
-                dem.retrieve(transaction);
-
-                // FIXME Date age vieillesse du requérant
-
-            }
-        }
-
-        if (dem != null) {
-            if (dateDebutFinal != null) {
-                dem.setDateDebut(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dateDebutFinal.toStrAMJ()));
             }
 
-            if ((dateFinFinal == null)
-                    || (cal.compare(dateFinFinal, new JADate("31.12.2099")) == JACalendar.COMPARE_EQUALS)) {
+            if (dd != null) {
+                dem.setDateDebut(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dd.toStrAMJ()));
+            }
+
+            if ((df == null) || (cal.compare(df, new JADate("31.12.2099")) == JACalendar.COMPARE_EQUALS)) {
                 dem.setDateFin("");
             } else {
-                dem.setDateFin(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dateFinFinal.toStrAMJ()));
+                dem.setDateFin(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(df.toStrAMJ()));
             }
-
             dem.update(transaction);
+
         }
 
         return vb;
-    }
-
-    private JADate takeUpperDateFin(JADate firstDateFin, JACalendar cal, JADate secondDateFin) throws JAException {
-        JADate dateToReturn = firstDateFin;
-        // On set date fin du droit avec la plus grande date de fin des
-        // périodes du droit.
-        if ((firstDateFin == null) && (secondDateFin != null)) {
-            dateToReturn = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(secondDateFin.toStrAMJ()));
-        } else if (firstDateFin != null) {
-            if (secondDateFin == null) {
-                dateToReturn = new JADate("31.12.2099");
-            } else {
-                if (cal.compare(firstDateFin, secondDateFin) == JACalendar.COMPARE_SECONDUPPER) {
-                    dateToReturn = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(secondDateFin
-                            .toStrAMJ()));
-                }
-            }
-        }
-        return dateToReturn;
-    }
-
-    private JADate takeLowerDateDebut(final JADate firstDateDebut, final JACalendar cal, final JADate secondDateDebut)
-            throws JAException {
-        JADate dateToReturn = firstDateDebut;
-        // On set date debut du droit avec la plus petite date de début
-        // des périodes du droit.
-        if ((firstDateDebut == null) && (secondDateDebut != null)) {
-            dateToReturn = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(secondDateDebut.toStrAMJ()));
-        } else if (firstDateDebut != null) {
-            if (secondDateDebut != null) {
-                if (cal.compare(firstDateDebut, secondDateDebut) == JACalendar.COMPARE_SECONDLOWER) {
-                    dateToReturn = new JADate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(secondDateDebut
-                            .toStrAMJ()));
-                }
-            }
-        }
-        return dateToReturn;
-    }
-
-    private boolean isSameTypeDemande(final String typeConstante, final String typeDemande) {
-        return typeConstante.equals(typeDemande);
     }
 
     /**
