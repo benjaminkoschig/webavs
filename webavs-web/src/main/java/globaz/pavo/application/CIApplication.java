@@ -664,7 +664,7 @@ public class CIApplication extends globaz.globall.db.BApplication {
                 affMgr.setForTypesAffPersonelles();
             }
 
-            affMgr.find();
+            affMgr.find(BManager.SIZE_NOLIMIT);
 
             // Si année non rempli, nous donnons la première affiliation
             if (JadeStringUtil.isEmpty(annee) || "0".equals(annee)) {

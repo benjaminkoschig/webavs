@@ -2089,41 +2089,6 @@ public class CIDeclaration extends BProcess {
 
     }
 
-    private boolean _isInPeriodeAffiliation(CIDeclarationRecord rec) throws Exception {
-        if ((rec.getDebutAffiliation() == null) || (rec.getFinAffiliation() == null)) {
-            return false;
-        }
-        JADate debAff = new JADate(rec.getDebutAffiliation());
-        JADate finAff = new JADate(("".equals(rec.getFinAffiliation())) ? "01.01.9999" : rec.getFinAffiliation());
-        // Si c'est 99-99, on compare juste l'année
-        if (((99 == rec.getMoisDebut()) && (99 == rec.getMoisFin()))
-                || ((66 == rec.getMoisDebut()) && (66 == rec.getMoisFin()))) {
-            int anneeInt = Integer.parseInt(rec.getAnnee());
-            int anneeDebutAff = Integer.parseInt(rec.getDebutAffiliation().substring(6));
-            if (anneeInt < anneeDebutAff) {
-                return false;
-            }
-            if (!JAUtil.isDateEmpty(rec.getFinAffiliation())) {
-                int anneeFinAff = Integer.parseInt(rec.getFinAffiliation().substring(6));
-                if (anneeInt > anneeFinAff) {
-                    return false;
-                }
-            }
-        } else {
-            JADate deb = new JADate(1, rec.getMoisDebut(), Integer.parseInt(rec.getAnnee()));
-            JADate fin = new JADate(1, rec.getMoisFin(), Integer.parseInt(rec.getAnnee()));
-            if (!BSessionUtil.compareDateBetweenOrEqual(getTransaction().getSession(), debAff.toStr("."),
-                    finAff.toStr("."), deb.toStr("."))) {
-                return false;
-            }
-            if (!BSessionUtil.compareDateBetweenOrEqual(getTransaction().getSession(), debAff.toStr("."),
-                    finAff.toStr("."), fin.toStr("."))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     /*
      * Met à jour les TreeMap utilisés pour les summary par affilié/Année
      */

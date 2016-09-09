@@ -25,7 +25,6 @@ import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAStringFormatter;
-import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.smtp.JadeSmtpClient;
@@ -671,8 +670,12 @@ public class CIImportPucs4Process extends BProcess {
                 montantInscriptionsNegatives.sub(montantEcr);
                 montantEcr = testAndSetPourMontantNegatif(ecriture, errors, montantEcr);
             }
+            CIApplication app = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
+                    CIApplication.DEFAULT_APPLICATION_PAVO);
+
             // Période affiliation
-            if (!_isInPeriodeAffiliation(dateDebutAffiliation, dateFinAffiliation, annee, moisDebut, moisFin)) {
+            if (!app.isInAffiliation(getSession(), dateDebutAffiliation, dateFinAffiliation, String.valueOf(jourDebut),
+                    String.valueOf(jourFin), String.valueOf(moisDebut), String.valueOf(moisFin), annee)) {
                 // Les dates ne correspondent pas avec la période d'affiliation
                 errors.add(getSession().getLabel("DT_ERR_DATE_AFFILIATION"));
             }
@@ -1464,41 +1467,6 @@ public class CIImportPucs4Process extends BProcess {
 
         }
         return noAvs;
-    }
-
-    private boolean _isInPeriodeAffiliation(String dateDebutAffiliation, String dateFinAffiliation, String annee,
-            int moisDebut, int moisFin) throws Exception {
-        if ((dateDebutAffiliation == null) || (dateFinAffiliation == null)) {
-            return false;
-        }
-        JADate debAff = new JADate(dateDebutAffiliation);
-        JADate finAff = new JADate(("".equals(dateFinAffiliation)) ? "01.01.9999" : dateFinAffiliation);
-        // Si c'est 99-99, on compare juste l'année
-        if (((99 == moisDebut) && (99 == moisFin)) || ((66 == moisDebut) && (66 == moisFin))) {
-            int anneeInt = Integer.parseInt(annee);
-            int anneeDebutAff = debAff.getYear();
-            if (anneeInt < anneeDebutAff) {
-                return false;
-            }
-            if (!JAUtil.isDateEmpty(dateFinAffiliation)) {
-                int anneeFinAff = finAff.getYear();
-                if (anneeInt > anneeFinAff) {
-                    return false;
-                }
-            }
-        } else {
-            JADate deb = new JADate(1, moisDebut, Integer.parseInt(annee));
-            JADate fin = new JADate(1, moisFin, Integer.parseInt(annee));
-            if (!BSessionUtil.compareDateBetweenOrEqual(getTransaction().getSession(), debAff.toStr("."),
-                    finAff.toStr("."), deb.toStr("."))) {
-                return false;
-            }
-            if (!BSessionUtil.compareDateBetweenOrEqual(getTransaction().getSession(), debAff.toStr("."),
-                    finAff.toStr("."), fin.toStr("."))) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private String testAndSetPourMontantNegatif(CIEcriture ecriture, ArrayList<String> errors, String montantEcr) {
