@@ -150,7 +150,7 @@ insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.ftp.pos
 
 --table des rejet OSIRIS
 DROP TABLE SCHEMA.CAORREJ;
-CREATE TABLE CCJUWEB.CAORREJ (
+CREATE TABLE SCHEMA.CAORREJ (
 	IDORRE NUMERIC(9,0) primary key not null,
 	IDORDR NUMERIC(9,0) not null,
 	CODE VARCHAR(32),
