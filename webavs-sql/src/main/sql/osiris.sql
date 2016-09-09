@@ -140,8 +140,8 @@ reorg table SCHEMA.CAORGRP allow read access;
 --prop pour ISO/SEPA
 insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.nbmax.multiog','2');
 insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.nbmax.ovparog','99000');
-insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.ftp.host','fdsbc.post.ch');
-insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.ftp.port','22');
+insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.ftp.host','isotest.postfinance.ch');
+insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.ftp.port','10022');
 insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.ftp.user','');
 insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.ftp.pass','');
 insert into SCHEMA.jadeprop (propname, propval) values ('osiris.iso.sepa.ftp.ack.folder','');
