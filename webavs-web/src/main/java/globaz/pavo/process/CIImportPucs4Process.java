@@ -2106,10 +2106,15 @@ public class CIImportPucs4Process extends BProcess {
     @Override
     protected String getEMailObject() {
 
-        String mailObject = numAffilieBase + " " + getSession().getLabel("DECLARATION_NB_ERREUR") + " "
-                + String.valueOf(totalErreur) + " " + getSession().getLabel("DECLARATION_NB_AVERT") + " "
-                + String.valueOf(totalAvertissement) + " " + getSession().getLabel("DECLARATION_NB_TOTAL")
-                + String.valueOf(totalTraite);
+        String mailObject = "";
+
+        if (!JadeStringUtil.isBlankOrZero(getSimulation())) {
+            mailObject = getSession().getLabel("IMPORT_PUCS_4_DETAIL_RESULT_SIMULATION") + " - ";
+        }
+
+        mailObject = mailObject + numAffilieBase + " " + getSession().getLabel("DECLARATION_NB_ERREUR") + " "
+                + totalErreur + " " + getSession().getLabel("DECLARATION_NB_AVERT") + " " + totalAvertissement + " "
+                + getSession().getLabel("DECLARATION_NB_TOTAL") + totalTraite;
         if (isOnError() || isErrorMontant || isErrorNbInscriptions || isAborted()) {
             if (declarationSalaire.isAfSeul()) {
                 return mailObject + " " + getSession().getLabel("EMAIL_IMPORTATION_AFSEULE_ECHEC");
