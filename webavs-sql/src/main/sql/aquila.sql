@@ -1,2 +1,0 @@
---S150902_002 - Liste prévisionnelle des poursuites avec informations supplémentaires - SCO
-INSERT INTO schema.JADEPROP (PROPNAME,PROPVAL) VALUES ('aquila.ajout.infos.liste.provisionnelle.poursuites','false');
