@@ -4,6 +4,7 @@ import globaz.draco.db.declaration.DSValidationViewBean;
 import globaz.draco.process.DSProcessValidation;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.pavo.process.CIDeclaration;
 import globaz.pavo.process.CIImportPucsFileProcess;
@@ -27,6 +28,7 @@ public class ValidationAutomatique {
     private final BigDecimal montantFacture;
     private final BigDecimal masse;
     private final boolean checkMontantFactureNegatif;
+    private String messageErreurMasseZero = "";
 
     public ValidationAutomatique(BigDecimal montantFacture, BigDecimal masse) throws PropertiesException {
         pourcentage = EBProperties.VALIDATION_MONTANT_POURCENTAGE_CONTROLE.getValueAsBigDecimal();
@@ -66,11 +68,27 @@ public class ValidationAutomatique {
     }
 
     public BigDecimal computePourcentage() {
+
         if (montantFacture.compareTo(new BigDecimal(0)) == 0) {
             return montantFacture;
         }
-        BigDecimal result = montantFacture.divide(masse, mathContext).multiply(new BigDecimal(100), mathContext).abs();
+        BigDecimal result;
+
+        try {
+            result = montantFacture.divide(masse, mathContext).multiply(new BigDecimal(100), mathContext).abs();
+
+        } catch (ArithmeticException e) {
+
+            if (!JadeStringUtil.isBlankOrZero(messageErreurMasseZero) && masse != null
+                    && JadeStringUtil.isBlankOrZero(masse.toString())) {
+                throw new ArithmeticException(messageErreurMasseZero);
+            }
+
+            throw (e);
+
+        }
         return result.setScale(2, mathContext.getRoundingMode());
+
     }
 
     private boolean isCheckMontantFactureNegatif() {
@@ -103,8 +121,13 @@ public class ValidationAutomatique {
         return masse.setScale(4).equals(totalPucs.setScale(4));
     }
 
+    private void initMessageErreurMasseZero(BSession session) {
+        messageErreurMasseZero = session.getLabel("IMPORT_PUCS_4_MESSAGE_ERREUR_DIVISION_MASSE_ZERO");
+    }
+
     public static DSProcessValidation execute(BSession session, CIDeclaration declaration, ElementsDomParser parser)
             throws Exception {
+
         DSProcessValidation processValidation = new DSProcessValidation();
         processValidation.setEMailAddress(session.getUserEMail());
         processValidation.setSession(session);
@@ -129,6 +152,7 @@ public class ValidationAutomatique {
                 montantFacture = BigDecimal.ZERO;
             }
             validationAutomatique = new ValidationAutomatique(montantFacture, montantMasse);
+            validationAutomatique.initMessageErreurMasseZero(session);
             if ((!declaration.hasDifferenceAc()) && validationAutomatique.isMontantSame(totalPucsFile)
                     && validationAutomatique.isMontantValide()) {
 
