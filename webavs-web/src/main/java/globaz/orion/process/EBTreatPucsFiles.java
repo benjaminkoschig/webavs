@@ -315,10 +315,16 @@ public class EBTreatPucsFiles extends BProcess {
                 moveFile = true;
                 // JadeThread.logClear();
                 boolean isForSimultation = isSimulation();
+
                 try {
 
                     PucsFile pucsFile = pucsFileMerge.retriveFileAndMergeIfNeeded(getSession());
                     isForSimultation = (pucsFileMerge.getPucsFile().isForTest()) || isSimulation();
+
+                    String libelleSimulation = "";
+                    if (isForSimultation) {
+                        libelleSimulation = getSession().getLabel("IMPORT_PUCS_4_MODE_SIMULATION") + " - ";
+                    }
 
                     // Récupération de l'affiliation
 
@@ -328,7 +334,8 @@ public class EBTreatPucsFiles extends BProcess {
                     if (aff == null) {
                         JadeSmtpClient.getInstance().sendMail(
                                 getSession().getUserEMail(),
-                                getSession().getLabel("ERREUR_MAJ_PROV_INSTIT_SUBJECT") + pucsFile.getNumeroAffilie(),
+                                libelleSimulation + getSession().getLabel("ERREUR_MAJ_PROV_INSTIT_SUBJECT")
+                                        + pucsFile.getNumeroAffilie(),
                                 pucsFile.getNumeroAffilie() + " : " + getSession().getLabel("ERREUR_AFF_INACTIF")
                                         + pucsFile.getAnneeDeclaration(), null);
                         exceptionAppend = true;
@@ -348,8 +355,9 @@ public class EBTreatPucsFiles extends BProcess {
                             moveFile = false;
                             JadeSmtpClient.getInstance().sendMail(
                                     getSession().getUserEMail(),
-                                    getSession().getLabel("PROCES_IMPORTATION_ERREUR_AUCUN_JOURNAL_EXISTANT") + " : "
-                                            + pucsFile.getNumeroAffilie(),
+                                    libelleSimulation
+                                            + getSession().getLabel("PROCES_IMPORTATION_ERREUR_AUCUN_JOURNAL_EXISTANT")
+                                            + " : " + pucsFile.getNumeroAffilie(),
                                     getSession().getLabel("PROCES_IMPORTATION_ERREUR_AUCUN_JOURNAL_EXISTANT"), null);
                             continue;
                         }
@@ -410,8 +418,10 @@ public class EBTreatPucsFiles extends BProcess {
                         majModeDeclarationSalaire(aff, pucsFile.getProvenance());
                     }
                     if (getSession().getCurrentThreadTransaction().hasErrors()) {
-                        JadeSmtpClient.getInstance().sendMail(getSession().getUserEMail(),
-                                getSession().getLabel("ERREUR_MAJ_PROV_INSTIT_SUBJECT") + pucsFile.getNumeroAffilie(),
+                        JadeSmtpClient.getInstance().sendMail(
+                                getSession().getUserEMail(),
+                                libelleSimulation + getSession().getLabel("ERREUR_MAJ_PROV_INSTIT_SUBJECT")
+                                        + pucsFile.getNumeroAffilie(),
                                 getSession().getLabel("ERREUR_MAJ_PROV_INSTIT_BODY") + aff.getAffilieNumero(), null);
                         // Si problème de rollback, on veut que ça remonte => pas de catch
                         getSession().getCurrentThreadTransaction().rollback();
