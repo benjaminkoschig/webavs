@@ -308,6 +308,13 @@ public class DSInscriptionsIndividuelles extends BEntity {
         } catch (Exception e) {
             _addError(transaction, getSession().getLabel("PERIODE_INVALIDE"));
         }
+
+        if (JadeStringUtil.isIntegerEmpty(montant) && !JadeStringUtil.isIntegerEmpty(idEcrtirueCI)) {
+            _addError(transaction,
+                    getSession().getLabel("ERROR_REMOVE_MONTANT_AVS_FROM_INSCRIPTION_LINK_TO_ECRITURE_CI"));
+
+        }
+
         if (!JadeStringUtil.isIntegerEmpty(montant)) {
             if (JadeStringUtil.isIntegerEmpty(idEcrtirueCI)) {
                 ecritureCi = new CIEcriture();
