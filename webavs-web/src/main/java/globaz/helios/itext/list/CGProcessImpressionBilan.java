@@ -55,7 +55,7 @@ public class CGProcessImpressionBilan extends FWIDocumentManager {
 
     private String classesCompteList;
     private String forCodePeriode = "";
-    private String idCentreCharge = "";
+    private String idCentreCharge = "0";
     private String idClassification = "";
     private String idComptabilite;
     private String idDefinitionListe = "";
