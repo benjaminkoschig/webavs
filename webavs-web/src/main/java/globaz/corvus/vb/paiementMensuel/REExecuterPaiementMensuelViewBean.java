@@ -17,6 +17,7 @@ import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.ordre.APIOrdreGroupe;
+import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import globaz.prestation.tools.PRDateFormater;
@@ -136,7 +137,6 @@ public class REExecuterPaiementMensuelViewBean extends PRAbstractViewBeanSupport
 
     /**
      * Retourne le vecteur de tableaux a 2 entrées {idOrganeExecution, description} défini pour ce view bean.
-     * 
      * 
      * @return Vecteur de tableau à 2 entrées {idOrganeExecution, description}
      * @throws Exception
@@ -281,7 +281,7 @@ public class REExecuterPaiementMensuelViewBean extends PRAbstractViewBeanSupport
     }
 
     public void setIsoHighPriority(String isoHightPriority) {
-        this.isoHighPriority = isoHightPriority;
+        isoHighPriority = isoHightPriority;
     }
 
     /*
@@ -302,10 +302,17 @@ public class REExecuterPaiementMensuelViewBean extends PRAbstractViewBeanSupport
                         "La date d'échéance du paiement doit être dans le même mois que le prochain pmt mensuel.");
             }
 
-            // BZ 5459
-            if (!JadeNumericUtil.isInteger(numeroOG)
-                    || (((Integer.parseInt(numeroOG)) < 1) || (Integer.parseInt(numeroOG) > 99))) {
-                throw new Exception(getSession().getLabel("ERREUR_NUMERO_OG_OBLIGATOIRE"));
+            // ISO20022
+            CAOrganeExecution organeExecution = new CAOrganeExecution();
+            organeExecution.setSession(getSession());
+            organeExecution.setIdOrganeExecution(getIdOrganeExecution());
+            organeExecution.retrieve();
+            if (organeExecution.getCSTypeTraitementOG().equals(APIOrganeExecution.OG_OPAE_DTA)) {
+                // BZ 5459
+                if (!JadeNumericUtil.isInteger(numeroOG)
+                        || (((Integer.parseInt(numeroOG)) < 1) || (Integer.parseInt(numeroOG) > 99))) {
+                    throw new Exception(getSession().getLabel("ERREUR_NUMERO_OG_OBLIGATOIRE"));
+                }
             }
         } catch (Exception e) {
             setMsgType(FWViewBeanInterface.ERROR);

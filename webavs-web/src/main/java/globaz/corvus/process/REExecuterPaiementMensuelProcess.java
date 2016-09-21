@@ -573,13 +573,6 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                 messageRente = new StringBuilder(getMessageRenteEntete());
             }
             while ((rente = (REPaiementRentes) mgr.cursorReadNext(statement)) != null) {
-                String idTiersPrincipal = rente.getIdTiersAdressePmt();
-
-                if (JadeStringUtil.isBlankOrZero(idTiersPrincipal) || Long.parseLong(idTiersPrincipal) < 0) {
-                    idTiersPrincipal = rente.getIdTiersBeneficiaire();
-                }
-
-                String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(getSession(), idTiersPrincipal);
 
                 // Ecriture du message pour la rente précédente
                 if (DEBUG_MODE) {
@@ -630,12 +623,18 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                         // pas de CA) on met la RA en erreur !!!
                         doMiseEnErreurRA(getSession(), rente.getIdRenteAccordee(), e.toString());
                         getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, this.getClass().toString());
+                        e.printStackTrace();
                         --nombreDeRentesVersees;
                         isErreursDetectee = true;
                         currentRaEnErreur = true;
                         continue;
                     }
+                    String idTiersPrincipal = rente.getIdTiersAdressePmt();
 
+                    if (JadeStringUtil.isBlankOrZero(idTiersPrincipal) || Long.parseLong(idTiersPrincipal) < 0) {
+                        idTiersPrincipal = rente.getIdTiersBeneficiaire();
+                    }
+                    String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(getSession(), idTiersPrincipal);
                     // 1ère écriture...
                     if (previousKey == null) {
                         noSectionIncrement = 0;
@@ -701,6 +700,7 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                         } catch (Exception e) {
                             --nombreDeRentesVersees;
                             isErreursDetectee = true;
+                            e.printStackTrace();
                             getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, this.getClass().toString());
                         }
 
@@ -761,6 +761,7 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                 } catch (Exception e) {
                     --nombreDeRentesVersees;
                     isErreursDetectee = true;
+                    e.printStackTrace();
                     getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, this.getClass().toString());
                 }
 
