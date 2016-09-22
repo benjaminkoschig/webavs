@@ -22,6 +22,8 @@ public class SepaSendOrderProcessor extends AbstractSepa {
 
         try {
             BApplication app = session.getApplication();
+
+            // FIXME lookuper ces propriétés dans la DB
             host = CAProperties.ISO_SEPA_FTP_HOST.getValue();
             String sport = CAProperties.ISO_SEPA_FTP_PORT.getValue();
 
