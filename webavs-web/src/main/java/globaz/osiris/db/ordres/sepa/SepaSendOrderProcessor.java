@@ -1,12 +1,12 @@
 package globaz.osiris.db.ordres.sepa;
 
-import globaz.globall.db.BApplication;
-import globaz.globall.db.BSession;
 import java.io.InputStream;
 import org.apache.commons.lang.StringUtils;
+import com.jcraft.jsch.ChannelSftp;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.osiris.business.constantes.CAProperties;
-import com.jcraft.jsch.ChannelSftp;
+import globaz.globall.db.BApplication;
+import globaz.globall.db.BSession;
 
 public class SepaSendOrderProcessor extends AbstractSepa {
     public static final String NAMESPACE_PAIN001 = "http://www.six-interbank-clearing.com/de/pain.001.001.03.ch.02.xsd";
@@ -37,7 +37,7 @@ public class SepaSendOrderProcessor extends AbstractSepa {
         }
 
         // go connect
-        ChannelSftp client = connect(host, port, login, password);
+        ChannelSftp client = connect(host, port, login, password, null);
 
         return client;
     }

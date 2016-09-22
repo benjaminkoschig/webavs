@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>ch.globaz</groupId>
 		<artifactId>java-superpom</artifactId>
-		<version>1.1.0</version>
+		<version>1.1.1</version>
 	</parent>
 
 	<artifactId>webavs-parent</artifactId>
@@ -49,7 +49,7 @@
 		<httpasyncclient.version>4.1</httpasyncclient.version>
 
 		<ch.globaz.mercato.notification.version>1.0.0</ch.globaz.mercato.notification.version>
-		<itucana.version>0.0.1</itucana.version>
+		<itucana.version>0.0.1</itucana.version>		
 		<jade.version>5.2.1</jade.version>
 		<pyxis.version>1.23.0</pyxis.version>
 		<simple-output-list.version>1.1.5</simple-output-list.version>
