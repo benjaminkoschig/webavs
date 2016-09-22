@@ -29,6 +29,7 @@ public class CAOperationOrdreManager extends CAOperationManager {
     private String forNumTransaction = "";
     private String fromNomCache = "";
     private String fromNumTransaction = "";
+    private String inIdOperation = "";
 
     private Boolean groupByDate = new Boolean(false);
 
@@ -92,6 +93,14 @@ public class CAOperationOrdreManager extends CAOperationManager {
             }
             sqlWhere += CAOrdreVersement.FIELD_IDORDREGROUPE + "="
                     + this._dbWriteNumeric(statement.getTransaction(), getForIdOrdreGroupe());
+        }
+        // list d'idOrdre
+        if (!JadeStringUtil.isBlank(getInIdOperation())) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += _getCollection() + CAOrdreVersement.TABLE_CAOPOVP + "." + CAOrdreVersement.FIELD_IDORDRE
+                    + " IN (" + getInIdOperation() + " ) ";
         }
 
         // traitement du positionnement à partir du nom de cache
@@ -452,6 +461,14 @@ public class CAOperationOrdreManager extends CAOperationManager {
      */
     void wantForEstBloque(Boolean newForEstBloque) {
         forEstBloque = newForEstBloque;
+    }
+
+    public String getInIdOperation() {
+        return inIdOperation;
+    }
+
+    public void setInIdOperation(String inIdOperation) {
+        this.inIdOperation = inIdOperation;
     }
 
 }

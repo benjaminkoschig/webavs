@@ -83,7 +83,7 @@ public abstract class AbstractSepa {
         }
     }
 
-    protected Document parseDocument(InputStream source) {
+    public static Document parseDocument(InputStream source) {
         Document doc;
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -101,7 +101,7 @@ public abstract class AbstractSepa {
     }
 
     // how to convert xml document/node/elements into java objects
-    protected <T> T unmarshall(Document doc, Class<? extends T> clazz) {
+    public static <T> T unmarshall(Document doc, Class<? extends T> clazz) {
         try {
             JAXBContext jc = JAXBContext.newInstance(clazz);
 

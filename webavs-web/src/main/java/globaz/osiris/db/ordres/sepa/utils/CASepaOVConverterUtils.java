@@ -19,17 +19,12 @@ public class CASepaOVConverterUtils {
     public static final String INSTRUCTION_ID_PREFIX = "OV-";
     public static final String ENDTOEND_ID_PREFIX = "TR-";
 
+    // caution, must be unique to identify BVR
     public static final String ORDRE_VERSEMENT_BVR = "BVR";
     public static final String ORDRE_VERSEMENT_VIREMENT = "virement";
 
-    public static final String PAYS_DESTINATION_SUISSE = "ch";
-    public static final String PAYS_DESTINATION_INTERNATIONNAL = "int";
-
-    public static final String B_LEVEL_ID_VIR_BANQ_POST_CH = "GT-01";
-    public static final String B_LEVEL_ID_MANDAT_CH = "GT-02";
-    public static final String B_LEVEL_ID_BVR = "GT-03";
-    public static final String B_LEVEL_ID_VIR_BANQ_POST_INT = "GT-11";
-    public static final String B_LEVEL_ID_MANDAT_INT = "GT-12";
+    public static final String PAYS_DESTINATION_SUISSE = "CH";
+    public static final String PAYS_DESTINATION_INTERNATIONNAL = "INT";
 
     public static final String ExternalServiceLevel1_SEPA = "SEPA";
 
@@ -40,14 +35,14 @@ public class CASepaOVConverterUtils {
     public static final String ExternalCategoryPurpose1_AUTRE = "SSBE";
     public static final String ExternalPaymentPurpose1_ALLOC_FAM = "BECH"; // FIXME, not from ExternalCodeSet Category
                                                                            // purpose
-    public static final String ExternalPaymentPurpose1_REMBOURSEMENT = "PENS";// FIXME, not from ExternalCodeSet
+    public static final String ExternalPaymentPurpose1_REMBOURSEMENT = "REFU";// FIXME, not from ExternalCodeSet
                                                                               // Category purpose
 
     /**
      * for hashmap key to regroup Blevels
      * 
      * @param ov
-     * @return String to identify in hashing compare
+     * @return String to identify in hashing compare BVR/virement
      * @throws Exception
      */
     public static String getTypeVersement(APICommonOdreVersement ov) throws Exception {
@@ -65,7 +60,7 @@ public class CASepaOVConverterUtils {
      * for hashmap key to regroup Blevels
      * 
      * @param ov
-     * @return String to identify in hashing compare
+     * @return String to identify in hashing compare bankANDccp/mandat/null
      * @throws Exception
      */
     public static String getTypeVirement(APICommonOdreVersement ov) throws Exception {
@@ -103,38 +98,6 @@ public class CASepaOVConverterUtils {
         return null;
     }
 
-    /**
-     * identifiant unique de l'enregistrement Blevel au niveau de l'ordre groupé
-     * 
-     * @param ov
-     * @return id
-     * @throws Exception
-     */
-    public static String getPmtInfId(APICommonOdreVersement ov) throws Exception {
-        if (!JadeStringUtil.isBlankOrZero(ov.getReferenceBVR())) {
-            return B_LEVEL_ID_BVR;
-        }
-        CAAdressePaiementFormatter adp = new CAAdressePaiementFormatter();
-        adp.setAdressePaiement(ov.getAdressePaiement());
-
-        if (adp.getTypeAdresse().equals(IntAdressePaiement.CCP)) {
-            return B_LEVEL_ID_VIR_BANQ_POST_CH;
-        } else if (adp.getTypeAdresse().equals(IntAdressePaiement.BANQUE)) {
-            return B_LEVEL_ID_VIR_BANQ_POST_CH;
-        } else if (adp.getTypeAdresse().equals(IntAdressePaiement.MANDAT)) {
-            return B_LEVEL_ID_MANDAT_CH;
-        } else if (adp.getTypeAdresse().equals(IntAdressePaiement.BVR)) {
-            return B_LEVEL_ID_BVR;
-        } else if (adp.getTypeAdresse().equals(IntAdressePaiement.BANQUE_INTERNATIONAL)) {
-            return B_LEVEL_ID_VIR_BANQ_POST_INT;
-        } else if (adp.getTypeAdresse().equals(IntAdressePaiement.MANDAT_INTERNATIONAL)) {
-            return B_LEVEL_ID_MANDAT_INT;
-        } else if (adp.getTypeAdresse().equals(IntAdressePaiement.CCP_INTERNATIONAL)) {
-            return B_LEVEL_ID_VIR_BANQ_POST_INT;
-        }
-        return null;
-    }
-
     public static ServiceLevel8Choice getSvcLvl(APICommonOdreVersement ov) throws Exception {
         CAAdressePaiementFormatter adp = new CAAdressePaiementFormatter();
         adp.setAdressePaiement(ov.getAdressePaiement());
@@ -161,6 +124,7 @@ public class CASepaOVConverterUtils {
 
     public static CategoryPurpose1CHCode getCtgyPurp(APICommonOdreVersement ov) {
         CategoryPurpose1CHCode ctgyPurp = new CategoryPurpose1CHCode();
+        // TODO determiner sur quel critère lpurpose code change
         ctgyPurp.setCd(ExternalCategoryPurpose1_RENTE_AVS_AI);
         return ctgyPurp;
     }
@@ -187,12 +151,7 @@ public class CASepaOVConverterUtils {
 
     public static String getCreditorName70(APICommonOdreVersement ov) throws Exception {
 
-        String name;
-        if (!JadeStringUtil.isBlank(ov.getAdressePaiement().getAdresseCourrier().getAutreNom())) {
-            name = ov.getAdressePaiement().getAdresseCourrier().getAutreNom();
-        } else {
-            name = ov.getAdressePaiement().getNomTiersAdrPmt();
-        }
+        String name = getBeneficiaire(ov);
 
         if (name.isEmpty()) {
             logger.error("CreditorName cannot be null or empty for OV {} , transaction {}", ov.getIdOperation(),
@@ -201,6 +160,23 @@ public class CASepaOVConverterUtils {
             logger.debug("getCreditorName70 - {}", name);
         }
         return CASepaCommonUtils.limit70(name);
+    }
+
+    /**
+     * retourne le nom du bénéficiaire de l'OP/OV en question
+     * 
+     * @param ov
+     * @return String, nom du bénéficiaire
+     * @throws Exception
+     */
+    public static String getBeneficiaire(APICommonOdreVersement ov) throws Exception {
+        String name;
+        if (!JadeStringUtil.isBlank(ov.getAdressePaiement().getAdresseCourrier().getAutreNom())) {
+            name = ov.getAdressePaiement().getAdresseCourrier().getAutreNom();
+        } else {
+            name = ov.getAdressePaiement().getNomTiersAdrPmt();
+        }
+        return name;
     }
 
     public static PaymentMethod3Code getPmtMtd(APICommonOdreVersement ov) throws Exception {
@@ -245,7 +221,7 @@ public class CASepaOVConverterUtils {
     }
 
     public static boolean isCLevelBicRequired(APICommonOdreVersement ov) throws Exception {
-        String blevelId = getPmtInfId(ov);
-        return (blevelId.equals(B_LEVEL_ID_VIR_BANQ_POST_CH) || blevelId.equals(B_LEVEL_ID_VIR_BANQ_POST_INT));
+        String blevelId = new CASepaGroupeOGKey(ov).getKeyString();
+        return (blevelId.contains(CASepaCommonUtils.TYPE_VIREMENT_BANCAIRE));
     }
 }

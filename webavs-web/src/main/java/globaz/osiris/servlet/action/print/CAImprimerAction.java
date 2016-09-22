@@ -12,6 +12,7 @@ import globaz.osiris.db.print.CABulletinsSoldesViewBean;
 import globaz.osiris.db.print.CAImpressionEcheancierViewBean;
 import globaz.osiris.db.print.CAImpressionPlanViewBean;
 import globaz.osiris.db.print.CAImprimerOrdreGroupeViewBean;
+import globaz.osiris.db.print.CAImprimerOrdreRejeteViewBean;
 import globaz.osiris.db.print.CAListComptesALettrerViewBean;
 import globaz.osiris.db.print.CAListExportSoldeCACCViewBean;
 import globaz.osiris.db.print.CAListExtraitCompteAnnexeViewBean;
@@ -154,6 +155,10 @@ public class CAImprimerAction extends CADefaultServletAction {
         if (actionSuite.equals("imprimerOrdreGroupe")) {
             if (!JadeStringUtil.isNull(super.getId(request, "forIdGroup"))) {
                 ((CAImprimerOrdreGroupeViewBean) viewBean).setIdOrdreGroupe(super.getId(request, "forIdGroup"));
+            }
+        } else if (actionSuite.equals("imprimerOrdreRejete")) {
+            if (!JadeStringUtil.isNull(super.getId(request, "forIdGroup"))) {
+                ((CAImprimerOrdreRejeteViewBean) viewBean).setIdOrdreGroupe(super.getId(request, "forIdGroup"));
             }
         } else if (actionSuite.equals("listImpressionsJournal")) {
             if (!JadeStringUtil.isNull(super.getId(request, "idJournal"))) {

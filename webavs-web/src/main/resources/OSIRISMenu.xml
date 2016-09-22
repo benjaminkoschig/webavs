@@ -1277,6 +1277,13 @@
 					<parameter name="selectedId"/>
 				</action>
 			</node>
+			<node>
+				<label refId="OPTIONS_ORDRE_REJETE_IMPRIMER" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.print.imprimerOrdreRejete.afficher" />
+					<parameter name="selectedId"/>
+				</action>
+			</node>
 		</nodes>
 	</menu>
 

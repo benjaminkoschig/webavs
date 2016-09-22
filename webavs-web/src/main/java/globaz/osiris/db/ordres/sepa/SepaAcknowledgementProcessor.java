@@ -1,5 +1,18 @@
 package globaz.osiris.db.ordres.sepa;
 
+import globaz.globall.db.BApplication;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
+import globaz.osiris.api.ordre.APICommonOdreVersement;
+import globaz.osiris.api.ordre.APIOrdreGroupe;
+import globaz.osiris.db.comptes.CAOperationManager;
+import globaz.osiris.db.comptes.CAOperationOrdreVersementManager;
+import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.osiris.db.ordres.CAOrdreGroupeManager;
+import globaz.osiris.db.ordres.CAOrdreRejete;
+import globaz.osiris.db.ordres.CAOrdreVersement;
+import globaz.osiris.db.ordres.sepa.utils.CASepaGroupeOGKey;
+import globaz.osiris.db.ordres.sepa.utils.CASepaOVConverterUtils;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -43,7 +56,7 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
     public static final String PROTOCOL_NAME = "JadeFsServiceSftp";
     public static final String PRIVATEKEY_NODENAME_PREFIX = "private.key.";
 
-    private static final String TRANSACTION_PREFIX = "OV-";
+    private static final String TRANSACTION_PREFIX = CASepaOVConverterUtils.INSTRUCTION_ID_PREFIX;
     private BSession session;
     private String title;
     private String body;
@@ -196,68 +209,36 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         if (!NAMESPACE_PAIN002.equals(doc.getDocumentElement().getNamespaceURI())) {
             throw new SepaException("the provided document is not a PAIN002 - Acknowledgement response");
         }
-
         com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document ack = unmarshall(doc,
                 com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document.class);
 
-        List<String> warnings = new ArrayList<String>();
-        processAck(ack, warnings);
-
-        if (!warnings.isEmpty()) {
-            sendAlertEmail(
-                    "Alertes concernant l'ordre groupé "
-                            + ack.getCstmrPmtStsRpt().getOrgnlGrpInfAndSts().getOrgnlMsgId(),
-                    StringUtils.join(warnings, "\n\n"));
-        }
+        processAcknowledgement(ack);
     }
 
-    private void sendAlertEmail(String title, String body) {
-        // TODO implémenter l'envoi d'un mail
-        LOG.info("MAIL TO SEND:");
-        this.title = title;
-        LOG.info("Title: {}", title);
-        this.body = body;
-        LOG.info("Body:\n{}", body);
+    public CAOrdreGroupe processAcknowledgement(com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document ack) {
+        return processAck(ack);
+
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    private void processAck(com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document acknowledgement,
-            List<String> warnings) {
+    private CAOrdreGroupe processAck(com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document acknowledgement) {
         CustomerPaymentStatusReportV03CH paymentStatusReport = acknowledgement.getCstmrPmtStsRpt();
 
         OriginalGroupInformation20CH orgnlGrpInfAndSts = paymentStatusReport.getOrgnlGrpInfAndSts();
         String messageId = orgnlGrpInfAndSts.getOrgnlMsgId();
 
         // 05. Récupérer l’ordre groupé associé à la quittance
-        CAOrdreGroupe ordre = findOrdreGroupeById(messageId);
+        CAOrdreGroupe ordreGroupe = findOrdreGroupeFromMsgId(messageId);
 
         // 05. A
-        if (ordre == null) {
-            return;
+        if (ordreGroupe == null) {
+            return null;
         }
 
         // 05. B
-        if (APIOrdreGroupe.ISO_ORDRE_STATUS_CONFIRME.equals(ordre.getIsoCsOrdreStatutExec())) {
-            warnings.add("Ordre Groupé " + messageId + " - déjà confirmé\n" + "Une quittance pour l'Ordre Groupé "
-                    + messageId + " - " + ordre.getMotif()
-                    + " a déjà été traitée. Le status d'execution de l'ordre est à CONFIRME");
-            // envoyer un mail d'alerte... le status était déjà confirmé, on a reçu un doublon?
-            return;
+        if (APIOrdreGroupe.ISO_ORDRE_STATUS_CONFIRME.equals(ordreGroupe.getIsoCsOrdreStatutExec())) {
+            LOG.warn(
+                    "Ordre Groupé {} - déjà confirmé\nUne quittance pour l'Ordre Groupé {} - {} a déjà été traitée. Le status d'execution de l'ordre est à CONFIRME",
+                    messageId, messageId, ordreGroupe.getMotif());
         }
 
         // 05. C
@@ -270,37 +251,32 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         }
 
         List<StatusReasonInformation8CH> stsRsnInf = orgnlGrpInfAndSts.getStsRsnInf();
-        List<String> comments = convertAdditionalCommentsToList(stsRsnInf);
 
         switch (grpSts) {
             case ACCP:
+                markOrdreGroupeConfirmed(ordreGroupe, APIOrdreGroupe.ISO_TRANSAC_STATUS_COMPLET);
+                break;
             case ACWC:
                 // "Accepté" ou "Accepté avec modifications" sont traités de la même façon!
             case ACTC:
                 // "L'ordre est techniquement accepté" -> même comportement que ses ptits copains // TODO comprendre ce
                 // que cela veut dire!
-                markOrdreGroupeConfirmed(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_COMPLET);
-                markAllTransactions(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_COMPLET);
                 break;
             case RJCT:
                 // "Rejeté" entièrement
-                markOrdreGroupeConfirmed(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_REJETE);
-                markAllTransactions(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_REJETE);
-                warnings.add("Ordre Groupé " + messageId + " - Entièrement Rejeté\n" + "L'Ordre Groupé " + messageId
-                        + " - " + ordre.getMotif()
-                        + " a été refusé par l'organisme financier. Les messages d'information suivants ont été inclus dans la réponse:\n\n  -"
-                        + StringUtils.join(comments.toArray(), "\n  -"));
-                handleBLevel(paymentStatusReport, ordre, warnings);
+                markOrdreGroupeConfirmed(ordreGroupe, APIOrdreGroupe.ISO_TRANSAC_STATUS_REJETE);
+                LOG.info(
+                        "Ordre Groupé {} - Entièrement Rejeté\nL'Ordre Groupé {} - {} a été refusé par l'organisme financier.",
+                        messageId, messageId, ordreGroupe.getMotif());
+                handleBLevel(paymentStatusReport, ordreGroupe);
                 break;
             case PART:
                 // "Accepté partiellement"
-                markOrdreGroupeConfirmed(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_PARTIEL);
-                markAllTransactions(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_PARTIEL);
-                warnings.add("Ordre Groupé " + messageId + " - Partiellement Exécuté\n" + "L'Ordre Groupé " + messageId
-                        + " - " + ordre.getMotif()
-                        + " a été partiellement exécuté par l'organisme financier. Les messages d'information suivants ont été inclus dans la réponse:\n\n  -"
-                        + StringUtils.join(comments.toArray(), "\n  -"));
-                handleBLevel(paymentStatusReport, ordre, warnings);
+                markOrdreGroupeConfirmed(ordreGroupe, APIOrdreGroupe.ISO_TRANSAC_STATUS_PARTIEL);
+                LOG.info(
+                        "Ordre Groupé {} - Partiellement Exécuté\nL'Ordre Groupé {} - {} a été partiellement exécuté par l'organisme financier.",
+                        messageId, messageId, ordreGroupe.getMotif());
+                handleBLevel(paymentStatusReport, ordreGroupe);
                 break;
 
             // --------------------------------------------------------
@@ -316,11 +292,12 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
             default:
                 throw new AssertionError("could not process status code: " + grpSts);
         }
+        return ordreGroupe;
+
     }
 
     // 07. Traiter la quittance B-Level (quittance par genre de transaction)
-    private void handleBLevel(CustomerPaymentStatusReportV03CH paymentStatusReport, CAOrdreGroupe ordreGroupe,
-            List<String> warnings) {
+    private void handleBLevel(CustomerPaymentStatusReportV03CH paymentStatusReport, CAOrdreGroupe ordreGroupe) {
         for (OriginalPaymentInformation1CH blevel : paymentStatusReport.getOrgnlPmtInfAndSts()) {
             TransactionGroupStatus3Code status = blevel.getPmtInfSts();
             List<StatusReasonInformation8CH> reasons = blevel.getStsRsnInf();
@@ -344,29 +321,41 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                     // 08. Invalider les transactions d’un même genre suite à un rejet B-Level
                     String messageTypeId = blevel.getOrgnlPmtInfId();
 
-                    List<Object> selectedTransactions = new ArrayList<Object>();
-                    if ("GT-01".equals(messageTypeId)) {
-                        // TODO GT-01 : sélectionner les virements bancaires ou postaux en suisse liés à l’ordre groupé
+                    List<APICommonOdreVersement> selectedTransactions = new ArrayList<APICommonOdreVersement>();
 
-                        // ça veut dire quoi "sélectionner les virements xxx"???
-                    } else if ("GT-02".equals(messageTypeId)) {
-                        // TODO GT-02 : sélectionner les mandats de paiement en suisse
-                    } else if ("GT-03".equals(messageTypeId)) {
-                        // TODO GT-03 : sélectionner les virements BVR en suisse
-                    } else if ("GT-11".equals(messageTypeId)) {
-                        // TODO GT-11 : sélectionner les virements bancaires ou postaux internationaux
-                    } else if ("GT-12".equals(messageTypeId)) {
-                        // TODO GT-12 : sélectionner les mandats de paiements internationaux
-                    } else {
-                        warnings.add("Ordre Groupé " + ordreGroupe.getIdOrdreGroupe()
-                                + " - Genre de transaction inconnu\n" + "L'Ordre Groupé "
-                                + ordreGroupe.getIdOrdreGroupe() + " - " + ordreGroupe.getMotif()
-                                + " contient un genre de transaction inconnu: " + messageTypeId
-                                + ". Impossible de traiter l'annulation des transactions correspondantes.");
+                    for (APICommonOdreVersement ordreV : getOpOVfromOG(ordreGroupe)) {
+                        try {
+                            CASepaGroupeOGKey messageIdKey = new CASepaGroupeOGKey(ordreV);
+                            if (messageTypeId.equals(messageIdKey.getKeyString())) {
+                                selectedTransactions.add(ordreV);
+                            }
+                        } catch (Exception e) {
+                            throw new SepaException("could not verify Blevel GroupKey of OV.", e);
+                        }
                     }
 
-                    for (Object o : selectedTransactions) {
-                        // TODO persist as OrdreRejete
+                    if (selectedTransactions.isEmpty()) {
+                        LOG.debug(
+                                "Ordre Groupé {} - Genre de transaction inconnu\nL'Ordre Groupé {} - {} ne contient pas d'ordre du type de retour: {}. Impossible de traiter l'annulation des transactions correspondantes.",
+                                ordreGroupe.getIdOrdreGroupe(), ordreGroupe.getIdOrdreGroupe(), ordreGroupe.getMotif(),
+                                messageTypeId);
+                    } else {
+                        for (APICommonOdreVersement o : selectedTransactions) {
+                            CAOrdreRejete rejected = new CAOrdreRejete();
+                            rejected.setSession(getSession());
+                            rejected.setIdOrdre(o.getIdOperation());
+
+                            StatusReasonInformation8CH rsn = reasons.get(0);
+                            rejected.setProprietary(rsn.getRsn().getCd());
+                            rejected.setProprietary(rsn.getRsn().getPrtry());
+                            rejected.setAdditionalInformations(StringUtils.join(rsn.getAddtlInf(), '\n'));
+
+                            try {
+                                rejected.add();
+                            } catch (Exception e) {
+                                throw new SepaException("could not save CAOrdreRejete.", e);
+                            }
+                        }
                     }
 
                 } else {
@@ -392,32 +381,30 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                          */
                         String transactionId = transactionInformations.getOrgnlInstrId();
                         if (!transactionId.startsWith(TRANSACTION_PREFIX)) {
-                            warnings.add("Transaction Rejetée - " + transactionId + "/" + orderTxId + "\n"
-                                    + "La transaction " + transactionId + " ne commence pas par le préfixe attendu '"
-                                    + TRANSACTION_PREFIX + "'");
+                            LOG.debug(
+                                    "Transaction Rejetée - {}/{}\nLa transaction {}  ne commence pas par le préfixe attendu '{}'",
+                                    transactionId, orderTxId, transactionId, TRANSACTION_PREFIX);
                             continue;
                         }
 
                         String transactionIdNoPrefix = transactionId.substring(TRANSACTION_PREFIX.length());
 
                         /* - La transaction n’est pas trouvée dans CAOPOVP.idOrdre */
-                        CAOrdreVersement ordre = getOrdreVersement(transactionIdNoPrefix);
-                        if (ordre == null) {
+                        CAOrdreVersement ov = getOrdreVersement(transactionIdNoPrefix);
+                        if (ov == null) {
                             // TODO décider du comportement si la transaction n'est pas trouvée!
-                            warnings.add("Transaction Rejetée - " + transactionId + "/" + orderTxId + "\n"
-                                    + "La transaction " + transactionId
-                                    + " n'a pas pu être trouvée dans la base de données.");
+                            LOG.warn(
+                                    "Transaction Rejetée - {}/{}\nLa transaction {} n'a pas pu être trouvée dans la base de données.",
+                                    transactionId, orderTxId, transactionId);
                             continue;
                         }
 
                         /* - La transaction est trouvée mais n’appartient pas à cet ordre groupé */
-                        if (!StringUtils.equals(ordreGroupe.getIdOrdreGroupe(),
-                                ordre.getOrdreGroupe().getIdOrdreGroupe())) {
-                            // TODO décider du comportement si la transaction n'est pas trouvée!
-                            warnings.add("Transaction Rejetée - " + transactionId + "/" + orderTxId + "\n"
-                                    + "La transaction " + transactionId + " n'appartient pas à l'ordre groupé "
-                                    + ordreGroupe.getIdOrdreGroupe() + ", mais à "
-                                    + ordre.getOrdreGroupe().getIdOrdreGroupe());
+                        if (!StringUtils.equals(ordreGroupe.getIdOrdreGroupe(), ov.getOrdreGroupe().getIdOrdreGroupe())) {
+                            LOG.error(
+                                    "Transaction Rejetée - {}/{}\nLa transaction {} n'appartient pas à l'ordre groupé {}, mais à {}",
+                                    transactionId, orderTxId, transactionId, ordreGroupe.getIdOrdreGroupe(), ov
+                                            .getOrdreGroupe().getIdOrdreGroupe());
                             continue;
                         }
 
@@ -428,7 +415,7 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                         for (StatusReasonInformation8CH xxx : cLevelReasons) {
                             CAOrdreRejete rejected = new CAOrdreRejete();
                             rejected.setSession(getSession());
-                            rejected.setIdOrdre(ordre.getIdOrdre());
+                            rejected.setIdOrdre(ov.getIdOrdre());
 
                             StatusReason6Choice rsn = xxx.getRsn();
                             rejected.setCode(rsn.getCd());
@@ -455,8 +442,21 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         }
     }
 
+    private List<APICommonOdreVersement> getOpOVfromOG(CAOrdreGroupe og) {
+        CAOperationOrdreVersementManager mgr = new CAOperationOrdreVersementManager();
+        mgr.setSession(getSession());
+        mgr.setForIdOrdreGroupe(og.getIdOrdreGroupe());
+        mgr.setOrderBy(CAOperationManager.ORDER_IDOPERATION);
+        try {
+            mgr.find(BManager.SIZE_NOLIMIT);
+        } catch (Exception e) {
+            throw new SepaException("could not search for transactions: " + og.getIdOrdreGroupe() + ": " + e, e);
+        }
+        List<APICommonOdreVersement> ovs = mgr.toList();
+        return ovs;
+    }
+
     private CAOrdreVersement getOrdreVersement(String transactionIdNoPrefix) {
-        // FIXME code-review de ce morceau par un expert JADE pleazzz
 
         CAOrdreVersement ordreVersement = new CAOrdreVersement();
         ordreVersement.setSession(getSession());
@@ -501,26 +501,6 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         return comments;
     }
 
-    private void markAllTransactions(CAOrdreGroupe ordre, String newStatus) {
-        // FIXME code-review de ce morceau par un expert JADE pleazzz
-
-        CAOrdreVersementManager m = new CAOrdreVersementManager();
-        m.setSession(getSession());
-
-        m.setForIdOrdreGroupe(ordre.getIdOrdreGroupe());
-        try {
-            m.find();
-        } catch (Exception e) {
-            throw new SepaException("could not search for transactions: " + ordre.getIdOrdreGroupe() + ": " + e, e);
-        }
-
-        List<CAOrdreVersement> orders = m.toList();
-        for (CAOrdreVersement ov : orders) {
-            // TODO
-            // order.set();
-        }
-    }
-
     private void markOrdreGroupeConfirmed(CAOrdreGroupe ordre, String newStatus) {
         ordre.setIsoCsOrdreStatutExec(APIOrdreGroupe.ISO_ORDRE_STATUS_CONFIRME);
         if (newStatus != null && !newStatus.isEmpty()) {
@@ -533,7 +513,7 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         }
     }
 
-    private CAOrdreGroupe findOrdreGroupeById(String messageId) {
+    private CAOrdreGroupe findOrdreGroupeFromMsgId(String messageId) {
         CAOrdreGroupeManager manager = new CAOrdreGroupeManager();
         manager.setSession(getSession());
 

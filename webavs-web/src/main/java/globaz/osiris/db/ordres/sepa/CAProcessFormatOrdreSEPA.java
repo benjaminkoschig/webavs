@@ -128,15 +128,15 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
         // +Postal Adr
         PostalAddress6CH postalAdr = factory.createPostalAddress6CH();
         // FIXME, need interface update
-        if (CASepaCommonUtils.TYPE_VIREMENT_MANDAT.equals(CASepaOVConverterUtils.getTypeVirement(ov))) {
+        postalAdr.setCtry(ov.getAdressePaiement().getAdresseCourrier().getPaysISO());
+        if (CASepaOVConverterUtils.PAYS_DESTINATION_SUISSE.equals(CASepaOVConverterUtils.getPaysDestination(ov))) {
             // adrLine interdit pour les type mandat
             String rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRue());
             postalAdr.setStrtNm((rue.isEmpty() ? null : rue));
             // postalAdr.setBldgNb((numeroRue.isEmpty() ? null : numeroRue));
             postalAdr.setPstCd(CASepaCommonUtils.limit16(ov.getAdressePaiement().getAdresseCourrier().getNumPostal()));
             postalAdr.setTwnNm(CASepaCommonUtils.limit35(ov.getAdressePaiement().getAdresseCourrier().getLocalite()));
-            postalAdr.setCtry(ov.getAdressePaiement().getAdresseCourrier().getPaysISO());
-        } else {
+
             // String rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRueSansNum());
             // String numeroRue =
             // CASepaCommonUtils.limit16(ov.getAdressePaiement().getAdresseCourrier().getNumeroRue());
@@ -145,9 +145,12 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
             // postalAdr.setPstCd(CASepaCommonUtils.limit16(ov.getAdressePaiement().getAdresseCourrier().getNumPostal()));
             // postalAdr.setTwnNm(CASepaCommonUtils.limit35(ov.getAdressePaiement().getAdresseCourrier().getLocalite()));
             // postalAdr.setCtry(ov.getAdressePaiement().getAdresseCourrier().getPaysISO());
-            postalAdr.getAdrLine()
-                    .add(CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRue()));
+        } else {
 
+            if (!ov.getAdressePaiement().getAdresseCourrier().getRue().isEmpty()) {
+                postalAdr.getAdrLine().add(
+                        CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRue()));
+            }
             postalAdr.getAdrLine().add(
                     CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getPaysISO() + "-"
                             + ov.getAdressePaiement().getAdresseCourrier().getNumPostal() + " "
@@ -187,7 +190,7 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
 
             // init Blevel
             PaymentInstructionInformation3CH bLevelData = factory.createPaymentInstructionInformation3CH();
-            bLevelData.setPmtInfId(key.toString());
+            bLevelData.setPmtInfId(key.getKeyString());
             bLevelData.setPmtMtd(CASepaOVConverterUtils.getPmtMtd(ov));
             bLevelData.setBtchBookg(null); // from OG --> will be set at aggregate
             PaymentTypeInformation19CH pmtTpInfB = factory.createPaymentTypeInformation19CH();
@@ -202,10 +205,10 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
             List<CreditTransferTransactionInformation10CH> cLevels = new ArrayList<CreditTransferTransactionInformation10CH>();
             cLevels.add(cLevelData);
             bLevels.put(key, cLevels);
-            logger.debug("New blevel group key : [{}]", key.toString());
+            logger.debug("New blevel group key : [{}]", key.getKeyString());
         } else {
             bLevels.get(key).add(cLevelData);
-            logger.debug("added clevel to blevel [{}] contain now {}", key.toString(), bLevels.get(key).size());
+            logger.debug("added clevel to blevel [{}] contain now {}", key.getKeyString(), bLevels.get(key).size());
         }
         return null;
     }
@@ -264,7 +267,7 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
             // Set Blevel info from OG
             bLevelData.setBtchBookg(btchBookg);
             // priority to set here if not a BVR
-            if (!bLevelData.getPmtInfId().equals(CASepaOVConverterUtils.B_LEVEL_ID_BVR)) {
+            if (!bLevelData.getPmtInfId().contains(CASepaOVConverterUtils.ORDRE_VERSEMENT_BVR)) {
                 bLevelData.getPmtTpInf().setInstrPrty(instrPrty);
             }
             bLevelData.setReqdExctnDt(reqdExctmDt);

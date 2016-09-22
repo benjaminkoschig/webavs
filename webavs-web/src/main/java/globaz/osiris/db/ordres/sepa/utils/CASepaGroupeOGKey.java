@@ -44,17 +44,20 @@ public class CASepaGroupeOGKey {
 
     @Override
     public int hashCode() {
-        return toString().hashCode();
+        return getKeyString().hashCode();
     }
 
-    @Override
-    public String toString() {
+    public String getKeyString() {
         return monnaieISO + typeOrdre + typeVirement + paysDest;
     }
 
     @Override
     public boolean equals(Object obj) {
-        return toString().equals(obj.toString());
+        if (obj instanceof CASepaGroupeOGKey) {
+            return getKeyString().equals(((CASepaGroupeOGKey) obj).getKeyString());
+        }
+        return false;
+
     }
 
     public PaymentInstructionInformation3CH getbLevel() {

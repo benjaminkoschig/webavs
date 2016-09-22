@@ -26,10 +26,6 @@ public class CASepaCommonUtils {
     public static final String TYPE_VIREMENT_POSTAL = "bankANDccp";
     public static final String TYPE_VIREMENT_MANDAT = "mandat";
 
-    /**
-     * La longueur max autorisé par les XSD pour le numéro de version de l'application
-     */
-    private static final int VERSION_LENGTH = 35;
     private static TIIbanFormater formater = new TIIbanFormater();
 
     /**
@@ -114,7 +110,7 @@ public class CASepaCommonUtils {
      * utilisé par la méthode de regroupement.
      * 
      * @param adp
-     * @return variable statique de la classe utilitaire
+     * @return variable statique de la classe utilitaire bankANDccp/mandat/null
      * @throws Exception
      */
     public static String getTypeVirement(CAAdressePaiementFormatter adp) throws Exception {

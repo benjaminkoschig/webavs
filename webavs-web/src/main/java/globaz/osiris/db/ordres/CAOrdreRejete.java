@@ -4,9 +4,12 @@ import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 
-// TODO en faire un BEntity et l'intégrer dans JADE......
 public class CAOrdreRejete extends BEntity {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 4010204185400415976L;
     public static final String FIELD_ID = "IDORRE";
     public static final String FIELD_IDORDRE = "IDORDR";
     public static final String FIELD_CODE = "CODE";
