@@ -1,13 +1,5 @@
 package globaz.osiris.db.ordres.sepa;
 
-import globaz.globall.db.BApplication;
-import globaz.globall.db.BSession;
-import globaz.osiris.api.ordre.APIOrdreGroupe;
-import globaz.osiris.db.ordres.CAOrdreGroupe;
-import globaz.osiris.db.ordres.CAOrdreGroupeManager;
-import globaz.osiris.db.ordres.CAOrdreRejete;
-import globaz.osiris.db.ordres.CAOrdreVersement;
-import globaz.osiris.db.ordres.CAOrdreVersementManager;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -15,12 +7,12 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.annotation.ThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.osiris.business.constantes.CAProperties;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import com.jcraft.jsch.ChannelSftp;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.CustomerPaymentStatusReportV03CH;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.OriginalGroupInformation20CH;
@@ -30,12 +22,26 @@ import com.six_interbank_clearing.de.pain_002_001_03_ch_02.StatusReason6Choice;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.StatusReasonInformation8CH;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.TransactionGroupStatus3Code;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.TransactionIndividualStatus3CodeCH;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.osiris.business.constantes.CAProperties;
+import globaz.globall.db.BApplication;
+import globaz.globall.db.BSession;
+import globaz.osiris.api.ordre.APIOrdreGroupe;
+import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.osiris.db.ordres.CAOrdreGroupeManager;
+import globaz.osiris.db.ordres.CAOrdreRejete;
+import globaz.osiris.db.ordres.CAOrdreVersement;
+import globaz.osiris.db.ordres.CAOrdreVersementManager;
 
-@ThreadSafe
 public class SepaAcknowledgementProcessor extends AbstractSepa {
     private static final Logger LOG = LoggerFactory.getLogger(SepaAcknowledgementProcessor.class);
 
     public static final String NAMESPACE_PAIN002 = "http://www.six-interbank-clearing.com/de/pain.002.001.03.ch.02.xsd";
+
+    /** Where to look to find a ssh private key (legacy file from Jade) */
+    public static final String LEGACY_JADE_CONFIG_FILE = "/JadeFsServer.xml";
+    public static final String PROTOCOL_NAME = "JadeFsServiceSftp";
+    public static final String PRIVATEKEY_NODENAME_PREFIX = "private.key.";
 
     private static final String TRANSACTION_PREFIX = "OV-";
     private BSession session;
@@ -44,6 +50,8 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
 
     /** Connecte sur le ftp cible, dans le folder adapté à l'envoi de messages SEPA. */
     private ChannelSftp connect(BSession session) {
+        String privateKey = loadPrivateKeyPathFromJadeConfigFile();
+
         // try fetching configuration from database
         String login = null;
         String password = null;
@@ -66,9 +74,58 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         }
 
         // go connect
-        ChannelSftp client = connect(host, port, login, password);
+        ChannelSftp client = connect(host, port, login, password, privateKey);
 
         return client;
+    }
+
+    protected String loadPrivateKeyPathFromJadeConfigFile() {
+        // try fetching a private ssh key from legacy config files, mimic Jade behavior
+        InputStream jadeFsServerConfig = getClass().getResourceAsStream(LEGACY_JADE_CONFIG_FILE);
+
+        if (jadeFsServerConfig == null) {
+            LOG.info("file {} not found. skipping retrieval of private ssh key for connecting to SFTP",
+                    LEGACY_JADE_CONFIG_FILE);
+            return null;
+        }
+
+        String privateKey = null;
+
+        Document doc = parseDocument(jadeFsServerConfig);
+        NodeList allProtocols = doc.getDocumentElement().getElementsByTagName("protocols");
+
+        for (int i = 0; i < allProtocols.getLength(); i++) {
+            Element protocols = (Element) allProtocols.item(i);
+            NodeList allProtocol = protocols.getElementsByTagName("protocol");
+
+            for (int j = 0; j < allProtocol.getLength(); j++) {
+                Element protocol = (Element) allProtocol.item(i);
+
+                if (PROTOCOL_NAME.equals(protocol.getAttribute("name"))) {
+                    NodeList protocolChildren = protocol.getChildNodes();
+
+                    for (int k = 0; k < protocolChildren.getLength(); k++) {
+                        Node n = protocolChildren.item(k);
+
+                        if (n instanceof Element && n.getNodeName().startsWith(PRIVATEKEY_NODENAME_PREFIX)) {
+                            privateKey = StringUtils.trimToNull(n.getTextContent());
+                            LOG.info("resolved private ssh key to be {}", privateKey);
+                            break;
+                        }
+                    }
+                }
+
+                if (privateKey != null) {
+                    break;
+                }
+            }
+
+            if (privateKey != null) {
+                break;
+            }
+        }
+
+        return privateKey;
     }
 
     public void findAndProcessAllAcknowledgements(BSession session) throws PropertiesException {
@@ -126,9 +183,9 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
     /**
      * Traite une "quittance" SEPA (aka Acknowledgement) qui informe de la bonne acceptation d'un ordre envoyé
      * précédemment.
-     * 
+     *
      * @throws SepaException en cas de souci lors du traitement.
-     * 
+     *
      * @see com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document
      */
     public void processAcknowledgement(InputStream source) {
@@ -147,8 +204,9 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         processAck(ack, warnings);
 
         if (!warnings.isEmpty()) {
-            sendAlertEmail("Alertes concernant l'ordre groupé "
-                    + ack.getCstmrPmtStsRpt().getOrgnlGrpInfAndSts().getOrgnlMsgId(),
+            sendAlertEmail(
+                    "Alertes concernant l'ordre groupé "
+                            + ack.getCstmrPmtStsRpt().getOrgnlGrpInfAndSts().getOrgnlMsgId(),
                     StringUtils.join(warnings, "\n\n"));
         }
     }
@@ -228,13 +286,8 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                 // "Rejeté" entièrement
                 markOrdreGroupeConfirmed(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_REJETE);
                 markAllTransactions(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_REJETE);
-                warnings.add("Ordre Groupé "
-                        + messageId
-                        + " - Entièrement Rejeté\n"
-                        + "L'Ordre Groupé "
-                        + messageId
-                        + " - "
-                        + ordre.getMotif()
+                warnings.add("Ordre Groupé " + messageId + " - Entièrement Rejeté\n" + "L'Ordre Groupé " + messageId
+                        + " - " + ordre.getMotif()
                         + " a été refusé par l'organisme financier. Les messages d'information suivants ont été inclus dans la réponse:\n\n  -"
                         + StringUtils.join(comments.toArray(), "\n  -"));
                 handleBLevel(paymentStatusReport, ordre, warnings);
@@ -243,13 +296,8 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                 // "Accepté partiellement"
                 markOrdreGroupeConfirmed(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_PARTIEL);
                 markAllTransactions(ordre, APIOrdreGroupe.ISO_TRANSAC_STATUS_PARTIEL);
-                warnings.add("Ordre Groupé "
-                        + messageId
-                        + " - Partiellement Exécuté\n"
-                        + "L'Ordre Groupé "
-                        + messageId
-                        + " - "
-                        + ordre.getMotif()
+                warnings.add("Ordre Groupé " + messageId + " - Partiellement Exécuté\n" + "L'Ordre Groupé " + messageId
+                        + " - " + ordre.getMotif()
                         + " a été partiellement exécuté par l'organisme financier. Les messages d'information suivants ont été inclus dans la réponse:\n\n  -"
                         + StringUtils.join(comments.toArray(), "\n  -"));
                 handleBLevel(paymentStatusReport, ordre, warnings);
@@ -363,8 +411,8 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                         }
 
                         /* - La transaction est trouvée mais n’appartient pas à cet ordre groupé */
-                        if (!StringUtils.equals(ordreGroupe.getIdOrdreGroupe(), ordre.getOrdreGroupe()
-                                .getIdOrdreGroupe())) {
+                        if (!StringUtils.equals(ordreGroupe.getIdOrdreGroupe(),
+                                ordre.getOrdreGroupe().getIdOrdreGroupe())) {
                             // TODO décider du comportement si la transaction n'est pas trouvée!
                             warnings.add("Transaction Rejetée - " + transactionId + "/" + orderTxId + "\n"
                                     + "La transaction " + transactionId + " n'appartient pas à l'ordre groupé "

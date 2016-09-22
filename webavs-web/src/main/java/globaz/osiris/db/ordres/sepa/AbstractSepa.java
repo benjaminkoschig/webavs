@@ -25,6 +25,8 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -108,8 +110,8 @@ public abstract class AbstractSepa {
 
             return unmarshaller.unmarshal(doc, clazz).getValue();
         } catch (JAXBException e) {
-            throw new SepaException("unable to convert xml document to java object of class " + clazz.getName() + ": "
-                    + e, e);
+            throw new SepaException(
+                    "unable to convert xml document to java object of class " + clazz.getName() + ": " + e, e);
         }
     }
 
@@ -132,18 +134,52 @@ public abstract class AbstractSepa {
 
     // FTP -------------------------------------------
 
-    /** @throws SepaException en cas d'erreur de connexion au FTP. */
-    protected ChannelSftp connect(String server, Integer port, String user, String password) {
+    /**
+     * Connecte au serveur SFTP spécifié, et retourne la canal utilisé pour transmettre les informations. Il faut
+     * spécifier soit le mot de passe, soit le chemin du fichier de clé.
+     *
+     * @param user Utilisateur
+     * @param password (optional)
+     *            Mot de passe, si authentification par mot de passe.
+     * @param keyFile (optional)
+     *            Clé privée, si authentification par clé privée.
+     *
+     * @throws SepaException en cas d'erreur de connexion au FTP.
+     */
+    protected ChannelSftp connect(String server, Integer port, String user, String password, String keyFile) {
+        Validate.notEmpty(server, "server was not specified");
+        Validate.notEmpty(user, "you must specify a user, even when using a private key file");
+        Validate.isTrue((password == null || keyFile == null) && (password != null || keyFile != null),
+                "you must specify a password or a key file, but not both");
+
         JSch jsch = new JSch();
+
         Session session;
         try {
-            session = jsch.getSession(user, server, port);
+            // if specified, set an identity (yet a private ssh key file)
+            if (StringUtils.isNotBlank(keyFile)) {
+                jsch.addIdentity(keyFile);
+            }
 
-            session.setPassword(password);
+            session = port == null ? jsch.getSession(user, server) : jsch.getSession(user, server, port);
 
+            // if specified, set the password
+            if (StringUtils.isNotBlank(password)) {
+                session.setPassword(password);
+            }
+
+            // XXX FIXME CRITICAL SECURITY BREACH!!!
+            // as per original code in globaz.jade.fs.service.jsch.JadeFsService#~576, we need to explicitly
+            // disable strict host key checks, making us vulnerable to man-in-the-middle attacks (ref.
+            // http://stackoverflow.com/questions/30178936/jsch-sftp-security-with-session-setconfigstricthostkeychecking-no).
+            // And since we are transferring financial informations over the public internet (to PostFinance...), this
+            // is terribly embarrassing and should be fixed ASAP: it is blocker, should prevent any deployment to
+            // production and send shame on us. But as ever, nobody really cares...
             session.setConfig("StrictHostKeyChecking", "no");
+
+            // pfiou we are connected, pop the champaign
             session.connect();
-            LOG.info("Connected to {}", server);
+            LOG.info("successfully connected to {}", server);
 
             Channel channel = session.openChannel("sftp");
             channel.connect();
