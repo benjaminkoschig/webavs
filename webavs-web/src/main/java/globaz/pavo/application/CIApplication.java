@@ -692,6 +692,10 @@ public class CIApplication extends globaz.globall.db.BApplication {
             final String jourDebutATester, final String jourFinATester, final String moisDebutATester,
             final String moisFinATester, final String anneeATester) throws Exception {
 
+        if (debutAffiliation == null || finAffiliation == null) {
+            return false;
+        }
+
         // Si nous avons l'année, mais pas le mois de début
         if (JadeStringUtil.isIntegerEmpty(moisDebutATester) || "66".equals(moisDebutATester)
                 || "77".equals(moisDebutATester) || "99".equals(moisDebutATester)) {
