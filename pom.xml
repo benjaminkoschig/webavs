@@ -49,12 +49,13 @@
 		<httpasyncclient.version>4.1</httpasyncclient.version>
 
 		<ch.globaz.mercato.notification.version>1.0.0</ch.globaz.mercato.notification.version>
-		<itucana.version>0.0.1</itucana.version>		
+		<itucana.version>0.0.1</itucana.version>
 		<jade.version>5.2.1</jade.version>
 		<pyxis.version>1.23.0</pyxis.version>
 		<simple-output-list.version>1.1.5</simple-output-list.version>
 		<op.version>5.0.3</op.version>
 		<globaz-external-xsd.version>1.2.0</globaz-external-xsd.version>
+		<ch.admin.ofit.anakin.version>1.12.1</ch.admin.ofit.anakin.version>
 
 
 		<!-- CONTINUOUS INTEGRATION -->
@@ -485,9 +486,9 @@
 
 			<!-- OFIT -->
 			<dependency>
-				<groupId>ch.admin.ofit</groupId>
+				<groupId>ch.admin.ofit.anakin</groupId>
 				<artifactId>Anakin</artifactId>
-				<version>0.0.1</version>
+				<version>${ch.admin.ofit.anakin.version}</version>
 			</dependency>
 
 			<dependency>

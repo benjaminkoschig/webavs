@@ -485,7 +485,7 @@
 			<artifactId>journalisation</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>ch.admin.ofit</groupId>
+			<groupId>ch.admin.ofit.anakin</groupId>
 			<artifactId>Anakin</artifactId>
 		</dependency>
 		<dependency>
