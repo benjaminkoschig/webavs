@@ -17,7 +17,7 @@ import ch.globaz.al.business.services.rubriques.comptables.RubriquesComptablesSe
 /**
  * Factory permettant de déterminer le service Rubrique comptable à utiliser
  * 
- * @author jts
+ * @author jts, pta (22.09.2016)
  */
 public abstract class RubriqueComptableServiceFactory {
 
@@ -42,6 +42,9 @@ public abstract class RubriqueComptableServiceFactory {
         RubriqueComptableServiceFactory.caissesMap.put("H515", RubriquesComptablesHorlogeresService.class);
         RubriqueComptableServiceFactory.caissesMap.put("H517", RubriquesComptablesHorlogeresService.class);
         RubriqueComptableServiceFactory.caissesMap.put("H51X", RubriquesComptablesHorlogeresService.class);
+
+        RubriqueComptableServiceFactory.caissesMap.put("NODE", RubriquesComptablesHorlogeresService.class);
+
     }
 
     /**
