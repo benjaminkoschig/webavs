@@ -170,7 +170,7 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
 
         return MotifVersementUtil.formatDeblocage(ov.getNumAvs(),
                 ov.getDesignationRequerant1() + " " + ov.getDesignationRequerant2(), ov.getSimpleOrdreVersement()
-                        .getRefPaiement(), libelle, message + " " + dateEcheance);
+                        .getRefPaiement(), libelle, message);
     }
 
     private SectionSimpleModel getSectionObjectFromList(String idSection, List<SectionSimpleModel> sectionsDette) {
