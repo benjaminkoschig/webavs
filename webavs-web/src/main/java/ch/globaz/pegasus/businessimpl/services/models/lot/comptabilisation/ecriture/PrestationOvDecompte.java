@@ -273,6 +273,7 @@ public class PrestationOvDecompte {
 
         String message = MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangFromIdTiers,
                 "PEGASUS_COMPTABILISATION_DECISION_DU", BSessionUtil.getSessionFromThreadContext());
+        message += " " + getDateDecision();
 
         String libelle = "";
         try {
@@ -285,7 +286,7 @@ public class PrestationOvDecompte {
         }
 
         return MotifVersementUtil.formatDecision(getNssRequerant(), getNomRequerant() + " " + getPrenomRequerant(),
-                getRefPaiement(), libelle, getDateDebut() + " - " + getDateFin(), message + " " + getDateDecision());
+                getRefPaiement(), libelle, getDateDebut() + " - " + getDateFin(), message);
     }
 
 }

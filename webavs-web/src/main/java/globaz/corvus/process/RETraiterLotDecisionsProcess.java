@@ -49,8 +49,10 @@ import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.APIGestionComptabiliteExterne;
 import globaz.osiris.api.APISection;
+import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.osiris.db.ordres.CAOrganeExecution;
 import globaz.osiris.external.IntRole;
 import globaz.osiris.utils.CAUtil;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -350,11 +352,19 @@ public class RETraiterLotDecisionsProcess extends BProcess {
             this._addError(getTransaction(), getSession().getLabel("ERREUR_DATE_ECHEANCE_SUP_DATE_JOURS"));
         }
 
-        // BZ 5459
-        if (!JadeNumericUtil.isInteger(getNumeroOG())
-                || (((Integer.parseInt(getNumeroOG())) < 1) || (Integer.parseInt(getNumeroOG()) > 99))) {
-            this._addError(getTransaction(), getSession().getLabel("ERREUR_NUMERO_OG_OBLIGATOIRE"));
+        // ISO20022
+        CAOrganeExecution organeExecution = new CAOrganeExecution();
+        organeExecution.setSession(getSession());
+        organeExecution.setIdOrganeExecution(getIdOrganeExecution());
+        organeExecution.retrieve();
+        if (organeExecution.getCSTypeTraitementOG().equals(APIOrganeExecution.OG_OPAE_DTA)) {
+            // BZ 5459
+            if (!JadeNumericUtil.isInteger(getNumeroOG())
+                    || (((Integer.parseInt(getNumeroOG())) < 1) || (Integer.parseInt(getNumeroOG()) > 99))) {
+                this._addError(getTransaction(), getSession().getLabel("ERREUR_NUMERO_OG_OBLIGATOIRE"));
+            }
         }
+
     }
 
     /**

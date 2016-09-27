@@ -40,9 +40,11 @@ import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.osiris.api.APIGestionRentesExterne;
 import globaz.osiris.api.APIRubrique;
 import globaz.osiris.api.APISection;
+import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CARubrique;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.osiris.db.ordres.CAOrganeExecution;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRSession;
@@ -169,10 +171,17 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
             this._addError(getTransaction(), getSession().getLabel("ERREUR_DESC_40_CARS"));
         }
 
-        // BZ 5459
-        if (!JadeNumericUtil.isInteger(getNumeroOG())
-                || (((Integer.parseInt(getNumeroOG())) < 1) || (Integer.parseInt(getNumeroOG()) > 99))) {
-            this._addError(getTransaction(), getSession().getLabel("ERREUR_NUMERO_OG_OBLIGATOIRE"));
+        // ISO20022
+        CAOrganeExecution organeExecution = new CAOrganeExecution();
+        organeExecution.setSession(getSession());
+        organeExecution.setIdOrganeExecution(getIdOrganeExecution());
+        organeExecution.retrieve();
+        if (organeExecution.getCSTypeTraitementOG().equals(APIOrganeExecution.OG_OPAE_DTA)) {
+            // BZ 5459
+            if (!JadeNumericUtil.isInteger(getNumeroOG())
+                    || (((Integer.parseInt(getNumeroOG())) < 1) || (Integer.parseInt(getNumeroOG()) > 99))) {
+                this._addError(getTransaction(), getSession().getLabel("ERREUR_NUMERO_OG_OBLIGATOIRE"));
+            }
         }
 
         // On contrôle que le mois précédent ait bien été validé...

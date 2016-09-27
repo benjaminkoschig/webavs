@@ -11,6 +11,7 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.osiris.api.ordre.APIOrdreGroupe;
+import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
@@ -205,11 +206,19 @@ public class REValiderLotViewBean extends PRAbstractViewBeanSupport {
                         "La date de valeur comptable doit être dans le même mois que le dernier pmt mensuel.");
             }
 
-            // BZ 5459
-            if (!JadeNumericUtil.isInteger(getNumeroOG())
-                    || (((Integer.parseInt(getNumeroOG())) < 1) || (Integer.parseInt(getNumeroOG()) > 99))) {
-                throw new Exception(getSession().getLabel("ERREUR_NUMERO_OG_OBLIGATOIRE"));
+            // ISO20022
+            CAOrganeExecution organeExecution = new CAOrganeExecution();
+            organeExecution.setSession(getSession());
+            organeExecution.setIdOrganeExecution(getIdOrganeExecution());
+            organeExecution.retrieve();
+            if (organeExecution.getCSTypeTraitementOG().equals(APIOrganeExecution.OG_OPAE_DTA)) {
+                // BZ 5459
+                if (!JadeNumericUtil.isInteger(getNumeroOG())
+                        || (((Integer.parseInt(getNumeroOG())) < 1) || (Integer.parseInt(getNumeroOG()) > 99))) {
+                    throw new Exception(getSession().getLabel("ERREUR_NUMERO_OG_OBLIGATOIRE"));
+                }
             }
+
         } catch (Exception e) {
             setMsgType(FWViewBeanInterface.ERROR);
             setMessage(e.getMessage());
