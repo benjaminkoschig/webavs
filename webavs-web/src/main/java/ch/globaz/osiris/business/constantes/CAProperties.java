@@ -15,7 +15,10 @@ public enum CAProperties implements IProperties {
     ISO_SEPA_FTP_USER("iso.sepa.ftp.user", "user sftp pour les transmission ISO20022"),
     ISO_SEPA_FTP_PASS("iso.sepa.ftp.pass", "pass sftp pour les transmission ISO20022 (pour la plateforme de test)"),
     ISO_SEPA_FTP_002_FOLDER("iso.sepa.ftp.ack.folder", "nom du folder de quittance pour les transmission ISO20022"),
-    ISO_SEPA_FTP_001_FOLDER("iso.sepa.ftp.post.folder", "nom du folder de post pain001 pour les transmission ISO20022");
+    ISO_SEPA_FTP_001_FOLDER("iso.sepa.ftp.post.folder", "nom du folder de post pain001 pour les transmission ISO20022"),
+    ISO_SEPA_RESPONSABLE_OG_EMAIL(
+            "iso.sepa.responsable.og.email",
+            "email du responsable OG à qui la liste des transactions non executées est envoyée pas le process de traitement des quittances");
 
     private String description;
     private String propertyName;

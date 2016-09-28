@@ -1,18 +1,20 @@
 package globaz.osiris.db.ordres.sepa;
 
-import java.io.InputStream;
-import org.apache.commons.lang.StringUtils;
-import com.jcraft.jsch.ChannelSftp;
-import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.osiris.business.constantes.CAProperties;
 import globaz.globall.db.BApplication;
 import globaz.globall.db.BSession;
+import java.io.InputStream;
+import org.apache.commons.lang.StringUtils;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.osiris.business.constantes.CAProperties;
+import com.jcraft.jsch.ChannelSftp;
 
 public class SepaSendOrderProcessor extends AbstractSepa {
     public static final String NAMESPACE_PAIN001 = "http://www.six-interbank-clearing.com/de/pain.001.001.03.ch.02.xsd";
 
     /** Connecte sur le ftp cible, dans le folder adapté à l'envoi de messages SEPA. */
     private ChannelSftp connect(BSession session) {
+        String privateKey = loadPrivateKeyPathFromJadeConfigFile();
+
         // try fetching configuration from database
         String login = null;
         String password = null;
@@ -39,7 +41,7 @@ public class SepaSendOrderProcessor extends AbstractSepa {
         }
 
         // go connect
-        ChannelSftp client = connect(host, port, login, password, null);
+        ChannelSftp client = connect(host, port, login, password, privateKey);
 
         return client;
     }

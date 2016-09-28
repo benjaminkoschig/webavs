@@ -9,7 +9,7 @@
 <%@page import="globaz.osiris.application.CAApplication"%>
 
 <%
-	idEcran = "GCAXXXX";
+	idEcran = "GCA2035";
 	CAImprimerOrdreRejeteViewBean viewBean = (CAImprimerOrdreRejeteViewBean) session.getAttribute(CADefaultServletAction.VB_ELEMENT);
 	userActionValue = CAApplication.DEFAULT_OSIRIS_NAME + ".print.imprimerOrdreRejete.executer"; 
 %>
@@ -18,12 +18,12 @@
 <%-- tpl:put name="zoneScripts" --%> 
 
 <SCRIPT language="JavaScript">
-top.document.title = "Web@Avs - <ct:FWLabel key='GCAXXXX_TITRE_ECRAN'/> - " + top.location.href;
+top.document.title = "Web@Avs - <ct:FWLabel key='GCA2035_TITRE_ECRAN'/> - " + top.location.href;
 </SCRIPT>
 
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart.jspf" %>
-<%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="GCAXXXX_TITRE_ECRAN"/><%-- /tpl:put --%>
+<%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="GCA2035_TITRE_ECRAN"/><%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart2.jspf" %>
 <%-- tpl:put name="zoneMain" --%> 
  
@@ -32,7 +32,7 @@ top.document.title = "Web@Avs - <ct:FWLabel key='GCAXXXX_TITRE_ECRAN'/> - " + to
     	<TD nowrap width="560"><INPUT type="text" name="emailAdress" value="<%=viewBean.getEmailAdress()%>" class="libelleLong"></TD>
     </TR>
     <TR> 
-      	<TD nowrap width="144"><ct:FWLabel key="GCAXXXX_MOTIF_OG"/></TD>
+      	<TD nowrap width="144"><ct:FWLabel key="GCA2035_MOTIF_OG"/></TD>
       	<TD nowrap width="560">
       		<INPUT type="text" name="_libelleLong" value="<%=viewBean.getIdOrdreGroupe()%>" maxlength="80" class="libelleLongDisabled">
       		<input type="hidden" name="idOrdreGroupe" value="<%=viewBean.getIdOrdreGroupe()%>">

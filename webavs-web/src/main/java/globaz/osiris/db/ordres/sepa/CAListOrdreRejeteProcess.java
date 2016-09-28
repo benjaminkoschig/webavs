@@ -245,6 +245,11 @@ public class CAListOrdreRejeteProcess extends BProcess {
 
     }
 
+    /**
+     * used by process heritage (from servlet action) to execute de list generation
+     * this one don't take any argument, but they are needed from viewbean (yes, viewbean extends this, don't ask me
+     * why, work as Jade design)
+     */
     @Override
     protected boolean _executeProcess() throws Exception {
         setSendCompletionMail(false);

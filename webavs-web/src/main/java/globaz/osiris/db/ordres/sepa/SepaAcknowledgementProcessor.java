@@ -16,16 +16,19 @@ import globaz.osiris.db.ordres.sepa.utils.CASepaOVConverterUtils;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.osiris.business.constantes.CAProperties;
 import com.jcraft.jsch.ChannelSftp;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.CustomerPaymentStatusReportV03CH;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.OriginalGroupInformation20CH;
@@ -35,31 +38,14 @@ import com.six_interbank_clearing.de.pain_002_001_03_ch_02.StatusReason6Choice;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.StatusReasonInformation8CH;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.TransactionGroupStatus3Code;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.TransactionIndividualStatus3CodeCH;
-import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.osiris.business.constantes.CAProperties;
-import globaz.globall.db.BApplication;
-import globaz.globall.db.BSession;
-import globaz.osiris.api.ordre.APIOrdreGroupe;
-import globaz.osiris.db.ordres.CAOrdreGroupe;
-import globaz.osiris.db.ordres.CAOrdreGroupeManager;
-import globaz.osiris.db.ordres.CAOrdreRejete;
-import globaz.osiris.db.ordres.CAOrdreVersement;
-import globaz.osiris.db.ordres.CAOrdreVersementManager;
 
 public class SepaAcknowledgementProcessor extends AbstractSepa {
     private static final Logger LOG = LoggerFactory.getLogger(SepaAcknowledgementProcessor.class);
 
     public static final String NAMESPACE_PAIN002 = "http://www.six-interbank-clearing.com/de/pain.002.001.03.ch.02.xsd";
 
-    /** Where to look to find a ssh private key (legacy file from Jade) */
-    public static final String LEGACY_JADE_CONFIG_FILE = "/JadeFsServer.xml";
-    public static final String PROTOCOL_NAME = "JadeFsServiceSftp";
-    public static final String PRIVATEKEY_NODENAME_PREFIX = "private.key.";
-
     private static final String TRANSACTION_PREFIX = CASepaOVConverterUtils.INSTRUCTION_ID_PREFIX;
     private BSession session;
-    private String title;
-    private String body;
 
     /** Connecte sur le ftp cible, dans le folder adapté à l'envoi de messages SEPA. */
     private ChannelSftp connect(BSession session) {
@@ -92,87 +78,38 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         return client;
     }
 
-    protected String loadPrivateKeyPathFromJadeConfigFile() {
-        // try fetching a private ssh key from legacy config files, mimic Jade behavior
-        InputStream jadeFsServerConfig = getClass().getResourceAsStream(LEGACY_JADE_CONFIG_FILE);
-
-        if (jadeFsServerConfig == null) {
-            LOG.info("file {} not found. skipping retrieval of private ssh key for connecting to SFTP",
-                    LEGACY_JADE_CONFIG_FILE);
-            return null;
-        }
-
-        String privateKey = null;
-
-        Document doc = parseDocument(jadeFsServerConfig);
-        NodeList allProtocols = doc.getDocumentElement().getElementsByTagName("protocols");
-
-        for (int i = 0; i < allProtocols.getLength(); i++) {
-            Element protocols = (Element) allProtocols.item(i);
-            NodeList allProtocol = protocols.getElementsByTagName("protocol");
-
-            for (int j = 0; j < allProtocol.getLength(); j++) {
-                Element protocol = (Element) allProtocol.item(i);
-
-                if (PROTOCOL_NAME.equals(protocol.getAttribute("name"))) {
-                    NodeList protocolChildren = protocol.getChildNodes();
-
-                    for (int k = 0; k < protocolChildren.getLength(); k++) {
-                        Node n = protocolChildren.item(k);
-
-                        if (n instanceof Element && n.getNodeName().startsWith(PRIVATEKEY_NODENAME_PREFIX)) {
-                            privateKey = StringUtils.trimToNull(n.getTextContent());
-                            LOG.info("resolved private ssh key to be {}", privateKey);
-                            break;
-                        }
-                    }
-                }
-
-                if (privateKey != null) {
-                    break;
-                }
-            }
-
-            if (privateKey != null) {
-                break;
-            }
-        }
-
-        return privateKey;
+    private static final class RemoteAck {
+        String remotePath;
+        com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document document;
     }
 
     public void findAndProcessAllAcknowledgements(BSession session) throws PropertiesException {
-
+        setSession(session);
         ChannelSftp client = connect(session);
         String[] listFiles;
 
+        Set<CAOrdreGroupe> ogProcessed = new HashSet<CAOrdreGroupe>();
         String folder = CAProperties.ISO_SEPA_FTP_002_FOLDER.getValue();
         String foldername = null;
-        if (!folder.isEmpty()) {
-            foldername = "./" + folder;
-        } else {
+        if (folder.isEmpty()) {
             foldername = ".";
+        } else {
+            foldername = "./" + folder;
         }
+
+        // get all available files,
+        List<RemoteAck> remoteAcks = new ArrayList<RemoteAck>();
 
         listFiles = listFiles(client, foldername);
 
         for (String file : listFiles) {
-            String originalFilename = file;
-            // tester si nous somme sur la // plateforme isotest.postfinance // pour les zip
-            if (CAProperties.ISO_SEPA_FTP_HOST.getValue().startsWith("isotest")) {
-                if (!originalFilename.toLowerCase().endsWith(".zip")) {
-                    LOG.debug("skipped non xml file: {}", originalFilename);
-                    continue;
-                }
+            String originalFilename = foldername + file;
 
-            } else {
-
-                if (!originalFilename.toLowerCase().endsWith(".xml")) {
-                    LOG.debug("skipped non xml file: {}", originalFilename);
-                    continue;
-                }
+            if (!originalFilename.toLowerCase().endsWith(".xml")) {
+                LOG.debug("skipped non xml file: {}", originalFilename);
+                continue;
             }
-            LOG.info("processing file with name {}", originalFilename);
+
             ByteArrayOutputStream baos = null;
             ByteArrayInputStream bais = null;
 
@@ -181,24 +118,68 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                 retrieveData(client, originalFilename, baos);
 
                 bais = new ByteArrayInputStream(baos.toByteArray());
-                processAcknowledgement(bais);
+                Document doc = parseDocument(bais);
 
-                renameFile(client, originalFilename, originalFilename + ".archived");
-            } catch (Exception e) {
+                // 04. Vérifier s’il s’agit d’une réponse pain.002
+                if (!NAMESPACE_PAIN002.equals(doc.getDocumentElement().getNamespaceURI())) {
+                    LOG.info("the file {} is not of type pain002");
+                    continue;
+                }
+
+                LOG.info("queuing file with name {}", originalFilename);
+
+                com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document ack = unmarshall(doc,
+                        com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document.class);
+
+                RemoteAck remoteAck = new RemoteAck();
+                remoteAck.remotePath = originalFilename;
+                remoteAck.document = ack;
+
+                remoteAcks.add(remoteAck);
+            } catch (SepaException e) {
                 LOG.error("an error occured when processing the file {}: {}", originalFilename, e, e);
             } finally {
                 IOUtils.closeQuietly(baos);
                 IOUtils.closeQuietly(bais);
             }
         }
+
+        // order by Payment date
+        Collections.sort(remoteAcks, new Comparator<RemoteAck>() {
+            @Override
+            public int compare(RemoteAck o1, RemoteAck o2) {
+                if (o1 == o2) {
+                    return 0;
+                }
+
+                return o1.document.getCstmrPmtStsRpt().getGrpHdr().getCreDtTm()
+                        .compare(o2.document.getCstmrPmtStsRpt().getGrpHdr().getCreDtTm());
+            }
+        });
+
+        // do the job, then delete remote files
+        for (RemoteAck remoteAck : remoteAcks) {
+            try {
+                LOG.info("processing file with name {}", remoteAck.remotePath);
+                ogProcessed.add(processAck(remoteAck.document));
+                deleteFile(client, remoteAck.remotePath);
+            } catch (SepaException e) {
+                LOG.error("could not process ack {}", remoteAck.remotePath, e);
+            }
+        }
+        CAListOrdreRejeteProcess listORProcess = new CAListOrdreRejeteProcess();
+        listORProcess.addMail(CAProperties.ISO_SEPA_RESPONSABLE_OG_EMAIL.getValue());
+        for (CAOrdreGroupe ogTraite : ogProcessed) {
+            listORProcess.process(getSession(), ogTraite);
+        }
     }
 
     /**
      * Traite une "quittance" SEPA (aka Acknowledgement) qui informe de la bonne acceptation d'un ordre envoyé
      * précédemment.
-     *
+     * 
      * @throws SepaException en cas de souci lors du traitement.
-     *
+     * 
      * @see com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document
      */
     public void processAcknowledgement(InputStream source) {

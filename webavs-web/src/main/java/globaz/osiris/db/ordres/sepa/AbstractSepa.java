@@ -2,6 +2,7 @@ package globaz.osiris.db.ordres.sepa;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,6 +31,9 @@ import org.apache.commons.lang.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
@@ -40,6 +44,11 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 public abstract class AbstractSepa {
+    /** Where to look to find a ssh private key (legacy file from Jade) */
+    public static final String LEGACY_JADE_CONFIG_FILE = "/JadeFsServer.xml";
+    public static final String PROTOCOL_NAME = "JadeFsServiceSftp";
+    public static final String PRIVATEKEY_NODENAME_PREFIX = "private.key.";
+
     public static/* final */class SepaException extends RuntimeException {
         private static final long serialVersionUID = 1L;
 
@@ -110,8 +119,8 @@ public abstract class AbstractSepa {
 
             return unmarshaller.unmarshal(doc, clazz).getValue();
         } catch (JAXBException e) {
-            throw new SepaException(
-                    "unable to convert xml document to java object of class " + clazz.getName() + ": " + e, e);
+            throw new SepaException("unable to convert xml document to java object of class " + clazz.getName() + ": "
+                    + e, e);
         }
     }
 
@@ -137,21 +146,25 @@ public abstract class AbstractSepa {
     /**
      * Connecte au serveur SFTP spécifié, et retourne la canal utilisé pour transmettre les informations. Il faut
      * spécifier soit le mot de passe, soit le chemin du fichier de clé.
-     *
+     * 
      * @param user Utilisateur
      * @param password (optional)
      *            Mot de passe, si authentification par mot de passe.
      * @param keyFile (optional)
      *            Clé privée, si authentification par clé privée.
-     *
+     * 
      * @throws SepaException en cas d'erreur de connexion au FTP.
      */
     protected ChannelSftp connect(String server, Integer port, String user, String password, String keyFile) {
         Validate.notEmpty(server, "server was not specified");
         Validate.notEmpty(user, "you must specify a user, even when using a private key file");
-        Validate.isTrue((password == null || keyFile == null) && (password != null || keyFile != null),
+        Validate.isTrue(
+                (StringUtils.isBlank(password) || StringUtils.isBlank(keyFile))
+                        && (StringUtils.isNotBlank(password) || StringUtils.isNotBlank(keyFile)),
                 "you must specify a password or a key file, but not both");
-
+        if (StringUtils.isNotBlank(keyFile)) {
+            Validate.isTrue(new File(keyFile).isFile(), "keyFile does not exist");
+        }
         JSch jsch = new JSch();
 
         Session session;
@@ -208,6 +221,14 @@ public abstract class AbstractSepa {
         }
     }
 
+    protected void deleteFile(ChannelSftp client, String fileName) {
+        try {
+            client.rm(fileName);
+        } catch (SftpException e) {
+            throw new SepaException("unable to delete the file " + fileName + ": " + e, e);
+        }
+    }
+
     protected String[] listFiles(ChannelSftp client, String foldername) {
         try {
             List<String> result = new ArrayList<String>();
@@ -236,5 +257,54 @@ public abstract class AbstractSepa {
         if (ftp != null) {
             ftp.disconnect();
         }
+    }
+
+    protected String loadPrivateKeyPathFromJadeConfigFile() {
+        // try fetching a private ssh key from legacy config files, mimic Jade behavior
+        InputStream jadeFsServerConfig = getClass().getResourceAsStream(LEGACY_JADE_CONFIG_FILE);
+
+        if (jadeFsServerConfig == null) {
+            LOG.info("file {} not found. skipping retrieval of private ssh key for connecting to SFTP",
+                    LEGACY_JADE_CONFIG_FILE);
+            return null;
+        }
+
+        String privateKey = null;
+
+        Document doc = parseDocument(jadeFsServerConfig);
+        NodeList allProtocols = doc.getDocumentElement().getElementsByTagName("protocols");
+
+        for (int i = 0; i < allProtocols.getLength(); i++) {
+            Element protocols = (Element) allProtocols.item(i);
+            NodeList allProtocol = protocols.getElementsByTagName("protocol");
+
+            for (int j = 0; j < allProtocol.getLength(); j++) {
+                Element protocol = (Element) allProtocol.item(j);
+
+                if (PROTOCOL_NAME.equals(protocol.getAttribute("name"))) {
+                    NodeList protocolChildren = protocol.getChildNodes();
+
+                    for (int k = 0; k < protocolChildren.getLength(); k++) {
+                        Node n = protocolChildren.item(k);
+
+                        if (n instanceof Element && n.getNodeName().startsWith(PRIVATEKEY_NODENAME_PREFIX)) {
+                            privateKey = StringUtils.trimToNull(n.getTextContent());
+                            LOG.info("resolved private ssh key to be {}", privateKey);
+                            break;
+                        }
+                    }
+                }
+
+                if (privateKey != null) {
+                    break;
+                }
+            }
+
+            if (privateKey != null) {
+                break;
+            }
+        }
+
+        return privateKey;
     }
 }
