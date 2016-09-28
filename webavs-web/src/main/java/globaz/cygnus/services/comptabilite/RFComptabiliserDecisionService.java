@@ -16,7 +16,10 @@ import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.osiris.api.APIGestionComptabiliteExterne;
+import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.osiris.db.ordres.CAOrganeExecution;
+import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import java.math.BigDecimal;
@@ -55,6 +58,7 @@ public class RFComptabiliserDecisionService {
     private String isoCsTypeAvis;
     private String isoGestionnaire;
     private String isoHighPriority;
+    private Boolean isIso;
 
     // private RFPrestationData prestation = null;
     private Set<RFPrestationData> prestationsSet = null;
@@ -68,15 +72,41 @@ public class RFComptabiliserDecisionService {
             throws Exception {
         String libelleOG = description;
         if (compta != null) {
-            int n = Integer.parseInt(numeroOG);
-            if (n < 10) {
-                libelleOG = "RFM - Pmt journalier/hebdo. 0" + n + "-" + libelleOG;
+            String numOG = "";
+            if (isIso20022(getIdOrganeExecution(), (BSession) getSession())) {
+                libelleOG = "RFM - Pmt journalier/hebdo. ISO20022 - " + libelleOG;
             } else {
-                libelleOG = "RFM - Pmt journalier/hebdo. " + n + "-" + libelleOG;
+                int n = Integer.parseInt(numeroOG);
+                if (n < 10) {
+                    libelleOG = "RFM - Pmt journalier/hebdo. 0" + n + "-" + libelleOG;
+                } else {
+                    libelleOG = "RFM - Pmt journalier/hebdo. " + n + "-" + libelleOG;
+                }
+                numOG = String.valueOf(n);
             }
-            compta.preparerOrdreGroupe(idOG, String.valueOf(n), dateEcheancePaiement, CAOrdreGroupe.VERSEMENT,
+            compta.preparerOrdreGroupe(idOG, numOG, dateEcheancePaiement, CAOrdreGroupe.VERSEMENT,
                     CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG, isoCsTypeAvis, isoGestionnaire, isoHighPriority);
         }
+    }
+
+    protected boolean isIso20022(String idOrganeExecution, BSession session) {
+        if (isIso == null) {
+            CAOrganeExecutionManager mgr = new CAOrganeExecutionManager();
+            mgr.setSession(session);
+            mgr.setForIdOrganeExecution(idOrganeExecution);
+            try {
+                mgr.find();
+                if (mgr.size() != 1) {
+                    throw new Exception();
+                }
+            } catch (Exception e) {
+                ((BSession) getSession()).addError("PMT_AVANCE_IDORGANEEXEC_NULL");
+            }
+
+            isIso = ((CAOrganeExecution) mgr.getEntity(0)).getIdTypeTraitementOG().equals(
+                    APIOrganeExecution.OG_ISO_20022);
+        }
+        return isIso.booleanValue();
     }
 
     private void doTraitement(List<RFPrestationData> prestationsMemeAdresseDePaiementList, FWMemoryLog memoryLog,

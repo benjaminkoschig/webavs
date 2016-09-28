@@ -21,8 +21,11 @@ import globaz.globall.util.JAException;
 import globaz.globall.util.JATime;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.APIGestionComptabiliteExterne;
+import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.osiris.db.ordres.CAOrganeExecution;
+import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
@@ -54,6 +57,8 @@ public class REExecuter1erAcompteAvancesProcess extends BProcess {
     private String isoCsTypeAvis;
     private String isoGestionnaire;
     private String isoHightPriority;
+
+    private Boolean isIso = null;
 
     @Override
     protected void _executeCleanUp() {
@@ -134,8 +139,11 @@ public class REExecuter1erAcompteAvancesProcess extends BProcess {
                 compta.comptabiliser();
 
                 // Description ordre groupé
-                String descOg = getOgDescriptionForDomaine(csDomaineApplicatif) + " - OG " + noOg;
-
+                String descOg = getOgDescriptionForDomaine(csDomaineApplicatif);
+                // en iso on ne gère pas le num OG
+                if (!isIso20022(getIdOrganeExecution(), getSession())) {
+                    descOg += " - OG " + noOg;
+                }
                 doPreparerOG(getIdOrganeExecution(), getNoOg(), getDateEcheance(), csDomaineApplicatif, compta, descOg);
             }
 
@@ -208,11 +216,36 @@ public class REExecuter1erAcompteAvancesProcess extends BProcess {
         if (compta != null) {
             getMemoryLog().logMessage("Préparation de l'OG : " + (new JATime(JACalendar.now())).toStr(":"),
                     FWMessage.INFORMATION, "");
-            int n = Integer.parseInt(numeroOG);
 
-            compta.preparerOrdreGroupe(idOE, String.valueOf(n), dateEcheancePaiement, CAOrdreGroupe.VERSEMENT,
+            String mumOG = "";
+            if (!isIso20022(getIdOrganeExecution(), getSession())) {
+                int n = Integer.parseInt(numeroOG);
+                mumOG = String.valueOf(n);
+            }
+
+            compta.preparerOrdreGroupe(idOE, mumOG, dateEcheancePaiement, CAOrdreGroupe.VERSEMENT,
                     CAOrdreGroupe.NATURE_RENTES_AVS_AI, desc, isoCsTypeAvis, isoGestionnaire, isoHightPriority);
         }
+    }
+
+    private boolean isIso20022(String idOrganeExecution, BSession session) {
+        if (isIso == null) {
+            CAOrganeExecutionManager mgr = new CAOrganeExecutionManager();
+            mgr.setSession(session);
+            mgr.setForIdOrganeExecution(idOrganeExecution);
+            try {
+                mgr.find();
+                if (mgr.size() != 1) {
+                    throw new Exception();
+                }
+            } catch (Exception e) {
+                getSession().addError("PMT_AVANCE_IDORGANEEXEC_NULL");
+            }
+
+            isIso = ((CAOrganeExecution) mgr.getEntity(0)).getIdTypeTraitementOG().equals(
+                    APIOrganeExecution.OG_ISO_20022);
+        }
+        return isIso.booleanValue();
     }
 
     public String getCsDomaineApplicatif() {

@@ -23,10 +23,12 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.APIGestionComptabiliteExterne;
 import globaz.osiris.api.APIGestionRentesExterne;
 import globaz.osiris.api.APIRubrique;
+import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.db.comptes.CAOperation;
 import globaz.osiris.db.comptes.CASecteurTypeSection;
 import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.db.ordres.CAOrganeExecution;
+import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import globaz.prestation.enums.codeprestation.PRCodePrestationPC;
 import globaz.prestation.process.PRAbstractProcess;
 import globaz.prestation.tools.PRAssert;
@@ -116,6 +118,7 @@ public abstract class AREPmtMensuel extends PRAbstractProcess {
     private String isoCsTypeAvis = "";
     private String isoGestionnaire = "";
     private String isoHighPriority = "";
+    private Boolean isIso = null;
 
     public AREPmtMensuel() {
         super();
@@ -632,6 +635,26 @@ public abstract class AREPmtMensuel extends PRAbstractProcess {
 
     public void setIsoHighPriority(String isoHighPriority) {
         this.isoHighPriority = isoHighPriority;
+    }
+
+    protected boolean isIso20022(String idOrganeExecution, BSession session) {
+        if (isIso == null) {
+            CAOrganeExecutionManager mgr = new CAOrganeExecutionManager();
+            mgr.setSession(session);
+            mgr.setForIdOrganeExecution(idOrganeExecution);
+            try {
+                mgr.find();
+                if (mgr.size() != 1) {
+                    throw new Exception();
+                }
+            } catch (Exception e) {
+                getSession().addError("PMT_AVANCE_IDORGANEEXEC_NULL");
+            }
+
+            isIso = ((CAOrganeExecution) mgr.getEntity(0)).getIdTypeTraitementOG().equals(
+                    APIOrganeExecution.OG_ISO_20022);
+        }
+        return isIso.booleanValue();
     }
 
     protected void validationPmt(BSession session, APIGestionRentesExterne comptaFast,

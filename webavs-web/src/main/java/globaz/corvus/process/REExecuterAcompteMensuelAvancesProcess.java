@@ -491,9 +491,16 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
      * @throws Exception exception potentiellement générée
      */
     private void doPreparerOG() throws Exception {
+        String libelleOG = "";
+        String numOG = "";
+        // iso20022 labelle a vide qui sera remplace par le journal par CA
+        if (!isIso20022(getIdOrganeExecution(), getSession())) {
+            if (Integer.parseInt(noOg) < 10) {
+                noOg = "0" + noOg;
 
-        if (Integer.parseInt(noOg) < 10) {
-            noOg = "0" + noOg;
+            }
+            libelleOG = getSession().getLabel("PMT_AVANCE_MENSUEL_RENTE_DESC_OG") + noOg;
+            numOG = String.valueOf(noOg);
         }
 
         if (compta != null) {
@@ -501,11 +508,8 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
                     getSession().getLabel("PMT_AVANCE_PREPARATION") + " " + (new JATime(JACalendar.now())).toStr(":"),
                     FWMessage.INFORMATION, "");
 
-            String libelleOG = getSession().getLabel("PMT_AVANCE_MENSUEL_RENTE_DESC_OG") + noOg;
-
-            compta.preparerOrdreGroupe(idOrganeExecution, String.valueOf(noOg), dateEcheancePaiement,
-                    CAOrdreGroupe.VERSEMENT, CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG, isoCsTypeAvis,
-                    isoGestionnaire, isoHightPriority);
+            compta.preparerOrdreGroupe(idOrganeExecution, numOG, dateEcheancePaiement, CAOrdreGroupe.VERSEMENT,
+                    CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG, isoCsTypeAvis, isoGestionnaire, isoHightPriority);
         }
     }
 

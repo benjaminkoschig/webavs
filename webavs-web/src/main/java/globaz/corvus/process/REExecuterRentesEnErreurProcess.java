@@ -511,14 +511,20 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
                 getMemoryLog().logMessage(
                         "Préparation de l'OG des retenues/blocages : " + (new JATime(JACalendar.now())).toStr(":"),
                         FWMessage.INFORMATION, "");
-                int n = Integer.parseInt(getNumeroOG());
-                n++;
-                if (n < 10) {
-                    libelleOG = "OPAE 0" + n + " - " + libelleOG;
+                String numOG = "";
+                if (isIso20022(getIdOrganeExecution(), getSession())) {
+                    libelleOG = "ISO20022 - " + libelleOG;
                 } else {
-                    libelleOG = "OPAE" + n + " - " + libelleOG;
+                    int n = Integer.parseInt(getNumeroOG());
+                    n++;
+                    if (n < 10) {
+                        libelleOG = "OPAE 0" + n + " - " + libelleOG;
+                    } else {
+                        libelleOG = "OPAE" + n + " - " + libelleOG;
+                    }
+                    numOG = String.valueOf(n);
                 }
-                comptaExt.preparerOrdreGroupe(getIdOrganeExecution(), String.valueOf(n), getDateEcheancePaiement(),
+                comptaExt.preparerOrdreGroupe(getIdOrganeExecution(), numOG, getDateEcheancePaiement(),
                         CAOrdreGroupe.VERSEMENT, CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG, getIsoCsTypeAvis(),
                         getIsoGestionnaire(), getIsoHighPriority());
 

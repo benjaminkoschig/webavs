@@ -53,6 +53,7 @@ import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
 import globaz.osiris.db.ordres.CAOrganeExecution;
+import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import globaz.osiris.external.IntRole;
 import globaz.osiris.utils.CAUtil;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -99,6 +100,7 @@ public class RETraiterLotDecisionsProcess extends BProcess {
     private String isoCsTypeAvis = "";
     private String isoGestionnaire = "";
     private String isoHightPriority = "";
+    private Boolean isIso = null;
 
     public RETraiterLotDecisionsProcess() {
         super();
@@ -578,15 +580,42 @@ public class RETraiterLotDecisionsProcess extends BProcess {
         if (compta != null) {
             getMemoryLog().logMessage("Préparation de l'OG : " + (new JATime(JACalendar.now())).toStr(":"),
                     FWMessage.INFORMATION, "");
-            int n = Integer.parseInt(numeroOG);
-            if (n < 10) {
-                libelleOG = "OPAE 0" + n + "-" + libelleOG;
+            String numOG = "";
+            if (isIso20022(getIdOrganeExecution(), getSession())) {
+                libelleOG = "ISO20022 - " + libelleOG;
             } else {
-                libelleOG = "OPAE " + n + "-" + libelleOG;
+                int n = Integer.parseInt(numeroOG);
+                n++;
+                if (n < 10) {
+                    libelleOG = "OPAE 0" + n + " - " + libelleOG;
+                } else {
+                    libelleOG = "OPAE" + n + " - " + libelleOG;
+                }
+                numOG = String.valueOf(n);
             }
-            compta.preparerOrdreGroupe(idOG, String.valueOf(n), dateEcheancePaiement, CAOrdreGroupe.VERSEMENT,
+            compta.preparerOrdreGroupe(idOG, numOG, dateEcheancePaiement, CAOrdreGroupe.VERSEMENT,
                     CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG, isoCsTypeAvis, isoGestionnaire, isoHightPriority);
         }
+    }
+
+    protected boolean isIso20022(String idOrganeExecution, BSession session) {
+        if (isIso == null) {
+            CAOrganeExecutionManager mgr = new CAOrganeExecutionManager();
+            mgr.setSession(session);
+            mgr.setForIdOrganeExecution(idOrganeExecution);
+            try {
+                mgr.find();
+                if (mgr.size() != 1) {
+                    throw new Exception();
+                }
+            } catch (Exception e) {
+                getSession().addError("PMT_AVANCE_IDORGANEEXEC_NULL");
+            }
+
+            isIso = ((CAOrganeExecution) mgr.getEntity(0)).getIdTypeTraitementOG().equals(
+                    APIOrganeExecution.OG_ISO_20022);
+        }
+        return isIso.booleanValue();
     }
 
     public String getDateComptable() {
