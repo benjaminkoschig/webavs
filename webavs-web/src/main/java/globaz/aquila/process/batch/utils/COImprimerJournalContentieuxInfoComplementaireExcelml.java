@@ -59,7 +59,7 @@ public class COImprimerJournalContentieuxInfoComplementaireExcelml extends COAbs
             String idCompteAnnexe = section.getIdCompteAnnexe();
             String categorie = compteAnnexe.getIdCategorie();
             String idTiers = compteAnnexe.getIdTiers();
-            Date date = new Date(contentieux.getDateOuverture());
+            Date date = new Date(section.getDateSection());
             AFAffiliation affiliation = retrieveAffiliation(session, numeroAffilie, idCompteAnnexe, idTiers, categorie);
 
             // Le décompte final (paritaires) a été établi pour l'année concernée par la future section en PO ?
