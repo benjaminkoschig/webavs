@@ -12,7 +12,11 @@ import ch.globaz.common.properties.PropertiesException;
  */
 public enum CPProperties implements IProperties {
 
-    LISTE_DECISIONS_COMPTABILISEES_TYPE_SUIVI_AF("liste.decisions.comptabilisees.type.suivi.af");
+    LISTE_DECISIONS_COMPTABILISEES_TYPE_SUIVI_AF("liste.decisions.comptabilisees.type.suivi.af"),
+    WIRRWEBSERVICE_URI_WSDL("wirr.webservice.uri.wsdl"),
+    WIRRWEBSERVICE_NAMESPACE("wirr.webservice.namespace"),
+    WIRRWEBSERVICE_NAME("wirr.webservice.name"),
+    WIRRWEBSERVICE_SEDEX_SENDER_ID("wirr.webservice.sedex.sender.id");
 
     private String property;
 
