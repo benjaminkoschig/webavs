@@ -53,6 +53,8 @@ import globaz.phenix.db.principale.CPDonneesBase;
 import globaz.phenix.process.communications.plausibiliteImpl.CPGenericReglePlausibilite;
 import globaz.phenix.toolbox.CPToolBox;
 import globaz.phenix.util.CPUtil;
+import globaz.phenix.util.WIRRDataBean;
+import globaz.phenix.util.WIRRServiceCallUtil;
 import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.application.TIApplication;
@@ -4554,23 +4556,44 @@ public class CPRegleCommunicationRetour extends CPGenericReglePlausibilite {
         }
     }
 
-    // public String isRenteWIRR(String niveauMsg, String idParam, String description) throws Exception {
-    //
-    // WIRRDataBean wirrDataBean = new WIRRDataBean();
-    //
-    // wirrDataBean.setNss(getSedexContribuable().getVn());
-    //
-    // wirrDataBean = WIRRServiceCallUtil.searchRenteWIRR(wirrDataBean, WIRRServiceCallUtil.initService());
-    //
-    // // TODO faut encore mettre le message dans le nouvel onglet
-    // if (wirrDataBean.isHasRenteWIRRFounded()) {
-    // ajouterErreur(idParam);
-    // return niveauMsg;
-    // }
-    //
-    // return "";
-    //
-    // }
+    private boolean isPlausiRenteWIRRVerified(String numAVS, String idParam) throws Exception {
+
+        WIRRDataBean wirrDataBean = new WIRRDataBean();
+
+        wirrDataBean.setNss(numAVS);
+
+        wirrDataBean = WIRRServiceCallUtil.searchRenteWIRR(getSession(), wirrDataBean,
+                WIRRServiceCallUtil.initService());
+
+        getCommunicationRetour().setMessageRenteAVS(wirrDataBean.getMessageForUser());
+
+        if (wirrDataBean.hasRenteWIRRFounded() || wirrDataBean.hasTechnicalError()) {
+            ajouterErreur(idParam);
+            return true;
+        }
+
+        return false;
+
+    }
+
+    public String isRenteWIRR(String niveauMsg, String idParam, String description) throws Exception {
+
+        if (!getCommunicationRetour().isNonActif()) {
+            return "";
+        }
+
+        boolean wantSearchForConjoint = getSedexConjoint() != null
+                && !JadeStringUtil.isBlankOrZero(getSedexConjoint().getVn());
+
+        if (isPlausiRenteWIRRVerified(getSedexContribuable().getVn(), idParam)) {
+            return niveauMsg;
+        } else if (wantSearchForConjoint && isPlausiRenteWIRRVerified(getSedexConjoint().getVn(), idParam)) {
+            return niveauMsg;
+        }
+
+        return "";
+
+    }
 
     public String isSedexConditionDeBase(String niveauMsg, String idParam, String description) throws Exception {
         AFAffiliation affiliation = null;
