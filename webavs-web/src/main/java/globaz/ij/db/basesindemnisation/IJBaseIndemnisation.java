@@ -732,11 +732,7 @@ public class IJBaseIndemnisation extends BEntity implements PRHierarchique, IPRC
      * @return la valeur courante de l'attribut nombre jours couverts
      */
     public String getNombreJoursCouverts() {
-        if (JadeStringUtil.isIntegerEmpty(nombreJoursCouverts)) {
-            return "";
-        } else {
-            return nombreJoursCouverts;
-        }
+        return nombreJoursCouverts;
     }
 
     /**
