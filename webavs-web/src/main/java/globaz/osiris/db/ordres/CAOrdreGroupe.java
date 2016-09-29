@@ -1,6 +1,5 @@
 package globaz.osiris.db.ordres;
 
-import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWLog;
 import globaz.framework.util.FWMemoryLog;
@@ -19,7 +18,6 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
-import globaz.jade.log.JadeLogger;
 import globaz.osiris.api.APIOperation;
 import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.api.ordre.APIOrganeExecution;
@@ -1272,11 +1270,6 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                         CAOrdreGroupeFtpUtils.sendOrRegisterFile(context, this, getOrganeExecution(),
                                 context.getFileName());
                     } else if (getOrganeExecution().getCSTypeTraitementOG().equals(APIOrganeExecution.OG_ISO_20022)) {
-                        // TODO new FTP file location, adapt or develop?
-                        /*
-                         * CAOrdreGroupeFtpUtils.sendOrRegiserFile(context, this, getOrganeExecution(),
-                         * context.getFileName());
-                         */
 
                         InputStream is = null;
                         try {
@@ -1297,15 +1290,6 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                             context.registerAttachedDocument(context.getFileName());
                             setIsoCsOrdreStatutExec(ISO_ORDRE_STATUS_A_TRANSMETTRE);
 
-                            getMemoryLog().logMessage("SERVER_FTP_UNVAILABLE", null, FWMessage.AVERTISSEMENT,
-                                    this.getClass().getName());
-
-                            JadeLogger.error(this, "could not send the data to ftp: " + e);
-                            JadeLogger.error(this, e);
-                            _addError(context.getTransaction(), e.getMessage());
-
-                            getMemoryLog().logMessage(e.getMessage(), FWViewBeanInterface.WARNING,
-                                    this.getClass().getName());
                         } finally {
                             IOUtils.closeQuietly(is);
                         }
