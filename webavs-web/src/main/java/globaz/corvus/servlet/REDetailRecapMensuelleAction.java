@@ -60,9 +60,12 @@ public class REDetailRecapMensuelleAction extends PRDefaultAction {
         ((REDetailRecapMensuelleViewBean) viewBean).setTo2_501(request.getParameter("to2_501"));
         ((REDetailRecapMensuelleViewBean) viewBean).setTo2_503(request.getParameter("to2_503"));
 
-        ((REDetailRecapMensuelleViewBean) viewBean).getElem500099().setMontant(request.getParameter("to3_500"));
-        ((REDetailRecapMensuelleViewBean) viewBean).getElem501099().setMontant(request.getParameter("to3_501"));
-        ((REDetailRecapMensuelleViewBean) viewBean).getElem503099().setMontant(request.getParameter("to3_503"));
+        ((REDetailRecapMensuelleViewBean) viewBean).getElem500099().setMontant(
+                request.getParameter("elem500099.montant"));
+        ((REDetailRecapMensuelleViewBean) viewBean).getElem501099().setMontant(
+                request.getParameter("elem501099.montant"));
+        ((REDetailRecapMensuelleViewBean) viewBean).getElem503099().setMontant(
+                request.getParameter("elem503099.montant"));
 
         _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAi.reAfficher&process=launched";
         goSendRedirect(_destination, request, response);

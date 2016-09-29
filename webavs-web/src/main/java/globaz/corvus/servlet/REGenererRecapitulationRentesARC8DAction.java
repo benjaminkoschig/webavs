@@ -37,9 +37,9 @@ public class REGenererRecapitulationRentesARC8DAction extends REDefaultProcessAc
             reDetRecMenViewBean.setTo2_511(request.getParameter("to2_511"));
             reDetRecMenViewBean.setTo2_513(request.getParameter("to2_513"));
 
-            reDetRecMenViewBean.getElem510099().setMontant(request.getParameter("to3_510"));
-            reDetRecMenViewBean.getElem511099().setMontant(request.getParameter("to3_511"));
-            reDetRecMenViewBean.getElem513099().setMontant(request.getParameter("to3_513"));
+            reDetRecMenViewBean.getElem510099().setMontant(request.getParameter("elem510099.montant"));
+            reDetRecMenViewBean.getElem511099().setMontant(request.getParameter("elem511099.montant"));
+            reDetRecMenViewBean.getElem513099().setMontant(request.getParameter("elem513099.montant"));
 
             ((REgenererRecapitulationRentesARC8DViewBean) viewBean).setReDetRecMenViewBean(reDetRecMenViewBean);
 
