@@ -193,6 +193,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
             put(IPCVariableMetier.CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS,
                     Attribut.FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS);
+            put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_EPS, Attribut.MONTANT_TYPE_CHAMBRE_EPS);
 
         }
     };
