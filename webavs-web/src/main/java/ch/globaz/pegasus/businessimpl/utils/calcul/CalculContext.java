@@ -77,7 +77,8 @@ public class CalculContext {
         CS_CATEGORIE_ARGENT_POCHE_LVPC_EMS_NOMMED_AGE_AVANCE,
         FRAIS_ENTRETIEN_IMMEUBLE,
         FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS,
-        TYPE_RENTE_REQUERANT;
+        TYPE_RENTE_REQUERANT,
+        MONTANT_TYPE_CHAMBRE_EPS;
     }
 
     static CalculContext getNewInstance() {
