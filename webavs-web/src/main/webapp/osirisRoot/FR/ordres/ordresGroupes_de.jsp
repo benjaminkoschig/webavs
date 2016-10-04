@@ -58,6 +58,12 @@ function validate() {
 	} else {
 		document.getElementById("dateEcheance").value=document.getElementById("dateVersement").value;
 	}
+	// si iso, effacer un eventuel numOG
+	var select = document.getElementById("idOrganeExecution");
+	if((select[select.selectedIndex].id)==258003){
+		document.getElementById("numeroOG").value="";
+	}
+	
     return state;
 
 }
