@@ -99,7 +99,7 @@ function init(){}
 // stop hiding -->
 </SCRIPT> <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
-			<%-- tpl:put name="zoneTitle" --%>Données fiscales<%-- /tpl:put --%>
+			<%-- tpl:put name="zoneTitle" --%>Steuermeldungsdaten<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart2.jspf" %>
 						<%-- tpl:put name="zoneMain" --%>
 		<div id="tabs"> 

@@ -754,7 +754,7 @@ line-height: 14px;
 													</TD>
 													<TD colspan="3">
 														<input class="montantDisabled" readonly type= "text" value="<%=viewBean.getTotalInscritJournal()%>" tabindex="-1"> &nbsp;
-														Total ALVI &nbsp; <input class="montantDisabled" readonly type= "text" value="<%=viewBean.getTotalControleAcForDisplay()%>" tabindex="-1"> &nbsp;
+														Total ALV1 &nbsp; <input class="montantDisabled" readonly type= "text" value="<%=viewBean.getTotalControleAcForDisplay()%>" tabindex="-1"> &nbsp;
 													</TD>
 													<TD>
 														
@@ -779,7 +779,7 @@ line-height: 14px;
             									</SELECT>
             									&nbsp;
             									<input type="text" name= "forMontantSigneValue"  value="<%=viewBean.getForMontantSigneValue()%>" onChange="validateFloatNumber(this)" >
-            									&nbsp;Avertissement &nbsp; 												
+            									&nbsp;Warnung &nbsp; 												
 									              	<input type="checkbox" onclick="updateHiddenAvertissement();" name="forAvertissement" <%=(viewBean.getForAvertissement().booleanValue())? "checked" : "unchecked"%>>
               										<input type="hidden" name="forAvertissementStr" value="<%=(viewBean.getForAvertissement())? "True" : "False"%>">
 												</td>
@@ -802,11 +802,11 @@ line-height: 14px;
 											<tr>
 												<td>
 													<%if(rightAdd){%>
-													<input name="ajout"  type="button" value="Ajouter" onClick="this.disabled=true;location.href='<%=ajouterPar15%>'"  >
+													<input name="ajout"  type="button" value="Hinzufügen" onClick="this.disabled=true;location.href='<%=ajouterPar15%>'"  >
 													<%}%>
 												</td>
 												<td>
-													<INPUT type="button" name="rechercher" value="Rechercher" onclick="this.disabled=true;search();" >
+													<INPUT type="button" name="rechercher" value="Suchen" onclick="this.disabled=true;search();" >
 												</TD>
 													<td colspan = "6">
 														<%if(!viewBean.isApresMiseEnProdEtCompl()){%>
@@ -881,7 +881,7 @@ line-height: 14px;
 								<ta:column title="ALV" width="30">
 									<ta:input  name ="soumisCheck" style="text-align: right" type="checkBox"></ta:input>
 								</ta:column>
-								<ta:column title="Remarque" width="200">
+								<ta:column title="Bemerkung" width="200">
 									<ta:input  name ="remarqueCont" type="text"></ta:input>
 								</ta:column>
 								<ta:column width ="0" >

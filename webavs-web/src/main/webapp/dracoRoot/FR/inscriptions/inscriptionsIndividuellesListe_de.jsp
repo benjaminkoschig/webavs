@@ -711,7 +711,7 @@ line-height: 14px;
 
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
-			<%-- tpl:put name="zoneTitle" --%>Saisie détaillé d'une déclaration de salaires <%-- /tpl:put --%>
+			<%-- tpl:put name="zoneTitle" --%>Saisie détaillée d'une déclaration de salaires <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart2.jspf" %>
 						<%-- tpl:put name="zoneMain" --%>
                               <TR>
