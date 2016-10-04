@@ -277,7 +277,7 @@ function hide(inputToHide) {
              </TD>
           </TR>
           <TR>
-          	<TD nowrap width="157">Revenu rente(s) AVS</TD>
+          	<TD nowrap width="157">Einkommen AHV Rente(n)</TD>
           	<TD nowrap width="96" colspan="6"><INPUT name="montantTotalRenteAVS" type="text" value="<%=viewBean.getMontantTotalRenteAVS()%>" class="montant" style="width : 2.45cm;"></TD>
           </TR>
           <TR id="ligneRevenuAutre">

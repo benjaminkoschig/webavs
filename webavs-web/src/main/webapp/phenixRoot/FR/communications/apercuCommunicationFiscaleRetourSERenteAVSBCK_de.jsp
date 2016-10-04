@@ -114,7 +114,7 @@ function init(){}
 	     </TR>
 	     <TR>
 			<TD>Message du WebService</TD>
-			<TD><INPUT name="messageRenteAVS" type="text" value="<%=viewBean.getMessageRenteAVS()%>" class="libelleLongDisabled" readonly="readonly"></TD>
+			<TD><INPUT name="messageRenteAVS" type="text" value="<%=viewBean.getMessageRenteAVS()%>" class="libelleLong20Disabled" readonly="readonly"></TD>
 	     </TR>
 	     
 		  <INPUT type="hidden"  name="isForBackup" value="<%=viewBean.isForBackup()%>">

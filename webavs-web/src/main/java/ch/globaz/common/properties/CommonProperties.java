@@ -27,7 +27,11 @@ public enum CommonProperties implements IProperties {
      * listes des prestations (PC, RFM, IJ, RENTES)
      */
     ADD_COMMUNE_POLITIQUE("liste.ajouter.commune.politique",
-            "Enrichit une partie des listes PC, RFM, IJ et rentes avec le commune politiques");
+            "Enrichit une partie des listes PC, RFM, IJ et rentes avec le commune politiques"),
+
+    KEYSTORE_PATH("keystore.path", "Chemin absolu du keystore"),
+    KEYSTORE_TYPE("keystore.type", "Type du keystore"),
+    KEYSTORE_PASSWORD("keystore.password", "Password du keystore");
 
     private String description;
     private String propertyName;

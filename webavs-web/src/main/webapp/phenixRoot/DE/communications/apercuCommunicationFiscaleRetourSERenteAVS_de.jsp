@@ -96,7 +96,7 @@ function init(){}
 // stop hiding -->
 </SCRIPT> <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
-			<%-- tpl:put name="zoneTitle" --%>Données fiscales<%-- /tpl:put --%>
+			<%-- tpl:put name="zoneTitle" --%>Steuermeldungsdaten<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart2.jspf" %>
 						<%-- tpl:put name="zoneMain" --%>
 		<div id="tabs"> 
@@ -113,11 +113,15 @@ function init(){}
 		
 		 <TR>
 			<TD>Gesamtbetrag der AHV Renten</TD>
-			<TD><INPUT name="montantTotalRenteAVS" type="text" value="<%=viewBean.getMontantTotalRenteAVS()%>" <%=viewBean.isNonActif()? "" : "disabled=\"disabled\" class=\"montantDisabled\" readonly=\"readonly\"" %> style="width : 2.45cm;"></TD>
+			<%if(viewBean.isNonActif()) {%>
+				<TD><ct:inputText style="width : 2.45cm;" name="montantTotalRenteAVS"  defaultValue="<%=viewBean.getMontantTotalRenteAVS()%>"   notation="data-g-amount='blankAsZero:false'" /></TD>
+	     	<%} else { %>
+	     		<TD><ct:inputText style="width : 2.45cm;" name="montantTotalRenteAVS"  defaultValue="<%=viewBean.getMontantTotalRenteAVS()%>" disabled="disabled" styleClass="montantDisabled" readonly="readonly"   notation="data-g-amount='blankAsZero:false'" /></TD>
+	     	<% } %>
 	     </TR>
 	     <TR>
 			<TD>Meldung des WebService</TD>
-			<TD><INPUT name="messageRenteAVS" type="text" value="<%=viewBean.getMessageRenteAVS()%>" class="libelleLongDisabled" readonly="readonly"></TD>
+			<TD><INPUT name="messageRenteAVS" type="text" value="<%=viewBean.getMessageRenteAVS()%>" class="libelleLong20Disabled" readonly="readonly"></TD>
 	     </TR>
         
        <%-- /tpl:put --%>

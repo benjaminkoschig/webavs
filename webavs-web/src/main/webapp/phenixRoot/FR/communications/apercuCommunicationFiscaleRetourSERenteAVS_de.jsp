@@ -113,11 +113,15 @@ function init(){}
 		
 		 <TR>
 			<TD>Montant total des rentes AVS</TD>
-			<TD><INPUT name="montantTotalRenteAVS" type="text" value="<%=viewBean.getMontantTotalRenteAVS()%>" <%=viewBean.isNonActif()? "" : "disabled=\"disabled\" class=\"montantDisabled\" readonly=\"readonly\"" %> style="width : 2.45cm;"></TD>
+			<%if(viewBean.isNonActif()) {%>
+				<TD><ct:inputText style="width : 2.45cm;" name="montantTotalRenteAVS"  defaultValue="<%=viewBean.getMontantTotalRenteAVS()%>"   notation="data-g-amount='blankAsZero:false'" /></TD>
+	     	<%} else { %>
+	     		<TD><ct:inputText style="width : 2.45cm;" name="montantTotalRenteAVS"  defaultValue="<%=viewBean.getMontantTotalRenteAVS()%>" disabled="disabled" styleClass="montantDisabled" readonly="readonly"   notation="data-g-amount='blankAsZero:false'" /></TD>
+	     	<% } %>
 	     </TR>
 	     <TR>
 			<TD>Message du WebService</TD>
-			<TD><INPUT name="messageRenteAVS" type="text" value="<%=viewBean.getMessageRenteAVS()%>" class="libelleLongDisabled" readonly="readonly"></TD>
+			<TD><INPUT name="messageRenteAVS" type="text" value="<%=viewBean.getMessageRenteAVS()%>" class="libelleLong20Disabled" readonly="readonly"></TD>
 	     </TR>
         
        <%-- /tpl:put --%>

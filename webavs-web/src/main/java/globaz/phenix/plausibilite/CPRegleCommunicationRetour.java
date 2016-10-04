@@ -4562,8 +4562,7 @@ public class CPRegleCommunicationRetour extends CPGenericReglePlausibilite {
 
         wirrDataBean.setNss(numAVS);
 
-        wirrDataBean = WIRRServiceCallUtil.searchRenteWIRR(getSession(), wirrDataBean,
-                WIRRServiceCallUtil.initService());
+        wirrDataBean = WIRRServiceCallUtil.searchRenteWIRR(getSession(), wirrDataBean);
 
         getCommunicationRetour().setMessageRenteAVS(wirrDataBean.getMessageForUser());
 
