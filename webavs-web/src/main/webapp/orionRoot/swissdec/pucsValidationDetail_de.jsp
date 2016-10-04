@@ -47,18 +47,19 @@
 
 $(document).ready(function(){
 	$('#accepter').click(function(){
+		$('button[type=button]').attr('disabled',true);
 		document.forms[0].elements('userAction').value="orion.swissdec.pucsValidationDetail.accepter";
 		document.forms[0].submit();
-		
 	});
 	
 	$('#annulerRefus').click(function(){
+		$('button[type=button]').attr('disabled',true);
 		document.forms[0].elements('userAction').value="orion.swissdec.pucsValidationDetail.annulerRefus";
 		document.forms[0].submit();
-		
 	});
 	
 	$('#refuser').click(function(){
+		$('button[type=button]').attr('disabled',true);
 		document.forms[0].elements('userAction').value="orion.swissdec.pucsValidationDetail.refuser";
 		document.forms[0].submit();
 	});
