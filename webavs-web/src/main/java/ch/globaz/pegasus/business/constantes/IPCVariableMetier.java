@@ -48,6 +48,7 @@ public interface IPCVariableMetier {
     public static final String CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS = "64008051";
 
     public static final String DEPENSE_LOYER_PLAFOND_CELIBATAIRE = "64008031";
+    public static final String CS_MONTANT_TYPE_CHAMBRE_EPS = "64008057";
     public static final String DEPENSE_LOYER_PLAFOND_COUPLE = "64008032";
     public static final String DEPENSE_LOYER_PLAFOND_FAUTEUIL_ROULANT = "64008036";
     public static final String MENSUALISATION_IJ_CHOMAGE = "64008040";
