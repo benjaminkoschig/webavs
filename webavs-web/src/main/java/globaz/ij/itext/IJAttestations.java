@@ -679,7 +679,7 @@ public class IJAttestations extends FWIDocumentManager {
         try {
 
             TIDocumentInfoHelper.fill(docInfo, tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), getSession(),
-                    IntRole.ROLE_IJAI, null, null);
+                    IntRole.ROLE_IJAI, "", "");
 
             // BZ 8076
             // docInfo.setDocumentType(IPRConstantesExternes.ATTESTATION_FISCALE_APG);
