@@ -75,6 +75,8 @@ public interface REGenresPrestations {
     public static final String PC_SOUS_TYPE_AI_HOME_SPAS = "109";
     public static final String PC_SOUS_TYPE_AI_HOME_SPAS_HORS_CANTON = "110";
     public static final String PC_SOUS_TYPE_AI_HOME = "112";
+    public static final String PC_SOUS_TYPE_AI_HOME_EPS = "117";
+    public static final String PC_SOUS_TYPE_AI_HOME_EPS_HORS_CANTON = "118";
 
     public static final String PC_SOUS_TYPE_AVS_COTISATION_AVS = "105";
     public static final String PC_SOUS_TYPE_AVS_DOMICILE = "100";
@@ -83,6 +85,8 @@ public interface REGenresPrestations {
     public static final String PC_SOUS_TYPE_AVS_HOME_SPAS = "103";
     public static final String PC_SOUS_TYPE_AVS_HOME_SPAS_HORS_CANTON = "104";
     public static final String PC_SOUS_TYPE_AVS_HOME = "114";
+    public static final String PC_SOUS_TYPE_AVS_HOME_EPS = "115";
+    public static final String PC_SOUS_TYPE_AVS_HOME_EPS_HORS_CANTON = "116";
 
     public static final int RENTE_API_DOMICILE_DEGRE_FAIBLE_IMPOTENCE_AI = 81;
     public static final int RENTE_API_DOMICILE_DEGRE_FAIBLE_IMPOTENCE_AVEC_ACCOMPAGNEMENT_AI = 84;

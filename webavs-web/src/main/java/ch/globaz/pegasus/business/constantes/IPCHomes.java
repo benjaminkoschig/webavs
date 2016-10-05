@@ -22,6 +22,7 @@ public interface IPCHomes {
     public final static String CS_SERVICE_ETAT_SPAS = "64025002";
     public final static String CS_SERVICE_ETAT_SPJ = "64025003";
     public final static String CS_SERVICE_ETAT_SSP = "64025005";
+    public final static String CS_SERVICE_ETAT_EPS = "64025009";
     // service etat
     public static final String SERVICE_ETAT = "PCSRVETA ";
 

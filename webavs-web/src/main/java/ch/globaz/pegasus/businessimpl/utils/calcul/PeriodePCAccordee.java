@@ -105,6 +105,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
                     Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON_LEGENDE);
             put(IPCVariableMetier.CS_FRACTION_REVENUS_PRIVILEGIES, Attribut.CS_FRACTION_REVENUS_PRIVILEGIES_LEGENDE);
             put(IPCVariableMetier.CS_PLAFOND_ANNUEL_HOME, Attribut.CS_PLAFOND_ANNUEL_HOME);
+            put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_EPS, Attribut.MONTANT_TYPE_CHAMBRE_EPS);
         }
     };
 
@@ -128,6 +129,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             put(IPCVariableMetier.CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE, Attribut.FRAIS_ENTRETIEN_IMMEUBLE);
             put(IPCVariableMetier.CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS,
                     Attribut.FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS);
+            put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_EPS, Attribut.MONTANT_TYPE_CHAMBRE_EPS);
         }
     };
     private final static Map<String, Attribut> mappageVarMetFinalisation = new HashMap<String, Attribut>() {

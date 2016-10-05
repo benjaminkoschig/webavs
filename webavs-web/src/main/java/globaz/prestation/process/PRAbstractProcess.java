@@ -1,5 +1,6 @@
 package globaz.prestation.process;
 
+import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
@@ -57,6 +58,7 @@ public abstract class PRAbstractProcess extends BProcess {
             processResult = runProcess();
         } catch (Exception ex) {
             ex.printStackTrace();
+            getMemoryLog().logMessage("test", FWMessage.ERREUR, this.getClass().toString());
             JadeLogger.error(this, ex.toString());
             throw ex;
         } finally {

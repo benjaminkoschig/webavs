@@ -18,7 +18,8 @@ public class ArgentDePocheHomeResolver {
         CS_CATEGORIE_CHAMBRE_MEDICALISE(IPCTaxeJournaliere.CS_CATEGORIE_CHAMBRE_MEDICALISE,
                 Attribut.CS_ARGENT_POCHE_MEDICALISE),
         CS_CATEGORIE_CHAMBRE_NON_MEDICALISE(IPCTaxeJournaliere.CS_CATEGORIE_CHAMBRE_NON_MEDICALISE,
-                Attribut.CS_ARGENT_POCHE_NON_MEDICALISE);
+                Attribut.CS_ARGENT_POCHE_NON_MEDICALISE),
+        CS_EPS(IPCTaxeJournaliere.CS_CATEGORIE_EPS, Attribut.MONTANT_TYPE_CHAMBRE_EPS);
 
         String cs;
         Attribut attribut;

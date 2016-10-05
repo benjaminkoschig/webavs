@@ -44,7 +44,8 @@ public class VariableMetierBuilder implements ICalculDonneesHorsDroitBuilder {
             IPCVariableMetier.CS_DEDUCTION_FORAITAIRE_IMMOBILIER_ASSURE_HOME_API,
             IPCVariableMetier.CS_AMORTISSEMENT_ANNUEL_DESSAISISSEMENT_FORTUNE,
             IPCVariableMetier.CS_TAUX_IMPUTATION_SOUSLOCATIONS_FRAIS_ACUISITION, IPCVariableMetier.CS_ALLOCATION_NOEL,
-            IPCVariableMetier.CS_TAUX_IMPUTATION_LOYER_FRAIS_ACQUISITION, IPCVariableMetier.CS_PLAFOND_ANNUEL_HOME });
+            IPCVariableMetier.CS_TAUX_IMPUTATION_LOYER_FRAIS_ACQUISITION, IPCVariableMetier.CS_PLAFOND_ANNUEL_HOME,
+            IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_EPS });
     private final static List<String> champsVariableMetierAvecFraction = Arrays.asList(new String[] {
             IPCVariableMetier.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE,
             IPCVariableMetier.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME,
