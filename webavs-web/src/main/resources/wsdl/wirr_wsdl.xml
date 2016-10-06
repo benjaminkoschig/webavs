@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://ws.admin.ch/zas/regcent/NRR/0" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:ebsv-2028-000102="http://www.bsv.admin.ch/xmlns/ebsv-2028-000102/1" xmlns:nrr-ws="http://ws.admin.ch/zas/regcent/NRR/0" xmlns:ebsv-2028-000101="http://www.bsv.admin.ch/xmlns/ebsv-2028-000101/1" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapbind="http://schemas.xmlsoap.org/wsdl/soap/">
+  <message name="deliveryRequestMsg">
+    <part name="body" element="ebsv-2028-000101:delivery">
+    </part>
+  </message>
+  <message name="deliveryResponseMsg">
+    <part name="body" element="ebsv-2028-000102:delivery">
+    </part>
+  </message>
+  <portType name="NRRQueryServicePortType">
+    <operation name="searchData">
+      <input message="nrr-ws:deliveryRequestMsg">
+    </input>
+      <output message="nrr-ws:deliveryResponseMsg">
+    </output>
+    </operation>
+  </portType>
+  <binding name="NRRQueryServiceBinding" type="nrr-ws:NRRQueryServicePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="searchData">
+      <soap:operation soapAction="http://soap.nrr.admin.ch"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="NRRQueryService">
+    <port name="NRRQueryServicePort" binding="nrr-ws:NRRQueryServiceBinding">
+      <soap:address location="https://webservice.nrr.zas.admin.ch:443/wirr_cc/NRRQueryService"/>
+    </port>
+  </service>
+</definitions>
