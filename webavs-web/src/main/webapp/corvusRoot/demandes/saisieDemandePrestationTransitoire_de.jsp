@@ -675,7 +675,7 @@
 				<%@ include file="/theme/detail/bodyButtons.jspf" %>
 				
 				<input type="button" value="<ct:FWLabel key="JSP_SUIVANT"/> (alt+<ct:FWLabel key="AK_REQ_SUIVANT"/>)" onclick="suivant();" accesskey="<ct:FWLabel key="AK_REQ_SUIVANT"/>">
-				<%if(hasDroitBoutonArret)){ %>
+				<%if(hasDroitBoutonArret){ %>
 					<input type="button" value="<ct:FWLabel key="JSP_ARRET"/> (alt+<ct:FWLabel key="AK_REQ_ARRET"/>)" onclick="arret()" accesskey="<ct:FWLabel key="AK_REQ_ARRET"/>">
 				<%} %>
 <%@ include file="/theme/detail/bodyErrors.jspf" %>
