@@ -24,6 +24,7 @@ public class PCCorrigerDroitViewBean extends BJadePersistentObjectViewBean {
     private Droit droit = null;
     private String idDroit = null;
     private String dateDecision = null;
+    private String mailProcessCompta = getSession().getUserEMail();
     private boolean isComptabilisationAuto = false;
 
     public PCCorrigerDroitViewBean() {
@@ -159,7 +160,7 @@ public class PCCorrigerDroitViewBean extends BJadePersistentObjectViewBean {
         retrieve();
         if (IPCDroits.CS_MOTIF_DROIT_DECES.equals(csMotif)) {
             droit = PegasusServiceLocator.getDroitService().corrigerDroitEnCasDeDeces(droit, dateAnnonce, csMotif,
-                    dateSuppression, dateDecision, getCurrentUserId(), isComptabilisationAuto());
+                    dateSuppression, dateDecision, getCurrentUserId(), isComptabilisationAuto(), mailProcessCompta);
         } else {
             droit = PegasusServiceLocator.getDroitService().corrigerDroit(droit, dateAnnonce, csMotif);
         }
@@ -177,4 +178,13 @@ public class PCCorrigerDroitViewBean extends BJadePersistentObjectViewBean {
     public void setIsComptabilisationAuto(boolean isComptabilisationAuto) {
         this.isComptabilisationAuto = isComptabilisationAuto;
     }
+
+    public String getMailProcessCompta() {
+        return mailProcessCompta;
+    }
+
+    public void setMailProcessCompta(String mailProcessCompta) {
+        this.mailProcessCompta = mailProcessCompta;
+    }
+
 }

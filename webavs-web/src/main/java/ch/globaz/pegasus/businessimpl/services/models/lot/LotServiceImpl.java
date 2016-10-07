@@ -2,6 +2,7 @@ package ch.globaz.pegasus.businessimpl.services.models.lot;
 
 import globaz.corvus.api.lots.IRELot;
 import globaz.corvus.properties.REProperties;
+import globaz.globall.db.BProcessLauncher;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
@@ -16,6 +17,7 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecutionManager;
+import globaz.pegasus.process.lot.PCValidationDecisionsComptabiliserLotProcess;
 import ch.globaz.common.domaine.Checkers;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.properties.PropertiesException;
@@ -256,8 +258,9 @@ public class LotServiceImpl extends PegasusAbstractServiceImpl implements LotSer
      * @throws IllegalArgumentException
      */
     @Override
-    public void comptabiliserAndResolveDateComptableEcheance(String idLot) throws PropertiesException,
-            ComptabiliserLotException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
+    public void comptabiliserAndResolveDateComptableEcheance(String idLot, String mailProcessCompta)
+            throws PropertiesException, ComptabiliserLotException, JadeApplicationServiceNotAvailableException,
+            JadePersistenceException {
 
         Checkers.checkNotNull(idLot, "idLot");
 
@@ -269,9 +272,21 @@ public class LotServiceImpl extends PegasusAbstractServiceImpl implements LotSer
             String dateComptable = dateEcheancePaiement;
             // lancement process de comptabilisation
             try {
-                PegasusServiceLocator.getLotService().comptabiliserLot(idLot, idOrganeExecution, "1", null,
-                        dateComptable, dateEcheancePaiement);
-            } catch (JAException e) {
+                PCValidationDecisionsComptabiliserLotProcess comptabiliserLotProcess = new PCValidationDecisionsComptabiliserLotProcess();
+                comptabiliserLotProcess.setSession(BSessionUtil.getSessionFromThreadContext());
+                comptabiliserLotProcess.setMailAdress(mailProcessCompta);
+                comptabiliserLotProcess.setIdLot(idLot);
+                comptabiliserLotProcess.setIdOrganeExecution(idOrganeExecution);
+                comptabiliserLotProcess.setNumeroOG("1");
+                comptabiliserLotProcess.setLibelleJournal(null);
+                comptabiliserLotProcess.setDateValeur(dateComptable);
+                comptabiliserLotProcess.setDateEcheance(dateEcheancePaiement);
+                try {
+                    BProcessLauncher.startJob(comptabiliserLotProcess);
+                } catch (Exception e) {
+                    throw new JadeApplicationServiceNotAvailableException("cannot start comptabiliserLotProcess", e);
+                }
+            } catch (Exception e) {
                 throw new RuntimeException("Unabled to comptabilise lot decision restitution", e);
             }
 

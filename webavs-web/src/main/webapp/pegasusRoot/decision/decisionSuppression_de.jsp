@@ -464,6 +464,10 @@ var initValue = {"masterValue":"<%=viewBean.getDecisionSuppression().getSimpleDe
 			<!-- **************************** Confirmation que l'utilisateur veut bien créer un lot de décision de restitution -->
 			<div id="dialog-confirm-creation-lot" title="<%= objSession.getLabel("JSP_PC_DECALCUL_D_CONFIRMATION_COMPTA_AUTO_TITRE")%>">
     			<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><%= objSession.getLabel("JSP_PC_DECALCUL_D_CONFIRMATION_COMPTA_AUTO")%></p>
+<!--     			<p> -->
+<%-- 							<%= objSession.getLabel("JSP_VALID_LOT_D_EMAIL")%> --%>
+<%-- 							<INPUT type="text" name="mailProcessCompta" value="<%=viewBean.getMailProcessCompta()%>" class="libelleLong"> --%>
+<!-- 					</p> -->
 			</div>
 			
 				<input type="hidden" name="isComptabilisationAuto" id="isComptabilisationAuto" value="<%=viewBean.isComptabilisationAuto()%>"/>

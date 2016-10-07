@@ -6,9 +6,9 @@ package ch.globaz.pegasus.businessimpl.services.models.decision;
 import globaz.corvus.api.lots.IRELot;
 import globaz.corvus.properties.REProperties;
 import globaz.externe.IPRConstantesExternes;
+import globaz.globall.db.BProcessLauncher;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JACalendar;
-import globaz.globall.util.JAException;
 import globaz.jade.context.JadeThread;
 import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
 import globaz.jade.exception.JadeApplicationException;
@@ -17,6 +17,7 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.pegasus.process.lot.PCValidationDecisionsComptabiliserLotProcess;
 import globaz.prestation.beans.PRPeriode;
 import java.util.Collections;
 import java.util.Comparator;
@@ -335,8 +336,9 @@ public class ValidationDecisionServiceImpl extends PegasusAbstractServiceImpl im
     }
 
     @Override
-    public void validerDecisionSuppression(DecisionSuppression decisionSuppression, boolean isComptabilisationAuto)
-            throws JadePersistenceException, DecisionException, JadeCloneModelException, JadeApplicationException {
+    public void validerDecisionSuppression(DecisionSuppression decisionSuppression, boolean isComptabilisationAuto,
+            String mailProcessCompta) throws JadePersistenceException, DecisionException, JadeCloneModelException,
+            JadeApplicationException {
 
         if (!PegasusServiceLocator.getPmtMensuelService().isValidationDecisionAuthorise()) {
             throw new DecisionException(BSessionUtil.getSessionFromThreadContext().getLabel(
@@ -369,9 +371,21 @@ public class ValidationDecisionServiceImpl extends PegasusAbstractServiceImpl im
                 String dateEcheancePaiement = dateComptable;
                 // lancement process de comptabilisation
                 try {
-                    PegasusServiceLocator.getLotService().comptabiliserLot(idLot, idOrganeExecution, "1", null,
-                            dateComptable, dateEcheancePaiement);
-                } catch (JAException e) {
+                    PCValidationDecisionsComptabiliserLotProcess comptabiliserLotProcess = new PCValidationDecisionsComptabiliserLotProcess();
+                    comptabiliserLotProcess.setSession(BSessionUtil.getSessionFromThreadContext());
+                    comptabiliserLotProcess.setMailAdress(mailProcessCompta);
+                    comptabiliserLotProcess.setIdLot(idLot);
+                    comptabiliserLotProcess.setIdOrganeExecution(idOrganeExecution);
+                    comptabiliserLotProcess.setNumeroOG("1");
+                    comptabiliserLotProcess.setLibelleJournal(null);
+                    comptabiliserLotProcess.setDateValeur(dateComptable);
+                    comptabiliserLotProcess.setDateEcheance(dateEcheancePaiement);
+                    try {
+                        BProcessLauncher.startJob(comptabiliserLotProcess);
+                    } catch (Exception e) {
+                        throw new JadeApplicationServiceNotAvailableException("cannot start comptabiliserLotProcess", e);
+                    }
+                } catch (Exception e) {
                     throw new DecisionException("Unabled to comptabilise lot decision restitution", e);
                 }
             }

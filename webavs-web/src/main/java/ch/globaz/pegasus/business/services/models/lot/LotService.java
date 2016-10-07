@@ -49,8 +49,9 @@ public interface LotService extends JadeApplicationService {
      * @throws JadeApplicationServiceNotAvailableException
      * @throws JadePersistenceException
      */
-    public void comptabiliserAndResolveDateComptableEcheance(String idLot) throws PropertiesException,
-            ComptabiliserLotException, JadeApplicationServiceNotAvailableException, JadePersistenceException;
+    public void comptabiliserAndResolveDateComptableEcheance(String idLot, String mailProcessCompta)
+            throws PropertiesException, ComptabiliserLotException, JadeApplicationServiceNotAvailableException,
+            JadePersistenceException;
 
     /**
      * Permet la création d'un lot avec une description spécifique

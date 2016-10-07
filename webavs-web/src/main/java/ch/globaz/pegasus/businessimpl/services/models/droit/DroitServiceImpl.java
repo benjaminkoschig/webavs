@@ -380,8 +380,8 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Droit corrigerDroitEnCasDeDeces(Droit droit, String dateAnnonce, String csMotif, String dateSuppression,
-            String dateDecision, String currentUserId, boolean comptabilisationAuto) throws DroitException,
-            JadePersistenceException, JadeApplicationServiceNotAvailableException {
+            String dateDecision, String currentUserId, boolean comptabilisationAuto, String mailAdressCompta)
+            throws DroitException, JadePersistenceException, JadeApplicationServiceNotAvailableException {
 
         BSession session = BSessionUtil.getSessionFromThreadContext();
 
@@ -444,7 +444,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
                 .setDateValidation(JadeDateUtil.getGlobazFormattedDate(new Date()));
         try {
             PegasusServiceLocator.getValidationDecisionService().validerDecisionSuppression(decisionSuppression,
-                    comptabilisationAuto);
+                    comptabilisationAuto, mailAdressCompta);
         } catch (Exception e) {
             throw new DroitException("unable to valid decision de suppression an error occured while validating", e);
         }

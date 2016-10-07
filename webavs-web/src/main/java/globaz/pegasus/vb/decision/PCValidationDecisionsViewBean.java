@@ -39,6 +39,7 @@ public class PCValidationDecisionsViewBean extends BJadePersistentObjectViewBean
     private String path = null;
     private BigDecimal montant = BigDecimal.ZERO;
     private boolean isComptabilisationAuto = false;
+    private String mailProcessCompta = getSession().getUserEMail();
     private ValiderDecisionAcData data = null;
     private Boolean isBaseSurCalculMoisSuivant = null;
 
@@ -343,7 +344,7 @@ public class PCValidationDecisionsViewBean extends BJadePersistentObjectViewBean
         }
 
         PegasusServiceLocator.getLotService().comptabiliserAndResolveDateComptableEcheance(
-                data.getSimplePrestation().getIdLot());
+                data.getSimplePrestation().getIdLot(), mailProcessCompta);
 
     }
 
@@ -366,5 +367,13 @@ public class PCValidationDecisionsViewBean extends BJadePersistentObjectViewBean
 
     public void setIsComptabilisationAuto(boolean isComptabilisationAuto) {
         this.isComptabilisationAuto = isComptabilisationAuto;
+    }
+
+    public String getMailProcessCompta() {
+        return mailProcessCompta;
+    }
+
+    public void setMailProcessCompta(String mailProcessCompta) {
+        this.mailProcessCompta = mailProcessCompta;
     }
 }

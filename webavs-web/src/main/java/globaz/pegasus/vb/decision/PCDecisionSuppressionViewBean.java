@@ -105,6 +105,7 @@ public class PCDecisionSuppressionViewBean extends BJadePersistentObjectViewBean
 
     private BigDecimal montantDecision = BigDecimal.ZERO;
     private boolean isComptabilisationAuto = false;
+    private String mailProcessCompta = getSession().getUserEMail();
 
     /**
      * Constructeur simple
@@ -922,7 +923,7 @@ public class PCDecisionSuppressionViewBean extends BJadePersistentObjectViewBean
         decisionSuppression = PegasusServiceLocator.getDecisionSuppressionService().update(decisionSuppression);
         // Validation de la décision
         PegasusServiceLocator.getValidationDecisionService().validerDecisionSuppression(decisionSuppression,
-                isComptabilisationAuto());
+                isComptabilisationAuto(), mailProcessCompta);
     }
 
     public BigDecimal getMontantDecision() {
@@ -943,5 +944,13 @@ public class PCDecisionSuppressionViewBean extends BJadePersistentObjectViewBean
 
     public void setIsComptabilisationAuto(boolean isComptabilisationAuto) {
         this.isComptabilisationAuto = isComptabilisationAuto;
+    }
+
+    public String getMailProcessCompta() {
+        return mailProcessCompta;
+    }
+
+    public void setMailProcessCompta(String mailProcessCompta) {
+        this.mailProcessCompta = mailProcessCompta;
     }
 }
