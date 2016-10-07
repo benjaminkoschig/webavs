@@ -2061,7 +2061,7 @@ public class RESaisieDemandeRenteHelper extends PRAbstractHelper {
         RERenteAccJoinTblTiersJoinDemRenteManager managerRenteAcc = new RERenteAccJoinTblTiersJoinDemRenteManager();
         managerRenteAcc.setSession(session);
         managerRenteAcc.setForNoDemandeRente(vb.getIdDemandeRente());
-        managerRenteAcc.find(BManager.SIZE_USEDEFAULT);
+        managerRenteAcc.find(BManager.SIZE_NOLIMIT);
 
         boolean hasFoundRenteAcc = false;
         JADate dateDebutFinal = null;
@@ -2080,19 +2080,16 @@ public class RESaisieDemandeRenteHelper extends PRAbstractHelper {
                 RERenteAccJoinTblTiersJoinDemandeRente renteAccordee = (RERenteAccJoinTblTiersJoinDemandeRente) managerRenteAcc
                         .get(i);
 
-                JADate dateDebutCurrent = null;
-                JADate datefinCurrent = null;
-
                 // Gestion de la date de début
                 if (!JadeStringUtil.isBlankOrZero(renteAccordee.getDateDebutDroit())) {
-                    dateDebutCurrent = new JADate(renteAccordee.getDateDebutDroit());
+                    final JADate dateDebutCurrent = new JADate(renteAccordee.getDateDebutDroit());
                     dateDebutFinal = takeLowerDateDebut(dateDebutFinal, cal, dateDebutCurrent);
                 }
 
                 // Gestion de la date de fin, si au moins une fois une date de fin vide alors on la prend comme
                 // référence
                 if (!JadeStringUtil.isBlankOrZero(renteAccordee.getDateFinDroit()) && !hasFoundDateSansFin) {
-                    datefinCurrent = new JADate(renteAccordee.getDateFinDroit());
+                    final JADate datefinCurrent = new JADate(renteAccordee.getDateFinDroit());
                     dateFinFinal = takeUpperDateFin(dateFinFinal, cal, datefinCurrent);
                 } else {
                     hasFoundDateSansFin = true;
@@ -2124,21 +2121,19 @@ public class RESaisieDemandeRenteHelper extends PRAbstractHelper {
 
                 boolean hasFoundDateSansFin = false;
                 for (int i = 0; i < mgr.size(); i++) {
-                    JADate dateDebutCurrent = null;
-                    JADate datefinCurrent = null;
 
                     REPeriodeInvalidite periode = (REPeriodeInvalidite) mgr.get(i);
 
                     // Gestion de la date de début
                     if (!JadeStringUtil.isBlankOrZero(periode.getDateDebutInvalidite())) {
-                        dateDebutCurrent = new JADate(periode.getDateDebutInvalidite());
+                        final JADate dateDebutCurrent = new JADate(periode.getDateDebutInvalidite());
                         dateDebutFinal = takeLowerDateDebut(dateDebutFinal, cal, dateDebutCurrent);
                     }
 
                     // Gestion de la date de fin, si au moins une fois une date de fin vide alors on la prend comme
                     // référence
                     if (!JadeStringUtil.isBlankOrZero(periode.getDateFinInvalidite()) && !hasFoundDateSansFin) {
-                        datefinCurrent = new JADate(periode.getDateFinInvalidite());
+                        final JADate datefinCurrent = new JADate(periode.getDateFinInvalidite());
                         dateFinFinal = takeUpperDateFin(dateFinFinal, cal, datefinCurrent);
                     } else {
                         hasFoundDateSansFin = true;
@@ -2173,21 +2168,19 @@ public class RESaisieDemandeRenteHelper extends PRAbstractHelper {
                 boolean hasFoundDateSansFin = false;
                 // Recherche de la limite de la date début la plus petite et la date de fin la plus grande des périodes
                 for (int i = 0; i < mgr.size(); i++) {
-                    JADate idd = null;
-                    JADate idf = null;
 
                     REPeriodeAPI p = (REPeriodeAPI) mgr.get(i);
 
                     // Gestion de la date de début
                     if (!JadeStringUtil.isBlankOrZero(p.getDateDebutInvalidite())) {
-                        idd = new JADate(p.getDateDebutInvalidite());
+                        final JADate idd = new JADate(p.getDateDebutInvalidite());
                         dateDebutFinal = takeLowerDateDebut(dateDebutFinal, cal, idd);
                     }
 
                     // Gestion de la date de fin, si au moins une fois une date de fin vide alors on la prend comme
                     // référence
                     if (!JadeStringUtil.isBlankOrZero(p.getDateFinInvalidite()) && !hasFoundDateSansFin) {
-                        idf = new JADate(p.getDateFinInvalidite());
+                        final JADate idf = new JADate(p.getDateFinInvalidite());
                         dateFinFinal = takeUpperDateFin(dateFinFinal, cal, idf);
                     } else {
                         hasFoundDateSansFin = true;
