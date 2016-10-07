@@ -5,7 +5,6 @@ import globaz.cygnus.api.ordresversements.IRFOrdresVersements;
 import globaz.cygnus.api.prestationsaccordees.IRFGenrePrestations;
 import globaz.cygnus.api.qds.IRFQd;
 import globaz.cygnus.utils.RFLogToDB;
-import globaz.cygnus.utils.RFUtils;
 import globaz.cygnus.vb.paiement.IRFModuleComptable;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.util.FWCurrency;
@@ -544,10 +543,8 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
         String idPrestationGroupees = "";
         String idTiersBeneficiairePrincipal = "";
         boolean isBeneficiarePrincipalInitialise = false;
-        boolean isAVS = false;
-        boolean isAI = false;
         boolean traiterOv = true;
-        Set<String> datesPrestations = new HashSet<String>();
+        Set<String> idDecisions = new HashSet<String>();
 
         // pour tous les Ovs des prestations de même adresse de paiement et même tiers bénéficiaire
         for (RFPrestationData prestationCourante : prestationsMemeAdresseDePaiementList) {
@@ -555,13 +552,8 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
                 rfmLogger.logInfoToDB("idPrestation prestation courante: " + prestationCourante.getIdPrestation(),
                         getClass().getName() + " - doTraitement");
             }
-            if (RFUtils.TYPE_PC_AVS.equals(RFUtils.getTypePc_AVS_AI(prestationCourante.getTypePrestation()))) {
-                isAVS = true;
-            } else {
-                isAI = true;
-            }
 
-            datesPrestations.add(prestationCourante.getDatePrestation());
+            idDecisions.add(prestationCourante.getIdDecision());
 
             if (JadeStringUtil.isBlankOrZero(idPrestationGroupees)) {
                 idPrestationGroupees = prestationCourante.getIdPrestation();
@@ -710,9 +702,9 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
             compteAnnexe = (APICompteAnnexe) compteAnnexeSectionNormaleObj[0];
             sectionNormale = (APISection) compteAnnexeSectionNormaleObj[1];
             memoryLog.logMessage(preparerOrdreVersement(nss, nom, prenom, idTiersAdressePaiement, idDomaineApplication,
-                    isAVS, isAI, datesPrestations, compteAnnexe, sectionNormale, sessionOsiris, transaction, compta,
-                    dateComptable, process.getIdOrganeExecution(), montantOrdreVersementBigDec, rfmLogger, isLotAVASAD,
-                    refPaiement, idTiersBeneficiairePrincipal));
+                    idDecisions, compteAnnexe, sectionNormale, sessionOsiris, transaction, compta, dateComptable,
+                    process.getIdOrganeExecution(), montantOrdreVersementBigDec, rfmLogger, isLotAVASAD, refPaiement,
+                    idTiersBeneficiairePrincipal));
 
         }
 
@@ -811,8 +803,8 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
     }
 
     private BIMessage preparerOrdreVersement(String nss, String nom, String prenom, String idTiersAdressePaiement,
-            String idDomaineApplication, boolean isAVS, boolean isAI, Set<String> datesPrestations,
-            APICompteAnnexe compteAnnexe, APISection sectionNormale, BSession session, BTransaction transaction,
+            String idDomaineApplication, Set<String> idDecisions, APICompteAnnexe compteAnnexe,
+            APISection sectionNormale, BSession session, BTransaction transaction,
             APIGestionComptabiliteExterne compta, String dateComptable, String idOrganeExecution,
             BigDecimal montantOrdreDeVersementBigDec, RFLogToDB rfmLogger, boolean isLotAVASAD, String refPaiement,
             final String idTiersBeneficiairePrincipal) throws Exception {
@@ -825,8 +817,8 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
 
         String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(getSession(), idTiersPrincipal);
 
-        String motifVersement = getMotifVersement(session, nss, nom, prenom, refPaiement, isAVS, isAI,
-                datesPrestations, isoLangFromIdTiers);
+        String motifVersement = getMotifVersement(session, nss, nom, prenom, refPaiement, idDecisions,
+                isoLangFromIdTiers);
         TIAdressePaiementData adrPaiementData = loadAdressePaiement(session, transaction, dateComptable,
                 idTiersAdressePaiement, idDomaineApplication);
         if (isLotAVASAD) {

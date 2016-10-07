@@ -232,7 +232,7 @@ public class MotifVersementUtil {
             message = session.getApplication().getLabel(labelID, isoLangFromIdTiers);
 
             // Si le label n'existe pas (soit langue inexistante, inconnu ou labelID inconnu.
-            if (message.toString().startsWith("LABEL_") || message.toString().contains("label not found")) {
+            if (message.startsWith("LABEL_") || message.contains("label not found")) {
                 // On fait pêter pour qu'il traduise par la langue de l'utilisateur
                 throw new IllegalArgumentException("Label not found");
             }
@@ -252,7 +252,7 @@ public class MotifVersementUtil {
             message = session.getApplication().getLabel(labelID, isoLangue);
 
             // Si le label n'existe pas (soit langue inexistante, inconnu ou labelID inconnu.
-            if (message.toString().startsWith("LABEL_") || message.toString().contains("label not found")) {
+            if (message.startsWith("LABEL_") || message.contains("label not found")) {
                 // On fait pêter pour qu'il traduise par la langue de l'utilisateur
                 throw new IllegalArgumentException("Label not found");
             }

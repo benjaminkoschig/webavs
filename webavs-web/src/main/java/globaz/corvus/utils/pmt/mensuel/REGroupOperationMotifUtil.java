@@ -41,29 +41,30 @@ public class REGroupOperationMotifUtil {
         if (multiGenres.contains(PRTypeCodePrestation.INVALIDITE)
                 || multiGenres.contains(PRTypeCodePrestation.VIEILLESSE)
                 || multiGenres.contains(PRTypeCodePrestation.SURVIVANT)) {
-            result.append(MotifVersementUtil.getTranslatedLabelFromIsolangue(codeISOLangue, "RENTE_AVS_AI", session));
+            result.append(MotifVersementUtil.getTranslatedLabelFromIsolangue(codeISOLangue, "RENTE_AVS_AI_OV", session));
             hasPrevious = true;
         }
         if (multiGenres.contains(PRTypeCodePrestation.API)) {
             if (hasPrevious) {
                 result.append("/");
             }
-            result.append(MotifVersementUtil.getTranslatedLabelFromIsolangue(codeISOLangue, "RENTE_API", session));
+            result.append(MotifVersementUtil.getTranslatedLabelFromIsolangue(codeISOLangue, "RENTE_API_OV", session));
             hasPrevious = true;
         }
         if (multiGenres.contains(PRTypeCodePrestation.PC)) {
             if (hasPrevious) {
                 result.append("/");
             }
-            result.append(MotifVersementUtil.getTranslatedLabelFromIsolangue(codeISOLangue, "RENTE_PC_AVS_AI", session));
+            result.append(MotifVersementUtil.getTranslatedLabelFromIsolangue(codeISOLangue, "RENTE_PC_AVS_AI_OV",
+                    session));
             hasPrevious = true;
         }
         if (multiGenres.contains(PRTypeCodePrestation.RFM)) {
             if (hasPrevious) {
                 result.append("/");
             }
-            result.append(MotifVersementUtil
-                    .getTranslatedLabelFromIsolangue(codeISOLangue, "RENTE_RFM_AVS_AI", session));
+            result.append(MotifVersementUtil.getTranslatedLabelFromIsolangue(codeISOLangue, "RENTE_RFM_AVS_AI_OV",
+                    session));
             hasPrevious = true;
         }
 

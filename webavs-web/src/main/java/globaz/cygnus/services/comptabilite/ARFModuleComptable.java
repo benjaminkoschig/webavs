@@ -3,6 +3,7 @@ package globaz.cygnus.services.comptabilite;
 import globaz.corvus.db.decisions.REDecisionEntity;
 import globaz.cygnus.api.TypesDeSoins.IRFTypesDeSoins;
 import globaz.cygnus.api.prestationsaccordees.IRFGenrePrestations;
+import globaz.cygnus.db.decisions.RFDecision;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
@@ -21,6 +22,7 @@ import globaz.osiris.db.ordres.CAOrdreGroupe;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Set;
 import ch.globaz.common.util.prestations.MotifVersementUtil;
 import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
@@ -36,22 +38,6 @@ public class ARFModuleComptable implements Comparator {
     public static final int TYPE_RUBRIQUE_NORMAL = 1000;
     public static final int TYPE_RUBRIQUE_RESTITUTION = 1400;
     public static final int TYPE_RUBRIQUE_RETROACTIF = 1200;
-
-    public static String getLibelleRubrique(BSession session, String typePrestation, String isoLangue) throws Exception {
-        String labelId = "";
-
-        if (IPCPCAccordee.CS_TYPE_PC_SURVIVANT.equals(typePrestation)
-                || IPCPCAccordee.CS_TYPE_PC_VIELLESSE.equals(typePrestation)) {
-            labelId = "PROCESS_COMPTABILISER_RFM_AVS";
-        } else if (IPCPCAccordee.CS_TYPE_PC_INVALIDITE.equals(typePrestation)) {
-            labelId = "PROCESS_COMPTABILISER_RFM_AI";
-        } else {
-            throw new Exception("ARFModuleComptable::getLibelleRubrique: genrePrestation null ou inconnu : "
-                    + typePrestation);
-        }
-
-        return MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangue, labelId, session);
-    }
 
     /**
      * Retourne la rubrique concernée
@@ -717,34 +703,43 @@ public class ARFModuleComptable implements Comparator {
     }
 
     protected String getMotifVersement(BSession session, String nss, String nom, String prenom, String refPmt,
-            boolean isAVS, boolean isAI, Set<String> datesPrestations, final String isoLangue) throws Exception {
+            Set<String> idDecisions, final String isoLangue) throws Exception {
 
         final String nomPrenom = nom + " " + prenom;
         final StringBuilder genrePrestation = new StringBuilder();
 
-        if (isAVS) {
-            genrePrestation.append(ARFModuleComptable.getLibelleRubrique(session, IPCPCAccordee.CS_TYPE_PC_SURVIVANT,
-                    isoLangue));
-        }
-
-        if (isAI) {
-            genrePrestation.append(isAVS ? "/" : " ");
-            genrePrestation.append(ARFModuleComptable.getLibelleRubrique(session, IPCPCAccordee.CS_TYPE_PC_INVALIDITE,
-                    isoLangue));
-        }
+        genrePrestation.append(MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangue,
+                "PROCESS_COMPTABILISER_RFM_AVS_AI_OV", session));
 
         final StringBuilder msgDecision = new StringBuilder(MotifVersementUtil.getTranslatedLabelFromIsolangue(
-                isoLangue, "PMT_MENS_DECISION_DU", session));
+                isoLangue, "PMT_MENS_DECISION_DU_RFM", session));
+
+        Set<String> dateDecisions = new HashSet<String>();
+        for (String idDecision : idDecisions) {
+            if (JadeStringUtil.isBlankOrZero(idDecision)) {
+                continue;
+            }
+
+            RFDecision decision = new RFDecision();
+            decision.setId(idDecision);
+            decision.setSession(session);
+            decision.retrieve();
+
+            if (!decision.isNew()) {
+                dateDecisions.add(decision.getDateSurDocument());
+            }
+        }
 
         boolean premierPassage = true;
-        for (String dateCourante : datesPrestations) {
+        for (String dateDecision : dateDecisions) {
+
             if (!premierPassage) {
                 msgDecision.append(", ");
             } else {
                 msgDecision.append(" ");
             }
 
-            msgDecision.append(dateCourante);
+            msgDecision.append(dateDecision);
             premierPassage = false;
         }
 
@@ -763,10 +758,8 @@ public class ARFModuleComptable implements Comparator {
     public TIAdressePaiementData loadAdressePaiement(BSession session, BTransaction transaction,
             String dateValeurCompta, String idTiersAdressePaiement, String idDomaine) throws Exception {
 
-        TIAdressePaiementData retValue = PRTiersHelper.getAdressePaiementData(session, transaction,
-                idTiersAdressePaiement, IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, "", dateValeurCompta);
-
-        return retValue;
+        return PRTiersHelper.getAdressePaiementData(session, transaction, idTiersAdressePaiement,
+                IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, "", dateValeurCompta);
     }
 
     @Override

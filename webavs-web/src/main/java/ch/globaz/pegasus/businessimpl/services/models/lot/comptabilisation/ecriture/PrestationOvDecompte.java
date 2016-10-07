@@ -1,5 +1,6 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecriture;
 
+import globaz.corvus.utils.REPmtMensuel;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
@@ -271,10 +272,7 @@ public class PrestationOvDecompte {
         String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(BSessionUtil.getSessionFromThreadContext(),
                 idTiersPrincipal);
 
-        String message = MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangFromIdTiers,
-                "PEGASUS_COMPTABILISATION_DECISION_DU", BSessionUtil.getSessionFromThreadContext());
-        message += " " + getDateDecision();
-
+        // Libelle
         String libelle = "";
         try {
             CodeSystem csLibelle = CodeSystemUtils.searchCodeSystemTraduction("64055001",
@@ -285,8 +283,18 @@ public class PrestationOvDecompte {
             libelle = BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001");
         }
 
+        // periode
+        final String dateFinFinal = JadeStringUtil.isBlankOrZero(getDateFin()) ? REPmtMensuel
+                .getDateDernierPmt(BSessionUtil.getSessionFromThreadContext()) : getDateFin();
+        final String periode = getDateDebut() + " - " + dateFinFinal;
+
+        // Message
+        String message = MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangFromIdTiers,
+                "PEGASUS_COMPTABILISATION_DECISION_DU", BSessionUtil.getSessionFromThreadContext());
+        message += " " + getDateDecision();
+
         return MotifVersementUtil.formatDecision(getNssRequerant(), getNomRequerant() + " " + getPrenomRequerant(),
-                getRefPaiement(), libelle, getDateDebut() + " - " + getDateFin(), message);
+                getRefPaiement(), libelle, periode, message);
     }
 
 }

@@ -382,7 +382,7 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
 
         String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(getSession(), idTiersPrincipal);
 
-        final String msgAvance = getOvDescriptionForDomaine(avance.getCsDomaineAvance(), isoLangFromIdTiers);
+        final String msgAvance = getOvDescription(isoLangFromIdTiers);
 
         final String motifVersement = MotifVersementUtil.formatAvance(nss, nomPrenom, msgAvance);
 
@@ -564,23 +564,8 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
      * @param csDomaineApplicatifAvance
      * @return
      */
-    private String getOvDescriptionForDomaine(String csDomaineApplicatifAvance, String isoLangue) {
-        String idMessage = "";
-
-        // si le domaine est différent de null, sinon on met la description rente par defaut
-        if (csDomaineApplicatifAvance != null) {
-            if (csDomaineApplicatifAvance.equals(IREAvances.CS_DOMAINE_AVANCE_PC)) {
-                idMessage = "AVANCE_PC";
-            } else if (csDomaineApplicatifAvance.equals(IREAvances.CS_DOMAINE_AVANCE_RENTE)) {
-                idMessage = "AVANCE_PC";
-            } else {
-                idMessage = "AVANCE_RFM";
-            }
-        } else {
-            idMessage = "AVANCE_RENTE";
-        }
-
-        return MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangue, idMessage, getSession());
+    private String getOvDescription(String isoLangue) {
+        return MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangue, "AVANCE_OV", getSession());
     }
 
     /**

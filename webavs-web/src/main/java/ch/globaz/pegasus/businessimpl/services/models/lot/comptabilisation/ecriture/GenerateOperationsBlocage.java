@@ -114,11 +114,6 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
                     SectionSimpleModel sectionDette = getSectionObjectFromList(ov.getSimpleOrdreVersement()
                             .getIdSectionDetteEnCompta(), sections);
 
-                    // this.ecritures.add(this.generateEcriture(SectionPegasus.BLOCAGE, APIEcriture.DEBIT,
-                    // APIReferenceRubrique.COMPENSATION_RENTES, new BigDecimal(ov.getSimpleOrdreVersement()
-                    // .getMontant()), null, compteAnnexe.getIdCompteAnnexe(), TypeEcriture.DETTE,
-                    // GenerateOperationsBlocage.generateOv(ov.getSimpleOrdreVersement())));
-
                     ecritures.add(this.generateEcriture(null, APIEcriture.DEBIT,
                             APIReferenceRubrique.COMPENSATION_RENTES, new BigDecimal(ov.getSimpleOrdreVersement()
                                     .getMontant()), sectionBlocage, sectionBlocage.getIdCompteAnnexe(),
@@ -155,9 +150,7 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
         String isoLangFromIdTiers = PRTiersHelper.getIsoLangFromIdTiers(BSessionUtil.getSessionFromThreadContext(),
                 idTiersPrincipal);
 
-        String message = MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangFromIdTiers,
-                "PEGASUS_COMPTABILISATION_VERSEMENT_DU", BSessionUtil.getSessionFromThreadContext());
-
+        // Libelle PC
         String libelle = "";
         try {
             CodeSystem csLibelle = CodeSystemUtils.searchCodeSystemTraduction("64055001",
@@ -167,6 +160,10 @@ public class GenerateOperationsBlocage extends GenerateOperationBasic implements
             JadeLogger.warn(e, e.getMessage());
             libelle = BSessionUtil.getSessionFromThreadContext().getCodeLibelle("64055001");
         }
+
+        // Message versement due
+        final String message = MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangFromIdTiers,
+                "PEGASUS_COMPTABILISATION_VERSEMENT_DU", BSessionUtil.getSessionFromThreadContext());
 
         return MotifVersementUtil.formatDeblocage(ov.getNumAvs(),
                 ov.getDesignationRequerant1() + " " + ov.getDesignationRequerant2(), ov.getSimpleOrdreVersement()

@@ -1,6 +1,8 @@
 package ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ecriture;
 
+import globaz.corvus.utils.REPmtMensuel;
 import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -81,7 +83,10 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
     private void generateOperationAllocationNoel(String dateForOv, PrestationOvDecompte decompte)
             throws JadeApplicationException {
         if (decompte.getAllocationsNoel().size() > 0) {
-            String strPeriode = decompte.getDateDebut() + " - " + decompte.getDateFin();
+            // Périodes
+            final String dateFin = JadeStringUtil.isBlankOrZero(decompte.getDateFin()) ? REPmtMensuel
+                    .getDateDernierPmt(BSessionUtil.getSessionFromThreadContext()) : decompte.getDateFin();
+            final String periode = decompte.getDateDebut() + " - " + dateFin;
 
             String strDecision = MotifVersementUtil.getTranslatedLabelFromTiers(
                     decompte.getIdTiersAddressePaiementRequerant(), decompte.getIdTiersRequerant(),
@@ -90,7 +95,7 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
 
             GenerateOperationsAllocationsNoel allocationsNoel = new GenerateOperationsAllocationsNoel();
             allocationsNoel.generateAllOperation(decompte.getAllocationsNoel(), decompte.getInfosRequerant(),
-                    decompte.getInfosConjoint(), strPeriode, strDecision);
+                    decompte.getInfosConjoint(), periode, strDecision);
             operations.addAllEcritures(allocationsNoel.getEcritures());
             operations.addAllOVs(allocationsNoel.getOrdreVersementCompta());
         }

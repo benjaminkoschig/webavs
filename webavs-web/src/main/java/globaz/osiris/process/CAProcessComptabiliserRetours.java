@@ -19,7 +19,6 @@ import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CAJournal;
 import globaz.osiris.db.comptes.CAReferenceRubrique;
 import globaz.osiris.db.comptes.CARubrique;
-import globaz.osiris.db.ordres.CAOrdreGroupe;
 import globaz.osiris.db.retours.CALignesRetours;
 import globaz.osiris.db.retours.CALignesRetoursListViewBean;
 import globaz.osiris.db.retours.CALignesRetoursViewBean;
@@ -338,15 +337,9 @@ public class CAProcessComptabiliserRetours extends BProcess {
                             } else {
                                 ordreVersement.setNatureOrdre(retour.getCsNatureOrdre());
                             }
-
-                            String nss = "";
-                            String nomPrenom = "";
-                            // pour les rentes on ajoute le NSS
-                            if (CAOrdreGroupe.NATURE_RENTES_AVS_AI.equals(ordreVersement.getNatureOrdre())) {
-                                CACompteAnnexe ca = retour.getCompteAnnexe();
-                                nss = ca.getIdExterneRole();
-                                nomPrenom = ca.getDescription();
-                            }
+                            CACompteAnnexe ca = retour.getCompteAnnexe();
+                            String nss = ca.getIdExterneRole();
+                            String nomPrenom = ca.getDescription();
 
                             String idTiersPrincipal = retour.getIdTiersLigneRetourSurAdressePaiement();
 
@@ -354,7 +347,7 @@ public class CAProcessComptabiliserRetours extends BProcess {
                                 idTiersPrincipal = lir.getIdTiers();
                             }
 
-                            String motifTexte = "";
+                            StringBuilder motifTexte = new StringBuilder();
 
                             try {
                                 String isoLangFromIdTiersDest = PRTiersHelper.getIsoLangFromIdTiers(getSession(),
@@ -363,17 +356,22 @@ public class CAProcessComptabiliserRetours extends BProcess {
                                 CodeSystem codeSystem = CodeSystemUtils.searchCodeSystemTraduction(
                                         retour.getCsMotifRetour(), getSession(), isoLangFromIdTiersDest);
 
-                                motifTexte = codeSystem.getTraduction();
+                                // CS MOTIF DE RETOUR
+                                motifTexte.append(codeSystem.getTraduction());
                             } catch (Exception e) {
                                 JadeLogger.warn(e, e.getMessage());
-                                motifTexte = getSession().getCodeLibelle(retour.getCsMotifRetour());
+                                motifTexte.append(getSession().getCodeLibelle(retour.getCsMotifRetour()));
                             }
 
                             if (!JadeStringUtil.isEmpty(retour.getLibelleRetour())) {
-                                motifTexte += " - " + retour.getLibelleRetour();
+                                if (!JadeStringUtil.isEmpty(motifTexte.toString().trim())) {
+                                    motifTexte.append(" ");
+                                }
+                                // LIBELLE DU RETOUR
+                                motifTexte.append(retour.getLibelleRetour());
                             }
 
-                            String motif = MotifVersementUtil.formatRetour(nss, nomPrenom, motifTexte);
+                            String motif = MotifVersementUtil.formatRetour(nss, nomPrenom, motifTexte.toString());
 
                             // tester motif vide. Bug 5780
                             if (!JadeStringUtil.isBlank(motif)) {
