@@ -54,6 +54,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author SCR
@@ -100,8 +102,8 @@ public class REGroupOperationCAUtil {
     private APISection sectionBlocage = null;
 
     public Map<Integer, RECumulPrstParRubrique> cumulParRubrique(Map<Integer, RECumulPrstParRubrique> result,
-            RECumulPrstParRubrique cppr) {
 
+    RECumulPrstParRubrique cppr) {
         if (result.containsKey(cppr.getKey())) {
             RECumulPrstParRubrique elm = result.get(cppr.getKey());
             elm.addMontant(cppr.getMontant());
@@ -802,6 +804,8 @@ public class REGroupOperationCAUtil {
             }
         }
 
+        APISection sectionStandard = null;
+        String numSection = null;
         try {
             /*
              * 
@@ -813,9 +817,10 @@ public class REGroupOperationCAUtil {
                 APICompteAnnexe compteAnnexe = process.initComptaExterne(transaction, true).getCompteAnnexeById(
                         idCompteAnnexe);
 
-                APISection sectionStandard = process.initComptaExterne(transaction, true).getSectionByIdExterne(
-                        idCompteAnnexe, APISection.ID_TYPE_SECTION_RENTE_AVS_AI,
-                        process.getNoSection(session, new JADate(datePmtEnCours), sectionIncrement),
+                numSection = process.getNoSection(session, new JADate(datePmtEnCours), sectionIncrement);
+
+                sectionStandard = process.initComptaExterne(transaction, true).getSectionByIdExterne(idCompteAnnexe,
+                        APISection.ID_TYPE_SECTION_RENTE_AVS_AI, numSection,
                         IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, null);
 
                 int count = 1;
@@ -899,6 +904,12 @@ public class REGroupOperationCAUtil {
             transaction.commit();
 
         } catch (Exception e) {
+            if (sectionStandard == null) {
+                logInfoSection(motif, numSection, sectionStandard);
+            } else {
+                logInfo(motif, numSection);
+            }
+
             hasError = true;
             errorMsg = e.toString();
         } finally {
@@ -920,6 +931,26 @@ public class REGroupOperationCAUtil {
             }
         }
         return result.values().toArray(new RECumulPrstParRubrique[result.size()]);
+    }
+
+    private void logInfoSection(final String motif, final String numSection, final APISection sectionStandard) {
+        // Log ayant été ajouté pour embellir le nullpointerException de la comptabilité quand on trouve
+        // plusieurs sections et qu'il retourne null. Pas le temps de gérer ces cas, on est en phase final 1.17.00 et
+        // permet de gagner du temps sur les log
+        StringBuilder message = new StringBuilder();
+        message.append("(NULLPOINTEREXCEPTION MAY BE THREW) Found 0 or more than 1 section (n° Section :" + numSection
+                + ")");
+        message.append(" - Information for : " + motif);
+
+        Logger.getLogger("REGroupOperationCAUtil").log(Level.WARNING, message.toString());
+    }
+
+    private void logInfo(final String motif, final String numSection) {
+        StringBuilder message = new StringBuilder();
+        message.append("EXCEPTION INFORMATION for : " + motif);
+
+        Logger.getLogger("REGroupOperationCAUtil").log(Level.WARNING, message.toString());
+
     }
 
     /**
