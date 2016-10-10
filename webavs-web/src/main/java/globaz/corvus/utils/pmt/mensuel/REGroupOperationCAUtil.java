@@ -907,7 +907,7 @@ public class REGroupOperationCAUtil {
             if (sectionStandard == null) {
                 logInfoSection(motif, numSection, sectionStandard);
             } else {
-                logInfo(motif, numSection);
+                logInfo(motif);
             }
 
             hasError = true;
@@ -945,7 +945,7 @@ public class REGroupOperationCAUtil {
         Logger.getLogger("REGroupOperationCAUtil").log(Level.WARNING, message.toString());
     }
 
-    private void logInfo(final String motif, final String numSection) {
+    private void logInfo(final String motif) {
         StringBuilder message = new StringBuilder();
         message.append("EXCEPTION INFORMATION for : " + motif);
 
