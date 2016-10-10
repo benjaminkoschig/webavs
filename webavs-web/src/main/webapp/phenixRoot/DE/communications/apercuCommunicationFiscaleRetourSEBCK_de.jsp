@@ -282,7 +282,7 @@ function init(){}
          </TR>
        	<TR>
             <TD nowrap>Vermögen</TD>
-            <TD nowrap><INPUT type="text" name="fortune" value="<%=viewBean.getFortune()%>" class="montantDisabled" readonly="readonly" style="width : 2.45cm;"> (Steuerpflichtiger + gemeinsam)</TD>
+            <TD nowrap><INPUT type="text" name="fortune" value="<%=viewBean.getFortune()%>" class="montantDisabled" readonly="readonly" style="width : 2.45cm;"> (Steuerpflichtiger + Ehepartner)</TD>
             <TD></TD>
             <TD nowrap></TD>
        	</TR>
