@@ -71,6 +71,8 @@ public class REModuleComptableFactory {
     public APIRubrique PC_AI_HOME_SASH_HORS_CANTON = null;
     public APIRubrique PC_AI_HOME_SPAS = null;
     public APIRubrique PC_AI_HOME_SPAS_HORS_CANTON = null;
+    public APIRubrique PC_AI_HOME_EPS = null;
+    public APIRubrique PC_AI_HOME_EPS_HORS_CANTON = null;
     public APIRubrique PC_AI_EN_HOME = null;
     /**
      * Rubrique PC AVS standard
@@ -85,6 +87,8 @@ public class REModuleComptableFactory {
     public APIRubrique PC_AVS_EN_HOME_HORS_CANTON_SPAS = null;
     public APIRubrique PC_AVS_EN_HOME_SASH = null;
     public APIRubrique PC_AVS_EN_HOME_SPAS = null;
+    public APIRubrique PC_AVS_EN_HOME_HORS_CANTON_EPS = null;
+    public APIRubrique PC_AVS_EN_HOME_EPS = null;
     public APIRubrique PC_AVS_EN_HOME = null;
 
     public APIRubrique PRST_AI_RESTITUER = null;
@@ -349,6 +353,10 @@ public class REModuleComptableFactory {
             return PC_AI_HOME_SPAS_HORS_CANTON;
         } else if (codeRubrique.equals(APIReferenceRubrique.PC_AI_EN_HOME)) {
             return PC_AI_EN_HOME;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AI_EN_HOME_EPS)) {
+            return PC_AI_HOME_EPS;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_EPS)) {
+            return PC_AI_HOME_EPS_HORS_CANTON;
         }
 
         // AVS
@@ -368,6 +376,10 @@ public class REModuleComptableFactory {
             return PC_AVS_EN_HOME_HORS_CANTON_SPAS;
         } else if (codeRubrique.equals(APIReferenceRubrique.PC_AVS_EN_HOME)) {
             return PC_AVS_EN_HOME;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AVS_EN_HOME_EPS)) {
+            return PC_AVS_EN_HOME_EPS;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_EPS)) {
+            return PC_AVS_EN_HOME_HORS_CANTON_EPS;
         }
 
         throw new Exception("Can not return an APIRubrique for requested rubrique [" + codeRubrique
@@ -480,6 +492,9 @@ public class REModuleComptableFactory {
         PC_AI_HOME_SPAS = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_EN_HOME_SPAS);
         PC_AI_HOME_SPAS_HORS_CANTON = referenceRubrique
                 .getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_SPAS);
+        PC_AI_HOME_EPS = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_EN_HOME_EPS);
+        PC_AI_HOME_EPS_HORS_CANTON = referenceRubrique
+                .getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_EPS);
         PC_AI_EN_HOME = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_EN_HOME);
 
         // PC AVS rubrique Initialization
@@ -494,6 +509,10 @@ public class REModuleComptableFactory {
         PC_AVS_EN_HOME_SPAS = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME_SPAS);
         PC_AVS_EN_HOME_HORS_CANTON_SPAS = referenceRubrique
                 .getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_SPAS);
+        PC_AVS_EN_HOME_EPS = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME_EPS);
+        PC_AVS_EN_HOME_HORS_CANTON_EPS = referenceRubrique
+                .getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_EPS);
+
         PC_AVS_EN_HOME = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME);
 
         RFM_AVS = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.RFM_AVS);

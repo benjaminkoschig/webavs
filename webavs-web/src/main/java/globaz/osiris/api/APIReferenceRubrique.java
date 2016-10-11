@@ -136,6 +136,15 @@ public interface APIReferenceRubrique {
     public final static String PC_AI_RESTITUTION_EN_HOME_SPAS = "237215";
     public final static String PC_AI_RESTITUTION_EN_HOME = "237306";
 
+    public final static String PC_AVS_EN_HOME_EPS = "237309";
+    public final static String PC_AVS_EN_HOME_HORS_CANTON_EPS = "237310";
+    public final static String PC_AI_EN_HOME_EPS = "237311";
+    public final static String PC_AI_EN_HOME_HORS_CANTON_EPS = "237312";
+    public final static String PC_AVS_RESTITUTION_EN_HOME_HORS_CANTON_EPS = "237314";
+    public final static String PC_AVS_RESTITUTION_EN_HOME_EPS = "237313";
+    public final static String PC_AI_RESTITUTION_EN_HOME_HORS_CANTON_EPS = "237316";
+    public final static String PC_AI_RESTITUTION_EN_HOME_EPS = "237315";
+
     // Rubrique PC_AVS :
     public final static String PC_AVS = "237113";
     public final static String PC_AVS_A_DOMICILE_ORDINAIRES_ESPECES = "237217";
