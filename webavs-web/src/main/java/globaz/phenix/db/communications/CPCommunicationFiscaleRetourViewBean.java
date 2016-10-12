@@ -1332,8 +1332,8 @@ public class CPCommunicationFiscaleRetourViewBean extends globaz.globall.db.BEnt
     @Override
     public String getMontantTotalRenteAVS() {
         if (!JadeStringUtil.isEmpty(montantTotalRenteAVS)) {
-            float montantTotal = Float.valueOf(montantTotalRenteAVS);
-            return JANumberFormatter.fmt(String.valueOf(montantTotal), true, false, true, 0);
+            float montantTotal = Float.parseFloat(montantTotalRenteAVS);
+            return JANumberFormatter.fmt(String.valueOf(montantTotal), true, false, true, 2);
         } else {
             return "0";
         }
