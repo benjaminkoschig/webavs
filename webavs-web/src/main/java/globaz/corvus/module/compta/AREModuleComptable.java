@@ -864,27 +864,19 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
 
     /**
      * Effectue un ordre de versement, lance une Exception si le montant est négatif
-     * 
-     * @param compta
-     *            DOCUMENT ME!
-     * @param idCompteAnnexe
-     *            DOCUMENT ME!
-     * @param idSection
-     *            DOCUMENT ME!
-     * @param montant
-     *            DOCUMENT ME!
-     * @param idAdressePaiement
-     *            DOCUMENT ME!
-     * @param nssRequerant
-     *            String, NSS du requérant principal. Cette valeur peut être null.
-     * @throws Exception
-     *             Si le montant est négatif
-     * @throws IllegalArgumentException
-     *             DOCUMENT ME!
      */
     protected BIMessage doOrdreVersement(final BSession session, final APIGestionComptabiliteExterne compta,
             final String idCompteAnnexe, final String idSection, final String montant, final String idAdressePaiement,
             final String motifVersement, final String dateComptable, final boolean isAvance) throws Exception {
+
+        return doOrdreVersement(session, compta, idCompteAnnexe, idSection, montant, idAdressePaiement, motifVersement,
+                dateComptable, isAvance, null);
+    }
+
+    protected BIMessage doOrdreVersement(final BSession session, final APIGestionComptabiliteExterne compta,
+            final String idCompteAnnexe, final String idSection, final String montant, final String idAdressePaiement,
+            final String motifVersement, final String dateComptable, final boolean isAvance, String idOrganeExecution)
+            throws Exception {
 
         FWMemoryLog log = new FWMemoryLog();
 
@@ -942,10 +934,15 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
                 .getCode(IPRConstantesExternes.OSIRIS_CS_CODE_ISO_MONNAIE_CHF));
         ordreVersement.setCodeISOMonnaieDepot(session.getCode(IPRConstantesExternes.OSIRIS_CS_CODE_ISO_MONNAIE_CHF));
         ordreVersement.setTypeVirement(APIOperationOrdreVersement.VIREMENT);
-        ordreVersement.setIdOrganeExecution(session.getApplication().getProperty(
-                REApplication.PROPERTY_ID_ORGANE_EXECUTION));
 
-        log.logMessage(session.getLabel("OV_MNT") + montant.toString() + " idAdrPmt = " + idAdressePaiement,
+        String idOrganeExecutionToTake = idOrganeExecution;
+        if (JadeStringUtil.isBlankOrZero(idOrganeExecutionToTake)) {
+            idOrganeExecutionToTake = session.getApplication().getProperty(REApplication.PROPERTY_ID_ORGANE_EXECUTION);
+        }
+
+        ordreVersement.setIdOrganeExecution(idOrganeExecutionToTake);
+
+        log.logMessage(session.getLabel("OV_MNT") + montant + " idAdrPmt = " + idAdressePaiement,
                 FWMessage.INFORMATION, this.getClass().getName());
 
         ordreVersement.setNatureOrdre(CAOrdreGroupe.NATURE_RENTES_AVS_AI);

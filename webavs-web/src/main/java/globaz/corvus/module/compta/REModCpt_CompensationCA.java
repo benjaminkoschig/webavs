@@ -282,13 +282,20 @@ public class REModCpt_CompensationCA extends AREModuleComptable implements IREMo
 
     }
 
+    @Override
+    public FWMemoryLog doTraitement(RETraiterLotDecisionsProcess process, APIGestionComptabiliteExterne compta,
+            BSession session, BTransaction transaction, REDecisionEntity decision, String dateComptable, String idLot,
+            String dateEcheance) throws Exception {
+        return doTraitement(process, compta, session, transaction, decision, dateComptable, idLot, dateEcheance, null);
+    }
+
     /**
      * Traitement des écritures comptables pmt avance.
      */
     @Override
     public FWMemoryLog doTraitement(RETraiterLotDecisionsProcess process, APIGestionComptabiliteExterne compta,
             BSession session, BTransaction transaction, REDecisionEntity decision, String dateComptable, String idLot,
-            String dateEcheance) throws Exception {
+            String dateEcheance, String idOrganeExecution) throws Exception {
 
         FWMemoryLog memoryLog = new FWMemoryLog();
 

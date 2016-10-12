@@ -40,6 +40,13 @@ public class REModCpt_Creanciers extends AREModuleComptable implements IREModule
         super(isGenererEcritureComptable);
     }
 
+    @Override
+    public FWMemoryLog doTraitement(RETraiterLotDecisionsProcess process, APIGestionComptabiliteExterne compta,
+            BSession session, BTransaction transaction, REDecisionEntity decision, String dateComptable, String idLot,
+            String dateEcheance) throws Exception {
+        return doTraitement(process, compta, session, transaction, decision, dateComptable, idLot, dateEcheance, null);
+    }
+
     /**
      * Traitement des Ordres de versements pour les créanciers. Le bénéficiaire principal n'est pas pris en compte dans
      * ce traitement.
@@ -47,7 +54,7 @@ public class REModCpt_Creanciers extends AREModuleComptable implements IREModule
     @Override
     public FWMemoryLog doTraitement(RETraiterLotDecisionsProcess process, APIGestionComptabiliteExterne compta,
             BSession session, BTransaction transaction, REDecisionEntity decisionEntity, String dateComptable,
-            String idLot, String dateEcheance) throws Exception {
+            String idLot, String dateEcheance, String idOrganeExecution) throws Exception {
 
         FWMemoryLog memoryLog = new FWMemoryLog();
 
@@ -112,7 +119,7 @@ public class REModCpt_Creanciers extends AREModuleComptable implements IREModule
                             ov.getMontantCompense().toString(),
                             loadAdressePaiement(session, transaction, dateEcheance, creancier.getIdTiersAdressePmt(),
                                     REApplication.CS_DOMAINE_ADRESSE_CORVUS).getIdAvoirPaiementUnique(),
-                            motifVersement, dateEcheance, false));
+                            motifVersement, dateEcheance, false, idOrganeExecution));
                 }
             }
 
@@ -130,5 +137,4 @@ public class REModCpt_Creanciers extends AREModuleComptable implements IREModule
         // Auto-generated method stub
         return 600;
     }
-
 }

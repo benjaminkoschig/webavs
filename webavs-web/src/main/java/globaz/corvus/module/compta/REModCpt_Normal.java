@@ -39,13 +39,20 @@ public class REModCpt_Normal extends AREModuleComptable implements IREModuleComp
         super(isGenererEcritureComptable);
     }
 
+    @Override
+    public FWMemoryLog doTraitement(RETraiterLotDecisionsProcess process, APIGestionComptabiliteExterne compta,
+            BSession session, BTransaction transaction, REDecisionEntity decision, String dateComptable, String idLot,
+            String dateEcheance) throws Exception {
+        return doTraitement(process, compta, session, transaction, decision, dateComptable, idLot, dateEcheance, null);
+    }
+
     /**
      * Traitement des écritures comptables Si l'objet compta == null, seul les écritures pour la récap seront effectuées
      */
     @Override
     public FWMemoryLog doTraitement(RETraiterLotDecisionsProcess process, APIGestionComptabiliteExterne compta,
             BSession session, BTransaction transaction, REDecisionEntity decisionEntity, String dateComptable,
-            String idLot, String dateEcheance) throws Exception {
+            String idLot, String dateEcheance, String idOrganeExecution) throws Exception {
 
         FWMemoryLog memoryLog = new FWMemoryLog();
 
@@ -149,7 +156,7 @@ public class REModCpt_Normal extends AREModuleComptable implements IREModuleComp
                         loadAdressePaiement(session, transaction, dateEcheance,
                                 renteAccordeePrincipale.getAdresseDePaiement().getId().toString(),
                                 REApplication.CS_DOMAINE_ADRESSE_CORVUS).getIdAvoirPaiementUnique(), motifVersement,
-                        dateEcheance, false));
+                        dateEcheance, false, idOrganeExecution));
             }
         } catch (Exception ex) {
             throw new RETechnicalException(ex);
@@ -163,5 +170,4 @@ public class REModCpt_Normal extends AREModuleComptable implements IREModuleComp
     public int getPriority() {
         return 100;
     }
-
 }

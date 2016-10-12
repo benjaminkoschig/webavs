@@ -32,13 +32,20 @@ public class REModRecapSansEcrituresComptables extends AREModuleComptable implem
         super(isGenererEcritureComptable);
     }
 
+    @Override
+    public FWMemoryLog doTraitement(RETraiterLotDecisionsProcess process, APIGestionComptabiliteExterne compta,
+            BSession session, BTransaction transaction, REDecisionEntity decision, String dateComptable, String idLot,
+            String dateEcheance) throws Exception {
+        return doTraitement(process, compta, session, transaction, decision, dateComptable, idLot, dateEcheance, null);
+    }
+
     /**
      * Traitement des écritures comptables
      */
     @Override
     public FWMemoryLog doTraitement(RETraiterLotDecisionsProcess process, APIGestionComptabiliteExterne compta,
             BSession session, BTransaction transaction, REDecisionEntity decision, String dateComptable, String idLot,
-            String dateEcheance) throws Exception {
+            String dateEcheance, String idOrganeExecution) throws Exception {
 
         FWMemoryLog memoryLog = new FWMemoryLog();
 

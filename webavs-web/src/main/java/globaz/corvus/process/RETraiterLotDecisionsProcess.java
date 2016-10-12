@@ -196,9 +196,17 @@ public class RETraiterLotDecisionsProcess extends BProcess {
 
                 IREModuleComptable[] mcs = factory.getModules(decision, isEcritureComptable);
                 for (IREModuleComptable mc : mcs) {
-                    getMemoryLog().logMessage(
-                            mc.doTraitement(this, compta, getSession(), transaction, decision, getDateComptable(),
-                                    lot.getIdLot(), getDateEcheancePaiement()));
+                    FWMemoryLog log = null;
+
+                    if (JadeStringUtil.isBlankOrZero(getIdOrganeExecution())) {
+                        log = mc.doTraitement(this, compta, getSession(), transaction, decision, getDateComptable(),
+                                lot.getIdLot(), getDateEcheancePaiement());
+                    } else {
+                        log = mc.doTraitement(this, compta, getSession(), transaction, decision, getDateComptable(),
+                                lot.getIdLot(), getDateEcheancePaiement(), getIdOrganeExecution());
+                    }
+
+                    getMemoryLog().logMessage(log);
                 }
 
                 // MAJ de la prestation

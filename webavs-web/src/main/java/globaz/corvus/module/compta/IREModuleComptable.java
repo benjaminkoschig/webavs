@@ -20,18 +20,13 @@ import globaz.osiris.api.APIGestionComptabiliteExterne;
  */
 public interface IREModuleComptable {
 
-    /**
-     * 
-     * 
-     * @param session
-     * @param transaction
-     * @param decision
-     * @return Message log du traitement effectué
-     * @throws Exception
-     */
     public FWMemoryLog doTraitement(RETraiterLotDecisionsProcess process, APIGestionComptabiliteExterne compta,
             BSession session, BTransaction transaction, REDecisionEntity decision, String dateComptable, String idLot,
             String dateEcheance) throws Exception;
+
+    public FWMemoryLog doTraitement(RETraiterLotDecisionsProcess process, APIGestionComptabiliteExterne compta,
+            BSession session, BTransaction transaction, REDecisionEntity decision, String dateComptable, String idLot,
+            String dateEcheance, String idOrganeExecution) throws Exception;
 
     public int getPriority();
 
