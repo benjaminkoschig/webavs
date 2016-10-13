@@ -1013,7 +1013,8 @@ public class CPActionApercuCommunicationFiscaleRetour extends FWDefaultServletAc
                     viewBeanPourUpdate.update();
                     _destination = getRelativeURL(request, session) + "SE" + "Conjoint_de.jsp?allComm=yes";
                 }
-                if (CPCommunicationFiscaleRetourViewBean.class.isAssignableFrom(viewBean.getClass())) {
+                if (CPCommunicationFiscaleRetourViewBean.class.isAssignableFrom(viewBean.getClass())
+                        && JadeStringUtil.isBlankOrZero(_destination)) {
                     CPCommunicationFiscaleRetourViewBean viewBeanPourUpdate = new CPCommunicationFiscaleRetourViewBean();
                     viewBeanPourUpdate.setSession((BSession) mainDispatcher.getSession());
                     viewBeanPourUpdate.setIdRetour(idRetour);
