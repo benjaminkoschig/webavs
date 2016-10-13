@@ -144,6 +144,8 @@ public interface APIReferenceRubrique {
     public final static String PC_AVS_RESTITUTION_EN_HOME_EPS = "237313";
     public final static String PC_AI_RESTITUTION_EN_HOME_HORS_CANTON_EPS = "237316";
     public final static String PC_AI_RESTITUTION_EN_HOME_EPS = "237315";
+	
+	public final static String COMPENSATION_LISSAGE_HORS_AVS = "237317";
 
     // Rubrique PC_AVS :
     public final static String PC_AVS = "237113";
