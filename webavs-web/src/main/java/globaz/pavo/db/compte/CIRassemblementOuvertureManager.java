@@ -6,6 +6,8 @@ import globaz.globall.db.BStatement;
 import globaz.globall.db.GlobazServer;
 import globaz.globall.util.JAUtil;
 import globaz.pavo.application.CIApplication;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Manager de <tt>CIRassemblementOuverture</tt>. Date de création : (12.11.2002 13:27:56)
@@ -25,6 +27,7 @@ public class CIRassemblementOuvertureManager extends BManager {
     /** (KKTARC) */
     private String forMotifArc = new String();
     private String forTypeEnregistrement = new String();
+    private List<String> forNotInTypeEnregistrement = new ArrayList<String>();
     private String fromDateCloture = new String();
     private String fromDateOrdre = new String();
     private String order = new String();
@@ -112,6 +115,52 @@ public class CIRassemblementOuvertureManager extends BManager {
             } catch (Exception e) {
             }
         }
+
+        if (!getForNotInTypeEnregistrement().isEmpty()) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            try {
+                CIApplication app = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
+                        CIApplication.DEFAULT_APPLICATION_PAVO);
+
+                if (app.isAnnoncesWA()) {
+                    StringBuilder builder = new StringBuilder("substr(cast(KKTENR as char(6)),5,2) NOT IN (");
+
+                    boolean firstWay = true;
+                    for (String type : getForNotInTypeEnregistrement()) {
+                        if (firstWay) {
+                            builder.append(_dbWriteString(statement.getTransaction(), type.substring(4)));
+                            firstWay = false;
+                        } else {
+                            builder.append(",");
+                            builder.append(_dbWriteString(statement.getTransaction(), type.substring(4)));
+                        }
+                    }
+                    builder.append(") ");
+
+                    sqlWhere += builder.toString();
+                } else {
+                    StringBuilder builder = new StringBuilder("KKTENR NOT IN (");
+
+                    boolean firstWay = true;
+                    for (String type : getForNotInTypeEnregistrement()) {
+                        if (firstWay) {
+                            builder.append(_dbWriteNumeric(statement.getTransaction(), type));
+                            firstWay = false;
+                        } else {
+                            builder.append(",");
+                            builder.append(_dbWriteNumeric(statement.getTransaction(), type));
+                        }
+                    }
+                    builder.append(") ");
+
+                    sqlWhere += builder.toString();
+                }
+            } catch (Exception e) {
+            }
+        }
+
         if (getFromDateOrdre().length() != 0) {
             if (sqlWhere.length() != 0) {
                 sqlWhere += " AND ";
@@ -124,11 +173,6 @@ public class CIRassemblementOuvertureManager extends BManager {
             }
             sqlWhere += "KKDORD <= " + _dbWriteDateAMJ(statement.getTransaction(), getUntilDateOrdre());
         }
-        // evite d'afficher les extraits (temporaire)
-        // if (sqlWhere.length() != 0) {
-        // sqlWhere += " AND ";
-        // }
-        // sqlWhere += "KKDCLO <> 0";
         return sqlWhere;
     }
 
@@ -315,6 +359,14 @@ public class CIRassemblementOuvertureManager extends BManager {
      */
     public void setUntilDateOrdre(String string) {
         untilDateOrdre = string;
+    }
+
+    public void setForNotInTypeEnregistrement(List<String> types) {
+        forNotInTypeEnregistrement = types;
+    }
+
+    public List<String> getForNotInTypeEnregistrement() {
+        return forNotInTypeEnregistrement;
     }
 
 }

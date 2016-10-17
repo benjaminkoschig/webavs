@@ -97,9 +97,6 @@ public abstract class CIAnnonceWrapper {
         CIAnnonceWrapper.listeCIAnnonces = null;
     }
 
-    // flag d'arrêt de traitement utiliser pour un groupe d'annonces d'un assuré
-    // modif 12.01.04 private boolean canceled = false;
-    //
     /**
      * Constructeur par défaut.
      * 
@@ -167,7 +164,6 @@ public abstract class CIAnnonceWrapper {
             // création de l'API pour la lecture (enregistrement 02 et 03)
             remoteEcritureAnnonce.setIdProgramme(CIApplication.DEFAULT_APPLICATION_PAVO);
             remoteEcritureAnnonce.setUtilisateur(getSession().getUserId());
-            // remoteEcritureAnnonce.setStatut(IHEAnnoncesViewBean.CS_TERMINE);
             remoteEcritureAnnonce.put(IHEAnnoncesViewBean.CODE_APPLICATION, "38");
             long total = 0;
             boolean genre8Existe = false;
@@ -188,17 +184,8 @@ public abstract class CIAnnonceWrapper {
             // ayant droit
             if (CIAnnonceSuspens.CS_ORDRE_SPLITTING.equals(annonceSuspens.getIdTypeTraitement())) {
                 // splitting -> recherche enregistrement 03
-
                 remoteEcritureAnnonce.put(IHEAnnoncesViewBean.NUMERO_ASSURE_AVANT_DROIT_OU_PARTENAIRE,
                         remoteAnnonce03.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_CONJOINT_SPLITTING_DIVORCE));
-
-                /*
-                 * if(forConjoint) { remoteEcritureAnnonce.put(
-                 * IHEAnnoncesViewBean.NUMERO_ASSURE_AVANT_DROIT_OU_PARTENAIRE, (compte != null ? compte.getNumeroAvs()
-                 * : "")); } else { remoteEcritureAnnonce.put(
-                 * IHEAnnoncesViewBean.NUMERO_ASSURE_AVANT_DROIT_OU_PARTENAIRE, (ciConjoint != null ?
-                 * ciConjoint.getNumeroAvs() : "")); }
-                 */
             } else {
                 // pas un splitting -> recherche enregistrement 02
                 String avs = remoteAnnonceCompl.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_AYANT_DROIT);
@@ -239,18 +226,11 @@ public abstract class CIAnnonceWrapper {
             for (int i = 0; i < ecritures.size(); i++) {
                 boolean annonceCode2 = false;
                 CIEcriture ecriture = (CIEcriture) ecritures.get(i);
-                /*
-                 * System.out.println( "écriture: " + ecriture.getMoisDebut() + "." + ecriture.getMoisFin() + "." +
-                 * ecriture.getAnnee() + ", " + ecriture.getMontantSigne());
-                 */
+
                 // recherche no affilié avec id tiers
                 AFAffiliation aff = null;
                 if (!JAUtil.isIntegerEmpty(ecriture.getEmployeur())) {
                     aff = application.getAffilie(transaction, ecriture.getEmployeur(), null);
-                    /*
-                     * application.getTiers( transaction, ecriture.getEmployeur(), new String[] { "getNom",
-                     * "getLocaliteLong", "getNumAffilieActuel" });
-                     */
                 }
                 // enregistrement
                 remoteEcritureAnnonce.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT,
@@ -310,7 +290,6 @@ public abstract class CIAnnonceWrapper {
                                 }
                             }
                         } else if (aff != null) {
-                            // numAff = aff.getNumAffilieActuel();
                             numAff = CIUtil.UnFormatNumeroAffilie(getSession(), aff.getAffilieNumero());
                             // Modif 5.3 pour CCVS, si le num d'aff est >11 on
                             // subtr
@@ -498,7 +477,6 @@ public abstract class CIAnnonceWrapper {
                     }
                 }
             } // pour toutes les écritures
-              // if (ecritures.size() != 0) {
               // annonce 39 01
             remoteEcritureAnnonce.put(IHEAnnoncesViewBean.CODE_APPLICATION, "39");
             remoteEcritureAnnonce.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, "1");
@@ -627,7 +605,6 @@ public abstract class CIAnnonceWrapper {
             copie.setPlausiNumAvs(true);
             compte.copyDataToEntity(copie);
             copie.setCompteIndividuelIdReference("0"); // a confirmer
-            // compte.getCompteIndividuelId());;;
             changed = false;
             // appel de l'implémentation du wrapper
             updateCI(transaction);
@@ -642,9 +619,6 @@ public abstract class CIAnnonceWrapper {
             compte.setPlausiNumAvs(true);
             compte.save(transaction);
         }
-        /*
-         * if (!transaction.hasErrors()) { transaction.commit(); } else { System.out.println(transaction.getErrors()); }
-         */
     }
 
     /**
@@ -740,16 +714,6 @@ public abstract class CIAnnonceWrapper {
     }
 
     /**
-     * Sets the canceled.
-     * 
-     * @param canceled
-     *            The canceled to set
-     */
-    // modif 12.01.04
-    /*
-     * public void setCanceled(boolean canceled) { this.canceled = canceled; }
-     */
-    /**
      * Envoi un email au responsable CI si une erreur apparait dans la transaction
      */
     public void envoiEmailErreurTr(BTransaction transaction, String description) throws Exception {
@@ -757,7 +721,6 @@ public abstract class CIAnnonceWrapper {
             String message = description + ": " + transaction.getErrors().toString();
             ArrayList to = application.getEMailResponsableCI(transaction);
             this.envoiEmail(to, getSession().getLabel("MSG_ANNONCE_ERR_PROCESS_SUJET"), message);
-            // transaction.clearErrorBuffer();
         }
     }
 
@@ -1030,7 +993,6 @@ public abstract class CIAnnonceWrapper {
             } else {
                 return false;
             }
-
         }
 
         if (CIUtil.unPad(remoteAnnonce.getField(IHEAnnoncesViewBean.NUMERO_AGENCE_CI)).equals(
@@ -1080,16 +1042,6 @@ public abstract class CIAnnonceWrapper {
     public void setRemoteSession(globaz.globall.api.BISession newRemoteSession) {
         remoteSession = newRemoteSession;
     }
-
-    /**
-     * Returns the canceled.
-     * 
-     * @return boolean
-     */
-    // modif 12.01.04
-    /*
-     * public boolean isCanceled() { return canceled; }
-     */
 
     /**
      * Insérez la description de la méthode ici. Date de création : (18.07.2003 15:07:12)
@@ -1149,17 +1101,13 @@ public abstract class CIAnnonceWrapper {
      *            doit être à true pour signifier si les tests doivent être effectués.
      */
     public void traiter(BTransaction transaction, boolean testFinal) throws Exception {
-        // application = (CIApplication) getSession().getApplication();
-        // remoteSession = application.getSessionAnnonce(getSession());
         // création de l'API
         remoteAnnonce = (IHEOutputAnnonce) remoteSession.getAPIFor(IHEOutputAnnonce.class);
         remoteAnnonce.setIdAnnonce(annonceSuspens.getIdAnnonce());
         remoteAnnonce.setMethodsToLoad(new String[] { "getIdAnnonce", "getInputTable", "getUtilisateur" });
         remoteAnnonce.retrieve(remoteTransaction);
         if (remoteAnnonce.isNew()) {
-            // annonceTraitee(transaction);
-            // Changement, on bloque l'annonce en loggant le fait qu'elle
-            // n'existe pas
+            // Changement, on bloque l'annonce en loggant le fait qu'elle n'existe pas
             createLog(transaction, getSession().getLabel("ANNONCE_INEXISTANTE"));
             suspendreAnnonce(transaction);
             transaction.commit();
@@ -1180,7 +1128,6 @@ public abstract class CIAnnonceWrapper {
             }
             if (remoteTransaction.hasErrors()) {
                 error += remoteTransaction.getErrors().toString();
-                // remoteTransaction.clearErrorBuffer();
             }
             if (!JAUtil.isStringEmpty(error)) {
                 // ajout des erreur de transaction de le log de l'annonce

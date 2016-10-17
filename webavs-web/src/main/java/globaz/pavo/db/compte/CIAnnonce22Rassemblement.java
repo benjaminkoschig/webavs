@@ -6,6 +6,7 @@ import globaz.hermes.api.IHEOutputAnnonce;
 import globaz.pavo.application.CIApplication;
 import globaz.pavo.util.CIUtil;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Wrapper de l'annonce 22. Date de création : (20.12.2002 09:51:15)
@@ -32,7 +33,7 @@ public class CIAnnonce22Rassemblement extends CIAnnonceWrapper {
      * @return le contenu de l'annonce.
      */
     private String getContenuAnnonce() throws Exception {
-        StringBuffer contenuAnnonce = new StringBuffer();
+        StringBuilder contenuAnnonce = new StringBuilder();
         contenuAnnonce.append("\n");
         contenuAnnonce.append(getSession().getLabel("MSG_ANNONCE_EMAIL_AVS"));
         contenuAnnonce.append(remoteAnnonce.getField(IHEAnnoncesViewBean.NUMERO_ASSURE));
@@ -71,13 +72,7 @@ public class CIAnnonce22Rassemblement extends CIAnnonceWrapper {
     public void traitementAnnonce(BTransaction transaction, boolean testFinal) throws Exception {
         // recherche ci au ra avec no avs
         compte = CICompteIndividuel.loadCI(remoteAnnonce.getField(IHEAnnoncesViewBean.NUMERO_ASSURE), transaction);
-        if (compte == null) {
-            // n'existe pas. Recherche ci au ra avec no avs avant le 1.7.72
-            // note -> envoi email erreur
-            // compte =
-            // CICompteIndividuel.loadCI(remoteAnnonce.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_AVANT_1_7_1972),
-            // transaction);
-        }
+
         if (compte != null) {
             idCaisse = application.getAdministration(getSession(),
                     remoteAnnonce.getField(IHEAnnoncesViewBean.NUMERO_CAISSE_COMMETTANTE),
@@ -99,14 +94,14 @@ public class CIAnnonce22Rassemblement extends CIAnnonceWrapper {
             rasMgr.setForCompteIndividuelId(compte.getCompteIndividuelId());
             rasMgr.setForMotifArc(remoteAnnonce.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE));
             rasMgr.setForDateOrdre(getDateBidouillee(remoteAnnonceCompl.getField(IHEAnnoncesViewBean.DATE_ORDRE_JJMMAA)));
+            rasMgr.setForNotInTypeEnregistrement(Arrays.asList(CIRassemblementOuverture.CS_EXTRAIT,
+                    CIRassemblementOuverture.CS_SAISIE_MANUELLE));
             rasMgr.find(transaction);
             ArrayList result = new ArrayList();
 
             boolean dejaTraitee = false;
-            // CIRassemblementOuverture rassembl = null;
-            // modif jmc 13.07.2006, si caisse fusionnée, on va regarder si
-            // c'est la caisse principale.
-            // Comme ça, on sait si on doit répondre vide ou pas
+            // modif jmc 13.07.2006, si caisse fusionnée, on va regarder si c'est la caisse principale. Comme ça, on
+            // sait si on doit répondre vide ou pas
             if (!application.isCaisseFusion()) {
                 if (rasMgr.size() != 0) {
                     for (int i = 0; i < rasMgr.size(); i++) {
@@ -119,30 +114,27 @@ public class CIAnnonce22Rassemblement extends CIAnnonceWrapper {
                     }
                 }
             } else if (!isCaissePrincipale()) {
-                // avec le flag déjà traité, on renvoie vide pour la caisse
-                // fusionnée
+                // avec le flag déjà traité, on renvoie vide pour la caisse fusionnée
                 dejaTraitee = true;
             }
 
             // ajouter l'annonce
             CIRassemblementOuverture rassembl = new CIRassemblementOuverture();
             rassembl.setSession(getSession());
-            // String dateOrdreBidouille =
-            // remoteAnnonceCompl.get(IHEAnnoncesViewBean.DATE_ORDRE_JJMMAA);
             rassembl.setDateOrdre(getDateBidouillee(remoteAnnonceCompl.getField(IHEAnnoncesViewBean.DATE_ORDRE_JJMMAA)));
-            // application.getCalendar().todayjjMMMMaaaa());
 
             if (application.isAnnoncesWA() && application.getProperty(CIApplication.CODE_CAISSE).equals(caisseTCI)) {
                 rassembl.setTypeEnregistrement(CIRassemblementOuverture.CS_RASSEMBLEMENT.substring(0, 3)
                         + agenceTCI.trim() + CIRassemblementOuverture.CS_RASSEMBLEMENT.substring(4));
             } else {
                 rassembl.setTypeEnregistrement(CIRassemblementOuverture.CS_RASSEMBLEMENT);
-                // todo: ajout caisse tenant ci
                 rassembl.setCaisseTenantCI(agenceTCI.trim());
+
                 if (CIUtil.isCaisseDifferente(getSession())) {
                     rassembl.setRealCaisse(caisseTCI.trim());
                 }
             }
+
             rassembl.setMotifArc(remoteAnnonce.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE));
             rassembl.setCaisseCommettante(idCaisse);
             rassembl.setReferenceInterne(remoteAnnonce
@@ -151,28 +143,27 @@ public class CIAnnonce22Rassemblement extends CIAnnonceWrapper {
             rassembl.add(transaction);
 
             if (!dejaTraitee) {
-                // rassembler les écritues actives
+                // rassembler les écritures actives
                 result = rassembl.rassemblerEcritures(transaction);
             }
+
             // annonce du ci (vide si déjà traitée pour une autre agence)
             annonceExtraitCI(transaction, result, false);
+
             // effacement de l'annonce
             annonceTraitee(transaction);
         } else {
+
             // n'existe pas non plus, envoi message d'erreur
             String message = java.text.MessageFormat.format(getSession().getLabel("MSG_ANNONCE_22R_EMAIL_MESSAGE"),
                     new Object[] { remoteAnnonce.getField(IHEAnnoncesViewBean.NUMERO_ASSURE), getContenuAnnonce() });
-            ArrayList to = application.getEMailResponsableCI(transaction);
+            ArrayList<String> to = application.getEMailResponsableCI(transaction);
             envoiEmail(to, getSession().getLabel("MSG_ANNONCE_22R_EMAIL_SUJET"), message);
+
             // annule les modifications effectuées
             transaction.rollback();
-            // modification annonce
-            // annonceSuspens.setNumeroCaisse(
-            // remoteAnnonce.getField(IHEAnnoncesViewBean.NUMERO_CAISSE_COMMETTANTE)
-            // + "."
-            // +
-            // remoteAnnonce.getField(IHEAnnoncesViewBean.NUMERO_AGENCE_COMMETTANTE));
             createLog(transaction, getSession().getLabel("MSG_ANNONCE_22R_EMAIL_SUJET"));
+
             // mettre l'annonce en suspens
             suspendreAnnonce(transaction);
         }
@@ -187,14 +178,6 @@ public class CIAnnonce22Rassemblement extends CIAnnonceWrapper {
      */
     @Override
     public void updateCI(BTransaction transaction) throws Exception {
-        // modification: pas de mise à jour de l'en-tête pour les 22
-        /*
-         * // nom compte.setNomPrenom(checkAndSet(compte.getNomPrenom(),
-         * remoteAnnonce.getField(IHEOutputAnnonce.ETAT_NOMINATIF))); // no avs précédant String result =
-         * remoteAnnonce.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_AVANT_1_7_1972 ); if (!JAUtil.isStringEmpty(result))
-         * { compte.setNumeroAvsPrecedant(result); } // référence interne result = remoteAnnonce
-         * .getField(IHEAnnoncesViewBean.REFERENCE_INTERNE_CAISSE_COMMETTANTE); if (!JAUtil.isStringEmpty(result)) {
-         * compte.setReferenceInterne(result); }
-         */
+        // Rien faire
     }
 }
