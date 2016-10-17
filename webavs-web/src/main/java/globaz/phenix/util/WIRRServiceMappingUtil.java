@@ -15,6 +15,7 @@ import ch.admin.bsv.xmlns.ebsv_2028_000000._1.SearchPerPersonAndPensionTypeType;
 import ch.admin.bsv.xmlns.ebsv_2028_000101._1.Delivery;
 import ch.ech.xmlns.ech_0058._4.HeaderRequestType;
 import ch.ech.xmlns.ech_0058._4.SendingApplicationType;
+import ch.globaz.common.properties.CommonProperties;
 
 public class WIRRServiceMappingUtil {
 
@@ -47,7 +48,7 @@ public class WIRRServiceMappingUtil {
         sendingApplicationType.setProductVersion(PRODUCT_VERSION);
 
         HeaderRequestType header = new HeaderRequestType();
-        header.setSenderId("sedex://" + CPProperties.WIRRWEBSERVICE_SEDEX_SENDER_ID.getValue());
+        header.setSenderId("sedex://" + CommonProperties.WIRRWEBSERVICE_SEDEX_SENDER_ID.getValue());
         header.getRecipientId().add(RECIPIENT_ID);
         header.setDeclarationLocalReference(DECLARATION_LOCAL_REFERENCE);
         header.setMessageId(JadeUUIDGenerator.createStringUUID());

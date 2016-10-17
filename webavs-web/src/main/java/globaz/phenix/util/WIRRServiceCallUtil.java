@@ -20,32 +20,34 @@ public class WIRRServiceCallUtil {
 
     private static final String SSL_SOCKET_FACTORY_ORACLE_JDK = "com.sun.xml.ws.transport.https.client.SSLSocketFactory";
     private static final String SSL_SOCKET_FACTORY_JAX_WS_RI = "com.sun.xml.internal.ws.transport.https.client.SSLSocketFactory";
-    private static final String SSL_CONTEXT_TYPE = "SSLv3";
     private static final String WIRR_WSDL_RESOURCE_PATH = "wsdl/wirr_wsdl.xml";
 
     public static final WIRRDataBean searchRenteWIRR(BSession session, WIRRDataBean wirrDataBean) {
+
         try {
             // init service
             ClassLoader classloader = Thread.currentThread().getContextClassLoader();
             URL wsdlLocation = classloader.getResource(WIRR_WSDL_RESOURCE_PATH);
-            Service service = Service.create(wsdlLocation, new QName(CPProperties.WIRRWEBSERVICE_NAMESPACE.getValue(),
-                    CPProperties.WIRRWEBSERVICE_NAME.getValue()));
+            Service service = Service.create(wsdlLocation,
+                    new QName(CommonProperties.WIRRWEBSERVICE_NAMESPACE.getValue(),
+                            CommonProperties.WIRRWEBSERVICE_NAME.getValue()));
 
             NRRQueryServicePortType port = service.getPort(NRRQueryServicePortType.class);
 
-            if (!JadeStringUtil.isBlankOrZero(CommonProperties.KEYSTORE_PATH.getValue())
-                    && !JadeStringUtil.isBlankOrZero(CommonProperties.KEYSTORE_TYPE.getValue())
-                    && !JadeStringUtil.isBlankOrZero(CommonProperties.KEYSTORE_PASSWORD.getValue())) {
+            if (!JadeStringUtil.isBlankOrZero(CommonProperties.WIRR_KEYSTORE_PATH.getValue())
+                    && !JadeStringUtil.isBlankOrZero(CommonProperties.WIRR_KEYSTORE_TYPE.getValue())
+                    && !JadeStringUtil.isBlankOrZero(CommonProperties.WIRR_KEYSTORE_PASSWORD.getValue())
+                    && !JadeStringUtil.isBlankOrZero(CommonProperties.WIRR_SSL_CONTEXT_TYPE.getValue())) {
 
-                SSLContext sc = SSLContext.getInstance(SSL_CONTEXT_TYPE);
+                SSLContext sc = SSLContext.getInstance(CommonProperties.WIRR_SSL_CONTEXT_TYPE.getValue());
 
                 KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 
-                KeyStore ks = KeyStore.getInstance(CommonProperties.KEYSTORE_TYPE.getValue());
-                FileInputStream fis = new FileInputStream(CommonProperties.KEYSTORE_PATH.getValue());
+                KeyStore ks = KeyStore.getInstance(CommonProperties.WIRR_KEYSTORE_TYPE.getValue());
+                FileInputStream fis = new FileInputStream(CommonProperties.WIRR_KEYSTORE_PATH.getValue());
 
                 String certPasswd = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(
-                        CommonProperties.KEYSTORE_PASSWORD.getValue());
+                        CommonProperties.WIRR_KEYSTORE_PASSWORD.getValue());
 
                 ks.load(fis, certPasswd.toCharArray());
                 IOUtils.closeQuietly(fis);
@@ -54,10 +56,9 @@ public class WIRRServiceCallUtil {
                 sc.init(kmf.getKeyManagers(), null, null);
 
                 BindingProvider bindingProvider = (BindingProvider) port;
-                bindingProvider.getRequestContext().put(
-                        SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
-                bindingProvider.getRequestContext().put(SSL_SOCKET_FACTORY_ORACLE_JDK,
-                        sc.getSocketFactory());
+                bindingProvider.getRequestContext().put(SSL_SOCKET_FACTORY_JAX_WS_RI, sc.getSocketFactory());
+                bindingProvider.getRequestContext().put(SSL_SOCKET_FACTORY_ORACLE_JDK, sc.getSocketFactory());
+
             }
 
             Delivery requestDelivery = WIRRServiceMappingUtil.convertWirrDataBeanToRequestDelivery(wirrDataBean);
