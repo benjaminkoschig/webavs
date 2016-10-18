@@ -2301,6 +2301,7 @@ public class AFApercuReleve extends BEntity {
      */
     public void retrieveReleveMontant() throws Exception {
 
+        double masseGeneral = 0.0;
         FWCurrency totalCotisation = new FWCurrency(0.0);
         for (int i = 0; i < cotisationList.size(); i++) {
             AFApercuReleveLineFacturation releveLine = cotisationList.get(i);
@@ -2319,13 +2320,30 @@ public class AFApercuReleve extends BEntity {
             }
             if (!montant.isNew()) {
                 releveLine.setMasse(montant.getMasse());
+
+                AFAssurance assurance = new AFAssurance();
+                assurance.setId(releveLine.getAssuranceId());
+                assurance.setSession(getSession());
+                assurance.retrieve();
+
+                if (!assurance.isNew() && CodeSystem.TYPE_ASS_COTISATION_AVS_AI.equals(assurance.getTypeAssurance())) {
+                    if (releveLine.getMasse() != 0.0) {
+                        masseGeneral = releveLine.getMasse();
+                    }
+                }
+
                 if (CodeSystem.GEN_VALEUR_ASS_TAUX_VARIABLE.equals(releveLine.getTauxGenre())
                         && !CodeSystem.TYPE_TAUX_FORCE.equals(releveLine.getTauxType())) {
                     // mise à jour des taux dans le cas d'une taux variable non
                     // forcé
                     // getTauxVariable(releveLine);
-                    findAndSetTauxVariable(releveLine, String.valueOf(montant.getMasse()), releveLine.getMasse());
+                    if (!assurance.isNew() && CodeSystem.TYPE_ASS_FRAIS_ADMIN.equals(assurance.getTypeAssurance())) {
+                        findAndSetTauxVariable(releveLine, String.valueOf(montant.getMasse()), masseGeneral);
+                    } else {
+                        findAndSetTauxVariable(releveLine, String.valueOf(montant.getMasse()), releveLine.getMasse());
+                    }
                 }
+
                 releveLine.setMontantCalculer(montant.getMontantCalculer(), false);
             } else {
                 cotisationList.remove(releveLine);
