@@ -307,13 +307,15 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         oper.validerFromBVR(context.getTransaction(), false);
 
         // Cas du BMS pour un rectificatif. Un paiement arrive sur un bulletin neutre en partie payée
-        if (oper.getMemoryLog().getMessagesToVector().size() == 1) {
-            FWMessage msg = (FWMessage) oper.getMemoryLog().getMessagesToVector().firstElement();
-            if ("7401".equals(msg.getMessageId())) {
-                oper.getMemoryLog().clear();
-                oper.setEtat(APIOperation.ETAT_OUVERT);
-            }
-        }
+        // Incident I160913_010 pour CCVS K160913_001
+        // A gérer avec une property lors du prochain rabat BMS
+        // if (oper.getMemoryLog().getMessagesToVector().size() == 1) {
+        // FWMessage msg = (FWMessage) oper.getMemoryLog().getMessagesToVector().firstElement();
+        // if ("7401".equals(msg.getMessageId())) {
+        // oper.getMemoryLog().clear();
+        // oper.setEtat(APIOperation.ETAT_OUVERT);
+        // }
+        // }
         // Incrémenter le montant total
         fTotal.sub(oper.getMontant());
 
