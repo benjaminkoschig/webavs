@@ -17,12 +17,14 @@ import ch.globaz.xmlns.eb.partnerweb.User;
  */
 public class DanServiceImpl {
 
-    public static byte[] downloadFile(String id, String type, BSession session) throws Exception {
+    public static byte[] downloadFile(String id, String type, String loginName, String userEmail, String langueIso)
+            throws Exception {
         DANService serviceDan = null;
         User usr = null;
 
-        usr = ServicesProviders.partnerWebServiceProvide(session).readActivUserOrAdminByLoginName(session.getUserId());
-        serviceDan = ServicesProviders.danServiceProvide(session);
+        usr = ServicesProviders.partnerWebServiceProvide(loginName, userEmail, langueIso)
+                .readActivUserOrAdminByLoginName(loginName);
+        serviceDan = ServicesProviders.danServiceProvide(loginName, userEmail, langueIso);
         return serviceDan.getPucsFileForWebavs(Integer.parseInt(id), usr.getUserId());
     }
 
@@ -81,6 +83,15 @@ public class DanServiceImpl {
         serviceDan = ServicesProviders.danServiceProvide(session);
         serviceDan.preRempliDan(dan, noAffilie, salaires, annee, idInstLaa, idInstLpp, login, override);
 
+    }
+
+    public static void preRempliDan(Dan dan, String noAffilie, List<ch.globaz.xmlns.eb.dan.Salaire> salaires,
+            int annee, String idInstLaa, String idInstLpp, String login, boolean override, String userEmail)
+            throws EBDanException_Exception {
+        DANService serviceDan = null;
+        // on passe "fr" comme langue car n'a pas d'impact pour le pré-remplissage
+        serviceDan = ServicesProviders.danServiceProvide(login, userEmail, "fr");
+        serviceDan.preRempliDan(dan, noAffilie, salaires, annee, idInstLaa, idInstLpp, login, override);
     }
 
 }

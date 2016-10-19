@@ -2,11 +2,8 @@ package ch.globaz.orion.businessimpl.services.pucs;
 
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
-import ch.globaz.common.listoutput.converterImplemented.LabelTranslater;
 import ch.globaz.orion.business.domaine.pucs.PeriodeSalary;
-import ch.globaz.simpleoutputlist.annotation.Translater;
 
-@Translater(identifier = "DS_PUCS", value = LabelTranslater.class)
 public class SalaryForList implements SalaryForListInterface {
 
     private String nss;

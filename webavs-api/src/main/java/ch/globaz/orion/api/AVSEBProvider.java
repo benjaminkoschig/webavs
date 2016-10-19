@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import ch.globaz.orion.ws.affiliation.WebAvsAffiliationService;
+import ch.globaz.orion.ws.common.WebAvsCommonService;
 import ch.globaz.orion.ws.comptabilite.WebAvsComptabiliteService;
 import ch.globaz.orion.ws.cotisation.WebAvsCotisationsService;
 
@@ -27,11 +28,16 @@ public final class AVSEBProvider {
     private static final String WEBAVS_AFFILIATION_NS_URI = "http://affiliation.ws.orion.globaz.ch/";
     private static final String WEBAVS_AFFILIATION_LOCAL_PART = "WebAvsAffiliationServiceImplService";
 
+    private static final String WEBAVS_COMMON_WSDL = "/webAvsCommonService?wsdl";
+    private static final String WEBAVS_COMMON_NS_URI = "http://common.ws.orion.globaz.ch/";
+    private static final String WEBAVS_COMMON_LOCAL_PART = "WebAvsCommonServiceImplService";
+
     private static Logger log = Logger.getLogger(AVSEBProvider.class.getName());
     private static Properties prop = null;
     private static Service webAvsCotisationService = null;
     private static Service webAvsComptabiliteService = null;
     private static Service webAvsAffiliationService = null;
+    private static Service webAvsCommonService = null;
 
     private AVSEBProvider() {
     };
@@ -112,6 +118,27 @@ public final class AVSEBProvider {
 
         return webAvsAffiliationService.getPort(WebAvsAffiliationService.class);
 
+    }
+
+    /**
+     * Retourne une instance du service WebavsCommon
+     * 
+     * @return
+     * @throws MalformedURLException
+     * @throws IOException
+     */
+    public static WebAvsCommonService getWebavsCommonService() throws MalformedURLException, IOException {
+        if (webAvsCommonService == null) {
+            init();
+            String wsBackUrl = getAVSUrl();
+            if (wsBackUrl == null) {
+                log.severe("Missing property : " + PROP_BACK_WS_URL);
+            }
+            webAvsCommonService = Service.create(new URL(wsBackUrl + WEBAVS_COMMON_WSDL), new QName(
+                    WEBAVS_COMMON_NS_URI, WEBAVS_COMMON_LOCAL_PART));
+        }
+        WebAvsCommonService theWebAvsCommonService = webAvsCommonService.getPort(WebAvsCommonService.class);
+        return theWebAvsCommonService;
     }
 
 }

@@ -24,8 +24,15 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _ExecuterPreRemplissageDan_QNAME = new QName("http://cotisation.ws.orion.globaz.ch/", "executerPreRemplissageDan");
+    private final static QName _GenererDocumentPucsLisible_QNAME = new QName("http://cotisation.ws.orion.globaz.ch/", "genererDocumentPucsLisible");
     private final static QName _ListerMassesActuelles_QNAME = new QName("http://cotisation.ws.orion.globaz.ch/", "listerMassesActuelles");
     private final static QName _ListerMassesActuellesResponse_QNAME = new QName("http://cotisation.ws.orion.globaz.ch/", "listerMassesActuellesResponse");
+    private final static QName _WebavsException_QNAME = new QName("http://cotisation.ws.orion.globaz.ch/", "WebavsException");
+    private final static QName _FindTauxAssuranceForCotisation_QNAME = new QName("http://cotisation.ws.orion.globaz.ch/", "findTauxAssuranceForCotisation");
+    private final static QName _FindTauxAssuranceForCotisationResponse_QNAME = new QName("http://cotisation.ws.orion.globaz.ch/", "findTauxAssuranceForCotisationResponse");
+    private final static QName _GenererDocumentPucsLisibleResponse_QNAME = new QName("http://cotisation.ws.orion.globaz.ch/", "genererDocumentPucsLisibleResponse");
+    private final static QName _ExecuterPreRemplissageDanResponse_QNAME = new QName("http://cotisation.ws.orion.globaz.ch/", "executerPreRemplissageDanResponse");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ch.globaz.orion.ws.cotisation
@@ -43,11 +50,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ListerMassesActuellesResponse }
+     * Create an instance of {@link ExecuterPreRemplissageDanResponse }
      * 
      */
-    public ListerMassesActuellesResponse createListerMassesActuellesResponse() {
-        return new ListerMassesActuellesResponse();
+    public ExecuterPreRemplissageDanResponse createExecuterPreRemplissageDanResponse() {
+        return new ExecuterPreRemplissageDanResponse();
+    }
+
+    /**
+     * Create an instance of {@link ListerMassesActuelles }
+     * 
+     */
+    public ListerMassesActuelles createListerMassesActuelles() {
+        return new ListerMassesActuelles();
     }
 
     /**
@@ -59,11 +74,77 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ListerMassesActuelles }
+     * Create an instance of {@link ExecuterPreRemplissageDan }
      * 
      */
-    public ListerMassesActuelles createListerMassesActuelles() {
-        return new ListerMassesActuelles();
+    public ExecuterPreRemplissageDan createExecuterPreRemplissageDan() {
+        return new ExecuterPreRemplissageDan();
+    }
+
+    /**
+     * Create an instance of {@link FindTauxAssuranceForCotisationResponse }
+     * 
+     */
+    public FindTauxAssuranceForCotisationResponse createFindTauxAssuranceForCotisationResponse() {
+        return new FindTauxAssuranceForCotisationResponse();
+    }
+
+    /**
+     * Create an instance of {@link FindTauxAssuranceForCotisation }
+     * 
+     */
+    public FindTauxAssuranceForCotisation createFindTauxAssuranceForCotisation() {
+        return new FindTauxAssuranceForCotisation();
+    }
+
+    /**
+     * Create an instance of {@link GenererDocumentPucsLisibleResponse }
+     * 
+     */
+    public GenererDocumentPucsLisibleResponse createGenererDocumentPucsLisibleResponse() {
+        return new GenererDocumentPucsLisibleResponse();
+    }
+
+    /**
+     * Create an instance of {@link GenererDocumentPucsLisible }
+     * 
+     */
+    public GenererDocumentPucsLisible createGenererDocumentPucsLisible() {
+        return new GenererDocumentPucsLisible();
+    }
+
+    /**
+     * Create an instance of {@link ListerMassesActuellesResponse }
+     * 
+     */
+    public ListerMassesActuellesResponse createListerMassesActuellesResponse() {
+        return new ListerMassesActuellesResponse();
+    }
+
+    /**
+     * Create an instance of {@link WebAvsException }
+     * 
+     */
+    public WebAvsException createWebAvsException() {
+        return new WebAvsException();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ExecuterPreRemplissageDan }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cotisation.ws.orion.globaz.ch/", name = "executerPreRemplissageDan")
+    public JAXBElement<ExecuterPreRemplissageDan> createExecuterPreRemplissageDan(ExecuterPreRemplissageDan value) {
+        return new JAXBElement<ExecuterPreRemplissageDan>(_ExecuterPreRemplissageDan_QNAME, ExecuterPreRemplissageDan.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GenererDocumentPucsLisible }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cotisation.ws.orion.globaz.ch/", name = "genererDocumentPucsLisible")
+    public JAXBElement<GenererDocumentPucsLisible> createGenererDocumentPucsLisible(GenererDocumentPucsLisible value) {
+        return new JAXBElement<GenererDocumentPucsLisible>(_GenererDocumentPucsLisible_QNAME, GenererDocumentPucsLisible.class, null, value);
     }
 
     /**
@@ -82,6 +163,51 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://cotisation.ws.orion.globaz.ch/", name = "listerMassesActuellesResponse")
     public JAXBElement<ListerMassesActuellesResponse> createListerMassesActuellesResponse(ListerMassesActuellesResponse value) {
         return new JAXBElement<ListerMassesActuellesResponse>(_ListerMassesActuellesResponse_QNAME, ListerMassesActuellesResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link WebAvsException }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cotisation.ws.orion.globaz.ch/", name = "WebavsException")
+    public JAXBElement<WebAvsException> createWebavsException(WebAvsException value) {
+        return new JAXBElement<WebAvsException>(_WebavsException_QNAME, WebAvsException.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindTauxAssuranceForCotisation }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cotisation.ws.orion.globaz.ch/", name = "findTauxAssuranceForCotisation")
+    public JAXBElement<FindTauxAssuranceForCotisation> createFindTauxAssuranceForCotisation(FindTauxAssuranceForCotisation value) {
+        return new JAXBElement<FindTauxAssuranceForCotisation>(_FindTauxAssuranceForCotisation_QNAME, FindTauxAssuranceForCotisation.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindTauxAssuranceForCotisationResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cotisation.ws.orion.globaz.ch/", name = "findTauxAssuranceForCotisationResponse")
+    public JAXBElement<FindTauxAssuranceForCotisationResponse> createFindTauxAssuranceForCotisationResponse(FindTauxAssuranceForCotisationResponse value) {
+        return new JAXBElement<FindTauxAssuranceForCotisationResponse>(_FindTauxAssuranceForCotisationResponse_QNAME, FindTauxAssuranceForCotisationResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GenererDocumentPucsLisibleResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cotisation.ws.orion.globaz.ch/", name = "genererDocumentPucsLisibleResponse")
+    public JAXBElement<GenererDocumentPucsLisibleResponse> createGenererDocumentPucsLisibleResponse(GenererDocumentPucsLisibleResponse value) {
+        return new JAXBElement<GenererDocumentPucsLisibleResponse>(_GenererDocumentPucsLisibleResponse_QNAME, GenererDocumentPucsLisibleResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ExecuterPreRemplissageDanResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cotisation.ws.orion.globaz.ch/", name = "executerPreRemplissageDanResponse")
+    public JAXBElement<ExecuterPreRemplissageDanResponse> createExecuterPreRemplissageDanResponse(ExecuterPreRemplissageDanResponse value) {
+        return new JAXBElement<ExecuterPreRemplissageDanResponse>(_ExecuterPreRemplissageDanResponse_QNAME, ExecuterPreRemplissageDanResponse.class, null, value);
     }
 
 }

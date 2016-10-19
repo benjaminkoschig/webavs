@@ -1,6 +1,7 @@
 
 package ch.globaz.orion.ws.cotisation;
 
+import java.math.BigDecimal;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
@@ -36,5 +37,77 @@ public interface WebAvsCotisationsService {
     public MassesForAffilie listerMassesActuelles(
         @WebParam(name = "arg0", targetNamespace = "")
         String arg0);
+
+    /**
+     * 
+     * @param arg3
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns boolean
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "executerPreRemplissageDan", targetNamespace = "http://cotisation.ws.orion.globaz.ch/", className = "ch.globaz.orion.ws.cotisation.ExecuterPreRemplissageDan")
+    @ResponseWrapper(localName = "executerPreRemplissageDanResponse", targetNamespace = "http://cotisation.ws.orion.globaz.ch/", className = "ch.globaz.orion.ws.cotisation.ExecuterPreRemplissageDanResponse")
+    public boolean executerPreRemplissageDan(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        Integer arg1,
+        @WebParam(name = "arg2", targetNamespace = "")
+        String arg2,
+        @WebParam(name = "arg3", targetNamespace = "")
+        String arg3);
+
+    /**
+     * 
+     * @param arg4
+     * @param arg3
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns java.lang.String
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "genererDocumentPucsLisible", targetNamespace = "http://cotisation.ws.orion.globaz.ch/", className = "ch.globaz.orion.ws.cotisation.GenererDocumentPucsLisible")
+    @ResponseWrapper(localName = "genererDocumentPucsLisibleResponse", targetNamespace = "http://cotisation.ws.orion.globaz.ch/", className = "ch.globaz.orion.ws.cotisation.GenererDocumentPucsLisibleResponse")
+    public String genererDocumentPucsLisible(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1,
+        @WebParam(name = "arg2", targetNamespace = "")
+        String arg2,
+        @WebParam(name = "arg3", targetNamespace = "")
+        String arg3,
+        @WebParam(name = "arg4", targetNamespace = "")
+        String arg4);
+
+    /**
+     * 
+     * @param montant
+     * @param idCotisation
+     * @param date
+     * @return
+     *     returns java.lang.Double
+     * @throws WebAvsException_Exception
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "findTauxAssuranceForCotisation", targetNamespace = "http://cotisation.ws.orion.globaz.ch/", className = "ch.globaz.orion.ws.cotisation.FindTauxAssuranceForCotisation")
+    @ResponseWrapper(localName = "findTauxAssuranceForCotisationResponse", targetNamespace = "http://cotisation.ws.orion.globaz.ch/", className = "ch.globaz.orion.ws.cotisation.FindTauxAssuranceForCotisationResponse")
+    public Double findTauxAssuranceForCotisation(
+        @WebParam(name = "idCotisation", targetNamespace = "")
+        Integer idCotisation,
+        @WebParam(name = "montant", targetNamespace = "")
+        BigDecimal montant,
+        @WebParam(name = "date", targetNamespace = "")
+        String date)
+        throws WebAvsException_Exception
+    ;
 
 }

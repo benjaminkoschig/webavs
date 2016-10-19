@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import ch.globaz.xmlns.eb.partnerweb.ContactFindResultBean;
 import ch.globaz.xmlns.eb.partnerweb.ContactsAffilie;
 import ch.globaz.xmlns.eb.partnerweb.User;
 import ch.globaz.xmlns.eb.partnerweb.UserLevelEnum;
@@ -33,18 +32,6 @@ class ContactEbAfillierMerger {
         }
 
         return contacts;
-    }
-
-    static ImmutableListMultimap<String, ContactFindResultBean> createMapContactByNumeroAffilie(
-            List<ContactFindResultBean> affilisations) {
-        ImmutableListMultimap<String, ContactFindResultBean> mapAffiliation = Multimaps.index(affilisations,
-                new Function<ContactFindResultBean, String>() {
-                    @Override
-                    public String apply(ContactFindResultBean affiliation) {
-                        return affiliation.getNumeroAffilie();
-                    }
-                });
-        return mapAffiliation;
     }
 
     static ImmutableListMultimap<String, AfilliationForContactEb> createMapAffilieByNumeroAffilie(

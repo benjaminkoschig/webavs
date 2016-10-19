@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
-import ch.globaz.xmlns.eb.partnerweb.ContactFindResultBean;
 import ch.globaz.xmlns.eb.partnerweb.UserLevelEnum;
 
 public class ContactEbAfillierMergerTest {
@@ -57,18 +56,4 @@ public class ContactEbAfillierMergerTest {
         contactExpected.setIsAdministrateur(true);
         return contactExpected;
     }
-
-    private ContactFindResultBean buildContactEb() {
-        return buildContactEb("100.000");
-    }
-
-    private ContactFindResultBean buildContactEb(String numeros) {
-        ContactFindResultBean contactFindResultBean = new ContactFindResultBean();
-        contactFindResultBean.setNom("nom");
-        contactFindResultBean.setEmail("mail");
-        contactFindResultBean.setNumeroAffilie(numeros);
-        contactFindResultBean.setLevel(UserLevelEnum.ADMIN);
-        return contactFindResultBean;
-    }
-
 }

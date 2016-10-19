@@ -52,7 +52,7 @@
 		<itucana.version>0.0.1</itucana.version>
 		<jade.version>5.2.1</jade.version>
 		<pyxis.version>1.23.1-SNAPSHOT</pyxis.version>
-		<simple-output-list.version>1.1.5</simple-output-list.version>
+		<simple-output-list.version>1.2.0-SNAPSHOT</simple-output-list.version>
 		<op.version>5.0.3</op.version>
 		<globaz-external-xsd.version>1.2.0</globaz-external-xsd.version>
 		<ch.admin.ofit.anakin.version>1.12.1</ch.admin.ofit.anakin.version>
@@ -332,7 +332,7 @@
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>ebback-api</artifactId>
-				<version>7.0.1</version>
+				<version>8.0.0-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>

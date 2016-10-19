@@ -41,7 +41,6 @@ import ch.globaz.common.document.babel.CatalogueTexteLoader;
 import ch.globaz.common.document.babel.TexteGiverBabelWithVariables;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.orion.businessimpl.services.ServicesProviders;
-import ch.globaz.xmlns.eb.mail.EBACLException;
 import ch.globaz.xmlns.eb.mail.FileExtension;
 
 /**
@@ -284,7 +283,7 @@ public class LEGenererEtapesSuivantes extends BProcess {
     }
 
     private void sendMail(LEEtapesSuivantesViewBean envoiCrt, TexteGiverBabelWithVariables textGiver,
-            JadePublishDocument doc, String mail) throws Exception, FileNotFoundException, IOException, EBACLException {
+            JadePublishDocument doc, String mail) throws Exception, FileNotFoundException, IOException {
         Map<String, String> map = new HashMap<String, String>();
         map.put("dateRappel", envoiCrt.getDateRappel());
         map.put("destinataire", envoiCrt.getDestinataire());

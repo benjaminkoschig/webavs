@@ -482,8 +482,9 @@ public class EBTreatPucsFiles extends BProcess {
 
                             for (PucsFile pucs : pucsFileMerge.getPucsFileToMergded()) {
                                 String filePath;
-                                ElementsDomParser parser = PucsServiceImpl.buildElementDomParser(pucs.getId(),
-                                        pucsFile.getProvenance(), EtatSwissDecPucsFile.A_TRAITER, getSession());
+                                ElementsDomParser parser = PucsServiceImpl.buildElementDomParser(pucs.getId(), pucsFile
+                                        .getProvenance(), EtatSwissDecPucsFile.A_TRAITER, getSession().getUserId(),
+                                        getSession().getUserEMail(), getSession().getIdLangueISO());
                                 filePath = PucsServiceImpl.pucFileLisiblePdf(pucsFile.getProvenance(), parser,
                                         getSession());
                                 filesPath.put(filePath, parser);

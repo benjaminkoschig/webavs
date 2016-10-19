@@ -70,7 +70,8 @@ public class PucsFileMerge {
      */
     private String retrieveFile(String id, DeclarationSalaireProvenance provenance, BSession session) throws Exception,
             JadeApplicationServiceNotAvailableException, IOException {
-        return PucsServiceImpl.retrieveFile(id, provenance, EtatSwissDecPucsFile.A_TRAITER, workDirectory, session);
+        return PucsServiceImpl.retrieveFile(id, provenance, EtatSwissDecPucsFile.A_TRAITER, workDirectory,
+                session.getUserId(), session.getUserEMail(), session.getIdLangueISO());
     }
 
     public static List<PucsFileMerge> build(List<PucsFile> pucsEntrys, Map<String, List<String>> pucsToMerge,

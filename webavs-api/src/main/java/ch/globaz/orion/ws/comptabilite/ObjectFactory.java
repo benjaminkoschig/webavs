@@ -39,27 +39,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link DownloadFile }
+     * 
+     */
+    public DownloadFile createDownloadFile() {
+        return new DownloadFile();
+    }
+
+    /**
      * Create an instance of {@link GenererExtraitCompteAnnexeResponse }
      * 
      */
     public GenererExtraitCompteAnnexeResponse createGenererExtraitCompteAnnexeResponse() {
         return new GenererExtraitCompteAnnexeResponse();
-    }
-
-    /**
-     * Create an instance of {@link ListerApercuCompteAnnexeResponse }
-     * 
-     */
-    public ListerApercuCompteAnnexeResponse createListerApercuCompteAnnexeResponse() {
-        return new ListerApercuCompteAnnexeResponse();
-    }
-
-    /**
-     * Create an instance of {@link ListerApercuCompteAnnexe }
-     * 
-     */
-    public ListerApercuCompteAnnexe createListerApercuCompteAnnexe() {
-        return new ListerApercuCompteAnnexe();
     }
 
     /**
@@ -71,14 +63,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GenererExtraitCompteAnnexe }
-     * 
-     */
-    public GenererExtraitCompteAnnexe createGenererExtraitCompteAnnexe() {
-        return new GenererExtraitCompteAnnexe();
-    }
-
-    /**
      * Create an instance of {@link ApercuCompteAnnexe }
      * 
      */
@@ -87,11 +71,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DownloadFile }
+     * Create an instance of {@link GenererExtraitCompteAnnexe }
      * 
      */
-    public DownloadFile createDownloadFile() {
-        return new DownloadFile();
+    public GenererExtraitCompteAnnexe createGenererExtraitCompteAnnexe() {
+        return new GenererExtraitCompteAnnexe();
+    }
+
+    /**
+     * Create an instance of {@link ListerApercuCompteAnnexe }
+     * 
+     */
+    public ListerApercuCompteAnnexe createListerApercuCompteAnnexe() {
+        return new ListerApercuCompteAnnexe();
+    }
+
+    /**
+     * Create an instance of {@link ListerApercuCompteAnnexeResponse }
+     * 
+     */
+    public ListerApercuCompteAnnexeResponse createListerApercuCompteAnnexeResponse() {
+        return new ListerApercuCompteAnnexeResponse();
     }
 
     /**

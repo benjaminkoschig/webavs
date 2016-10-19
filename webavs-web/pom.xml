@@ -445,6 +445,16 @@
 		<dependency>
 			<groupId>ch.globaz</groupId>
 			<artifactId>jade</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>jaxb-api</artifactId>
+					<groupId>javax.xml.bind</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jaxb-impl</artifactId>
+					<groupId>com.sun.xml.bind</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -481,6 +491,12 @@
 		<dependency>
 			<groupId>ch.globaz</groupId>
 			<artifactId>globaz-external-xsd</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>jaxb-api</artifactId>
+					<groupId>javax.xml.bind</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>stax</groupId>

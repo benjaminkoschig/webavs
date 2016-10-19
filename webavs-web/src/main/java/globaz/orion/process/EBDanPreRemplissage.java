@@ -45,16 +45,17 @@ public class EBDanPreRemplissage extends EBAbstractJadeJob {
 
     private String annee = null;
     private StringBuffer bodyMailBuffError = null;
-
     private StringBuffer bodyMailBuffInfo = null;
-
     private String dateRadiation = null;
     private String email = null;
     private String numAffilie = null;
     private Boolean preRemplissageForRadiation = new Boolean(false);
     private String subjectMail = null;
-
     private String typeDeclaration = null;
+    private boolean executeFromWebAvs = true;
+    private String loginName = null;
+
+
 
     public void addMailError(String message) {
         if (bodyMailBuffError == null) {
@@ -362,8 +363,13 @@ public class EBDanPreRemplissage extends EBAbstractJadeJob {
                     override = true;
                 }
                 try {
-                    DanServiceImpl.preRempliDan(dan, aff.getAffilieNumero(), listeSalaire, Integer.parseInt(annee),
-                            instLaa, instLpp, getSession().getUserId(), override, getSession());
+                    if (executeFromWebAvs) {
+                        DanServiceImpl.preRempliDan(dan, aff.getAffilieNumero(), listeSalaire, Integer.parseInt(annee),
+                                instLaa, instLpp, getSession().getUserId(), override, getSession());
+                    } else {
+                        DanServiceImpl.preRempliDan(dan, aff.getAffilieNumero(), listeSalaire, Integer.parseInt(annee),
+                                instLaa, instLpp, loginName, override, email);
+                    }
                 } catch (EBDanException_Exception e) {
                     List<String> errors = (e.getFaultInfo().getErrors());
                     for (String erreur : errors) {
@@ -388,7 +394,9 @@ public class EBDanPreRemplissage extends EBAbstractJadeJob {
             addMailError(messageInformation);
 
         } finally {
-            sendEmail();
+            if (executeFromWebAvs) {
+                sendEmail();
+            }
         }
     }
 
@@ -458,6 +466,22 @@ public class EBDanPreRemplissage extends EBAbstractJadeJob {
         } else if (PreRemplissageStatus.PRE_REMPLISSAGE_DAN_KO.equals(status)) {
             addMailInfo("- " + numAffilie + " - " + getSession().getLabel("STATUS_PRE_REMPLISSAGE_ERROR"));
         }
+    }
+    
+    public String getLoginName() {
+        return loginName;
+    }
+
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
+    }
+
+    public boolean getExecuteFromWebAvs() {
+        return executeFromWebAvs;
+    }
+
+    public void setExecuteFromWebAvs(boolean executeFromWebAvs) {
+        this.executeFromWebAvs = executeFromWebAvs;
     }
 
 }

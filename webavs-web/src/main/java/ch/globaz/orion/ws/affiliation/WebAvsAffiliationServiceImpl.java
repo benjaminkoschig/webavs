@@ -1,6 +1,10 @@
 package ch.globaz.orion.ws.affiliation;
 
+import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.suiviCaisseAffiliation.AFSuiviCaisseAffiliation;
 import globaz.naos.db.suiviCaisseAffiliation.AFSuiviCaisseAffiliationManager;
@@ -10,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.jws.WebService;
 import ch.globaz.common.domaine.Checkers;
+import ch.globaz.orion.ws.exceptions.WebAvsException;
 import ch.globaz.orion.ws.service.AppAffiliationService;
 import ch.globaz.orion.ws.service.UtilsService;
 
@@ -63,12 +68,36 @@ public class WebAvsAffiliationServiceImpl implements WebAvsAffiliationService {
         caisseLppManager.setForGenreCaisse(typeCaisse);
         caisseLppManager.setOrder("MYDDEB desc");
         caisseLppManager.setForAnnee(annee);
-        caisseLppManager.find();
+        caisseLppManager.find(BManager.SIZE_NOLIMIT);
 
         if (!caisseLppManager.isEmpty()) {
             AFSuiviCaisseAffiliation caisse = (AFSuiviCaisseAffiliation) caisseLppManager.getFirstEntity();
             return caisse.getIdTiersCaisse();
         }
         return null;
+    }
+
+    @Override
+    public String findAdresseCourrierAffilie(String numeroAffilie) throws WebAvsException {
+        if (JadeStringUtil.isBlankOrZero(numeroAffilie)) {
+            throw new WebAvsException("numeroAffilie cannot be null or zero");
+        }
+
+        String adresseCourrier = null;
+        BSession session = UtilsService.initSession();
+        try {
+            // initialise un contexte et le start
+            BSessionUtil.initContext(session, Thread.currentThread());
+
+            // récupération de l'adresse de courrier
+            adresseCourrier = AppAffiliationService.findAdresseCourrierAffilie(numeroAffilie);
+        } catch (Exception e) {
+            JadeLogger.error(this.getClass(),
+                    "Unable to find address for affilie :" + numeroAffilie + " -> " + e.getMessage());
+            throw new WebAvsException("Unable to find address for affilie : " + numeroAffilie);
+        } finally {
+            BSessionUtil.stopUsingContext(Thread.currentThread());
+        }
+        return adresseCourrier;
     }
 }

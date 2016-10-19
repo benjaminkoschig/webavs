@@ -4,12 +4,13 @@ import java.util.List;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import ch.globaz.orion.ws.exceptions.WebAvsException;
 
 @WebService
 public interface WebAvsAffiliationService {
 
     /**
-     * Méthode permettant de trouver la catégorie d'affiliation d'un affilié dans une période donnée
+     * Trouve la catégorie d'affiliation d'un affilié dans une période donnée
      * La méthode retourne :
      * - 0 si l'affiliation est ni AF, ni AVS
      * - 1 si l'affiliation est de catégorie AVS seul
@@ -28,4 +29,14 @@ public interface WebAvsAffiliationService {
     @WebMethod
     public abstract List<Integer> findActiveSuiviCaisse(@WebParam(name = "numeroAffilie") String numeroAffilie,
             @WebParam(name = "annee") String dateValidite);
+
+    /**
+     * Retourne l'adresse de courrier de l'affilié spécifié
+     * 
+     * @param numeroAffilie
+     * @return
+     */
+    @WebMethod
+    public abstract String findAdresseCourrierAffilie(@WebParam(name = "numeroAffilie") String numeroAffilie)
+            throws WebAvsException;
 }

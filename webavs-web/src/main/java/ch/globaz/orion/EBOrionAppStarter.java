@@ -13,6 +13,7 @@ public class EBOrionAppStarter extends JadeServiceContainer {
     // singleton
     private static EBOrionAppStarter singleton = null;
     String port = null;
+
     // static instantiation
     static {
         EBOrionAppStarter.singleton = new EBOrionAppStarter();
@@ -25,14 +26,16 @@ public class EBOrionAppStarter extends JadeServiceContainer {
             throw new JadeInitializationException("cannot initialize: the received Node ain't an XML Element");
         }
         final Element element = (Element) node;
-        // Exposition des Webservices
+
+        // Exposition des WebServices
         try {
             port = JadeXmlUtil.readTagValue(element, "orion.cotiservice.ws.port");
         } catch (JadeXmlException e) {
             JadeLogger.error(this,
                     "EBOrionAppStarter service is present, but no no tag [orion.cotiservice.ws.port] could be found.");
             throw new JadeInitializationException(
-                    "EBOrionAppStarter service is present, but no no tag [orion.cotiservice.ws.port] could be found.");
+                    "EBOrionAppStarter service is present, but no no tag [orion.cotiservice.ws.port] could be found.",
+                    e);
         }
     }
 
@@ -43,27 +46,6 @@ public class EBOrionAppStarter extends JadeServiceContainer {
         } else {
             throw new JadeInitializationException("property [orion.cotiservice.ws.port] is null");
         }
-
-        // JadeLogger.info(this, "Scheduling ORION autostart...");
-        //
-        // try {
-        // new Thread(new Runnable() {
-        //
-        // @Override
-        // public void run() {
-        // try {
-        // Thread.sleep(30000);
-        // GlobazSystem.getApplication("ORION");
-        // } catch (Exception e) {
-        // JadeLogger.error(this, e.toString());
-        // e.printStackTrace();
-        // }
-        // }
-        // }).start();
-        // JadeLogger.info(this, "ORION autostart scheduled.");
-        // } catch (Exception e) {
-        // throw new JadeInitializationException(e);
-        // }
     }
 
     public static EBOrionAppStarter getInstance() {

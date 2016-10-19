@@ -4,22 +4,35 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazServer;
 import globaz.globall.format.IFormatData;
+import globaz.globall.util.JACalendar;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.services.AFAffiliationServices;
 import globaz.naos.translation.CodeSystem;
 import globaz.pyxis.application.TIApplication;
+import globaz.webavs.common.ICommonConstantes;
 import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.domaine.Checkers;
+import ch.globaz.naos.business.service.AFBusinessServiceLocator;
+import ch.globaz.pyxis.business.model.AdresseTiersDetail;
+import ch.globaz.pyxis.business.service.AdresseService;
+import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 
 /**
- * Service d'acces a l'application de l'affiliation
+ * Service d'accès a l'application de l'affiliation
  * 
  * @author sco
  */
 public class AppAffiliationService {
+
+    private AppAffiliationService() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Permet la récupération de la liste des cotisations pour le numéro d'affilié et l'année passée en paramétre.
@@ -109,7 +122,7 @@ public class AppAffiliationService {
                 numAffilieFormate, periodeDebut, periodeFin, session);
 
         // Si pas d'affiliation, on retourne 0 car cela correspond a ni AF et ni AVS
-        if (listAffiliation.size() == 0) {
+        if (listAffiliation.isEmpty()) {
             return 0;
         }
 
@@ -153,7 +166,7 @@ public class AppAffiliationService {
             return 2;
         }
 
-        // Retour par défaut de 0
+        // Retourne 0 par défaut
         return 0;
     }
 
@@ -202,5 +215,41 @@ public class AppAffiliationService {
             throw new NullPointerException("ERROR OCCURED IN AppAffiliationService.formatNumAffilie : formater is null");
         }
         return formater;
+    }
+
+    /**
+     * Retourne l'adresse de courrier d'un affilié
+     * 
+     * @param numeroAffilie
+     * @return
+     */
+    public static String findAdresseCourrierAffilie(String numeroAffilie) {
+        String adresseCourrier = null;
+        try {
+            // Retrouver l'id du tiers correspondant au numéro d'affilié
+            String idTiers = AFBusinessServiceLocator.getAffiliationService()
+                    .findIdTiersForNumeroAffilie(numeroAffilie);
+            if (idTiers == null) {
+                JadeLogger.error(AppAffiliationService.class, "idTiers for affilie not found : " + numeroAffilie);
+            }
+
+            // Retrouver l'adresse de courrier relative à l'id du tiers
+            AdresseTiersDetail adresseTiersDetail = TIBusinessServiceLocator.getAdresseService().getAdresseTiers(
+                    idTiers, true, JACalendar.todayJJsMMsAAAA(), ICommonConstantes.CS_APPLICATION_COTISATION,
+                    AdresseService.CS_TYPE_COURRIER, "");
+            if (adresseTiersDetail == null) {
+                JadeLogger.error(AppAffiliationService.class, "adresseTiersDetail for idTiers not found : " + idTiers);
+            } else {
+                adresseCourrier = adresseTiersDetail.getAdresseFormate();
+            }
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            JadeLogger.error("Unable to find address. service not available", e);
+        } catch (JadePersistenceException e) {
+            JadeLogger.error("Unable to find address. Persitence error occured", e);
+        } catch (JadeApplicationException e) {
+            JadeLogger.error("Unable to find address. Application error occured", e);
+        }
+
+        return adresseCourrier;
     }
 }

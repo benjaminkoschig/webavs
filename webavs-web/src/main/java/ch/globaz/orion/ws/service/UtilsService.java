@@ -14,17 +14,19 @@ import java.util.Date;
  * @author sco
  * 
  */
-public class UtilsService {
+public final class UtilsService {
+    static final String DATE_FORMAT = "dd.MM.yyyy";
 
-    final static String DATE_FORMAT = "dd.MM.yyyy";
+    private UtilsService() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
-     * Permet d'initialiser une session anonyme
+     * Initialise une session anonyme
      * 
      * @return
      */
     public static BSession initSession() {
-
         BSession session = null;
 
         try {

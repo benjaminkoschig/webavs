@@ -61,4 +61,21 @@ public interface WebAvsAffiliationService {
         @WebParam(name = "annee", targetNamespace = "")
         String annee);
 
+    /**
+     * 
+     * @param numeroAffilie
+     * @return
+     *     returns java.lang.String
+     * @throws WebAvsException_Exception
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "findAdresseCourrierAffilie", targetNamespace = "http://affiliation.ws.orion.globaz.ch/", className = "ch.globaz.orion.ws.affiliation.FindAdresseCourrierAffilie")
+    @ResponseWrapper(localName = "findAdresseCourrierAffilieResponse", targetNamespace = "http://affiliation.ws.orion.globaz.ch/", className = "ch.globaz.orion.ws.affiliation.FindAdresseCourrierAffilieResponse")
+    public String findAdresseCourrierAffilie(
+        @WebParam(name = "numeroAffilie", targetNamespace = "")
+        String numeroAffilie)
+        throws WebAvsException_Exception
+    ;
+
 }

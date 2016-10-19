@@ -109,7 +109,7 @@ public class WebAvsComptabiliteServiceImpl implements WebAvsComptabiliteService 
         byte[] byteFile = null;
         File docFile = new File(filepath);
         try {
-            byteFile = (FileUtils.readFileToByteArray(docFile));
+            byteFile = FileUtils.readFileToByteArray(docFile);
         } catch (IOException e) {
             JadeLogger.error("Unabled to download file : " + filepath, e);
         }

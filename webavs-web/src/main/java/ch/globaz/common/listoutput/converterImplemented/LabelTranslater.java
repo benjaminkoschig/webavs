@@ -2,19 +2,36 @@ package ch.globaz.common.listoutput.converterImplemented;
 
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import java.util.Locale;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.simpleoutputlist.converter.Translater;
 import com.google.common.base.CaseFormat;
 
 public class LabelTranslater implements Translater {
+    private BSession session;
+    private String identifier;
+
+    public LabelTranslater(BSession session, String identifier) {
+        super();
+        this.session = session;
+        this.identifier = identifier;
+    }
+
+    public LabelTranslater() {
+        session = BSessionUtil.getSessionFromThreadContext();
+    }
 
     @Override
-    public String translate(String textToTranslate, String identifier, Locale local) {
-        BSession session = BSessionUtil.getSessionFromThreadContext();
+    public String translate(String textToTranslate, String overridedIdentifier, Locale local) {
         if (session == null) {
             throw new CommonTechnicalException("Unable to translate no session founded :" + textToTranslate);
         }
+
+        if (!JadeStringUtil.isEmpty(overridedIdentifier)) {
+            identifier = overridedIdentifier;
+        }
+
         String separator = "";
         if (identifier != null) {
             separator = "_";

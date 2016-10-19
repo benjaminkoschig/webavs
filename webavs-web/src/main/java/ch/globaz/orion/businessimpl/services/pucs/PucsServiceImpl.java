@@ -19,6 +19,7 @@ import java.util.Locale;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.dom.ElementsDomParser;
 import ch.globaz.common.domaine.Checkers;
+import ch.globaz.common.listoutput.converterImplemented.LabelTranslater;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.exceptions.OrionPucsException;
@@ -26,7 +27,9 @@ import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.business.services.pucs.PucsService;
 import ch.globaz.orion.businessimpl.services.ServicesProviders;
 import ch.globaz.orion.businessimpl.services.dan.DanServiceImpl;
+import ch.globaz.orion.ws.service.UtilsService;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
+import ch.globaz.simpleoutputlist.converter.Translater;
 import ch.globaz.simpleoutputlist.core.Details;
 import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 import ch.globaz.xmlns.eb.dan.EBDanException_Exception;
@@ -40,16 +43,17 @@ public class PucsServiceImpl implements PucsService {
 
     public static final String NUMERO_INFORM_PUCS_LISIBLE = "0315CEB";
 
-    public static byte[] downloadFile(String id, String type, BSession session) throws OrionPucsException {
+    public static byte[] downloadFile(String id, String type, String loginName, String userEmail, String langueIso)
+            throws OrionPucsException {
         try {
-            Checkers.checkNotNull(session, "session");
             Checkers.checkNotNull(id, "id");
             Checkers.checkNotNull(type, "type");
 
-            User usr = ServicesProviders.partnerWebServiceProvide(session).readActivUserOrAdminByLoginName(
-                    session.getUserId());
+            User usr = ServicesProviders.partnerWebServiceProvide(loginName, userEmail, langueIso)
+                    .readActivUserOrAdminByLoginName(loginName);
 
-            return ServicesProviders.pucsServiceProvide(session).getPucsFile(Integer.parseInt(id), usr.getUserId());
+            return ServicesProviders.pucsServiceProvide(loginName, userEmail, langueIso).getPucsFile(
+                    Integer.parseInt(id), usr.getUserId());
 
         } catch (Exception e) {
             throw new OrionPucsException("Impossible de télécharger le ficheir PUCS", e);
@@ -105,18 +109,16 @@ public class PucsServiceImpl implements PucsService {
      * @return
      */
     public static String retrieveFile(String id, DeclarationSalaireProvenance provenance,
-            EtatSwissDecPucsFile etatSwissDecPucsFile, String workDirectory, BSession bSession) {
+            EtatSwissDecPucsFile etatSwissDecPucsFile, String workDirectory, String loginName, String userEmail,
+            String langueIso) {
         byte[] fileContent = null;
         String filePath = workDirectory + id + ".xml";
         try {
             if (provenance.isPucs()) {
-
-                fileContent = PucsServiceImpl.downloadFile(id, provenance.getValue(), bSession);
-
+                fileContent = PucsServiceImpl.downloadFile(id, provenance.getValue(), loginName, userEmail, langueIso);
             } else if (provenance.isDan()) {
-                fileContent = DanServiceImpl.downloadFile(id, provenance.getValue(), bSession);
+                fileContent = DanServiceImpl.downloadFile(id, provenance.getValue(), loginName, userEmail, langueIso);
             } else if (provenance.isSwissDec()) {
-
                 String file = JadeFsFacade.readFile(etatSwissDecPucsFile.getPath() + id + ".xml");
                 JadeFsFacade.copyFile(file, workDirectory + id + ".xml");
             }
@@ -144,8 +146,9 @@ public class PucsServiceImpl implements PucsService {
 
     public static String retrieveFile(String id, DeclarationSalaireProvenance provenance,
             EtatSwissDecPucsFile etatSwissDecPucsFile, String workDirectory) {
-        return retrieveFile(id, provenance, etatSwissDecPucsFile, workDirectory,
-                BSessionUtil.getSessionFromThreadContext());
+        BSession session = BSessionUtil.getSessionFromThreadContext();
+        return retrieveFile(id, provenance, etatSwissDecPucsFile, workDirectory, session.getUserId(),
+                session.getUserEMail(), session.getIdLangueISO());
     }
 
     @Override
@@ -182,6 +185,23 @@ public class PucsServiceImpl implements PucsService {
         return JadeFilenameUtil.normalizePathComponents(file.getAbsolutePath());
     }
 
+    @Override
+    public String pucsFileLisibleForEbusiness(String id, DeclarationSalaireProvenance provenance, String format,
+            String loginName, String userEmail, String langue) {
+        Locale locale = new Locale(langue);
+        SimpleOutputListBuilder builder;
+
+        if ("pdf".equals(format)) {
+            builder = SimpleOutputListBuilder.newInstance().asPdf().local(locale);
+        } else if ("xls".equals(format)) {
+            builder = SimpleOutputListBuilder.newInstance().asXls().local(locale);
+        } else {
+            throw new IllegalArgumentException("the format " + format + " is not allowed");
+        }
+        File file = outForEbusiness(id, provenance, null, builder, loginName, userEmail, langue);
+        return JadeFilenameUtil.normalizePathComponents(file.getAbsolutePath());
+    }
+
     public static String pucFileLisiblePdf(DeclarationSalaireProvenance provenance, ElementsDomParser parser,
             BSession session) {
 
@@ -205,13 +225,24 @@ public class PucsServiceImpl implements PucsService {
 
     private static File out(String id, DeclarationSalaireProvenance provenance,
             EtatSwissDecPucsFile etatSwissDecPucsFile, SimpleOutputListBuilder generator, BSession session) {
-        ElementsDomParser parser = buildElementDomParser(id, provenance, etatSwissDecPucsFile, session);
+        ElementsDomParser parser = buildElementDomParser(id, provenance, etatSwissDecPucsFile, session.getUserId(),
+                session.getUserEMail(), session.getIdLangueISO());
+        return out(provenance, generator, parser, session);
+    }
+
+    private static File outForEbusiness(String id, DeclarationSalaireProvenance provenance,
+            EtatSwissDecPucsFile etatSwissDecPucsFile, SimpleOutputListBuilder generator, String loginName,
+            String userEmail, String langueIso) {
+        ElementsDomParser parser = buildElementDomParser(id, provenance, etatSwissDecPucsFile, loginName, userEmail,
+                langueIso);
+        BSession session = UtilsService.initSession();
         return out(provenance, generator, parser, session);
     }
 
     public static ElementsDomParser buildElementDomParser(String id, DeclarationSalaireProvenance provenance,
-            EtatSwissDecPucsFile etatSwissDecPucsFile, BSession session) {
-        String pathFile = retrieveFile(id, provenance, etatSwissDecPucsFile, session);
+            EtatSwissDecPucsFile etatSwissDecPucsFile, String loginName, String userEmail, String langueIso) {
+        String pathFile = retrieveFile(id, provenance, etatSwissDecPucsFile,
+                (Jade.getInstance().getHomeDir() + "work/"), loginName, userEmail, langueIso);
         ElementsDomParser parser = new ElementsDomParser(pathFile);
         try {
             JadeFsFacade.delete(pathFile);
@@ -224,6 +255,7 @@ public class PucsServiceImpl implements PucsService {
     private static File out(DeclarationSalaireProvenance provenance, SimpleOutputListBuilder builder,
             ElementsDomParser parser, BSession session) {
 
+        Translater translater = new LabelTranslater(session, "DS_PUCS");
         DeclarationSalaire ds = DeclarationSalaireBuilder.build(parser, provenance);
 
         List<SalaryForList> list = DeclarationSalaireBuilder.buildForList(ds.getEmployees());
@@ -259,7 +291,7 @@ public class PucsServiceImpl implements PucsService {
                 .addHeaderDetails(paramsData)
                 .addTitle(
                         session.getLabel("TITRE_LIST_SALAIRE") + "(" + PucsServiceImpl.NUMERO_INFORM_PUCS_LISIBLE + ")",
-                        Align.RIGHT);
+                        Align.RIGHT).translater(translater);
 
         File file = builder.outputName(name).build();
 
@@ -268,13 +300,15 @@ public class PucsServiceImpl implements PucsService {
 
     public static String retrieveFile(String id, DeclarationSalaireProvenance provenance,
             EtatSwissDecPucsFile etatSwissDecPucsFile, BSession bSession) {
-        return retrieveFile(id, provenance, etatSwissDecPucsFile, (Jade.getInstance().getHomeDir() + "work/"), bSession);
+        return retrieveFile(id, provenance, etatSwissDecPucsFile, (Jade.getInstance().getHomeDir() + "work/"),
+                bSession.getUserId(), bSession.getUserEMail(), bSession.getIdLangueISO());
     }
 
     private static String retrieveFile(String id, DeclarationSalaireProvenance provenance,
             EtatSwissDecPucsFile etatSwissDecPucsFile) {
+        BSession session = BSessionUtil.getSessionFromThreadContext();
         return retrieveFile(id, provenance, etatSwissDecPucsFile, (Jade.getInstance().getHomeDir() + "work/"),
-                BSessionUtil.getSessionFromThreadContext());
+                session.getUserId(), session.getUserEMail(), session.getIdLangueISO());
     }
 
     private static Locale buildLocale(BSession session) {
