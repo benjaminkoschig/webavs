@@ -1,9 +1,3 @@
-/*
- * Créé le 22 déc. 05
- * 
- * Pour changer le modèle de ce fichier généré, allez à : Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code
- * et commentaires
- */
 package globaz.orion.helpers.acompte;
 
 import globaz.framework.bean.FWViewBeanInterface;
@@ -21,22 +15,10 @@ import globaz.orion.vb.acompte.EBPrevisionAcompteViewBean;
  */
 public class EBPrevisionAcompteHelper extends FWHelper {
 
-    // ~ Constructors
-    // ---------------------------------------------------------------------------------------------------
-
-    /**
-     * Crée une nouvelle instance de la classe AFAffiliationNAIndSansCIHelper.
-     */
     public EBPrevisionAcompteHelper() {
+        // Do nothing
     }
 
-    // ~ Methods
-    // --------------------------------------------------------------------------------------------------------
-
-    /**
-     * @see globaz.framework.controller.FWHelper#_start(globaz.framework.bean.FWViewBeanInterface,
-     *      globaz.framework.controller.FWAction, globaz.globall.api.BISession)
-     */
     @Override
     protected void _start(FWViewBeanInterface viewBean, FWAction action, BISession session) {
         EBPrevisionAcompteViewBean anViewBean = (EBPrevisionAcompteViewBean) viewBean;
