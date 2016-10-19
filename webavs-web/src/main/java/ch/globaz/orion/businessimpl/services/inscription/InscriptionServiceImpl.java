@@ -28,10 +28,22 @@ public class InscriptionServiceImpl {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         pwService.changeStatusForInscription(inscId, status, owner, message);
     }
 
-    public static String createAffilieAndAdmin(InscriptionEbusiness insc, BSession session)
+    /**
+     * Permet la création de l'affilié et du user admin.
+     * Ce service va également envoyé un mail a la personne qui à demandé l'inscription.
+     * 
+     * @param insc Un objet inscription
+     * @param language Langue utilisé pour envoyé le mail de confirmation de la création du compte.
+     * @param session Une session
+     * @return
+     * @throws OrionInscriptionException
+     * @throws EBPartnerWebException_Exception
+     */
+    public static String createAffilieAndAdmin(InscriptionEbusiness insc, String language, BSession session)
             throws OrionInscriptionException, EBPartnerWebException_Exception {
 
         PartnerWebService pwService = null;
@@ -41,7 +53,7 @@ public class InscriptionServiceImpl {
             e.printStackTrace();
         }
         return pwService.createAffilieAndAdminForInsc(insc.getRaisonSociale(), insc.getNumAffilie(), "", insc.getNom(),
-                insc.getPrenom(), insc.getMail(), insc.getTel());
+                insc.getPrenom(), insc.getMail(), insc.getTel(), language);
 
     }
 
@@ -80,8 +92,8 @@ public class InscriptionServiceImpl {
             inscRet.setTel(insc.getTel());
             listInscRet.add(inscRet);
         }
-        InscriptionEbusiness[] inscArray = listInscRet.toArray(new InscriptionEbusiness[listInscRet.size()]);
-        return inscArray;
+
+        return listInscRet.toArray(new InscriptionEbusiness[listInscRet.size()]);
     }
 
 }
