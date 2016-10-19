@@ -32,6 +32,8 @@ import com.google.common.base.Throwables;
 
 public class EBGenererListSalaire extends EBAbstractJadeJob {
 
+    private static final long serialVersionUID = 1L;
+    
     private String email;
     private Boolean generateEtapeRappel = false;
     private String forDateReference;

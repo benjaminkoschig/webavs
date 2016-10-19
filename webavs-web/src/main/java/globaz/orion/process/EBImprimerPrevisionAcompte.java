@@ -1,6 +1,5 @@
 package globaz.orion.process;
 
-import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
@@ -11,18 +10,11 @@ import globaz.orion.utils.EBExcelmlUtils;
 import globaz.webavs.common.CommonExcelmlContainer;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-/**
- * 
- * @author hna
- * 
- */
-public class EBImprimerPrevisionAcompte extends BProcess implements FWViewBeanInterface {
+public class EBImprimerPrevisionAcompte extends BProcess {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     public static final String ANCIENNE_MASSE = "ANCIENNE_MASSE";
     public static final String MODEL_NAME = "listeRecapPrevisionAcompte.xml";
@@ -34,23 +26,18 @@ public class EBImprimerPrevisionAcompte extends BProcess implements FWViewBeanIn
     public static final String STATUT = "STATUT";
     public static final String SUP_MASSE_MAX_AUTORISEE = "SUP_MASSE_MAX_AUTORISEE";
 
-    List<Map<String, String>> listPrevisionAcompte = null;
-    BigDecimal masseAnnuelleMaxPourPeriodiciteAnnuelle = null;
+    List<Map<String, String>> listPrevisionAcompte;
+    BigDecimal masseAnnuelleMaxPourPeriodiciteAnnuelle;
 
-    /**
-     * @see globaz.globall.db.BProcess#_executeCleanUp()
-     */
     @Override
     protected void _executeCleanUp() {
+        // Do nothing
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#_executeProcess()
-     */
     @Override
-    protected boolean _executeProcess() throws Exception, Exception {
+    protected boolean _executeProcess() throws Exception {
 
-        if (listPrevisionAcompte.size() > 0) {
+        if (!listPrevisionAcompte.isEmpty()) {
             setProgressScaleValue(listPrevisionAcompte.size());
             return createDocument(listPrevisionAcompte);
 
@@ -62,22 +49,12 @@ public class EBImprimerPrevisionAcompte extends BProcess implements FWViewBeanIn
 
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#_validate()
-     */
     @Override
     protected void _validate() throws Exception {
 
         setControleTransaction(true);
         setSendCompletionMail(true);
         setSendMailOnError(true);
-
-        // if (JadeStringUtil.isEmpty(this.getFromDateRadiation())
-        // || JadeStringUtil.isEmpty(this.getToDateRadiation())
-        // || (new JADate(this.getFromDateRadiation()).getYear() != new JADate(this.getToDateRadiation())
-        // .getYear())) {
-        // this.getSession().addError(this.getSession().getLabel("LISTE_EMPLOYEUR_RADIE_ERREUR_DATE_RADIATION"));
-        // }
 
         /**
          * sécurité supplémentaire ------------------------ mais on ne devrait pas se retrouver avec une adresse email
@@ -92,18 +69,19 @@ public class EBImprimerPrevisionAcompte extends BProcess implements FWViewBeanIn
         }
     }
 
-    private boolean createDocument(List<Map<String, String>> listPrevisionAcompte) throws Exception, Exception {
-        CommonExcelmlContainer container = EBXmlmlRecapPrevisionAcompte.loadResults(listPrevisionAcompte, this,
-                masseAnnuelleMaxPourPeriodiciteAnnuelle);
-        String nomDoc = (getSession().getLabel("LISTE_PREVISION_ACOMPTE"));
+    private boolean createDocument(List<Map<String, String>> listPrevisionAcompte) throws Exception {
 
         if (isAborted()) {
             return false;
         }
 
-        String docPath = "";
-        docPath = EBExcelmlUtils.createDocumentExcel(getSession().getIdLangueISO().toUpperCase() + "/"
-                + EBImprimerPrevisionAcompte.MODEL_NAME, nomDoc, container);
+        CommonExcelmlContainer container = EBXmlmlRecapPrevisionAcompte.loadResults(listPrevisionAcompte, this,
+                masseAnnuelleMaxPourPeriodiciteAnnuelle);
+        String nomDoc = getSession().getLabel("LISTE_PREVISION_ACOMPTE");
+
+        String docPath = EBExcelmlUtils.createDocumentExcel(getSession().getIdLangueISO().toUpperCase(Locale.ENGLISH)
+                + "/" + EBImprimerPrevisionAcompte.MODEL_NAME, nomDoc, container);
+
         // Publication du document
         JadePublishDocumentInfo docInfo = createDocumentInfo();
         docInfo.setApplicationDomain(AFApplication.DEFAULT_APPLICATION_NAOS);
@@ -116,9 +94,6 @@ public class EBImprimerPrevisionAcompte extends BProcess implements FWViewBeanIn
         return true;
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#getEMailObject()
-     */
     @Override
     protected String getEMailObject() {
         if (isAborted() || getSession().hasErrors()) {
@@ -136,9 +111,6 @@ public class EBImprimerPrevisionAcompte extends BProcess implements FWViewBeanIn
         return masseAnnuelleMaxPourPeriodiciteAnnuelle;
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#jobQueue()
-     */
     @Override
     public GlobazJobQueue jobQueue() {
         return GlobazJobQueue.READ_SHORT;

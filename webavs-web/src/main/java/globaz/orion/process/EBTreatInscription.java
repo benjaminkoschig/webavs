@@ -1,5 +1,6 @@
 package globaz.orion.process;
 
+import globaz.globall.db.BManager;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
@@ -17,6 +18,7 @@ import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.naos.itext.ebusiness.AFLettreInscription;
 import globaz.naos.translation.CodeSystem;
 import globaz.orion.utils.InscComparator;
+import globaz.pyxis.db.tiers.TITiersViewBean;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,12 +37,11 @@ import ch.globaz.xmlns.eb.partnerweb.InscriptionBackStatusEnum;
  * 
  */
 public class EBTreatInscription extends EBAbstractJadeJob {
-    /**
-     * 
-     */
+
     private static final long serialVersionUID = 1L;
     private static final String LETTRE_INSCRIPTION_DOC_NAME = "inscebu.pdf";
     private static final String LETTRE_INSCRIPTION_TO_CHECK_DOC_NAME = "inscebucheck.pdf";
+    private static final List<String> ACCEPTED_LANGUAGE = Arrays.asList("fr", "de", "en");
 
     /**
      * vérifie qu'un affiliation existe pour cette inscription et met le statut de l'inscription en erreur si
@@ -58,7 +59,7 @@ public class EBTreatInscription extends EBAbstractJadeJob {
                 CodeSystem.TYPE_AFFILI_INDEP_EMPLOY });
         affiliationManager.setFromDateFin(JACalendar.todayJJsMMsAAAA());
         try {
-            affiliationManager.find();
+            affiliationManager.find(BManager.SIZE_USEDEFAULT);
             if (affiliationManager.size() > 0) {
                 // récupération de l'affiliation
                 AFAffiliation affiliation = (AFAffiliation) affiliationManager.getFirstEntity();
@@ -109,7 +110,7 @@ public class EBTreatInscription extends EBAbstractJadeJob {
      * @param inscriptionTreated
      * @throws JadeNoBusinessLogSessionError
      */
-    private void imprimerLettreInscription(ArrayList<String> docs, ArrayList<String> docsToCheck,
+    private void imprimerLettreInscription(List<String> docs, List<String> docsToCheck,
             InscriptionEbusiness inscriptionTreated) throws JadeNoBusinessLogSessionError {
         // impression de la lettre d'inscription
         AFLettreInscription process = new AFLettreInscription();
@@ -129,7 +130,7 @@ public class EBTreatInscription extends EBAbstractJadeJob {
 
         // ajoute la lettre au bon lot
         List<JadePublishDocument> attachedDocuments = process.getAttachedDocuments();
-        if ((attachedDocuments.size() > 0) && (attachedDocuments.get(0) != null)) {
+        if ((!attachedDocuments.isEmpty()) && (attachedDocuments.get(0) != null)) {
             if (attachedDocuments.get(0).getPublishJobDefinition().getDocumentInfo().getSeparateDocument()) {
                 docsToCheck.add(attachedDocuments.get(0).getDocumentLocation());
             } else {
@@ -155,7 +156,7 @@ public class EBTreatInscription extends EBAbstractJadeJob {
         impressionListe._executeProcess();
 
         List attachedDocuments = impressionListe.getAttachedDocuments();
-        if ((attachedDocuments.size() > 0) && (attachedDocuments.get(0) != null)) {
+        if ((!attachedDocuments.isEmpty()) && (attachedDocuments.get(0) != null)) {
             JadePublishDocument doc = (JadePublishDocument) attachedDocuments.get(0);
             String docLocation = doc.getDocumentLocation();
             if (!JadeStringUtil.isBlank(docLocation)) {
@@ -171,8 +172,8 @@ public class EBTreatInscription extends EBAbstractJadeJob {
     @Override
     protected void process() throws Exception {
         // container pour les lettres d'inscriptions
-        ArrayList<String> docs = new ArrayList<String>();
-        ArrayList<String> docsToCheck = new ArrayList<String>();
+        List<String> docs = new ArrayList<String>();
+        List<String> docsToCheck = new ArrayList<String>();
 
         // récupération des nouvelles inscriptions depuis l'e-Business (utilisation du service distant)
         InscriptionEbusiness[] listInscriptionNouvelle = null;
@@ -200,7 +201,10 @@ public class EBTreatInscription extends EBAbstractJadeJob {
             String pwd = "";
             try {
                 if (!InscriptionEbusiness.STATUT_ERREUR.equals(inscriptionTreated.getStatut())) {
-                    pwd = InscriptionServiceImpl.createAffilieAndAdmin(inscriptionTreated, getSession());
+
+                    String langue = resolveLangueForMail(inscriptionTreated);
+
+                    pwd = InscriptionServiceImpl.createAffilieAndAdmin(inscriptionTreated, langue, getSession());
                     inscriptionTreated.setPassword(pwd);
                     inscriptionTreated.setStatut(InscriptionEbusiness.STATUT_TERMINEE);
                     inscriptionTreated.setRemarque("");
@@ -270,7 +274,6 @@ public class EBTreatInscription extends EBAbstractJadeJob {
 
         // publication de la liste des inscriptions traitées (fichier Excel)
         publishListInscription(listInscriptionTreated);
-        System.out.println("test");
     }
 
     /**
@@ -280,12 +283,12 @@ public class EBTreatInscription extends EBAbstractJadeJob {
      * @param docsToCheck
      * @throws JadeNoBusinessLogSessionError
      */
-    private void publishLettreInscription(ArrayList<String> docs, ArrayList<String> docsToCheck)
+    private void publishLettreInscription(List<String> docs, List<String> docsToCheck)
             throws JadeNoBusinessLogSessionError {
         // définition des règles de fusion
         String pdfMergeRules[] = new String[] { JadePdfUtil.REPLACE_FILE };
         // fusion et publication 1er lot
-        if (docs.size() > 0) {
+        if (!docs.isEmpty()) {
             String docsTab[] = new String[docs.size()];
             docsTab = docs.toArray(docsTab);
             try {
@@ -308,7 +311,7 @@ public class EBTreatInscription extends EBAbstractJadeJob {
             }
         }
         // fusion et publication 2ème lot
-        if (docsToCheck.size() > 0) {
+        if (!docsToCheck.isEmpty()) {
             String docsToCheckTab[] = new String[docsToCheck.size()];
             docsToCheckTab = docsToCheck.toArray(docsToCheckTab);
             try {
@@ -419,5 +422,55 @@ public class EBTreatInscription extends EBAbstractJadeJob {
                     InscriptionBackStatusEnum.TERMINE, getSession(), "");
         }
 
+    }
+
+    /**
+     * Trouve la langue qui sera utilisé pour le mail de retour de l'inscription-
+     * Ce sera la langue du tiers pour autant que celle ci soit dans les langues acceptées. Sinon, ce sera "fr" par
+     * défaut.
+     * 
+     * @param inscription Une isncrition
+     * @return La langue
+     */
+    private String resolveLangueForMail(InscriptionEbusiness inscription) {
+        String langue = retrieveLangueTiersForInscription(inscription);
+
+        if (langue == null) {
+            langue = getSession().getIdLangueISO();
+        }
+
+        if (!ACCEPTED_LANGUAGE.contains(langue)) {
+            langue = "fr";
+        }
+
+        return langue;
+    }
+
+    /**
+     * Récupération de la langue suivant le tiers
+     * 
+     * @param inscription Une isncription contenant un idTiers
+     * @return La langue du tiers sous format "fr","de", ....
+     */
+    private String retrieveLangueTiersForInscription(InscriptionEbusiness inscription) {
+
+        if (JadeStringUtil.isIntegerEmpty(inscription.getIdTiers())) {
+            return null;
+        }
+
+        String langue = null;
+
+        TITiersViewBean tiers = new TITiersViewBean();
+        tiers.setSession(getSession());
+        tiers.setIdTiers(inscription.getIdTiers());
+        try {
+            tiers.retrieve();
+
+            langue = tiers.getLangueIso();
+        } catch (Exception e) {
+            JadeLogger.error(this, "Unable to find the language for inscription" + e.getMessage());
+        }
+
+        return langue;
     }
 }

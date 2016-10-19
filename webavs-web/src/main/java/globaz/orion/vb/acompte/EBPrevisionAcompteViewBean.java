@@ -1,12 +1,5 @@
-/*
- * Créé le 9 déc. 05
- * 
- * Pour changer le modèle de ce fichier généré, allez à : Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code
- * et commentaires
- */
 package globaz.orion.vb.acompte;
 
-import globaz.framework.bean.FWViewBeanInterface;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.orion.vb.EBAbstractViewBean;
 
@@ -21,10 +14,7 @@ import globaz.orion.vb.EBAbstractViewBean;
  */
 public class EBPrevisionAcompteViewBean extends EBAbstractViewBean {
 
-    // ~ Instance fields
-    // ------------------------------------------------------------------------------------------------
-
-    private String email;
+    private String email = "";
 
     /**
      * Crée une nouvelle instance de la classe AFAnnonceSalairesViewBean.
@@ -40,12 +30,7 @@ public class EBPrevisionAcompteViewBean extends EBAbstractViewBean {
      */
     public String getEmail() {
         if (JadeStringUtil.isBlank(email)) {
-            try {
-                email = getISession().getUserEMail();
-            } catch (Exception e) {
-                setMessage("Impossible de trouver l'adresse e-mail de l'utilisateur");
-                setMsgType(FWViewBeanInterface.ERROR);
-            }
+            email = getSession().getUserEMail();
         }
 
         return email;

@@ -23,6 +23,8 @@ import com.google.common.base.Throwables;
 
 public class EBGenererListContact extends EBAbstractJadeJob {
 
+    private static final long serialVersionUID = 1L;
+
     private String email;
 
     public String getEmail() {
