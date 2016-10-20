@@ -28,7 +28,7 @@ public class EBMainServlet extends FWJadeServlet {
         stack.addRule(rule);
 
         // supprime les actions interdites de la pile
-        List listeInterdits = new ArrayList();
+        List<String> listeInterdits = new ArrayList<String>();
         listeInterdits.add(".lister");
         listeInterdits.add(".choisir");
         listeInterdits.add(".selectionner");
@@ -52,7 +52,7 @@ public class EBMainServlet extends FWJadeServlet {
     @Override
     protected void goHomePage(HttpSession httpSession, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-        StringBuffer path = new StringBuffer("/").append(EBApplication.APPLICATION_ROOT);
+        StringBuilder path = new StringBuilder("/").append(EBApplication.APPLICATION_ROOT);
         path.append("/").append("homePage.jsp");
         getServletContext().getRequestDispatcher(path.toString()).forward(request, response);
     }
@@ -67,6 +67,7 @@ public class EBMainServlet extends FWJadeServlet {
         registerActionMapping("orion.pucs", EBPucsServletAction.class);
         registerActionMapping("orion.dan", FWDefaultServletAction.class);
         registerActionMapping("orion.acompte", FWDefaultServletAction.class);
+        registerActionMapping("orion.sdd", FWDefaultServletAction.class);
         registerActionMapping("orion.partnerWeb", FWDefaultServletAction.class);
         registerActionMapping("orion.swissdec", EBActionValidationSwissDec.class);
     }

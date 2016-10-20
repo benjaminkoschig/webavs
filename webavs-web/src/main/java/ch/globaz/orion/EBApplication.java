@@ -11,11 +11,9 @@ import ch.globaz.orion.service.EBEbusinessCIAccessImplementation;
 import ch.globaz.orion.service.EBEbusinessDSAccessImplementation;
 
 public class EBApplication extends BApplication {
-    /**
-	 * 
-	 */
+
     private static final long serialVersionUID = 1L;
-    public final static String APPLICATION_ID = "ORION";
+    public static final String APPLICATION_ID = "ORION";
     public static final String APPLICATION_NAME = "EBUSINESS_APP";
     public static final String APPLICATION_PREFIX = "EB";
     public static final String APPLICATION_ROOT = "orionRoot";
@@ -30,7 +28,7 @@ public class EBApplication extends BApplication {
 
     @Override
     protected void _declareAPI() {
-
+        // Do nothing
     }
 
     @Override
@@ -51,6 +49,7 @@ public class EBApplication extends BApplication {
         FWAction.registerActionCustom("orion.swissdec.pucsValidationDetail.accepter", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("orion.swissdec.pucsValidationDetail.refuser", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("orion.swissdec.pucsValidationDetail.annulerRefus", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom("orion.sdd.saisieDecompte.afficher", FWSecureConstants.UPDATE);
     }
 
     /**
