@@ -1,5 +1,6 @@
 package ch.globaz.orion.ws.cotisation;
 
+import globaz.globall.db.BManager;
 import globaz.globall.db.BProcessLauncher;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JANumberFormatter;
@@ -7,10 +8,14 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.naos.db.cotisation.AFCotisation;
+import globaz.naos.db.releve.AFApercuReleve;
+import globaz.naos.db.releve.AFApercuReleveLineFacturation;
+import globaz.naos.db.releve.AFApercuReleveManager;
 import globaz.orion.process.EBDanPreRemplissage;
 import java.math.BigDecimal;
 import java.util.List;
 import javax.jws.WebService;
+import ch.globaz.common.domaine.Checkers;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.services.OrionServiceLocator;
 import ch.globaz.orion.ws.exceptions.WebAvsException;
@@ -157,5 +162,31 @@ public class WebAvsCotisationsServiceImpl implements WebAvsCotisationsService {
                     "Unable to retrieve cotisation with id : " + idCotisation + " -> " + e.getMessage());
             throw new WebAvsException("Unable to retrieve cotisation with id : " + idCotisation);
         }
+    }
+
+    @Override
+    public DecompteMensuel findDecompteMois(String numeroAffilie, String mois, String annee) {
+        Checkers.checkNotNull(numeroAffilie, "numeroAffilie");
+        Checkers.checkNotNull(mois, "mois");
+
+        try {
+
+            AFApercuReleveManager manager = new AFApercuReleveManager();
+            manager.setSession(UtilsService.initSession());
+            manager.setForAffilieNumero(numeroAffilie);
+            manager.find(BManager.SIZE_USEDEFAULT);
+
+            if (!manager.isEmpty()) {
+                AFApercuReleve releve = (AFApercuReleve) manager.getFirstEntity();
+
+                // Récupération des lignes de facturation
+                AFApercuReleveLineFacturation line;
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return new DecompteMensuel();
     }
 }

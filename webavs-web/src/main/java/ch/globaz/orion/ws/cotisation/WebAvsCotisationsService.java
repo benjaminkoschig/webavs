@@ -57,4 +57,11 @@ public interface WebAvsCotisationsService {
     public abstract Double findTauxAssuranceForCotisation(@WebParam(name = "idCotisation") Integer idCotisation,
             @WebParam(name = "montant") BigDecimal montant, @WebParam(name = "date") String date)
             throws WebAvsException;
+
+    /**
+     * Recherche des décomptes pour le mois passé en paramètre.
+     **/
+    @WebMethod
+    DecompteMensuel findDecompteMois(@WebParam(name = "numeroAffilie") String numeroAffilie,
+            @WebParam(name = "mois") String mois, @WebParam(name = " annee") String annee);
 }
