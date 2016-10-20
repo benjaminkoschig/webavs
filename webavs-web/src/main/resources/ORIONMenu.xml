@@ -52,6 +52,12 @@
 						<parameter name="userAction" value="orion.acompte.previsionAcompte.afficher" />
 				</action>
 			</node>
+			<node>
+				<label refId="MENU_SAISIE_DECOMPTE"/>
+				<action command="/orion" responseTarget="fr_main">
+						<parameter name="userAction" value="orion.sdd.saisieDecompte.afficher" />
+				</action>
+			</node>
 		</nodes>
 	</menu>
 	
