@@ -37,6 +37,15 @@ public class CIEcritureRapideManager extends BManager {
     private java.lang.String toDateInscription;
     private java.lang.String toNumeroJournal;
     private java.lang.String tri;
+    private String inCodeSpecial;
+
+    public String getInCodeSpecial() {
+        return inCodeSpecial;
+    }
+
+    public void setInCodeSpecial(String inCodeSpecial) {
+        this.inCodeSpecial = inCodeSpecial;
+    }
 
     /**
      * Constructor for CIEcritureRapideManager.
@@ -140,6 +149,14 @@ public class CIEcritureRapideManager extends BManager {
             sqlWhere += " AND " + _getCollection() + "CIECRIP.KBTSPE = " + getForCodeSpecial();
 
         }
+
+        if (!JadeStringUtil.isBlank(getInCodeSpecial())) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += _getCollection() + "CIECRIP.KBTSPE IN (" + getInCodeSpecial() + ")";
+        }
+
         if (!JadeStringUtil.isBlank(getForMoisFin())) {
             sqlWhere += " AND " + _getCollection() + "CIECRIP.KBNMOF = "
                     + _dbWriteNumeric(statement.getTransaction(), getForMoisFin());

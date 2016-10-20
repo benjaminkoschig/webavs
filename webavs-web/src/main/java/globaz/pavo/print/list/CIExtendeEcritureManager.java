@@ -154,10 +154,19 @@ public class CIExtendeEcritureManager extends globaz.globall.db.BManager {
     private String isBta = new String();
     private ArrayList listeEcrituresCachees = new ArrayList();// contient l'id
     private java.lang.String toAnneeCotisation;
+    private String forCodeSpecial;
 
     // (KBIECR) des
     // écritures
     // cachées
+
+    public String getForCodeSpecial() {
+        return forCodeSpecial;
+    }
+
+    public void setForCodeSpecial(String forCodeSpecial) {
+        this.forCodeSpecial = forCodeSpecial;
+    }
 
     private java.lang.String toDateInscription;
 
@@ -407,6 +416,15 @@ public class CIExtendeEcritureManager extends globaz.globall.db.BManager {
     protected String _getWhere(globaz.globall.db.BStatement statement) {
         // composant de la requete initialises avec les options par defaut
         String sqlWhere = "";
+
+        if (!JadeStringUtil.isBlankOrZero(getForCodeSpecial())) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += _getCollection() + "CIECRIP.KBTSPE = "
+                    + this._dbWriteNumeric(statement.getTransaction(), getForCodeSpecial());
+        }
+
         // Les jointures
         // Avec les journeaux
         // sqlWhere = _getCollection() + "CIJOURP.KCID=" + _getCollection() +

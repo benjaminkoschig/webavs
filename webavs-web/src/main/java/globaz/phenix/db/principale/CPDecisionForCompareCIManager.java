@@ -41,7 +41,7 @@ public class CPDecisionForCompareCIManager extends BManager {
         // composant de la requete initialises avec les options par defaut
         String sqlWhere = " IATETA IN (604004, 604009, 604005, 604006) AND  (IAACTI = '1'or (IAACTI='2' and (IADDEB>=MADFIN AND MADFIN!=0)or IADFIN<=MADDEB))"
                 + " AND IATTDE <>605008 AND IATSPE <> 609020 AND CPDOCAP.IHIDCA=600021 AND  ((KBTCOD not in (313001)"
-                + " AND  (KBTGEN IN (310003, 310004, 310009, 310002) OR KBTGEN =  310007 and KBTSPE IN (312002,312001,0))) OR KANAVS IS NULL)";
+                + " AND  (KBTGEN IN (310003, 310004, 310009, 310002) OR KBTGEN =  310007 and KBTSPE IN (312002,312001,0,312004))) OR KANAVS IS NULL)";
 
         // traitement du positionnement
         if (getForAnneeDecision().length() != 0) {

@@ -13,6 +13,7 @@ public class CIJournal_ParameterList extends FWIImportParametre {
     public static final String PARAM_JOURNAL_ANNEE_COTISATION = "P_ANNEE_COTISATION";
     public static final String PARAM_JOURNAL_CHIFFRE_CLE = "P_CHIFFRE_CLE";
     public static final String PARAM_JOURNAL_CODE = "P_CODE";
+    public static final String PARAM_JOURNAL_CODE_SPECIAL = "P_CODE_SPECIAL";
     public static final String PARAM_JOURNAL_COL1 = "COL_1";
     // public static final String PARAM_JOURNAL_COL8 = "COL_8";
     // public static final String PARAM_JOURNAL_COL9 = "COL_9";
@@ -38,6 +39,7 @@ public class CIJournal_ParameterList extends FWIImportParametre {
     public static final String PARAM_JOURNAL_LABEL_ANNEE_COTISATION = "L_ANNEE_COTISATION";
     public static final String PARAM_JOURNAL_LABEL_CHIFFRE_CLE = "L_CHIFFRE_CLE";
     public static final String PARAM_JOURNAL_LABEL_CODE = "L_CODE";
+    public static final String PARAM_JOURNAL_LABEL_CODE_SPECIAL = "L_CODE_SPECIAL";
     public static final String PARAM_JOURNAL_LABEL_COMPANYNAME = "L_COMPANYNAME";
     public static final String PARAM_JOURNAL_LABEL_COMPTE = "L_COMPTE";
     public static final String PARAM_JOURNAL_LABEL_COMPTE_INDIVIDUEL = "L_COMPTE_INDIVIDUEL";

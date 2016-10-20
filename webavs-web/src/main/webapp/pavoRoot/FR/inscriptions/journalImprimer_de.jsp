@@ -182,6 +182,17 @@ function trim(valueToTrim)
           		<ct:FWCodeSelectTag name="forCode" defaut="" wantBlank="true" codeType="CICODAMO"/>
           	</TD>
           </TR>
+          
+          <TR>
+          	<TD>
+          		Code spécial
+          	</TD>
+	          	<TD width="20" height="2"></TD>
+          	<TD>
+          		  <ct:FWCodeSelectTag	libelle="both" name="forCodeSpecial" defaut="" wantBlank="true" codeType="CICODSPE"  />
+          	</TD>
+          </TR>
+        
           <tr> 
             <td width="23%" height="2">Tri</td>
 						<TD width="20" height="2"></TD>

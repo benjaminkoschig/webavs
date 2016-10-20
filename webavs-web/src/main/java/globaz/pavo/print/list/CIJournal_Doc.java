@@ -53,6 +53,7 @@ public class CIJournal_Doc extends FWIDocumentManager {
     private boolean forAffilieParitaire = false;
     private boolean forAffiliePersonnel = false;
     private String forCode;
+    private String forCodeSpecial;
     private String forGenreEcrituresAParser = "";
     private java.lang.String forIdTypeCompte;
     private java.lang.String forIdTypeJournal;
@@ -86,6 +87,14 @@ public class CIJournal_Doc extends FWIDocumentManager {
 
     public CIJournal_Doc() throws Exception {
         this(new BSession(CIApplication.DEFAULT_APPLICATION_PAVO));
+    }
+
+    public String getForCodeSpecial() {
+        return forCodeSpecial;
+    }
+
+    public void setForCodeSpecial(String forCodeSpecial) {
+        this.forCodeSpecial = forCodeSpecial;
     }
 
     /**
@@ -268,6 +277,8 @@ public class CIJournal_Doc extends FWIDocumentManager {
                     getSession().getLabel("IMPRESSION_JOURNAL_TYPE"));
             super.setParametres(CIJournal_ParameterList.PARAM_JOURNAL_LABEL_CODE,
                     getSession().getLabel("IMPRESSION_JOURNAL_CODE"));
+            super.setParametres(CIJournal_ParameterList.PARAM_JOURNAL_LABEL_CODE_SPECIAL,
+                    getSession().getLabel("IMPRESSION_JOURNAL_CODE_SPECIAL"));
             super.setParametres(CIJournal_ParameterList.PARAM_JOURNAL_LABEL_ECRITURES_NEGATIVES,
                     getSession().getLabel("IMPRESSION_JOURNAL_ECRITURES_NEGATIVES"));
             super.setParametres(CIJournal_ParameterList.PARAM_JOURNAL_LABEL_CHIFFRE_CLE,
@@ -344,6 +355,20 @@ public class CIJournal_Doc extends FWIDocumentManager {
                         .getLibelle());
             } else {
                 super.setParametres(CIJournal_ParameterList.PARAM_JOURNAL_CODE, "*");
+            }
+
+            // Info Code spécial
+            if (!JadeStringUtil.isEmpty(getForCodeSpecial())) {
+                FWParametersSystemCodeManager csCodeManager = new FWParametersSystemCodeManager();
+                csCodeManager.setForIdGroupe("CICODSPE");
+                csCodeManager.setForIdTypeCode("10300012");
+                csCodeManager.setSession(getSession());
+                csCodeManager.find(BManager.SIZE_NOLIMIT);
+                FWParametersSystemCode cs = csCodeManager.getCodeSysteme(forCodeSpecial);
+                super.setParametres(CIJournal_ParameterList.PARAM_JOURNAL_CODE_SPECIAL, cs.getCurrentCodeUtilisateur()
+                        .getCode());
+            } else {
+                super.setParametres(CIJournal_ParameterList.PARAM_JOURNAL_CODE_SPECIAL, "*");
             }
 
             // Info Ecritures négatives
@@ -655,6 +680,7 @@ public class CIJournal_Doc extends FWIDocumentManager {
         ds.setForNumeroAffilie(forNumeroAffilie);
         ds.setForNomEspion(forNomEspion);
         ds.setForCode(forCode);
+        ds.setForCodeSpecial(forCodeSpecial);
         ds.setForItTypeJournalMultiple(forIdTypeJournalMultiple);
         ds.setForGenreEcrituresAParser(getForGenreEcrituresAParser());
         ds.setAvecEcrituresNegatives(avecEcrituresNegatives);
@@ -722,6 +748,7 @@ public class CIJournal_Doc extends FWIDocumentManager {
                 somme.setForNumeroAffilie(forNumeroAffilie);
                 somme.setForNomEspion(forNomEspion);
                 somme.setForCode(forCode);
+                somme.setForCodeSpecial(forCodeSpecial);
                 somme.setForItTypeJournalMultiple(forIdTypeJournalMultiple);
                 somme.setForGenreEcrituresAParser(getForGenreEcrituresAParser());
                 somme.setAvecEcrituresNegatives(avecEcrituresNegatives);

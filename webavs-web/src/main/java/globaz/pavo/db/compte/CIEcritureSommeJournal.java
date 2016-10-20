@@ -14,6 +14,7 @@ import globaz.globall.db.GlobazServer;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.parameters.FWParametersSystemCodeManager;
 import globaz.globall.util.JAUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.pavo.application.CIApplication;
 import globaz.pavo.util.CIUtil;
 
@@ -47,6 +48,7 @@ public class CIEcritureSommeJournal extends BManager {
     private Boolean ecrituresSalariees = new Boolean(false);
     private String forAnneeCotisation;
     private String forCode;
+    private String forCodeSpecial;
     private String forExtourne;
     private String forGenre;
     private String forGenreEcrituresAParser;
@@ -81,6 +83,14 @@ public class CIEcritureSommeJournal extends BManager {
         // TODO Raccord de constructeur auto-généré
     }
 
+    public String getForCodeSpecial() {
+        return forCodeSpecial;
+    }
+
+    public void setForCodeSpecial(String forCodeSpecial) {
+        this.forCodeSpecial = forCodeSpecial;
+    }
+
     @Override
     protected String _getFrom(BStatement statement) {
         String joinStr = "";
@@ -111,6 +121,13 @@ public class CIEcritureSommeJournal extends BManager {
         // sqlWhere += " AND " + _getCollection() + "CIINDIP.KAIIND=" +
         // _getCollection() + "CIECRIP.KAIIND";
         // Test sur le numéro d'affilié
+
+        if (!JadeStringUtil.isBlankOrZero(getForCodeSpecial())) {
+
+            sqlWhere += " AND " + _getCollection() + "CIECRIP.KBTSPE = "
+                    + this._dbWriteNumeric(statement.getTransaction(), getForCodeSpecial());
+        }
+
         if (!globaz.globall.util.JAUtil.isStringEmpty(forNumeroAffilie)) {
             // recherche de l'id
             try {

@@ -69,7 +69,7 @@ public class CIStatDocument {
     private HSSFSheet sheet2;
     private HSSFSheet sheet3;
     private String sz = "Schlüsselzahl";
-    private String sz0 = "Schlüsselzahl(00)";
+    private String sz0 = "Schlüsselzahl(00/04)";
     private String sz2 = "Schlüsselzahl(02)";
     private String sz3 = "Schlüsselzahl(03)";
     private BigDecimal totalMontant06 = new BigDecimal("0");
@@ -320,7 +320,7 @@ public class CIStatDocument {
         }
         if ("pas".equals(codeSpe)) {
         } else if ("0".equals(codeSpe)) {
-            ecrMgr.setForCodeSpecial("0");
+            ecrMgr.setInCodeSpecial("0,312004");
         } else if ("3".equals(codeSpe)) {
             ecrMgr.setForCodeSpecial(CIEcriture.CS_NONFORMATTEUR_SALARIE);
         } else if ("2".equals(codeSpe)) {
@@ -802,7 +802,7 @@ public class CIStatDocument {
             sz = "Chiffre clé";
             rentner = "Montant total des rentiers";
             sz3 = "Chiffre clé (03)";
-            sz0 = "Chiffre clé (00)";
+            sz0 = "Chiffre clé (00/04)";
             sz2 = "Chiffre clé (02)";
 
         }

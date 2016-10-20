@@ -1094,7 +1094,7 @@ public class CIEcritureManager extends BManager {
             }
             sqlWhere += " (KBTGEN IN (" + CIEcriture.CS_CIGENRE_3 + ", " + CIEcriture.CS_CIGENRE_4 + ", "
                     + CIEcriture.CS_CIGENRE_9 + ", " + CIEcriture.CS_CIGENRE_2 + ")";
-            sqlWhere += " OR KBTGEN =  " + CIEcriture.CS_CIGENRE_7 + " and KBTSPE IN (312002,312001,0))";
+            sqlWhere += " OR KBTGEN =  " + CIEcriture.CS_CIGENRE_7 + " and KBTSPE IN (312002,312001,0,312004))";
 
         }
         if ((forRee != null) && forRee.equals("true")) {

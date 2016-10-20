@@ -55,6 +55,9 @@ public class CIEcriture extends BEntity {
     /**
      * 
      */
+
+    public static final String DATE_CODE_SPECIAL04_MANDATORY = "01.01.2016";
+
     private static final long serialVersionUID = 1L;
     public final static String CS_ANNEE_JEUNESSE = "306001";
     // Type de compte
@@ -102,6 +105,7 @@ public class CIEcriture extends BEntity {
     // Particulier
     public final static String CS_MANDAT_NORMAL = "306000";
     public final static String CS_NONFORMATTEUR_INDEPENDANT = "312002";
+    public final static String CS_NONFORMATTEUR_NONACTIF = "312004";
     public final static String CS_NONFORMATTEUR_SALARIE = "312003";
     public final static String CS_PARTAGE_CI_CLOTURES = "306005";
     public final static String CS_PARTAGE_RAM = "306004";
@@ -1354,6 +1358,45 @@ public class CIEcriture extends BEntity {
         checkInscriptionAuCIEstPossible(statement.getTransaction());
 
         updateInscription(statement.getTransaction());
+
+        forceCodeSpecial04IfNeeded();
+
+    }
+
+    private void forceCodeSpecial04IfNeeded() {
+
+        try {
+
+            if (CIEcriture.CS_CIGENRE_7.equalsIgnoreCase(getGenreEcriture())
+                    && !JadeStringUtil.isBlankOrZero(getEmployeur())) {
+
+                String dateInscription = new BSpy(getEspionSaisie()).getDate();
+
+                AFAffiliation affiliation = new AFAffiliation();
+                affiliation.setSession(getSession());
+                affiliation.setAffiliationId(getEmployeur());
+                affiliation.retrieve();
+
+                if (BSessionUtil.compareDateFirstLowerOrEqual(getSession(), DATE_CODE_SPECIAL04_MANDATORY,
+                        dateInscription)
+                        && globaz.naos.translation.CodeSystem.TYPE_AFFILI_NON_ACTIF.equalsIgnoreCase(affiliation
+                                .getTypeAffiliation())) {
+                    setCodeSpecial(CIEcriture.CS_NONFORMATTEUR_NONACTIF);
+
+                } else if (globaz.naos.translation.CodeSystem.TYPE_AFFILI_NON_ACTIF.equalsIgnoreCase(affiliation
+                        .getTypeAffiliation())) {
+                    setCodeSpecial("");
+
+                } else {
+                    determineCodeSpecial(affiliation);
+                }
+
+            }
+
+        } catch (Exception e) {
+            // Nothing to do, le code spécial n'est pas forcé
+        }
+
     }
 
     @Override
@@ -2068,7 +2111,7 @@ public class CIEcriture extends BEntity {
                     || globaz.naos.translation.CodeSystem.TYPE_AFFILI_LTN.equals(genreAff)) {
                 // employeur + BZ 8587 ajout du type LTN lors de la comparaison
                 setCodeSpecial(CIEcriture.CS_NONFORMATTEUR_SALARIE);
-            } else if ("804005".equals(genreAff) && JadeStringUtil.isBlankOrZero(getCodeSpecial())) {
+            } else if ("804005".equals(genreAff)) {
                 // employeur/indépendant
                 // test du no avs
                 if (CIUtil.unFormatAVS(getAvs()).equals(CIUtil.unFormatAVS(aff.getTiers().getNumAvsActuel()))) {

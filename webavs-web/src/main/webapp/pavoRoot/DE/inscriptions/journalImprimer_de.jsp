@@ -134,18 +134,18 @@ function trim(valueToTrim)
 	<script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 	<%-- /tpl:put --%>
 	<%@ include file="/theme/process/bodyStart.jspf" %>
-				<%-- tpl:put name="zoneTitle" --%>Imprimer les inscriptions<%-- /tpl:put --%>
+				<%-- tpl:put name="zoneTitle" --%>IK-Buchungen ausdrucken<%-- /tpl:put --%>
 	<%@ include file="/theme/process/bodyStart2.jspf" %>
 							<%-- tpl:put name="zoneMain" --%>
           <tr> 
-            <td width="23%" height="2">Adresse E-Mail</td>
+            <td width="23%" height="2">E-Mail Adresse</td>
 						<TD width="20" height="2"></TD>
 						<td height="2"> 
               <input type="text" name="mailAddress" maxlength="40" size="40" style="width:8cm;" value="<%=viewBean.getEMailAddress()!=null?viewBean.getEMailAddress():""%>">
               *</td>
           </tr>
           <tr> 
-            <td width="23%" height="2">Type de compte</td>
+            <td width="23%" height="2">Buchungsart</td>
 						<TD width="20" height="2"></TD>
 						<%
 						java.util.HashSet typeCompte = new java.util.HashSet();
@@ -160,7 +160,7 @@ function trim(valueToTrim)
           	<TD><input size="3" maxlength="3" type="text" name="forGenreEcrituresAParser" value=""></TD>
           </TR>
           <TR>
-          	<TD  width="23%" height="2">Avec écritures négatives</TD>
+          	<TD  width="23%" height="2">Mit Minusbuchungen</TD>
           	<TD width="20" height="2"></TD>
           	<TD><input type="checkBox" checked name="avecEcrituresNegatives" ></TD>
           </TR>
@@ -179,27 +179,38 @@ function trim(valueToTrim)
           		<ct:FWCodeSelectTag name="forCode" defaut="" wantBlank="true" codeType="CICODAMO"/>
           	</TD>
           </TR>
+          
+           <TR>
+          	<TD>
+          		Sonderfallcode
+          	</TD>
+	          	<TD width="20" height="2"></TD>
+          	<TD>
+          		  <ct:FWCodeSelectTag	libelle="both" name="forCodeSpecial" defaut="" wantBlank="true" codeType="CICODSPE"  />
+          	</TD>
+          </TR>
+          
           <tr> 
-            <td width="23%" height="2">Tri</td>
+            <td width="23%" height="2">Sortierung</td>
 						<TD width="20" height="2"></TD>
 						<td height="2"> 
               <select name="tri" style="width:8cm;">
-                <option value="nomPrenom" <%="nomPrenom".equals(viewBean.getTri())?"selected":""%>>Nom</option>
-                <option value="avs" <%="avs".equals(viewBean.getTri())?"selected":""%>>NSS</option>
-                <option value="date" <%="date".equals(viewBean.getTri())?"selected":""%>>Date d'inscription</option>
-                <option value="numAff" <%="numAff".equals(viewBean.getTri())?"selected":""%>>Affilié</option>
+                <option value="nomPrenom" <%="nomPrenom".equals(viewBean.getTri())?"selected":""%>>Name</option>
+                <option value="avs" <%="avs".equals(viewBean.getTri())?"selected":""%>>SVN</option>
+                <option value="date" <%="date".equals(viewBean.getTri())?"selected":""%>>Buchungsdatum</option>
+                <option value="numAff" <%="numAff".equals(viewBean.getTri())?"selected":""%>>Mitglied</option>
                </select>
                &nbsp;&nbsp;
 			  <INPUT type="checkbox" name=avecSousTotal value="on">
-			  &nbsp;&nbsp;Avec sous total (uniquement avec tri Nom)
+			  &nbsp;&nbsp;Mit Zwischensumme (nur mit Name Sortierung)
             </td>
           </tr>
           <tr> 
             <td width="23%" height="2">Journal</td>
-						<TD width="20" height="2">du</TD>
+						<TD width="20" height="2">von</TD>
 						<td height="2">  
               <input type="text" name="fromIdJournal" size="15" maxlength="10" value="<%=viewBean.getFromIdJournal()!=null?viewBean.getFromIdJournal():""%>">
-              au 
+              bis 
               <input type="text" name="untilIdJournal" size="15" maxlength="10" value="<%=viewBean.getUntilIdJournal()!=null?viewBean.getUntilIdJournal():""%>">
             </td>
           </tr>
@@ -214,52 +225,52 @@ function trim(valueToTrim)
             </td>
           </tr>
           <tr> 
-            <td width="23%" height="2">Ann&eacute;e de cotisation</td>
-						<TD width="20" height="2">de</TD>
+            <td width="23%" height="2">Beitragsjahr </td>
+						<TD width="20" height="2">von</TD>
 						<td height="2">  
               <input type="text" name="fromAnnee" size="4" maxlength="4" value="<%=viewBean.getFromAnnee()!=null?viewBean.getFromAnnee():""%>">
-              &agrave; 
+              bis
               <input type="text" name="untilAnnee" size="4" maxlength="4" value="<%=viewBean.getUntilAnnee()!=null?viewBean.getUntilAnnee():""%>">
               &nbsp;&nbsp;
 			  <INPUT type="checkbox" name=unMailPasAnnee value="on">
-			  &nbsp;&nbsp;un journal par année
+			  &nbsp;&nbsp;ein Journal pro Jahr
             </td>
           </tr>
           <tr> 
-            <td width="23%" height="2">Date d'inscription</td>
-						<TD width="20" height="2">du</TD>
+            <td width="23%" height="2">Buchungsdatum</td>
+						<TD width="20" height="2">von</TD>
 						<td height="2"> 
 	
 						<%String dateFrom = viewBean.getFromDateInscription()==null?"":viewBean.getFromDateInscription();
 						  String dateUntil = viewBean.getUntilDateInscription()==null?"":viewBean.getUntilDateInscription();%>
 						<ct:FWCalendarTag name="fromDateInscription" value="<%=dateFrom%>"/>
-              au               			              				
+              bis               			              				
 						<ct:FWCalendarTag name="untilDateInscription" value="<%=dateUntil%>"/>
 
               
             </td>
           </tr>
           <tr> 
-            <td width="23%" height="2">NSS </td>
-						<TD width="20" height="2">de</TD>
+            <td width="23%" height="2">SVN  </td>
+						<TD width="20" height="2">von</TD>
 						<td height="2"> 
 
               <nss:nssPopup value='<%=viewBean.getFromNumeroAvs()!=null?viewBean.getFromNumeroAvs():""%>' name="fromNumeroAvs" 
                cssclass="visible" jspName="<%=jspLocation%>" avsMinNbrDigit="3" nssMinNbrDigit="3"/>
-              &agrave; 
+              bis 
               <nss:nssPopup value='<%=viewBean.getUntilNumeroAvs()!=null?viewBean.getUntilNumeroAvs():""%>' name="untilNumeroAvs"  
               avsMinNbrDigit="3" nssMinNbrDigit="3"   cssclass="visible" jspName="<%=jspLocation%>" />
             </td>
           </tr>
 	   <tr> 
-            <td width="23%" height="2">Utilisateur </td>
+            <td width="23%" height="2">Benutzer </td>
 						<TD width="20" height="2"></TD>
 						<td height="2"> 
               <input type="text" name="forNomEspion" size="20" maxlength="20" value="<%=viewBean.getForNomEspion()!=null?viewBean.getForNomEspion():""%>">
             </td>
           </tr>
 	   <tr> 
-            <td width="23%" height="2">Numéro d'affilié</td>
+            <td width="23%" height="2">Abr.-Nr.</td>
 						<TD width="20" height="2"></TD>
 						<td height="2"> 
               <ct:FWPopupList validateOnChange="true" onFailure="resetInfoAffilie();" onChange="updateInfoAffilie(tag);" value='<%=viewBean.getForNumeroAffilie()!=null?viewBean.getForNumeroAffilie():""%>' name="forNumeroAffilie" size="<%=tailleChamps%>" className="visible" jspName="<%=jspLocation2%>" minNbrDigit="3" autoNbrDigit="<%=autoDigitAff%>"/>
@@ -268,14 +279,14 @@ function trim(valueToTrim)
             </td>
           </tr>
           <tr> 
-            <td width="23%" height="2">Imprimer le journal d&eacute;taill&eacute;</td>
+            <td width="23%" height="2">Detailliertes Journals ausdrucken</td>
 						<TD width="20" height="2"></TD>
 						<td height="2"> 
               <input type="checkbox" name="detail" checked>
             </td>
           </tr>
           <tr> 
-            <td width="23%" height="2">Imprimer la r&eacute;capitulation</td>
+            <td width="23%" height="2">Zusammenfassung ausdrucken</td>
 						<TD width="20" height="2"></TD>
 						<td height="2"> 
               <input type="checkbox" name="recapitulation" checked>

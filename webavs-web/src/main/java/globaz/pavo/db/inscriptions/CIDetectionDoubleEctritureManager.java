@@ -26,14 +26,16 @@ public class CIDetectionDoubleEctritureManager extends BManager {
         from += _getCollection() + "CIECRIP EC2 ON EC1.KAIIND = EC2.KAIIND";
         from += " WHERE EC1.KBNANN = " + forAnnee + " AND EC2.KBNANN = " + forAnnee + " AND ";
         from += " (EC1.KBTGEN = 310001 OR (EC1.KBTGEN = 310007 AND EC1.KBTSPE = 312003 ))	AND (EC2.KBTGEN = 310004 "
-                + "OR (EC2.KBTGEN = 310007 AND EC2.KBTSPE = 0 )) AND EC1.KBIECR <> EC2.KBIECR" + " GROUP BY EC1.KAIIND";
+                + "OR (EC2.KBTGEN = 310007 AND EC2.KBTSPE in (0,312004) )) AND EC1.KBIECR <> EC2.KBIECR"
+                + " GROUP BY EC1.KAIIND";
         from += " UNION ";
         from += " SELECT EC1.KAIIND FROM ";
         from += _getCollection() + "CIECRIP EC1 JOIN ";
         from += _getCollection() + "CIECRIP EC2 ON EC1.KAIIND = EC2.KAIIND";
         from += " WHERE EC1.KBNANN = " + forAnnee + " AND EC2.KBNANN = " + forAnnee + " AND ";
         from += " (EC1.KBTGEN = 310003 OR (EC1.KBTGEN = 310007 AND EC1.KBTSPE = 312002 ))	AND (EC2.KBTGEN = 310004 "
-                + "OR (EC2.KBTGEN = 310007 AND EC2.KBTSPE = 0 )) AND EC1.KBIECR <> EC2.KBIECR" + " GROUP BY EC1.KAIIND";
+                + "OR (EC2.KBTGEN = 310007 AND EC2.KBTSPE in (0,312004) )) AND EC1.KBIECR <> EC2.KBIECR"
+                + " GROUP BY EC1.KAIIND";
         from += ") T JOIN ";
         from += _getCollection() + "CIINDIP CI ON CI.KAIIND = T.KAIIND";
 

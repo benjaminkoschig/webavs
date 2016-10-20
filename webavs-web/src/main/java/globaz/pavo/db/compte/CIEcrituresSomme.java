@@ -213,7 +213,7 @@ public class CIEcrituresSomme extends globaz.globall.db.BManager {
             }
             whereUnion += " (KBTGEN IN (" + CIEcriture.CS_CIGENRE_3 + ", " + CIEcriture.CS_CIGENRE_4 + ", "
                     + CIEcriture.CS_CIGENRE_9 + ", " + CIEcriture.CS_CIGENRE_2 + ")";
-            whereUnion += " OR KBTGEN =  " + CIEcriture.CS_CIGENRE_7 + " and KBTSPE IN (312002,312001,0))";
+            whereUnion += " OR KBTGEN =  " + CIEcriture.CS_CIGENRE_7 + " and KBTSPE IN (312002,312001,0,312004))";
 
         }
         if ((forNumeroAffilie != null) && (forNumeroAffilie.length() != 0)) {
@@ -262,7 +262,7 @@ public class CIEcrituresSomme extends globaz.globall.db.BManager {
                     whereUnion = " where ";
                 }
                 whereUnion += " (KBTGEN =" + CIEcriture.CS_CIGENRE_4 + " OR (KBTGEN =" + CIEcriture.CS_CIGENRE_7
-                        + " and KBTSPE in (0," + CIEcriture.CS_COTISATION_MINIMALE + ")))";
+                        + " and KBTSPE in (312004,0," + CIEcriture.CS_COTISATION_MINIMALE + ")))";
             }
         }
 

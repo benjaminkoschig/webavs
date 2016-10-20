@@ -34,7 +34,7 @@
    <NumberFormat/>
    <Protection/>
   </Style>
-  <Style ss:ID="m126200448">
+  <Style ss:ID="m41010048">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
    <Borders>
     <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -94,6 +94,17 @@
    <Font ss:FontName="Sans Sherif" ss:Size="8"/>
    <NumberFormat ss:Format="00"/>
   </Style>
+  <Style ss:ID="s76">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Sans Sherif" ss:Size="8"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
   <Style ss:ID="s77">
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -123,40 +134,30 @@
    </Borders>
    <Font ss:FontName="Sans Sherif" ss:Size="8"/>
   </Style>
-  <Style ss:ID="s80">
-   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
-   <Borders>
-    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
-    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
-    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
-    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
-   </Borders>
-   <Font ss:FontName="Sans Sherif" ss:Size="8"/>
-   <NumberFormat ss:Format="@"/>
-  </Style>
  </Styles>
  <Names>
-  <NamedRange ss:Name="COL_1_VALUE" ss:RefersTo="=Feuil1!R7C1"/>
-  <NamedRange ss:Name="COL_10_VALUE" ss:RefersTo="=Feuil1!R7C10"/>
-  <NamedRange ss:Name="COL_11_VALUE" ss:RefersTo="=Feuil1!R7C11"/>
-  <NamedRange ss:Name="COL_12_VALUE" ss:RefersTo="=Feuil1!R7C12"/>
-  <NamedRange ss:Name="COL_13_VALUE" ss:RefersTo="=Feuil1!R7C13"/>
-  <NamedRange ss:Name="COL_2_VALUE" ss:RefersTo="=Feuil1!R7C2"/>
-  <NamedRange ss:Name="COL_3_VALUE" ss:RefersTo="=Feuil1!R7C3"/>
-  <NamedRange ss:Name="COL_4_VALUE" ss:RefersTo="=Feuil1!R7C4"/>
-  <NamedRange ss:Name="COL_5_VALUE" ss:RefersTo="=Feuil1!R7C5"/>
-  <NamedRange ss:Name="COL_6_VALUE" ss:RefersTo="=Feuil1!R7C6"/>
-  <NamedRange ss:Name="COL_7_VALUE" ss:RefersTo="=Feuil1!R7C7"/>
-  <NamedRange ss:Name="COL_8_VALUE" ss:RefersTo="=Feuil1!R7C8"/>
-  <NamedRange ss:Name="COL_9_VALUE" ss:RefersTo="=Feuil1!R7C9"/>
+  <NamedRange ss:Name="COL_1_VALUE" ss:RefersTo="=Feuil1!R8C1"/>
+  <NamedRange ss:Name="COL_10_VALUE" ss:RefersTo="=Feuil1!R8C10"/>
+  <NamedRange ss:Name="COL_11_VALUE" ss:RefersTo="=Feuil1!R8C11"/>
+  <NamedRange ss:Name="COL_12_VALUE" ss:RefersTo="=Feuil1!R8C12"/>
+  <NamedRange ss:Name="COL_13_VALUE" ss:RefersTo="=Feuil1!R8C13"/>
+  <NamedRange ss:Name="COL_2_VALUE" ss:RefersTo="=Feuil1!R8C2"/>
+  <NamedRange ss:Name="COL_3_VALUE" ss:RefersTo="=Feuil1!R8C3"/>
+  <NamedRange ss:Name="COL_4_VALUE" ss:RefersTo="=Feuil1!R8C4"/>
+  <NamedRange ss:Name="COL_5_VALUE" ss:RefersTo="=Feuil1!R8C5"/>
+  <NamedRange ss:Name="COL_6_VALUE" ss:RefersTo="=Feuil1!R8C6"/>
+  <NamedRange ss:Name="COL_7_VALUE" ss:RefersTo="=Feuil1!R8C7"/>
+  <NamedRange ss:Name="COL_8_VALUE" ss:RefersTo="=Feuil1!R8C8"/>
+  <NamedRange ss:Name="COL_9_VALUE" ss:RefersTo="=Feuil1!R8C9"/>
   <NamedRange ss:Name="P_ANNEE_COTISATION" ss:RefersTo="=Feuil1!R2C5"/>
   <NamedRange ss:Name="P_CHIFFRE_CLE" ss:RefersTo="=Feuil1!R3C10"/>
   <NamedRange ss:Name="P_CODE" ss:RefersTo="=Feuil1!R3C5"/>
+  <NamedRange ss:Name="P_CODE_SPECIAL" ss:RefersTo="=Feuil1!R4C5"/>
   <NamedRange ss:Name="P_COMPTE" ss:RefersTo="=Feuil1!R3C2"/>
   <NamedRange ss:Name="P_COMPTE_INDIVIDUEL" ss:RefersTo="=Feuil1!R4C2"/>
   <NamedRange ss:Name="P_DATE_INSCRIPTION" ss:RefersTo="=Feuil1!R2C2"/>
   <NamedRange ss:Name="P_DATE_TIME" ss:RefersTo="=Feuil1!R1C13"/>
-  <NamedRange ss:Name="P_ECRITURES_NEGATIVES" ss:RefersTo="=Feuil1!R4C5"/>
+  <NamedRange ss:Name="P_ECRITURES_NEGATIVES" ss:RefersTo="=Feuil1!R5C5"/>
   <NamedRange ss:Name="P_JOURNAL" ss:RefersTo="=Feuil1!R1C2"/>
   <NamedRange ss:Name="P_JOURNAL_TYPE" ss:RefersTo="=Feuil1!R1C5"/>
   <NamedRange ss:Name="P_NUMERO_AFFILIE" ss:RefersTo="=Feuil1!R2C10"/>
@@ -164,7 +165,7 @@
   <NamedRange ss:Name="P_USER" ss:RefersTo="=Feuil1!R1C10"/>
  </Names>
  <Worksheet ss:Name="Feuil1">
-  <Table ss:ExpandedColumnCount="13" ss:ExpandedRowCount="7" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="13" ss:ExpandedRowCount="8" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s62" ss:DefaultColumnWidth="60"
    ss:DefaultRowHeight="11.25">
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="70.5"/>
@@ -213,14 +214,19 @@
     <Cell><Data ss:Type="String">Assuré</Data></Cell>
     <Cell><Data ss:Type="String">null</Data><NamedCell
       ss:Name="P_COMPTE_INDIVIDUEL"/></Cell>
-    <Cell><Data ss:Type="String">Avec écritures négatives</Data></Cell>
+    <Cell><Data ss:Type="String">Code spécial</Data></Cell>
     <Cell ss:Index="5"><Data ss:Type="String">null</Data><NamedCell
-      ss:Name="P_ECRITURES_NEGATIVES"/></Cell>
+      ss:Name="P_CODE_SPECIAL"/></Cell>
     <Cell ss:Index="9"><Data ss:Type="String">Tri</Data></Cell>
     <Cell><Data ss:Type="String">null</Data><NamedCell ss:Name="P_TRI"/></Cell>
    </Row>
-   <Row ss:Index="6" ss:AutoFitHeight="0">
-    <Cell ss:MergeAcross="2" ss:StyleID="m126200448"><Data ss:Type="String">?Assuré</Data></Cell>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="3"><Data ss:Type="String">Avec écritures négatives</Data></Cell>
+    <Cell ss:Index="5"><Data ss:Type="String">null</Data><NamedCell
+      ss:Name="P_ECRITURES_NEGATIVES"/></Cell>
+   </Row>
+   <Row ss:Index="7" ss:AutoFitHeight="0">
+    <Cell ss:MergeAcross="2" ss:StyleID="m41010048"><Data ss:Type="String">?Assuré</Data></Cell>
     <Cell ss:StyleID="s71"><Data ss:Type="String">Période</Data></Cell>
     <Cell ss:StyleID="s71"><Data ss:Type="String">Année</Data></Cell>
     <Cell ss:StyleID="s71"><Data ss:Type="String">Genre</Data></Cell>
@@ -240,7 +246,7 @@
     <Cell ss:StyleID="s74"><NamedCell ss:Name="COL_4_VALUE"/></Cell>
     <Cell ss:StyleID="s75"><Data ss:Type="Number">0</Data><NamedCell
       ss:Name="COL_5_VALUE"/></Cell>
-    <Cell ss:StyleID="s80"><NamedCell ss:Name="COL_6_VALUE"/></Cell>
+    <Cell ss:StyleID="s76"><NamedCell ss:Name="COL_6_VALUE"/></Cell>
     <Cell ss:StyleID="s77"><Data ss:Type="Number">0</Data><NamedCell
       ss:Name="COL_7_VALUE"/></Cell>
     <Cell ss:StyleID="s78"><NamedCell ss:Name="COL_8_VALUE"/></Cell>
@@ -274,8 +280,8 @@
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>6</ActiveRow>
-     <ActiveCol>5</ActiveCol>
+     <ActiveRow>4</ActiveRow>
+     <ActiveCol>4</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>

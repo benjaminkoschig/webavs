@@ -1191,6 +1191,7 @@ public class CICompteIndividuelUtil extends CIEcritureManager {
                     }
                     if (CIEcriture.CS_CIGENRE_7.equalsIgnoreCase(ecriture.getGenreEcriture())
                             && !JadeStringUtil.isBlankOrZero(ecriture.getCodeSpecial())
+                            && !CIEcriture.CS_NONFORMATTEUR_NONACTIF.equalsIgnoreCase(ecriture.getCodeSpecial())
                             && !CIEcriture.CS_COTISATION_MINIMALE.equals(ecriture.getCodeSpecial())) {
                         continue;
                     }

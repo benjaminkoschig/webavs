@@ -32,7 +32,7 @@ public class CPEcritureMemeTiersManager extends BManager {
     @Override
     protected String _getWhere(BStatement statement) {
         // composant de la requete initialises avec les options par defaut
-        String sqlWhere = " (KBTGEN IN (310003, 310004, 310009, 310002) OR KBTGEN =  310007 and KBTSPE IN (312002,312001,0))";
+        String sqlWhere = " (KBTGEN IN (310003, 310004, 310009, 310002) OR KBTGEN =  310007 and KBTSPE IN (312002,312001,0,312004))";
 
         // traitement du positionnement
         if (getForAnnee().length() != 0) {
