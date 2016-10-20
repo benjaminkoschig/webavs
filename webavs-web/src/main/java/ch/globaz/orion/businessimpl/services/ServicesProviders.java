@@ -12,6 +12,7 @@ import ch.globaz.xmlns.eb.pac.PACService;
 import ch.globaz.xmlns.eb.partnerweb.PartnerWebService;
 import ch.globaz.xmlns.eb.partnerweb.User;
 import ch.globaz.xmlns.eb.pucs.PUCSService;
+import ch.globaz.xmlns.eb.sdd.SDDService;
 
 public class ServicesProviders {
 
@@ -148,6 +149,23 @@ public class ServicesProviders {
             String owner = app.getProperty("ebusiness.owner");
 
             return BackProvider.getPacService(unConnectedUser, owner, session.getIdLangueISO());
+        } catch (Exception e) {
+            // Problem général, le service n'est pas utilisable ...
+            JadeLogger.fatal(ServicesProviders.class, e);
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public static SDDService sddServiceProvide(BSession session) {
+        User unConnectedUser = new User();
+        unConnectedUser.setNomLogin(session.getUserId());
+        unConnectedUser.setEmail(session.getUserEMail());
+        try {
+            EBApplication app = (EBApplication) GlobazServer.getCurrentSystem().getApplication(
+                    EBApplication.APPLICATION_ID);
+            String owner = app.getProperty("ebusiness.owner");
+
+            return BackProvider.getSddService(unConnectedUser, owner, session.getIdLangueISO());
         } catch (Exception e) {
             // Problem général, le service n'est pas utilisable ...
             JadeLogger.fatal(ServicesProviders.class, e);
