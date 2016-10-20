@@ -82,6 +82,8 @@
 	<parameter name="L_INFO_AFFILIE" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="P_IMPRIMER_TITRE" isForPrompting="false" class="java.lang.Boolean"/>
 	<parameter name="P_IMPRIMER_SOUS_TOTAUX" isForPrompting="false" class="java.lang.Boolean"/>
+	<parameter name="L_CODE_SPECIAL" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_CODE_SPECIAL" isForPrompting="true" class="java.lang.String"/>
 	<field name="COL_1" class="java.lang.String"/>
 	<field name="COL_2" class="java.lang.String"/>
 	<field name="COL_3" class="java.lang.String"/>
@@ -695,6 +697,46 @@
 						<font reportFont="Arial_Normal" fontName="Helvetica" size="10"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_INFO_AFFILIE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Report" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="553"
+						y="100"
+						width="57"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-14"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="Arial_Normal" fontName="Helvetica"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{L_CODE_SPECIAL}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Report" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="618"
+						y="100"
+						width="159"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-15"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="Arial_Normal" fontName="Helvetica"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_CODE_SPECIAL}]]></textFieldExpression>
 				</textField>
 			</band>
 		</title>
