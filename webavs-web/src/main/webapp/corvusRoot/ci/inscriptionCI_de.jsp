@@ -169,8 +169,8 @@
 							<TD><INPUT name="partBonifAssist" value="<%=viewBean.getPartBonifAssist()%>" maxlength="3" size="3"></TD>
 						</TR>
 						<TR>
-							<TD><LABEL for="codeSpecial"><ct:FWLabel key="JSP_ICI_D_CODE_SPECIAL"/></LABEL></TD>
-							<TD><INPUT name="codeSpecial" value="<%=viewBean.getCodeSpecial()%>" maxlength="2" size="2"></TD>
+							<TD><LABEL for="codeSpeciale"><ct:FWLabel key="JSP_ICI_D_CODE_SPECIAL"/></LABEL></TD>
+							<TD><INPUT name="codeSpeciale" value="<%=viewBean.getCodeSpecial()%>" maxlength="2" size="2"></TD>
 							<TD><LABEL for="noAffilie"><ct:FWLabel key="JSP_ICI_D_NO_AFFILIE"/></LABEL></TD>
 							<TD><INPUT name="noAffilie" value="<%=viewBean.getNoAffilie()%>"></TD>
 							<TD><LABEL for="provenance"><ct:FWLabel key="JSP_ICI_D_PROVENANCE"/></LABEL></TD>
@@ -221,8 +221,8 @@
 							<TD colspan="3"><INPUT name="noAffilie" value="<%=viewBean.getCodeParticulier()%>"></TD>
 						</TR>
 						<TR>
-							<TD><LABEL for="codeSpecial"><ct:FWLabel key="JSP_ICI_D_CODE_SPECIAL"/></LABEL></TD>
-							<TD><INPUT name="codeSpecial" value="<%=viewBean.getCodeSpecial()%>"></TD>							
+							<TD><LABEL for="codeSpeciale"><ct:FWLabel key="JSP_ICI_D_CODE_SPECIAL"/></LABEL></TD>
+							<TD><INPUT name="codeSpeciale" value="<%=viewBean.getCodeSpecial()%>"></TD>							
 						</TR>
 
 						

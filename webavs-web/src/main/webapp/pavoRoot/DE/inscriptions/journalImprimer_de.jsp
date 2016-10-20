@@ -155,7 +155,7 @@ function trim(valueToTrim)
             </td>
           </tr>
           <TR>
-          	<TD width="23%" height="2">Chiffre clé</TD>
+          	<TD width="23%" height="2">Schlüsselzahl</TD>
           	<TD width="20" height="2"></TD>
           	<TD><input size="3" maxlength="3" type="text" name="forGenreEcrituresAParser" value=""></TD>
           </TR>
@@ -165,7 +165,7 @@ function trim(valueToTrim)
           	<TD><input type="checkBox" checked name="avecEcrituresNegatives" ></TD>
           </TR>
           <TR>
-          	<TD  width="23%" height="2">Uniquement les écritures salariées</TD>
+          	<TD  width="23%" height="2">Nur die Arbeitnehmer Buchungen</TD>
           	<TD width="20" height="2"></TD>
           	<TD><input type="checkBox" checked name="ecrituresSalariees" ></TD>
           </TR>
@@ -215,7 +215,7 @@ function trim(valueToTrim)
             </td>
           </tr>
           <tr> 
-          	<td width="23%" height="2">Type de journal</td>
+          	<td width="23%" height="2">Journalstyp</td>
 			<TD width="20" height="2"></TD>
 			<td height="2"> 							
 				<SELECT name="tableauIdTypeJournal" id="tableauIdTypeJournal"multiple="multiple">

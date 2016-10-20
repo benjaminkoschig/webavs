@@ -323,8 +323,8 @@ function resetInfoAffilie() {
 		</ct:menuChange>
 	<%}else if(CIJournal.CS_DECLARATION_SALAIRES.equals(viewBean.getIdTypeInscription()) || CIJournal.CS_DECLARATION_COMPLEMENTAIRE.equals(viewBean.getIdTypeInscription())){%>
 		<ct:menuSetAllParams key="selectedId" value="<%=viewBean.getIdJournal()%>" menuId="journal-detailDeclaration"/>
-			<ct:menuSetAllParams key="idJournal" value="<%=viewBean.getIdJournal()%>"menuId="journal-detailDeclaration"/>
-			<ct:menuSetAllParams key="fromIdJournal" value="<%=viewBean.getIdJournal()%>"menuId="journal-detailDeclaration"/>
+			<ct:menuSetAllParams key="idJournal" value="<%=viewBean.getIdJournal()%>" menuId="journal-detailDeclaration"/>
+			<ct:menuSetAllParams key="fromIdJournal" value="<%=viewBean.getIdJournal()%>" menuId="journal-detailDeclaration"/>
 		<ct:menuChange displayId="options" menuId="journal-detailDeclaration" showTab="options">
 			
 		</ct:menuChange>
