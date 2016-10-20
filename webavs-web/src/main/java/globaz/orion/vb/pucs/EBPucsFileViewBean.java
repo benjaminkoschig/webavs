@@ -15,11 +15,11 @@ import ch.globaz.orion.businessimpl.services.pucs.EtatSwissDecPucsFile;
 import ch.globaz.orion.businessimpl.services.pucs.PucsServiceImpl;
 
 public class EBPucsFileViewBean extends EBAbstractViewBean {
-    private String id = null;
-    private String provenance = null;
-    private PucsFile pucsFile = null;
-    private Boolean hasParticulariteCodeBlocage = null;
-    private Boolean hasParticulariteFichePartiel = null;
+    private String id;
+    private String provenance;
+    private PucsFile pucsFile;
+    private Boolean hasParticulariteCodeBlocage;
+    private Boolean hasParticulariteFichePartiel;
     private boolean hasRightAccesSecurity = false;
 
     public EBPucsFileViewBean() {

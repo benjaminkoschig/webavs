@@ -13,10 +13,14 @@ import ch.globaz.xmlns.eb.pac.StatusSaisiePAC;
 /**
  * @revision SCO 15 déc. 2010
  */
-public class EBXmlmlRecapPrevisionAcompte {
+public final class EBXmlmlRecapPrevisionAcompte {
+
+    private EBXmlmlRecapPrevisionAcompte() {
+        super();
+    }
 
     private static void loadDetail(CommonExcelmlContainer container, Map<String, String> m,
-            EBImprimerPrevisionAcompte process) throws Exception, Exception {
+            EBImprimerPrevisionAcompte process) throws Exception {
         process.incProgressCounter();
         container.put(IEBListeAcl.NUMERO_AFFILIE, m.get(EBImprimerPrevisionAcompte.NUM_AFFILIE));
         container.put(IEBListeAcl.NOM_PRENOM, m.get(EBImprimerPrevisionAcompte.NOM));

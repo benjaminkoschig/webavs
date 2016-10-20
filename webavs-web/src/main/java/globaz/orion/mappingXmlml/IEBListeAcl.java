@@ -1,15 +1,19 @@
 package globaz.orion.mappingXmlml;
 
 public interface IEBListeAcl {
-    public static final String ANCIENNE_MASSE = "ancienneMasse";
-    public static final String DATE_ENGAGEMENT = "dateEngagement";
-    public static final String DATE_NAISSANCE = "dateNaissance";
+
     public static final String HEADER_BLANK_1 = "headerBlank1";
     public static final String HEADER_BLANK_2 = "headerBlank2";
     public static final String HEADER_BLANK_3 = "headerBlank3";
     public static final String HEADER_DATE = "headerDate";
     public static final String HEADER_NUM_INFOROM = "headerNumInforom";
     public static final String HEADER_TITRE = "headerTitre";
+    public static final String HEADER_LABEL_NOMBRE_CAS_TRAITE = "headerLabelNombreCasTraite";
+    public static final String HEADER_NOMBRE_CAS_TRAITE = "headerNombreCasTraite";
+
+    public static final String ANCIENNE_MASSE = "ancienneMasse";
+    public static final String DATE_ENGAGEMENT = "dateEngagement";
+    public static final String DATE_NAISSANCE = "dateNaissance";
     public static final String LIBELLE_MASSE_MAX = "libMasseMax";
     public final static String[] listeNoms = { IEBListeAcl.NUMERO_ASSURE, IEBListeAcl.NOM_PRENOM,
             IEBListeAcl.NATIONNALITE, IEBListeAcl.DATE_NAISSANCE, IEBListeAcl.DATE_ENGAGEMENT, IEBListeAcl.TYPE_ARC,
@@ -23,4 +27,12 @@ public interface IEBListeAcl {
     public static final String RELEVER_A_CONTROLER = "releveAControler";
     public static final String STATUT = "statut";
     public static final String TYPE_ARC = "typeARC";
+
+    public static final String HEADER_COLONNE_NUMERO_AFFILIE = "headerColonneLabelNumeroAffilie";
+    public static final String HEADER_COLONNE_NOM_PRENOM = "headerColonneLabelNomPrenom";
+    public static final String HEADER_COLONNE_LOCALITE = "headerColonneLabelLocalite";
+    public static final String HEADER_COLONNE_PERIODE = "headerColonneLabelPeriode";
+    public static final String HEADER_COLONNE_TYPE = "headerColonneLabelType";
+    public static final String HEADER_COLONNE_SAISIE_LE = "headerColonneLabelSaisieLe";
+    public static final String HEADER_COLONNE_ERREUR = "headerColonneLabelErreur";
 }

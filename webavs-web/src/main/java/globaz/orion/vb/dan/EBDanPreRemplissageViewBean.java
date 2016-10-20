@@ -11,8 +11,8 @@ import globaz.orion.vb.EBAbstractViewBean;
  */
 public class EBDanPreRemplissageViewBean extends EBAbstractViewBean {
 
-    private String annee = null;
-    private String email = null;
+    private String annee = "";
+    private String email = "";
     private String nomAffilie = "";
     private String numAffilie = "";
 

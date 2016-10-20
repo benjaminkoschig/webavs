@@ -35,9 +35,6 @@ import ch.globaz.xmlns.eb.pac.StatusSaisiePAC;
  */
 public class EBTreatPac extends BProcess implements FWViewBeanInterface {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     private String dateChangementAvs = "";
     private IFAPassage dernierPassagePeriodiqueParitaire = null;
@@ -45,17 +42,11 @@ public class EBTreatPac extends BProcess implements FWViewBeanInterface {
     private String periodicite = "";
     boolean premiereMasse = true;
 
-    /**
-     * @see globaz.globall.db.BProcess#_executeCleanUp()
-     */
     @Override
     protected void _executeCleanUp() {
-
+        // do nothing
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#_executeProcess()
-     */
     @Override
     protected boolean _executeProcess() {
         try {
