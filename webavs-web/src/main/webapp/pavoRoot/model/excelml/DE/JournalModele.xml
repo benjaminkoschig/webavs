@@ -8,7 +8,7 @@
  <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
   <Author>Jean SIGNORI</Author>
   <LastAuthor>Fabrice Willemin</LastAuthor>
-  <LastPrinted>2011-03-30T13:25:57Z</LastPrinted>
+  <LastPrinted>2016-10-20T11:24:52Z</LastPrinted>
   <Created>2010-11-03T14:22:37Z</Created>
   <LastSaved>2011-03-30T13:30:43Z</LastSaved>
   <Company>GLOBAZ</Company>
@@ -34,7 +34,7 @@
    <NumberFormat/>
    <Protection/>
   </Style>
-  <Style ss:ID="m44288640">
+  <Style ss:ID="m67488160">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
    <Borders>
     <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -176,7 +176,7 @@
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="28.5"/>
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="53.25"/>
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="77.25"/>
-   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="45.75"/>
+   <Column ss:StyleID="s62" ss:Width="55.5"/>
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="26.25"/>
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="66"/>
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="81.75"/>
@@ -184,59 +184,59 @@
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">Journal</Data></Cell>
     <Cell><Data ss:Type="String">null</Data><NamedCell ss:Name="P_JOURNAL"/></Cell>
-    <Cell><Data ss:Type="String">Type du journal</Data></Cell>
+    <Cell><Data ss:Type="String">Journalstyp</Data></Cell>
     <Cell ss:Index="5"><Data ss:Type="String">null</Data><NamedCell
       ss:Name="P_JOURNAL_TYPE"/></Cell>
-    <Cell ss:Index="9"><Data ss:Type="String">Utilisateur</Data></Cell>
+    <Cell ss:Index="9"><Data ss:Type="String">Benutzer</Data></Cell>
     <Cell><Data ss:Type="String">null</Data><NamedCell ss:Name="P_USER"/></Cell>
-    <Cell ss:Index="13" ss:StyleID="s63"><Data ss:Type="String">Date</Data><NamedCell
+    <Cell ss:Index="13" ss:StyleID="s63"><Data ss:Type="String">Datum</Data><NamedCell
       ss:Name="P_DATE_TIME"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">Date d'inscription</Data></Cell>
+    <Cell><Data ss:Type="String">Buchungsdatum</Data></Cell>
     <Cell><Data ss:Type="String">null</Data><NamedCell ss:Name="P_DATE_INSCRIPTION"/></Cell>
-    <Cell><Data ss:Type="String">Année de cotisation</Data></Cell>
+    <Cell><Data ss:Type="String">Beitragsjahr</Data></Cell>
     <Cell ss:Index="5"><Data ss:Type="String">null</Data><NamedCell
       ss:Name="P_ANNEE_COTISATION"/></Cell>
-    <Cell ss:Index="9"><Data ss:Type="String">No d'affilié</Data></Cell>
+    <Cell ss:Index="9"><Data ss:Type="String">Abr.-Nr.</Data></Cell>
     <Cell><Data ss:Type="String">null</Data><NamedCell ss:Name="P_NUMERO_AFFILIE"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">Genre</Data></Cell>
+    <Cell><Data ss:Type="String">Buchungsart</Data></Cell>
     <Cell><Data ss:Type="String">null</Data><NamedCell ss:Name="P_COMPTE"/></Cell>
     <Cell><Data ss:Type="String">Code</Data></Cell>
     <Cell ss:Index="5"><Data ss:Type="String">null</Data><NamedCell
       ss:Name="P_CODE"/></Cell>
-    <Cell ss:Index="9"><Data ss:Type="String">Chiffre clé</Data></Cell>
+    <Cell ss:Index="9"><Data ss:Type="String">Schlüsselzahl</Data></Cell>
     <Cell><Data ss:Type="String">null</Data><NamedCell ss:Name="P_CHIFFRE_CLE"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">Assuré</Data></Cell>
+    <Cell><Data ss:Type="String">Versicherte</Data></Cell>
     <Cell><Data ss:Type="String">null</Data><NamedCell
       ss:Name="P_COMPTE_INDIVIDUEL"/></Cell>
-    <Cell><Data ss:Type="String">Code spécial</Data></Cell>
+    <Cell><Data ss:Type="String">Sonderfallcode</Data></Cell>
     <Cell ss:Index="5"><Data ss:Type="String">null</Data><NamedCell
       ss:Name="P_CODE_SPECIAL"/></Cell>
-    <Cell ss:Index="9"><Data ss:Type="String">Tri</Data></Cell>
+    <Cell ss:Index="9"><Data ss:Type="String">Sortierung</Data></Cell>
     <Cell><Data ss:Type="String">null</Data><NamedCell ss:Name="P_TRI"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell ss:Index="3"><Data ss:Type="String">Avec écritures négatives</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">Mit Minusbuchungen</Data></Cell>
     <Cell ss:Index="5"><Data ss:Type="String">null</Data><NamedCell
       ss:Name="P_ECRITURES_NEGATIVES"/></Cell>
    </Row>
    <Row ss:Index="7" ss:AutoFitHeight="0">
-    <Cell ss:MergeAcross="2" ss:StyleID="m44288640"><Data ss:Type="String">?Assuré</Data></Cell>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">Période</Data></Cell>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">Année</Data></Cell>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">Genre</Data></Cell>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">Revenu</Data></Cell>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">No d'affilié/conjoint</Data></Cell>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">Code spéc.</Data></Cell>
+    <Cell ss:MergeAcross="2" ss:StyleID="m67488160"><Data ss:Type="String">Versicherte</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Periode</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Jahr</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">SZ</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Betrag</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Abr.-Nr./Ehepartner</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">SFC</Data></Cell>
     <Cell ss:StyleID="s71"><Data ss:Type="String">Code</Data></Cell>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">Date d'inscription</Data></Cell>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">Genre</Data></Cell>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">Utilisateur</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Buchungsdatum</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Buchungsart</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Benutzer</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="String">null</Data><NamedCell
@@ -261,7 +261,7 @@
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
    <PageSetup>
     <Layout x:Orientation="Landscape"/>
-    <Header x:Margin="0.51181102362204722" x:Data="&amp;CJournal des inscriptions"/>
+    <Header x:Margin="0.51181102362204722" x:Data="&amp;CIK-Buchungsjournal"/>
     <Footer x:Margin="0.51181102362204722" x:Data="&amp;D&amp;P / &amp;T"/>
     <PageMargins x:Bottom="0.98425196850393704" x:Left="0.39370078740157483"
      x:Right="0.39370078740157483" x:Top="0.98425196850393704"/>
@@ -272,7 +272,7 @@
     <FitHeight>0</FitHeight>
     <ValidPrinterInfo/>
     <PaperSizeIndex>9</PaperSizeIndex>
-    <Scale>91</Scale>
+    <Scale>90</Scale>
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
@@ -280,8 +280,8 @@
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>3</ActiveRow>
-     <ActiveCol>4</ActiveCol>
+     <ActiveRow>6</ActiveRow>
+     <ActiveCol>12</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
