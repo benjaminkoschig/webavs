@@ -5,7 +5,7 @@
 <%@page import="globaz.orion.vb.partnerWeb.EBListeDesSalairesViewBean"%>
 <%-- tpl:put name="zoneInit" --%>
 <%
-idEcran = "GEB3051";
+idEcran = "GEB3004";
 EBListeDesSalairesViewBean viewBean = (EBListeDesSalairesViewBean) session.getAttribute("viewBean");
 userActionValue = "orion.partnerWeb.listeDesSalaires.executer";
 %>

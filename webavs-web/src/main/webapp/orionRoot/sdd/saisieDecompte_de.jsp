@@ -1,13 +1,14 @@
 <%-- tpl:insert page="/theme/process.jtpl" --%>
-<%@ page language="java" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+
+<%@page import="globaz.orion.vb.sdd.EBSaisieDecompteViewBean"%>
+<%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/process/header.jspf" %>
-<%@page import="globaz.orion.vb.partnerWeb.EBListeDesContactsViewBean"%>
 <%-- tpl:put name="zoneInit" --%>
 <%
-idEcran = "GEB3003";
-EBListeDesContactsViewBean viewBean = (EBListeDesContactsViewBean) session.getAttribute("viewBean");
-userActionValue = "orion.partnerWeb.listeDesContacts.executer";
+idEcran = "GEB3005";
+EBSaisieDecompteViewBean viewBean = (EBSaisieDecompteViewBean) session.getAttribute("viewBean");
+userActionValue = "orion.sdd.saisieDecompte.executer";
 %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%>
@@ -16,11 +17,10 @@ userActionValue = "orion.partnerWeb.listeDesContacts.executer";
 <%-- tpl:put name="zoneScripts" --%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart.jspf" %>
-			<ct:FWLabel key="TITRE_LISTE_DES_CONTACTS"/><%-- /tpl:put --%>
+			<%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="JSP_GEB3005_TITRE_SAISIE_DECOMPTE"/><%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart2.jspf" %>
 						<%-- tpl:put name="zoneMain" --%>
-						<TR>
-							<TD colspan="2">&nbsp;</TD>
+							<TD>&nbsp;</TD>
                     	</TR>
 			         	<TR> 
   				          	<TD><ct:FWLabel key="EMAIL"/></TD>
