@@ -17,6 +17,8 @@ public class REFamillePourAttestationsFiscales implements Comparable<REFamillePo
     private boolean hasPlusieursAdressePaiement;
     private Map<String, RETiersPourAttestationsFiscales> tiersBeneficiaires;
     private RETiersPourAttestationsFiscales tiersRequerant;
+    private RETiersPourAttestationsFiscales tiersPourCorrespondance;
+    private boolean hasRetroactif;
 
     public REFamillePourAttestationsFiscales() {
         super();
@@ -65,5 +67,46 @@ public class REFamillePourAttestationsFiscales implements Comparable<REFamillePo
 
     void setTiersRequerant(RETiersPourAttestationsFiscales tiersRequerant) {
         this.tiersRequerant = tiersRequerant;
+    }
+
+    public void setTiersPourCorrespondance(RETiersPourAttestationsFiscales tiersPourCorrespondance) {
+        this.tiersPourCorrespondance = tiersPourCorrespondance;
+    }
+
+    public RETiersPourAttestationsFiscales getTiersPourCorrespondance() {
+        return tiersPourCorrespondance;
+    }
+
+    /**
+     * Return <code>true</code> si un des tiers bénéficiaires de la familles est au bénéfice d'un rente PC dans l'année
+     * fiscales
+     * 
+     * @return <code>true</code> si un des tiers bénéficiaires de la familles est au bénéfice d'un rente PC dans l'année
+     */
+    public boolean getHasRentePC() {
+        for (RETiersPourAttestationsFiscales tiers : tiersBeneficiaires.values()) {
+            if (tiers.hasPcEnDecembre()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Si la famille à eu au moins une décision rétroactive dans l'année
+     * 
+     * @param hasRetroactif
+     */
+    public void setHasRetroactif(boolean hasRetroactif) {
+        this.hasRetroactif = hasRetroactif;
+    }
+
+    /**
+     * Retourne <code>true</code> si la famille à eu au moins une décision rétroactive dans l'année
+     * 
+     * @return
+     */
+    public boolean getHasRetroactif() {
+        return hasRetroactif;
     }
 }

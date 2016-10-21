@@ -13,6 +13,7 @@ import ch.globaz.utils.excel.ExcelAbstractDocumentGenerator;
 public class REListeExcelAttestationsFiscalesNonSorties extends ExcelAbstractDocumentGenerator {
 
     private String annee;
+    private int anneeAsInteger;
     private List<REFamillePourAttestationsFiscales> familles;
     private BSession session;
 
@@ -22,6 +23,7 @@ public class REListeExcelAttestationsFiscalesNonSorties extends ExcelAbstractDoc
 
         this.session = session;
         this.annee = annee;
+        anneeAsInteger = Integer.parseInt(annee);
         this.familles = familles;
     }
 
@@ -72,7 +74,7 @@ public class REListeExcelAttestationsFiscalesNonSorties extends ExcelAbstractDoc
     }
 
     private String hasNotAdresse(REFamillePourAttestationsFiscales uneFamille) {
-        if (!REAttestationsFiscalesUtils.hasTiersCorrespondanceAvecAdresseValide(uneFamille, annee)) {
+        if (REAttestationsFiscalesUtils.getTiersCorrespondanceAvecAdresseValide(uneFamille, annee) == null) {
             return "X";
         }
         return "";
@@ -100,7 +102,7 @@ public class REListeExcelAttestationsFiscalesNonSorties extends ExcelAbstractDoc
     }
 
     private String hasRetroactif(REFamillePourAttestationsFiscales uneFamille) {
-        if (REAttestationsFiscalesUtils.hasRetroDansAnneeFiscale(uneFamille, annee)) {
+        if (REAttestationsFiscalesUtils.hasSeulementDecisionEnDecembre(uneFamille, anneeAsInteger)) {
             return "X";
         }
         return "";

@@ -4,23 +4,24 @@ import ch.globaz.prestation.domaine.constantes.DomaineCodePrestation;
 
 /**
  * <p>
- * Analyseur détectant les familles faisant parties du lot 1.
+ * Analyseur détectant les familles faisant parties du lot 5.
  * </p>
  * <p>
- * Ce lot comporte les rentes vieillesse et invalidité n'ayant pas eu de décision durant l'année fiscale voulue
+ * Ce lot comporte les rentes de vieillesse et d'invalidité ayant une décision avec rétro dans l'année en cours
+ * uniquement.
  * </p>
  * 
- * @author PBA
+ * @author LGA
  * @see REAbstractAnalyseurLot
  */
-public class REAnalyseurLot1 extends REAbstractAnalyseurLot1a4 {
+public class REAnalyseurLot6 extends REAbstractAnalyseurLot5a8 {
 
-    public REAnalyseurLot1(String annee) {
+    public REAnalyseurLot6(String annee) {
         super(annee, false, DomaineCodePrestation.AI, DomaineCodePrestation.VIEILLESSE);
     }
 
     @Override
     public int getNumeroAnalyseur() {
-        return 1;
+        return 6;
     }
 }

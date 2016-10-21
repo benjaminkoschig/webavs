@@ -1,29 +1,5 @@
 package globaz.corvus.topaz;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import ch.globaz.corvus.domaine.constantes.DegreImpotenceAPI;
-import ch.globaz.corvus.process.attestationsfiscales.REAttestationsFiscalesUtils;
-import ch.globaz.corvus.process.attestationsfiscales.REFamillePourAttestationsFiscales;
-import ch.globaz.corvus.process.attestationsfiscales.RERentePourAttestationsFiscales;
-import ch.globaz.corvus.process.attestationsfiscales.RETiersPourAttestationsFiscales;
-import ch.globaz.jade.JadeBusinessServiceLocator;
-import ch.globaz.jade.business.models.Langues;
-import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
-import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
-import ch.globaz.prestation.domaine.CodePrestation;
-import ch.globaz.topaz.datajuicer.Collection;
-import ch.globaz.topaz.datajuicer.DataList;
-import ch.globaz.topaz.datajuicer.DocumentData;
 import globaz.babel.utils.CatalogueText;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
@@ -48,6 +24,27 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.api.ITIPersonne;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import ch.globaz.corvus.domaine.constantes.DegreImpotenceAPI;
+import ch.globaz.corvus.process.attestationsfiscales.REFamillePourAttestationsFiscales;
+import ch.globaz.corvus.process.attestationsfiscales.RERentePourAttestationsFiscales;
+import ch.globaz.corvus.process.attestationsfiscales.RETiersPourAttestationsFiscales;
+import ch.globaz.jade.JadeBusinessServiceLocator;
+import ch.globaz.jade.business.models.Langues;
+import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
+import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
+import ch.globaz.prestation.domaine.CodePrestation;
+import ch.globaz.topaz.datajuicer.Collection;
+import ch.globaz.topaz.datajuicer.DataList;
+import ch.globaz.topaz.datajuicer.DocumentData;
 
 public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
@@ -59,12 +56,13 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
     public static final String FICHIER_MODELE_ENTETE_CORVUS = "RE_LETTRE_ATTESTATION_FISCALE";
 
     private String annee;
-    private Map<String, CatalogueText> cataloguesAttestationsFiscalesParCodeIso;
-    private Map<String, CatalogueText> cataloguesDecisionParCodeIso;
+    private CatalogueText catalogueTextesAttestationsFiscales;
+    private CatalogueText catalogueTextesDecision;
     private List<JadeCodeSysteme> codesSystemesGenresRentes;
     private String dateDernierPaiement;
     private String dateImpression;
     private SortedSet<REFamillePourAttestationsFiscales> familles;
+    private String codeIsoLangue;
     private boolean isSendToGed;
 
     public REAttestationsFiscalesOO() {
@@ -74,75 +72,38 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
         dateDernierPaiement = "";
         dateImpression = "";
         familles = new TreeSet<REFamillePourAttestationsFiscales>();
-
-        cataloguesAttestationsFiscalesParCodeIso = new HashMap<String, CatalogueText>();
-        cataloguesDecisionParCodeIso = new HashMap<String, CatalogueText>();
         codesSystemesGenresRentes = new ArrayList<JadeCodeSysteme>();
 
-        CatalogueText catalogueTexteFr = new CatalogueText();
-        catalogueTexteFr.setCodeIsoLangue("fr");
-        catalogueTexteFr.setCsDomaine(IRECatalogueTexte.CS_RENTES);
-        catalogueTexteFr.setCsTypeDocument(IRECatalogueTexte.CS_ATTESTATION_FISCALE);
-        catalogueTexteFr.setNomCatalogue("openOffice");
-        cataloguesAttestationsFiscalesParCodeIso.put(catalogueTexteFr.getCodeIsoLangue(), catalogueTexteFr);
-
-        CatalogueText catalogueTexteDe = new CatalogueText();
-        catalogueTexteDe.setCodeIsoLangue("de");
-        catalogueTexteDe.setCsDomaine(IRECatalogueTexte.CS_RENTES);
-        catalogueTexteDe.setCsTypeDocument(IRECatalogueTexte.CS_ATTESTATION_FISCALE);
-        catalogueTexteDe.setNomCatalogue("openOffice");
-        cataloguesAttestationsFiscalesParCodeIso.put(catalogueTexteDe.getCodeIsoLangue(), catalogueTexteDe);
-
-        CatalogueText catalogueTexteIt = new CatalogueText();
-        catalogueTexteIt.setCodeIsoLangue("it");
-        catalogueTexteIt.setCsDomaine(IRECatalogueTexte.CS_RENTES);
-        catalogueTexteIt.setCsTypeDocument(IRECatalogueTexte.CS_ATTESTATION_FISCALE);
-        catalogueTexteIt.setNomCatalogue("openOffice");
-        cataloguesAttestationsFiscalesParCodeIso.put(catalogueTexteIt.getCodeIsoLangue(), catalogueTexteIt);
-
-        CatalogueText ctDecisionFr = new CatalogueText();
-        ctDecisionFr.setCodeIsoLangue("fr");
-        ctDecisionFr.setCsDomaine(IRECatalogueTexte.CS_RENTES);
-        ctDecisionFr.setCsTypeDocument(IRECatalogueTexte.CS_DECISION);
-        ctDecisionFr.setNomCatalogue("openOffice");
-        cataloguesDecisionParCodeIso.put(ctDecisionFr.getCodeIsoLangue(), ctDecisionFr);
-
-        CatalogueText ctDecisionDe = new CatalogueText();
-        ctDecisionDe.setCodeIsoLangue("de");
-        ctDecisionDe.setCsDomaine(IRECatalogueTexte.CS_RENTES);
-        ctDecisionDe.setCsTypeDocument(IRECatalogueTexte.CS_DECISION);
-        ctDecisionDe.setNomCatalogue("openOffice");
-        cataloguesDecisionParCodeIso.put(ctDecisionDe.getCodeIsoLangue(), ctDecisionDe);
-
-        CatalogueText ctDecisionIt = new CatalogueText();
-        ctDecisionIt.setCodeIsoLangue("it");
-        ctDecisionIt.setCsDomaine(IRECatalogueTexte.CS_RENTES);
-        ctDecisionIt.setCsTypeDocument(IRECatalogueTexte.CS_DECISION);
-        ctDecisionIt.setNomCatalogue("openOffice");
-        cataloguesDecisionParCodeIso.put(ctDecisionIt.getCodeIsoLangue(), ctDecisionIt);
     }
 
     @Override
     protected List<CatalogueText> definirCataloguesDeTextes() {
-        List<CatalogueText> tousLesCatalogues = new ArrayList<CatalogueText>();
-        tousLesCatalogues.addAll(cataloguesAttestationsFiscalesParCodeIso.values());
-        tousLesCatalogues.addAll(cataloguesDecisionParCodeIso.values());
-        return tousLesCatalogues;
+        List<CatalogueText> catalogues = new ArrayList<CatalogueText>();
+
+        catalogueTextesAttestationsFiscales = new CatalogueText();
+        catalogueTextesAttestationsFiscales.setCodeIsoLangue(getCodeIsoLangue());
+        catalogueTextesAttestationsFiscales.setCsDomaine(IRECatalogueTexte.CS_RENTES);
+        catalogueTextesAttestationsFiscales.setCsTypeDocument(IRECatalogueTexte.CS_ATTESTATION_FISCALE);
+        catalogueTextesAttestationsFiscales.setNomCatalogue("openOffice");
+        catalogues.add(catalogueTextesAttestationsFiscales);
+
+        catalogueTextesDecision = new CatalogueText();
+        catalogueTextesDecision.setCodeIsoLangue(getCodeIsoLangue());
+        catalogueTextesDecision.setCsDomaine(IRECatalogueTexte.CS_RENTES);
+        catalogueTextesDecision.setCsTypeDocument(IRECatalogueTexte.CS_DECISION);
+        catalogueTextesDecision.setNomCatalogue("openOffice");
+        catalogues.add(catalogueTextesDecision);
+
+        return catalogues;
     }
 
     private DocumentData genererAttestationPourUneFamille(REFamillePourAttestationsFiscales uneFamille)
             throws Exception {
-        RETiersPourAttestationsFiscales tiersCorrespondance = REAttestationsFiscalesUtils
-                .getTiersCorrespondance(uneFamille, annee);
-
-        // récupération du catalogue de texte à utiliser en fonction de la langue de correspondance du tiers
-        CatalogueText catalogueAttestationFiscaleDansLaLangueDuTiers = cataloguesAttestationsFiscalesParCodeIso
-                .get(tiersCorrespondance.getCodeIsoLangue().toLowerCase());
-        CatalogueText catalogueDecisionDansLaLangueDuTiers = cataloguesDecisionParCodeIso
-                .get(tiersCorrespondance.getCodeIsoLangue().toLowerCase());
+        RETiersPourAttestationsFiscales tiersCorrespondance = uneFamille.getTiersPourCorrespondance();
 
         // remplissage des champs statiques (paragraphes, titres, en-tête de tableau, etc...)
-        DocumentData data = getDonneesPreRemplies(catalogueAttestationFiscaleDansLaLangueDuTiers);
+        DocumentData data = getDonneesPreRemplies(catalogueTextesAttestationsFiscales);
+
         // remplissage de l'en-tête et signature en fonction du tiers de correspondance
         genererEnTeteSignature(tiersCorrespondance, data);
 
@@ -171,16 +132,16 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             public int compare(RETiersPourAttestationsFiscales tiers1, RETiersPourAttestationsFiscales tiers2) {
 
                 for (RERentePourAttestationsFiscales renteTiers1 : tiers1.getRentes()) {
-                    CodePrestation codePrestation = CodePrestation
-                            .getCodePrestation(Integer.parseInt(renteTiers1.getCodePrestation()));
+                    CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(renteTiers1
+                            .getCodePrestation()));
                     if (codePrestation.isRentePrincipale()) {
                         return -1;
                     }
                 }
 
                 for (RERentePourAttestationsFiscales renteTiers2 : tiers2.getRentes()) {
-                    CodePrestation codePrestation = CodePrestation
-                            .getCodePrestation(Integer.parseInt(renteTiers2.getCodePrestation()));
+                    CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(renteTiers2
+                            .getCodePrestation()));
                     if (codePrestation.isRentePrincipale()) {
                         return 1;
                     }
@@ -210,8 +171,8 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                  */
                 if (nbMois > 0) {
 
-                    CodePrestation codePrestation = CodePrestation
-                            .getCodePrestation(Integer.parseInt(uneRenteDuBeneficiaire.getCodePrestation()));
+                    CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer
+                            .parseInt(uneRenteDuBeneficiaire.getCodePrestation()));
 
                     // si API, on ne l'affiche pas dans la liste, mais une remarque sera ajouté plus tard
                     // avec le degré de cette API
@@ -240,12 +201,12 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                     if (ITIPersonne.CS_HOMME.equals(unTiersBeneficiaire.getCsSexe())
                             && (codePrestation.getCodePrestation() == 13)) {
                         // texte "Rente de veuf" pris depuis le catalogue de texte de la décision de rente
-                        traductionCodePrestation = getTexte(catalogueDecisionDansLaLangueDuTiers, 2, 11);
+                        traductionCodePrestation = getTexte(catalogueTextesDecision, 2, 11);
                     } else if (ITIPersonne.CS_HOMME.equals(unTiersBeneficiaire.getCsSexe())
                             && (codePrestation.getCodePrestation() == 23)) {
                         // texte "Rente de veuf extraordinaire" pris depuis le catalogue de texte de la décision de
                         // rente
-                        traductionCodePrestation = getTexte(catalogueDecisionDansLaLangueDuTiers, 2, 12);
+                        traductionCodePrestation = getTexte(catalogueTextesDecision, 2, 12);
                     } else {
                         traductionCodePrestation = getTraductionGenreRente(csCodePrestation.toString(),
                                 tiersCorrespondance.getCodeIsoLangue());
@@ -263,8 +224,8 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
                     ligneInfoRente.addData("periode_rente", periodeRente.toString());
 
-                    double montantAnnuel = Double.parseDouble(
-                            JANumberFormatter.deQuote(uneRenteDuBeneficiaire.getMontantPrestation())) * nbMois;
+                    double montantAnnuel = Double.parseDouble(JANumberFormatter.deQuote(uneRenteDuBeneficiaire
+                            .getMontantPrestation())) * nbMois;
                     montantTotal += montantAnnuel;
 
                     ligneInfoRente.addData("montant_rente", new FWCurrency(montantAnnuel).toStringFormat());
@@ -285,13 +246,13 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             String texteAPI = null;
             switch (degreAPI) {
                 case FAIBLE:
-                    texteAPI = getTexte(catalogueAttestationFiscaleDansLaLangueDuTiers, 4, 2);
+                    texteAPI = getTexte(catalogueTextesAttestationsFiscales, 4, 2);
                     break;
                 case MOYEN:
-                    texteAPI = getTexte(catalogueAttestationFiscaleDansLaLangueDuTiers, 4, 3);
+                    texteAPI = getTexte(catalogueTextesAttestationsFiscales, 4, 3);
                     break;
                 case GRAVE:
-                    texteAPI = getTexte(catalogueAttestationFiscaleDansLaLangueDuTiers, 4, 4);
+                    texteAPI = getTexte(catalogueTextesAttestationsFiscales, 4, 4);
                     break;
                 default:
                     // rien
@@ -299,18 +260,30 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             }
 
             if (!JadeStringUtil.isBlank(texteAPI)) {
-                data.addData("TITRE_API", getTexte(catalogueAttestationFiscaleDansLaLangueDuTiers, 4, 1));
+                data.addData("TITRE_API", getTexte(catalogueTextesAttestationsFiscales, 4, 1));
                 data.addData("TEXTE_API", texteAPI);
             }
         }
 
         if (uneFamille.hasPlusieursAdressePaiement()) {
-            data.addData("PLUSIEURS_ATT_FAMILLE", getTexte(catalogueAttestationFiscaleDansLaLangueDuTiers, 4, 6));
+            data.addData("PLUSIEURS_ATT_FAMILLE", getTexte(catalogueTextesAttestationsFiscales, 4, 6));
+        }
+        // Si PC en décembre
+        if (uneFamille.getHasRentePC()) {
+            data.addData("HAS_PC_DECEMBRE", getTexte(catalogueTextesAttestationsFiscales, 4, 7));
+        }
+        // Si rétroactif
+        if (uneFamille.getHasRetroactif()) {
+            String texte = getTexte(catalogueTextesAttestationsFiscales, 4, 8);
+            if (!JadeStringUtil.isBlank(texte)) {
+                texte = texte.replace("{annee}", getAnnee());
+            }
+            data.addData("HAS_RETROACTIF", texte);
         }
 
-        data.addData("SALUTATION_ATTESTATION",
-                PRStringUtils.replaceString(getTexte(catalogueAttestationFiscaleDansLaLangueDuTiers, 5, 1),
-                        "{TitreSalutation}", tiersCorrespondance.getTitreTiers()));
+        data.addData("SALUTATION_ATTESTATION", PRStringUtils.replaceString(
+                getTexte(catalogueTextesAttestationsFiscales, 5, 1), "{TitreSalutation}",
+                tiersCorrespondance.getTitreTiers()));
 
         return data;
     }
@@ -358,16 +331,14 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             singleDocInfo.setPublishDocument(false);
             singleDocInfo.setDocumentType(IRENoDocumentInfoRom.ATTESTATIONS_FISCALES_ANNUELLE);
             singleDocInfo.setDocumentTypeNumber(IRENoDocumentInfoRom.ATTESTATIONS_FISCALES_ANNUELLE);
-            singleDocInfo
-                    .setDocumentProperty(REGedUtils.PROPRIETE_GED_TYPE_DEMANDE_RENTE,
-                            REGedUtils.getCleGedPourTypeRente(getSession(),
-                                    REGedUtils.getTypeRentePourListeCodesPrestation(getSession(),
-                                            getCodePrestationFamille(uneFamille), false, true)));
+            singleDocInfo.setDocumentProperty(REGedUtils.PROPRIETE_GED_TYPE_DEMANDE_RENTE, REGedUtils
+                    .getCleGedPourTypeRente(getSession(), REGedUtils.getTypeRentePourListeCodesPrestation(getSession(),
+                            getCodePrestationFamille(uneFamille), false, true)));
 
             // bz-7950
             RETiersPourAttestationsFiscales tiersCorrespondance = null;
             try {
-                tiersCorrespondance = REAttestationsFiscalesUtils.getTiersCorrespondance(uneFamille, annee);
+                tiersCorrespondance = uneFamille.getTiersPourCorrespondance();
                 TIDocumentInfoHelper.fill(singleDocInfo, tiersCorrespondance.getIdTiers(), getSession(), null, null,
                         null);
             } catch (Exception e) {
@@ -386,21 +357,21 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
     private void genererEnTeteSignature(RETiersPourAttestationsFiscales tiersCorrespondance, DocumentData data) {
         try {
-            CatalogueText catalogueLangueTiers = cataloguesAttestationsFiscalesParCodeIso
-                    .get(tiersCorrespondance.getCodeIsoLangue().toLowerCase());
+            // CatalogueText catalogueLangueTiers = catalogueTextesAttestationsFiscales.get(tiersCorrespondance
+            // .getCodeIsoLangue().toLowerCase());
 
-            data.addData("SIGNATURE", getTexte(catalogueLangueTiers, 7, 1));
+            data.addData("SIGNATURE", getTexte(catalogueTextesAttestationsFiscales, 7, 1));
 
             CaisseHeaderReportBean crBean = new CaisseHeaderReportBean();
             crBean.setAdresse(tiersCorrespondance.getAdresseCourrierFormatee());
 
-            ICaisseReportHelperOO caisseHelper = CaisseHelperFactory.getInstance()
-                    .getCaisseReportHelperOO(getSession().getApplication(), tiersCorrespondance.getCodeIsoLangue());
+            ICaisseReportHelperOO caisseHelper = CaisseHelperFactory.getInstance().getCaisseReportHelperOO(
+                    getSession().getApplication(), tiersCorrespondance.getCodeIsoLangue());
             caisseHelper.setTemplateName(REAttestationsFiscalesOO.FICHIER_MODELE_ENTETE_CORVUS);
 
             if (Boolean.parseBoolean(getSession().getApplication().getProperty("isAfficherDossierTraitePar"))) {
                 StringBuilder nomCollaboration = new StringBuilder();
-                nomCollaboration.append(getTexte(catalogueLangueTiers, 6, 1)).append(" ")
+                nomCollaboration.append(getTexte(catalogueTextesAttestationsFiscales, 6, 1)).append(" ")
                         .append(getSession().getUserFullName());
 
                 crBean.setNomCollaborateur(nomCollaboration.toString());
@@ -426,8 +397,8 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             } else if (JadeDateUtil.isGlobazDateMonthYear(dateImpression)) {
                 JADate date = new JADate(dateImpression);
                 StringBuilder dateImpression = new StringBuilder();
-                dateImpression.append(" ")
-                        .append(JACalendar.getMonthName(date.getMonth(), tiersCorrespondance.getCodeIsoLangue()));
+                dateImpression.append(" ").append(
+                        JACalendar.getMonthName(date.getMonth(), tiersCorrespondance.getCodeIsoLangue()));
                 dateImpression.append(" ").append(Integer.toString(date.getYear()));
 
                 crBean.setDate(dateImpression.toString());
@@ -453,8 +424,8 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
         for (RERentePourAttestationsFiscales uneRente : famille.getRentesDeLaFamille()) {
             if (!JadeStringUtil.isBlankOrZero(uneRente.getCodePrestation())
                     && JadeNumericUtil.isInteger(uneRente.getCodePrestation())) {
-                CodePrestation codePrestation = CodePrestation
-                        .getCodePrestation(Integer.parseInt(uneRente.getCodePrestation()));
+                CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(uneRente
+                        .getCodePrestation()));
                 codesPrestation.add(codePrestation);
             }
         }
@@ -571,6 +542,14 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
      */
     public final void setIsSendToGed(boolean isSendToGed) {
         this.isSendToGed = isSendToGed;
+    }
+
+    public String getCodeIsoLangue() {
+        return codeIsoLangue;
+    }
+
+    public void setCodeIsoLangue(String codeIsoLangue) {
+        this.codeIsoLangue = codeIsoLangue;
     }
 
 }

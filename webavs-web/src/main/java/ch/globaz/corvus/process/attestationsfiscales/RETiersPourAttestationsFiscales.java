@@ -23,6 +23,7 @@ public class RETiersPourAttestationsFiscales implements Comparable<RETiersPourAt
     private String prenom;
     private Map<String, RERentePourAttestationsFiscales> rentes;
     private String titreTiers;
+    private boolean hasPcEnDecembre = false;
 
     public RETiersPourAttestationsFiscales() {
         super();
@@ -164,4 +165,26 @@ public class RETiersPourAttestationsFiscales implements Comparable<RETiersPourAt
     void setTitreTiers(String titreTiers) {
         this.titreTiers = titreTiers;
     }
+
+    /**
+     * Return <code>true</code> si le tiers à été au bénéfice d'une rente PC durant le mois de décembre de l'annéle
+     * fiscale
+     * 
+     * @return <code>true</code> si le tiers à été au bénéfice d'une rente PC durant le mois de décembre de l'annéle
+     *         fiscale
+     */
+    public boolean hasPcEnDecembre() {
+        return hasPcEnDecembre;
+    }
+
+    /**
+     * Définit si le tiers à été au bénéfice d'une rente PC durant le mois de décembre de l'annéle fiscale
+     * 
+     * @param hasPcEnDecembre si le tiers à été au bénéfice d'une rente PC durant le mois de décembre de l'année
+     *            fiscale
+     */
+    public void setHasPcEnDecembre(boolean hasPcEnDecembre) {
+        this.hasPcEnDecembre = hasPcEnDecembre;
+    }
+
 }

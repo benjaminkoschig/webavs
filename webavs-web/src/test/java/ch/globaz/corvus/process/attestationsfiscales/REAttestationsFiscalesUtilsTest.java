@@ -1,7 +1,7 @@
 package ch.globaz.corvus.process.attestationsfiscales;
 
 import globaz.corvus.api.retenues.IRERetenues;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -9,10 +9,12 @@ import org.junit.Test;
 public class REAttestationsFiscalesUtilsTest {
 
     private String annee;
+    private int anneeAsInteger;
 
     @Before
     public void setUp() throws Exception {
         annee = "2011";
+        anneeAsInteger = Integer.parseInt(annee);
     }
 
     @Test
@@ -273,32 +275,32 @@ public class REAttestationsFiscalesUtilsTest {
         // Décision avant l'année, rente débutant avant l'année mais avec rétro
         rente1.setDateDebutDroit("11.2010");
         rente1.setDateDecision("31.12.2010");
-        Assert.assertFalse(REAttestationsFiscalesUtils.hasRetroDansAnneeFiscale(famille, annee));
+        Assert.assertFalse(REAttestationsFiscalesUtils.hasRetro(famille, anneeAsInteger));
 
         // Décision dans l'année, rente débutant avant l'année (donc rétro)
         rente1.setDateDebutDroit("12.2010");
         rente1.setDateDecision("01.01.2011");
-        Assert.assertTrue(REAttestationsFiscalesUtils.hasRetroDansAnneeFiscale(famille, annee));
+        Assert.assertTrue(REAttestationsFiscalesUtils.hasRetro(famille, anneeAsInteger));
 
         // Décision dans l'année, rente débutant dans l'année avec rétro
         rente1.setDateDebutDroit("01.2011");
         rente1.setDateDecision("01.02.2011");
-        Assert.assertTrue(REAttestationsFiscalesUtils.hasRetroDansAnneeFiscale(famille, annee));
+        Assert.assertTrue(REAttestationsFiscalesUtils.hasRetro(famille, anneeAsInteger));
 
         // Décision dans l'année, rente débutant dans le même mois que la décision -> rétro
         rente1.setDateDebutDroit("02.2011");
         rente1.setDateDecision("01.02.2011");
-        Assert.assertTrue(REAttestationsFiscalesUtils.hasRetroDansAnneeFiscale(famille, annee));
+        Assert.assertTrue(REAttestationsFiscalesUtils.hasRetro(famille, anneeAsInteger));
 
         // Décision dans l'année, rente débutant dans l'année, sans rétro
         rente1.setDateDebutDroit("03.2011");
         rente1.setDateDecision("01.02.2011");
-        Assert.assertFalse(REAttestationsFiscalesUtils.hasRetroDansAnneeFiscale(famille, annee));
+        Assert.assertFalse(REAttestationsFiscalesUtils.hasRetro(famille, anneeAsInteger));
 
         // Décision dans l'année suivante, rente dans l'année, avec rétro
         rente1.setDateDebutDroit("10.2011");
         rente1.setDateDecision("01.01.2012");
-        Assert.assertFalse(REAttestationsFiscalesUtils.hasRetroDansAnneeFiscale(famille, annee));
+        Assert.assertFalse(REAttestationsFiscalesUtils.hasRetro(famille, anneeAsInteger));
     }
 
     @Test

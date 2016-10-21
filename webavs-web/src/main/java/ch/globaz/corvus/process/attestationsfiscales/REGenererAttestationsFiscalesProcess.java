@@ -1,5 +1,39 @@
 package ch.globaz.corvus.process.attestationsfiscales;
 
+import globaz.corvus.api.basescalcul.IREPrestationDue;
+import globaz.corvus.application.REApplication;
+import globaz.corvus.db.attestationsFiscales.REDonneesPourAttestationsFiscales;
+import globaz.corvus.db.attestationsFiscales.REDonneesPourAttestationsFiscalesManager;
+import globaz.corvus.db.rentesaccordees.REPrestationDue;
+import globaz.corvus.db.rentesaccordees.REPrestationsDuesManager;
+import globaz.corvus.excel.REListeExcelAttestationsFiscalesNonSorties;
+import globaz.corvus.exceptions.RETechnicalException;
+import globaz.corvus.topaz.REAttestationsFiscalesOO;
+import globaz.corvus.utils.REPmtMensuel;
+import globaz.framework.bean.FWViewBeanInterface;
+import globaz.framework.util.FWMessage;
+import globaz.framework.util.FWMessageFormat;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BPreparedStatement;
+import globaz.globall.db.BProcess;
+import globaz.globall.db.BProcessLauncher;
+import globaz.globall.db.BSession;
+import globaz.globall.db.GlobazJobQueue;
+import globaz.jade.admin.JadeAdminServiceLocatorProvider;
+import globaz.jade.client.util.JadeConversionUtil;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.Jade;
+import globaz.jade.context.JadeContext;
+import globaz.jade.context.JadeContextImplementation;
+import globaz.jade.context.JadeThreadActivator;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
+import globaz.pyxis.adresse.formater.TIAdresseFormater;
+import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
+import globaz.pyxis.api.ITITiers;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,36 +52,6 @@ import ch.globaz.jade.business.models.Langues;
 import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
 import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
 import ch.globaz.prestation.domaine.CodePrestation;
-import globaz.corvus.api.basescalcul.IREPrestationDue;
-import globaz.corvus.application.REApplication;
-import globaz.corvus.db.attestationsFiscales.REDonneesPourAttestationsFiscales;
-import globaz.corvus.db.attestationsFiscales.REDonneesPourAttestationsFiscalesManager;
-import globaz.corvus.db.rentesaccordees.REPrestationDue;
-import globaz.corvus.db.rentesaccordees.REPrestationsDuesManager;
-import globaz.corvus.excel.REListeExcelAttestationsFiscalesNonSorties;
-import globaz.corvus.topaz.REAttestationsFiscalesOO;
-import globaz.corvus.utils.REPmtMensuel;
-import globaz.framework.bean.FWViewBeanInterface;
-import globaz.framework.util.FWMessage;
-import globaz.framework.util.FWMessageFormat;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BProcessLauncher;
-import globaz.globall.db.BSession;
-import globaz.globall.db.GlobazJobQueue;
-import globaz.jade.admin.JadeAdminServiceLocatorProvider;
-import globaz.jade.client.util.JadeConversionUtil;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeContext;
-import globaz.jade.context.JadeContextImplementation;
-import globaz.jade.context.JadeThreadActivator;
-import globaz.prestation.interfaces.tiers.PRTiersHelper;
-import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
-import globaz.pyxis.adresse.formater.TIAdresseFormater;
-import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
-import globaz.pyxis.api.ITITiers;
-import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 
 public class REGenererAttestationsFiscalesProcess extends BProcess {
 
@@ -55,23 +59,33 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
      *
      */
     private static final long serialVersionUID = 1L;
+    private String annee;
+    private List<REDonneesPourAttestationsFiscales> attestationInvalides;
+    private List<JadeCodeSysteme> codesSystemesGenresRentes;
+    private String dateImpression;
+    private boolean isSendToGed;
+    private String NssA;
+    private String NssDe;
+
     private REAbstractAnalyseurLot analyseurLot1;
     private REAbstractAnalyseurLot analyseurLot2;
     private REAbstractAnalyseurLot analyseurLot3;
     private REAbstractAnalyseurLot analyseurLot4;
-    private String annee;
-    List<REDonneesPourAttestationsFiscales> attestationInvalides;
-    private List<JadeCodeSysteme> codesSystemesGenresRentes;
-    private String dateImpression;
+    private REAbstractAnalyseurLot analyseurLot5;
+    private REAbstractAnalyseurLot analyseurLot6;
+    private REAbstractAnalyseurLot analyseurLot7;
+    private REAbstractAnalyseurLot analyseurLot8;
+
     private List<REFamillePourAttestationsFiscales> famillesDuLot1;
     private List<REFamillePourAttestationsFiscales> famillesDuLot2;
     private List<REFamillePourAttestationsFiscales> famillesDuLot3;
     private List<REFamillePourAttestationsFiscales> famillesDuLot4;
+    private List<REFamillePourAttestationsFiscales> famillesDuLot5;
+    private List<REFamillePourAttestationsFiscales> famillesDuLot6;
+    private List<REFamillePourAttestationsFiscales> famillesDuLot7;
+    private List<REFamillePourAttestationsFiscales> famillesDuLot8;
     private List<REFamillePourAttestationsFiscales> famillesSansLot;
     private List<REFamillePourAttestationsFiscales> famillesAvecRentesAPIOnly;
-    private boolean isSendToGed;
-    private String NssA;
-    private String NssDe;
 
     public REGenererAttestationsFiscalesProcess() {
         super();
@@ -80,6 +94,11 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         famillesDuLot2 = new ArrayList<REFamillePourAttestationsFiscales>();
         famillesDuLot3 = new ArrayList<REFamillePourAttestationsFiscales>();
         famillesDuLot4 = new ArrayList<REFamillePourAttestationsFiscales>();
+        famillesDuLot5 = new ArrayList<REFamillePourAttestationsFiscales>();
+        famillesDuLot6 = new ArrayList<REFamillePourAttestationsFiscales>();
+        famillesDuLot7 = new ArrayList<REFamillePourAttestationsFiscales>();
+        famillesDuLot8 = new ArrayList<REFamillePourAttestationsFiscales>();
+
         famillesSansLot = new ArrayList<REFamillePourAttestationsFiscales>();
         famillesAvecRentesAPIOnly = new ArrayList<REFamillePourAttestationsFiscales>();
         codesSystemesGenresRentes = new ArrayList<JadeCodeSysteme>();
@@ -99,6 +118,10 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
             analyseurLot2 = new REAnalyseurLot2(annee);
             analyseurLot3 = new REAnalyseurLot3(annee);
             analyseurLot4 = new REAnalyseurLot4(annee);
+            analyseurLot5 = new REAnalyseurLot5(annee);
+            analyseurLot6 = new REAnalyseurLot6(annee);
+            analyseurLot7 = new REAnalyseurLot7(annee);
+            analyseurLot8 = new REAnalyseurLot8(annee);
 
             JadeCodeSystemeService codeSystemeService = JadeBusinessServiceLocator.getCodeSystemeService();
             codesSystemesGenresRentes = codeSystemeService.getFamilleCodeSysteme("REGENRPRST");
@@ -106,25 +129,51 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
             List<REFamillePourAttestationsFiscales> familles = recupererEtAgregerLesDonness();
             for (REFamillePourAttestationsFiscales uneFamille : familles) {
 
+                // Les familles avec que des rentes API sont écartées dans un lot spécifique -> pas d'attestation pour
+                // ces gens la !
                 if (hasOnlyRenteAPI(uneFamille)) {
                     famillesAvecRentesAPIOnly.add(uneFamille);
                     continue;
                 }
 
                 // les familles sans adresses de courrier sortent sur la feuille Excel des non sorties
-                if (!REAttestationsFiscalesUtils.hasTiersCorrespondanceAvecAdresseValide(uneFamille, annee)) {
+                RETiersPourAttestationsFiscales tiersPourCorrespondance = REAttestationsFiscalesUtils
+                        .getTiersCorrespondanceAvecAdresseValide(uneFamille, annee);
+
+                if (tiersPourCorrespondance == null) {
                     famillesSansLot.add(uneFamille);
                     continue;
+                } else {
+                    uneFamille.setTiersPourCorrespondance(tiersPourCorrespondance);
                 }
 
+                // Les lots 1 à 4 ne contiennent pas de rétroactif
                 if (analyseurLot1.isFamilleDansLot(uneFamille)) {
+                    uneFamille.setHasRetroactif(false);
                     famillesDuLot1.add(uneFamille);
                 } else if (analyseurLot2.isFamilleDansLot(uneFamille)) {
+                    uneFamille.setHasRetroactif(false);
                     famillesDuLot2.add(uneFamille);
                 } else if (analyseurLot3.isFamilleDansLot(uneFamille)) {
+                    uneFamille.setHasRetroactif(false);
                     famillesDuLot3.add(uneFamille);
                 } else if (analyseurLot4.isFamilleDansLot(uneFamille)) {
+                    uneFamille.setHasRetroactif(false);
                     famillesDuLot4.add(uneFamille);
+                }
+                // Les lots 5 à 8 contiennent du rétroactif
+                else if (analyseurLot5.isFamilleDansLot(uneFamille)) {
+                    uneFamille.setHasRetroactif(true);
+                    famillesDuLot5.add(uneFamille);
+                } else if (analyseurLot6.isFamilleDansLot(uneFamille)) {
+                    uneFamille.setHasRetroactif(true);
+                    famillesDuLot6.add(uneFamille);
+                } else if (analyseurLot7.isFamilleDansLot(uneFamille)) {
+                    uneFamille.setHasRetroactif(true);
+                    famillesDuLot7.add(uneFamille);
+                } else if (analyseurLot8.isFamilleDansLot(uneFamille)) {
+                    uneFamille.setHasRetroactif(true);
+                    famillesDuLot8.add(uneFamille);
                 } else {
                     famillesSansLot.add(uneFamille);
                 }
@@ -142,14 +191,14 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
     /**
      * Test si la famille ne possède que des rentes de type API
-     *
+     * 
      * @param famille
      * @return <code>true</code> si la famille ne possède que des rentes de type API
      */
     private boolean hasOnlyRenteAPI(REFamillePourAttestationsFiscales famille) {
         for (RERentePourAttestationsFiscales uneRente : famille.getRentesDeLaFamille()) {
-            CodePrestation codePrestation = CodePrestation
-                    .getCodePrestation(Integer.parseInt(uneRente.getCodePrestation()));
+            CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(uneRente
+                    .getCodePrestation()));
             if (codePrestation.isAPI()) {
                 continue;
             } else {
@@ -239,69 +288,67 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
             message.append("\n\n");
             message.append(getSession().getLabel("ATTESTATION_FISCALE_PAS_ATTESTATION_NON_SORTIE"));
             message.append("\n\n");
-            getMemoryLog().logMessage(message.toString(), FWMessage.INFORMATION,
-                    REGenererAttestationsFiscalesProcess.class.getSimpleName());
+            logMailInfo(message.toString());
             message = new StringBuilder();
         }
 
-        message.append("\n\n");
+        logMailInfo("\n\n");
 
-        message.append(
-                FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_1"), famillesDuLot1.size()))
-                .append("\n");
-        message.append(
-                FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_2"), famillesDuLot2.size()))
-                .append("\n");
-        message.append(
-                FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_3"), famillesDuLot3.size()))
-                .append("\n");
-        message.append(
-                FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_4"), famillesDuLot4.size()))
-                .append("\n");
+        message = new StringBuilder();
 
-        message.append(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_REMARQUE")).append("\n");
+        logMailInfo(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_1"),
+                famillesDuLot1.size())
+                + "\n");
+        logMailInfo(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_2"),
+                famillesDuLot2.size())
+                + "\n");
+        logMailInfo(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_3"),
+                famillesDuLot3.size())
+                + "\n");
+        logMailInfo(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_4"),
+                famillesDuLot4.size())
+                + "\n");
+        logMailInfo(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_5"),
+                famillesDuLot5.size())
+                + "\n");
+        logMailInfo(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_6"),
+                famillesDuLot6.size())
+                + "\n");
+        logMailInfo(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_7"),
+                famillesDuLot7.size())
+                + "\n");
+        logMailInfo(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_8"),
+                famillesDuLot8.size())
+                + "\n");
 
-        getMemoryLog().logMessage(message.toString(), FWMessage.INFORMATION,
-                REGenererAttestationsFiscalesProcess.class.getSimpleName());
+        logMailInfo(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_REMARQUE") + "\n");
+
+        logMailInfo(message.toString());
         message = new StringBuilder(intro);
 
         message.append("\n\n");
-        Integer total = famillesDuLot1.size() + famillesDuLot2.size() + famillesDuLot3.size() + famillesDuLot4.size();
+        Integer total = famillesDuLot1.size() + famillesDuLot2.size() + famillesDuLot3.size() + famillesDuLot4.size()
+                + famillesDuLot5.size() + famillesDuLot6.size() + famillesDuLot7.size() + +famillesDuLot8.size();
         message.append(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_TOTAL"), total, annee))
                 .append("\n");
         message.append(
                 FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_SANS_LOT"),
-                famillesSansLot.size())).append("\n");
+                        famillesSansLot.size())).append("\n");
 
-        getMemoryLog().logMessage(message.toString(), FWMessage.INFORMATION,
-                REGenererAttestationsFiscalesProcess.class.getSimpleName());
+        logMailInfo(message.toString());
 
         // descriptions des lots
-        message = new StringBuilder();
-        message.append("\n").append(getSession().getLabel("ATTESTATION_FISCALE_DESCRIPTION_LOT_1")).append("\n");
-        getMemoryLog().logMessage(message.toString(), FWMessage.INFORMATION,
-                REGenererAttestationsFiscalesProcess.class.getSimpleName());
-
-        message = new StringBuilder();
-        message.append("\n").append(getSession().getLabel("ATTESTATION_FISCALE_DESCRIPTION_LOT_2")).append("\n");
-        getMemoryLog().logMessage(message.toString(), FWMessage.INFORMATION,
-                REGenererAttestationsFiscalesProcess.class.getSimpleName());
-
-        message = new StringBuilder();
-        message.append("\n").append(getSession().getLabel("ATTESTATION_FISCALE_DESCRIPTION_LOT_3")).append("\n");
-        getMemoryLog().logMessage(message.toString(), FWMessage.INFORMATION,
-                REGenererAttestationsFiscalesProcess.class.getSimpleName());
-
-        message = new StringBuilder();
-        message.append("\n").append(getSession().getLabel("ATTESTATION_FISCALE_DESCRIPTION_LOT_4")).append("\n");
-        getMemoryLog().logMessage(message.toString(), FWMessage.INFORMATION,
-                REGenererAttestationsFiscalesProcess.class.getSimpleName());
+        for (int ctr = 1; ctr < 9; ctr++) {
+            message = new StringBuilder();
+            message.append("\n").append(getSession().getLabel("ATTESTATION_FISCALE_DESCRIPTION_LOT_" + ctr))
+                    .append("\n");
+            logMailInfo(message.toString());
+        }
 
         message = new StringBuilder();
         message.append("\n").append(getSession().getLabel("ATTESTATION_FISCALE_DESCRIPTION_LOT_REMARQUE")).append("\n");
 
-        getMemoryLog().logMessage(message.toString(), FWMessage.INFORMATION,
-                REGenererAttestationsFiscalesProcess.class.getSimpleName());
+        logMailInfo(message.toString());
 
         // / On vas insérer dans le mail la liste des attestations avec un code
         // system rente invalide
@@ -313,9 +360,18 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                             + attestation.getNumeroAvsTiersBaseCalcul());
 
             message.append("\n");
-            getMemoryLog().logMessage(message.toString(), FWMessage.INFORMATION,
-                    REGenererAttestationsFiscalesProcess.class.getSimpleName());
+            logMailInfo(message.toString());
         }
+    }
+
+    /**
+     * Ajoute une ligne d'info dans le mail
+     * 
+     * @param message
+     */
+    private void logMailInfo(String message) {
+        getMemoryLog().logMessage(message, FWMessage.INFORMATION,
+                REGenererAttestationsFiscalesProcess.class.getSimpleName());
     }
 
     private String getAdressePaiementFormatee(RETiersPourAttestationsFiscales unTiersBeneficiaire) {
@@ -512,6 +568,10 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         toutesLesFamillesDansUnLot.addAll(famillesDuLot2);
         toutesLesFamillesDansUnLot.addAll(famillesDuLot3);
         toutesLesFamillesDansUnLot.addAll(famillesDuLot4);
+        toutesLesFamillesDansUnLot.addAll(famillesDuLot5);
+        toutesLesFamillesDansUnLot.addAll(famillesDuLot6);
+        toutesLesFamillesDansUnLot.addAll(famillesDuLot7);
+        toutesLesFamillesDansUnLot.addAll(famillesDuLot8);
         return toutesLesFamillesDansUnLot;
     }
 
@@ -544,16 +604,54 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         return GlobazJobQueue.READ_LONG;
     }
 
+    /**
+     * Lance un processus OpenOffice par langue
+     * 
+     * @throws Exception
+     */
     private void lancerProcessusOpenOffice() throws Exception {
+
+        // Récupération de la date du dernier paiement mensuel
+        String dateDernierPmtMensuel = REPmtMensuel.getDateDernierPmt(getSession());
+        if (JadeStringUtil.isBlankOrZero(dateDernierPmtMensuel)
+                || REPmtMensuel.DATE_NON_TROUVEE_POUR_DERNIER_PAIEMENT.equals(dateDernierPmtMensuel)) {
+            String message = getSession().getLabel("ERREUR_IMPOSSIBLE_RETROUVER_DATE_DERNIER_PAIEMENT");
+            throw new RETechnicalException(message);
+        }
+
+        // On récupère toutes les familles dans un Set
+        SortedSet<REFamillePourAttestationsFiscales> toutesLesFamilles = getToutesLesFamillesDansLots();
+
+        Map<String, SortedSet<REFamillePourAttestationsFiscales>> famillesParLangues = new HashMap<String, SortedSet<REFamillePourAttestationsFiscales>>();
+        // On boucle sur toutes les familles et on les tries par la langue du tiers de correspondance
+        for (REFamillePourAttestationsFiscales famille : toutesLesFamilles) {
+            String isoLangue = famille.getTiersPourCorrespondance().getCodeIsoLangue();
+
+            if (!famillesParLangues.containsKey(isoLangue)) {
+                famillesParLangues.put(isoLangue, new TreeSet<REFamillePourAttestationsFiscales>());
+            }
+            famillesParLangues.get(isoLangue).add(famille);
+        }
+
+        // Pour chacune des langues on lance un nouveau processus open office
+        for (String codeIsoLangue : famillesParLangues.keySet()) {
+            REAttestationsFiscalesOO attestationsFiscalesOO = creerProcessOO();
+            attestationsFiscalesOO.setDateDernierPaiement(dateDernierPmtMensuel);
+            attestationsFiscalesOO.setCodeIsoLangue(codeIsoLangue);
+            attestationsFiscalesOO.setFamilles(famillesParLangues.get(codeIsoLangue));
+            BProcessLauncher.startJob(attestationsFiscalesOO);
+        }
+
+    }
+
+    private REAttestationsFiscalesOO creerProcessOO() {
         REAttestationsFiscalesOO attestationsFiscalesOO = new REAttestationsFiscalesOO();
         attestationsFiscalesOO.setSession(getSession());
         attestationsFiscalesOO.setAdresseEmail(getEMailAddress());
         attestationsFiscalesOO.setAnnee(getAnnee());
-        attestationsFiscalesOO.setDateDernierPaiement(REPmtMensuel.getDateDernierPmt(getSession()));
         attestationsFiscalesOO.setDateImpression(getDateImpression());
-        attestationsFiscalesOO.setFamilles(getToutesLesFamillesDansLots());
         attestationsFiscalesOO.setIsSendToGed(getIsSendToGed());
-        BProcessLauncher.startJob(attestationsFiscalesOO);
+        return attestationsFiscalesOO;
     }
 
     private List<REFamillePourAttestationsFiscales> recupererEtAgregerLesDonness() throws Exception {
@@ -588,11 +686,13 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
         // TODO supprimer cette boucle inutile, les données sont à double
         // et cause des problèmes à la génération des docs si une fraction rentes est invalides...
-        for (int i = 0; i < manager.size(); i++) {
-            attestationValides.add((REDonneesPourAttestationsFiscales) manager.get(i));
-        }
+        // for (int i = 0; i < manager.size(); i++) {
+        // attestationValides.add((REDonneesPourAttestationsFiscales) manager.get(i));
+        // }
 
-        return transformer(attestationValides, annee);
+        Set<String> listeBeneficiairePCDecembre = rechercherLesPcs();
+
+        return transformer(attestationValides, annee, listeBeneficiairePCDecembre);
     }
 
     public void setAnnee(String annee) {
@@ -615,6 +715,49 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         NssDe = nssDe;
     }
 
+    private Set<String> rechercherLesPcs() {
+        BPreparedStatement statement = null;
+        Set<String> set = new HashSet<String>();
+        try {
+            statement = new BPreparedStatement(getSession().getCurrentThreadTransaction());
+            statement.prepareStatement(creerRequeteRecherchePCs(getAnneeAsInteger()));
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                String idTiers = String.valueOf(resultSet.getInt(1));
+                if (!JadeStringUtil.isBlankOrZero(idTiers)) {
+                    set.add(idTiers);
+                }
+            }
+
+        } catch (Exception e) {
+            // What can i do with this here ?! Nothing, so y re-throw them
+            throw new IllegalStateException("Exception occur when executing request : " + e.toString(), e);
+        } finally {
+            if (statement != null) {
+                statement.closePreparedStatement();
+            }
+        }
+        return set;
+    }
+
+    private String creerRequeteRecherchePCs(int annee) {
+        StringBuilder request = new StringBuilder();
+        String schema = Jade.getInstance().getDefaultJdbcSchema();
+        request.append("SELECT distinct(ZTITBE)");
+        request.append(" from " + schema + ".REPRACC AS repraccPC");
+        request.append(" INNER JOIN " + schema + ".PCPCACC AS pcAccordee ON");
+        request.append(" (");
+        request.append("    repraccPC.ZTIPRA = pcAccordee.CUIPRA OR (repraccPC.ZTIPRA = pcAccordee.CUIPRC and pcAccordee.CUIPRC<>0)");
+        request.append(" )");
+        request.append(" AND pcAccordee.CUTETA = 64029002");
+        request.append(" AND repraccPC.ZTTGEN = 52849002");
+        request.append(" AND pcAccordee.CUBSUP <> 1");
+        request.append(" AND pcAccordee.CUDDEB <" + String.valueOf(++annee) + "00"); // année + 1
+        request.append(" AND (pcAccordee.CUDFIN is null OR pcAccordee.CUDFIN =0 OR pcAccordee.CUDFIN = " + annee
+                + "12)");
+        return request.toString();
+    }
+
     /**
      * <p>
      * Découpe l'attestation en plusieurs si des rentes de survivants de cette famille sont payées à des endroits
@@ -625,7 +768,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
      * {@link REFamillePourAttestationsFiscales#hasPlusieursAdressePaiement()} sera à <code>true</code> afin qu'une
      * phrase supplémentaire soit imprimée dans l'attestation fiscale de cette famille.
      * </p>
-     *
+     * 
      * @param values
      * @return
      */
@@ -685,10 +828,14 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         return familles;
     }
 
+    private int getAnneeAsInteger() {
+        return Integer.valueOf(annee);
+    }
+
     /**
      * Regroupe les données brutes par tiers requérant (tiers auquel l'attestation fiscale sera envoyée) et ajoute tous
      * les tiers bénéficiaires (et leurs rentes) liés à ce tiers requérant (par ID tiers de la base de calcul)
-     *
+     * 
      * @param donnees
      *            les données brutes chargées par {@link REDonneesPourAttestationsFiscalesManager}
      * @return les données regroupées par tiers requérant
@@ -697,7 +844,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
      *             titre du tiers requérant
      */
     public List<REFamillePourAttestationsFiscales> transformer(List<REDonneesPourAttestationsFiscales> donnees,
-            String annee) throws Exception {
+            String annee, Set<String> listeBeneficiairePCDecembre) throws Exception {
         Map<String, REFamillePourAttestationsFiscales> famillesParIdTiersBaseCalcul = new HashMap<String, REFamillePourAttestationsFiscales>();
 
         for (REDonneesPourAttestationsFiscales uneDonnee : donnees) {
@@ -706,7 +853,13 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                 uneFamille = famillesParIdTiersBaseCalcul.get(uneDonnee.getIdTiersBaseCalcul());
             } else {
                 uneFamille = new REFamillePourAttestationsFiscales();
-                uneFamille.setTiersRequerant(getTiersBaseCalcul(uneDonnee));
+                RETiersPourAttestationsFiscales tiersRequerant = getTiersBaseCalcul(uneDonnee);
+                // ADD
+                if (listeBeneficiairePCDecembre.contains(tiersRequerant.getIdTiers())) {
+                    tiersRequerant.setHasPcEnDecembre(true);
+                }
+                // ADD
+                uneFamille.setTiersRequerant(tiersRequerant);
                 famillesParIdTiersBaseCalcul.put(uneDonnee.getIdTiersBaseCalcul(), uneFamille);
             }
 
@@ -715,6 +868,12 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                 unTiersBeneficaire = uneFamille.getMapTiersBeneficiaire().get(uneDonnee.getIdTiersBeneficiaire());
             } else {
                 unTiersBeneficaire = getTiersBeneficiaire(uneDonnee);
+                // ADD
+                if (listeBeneficiairePCDecembre.contains(unTiersBeneficaire.getIdTiers())) {
+                    unTiersBeneficaire.setHasPcEnDecembre(true);
+                }
+                // ADD
+
                 uneFamille.getMapTiersBeneficiaire().put(uneDonnee.getIdTiersBeneficiaire(), unTiersBeneficaire);
             }
 

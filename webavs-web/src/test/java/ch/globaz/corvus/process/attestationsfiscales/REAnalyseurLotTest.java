@@ -1,14 +1,13 @@
 package ch.globaz.corvus.process.attestationsfiscales;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import ch.globaz.prestation.domaine.constantes.DomaineCodePrestation;
-import junit.framework.Assert;
 
 /**
  * Test pour les analyseurs de lots dans la génération des attestations fiscales
- *
+ * 
  * @author PBA
  */
 public class REAnalyseurLotTest {
@@ -17,20 +16,34 @@ public class REAnalyseurLotTest {
     private REAbstractAnalyseurLot analyseurLot2;
     private REAbstractAnalyseurLot analyseurLot3;
     private REAbstractAnalyseurLot analyseurLot4;
+    private REAbstractAnalyseurLot analyseurLot5;
+    private REAbstractAnalyseurLot analyseurLot6;
+    private REAbstractAnalyseurLot analyseurLot7;
+    private REAbstractAnalyseurLot analyseurLot8;
     private REFamillePourAttestationsFiscales famille;
     private RERentePourAttestationsFiscales rente1;
     private RETiersPourAttestationsFiscales tiers1;
 
     @Before
     public void setUp() {
-        new REAbstractAnalyseurLot("2011", false, DomaineCodePrestation.AI, DomaineCodePrestation.SURVIVANT,
-                DomaineCodePrestation.VIEILLESSE) {
-        };
+        // new REAbstractAnalyseurLot1a4("2011", false, DomaineCodePrestation.AI, DomaineCodePrestation.SURVIVANT,
+        // DomaineCodePrestation.VIEILLESSE) {
+        //
+        // @Override
+        // public int getNumeroAnalyseur() {
+        // // TODO Auto-generated method stub
+        // return 0;
+        // }
+        // };
 
         analyseurLot1 = new REAnalyseurLot1("2011");
         analyseurLot2 = new REAnalyseurLot2("2011");
         analyseurLot3 = new REAnalyseurLot3("2011");
         analyseurLot4 = new REAnalyseurLot4("2011");
+        analyseurLot5 = new REAnalyseurLot5("2011");
+        analyseurLot6 = new REAnalyseurLot6("2011");
+        analyseurLot7 = new REAnalyseurLot7("2011");
+        analyseurLot8 = new REAnalyseurLot8("2011");
 
         famille = new REFamillePourAttestationsFiscales();
 
