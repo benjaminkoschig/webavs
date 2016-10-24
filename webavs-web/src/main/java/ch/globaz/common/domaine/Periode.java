@@ -2,6 +2,7 @@ package ch.globaz.common.domaine;
 
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.prestation.utils.PRDateUtils;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -1368,5 +1369,13 @@ public class Periode implements Comparable<Periode>, Serializable {
             return true;
         }
         return false;
+    }
+
+    public Integer countNbDaysIn() {
+        return PRDateUtils.getNbDayBetween2(dateDebut, dateFin);
+    }
+
+    public Integer countNbDays() {
+        return PRDateUtils.getNbDayBetween2(dateDebut, dateFin) + 1;
     }
 }

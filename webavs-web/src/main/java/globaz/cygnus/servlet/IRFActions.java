@@ -33,6 +33,7 @@ public interface IRFActions {
     public static final String ACTION_GENERER_DOCUMENT = "cygnus.documents.genererDocument";
     public static final String ACTION_IMPORTER_AVASAD = "cygnus.process.importerAvasad";
     public static final String ACTION_IMPORTER_FINANCEMENT_SOIN = "cygnus.process.importerFinancementSoin";
+    public static final String ACTION_IMPORTER_SOIN_A_DOMICILE = "cygnus.process.importerSoinADomicile";
 
     public static final String ACTION_IMPUTER_SUR_QD = "cygnus.demandes.imputerSurQd";
 

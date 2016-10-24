@@ -12,6 +12,10 @@ import java.util.Locale;
  * 
  * @author Arnaud Geiser (AGE) | Créé le 17 déc. 2013
  */
+/**
+ * @author dma
+ * 
+ */
 public class Montant {
     private static final long serialVersionUID = 1L;
 
@@ -370,6 +374,19 @@ public class Montant {
      */
     public Montant normalize() {
         return new Montant(getBigDecimalNormalisee());
+    }
+
+    /**
+     * Détermine si le montant a été normalisé.
+     * Regarde si on à un centime qui est égale à 5 ou 0;
+     */
+    public boolean isNormalized() {
+        BigDecimal increment = new BigDecimal("0.05");
+        BigDecimal decimal = currency.abs().setScale(2, BigDecimal.ROUND_FLOOR).remainder(BigDecimal.ONE);
+        if (decimal.compareTo(BigDecimal.ZERO) == 0 || decimal.compareTo(increment) == 0) {
+            return true;
+        }
+        return false;
     }
 
     private BigDecimal getBigDecimalNormalisee() {

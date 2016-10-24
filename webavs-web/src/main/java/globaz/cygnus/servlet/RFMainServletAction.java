@@ -100,6 +100,8 @@ public class RFMainServletAction {
                 .put(IRFActions.ACTION_ADAPTATIONS_JOURNALIERE, RFAdaptationsJournaliereAction.class);
         RFMainServletAction.ACTIONS.put(IRFActions.ACTION_IMPORTER_FINANCEMENT_SOIN,
                 RFImporterFinancementSoinAction.class);
+        RFMainServletAction.ACTIONS
+                .put(IRFActions.ACTION_IMPORTER_SOIN_A_DOMICILE, RFImporterSoinADomicileAction.class);
 
         RFMainServletAction.ACTIONS.put(IRFActions.ACTION_LISTE_RECAPITULATIVE_PAIEMENTS,
                 RFListeRecapitulativePaiementsAction.class);

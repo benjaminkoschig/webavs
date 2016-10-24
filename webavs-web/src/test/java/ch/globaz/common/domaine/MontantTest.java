@@ -366,4 +366,31 @@ public class MontantTest {
         assertEquals("0.00", montant.toStringFormat());
     }
 
+    @Test
+    public void testIsNormalized() throws Exception {
+        Montant montant = new Montant("5.056");
+        assertEquals(true, montant.isNormalized());
+        montant = new Montant("-5.056");
+        assertEquals(true, montant.isNormalized());
+        montant = new Montant("5.054");
+        assertEquals(true, montant.isNormalized());
+        montant = new Montant("-5.054");
+        assertEquals(true, montant.isNormalized());
+        montant = new Montant("5.00");
+        assertEquals(true, montant.isNormalized());
+        montant = new Montant(1);
+        assertEquals(true, montant.isNormalized());
+        montant = new Montant(0);
+        assertEquals(true, montant.isNormalized());
+        montant = new Montant("5.01");
+        assertEquals(false, montant.isNormalized());
+        montant = new Montant("5.245");
+        assertEquals(false, montant.isNormalized());
+        montant = new Montant("-5.245");
+        assertEquals(false, montant.isNormalized());
+        montant = new Montant("5.265");
+        assertEquals(false, montant.isNormalized());
+        montant = new Montant("-5.265");
+        assertEquals(false, montant.isNormalized());
+    }
 }

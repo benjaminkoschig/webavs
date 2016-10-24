@@ -62,6 +62,69 @@
 	</bean>
 	<!--  FIN Processus de traitement du financements des soins -->
 	
+	
+		<!--  Processus de traitement du financements des soins -->
+	<bean id="Cygnus.import.soin.domicile"
+		class="ch.globaz.jade.process.business.conf.JadeProcessDefinitionBean">
+		<property name="classNamePopulation" value="globaz.cygnus.process.soinAdomicile.RFImportSoinADomicilePopulation" />	
+		<property name="description">
+			<map>
+				<entry key="FR">
+					<value>
+						<![CDATA[<h1>Import des financement soins</h1>
+	
+						   ]]>
+					</value>
+				</entry>
+			</map>
+		</property>
+		
+				
+		<!--  lien pour entites dans applis -->
+		<property name="urlEntite" value="" />	
+		
+		<!--  jsp pour passer param -->
+		<property name="urlProperties" value="pegasus?pegasus.process.import.afficher" />	
+		
+		<property name="displayValue">	
+			<map>
+				<entry key="1">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessDisplayValue">
+						<property name="libelle" value="LigneCSV" />
+						<property name="keyValue" value="value1" />
+						<property name="displayInCSV" value="true" />
+						<property name="displayInHtml" value="true" />
+						<property name="width" value="140px" />
+						<property name="search" value="true" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	
+		
+		<property name="steps">
+			<map>
+				<entry key="1">
+					<bean class="ch.globaz.jade.process.business.conf.JadeProcessStepBean">
+						<property name="classNameStep" value="globaz.cygnus.process.soinAdomicile.RFImportSoinADomicileStep1" />
+						<property name="hasRollback" value="true" />
+						<property name="nbThread" value="1" />
+						<property name="order" value="1" />
+						<property name="isOptional" value="false" />
+						<property name="description">
+							<map>
+								<entry key="FR" value="Importation des soins" />
+								<entry key="DE" value="Importation des soins" />
+								<entry key="IT" value="Importation des soins" />
+							</map>
+						</property>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	<!--  FIN Processus de traitement du financements des soins -->
+	
 	<!--  Processus de traitement des adaptations annuelle-->
 	<bean id="Cygnus.adaptationAnnuelle"
 		class="ch.globaz.jade.process.business.conf.JadeProcessDefinitionBean">

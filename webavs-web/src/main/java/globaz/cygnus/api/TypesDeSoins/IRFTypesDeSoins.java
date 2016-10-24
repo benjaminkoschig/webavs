@@ -83,6 +83,8 @@ public interface IRFTypesDeSoins {
     public static final String st_2_REGIME_ALIMENTAIRE = "66000203";
     public static final String st_2_REGIME_ALIMENTAIRE_DIABETIQUE = "66000304";
     public static final String st_20_FINANCEMENT_DES_SOINS = "66000305";
+    public static final String st_25_SOINS_A_DOMICILE = "66000454";
+
     public static final String st_3_CHAISES_PERCEES = "66000204";
     public static final String st_3_CORSET_ORTHOPEDIQUE = "66000206";
     public static final String st_3_FRAIS_D_ENDOPROTHESES = "66000209";

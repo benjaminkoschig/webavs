@@ -1,20 +1,26 @@
 package globaz.cygnus.service;
 
 import globaz.cygnus.mappingXmlml.RFXmlmlMappingLogImport;
+import globaz.cygnus.process.demande.LigneImport;
 import globaz.cygnus.process.financementSoin.CellulesExcelEnum;
 import globaz.cygnus.process.financementSoin.NSS;
 import globaz.cygnus.process.financementSoin.RFLigneFichierExcel;
+import globaz.cygnus.process.soinAdomicile.LigneFichier;
 import globaz.cygnus.utils.RFExcelmlUtils;
 import globaz.cygnus.utils.RFXmlmlContainer;
 import globaz.globall.db.BSession;
 import globaz.jade.smtp.JadeSmtpClient;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import ch.globaz.common.domaine.Montant;
+import com.google.common.base.Throwables;
 
 public class RFimportService implements Comparable<RFLigneFichierExcel> {
 
@@ -125,7 +131,7 @@ public class RFimportService implements Comparable<RFLigneFichierExcel> {
         for (RFLigneFichierExcel ligne : listeTrieeParNumeroDeLigne) {
             if (ligne.getCellulesEnErreur().size() == 0) {
 
-                // recuperation du nss
+                // Récupération du nss
                 nssTiers = ligne.getNumNss();
 
                 // Addition chaque montant pour récapitulatif en bas de mail
@@ -171,12 +177,29 @@ public class RFimportService implements Comparable<RFLigneFichierExcel> {
 
         for (NSS keyNss : mapLigneEnTraitement.keySet()) {
             for (RFLigneFichierExcel ligne : mapLigneEnTraitement.get(keyNss)) {
-
                 listeTriees.add(ligne);
-
             }
         }
+        Collections.sort(listeTriees);
 
+        return listeTriees;
+    }
+
+    /**
+     * Methode pour ordrer les entités par numéro de ligne.
+     * 
+     * @param mapLigneEnTraitement
+     * @return
+     */
+    private List<LigneImport> createListAndSortByNumeroDeLigne(Map<NSS, List<LigneFichier>> mapLigneEnTraitement) {
+
+        List<LigneImport> listeTriees = new ArrayList<LigneImport>();
+
+        for (NSS keyNss : mapLigneEnTraitement.keySet()) {
+            for (LigneImport ligne : mapLigneEnTraitement.get(keyNss)) {
+                listeTriees.add(ligne);
+            }
+        }
         Collections.sort(listeTriees);
 
         return listeTriees;
@@ -243,6 +266,83 @@ public class RFimportService implements Comparable<RFLigneFichierExcel> {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private boolean hasError(Map<NSS, List<LigneFichier>> map) {
+        for (Entry<NSS, List<LigneFichier>> entry : map.entrySet()) {
+            for (LigneFichier ligne : entry.getValue()) {
+                if (ligne.hasError()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Methode pour construire le mail et le fichier joint (pour le home)
+     * 
+     * @param mapLignesEnTraitement
+     * @param emailDestinataire
+     */
+    public void sendMailForSoinDomicile(BSession session, Map<NSS, List<LigneFichier>> map, String emailDestinataire) {
+
+        StringBuilder bodyMail = new StringBuilder();
+        List<LigneImport> listeTrieesParNumeroLigne = createListAndSortByNumeroDeLigne(map);
+
+        // Si aucune erreur, chargement des lignes traités dans le body du mail.
+        if (!session.hasErrors()) {
+            if (hasError(map)) {
+                bodyMail.append("<b>" + session.getLabel("MAIL_RF_IMPORT_SOIN_DOMICILE_RESULTAT") + "</b>" + "\n \n \n");
+                // Ordres les lignes par numéro de ligne
+                // Creation des lignes en erreurs
+                bodyMail.append("<b>" + session.getLabel("MAIL_RF_IMPORT_FINANCEMENT_SOIN_LIGNES_EN_ERREURS") + "</b>");
+
+                bodyMail.append("\n");
+                for (LigneImport ligne : listeTrieesParNumeroLigne) {
+                    // Incrémentation du numéro de ligne de 1, pour être juste avec la ligne du fichier importé
+                    bodyMail.append("\n<b> Ligne " + (ligne.getNumeroLigne()) + " en erreur : </b>"
+                            + ligne.getDescription());
+                    bodyMail.append("<ul>");
+                    for (Entry<String, List<String>> entry : ligne.getErrors().entrySet()) {
+                        bodyMail.append("<li>");
+                        bodyMail.append(MessageFormat.format(
+                                session.getLabel("PROCESS_RF_IMPORT_SOIN_DOMICILE_ERREUR_" + entry.getKey()).replace(
+                                        "'", "'\'"), entry.getValue().toArray()));
+                        bodyMail.append("</li>");
+                    }
+
+                    if (ligne.getException() != null) {
+                        bodyMail.append("<li>");
+                        bodyMail.append(Throwables.getStackTraceAsString(ligne.getException()));
+                        bodyMail.append("</li>");
+                    }
+                    bodyMail.append("</ul>");
+                }
+            } else {
+                bodyMail.append("\n \n");
+                bodyMail.append("<b>" + session.getLabel("MAIL_RF_IMPORT_SOIN_DOMICIL_LIGNES_SANS_ERREUR") + "</b>");
+                bodyMail.append("\n");
+                Montant total = Montant.ZERO;
+                for (LigneImport ligne : listeTrieesParNumeroLigne) {
+                    total = total.add(ligne.getTotal());
+                }
+                bodyMail.append("\n\n");
+                bodyMail.append(session.getLabel("MAIL_RF_IMPORT_SOIN_DOMICILE_MONTANT_TOTAL"));
+                bodyMail.append(" CHF ");
+                bodyMail.append(total.toStringFormat() + "\n");
+            }
+        } else {
+            // Sinon, chargement de l'erreur rencontrée.
+            bodyMail.append(session.getErrors().toString());
+        }
+
+        try {
+            JadeSmtpClient.getInstance().sendMail(emailDestinataire,
+                    session.getLabel("MAIL_RF_IMPORT_SOIN_DOMICILE_TITRE_PROCESS"), bodyMail.toString(), null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

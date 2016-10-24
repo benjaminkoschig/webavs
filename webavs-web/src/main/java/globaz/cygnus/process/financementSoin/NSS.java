@@ -1,5 +1,7 @@
 package globaz.cygnus.process.financementSoin;
 
+import globaz.cygnus.utils.RFUtils;
+
 public class NSS {
 
     private String nss = null;
@@ -10,7 +12,10 @@ public class NSS {
         if ((nss == null) || (nss.length() == 0)) {
             throw new IllegalArgumentException("NSS cannot be null or empty");
         }
+    }
 
+    public boolean isValid() {
+        return RFUtils.isNNS(nss);
     }
 
     /*

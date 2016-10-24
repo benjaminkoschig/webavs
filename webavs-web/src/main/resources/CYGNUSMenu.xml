@@ -95,6 +95,12 @@
 						</action>
 					</node>
 					<node>
+						<label refId="MENU_IMPORTATION_SOIN_A_DOMICILE"/>
+						<action command="/cygnus" responseTarget="fr_main">
+							<parameter name="userAction" value="cygnus.process.importerSoinADomicile.afficher"/>													
+						</action>
+					</node>
+					<node>
 						<label refId="MENU_IMPORTATION_AVASAD"/>
 						<action command="/fx" responseTarget="fr_main">
 							<parameter name="userAction" value="fx.process.jadeProcessList.afficher" />

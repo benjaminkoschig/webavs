@@ -60,8 +60,7 @@ public class RFSoinsListsBuilder {
 
             RFTypeDeSoinManager typeDeSoinsManager = new RFTypeDeSoinManager();
             typeDeSoinsManager.setSession(session);
-            typeDeSoinsManager.changeManagerSize(0);
-            typeDeSoinsManager.find();
+            typeDeSoinsManager.find(BManager.SIZE_NOLIMIT);
 
             Iterator<RFTypeDeSoin> codeTypeDeSoinsDemandeIter = typeDeSoinsManager.getContainer().iterator();
             typeDeSoinsDemande = new Vector<String[]>();

@@ -3,6 +3,7 @@ package ch.globaz.pyxis.businessimpl.services;
 import globaz.globall.db.BSessionUtil;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import ch.globaz.common.domaine.Checkers;
 import ch.globaz.corvus.businessimpl.services.models.CanevasCrudService;
 import ch.globaz.pyxis.business.services.PersonneAvsCrudService;
 import ch.globaz.pyxis.domaine.NumeroSecuriteSociale;
@@ -50,5 +51,27 @@ public class PersonneAvsCrudServiceJadeImpl extends CanevasCrudService<PersonneA
     @Override
     public PersonneAVS update(PersonneAVS objetDeDomaine) {
         throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    @Override
+    public PersonneAVS readByNss(String nss) {
+        Checkers.checkNotNull(nss, "nss");
+        Checkers.checkNotEmpty(nss, "nss");
+        PersonneAVS objetDeDomaine = new PersonneAVS();
+        try {
+            PRTiersWrapper tiers = PRTiersHelper.getTiers(BSessionUtil.getSessionFromThreadContext(), nss);
+            if (tiers != null) {
+                objetDeDomaine.setId(Long.valueOf(tiers.getIdTiers()));
+                objetDeDomaine.setNom(tiers.getNom());
+                objetDeDomaine.setPrenom(tiers.getPrenom());
+                objetDeDomaine.setDateNaissance(tiers.getDateNaissance());
+                objetDeDomaine.setDateDeces(tiers.getDateDeces());
+                objetDeDomaine.setNss(new NumeroSecuriteSociale(tiers.getNSS()));
+            }
+        } catch (Exception ex) {
+            throw new TITechnicalExcpetion(ex);
+        }
+        return objetDeDomaine;
+
     }
 }
