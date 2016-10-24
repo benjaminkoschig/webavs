@@ -570,6 +570,8 @@ public enum Infirmite {
 	INFIRMITE_487(52810487),
 	/** Syndrome de Turner (seulement troubles de la fonction des gonades et de la croissance) */
 	INFIRMITE_488(52810488),
+	/** Trisomie 21 (Down-Syndrom)*/
+	INFIRMITE_489(52810489),
 	/** Infection congénitales par HIV */
 	INFIRMITE_490(52810490),
 	/** Tumeurs du nouveau-né */
