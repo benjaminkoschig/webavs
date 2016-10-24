@@ -7,6 +7,7 @@ import globaz.apg.api.alfa.IAPBouclementAlfa;
 import globaz.apg.api.alfa.IAPBouclementAlfaLoader;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.api.prestation.IAPPrestationLoader;
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BSession;
 import globaz.itucana.constantes.ITUCSRubriqueListeDesRubriques;
@@ -166,8 +167,9 @@ public class APProcessBouclementAlpha extends TUProcessusBouclement {
                 // en cours afin de voir si c'est la première prestation du
                 // droit
                 final IAPPrestationLoader prest = (IAPPrestationLoader) session.getAPIFor(IAPPrestationLoader.class);
-                final IAPPrestation[] arrayPrest = prest.load(elem.getIdDroit(), IAPPrestation.CS_GENRE_ACM_ALPHA,
-                        IAPPrestation.FIELDNAME_DATEDEBUT_PRESTATION);
+                final IAPPrestation[] arrayPrest = prest
+                        .load(elem.getIdDroit(), APTypeDePrestation.ACM_ALFA.getCodesystemString(),
+                                IAPPrestation.FIELDNAME_DATEDEBUT_PRESTATION);
 
                 if ((arrayPrest != null) && (arrayPrest.length > 0)) {
                     final IAPPrestation firstPrestation = arrayPrest[0];
