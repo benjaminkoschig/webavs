@@ -21,6 +21,8 @@ public interface SituationProfessionnelle {
 
     public Boolean getHasAcmAlphaPrestations();
 
+    public Boolean getHasAcm2AlphaPrestations();
+
     public Boolean getHasLaMatPrestations();
 
     public String getHeuresSemaine();

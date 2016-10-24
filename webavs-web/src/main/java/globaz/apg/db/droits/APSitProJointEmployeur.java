@@ -50,6 +50,7 @@ public class APSitProJointEmployeur extends BEntity {
                 + APSitProJointEmployeur.FIELDNAME_AF_NO_AFFILIE + ", "
                 + APSitProJointEmployeur.FIELDNAME_AF_ID_AFFILIE + ", " + APDroitLAPGJointDemande.FIELDNAME_NOM + ", "
                 + APSituationProfessionnelle.FIELDNAME_HAS_ACM_ALPHA_PRESTATION + ", "
+                + APSituationProfessionnelle.FIELDNAME_HAS_ACM2_ALPHA_PRESTATION + ", "
                 + APSituationProfessionnelle.FIELDNAME_HAS_LAMAT_PRESTATION + ", "
                 + APSituationProfessionnelle.FIELDNAME_DATEDEBUT + ", " + APSituationProfessionnelle.FIELDNAME_DATEFIN
                 + ", " + APSituationProfessionnelle.FIELDNAME_MONTANT_JOURNALIER_ACM_NE + ", "
@@ -145,6 +146,7 @@ public class APSitProJointEmployeur extends BEntity {
     private transient String fromClause = null;
 
     private boolean hasAcmAlphaPrestations = false;
+    private boolean hasAcm2AlphaPrestations = false;
     private boolean hasLaMatPrestations = false;
     private String idAffilie = "";
     private String idSitPro = "";
@@ -238,6 +240,8 @@ public class APSitProJointEmployeur extends BEntity {
         dateFin = statement.dbReadDateAMJ(APSituationProfessionnelle.FIELDNAME_DATEFIN);
         hasLaMatPrestations = statement.dbReadBoolean(APSituationProfessionnelle.FIELDNAME_HAS_LAMAT_PRESTATION);
         hasAcmAlphaPrestations = statement.dbReadBoolean(APSituationProfessionnelle.FIELDNAME_HAS_ACM_ALPHA_PRESTATION);
+        hasAcm2AlphaPrestations = statement
+                .dbReadBoolean(APSituationProfessionnelle.FIELDNAME_HAS_ACM2_ALPHA_PRESTATION);
         montantJournalierAcmNe = statement.dbReadNumeric(
                 APSituationProfessionnelle.FIELDNAME_MONTANT_JOURNALIER_ACM_NE, 2);
         csAssuranceAssociation = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_CS_ASSURANCE_ASSOCIATION);
@@ -426,4 +430,11 @@ public class APSitProJointEmployeur extends BEntity {
         nom = string;
     }
 
+    public boolean isHasAcm2AlphaPrestations() {
+        return hasAcm2AlphaPrestations;
+    }
+
+    public void setHasAcm2AlphaPrestations(boolean hasAcm2AlphaPrestations) {
+        this.hasAcm2AlphaPrestations = hasAcm2AlphaPrestations;
+    }
 }

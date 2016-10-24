@@ -2,7 +2,6 @@ package globaz.apg.module.calcul;
 
 import globaz.apg.acor.parser.APACORPrestationsParser;
 import globaz.apg.api.droits.IAPDroitMaternite;
-import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.droits.APDroitLAPG;
@@ -17,6 +16,7 @@ import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.db.prestation.APRepartitionPaiements;
 import globaz.apg.db.prestation.APRepartitionPaiementsManager;
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.helpers.droits.APSituationProfessionnelleHelper;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.util.FWCurrency;
@@ -2465,7 +2465,7 @@ public class APModuleRepartitionPaiements {
         APPrestationManager prestManager = new APPrestationManager();
         prestManager.setSession(session);
         prestManager.setForIdDroit(idDroit);
-        prestManager.setForGenre(IAPPrestation.CS_GENRE_STANDARD);
+        prestManager.setForGenre(APTypeDePrestation.STANDARD.getCodesystemString());
         prestManager.setFromDateDebut(dateDebut);
         prestManager.setToDateFin(dateFin);
         try {

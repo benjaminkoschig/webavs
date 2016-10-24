@@ -3,7 +3,7 @@
  */
 package globaz.apg.db.prestation;
 
-import globaz.apg.api.prestation.IAPPrestation;
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
@@ -151,11 +151,15 @@ public class APGenerationInscriptionCIManager extends PRAbstractManager {
                 sqlWhere += " AND ";
             }
 
-            sqlWhere += _getCollection() + APPrestation.TABLE_NAME + "." + APPrestation.FIELDNAME_GENRE_PRESTATION
-                    + "<>" + this._dbWriteNumeric(statement.getTransaction(), IAPPrestation.CS_GENRE_ACM_ALPHA)
-                    + " AND " + _getCollection() + APPrestation.TABLE_NAME + "."
-                    + APPrestation.FIELDNAME_GENRE_PRESTATION + "<>"
-                    + this._dbWriteNumeric(statement.getTransaction(), IAPPrestation.CS_GENRE_LAMAT);
+            sqlWhere += _getCollection()
+                    + APPrestation.TABLE_NAME
+                    + "."
+                    + APPrestation.FIELDNAME_GENRE_PRESTATION
+                    + "<>"
+                    + this._dbWriteNumeric(statement.getTransaction(),
+                            APTypeDePrestation.ACM_ALFA.getCodesystemString()) + " AND " + _getCollection()
+                    + APPrestation.TABLE_NAME + "." + APPrestation.FIELDNAME_GENRE_PRESTATION + "<>"
+                    + this._dbWriteNumeric(statement.getTransaction(), APTypeDePrestation.LAMAT.getCodesystemString());
         }
 
         return sqlWhere + _getGroupBy(statement);

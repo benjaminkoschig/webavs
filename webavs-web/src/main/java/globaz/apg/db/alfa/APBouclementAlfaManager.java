@@ -1,10 +1,10 @@
 package globaz.apg.db.alfa;
 
-import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.prestation.APCotisation;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APRepartitionPaiements;
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
@@ -164,13 +164,11 @@ public class APBouclementAlfaManager extends BManager {
         sql.append(" WHERE ");
 
         sql.append(APPrestation.FIELDNAME_GENRE_PRESTATION);
-        sql.append("=");
-        sql.append(IAPPrestation.CS_GENRE_ACM_ALPHA);
-
-        // sql.append(" AND ");
-        // sql.append(APPrestation.FIELDNAME_TYPE);
-        // sql.append("=");
-        // sql.append(IAPPrestation.CS_TYPE_NORMAL);
+        sql.append(" IN (");
+        sql.append(APTypeDePrestation.ACM_ALFA.getCodesystemString());
+        sql.append(",");
+        sql.append(APTypeDePrestation.ACM2_ALFA.getCodesystemString());
+        sql.append(") ");
 
         sql.append(" AND (");
         sql.append(APPrestation.FIELDNAME_DATEPAIEMENT);

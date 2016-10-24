@@ -305,7 +305,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
                 // Calcul des prestations courantes, pour chaque base de calculs données.
                 // Toutes les prestations sont ajoutées dans la liste prestationCourantes
-                traiterPrestationsAcmALpha(session, transaction, droit, IAPPrestation.CS_GENRE_ACM_ALPHA);
+                traiterPrestationsAcmALpha(session, transaction, droit, APTypeDePrestation.ACM_ALFA.getCodesystemString());
             }
         } catch (final Exception e) {
             if (transaction != null) {
@@ -347,7 +347,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
                 // Calcul des prestations courantes, pour chaque base de calculs données.
                 // Toutes les prestations sont ajoutées dans la liste prestationCourantes
-                traiterPrestationsMaternite(session, transaction, droit, IAPPrestation.CS_GENRE_LAMAT,
+                traiterPrestationsMaternite(session, transaction, droit,
+                        APTypeDePrestation.LAMAT.getCodesystemString(),
                         isAllocationMax(session, transaction, droit.getIdDroit()));
             }
         } catch (final Exception e) {
@@ -731,11 +732,11 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                 CommonPropertiesUtils.validatePropertyValue(APProperties.TYPE_DE_PRESTATION_ACM, propertyValue,
                         APPropertyTypeDePrestationAcmValues.propertyValues());
 
-                final boolean hasPrestationACM_ALFA = APPropertyTypeDePrestationAcmValues.ACM_ALFA.getPropertyValue()
+                final boolean hasPrestationACMALFA = APPropertyTypeDePrestationAcmValues.ACM_ALFA.getPropertyValue()
                         .equals(propertyValue);
 
                 // Si la caisse est une caisse horlogere => calculer les ACM
-                if (hasPrestationACM_ALFA && APPrestationHelper.hasAcmFalgInSitPro(session, droit) && !isDroitAdoption) {
+                if (hasPrestationACMALFA && APPrestationHelper.hasAcmFalgInSitPro(session, droit) && !isDroitAdoption) {
                     helper.calculerACM(vbDroit, action, session);
                 }
             } catch (final RemoteException e1) {
@@ -1040,7 +1041,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
         for (int i = 0; i < prestationsARestituer.length; i++) {
 
-            if (IAPPrestation.CS_GENRE_STANDARD.equals(prestationsARestituer[i].getGenre())
+            if (APTypeDePrestation.STANDARD.getCodesystemString().equals(prestationsARestituer[i].getGenre())
                     && IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestationsARestituer[i].getEtat())) {
                 prestations.add(prestationsARestituer[i]);
             }
@@ -1054,7 +1055,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
         // Traitement des prestations ACM ALFA
         for (int i = 0; i < prestationsARestituer.length; i++) {
-            if (IAPPrestation.CS_GENRE_ACM_ALPHA.equals(prestationsARestituer[i].getGenre())
+            if (APTypeDePrestation.ACM_ALFA.getCodesystemString().equals(prestationsARestituer[i].getGenre())
                     && IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestationsARestituer[i].getEtat())) {
                 prestations.add(prestationsARestituer[i]);
             }
@@ -1076,7 +1077,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         prestations.clear();
 
         for (int i = 0; i < prestationsARestituer.length; i++) {
-            if (IAPPrestation.CS_GENRE_LAMAT.equals(prestationsARestituer[i].getGenre())
+            if (APTypeDePrestation.LAMAT.getCodesystemString().equals(prestationsARestituer[i].getGenre())
                     && IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestationsARestituer[i].getEtat())) {
                 prestations.add(prestationsARestituer[i]);
             }
@@ -1116,7 +1117,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
         prestations.setSession((BSession) session);
         prestations.setForIdDroit(droit.getIdDroit());
-        prestations.setForGenre(IAPPrestation.CS_GENRE_STANDARD);
+        prestations.setForGenre(APTypeDePrestation.STANDARD.getCodesystemString());
         prestations.setToDateFin(dateFin);
         prestations.find(transaction);
 
@@ -2299,7 +2300,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             final APDroitLAPG droit, final String genrePrestation, final boolean isAllocationMax) throws Exception {
 
         // prestation du genre LAMAT (Droit genevois)
-        if (IAPPrestation.CS_GENRE_LAMAT.equals(genrePrestation)) {
+        if (APTypeDePrestation.LAMAT.getCodesystemString().equals(genrePrestation)) {
 
             // L'id droit du père est l'id permettant de récupérer tous les droits groupés entre eux, car c'est l'id du
             // droit de base.
@@ -2558,7 +2559,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
         prestations.setSession((BSession) session);
         prestations.setForIdDroit(droit.getIdDroit());
-        prestations.setForGenre(IAPPrestation.CS_GENRE_STANDARD);
+        prestations.setForGenre(APTypeDePrestation.STANDARD.getCodesystemString());
         prestations.setToDateFin(dateFin);
 
         prestations.find(transaction);

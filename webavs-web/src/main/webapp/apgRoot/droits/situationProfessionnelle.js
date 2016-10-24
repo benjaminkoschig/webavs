@@ -110,6 +110,7 @@ ViewController = function(viewControllerData){
 		// On set les champs selon le résultat du service
 		if (typeDePrestation === nomTypePrestationAcmAlpha) {
 			$('[name=hasAcmAlphaPrestations]').attr('checked', 'checked');
+			$('[name=hasAcm2AlphaPrestations]').attr('checked', 'checked');
 			$('[name=montantJournalierAcmNe]').val('');
 		}
 		else if (typeDePrestation === nomTypePrestationAcmNe  && $('input[name="isVersementEmployeur"]:radio')[0].checked) {
@@ -118,6 +119,7 @@ ViewController = function(viewControllerData){
 		}
 		else{
 			$('[name=hasAcmAlphaPrestations]').prop('checked',false);
+			$('[name=hasAcm2AlphaPrestations]').prop('checked',false);
 			$('[name=csAssuranceAssociation]').val('');
 			$('[name=montantJournalierAcmNe]').val('');
 			this.hideAcmNe();
@@ -218,6 +220,7 @@ ViewController = function(viewControllerData){
 	this.hideAcmAlpha = function() {
 		this.log("Hiding ACM ALFA bloc");
 		$('.prestationAcmAlpha').hide();
+		$('.prestationAcm2Alpha').hide();
 	};
 
 	this.showAcmNe = function() {
@@ -228,6 +231,7 @@ ViewController = function(viewControllerData){
 	this.showAcmAlpha = function() {
 		this.log("Show ACM ALFA bloc");
 		$('.prestationAcmAlpha').show();
+		$('.prestationAcm2Alpha').show();
 	};
 	
 	this.isEmpty = function(value){

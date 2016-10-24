@@ -8,6 +8,7 @@ import globaz.apg.db.droits.APDroitAPGJointTiersManager;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.enums.APGenreServiceAPG;
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.interfaces.APDroitAvecParent;
 import globaz.apg.pojo.APChampsAnnonce;
@@ -111,7 +112,7 @@ public class Rule506 extends Rule {
                 // On recherche les prestations standard de chaque droit sans parents
                 APPrestationManager prestationManager = new APPrestationManager();
                 prestationManager.setSession(getSession());
-                prestationManager.setForGenre(IAPPrestation.CS_GENRE_STANDARD);
+                prestationManager.setForGenre(APTypeDePrestation.STANDARD.getCodesystemString());
                 prestationManager.setForType(IAPPrestation.CS_TYPE_NORMAL); // pas les prestations annulées
                 prestationManager.setForContenuAnnonce(IAPAnnonce.CS_DEMANDE_ALLOCATION);
 

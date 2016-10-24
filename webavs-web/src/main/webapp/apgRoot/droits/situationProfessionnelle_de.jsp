@@ -96,7 +96,6 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 		checkPeriodeApgPeriodeAff();
 	}
 	
-
 	// Les prestations ACM_NE sont calculée uniquement pour les cas APG et non maternité	
 	var isAPG = <%=viewBean.isAPG()%>;
 	var isPrestationAcmNeEnable = <%=viewBean.isPrestationAcmNeEnable()%>;
@@ -106,13 +105,20 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 	viewControllerData.className = '<%=viewBean.getNameClassForAPRechercherTypeAcmService()%>';
 	viewControllerData.methodName = '<%=viewBean.getNameMethodForAPRechercherTypeAcmService()%>';
 	viewControllerData.isModification = <%=bButtonUpdate%>;
-	viewControllerData.isAcmAlphaEnable = <%=viewBean.isPrestationAcmAlfaEnable()%>;
+	viewControllerData.isAcmAlphaEnable = <%=viewBean.isPrestationAcmAlfaEnable().booleanValue()%>;
 	viewControllerData.isAcmNeEnable = isAPG && isPrestationAcmNeEnable;
+	
+	if (document.forms[0].elements('_method').value == "add"){
+		$('input[type="checkbox"][name="hasAcmAlphaPrestations"]').attr('checked', viewControllerData.isAcmAlphaEnable);
+		$('input[type="checkbox"][name="hasAcm2AlphaPrestations"]').attr('checked', viewControllerData.isAcmAlphaEnable);
+	} else {		
+		$('input[type="checkbox"][name="hasAcmAlphaPrestations"]').attr('checked', <%=viewBean.getHasAcmAlphaPrestations().booleanValue()%>);
+		$('input[type="checkbox"][name="hasAcm2AlphaPrestations"]').attr('checked', <%=viewBean.getHasAcm2AlphaPrestations().booleanValue()%>);
+	}
 
 	// Création d'une instance du controlleur de vue de cette page
 	var viewController = new ViewController(viewControllerData);
 	viewController.init(isRetourPyxis);
-
   }
   
   function postInit(){
@@ -404,8 +410,23 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 		var output = input.replace("'", ""); 
 		return output;
 	}
-  
-  
+	
+	function OnClickACM(){
+		var isACMChecked = $('input[type="checkbox"][name="hasAcmAlphaPrestations"]').is(":checked");
+		// si checkbox ACM a été clické et sa valeur est coché, alors on coche obligatoiremment ACM2
+		// si checkbox ACM a été clické et sa valeur est décoché, alors on décoche obligatoiremment ACM2
+		$('input[type="checkbox"][name="hasAcm2AlphaPrestations"]').prop('checked', isACMChecked);
+	}
+	
+	function OnClickACM2(){
+		var isACMChecked = $('input[type="checkbox"][name="hasAcmAlphaPrestations"]').is(':checked');
+		var isACM2Checked = $('input[type="checkbox"][name="hasAcm2AlphaPrestations"]').is(':checked');
+		
+		// si checkbox ACM2 a été clické et sa valeur est coché ET ACM est décoché, alors on coche obligatoirement ACM
+		if(!isACMChecked && isACM2Checked){
+			$('input[type="checkbox"][name="hasAcmAlphaPrestations"]').prop('checked', true);
+		}
+	}
 </script>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
@@ -463,7 +484,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 							<TD><INPUT type="checkbox" name="isIndependant" value="on" onclick="boutonIndependantChange();" <%=viewBean.getIsIndependant().booleanValue()?"CHECKED":""%>></TD>
 							<TD><LABEL for="revenuIndependant"><ct:FWLabel key="JSP_REVENU_INDEPENDANT"/></LABEL></TD>
 							<TD><INPUT type="text" name="revenuIndependant" value="<%=viewBean.getRevenuIndependant()%>" class="montant" onchange="validateFloatNumber(this);" onkeypress="montantIndependantChange(); return filterCharForFloat(window.event);"></TD>
-							<%if (!viewBean.isPrestationAcmAlfaEnable()) {%>
+							<%if (!viewBean.isPrestationAcmAlfaEnable().booleanValue()) {%>
 							<TD>
 								<LABEL for="isAllocationMax"><ct:FWLabel key="JSP_MONTANT_MAX"/></LABEL>
 								<INPUT type="checkbox" name="isAllocationMax" value="on" <%=viewBean.getIsAllocationMax().booleanValue()?"CHECKED":""%>>
@@ -483,9 +504,15 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 								<%}%>
 								<!-- ************************* D0063 ************************** -->
 								<!-- Sélection des types ACM selon propertie "apg.type.de.prestation" -->
+								
 								<DIV class="prestationAcmAlpha">				
 										<LABEL for="hasAcmAlphaPrestations"><ct:FWLabel key="JSP_ACM" /></LABEL>
-										<INPUT type="checkbox" name="hasAcmAlphaPrestations"  <%=viewBean.isPrestationAcmAlfaEnable()?"CHECKED":""%>>
+										<INPUT type="checkbox" onclick="OnClickACM()" name="hasAcmAlphaPrestations">
+								</DIV>
+								
+								<DIV class="prestationAcm2Alpha">				
+										<LABEL for="hasAcm2AlphaPrestations"><ct:FWLabel key="JSP_ACM2" /></LABEL>
+										<INPUT type="checkbox" onclick="OnClickACM2()" name="hasAcm2AlphaPrestations">
 								</DIV>
 							</TD>
 						</TR>
@@ -504,6 +531,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 							</TR>
 							<TR class="prestationAcmNe"><TD colspan="6"><HR></TD></TR>
 							<TR class="prestationNonAcm"><TD><INPUT type="hidden" name="hasAcmAlphaPrestations" value="" ></TD></TR>
+							<TR class="prestationNonAcm2"><TD><INPUT type="hidden" name="hasAcm2AlphaPrestations" value="" ></TD></TR>
 													
 							<INPUT type="hidden" id="nomTypePrestationAcmAlpha" value="<%=globaz.apg.enums.APTypeDePrestation.ACM_ALFA.getNomTypePrestation()%>" >
 							<INPUT type="hidden" id="nomTypePrestationAcmNe" value="<%=globaz.apg.enums.APTypeDePrestation.ACM_NE.getNomTypePrestation()%>" >				

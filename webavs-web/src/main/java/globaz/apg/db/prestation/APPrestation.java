@@ -7,6 +7,7 @@ import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.db.annonces.APAnnonceAPG;
 import globaz.apg.db.lots.APCompensation;
 import globaz.apg.db.lots.APLot;
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.pojo.wrapper.APPrestationWrapper;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BConstants;
@@ -75,7 +76,7 @@ public class APPrestation extends BEntity implements IAPPrestation {
     private String droitAcquis = "";
     protected String etat = "";
     private String fraisGarde = "";
-    protected String genre = IAPPrestation.CS_GENRE_STANDARD;
+    protected String genre = APTypeDePrestation.STANDARD.getCodesystemString();
     private String idAnnonce = "";
     protected String idDroit = "";
     private String idLot = "";

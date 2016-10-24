@@ -5,7 +5,6 @@ package globaz.apg.process;
 
 import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.api.droits.IAPDroitMaternite;
-import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APSituationFamilialeMat;
@@ -2386,7 +2385,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             final String montant) {
 
         // Cumul des cotisations par genre de prestations
-        if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(genrePrestation)) {
+        if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(genrePrestation)
+                || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(genrePrestation)) {
             montants.add(Montants.TYPE_ACM, montant);
         }
 
@@ -2725,12 +2725,12 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         APIRubrique rubrique = null;
 
         boolean isLamat = false;
-        if (genrePrestation.equals(IAPPrestation.CS_GENRE_LAMAT)) {
+        if (genrePrestation.equals(APTypeDePrestation.LAMAT.getCodesystemString())) {
             isLamat = true;
         }
 
         // cas des ACM
-        if (genrePrestation.equals(IAPPrestation.CS_GENRE_ACM_ALPHA)) {
+        if (genrePrestation.equals(APTypeDePrestation.ACM_ALFA.getCodesystemString())) {
             if (isRestitution) {
                 rubrique = ACM_RESTITUTION;
             } else {

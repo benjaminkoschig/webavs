@@ -4,7 +4,6 @@ import globaz.apg.ApgServiceLocator;
 import globaz.apg.acor.parser.APACORPrestationsParser;
 import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.api.droits.IAPDroitLAPG;
-import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.application.APApplication;
 import globaz.apg.business.service.APEntityService;
 import globaz.apg.business.service.APPlausibilitesApgService;
@@ -128,6 +127,30 @@ public class APPrestationHelper extends PRAbstractHelper {
         while (iter.hasNext()) {
             final APSituationProfessionnelle sitPro = iter.next();
             if (sitPro.getHasAcmAlphaPrestations().booleanValue()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Vrais si la situation prof du droit contient au moins un employeur avec la flag ACM2 a true
+     * 
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    public static boolean hasAcm2FalgInSitPro(final BISession session, final APDroitLAPG droit) throws Exception {
+        final APSituationProfessionnelleManager man = new APSituationProfessionnelleManager();
+        man.setSession((BSession) session);
+        man.setForIdDroit(droit.getIdDroit());
+        man.find();
+
+        @SuppressWarnings("unchecked")
+        final Iterator<APSituationProfessionnelle> iter = man.iterator();
+        while (iter.hasNext()) {
+            final APSituationProfessionnelle sitPro = iter.next();
+            if (sitPro.getHasAcm2AlphaPrestations().booleanValue()) {
                 return true;
             }
         }
@@ -506,7 +529,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             final List<APValidationPrestationAPGContainer> containers = new ArrayList<APValidationPrestationAPGContainer>();
             for (int ctr = 0; ctr < prestations.size(); ctr++) {
                 // On évite les prestation ACM et autres
-                if (IAPPrestation.CS_GENRE_STANDARD.equals(prestations.get(ctr).getGenre())) {
+                if (APTypeDePrestation.STANDARD.getCodesystemString().equals(prestations.get(ctr).getGenre())) {
                     // On évite les prestations de restitutions
                     if (!IAPAnnonce.CS_RESTITUTION.equals(prestations.get(ctr).getContenuAnnonce())) {
                         final APValidationPrestationAPGContainer container = new APValidationPrestationAPGContainer();

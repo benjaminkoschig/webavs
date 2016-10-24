@@ -13,7 +13,6 @@ public enum APProperties implements IProperties {
     AFFICHER_BOUTON_SIMULER_PAIEMENT_AVEC_BPID(
             "simuler.paiement.bpid",
             "Active l'affichage du bouton simuler pmt avec BPID dans l'écran APG récapitulatif. Affichage du bouton soumis à des droits !") {
-
         @Override
         public boolean isValidValue(final String propertyValue) {
             return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
@@ -82,6 +81,22 @@ public enum APProperties implements IProperties {
             }
             return false;
         }
+    },
+
+    PROPERTY_DROIT_ACM_MAT_DUREE_JOURS("droits.acm.maternite.dureejours",
+            "Défini le nombre de jours du ACM depuis le début du droit") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidIntegerPropertyValue(propertyValue);
+        }
+    },
+
+    PROPERTY_DROIT_ACM2_MAT_DUREE_JOURS("droits.acm2.maternite.dureejours",
+            "Défini le nombre de jours du ACM2 commencant après l'ACM normal") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidIntegerPropertyValue(propertyValue);
+        }
     };
 
     private String description;
@@ -129,96 +144,4 @@ public enum APProperties implements IProperties {
      * @return <code>true</code> si la valeur de la propriété est correcte
      */
     public abstract boolean isValidValue(final String propertyValue);
-
-    // # Properties for Framework
-    // applicationClassName=globaz.apg.application.APApplication
-    // # --- Application information
-    // applicationName=APG
-    //
-    // groupe.apg.gestionnaire=gApgUser
-    // groupe.maternite.gestionnaire=gMaterniteUser
-    //
-    // droits.situation.professionnelle.departement.enabled=true
-    // droits.maternite.dureejours=98
-    // montant.minimum.prestation.maternite=200
-    //
-    // montant.minimum.paye.employeur.apg=0.00
-    // montant.minimum.paye.employeur.mat=0.00
-    //
-    // # le montant journalier minimum à payer à l'assuré si le montant à verser est
-    // # plus grand que le montant versé par l'employeur
-    // montant.minimum.paye.assure=2.00
-    //
-    // clone.structure.definition.filename=clones.xml
-    // clone.copie.droit.apg.id=prestation-APG-copie-droit-APG
-    // clone.correction.droit.apg.id=prestation-APG-correction-droit-APG
-    // clone.copie.droit.maternite.id=prestation-APG-copie-droit-MATERNITE
-    //
-    //
-    //
-    // isDroitMaterniteCantonale=false
-    // droits.maternite.cantonale.dureejours=112
-    // droits.acm.maternite.dureejours=112
-    //
-    // assurance.avsai.paritaire.id=10
-    // assurance.avsai.personnelle.id=110
-    // assurance.ac.paritaire.id=20
-    // assurance.ac.personnelle.id=120
-    // assurance.lfa.paritaire.id=40
-    // assurance.lfa.personnelle.id=40
-    // assurance.fad.paritaire.id=50
-    // assurance.fad.personnelle.id=50
-    //
-    // # la factory a utiliser pour la generation des fichiers d'execution de ACOR
-    // acor.apg.factory.class=globaz.apg.acor.adapter.plat.APAdapterPlatFactory
-    //
-    // isRecapitulatifDecompte=false
-    //
-    // isSentToGED=true
-    // service.ged=AF
-    //
-    // tailleLotPourEnvoi=15
-    //
-    // # Détermine si le libelle confidentiel doit être ajouté dans l'adresse du destinataire dans l'envoi des documents
-    // documents.is.confidentiel=false
-    //
-    // #
-    // # Nature des ordres de versement selon type de prestation...
-    // #
-    // # Valeurs possible :
-    // # - NATURE_VERSEMENT_APG
-    // # - NATURE_ASSURANCE_MATERNITE
-    // # ( - NATURE_ASSURANCE_MATERNITE_CANTONALE non utilisé)
-    // # - NATURE_ALFA_ACM
-    // #
-    //
-    // nature.versement.apg=NATURE_VERSEMENT_APG
-    // nature.versement.acm.apg=NATURE_VERSEMENT_APG
-    //
-    // nature.versement.maternite=NATURE_ASSURANCE_MATERNITE
-    // nature.versement.acm.maternite=NATURE_ASSURANCE_MATERNITE
-    // nature.versement.lamat=NATURE_ASSURANCE_MATERNITE
-    // #
-    // # Rubrique pour les écritures comptables de compensations...
-    // #
-    // # Valeurs possible :
-    // # - RUBRIQUE_DE_LISSAGE
-    // # - COMPENSATION_ALFA
-    // #
-    //
-    // rubrique.compensation.standard=RUBRIQUE_DE_LISSAGE
-    // rubrique.compensation.acm=RUBRIQUE_DE_LISSAGE
-    //
-    // # Détermine si une copie de decision AMAT doit être effectuée à l'assuré si destinataire = employeur
-    // documents.decision.amat.copie.assure=true
-    //
-    // # Propriété interne pour le traitement des cas de reprise ancien système.
-    // role.prestation.globaz=rPRGlobaz
-    //
-    // # Indique si le NIP doit apparaître dans les documents
-    // document.display.nip=false
-    //
-    // # Propriété indiquant le nom du service GED pour le domaine
-    // domaine.nomService.ged=ALLOC
-
 }

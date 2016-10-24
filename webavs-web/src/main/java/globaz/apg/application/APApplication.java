@@ -99,6 +99,10 @@ public class APApplication extends PRAbstractApplication {
      */
     public static final String PROPERTY_DOC_CONFIDENTIEL = "documents.is.confidentiel";
 
+    /**
+     * @deprecated Utiliser plutôt APProperties
+     */
+    @Deprecated
     public static final String PROPERTY_DROIT_ACM_MAT_DUREE_JOURS = "droits.acm.maternite.dureejours";
 
     /**

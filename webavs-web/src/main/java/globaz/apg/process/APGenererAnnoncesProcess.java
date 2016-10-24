@@ -4,13 +4,13 @@
 package globaz.apg.process;
 
 import globaz.apg.api.droits.IAPDroitMaternite;
-import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.db.annonces.APAnnonceAPG;
 import globaz.apg.db.droits.APDroitAPG;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APDroitMaternite;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.utils.APGenerateurAnnonceRAPG;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
@@ -83,7 +83,7 @@ public class APGenererAnnoncesProcess extends BProcess {
             managerPrestation.setForIdLot(forIdLot);
 
             // managerPrestation.setForPrestationsSansAnnonce(true);
-            managerPrestation.setForGenre(IAPPrestation.CS_GENRE_STANDARD);
+            managerPrestation.setForGenre(APTypeDePrestation.STANDARD.getCodesystemString());
 
             BStatement statement = managerPrestation.cursorOpen(transaction);
 

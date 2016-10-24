@@ -70,6 +70,9 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
     public static final String FIELDNAME_HAS_ACM_ALPHA_PRESTATION = "VFBACM";
 
     /** DOCUMENT ME! */
+    public static final String FIELDNAME_HAS_ACM2_ALPHA_PRESTATION = "VFBACM2";
+
+    /** DOCUMENT ME! */
     public static final String FIELDNAME_HAS_LAMAT_PRESTATION = "VFBLAM";
 
     /** DOCUMENT ME! */
@@ -184,6 +187,9 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
     /** DOCUMENT ME! */
     protected Boolean hasAcmAlphaPrestations = Boolean.FALSE;
+
+    /** DOCUMENT ME! */
+    protected Boolean hasAcm2AlphaPrestations = Boolean.FALSE;
 
     /** DOCUMENT ME! */
     protected Boolean hasLaMatPrestations = Boolean.FALSE;
@@ -457,6 +463,8 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
         hasLaMatPrestations = statement.dbReadBoolean(APSituationProfessionnelle.FIELDNAME_HAS_LAMAT_PRESTATION);
         hasAcmAlphaPrestations = statement.dbReadBoolean(APSituationProfessionnelle.FIELDNAME_HAS_ACM_ALPHA_PRESTATION);
+        hasAcm2AlphaPrestations = statement
+                .dbReadBoolean(APSituationProfessionnelle.FIELDNAME_HAS_ACM2_ALPHA_PRESTATION);
         csAssuranceAssociation = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_CS_ASSURANCE_ASSOCIATION);
 
         montantJournalierAcmNe = statement.dbReadNumeric(
@@ -749,6 +757,10 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
                 statement.getTransaction(), hasAcmAlphaPrestations, BConstants.DB_TYPE_BOOLEAN_CHAR,
                 "hasAcmAlphaPrestations"));
 
+        statement.writeField(APSituationProfessionnelle.FIELDNAME_HAS_ACM2_ALPHA_PRESTATION, this._dbWriteBoolean(
+                statement.getTransaction(), hasAcm2AlphaPrestations, BConstants.DB_TYPE_BOOLEAN_CHAR,
+                "hasAcm2AlphaPrestations"));
+
         statement.writeField(APSituationProfessionnelle.FIELDNAME_CS_ASSURANCE_ASSOCIATION,
                 this._dbWriteNumeric(statement.getTransaction(), csAssuranceAssociation, "csAssuranceAssociation"));
 
@@ -800,6 +812,7 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         clone.setSalaireNature(getSalaireNature());
         clone.setHasLaMatPrestations(getHasLaMatPrestations());
         clone.setHasAcmAlphaPrestations(getHasAcmAlphaPrestations());
+        clone.setHasAcm2AlphaPrestations(getHasAcm2AlphaPrestations());
         clone.setCsAssuranceAssociation(getCsAssuranceAssociation());
         clone.setMontantJournalierAcmNe(getMontantJournalierAcmNe());
 
@@ -882,6 +895,11 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
     @Override
     public Boolean getHasAcmAlphaPrestations() {
         return hasAcmAlphaPrestations;
+    }
+
+    @Override
+    public Boolean getHasAcm2AlphaPrestations() {
+        return hasAcm2AlphaPrestations;
     }
 
     /**
@@ -1298,6 +1316,10 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
     public void setHasAcmAlphaPrestations(Boolean hasAcmAlphaPrestations) {
         this.hasAcmAlphaPrestations = hasAcmAlphaPrestations;
+    }
+
+    public void setHasAcm2AlphaPrestations(Boolean hasAcm2AlphaPrestations) {
+        this.hasAcm2AlphaPrestations = hasAcm2AlphaPrestations;
     }
 
     /**

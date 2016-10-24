@@ -809,7 +809,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * @return Si la caisse à activé les prestations complémentaires ACM ALFA
      * @throws PropertiesException
      */
-    public boolean isPrestationAcmAlfaEnable() throws PropertiesException {
+    public Boolean isPrestationAcmAlfaEnable() throws PropertiesException {
         final String propertyValue = getPropertyValue();
         return APPropertyTypeDePrestationAcmValues.ACM_ALFA.getPropertyValue().equals(propertyValue);
     }

@@ -13,9 +13,11 @@ import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
 import globaz.apg.db.prestation.APRepartitionPaiements;
 import globaz.apg.db.prestation.APRepartitionPaiementsManager;
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.groupdoc.ccju.GroupdocPropagateUtil;
 import globaz.apg.module.calcul.APReferenceDataParser;
 import globaz.apg.module.calcul.rev2005.APReferenceDataAPG;
+import globaz.apg.properties.APProperties;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTListeTextes;
 import globaz.babel.api.ICTTexte;
@@ -76,6 +78,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import net.sf.jasperreports.engine.JRDataSource;
+import ch.globaz.common.properties.PropertiesException;
 
 /**
  * <H1>Description</H1>
@@ -510,6 +513,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         // model en fonction de la langue de l'employeur
         if (document.equals(documentEmployeurs)) {
             final PRTiersWrapper employeur = PRTiersHelper.getTiersParId(getISession(), repartition.getIdTiers());
+
             // le helper est deja setter pour un document employeur
             codeIsoLangue = getSession().getCode(employeur.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
             codeIsoLangue = PRUtil.getISOLangueTiers(codeIsoLangue);
@@ -686,25 +690,25 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         buffer.setLength(0); // on recycle
 
         // fusionner tous les textes sauf les speciaux (position > 100)
-
-        // pour adresse pmt
         try {
-            // boolean isAdresseOK = false;
-            // Ajout de l'adresse de paiement --> Voir plus haut
-
             for (final Iterator textes = document.getTextes(4).iterator(); textes.hasNext()
                     && (Integer.parseInt((texte = (ICTTexte) textes.next()).getPosition()) < 100);) {
-                if (buffer.length() > 0) {
-                    buffer.append("\n\n"); // paragraphe
-                }
-                // if (!isAdresseOK) {
-                // if (state == STATE_ASSURES || isIndependant){
-                // buffer.append(texteFinal);
-                // isAdresseOK = true;
-                // }
-                // }
 
-                buffer.append(texte.getDescription());
+                if (buffer.length() > 0) {
+                    buffer.append("\n\n");
+                }
+
+                boolean isPos3ACMEmployeur = Integer.parseInt(texte.getPosition()) == 3;
+                isPos3ACMEmployeur &= "ACM".equals(helper.getNom());
+                isPos3ACMEmployeur &= ICTDocument.CS_EMPLOYEUR.equals(helper.getCsDestinataire());
+
+                // Cas particulier (Destinataire employeur et lettre ACM), car paragraphe 3 est devenu générique dans le
+                // niveau 4 afin d'afficher le bon nombre de jours.
+                if (isPos3ACMEmployeur) {
+                    buffer.append(traitementLevel4Pos3ACMEmployeur(texte));
+                } else {
+                    buffer.append(texte.getDescription());
+                }
             }
 
         } catch (final NumberFormatException e) {
@@ -779,6 +783,33 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             parametres.put("P_COPIE_A", document.getTextes(1).getTexte(8).getDescription());
             parametres.put("P_COPIE_A2", ligne);
         }
+    }
+
+    private String traitementLevel4Pos3ACMEmployeur(ICTTexte texte) throws PropertiesException {
+        final StringBuffer bufferLocal = new StringBuffer(texte.getDescription());
+
+        boolean hasACM = false;
+        boolean hasACM2 = false;
+
+        for (int i = 0; i < prestations.size(); i++) {
+            APPrestation prestation = (APPrestation) prestations.getEntity(i);
+            if (APTypeDePrestation.ACM_ALFA.getCodesystemString().equals(prestation.getGenre())) {
+                hasACM = true;
+            }
+            if (APTypeDePrestation.ACM2_ALFA.getCodesystemString().equals(prestation.getGenre())) {
+                hasACM2 = true;
+            }
+        }
+
+        Integer nbJoursTotaux = 0;
+        if (hasACM) {
+            nbJoursTotaux += Integer.valueOf(APProperties.PROPERTY_DROIT_ACM_MAT_DUREE_JOURS.getValue());
+        }
+        if (hasACM2) {
+            nbJoursTotaux += Integer.valueOf(APProperties.PROPERTY_DROIT_ACM2_MAT_DUREE_JOURS.getValue());
+        }
+
+        return PRStringUtils.formatMessage(bufferLocal, nbJoursTotaux.toString());
     }
 
     private String buildOrderPrintingByKey(final String idAffilie, final String idTiers) throws Exception {
@@ -1461,9 +1492,10 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                     final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
 
-                    if (((prestation.getGenre().equals(IAPPrestation.CS_GENRE_STANDARD)) && (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD))
-                            || ((prestation.getGenre().equals(IAPPrestation.CS_GENRE_ACM_ALPHA)) && (state_dec == APDecisionCommunicationAMAT.STATE_ACM))
-                            || ((prestation.getGenre().equals(IAPPrestation.CS_GENRE_LAMAT)) && (state_dec == APDecisionCommunicationAMAT.STATE_LAMAT))) {
+                    if (((prestation.getGenre().equals(APTypeDePrestation.STANDARD.getCodesystemString())) && (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD))
+                            || ((prestation.getGenre().equals(APTypeDePrestation.ACM_ALFA.getCodesystemString()) || prestation
+                                    .getGenre().equals(APTypeDePrestation.ACM2_ALFA.getCodesystemString())) && (state_dec == APDecisionCommunicationAMAT.STATE_ACM))
+                            || ((prestation.getGenre().equals(APTypeDePrestation.LAMAT.getCodesystemString())) && (state_dec == APDecisionCommunicationAMAT.STATE_LAMAT))) {
 
                         nbPrest++;
 
@@ -1475,88 +1507,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                         for (int idRP = 0; idRP < repartitionPaiementsManager.size(); ++idRP) {
                             final APRepartitionPaiements rp = (APRepartitionPaiements) repartitionPaiementsManager
                                     .get(idRP);
-
-                            // Adresses de paiement mis de côté pour l'instant
-                            // --> Problème d'impression TODO
-                            //
-                            // String adressePourDocument = "";
-                            //
-                            // // Reprise de l'adresse des paiements pour
-                            // affichage sur la décision
-                            // // Comme il peut y avoir plusieurs répartitions
-                            // pour l'assuré, seule la dernière sera en mémoire.
-                            //
-                            // // Si l'idTiers de la répartition est égale au
-                            // tiers du document (assuré)
-                            // if
-                            // (tiers().getProperty(PRTiersWrapper.PROPERTY_ID_TIERS).equals(rp.getIdTiers()))
-                            // {
-                            //
-                            // TIAdressePaiementData adressePmt =
-                            // rp.loadAdressePaiement(date);
-                            // TIAdressePaiementDataSource source = new
-                            // TIAdressePaiementDataSource();
-                            //
-                            // texteFinal =
-                            // documentAssures.getTextes(3).getTexte(12).getDescription();
-                            //
-                            // nbAdresseDansRepartition = 0;
-                            //
-                            // // Si pas d'adresse de paiement, on suppose que
-                            // c'est par mandat postal
-                            // if (null == adressePmt){
-                            //
-                            // } else {
-                            // nbAdresseDansRepartition++;
-                            // source.load(adressePmt);
-                            // // Si c'est une adresse bancaire
-                            // if
-                            // (!JadeStringUtil.isEmpty(adressePmt.getCompte()))
-                            // {
-                            // texteFinal =
-                            // PRStringUtils.replaceString(texteFinal,
-                            // "{stylePaiement}",
-                            // documentAssures.getTextes(3).getTexte(16).getDescription());
-                            //
-                            // adressePourDocument =
-                            // PRStringUtils.replaceString(documentAssures.getTextes(3).getTexte(13).getDescription(),
-                            // "{banqueAdresse}",
-                            // new
-                            // TIAdressePaiementBanqueFormater().format(source));
-                            //
-                            // // Si c'est un CCP
-                            // } else if
-                            // (!JadeStringUtil.isEmpty(adressePmt.getCcp())){
-                            // texteFinal =
-                            // PRStringUtils.replaceString(texteFinal,
-                            // "{stylePaiement}",
-                            // documentAssures.getTextes(3).getTexte(17).getDescription());
-                            //
-                            //
-                            // adressePourDocument =
-                            // PRStringUtils.replaceString(documentAssures.getTextes(3).getTexte(14).getDescription(),
-                            // "{noCCP}",
-                            // new
-                            // TIAdressePaiementCppFormater().format(source))
-                            // +"\n";
-                            // // Sinon un suppose le mandat
-                            // } else {
-                            // texteFinal =
-                            // PRStringUtils.replaceString(texteFinal,
-                            // "{stylePaiement}",
-                            // documentAssures.getTextes(3).getTexte(18).getDescription());
-                            //
-                            // adressePourDocument =
-                            // PRStringUtils.replaceString(documentAssures.getTextes(3).getTexte(15).getDescription(),
-                            // "{mandatPostal}",
-                            // new
-                            // TIAdressePaiementBeneficiaireFormater().format(source))
-                            // +"\n";
-                            // }
-                            // texteFinal += adressePourDocument;
-                            // }
-                            //
-                            // }
 
                             // reprendre la situation prof pour voir si
                             // indépendant
@@ -1591,9 +1541,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                             message.format(new Object[] { prestation.getDateDebut() }, buffer,
                                                     new FieldPosition(0)).toString());
 
-                                    // champs.put("CHAMP_DATE_DEBUT",
-                                    // prestation.getDateDebut());
-
                                     buffer.setLength(0);
                                     buffer.append(documentAssures.getTextes(3).getTexte(7));
                                     message = createMessageFormat(buffer);
@@ -1603,9 +1550,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                             message.format(new Object[] { prestation.getDateFin() }, buffer,
                                                     new FieldPosition(0)).toString());
 
-                                    // champs.put("CHAMP_DATE_FIN",
-                                    // prestation.getDateFin());
-
                                     buffer.setLength(0);
                                     buffer.append(documentAssures.getTextes(3).getTexte(8));
                                     message = createMessageFormat(buffer);
@@ -1614,9 +1558,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                             "CHAMP_NB_JOURS",
                                             message.format(new Object[] { prestation.getNombreJoursSoldes() }, buffer,
                                                     new FieldPosition(0)).toString());
-
-                                    // champs.put("CHAMP_NB_JOURS",
-                                    // prestation.getNombreJoursSoldes());
 
                                     buffer.setLength(0);
                                     buffer.append(documentAssures.getTextes(3).getTexte(9));
@@ -1639,17 +1580,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                             message.format(
                                                     new Object[] { JANumberFormatter.formatNoRound(rp.getMontantBrut()) },
                                                     buffer, new FieldPosition(0)).toString());
-
-                                    /*
-                                     * bz-4001 if (!JadeStringUtil.isEmpty(prestation .getRemarque())) {
-                                     * 
-                                     * buffer.setLength(0); buffer.append(documentAssures .getTextes(3).getTexte(11));
-                                     * message = createMessageFormat(buffer); buffer.setLength(0);
-                                     * champs.put("FIELD_REMARQUE_PRESTATION", message.format(new Object[] {
-                                     * prestation.getRemarque() }, buffer, new FieldPosition(0)).toString());
-                                     * 
-                                     * }
-                                     */
                                     lignes.add(champs);
                                 }
                             } else {
@@ -1707,17 +1637,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                             message.format(
                                                     new Object[] { JANumberFormatter.formatNoRound(rp.getMontantBrut()) },
                                                     buffer, new FieldPosition(0)).toString());
-
-                                    /*
-                                     * bz-4001 if (!JadeStringUtil.isEmpty(prestation .getRemarque())) {
-                                     * 
-                                     * buffer.setLength(0); buffer.append(documentEmployeurs
-                                     * .getTextes(3).getTexte(11)); message = createMessageFormat(buffer);
-                                     * buffer.setLength(0); champs.put("FIELD_REMARQUE_PRESTATION", message.format(new
-                                     * Object[] { prestation.getRemarque() }, buffer, new FieldPosition(0)).toString());
-                                     * 
-                                     * }
-                                     */
                                     lignes.add(champs);
                                 }
 
@@ -1739,9 +1658,10 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                     final StringBuffer buffer = new StringBuffer();
                     FWMessageFormat message = createMessageFormat(buffer);
 
-                    if (((prestation.getGenre().equals(IAPPrestation.CS_GENRE_STANDARD)) && (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD))
-                            || ((prestation.getGenre().equals(IAPPrestation.CS_GENRE_ACM_ALPHA)) && (state_dec == APDecisionCommunicationAMAT.STATE_ACM))
-                            || ((prestation.getGenre().equals(IAPPrestation.CS_GENRE_LAMAT)) && (state_dec == APDecisionCommunicationAMAT.STATE_LAMAT))) {
+                    if (((prestation.getGenre().equals(APTypeDePrestation.STANDARD.getCodesystemString())) && (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD))
+                            || ((prestation.getGenre().equals(APTypeDePrestation.ACM_ALFA.getCodesystemString()) || prestation
+                                    .getGenre().equals(APTypeDePrestation.ACM2_ALFA.getCodesystemString())) && (state_dec == APDecisionCommunicationAMAT.STATE_ACM))
+                            || ((prestation.getGenre().equals(APTypeDePrestation.LAMAT.getCodesystemString())) && (state_dec == APDecisionCommunicationAMAT.STATE_LAMAT))) {
 
                         repartitionPaiementsManager.setForIdPrestation(prestation.getIdPrestationApg());
                         repartitionPaiementsManager.find();
@@ -1829,16 +1749,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                                 }
                             }
                         }
-                        /*
-                         * bz-4001 if (!JadeStringUtil.isEmpty(prestation.getRemarque())) {
-                         * 
-                         * buffer.setLength(0); buffer.append(documentEmployeurs. getTextes(3).getTexte(11)); message =
-                         * createMessageFormat(buffer); buffer.setLength(0); champs.put("FIELD_REMARQUE_PRESTATION",
-                         * message.format(new Object[] { prestation.getRemarque() }, buffer, new
-                         * FieldPosition(0)).toString());
-                         * 
-                         * }
-                         */
                         if (count > 0) {
                             lignes.add(champs);
                         }
@@ -1889,7 +1799,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
         try {
 
-            // TODO A VOIR SI UITLE
             // Récupère le service de la ged à utiliser.
             JADate date = new JADate();
             if (JadeStringUtil.isEmpty(getDate())) {
@@ -1914,12 +1823,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             } else {
                 docInfo.setDocumentProperty("annee", yy);
             }
-
-            // Point ouvert 00405
-            // docInfo.setPublishProperty("service",
-            // PRAbstractApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG).getProperty(APApplication.PROPERTY_SERVICE_GED));
-
-            // FIN
 
             IPRAffilie affilie = null;
             PRTiersWrapper tierWrapper = null;
@@ -2211,7 +2114,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                         continue;
                     } else {
                         // les prestations standard on la priorité
-                        if (IAPPrestation.CS_GENRE_STANDARD.equals(prestationType.getGenre())) {
+                        if (APTypeDePrestation.STANDARD.getCodesystemString().equals(prestationType.getGenre())) {
                             break;
                         } else {
                             continue;
