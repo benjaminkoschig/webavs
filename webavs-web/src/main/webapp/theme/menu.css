@@ -1,3 +1,5 @@
+@import "newmenu.css";
+
 /* Here BEGIN the styles for the menu */
 .menuNormal {
 	border : solid 1px #B3C4DB;
@@ -86,4 +88,5 @@ div.disabled {
 	color: #888;
 	cursor: default;
 }
+
 /* Here END the styles for the menu */

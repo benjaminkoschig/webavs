@@ -363,20 +363,21 @@ function forceCaracterNum (){
 function updateText() {
 // Parcours de la table pour mettre à jour les noms
 }
+
+/* spi 24.10.16: dead code is commented out, should be deleted
 function onDone(src){
     oPopup.document.write(src);
 }
 function showPopup(baseObject,id){
-	oPopup = window.createPopup();
+	oPopup = window.create Popup();
     document.forms[0].selectedId.value = id;
     dwn.startDownload("/" + popupSection + "/" + popupPage + "_cMenu.jsp",onDone);
     oPopup.show(event.clientX + document.body.scrollLeft, event.clientY + document.body.scrollTop, 175, 260, baseObject);
     //alert("hello");
 }
 
-
-
-var oPopup = window.createPopup();
+var oPopup = window.create Popup();
+*/
 
 document.write("<div style=\"position:absolute;border=1px solid black;background-color:#B3C4DB;font-size : 9;visibility:hidden\" name=\"toolTips\" id=\"toolTipsDiv\"></div>\n");
 var toolTips = new PopupWindow("toolTipsDiv");

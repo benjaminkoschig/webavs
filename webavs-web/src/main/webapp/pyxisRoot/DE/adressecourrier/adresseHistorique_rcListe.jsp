@@ -112,20 +112,6 @@ var popupPage = "";
 detailLabel="Detail" detailLink="<%=detailLink+\"-id-\"%>" />
 <DOWNLOAD ID=dwn STYLE="behavior:url(#default#download)" />
 
-<SCRIPT>
-function onDone(src){
-	oPopup.document.write(src);
-}
-function showPopup(baseObject,id){
-	oPopup = window.createPopup();
-	document.forms[0].selectedId.value = id;
-	dwn.startDownload("/" + popupSection + "/" + popupPage + "_cMenu.jsp",onDone);
-	oPopup.show(event.clientX + document.body.scrollLeft, event.clientY + document.body.scrollTop, 175, 260, baseObject);
-}
-
-var oPopup = window.createPopup();
-
-</SCRIPT>
 <TABLE width="100%" border="0" cellspacing="0">
   <TBODY>
   <TR align="center" >

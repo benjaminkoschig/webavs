@@ -8,8 +8,9 @@
 <META http-equiv="Content-Type" content="text/html;">
 <META http-equiv="Content-Style-Type" content="text/css">
 <LINK rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/theme/master.css">
+<script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery.js"></script>
 <style>
-<!--
+/*
 a.menu:link {color: black; text-decoration: none;}
 a.menu:visited {color: black; text-decoration: none; }
 a.menu:active {color: black; }
@@ -19,7 +20,7 @@ a.menu:hover {color: black; text-decoration: underline; }
   width : 100%;
   height : 100%;
  }
- -->
+ */
  TD.selectable{
      color: #123450;
      background-color : white;
@@ -43,8 +44,29 @@ body {
 <%
 String context = request.getContextPath();
 String servlet = "/" + request.getParameter("servlet");
-
 %>
+$(document).ready(function(){
+    // cliquer sur un <li> doit réagir comme le lien qu'elle contient
+    $('#appIconsApplicationBodyContent li').each(function() {
+        var that = $(this);
+        
+        that.click(function(e) {
+            top.fr_main.location.href = that.find('a').attr('href');
+            e.stopPropagation();
+            e.preventDefault();
+        });
+    });
+    
+    // gérer le hover sur un <li> - en css ça marche très moyennement, et dépend du mode de compat'
+    $('#appIconsApplicationBodyContent li').each(function() {        
+        $(this).hover(function(){
+            $(this).addClass( "hovered" );        
+        }, function(){            
+            $(this).removeClass( "hovered" );
+        });
+    });
+});
+
 function finds(styleName) {
   for (i = 0; i < document.styleSheets.length; i++) {
     for (j = 0; j < document.styleSheets(i).rules.length; j++) {
@@ -55,51 +77,42 @@ function finds(styleName) {
   }
 }
 
-function showAppsPopup(baseObject){
-	oAppsPopup.show(0, 30, 185, 553, baseObject);
+var menu;
+function showMainMenu() { 
+    if(menu) {
+        hideMainMenu();
+    }
+    
+    menu = $('#appIconsApplicationBodyContent').clone(true);
+    menu.removeClass('hidden');        
+    menu.appendTo(top.frames["fr_main"].document.body);
+    
+    // ensure our custom css is present on the frame
+    try {         
+        if(top.frames["fr_main"].$('head link[href="<%=request.getContextPath()%>/theme/newmenu.css"]').length==0) {
+    	    top.frames["fr_main"].$("head link[rel='stylesheet']").last().after('<link rel="stylesheet" href="<%=request.getContextPath()%>/theme/newmenu.css" type="text/css" media="screen">');
+        }
+    } catch(e) {/* ignore */}
+    
+    menu.show();
 }
 
-function populateAppPopup() {
-//	sendPopupMenuRequest();
-    var oPopBody = oAppsPopup.document.body;
-    // The following HTML that populates the popup object with a string.
-    oPopBody.innerHTML = document.getElementById("appIconsApplicationBodyContent").innerHTML;
-//	document.getElementById("appIconsApplicationContent").innerHTML = "";
-	//head.innerHTML = document.getElementById("appIconsApplicationHeadContent").innerHTML;
-	document.getElementById("appIconsApplicationBodyContent").innerHTML = "";
-
-
-	var headID = oAppsPopup.document.getElementsByTagName("head")[0];
-	var newScript = oAppsPopup.document.createElement('script');
-	newScript.type = 'text/javascript';
-	newScript.src = 'appIconsScript.js';
-	headID.appendChild(newScript);
-
-	var cssNode = oAppsPopup.document.createElement('link');
-	cssNode.type = 'text/css';
-	cssNode.rel = 'stylesheet';
-	cssNode.href = '<%=request.getContextPath()%>/theme/menu.css';
-	cssNode.media = 'screen';
-	headID.appendChild(cssNode);
-
-	cssNode = oAppsPopup.document.createElement('link');
-	cssNode.type = 'text/css';
-	cssNode.rel = 'stylesheet';
-	cssNode.href = '<%=request.getContextPath()%>/theme/master.css';
-	cssNode.media = 'screen';
-	headID.appendChild(cssNode);
-
-	cssNode = oAppsPopup.document.createElement('link');
-	cssNode.type = 'text/css';
-	cssNode.rel = 'stylesheet';
-	cssNode.href = 'appIconsCSS.css';
-	cssNode.media = 'screen';
-	headID.appendChild(cssNode);
-
-
+function hideMainMenu() {
+    if(menu) {
+        // not sure why, but jQuery sometimes die here on IE11 with a "SCRIPT70: permission denied", 100% when 
+        // the old menu is no longer in the dom, and at some other random places...   
+        try {
+        	menu.hide();
+        } catch(e) {/* ignore */ }
+        try {
+        	menu.remove();
+        } catch(e) {/* ignore */ }
+        
+        menu = null;
+    }
 }
 
-function chgCellStyle(cellule, mode){
+function chgCellStyle(cellule, mode) {
 	/*if (mode == 'Over'){
 		cellule.style.background=finds('TD.selected').style.backgroundColor;
 		cellule.style.color=finds('TD.selected').style.color;
@@ -167,17 +180,19 @@ function checkPostit() {
 	}
 }
 
-var oAppsPopup = window.createPopup();
+
+var hideTimeout;
+
 </script>
 </HEAD>
-<BODY onload="checkPostit();populateAppPopup();">
+<BODY onload="checkPostit();">
 <table class="menutable">
  <tr>
-  <TD id="tdApp" width="30" class="selectable" onmouseover="chgCellStyle(this,'Over');" onmouseout="chgCellStyle(this,'Out');" onclick="javascript:showAppsPopup(this);" style="background-color: <%=Jade.getInstance().getWebappBackgroundColor()%>;" nowrap>
-    <DIV align="CENTER"><B><FONT face="Lucida Sans Unicode" ><A href="javascript:showAppsPopup(tdApp);">Applications...</A></FONT></B></DIV>
+  <TD id="tdApp" width="30" class="selectable" onmouseover="chgCellStyle(this,'Over');" onmouseout="chgCellStyle(this,'Out');" onclick="javascript:showMainMenu();" style="background-color: <%=Jade.getInstance().getWebappBackgroundColor()%>;" nowrap>
+    <DIV align="CENTER"><B><FONT face="Lucida Sans Unicode" ><A href="javascript:showMainMenu();">Applications...</A></FONT></B></DIV>
   </TD>
   <td align='right' nowrap>
-	<input  style="width:0mm;height:0mm;font-size:0pt" type ="button" accesskey="q" onclick="top.fr_main.location.href='<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.summary.afficher'">
+	<input  style="width:0mm;height:0mm;font-size:0pt;display:none" type ="button" accesskey="q" onclick="top.fr_main.location.href='<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.summary.afficher'">
    	<a href="#" onclick="top.fr_main.location.href='<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.summary.afficher'"><IMG id="icon_help" SRC="<%=request.getContextPath()%>/images/evr_find.png" ALT="Vue globale [ALT+Q]" border="0"/></a>
 
   <%
@@ -199,302 +214,274 @@ var oAppsPopup = window.createPopup();
 <a href="javascript:hidePostit()">hide</a>
 <a href="javascript:showPostit()">show</a>
 -->
-<div id="appIconsApplicationBodyContent" class="hidden">
-	<div style="width=100%;height=100%" id="outilsMenu">
-		<table border="0" width="100%" height="100%" CELLSPACING="1" CELLPADDING="0" bgcolor="black" id="Applications">
+
+<div id="appIconsApplicationBodyContent" class="hidden" onmousemove="clearTimeout(hideTimeout)" onmouseleave="hideTimeout = setTimeout(hideMainMenu, 500)">
+	<div id="outilsMenu">
+		<table border="0" CELLSPACING="1" CELLPADDING="0" bgcolor="black" id="Applications">
 			<tr>
-				<td class="title"><b>Applications</b></td>
+				<td class="menuTitle"><b>Applications</b></td>
 			</tr>
-			<tr style="height: 100%">
+			<tr>
 				<td>
-					<table height="100%" border="0" CELLSPACING="0" CELLPADDING="4" width="100%" bgcolor="#B3C4DB">
-						<tr valign="top">
-							<td>
+					<ul>
+						<%
+							globaz.framework.controller.FWController controller = (globaz.framework.controller.FWController) session.getAttribute("objController");
+							globaz.globall.db.BSession objSession = (globaz.globall.db.BSession)controller.getSession();
+							boolean showAdmin = objSession.hasRight("fx", globaz.framework.secure.FWSecureConstants.READ);
+							showAdmin |= objSession.hasRight("fx.job.queue", globaz.framework.secure.FWSecureConstants.READ);
+							showAdmin |= objSession.hasRight("fx.job.job", globaz.framework.secure.FWSecureConstants.READ);
+							showAdmin |= objSession.hasRight("fx.publish.queue", globaz.framework.secure.FWSecureConstants.READ);
+							showAdmin |= objSession.hasRight("fx.publish.job", globaz.framework.secure.FWSecureConstants.READ);
+							showAdmin |= objSession.hasRight("fx.user.user.showpasswordupdate", globaz.framework.secure.FWSecureConstants.READ);
+							
+						if (showAdmin) {%>
+							<li>
+							<a href="<%=request.getContextPath()%>/fx" target="_top">
+								Administration
+							</a>
+							</li>
+						<%}%>
+
+						<%if (objSession.hasRight("naos", globaz.framework.secure.FWSecureConstants.READ)) {%>
+							<li>
+							<a href="<%=request.getContextPath()%>/naos" target="_top">
+								Affiliation
+							</a>
+							</li>
+						<%}%>
+						
+						<%if (objSession.hasRight("al", globaz.framework.secure.FWSecureConstants.READ)) {%>
+							<li>
+							<a href="<%=request.getContextPath()%>/al" target="_top">
+								Allocations familiales
+							</a>
+							</li>
+						<%} else if(objSession.hasRight("al.annoncesRafam.annonceRafamED", globaz.framework.secure.FWSecureConstants.READ)) { %>
+							<li>
+							<a href="<%=request.getContextPath()%>/al" target="_top">
+								Annonces af-delegue
+							</a>
+							</li>
+						<%} %>
+						
+						<%if (objSession.hasRight("apg", globaz.framework.secure.FWSecureConstants.READ)) {%>
+							<li>
+							<a href="<%=request.getContextPath()%>/apg?typePrestation=APG" target="_top">
+								Allocation pertes de gains
+							</a>
+							</li>
+							<li>
+							<a href="<%=request.getContextPath()%>/apg?typePrestation=MATERNITE" target="_top">
+								Allocation Maternité
+							</a>
+							</li>
+						<%}%>
+
+						<%if (objSession.hasRight("hermes", globaz.framework.secure.FWSecureConstants.READ)) {%>
+							<li>
+							<a href="<%=request.getContextPath()%>/hermes" target="_top">
+								ARC/ZAS
+							</a>
+							</li>
+						<%}%>
+						
+						<%if (objSession.hasRight("osiris", globaz.framework.secure.FWSecureConstants.READ)) {%>
+							<li>
+							<a href="<%=request.getContextPath()%>/osiris" target="_top">
+								Comptabilit&eacute; auxiliaire
+							</a>
+							</li>
+						<%}%>
+						
+						<%if (objSession.hasRight("lynx", globaz.framework.secure.FWSecureConstants.READ)) {%>
+							<li>
+							<a href="<%=request.getContextPath()%>/lynx" target="_top">
+								Comptabilit&eacute; fournisseur
+							</a>
+							</li>
+						<%}%>
+
+						<%if (objSession.hasRight("helios", globaz.framework.secure.FWSecureConstants.READ)) {%>
+							<li>
+							<a href="<%=request.getContextPath()%>/helios" target="_top">
+								Comptabilit&eacute; g&eacute;n&eacute;rale
+							</a>
+							</li>
+						<%}%>
+
+						<%if (objSession.hasRight("pavo", globaz.framework.secure.FWSecureConstants.READ)) {%>
+							<li>
+							<a href="<%=request.getContextPath()%>/pavo" target="_top">
+								Comptes individuels
+							</a>
+							</li>
+						<%}%>
+						<%if (objSession.hasRight("hercule", globaz.framework.secure.FWSecureConstants.READ)) {%>
+							<li>
+							<a href="<%=request.getContextPath()%>/hercule" target="_top">
+								Contrôle d'employeur
+							</a>
+							</li>
+						<%}%>
+						<%if (objSession.hasRight("aquila", globaz.framework.secure.FWSecureConstants.READ)) {%>
 							<%
-								globaz.framework.controller.FWController controller = (globaz.framework.controller.FWController) session.getAttribute("objController");
-								globaz.globall.db.BSession objSession = (globaz.globall.db.BSession)controller.getSession();
-								boolean showAdmin = objSession.hasRight("fx", globaz.framework.secure.FWSecureConstants.READ);
-								showAdmin |= objSession.hasRight("fx.job.queue", globaz.framework.secure.FWSecureConstants.READ);
-								showAdmin |= objSession.hasRight("fx.job.job", globaz.framework.secure.FWSecureConstants.READ);
-								showAdmin |= objSession.hasRight("fx.publish.queue", globaz.framework.secure.FWSecureConstants.READ);
-								showAdmin |= objSession.hasRight("fx.publish.job", globaz.framework.secure.FWSecureConstants.READ);
-								showAdmin |= objSession.hasRight("fx.user.user.showpasswordupdate", globaz.framework.secure.FWSecureConstants.READ);
+							try {
+								globaz.globall.db.GlobazServer.getCurrentSystem().getApplication("AQUILA");
 							%>
-							<%if (showAdmin) {%>
-								<a href="#" id="iditem88390232" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88390232,'#D7E4FF',1);selected=this.children.iditem88390232;" onblur="javascript:changeStyle(this.children.iditem88390232,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/fx');">
-									<div id="iditem88390232" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/fx');">
-										Administration
-									</div>
+							    <li>
+								<a href="<%=request.getContextPath()%>/aquila" target="_top">
+									Contentieux
 								</a>
-							<%}%>
+							    </li>
+							<%
+							} catch (Exception e) {
+								// rien faire, pas d'aquila, ok.
+							}
+							%>
+						<%}%>
 
-							<%if (objSession.hasRight("naos", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88387848" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88387848,'#D7E4FF',1);selected=this.children.iditem88387848;" onblur="javascript:changeStyle(this.children.iditem88387848,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/naos');">
-									<div id="iditem88387848" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/naos');">
-										Affiliation
-									</div>
-								</a>
-							<%}%>
-							<%if (objSession.hasRight("al", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						<%if (objSession.hasRight("phenix", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/phenix" target="_top">
+								Cotisations personnelles
+							</a>
+						    </li>
+						<%}%>
+						
+						<%if (objSession.hasRight("draco", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/draco" target="_top">
+								D&eacute;claration de salaires
+							</a>
+						    </li>
+						<%}%>
+						<%if (objSession.hasRight("orion", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/orion" target="_top">
+									E-Business
+							</a>
+						    </li>
+						<%}%>
+						<%if (objSession.hasRight("musca", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/musca" target="_top">
+								Facturation
+							</a>
+						    </li>
+						<%}%>
 
-								<a href="#" id="iditem88347310" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88347310,'#D7E4FF',1);selected=this.children.iditem88347310;" onblur="javascript:changeStyle(this.children.iditem88347310,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/al');">
-									<div id="iditem88347310" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/al');">
-										Allocations familiales
-									</div>
-								</a>
-							<%}else if(objSession.hasRight("al.annoncesRafam.annonceRafamED", globaz.framework.secure.FWSecureConstants.READ)) {%>
-									<a href="#" id="iditem88347310" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88347310,'#D7E4FF',1);selected=this.children.iditem88347310;" onblur="javascript:changeStyle(this.children.iditem88347310,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/al');">
-									<div id="iditem88347310" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/al');">
-										Annonces af-delegue
-									</div>
-								</a>
-							<%} %>
-							
-							<%if (objSession.hasRight("apg", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88387866" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88387866,'#D7E4FF',1);selected=this.children.iditem88387866;" onblur="javascript:changeStyle(this.children.iditem88387866,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/apg?typePrestation=APG');">
-									<div id="iditem88387866" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/apg?typePrestation=APG');">
-										Allocation pertes de gains
-									</div>
-								</a>
-								<a href="#" id="iditem88387877" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88387877,'#D7E4FF',1);selected=this.children.iditem88387877;" onblur="javascript:changeStyle(this.children.iditem88387877,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/apg?typePrestation=MATERNITE');">
-									<div id="iditem88387877" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/apg?typePrestation=MATERNITE');">
-										Allocation Maternité
-									</div>
-								</a>
-							<%}%>
+						<%if (objSession.hasRight("leo", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/leo" target="_top">
+								Gestion des envois
+							</a>
+						    </li>
+						<%}%>
 
-							<%if (objSession.hasRight("hermes", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88385920" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88385920,'#D7E4FF',1);selected=this.children.iditem88385920;" onblur="javascript:changeStyle(this.children.iditem88385920,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/hermes');">
-									<div id="iditem88385920" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/hermes');">
-										ARC/ZAS
-									</div>
-								</a>
-							<%}%>
-							
-							<%if (objSession.hasRight("osiris", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88352696" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88352696,'#D7E4FF',1);selected=this.children.iditem88352696;" onblur="javascript:changeStyle(this.children.iditem88352696,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/osiris');">
-									<div id="iditem88352696" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/osiris');">
-										Comptabilit&eacute; auxiliaire
-									</div>
-								</a>
-							<%}%>
-							
-							<%if (objSession.hasRight("lynx", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88352777" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88352777,'#D7E4FF',1);selected=this.children.iditem88352777;" onblur="javascript:changeStyle(this.children.iditem88352777,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/lynx');">
-									<div id="iditem88352777" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/lynx');">
-										Comptabilit&eacute; fournisseur
-									</div>
-								</a>
-							<%}%>
+						<%if (objSession.hasRight("campus", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/campus" target="_top">
+								Gestion des étudiants
+							</a>
+						    </li>
+						<%}%>
 
-							<%if (objSession.hasRight("helios", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem33517784" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem33517784,'#D7E4FF',1);selected=this.children.iditem33517784;" onblur="javascript:changeStyle(this.children.iditem33517784,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/helios');">
-									<div id="iditem33517784" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/helios');">
-										Comptabilit&eacute; g&eacute;n&eacute;rale
-									</div>
-								</a>
-							<%}%>
+						<%if (objSession.hasRight("pyxis", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/pyxis" target="_top">
+								Gestion des tiers
+							</a>
+						    </li>
+						<%}%>
 
-							<%if (objSession.hasRight("pavo", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88392528" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88392528,'#D7E4FF',1);selected=this.children.iditem88392528;" onblur="javascript:changeStyle(this.children.iditem88392528,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/pavo');">
-									<div id="iditem88392528" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/pavo');">
-										Comptes individuels
-									</div>
-								</a>
-							<%}%>
-							<%if (objSession.hasRight("hercule", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88392529" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88392529,'#D7E4FF',1);selected=this.children.iditem88392529;" onblur="javascript:changeStyle(this.children.iditem88392529,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/hercule');">
-									<div id="iditem88392529" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/hercule');">
-										Contrôle d'employeur
-									</div>
-								</a>
-							<%}%>							
-							<%if (objSession.hasRight("aquila", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<%
-								try {
-									globaz.globall.db.GlobazServer.getCurrentSystem().getApplication("AQUILA");
-								%>
-									<a href="#" id="iditem88392588" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88392588,'#D7E4FF',1);selected=this.children.iditem88392588;" onblur="javascript:changeStyle(this.children.iditem88392588,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/aquila');">
-										<div id="iditem88392588" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/aquila');">
-											Contentieux
-										</div>
-									</a>
-								<%
-								} catch (Exception e) {
-									// rien faire, pas d'aquila, ok.
-								}
-								%>
-							<%}%>
+						<%if (objSession.hasRight("ij", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/ij" target="_top">
+								Indemnités journalières
+							</a>
+						    </li>
+						<%}%>
 
-							<%if (objSession.hasRight("phenix", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88391944" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88391944,'#D7E4FF',1);selected=this.children.iditem88391944;" onblur="javascript:changeStyle(this.children.iditem88391944,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/phenix');">
-									<div id="iditem88391944" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/phenix');">
-										Cotisations personnelles
-									</div>
-								</a>
-							<%}%>
-							
-							<%if (objSession.hasRight("draco", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88374936" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88374936,'#D7E4FF',1);selected=this.children.iditem88374936;" onblur="javascript:changeStyle(this.children.iditem88374936,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/draco');">
-									<div id="iditem88374936" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/draco');">
-										D&eacute;claration de salaires
-									</div>
-								</a>
-							<%}%>
-								<%if (objSession.hasRight("orion", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88374937" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88374937,'#D7E4FF',1);selected=this.children.iditem88374937;" onblur="javascript:changeStyle(this.children.iditem88374937,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/draco');">
-									<div id="iditem88374937" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/orion');">
-										E-Business
-									</div>
-								</a>
-							<%}%>
-							<%if (objSession.hasRight("musca", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88340536" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88340536,'#D7E4FF',1);selected=this.children.iditem88340536;" onblur="javascript:changeStyle(this.children.iditem88340536,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/musca');">
-									<div id="iditem88340536" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/musca');">
-										Facturation
-									</div>
-								</a>
-							<%}%>
+						<%if (objSession.hasRight("libra", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/libra" target="_top">
+								Journalisations
+							</a>
+						    </li>
+						<%}%>
+						
+						<%if (objSession.hasRight("vulpecula", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/vulpecula" target="_top">
+								M&eacute;tier
+							</a>
+						    </li>
+						<%}%>
+						
+						<%if (objSession.hasRight("pegasus", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/pegasus" target="_top">
+								PC
+							</a>
+						    </li>
+						<%}%>
+						
+						<%if (objSession.hasRight("perseus", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/perseus" target="_top">
+								PC Familles
+							</a>
+						    </li>
+						<%}%>
+						
+						<%if (objSession.hasRight("cygnus", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/cygnus" target="_top">
+								RFM
+							</a>
+						    </li>
+						<%}%>
 
-							<%if (objSession.hasRight("leo", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88347288" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88347288,'#D7E4FF',1);selected=this.children.iditem88347288;" onblur="javascript:changeStyle(this.children.iditem88347288,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/leo');">
-									<div id="iditem88347288" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/leo');">
-										Gestion des envois
-									</div>
-								</a>
-							<%}%>
+						<%if (objSession.hasRight("amal", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/amal" target="_top">
+								R&eacute;ductions des primes LAMal
+							</a>
+						    </li>
+						<%}%>
+						
+						<%if (objSession.hasRight("corvus", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/corvus" target="_top">
+								Rentes
+							</a>
+						    </li>
+						<%}%>
 
-							<%if (objSession.hasRight("campus", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88347311" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88347311,'#D7E4FF',1);selected=this.children.iditem88347311;" onblur="javascript:changeStyle(this.children.iditem88347311,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/campus');">
-									<div id="iditem88347311" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/campus');">
-										Gestion des étudiants
-									</div>
-								</a>
-							<%}%>
-
-							<%if (objSession.hasRight("pyxis", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88351008" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88351008,'#D7E4FF',1);selected=this.children.iditem88351008;" onblur="javascript:changeStyle(this.children.iditem88351008,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/pyxis');">
-									<div id="iditem88351008" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/pyxis');">
-										Gestion des tiers
-									</div>
-								</a>
-							<%}%>
-
-							<%if (objSession.hasRight("ij", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88347299" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88347299,'#D7E4FF',1);selected=this.children.iditem88347299;" onblur="javascript:changeStyle(this.children.iditem88347299,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/ij');">
-									<div id="iditem88347299" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/ij');">
-										Indemnités journalières
-									</div>
-								</a>
-							<%}%>
-
-							<%if (objSession.hasRight("libra", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88347312" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88347312,'#D7E4FF',1);selected=this.children.iditem88347312;" onblur="javascript:changeStyle(this.children.iditem88347312,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/libra');">
-									<div id="iditem88347312" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/libra');">
-										Journalisations
-									</div>
-								</a>
-							<%}%>
-							
-							<%if (objSession.hasRight("vulpecula", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem69696969" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem69696969,'#D7E4FF',1);selected=this.children.iditem69696969;" onblur="javascript:changeStyle(this.children.iditem69696969,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/vulpecula');">
-									<div id="iditem69696969" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/vulpecula');">
-										M&eacute;tier
-									</div>
-								</a>
-							<%}%>
-							
-							<%if (objSession.hasRight("pegasus", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88347313" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88347313,'#D7E4FF',1);selected=this.children.iditem88347313;" onblur="javascript:changeStyle(this.children.iditem88347313,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/pegasus');">
-									<div id="iditem88347313" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/pegasus');">
-										PC
-									</div>
-								</a>
-							<%}%>
-							
-							<%if (objSession.hasRight("perseus", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88347314" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88347314,'#D7E4FF',1);selected=this.children.iditem88347314;" onblur="javascript:changeStyle(this.children.iditem88347314,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/perseus');">
-									<div id="iditem88347314" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/perseus');">
-										PC Familles
-									</div>
-								</a>
-							<%}%>
-							
-							<%if (objSession.hasRight("cygnus", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88347315" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88347315,'#D7E4FF',1);selected=this.children.iditem88347315;" onblur="javascript:changeStyle(this.children.iditem88347315,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/cygnus');">
-									<div id="iditem88347315" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/cygnus');">
-										RFM
-									</div>
-								</a>
-							<%}%>
-
-							<%if (objSession.hasRight("amal", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88347319" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88347319,'#D7E4FF',1);selected=this.children.iditem88347319;" onblur="javascript:changeStyle(this.children.iditem88347319,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/amal');">
-									<div id="iditem88347319" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/amal');">
-										R&eacute;ductions des primes LAMal
-									</div>
-								</a>
-							<%}%>
-							
-							<%if (objSession.hasRight("corvus", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88347316" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88347316,'#D7E4FF',1);selected=this.children.iditem88347316;" onblur="javascript:changeStyle(this.children.iditem88347316,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/corvus');">
-									<div id="iditem88347316" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/corvus');">
-										Rentes
-									</div>
-								</a>
-							<%}%>
-
-							<%if (objSession.hasRight("hera", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88347300" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88347300,'#D7E4FF',1);selected=this.children.iditem88347300;" onblur="javascript:changeStyle(this.children.iditem88347300,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/hera');">
-									<div id="iditem88347300" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/hera');">
-										Situation familiale
-									</div>
-								</a>
-							<%}%>
-							
-							
-
-							<%if (objSession.hasRight("lacerta", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88347317" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88347317,'#D7E4FF',1);selected=this.children.iditem88347317;" onblur="javascript:changeStyle(this.children.iditem88347317,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/lacerta');">
-									<div id="iditem88347317" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/lacerta');">
-										Fichier central
-									</div>
-								</a>
-							<%}%>
-							
-							<%if (objSession.hasRight("tucana", globaz.framework.secure.FWSecureConstants.READ)) {%>
-								<a href="#" id="iditem88347318" onfocus="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);changeStyle(this.children.iditem88347318,'#D7E4FF',1);selected=this.children.iditem88347318;" onblur="javascript:changeStyle(this.children.iditem88347318,'#B3C4DB',0)" onkeypress="javascript:top.location.replace('<%=request.getContextPath()%>/tucana');">
-									<div id="iditem88347318" class="style1" onMouseMove="javascript:if(selected!='') changeStyle(selected,'#B3C4DB',0);selected=this;changeStyle(this,'#D7E4FF',1);" onMouseOut="javascript:changeStyle(this,'#B3C4DB',0)" onClick="javascript:top.location.replace('<%=request.getContextPath()%>/tucana');">
-										Tucana
-									</div>
-								</a>
-							<%}%>
-											
-
-							</td>
-						</tr>
-						<tr>
-							<td bgcolor="#444444" />
-						</tr>
-						<tr>
-							<td bgcolor="#888888" />
-						</tr>
-						<tr>
-							<td bgcolor="#aaaaaa" />
-						</tr>
-						<tr>
-							<td bgcolor="#cccccc" />
-						</tr>
-						<tr>
-							<td bgcolor="#dddddd" />
-						</tr>
-						<tr>
-							<td bgcolor="#eeeeee" />
-						</tr>
-						<tr style="background-color: #eee; height: 100%; width: 100%">
-							<td />
-						</tr>
-					</table>
+						<%if (objSession.hasRight("hera", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/hera" target="_top">
+								Situation familiale
+							</a>
+						    </li>
+						<%}%>
+						
+						<%if (objSession.hasRight("lacerta", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/lacerta" target="_top">
+								Fichier central
+							</a>
+						    </li>
+						<%}%>
+						
+						<%if (objSession.hasRight("tucana", globaz.framework.secure.FWSecureConstants.READ)) {%>
+						    <li>
+							<a href="<%=request.getContextPath()%>/tucana" target="_top">
+								Tucana
+							</a>
+						    </li>
+						<%}%>
+					</ul>
 				</td>
 			</tr>
 		</table>
