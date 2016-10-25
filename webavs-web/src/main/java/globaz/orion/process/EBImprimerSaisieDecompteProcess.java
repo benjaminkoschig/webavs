@@ -7,7 +7,6 @@ import globaz.naos.application.AFApplication;
 import globaz.orion.mappingXmlml.EBXmlmlRecapSaisieDecompte;
 import globaz.orion.utils.EBExcelmlUtils;
 import globaz.webavs.common.CommonExcelmlContainer;
-import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.orion.business.models.sdd.RecapSaisieDecompte;
 
@@ -25,6 +24,8 @@ public class EBImprimerSaisieDecompteProcess extends BProcess {
     public static final String SAISIE_LE = "SAISIE_LE";
     public static final String ERREUR = "ERREUR";
 
+    private List<RecapSaisieDecompte> listeRecapSaisieDecompte;
+
     @Override
     protected void _executeCleanUp() {
         // DO nothing
@@ -32,17 +33,11 @@ public class EBImprimerSaisieDecompteProcess extends BProcess {
 
     @Override
     protected boolean _executeProcess() throws Exception {
+        if (listeRecapSaisieDecompte == null || listeRecapSaisieDecompte.isEmpty()) {
+            return true;
+        }
 
-        List<RecapSaisieDecompte> listeRecapSaisieDecompte;
-
-        RecapSaisieDecompte saisie = new RecapSaisieDecompte.RecapSaisieDecompteBuilder().numeroAffilie("401.1005")
-                .nomPrenom("Sullivann Corneille").localite("Maiche").periode("05.2016").type("Périodique")
-                .dateSaisie("05.09.2016").erreur("Aucune").build();
-
-        listeRecapSaisieDecompte = new ArrayList<RecapSaisieDecompte>();
-        listeRecapSaisieDecompte.add(saisie);
-
-        return createDocument(listeRecapSaisieDecompte, 1);
+        return createDocument(listeRecapSaisieDecompte, listeRecapSaisieDecompte.size());
     }
 
     private boolean createDocument(List<RecapSaisieDecompte> listeRecapSaisieDecompte, int nbCasTraites)
@@ -82,6 +77,10 @@ public class EBImprimerSaisieDecompteProcess extends BProcess {
     @Override
     public GlobazJobQueue jobQueue() {
         return GlobazJobQueue.READ_SHORT;
+    }
+
+    public void setListeRecapSaisieDecompte(List<RecapSaisieDecompte> listeRecapSaisieDecompte) {
+        this.listeRecapSaisieDecompte = listeRecapSaisieDecompte;
     }
 
 }
