@@ -1,6 +1,8 @@
 package globaz.phenix.util;
 
+import globaz.common.db.CommonLogWIRR;
 import globaz.globall.db.BSession;
+import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.crypto.JadeDefaultEncrypters;
 import java.io.FileInputStream;
@@ -21,6 +23,45 @@ public class WIRRServiceCallUtil {
     private static final String SSL_SOCKET_FACTORY_ORACLE_JDK = "com.sun.xml.ws.transport.https.client.SSLSocketFactory";
     private static final String SSL_SOCKET_FACTORY_JAX_WS_RI = "com.sun.xml.internal.ws.transport.https.client.SSLSocketFactory";
     private static final String WIRR_WSDL_RESOURCE_PATH = "wsdl/wirr_wsdl.xml";
+
+    private static final void logCallWIRR(BSession session, Delivery requestDelivery) {
+
+        BTransaction wirrTransaction = null;
+        try {
+
+            wirrTransaction = new BTransaction(session);
+            wirrTransaction.openTransaction();
+
+            CommonLogWIRR logWIRREntity = new CommonLogWIRR();
+            logWIRREntity.setSession(session);
+            logWIRREntity.setVisa(session.getUserName());
+            logWIRREntity.setPrenomNom(session.getUserFullName());
+            logWIRREntity.setSedexId(CommonProperties.WIRRWEBSERVICE_SEDEX_SENDER_ID.getValue());
+            logWIRREntity.setMessageId(requestDelivery.getHeader().getMessageId());
+            logWIRREntity.add(wirrTransaction);
+
+        } catch (Exception e) {
+            System.out.println("Error in login call to webservice WIRR : " + e.getMessage());
+        } finally {
+
+            try {
+
+                if (wirrTransaction.isRollbackOnly() || wirrTransaction.hasErrors()) {
+                    System.out.println("WIRRTransaction has errors : " + wirrTransaction.getErrors().toString());
+                    wirrTransaction.rollback();
+                } else {
+                    wirrTransaction.commit();
+                }
+
+                wirrTransaction.closeTransaction();
+
+            } catch (Exception e2) {
+                System.out.println("Error with WIRRTransaction : " + e2.getMessage());
+            }
+
+        }
+
+    }
 
     public static final WIRRDataBean searchRenteWIRR(BSession session, WIRRDataBean wirrDataBean) {
 
@@ -62,6 +103,7 @@ public class WIRRServiceCallUtil {
             }
 
             Delivery requestDelivery = WIRRServiceMappingUtil.convertWirrDataBeanToRequestDelivery(wirrDataBean);
+            logCallWIRR(session, requestDelivery);
             ch.admin.bsv.xmlns.ebsv_2028_000102._1.Delivery responseDelivery = port.searchData(requestDelivery);
 
             wirrDataBean = WIRRServiceMappingUtil.putResponseDeliveryResultInWirrDataBean(session, responseDelivery,
