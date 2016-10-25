@@ -10,11 +10,11 @@ public class LigneFichierTest {
 
     @Test
     public void testLigneFichierCorrect() throws Exception {
-        String l = "1;Courrendlin-Val Terbi;756.0000.0000.00;Tartempion Juliette;5.00;01.01.2017;31.01.2017;6;30.00;25.02.2017;;";
+        String l = "1;Courrendlin-Val Terbi;756.0000.0000.00;Tartempion Juliette;5.00;01.01.2017;06.01.2017;6;30.00;25.02.2017;;";
         String[] values = l.split(";");
         LigneFichier ligne = new LigneFichier(values, 0);
         assertThat(ligne.getDateDebut()).isEqualTo(new Date("01.01.2017"));
-        assertThat(ligne.getDateFin()).isEqualTo(new Date("31.01.2017"));
+        assertThat(ligne.getDateFin()).isEqualTo(new Date("06.01.2017"));
         assertThat(ligne.getDateDecompte()).isEqualTo(new Date("25.02.2017"));
         assertThat(ligne.getFraisJournalier()).isEqualTo(new Montant("5.00"));
         assertThat(ligne.getNbJours()).isEqualTo(6);
