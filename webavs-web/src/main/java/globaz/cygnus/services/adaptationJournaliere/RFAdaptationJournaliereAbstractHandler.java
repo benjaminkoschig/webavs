@@ -30,9 +30,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import ch.globaz.pegasus.business.constantes.IPCDecision;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
@@ -53,6 +55,8 @@ public abstract class RFAdaptationJournaliereAbstractHandler {
     // Liste de logs, String[idAdaptation,idTiersBeneficiaire,idDecision,libelle]
     protected List<String[]> logsList = null;
     protected BSession session = null;
+
+    protected Map<String, List<String>> idPeriodesForIdQD = new HashMap<String, List<String>>();
 
     protected BTransaction transaction = null;
     protected final String TYPE_MUTATION_COMPRIS_DANS_PERIODE_PC = "COMPRIS_DANS_PERIODE";
@@ -181,12 +185,6 @@ public abstract class RFAdaptationJournaliereAbstractHandler {
                             mutationPeriodeCourante.getIdPeriode(), mutationPeriodeCourante.getIdFamille(),
                             IRFQd.CS_SUPPRESSION, mutationPeriodeCourante.getDateDebutQd1(),
                             mutationPeriodeCourante.getDateFinQd1());
-
-                    RFUtils.ajouterLogAdaptation(FWViewBeanInterface.WARNING,
-                            getContext().getIdAdaptationJournaliere(), idTiers, getContext().getNssTiersBeneficiaire(),
-                            getContext().getIdDecisionPc(), getContext().getNumeroDecisionPc(),
-                            "Suppresion de la période de validité n° " + periodeQdCouranteData.getId_periode()
-                                    + " de la Qd N° " + periodeQdCouranteData.getId_qd(), getLogsList());
 
                     ajouterLogRegimeImpacte(periodeQdCouranteData, idTiers);
 
@@ -759,12 +757,20 @@ public abstract class RFAdaptationJournaliereAbstractHandler {
             rfNouvellePeriodeValiditeQdPrincipale.setIdFamilleModification(retrieveProchainIdFamillePeriodeVal());
         }
 
-        if (!IRFQd.CS_SUPPRESSION.equals(typeDeModification)) {
-            rfNouvellePeriodeValiditeQdPrincipale.setDateDebut(dateDebut);
-            rfNouvellePeriodeValiditeQdPrincipale.setDateFin(dateFin);
-        }
+        rfNouvellePeriodeValiditeQdPrincipale.setDateDebut(dateDebut);
+        rfNouvellePeriodeValiditeQdPrincipale.setDateFin(dateFin);
 
         rfNouvellePeriodeValiditeQdPrincipale.add(getTransaction());
+
+        if (IRFQd.CS_SUPPRESSION.equals(typeDeModification)) {
+            List<String> idPeriodes = new ArrayList<String>();
+            if (idPeriodesForIdQD.containsKey(idQd)) {
+                idPeriodes = idPeriodesForIdQD.get(idQd);
+            }
+
+            idPeriodes.add(rfNouvellePeriodeValiditeQdPrincipale.getIdPeriodeValidite());
+            idPeriodesForIdQD.put(idQd, idPeriodes);
+        }
 
         return rfNouvellePeriodeValiditeQdPrincipale.getIdPeriodeValidite();
 
@@ -888,4 +894,7 @@ public abstract class RFAdaptationJournaliereAbstractHandler {
         this.transaction = transaction;
     }
 
+    public Map<String, List<String>> getIdPeriodesForIdQD() {
+        return idPeriodesForIdQD;
+    }
 }

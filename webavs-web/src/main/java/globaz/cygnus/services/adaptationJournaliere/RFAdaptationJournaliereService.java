@@ -1,14 +1,19 @@
 package globaz.cygnus.services.adaptationJournaliere;
 
 import globaz.cygnus.api.adaptationsJournalieres.IRFAdaptationJournaliere;
+import globaz.cygnus.api.qds.IRFQd;
 import globaz.cygnus.db.adaptationsJournalieres.RFAdaptationJournaliere;
 import globaz.cygnus.db.adaptationsJournalieres.RFAdaptationJournaliereManager;
 import globaz.cygnus.db.adaptationsJournalieres.RFDateTraitementAdaptationJournaliere;
 import globaz.cygnus.db.adaptationsJournalieres.RFDateTraitementAdaptationJournaliereManager;
+import globaz.cygnus.db.qds.RFPeriodeValiditeQdPrincipale;
+import globaz.cygnus.db.qds.RFPeriodeValiditeQdPrincipaleManager;
+import globaz.cygnus.db.qds.RFQd;
 import globaz.cygnus.services.RFDecisionPcService;
 import globaz.cygnus.utils.RFUtils;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.api.BITransaction;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
@@ -25,7 +30,10 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import org.apache.log4j.Logger;
 import ch.globaz.pegasus.business.constantes.IPCDecision;
 import ch.globaz.pegasus.business.vo.decision.DecisionPcVO;
 
@@ -51,6 +59,8 @@ public class RFAdaptationJournaliereService {
 
     private BITransaction transaction = null;
 
+    private Map<String, List<RFQdRemovedPeriodeData>> qdsDuTiersATraiter = new ConcurrentHashMap<String, List<RFQdRemovedPeriodeData>>();
+
     public RFAdaptationJournaliereService(String idGestionnaire, BSession session, BITransaction transaction) {
         super();
         this.session = session;
@@ -61,10 +71,6 @@ public class RFAdaptationJournaliereService {
     private void ajouterAdaptationJournaliere(DecisionPcVO decisionPcVoCourant) throws ParseException, Exception {
         RFAdaptationJournaliere rfAdaJou = new RFAdaptationJournaliere();
         rfAdaJou.setSession(getSession());
-
-        // System.out.println("NoDéc: " + decisionPcVoCourant.getNoDecision() + " Ddéb: "+
-        // decisionPcVoCourant.getDateDebut() + " TypePC(sup:02): "+
-        // decisionPcVoCourant.getCsTypeDecision());
 
         rfAdaJou.setDateDeDebut("01." + decisionPcVoCourant.getDateDebut());
         String dateFinStr = "";
@@ -240,9 +246,18 @@ public class RFAdaptationJournaliereService {
 
                     transaction.openTransaction();
 
-                    contextCourant = RFAdaptationJournaliereProvider.getHandler(contextCourant, session,
-                            (BTransaction) getTransaction(), logsList, contextCourant.getGestionnaire(), false)
-                            .executerAdaptation();
+                    RFAdaptationJournaliereAbstractHandler handler = RFAdaptationJournaliereProvider.getHandler(
+                            contextCourant, session, (BTransaction) getTransaction(), logsList,
+                            contextCourant.getGestionnaire(), false);
+
+                    contextCourant = handler.executerAdaptation();
+
+                    // On ajoute dans notre map les QD pour un tiers qui doivent être revu afin de savoir si il faut les
+                    // clôturer et également supprimé les dernieres periodes qui sont de type suppression
+                    if (!handler.getIdPeriodesForIdQD().isEmpty()) {
+                        putInMap(contextCourant.getIdTiersBeneficiaire(), handler.getIdPeriodesForIdQD(),
+                                contextCourant);
+                    }
 
                     if (contextCourant.getEtat().equals(IRFAdaptationJournaliere.ETAT_ECHEC) || hasTransactionErrors()) {
 
@@ -301,6 +316,124 @@ public class RFAdaptationJournaliereService {
             }
         }
 
+        // Traitement de chaque QD d'un tiers bénéficiaire afin de savoir si ils doivent être clôturer ou non et de 
+        // supprimer les periodes de type suppression si elles sont les dernieres des periodes
+        majQDForThoseHavingPeriodeTypeSuppression();
+    }
+
+    private void majQDForThoseHavingPeriodeTypeSuppression() throws Exception {
+
+        // Boucle sur chaque tiers
+        for (final List<RFQdRemovedPeriodeData> qdsDuTiers : qdsDuTiersATraiter.values()) {
+
+            // Boucle sur chaque QD du tiers à devoir vérifier son état
+            for (final RFQdRemovedPeriodeData qdCourant : qdsDuTiers) {
+                try {
+                    transaction = (session).newTransaction();
+
+                    if (getTransaction() != null) {
+                        transaction.openTransaction();
+                        try {
+                            // Si on n'arrive pas à récuperer la dernière période, c'est que la QD doit être en état
+                            // clôturé
+                            RFPeriodeValiditeQdPrincipaleManager periodeManager = new RFPeriodeValiditeQdPrincipaleManager();
+                            periodeManager.setSession(getSession());
+                            periodeManager.setForIdQd(qdCourant.getIdQd());
+                            periodeManager.setForDerniereVersion(true);
+                            periodeManager.find(BManager.SIZE_USEDEFAULT);
+
+                            // Dans le cas d'une QD qui devrait être clôturé
+                            if (periodeManager.getSize() == 0) {
+                                clotureQD(qdCourant);
+                            }
+                        } catch (Exception e) {
+                            Logger.getLogger(RFAdaptationJournaliereOctroiHandler.class).error(e.getMessage(), e);
+                            RFUtils.ajouterLogAdaptation(
+                                    FWViewBeanInterface.ERROR,
+                                    qdCourant.getContext().getIdAdaptationJournaliere(),
+                                    qdCourant.getContext().getIdTiersBeneficiaire(),
+                                    qdCourant.getContext().getNssTiersBeneficiaire(),
+                                    qdCourant.getContext().getIdDecisionPc(),
+                                    qdCourant.getContext().getNumeroDecisionPc(),
+                                    "RFAdaptationJournaliereService.majDeletedPeriodeAndStateQD(): Problème lors de la mise à jour du status à clotûrer de la QD N° : "
+                                            + qdCourant.getIdQd(), getLogsList());
+                        }
+                    } else {
+
+                        RFUtils.ajouterLogAdaptation(FWViewBeanInterface.OK, qdCourant.getContext()
+                                .getIdAdaptationJournaliere(), qdCourant.getContext().getIdTiersBeneficiaire(),
+                                qdCourant.getContext().getNssTiersBeneficiaire(), qdCourant.getContext()
+                                        .getIdDecisionPc(), qdCourant.getContext().getNumeroDecisionPc(),
+                                "transaction null, Impossible d'effectuer l'adaptation", getLogsList());
+
+                    }
+                } catch (Exception e) {
+                    Logger.getLogger(RFAdaptationJournaliereOctroiHandler.class).error(e.getMessage(), e);
+
+                    reInitTransaction();
+
+                    qdCourant.getContext().setEtat(IRFAdaptationJournaliere.ETAT_ECHEC);
+                    qdCourant.setContext(majEtatAdaptation(qdCourant.getContext()));
+
+                    RFUtils.ajouterLogAdaptation(FWViewBeanInterface.ERROR, qdCourant.getContext()
+                            .getIdAdaptationJournaliere(), qdCourant.getContext().getIdTiersBeneficiaire(), qdCourant
+                            .getContext().getNssTiersBeneficiaire(), qdCourant.getContext().getIdDecisionPc(),
+                            qdCourant.getContext().getNumeroDecisionPc(), e.getMessage(), getLogsList());
+
+                    reCommitTransaction();
+
+                } finally {
+                    transaction.closeTransaction();
+                }
+            }
+        }
+    }
+
+    private void clotureQD(final RFQdRemovedPeriodeData qdCourant) throws Exception {
+        // Recherche de la QD
+        RFQd qd = new RFQd();
+        qd.setId(qdCourant.getIdQd());
+        qd.setSession(getSession());
+        qd.retrieve(transaction);
+
+        if (!qd.isNew() && !IRFQd.CS_ETAT_QD_CLOTURE.equals(qd.getCsEtat())) {
+            qd.setCsEtat(IRFQd.CS_ETAT_QD_CLOTURE);
+            qd.update(transaction);
+
+            removePeriodesTypeSuppression(qdCourant);
+
+            transaction.commit();
+        }
+    }
+
+    private void removePeriodesTypeSuppression(RFQdRemovedPeriodeData qdCourant) throws Exception {
+        for (String idPeriodeToDelete : qdCourant.getIdPeriodes()) {
+            RFPeriodeValiditeQdPrincipale periode = new RFPeriodeValiditeQdPrincipale();
+            periode.setSession(getSession());
+            periode.setIdPeriodeValidite(idPeriodeToDelete);
+            periode.retrieve(transaction);
+
+            if (!periode.isNew()) {
+                periode.delete(transaction);
+            }
+        }
+    }
+
+    private void putInMap(String idTiersBeneficiaire, Map<String, List<String>> idPeriodesForQD,
+            RFAdaptationJournaliereContext context) {
+        List<RFQdRemovedPeriodeData> qds = new ArrayList<RFQdRemovedPeriodeData>();
+
+        if (qdsDuTiersATraiter.containsKey(idTiersBeneficiaire)) {
+            qds.addAll(qdsDuTiersATraiter.get(idTiersBeneficiaire));
+        }
+
+        for (final String idQdCourant : idPeriodesForQD.keySet()) {
+            RFQdRemovedPeriodeData qdCourant = new RFQdRemovedPeriodeData(idQdCourant, context,
+                    idPeriodesForQD.get(idQdCourant));
+            qds.add(qdCourant);
+        }
+
+        qdsDuTiersATraiter.put(idTiersBeneficiaire, qds);
     }
 
     private List<RFAdaptationJournaliereContext> getContextsListe() {

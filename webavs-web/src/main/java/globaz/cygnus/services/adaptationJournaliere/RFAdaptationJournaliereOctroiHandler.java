@@ -631,17 +631,6 @@ public class RFAdaptationJournaliereOctroiHandler extends RFAdaptationJournalier
                                             mutationPeriodeCourante.getDateDebutQd1(),
                                             mutationPeriodeCourante.getDateFinQd1());
 
-                                    RFUtils.ajouterLogAdaptation(
-                                            FWViewBeanInterface.WARNING,
-                                            getContext().getIdAdaptationJournaliere(),
-                                            getContext().getInfoDroitPcServiceData().getIdTiers(),
-                                            getContext().getNssTiersBeneficiaire(),
-                                            getContext().getIdDecisionPc(),
-                                            getContext().getNumeroDecisionPc(),
-                                            "Suppresion de la période de validité n° "
-                                                    + mutationPeriodeCourante.getIdPeriode() + " de la Qd N° "
-                                                    + mutationPeriodeCourante.getIdQd(), getLogsList());
-
                                 } else {
                                     getContext().setEtat(IRFAdaptationJournaliere.ETAT_ECHEC);
                                     RFUtils.ajouterLogAdaptation(
