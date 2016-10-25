@@ -54,7 +54,7 @@ public class EBTreatPac extends BProcess implements FWViewBeanInterface {
             List<MassesMensuellesPourAVS> saisiesDeMasses = PacServiceImpl.listPacSaisies(getSession());
 
             // Pas de saisie, on fait rien
-            if (saisiesDeMasses.size() == 0) {
+            if (saisiesDeMasses.isEmpty()) {
                 return true;
             }
 
