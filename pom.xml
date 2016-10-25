@@ -55,7 +55,6 @@
 		<simple-output-list.version>1.2.0-SNAPSHOT</simple-output-list.version>
 		<op.version>5.0.3</op.version>
 		<globaz-external-xsd.version>1.2.0</globaz-external-xsd.version>
-		<ch.admin.ofit.anakin.version>1.12.1</ch.admin.ofit.anakin.version>
 
 
 		<!-- CONTINUOUS INTEGRATION -->
@@ -491,12 +490,6 @@
 			</dependency>
 
 			<!-- OFIT -->
-			<dependency>
-				<groupId>ch.admin.ofit.anakin</groupId>
-				<artifactId>Anakin</artifactId>
-				<version>${ch.admin.ofit.anakin.version}</version>
-			</dependency>
-
 			<dependency>
 				<groupId>ch.admin.ofit.anakin</groupId>
 				<artifactId>Arena</artifactId>

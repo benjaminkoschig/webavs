@@ -470,12 +470,12 @@
 			<groupId>ch.globaz</groupId>
 			<artifactId>uidwse</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>ch.globaz</groupId>
- 			<artifactId>wirr-api</artifactId>	
+			<artifactId>wirr-api</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>ch.globaz</groupId>
 			<artifactId>gcom</artifactId>
@@ -506,10 +506,12 @@
 			<groupId>ch.globaz</groupId>
 			<artifactId>journalisation</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>ch.admin.ofit.anakin</groupId>
-			<artifactId>Anakin</artifactId>
-		</dependency>
+ 		<dependency>
+ 			<groupId>ch.admin.ofit.anakin</groupId>
+ 			<artifactId>Anakin</artifactId>
+ 			<version>1.12.2</version>
+ 			<classifier>globaz</classifier>
+ 		</dependency>
 		<dependency>
 			<groupId>ch.admin.ofit.anakin</groupId>
 			<artifactId>Arena</artifactId>
