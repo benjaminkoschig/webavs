@@ -30,6 +30,49 @@ public class LigneFichier implements LigneImport {
     private final NSS numNss;
     private final Periode periode;
 
+    /**
+     * Constructeur
+     * 
+     * @param valueTab
+     * @param numLigne
+     */
+    public LigneFichier(String[] valueTab, Integer numLigne) {
+        numeroLigne = numLigne;
+        orginalValues = valueTab;
+        if (isLigneComplete(valueTab)) {
+
+            numNss = new NSS(valueTab[CellMappingSoinDomicile.NSS.getIndex()]);
+            nomService = toString(CellMappingSoinDomicile.SERVICE);
+            fraisJournalier = newMontant(CellMappingSoinDomicile.FRAIS_JOURNALIER);
+            dateDebut = newDate(CellMappingSoinDomicile.DATE_DEBUT);
+            dateFin = newDate(CellMappingSoinDomicile.DATE_FIN);
+            nbJours = toInteger(CellMappingSoinDomicile.NB_JOURS);
+            total = newMontant(CellMappingSoinDomicile.MONTANT_TOTAL);
+            dateDecompte = newDate(CellMappingSoinDomicile.DATE_DECOMPTE);
+            if (dateFin != null && dateDebut != null) {
+                periode = new Periode(valueTab[CellMappingSoinDomicile.DATE_DEBUT.getIndex()],
+                        valueTab[CellMappingSoinDomicile.DATE_FIN.getIndex()]);
+            } else {
+                periode = null;
+            }
+            checkValues();
+        } else {
+            addErrors("LIGNE_INCOMPLETE");
+            periode = null;
+            numNss = null;
+            nomService = null;
+            fraisJournalier = null;
+            dateDebut = null;
+            dateFin = null;
+            nbJours = null;
+            total = null;
+            dateDecompte = null;
+        }
+        if (!isValid()) {
+            errors.clear();
+        }
+    }
+
     @Override
     public Exception getException() {
         return exception;
@@ -39,6 +82,7 @@ public class LigneFichier implements LigneImport {
         this.exception = exception;
     }
 
+    @Override
     public Montant getTotal() {
         return total;
     }
@@ -93,49 +137,6 @@ public class LigneFichier implements LigneImport {
             return true;
         }
         return !errors.isEmpty();
-    }
-
-    /**
-     * Constructeur
-     * 
-     * @param valueTab
-     * @param numLigne
-     */
-    public LigneFichier(String[] valueTab, Integer numLigne) {
-        numeroLigne = numLigne;
-        orginalValues = valueTab;
-        if (isLigneComplete(valueTab)) {
-
-            numNss = new NSS(valueTab[CellMappingSoinDomicile.NSS.getIndex()]);
-            nomService = toString(CellMappingSoinDomicile.SERVICE);
-            fraisJournalier = newMontant(CellMappingSoinDomicile.FRAIS_JOURNALIER);
-            dateDebut = newDate(CellMappingSoinDomicile.DATE_DEBUT);
-            dateFin = newDate(CellMappingSoinDomicile.DATE_FIN);
-            nbJours = toInteger(CellMappingSoinDomicile.NB_JOURS);
-            total = newMontant(CellMappingSoinDomicile.MONTANT_TOTAL);
-            dateDecompte = newDate(CellMappingSoinDomicile.DATE_DECOMPTE);
-            if (dateFin != null && dateDebut != null) {
-                periode = new Periode(valueTab[CellMappingSoinDomicile.DATE_DEBUT.getIndex()],
-                        valueTab[CellMappingSoinDomicile.DATE_FIN.getIndex()]);
-            } else {
-                periode = null;
-            }
-            checkValues();
-        } else {
-            addErrors("LIGNE_INCOMPLETE");
-            periode = null;
-            numNss = null;
-            nomService = null;
-            fraisJournalier = null;
-            dateDebut = null;
-            dateFin = null;
-            nbJours = null;
-            total = null;
-            dateDecompte = null;
-        }
-        if (!isValid()) {
-            errors.clear();
-        }
     }
 
     @Override
