@@ -31,6 +31,8 @@ public class ObjectFactory {
     private final static QName _WebavsException_QNAME = new QName("http://cotisation.ws.orion.globaz.ch/", "WebavsException");
     private final static QName _FindTauxAssuranceForCotisation_QNAME = new QName("http://cotisation.ws.orion.globaz.ch/", "findTauxAssuranceForCotisation");
     private final static QName _FindTauxAssuranceForCotisationResponse_QNAME = new QName("http://cotisation.ws.orion.globaz.ch/", "findTauxAssuranceForCotisationResponse");
+    private final static QName _FindDecompteMois_QNAME = new QName("http://cotisation.ws.orion.globaz.ch/", "findDecompteMois");
+    private final static QName _FindDecompteMoisResponse_QNAME = new QName("http://cotisation.ws.orion.globaz.ch/", "findDecompteMoisResponse");
     private final static QName _GenererDocumentPucsLisibleResponse_QNAME = new QName("http://cotisation.ws.orion.globaz.ch/", "genererDocumentPucsLisibleResponse");
     private final static QName _ExecuterPreRemplissageDanResponse_QNAME = new QName("http://cotisation.ws.orion.globaz.ch/", "executerPreRemplissageDanResponse");
 
@@ -42,35 +44,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Masse }
+     * Create an instance of {@link FindDecompteMoisResponse }
      * 
      */
-    public Masse createMasse() {
-        return new Masse();
+    public FindDecompteMoisResponse createFindDecompteMoisResponse() {
+        return new FindDecompteMoisResponse();
     }
 
     /**
-     * Create an instance of {@link ExecuterPreRemplissageDanResponse }
+     * Create an instance of {@link GenererDocumentPucsLisible }
      * 
      */
-    public ExecuterPreRemplissageDanResponse createExecuterPreRemplissageDanResponse() {
-        return new ExecuterPreRemplissageDanResponse();
-    }
-
-    /**
-     * Create an instance of {@link ListerMassesActuelles }
-     * 
-     */
-    public ListerMassesActuelles createListerMassesActuelles() {
-        return new ListerMassesActuelles();
-    }
-
-    /**
-     * Create an instance of {@link MassesForAffilie }
-     * 
-     */
-    public MassesForAffilie createMassesForAffilie() {
-        return new MassesForAffilie();
+    public GenererDocumentPucsLisible createGenererDocumentPucsLisible() {
+        return new GenererDocumentPucsLisible();
     }
 
     /**
@@ -82,11 +68,67 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FindTauxAssuranceForCotisationResponse }
+     * Create an instance of {@link DecompteMensuel }
      * 
      */
-    public FindTauxAssuranceForCotisationResponse createFindTauxAssuranceForCotisationResponse() {
-        return new FindTauxAssuranceForCotisationResponse();
+    public DecompteMensuel createDecompteMensuel() {
+        return new DecompteMensuel();
+    }
+
+    /**
+     * Create an instance of {@link ListerMassesActuelles }
+     * 
+     */
+    public ListerMassesActuelles createListerMassesActuelles() {
+        return new ListerMassesActuelles();
+    }
+
+    /**
+     * Create an instance of {@link ListerMassesActuellesResponse }
+     * 
+     */
+    public ListerMassesActuellesResponse createListerMassesActuellesResponse() {
+        return new ListerMassesActuellesResponse();
+    }
+
+    /**
+     * Create an instance of {@link WebAvsException }
+     * 
+     */
+    public WebAvsException createWebAvsException() {
+        return new WebAvsException();
+    }
+
+    /**
+     * Create an instance of {@link ExecuterPreRemplissageDanResponse }
+     * 
+     */
+    public ExecuterPreRemplissageDanResponse createExecuterPreRemplissageDanResponse() {
+        return new ExecuterPreRemplissageDanResponse();
+    }
+
+    /**
+     * Create an instance of {@link Masse }
+     * 
+     */
+    public Masse createMasse() {
+        return new Masse();
+    }
+
+    /**
+     * Create an instance of {@link DecompteMensuelLine }
+     * 
+     */
+    public DecompteMensuelLine createDecompteMensuelLine() {
+        return new DecompteMensuelLine();
+    }
+
+    /**
+     * Create an instance of {@link FindDecompteMois }
+     * 
+     */
+    public FindDecompteMois createFindDecompteMois() {
+        return new FindDecompteMois();
     }
 
     /**
@@ -106,27 +148,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GenererDocumentPucsLisible }
+     * Create an instance of {@link MassesForAffilie }
      * 
      */
-    public GenererDocumentPucsLisible createGenererDocumentPucsLisible() {
-        return new GenererDocumentPucsLisible();
+    public MassesForAffilie createMassesForAffilie() {
+        return new MassesForAffilie();
     }
 
     /**
-     * Create an instance of {@link ListerMassesActuellesResponse }
+     * Create an instance of {@link FindTauxAssuranceForCotisationResponse }
      * 
      */
-    public ListerMassesActuellesResponse createListerMassesActuellesResponse() {
-        return new ListerMassesActuellesResponse();
-    }
-
-    /**
-     * Create an instance of {@link WebAvsException }
-     * 
-     */
-    public WebAvsException createWebAvsException() {
-        return new WebAvsException();
+    public FindTauxAssuranceForCotisationResponse createFindTauxAssuranceForCotisationResponse() {
+        return new FindTauxAssuranceForCotisationResponse();
     }
 
     /**
@@ -190,6 +224,24 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://cotisation.ws.orion.globaz.ch/", name = "findTauxAssuranceForCotisationResponse")
     public JAXBElement<FindTauxAssuranceForCotisationResponse> createFindTauxAssuranceForCotisationResponse(FindTauxAssuranceForCotisationResponse value) {
         return new JAXBElement<FindTauxAssuranceForCotisationResponse>(_FindTauxAssuranceForCotisationResponse_QNAME, FindTauxAssuranceForCotisationResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindDecompteMois }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cotisation.ws.orion.globaz.ch/", name = "findDecompteMois")
+    public JAXBElement<FindDecompteMois> createFindDecompteMois(FindDecompteMois value) {
+        return new JAXBElement<FindDecompteMois>(_FindDecompteMois_QNAME, FindDecompteMois.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link FindDecompteMoisResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://cotisation.ws.orion.globaz.ch/", name = "findDecompteMoisResponse")
+    public JAXBElement<FindDecompteMoisResponse> createFindDecompteMoisResponse(FindDecompteMoisResponse value) {
+        return new JAXBElement<FindDecompteMoisResponse>(_FindDecompteMoisResponse_QNAME, FindDecompteMoisResponse.class, null, value);
     }
 
     /**

@@ -110,4 +110,24 @@ public interface WebAvsCotisationsService {
         throws WebAvsException_Exception
     ;
 
+    /**
+     * 
+     * @param numeroAffilie
+     * @param mois
+     * @param annee
+     * @return
+     *     returns ch.globaz.orion.ws.cotisation.DecompteMensuel
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "findDecompteMois", targetNamespace = "http://cotisation.ws.orion.globaz.ch/", className = "ch.globaz.orion.ws.cotisation.FindDecompteMois")
+    @ResponseWrapper(localName = "findDecompteMoisResponse", targetNamespace = "http://cotisation.ws.orion.globaz.ch/", className = "ch.globaz.orion.ws.cotisation.FindDecompteMoisResponse")
+    public DecompteMensuel findDecompteMois(
+        @WebParam(name = "numeroAffilie", targetNamespace = "")
+        String numeroAffilie,
+        @WebParam(name = "mois", targetNamespace = "")
+        String mois,
+        @WebParam(name = "annee", targetNamespace = "")
+        String annee);
+
 }
