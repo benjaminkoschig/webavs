@@ -44,7 +44,7 @@ public class AppAffiliationService {
      * @return Une liste des masses pour l'affilié
      */
     public static List<AFMassesForAffilie> retrieveListCotisationForNumAffilie(BSession session, String numAffilie,
-            String date) {
+            String date, String forMois, String forAnnee) {
 
         Checkers.checkNotNull(session, "session");
         Checkers.checkNotNull(numAffilie, "numAffilie");
@@ -69,10 +69,42 @@ public class AppAffiliationService {
             return listMassesForAffilie;
         }
 
-        listMassesForAffilie.addAll(manager.getContainer());
+        listMassesForAffilie = manager.toList();
 
         return listMassesForAffilie;
 
+    }
+
+    /**
+     * Méthode permettant de récupérer de la liste des cotisations actives d'un affilié pour un mois et une année
+     * donnée.
+     * 
+     * @param session Une session
+     * @param numAffilie Un numéro d'affilié
+     * @param forMois Un mois donnée
+     * @param forAnnee Une année donnée
+     * @return Une list de masses
+     * @throws IllegalArgumentException Exception levée si le numéro d'affilié est null ou vide
+     * @throws NullPointerException Si la session est null
+     */
+    public static List<AFMassesForAffilie> retrieveListCotisationForNumAffilieForMoisAnnee(BSession session,
+            String numAffilie, String forMois, String forAnnee) {
+        return retrieveListCotisationForNumAffilie(session, numAffilie, null, forMois, forAnnee);
+    }
+
+    /**
+     * Méthode permettant de récupérer de la liste des cotisations d'un affilié à la date indiquée.
+     * 
+     * @param session Une session
+     * @param numAffilie Un numéro d'affilié
+     * @param date une date
+     * @return Une list de masses
+     * @throws IllegalArgumentException Exception levée si le numéro d'affilié est null ou vide
+     * @throws NullPointerException Si la session est null
+     */
+    public static List<AFMassesForAffilie> retrieveListCotisationForNumAffilie(BSession session, String numAffilie,
+            String date) {
+        return retrieveListCotisationForNumAffilie(session, numAffilie, date, null, null);
     }
 
     /**
@@ -85,7 +117,7 @@ public class AppAffiliationService {
      * @throws NullPointerException Si la session est null
      */
     public static List<AFMassesForAffilie> retrieveListCotisationActiveForNumAffilie(BSession session, String numAffilie) {
-        return retrieveListCotisationForNumAffilie(session, numAffilie, null);
+        return retrieveListCotisationForNumAffilie(session, numAffilie, null, null, null);
     }
 
     /**

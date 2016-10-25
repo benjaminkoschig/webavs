@@ -63,5 +63,5 @@ public interface WebAvsCotisationsService {
      **/
     @WebMethod
     DecompteMensuel findDecompteMois(@WebParam(name = "numeroAffilie") String numeroAffilie,
-            @WebParam(name = "mois") String mois, @WebParam(name = " annee") String annee);
+            @WebParam(name = "mois") String mois, @WebParam(name = "annee") String annee);
 }

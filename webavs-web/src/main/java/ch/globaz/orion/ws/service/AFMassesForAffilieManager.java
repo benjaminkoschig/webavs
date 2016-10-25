@@ -4,6 +4,7 @@ import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Manager permettant de récupérer la liste des cotisations paritaires d'un affilié
@@ -18,6 +19,8 @@ public class AFMassesForAffilieManager extends BManager {
 
     private String numAffilie = "";
     private String dateFin = "";
+    private String forMois = "";
+    private String forAnnee = "";
 
     @Override
     protected String _getSql(BStatement statement) {
@@ -25,7 +28,7 @@ public class AFMassesForAffilieManager extends BManager {
         StringBuilder sqlBuffer = new StringBuilder();
 
         sqlBuffer
-                .append(" SELECT aff.MAIAFF, aff.MADESL, aff.malnaf, cot.MEICOT, cot.memmap, cot.meddeb, cot.medfin, ass.MBLLIF, ass.MBLLID, ass.MBLLII, ass.MBTTYP, ass.mbtcan");
+                .append(" SELECT aff.MAIAFF, aff.MADESL, aff.malnaf, cot.MEICOT, cot.memmap, cot.meddeb, cot.medfin, ass.MBLLIF, ass.MBLLID, ass.MBLLII, ass.MBTTYP, ass.mbtcan, ass.mbirub");
         sqlBuffer.append(" FROM ").append(_getCollection()).append("AFAFFIP aff");
         sqlBuffer.append(" inner join ").append(_getCollection()).append("AFADHEP adh on adh.MAIAFF = aff.MAIAFF");
         sqlBuffer.append(" inner join ").append(_getCollection()).append("afcotip cot on cot.MRIADH = adh.MRIADH");
@@ -35,8 +38,19 @@ public class AFMassesForAffilieManager extends BManager {
         if (JadeStringUtil.isEmpty(getDateFin())) {
             sqlBuffer.append(" and cot.MEDFIN = 0");
         } else {
-            sqlBuffer.append(" and (cot.MEDFIN = 0 OR cot.MEDFIN >= "
-                    + this._dbWriteNumeric(statement.getTransaction(), getDateFin()) + ")");
+
+            if (!JadeStringUtil.isEmpty(forMois) && !JadeStringUtil.isEmpty(forAnnee)) {
+
+                sqlBuffer.append(" and ((cot.medfin = 0 and cot.MEDDEB <= " + forAnnee + forMois
+                        + "01) or (cot.medfin between " + forAnnee + forMois + "01 and " + forAnnee + forMois
+                        + "99 and cot.MEDDEB <= " + forAnnee + forMois + "01)) "
+                        + this._dbWriteNumeric(statement.getTransaction(), getDateFin()) + ")");
+
+            } else {
+
+                sqlBuffer.append(" and (cot.MEDFIN = 0 OR cot.MEDFIN >= "
+                        + this._dbWriteNumeric(statement.getTransaction(), getDateFin()) + ")");
+            }
         }
 
         sqlBuffer.append(" and ass.MBTGEN = 801001");
@@ -63,6 +77,22 @@ public class AFMassesForAffilieManager extends BManager {
 
     public void setDateFin(String dateFin) {
         this.dateFin = dateFin;
+    }
+
+    public String getForMois() {
+        return forMois;
+    }
+
+    public void setForMois(String forMois) {
+        this.forMois = StringUtils.leftPad(forMois, 2, "0");
+    }
+
+    public String getForAnnee() {
+        return forAnnee;
+    }
+
+    public void setForAnnee(String forAnnee) {
+        this.forAnnee = forAnnee;
     }
 
 }

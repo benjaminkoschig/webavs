@@ -9,12 +9,13 @@ import globaz.jade.log.JadeLogger;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.naos.db.cotisation.AFCotisation;
 import globaz.naos.db.releve.AFApercuReleve;
-import globaz.naos.db.releve.AFApercuReleveLineFacturation;
 import globaz.naos.db.releve.AFApercuReleveManager;
 import globaz.orion.process.EBDanPreRemplissage;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import javax.jws.WebService;
+import org.apache.commons.lang.StringUtils;
 import ch.globaz.common.domaine.Checkers;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.services.OrionServiceLocator;
@@ -22,6 +23,8 @@ import ch.globaz.orion.ws.exceptions.WebAvsException;
 import ch.globaz.orion.ws.service.AFMassesForAffilie;
 import ch.globaz.orion.ws.service.AppAffiliationService;
 import ch.globaz.orion.ws.service.UtilsService;
+import ch.globaz.orion.ws.service.manager.AFReleveForSdd;
+import ch.globaz.orion.ws.service.manager.AFReleveForSddManager;
 
 @WebService(endpointInterface = "ch.globaz.orion.ws.cotisation.WebAvsCotisationsService")
 public class WebAvsCotisationsServiceImpl implements WebAvsCotisationsService {
@@ -167,26 +170,115 @@ public class WebAvsCotisationsServiceImpl implements WebAvsCotisationsService {
     @Override
     public DecompteMensuel findDecompteMois(String numeroAffilie, String mois, String annee) {
         Checkers.checkNotNull(numeroAffilie, "numeroAffilie");
+        Checkers.checkNotEmpty(numeroAffilie, "numeroAffilie");
         Checkers.checkNotNull(mois, "mois");
+        Checkers.checkNotEmpty(mois, "mois");
+        Checkers.checkIsInteger(mois, "mois");
+        Checkers.checkNotNull(annee, "annee");
+        Checkers.checkNotEmpty(annee, "annee");
+        Checkers.checkIsInteger(annee, "annee");
+
+        DecompteMensuel decompte = null;
+
+        BSession session;
 
         try {
 
-            AFApercuReleveManager manager = new AFApercuReleveManager();
-            manager.setSession(UtilsService.initSession());
-            manager.setForAffilieNumero(numeroAffilie);
-            manager.find(BManager.SIZE_USEDEFAULT);
+            session = UtilsService.initSession();
 
-            if (!manager.isEmpty()) {
-                AFApercuReleve releve = (AFApercuReleve) manager.getFirstEntity();
+            // Récupération des informations des cotisations
+            decompte = retrieveCotisationsInformations(numeroAffilie, mois, annee, session);
 
-                // Récupération des lignes de facturation
-                AFApercuReleveLineFacturation line;
-            }
+            // Récupération des relevés
+            decompte = fillCotisationsInformationsWithReleve(numeroAffilie, decompte, session);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        return new DecompteMensuel();
+        // TODO Return exception pour cas en dehors affiliation
+        return decompte;
+    }
+
+    private static DecompteMensuel fillCotisationsInformationsWithReleve(String numeroAffilie,
+            DecompteMensuel decompte, BSession session) throws Exception {
+        AFApercuReleveManager manager = new AFApercuReleveManager();
+        manager.setSession(session);
+        manager.setForAffilieNumero(numeroAffilie);
+        manager.setForDateDebut("01." + StringUtils.leftPad(decompte.getMoisDecompte(), 2, '0') + "."
+                + decompte.getAnneeDecompte());
+        manager.find(BManager.SIZE_USEDEFAULT);
+
+        if (!manager.isEmpty()) {
+
+            AFApercuReleve releve = (AFApercuReleve) manager.getFirstEntity();
+
+            AFReleveForSddManager managerSdd = new AFReleveForSddManager();
+            managerSdd.setSession(session);
+            managerSdd.setForIdReleve(releve.getIdReleve());
+
+            managerSdd.find(BManager.SIZE_USEDEFAULT);
+
+            if (!managerSdd.isEmpty()) {
+
+                decompte.setDejaEtabli(true);
+
+                List<AFReleveForSdd> listReleve = managerSdd.toList();
+                for (AFReleveForSdd releveSdd : listReleve) {
+                    fillDecompteMensuelWithReleve(decompte, releveSdd);
+                }
+            }
+        }
+
+        return decompte;
+    }
+
+    private static DecompteMensuel retrieveCotisationsInformations(String numeroAffilie, String mois, String annee,
+            BSession session) {
+
+        // Récupération des cotisations
+        List<AFMassesForAffilie> listeMasseForAffilie = AppAffiliationService
+                .retrieveListCotisationForNumAffilieForMoisAnnee(session, numeroAffilie, mois, annee);
+
+        DecompteMensuel decompte = null;
+
+        if (!listeMasseForAffilie.isEmpty()) {
+
+            AFMassesForAffilie masseAff = listeMasseForAffilie.get(0);
+
+            decompte = new DecompteMensuelBuilder().withIdAffilie(masseAff.getIdAffilie()).withAnneeDecompte(annee)
+                    .withMoisDecompte(mois).withNumeroAffilie(masseAff.getNumAffilie())
+                    .withLinesDecompte(fillDecompteMensuelForAffilie(listeMasseForAffilie)).build();
+        }
+
+        return decompte;
+    }
+
+    public static DecompteMensuel fillDecompteMensuelWithReleve(DecompteMensuel decompte, AFReleveForSdd releveSdd) {
+
+        for (DecompteMensuelLine line : decompte.getLinesDecompte()) {
+            int idRubrique = Integer.parseInt(releveSdd.getIdRubrique());
+
+            if (line.getIdRubrique() == idRubrique) {
+                line.setMasse(releveSdd.getMasseFacture());
+            }
+        }
+
+        return decompte;
+    }
+
+    private static List<DecompteMensuelLine> fillDecompteMensuelForAffilie(List<AFMassesForAffilie> masses) {
+
+        List<DecompteMensuelLine> lines = new ArrayList<DecompteMensuelLine>();
+
+        for (AFMassesForAffilie masseAff : masses) {
+
+            lines.add(new DecompteMensuelLineBuilder().withIdCotisation(masseAff.getIdCotisation())
+                    .withIdRubrique(Integer.parseInt(masseAff.getIdRubrique())).withLibelleDe(masseAff.getLibelleDe())
+                    .withLibelleFr(masseAff.getLibelleFr()).withLibelleIt(masseAff.getLibelleIt())
+                    .withMasse(BigDecimal.ZERO).withTypeCotisation(masseAff.getTypeAssurance()).build());
+        }
+
+        return lines;
     }
 }

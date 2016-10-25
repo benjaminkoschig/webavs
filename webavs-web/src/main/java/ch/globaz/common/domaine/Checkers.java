@@ -121,4 +121,12 @@ public class Checkers {
         }
     }
 
+    public static void checkIsInteger(final String integer, final String nomParametre) {
+        try {
+            Integer.parseInt(integer);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("[" + nomParametre + "] must be a integer");
+        }
+    }
+
 }

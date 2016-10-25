@@ -10,17 +10,20 @@ public class DecompteMensuelLine {
     private String libelleFr;
     private String libelleDe;
     private String libelleIt;
+    private int idRubrique;
 
-    public DecompteMensuelLine() {
-        super();
+    DecompteMensuelLine(DecompteMensuelLineBuilder builder) {
+        idCotisation = builder.getIdCotisation();
+        masse = builder.getMasse();
+        typeCotisation = builder.getTypeCotisation();
+        libelleFr = builder.getLibelleFr();
+        libelleDe = builder.getLibelleDe();
+        libelleIt = builder.getLibelleIt();
+        idRubrique = builder.getIdRubrique();
     }
 
     public String getIdCotisation() {
         return idCotisation;
-    }
-
-    public void setIdCotisation(String idCotisation) {
-        this.idCotisation = idCotisation;
     }
 
     public BigDecimal getMasse() {
@@ -35,32 +38,43 @@ public class DecompteMensuelLine {
         return typeCotisation;
     }
 
-    public void setTypeCotisation(String typeCotisation) {
-        this.typeCotisation = typeCotisation;
-    }
-
     public String getLibelleFr() {
         return libelleFr;
-    }
-
-    public void setLibelleFr(String libelleFr) {
-        this.libelleFr = libelleFr;
     }
 
     public String getLibelleDe() {
         return libelleDe;
     }
 
-    public void setLibelleDe(String libelleDe) {
-        this.libelleDe = libelleDe;
-    }
-
     public String getLibelleIt() {
         return libelleIt;
+    }
+
+    public int getIdRubrique() {
+        return idRubrique;
+    }
+
+    public void setIdCotisation(String idCotisation) {
+        this.idCotisation = idCotisation;
+    }
+
+    public void setTypeCotisation(String typeCotisation) {
+        this.typeCotisation = typeCotisation;
+    }
+
+    public void setLibelleFr(String libelleFr) {
+        this.libelleFr = libelleFr;
+    }
+
+    public void setLibelleDe(String libelleDe) {
+        this.libelleDe = libelleDe;
     }
 
     public void setLibelleIt(String libelleIt) {
         this.libelleIt = libelleIt;
     }
 
+    public void setIdRubrique(int idRubrique) {
+        this.idRubrique = idRubrique;
+    }
 }

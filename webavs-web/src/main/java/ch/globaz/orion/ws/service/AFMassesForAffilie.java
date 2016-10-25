@@ -26,6 +26,7 @@ public class AFMassesForAffilie extends BEntity {
     private String raisonSociale;
     private String dateDebut;
     private String dateFin;
+    private String idRubrique;
 
     @Override
     protected String _getTableName() {
@@ -47,6 +48,7 @@ public class AFMassesForAffilie extends BEntity {
         raisonSociale = statement.dbReadString("MADESL");
         dateDebut = statement.dbReadDateAMJ("MEDDEB");
         dateFin = statement.dbReadDateAMJ("MEDFIN");
+        idRubrique = statement.dbReadNumeric("MBIRUB");
     }
 
     @Override
@@ -158,6 +160,14 @@ public class AFMassesForAffilie extends BEntity {
 
     public void setDateFin(String dateFin) {
         this.dateFin = dateFin;
+    }
+
+    public String getIdRubrique() {
+        return idRubrique;
+    }
+
+    public void setIdRubrique(String idRubrique) {
+        this.idRubrique = idRubrique;
     }
 
 }

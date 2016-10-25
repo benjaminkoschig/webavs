@@ -10,49 +10,31 @@ public class DecompteMensuel {
     private String moisDecompte;
     private String anneeDecompte;
     private List<DecompteMensuelLine> linesDecompte;
-    private boolean dejeEtabli;
+    private boolean dejaEtabli;
 
-    public DecompteMensuel() {
-        super();
-    }
-
-    public DecompteMensuel(String numeroAffilie, String idAffilie, String moisDecompte) {
-        super();
-        this.numeroAffilie = numeroAffilie;
-        this.idAffilie = idAffilie;
-        this.moisDecompte = moisDecompte;
+    public DecompteMensuel(DecompteMensuelBuilder builder) {
+        numeroAffilie = builder.getNumeroAffilie();
+        idAffilie = builder.getIdAffilie();
+        moisDecompte = builder.getMoisDecompte();
+        anneeDecompte = builder.getAnneeDecompte();
+        linesDecompte = builder.getLinesDecompte();
+        dejaEtabli = false;
     }
 
     public String getNumeroAffilie() {
         return numeroAffilie;
     }
 
-    public void setNumeroAffilie(String numeroAffilie) {
-        this.numeroAffilie = numeroAffilie;
-    }
-
     public String getIdAffilie() {
         return idAffilie;
-    }
-
-    public void setIdAffilie(String idAffilie) {
-        this.idAffilie = idAffilie;
     }
 
     public String getMoisDecompte() {
         return moisDecompte;
     }
 
-    public void setMoisDecompte(String moisDecompte) {
-        this.moisDecompte = moisDecompte;
-    }
-
-    public void addDecompteMensuelLine(DecompteMensuelLine line) {
-        if (linesDecompte == null) {
-            linesDecompte = new ArrayList<DecompteMensuelLine>();
-        }
-
-        linesDecompte.add(line);
+    public void addAllLines(List<DecompteMensuelLine> lines) {
+        linesDecompte = new ArrayList<DecompteMensuelLine>(lines);
     }
 
     public List<DecompteMensuelLine> getLinesDecompte() {
@@ -63,16 +45,32 @@ public class DecompteMensuel {
         return anneeDecompte;
     }
 
+    public boolean isDejaEtabli() {
+        return dejaEtabli;
+    }
+
+    public void setDejaEtabli(boolean dejaEtabli) {
+        this.dejaEtabli = dejaEtabli;
+    }
+
+    public void setNumeroAffilie(String numeroAffilie) {
+        this.numeroAffilie = numeroAffilie;
+    }
+
+    public void setIdAffilie(String idAffilie) {
+        this.idAffilie = idAffilie;
+    }
+
+    public void setMoisDecompte(String moisDecompte) {
+        this.moisDecompte = moisDecompte;
+    }
+
     public void setAnneeDecompte(String anneeDecompte) {
         this.anneeDecompte = anneeDecompte;
     }
 
-    public boolean isDejeEtabli() {
-        return dejeEtabli;
-    }
-
-    public void setDejeEtabli(boolean dejeEtabli) {
-        this.dejeEtabli = dejeEtabli;
+    public void setLinesDecompte(List<DecompteMensuelLine> linesDecompte) {
+        this.linesDecompte = new ArrayList<DecompteMensuelLine>(linesDecompte);
     }
 
 }
