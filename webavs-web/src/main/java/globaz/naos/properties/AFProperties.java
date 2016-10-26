@@ -21,7 +21,10 @@ public enum AFProperties implements IProperties {
     GENRE_AFFILIE_PASSIF("ide.genreAffiliation.passif",
             "codeSysteme des genres d'affiliation pouvant être Passif pour l'ide"),
     MOTIFS_FIN_CESSATION("ide.motifsFinAffiliation.cessation",
-            "codeSysteme des motifs de fin d'affiliation étant de l'ordre d'une cessation d'activité (radiation)");
+            "codeSysteme des motifs de fin d'affiliation étant de l'ordre d'une cessation d'activité (radiation)"),
+    CATEGORIE_DECISION_CAP_TO_PRINT_DURING_RENOUVELLEMENT(
+            "renouvellement.cap.impression.decisions.pour.type.assurance",
+            "Catégories de décisions CAP à imprimer durant le renouvellement");
 
     private String description;
     private String propertyName;

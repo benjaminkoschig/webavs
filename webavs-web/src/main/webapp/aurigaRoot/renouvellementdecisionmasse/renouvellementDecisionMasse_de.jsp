@@ -143,11 +143,7 @@
 			</tr>
 	
 			<tr>
-				<td />
-				<td />
-				<td />
-				<td />
-				<td />
+				<td colspan="5"><B><ct:FWLabel key="JSP_AU_RENOUVELLEMENT_MASSE_DECISION_CATEGORIE_A_IMPRIMER"/>&nbsp;<%=viewBean.getLibelleCategorieDecisionPrinted()%></B></td>
 			</tr>
 			<tr>
 				<td />

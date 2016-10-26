@@ -101,6 +101,7 @@
             <search-field name="forType" operation="EQUALS" field-ref="type" />
             <search-field name="forNotType" operation="NOT_EQUALS" field-ref="type" />
             <search-field name="inType" operation="IN" field-ref="type" />
+            <search-field name="inCategorie" operation="IN" field-ref="categorie" />
          </search-group>
       </search-definition>
       
