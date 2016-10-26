@@ -788,6 +788,8 @@ public class DecisionCAPServiceImpl implements DecisionCAPService {
         String categorieDecisionPrintedResult = "";
         for (String aCategorie : listCategorieToPrint) {
 
+            aCategorie = aCategorie.trim();
+
             FWParametersSystemCode csEntity = new FWParametersSystemCode();
             csEntity.setSession(session);
             csEntity.setIdCode(aCategorie);
