@@ -399,10 +399,6 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     private String userIdCollaborateur = null;
     protected String montantTotalIM = null;
 
-    public String getMontantTotalIM() {
-        return montantTotalIM;
-    }
-
     public void setMontantTotalIM(String montantTotalIM) {
         this.montantTotalIM = montantTotalIM;
     }

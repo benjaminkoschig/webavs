@@ -78,7 +78,6 @@ public class CAInteretManuelVisualComponent implements Serializable {
     public String montantInteretTotalCalcule() {
         BigDecimal total = new BigDecimal("0");
         for (CADetailInteretMoratoire detail : detailInteretMoratoire) {
-            // detail.getMontantInteret() vs detail.getInteretCalcule() ??? // XXX
             try {
                 total = total.add(new BigDecimal(detail.getMontantInteret()));
             } catch (Exception e) {

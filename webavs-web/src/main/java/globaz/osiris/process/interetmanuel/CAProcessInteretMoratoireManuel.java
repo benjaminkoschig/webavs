@@ -349,7 +349,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
         CASectionAuxPoursuites sectionAuxPoursuite = getSectionAuxPoursuites();
         String dateExecution = "";
 
-        boolean isNouveauCDP = isNouveauCDP(sectionAuxPoursuite);
+        boolean isNouveauCDP = isNouveauCDP(sectionAuxPoursuite) && !isRDPProcess;
 
         // si le nouveau régime est activé
         if (isNouveauCDP) {

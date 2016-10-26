@@ -18,6 +18,7 @@ import globaz.aquila.util.COSectionProxy;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
+import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.APIRubrique;
@@ -28,6 +29,9 @@ import globaz.osiris.db.comptes.CAEcriture;
 import globaz.osiris.db.contentieux.CACalculTaxe;
 import globaz.osiris.db.journal.comptecourant.CAJoinCompteCourantOperation;
 import globaz.osiris.external.IntRole;
+import globaz.osiris.process.interetmanuel.CAProcessInteretMoratoireManuel;
+import globaz.osiris.process.interetmanuel.visualcomponent.CAInteretManuelVisualComponent;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -107,9 +111,25 @@ public class COTaxeDefaut implements ICOTaxeProducer {
             parametres = null;
         }
 
+        FWCurrency mntInteret = new FWCurrency(0);
+        CAProcessInteretMoratoireManuel process = new CAProcessInteretMoratoireManuel();
+        process.setSession(session);
+        process.setDateFin(JACalendar.todayJJsMMsAAAA());
+        process.setIdSection(contentieux.getIdSection());
+        process.setSimulationMode(true);
+        process.setIsRDPProcess(true);
+        process.executeProcess();
+        List<CAInteretManuelVisualComponent> listInteret = process.getVisualComponents();
+	    for (CAInteretManuelVisualComponent i : listInteret) {
+	    	mntInteret.add(i.montantInteretTotalCalcule());
+	    }
+
+        FWCurrency soldeInteret = mntInteret;
+        soldeInteret.add(contentieux.getSection().getSolde());
+        
         // Montant déterminant de section
         if (calculTaxe.getBaseTaxe().equalsIgnoreCase(COCalculTaxe.SECTION)) {
-            taxe.setMontantBase(contentieux.getSection().getSolde());
+            taxe.setMontantBase(JANumberFormatter.deQuote(soldeInteret.toString())); 
         } else if (calculTaxe.getBaseTaxe().equalsIgnoreCase(COCalculTaxe.MASSE)) {
             String masseCompteur = giveMasseCompteur(session, contentieux, parametres);
 

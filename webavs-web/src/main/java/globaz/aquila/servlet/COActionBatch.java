@@ -16,7 +16,9 @@ import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWDefaultServletAction;
 import globaz.framework.controller.FWDispatcher;
 import globaz.framework.servlets.FWServlet;
+import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
 import globaz.globall.http.JSPUtils;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
@@ -29,11 +31,13 @@ import globaz.osiris.db.interets.CAInteretMoratoire;
 import globaz.osiris.db.interets.CAInteretMoratoireManager;
 import globaz.osiris.process.interetmanuel.CAProcessInteretMoratoireManuel;
 import globaz.osiris.process.interetmanuel.visualcomponent.CAInteretManuelVisualComponent;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -266,13 +270,9 @@ public class COActionBatch extends CODefaultServletAction {
                 // on charge la transition pour obtenir l'étape suivante, on ne
                 // veut pas modifier le viewBean
                 COTransition transition = new COTransition();
-
                 transition.setIdTransition(transitionViewBean.getIdTransition());
                 transition.setSession(sessionb);
                 transition.retrieve();
-
-                // Recherche ou/et calcul des IM
-                transitionViewBean.setInteretCalcule(giveDecisionIM(sessionb, contentieux, transition));
 
                 // calculer les taxes
                 ICOTaxeProducer producer = COServiceLocator.getTaxeService().getTaxeProducer(
@@ -503,7 +503,7 @@ public class COActionBatch extends CODefaultServletAction {
             return null;
         }
 
-        if (!ICOEtape.CS_FRAIS_ET_INTERETS_RECLAMES.equals(transition.getEtapeSuivante().getLibEtape())) {
+        if (!ICOEtape.CS_FRAIS_ET_INTERETS_RECLAMES.equals(transition.getEtapeSuivante().getLibEtape()) && !isNouveauRegime(session, contentieux.getDateExecution())) {
             return null;
         }
 
@@ -533,11 +533,28 @@ public class COActionBatch extends CODefaultServletAction {
             process.setDateFin(JACalendar.todayJJsMMsAAAA());
             process.setIdSection(contentieux.getIdSection());
             process.setSimulationMode(true);
+            process.setIsRDPProcess(true);
             process.executeProcess();
 
             liste = process.getVisualComponents();
         }
 
         return liste;
+    }
+    
+    public Boolean isNouveauRegime(BSession session, String dateExecution) {
+        try {
+            String dateProduction = session.getApplication().getProperty("dateProductionNouveauCDP");
+            if (dateProduction == null) {
+                return false;
+            }
+
+            // retourne true si la date d'execution de la RP est supérieure ou égale à la date de production du nouveau
+            // regime
+            return BSessionUtil.compareDateFirstGreaterOrEqual(session, dateExecution, dateProduction);
+        } catch (Exception e) {
+            JadeLogger.error(e, "La propriété n'existe pas.");
+            return false;
+        }
     }
 }

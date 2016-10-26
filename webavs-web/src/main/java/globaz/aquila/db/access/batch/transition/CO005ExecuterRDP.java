@@ -7,7 +7,9 @@ import globaz.aquila.process.COProcessContentieux;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.osiris.db.interets.CADetailInteretMoratoire;
 import globaz.osiris.process.interetmanuel.visualcomponent.CAInteretManuelVisualComponent;
+
 import java.util.List;
 
 /**
@@ -61,12 +63,16 @@ public class CO005ExecuterRDP extends COAbstractEnvoyerDocument {
                 // Redonne le canton de l office destinataire
                 String canton = giveCantonDestinataire(transaction.getSession(), contentieux);
                 if (CORequisitionPoursuiteUtil.isOfficeDontWantToUseNewRegime(transaction.getSession(), canton) == false) {
-                    giveDecisionIM(transaction, contentieux, getDateExecution());
-                    if (getInteretCalcule().size() > 0) {
-                        FWCurrency montantIM = new FWCurrency("0");
-                        for (CAInteretManuelVisualComponent interet : getInteretCalcule()) {
+                    
+                    List<CAInteretManuelVisualComponent> listInteret = giveDecisionIM(transaction, contentieux, getDateExecution());
+                    setInteretCalcule(listInteret);
+                    
+                    if (listInteret.size() > 0) {
+                        FWCurrency montantIM = new FWCurrency(0);
+                        for (CAInteretManuelVisualComponent interet : listInteret) {
                             montantIM.add(interet.montantInteretTotalCalcule());
                         }
+//                        contentieux.setMontantInteretsCalcule(montantIM.toStringFormat());
                         rdp.setMontantTotalIM(montantIM.toString());
                     }
                 }

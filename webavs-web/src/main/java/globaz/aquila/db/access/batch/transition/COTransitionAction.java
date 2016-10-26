@@ -20,6 +20,7 @@ import globaz.framework.util.FWMessage;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
@@ -34,6 +35,7 @@ import globaz.osiris.process.interetmanuel.visualcomponent.CAInteretManuelVisual
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TITiers;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -266,9 +268,13 @@ public abstract class COTransitionAction {
      * @return la liste des interets manuel ou null
      * @throws Exception
      */
-    public Boolean giveDecisionIM(BTransaction transaction, COContentieux contentieux, String date) throws Exception {
+    public List<CAInteretManuelVisualComponent> giveDecisionIM(BTransaction transaction, COContentieux contentieux, String date) throws Exception {
 
         if (contentieux == null) {
+            return null;
+        }
+        
+        if (!isNouveauRegime(transaction.getSession(), contentieux.getDateExecution())) {
             return null;
         }
 
@@ -289,8 +295,23 @@ public abstract class COTransitionAction {
             liste = process.getVisualComponents();
         }
 
-        interetCalcule = liste;
-        return (liste.size() > 0);
+        return liste;
+    }
+    
+    public Boolean isNouveauRegime(BSession session, String dateExecution) {
+        try {
+            String dateProduction = session.getApplication().getProperty("dateProductionNouveauCDP");
+            if (dateProduction == null) {
+                return false;
+            }
+
+            // retourne true si la date d'execution de la RP est supérieure ou égale à la date de production du nouveau
+            // regime
+            return BSessionUtil.compareDateFirstGreaterOrEqual(session, dateExecution, dateProduction);
+        } catch (Exception e) {
+            JadeLogger.error(e, "La propriété n'existe pas.");
+            return false;
+        }
     }
 
     /**
