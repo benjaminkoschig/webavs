@@ -76,4 +76,6 @@ public interface DecisionCAPService extends JadeApplicationService {
 
     public SimpleDecisionCAP updateWithoutCalculCotis(SimpleDecisionCAP decisionCap) throws JadePersistenceException,
             Exception;
+
+    public String getLibelleCategorieDecisionPrintedInRenouvellement() throws Exception;
 }

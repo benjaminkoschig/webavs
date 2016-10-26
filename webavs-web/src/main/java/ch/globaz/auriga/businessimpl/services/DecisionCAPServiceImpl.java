@@ -5,6 +5,7 @@ import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BConstants;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
+import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JANumberFormatter;
@@ -33,8 +34,10 @@ import globaz.naos.db.parametreAssurance.AFParametreAssurance;
 import globaz.naos.db.parametreAssurance.AFParametreAssuranceManager;
 import globaz.naos.db.tauxAssurance.AFTauxAssurance;
 import globaz.naos.db.tauxAssurance.AFTauxAssuranceManager;
+import globaz.naos.properties.AFProperties;
 import globaz.naos.translation.CodeSystem;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
 import ch.globaz.aries.business.services.AriesServiceLocator;
@@ -61,6 +64,7 @@ import ch.globaz.auriga.businessimpl.checkers.RenouvellementDecisionCAPChecker;
 import ch.globaz.auriga.businessimpl.checkers.SimpleDecisionCapChecker;
 import ch.globaz.common.business.models.ResultatTraitementMasseCsvJournal;
 import ch.globaz.common.businessimpl.models.UnitTaskResultState;
+import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.musca.business.models.PassageModel;
 import ch.globaz.musca.business.services.FABusinessServiceLocator;
 import ch.globaz.naos.business.model.AdhesionCotisationAssuranceSearchComplexModel;
@@ -754,6 +758,52 @@ public class DecisionCAPServiceImpl implements DecisionCAPService {
 
     }
 
+    private List<String> getListCategorieToPrintForRenouvellement() throws PropertiesException {
+
+        String categorieToPrintSeparatedByVirgule = AFProperties.CATEGORIE_DECISION_CAP_TO_PRINT_DURING_RENOUVELLEMENT
+                .getValue();
+
+        List<String> listCategorieToPrint = new ArrayList<String>(Arrays.asList(categorieToPrintSeparatedByVirgule
+                .split(",")));
+
+        for (String aCategorie : listCategorieToPrint) {
+            aCategorie = aCategorie.trim();
+        }
+
+        return listCategorieToPrint;
+
+    }
+
+    @Override
+    public String getLibelleCategorieDecisionPrintedInRenouvellement() throws Exception {
+
+        BSession session = BSessionUtil.getSessionFromThreadContext();
+
+        String categorieToPrintSeparatedByVirgule = AFProperties.CATEGORIE_DECISION_CAP_TO_PRINT_DURING_RENOUVELLEMENT
+                .getValue();
+
+        List<String> listCategorieToPrint = new ArrayList<String>(Arrays.asList(categorieToPrintSeparatedByVirgule
+                .split(",")));
+
+        String categorieDecisionPrintedResult = "";
+        for (String aCategorie : listCategorieToPrint) {
+
+            FWParametersSystemCode csEntity = new FWParametersSystemCode();
+            csEntity.setSession(session);
+            csEntity.setIdCode(aCategorie);
+            csEntity.retrieve();
+
+            if (!JadeStringUtil.isBlankOrZero(categorieDecisionPrintedResult)) {
+                categorieDecisionPrintedResult += ", ";
+            }
+            categorieDecisionPrintedResult += csEntity.getCurrentCodeUtilisateur().getLibelle();
+
+        }
+
+        return categorieDecisionPrintedResult;
+
+    }
+
     @Override
     public List<JadePublishDocument> printDecisionPassage(String idPassage) throws Exception {
         List<JadePublishDocument> listPrintedDocument = new ArrayList<JadePublishDocument>();
@@ -761,6 +811,7 @@ public class DecisionCAPServiceImpl implements DecisionCAPService {
         DecisionCAPSearchModel decisionCAPSearchModel = new DecisionCAPSearchModel();
         decisionCAPSearchModel.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
         decisionCAPSearchModel.setForIdPassageFacturation(idPassage);
+        decisionCAPSearchModel.setInCategorie(getListCategorieToPrintForRenouvellement());
         decisionCAPSearchModel = this.search(decisionCAPSearchModel);
 
         PassageModel thePassage = FABusinessServiceLocator.getPassageModelService().read(idPassage);

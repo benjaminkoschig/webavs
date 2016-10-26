@@ -22,7 +22,16 @@ public class DecisionCAPSearchModel extends JadeSearchSimpleModel {
     private String fromAnnee = null;
     private List<String> inEtat = null;
     private List<String> inType = null;
+    private List<String> inCategorie = null;
     private List<String> notInIdDecision = null;
+
+    public List<String> getInCategorie() {
+        return inCategorie;
+    }
+
+    public void setInCategorie(List<String> inCategorie) {
+        this.inCategorie = inCategorie;
+    }
 
     public String getForAnnee() {
         return forAnnee;

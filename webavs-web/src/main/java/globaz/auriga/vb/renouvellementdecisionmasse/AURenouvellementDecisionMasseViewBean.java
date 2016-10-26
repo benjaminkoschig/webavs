@@ -4,6 +4,7 @@ import globaz.auriga.vb.AUAbstractDefaultViewBean;
 import globaz.globall.util.JACalendar;
 import globaz.jade.context.JadeThread;
 import globaz.naos.translation.CodeSystem;
+import ch.globaz.auriga.business.services.AurigaServiceLocator;
 
 public class AURenouvellementDecisionMasseViewBean extends AUAbstractDefaultViewBean {
 
@@ -14,6 +15,15 @@ public class AURenouvellementDecisionMasseViewBean extends AUAbstractDefaultView
     private String numeroAffilieFin = null;
     private String numeroPassage = null;
     private String typesAffForWidgetString = null;
+    private String libelleCategorieDecisionPrinted = null;
+
+    public String getLibelleCategorieDecisionPrinted() {
+        return libelleCategorieDecisionPrinted;
+    }
+
+    public void setLibelleCategorieDecisionPrinted(String libelleCategorieDecisionPrinted) {
+        this.libelleCategorieDecisionPrinted = libelleCategorieDecisionPrinted;
+    }
 
     public AURenouvellementDecisionMasseViewBean() {
         super();
@@ -79,6 +89,14 @@ public class AURenouvellementDecisionMasseViewBean extends AUAbstractDefaultView
 
     public void setTypesAffForWidgetString(String typesAffForWidgetString) {
         this.typesAffForWidgetString = typesAffForWidgetString;
+    }
+
+    @Override
+    public void retrieve() throws Exception {
+
+        libelleCategorieDecisionPrinted = AurigaServiceLocator.getDecisionCAPService()
+                .getLibelleCategorieDecisionPrintedInRenouvellement();
+
     }
 
 }
