@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ch.globaz.al.business.compensation.CompensationBusinessModel;
 import ch.globaz.al.business.compensation.CompensationRecapitulatifBusinessModel;
 import ch.globaz.al.business.constantes.ALCSDossier;
@@ -55,6 +57,7 @@ import ch.globaz.naos.business.data.AssuranceInfo;
  * 
  */
 public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImpl implements CompensationFactureService {
+    private static final Logger LOG = LoggerFactory.getLogger(CompensationFactureServiceImpl.class);
 
     /*
      * (non-Javadoc)
@@ -197,6 +200,10 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
         Collections.sort(list);
         return list;
     }
+	
+    // JIRA IN-2732 et WEBAVS-3155: Traitement de simulation de compensation du processus paritaire principale en erreur
+    // à cause d'un IN SQL trop grand, on découpe donc notre liste en sous-listes de N éléments
+    private static final int IN_MAX = 1000;
 
     /*
      * (non-Javadoc)
@@ -233,82 +240,98 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
 
         checkDoublons(recaps, logger);
 
-        CheckAffiliationSearchComplexModel search = new CheckAffiliationSearchComplexModel();
-        search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
-        // on lance que si il y a des récaps
-        if (idsRecap.size() > 0) {
+		
+        /*
+         * JIRA IN-2732 et WEBAVS-3155: On découpe le travail en lots de max IN_MAX éléments, pour ne pas faire sauter
+         * la requête SQL.
+         * TODO : ça mériterait d'être supprimé lorsque le framework saura gérer correctement les limites de tailles
+         * pour un champ de recherche utilisant l'opérateur "IN".
+         */
+        List<String> listIdsRecap = new ArrayList<String>(idsRecap);
+
+        double lots = Math.ceil(((double) listIdsRecap.size()) / IN_MAX);
+        LOG.debug("will iterate {} times to cover {} elements in the IN criteria", lots, listIdsRecap.size());
+
+        for (int lotIndex = 0; lotIndex < lots; lotIndex++) {
+            List<String> lotElements = listIdsRecap.subList(lotIndex * IN_MAX,
+                    Math.min((lotIndex + 1) * IN_MAX, listIdsRecap.size()));
+            LOG.debug("  searching lot {} with {} elements in the IN criteria", lotIndex, lotElements.size());
+		
+            CheckAffiliationSearchComplexModel search = new CheckAffiliationSearchComplexModel();
+            search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+            // on lance que si il y a des récaps
             search.setInIdRecap(idsRecap);
-            search = (CheckAffiliationSearchComplexModel) JadePersistenceManager.search(search);
-        }
+            search = (CheckAffiliationSearchComplexModel) JadePersistenceManager.search(search);        
 
-        // Map contenant les avertissement (key) en cours de traitement dans la boucle for
-        Map<String, Object> avertissementEnTraitement = new HashMap<String, Object>();
-        // Map contenant pour chaque affilié (key) leurs avertissements (value)
-        Map<String, Map<String, Object>> affilieTraiter = new HashMap<String, Map<String, Object>>();
+            // Map contenant les avertissement (key) en cours de traitement dans la boucle for
+            Map<String, Object> avertissementEnTraitement = new HashMap<String, Object>();
+            // Map contenant pour chaque affilié (key) leurs avertissements (value)
+            Map<String, Map<String, Object>> affilieTraiter = new HashMap<String, Map<String, Object>>();
 
-        for (int i = 0; i < search.getSize(); i++) {
+            for (int i = 0; i < search.getSize(); i++) {
 
-            CheckAffiliationComplexModel model = ((CheckAffiliationComplexModel) search.getSearchResults()[i]);
+                CheckAffiliationComplexModel model = ((CheckAffiliationComplexModel) search.getSearchResults()[i]);
 
-            // Si un affilié réapparait pour une récap, nous prenons sa map d'avertissement
-            if (affilieTraiter.containsKey(model.getNumeroAffilie())) {
-                avertissementEnTraitement = affilieTraiter.get(model.getNumeroAffilie());
-            } else { // autrement nous créons une nouvelle map d'avertissement pour l'affilié pas encore été traité
-                avertissementEnTraitement = new HashMap<String, Object>();
-                affilieTraiter.put(model.getNumeroAffilie(), avertissementEnTraitement);
-            }
+                // Si un affilié réapparait pour une récap, nous prenons sa map d'avertissement
+                if (affilieTraiter.containsKey(model.getNumeroAffilie())) {
+                    avertissementEnTraitement = affilieTraiter.get(model.getNumeroAffilie());
+                } else { // autrement nous créons une nouvelle map d'avertissement pour l'affilié pas encore été traité
+                    avertissementEnTraitement = new HashMap<String, Object>();
+                    affilieTraiter.put(model.getNumeroAffilie(), avertissementEnTraitement);
+                }
 
-            AssuranceInfo assuranceInfo = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(
-                    model.getNumeroAffilie(), model.getActiviteAllocataire(), "01." + model.getPeriodeDe());
+                AssuranceInfo assuranceInfo = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(
+                        model.getNumeroAffilie(), model.getActiviteAllocataire(), "01." + model.getPeriodeDe());
 
-            if (ALCSDossier.ETAT_RADIE.equals(model.getEtatDossier())) {
-                // pour le dossier chercher toute les prestation égale ou psostérieure à période A: faire le totales de
-                // ces prstations
-                // si le total est égal à 0 pas d'avertissement, sinon avertissement (totale négatif ou positif)
+                if (ALCSDossier.ETAT_RADIE.equals(model.getEtatDossier())) {
+                    // pour le dossier chercher toute les prestation égale ou psostérieure à période A: faire le totales de
+                    // ces prstations
+                    // si le total est égal à 0 pas d'avertissement, sinon avertissement (totale négatif ou positif)
 
-                try {
-                    JACalendarGregorian dateUtil = new JACalendarGregorian();
-                    if (dateUtil.compare(new JADate("30." + model.getPresPeriodeA()),
-                            new JADate(model.getFinValidite())) == JACalendar.COMPARE_FIRSTUPPER) {
+                    try {
+                        JACalendarGregorian dateUtil = new JACalendarGregorian();
+                        if (dateUtil.compare(new JADate("30." + model.getPresPeriodeA()),
+                                new JADate(model.getFinValidite())) == JACalendar.COMPARE_FIRSTUPPER) {
 
-                        // si dossier radier voir le montant total des prestations posterieures à fin de validité du
-                        // dossie
-                        String montantPresta = ALImplServiceLocator.getGenerationService()
-                                .totalMontantPrestaGenereDossierPeriode(model.getIdDossier(), model.getIdRecap(),
-                                        JadeStringUtil.substring(model.getFinValidite(), 3, 7));
-                        if (!JadeStringUtil.isBlankOrZero(montantPresta)) {
+                            // si dossier radier voir le montant total des prestations posterieures à fin de validité du
+                            // dossie
+                            String montantPresta = ALImplServiceLocator.getGenerationService()
+                                    .totalMontantPrestaGenereDossierPeriode(model.getIdDossier(), model.getIdRecap(),
+                                            JadeStringUtil.substring(model.getFinValidite(), 3, 7));
+                            if (!JadeStringUtil.isBlankOrZero(montantPresta)) {
 
-                            logger.getWarningsLogger(model.getNumeroAffilie(), assuranceInfo.getDesignation())
-                                    .addMessage(
-                                            new JadeBusinessMessage(JadeBusinessMessageLevels.WARN,
-                                                    CompensationFactureServiceImpl.class.getName(),
-                                                    "al.protocoles.compensation.dossier.radie", new String[] { model
-                                                            .getIdDossier() }));
+                                logger.getWarningsLogger(model.getNumeroAffilie(), assuranceInfo.getDesignation())
+                                        .addMessage(
+                                                new JadeBusinessMessage(JadeBusinessMessageLevels.WARN,
+                                                        CompensationFactureServiceImpl.class.getName(),
+                                                        "al.protocoles.compensation.dossier.radie", new String[] { model
+                                                                .getIdDossier() }));
+                            }
+                        }
+                    } catch (JAException e) {
+                        throw new ALCompensationPrestationException("JADate error", e);
+                    }
+                }
+
+                String[] params = { model.getPeriodeDe(), model.getPeriodeA() };
+                if (!assuranceInfo.getWarningsContainer().isEmpty()) {
+                    for (String warn : assuranceInfo.getWarningsContainer()) {
+                        // Nous insérons dans le mail/liste qu'une seule fois un type d'avertissement pour un affilié
+                        if (!avertissementEnTraitement.containsKey(warn)) {
+                            logger.getWarningsLogger(model.getNumeroAffilie(), assuranceInfo.getDesignation()).addMessage(
+                                    new JadeBusinessMessage(JadeBusinessMessageLevels.WARN,
+                                            CompensationFactureServiceImpl.class.getName(), warn, params));
+
+                            avertissementEnTraitement.put(warn, assuranceInfo);
                         }
                     }
-                } catch (JAException e) {
-                    throw new ALCompensationPrestationException("JADate error", e);
+                } else if (!assuranceInfo.getCouvert()) {
+
+                    logger.getWarningsLogger(model.getNumeroAffilie(), assuranceInfo.getDesignation()).addMessage(
+                            new JadeBusinessMessage(JadeBusinessMessageLevels.WARN, CompensationFactureServiceImpl.class
+                                    .getName(), "al.protocoles.compensation.diagnostique.affilie.inactif", params));
                 }
-            }
-
-            String[] params = { model.getPeriodeDe(), model.getPeriodeA() };
-            if (!assuranceInfo.getWarningsContainer().isEmpty()) {
-                for (String warn : assuranceInfo.getWarningsContainer()) {
-                    // Nous insérons dans le mail/liste qu'une seule fois un type d'avertissement pour un affilié
-                    if (!avertissementEnTraitement.containsKey(warn)) {
-                        logger.getWarningsLogger(model.getNumeroAffilie(), assuranceInfo.getDesignation()).addMessage(
-                                new JadeBusinessMessage(JadeBusinessMessageLevels.WARN,
-                                        CompensationFactureServiceImpl.class.getName(), warn, params));
-
-                        avertissementEnTraitement.put(warn, assuranceInfo);
-                    }
-                }
-            } else if (!assuranceInfo.getCouvert()) {
-
-                logger.getWarningsLogger(model.getNumeroAffilie(), assuranceInfo.getDesignation()).addMessage(
-                        new JadeBusinessMessage(JadeBusinessMessageLevels.WARN, CompensationFactureServiceImpl.class
-                                .getName(), "al.protocoles.compensation.diagnostique.affilie.inactif", params));
-            }
+			}	
         }
 
         return logger;
