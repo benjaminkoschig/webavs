@@ -62,6 +62,6 @@ public interface WebAvsCotisationsService {
      * Recherche des décomptes pour le mois passé en paramètre.
      **/
     @WebMethod
-    DecompteMensuel findDecompteMois(@WebParam(name = "numeroAffilie") String numeroAffilie,
+    public abstract DecompteMensuel findDecompteMois(@WebParam(name = "numeroAffilie") String numeroAffilie,
             @WebParam(name = "mois") String mois, @WebParam(name = "annee") String annee);
 }

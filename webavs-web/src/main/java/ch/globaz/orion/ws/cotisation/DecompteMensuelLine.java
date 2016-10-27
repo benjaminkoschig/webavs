@@ -12,7 +12,11 @@ public class DecompteMensuelLine {
     private String libelleIt;
     private int idRubrique;
 
-    DecompteMensuelLine(DecompteMensuelLineBuilder builder) {
+    DecompteMensuelLine() {
+        // vide pour génération jAXWS
+    }
+
+    public DecompteMensuelLine(DecompteMensuelLineBuilder builder) {
         idCotisation = builder.getIdCotisation();
         masse = builder.getMasse();
         typeCotisation = builder.getTypeCotisation();

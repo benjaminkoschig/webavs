@@ -12,6 +12,10 @@ public class DecompteMensuel {
     private List<DecompteMensuelLine> linesDecompte;
     private boolean dejaEtabli;
 
+    public DecompteMensuel() {
+        // vide pour génération jAXWS
+    }
+
     public DecompteMensuel(DecompteMensuelBuilder builder) {
         numeroAffilie = builder.getNumeroAffilie();
         idAffilie = builder.getIdAffilie();
