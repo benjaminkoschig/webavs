@@ -402,6 +402,10 @@ public abstract class CODocumentManager extends FWIDocumentManager {
     public void setMontantTotalIM(String montantTotalIM) {
         this.montantTotalIM = montantTotalIM;
     }
+    
+    public String getMontantTotalIM() {
+        return montantTotalIM;
+    }
 
     /**
      * Retourne le domaine d'adresse standard à utiliser par tous les documents.
