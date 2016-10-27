@@ -1042,7 +1042,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
         for (int i = 0; i < prestationsARestituer.length; i++) {
 
-            if (APTypeDePrestation.STANDARD.getCodesystemString().equals(prestationsARestituer[i].getGenre())
+            if (APTypeDePrestation.STANDARD.isCodeSystemEqual(prestationsARestituer[i].getGenre())
                     && IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestationsARestituer[i].getEtat())) {
                 prestations.add(prestationsARestituer[i]);
             }
@@ -1051,7 +1051,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
         // Traitement des prestations ACM ALFA
         for (int i = 0; i < prestationsARestituer.length; i++) {
-            if (APTypeDePrestation.ACM_ALFA.getCodesystemString().equals(prestationsARestituer[i].getGenre())
+            if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(prestationsARestituer[i].getGenre())
                     && IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestationsARestituer[i].getEtat())) {
                 prestations.add(prestationsARestituer[i]);
             }
@@ -1059,7 +1059,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
         // Traitement des prestations ACM NE
         for (int i = 0; i < prestationsARestituer.length; i++) {
-            if (APTypeDePrestation.ACM_NE.getCodesystemString().equals(prestationsARestituer[i].getGenre())
+            if (APTypeDePrestation.ACM_NE.isCodeSystemEqual(prestationsARestituer[i].getGenre())
                     && IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestationsARestituer[i].getEtat())) {
                 prestations.add(prestationsARestituer[i]);
             }
@@ -1068,7 +1068,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
         // Traitement des prestations ACM 2
         for (int i = 0; i < prestationsARestituer.length; i++) {
-            if (APTypeDePrestation.ACM2_ALFA.getCodesystemString().equals(prestationsARestituer[i].getGenre())
+            if (APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(prestationsARestituer[i].getGenre())
                     && IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestationsARestituer[i].getEtat())) {
                 prestations.add(prestationsARestituer[i]);
             }
@@ -1076,7 +1076,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         doRestitutionAndClear(session, transaction, idDroit, pgpcRestitution, prestations);
 
         for (int i = 0; i < prestationsARestituer.length; i++) {
-            if (APTypeDePrestation.LAMAT.getCodesystemString().equals(prestationsARestituer[i].getGenre())
+            if (APTypeDePrestation.LAMAT.isCodeSystemEqual(prestationsARestituer[i].getGenre())
                     && IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestationsARestituer[i].getEtat())) {
                 prestations.add(prestationsARestituer[i]);
             }
@@ -1086,7 +1086,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
     private void doRestitutionAndClear(final BSession session, final BTransaction transaction, final String idDroit,
             final APPeriodeWrapper pgpcRestitution, final List prestations) throws Exception {
-        if (prestations.size() > 0) {
+        if (!prestations.isEmpty()) {
             doRestitution(session, transaction, idDroit, pgpcRestitution,
                     (APPrestation[]) prestations.toArray(new APPrestation[prestations.size()]));
         }
@@ -2304,7 +2304,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             final APDroitLAPG droit, final String genrePrestation, final boolean isAllocationMax) throws Exception {
 
         // prestation du genre LAMAT (Droit genevois)
-        if (APTypeDePrestation.LAMAT.getCodesystemString().equals(genrePrestation)) {
+        if (APTypeDePrestation.LAMAT.isCodeSystemEqual(genrePrestation)) {
 
             // L'id droit du père est l'id permettant de récupérer tous les droits groupés entre eux, car c'est l'id du
             // droit de base.

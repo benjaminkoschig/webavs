@@ -529,7 +529,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             final List<APValidationPrestationAPGContainer> containers = new ArrayList<APValidationPrestationAPGContainer>();
             for (int ctr = 0; ctr < prestations.size(); ctr++) {
                 // On évite les prestation ACM et autres
-                if (APTypeDePrestation.STANDARD.getCodesystemString().equals(prestations.get(ctr).getGenre())) {
+                if (APTypeDePrestation.STANDARD.isCodeSystemEqual(prestations.get(ctr).getGenre())) {
                     // On évite les prestations de restitutions
                     if (!IAPAnnonce.CS_RESTITUTION.equals(prestations.get(ctr).getContenuAnnonce())) {
                         final APValidationPrestationAPGContainer container = new APValidationPrestationAPGContainer();

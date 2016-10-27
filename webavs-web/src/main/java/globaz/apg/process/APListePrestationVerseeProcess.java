@@ -322,7 +322,7 @@ public class APListePrestationVerseeProcess extends BProcess {
             GenreService = GenreService.trim();
             GenrePrestationLibelle = GenrePrestationLibelle.trim();
             GenrePrestationLibelle = "(" + GenrePrestationLibelle + ")";
-            if (APTypeDePrestation.STANDARD.getCodesystemString().equalsIgnoreCase(GenrePrestation)) {
+            if (APTypeDePrestation.STANDARD.isCodeSystemEqual(GenrePrestation)) {
                 GenrePrestationLibelle = "";
             }
 

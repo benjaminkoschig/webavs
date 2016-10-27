@@ -1015,8 +1015,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 if ((decompteCourant != null)
                         && APTypeDeDecompte.NORMAL_ACM_NE.equals(decompteCourant.getTypeDeDecompte())) {
                     // 2 - la prestation doit être de type ACMNE
-                    if (APTypeDePrestation.ACM_NE.getCodesystemString().equals(
-                            repartition.getGenrePrestationPrestation())) {
+                    if (APTypeDePrestation.ACM_NE.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
                         champs.put(APAbstractDecomptesGenerationProcess.PARAMETER_PRESTATION_COMPLEMENTAIRE, document
                                 .getTextes(3).getTexte(50).getDescription());
                     }

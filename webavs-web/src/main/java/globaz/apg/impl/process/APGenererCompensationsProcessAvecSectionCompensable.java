@@ -59,7 +59,7 @@ import java.util.TreeMap;
  * cas) grâce aux méthodes {@link #isSectionACompenserAutomatiquement(APISection)} et
  * {@link #isSectionAVerifier(APISection)}.
  * </p>
- *
+ * 
  * @author PBA
  */
 public abstract class APGenererCompensationsProcessAvecSectionCompensable extends BProcess implements
@@ -318,7 +318,7 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
 
                     // Volonté d'assembler les ACM2 et ACM dans les mêmes montants de compensations
                     String genre = repartitionPaiementsJointEmployeur.getGenrePrestationPrestation();
-                    if (APTypeDePrestation.ACM2_ALFA.getCodesystemString().equals(genre)) {
+                    if (APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(genre)) {
                         genre = APTypeDePrestation.ACM_ALFA.getCodesystemString();
                     }
 
@@ -550,7 +550,7 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
 
                     // On prend les ACM et ACM 2 ensemble pour leur attribuer le même id compensation
                     final List<String> genres = new ArrayList<String>();
-                    if (APTypeDePrestation.ACM_ALFA.getCodesystemString().equals(key.genrePrestation)) {
+                    if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(key.genrePrestation)) {
                         genres.add(APTypeDePrestation.ACM2_ALFA.getCodesystemString());
                     }
                     genres.add(key.genrePrestation);

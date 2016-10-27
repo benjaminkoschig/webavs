@@ -309,7 +309,7 @@ public class APGenererCompensationsProcess003 extends BProcess implements IAPGen
 
                     // Volonté d'assembler les ACM2 et ACM dans les mêmes montants de compensations
                     String genre = repartitionPaiementsJointEmployeur.getGenrePrestationPrestation();
-                    if (APTypeDePrestation.ACM2_ALFA.getCodesystemString().equals(genre)) {
+                    if (APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(genre)) {
                         genre = APTypeDePrestation.ACM_ALFA.getCodesystemString();
                     }
 
@@ -533,10 +533,10 @@ public class APGenererCompensationsProcess003 extends BProcess implements IAPGen
                     repartitionPaiementsJointEmployeurManager.setForIdTiers(key.idTiers);
                     repartitionPaiementsJointEmployeurManager.setForIdAffilie(key.idAffilie);
                     repartitionPaiementsJointEmployeurManager.setForIdParticularite(key.idExtra2);
-                 
+
                     // On prend les ACM et ACM 2 ensemble pour leur attribuer le même id compensation
                     final List<String> genres = new ArrayList<String>();
-                    if (APTypeDePrestation.ACM_ALFA.getCodesystemString().equals(key.genrePrestation)) {
+                    if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(key.genrePrestation)) {
                         genres.add(APTypeDePrestation.ACM2_ALFA.getCodesystemString());
                     }
                     genres.add(key.genrePrestation);

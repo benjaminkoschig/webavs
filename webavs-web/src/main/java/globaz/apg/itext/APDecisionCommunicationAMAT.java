@@ -793,10 +793,10 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
         for (int i = 0; i < prestations.size(); i++) {
             APPrestation prestation = (APPrestation) prestations.getEntity(i);
-            if (APTypeDePrestation.ACM_ALFA.getCodesystemString().equals(prestation.getGenre())) {
+            if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(prestation.getGenre())) {
                 hasACM = true;
             }
-            if (APTypeDePrestation.ACM2_ALFA.getCodesystemString().equals(prestation.getGenre())) {
+            if (APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(prestation.getGenre())) {
                 hasACM2 = true;
             }
         }
@@ -1492,10 +1492,10 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                     final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
 
-                    if (((prestation.getGenre().equals(APTypeDePrestation.STANDARD.getCodesystemString())) && (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD))
-                            || ((prestation.getGenre().equals(APTypeDePrestation.ACM_ALFA.getCodesystemString()) || prestation
-                                    .getGenre().equals(APTypeDePrestation.ACM2_ALFA.getCodesystemString())) && (state_dec == APDecisionCommunicationAMAT.STATE_ACM))
-                            || ((prestation.getGenre().equals(APTypeDePrestation.LAMAT.getCodesystemString())) && (state_dec == APDecisionCommunicationAMAT.STATE_LAMAT))) {
+                    if (((APTypeDePrestation.STANDARD.isCodeSystemEqual(prestation.getGenre())) && (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD))
+                            || ((APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(prestation.getGenre()) || APTypeDePrestation.ACM2_ALFA
+                                    .isCodeSystemEqual(prestation.getGenre())) && (state_dec == APDecisionCommunicationAMAT.STATE_ACM))
+                            || (APTypeDePrestation.LAMAT.isCodeSystemEqual(prestation.getGenre()) && (state_dec == APDecisionCommunicationAMAT.STATE_LAMAT))) {
 
                         nbPrest++;
 
@@ -1658,10 +1658,10 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                     final StringBuffer buffer = new StringBuffer();
                     FWMessageFormat message = createMessageFormat(buffer);
 
-                    if (((prestation.getGenre().equals(APTypeDePrestation.STANDARD.getCodesystemString())) && (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD))
-                            || ((prestation.getGenre().equals(APTypeDePrestation.ACM_ALFA.getCodesystemString()) || prestation
-                                    .getGenre().equals(APTypeDePrestation.ACM2_ALFA.getCodesystemString())) && (state_dec == APDecisionCommunicationAMAT.STATE_ACM))
-                            || ((prestation.getGenre().equals(APTypeDePrestation.LAMAT.getCodesystemString())) && (state_dec == APDecisionCommunicationAMAT.STATE_LAMAT))) {
+                    if (((APTypeDePrestation.STANDARD.isCodeSystemEqual(prestation.getGenre())) && (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD))
+                            || ((APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(prestation.getGenre()) || APTypeDePrestation.ACM2_ALFA
+                                    .isCodeSystemEqual(prestation.getGenre())) && (state_dec == APDecisionCommunicationAMAT.STATE_ACM))
+                            || (APTypeDePrestation.LAMAT.isCodeSystemEqual(prestation.getGenre()) && (state_dec == APDecisionCommunicationAMAT.STATE_LAMAT))) {
 
                         repartitionPaiementsManager.setForIdPrestation(prestation.getIdPrestationApg());
                         repartitionPaiementsManager.find();
@@ -2114,7 +2114,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                         continue;
                     } else {
                         // les prestations standard on la priorité
-                        if (APTypeDePrestation.STANDARD.getCodesystemString().equals(prestationType.getGenre())) {
+                        if (APTypeDePrestation.STANDARD.isCodeSystemEqual(prestationType.getGenre())) {
                             break;
                         } else {
                             continue;

@@ -2672,13 +2672,13 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         APIRubrique rubrique = null;
 
         boolean isLamat = false;
-        if (genrePrestation.equals(APTypeDePrestation.LAMAT.getCodesystemString())) {
+        if (APTypeDePrestation.LAMAT.isCodeSystemEqual(genrePrestation)) {
             isLamat = true;
         }
 
         // cas des ACM
-        if (genrePrestation.equals(APTypeDePrestation.ACM_ALFA.getCodesystemString())
-                || genrePrestation.equals(APTypeDePrestation.ACM2_ALFA.getCodesystemString())) {
+        if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(genrePrestation)
+                || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(genrePrestation)) {
             if (isRestitution) {
                 rubrique = ACM_RESTITUTION;
             } else {
