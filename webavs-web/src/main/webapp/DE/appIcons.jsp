@@ -368,7 +368,7 @@ var hideTimeout;
 							
 						<%if (objSession.hasRight("orion", globaz.framework.secure.FWSecureConstants.READ)) {%>
 						    <li>
-							<a href="<%=request.getContextPath()%>/draco" target="_top">
+							<a href="<%=request.getContextPath()%>/orion" target="_top">
 								E-Business
 							</a>
 							</li>
