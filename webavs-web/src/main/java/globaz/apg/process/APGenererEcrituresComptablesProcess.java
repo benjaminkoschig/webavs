@@ -743,7 +743,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
     }
 
     private String convertGenrePrestToRubrique(final String genrePrestation) {
-        if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(genrePrestation)) {
+        if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(genrePrestation)
+                || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(genrePrestation)) {
             return Montants.TYPE_ACM;
         } else if (APTypeDePrestation.ACM_NE.isCodeSystemEqual(genrePrestation)) {
             return Montants.TYPE_ACM_NE;
@@ -1399,7 +1400,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             repartition = (Repartition) repartitionsIterator.next();
 
             final boolean isGenrePrestationACMAlpha = APTypeDePrestation.ACM_ALFA
-                    .isCodeSystemEqual(repartition.genrePrestation);
+                    .isCodeSystemEqual(repartition.genrePrestation)
+                    || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(repartition.genrePrestation);
             final boolean isGenrePrestationACMNe = APTypeDePrestation.ACM_NE
                     .isCodeSystemEqual(repartition.genrePrestation);
 
@@ -1760,7 +1762,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
                 if (isLotMaternite) {
 
-                    if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(ventilation.genrePrestation)) {
+                    if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(ventilation.genrePrestation)
+                            || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(ventilation.genrePrestation)) {
 
                         doOrdreVersement(
                                 compta,
@@ -1785,6 +1788,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     }
                 } else {
                     if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(ventilation.genrePrestation)
+                            || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(ventilation.genrePrestation)
                             || APTypeDePrestation.ACM_NE.isCodeSystemEqual(ventilation.genrePrestation)) {
                         doOrdreVersement(
                                 compta,
@@ -2087,7 +2091,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             final Compensation compensation = (Compensation) compensationsPourCetIdIterator.next();
 
             final boolean isGenrePrestationACMAlpha = APTypeDePrestation.ACM_ALFA
-                    .isCodeSystemEqual(compensation.genrePrestation);
+                    .isCodeSystemEqual(compensation.genrePrestation)
+                    || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(compensation.genrePrestation);
             final boolean isGenrePrestationACMNe = APTypeDePrestation.ACM_NE
                     .isCodeSystemEqual(compensation.genrePrestation);
 
@@ -2210,15 +2215,6 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
                     compteAnnexeAffilie = compta.getCompteAnnexeByRole(key.idTiers, idRole, idExterneRole);
 
-                    // bz-4199
-                    // sectionCompensationFutures =
-                    // compta.getSectionByIdExterne(compteAnnexeAffilie.getIdCompteAnnexe(),
-                    // APISection.ID_TYPE_SECTION_APG,
-                    // String.valueOf(new JADate(dateComptable)
-                    // .getYear()) +
-                    // APISection.ID_TYPE_SECTION_APG +
-                    // "000");
-
                     sectionCompensationFutures = compta.getSectionByIdExterne(compteAnnexeAffilie.getIdCompteAnnexe(),
                             APISection.ID_TYPE_SECTION_APG, noFactureNormale);
 
@@ -2258,41 +2254,6 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 }
             }
         }
-
-        // Map naturesVersement = getMapNaturesVersement();
-        //
-        // //Un ordre de versement pour chaque nature de versement à
-        // effectuer...
-        // //Dépend du paramétrage de la caisse.
-        // Set keysNatures = naturesVersement.keySet();
-        // for (Iterator iter = keysNatures.iterator(); iter.hasNext();) {
-        // String innerKey = (String) iter.next();
-        // String value = (String)naturesVersement.get(innerKey);
-        //
-        // //versement effectif
-        // FWCurrency versement = montantsBrutTotal.getMontantCumule(value);
-        //
-        // versement.add(new
-        // FWCurrency(totalCotisations.getMontantCumule(value).toString()));
-        // versement.sub(new
-        // FWCurrency(compensationsTotale.getMontantCumule(value).toString()));
-        // versement.sub(new
-        // FWCurrency(ventilationTotale.getMontantCumule(value).toString()));
-        //
-        // if (versement.isPositive()) {
-        // doOrdreVersement(compta, compteAnnexeAPG.getIdCompteAnnexe(),
-        // sectionNormale.getIdSection(),
-        // versement.toString(), idAdressePaiementBeneficiaireDeBase, innerKey,
-        // null, null);
-        // }
-        //
-        // if (getTransaction().hasErrors()) {
-        // throw new Exception(getTransaction().getErrors().toString());
-        // }
-        //
-        //
-        //
-        // }
 
         // Un ordre de versement pour chaque nature de versement à effectuer...
         int iNature = 0;
@@ -2612,11 +2573,6 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             if (idAssureDeBase.equals(idTiers)) {
                 // choix de la section
                 repartition.section = getSection(idTiers, idAffilie, isRestitution);
-
-                // key = new Key(idTiers, idAffilie,
-                // repartition.idAdressePaiement,
-                // repartition.genrePrestation, repartition.idDepartement);
-
                 key = new Key(idTiers, idAffilie, "0", "0", "0");
 
             }
@@ -2624,12 +2580,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             else if (!JadeStringUtil.isIntegerEmpty(idAffilie)) {
                 // choix de la section
                 repartition.section = getSection(idTiers, idAffilie, isRestitution);
-
-                // key = new Key(idTiers, idAffilie,
-                // repartition.idAdressePaiement,
-                // repartition.genrePrestation, repartition.idDepartement);
-
                 key = new Key(idTiers, idAffilie, "0", "0", "0");
+
             }
             // Cas ou le bénéficiaire est un employeur non affilié,
             // la clé est composé de l'idtiers du l'assuré principal.
@@ -2640,11 +2592,6 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             else {
                 // choix de la section
                 repartition.section = getSection(idAssureDeBase, idAffilie, isRestitution);
-
-                // key = new Key(idAssureDeBase, idAffilie,
-                // repartition.idAdressePaiement,
-                // repartition.genrePrestation, repartition.idDepartement);
-
                 key = new Key(idAssureDeBase, "0", idTiers, "0", "0");
             }
 
@@ -2730,7 +2677,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         }
 
         // cas des ACM
-        if (genrePrestation.equals(APTypeDePrestation.ACM_ALFA.getCodesystemString())) {
+        if (genrePrestation.equals(APTypeDePrestation.ACM_ALFA.getCodesystemString())
+                || genrePrestation.equals(APTypeDePrestation.ACM2_ALFA.getCodesystemString())) {
             if (isRestitution) {
                 rubrique = ACM_RESTITUTION;
             } else {
@@ -2829,154 +2777,6 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
     }
 
-    // /**
-    // *
-    // * Clé : NATURE_VERSEMENT
-    // * Value : ACM + APG + AMAT + AMATF
-    // *
-    // * Exemple :
-    // *
-    // * Key Value
-    // * ===========================¦=============
-    // * NATURE_VERSEMENT_APG APG
-    // * NATURE_ALFA_ACM ACM
-    // * NATURE_ASSURANCE_MATERNITE AMATF_LAMAT
-    // *
-    // * @return Map des natures de versement.
-    // *
-    // * @throws Exception
-    // */
-    // private Map getMapNaturesVersement() throws Exception {
-    //
-    // String natureAPG =
-    // getSession().getApplication().getProperty(PROP_NATURE_VERSEMENT_APG);
-    // String natureAMATF =
-    // getSession().getApplication().getProperty(PROP_NATURE_VERSEMENT_AMAT);
-    // String natureACM_APG =
-    // getSession().getApplication().getProperty(PROP_NATURE_VERSEMENT_ACM_APG);
-    // String natureACM_MAT =
-    // getSession().getApplication().getProperty(PROP_NATURE_VERSEMENT_ACM_MAT);
-    // String natureLAMAT =
-    // getSession().getApplication().getProperty(PROP_NATURE_VERSEMENT_LAMAT);
-    //
-    // Map naturesVersement = new HashMap();
-    //
-    //
-    //
-    // String value = "";
-    // if (natureAPG.equals("NATURE_VERSEMENT_APG"))
-    // value+="_"+Montants.TYPE_APG;
-    // else if (natureAPG.equals("NATURE_ALFA_ACM"))
-    // value+="_"+Montants.TYPE_APG;
-    // else if (natureAPG.equals("NATURE_ASSURANCE_MATERNITE"))
-    // value+="_"+Montants.TYPE_APG;
-    // else if (natureAPG.equals("NATURE_ASSURANCE_MATERNITE_CANTONALE"))
-    // value+="_"+Montants.TYPE_APG;
-    //
-    // naturesVersement.put(natureAPG, value);
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    // if (naturesVersement.containsKey(natureAMATF)) {
-    // value = (String)naturesVersement.get(natureAMATF);
-    // }
-    // else {
-    // value = "";
-    // }
-    //
-    // if (natureAMATF.equals("NATURE_VERSEMENT_APG"))
-    // value+="_"+Montants.TYPE_APG;
-    // else if (natureAMATF.equals("NATURE_ALFA_ACM"))
-    // value+="_"+Montants.TYPE_ACM;
-    // else if (natureAMATF.equals("NATURE_ASSURANCE_MATERNITE"))
-    // value+="_"+Montants.TYPE_AMAT;
-    // else if (natureAMATF.equals("NATURE_ASSURANCE_MATERNITE_CANTONALE"))
-    // value+="_"+Montants.TYPE_LAMAT;
-    //
-    // naturesVersement.put(natureAMATF, value);
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    // if (naturesVersement.containsKey(natureACM_APG)) {
-    // value = (String)naturesVersement.get(natureACM_APG);
-    // }
-    // else {
-    // value = "";
-    // }
-    //
-    // if (natureACM_APG.equals("NATURE_VERSEMENT_APG"))
-    // value+="_"+Montants.TYPE_APG;
-    // else if (natureACM_APG.equals("NATURE_ALFA_ACM"))
-    // value+="_"+Montants.TYPE_ACM;
-    // else if (natureACM_APG.equals("NATURE_ASSURANCE_MATERNITE"))
-    // value+="_"+Montants.TYPE_AMAT;
-    // else if (natureACM_APG.equals("NATURE_ASSURANCE_MATERNITE_CANTONALE"))
-    // value+="_"+Montants.TYPE_LAMAT;
-    //
-    // naturesVersement.put(natureACM_APG, value);
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    // if (naturesVersement.containsKey(natureACM_MAT)) {
-    // value = (String)naturesVersement.get(natureACM_MAT);
-    // }
-    // else {
-    // value = "";
-    // }
-    //
-    // if (natureACM_MAT.equals("NATURE_VERSEMENT_APG"))
-    // value+="_"+Montants.TYPE_APG;
-    // else if (natureACM_MAT.equals("NATURE_ALFA_ACM"))
-    // value+="_"+Montants.TYPE_ACM;
-    // else if (natureACM_MAT.equals("NATURE_ASSURANCE_MATERNITE"))
-    // value+="_"+Montants.TYPE_AMAT;
-    // else if (natureACM_MAT.equals("NATURE_ASSURANCE_MATERNITE_CANTONALE"))
-    // value+="_"+Montants.TYPE_LAMAT;
-    //
-    // naturesVersement.put(natureACM_MAT, value);
-    //
-    //
-    //
-    //
-    //
-    //
-    // if (naturesVersement.containsKey(natureLAMAT)) {
-    // value = (String)naturesVersement.get(natureLAMAT);
-    // }
-    // else {
-    // value = "";
-    // }
-    //
-    // if (natureLAMAT.equals("NATURE_VERSEMENT_APG"))
-    // value+="_"+Montants.TYPE_APG;
-    // else if (natureLAMAT.equals("NATURE_ALFA_ACM"))
-    // value+="_"+Montants.TYPE_ACM;
-    // else if (natureLAMAT.equals("NATURE_ASSURANCE_MATERNITE"))
-    // value+="_"+Montants.TYPE_AMAT;
-    // else if (natureLAMAT.equals("NATURE_ASSURANCE_MATERNITE_CANTONALE"))
-    // value+="_"+Montants.TYPE_LAMAT;
-    //
-    // naturesVersement.put(natureLAMAT, value);
-    //
-    //
-    //
-    // return naturesVersement;
-    // }
-
     /**
      * Initialise les Id des rubriques
      * 
@@ -3034,10 +2834,6 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_ACM_MONTANT_BRUT);
             ACM_RESTITUTION = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_ACM_RESTITUTION);
-            // ACM_COT_AVS =
-            // referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_ACM_COTISATIONS_AVS);
-            // ACM_COT_AC =
-            // referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_ACM_COTISATIONS_AC);
         } else {
             EMPLOYEUR_AVEC_AC = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.APG_EMPLOYEUR_AVEC_AC);

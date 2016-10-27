@@ -1947,7 +1947,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                             }
                         } else if ((APTypeDeDecompte.ACM_GE.equals(decompteCourant.getTypeDeDecompte()))) {
                             // la case ACM est cochée dans la sit. pro. normalement pas de paiement assuré
-                            // pour les ACM
+                            // pour les ACM (même cas pour les ACM 2, du coup on se base sur ACM1
                             if (sitPro.getHasAcmAlphaPrestations().booleanValue()) {
                                 if (!employeurs.containsKey(employeur.getIdAffilie())) {
                                     employeurs.put(employeur.getIdAffilie(), employeur);

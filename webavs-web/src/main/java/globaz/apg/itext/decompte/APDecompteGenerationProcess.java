@@ -405,45 +405,6 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
         return repartitionsMgr.getContainer();
     }
 
-    // /**
-    // * Pour chacun des éléments PrestationJointRepartitionPOJO qui représente une PrestationJointRepartition APG, il
-    // * faut lui rajouter tout ce qui concerne les répartitions 'finales' et les ventilations
-    // *
-    // * @param decomptes
-    // * L'ensemble des répartitions à traiter
-    // * @throws Exception
-    // */
-    // private void ajouterVentilationsEtCompensations(final DecompteTaMere decomptes, final
-    // PrestationJointRepartitionPOJO repartitionPOJO) throws Exception {
-    // final APRepartitionJointPrestationManager ventilations = new APRepartitionJointPrestationManager();
-    // ventilations.setSession(this.getSession());
-    //
-    // final APFactureACompenserManager factures = new APFactureACompenserManager();
-    // factures.setSession(this.getSession());
-    //
-    // for (final PrestationJointRepartitionPOJO repartitionPOJO2 : decomptes) {
-    //
-    // final APRepartitionJointPrestation repartitionCourante = repartitionPOJO.getPrestationJointRepartition();
-    //
-    // ventilations.setForIdParent(repartitionCourante.getIdRepartitionBeneficiairePaiement());
-    // ventilations.find(BManager.SIZE_NOLIMIT);
-    //
-    // for (int idVentilation = 0; idVentilation < ventilations.size(); ++idVentilation) {
-    // decomptes.addRepartitionEnfant((APRepartitionJointPrestation) ventilations.get(idVentilation));
-    // }
-    //
-    // // ajouter les factures à compenser pour cette répartition
-    // if (!JadeStringUtil.isIntegerEmpty(repartitionCourante.getIdCompensation())) {
-    // factures.setForIdCompensationParente(repartitionCourante.getIdCompensation());
-    // factures.find(BManager.SIZE_NOLIMIT);
-    //
-    // for (int idCompensation = 0; idCompensation < factures.size(); ++idCompensation) {
-    // decomptes.addFactureACompenser((APFactureACompenser) factures.get(idCompensation));
-    // }
-    // }
-    // }
-    // }
-
     /**
      * @param data
      * @param repartitionsMgr
@@ -640,8 +601,6 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
             ICTDocument document = documents.get(cleCatalogue);
             if (document == null) {
                 documentHelper.setNom(decompteCourant.getTypeDeDecompte().getNomDocument());
-                // remplacé par la ligne ci-dessus
-                // this.documentHelper.setNom(APDecompteGenerationProcess.NOMS_DOCUMENTS.get(String.valueOf(1)));
                 documentHelper.setCsDestinataire(decompteCourant.getIsPaiementEmployeur() ? ICTDocument.CS_EMPLOYEUR
                         : ICTDocument.CS_ASSURE);
 

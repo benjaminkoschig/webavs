@@ -17,6 +17,7 @@ import globaz.apg.db.prestation.APRepartitionJointPrestationManager;
 import globaz.apg.db.prestation.APRepartitionPaiements;
 import globaz.apg.db.prestation.APRepartitionPaiementsJointEmployeur;
 import globaz.apg.db.prestation.APRepartitionPaiementsJointEmployeurManager;
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.process.Key;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
@@ -39,10 +40,12 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRSession;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -304,17 +307,15 @@ public class APGenererCompensationsProcess003 extends BProcess implements IAPGen
                         continue;
                     }
 
-                    // Key key = new
-                    // Key(repartitionPaiementsJointEmployeur.getIdTiers(),
-                    // repartitionPaiementsJointEmployeur.getIdAffilie(),
-                    // repartitionPaiementsJointEmployeur.loadAdressePaiement(null).getIdAdressePaiement(),
-                    // repartitionPaiementsJointEmployeur.getIdParticularite(),
-                    // repartitionPaiementsJointEmployeur.getGenrePrestationPrestation());
+                    // Volonté d'assembler les ACM2 et ACM dans les mêmes montants de compensations
+                    String genre = repartitionPaiementsJointEmployeur.getGenrePrestationPrestation();
+                    if (APTypeDePrestation.ACM2_ALFA.getCodesystemString().equals(genre)) {
+                        genre = APTypeDePrestation.ACM_ALFA.getCodesystemString();
+                    }
 
                     Key key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                             repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                            repartitionPaiementsJointEmployeur.getIdParticularite(),
-                            repartitionPaiementsJointEmployeur.getGenrePrestationPrestation());
+                            repartitionPaiementsJointEmployeur.getIdParticularite(), genre);
 
                     key.idDomaineAdressePaiement = repartitionPaiementsJointEmployeur.getIdDomaineAdressePaiement();
                     key.idTiersAdressePaiement = repartitionPaiementsJointEmployeur.getIdTiersAdressePaiement();
@@ -330,22 +331,9 @@ public class APGenererCompensationsProcess003 extends BProcess implements IAPGen
                     // de paiement'.
                     // Le montant total à répartir est donc égal au montant net
                     // du parent moins la sommes des montants ventilés.
-
                     FWCurrency montantRepartition = new FWCurrency(repartitionPaiementsJointEmployeur.getMontantNet());
                     montantRepartition.sub(getMontantVentile(session,
                             repartitionPaiementsJointEmployeur.getIdRepartitionBeneficiairePaiement(), forIdLot));
-
-                    // FWCurrency montantRepartition = null;
-                    //
-                    // if
-                    // (JadeStringUtil.isIntegerEmpty(repartitionPaiementsJointEmployeur.getIdParent()))
-                    // {
-                    // montantRepartition = new
-                    // FWCurrency(repartitionPaiementsJointEmployeur.getMontantRestant());
-                    // } else {
-                    // montantRepartition = new
-                    // FWCurrency(repartitionPaiementsJointEmployeur.getMontantVentile());
-                    // }
 
                     if (sommes.containsKey(key)) {
                         FWCurrency somme = (FWCurrency) sommes.get(key);
@@ -544,10 +532,16 @@ public class APGenererCompensationsProcess003 extends BProcess implements IAPGen
                     repartitionPaiementsJointEmployeurManager.setForIdLot(forIdLot);
                     repartitionPaiementsJointEmployeurManager.setForIdTiers(key.idTiers);
                     repartitionPaiementsJointEmployeurManager.setForIdAffilie(key.idAffilie);
-                    // repartitionPaiementsJointEmployeurManager.setForIdTiersAdressePaiement(key.idTiersAdressePaiement);
-                    // repartitionPaiementsJointEmployeurManager.setForIdDomaineAdressePaiement(key.idDomaineAdressePaiement);
                     repartitionPaiementsJointEmployeurManager.setForIdParticularite(key.idExtra2);
-                    repartitionPaiementsJointEmployeurManager.setForGenrePrestation(key.genrePrestation);
+                 
+                    // On prend les ACM et ACM 2 ensemble pour leur attribuer le même id compensation
+                    final List<String> genres = new ArrayList<String>();
+                    if (APTypeDePrestation.ACM_ALFA.getCodesystemString().equals(key.genrePrestation)) {
+                        genres.add(APTypeDePrestation.ACM2_ALFA.getCodesystemString());
+                    }
+                    genres.add(key.genrePrestation);
+
+                    repartitionPaiementsJointEmployeurManager.setForInGenrePrestation(genres);
 
                     statement = repartitionPaiementsJointEmployeurManager.cursorOpen(transaction);
                     repartitionPaiementsJointEmployeur = null;

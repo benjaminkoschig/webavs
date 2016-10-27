@@ -1,14 +1,5 @@
 package globaz.apg.impl.process;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import globaz.apg.api.lots.IAPLot;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.api.process.IAPGenererCompensationProcess;
@@ -23,6 +14,7 @@ import globaz.apg.db.prestation.APRepartitionJointPrestationManager;
 import globaz.apg.db.prestation.APRepartitionPaiements;
 import globaz.apg.db.prestation.APRepartitionPaiementsJointEmployeur;
 import globaz.apg.db.prestation.APRepartitionPaiementsJointEmployeurManager;
+import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.exceptions.APTechnicalException;
 import globaz.apg.process.Key;
 import globaz.framework.util.FWCurrency;
@@ -45,6 +37,16 @@ import globaz.osiris.db.comptes.CACompteAnnexeManager;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRSession;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * <p>
@@ -283,7 +285,6 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                 // affilié adresse de paiement et département.
                 // Création dans le même temps d'une map contenant en clef un idTiers et en valeur un montant, pour
                 // avoir la somme pour un idTiers
-
                 APRepartitionPaiementsJointEmployeurManager repartitionPaiementsJointEmployeurManager = new APRepartitionPaiementsJointEmployeurManager();
                 repartitionPaiementsJointEmployeurManager.setForIdLot(forIdLot);
                 repartitionPaiementsJointEmployeurManager.setForTypePrestation(IAPRepartitionPaiements.CS_NORMAL);
@@ -315,10 +316,15 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                         continue;
                     }
 
+                    // Volonté d'assembler les ACM2 et ACM dans les mêmes montants de compensations
+                    String genre = repartitionPaiementsJointEmployeur.getGenrePrestationPrestation();
+                    if (APTypeDePrestation.ACM2_ALFA.getCodesystemString().equals(genre)) {
+                        genre = APTypeDePrestation.ACM_ALFA.getCodesystemString();
+                    }
+
                     Key key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                             repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                            repartitionPaiementsJointEmployeur.getIdParticularite(),
-                            repartitionPaiementsJointEmployeur.getGenrePrestationPrestation());
+                            repartitionPaiementsJointEmployeur.getIdParticularite(), genre);
 
                     key.idDomaineAdressePaiement = repartitionPaiementsJointEmployeur.getIdDomaineAdressePaiement();
                     key.idTiersAdressePaiement = repartitionPaiementsJointEmployeur.getIdTiersAdressePaiement();
@@ -329,7 +335,6 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                     // Il n'est donc pas possible de compensé sur une 'adresse de paiement'.
                     // Le montant total à répartir est donc égal au montant net du parent moins la sommes des montants
                     // ventilés.
-
                     FWCurrency montantRepartition = new FWCurrency(repartitionPaiementsJointEmployeur.getMontantNet());
                     montantRepartition.sub(getMontantVentile(session,
                             repartitionPaiementsJointEmployeur.getIdRepartitionBeneficiairePaiement(), forIdLot));
@@ -542,7 +547,15 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                     repartitionPaiementsJointEmployeurManager.setForIdTiers(key.idTiers);
                     repartitionPaiementsJointEmployeurManager.setForIdAffilie(key.idAffilie);
                     repartitionPaiementsJointEmployeurManager.setForIdParticularite(key.idExtra2);
-                    repartitionPaiementsJointEmployeurManager.setForGenrePrestation(key.genrePrestation);
+
+                    // On prend les ACM et ACM 2 ensemble pour leur attribuer le même id compensation
+                    final List<String> genres = new ArrayList<String>();
+                    if (APTypeDePrestation.ACM_ALFA.getCodesystemString().equals(key.genrePrestation)) {
+                        genres.add(APTypeDePrestation.ACM2_ALFA.getCodesystemString());
+                    }
+                    genres.add(key.genrePrestation);
+
+                    repartitionPaiementsJointEmployeurManager.setForInGenrePrestation(genres);
 
                     statement = repartitionPaiementsJointEmployeurManager.cursorOpen(transaction);
                     repartitionPaiementsJointEmployeur = null;

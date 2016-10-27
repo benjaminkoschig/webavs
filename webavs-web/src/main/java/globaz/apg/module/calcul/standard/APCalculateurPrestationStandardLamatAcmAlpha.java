@@ -305,7 +305,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
                 // Calcul des prestations courantes, pour chaque base de calculs données.
                 // Toutes les prestations sont ajoutées dans la liste prestationCourantes
-                traiterPrestationsAcmALpha(session, transaction, droit, APTypeDePrestation.ACM_ALFA.getCodesystemString());
+                traiterPrestationsAcmALpha(session, transaction, droit,
+                        APTypeDePrestation.ACM_ALFA.getCodesystemString());
             }
         } catch (final Exception e) {
             if (transaction != null) {
@@ -1046,12 +1047,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                 prestations.add(prestationsARestituer[i]);
             }
         }
-        if (prestations.size() > 0) {
-            doRestitution(session, transaction, idDroit, pgpcRestitution,
-                    (APPrestation[]) prestations.toArray(new APPrestation[prestations.size()]));
-        }
-
-        prestations.clear();
+        doRestitutionAndClear(session, transaction, idDroit, pgpcRestitution, prestations);
 
         // Traitement des prestations ACM ALFA
         for (int i = 0; i < prestationsARestituer.length; i++) {
@@ -1068,13 +1064,16 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                 prestations.add(prestationsARestituer[i]);
             }
         }
+        doRestitutionAndClear(session, transaction, idDroit, pgpcRestitution, prestations);
 
-        if (prestations.size() > 0) {
-            doRestitution(session, transaction, idDroit, pgpcRestitution,
-                    (APPrestation[]) prestations.toArray(new APPrestation[prestations.size()]));
+        // Traitement des prestations ACM 2
+        for (int i = 0; i < prestationsARestituer.length; i++) {
+            if (APTypeDePrestation.ACM2_ALFA.getCodesystemString().equals(prestationsARestituer[i].getGenre())
+                    && IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestationsARestituer[i].getEtat())) {
+                prestations.add(prestationsARestituer[i]);
+            }
         }
-
-        prestations.clear();
+        doRestitutionAndClear(session, transaction, idDroit, pgpcRestitution, prestations);
 
         for (int i = 0; i < prestationsARestituer.length; i++) {
             if (APTypeDePrestation.LAMAT.getCodesystemString().equals(prestationsARestituer[i].getGenre())
@@ -1082,12 +1081,17 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                 prestations.add(prestationsARestituer[i]);
             }
         }
+        doRestitutionAndClear(session, transaction, idDroit, pgpcRestitution, prestations);
+    }
 
+    private void doRestitutionAndClear(final BSession session, final BTransaction transaction, final String idDroit,
+            final APPeriodeWrapper pgpcRestitution, final List prestations) throws Exception {
         if (prestations.size() > 0) {
             doRestitution(session, transaction, idDroit, pgpcRestitution,
                     (APPrestation[]) prestations.toArray(new APPrestation[prestations.size()]));
         }
 
+        prestations.clear();
     }
 
     /**

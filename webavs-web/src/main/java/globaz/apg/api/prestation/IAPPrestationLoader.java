@@ -17,4 +17,6 @@ public interface IAPPrestationLoader {
      * @see globaz.apg.api.prestation.IAPPrestation#load(java.lang.String, java.lang.String, java.lang.String)
      */
     public IAPPrestation[] load(String idDroit, String genrePrestation, String orderBy) throws Exception;
+
+    public IAPPrestation[] load(String idDroit, String[] genrePrestation, String orderBy) throws Exception;
 }

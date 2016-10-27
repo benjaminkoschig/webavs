@@ -876,13 +876,20 @@ public class APPrestation extends BEntity implements IAPPrestation {
      * @see globaz.apg.api.prestation.IAPPrestation#load(java.lang.String, java.lang.String, java.lang.String)
      */
     public IAPPrestation[] load(String idDroit, String genrePrestation, String orderBy) throws Exception {
+        return load(idDroit, new String[] { genrePrestation }, orderBy);
+    }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see globaz.apg.api.prestation.IAPPrestation#load(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public IAPPrestation[] load(String idDroit, String[] genrePrestations, String orderBy) throws Exception {
         // On récupère toutes les prestations de ce droit.
         APPrestationManager mgr = new APPrestationManager();
         mgr.setSession(getSession());
         mgr.setForIdDroit(idDroit);
-        mgr.setForGenre(genrePrestation);
-
+        mgr.setForInGenre(java.util.Arrays.asList(genrePrestations));
         mgr.setOrderBy(orderBy);
         mgr.find(BManager.SIZE_NOLIMIT);
 

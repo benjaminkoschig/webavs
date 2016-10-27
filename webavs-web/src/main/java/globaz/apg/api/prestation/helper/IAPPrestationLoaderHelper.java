@@ -36,13 +36,13 @@ public class IAPPrestationLoaderHelper extends GlobazHelper implements IAPPresta
         super(valueObject);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.apg.api.prestation.IAPPrestation#load(java.lang.String, java.lang.String, java.lang.String)
-     */
     @Override
     public IAPPrestation[] load(String idDroit, String genrePrestation, String orderBy) throws Exception {
+        return (IAPPrestation[]) _getObject("load", new Object[] { idDroit, genrePrestation, orderBy });
+    }
+
+    @Override
+    public IAPPrestation[] load(String idDroit, String[] genrePrestation, String orderBy) throws Exception {
         return (IAPPrestation[]) _getObject("load", new Object[] { idDroit, genrePrestation, orderBy });
     }
 }

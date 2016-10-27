@@ -6,6 +6,8 @@ package globaz.apg.db.prestation;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <H1>Description</H1>
@@ -25,6 +27,7 @@ public class APRepartitionJointPrestationManager extends APRepartitionPaiementsM
     private String forDateFin = "";
     private String forEtatPrestation = "";
     private String forGenrePrestation = "";
+    private List<String> forInGenrePrestation = new ArrayList<String>();
     private String forIdDroit = "";
     private String forIdLot = "";
 
@@ -75,6 +78,23 @@ public class APRepartitionJointPrestationManager extends APRepartitionPaiementsM
                     + _dbWriteNumeric(statement.getTransaction(), forGenrePrestation);
         }
 
+        if (!getForInGenrePrestation().isEmpty()) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+
+            StringBuilder valuesStr = new StringBuilder();
+            for (String genre : getForInGenrePrestation()) {
+                if (!JadeStringUtil.isEmpty(valuesStr.toString())) {
+                    valuesStr.append(",");
+                }
+                valuesStr.append(_dbWriteNumeric(statement.getTransaction(), genre));
+            }
+
+            sqlWhere += _getCollection() + APPrestation.TABLE_NAME + "." + APPrestation.FIELDNAME_GENRE_PRESTATION
+                    + " IN (" + valuesStr.toString() + ")";
+        }
+
         if (!JadeStringUtil.isIntegerEmpty(forIdDroit)) {
             if (sqlWhere.length() != 0) {
                 sqlWhere += " AND ";
@@ -110,29 +130,6 @@ public class APRepartitionJointPrestationManager extends APRepartitionPaiementsM
             sqlWhere += schema + APPrestation.TABLE_NAME + "." + APPrestation.FIELDNAME_ETAT + "="
                     + _dbWriteNumeric(statement.getTransaction(), forEtatPrestation);
         }
-
-        // if (!JadeStringUtil.isIntegerEmpty(forDateDebutComptabilise)) {
-        // if (sqlWhere.length() != 0) {
-        // sqlWhere += " AND ";
-        // }
-        //
-        // sqlWhere += schema + APPrestation.TABLE_NAME + "." +
-        // APPrestation.FIELDNAME_DATEPAIEMENT +
-        // ">=" +
-        // _dbWriteNumeric(statement.getTransaction(),
-        // forDateDebutComptabilise);
-        // }
-        //
-        // if (!JadeStringUtil.isIntegerEmpty(forDateFinComptabilise)) {
-        // if (sqlWhere.length() != 0) {
-        // sqlWhere += " AND ";
-        // }
-        //
-        // sqlWhere += schema + APPrestation.TABLE_NAME + "." +
-        // APPrestation.FIELDNAME_DATEPAIEMENT +
-        // "<=" +
-        // _dbWriteNumeric(statement.getTransaction(), forDateFinComptabilise);
-        // }
 
         return sqlWhere;
     }
@@ -239,21 +236,12 @@ public class APRepartitionJointPrestationManager extends APRepartitionPaiementsM
         forIdLot = string;
     }
 
-    // public String getForDateDebutComptabilise() {
-    // return forDateDebutComptabilise;
-    // }
-    //
-    // public void setForDateDebutComptabilise(String forDateDebutComptabilise)
-    // {
-    // this.forDateDebutComptabilise = forDateDebutComptabilise;
-    // }
-    //
-    // public String getForDateFinComptabilise() {
-    // return forDateFinComptabilise;
-    // }
-    //
-    // public void setForDateFinComptabilise(String forDateFinComptabilise) {
-    // this.forDateFinComptabilise = forDateFinComptabilise;
-    // }
+    public List<String> getForInGenrePrestation() {
+        return forInGenrePrestation;
+    }
+
+    public void setForInGenrePrestation(List<String> forInGenrePrestation) {
+        this.forInGenrePrestation = forInGenrePrestation;
+    }
 
 }

@@ -123,18 +123,10 @@ public class APProcessBouclementAlpha extends TUProcessusBouclement {
         boolean isCarteSupp = false;
 
         try {
-
-            // A setter manuellement pour les tests
-            // setSession((BSession)GlobazSystem.getApplication("APG").newSession("globaz",
-            // "glob4az"));
-
             final BISession session = PRSession.connectSession(getSession(), "APG");
             final IAPBouclementAlfaLoader bcl = (IAPBouclementAlfaLoader) session
                     .getAPIFor(IAPBouclementAlfaLoader.class);
 
-            // IAPBouclementAlfaLoader bcl =
-            // (IAPBouclementAlfaLoader)GlobazSystem.getApplication("APG").getAPIFor(getSession(),
-            // IAPBouclementAlfaLoader.class);
             final IAPBouclementAlfa[] array = bcl.load(getMois(), getAnnee());
 
             final Map map = new Hashtable();
@@ -167,9 +159,11 @@ public class APProcessBouclementAlpha extends TUProcessusBouclement {
                 // en cours afin de voir si c'est la première prestation du
                 // droit
                 final IAPPrestationLoader prest = (IAPPrestationLoader) session.getAPIFor(IAPPrestationLoader.class);
-                final IAPPrestation[] arrayPrest = prest
-                        .load(elem.getIdDroit(), APTypeDePrestation.ACM_ALFA.getCodesystemString(),
-                                IAPPrestation.FIELDNAME_DATEDEBUT_PRESTATION);
+                final IAPPrestation[] arrayPrest = prest.load(
+                        elem.getIdDroit(),
+                        new String[] { APTypeDePrestation.ACM_ALFA.getCodesystemString(),
+                                APTypeDePrestation.ACM2_ALFA.getCodesystemString() },
+                        IAPPrestation.FIELDNAME_DATEDEBUT_PRESTATION);
 
                 if ((arrayPrest != null) && (arrayPrest.length > 0)) {
                     final IAPPrestation firstPrestation = arrayPrest[0];
@@ -210,8 +204,7 @@ public class APProcessBouclementAlpha extends TUProcessusBouclement {
 
                     map.put(k, ai);
                 }
-                // Sinon on insère simplement les valeurs ! Et si la valeur est
-                // "VIDE", alors on insère "0" !
+                // Sinon on insère simplement les valeurs ! Et si la valeur est "VIDE", alors on insère "0" !
                 else {
                     final AlphaInfo ai = new AlphaInfo();
 
@@ -255,8 +248,7 @@ public class APProcessBouclementAlpha extends TUProcessusBouclement {
                 // System.out.println("---------------------------------------------------------------------------");
                 // System.out.println("Résultat pour le canton de '"+key.canton+"' et pour le type '"+key.typePrestation);
                 // System.out.println(" ");
-                // System.out.println("Montant des prestations ACM (net) = " +
-                // montantNet.toString());
+                // System.out.println("Montant des prestations ACM (net) = " + montantNet.toString());
                 // System.out.println("Nombre de cartes  ACM        	  = "+Integer.toString(ai.nbrCartes));
                 // System.out.println("Nombre de jours soldés ACM        = "+Integer.toString(ai.nbrJoursSolde));
                 // System.out.println("---------------------------------------------------------------------------");

@@ -6,7 +6,8 @@ import java.util.List;
 
 public enum APTypeDeDecompte {
 
-    ACM_GE(2, "acm", "AP_DECOMPTE_DETAIL.jasper", new APTypeDePrestation[] { APTypeDePrestation.ACM_ALFA }),
+    ACM_GE(2, "acm", "AP_DECOMPTE_DETAIL.jasper", new APTypeDePrestation[] { APTypeDePrestation.ACM_ALFA,
+            APTypeDePrestation.ACM2_ALFA }),
     AMAT_GE(3, "LAMat", "AP_DECOMPTE_DETAIL.jasper", new APTypeDePrestation[] { APTypeDePrestation.LAMAT }),
     NORMAL(1, "normal", "AP_DECOMPTE_DETAIL.jasper", new APTypeDePrestation[] { APTypeDePrestation.STANDARD }),
     NORMAL_ACM_NE(5, "normal_acmne", "AP_DECOMPTE_DETAIL_ACMNE.jasper", new APTypeDePrestation[] {
@@ -41,9 +42,7 @@ public enum APTypeDeDecompte {
         APTypeDeDecompte typeDuDecompte = null;
 
         if (vals.length != 0) {
-
-            // 1 seul type de prestation trouvé
-            if (vals.length == 1) {
+            if (vals.length == 1) { // 1 type de prestation trouvé
                 switch (vals[0]) {
                     case STANDARD:
                         typeDuDecompte = APTypeDeDecompte.NORMAL;
@@ -52,34 +51,37 @@ public enum APTypeDeDecompte {
                         typeDuDecompte = APTypeDeDecompte.AMAT_GE;
                         break;
                     case ACM_ALFA:
+                    case ACM2_ALFA: // ACM 2 se comporte de la même manière qu'un décompte ACM 1
                         typeDuDecompte = APTypeDeDecompte.ACM_GE;
                         break;
                     case ACM_NE:
                         typeDuDecompte = APTypeDeDecompte.NORMAL_ACM_NE;
                         break;
                 }
-            }
-            // 1er cas : 2 type de prestations sont présent. Seul le type APTypeDuDecompte.NORMAL_ACM_NE en contient 2
-            else if (vals.length == 2) {
+            } else if (vals.length == 2) { // 2 types de prestations trouvés.
                 boolean standard = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.STANDARD, vals);
                 boolean acm_ne = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.ACM_NE, vals);
+                boolean acm1 = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.ACM_ALFA, vals);
+                boolean acm2 = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.ACM2_ALFA, vals);
+
                 if (standard && acm_ne) {
                     typeDuDecompte = APTypeDeDecompte.NORMAL_ACM_NE;
                 }
-            }
-            // Cas anormal, trop de type de prestation, aucun décompte n'en contient plus que 2
-            else {
+
+                if (acm1 && acm2) {
+                    typeDuDecompte = APTypeDeDecompte.ACM_GE;
+                }
+            } else { // Trop de type de prestation, aucun décompte n'en contient plus que 2
                 throw new IllegalArgumentException("Too many APTypeDePrestation founded to resole the APTypeDuDecompte");
             }
-        }
-        // Aucune type de prestation trouvés, impossible de résoudre le type de décompte
-        else {
+        } else { // Aucune type de prestation trouvés, impossible de résoudre le type de décompte
             throw new IllegalArgumentException("Any APTypeDePrestation founded to resole the APTypeDuDecompte");
         }
 
         if (typeDuDecompte == null) {
             throw new IllegalArgumentException("Unable to resole the APTypeDuDecompte");
         }
+
         return typeDuDecompte;
     }
 
