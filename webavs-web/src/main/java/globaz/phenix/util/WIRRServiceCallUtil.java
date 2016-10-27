@@ -14,8 +14,8 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 import org.apache.commons.io.IOUtils;
-import ch.admin.bsv.xmlns.ebsv_2028_000101._1.Delivery;
-import ch.admin.ws.zas.regcent.nrr._0.NRRQueryServicePortType;
+import wirrch.admin.bsv.xmlns.ebsv_2028_000101._1.Delivery;
+import wirrch.admin.ws.zas.regcent.nrr._0.NRRQueryServicePortType;
 import ch.globaz.common.properties.CommonProperties;
 
 public class WIRRServiceCallUtil {
@@ -104,7 +104,7 @@ public class WIRRServiceCallUtil {
 
             Delivery requestDelivery = WIRRServiceMappingUtil.convertWirrDataBeanToRequestDelivery(wirrDataBean);
             logCallWIRR(session, requestDelivery);
-            ch.admin.bsv.xmlns.ebsv_2028_000102._1.Delivery responseDelivery = port.searchData(requestDelivery);
+            wirrch.admin.bsv.xmlns.ebsv_2028_000102._1.Delivery responseDelivery = port.searchData(requestDelivery);
 
             wirrDataBean = WIRRServiceMappingUtil.putResponseDeliveryResultInWirrDataBean(session, responseDelivery,
                     wirrDataBean);

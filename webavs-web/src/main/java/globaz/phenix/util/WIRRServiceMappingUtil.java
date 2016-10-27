@@ -10,11 +10,11 @@ import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import ch.admin.bsv.xmlns.ebsv_2028_000000._1.RequestType;
-import ch.admin.bsv.xmlns.ebsv_2028_000000._1.SearchPerPersonAndPensionTypeType;
-import ch.admin.bsv.xmlns.ebsv_2028_000101._1.Delivery;
-import ch.ech.xmlns.ech_0058._4.HeaderRequestType;
-import ch.ech.xmlns.ech_0058._4.SendingApplicationType;
+import wirrch.admin.bsv.xmlns.ebsv_2028_000000._1.RequestType;
+import wirrch.admin.bsv.xmlns.ebsv_2028_000000._1.SearchPerPersonAndPensionTypeType;
+import wirrch.admin.bsv.xmlns.ebsv_2028_000101._1.Delivery;
+import wirrch.ech.xmlns.ech_0058._4.HeaderRequestType;
+import wirrch.ech.xmlns.ech_0058._4.SendingApplicationType;
 import ch.globaz.common.properties.CommonProperties;
 
 public class WIRRServiceMappingUtil {
@@ -83,12 +83,12 @@ public class WIRRServiceMappingUtil {
     }
 
     public static final WIRRDataBean putResponseDeliveryResultInWirrDataBean(BSession session,
-            ch.admin.bsv.xmlns.ebsv_2028_000102._1.Delivery responseDelivery, WIRRDataBean wirrDataBean) {
+            wirrch.admin.bsv.xmlns.ebsv_2028_000102._1.Delivery responseDelivery, WIRRDataBean wirrDataBean) {
 
-        ch.admin.bsv.xmlns.ebsv_2028_000102._1.Delivery.Content.PositiveResponse positiveResponse = responseDelivery
+        wirrch.admin.bsv.xmlns.ebsv_2028_000102._1.Delivery.Content.PositiveResponse positiveResponse = responseDelivery
                 .getContent().getPositiveResponse();
 
-        ch.admin.bsv.xmlns.ebsv_2028_000102._1.Delivery.Content.NegativeReport negativeResponse = responseDelivery
+        wirrch.admin.bsv.xmlns.ebsv_2028_000102._1.Delivery.Content.NegativeReport negativeResponse = responseDelivery
                 .getContent().getNegativeReport();
 
         if (positiveResponse != null) {
