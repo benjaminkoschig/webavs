@@ -68,7 +68,7 @@ public class WebAvsAffiliationServiceImpl implements WebAvsAffiliationService {
         caisseLppManager.setForGenreCaisse(typeCaisse);
         caisseLppManager.setOrder("MYDDEB desc");
         caisseLppManager.setForAnnee(annee);
-        caisseLppManager.find(BManager.SIZE_NOLIMIT);
+        caisseLppManager.find(BManager.SIZE_USEDEFAULT);
 
         if (!caisseLppManager.isEmpty()) {
             AFSuiviCaisseAffiliation caisse = (AFSuiviCaisseAffiliation) caisseLppManager.getFirstEntity();
