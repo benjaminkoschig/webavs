@@ -28,12 +28,12 @@ import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TITiersViewBean;
 import globaz.webavs.common.ICommonConstantes;
+import idech.admin.bit.xmlns.uid_wse_shared._1.RegisterDeregisterStatus;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpSession;
 import javax.xml.datatype.XMLGregorianCalendar;
-import ch.admin.bit.xmlns.uid_wse_shared._1.RegisterDeregisterStatus;
 import ch.globaz.common.properties.PropertiesException;
 
 /**

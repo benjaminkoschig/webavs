@@ -1,6 +1,22 @@
 package globaz.naos.util;
 
 import globaz.jade.client.util.JadeStringUtil;
+import idech.admin.bit.xmlns.uid_wse_f._3.RegisterDeregisterItem;
+import idech.admin.bit.xmlns.uid_wse_shared._1.RegisterDeregisterStatus;
+import idech.ech.xmlns.ech_0007_f._6.CantonAbbreviationType;
+import idech.ech.xmlns.ech_0010_f._6.AddressInformationType;
+import idech.ech.xmlns.ech_0010_f._6.CountryType;
+import idech.ech.xmlns.ech_0010_f._6.MailAddressType;
+import idech.ech.xmlns.ech_0046_f._3.AddressType;
+import idech.ech.xmlns.ech_0046_f._3.ContactType;
+import idech.ech.xmlns.ech_0097_f._2.NamedOrganisationIdType;
+import idech.ech.xmlns.ech_0097_f._2.OrganisationIdentificationType;
+import idech.ech.xmlns.ech_0097_f._2.UidOrganisationIdCategorieType;
+import idech.ech.xmlns.ech_0097_f._2.UidStructureType;
+import idech.ech.xmlns.ech_0098_f._3.DatePartiallyKnownType;
+import idech.ech.xmlns.ech_0098_f._3.FoundationType;
+import idech.ech.xmlns.ech_0108_f._3.OrganisationType;
+import idech.ech.xmlns.ech_0108_f._3.UidregInformationType;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import javax.xml.bind.JAXBElement;
@@ -8,22 +24,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import org.apache.axis.types.NonNegativeInteger;
-import ch.admin.bit.xmlns.uid_wse_f._3.RegisterDeregisterItem;
-import ch.admin.bit.xmlns.uid_wse_shared._1.RegisterDeregisterStatus;
-import ch.ech.xmlns.ech_0007_f._6.CantonAbbreviationType;
-import ch.ech.xmlns.ech_0010_f._6.AddressInformationType;
-import ch.ech.xmlns.ech_0010_f._6.CountryType;
-import ch.ech.xmlns.ech_0010_f._6.MailAddressType;
-import ch.ech.xmlns.ech_0046_f._3.AddressType;
-import ch.ech.xmlns.ech_0046_f._3.ContactType;
-import ch.ech.xmlns.ech_0097_f._2.NamedOrganisationIdType;
-import ch.ech.xmlns.ech_0097_f._2.OrganisationIdentificationType;
-import ch.ech.xmlns.ech_0097_f._2.UidOrganisationIdCategorieType;
-import ch.ech.xmlns.ech_0097_f._2.UidStructureType;
-import ch.ech.xmlns.ech_0098_f._3.DatePartiallyKnownType;
-import ch.ech.xmlns.ech_0098_f._3.FoundationType;
-import ch.ech.xmlns.ech_0108_f._3.OrganisationType;
-import ch.ech.xmlns.ech_0108_f._3.UidregInformationType;
 
 public class IDEServiceMappingUtil {
 
@@ -35,7 +35,7 @@ public class IDEServiceMappingUtil {
         return getNumeroIDE(registerDeregisterItem.getUid());
     }
 
-    public static final String getNumeroIDE(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getNumeroIDE(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         return String.valueOf(organisationType.getOrganisation().getOrganisationIdentification().getUid()
                 .getUidOrganisationIdCategorie())
                 + String.valueOf(organisationType.getOrganisation().getOrganisationIdentification().getUid()
@@ -53,7 +53,7 @@ public class IDEServiceMappingUtil {
                 + String.valueOf(uidStruct.getUidOrganisationId());
     }
 
-    public static final String getNumeroIDERemplacement(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getNumeroIDERemplacement(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
 
         UidStructureType uidStructureType = organisationType.getUidregInformation().getUidReplacement();
 
@@ -66,52 +66,52 @@ public class IDEServiceMappingUtil {
 
     }
 
-    public static final String getCanton(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getCanton(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         return String.valueOf(organisationType.getCantonAbbreviationMainAddress());
     }
 
-    public static final String getNPA(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getNPA(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         return String.valueOf(organisationType.getOrganisation().getContact().getAddress().get(0).getPostalAddress()
                 .getAddressInformation().getForeignZipCodeOrSwissZipCodeIdOrSwissZipCode().get(0).getValue());
     }
 
-    public static final String getLocalite(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getLocalite(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         return String.valueOf(organisationType.getOrganisation().getContact().getAddress().get(0).getPostalAddress()
                 .getAddressInformation().getTown());
     }
 
-    public static final String getRue(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getRue(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         return organisationType.getOrganisation().getContact().getAddress().get(0).getPostalAddress()
                 .getAddressInformation().getStreet();
     }
 
-    public static final String getNumeroRue(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getNumeroRue(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         return organisationType.getOrganisation().getContact().getAddress().get(0).getPostalAddress()
                 .getAddressInformation().getHouseNumber();
     }
 
-    public static final String getCareOf(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getCareOf(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         return String.valueOf(organisationType.getOrganisation().getContact().getAddress().get(0).getPostalAddress()
                 .getAddressInformation().getAddressLine1());
     }
 
-    public static final String getLegalForm(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getLegalForm(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         return String.valueOf(organisationType.getOrganisation().getOrganisationIdentification().getLegalForm());
     }
 
-    public static final String getLangue(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getLangue(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         return String.valueOf(organisationType.getOrganisation().getLanguageOfCorrespondance());
     }
 
-    public static final String getOrganisationType(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getOrganisationType(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         return String.valueOf(organisationType.getUidregInformation().getUidregOrganisationType());
     }
 
-    public static final String getRaisonSociale(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getRaisonSociale(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         return String.valueOf(organisationType.getOrganisation().getOrganisationIdentification().getOrganisationName());
     }
 
-    public static final String getNaissance(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getNaissance(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         try {
             XMLGregorianCalendar birth = organisationType.getOrganisation().getFoundation().getFoundationDate()
                     .getYearMonthDay();
@@ -125,18 +125,18 @@ public class IDEServiceMappingUtil {
         return "";
     }
 
-    public static final String getActivite(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getActivite(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         return String.valueOf(organisationType.getOrganisation().getUidBrancheText());
     }
 
     /**
      * code noga selon le registre != code noga dans l'affiliation
      */
-    public static final String getNogaCode(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getNogaCode(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         return String.valueOf(organisationType.getOrganisation().getNogaCode());
     }
 
-    public static final String getNumeroAffilie(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getNumeroAffilie(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         if (!organisationType.getOrganisation().getOrganisationIdentification().getOtherOrganisationId().isEmpty()) {
             return String.valueOf(organisationType.getOrganisation().getOrganisationIdentification()
                     .getOtherOrganisationId().get(0).getOrganisationId());
@@ -144,7 +144,7 @@ public class IDEServiceMappingUtil {
         return "";
     }
 
-    public static final String getAdresse(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getAdresse(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         AddressInformationType adresseInformation = organisationType.getOrganisation().getContact().getAddress().get(0)
                 .getPostalAddress().getAddressInformation();
         String adresse = "";
@@ -176,7 +176,7 @@ public class IDEServiceMappingUtil {
         return registerDeregisterItem.getStatus();
     }
 
-    public static final String getStatut(ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getStatut(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
         return String.valueOf(AFIDEUtil.translateCodeStatut(Integer.valueOf(organisationType.getUidregInformation()
                 .getUidregStatusEnterpriseDetail())));
     }
@@ -201,7 +201,7 @@ public class IDEServiceMappingUtil {
     public static final OrganisationType getStructureForRadiationEntiteIde(IDEDataBean ideDataBean) {
 
         OrganisationType organisationType = new OrganisationType();
-        organisationType.setOrganisation(new ch.ech.xmlns.ech_0098_f._3.OrganisationType());
+        organisationType.setOrganisation(new idech.ech.xmlns.ech_0098_f._3.OrganisationType());
 
         UidStructureType uidStruct = new UidStructureType();
         NonNegativeInteger uid = new NonNegativeInteger(AFIDEUtil.giveMeNumIdeUnformatedWithoutPrefix(ideDataBean
@@ -242,7 +242,7 @@ public class IDEServiceMappingUtil {
         OrganisationIdentificationType organisationIdentification = new OrganisationIdentificationType();
         organisationIdentification.setOrganisationName(ideDataBean.getRaisonSociale());
 
-        ch.ech.xmlns.ech_0098_f._3.OrganisationType organisation = new ch.ech.xmlns.ech_0098_f._3.OrganisationType();
+        idech.ech.xmlns.ech_0098_f._3.OrganisationType organisation = new idech.ech.xmlns.ech_0098_f._3.OrganisationType();
         // personnalité juridique
 
         String legalForm = AFIDEUtil.translatePersJuriVersLegalForm(ideDataBean.getPersonnaliteJuridique());
@@ -337,7 +337,7 @@ public class IDEServiceMappingUtil {
         return root;
     }
 
-    public static final ch.ech.xmlns.ech_0108_f._3.OrganisationType getStructureForSearchByNumeroIDE(String numeroIDE) {
+    public static final idech.ech.xmlns.ech_0108_f._3.OrganisationType getStructureForSearchByNumeroIDE(String numeroIDE) {
         String numeroIDEWithoutPrefixe = IDEUtils.removePrefixeFromNumeroIDE(numeroIDE);
 
         UidStructureType uidStruct = new UidStructureType();
@@ -349,21 +349,21 @@ public class IDEServiceMappingUtil {
         OrganisationIdentificationType organisationIdentification = new OrganisationIdentificationType();
         organisationIdentification.setUid(uidStruct);
 
-        ch.ech.xmlns.ech_0098_f._3.OrganisationType organisation = new ch.ech.xmlns.ech_0098_f._3.OrganisationType();
+        idech.ech.xmlns.ech_0098_f._3.OrganisationType organisation = new idech.ech.xmlns.ech_0098_f._3.OrganisationType();
         organisation.setOrganisationIdentification(organisationIdentification);
 
-        ch.ech.xmlns.ech_0108_f._3.OrganisationType organisationType = new ch.ech.xmlns.ech_0108_f._3.OrganisationType();
+        idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType = new idech.ech.xmlns.ech_0108_f._3.OrganisationType();
         organisationType.setOrganisation(organisation);
 
         return organisationType;
     }
 
-    public static final ch.ech.xmlns.ech_0108_f._3.OrganisationType getStructureForSearch(String forRaisonSociale,
+    public static final idech.ech.xmlns.ech_0108_f._3.OrganisationType getStructureForSearch(String forRaisonSociale,
             String forNpa, String forLocalite, String forRue, String forNumeroRue, String forNaissance) {
 
         OrganisationType organisationType = new OrganisationType();
 
-        ch.ech.xmlns.ech_0098_f._3.OrganisationType org = new ch.ech.xmlns.ech_0098_f._3.OrganisationType();
+        idech.ech.xmlns.ech_0098_f._3.OrganisationType org = new idech.ech.xmlns.ech_0098_f._3.OrganisationType();
 
         // Recherche par nom
         OrganisationIdentificationType searchNom = new OrganisationIdentificationType();
