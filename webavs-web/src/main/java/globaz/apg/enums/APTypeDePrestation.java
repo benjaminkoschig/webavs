@@ -3,7 +3,7 @@ package globaz.apg.enums;
 public enum APTypeDePrestation implements Comparable<APTypeDePrestation> {
 
     ACM_ALFA("ACM_ALFA", 52015002, true, true),
-    ACM2_ALFA("ACM2_ALFA", 52015005, true, true),
+    ACM2_ALFA("ACM2_ALFA", 52015005, false, true),
     ACM_NE("ACM_NE", 52015004, true, false),
     LAMAT("LAMAT", 52015003, true, true),
 

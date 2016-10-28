@@ -161,7 +161,7 @@
 				<%=line.getDateDebut() + " - " + line.getDateFin()%>&nbsp;
 			</td>
 			
-			<% if(!APTypeDePrestation.ACM_NE.getCodesystemString().equals(line.getGenre())){ %>
+			<% if(!APTypeDePrestation.ACM_NE.isCodeSystemEqual(line.getGenre())){ %>
 			<td align="right" class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>">
 				<%=line.getMontantJournalier()%>&nbsp;
 			</td>			

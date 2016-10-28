@@ -186,8 +186,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         public boolean equals(final Object obj) {
             final KeyRegroupementRubriqueConcernee key = (KeyRegroupementRubriqueConcernee) obj;
 
-            final boolean result = (rubrique.getId().equals(key.rubrique.getId())) && section.equals(key.section);
-            return result;
+            return (rubrique.getId().equals(key.rubrique.getId())) && section.equals(key.section);
         }
 
         /*
@@ -203,11 +202,11 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
     // Inner class
     class Montants {
-        public final static String TYPE_ACM = "ACM";
-        public final static String TYPE_ACM_NE = "ACM_NE";
-        public final static String TYPE_AMAT = "AMATF";
-        public final static String TYPE_APG = "APG";
-        public final static String TYPE_LAMAT = "LAMAT";
+        public static final String TYPE_ACM = "ACM";
+        public static final String TYPE_ACM_NE = "ACM_NE";
+        public static final String TYPE_AMAT = "AMATF";
+        public static final String TYPE_APG = "APG";
+        public static final String TYPE_LAMAT = "LAMAT";
 
         private final FWCurrency montantACM = new FWCurrency(0);
         private final FWCurrency montantACMNE = new FWCurrency(0);
@@ -316,13 +315,9 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
      */
     private class Repartition {
 
-        // ~ Instance fields
-        // --------------------------------------------------------------------------------------------
-
         public String anneeCotisation = "";
         public String cotisationAC = "";
         public String cotisationAVS = "";
-
         public String cotisationFNE = "";
         public String cotisationLFA = "";
         public String fraisAdministration = "";
@@ -338,9 +333,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         public boolean isRestitution = false;
         public String montant = "";
         public String montantBrutCotisationFNE = "";
-
         public APIRubrique rubriqueConcernee = null;
-
         public String section = "";
         public String tauxCotisationFNE = "";
         public String typeAssociation = "";
@@ -351,17 +344,10 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
      * classe représentant une ventilation
      */
     private class Ventilation {
-
-        // ~ Instance fields
-        // --------------------------------------------------------------------------------------------
-
         public String genrePrestation = "";
         public String idAdressePaiement = "";
         public String montant = "";
         public String referenceInterne = "";
-
-        // ~ Constructors
-        // -----------------------------------------------------------------------------------------------
 
         public Ventilation(final String montant, final String genrePrestation, final String idAdressePaiement,
                 final String referenceInterne) {
@@ -373,25 +359,15 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
     }
 
     private static final String COMPENSATION_ACMNE = "COMPENSATION_ACMNE";
-
     private static final String PROP_NATURE_VERSEMENT_ACM_APG = "nature.versement.acm.apg";;
-
     private static final String PROP_NATURE_VERSEMENT_ACM_MAT = "nature.versement.acm.maternite";
-
     private static final String PROP_NATURE_VERSEMENT_AMAT = "nature.versement.maternite";
-
     private static final String PROP_NATURE_VERSEMENT_APG = "nature.versement.apg";
-
     private static final String PROP_NATURE_VERSEMENT_LAMAT = "nature.versement.lamat";
-
     private static final String PROP_RUBRIQUE_COMPENSATION = "rubrique.compensation.standard";
-
     private static final String PROP_RUBRIQUE_COMPENSATION_ACM = "rubrique.compensation.acm";
     public static final String REQUETE_SQL_CAISSE_PROF_COL_NAME_ID_TIERS_ADMINISTRATION = "ID_TIERS_ADMINISTRATION";
 
-    /**
-	 *
-	 */
     private static final long serialVersionUID = -7018310890658933220L;
 
     public static void main(final String[] args) throws InstantiationException, IllegalAccessException {
@@ -417,55 +393,34 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
     // ------------------------------------------------------------------------------------------------
     // ACM
     private APIRubrique ACM_MONTANT_BRUT = null;
-
     private APIRubrique ACM_RESTITUTION = null;
-
-    // private APIRubrique ACM_COT_AVS = null;
-    // private APIRubrique ACM_COT_AC = null;
     private APIRubrique ASSURE_OU_INDEPENDANT_AVEC_AC = null;
     private APIRubrique ASSURE_OU_INDEPENDANT_SANS_AC = null;
     private APIRubrique COMPENSATION = null;
-
     private APIRubrique COMPENSATION_ACM = null;
     private APIRubrique COMPENSATION_LAMAT = null;
-
     private APIRubrique COT_AC = null;
     private APIRubrique COT_AVS = null;
     private APIRubrique COT_LFA = null;
-    private String dateComptable = "";
-
-    private String dateSurDocument = "";
-    // Maternite
+    private APIRubrique IMPOT_SOURCE = null;
+    private APIRubrique IMPOT_SOURCE_ACM = null;
+    private APIRubrique IMPOT_SOURCE_LAMAT_CANTONALE = null;
     private APIRubrique EMPLOYEUR_AVEC_AC = null;
     private APIRubrique EMPLOYEUR_SANS_AC = null;
     private APIRubrique FONDS_DE_COMPENSATION = null;
-
     private APIRubrique FONDS_DE_COMPENSATION_ACM = null;
     private APIRubrique FRAIS_ADMINISTRATION = null;
-
-    private String idLot = "";
-    private APIRubrique IMPOT_SOURCE = null;
-
-    private APIRubrique IMPOT_SOURCE_ACM = null;
-
-    private APIRubrique IMPOT_SOURCE_LAMAT_CANTONALE = null;
-    private boolean isLotMaternite = false;
-
-    private final Map<String, AcmNeBean> mapAcmNeBean = new HashMap<String, AcmNeBean>();
-
     private APIRubrique PRESTATION_A_RESTITUER = null;
-
     private APIRubrique PRESTATION_A_RESTITUER_LAMAT = null;
-
-    // ~ Constructors
-    // ---------------------------------------------------------------------------------------------------
-
     private APIRubrique SANS_COTISATION = null;
-
-    // LAMAT
     private APIRubrique SANS_COTISATION_LAMAT_ADOPTION = null;
-
     private APIRubrique SANS_COTISATION_LAMAT_NAISSANCE = null;
+
+    private String dateComptable = "";
+    private String dateSurDocument = "";
+    private String idLot = "";
+    private boolean isLotMaternite = false;
+    private final Map<String, AcmNeBean> mapAcmNeBean = new HashMap<String, AcmNeBean>();
     private String schemaDBWithTablePrefix = null;
 
     /**
@@ -475,9 +430,6 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         super();
         schemaDBWithTablePrefix = TIToolBox.getCollection();
     }
-
-    // ~ Methods
-    // --------------------------------------------------------------------------------------------------------
 
     /**
      * Crée une nouvelle instance de la classe APGenererEcrituresComptablesProcess.
@@ -501,21 +453,10 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         schemaDBWithTablePrefix = TIToolBox.getCollection();
     }
 
-    /**
-     * (non-Javadoc)
-     * 
-     * @see globaz.globall.db.BProcess#_executeCleanUp()
-     */
     @Override
     protected void _executeCleanUp() {
     }
 
-    /**
-     * (non-Javadoc)
-     * 
-     * @see globaz.globall.db.BProcess#_executeProcess()
-     * @return DOCUMENT ME!
-     */
     @Override
     protected boolean _executeProcess() {
 
@@ -743,6 +684,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
     }
 
     private String convertGenrePrestToRubrique(final String genrePrestation) {
+        // Si genre de prestation ACM ou ACM 2, les deux sont du même type "ACM" afin de les mettre dans les mêmes
+        // écritures comptable (rubrique)
         if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(genrePrestation)
                 || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(genrePrestation)) {
             return Montants.TYPE_ACM;
@@ -1025,7 +968,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
             getMemoryLog().logMessage(
                     java.text.MessageFormat.format(getSession().getLabel("ECR_COM_ECRITURE"), new Object[] {
-                            montantSigne.toString(), rubrique.getIdExterne() }), FWMessage.INFORMATION,
+                            montantSigne, rubrique.getIdExterne() }), FWMessage.INFORMATION,
                     getSession().getLabel("ECR_COM_GENERER_ECRITURES_COMPTABLES_PROCESS"));
 
             if (positif) {
@@ -1063,14 +1006,14 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             ecriture.setIdSection(idSection);
             ecriture.setDate(dateComptable);
             ecriture.setIdCompte(rubrique.getIdRubrique());
-            ecriture.setMasse(masse.toString());
+            ecriture.setMasse(masse);
             ecriture.setTaux(taux);
             ecriture.setIdCaisseProfessionnelle(idCaisseProf);
             ecriture.setMontant(montant.toString());
 
             getMemoryLog().logMessage(
                     java.text.MessageFormat.format(getSession().getLabel("ECR_COM_ECRITURE"), new Object[] {
-                            montantSigne.toString(), rubrique.getIdExterne() }), FWMessage.INFORMATION,
+                            montantSigne, rubrique.getIdExterne() }), FWMessage.INFORMATION,
                     getSession().getLabel("ECR_COM_GENERER_ECRITURES_COMPTABLES_PROCESS"));
 
             if (positif) {
@@ -1788,7 +1731,6 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     }
                 } else {
                     if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(ventilation.genrePrestation)
-                            || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(ventilation.genrePrestation)
                             || APTypeDePrestation.ACM_NE.isCodeSystemEqual(ventilation.genrePrestation)) {
                         doOrdreVersement(
                                 compta,
@@ -2346,6 +2288,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             final String montant) {
 
         // Cumul des cotisations par genre de prestations
+        // Les montants ACM et ACM 2 sont cumulés
         if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(genrePrestation)
                 || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(genrePrestation)) {
             montants.add(Montants.TYPE_ACM, montant);
@@ -2565,7 +2508,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
             // choix de la rubrique
             repartition.rubriqueConcernee = getRubriqueConcernee(isEmployeur, isIndependant, hasAC, hasCotisation,
-                    noRevision, isRestitution, repartition.genrePrestation, isAdoption, repartition.typeAssociation);
+                    isRestitution, repartition.genrePrestation, isAdoption, repartition.typeAssociation);
 
             final String idAssureDeBase = droit.loadDemande().getIdTiers();
 
@@ -2621,13 +2564,13 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             rep.setIdRepartitionBeneficiairePaiement(idRepartitionPmt);
             rep.retrieve();
 
-            if ((rep != null) && !rep.isNew()) {
+            if (!rep.isNew()) {
                 final String idPrestation = rep.getIdPrestationApg();
                 final APPrestation prestation = new APPrestation();
                 prestation.setSession(getSession());
                 prestation.setIdPrestationApg(idPrestation);
                 prestation.retrieve();
-                if ((prestation != null) && !prestation.isNew()) {
+                if (!prestation.isNew()) {
 
                     // prestation.getid
 
@@ -2636,7 +2579,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     droit.setIdDroit(prestation.getIdDroit());
                     droit.retrieve();
 
-                    if ((droit != null) && !droit.isNew()) {
+                    if (!droit.isNew()) {
                         final PRTiersWrapper tiersWP = droit.loadDemande().loadTiers();
                         nom = tiersWP.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
                                 + tiersWP.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
@@ -2644,6 +2587,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 }
             }
         } catch (final Exception e) {
+            JadeLogger.info(e, e.getLocalizedMessage());
             return null;
         }
         return nom;
@@ -2667,7 +2611,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
      * @return la rubrique concernée
      */
     private APIRubrique getRubriqueConcernee(final boolean isEmployeur, final boolean isIndependant,
-            final boolean hasAC, final boolean hasCotisation, final String noRevision, final boolean isRestitution,
+            final boolean hasAC, final boolean hasCotisation, final boolean isRestitution,
             final String genrePrestation, final boolean isAdoption, final String typeAssociation) {
         APIRubrique rubrique = null;
 
@@ -2697,7 +2641,6 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 rubrique = PRESTATION_A_RESTITUER;
             }
         } else {
-
             if (!hasCotisation) {
                 if (isLamat) {
                     if (isAdoption) {
@@ -2957,10 +2900,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
     }
 
     private String replaceSchemaInSqlQuery(String sqlQuery) {
-
-        sqlQuery = sqlQuery.replaceAll("(?i)schema\\.", schemaDBWithTablePrefix);
-
-        return sqlQuery;
+        return sqlQuery.replaceAll("(?i)schema\\.", schemaDBWithTablePrefix);
     }
 
     /**

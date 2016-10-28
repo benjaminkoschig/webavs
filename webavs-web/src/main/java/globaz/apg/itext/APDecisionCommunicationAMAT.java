@@ -78,7 +78,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import net.sf.jasperreports.engine.JRDataSource;
-import ch.globaz.common.properties.PropertiesException;
 
 /**
  * <H1>Description</H1>
@@ -93,9 +92,6 @@ import ch.globaz.common.properties.PropertiesException;
  * @author vre
  */
 public class APDecisionCommunicationAMAT extends FWIDocumentManager {
-
-    // ~ Static fields/initializers
-    // -------------------------------------------------------------------------------------
 
     /**
      * 
@@ -123,11 +119,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             super(root, source);
         }
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see globaz.framework.printing.itext.api.FWICollectionInterface#add(java .lang.Object)
-         */
         @Override
         public void add(final Object obj) {
             if (isDecompteRempli) {
@@ -236,12 +227,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     private boolean clearDocumentList = false;
 
-    // ~ Instance fields
-    // ------------------------------------------------------------------------------------------------
-
-    // private boolean sentToGed = false;
-    // pour adresse pmt
-    // private String texteFinal = "";
     private String codeIsoLangue = "FR";
     private boolean createDocumentCopie = false;
     private String csTypeDocument;
@@ -280,9 +265,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
     private RepartitionsEmployeurIterator repartitionsEmployeur;
 
-    // ~ Constructors
-    // ---------------------------------------------------------------------------------------------------
-
     private int state = APDecisionCommunicationAMAT.STATE_ASSURES;
 
     private int state_dec = APDecisionCommunicationAMAT.STATE_STANDARD;
@@ -303,9 +285,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
     public APDecisionCommunicationAMAT(final BProcess parent) throws FWIException {
         super(parent, APApplication.APPLICATION_APG_REP, APDecisionCommunicationAMAT.FICHIER_RESULTAT);
     }
-
-    // ~ Methods
-    // --------------------------------------------------------------------------------------------------------
 
     /**
      * Crée une nouvelle instance de la classe APGenererDecisionProcess.
@@ -374,9 +353,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 	 */
     @Override
     public void beforeExecuteReport() {
-        // effacer les pdfs a la fin
-        // setDeleteOnExit(true);
-
         try {
             // le modele
             final String extensionModelCaisse = getSession().getApplication().getProperty("extensionModelITextCaisse");
@@ -405,7 +381,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             // décompte à l'assuré,
             // ou 1 ou plusieurs à l' (aux) employeur(s)
             // ou 1 ou + pour chacun
-
             final APRepartitionPaiementsManager repartitionPaiementsManager = new APRepartitionPaiementsManager();
             repartitionPaiementsManager.setSession(getSession());
 
@@ -422,10 +397,8 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                     if (rp.isBeneficiaireEmployeur()) {
                         // si pas d'idAffilie --> Assuré
                         nbRepEmployeur++;
-
                     } else {
                         nbRepAssure++;
-
                     }
                 }
             }
@@ -452,60 +425,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
         return super.beforePrintDocument();
     }
-
-    /**
-     * Set les proprietes du JadePublishDocumentInfo et genere le fichier PDF pour l'impression
-     */
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.framework.printing.itext.FWIDocumentManager#afterExecuteReport()
-     */
-    // public void afterExecuteReport() {
-
-    // if (getAttachedDocuments().size() > 0) {
-    // try {
-    // // on set les propriétés du DocInfo pour envoyer le mail
-    // setSendCompletionMail(false);
-    // JadePublishDocumentInfo docInfo = createDocumentInfo();
-    // docInfo.setPublishDocument(true);
-    // docInfo.setArchiveDocument(false);
-    // // Point ouvert 00405
-    // // docInfo.setPublishProperty("service",
-    // PRAbstractApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG).getProperty(APApplication.PROPERTY_SERVICE_GED));
-    // docInfo.setPublishProperty(JadePublishDocumentInfo.MAIL_TO,
-    // getEMailAddress());
-    // docInfo.setDocumentTitle("L'impression des documents de décompte s'est terminée avec succès");
-    //
-    // // // Pour les client qui possedent une GED et
-    // // // si l'insertion dans la GED est cochee
-    // // // si pas une copie
-    // // if
-    // ("true".equalsIgnoreCase(APApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG).getProperty(APApplication.PROPERTY_IS_SENT_TO_GED))
-    // &&
-    // // getIsSentToGed() &&
-    // // !isDocumentCopy()) {
-    // //
-    // // // on genere le doc pour impression (mail) et on set les proprietes
-    // DocInfo
-    // // // on ne supprime pas les documents individuels car on doit les
-    // envoies à la GED
-    // // // on trie les documents sur le critère "orderPrintBy"
-    // // mergePDF(docInfo, false, 0, false, ORDER_PRINTING_BY);
-    // // } else {
-    // // // on genere le doc pour impression (mail) et on set les proprietes
-    // DocInfo
-    // // // on supprime les documents individuels car on ne les envoies pas à
-    // la GED
-    // // // on trie les documents sur le critère "orderPrintBy"
-    // // mergePDF(docInfo, true, 0, false, ORDER_PRINTING_BY);
-    // // }
-    //
-    // } catch (Exception e) {
-    // e.printStackTrace();
-    // }
-    // }
-    // }
 
     private void buildDecision(ICTDocument document) throws Exception {
 
@@ -785,28 +704,30 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         }
     }
 
-    private String traitementLevel4Pos3ACMEmployeur(ICTTexte texte) throws PropertiesException {
+    /**
+     * Pouvoir attribuer dans le niveau 4 position 3 ACM Employeur, le nombre de jours corrects selon si la décision
+     * pour l'employeur verse que des ACM ou (ACM et ACM 2)
+     * 
+     * @param texte Le catalogue de texte.
+     * @return Le chaine du niveau 4 position 3 avec la nouvelle valeur.
+     * @throws Exception Exception due a la recherche de situation professionnelle
+     */
+    private String traitementLevel4Pos3ACMEmployeur(ICTTexte texte) throws Exception {
         final StringBuffer bufferLocal = new StringBuffer(texte.getDescription());
 
-        boolean hasACM = false;
-        boolean hasACM2 = false;
+        // reprendre la situation prof pour savoir si elle a un type ACM 2
+        final APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
+        sitPro.setSession(getSession());
+        sitPro.setIdSituationProf(repartition.getIdSituationProfessionnelle());
+        sitPro.retrieve();
 
-        for (int i = 0; i < prestations.size(); i++) {
-            APPrestation prestation = (APPrestation) prestations.getEntity(i);
-            if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(prestation.getGenre())) {
-                hasACM = true;
-            }
-            if (APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(prestation.getGenre())) {
-                hasACM2 = true;
-            }
-        }
+        Integer nbJoursTotaux = Integer.valueOf(APProperties.PROPERTY_DROIT_ACM_MAT_DUREE_JOURS.getValue());
+        if (!sitPro.isNew()) {
+            final boolean hasAcm2 = sitPro.getHasAcm2AlphaPrestations();
 
-        Integer nbJoursTotaux = 0;
-        if (hasACM) {
-            nbJoursTotaux += Integer.valueOf(APProperties.PROPERTY_DROIT_ACM_MAT_DUREE_JOURS.getValue());
-        }
-        if (hasACM2) {
-            nbJoursTotaux += Integer.valueOf(APProperties.PROPERTY_DROIT_ACM2_MAT_DUREE_JOURS.getValue());
+            if (hasAcm2) {
+                nbJoursTotaux += Integer.valueOf(APProperties.PROPERTY_DROIT_ACM2_MAT_DUREE_JOURS.getValue());
+            }
         }
 
         return PRStringUtils.formatMessage(bufferLocal, nbJoursTotaux.toString());
@@ -886,7 +807,6 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             helper.setActif(Boolean.TRUE);
 
             // pour l'assure
-            // helper.setDefault(Boolean.TRUE);
             helper.setCsDestinataire(ICTDocument.CS_ASSURE);
 
             // on cherche la langue de l'assure
@@ -1492,10 +1412,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
 
                     final APPrestation prestation = (APPrestation) loadPrestations().get(idPrestation);
 
-                    if (((APTypeDePrestation.STANDARD.isCodeSystemEqual(prestation.getGenre())) && (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD))
-                            || ((APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(prestation.getGenre()) || APTypeDePrestation.ACM2_ALFA
-                                    .isCodeSystemEqual(prestation.getGenre())) && (state_dec == APDecisionCommunicationAMAT.STATE_ACM))
-                            || (APTypeDePrestation.LAMAT.isCodeSystemEqual(prestation.getGenre()) && (state_dec == APDecisionCommunicationAMAT.STATE_LAMAT))) {
+                    if (isGenreSameAsStateDecision(prestation)) {
 
                         nbPrest++;
 
@@ -1658,10 +1575,7 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
                     final StringBuffer buffer = new StringBuffer();
                     FWMessageFormat message = createMessageFormat(buffer);
 
-                    if (((APTypeDePrestation.STANDARD.isCodeSystemEqual(prestation.getGenre())) && (state_dec == APDecisionCommunicationAMAT.STATE_STANDARD))
-                            || ((APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(prestation.getGenre()) || APTypeDePrestation.ACM2_ALFA
-                                    .isCodeSystemEqual(prestation.getGenre())) && (state_dec == APDecisionCommunicationAMAT.STATE_ACM))
-                            || (APTypeDePrestation.LAMAT.isCodeSystemEqual(prestation.getGenre()) && (state_dec == APDecisionCommunicationAMAT.STATE_LAMAT))) {
+                    if (isGenreSameAsStateDecision(prestation)) {
 
                         repartitionPaiementsManager.setForIdPrestation(prestation.getIdPrestationApg());
                         repartitionPaiementsManager.find();
@@ -1784,6 +1698,26 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
             getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, "APDecisionCommunicationAMAT");
             abort();
         }
+    }
+
+    private boolean isGenreSameAsStateDecision(final APPrestation prestation) {
+        boolean isGoodStateAndGenre = false;
+
+        // Genre de prestation STANDARD ET décision à l'état STANDARD
+        isGoodStateAndGenre |= APTypeDePrestation.STANDARD.isCodeSystemEqual(prestation.getGenre())
+                && state_dec == APDecisionCommunicationAMAT.STATE_STANDARD;
+
+        // OU
+        // Genre de prestation (ACM OU ACM2) ET décision à l'état ACM
+        isGoodStateAndGenre |= (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(prestation.getGenre()) || APTypeDePrestation.ACM2_ALFA
+                .isCodeSystemEqual(prestation.getGenre())) && state_dec == APDecisionCommunicationAMAT.STATE_ACM;
+
+        // OU
+        // Genre de prestation LAMAT ET décision à l'état LAMAT
+        isGoodStateAndGenre |= APTypeDePrestation.LAMAT.isCodeSystemEqual(prestation.getGenre())
+                && state_dec == APDecisionCommunicationAMAT.STATE_LAMAT;
+
+        return isGoodStateAndGenre;
     }
 
     public void createDocInfo() {

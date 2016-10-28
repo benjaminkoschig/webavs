@@ -52,21 +52,26 @@ public class APDonneeRegroupementDecompte {
          */
         APDonneeRegroupementDecompte.regroupementSepare.put(APTypeDePrestation.STANDARD, Regroupement.STANDARD);
         APDonneeRegroupementDecompte.regroupementSepare.put(APTypeDePrestation.LAMAT, Regroupement.LAMAT);
+
+        // Même regroupement pour ACM et ACM2
         APDonneeRegroupementDecompte.regroupementSepare.put(APTypeDePrestation.ACM_ALFA, Regroupement.ACM_ALFA);
         APDonneeRegroupementDecompte.regroupementSepare.put(APTypeDePrestation.ACM2_ALFA, Regroupement.ACM_ALFA);
+
         APDonneeRegroupementDecompte.regroupementSepare.put(APTypeDePrestation.ACM_NE, Regroupement.ACM_NE);
         /*
          * Chaque type de prestation sera sur un décompte séparé hormis les ACM_NE qui seront regroupées avec les
          * prestations standard
          */
+        // Même regroupement pour ACM_NE et Standard
         APDonneeRegroupementDecompte.regroupementPrestationStandardEtACM_Ne.put(APTypeDePrestation.STANDARD,
                 Regroupement.STANDARD);
+        APDonneeRegroupementDecompte.regroupementPrestationStandardEtACM_Ne.put(APTypeDePrestation.ACM_NE,
+                Regroupement.STANDARD);
+
         APDonneeRegroupementDecompte.regroupementPrestationStandardEtACM_Ne.put(APTypeDePrestation.LAMAT,
                 Regroupement.LAMAT);
         APDonneeRegroupementDecompte.regroupementPrestationStandardEtACM_Ne.put(APTypeDePrestation.ACM_ALFA,
                 Regroupement.ACM_ALFA);
-        APDonneeRegroupementDecompte.regroupementPrestationStandardEtACM_Ne.put(APTypeDePrestation.ACM_NE,
-                Regroupement.STANDARD);
     }
 
     public String genererCleDeRegroupement(final APMethodeRegroupement methodeRegroupement) {

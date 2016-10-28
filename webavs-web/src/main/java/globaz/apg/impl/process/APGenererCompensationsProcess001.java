@@ -29,6 +29,7 @@ import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.naos.api.IAFAffiliation;
 import globaz.naos.application.AFApplication;
 import globaz.naos.translation.CodeSystem;
@@ -124,6 +125,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
      */
     @Override
     protected void _executeCleanUp() {
+        // Nothing to do
     }
 
     @Override
@@ -393,7 +395,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                             isRadie = true;
                         }
                     } catch (Exception e) {
-                        ;
+                        JadeLogger.info(e, e.getMessage());
                     }
 
                     String codePeriodiciteAffilie = employeur.getPeriodicite();
@@ -549,7 +551,8 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                     repartitionPaiementsJointEmployeurManager.setForIdAffilie(key.idAffilie);
                     repartitionPaiementsJointEmployeurManager.setForIdParticularite(key.idExtra2);
 
-                    // On prend les ACM et ACM 2 ensemble pour leur attribuer le même id compensation
+                    // On prend les repartitions provenant de prestations ACM et ACM 2 ensemble pour leur attribuer le
+                    // même id compensation
                     final List<String> genres = new ArrayList<String>();
                     if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(key.genrePrestation)) {
                         genres.add(APTypeDePrestation.ACM2_ALFA.getCodesystemString());
@@ -586,9 +589,11 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                 lot.update(transaction);
             }
         } catch (Exception e) {
+            JadeLogger.info(e, e.getMessage());
             try {
                 transaction.rollback();
             } catch (Exception e1) {
+                JadeLogger.info(e1, e1.getMessage());
                 e1.printStackTrace();
             }
 
@@ -702,6 +707,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
         try {
             lot.retrieve();
         } catch (Exception e) {
+            JadeLogger.info(e, e.getMessage());
             e.printStackTrace();
         }
 

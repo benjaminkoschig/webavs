@@ -257,6 +257,25 @@ public class APPrestation extends BEntity implements IAPPrestation {
             }
         }
 
+        // si on veut annulé une prestation de type restitution, on enleve les liens des prestations sur la restitution
+        // et on met la prestation à annuler.
+        if (IAPAnnonce.CS_RESTITUTION.equals(getContenuAnnonce())
+                && IAPPrestation.CS_ETAT_PRESTATION_ANNULE.equals(etat)) {
+
+            APPrestationManager mgr = new APPrestationManager();
+            mgr.setSession(getSession());
+            mgr.setForIdRestitution(getIdPrestationApg());
+            mgr.find(transaction);
+
+            for (Iterator iter = mgr.iterator(); iter.hasNext();) {
+                APPrestation element = (APPrestation) iter.next();
+                element.setIdRestitution(null);
+                element.update(transaction);
+            }
+
+            return;
+        }
+
         // recalculer les repartitions de paiements pour cette prestation
         if (miseAJourRepartitions) {
 

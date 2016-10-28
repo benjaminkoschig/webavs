@@ -58,7 +58,8 @@ public enum APTypeDeDecompte {
                         typeDuDecompte = APTypeDeDecompte.NORMAL_ACM_NE;
                         break;
                 }
-            } else if (vals.length == 2) { // 2 types de prestations trouvés.
+            } else if (vals.length == 2) { // 2 types de prestations trouvés. (Due aux regroupement dans
+                                           // APDonneeRegroupementDecompte)
                 boolean standard = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.STANDARD, vals);
                 boolean acm_ne = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.ACM_NE, vals);
                 boolean acm1 = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.ACM_ALFA, vals);

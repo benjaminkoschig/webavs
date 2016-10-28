@@ -28,6 +28,7 @@ import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.naos.api.IAFAffiliation;
 import globaz.naos.application.AFApplication;
 import globaz.osiris.api.APICompteAnnexe;
@@ -65,6 +66,7 @@ import java.util.TreeMap;
 public abstract class APGenererCompensationsProcessAvecSectionCompensable extends BProcess implements
         IAPGenererCompensationProcess {
 
+    private static final String PROCESS_GENERER_COMPENSATIONS = "PROCESS_GENERER_COMPENSATIONS";
     /**
      * 
      */
@@ -121,7 +123,7 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
             }
             return section.getSolde();
         }
-    };
+    }
 
     private String forIdLot = "";
     private String moisPeriodeFacturation = "";
@@ -186,7 +188,7 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                                     new Object[] { repartitionJointPrestation.getNom(),
                                             tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL),
                                             repartitionJointPrestation.getIdPrestationApg() }), FWMessage.ERREUR,
-                            getSession().getLabel("PROCESS_GENERER_COMPENSATIONS"));
+                            getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                 }
 
                 // unique test
@@ -213,7 +215,7 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                             java.text.MessageFormat.format(getSession().getLabel("ADRESSE_PAIEMENT_ABSENTE"),
                                     new Object[] { repartitionJointPrestation.getNom(), noAVS,
                                             repartitionJointPrestation.getIdPrestationApg() }), FWMessage.ERREUR,
-                            getSession().getLabel("PROCESS_GENERER_COMPENSATIONS"));
+                            getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                 }
 
                 // adresse de courrier absente
@@ -227,7 +229,7 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                             java.text.MessageFormat.format(getSession().getLabel("ADRESSE_COURRIER_ABSENTE"),
                                     new Object[] { repartitionJointPrestation.getNom(), noAVS,
                                             repartitionJointPrestation.getIdPrestationApg() }), FWMessage.ERREUR,
-                            getSession().getLabel("PROCESS_GENERER_COMPENSATIONS"));
+                            getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                 }
 
                 // Etat civil absent
@@ -244,12 +246,12 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                                 java.text.MessageFormat.format(getSession().getLabel("ETAT_CIVIL_ABSENT"),
                                         new Object[] { repartitionJointPrestation.getNom(), noAVS,
                                                 repartitionJointPrestation.getIdPrestationApg() }), FWMessage.ERREUR,
-                                getSession().getLabel("PROCESS_GENERER_COMPENSATIONS"));
+                                getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                     }
                 } else {
                     getMemoryLog().logMessage(
                             "Tiers non trouvé pour idTiers n° " + droitLAPG.loadDemande().getIdTiers(),
-                            FWMessage.ERREUR, getSession().getLabel("PROCESS_GENERER_COMPENSATIONS"));
+                            FWMessage.ERREUR, getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                 }
 
                 // Montant brut vaut zero
@@ -262,7 +264,7 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                     getMemoryLog().logMessage(
                             java.text.MessageFormat.format(getSession().getLabel("MONTANT_BRUT_VAUT_ZERO"),
                                     new Object[] { repartitionJointPrestation.getIdPrestationApg(), noAVS }),
-                            FWMessage.ERREUR, getSession().getLabel("PROCESS_GENERER_COMPENSATIONS"));
+                            FWMessage.ERREUR, getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                 }
 
             }
@@ -380,7 +382,7 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                     getMemoryLog().logMessage(
                             MessageFormat.format(getSession().getLabel("COMPENSATION_AJOUTEE"),
                                     new Object[] { compensation.getIdCompensation() }), FWMessage.INFORMATION,
-                            getSession().getLabel("PROCESS_GENERER_COMPENSATIONS"));
+                            getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
 
                     IAFAffiliation employeur = (IAFAffiliation) session.getAPIFor(IAFAffiliation.class);
                     employeur.setAffiliationId(key.idAffilie);
@@ -548,7 +550,8 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
                     repartitionPaiementsJointEmployeurManager.setForIdAffilie(key.idAffilie);
                     repartitionPaiementsJointEmployeurManager.setForIdParticularite(key.idExtra2);
 
-                    // On prend les ACM et ACM 2 ensemble pour leur attribuer le même id compensation
+                    // On prend les repartitions provenant de prestations ACM et ACM 2 ensemble pour leur attribuer le
+                    // même id compensation
                     final List<String> genres = new ArrayList<String>();
                     if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(key.genrePrestation)) {
                         genres.add(APTypeDePrestation.ACM2_ALFA.getCodesystemString());
@@ -588,9 +591,11 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
             return true;
 
         } catch (Exception e) {
+            JadeLogger.info(e, e.getMessage());
             try {
                 transaction.rollback();
             } catch (Exception e1) {
+                JadeLogger.info(e1, e1.getMessage());
                 e1.printStackTrace();
             }
 
@@ -700,11 +705,12 @@ public abstract class APGenererCompensationsProcessAvecSectionCompensable extend
         try {
             lot.retrieve();
         } catch (Exception e) {
+            JadeLogger.info(e, e.getMessage());
             e.printStackTrace();
         }
 
-        return getSession().getLabel("PROCESS_GENERER_COMPENSATIONS") + " du lot: " + lot.getDescription()
-                + ", status: " + ((getMemoryLog().hasErrors() == true) ? "ECHEC" : "SUCCES");
+        return getSession().getLabel(PROCESS_GENERER_COMPENSATIONS) + " du lot: " + lot.getDescription() + ", status: "
+                + (getMemoryLog().hasErrors() ? "ECHEC" : "SUCCES");
     }
 
     public String getForIdLot() {

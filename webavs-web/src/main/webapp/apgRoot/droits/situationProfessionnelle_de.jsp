@@ -510,10 +510,10 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 										<INPUT type="checkbox" onclick="OnClickACM()" name="hasAcmAlphaPrestations">
 								</DIV>
 								
-								<DIV class="prestationAcm2Alpha">				
+								<%if (globaz.apg.util.TypePrestation.TYPE_MATERNITE.equals(viewBean.getTypePrestation())) {%>
 										<LABEL for="hasAcm2AlphaPrestations"><ct:FWLabel key="JSP_ACM2" /></LABEL>
 										<INPUT type="checkbox" onclick="OnClickACM2()" name="hasAcm2AlphaPrestations">
-								</DIV>
+								<%}%>						
 							</TD>
 						</TR>
 						<TR><TD colspan="6"><HR></TD>

@@ -156,9 +156,10 @@ public class APProcessBouclementAlpha extends TUProcessusBouclement {
                 k.typePrestation = elem.getType();
 
                 // Reprendre toutes les prestations selon l'idDroit de l'element
-                // en cours afin de voir si c'est la première prestation du
-                // droit
+                // en cours afin de voir si c'est la première prestation du droit
                 final IAPPrestationLoader prest = (IAPPrestationLoader) session.getAPIFor(IAPPrestationLoader.class);
+
+                // Charger toutes les prestations de type ACM et ACM2
                 final IAPPrestation[] arrayPrest = prest.load(
                         elem.getIdDroit(),
                         new String[] { APTypeDePrestation.ACM_ALFA.getCodesystemString(),

@@ -165,8 +165,8 @@ idEcran="PAP0034";
 						</TR>						
 						<TR>
 							<TD colspan="2"><ct:FWLabel key="JSP_PERIODE"/></TD>
-							<TD><ct:FWLabel key="JSP_DU"/></td><td><INPUT type="text" name="dateDebut" value="<%=viewBean.getDateDebut()%>" class="date"></TD>
-							<TD><ct:FWLabel key="JSP_AU"/></td><td><INPUT type="text" name="dateFin" value="<%=viewBean.getDateFin()%>" class="date"></TD>
+							<TD><ct:FWLabel key="JSP_DU"/></td><td><INPUT type="text" name="dateDebut" value="<%=viewBean.getDateDebut()%>" <%=viewBean.isRestitution()?"class=\"date disabled\" readonly":" class=\"date\""%>></TD>
+							<TD><ct:FWLabel key="JSP_AU"/></td><td><INPUT type="text" name="dateFin" value="<%=viewBean.getDateFin()%>" <%=viewBean.isRestitution()?"class=\"date disabled\" readonly":" class=\"date\""%>></TD>
 							<TD colspan="2">&nbsp;</TD>
 						</TR>
 						<TR>
@@ -221,7 +221,7 @@ idEcran="PAP0034";
 						<TR>
 							<TD colspan="2"><LABEL for="remarque"><ct:FWLabel key="JSP_REMARQUE"/></LABEL></TD>
 							<td></td>
-							<TD colspan="5"><textarea name="remarque" cols="100" rows="10" onkeyup="limiteur();"><%=viewBean.getRemarque()%></textarea></TD>
+							<TD colspan="5"><textarea name="remarque" cols="100" rows="10" onkeyup="limiteur();" <%=viewBean.isRestitution()?"class=\"disabled\" readonly":" class=\"\""%>><%=viewBean.getRemarque()%></textarea></TD>
 								<!--<INPUT type="texte" value="<%//=viewBean.getRemarque()%>" size="100" onkeydown="limiteur();" name="remarque" id="remarque">-->
 						</TR>
 						<TR>
