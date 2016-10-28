@@ -19,6 +19,7 @@ import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.AFIDEUtil;
 import globaz.naos.util.IDEDataBean;
 import globaz.naos.util.IDEServiceCallUtil;
+import idech.admin.bfs.xmlns.bfs_5102_000001._2.Message;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -26,11 +27,10 @@ import java.util.Properties;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import ch.admin.bfs.xmlns.bfs_5102_000001._2.Message;
 
 public class AFIdeReceptionMessageInfoAboSedexProcess {
 
-    private static final String PACKAGE_CLASS_FOR_READ_SEDEX_INFO_ABO_MESSAGE = "ch.admin.bfs.xmlns.bfs_5102_000001._2";
+    private static final String PACKAGE_CLASS_FOR_READ_SEDEX_INFO_ABO_MESSAGE = "idech.admin.bfs.xmlns.bfs_5102_000001._2";
 
     private BSession session = null;
     private JAXBContext jaxbContext = null;
