@@ -7,11 +7,13 @@ import globaz.caisse.report.helper.ICaisseReportHelperOO;
 import globaz.corvus.api.codesystem.IRECatalogueTexte;
 import globaz.corvus.api.topaz.IRENoDocumentInfoRom;
 import globaz.corvus.application.REApplication;
+import globaz.corvus.exceptions.RETechnicalException;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.globall.db.BManager;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.print.server.JadePrintDocumentContainer;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
@@ -520,7 +522,13 @@ public class RECommunicationMutationOO extends REAbstractJobOO {
         docData = caisseHelper.addHeaderParameters(docData, crBean, false);
         docData = caisseHelper.addSignatureParameters(docData, crBean);
 
-        docData.addData("SIGNATURE", getTexte(catalogueLettreCommunicationMutation, 3, 2));
+        try {
+            docData.addData("SIGNATURE", getTexte(catalogueLettreCommunicationMutation, 3, 2));
+        } catch (RETechnicalException e) {
+            JadeLogger.warn(this, e.getMessage());
+            docData.addData("SIGNATURE", "");
+        }
+
     }
 
     protected void creerDocument(JadePrintDocumentContainer allDoc) throws Exception {

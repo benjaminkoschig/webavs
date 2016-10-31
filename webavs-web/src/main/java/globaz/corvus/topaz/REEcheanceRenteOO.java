@@ -27,6 +27,7 @@ import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.job.AbstractJadeJob;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.print.server.JadePrintDocumentContainer;
@@ -1213,7 +1214,12 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
 
             data = caisseHelper.addSignatureParameters(data, crBean);
 
-            data.addData("SIGNATURE", document.getTextes(9).getTexte(6).getDescription());
+            try {
+                data.addData("SIGNATURE", document.getTextes(9).getTexte(6).getDescription());
+            } catch (IndexOutOfBoundsException e) {
+                JadeLogger.warn(this, e.getMessage());
+                data.addData("SIGNATURE", "");
+            }
 
         } catch (Exception e) {
             throw new Exception(getSession().getLabel("ERREUR_ENTETE_SIGNATURE"));
