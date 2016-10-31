@@ -35,6 +35,10 @@ public enum DeclarationSalaireProvenance {
         return PUCS.equals(this);
     }
 
+    public boolean isUndefinded() {
+        return UNDEFINDED.equals(this);
+    }
+
     public String getLabel() {
         return label;
     }

@@ -31,8 +31,8 @@ public class DeclarationSalaireBuilderTest {
 
         DeclarationSalaire ds = DeclarationSalaireBuilder.build(
                 "src/test/resources/ch/globaz/orion/businessimpl/services/pucs/pucs1.xml", buildFormater());
-        assertEquals(2012, ds.getAnnee());
-        assertEquals(0, ds.getNbSalaire());
+        assertEquals(new Integer(2012), ds.getAnnee());
+        assertEquals(new Integer(0), ds.getNbSalaire());
         assertEquals(new Montant(208067.2), ds.getMontantAc1());
         assertEquals(new Montant(11784), ds.getMontantAc2());
         assertEquals(new Montant(280851.2), ds.getMontantAvs());
@@ -84,8 +84,8 @@ public class DeclarationSalaireBuilderTest {
     public void testBuildAfSeul() throws Exception {
         DeclarationSalaire ds = DeclarationSalaireBuilder.build(
                 "src/test/resources/ch/globaz/orion/businessimpl/services/pucs/124.1195-AF_SEULE.xml", buildFormater());
-        assertEquals(2014, ds.getAnnee());
-        assertEquals(1, ds.getNbSalaire());
+        assertEquals(new Integer(2014), ds.getAnnee());
+        assertEquals(new Integer(1), ds.getNbSalaire());
         assertEquals(new Montant(0), ds.getMontantAc1());
         assertEquals(new Montant(0), ds.getMontantAc2());
         assertEquals(new Montant(0), ds.getMontantAvs());

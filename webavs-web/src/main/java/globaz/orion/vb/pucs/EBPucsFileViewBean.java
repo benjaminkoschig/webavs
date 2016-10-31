@@ -2,24 +2,19 @@ package globaz.orion.vb.pucs;
 
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BSpy;
-import globaz.jade.common.JadeCodingUtil;
 import globaz.naos.db.affiliation.AFAffiliation;
-import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliation;
-import globaz.naos.services.AFAffiliationServices;
 import globaz.naos.translation.CodeSystem;
 import globaz.orion.vb.EBAbstractViewBean;
-import java.util.Arrays;
 import java.util.List;
 import ch.globaz.orion.business.models.pucs.PucsFile;
-import ch.globaz.orion.businessimpl.services.pucs.EtatSwissDecPucsFile;
 import ch.globaz.orion.businessimpl.services.pucs.PucsServiceImpl;
 
 public class EBPucsFileViewBean extends EBAbstractViewBean {
     private String id;
     private String provenance;
     private PucsFile pucsFile;
-    private Boolean hasParticulariteCodeBlocage;
-    private Boolean hasParticulariteFichePartiel;
+    private boolean hasParticulariteCodeBlocage;
+    private boolean hasParticulariteFichePartiel;
     private boolean hasRightAccesSecurity = false;
 
     public EBPucsFileViewBean() {
@@ -27,21 +22,22 @@ public class EBPucsFileViewBean extends EBAbstractViewBean {
         pucsFile = new PucsFile();
     }
 
-    public EBPucsFileViewBean(PucsFile pucsFile) {
+    public EBPucsFileViewBean(PucsFile pucsFile, List<String> particularites, AFAffiliation afAffiliation) {
         super();
         this.pucsFile = pucsFile;
+        id = pucsFile.getIdDb();
         if (!pucsFile.getProvenance().isSwissDec()) {
-            pucsFile.setLock(!PucsServiceImpl.userHasRight(pucsFile, EtatSwissDecPucsFile.A_TRAITER,
-                    BSessionUtil.getSessionFromThreadContext()));
+            pucsFile.setLock(!PucsServiceImpl.userHasRight(afAffiliation, BSessionUtil.getSessionFromThreadContext()));
         }
-        hasRightAccesSecurity = !pucsFile.isLock();
-        try {
-            hasParticulariteCodeBlocage = hasParticularite(CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL);
-            hasParticulariteFichePartiel = hasParticularite(CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE);
+        // hasRightAccesSecurity = !pucsFile.isLock();
 
-        } catch (Exception e) {
-            JadeCodingUtil.catchException(this, "EBPucsFileViewBean", e);
+        hasRightAccesSecurity = true;
+
+        if (particularites != null) {
+            hasParticulariteCodeBlocage = particularites.contains(CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL);
+            hasParticulariteFichePartiel = particularites.contains(CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE);
         }
+
     }
 
     @Override
@@ -95,18 +91,7 @@ public class EBPucsFileViewBean extends EBAbstractViewBean {
     }
 
     public boolean hasLock() {
-        return (!hasRightAccesSecurity || hasParticulariteFichePartiel || hasParticulariteCodeBlocage);
-    }
-
-    private boolean hasParticularite(String genreParticularite) throws Exception {
-        List<AFAffiliation> affiliations = AFAffiliationServices.searchAffiliationByNumeros(
-                Arrays.asList(pucsFile.getNumeroAffilie()), BSessionUtil.getSessionFromThreadContext());
-        if (!affiliations.isEmpty()) {
-            return AFParticulariteAffiliation.existeParticularite(BSessionUtil.getSessionFromThreadContext(),
-                    affiliations.get(0).getId(), genreParticularite);
-        } else {
-            return false;
-        }
+        return !hasRightAccesSecurity || hasParticulariteFichePartiel || hasParticulariteCodeBlocage;
     }
 
     public String getMessageLock() {

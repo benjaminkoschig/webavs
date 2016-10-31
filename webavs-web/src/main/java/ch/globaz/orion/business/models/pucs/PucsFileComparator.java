@@ -10,10 +10,9 @@ public class PucsFileComparator implements Comparator<PucsFile> {
     @Override
     public int compare(PucsFile o1, PucsFile o2) {
         try {
-            if (BSessionUtil.compareDateFirstGreater(getSession(), o1.getDateDeReception(), o2.getDateDeReception())) {
+            if (BSessionUtil.compareDateFirstGreater(session, o1.getDateDeReception(), o2.getDateDeReception())) {
                 return -1;
-            } else if (BSessionUtil.compareDateFirstLower(getSession(), o1.getDateDeReception(),
-                    o2.getDateDeReception())) {
+            } else if (BSessionUtil.compareDateFirstLower(session, o1.getDateDeReception(), o2.getDateDeReception())) {
                 return 1;
             } else {
                 // Si égal, on compare sur le no d'affilié
@@ -30,10 +29,6 @@ public class PucsFileComparator implements Comparator<PucsFile> {
         } catch (Exception e) {
             return -1;
         }
-    }
-
-    public BSession getSession() {
-        return session;
     }
 
     public void setSession(BSession session) {

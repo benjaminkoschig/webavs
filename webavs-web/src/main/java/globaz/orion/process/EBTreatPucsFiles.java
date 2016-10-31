@@ -570,7 +570,7 @@ public class EBTreatPucsFiles extends BProcess {
 
         String codeSecurity = affiliation.getAccesSecurite();
 
-        boolean hasUserRight = PucsServiceImpl.userHasRight(affiliation, parser, getSession());
+        boolean hasUserRight = PucsServiceImpl.userHasRight(affiliation, getSession());
 
         int affilieSecurity = Integer.parseInt(codeSecurity.substring(codeSecurity.length() - 1));
         if (JadeGedFacade.isInstalled() && !isForSimultation && affilieSecurity == 0) {

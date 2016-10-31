@@ -1,6 +1,9 @@
 package ch.globaz.common.dom;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -35,18 +38,26 @@ public class ElementsDomParser {
         try {
             FileInputStream fileInputStream = new FileInputStream(path);
             InputSource is = new InputSource(fileInputStream);
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            documentBuilderFactory.setNamespaceAware(true);
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            document = documentBuilder.parse(is);
+            create(is);
         } catch (Exception e) {
             throw new CommonTechnicalException(e);
         }
     }
 
-    public ElementsDomParser(FileInputStream fileInputStream) {
+    public ElementsDomParser(File file) {
         try {
-            InputSource is = new InputSource(fileInputStream);
+            create(new InputSource(new FileInputStream(file)));
+        } catch (FileNotFoundException e) {
+            throw new CommonTechnicalException(e);
+        }
+    }
+
+    public ElementsDomParser(InputStream inputStream) {
+        create(new InputSource(inputStream));
+    }
+
+    private void create(InputSource is) {
+        try {
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             documentBuilderFactory.setNamespaceAware(true);
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();

@@ -54,6 +54,18 @@
 		text-align: center !important;
 		text-align: center;
 	}
+	
+	.ui-dialog{
+		height:650px;
+	}
+	
+	.nbNoteIcone{
+		top :2px !important;
+	}
+	
+	#memo{
+		height: 100px !important;
+	}
 </style>
 <script type="text/javascript">
 function doOkAction() {}
@@ -189,7 +201,9 @@ $(function() {
 								<c:if test="${pucsEntry.value.size() == 1}">
 									<td class="fusions"></td>
 								</c:if>
-								<td class="centre">${pucs.numeroAffilie}</td> 
+								<td class="centre">${pucs.numeroAffilie} 
+									<span data-g-note="idExterne:${pucs.id},tableSource: EBPUCS_FILE, inList: false"></span>
+								</td> 
 								<td style="vertical-align: middle;" > 	
 									<c:if test="${pucs.forTest}">
 										<i title ="<ct:FWLabel key='PUCS_TEST_FILE'/>"  class="icon-check"></i>

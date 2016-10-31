@@ -13,7 +13,6 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
@@ -23,7 +22,6 @@ import ch.globaz.common.listoutput.converterImplemented.LabelTranslater;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.exceptions.OrionPucsException;
-import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.business.services.pucs.PucsService;
 import ch.globaz.orion.businessimpl.services.ServicesProviders;
 import ch.globaz.orion.businessimpl.services.dan.DanServiceImpl;
@@ -69,7 +67,7 @@ public class PucsServiceImpl implements PucsService {
         }
     }
 
-    public static List<PucsEntrySummary> listPucsFile(String type, int size, String likeAffilie, String forAnnee,
+    public static List<PucsEntrySummary> listPucsFile(int size, String likeAffilie, String forAnnee,
             String dateSoumission, BSession session) throws OrionPucsException {
         try {
             return ServicesProviders.pucsServiceProvide(session).getPucsSummariesForWebAvs(size, likeAffilie, forAnnee,
@@ -89,13 +87,6 @@ public class PucsServiceImpl implements PucsService {
             throw new OrionPucsException("Impossible de mettre à jour le statut", e);
         }
 
-    }
-
-    @Override
-    public List<PucsEntrySummary> listPucsFile(String type, int size, String likeAffilie, String forAnnee,
-            String dateSoumission, PucsSearchOrderByEnum orderby, BSession session) throws OrionPucsException {
-
-        return null;
     }
 
     /**
@@ -126,13 +117,18 @@ public class PucsServiceImpl implements PucsService {
             if (fileContent != null) {
                 OutputStreamWriter os = null;
                 CharsetEncoder utf8 = Charset.forName("UTF-8").newEncoder();
+                FileOutputStream fileOutputStream = null;
                 try {
-                    os = new OutputStreamWriter(new FileOutputStream(filePath), utf8);
+                    fileOutputStream = new FileOutputStream(filePath);
+                    os = new OutputStreamWriter(fileOutputStream, utf8);
                     os.write(new String(fileContent, utf8.charset()));
                     os.flush();
                 } finally {
                     if (os != null) {
                         os.close();
+                    }
+                    if (fileOutputStream != null) {
+                        fileOutputStream.close();
                     }
                 }
             }
@@ -142,13 +138,6 @@ public class PucsServiceImpl implements PucsService {
             throw new CommonTechnicalException(e);
         }
         return filePath;
-    }
-
-    public static String retrieveFile(String id, DeclarationSalaireProvenance provenance,
-            EtatSwissDecPucsFile etatSwissDecPucsFile, String workDirectory) {
-        BSession session = BSessionUtil.getSessionFromThreadContext();
-        return retrieveFile(id, provenance, etatSwissDecPucsFile, workDirectory, session.getUserId(),
-                session.getUserEMail(), session.getIdLangueISO());
     }
 
     @Override
@@ -209,13 +198,12 @@ public class PucsServiceImpl implements PucsService {
         SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance().asPdf().local(locale);
 
         File file = out(provenance, builder, parser, session);
+
         return JadeFilenameUtil.normalizePathComponents(file.getAbsolutePath());
     }
 
     public static Integer findIdInstitution(int type, int idPucs, BSession session) throws EBDanException_Exception {
-        PUCSService service = null;
-
-        service = ServicesProviders.pucsServiceProvide(session);
+        PUCSService service = ServicesProviders.pucsServiceProvide(session);
         LienInstitution lienInstitution = service.findPucsInstitutionForUtilisation(idPucs, type);
         if (lienInstitution != null) {
             return lienInstitution.getIdInstitution();
@@ -241,8 +229,8 @@ public class PucsServiceImpl implements PucsService {
 
     public static ElementsDomParser buildElementDomParser(String id, DeclarationSalaireProvenance provenance,
             EtatSwissDecPucsFile etatSwissDecPucsFile, String loginName, String userEmail, String langueIso) {
-        String pathFile = retrieveFile(id, provenance, etatSwissDecPucsFile,
-                (Jade.getInstance().getHomeDir() + "work/"), loginName, userEmail, langueIso);
+        String pathFile = retrieveFile(id, provenance, etatSwissDecPucsFile, getWorkDir(), loginName, userEmail,
+                langueIso);
         ElementsDomParser parser = new ElementsDomParser(pathFile);
         try {
             JadeFsFacade.delete(pathFile);
@@ -250,6 +238,10 @@ public class PucsServiceImpl implements PucsService {
             throw new CommonTechnicalException(e);
         }
         return parser;
+    }
+
+    private static String getWorkDir() {
+        return Jade.getInstance().getHomeDir() + "work/";
     }
 
     private static File out(DeclarationSalaireProvenance provenance, SimpleOutputListBuilder builder,
@@ -283,8 +275,8 @@ public class PucsServiceImpl implements PucsService {
         paramsData.add(session.getLabel("MONTANT_CAF"), ds.getMontantCaf().toStringFormat());
 
         paramsData.newLigne();
-        String name = (Jade.getInstance().getPersistenceDir() + ds.getNumeroAffilie() + "list_" + JadeUUIDGenerator
-                .createStringUUID());
+        String name = Jade.getInstance().getPersistenceDir() + ds.getNumeroAffilie() + "list_"
+                + JadeUUIDGenerator.createStringUUID();
 
         builder.addList(list)
                 .classElementList(SalaryForList.class)
@@ -293,77 +285,35 @@ public class PucsServiceImpl implements PucsService {
                         session.getLabel("TITRE_LIST_SALAIRE") + "(" + PucsServiceImpl.NUMERO_INFORM_PUCS_LISIBLE + ")",
                         Align.RIGHT).translater(translater);
 
-        File file = builder.outputName(name).build();
-
-        return file;
+        return builder.outputName(name).build();
     }
 
     public static String retrieveFile(String id, DeclarationSalaireProvenance provenance,
             EtatSwissDecPucsFile etatSwissDecPucsFile, BSession bSession) {
-        return retrieveFile(id, provenance, etatSwissDecPucsFile, (Jade.getInstance().getHomeDir() + "work/"),
-                bSession.getUserId(), bSession.getUserEMail(), bSession.getIdLangueISO());
+        return retrieveFile(id, provenance, etatSwissDecPucsFile, getWorkDir(), bSession.getUserId(),
+                bSession.getUserEMail(), bSession.getIdLangueISO());
     }
 
-    private static String retrieveFile(String id, DeclarationSalaireProvenance provenance,
+    public static String retrieveFile(String id, DeclarationSalaireProvenance provenance,
             EtatSwissDecPucsFile etatSwissDecPucsFile) {
         BSession session = BSessionUtil.getSessionFromThreadContext();
-        return retrieveFile(id, provenance, etatSwissDecPucsFile, (Jade.getInstance().getHomeDir() + "work/"),
-                session.getUserId(), session.getUserEMail(), session.getIdLangueISO());
+        return retrieveFile(id, provenance, etatSwissDecPucsFile, getWorkDir(), session.getUserId(),
+                session.getUserEMail(), session.getIdLangueISO());
     }
 
     private static Locale buildLocale(BSession session) {
-        Locale locale = new Locale(session.getIdLangueISO());
-        return locale;
+        return new Locale(session.getIdLangueISO());
     }
 
-    public static boolean userHasRight(PucsFile pucsFile, EtatSwissDecPucsFile etatSwissDecPucsFile, BSession session) {
+    public static boolean userHasRight(AFAffiliation afAffiliation, BSession session) {
         boolean hasRight;
-        try {
-            // String path = PucsServiceImpl.retrieveFile(pucsFile.getId(), pucsFile.getProvenance(),
-            // etatSwissDecPucsFile, session);
-            // ElementsDomParser parser = new ElementsDomParser(path);
+        if (afAffiliation == null) {
+            hasRight = false;
+        } else {
+            hasRight = AFAffiliationServices.hasRightAccesSecurity(afAffiliation, session);
 
-            List<AFAffiliation> affiliations = AFAffiliationServices.searchAffiliationByNumeros(
-                    Arrays.asList(pucsFile.getNumeroAffilie().trim()), session);
-            if (affiliations.isEmpty()) {
-                hasRight = false;
-            } else {
-                hasRight = AFAffiliationServices.hasRightAccesSecurity(affiliations.get(0), session);
-
-                // hasRight = userHasRight(affiliations.get(0), parser, session);
-            }
-
-            // JadeFsFacade.delete(path);
-        } catch (Exception e) {
-            throw new CommonTechnicalException(pucsFile.toString(), e);
         }
         return hasRight;
-    }
-
-    public static boolean userHasRight(AFAffiliation affiliation, ElementsDomParser parser, BSession session) {
-        boolean hasSecurity = true;
-        if (affiliation != null) {
-            // List<String> listNss = parser.findValues("Person SV-AS-Number");
-            // List<List<String>> splitedNSSList = split(listNss, 1000);
-            // for (List<String> splitedNss : splitedNSSList) {
-            // String nssIn = '\'' + Joiner.on("','").skipNulls().join(splitedNss).replace(".", "") + '\'';
-            // BigDecimal code = QueryExecutor.executeAggregate(
-            // "select max(KATSEC) from schema.CIINDIP where KANAVS in (" + nssIn + ")", session);
-            // if (!BigDecimal.ZERO.equals(code)) {
-            // String codeSecurity = code.toString();
-            // Integer ciSecurity = Integer.parseInt(codeSecurity.substring(codeSecurity.length() - 1));
-            // hasSecurity = AFAffiliationServices.hasRightAccesSecurity(ciSecurity, session);
-            // if (hasSecurity) {
-            // break;
-            // }
-            // }
-            // }
-
-            // if (hasSecurity) {
-            hasSecurity = AFAffiliationServices.hasRightAccesSecurity(affiliation, session);
-            // }
-        }
-        return hasSecurity;
     }
 
 }

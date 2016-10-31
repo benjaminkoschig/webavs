@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import ch.globaz.common.jadedb.TableDefinition;
+import com.google.common.base.Joiner;
 
 /**
  * Le but de cette class est de permettre la création de requête ou une partie de requête.
@@ -16,9 +17,11 @@ public class SQLWriter {
 
     private final StringBuffer query = new StringBuffer();
     private final String schema;
-    private boolean mustAddOperator = false;
+    private int countAddOperators = 0;
     private String charToReplace = "?";
     private List<String> paramsToUse = new ArrayList<String>();
+    private Integer currentIndice;
+    private static final String SCHEMA = "schema.";
 
     private SQLWriter(String schema) {
         this.schema = schema;
@@ -85,7 +88,7 @@ public class SQLWriter {
      */
     public SQLWriter where(String sqlFragement) {
         this.where().query.append(" ").append(sqlFragement);
-        mustAddOperator = true;
+        countAddOperators++;
         return this;
     }
 
@@ -102,7 +105,7 @@ public class SQLWriter {
     public SQLWriter where(String sqlFragement, String... params) {
         this.where();
         this.and(sqlFragement, params);
-        mustAddOperator = true;
+        countAddOperators++;
         return this;
     }
 
@@ -119,7 +122,7 @@ public class SQLWriter {
     public SQLWriter where(String sqlFragement, Collection<String> params) {
         this.where();
         this.and(sqlFragement, params);
-        mustAddOperator = true;
+        countAddOperators++;
         return this;
     }
 
@@ -146,6 +149,90 @@ public class SQLWriter {
         return this;
     }
 
+    int currentIndex() {
+        currentIndice = query.length();
+        return currentIndice;
+    }
+
+    public SQLWriter equal(String param) {
+        if (param != null && !param.isEmpty()) {
+            paramsToUse.add(param);
+            query.append("='?'");
+        } else {
+            rollback();
+        }
+        return this;
+    }
+
+    public SQLWriter equal(Integer param) {
+        if (param != null) {
+            paramsToUse.add(String.valueOf(param));
+            query.append("=?");
+        } else {
+            rollback();
+        }
+        return this;
+    }
+
+    public SQLWriter in(String values) {
+        if (values != null && !values.isEmpty()) {
+            paramsToUse.add(values);
+            query.append(" in (?)");
+        } else {
+            rollback();
+        }
+        return this;
+    }
+
+    public SQLWriter in(Collection<?> list) {
+        if (list != null && !list.isEmpty()) {
+            String params = Joiner.on(",").join(list);
+            paramsToUse.add(params);
+            query.append(" in (?)");
+        } else {
+            rollback();
+        }
+        return this;
+    }
+
+    SQLWriter rollback() {
+        if (currentIndice != null) {
+            query.delete(currentIndice, query.length());
+            currentIndice = null;
+            countAddOperators--;
+        }
+        return this;
+    }
+
+    /**
+     * Ajoute le mot 'and' à la requête si besoin et le sqlFramgment.
+     * 
+     * @param sqlFramgment
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter and(TableDefinition tableDefinition) {
+        String column = tableDefinition.getTableName() + "." + tableDefinition.getColumn();
+        if (hasSchema()) {
+            column = SCHEMA + column;
+        }
+        this.and(column);
+        return this;
+    }
+
+    public SQLWriter like(String param) {
+        if (param != null && !param.isEmpty()) {
+            paramsToUse.add(param);
+            query.append(" like '%?%'");
+        } else {
+            rollback();
+        }
+        return this;
+    }
+
+    private boolean hasSchema() {
+        return schema != null;
+    }
+
     /**
      * Ajoute le mot 'and' à la requête(si besoin) et le fragment SQL si les paramètres ne sont pas vide(null).
      * 
@@ -165,7 +252,7 @@ public class SQLWriter {
     }
 
     /**
-     * TODO que faire si certaine paramétre sont vide ???
+     * TODO que faire si certaine paramétrer sont vide ???
      * 
      * Ajoute le mot 'and' à la requête(si besoin) et le fragment SQL si les paramètres ne sont pas vide(null ou chain
      * vide).
@@ -300,6 +387,23 @@ public class SQLWriter {
     }
 
     /**
+     * Ajoute le fragment SQL à la requête si les params donnée en paramètres ne sont pas vide.
+     * 
+     * @param sqlFragment Le fragment SQL à ajouter.
+     * @param params Les paramètres à utiliser pour la requête.
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter append(String sqlFragment, Integer... params) {
+        if (isNotEmpty(params)) {
+            for (Integer p : params) {
+                paramsToUse.add(String.valueOf(p));
+            }
+            query.append(sqlFragment);
+        }
+        return this;
+    }
+
+    /**
      * Ajoute le fragment SQL à la requête si la condition est vrais.
      * 
      * 
@@ -400,8 +504,8 @@ public class SQLWriter {
      */
     public String toSql() {
         String sql = query.toString();
-        if (schema != null) {
-            sql = sql.replaceAll("schema.", schema);
+        if (hasSchema()) {
+            sql = sql.replaceAll(SCHEMA, schema);
         }
         return this.replace(sql, paramsToUse);
     }
@@ -452,16 +556,17 @@ public class SQLWriter {
     void checkMatchParams(String sqlFragment, int nbParams) {
         int nbMatch = countCharToReplace(sqlFragment);
         if (nbMatch != nbParams) {
-            throw new CommonTechnicalException("Unabeld to replace the " + charToReplace + " with parmas. The number ("
+            throw new RuntimeException("Unabeld to replace the " + charToReplace + " with parmas. The number ("
                     + nbMatch + ") of the " + charToReplace + " not match with the number of parmas (" + nbParams + ")");
         }
     }
 
     private void addOpertor(String operator) {
-        if (mustAddOperator) {
+        currentIndex();
+        if (countAddOperators > 0) {
             query.append(" ").append(operator);
         }
-        mustAddOperator = true;
+        countAddOperators++;
     }
 
     int countCharToReplace(String sqlFragment) {

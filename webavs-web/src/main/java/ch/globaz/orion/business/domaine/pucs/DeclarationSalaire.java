@@ -17,8 +17,8 @@ public class DeclarationSalaire {
     private static final Logger LOG = LoggerFactory.getLogger(DeclarationSalaire.class);
 
     private String numeroAffilie;
-    private int nbSalaire;
-    private int annee;
+    private Integer nbSalaire;
+    private Integer annee;
     private String nom;
     private String numeroIde;
     private Contact contact;
@@ -68,11 +68,11 @@ public class DeclarationSalaire {
         this.numeroAffilie = numeroAffilie;
     }
 
-    public int getAnnee() {
+    public Integer getAnnee() {
         return annee;
     }
 
-    public void setAnnee(int annee) {
+    public void setAnnee(Integer annee) {
         this.annee = annee;
     }
 
@@ -135,7 +135,7 @@ public class DeclarationSalaire {
         this.employees = employees;
     }
 
-    public int getNbSalaire() {
+    public Integer getNbSalaire() {
         return nbSalaire;
     }
 

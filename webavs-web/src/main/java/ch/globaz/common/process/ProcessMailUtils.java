@@ -70,7 +70,7 @@ public class ProcessMailUtils {
                 body = body + process.getSession().getErrors();
             }
             if (transaction != null) {
-                body = body + process.getSession().getErrors();
+                body = body + transaction.getSession().getErrors();
             }
             if (e != null) {
                 body = body + LabelCommonProvider.getLabel("PROCESS_ERROR", isoLangue) + ": " + e.getMessage();
@@ -126,6 +126,24 @@ public class ProcessMailUtils {
         if (e != null) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * permet d'envoyer un mail d'erreur à un mail donné
+     * 
+     * @param mail
+     * @param e
+     * @param process
+     * @param messageInfo
+     * @param transaction
+     * @param objectsToJson
+     * @throws Exception
+     */
+    public static void sendMailError(String mail, Throwable e, AbstractJadeJob process, String messageInfo,
+            Object... objectsToJson) throws Exception {
+        List<String> mailsList = new ArrayList<String>();
+        mailsList.add(mail);
+        sendMailError(mailsList, e, process, messageInfo, null, objectsToJson);
     }
 
     /**

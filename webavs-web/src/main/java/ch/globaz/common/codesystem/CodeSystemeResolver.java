@@ -21,6 +21,18 @@ public class CodeSystemeResolver {
     private boolean isContextextInitlisied = false;
     private BSession session;
 
+    public CodeSystemeResolver() {
+        if (BSessionUtil.getSessionFromThreadContext() == null) {
+            throw new RuntimeException(
+                    "Context not initialized, use the session construtor or initialize the context !");
+        }
+        langue = Langues.getLangueDepuisCodeIso(BSessionUtil.getSessionFromThreadContext().getIdLangueISO());
+    }
+
+    public CodeSystemeResolver(BSession session) {
+        langue = Langues.getLangueDepuisCodeIso(session.getIdLangueISO());
+    }
+
     public CodeSystemeResolver(Langues langue) {
         this.langue = langue;
     }
@@ -28,7 +40,6 @@ public class CodeSystemeResolver {
     public CodeSystemeResolver(Langues langue, BSession session) {
         this.langue = langue;
         this.session = session;
-
     }
 
     public CodeSystemeResolver(Langues langue, JadeCodeSystemeService service) {

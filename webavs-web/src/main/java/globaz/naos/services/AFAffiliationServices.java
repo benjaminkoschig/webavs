@@ -12,7 +12,7 @@ import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliationManager
 import globaz.naos.exceptions.AFTechnicalException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
 import ch.globaz.common.domaine.Checkers;
 import com.google.common.base.Joiner;
@@ -248,7 +248,7 @@ public final class AFAffiliationServices {
      * @throws NullPointerException Si la session est null
      * @throws AFTechnicalException Si la récupération de l'affilaition a échoué
      */
-    public static List<AFAffiliation> searchAffiliationByNumeros(List<String> affilieNumeros, BSession session) {
+    public static List<AFAffiliation> searchAffiliationByNumeros(Collection<String> affilieNumeros, BSession session) {
 
         if (affilieNumeros == null) {
             throw new NullPointerException("affilieNumero must be not null");
@@ -259,7 +259,7 @@ public final class AFAffiliationServices {
         }
 
         List<AFAffiliation> affiliations = new ArrayList<AFAffiliation>();
-        if (affilieNumeros.size() > 0) {
+        if (!affilieNumeros.isEmpty()) {
 
             AFAffiliationManager affiliationManager = new AFAffiliationManager();
             String in = "\'" + Joiner.on("\',\'").skipNulls().join(affilieNumeros) + "\'";
@@ -272,13 +272,8 @@ public final class AFAffiliationServices {
             } catch (Exception e) {
                 throw new AFTechnicalException("Impossible de récupérer les affiliation, numéros : " + in, e);
             }
-            for (Iterator<?> it = affiliationManager.iterator(); it.hasNext();) {
-                AFAffiliation affiliation = (AFAffiliation) it.next();
-                affiliations.add(affiliation);
-            }
-
+            affiliations = affiliationManager.toList();
         }
-
         return affiliations;
     }
 

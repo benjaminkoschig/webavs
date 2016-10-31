@@ -1,5 +1,6 @@
 package ch.globaz.orion.business.models.pucs;
 
+import java.io.File;
 import java.io.Serializable;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 
@@ -23,6 +24,16 @@ public class PucsFile implements Serializable {
     private boolean lock;
     private boolean isAffiliationExistante = false;
     private boolean duplicate = false;
+    private String idDb;
+    private File file;
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
 
     public boolean isAffiliationExistante() {
         return isAffiliationExistante;
@@ -162,6 +173,18 @@ public class PucsFile implements Serializable {
 
     public void setDuplicate(boolean duplicate) {
         this.duplicate = duplicate;
+    }
+
+    public String getIdDb() {
+        return idDb;
+    }
+
+    public void setIdDb(String idDb) {
+        this.idDb = idDb;
+    }
+
+    public void setAffiliationExistante(boolean isAffiliationExistante) {
+        this.isAffiliationExistante = isAffiliationExistante;
     }
 
     @Override

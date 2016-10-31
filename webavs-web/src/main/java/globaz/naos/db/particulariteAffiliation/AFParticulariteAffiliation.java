@@ -15,8 +15,14 @@ import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.translation.CodeSystem;
 import globaz.pyxis.db.tiers.TITiers;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * La classe définissant l'entité ParticulariteAffiliation.
@@ -118,6 +124,37 @@ public class AFParticulariteAffiliation extends BEntity {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Remonte toutes les particularités donnée en paramètre pour des idAffiliation
+     * 
+     * @param session ,idAffiliation, genreParticularite
+     * @return Une map avec comme id l'idAffiliation
+     */
+    public static Map<String, List<String>> findParticularites(BSession session, Collection<String> idsAffiliation,
+            String... genreParticularite) {
+
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+
+        AFParticulariteAffiliationManager particulariteManager = new AFParticulariteAffiliationManager();
+        particulariteManager.setInAffiliationIds(idsAffiliation);
+        particulariteManager.setInParticularites(Arrays.asList(genreParticularite));
+        particulariteManager.setSession(session);
+        try {
+            particulariteManager.find(BManager.SIZE_NOLIMIT);
+            List<AFParticulariteAffiliation> entities = particulariteManager.toList();
+
+            for (AFParticulariteAffiliation par : entities) {
+                if (!map.containsKey(par.getAffiliationId())) {
+                    map.put(par.getAffiliationId(), new ArrayList<String>());
+                }
+                map.get(par.getAffiliationId()).add(par.getParticularite());
+            }
+            return map;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

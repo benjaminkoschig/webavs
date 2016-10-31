@@ -2,12 +2,14 @@
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/list/header.jspf" %>
 <%-- tpl:insert attribute="zoneScripts" --%>
-
+<%@page isELIgnored="false" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page import="globaz.orion.vb.pucs.EBPucsFileListViewBean"%>
 <%@page import="globaz.orion.utils.EBDanUtils"%>
 
 <%
 	EBPucsFileListViewBean viewBean = (EBPucsFileListViewBean) request.getAttribute("viewBean"); 
+
 	size = viewBean.getSize();
 	String changeUserAction = baseLink+"changeUser";
 %>
@@ -52,6 +54,19 @@
 
 </style>
 <%@ include file="/theme/list/javascripts.jspf" %>
+<script type="text/javascript">
+
+$(function () {
+	$("TBODY").on("click","TD", function (e) {
+		var id = $(this).parent().attr("id");
+		console.log(id)
+		//alret(id)
+		//orion?userAction=orion.swissdec.pucsValidationList.afficher
+		parent.location.href='orion?userAction=orion.swissdec.pucsValidationDetail.afficher&selectedId='+id;
+
+	})
+});
+</script>
 
 
  <%-- tpl:insert attribute="zoneHeaders" --%>
@@ -74,10 +89,19 @@
 <%@ include file="/theme/list/tableHeader.jspf" %>
 <%-- tpl:insert attribute="zoneCondition" --%>
 <%-- /tpl:insert --%>
-<%@ include file="/theme/list/lineStyle.jspf" %>
-<%-- tpl:insert attribute="zoneList" --%>
-
-			<%EBPucsFileViewBean line = (EBPucsFileViewBean) viewBean.get(i);%>
+	<%
+			if (condition) {
+				rowStyle = "row";
+			} else {
+				rowStyle = "rowOdd";
+			}
+	%>
+			<%
+				EBPucsFileViewBean line = (EBPucsFileViewBean) viewBean.get(i);
+				pageContext.setAttribute("pucsFile", ((EBPucsFileViewBean) viewBean.get(i)).getPucsFile());
+			%>
+			<tr id="<%=line.getId()%>" class="<%=rowStyle%>" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'rowHighligthed')" onMouseOut="jscss('swap', this, 'rowHighligthed', '<%=rowStyle%>')">
+			
 			<td style="text-align: center;">
 				<%if(!line.hasLock() ){%>
 					<% if(line.getPucsFile().isStatusHandling()) {%>
@@ -90,12 +114,12 @@
 				<%}%>
 				
 			</td>
-			<td><%=line.getPucsFile().getNumeroAffilie()%></td>
-			<td>
+			<td><%=line.getPucsFile().getNumeroAffilie()%> <span data-g-note="idExterne:<%=line.getPucsFile().getIdDb()%>,  tableSource: EBPUCS_FILE, inList: true"> </span></td>
+			<td> 
 				<%if (line.getPucsFile().isForTest()){%>
 				 	<i title ="<ct:FWLabel key='PUCS_TEST_FILE'/>" class="icon-check"></i>
 				<% } %>
-				<%=line.getPucsFile().getNomAffilie()%>
+				<c:out value="${pucsFile.nomAffilie}" />
 			</td>
 			<td align = "center"><%=line.getPucsFile().getDateDeReception()%></td>
 			<td align="center"><%=line.getPucsFile().getAnneeDeclaration()%></td>
@@ -103,13 +127,16 @@
 			<td align="center"><%=line.getPucsFile().getNbSalaires()%></td>
 			<td><%=line.getPucsFile().getHandlingUser()==null?"":line.getPucsFile().getHandlingUser()%></td>
 			<td><%=objSession.getCodeLibelle(line.getPucsFile().getCurrentStatus())%></td>
-		<% if("1".equals(line.getPucsFile().getProvenance().getValue())) { %>
-			<td><ct:FWLabel key="PUCS_TYPE_PUCS"/></td>
-		<% } else if("2".equals(line.getPucsFile().getProvenance().getValue())) { %>
-			<td><ct:FWLabel key="PUCS_TYPE_DAN"/></td>
-		<% } else {%>
-			<td><ct:FWLabel key="PUCS_TYPE_SWISS_DEC"/></td>
-		<% } %>
+			<td>
+
+			<% if(line.getPucsFile().getProvenance().isPucs()) { %>
+				<ct:FWLabel key="PUCS_TYPE_PUCS"/>
+			<% } else if(line.getPucsFile().getProvenance().isDan()) { %>
+				<ct:FWLabel key="PUCS_TYPE_DAN"/>
+			<% } else if(line.getPucsFile().getProvenance().isSwissDec()) {%>
+				<ct:FWLabel key="PUCS_TYPE_SWISS_DEC"/>
+			<% } %>
+			</td>
 			<td align="center">
 				<%if (line.getPucsFile().isAfSeul()){%>
 					<i class="icon-ok"></i>
@@ -118,8 +145,9 @@
 			<td align="center">
 	
 			</td> 
-<%-- /tpl:insert --%>
-<%@ include file="/theme/list/lineEnd.jspf" %>
+    </tr>
+<%	} %>
+
 <%-- tpl:insert attribute="zoneTableFooter" --%>
 <%-- /tpl:insert --%>
 <%@ include file="/theme/list/tableEnd.jspf" %>

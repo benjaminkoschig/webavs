@@ -4,7 +4,6 @@ import static org.fest.assertions.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
 
 public class SQLWriterTest {
 
@@ -134,7 +133,7 @@ public class SQLWriterTest {
 
     @Test
     public void testAppendWithParams() throws Exception {
-        assertThat(SQLWriter.write().append("select * from", null).toSql()).isEqualTo("");
+        // assertThat(SQLWriter.write().append("select * from", null).toSql()).isEqualTo("");
         assertThat(SQLWriter.write().append("select * from", "").toSql()).isEqualTo("");
         assertThat(SQLWriter.write().append("select * from where t1 = '?'", "1").toSql()).isEqualTo(
                 "select * from where t1 = '1'");
@@ -165,8 +164,8 @@ public class SQLWriterTest {
     public void testCheckMatchParmasZeroCharToReplaceOne() throws Exception {
         try {
             SQLWriter.write().checkMatchParams("?", 0);
-            failBecauseExceptionWasNotThrown(CommonTechnicalException.class);
-        } catch (CommonTechnicalException e) {
+            failBecauseExceptionWasNotThrown(RuntimeException.class);
+        } catch (RuntimeException e) {
             assertThat(e)
                     .hasMessage(
                             "Unabeld to replace the ? with parmas. The number (1) of the ? not match with the number of parmas (0)");
@@ -177,8 +176,8 @@ public class SQLWriterTest {
     public void testCheckMatchParmasOneCharToReplaceFor() throws Exception {
         try {
             SQLWriter.write().checkMatchParams("?,?,?,?)", 1);
-            failBecauseExceptionWasNotThrown(CommonTechnicalException.class);
-        } catch (CommonTechnicalException e) {
+            failBecauseExceptionWasNotThrown(RuntimeException.class);
+        } catch (RuntimeException e) {
             assertThat(e)
                     .hasMessage(
                             "Unabeld to replace the ? with parmas. The number (4) of the ? not match with the number of parmas (1)");
@@ -189,8 +188,8 @@ public class SQLWriterTest {
     public void testCheckMatchParmasOneCharToReplaceZero() throws Exception {
         try {
             SQLWriter.write().checkMatchParams("", 1);
-            failBecauseExceptionWasNotThrown(CommonTechnicalException.class);
-        } catch (CommonTechnicalException e) {
+            failBecauseExceptionWasNotThrown(RuntimeException.class);
+        } catch (RuntimeException e) {
             assertThat(e)
                     .hasMessage(
                             "Unabeld to replace the ? with parmas. The number (0) of the ? not match with the number of parmas (1)");
@@ -204,8 +203,8 @@ public class SQLWriterTest {
 
             // SQLWriter.write("use ") + schema +";"
 
-            failBecauseExceptionWasNotThrown(CommonTechnicalException.class);
-        } catch (CommonTechnicalException e) {
+            failBecauseExceptionWasNotThrown(RuntimeException.class);
+        } catch (RuntimeException e) {
             assertThat(e)
                     .hasMessage(
                             "Unabeld to replace the ? with parmas. The number (1) of the ? not match with the number of parmas (2)");
@@ -216,6 +215,33 @@ public class SQLWriterTest {
     public void testToSql() throws Exception {
         assertThat(SQLWriter.write().append(" ? ", "toto").toSql()).isEqualTo(" toto ");
         assertThat(SQLWriter.write("schema").append(" ? ", "toto").toSql()).isEqualTo(" toto ");
+    }
+
+    @Test
+    public void testEqual() throws Exception {
+        assertThat(SQLWriter.write().and("tableName").equal("toto").toSql()).isEqualTo(" tableName='toto'");
+    }
+
+    @Test
+    public void testCurrentIndex() throws Exception {
+        assertThat(SQLWriter.write().append("12345").currentIndex()).isEqualTo(5);
+    }
+
+    @Test
+    public void testRollback() throws Exception {
+        assertThat(SQLWriter.write().and("toeosisu").rollback().toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().append("toeosisu").and("sjsjsksk").rollback().toSql()).isEqualTo("toeosisu");
+    }
+
+    @Test
+    public void testInWithRollback() throws Exception {
+        String id = null;
+        assertThat(SQLWriter.write().and("toeosisu").in(id).and("sjsjsksk").equal(5).toSql()).isEqualTo(" sjsjsksk=5");
+    }
+
+    @Test
+    public void testLike() throws Exception {
+        assertThat(SQLWriter.write().and("COL").like("%toto").toSql()).isEqualTo(" COL like '%toto'");
     }
 
 }

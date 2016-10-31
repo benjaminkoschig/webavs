@@ -1,10 +1,18 @@
 package ch.globaz.orion.businessimpl.services.pucs;
 
+import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadeFilenameUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.JadeClassCastException;
+import globaz.jade.fs.JadeFsFacade;
+import globaz.jade.fs.message.JadeFsFileInfo;
+import globaz.jade.service.exception.JadeServiceActivatorException;
+import globaz.jade.service.exception.JadeServiceLocatorException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -16,17 +24,9 @@ import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.globaz.orion.business.domaine.swissdec.EtatSwissDec;
 import ch.globaz.orion.business.models.pucs.PucsFile;
-import globaz.globall.db.BSession;
-import globaz.jade.client.util.JadeFilenameUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.common.JadeClassCastException;
-import globaz.jade.fs.JadeFsFacade;
-import globaz.jade.fs.message.JadeFsFileInfo;
-import globaz.jade.service.exception.JadeServiceActivatorException;
-import globaz.jade.service.exception.JadeServiceLocatorException;
-import globaz.naos.db.affiliation.AFAffiliation;
-import globaz.naos.services.AFAffiliationServices;
+import com.google.common.io.Closer;
 
 /**
  * Service de recherche des fichiers SwissDec
@@ -42,7 +42,7 @@ public class FindPucsSwissDec {
 
     /**
      * Permet de lire les fichiers swissdec dans le répertoire "a valider"
-     *
+     * 
      * @return La liste de fichier du répertoire
      * @throws JadeServiceLocatorException
      * @throws JadeServiceActivatorException
@@ -58,7 +58,7 @@ public class FindPucsSwissDec {
 
     /**
      * Permet de lire les fichiers swissdec dans le répertoire "a valider"
-     *
+     * 
      * @return La liste de fichier du répertoire
      * @throws JadeServiceLocatorException
      * @throws JadeServiceActivatorException
@@ -74,7 +74,7 @@ public class FindPucsSwissDec {
 
     /**
      * Permet de lire les fichiers swissdec dans le répertoire "a traiter"
-     *
+     * 
      * @return La liste de fichier du répertoire
      * @throws JadeServiceLocatorException
      * @throws JadeServiceActivatorException
@@ -83,14 +83,15 @@ public class FindPucsSwissDec {
      * @throws JadeClassCastException
      * @throws PropertiesException
      */
-    public List<PucsFile> loadPucsSwissDecATraiter() throws JadeServiceLocatorException, JadeServiceActivatorException,
-            NullPointerException, ClassCastException, JadeClassCastException, PropertiesException {
-        return loadPucsSwissDec(EBProperties.PUCS_SWISS_DEC_DIRECTORY.getValue());
+    public List<PucsFile> loadPucsSwissDecATraiter() {
+        try {
+            return loadPucsSwissDec(EBProperties.PUCS_SWISS_DEC_DIRECTORY.getValue());
+        } catch (PropertiesException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private List<PucsFile> loadPucsSwissDec(String uri)
-            throws JadeServiceLocatorException, JadeServiceActivatorException, NullPointerException, ClassCastException,
-            JadeClassCastException, PropertiesException {
+    private List<PucsFile> loadPucsSwissDec(String uri) {
         // on accepte que l'URI soit vide car certains clients n'utilisent pas la fonctionnalité SwissDec.
         if (JadeStringUtil.isBlank(uri)) {
             return new ArrayList<PucsFile>();
@@ -98,15 +99,18 @@ public class FindPucsSwissDec {
 
         StopWatch watch = new StopWatch();
         watch.start();
-
-        if (!JadeFsFacade.isFolder(uri)) {
-            throw new RuntimeException("This value is not a valid folder: " + uri);
+        List<String> listRemotePucsFileUri;
+        try {
+            if (!JadeFsFacade.isFolder(uri)) {
+                throw new RuntimeException("This value is not a valid folder: " + uri);
+            }
+            listRemotePucsFileUri = JadeFsFacade.getFolderChildren(uri);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
-        final List<String> listRemotePucsFileUri = JadeFsFacade.getFolderChildren(uri);
-
-        final List<PucsFile> pucsFiles = Collections
-                .synchronizedList(new ArrayList<PucsFile>(listRemotePucsFileUri.size()));
+        final List<PucsFile> pucsFiles = Collections.synchronizedList(new ArrayList<PucsFile>(listRemotePucsFileUri
+                .size()));
 
         ExecutorService threadExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
         for (String remotePucsFileUri : listRemotePucsFileUri) {
@@ -146,7 +150,8 @@ public class FindPucsSwissDec {
                     name = nameConverted;
                 }
                 if (!info.getIsFolder()) {
-                    pucsFiles.add(buildPucsByFile(path + name, session));
+                    PucsFile pucsFile = buildPucsByFile(path + name, session);
+                    pucsFiles.add(pucsFile);
                 }
             } catch (Exception e) {
                 throw new CommonTechnicalException(e);
@@ -156,7 +161,7 @@ public class FindPucsSwissDec {
 
     /**
      * Permet de charger un fichier Pucs en passant l'adresse et le nom de celui-ci
-     *
+     * 
      * @param remotePucsFileUri Une chemin vers le fichier du type ftp://login:pass/pucs/atraiter/monfichier.xml
      * @return Objet représentant les caractéristique du fichier
      * @throws JadeServiceLocatorException
@@ -169,7 +174,8 @@ public class FindPucsSwissDec {
             JadeServiceActivatorException, NullPointerException, ClassCastException, JadeClassCastException {
         String path = JadeFsFacade.readFile(remotePucsFileUri);
         PucsFile pucsFile = buildPucsByFileBy(path, remotePucsFileUri, session);
-        JadeFsFacade.delete(path);
+
+        // JadeFsFacade.delete(path);
         return pucsFile;
     }
 
@@ -177,17 +183,19 @@ public class FindPucsSwissDec {
         PucsFile pucsFile = buildPucsByFile(filePath, DeclarationSalaireProvenance.SWISS_DEC, session);
         pucsFile.setId(JadeFilenameUtil.extractFilename(remotePucsFileUri).replace(".xml", ""));
         return pucsFile;
+
     }
 
     public static PucsFile buildPucsByFile(String filePath, DeclarationSalaireProvenance provenance, BSession session) {
         PucsFile pucsFile = new PucsFile();
-
+        Closer closer = Closer.create();
         try {
             File file = new File(filePath);
             FileInputStream fileInputStream = new FileInputStream(file);
+            closer.register(fileInputStream);
             ElementsDomParser parser = new ElementsDomParser(fileInputStream);
 
-            double kilobytes = ((file.length() / 1024));
+            double kilobytes = file.length() / 1024;
             pucsFile.setSizeFileInKo(kilobytes);
             pucsFile.setId(JadeFilenameUtil.extractFilename(filePath).replace(".xml", ""));
             pucsFile.setProvenance(provenance);
@@ -201,24 +209,35 @@ public class FindPucsSwissDec {
             pucsFile.setDateDeReception(ds.getTransmissionDate().getSwissValue());
             pucsFile.setAfSeul(ds.isAfSeul());
             pucsFile.setForTest(ds.isTest());
+            pucsFile.setCurrentStatus(EtatSwissDec.A_VALIDE.getValue());
             pucsFile.setDuplicate(ds.isDuplicate());
+            pucsFile.setHandlingUser(session.getUserId());
+            pucsFile.setFile(file);
 
-            List<AFAffiliation> affiliations = AFAffiliationServices
-                    .searchAffiliationByNumeros(Arrays.asList(pucsFile.getNumeroAffilie().trim()), session);
-            if (affiliations.isEmpty()) {
-                pucsFile.setLock(true);
-                pucsFile.setIsAffiliationExistante(false);
-            } else {
-                pucsFile.setIsAffiliationExistante(true);
-                pucsFile.setLock(!PucsServiceImpl.userHasRight(affiliations.get(0), parser, session));
-            }
+            // List<AFAffiliation> affiliations = AFAffiliationServices.searchAffiliationByNumeros(
+            // Arrays.asList(pucsFile.getNumeroAffilie().trim()), session);
+            // if (affiliations.isEmpty()) {
+            // pucsFile.setLock(true);
+            // pucsFile.setIsAffiliationExistante(false);
+            // } else {
+            // pucsFile.setIsAffiliationExistante(true);
+            // pucsFile.setLock(!PucsServiceImpl.userHasRight(affiliations.get(0), session));
+            // }
 
             if (ds.isAfSeul()) {
                 pucsFile.setTotalControle(ds.getMontantCaf().toStringFormat());
             }
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                closer.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         return pucsFile;
     }
+
 }

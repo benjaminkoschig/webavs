@@ -6,6 +6,9 @@ import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.translation.CodeSystem;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
+import com.google.common.base.Joiner;
 
 /**
  * Le Manager de l'entité ParticulariteAffiliation.
@@ -18,6 +21,8 @@ public class AFParticulariteAffiliationManager extends BManager implements Seria
      * 
      */
     private static final long serialVersionUID = 1L;
+    private Collection<String> inAffiliationIds;
+    private List<String> inParticularites;
     private java.lang.String dateDebutLessOrEqual;
     private java.lang.String dateFinGreatOrEqual;
     private java.lang.String forAffiliationId;
@@ -30,6 +35,22 @@ public class AFParticulariteAffiliationManager extends BManager implements Seria
     private java.lang.String exceptParaticulariteId;
 
     private java.lang.String order = "MFDDEB";
+
+    public Collection<String> getInAffiliationIds() {
+        return inAffiliationIds;
+    }
+
+    public void setInAffiliationIds(Collection<String> inAffiliationIds) {
+        this.inAffiliationIds = inAffiliationIds;
+    }
+
+    public List<String> getInParticularites() {
+        return inParticularites;
+    }
+
+    public void setInParticularites(List<String> inParticularites) {
+        this.inParticularites = inParticularites;
+    }
 
     /**
      * Renvoie la clause FROM.
@@ -90,11 +111,25 @@ public class AFParticulariteAffiliationManager extends BManager implements Seria
             sqlWhere += "MAIAFF=" + this._dbWriteNumeric(statement.getTransaction(), getForAffiliationId());
         }
 
+        if (getInAffiliationIds() != null && !getInAffiliationIds().isEmpty()) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += "MAIAFF in (" + Joiner.on(",").join(getInAffiliationIds()) + ")";
+        }
+
         if (!JadeStringUtil.isEmpty(getForParticularite())) {
             if (sqlWhere.length() != 0) {
                 sqlWhere += " AND ";
             }
             sqlWhere += "MFTPAR=" + this._dbWriteNumeric(statement.getTransaction(), getForParticularite());
+        }
+
+        if (getInParticularites() != null && !getInParticularites().isEmpty()) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += "MFTPAR in (" + Joiner.on(",").join(inParticularites) + ")";
         }
 
         if (!JadeStringUtil.isEmpty(getFromDateDebut())) {

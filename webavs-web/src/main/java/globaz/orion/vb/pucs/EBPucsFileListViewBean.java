@@ -1,107 +1,134 @@
 package globaz.orion.vb.pucs;
 
-import globaz.draco.db.declaration.DSDeclarationListViewBean;
-import globaz.draco.db.declaration.DSDeclarationViewBean;
 import globaz.globall.db.BIPersistentObject;
 import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
-import globaz.globall.util.JACalendar;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.orion.utils.EBDanUtils;
-import globaz.orion.vb.EBAbstractListViewBean;
+import globaz.globall.db.BSessionUtil;
+import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliation;
+import globaz.naos.services.AFAffiliationServices;
+import globaz.naos.translation.CodeSystem;
+import globaz.orion.vb.EBAbstractListViewBeanPagination;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import ch.globaz.common.domaine.Date;
+import ch.globaz.common.domaine.Montant;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.models.pucs.PucsFile;
-import ch.globaz.orion.business.models.pucs.PucsFileComparator;
-import ch.globaz.orion.business.models.pucs.PucsSearchCriteria;
-import ch.globaz.orion.businessimpl.services.dan.DanServiceImpl;
-import ch.globaz.orion.businessimpl.services.pucs.FindPucsSwissDec;
-import ch.globaz.orion.businessimpl.services.pucs.PucsServiceImpl;
-import ch.globaz.xmlns.eb.dan.Dan;
+import ch.globaz.orion.db.EBPucsFileDefTable;
+import ch.globaz.orion.db.EBPucsFileEntity;
+import ch.globaz.orion.db.EBPucsFileManager;
 import ch.globaz.xmlns.eb.pucs.PucsEntrySummary;
-import com.google.common.base.Splitter;
 
-public class EBPucsFileListViewBean extends EBAbstractListViewBean {
+public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
 
-    private String dateSoumission = "";
-    private String forAnnee = "";
-    private String likeAffilie = "";
-    private String orderby = "";
+    private String orderBy;
     private List<PucsEntrySummary> pucsFiles = null;
     private List<PucsFile> pucsFilesFinal = new ArrayList<PucsFile>();
-    private PucsSearchCriteria search = null;
-    private String type = "";
+    private Map<String, List<String>> mapNumAffiliationParticularite;
+    private Map<String, AFAffiliation> mapAffiliation;
+    private EBPucsFileManager manager = new EBPucsFileManager();
 
-    public EBPucsFileListViewBean() {
-        search = new PucsSearchCriteria();
+    @Override
+    public BManager getManager() {
+        return manager;
+    }
+
+    @Override
+    public void findNext() throws Exception {
+        manager.findNext();
+        perpareList();
+    }
+
+    @Override
+    public void findPrev() throws Exception {
+        manager.findPrev();
+        perpareList();
     }
 
     @Override
     public void find() throws Exception {
-        DeclarationSalaireProvenance provenance = null;
-        if (!JadeStringUtil.isBlank(type)) {
-            provenance = DeclarationSalaireProvenance.fromValue(type);
+        if (orderBy == null || orderBy.isEmpty() || "DATE_RECEPTION".equalsIgnoreCase(orderBy)) {
+            manager.setOrderBy(EBPucsFileDefTable.DATE_RECEPTION.getColumn() + " DESC");
+        } else if ("NOM_AFFILIE".equalsIgnoreCase(orderBy)) {
+            manager.setOrderBy(EBPucsFileDefTable.NOM_AFFILIE.getColumn());
+        } else if ("NUMERO_AFFILIE".equalsIgnoreCase(orderBy)) {
+            manager.setOrderBy(EBPucsFileDefTable.NUMERO_AFFILIE.getColumn());
         }
-        // Recherche des DS ouvert et qui ont un pucs file
-        Collection<String> listDS = findDS();
-        List<PucsEntrySummary> pucsFileTemp = null;
-        List<Dan> danFileTemp = null;
-        List<PucsFile> pucsSwissDec = new ArrayList<PucsFile>();
-        // Recherche des pucsfile dans ebusiness
-        if (provenance == null || provenance.isPucs()) {
-            pucsFileTemp = PucsServiceImpl.listPucsFile(type, 0, likeAffilie, forAnnee, dateSoumission,
-                    (BSession) getISession());
-        }
-        if (provenance == null || provenance.isDan()) {
-            Integer dateSoumInt = null;
-            if ((dateSoumission != null) && (dateSoumission.length() == 8)) {
-                dateSoumInt = Integer.parseInt(JACalendar.format(dateSoumission, JACalendar.FORMAT_YYYYMMDD));
-            }
-            danFileTemp = DanServiceImpl.listDanFile(likeAffilie, dateSoumInt, (BSession) getISession());
-        }
-        if (provenance == null || provenance.isSwissDec()) {
-            FindPucsSwissDec swissDec = new FindPucsSwissDec((BSession) getISession());
-            pucsSwissDec = swissDec.loadPucsSwissDecATraiter();
+        manager.find(50);
+        perpareList();
+    }
+
+    private void perpareList() {
+
+        List<EBPucsFileEntity> list = manager.toList();
+        pucsFilesFinal.clear();
+        for (EBPucsFileEntity entity : list) {
+            PucsFile pucsFile = new PucsFile();
+            pucsFile.setId(entity.getIdFileName());
+
+            pucsFile.setAfSeul(entity.isAfSeul());
+            pucsFile.setAnneeDeclaration(String.valueOf(entity.getAnneeDeclaration()));
+            pucsFile.setCurrentStatus(String.valueOf(entity.getStatut()));
+            pucsFile.setDateDeReception(new Date(entity.getDateReception()).getSwissValue());
+            pucsFile.setDuplicate(entity.isDuplicate());
+            pucsFile.setHandlingUser(entity.getHandlingUser());
+            pucsFile.setIsAffiliationExistante(entity.isAffiliationExistante());
+            pucsFile.setNbSalaires(String.valueOf(entity.getNbSalaire()));
+            pucsFile.setNomAffilie(entity.getNomAffilie());
+            pucsFile.setNumeroAffilie(entity.getNumeroAffilie());
+            pucsFile.setProvenance(DeclarationSalaireProvenance.fromValue(entity.getProvenance()));
+            pucsFile.setSalaireInferieurLimite(entity.getSalaireInferieurLimite());
+            pucsFile.setSizeFileInKo(entity.getSizeFileInKo());
+            pucsFile.setTotalControle(new Montant(entity.getTotalControle()).toStringFormat());
+            pucsFile.setIdDb(entity.getIdEntity());
+            pucsFilesFinal.add(pucsFile);
         }
 
-        List<PucsFile> pucsFilesMerged = mergeList(listDS, pucsFileTemp, danFileTemp, pucsSwissDec);
-        List<PucsFile> pucsFilesFiltred = new ArrayList<PucsFile>();
-        for (PucsFile pucsFile : pucsFilesMerged) {
-            if (forAnnee != null && forAnnee.trim().length() > 0 && dateSoumission != null
-                    && dateSoumission.trim().length() > 0) {
-                if (pucsFile.getAnneeDeclaration().equals(forAnnee)
-                        && pucsFile.getDateDeReception().equals(dateSoumission)) {
-                    pucsFilesFiltred.add(pucsFile);
-                }
-            } else if (forAnnee != null && forAnnee.trim().length() > 0) {
-                if (pucsFile.getAnneeDeclaration().equals(forAnnee)) {
-                    pucsFilesFiltred.add(pucsFile);
-                }
-            } else if (dateSoumission != null && dateSoumission.trim().length() > 0) {
-                if (pucsFile.getDateDeReception().equals(dateSoumission)) {
-                    pucsFilesFiltred.add(pucsFile);
-                }
-            } else {
-                pucsFilesFiltred.add(pucsFile);
-            }
-        }
-        for (PucsFile pucsFile : pucsFilesFiltred) {
-            if (likeAffilie != null && likeAffilie.trim().length() > 0) {
-                if (pucsFile.getNumeroAffilie().contains(likeAffilie)) {
-                    pucsFilesFinal.add(pucsFile);
-                }
-            } else {
-                pucsFilesFinal.add(pucsFile);
-            }
-        }
+        mapAffiliation = findAffiliations(list);
+        mapNumAffiliationParticularite = resolveParticularites(mapAffiliation);
 
+        // ProcessItemsFactory.newInstance().session((BSession) getISession()).start(new EBImportSwissDec()).build();
         sortByFusionable();
+        // ProcessItemsFactory.newInstance().session((BSession) getISession()).start(new EBImportPucsDan()).build();
+    }
+
+    private Map<String, AFAffiliation> findAffiliations(List<EBPucsFileEntity> list) {
+        List<String> numAffiliations = new ArrayList<String>();
+
+        for (EBPucsFileEntity entity : list) {
+            numAffiliations.add(entity.getNumeroAffilie());
+        }
+
+        List<AFAffiliation> affiliations = AFAffiliationServices.searchAffiliationByNumeros(numAffiliations,
+                BSessionUtil.getSessionFromThreadContext());
+
+        Map<String, AFAffiliation> map = new HashMap<String, AFAffiliation>();
+
+        for (AFAffiliation afAffiliation : affiliations) {
+            map.put(afAffiliation.getId(), afAffiliation);
+        }
+        return map;
+    }
+
+    private Map<String, List<String>> resolveParticularites(Map<String, AFAffiliation> mapAff) {
+
+        Map<String, List<String>> particularites = AFParticulariteAffiliation.findParticularites(
+                BSessionUtil.getSessionFromThreadContext(), mapAffiliation.keySet(),
+                CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL, CodeSystem.PARTIC_AFFILIE_FICHE_PARTIELLE);
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+
+        for (Entry<String, List<String>> entry : particularites.entrySet()) {
+            AFAffiliation afAffiliation = mapAff.get(entry.getKey());
+            if (afAffiliation != null) {
+                map.put(afAffiliation.getAffilieNumero(), entry.getValue());
+            }
+        }
+        return map;
     }
 
     private void sortByFusionable() {
@@ -133,59 +160,14 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBean {
         });
     }
 
-    public Collection<String> findDS() throws Exception {
-
-        Collection<String> listDs = new ArrayList<String>();
-
-        DSDeclarationListViewBean manager = new DSDeclarationListViewBean();
-        manager.setSession((BSession) getISession());
-        manager.setForEtat(DSDeclarationViewBean.CS_OUVERT);
-        manager.setForIdPucsFileNotEmpty(true);
-        manager.wantCallMethodAfter(false);
-        manager.wantCallMethodBefore(false);
-
-        manager.find(BManager.SIZE_NOLIMIT);
-
-        for (int i = 0; i < manager.getSize(); i++) {
-            DSDeclarationViewBean ds = (DSDeclarationViewBean) manager.getEntity(i);
-            List<String> ids = Splitter.on(";").trimResults().splitToList(ds.getIdPucsFile());
-            for (String id : ids) {
-                listDs.add(id + "#" + ds.getProvenance());
-            }
-
-        }
-
-        return listDs;
-    }
-
     @Override
     public BIPersistentObject get(int idx) {
-        return (pucsFilesFinal != null) && (pucsFilesFinal.size() > idx) ? new EBPucsFileViewBean(
-                pucsFilesFinal.get(idx)) : new EBPucsFileViewBean();
-    }
+        PucsFile pucsFile = pucsFilesFinal.get(idx);
+        List<String> particularites = mapNumAffiliationParticularite.get(pucsFile.getNumeroAffilie());
+        AFAffiliation afAffiliation = mapAffiliation.get(pucsFile.getNumeroAffilie());
 
-    public String getDateSoumission() {
-        return dateSoumission;
-    }
-
-    public String getForAnnee() {
-        return forAnnee;
-    }
-
-    public String getLikeAffilie() {
-        return likeAffilie;
-    }
-
-    public String getOrderby() {
-        return orderby;
-    }
-
-    public List<PucsEntrySummary> getPucsFiles() {
-        return pucsFiles;
-    }
-
-    public PucsSearchCriteria getSearch() {
-        return search;
+        return pucsFilesFinal.size() > idx ? new EBPucsFileViewBean(pucsFile, particularites, afAffiliation)
+                : new EBPucsFileViewBean();
     }
 
     @Override
@@ -193,74 +175,36 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBean {
         return pucsFilesFinal == null ? 0 : pucsFilesFinal.size();
     }
 
-    public String getType() {
-        return type;
+    public void setOrderBy(String orderBy) {
+        this.orderBy = orderBy;
     }
 
-    private List<PucsFile> mergeList(Collection<String> listDS, List<PucsEntrySummary> pucsFileTemp,
-            List<Dan> danFileTemp, List<PucsFile> pucsSwissDec) {
-
-        if (((pucsFileTemp == null) || (pucsFileTemp.size() == 0))
-                && ((danFileTemp == null) || (danFileTemp.size() == 0)) && pucsSwissDec.isEmpty()) {
-            return new ArrayList<PucsFile>();
-        }
-
-        ArrayList<PucsFile> mergeList = new ArrayList<PucsFile>();
-        if (((pucsFileTemp != null) && (!pucsFileTemp.isEmpty()))) {
-            for (PucsEntrySummary file : pucsFileTemp) {
-                if (!listDS.contains(file.getIdPucsEntry() + "#" + DeclarationSalaireProvenance.PUCS.getValue())) {
-                    mergeList.add(EBDanUtils.mapPucsfile(file));
-                }
-            }
-        }
-        if (((danFileTemp != null) && (danFileTemp.size() != 0))) {
-            for (Dan file : danFileTemp) {
-                if (!listDS.contains(file.getIdDan() + "#" + DeclarationSalaireProvenance.DAN.getValue())) {
-                    mergeList.add(EBDanUtils.mapDanfile(file));
-                }
-            }
-        }
-
-        if (((pucsSwissDec != null) && (pucsSwissDec.size() != 0))) {
-            for (PucsFile file : pucsSwissDec) {
-                // if (!listDS.contains(file.getId() + "#" + DeclarationSalaireProvenance.SWISS_DEC.getValue())) {
-                mergeList.add(file);
-                // }
-            }
-        }
-
-        PucsFileComparator comp = new PucsFileComparator();
-        comp.setSession((BSession) getISession());
-        Collections.sort(mergeList, comp);
-        return mergeList;
+    public List<PucsEntrySummary> getPucsFiles() {
+        return pucsFiles;
     }
 
     public void setDateSoumission(String dateSoumission) {
-        this.dateSoumission = dateSoumission;
+        manager.setForDateSoumission(dateSoumission);
     }
 
-    public void setForAnnee(String forAnnee) {
-        this.forAnnee = forAnnee;
+    public void setStatut(String statut) {
+        manager.setForStatut(statut);
     }
 
     public void setLikeAffilie(String likeAffilie) {
-        this.likeAffilie = likeAffilie;
+        manager.setLikeAffilie(likeAffilie);
     }
 
-    public void setOrderby(String orderby) {
-        this.orderby = orderby;
+    public void setType(String type) {
+        manager.setForProvenance(DeclarationSalaireProvenance.fromValueWithOutException(type));
+    }
+
+    public void setFullText(String fullText) {
+        manager.setFullText(fullText);
     }
 
     public void setPucsFiles(List<PucsEntrySummary> pucsFiles) {
         this.pucsFiles = pucsFiles;
-    }
-
-    public void setSearch(PucsSearchCriteria search) {
-        this.search = search;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
 }

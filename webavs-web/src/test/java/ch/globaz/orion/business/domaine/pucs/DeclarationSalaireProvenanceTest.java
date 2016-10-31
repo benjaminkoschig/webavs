@@ -27,7 +27,8 @@ public class DeclarationSalaireProvenanceTest {
 
     @Test
     public void testFromValueWithOutException() throws Exception {
-        assertEquals(DeclarationSalaireProvenance.UNDEFINDED, DeclarationSalaireProvenance.fromValueWithOutException(""));
+        assertEquals(DeclarationSalaireProvenance.UNDEFINDED,
+                DeclarationSalaireProvenance.fromValueWithOutException(""));
     }
 
     @Test
@@ -49,6 +50,5 @@ public class DeclarationSalaireProvenanceTest {
         assertTrue(DeclarationSalaireProvenance.PUCS.isPucs());
         assertFalse(DeclarationSalaireProvenance.DAN.isPucs());
         assertFalse(DeclarationSalaireProvenance.SWISS_DEC.isPucs());
-
     }
 }

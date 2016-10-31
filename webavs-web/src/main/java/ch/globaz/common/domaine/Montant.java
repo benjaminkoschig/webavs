@@ -80,7 +80,7 @@ public class Montant {
             newValue = value;
         }
 
-        if (Double.valueOf(value) == null) {
+        if (Double.valueOf(newValue) == null) {
             throw new IllegalArgumentException("Le montant doit être un double");
         }
         currency = new BigDecimal(newValue, mathContext);

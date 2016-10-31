@@ -2,10 +2,10 @@ package globaz.orion.vb.swissdec;
 
 import globaz.draco.db.declaration.DSDeclarationListViewBean;
 import globaz.draco.db.declaration.DSDeclarationViewBean;
+import globaz.globall.db.BManager;
 import globaz.globall.util.JACalendar;
 import globaz.hercule.service.CETiersService;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.fs.JadeFsFacade;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliation;
 import globaz.naos.db.releve.AFApercuReleve;
@@ -20,9 +20,9 @@ import globaz.pyxis.db.tiers.TITiersViewBean;
 import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.draco.business.domaine.DeclarationSalaireType;
-import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.businessimpl.services.pucs.DeclarationSalaireBuilder;
+import ch.globaz.orion.db.EBPucsFileEntity;
 import ch.globaz.orion.ws.service.AFMassesForAffilie;
 import ch.globaz.orion.ws.service.AppAffiliationService;
 
@@ -51,15 +51,11 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
     public void retrieve() throws Exception {
 
         findTheNextToValidate();
+        EBPucsFileEntity ebPucsFileEntity = new EBPucsFileEntity();
+        ebPucsFileEntity.setIdEntity(id);
+        ebPucsFileEntity.retrieveWithFile();
 
-        String file = null;
-        if (refuser == true) {
-            file = JadeFsFacade.readFile(EBProperties.PUCS_SWISS_DEC_DIRECTORY_REFUSER.getValue() + id + ".xml");
-        } else {
-            file = JadeFsFacade.readFile(EBProperties.PUCS_SWISS_DEC_DIRECTORY_A_VALIDER.getValue() + id + ".xml");
-        }
-
-        decSal = DeclarationSalaireBuilder.build(file);
+        decSal = DeclarationSalaireBuilder.build(ebPucsFileEntity.getInputStream());
 
         // Recherche affiliation
         affiliation = AFAffiliationServices.getAffiliationParitaireByNumero(decSal.getNumeroAffilie(),
@@ -101,7 +97,7 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
         manager.setForAffilieNumero(affiliation.getAffilieNumero());
         manager.setFromDateDebut("01.01." + decSal.getAnnee());
         manager.setUntilDateFin("31.12." + decSal.getAnnee());
-        manager.find();
+        manager.find(BManager.SIZE_NOLIMIT);
         for (int i = 0; i < manager.size(); i++) {
             AFApercuReleve releve = (AFApercuReleve) manager.getEntity(i);
             // Détermination du type (Si relevé déjà existant => complément sinon final)
@@ -129,7 +125,7 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
         manager.setForAffiliationId(affiliation.getAffiliationId());
         manager.setForTypeDeclaration(DeclarationSalaireType.PRINCIPALE.getCodeSystem());
         manager.setSession(getSession());
-        manager.find();
+        manager.find(BManager.SIZE_NOLIMIT);
 
         if (manager.getSize() > 0) {
             isDsExistante = true;
@@ -158,17 +154,17 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
         List<String> lstIdFichier = (List<String>) getSession().getAttribute("lstIdFichier");
 
         List<String> lstEpurer = new ArrayList<String>();
-
-        boolean findCurrent = false;
-        for (String idPucs : lstIdFichier) {
-            if (id.equals(idPucs)) {
-                findCurrent = true;
-            } else if (findCurrent) {
-                lstEpurer.add(idPucs);
+        if (lstIdFichier != null) {
+            boolean findCurrent = false;
+            for (String idPucs : lstIdFichier) {
+                if (id.equals(idPucs)) {
+                    findCurrent = true;
+                } else if (findCurrent) {
+                    lstEpurer.add(idPucs);
+                }
             }
+            getSession().setAttribute("lstIdFichier", lstEpurer);
         }
-
-        getSession().setAttribute("lstIdFichier", lstEpurer);
 
     }
 

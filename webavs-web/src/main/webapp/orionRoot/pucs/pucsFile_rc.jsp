@@ -1,4 +1,13 @@
-<%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" %>
+<%@page import="java.util.LinkedHashMap"%>
+<%@page import="ch.globaz.orion.business.domaine.swissdec.EtatSwissDec"%>
+<%@page import="java.util.Map.Entry"%>
+<%@page import="ch.globaz.orion.business.models.pucs.PucsSearchCriteria"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.Map"%>
+<%@page import="globaz.globall.db.BSessionUtil"%>
+<%@page import="ch.globaz.jade.business.models.Langues"%>
+<%@page import="ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme"%>
+<%@page import="ch.globaz.jade.JadeBusinessServiceLocator"%>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/find/header.jspf" %>
 <%-- tpl:insert attribute="zoneInit" --%>
@@ -7,6 +16,17 @@
 <%
 	idEcran = "GEB0001";
 	bButtonNew = false;
+	List<JadeCodeSysteme> codes = JadeBusinessServiceLocator.getCodeSystemeService().getFamilleCodeSysteme("EB_PUCS");
+	codes.addAll(JadeBusinessServiceLocator.getCodeSystemeService().getFamilleCodeSysteme(EtatSwissDec.CODE_FAMILLE));
+	Langues langue = Langues.getLangueDepuisCodeIso(objSession.getIdLangueISO());
+	Map<String, String> map = new LinkedHashMap<String, String>();
+	String codesEnCours = PucsSearchCriteria.CS_TO_HANDLE+","+PucsSearchCriteria.CS_HANDLING+","+EtatSwissDec.A_VALIDE.getValue();
+	map.put(codesEnCours, objSession.getLabel("PUCS_STATUT_EN_CROURS"));
+	for(JadeCodeSysteme code: codes){
+	    map.put(code.getIdCodeSysteme(), code.getTraduction(langue));
+	}
+	
+	//CodeSystemeResolver codeSystemeResolver = new CodeSystemeResolver();
 %>
 <%-- /tpl:insert --%>
 <%@ include file="/theme/find/javascripts.jspf" %>
@@ -79,6 +99,21 @@ function removeInputs(){
 	<td>
 		&nbsp;
 	</td>
+	<td> 
+		&nbsp;<ct:FWLabel key="PUCS_STATU"/>
+	</td>
+	<td>
+	<select id='statut' name='statut'>
+		<OPTION value=''></OPTION>
+		<%for(Entry<String, String> entry : map.entrySet()) {%>
+			<% if(codesEnCours.equals(entry.getKey())) {%>
+				<OPTION selected="selected" value='<%=entry.getKey()%>'><%=entry.getValue() %></OPTION>
+			<%} else {%>
+				<OPTION value='<%=entry.getKey()%>'><%=entry.getValue() %></OPTION>
+			<%} %>
+		<%}%>
+	</select>
+	</td>
 	<td>
 		<ct:FWLabel key="MENU_NO_AFFILIE"/>
 	</td>
@@ -89,7 +124,6 @@ function removeInputs(){
 		&nbsp;<ct:FWLabel key="PUCS_TYPE"/>
 	</td>
 	<td>
-	
 		<select name="type">
 			<option value = ""></option>
 			<option value = "1"><ct:FWLabel key="PUCS_TYPE_PUCS"/></option>
@@ -97,10 +131,21 @@ function removeInputs(){
 		    <option value = "4"><ct:FWLabel key="PUCS_TYPE_SWISS_DEC"/></option>
 		</select>
 	</td>
+	<td> 
+		&nbsp;<ct:FWLabel key="PUCS_TRIE_PAR"/>
+	</td>
+	<td>
+		<select name="orderBy">
+			<option value = ""></option>
+			<option value = "NOM_AFFILIE"><ct:FWLabel key="PUCS_ORDERBY_NOM_AFFILIE"/></option>
+		    <option value = "NUMERO_AFFILIE"><ct:FWLabel key="PUCS_ORDERBY_NUMERO_AFFILIE"/></option>
+		</select>
+	</td>
 </tr>
 <tr>
 	<td>
-		<input type="checkbox" id="selectionner_to_handle"/><ct:FWLabel key="FICHIERS_A_TRAITER"/>
+		<input type="checkbox" id="selectionner_to_handle"/>
+		<ct:FWLabel key="FICHIERS_A_TRAITER"/>
 	</td>
 	<td>
 		&nbsp;
@@ -110,6 +155,12 @@ function removeInputs(){
 	</td>
 	<td>
 		<ct:FWCalendarTag name="dateSoumission" value = ""/>
+	</td>
+	<td>
+		<ct:FWLabel key="PUCS_RECHERCHE"/>
+	</td>
+	<td>
+		<input type="text" name="fullText"/>
 	</td>
 </tr>
 

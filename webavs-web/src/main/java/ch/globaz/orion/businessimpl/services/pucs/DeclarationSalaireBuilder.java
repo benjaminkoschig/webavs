@@ -1,5 +1,8 @@
 package ch.globaz.orion.businessimpl.services.pucs;
 
+import globaz.globall.format.IFormatData;
+import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,7 +22,6 @@ import ch.globaz.orion.business.domaine.pucs.SalariesCaf;
 import ch.globaz.orion.business.domaine.pucs.SalaryAvs;
 import ch.globaz.orion.business.domaine.pucs.SalaryCaf;
 import ch.globaz.orion.ws.service.AppAffiliationService;
-import globaz.globall.format.IFormatData;
 
 // FIXME les parseurs maison (cf. ElementsDomParser) c'est LE MAL ABSOLU!!!
 public class DeclarationSalaireBuilder {
@@ -33,6 +35,16 @@ public class DeclarationSalaireBuilder {
         return build(path, formater);
     }
 
+    public static DeclarationSalaire build(File file) {
+        IFormatData formater = AppAffiliationService.resolveNumAffilieFormater();
+        return build(file, formater);
+    }
+
+    public static DeclarationSalaire build(InputStream inputStream) {
+        IFormatData formater = AppAffiliationService.resolveNumAffilieFormater();
+        return build(inputStream, formater);
+    }
+
     public static DeclarationSalaire build(ElementsDomParser parser, DeclarationSalaireProvenance provenance) {
         IFormatData formater = AppAffiliationService.resolveNumAffilieFormater();
         return build(parser, provenance, formater);
@@ -41,6 +53,24 @@ public class DeclarationSalaireBuilder {
     public static DeclarationSalaire builOnlyHead(ElementsDomParser parser) {
         IFormatData formater = AppAffiliationService.resolveNumAffilieFormater();
         return builOnlyHead(parser, formater);
+    }
+
+    static DeclarationSalaire build(InputStream inputStream, IFormatData formater) {
+
+        ElementsDomParser parser = new ElementsDomParser(inputStream);
+        DeclarationSalaire ds = builOnlyHead(parser, formater);
+        ds.setEmployees(buildEmployees(parser));
+
+        return ds;
+    }
+
+    static DeclarationSalaire build(File file, IFormatData formater) {
+
+        ElementsDomParser parser = new ElementsDomParser(file);
+        DeclarationSalaire ds = builOnlyHead(parser, formater);
+        ds.setEmployees(buildEmployees(parser));
+
+        return ds;
     }
 
     static DeclarationSalaire build(String path, IFormatData formater) {
