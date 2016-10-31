@@ -35,6 +35,7 @@ public class EBPucsFileEntity extends JadeEntity {
     private Integer niveauSecurite;
     private Boolean salaireInferieurLimite;
     private File file;
+    private InputStream inputStream;
 
     @Override
     protected void writeProperties() {
@@ -276,7 +277,4 @@ public class EBPucsFileEntity extends JadeEntity {
         return inputStream;
     }
 
-    public void setInputStream(InputStream inputStream) {
-        this.inputStream = inputStream;
-    }
 }
