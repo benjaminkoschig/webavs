@@ -1213,6 +1213,8 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
 
             data = caisseHelper.addSignatureParameters(data, crBean);
 
+            data.addData("SIGNATURE", document.getTextes(9).getTexte(6).getDescription());
+
         } catch (Exception e) {
             throw new Exception(getSession().getLabel("ERREUR_ENTETE_SIGNATURE"));
 

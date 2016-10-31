@@ -519,6 +519,8 @@ public class RECommunicationMutationOO extends REAbstractJobOO {
         crBean.setDate(df.format(d));
         docData = caisseHelper.addHeaderParameters(docData, crBean, false);
         docData = caisseHelper.addSignatureParameters(docData, crBean);
+
+        docData.addData("SIGNATURE", getTexte(catalogueLettreCommunicationMutation, 3, 2));
     }
 
     protected void creerDocument(JadePrintDocumentContainer allDoc) throws Exception {

@@ -210,6 +210,8 @@ public class REAccuseDeReceptionOO extends AbstractJadeJob {
 
             caisseHelper.addHeaderParameters(data, crBean, Boolean.FALSE);
 
+            data.addData("SIGNATURE", document.getTextes(6).getTexte(1).getDescription());
+
             setDocumentData(data);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
