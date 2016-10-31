@@ -46,6 +46,8 @@ public class RFRechercherDescriptionsQdsMembresFamillesService {
 
             if (null != rfDernierePeriodeValiditeQdPrincipale) {
 
+                descriptionData.setIdQdsPrincipale(rfDernierePeriodeValiditeQdPrincipale.getIdQdPrincipale());
+
                 String mntSoldeExcedent = RFUtils.getSoldeExcedentDeRevenu(
                         rfDernierePeriodeValiditeQdPrincipale.getIdQd(), (BSession) session);
 
@@ -324,9 +326,6 @@ public class RFRechercherDescriptionsQdsMembresFamillesService {
 
         BISession session = BSessionUtil.getSessionFromThreadContext();
 
-        // System.out.println("dateFactureDemande: " + dateFactureDemande + " dateDebutTraitementDemande: "
-        // + dateDebutTraitementDemande);
-
         RFDescriptionsQdsMembresFamillesData descriptionData = null;
 
         // Recherche des membres familles compris dans le calcul
@@ -361,7 +360,9 @@ public class RFRechercherDescriptionsQdsMembresFamillesService {
 
             if (((BSession) session).getApplication().getCalendar().isValid(dateFacture)) {
 
-                if (JadeStringUtil.isBlankOrZero(idQdPrincipale)) {
+                boolean idQdPrincipaleDefini = JadeStringUtil.isBlankOrZero(idQdPrincipale);
+
+                if (!idQdPrincipaleDefini || (etatFormulaireDemande.equals("add") && idQdPrincipaleDefini)) {
                     rfPerValQdPriMgr.setForAnneeQd(PRDateFormater.convertDate_JJxMMxAAAA_to_AAAA(dateFacture));
                     rfPerValQdPriMgr.setForDateDebutBetweenPeriode(dateFacture);
                 } else {

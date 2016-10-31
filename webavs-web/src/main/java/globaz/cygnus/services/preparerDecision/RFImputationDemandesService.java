@@ -1137,8 +1137,9 @@ public class RFImputationDemandesService {
                         RFVerificationQdPrincipaleService rfVerificationQdPrincipaleService = new RFVerificationQdPrincipaleService();
                         RFCalculMontantAPayerData idsMotifRefusQdPrincipal = rfVerificationQdPrincipaleService
                                 .montantQdPrincipale(
-                                        new RFVerificationQdPrincipaleData(demandeCourante.getDateDebutTraitement(),
-                                                demandeCourante.getDateFacture(), demandeCourante.getIdTiers(),
+                                        new RFVerificationQdPrincipaleData(demandeCourante.getIdQdPrincipale(),
+                                                demandeCourante.getDateDebutTraitement(), demandeCourante
+                                                        .getDateFacture(), demandeCourante.getIdTiers(),
                                                 demandeCourante.getMontantAPayerInitial(), demandeCourante
                                                         .getCodeTypeDeSoin(), demandeCourante.getCodeSousTypeDeSoin()),
                                         session, true, transaction, qdsAimputerMap);

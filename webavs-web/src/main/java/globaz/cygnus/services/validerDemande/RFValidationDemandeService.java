@@ -185,21 +185,6 @@ public class RFValidationDemandeService {
                 }
             }
 
-            /*
-             * if (JadeStringUtil.isBlankOrZero(this.viewBean.getDateEnvoiMDC())) {
-             * RFUtils.setMsgErreurViewBean(this.viewBean, "ERREUR_RF_DEM_S_DATE_ENVOI_MDC_OBLIGATOIRE"); }
-             */
-
-            /*
-             * if (JadeStringUtil.isBlankOrZero(this.viewBean.getDateReceptionPreavis())) {
-             * RFUtils.setMsgErreurViewBean(this.viewBean, "ERREUR_RF_DEM_S_DATE_RECEPTION_PREAVIS_OBLIGATOIRE"); }
-             */
-
-            /*
-             * if (JadeStringUtil.isBlankOrZero(this.viewBean.getDateEnvoiAcceptation())) {
-             * RFUtils.setMsgErreurViewBean(this.viewBean, "ERREUR_RF_DEM_S_DATE_ENVOI_ACCEPTATION_OBLIGATOIRE"); }
-             */
-
         } else {
 
             if (JadeStringUtil.isBlankOrZero(viewBean.getDateFacture())) {
@@ -623,9 +608,9 @@ public class RFValidationDemandeService {
         if (!viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
             RFVerificationQdPrincipaleService rfVerificationQdPrincipaleService = new RFVerificationQdPrincipaleService();
             RFCalculMontantAPayerData rfCalMonAPayDat = rfVerificationQdPrincipaleService.montantQdPrincipale(
-                    new RFVerificationQdPrincipaleData(viewBean.getDateDebutTraitement(), dateFacture, viewBean
-                            .getIdTiers(), montantAPayer, viewBean.getCodeTypeDeSoinList(), viewBean
-                            .getCodeSousTypeDeSoinList()), viewBean.getSession(), false, null, null);
+                    new RFVerificationQdPrincipaleData(viewBean.getIdQdPrincipale(), viewBean.getDateDebutTraitement(),
+                            dateFacture, viewBean.getIdTiers(), montantAPayer, viewBean.getCodeTypeDeSoinList(),
+                            viewBean.getCodeSousTypeDeSoinList()), viewBean.getSession(), false, null, null);
 
             if (null != rfCalMonAPayDat) {
 

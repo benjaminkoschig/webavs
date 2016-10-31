@@ -109,6 +109,11 @@ var demandeAjax = {
 			$adresse.empty().append(data.adressePaiement);
 			
 			$('#descQd').html(data.descriptionQd);
+			$("#idQdPrincipale").val(data.idQdsPrincipale);
+			
+			//alert(data.idQdsPrincipale);
+			//alert($("#idQdPrincipale").val());
+			
 			$('#descFamilleCc').html(data.membresFamilleCC);
 			$('[name="idTiers"]').val($("input[type=radio][name=membreFamille]:checked").attr('value'));
 			

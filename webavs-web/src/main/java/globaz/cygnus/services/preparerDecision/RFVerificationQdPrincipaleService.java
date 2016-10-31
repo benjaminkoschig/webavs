@@ -7,6 +7,7 @@ import globaz.cygnus.api.motifsRefus.IRFMotifsRefus;
 import globaz.cygnus.api.qds.IRFQd;
 import globaz.cygnus.db.qds.RFQdJointPeriodeValiditeJointDossierJointTiersJointDemande;
 import globaz.cygnus.db.qds.RFQdJointPeriodeValiditeJointDossierJointTiersJointDemandeManager;
+import globaz.cygnus.db.qds.RFQdPrincipale;
 import globaz.cygnus.utils.RFUtils;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BSession;
@@ -116,10 +117,17 @@ public class RFVerificationQdPrincipaleService {
 
         RFCalculMontantAPayerData rfCalculMonAPay = null;
 
+        RFQdPrincipale qdPrincipale = new RFQdPrincipale();
+        qdPrincipale.setSession(session);
+        qdPrincipale.setIdQdPrincipale(data.getIdQdPrincipale());
+        qdPrincipale.retrieve();
+
         RFQdJointPeriodeValiditeJointDossierJointTiersJointDemandeManager rfQdJointPerValJointDosJointTieJointDemMgr = new RFQdJointPeriodeValiditeJointDossierJointTiersJointDemandeManager();
         rfQdJointPerValJointDosJointTieJointDemMgr.setSession(session);
         rfQdJointPerValJointDosJointTieJointDemMgr.setForCsGenreQd(IRFQd.CS_GRANDE_QD);
-        // rfQdJointPerValJointDosJointTieJointDemMgr.setForIdDossier(viewBean.getIdDossier());
+        rfQdJointPerValJointDosJointTieJointDemMgr.setForCsGenrePc(qdPrincipale.getCsGenrePCAccordee());
+        rfQdJointPerValJointDosJointTieJointDemMgr.setForCsTypeBeneficiaireQd(qdPrincipale.getCsTypeBeneficiaire());
+
         // Impossible car le dossier n'existe pas forcément
         rfQdJointPerValJointDosJointTieJointDemMgr.setForIdTiers(data.getIdTiers());
 

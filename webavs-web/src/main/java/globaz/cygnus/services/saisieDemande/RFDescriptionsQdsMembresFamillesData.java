@@ -6,6 +6,15 @@ public class RFDescriptionsQdsMembresFamillesData {
     String descriptionQd = "";
     String idTiers = null;
     String membresFamilleCC = null;
+    String idQdsPrincipale = null;
+
+    public String getIdQdsPrincipale() {
+        return idQdsPrincipale;
+    }
+
+    public void setIdQdsPrincipale(String idQdsPrincipale) {
+        this.idQdsPrincipale = idQdsPrincipale;
+    }
 
     public String getAdressePaiement() {
         return adressePaiement;

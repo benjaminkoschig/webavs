@@ -16,6 +16,7 @@ public class RFVerificationQdPrincipaleData {
     private String dateFacture = "";
     private String idTiers = "";
     private String montantAPayer = "";
+    private String idQdPrincipale = "";
 
     public RFVerificationQdPrincipaleData(String dateDebutTraitement, String dateFacture, String idTiers,
             String montantAPayer, String codeTypeDeSoin, String codeSousTypeDeSoin) {
@@ -25,6 +26,25 @@ public class RFVerificationQdPrincipaleData {
         this.montantAPayer = montantAPayer;
         this.codeTypeDeSoin = codeTypeDeSoin;
         this.codeSousTypeDeSoin = codeSousTypeDeSoin;
+    }
+
+    public RFVerificationQdPrincipaleData(String idQdPrincipale, String dateDebutTraitement, String dateFacture,
+            String idTiers, String montantAPayer, String codeTypeDeSoin, String codeSousTypeDeSoin) {
+        this.dateDebutTraitement = dateDebutTraitement;
+        this.dateFacture = dateFacture;
+        this.idTiers = idTiers;
+        this.montantAPayer = montantAPayer;
+        this.codeTypeDeSoin = codeTypeDeSoin;
+        this.codeSousTypeDeSoin = codeSousTypeDeSoin;
+        this.idQdPrincipale = idQdPrincipale;
+    }
+
+    public String getIdQdPrincipale() {
+        return idQdPrincipale;
+    }
+
+    public void setIdQdPrincipale(String idQdPrincipale) {
+        this.idQdPrincipale = idQdPrincipale;
     }
 
     public String getCodeSousTypeDeSoin() {

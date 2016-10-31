@@ -34,7 +34,26 @@ public class RFQdJointPeriodeValiditeJointDossierJointTiersJointDemandeManager e
 
     private String forCsEtatQd = "";
     private String forCsGenreQd = "";
-    private String forCsTypePC = "";
+    private String forCsTypeBeneficiaireQd = "";
+    private String forCsGenrePc = "";
+
+    public String getForCsGenrePc() {
+        return forCsGenrePc;
+    }
+
+    public void setForCsGenrePc(String forCsGenrePc) {
+        this.forCsGenrePc = forCsGenrePc;
+    }
+
+    public String getForCsTypeBeneficiaireQd() {
+        return forCsTypeBeneficiaireQd;
+    }
+
+    public void setForCsTypeBeneficiaireQd(String forCsTypeBeneficiaireQd) {
+        this.forCsTypeBeneficiaireQd = forCsTypeBeneficiaireQd;
+    }
+
+    private String forCsGenre = "";
     private String forDateDebutBetweenPeriode = "";
     private String forDateFinBetweenPeriode = "";
     private String forIdDossier = "";
@@ -67,23 +86,6 @@ public class RFQdJointPeriodeValiditeJointDossierJointTiersJointDemandeManager e
         // String schema = this._getCollection();
 
         StringBuffer fields = new StringBuffer();
-
-        /*
-         * fields.append(RFQdJointPeriodeValiditeJointDossierJointTiersJointDemande.FIELDNAME_DATEDECES).append(",");
-         * fields
-         * .append(RFQdJointPeriodeValiditeJointDossierJointTiersJointDemande.FIELDNAME_DATENAISSANCE).append(",");
-         * fields
-         * .append(schema).append(RFQdJointPeriodeValiditeJointDossierJointTiersJointDemande.TABLE_TIERS).append(".")
-         * .append(RFQdJointPeriodeValiditeJointDossierJointTiersJointDemande.FIELDNAME_ID_TIERS_TI).append(",");
-         * fields.append(RFQdJointPeriodeValiditeJointDossierJointTiersJointDemande.FIELDNAME_NATIONALITE).append(",");
-         * fields.append(RFQdJointPeriodeValiditeJointDossierJointTiersJointDemande.FIELDNAME_NOM).append(",");
-         * fields.append
-         * (RFQdJointPeriodeValiditeJointDossierJointTiersJointDemande.FIELDNAME_NOM_FOR_SEARCH).append(",");
-         * fields.append(RFQdJointPeriodeValiditeJointDossierJointTiersJointDemande.FIELDNAME_NUM_AVS).append(",");
-         * fields.append(RFQdJointPeriodeValiditeJointDossierJointTiersJointDemande.FIELDNAME_PRENOM).append(",");
-         * fields.append(RFQdJointPeriodeValiditeJointDossierJointTiersJointDemande.FIELDNAME_PRENOM_FOR_SEARCH).append(
-         * ","); fields.append(RFQdJointPeriodeValiditeJointDossierJointTiersJointDemande.FIELDNAME_SEXE).append(",");
-         */
 
         fields.append(RFQdPrincipale.FIELDNAME_CS_DEGRE_API).append(",");
         fields.append(RFQdPrincipale.FIELDNAME_CS_GENRE_PC_ACCORDEE).append(",");
@@ -133,7 +135,10 @@ public class RFQdJointPeriodeValiditeJointDossierJointTiersJointDemandeManager e
 
         fields.append(PRDemande.FIELDNAME_IDTIERS).append(",");
 
-        fields.append(RFDossier.FIELDNAME_ID_DOSSIER);
+        fields.append(RFDossier.FIELDNAME_ID_DOSSIER).append(",");
+
+        fields.append(RFQdPrincipale.FIELDNAME_CS_GENRE_PC_ACCORDEE).append(",");
+        fields.append(RFQdPrincipale.FIELDNAME_CS_TYPE_BENEFICIAIRE);
 
         return fields.toString();
 
@@ -251,6 +256,28 @@ public class RFQdJointPeriodeValiditeJointDossierJointTiersJointDemandeManager e
             sqlWhere.append(RFQd.FIELDNAME_CS_ETAT_QD);
             sqlWhere.append(" = ");
             sqlWhere.append(this._dbWriteNumeric(statement.getTransaction(), forCsEtatQd));
+        }
+
+        if (!JadeStringUtil.isBlankOrZero(forCsGenrePc)) {
+
+            if (sqlWhere.length() != 0) {
+                sqlWhere.append(" AND ");
+            }
+
+            sqlWhere.append(RFQdPrincipale.FIELDNAME_CS_GENRE_PC_ACCORDEE);
+            sqlWhere.append(" = ");
+            sqlWhere.append(this._dbWriteNumeric(statement.getTransaction(), forCsGenrePc));
+        }
+
+        if (!JadeStringUtil.isBlankOrZero(forCsTypeBeneficiaireQd)) {
+
+            if (sqlWhere.length() != 0) {
+                sqlWhere.append(" AND ");
+            }
+
+            sqlWhere.append(RFQdPrincipale.FIELDNAME_CS_TYPE_BENEFICIAIRE);
+            sqlWhere.append(" = ");
+            sqlWhere.append(this._dbWriteNumeric(statement.getTransaction(), forCsTypeBeneficiaireQd));
         }
 
         if (!JadeStringUtil.isBlankOrZero(forNotCsEtatQd)) {
@@ -486,7 +513,7 @@ public class RFQdJointPeriodeValiditeJointDossierJointTiersJointDemandeManager e
     }
 
     public String getForCsTypePC() {
-        return forCsTypePC;
+        return forCsGenre;
     }
 
     public String getForDateDebutBetweenPeriode() {
@@ -550,7 +577,7 @@ public class RFQdJointPeriodeValiditeJointDossierJointTiersJointDemandeManager e
     }
 
     public void setForCsTypePC(String forCsTypePC) {
-        this.forCsTypePC = forCsTypePC;
+        forCsGenre = forCsTypePC;
     }
 
     public void setForDateDebutBetweenPeriode(String forDateDebutBetweenPeriode) {
