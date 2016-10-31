@@ -71,6 +71,9 @@
    <Alignment ss:Vertical="Bottom"/>
   </Style>
   <Style ss:ID="s74">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+  </Style>
+  <Style ss:ID="s75">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -80,7 +83,7 @@
    </Borders>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
   </Style>
-  <Style ss:ID="s76" ss:Parent="s63">
+  <Style ss:ID="s77" ss:Parent="s63">
    <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -91,7 +94,7 @@
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
    <Interior/>
   </Style>
-  <Style ss:ID="s77" ss:Parent="s63">
+  <Style ss:ID="s78" ss:Parent="s63">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -102,7 +105,7 @@
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
    <Interior/>
   </Style>
-  <Style ss:ID="s78">
+  <Style ss:ID="s79">
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -111,44 +114,45 @@
    </Borders>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
   </Style>
-  <Style ss:ID="s79">
+  <Style ss:ID="s80">
    <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
    <NumberFormat/>
   </Style>
-  <Style ss:ID="s81" ss:Parent="s62">
+  <Style ss:ID="s82" ss:Parent="s62">
    <Alignment ss:Horizontal="Left" ss:Vertical="Center" ss:WrapText="1"/>
    <Borders/>
    <Interior/>
   </Style>
-  <Style ss:ID="s82">
-   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
-   <Font ss:FontName="Arial" x:Family="Swiss"/>
-   <NumberFormat ss:Format="Standard"/>
-  </Style>
-  <Style ss:ID="s83">
+  <Style ss:ID="s84">
    <Alignment ss:Horizontal="Right" ss:Vertical="Bottom" ss:ShrinkToFit="1"/>
    <Font ss:FontName="Arial" x:Family="Swiss"/>
    <NumberFormat ss:Format="Standard"/>
   </Style>
-  <Style ss:ID="s84">
+  <Style ss:ID="s85">
    <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:ShrinkToFit="1"/>
    <NumberFormat ss:Format="#,##0"/>
   </Style>
-  <Style ss:ID="s85">
-   <Alignment ss:Horizontal="Left" ss:Vertical="Center" ss:ShrinkToFit="1"/>
-   <Font ss:FontName="Arial" x:Family="Swiss"/>
-   <NumberFormat ss:Format="#,##0"/>
-  </Style>
-  <Style ss:ID="s86">
+  <Style ss:ID="s87">
    <Borders/>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
    <Interior/>
   </Style>
-  <Style ss:ID="s87">
+  <Style ss:ID="s88">
    <NumberFormat ss:Format="Standard"/>
   </Style>
-  <Style ss:ID="s88">
+  <Style ss:ID="s89">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:ShrinkToFit="1"/>
+   <NumberFormat/>
+  </Style>
+  <Style ss:ID="s90">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center" ss:ShrinkToFit="1"/>
+   <Font ss:FontName="Arial" x:Family="Swiss"/>
+   <NumberFormat/>
+  </Style>
+  <Style ss:ID="s91">
    <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Arial" x:Family="Swiss"/>
+   <NumberFormat/>
   </Style>
  </Styles>
  <Names>
@@ -219,50 +223,50 @@
    <Row>
     <Cell><Data ss:Type="String">headerLabelNombreCasTraite</Data><NamedCell
       ss:Name="headerLabelNombreCasTraite"/></Cell>
-    <Cell ss:StyleID="s88"><NamedCell ss:Name="headerNombreCasTraite"/></Cell>
+    <Cell ss:StyleID="s74"><NamedCell ss:Name="headerNombreCasTraite"/></Cell>
    </Row>
    <Row>
     <Cell><Data ss:Type="String">headerBlank3</Data><NamedCell
       ss:Name="headerBlank3"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="25.5">
-    <Cell ss:StyleID="s74"><Data ss:Type="String">No d'affilié</Data><NamedCell
+    <Cell ss:StyleID="s75"><Data ss:Type="String">No d'affilié</Data><NamedCell
       ss:Name="headerColonneLabelNumeroAffilie"/></Cell>
-    <Cell ss:StyleID="s76"><Data ss:Type="String">Nom</Data><NamedCell
+    <Cell ss:StyleID="s77"><Data ss:Type="String">Nom</Data><NamedCell
       ss:Name="headerColonneLabelNomPrenom"/></Cell>
-    <Cell ss:StyleID="s76"><Data ss:Type="String">Localité</Data><NamedCell
+    <Cell ss:StyleID="s77"><Data ss:Type="String">Localité</Data><NamedCell
       ss:Name="headerColonneLabelLocalite"/></Cell>
-    <Cell ss:StyleID="s77"><Data ss:Type="String">Période</Data><NamedCell
+    <Cell ss:StyleID="s78"><Data ss:Type="String">Période</Data><NamedCell
       ss:Name="headerColonneLabelPeriode"/></Cell>
-    <Cell ss:StyleID="s77"><Data ss:Type="String">Type</Data><NamedCell
+    <Cell ss:StyleID="s78"><Data ss:Type="String">Type</Data><NamedCell
       ss:Name="headerColonneLabelType"/></Cell>
-    <Cell ss:StyleID="s74"><Data ss:Type="String">Saisie le</Data><NamedCell
+    <Cell ss:StyleID="s75"><Data ss:Type="String">Saisie le</Data><NamedCell
       ss:Name="headerColonneLabelSaisieLe"/></Cell>
-    <Cell ss:StyleID="s78"><Data ss:Type="String">Erreur</Data><NamedCell
+    <Cell ss:StyleID="s79"><Data ss:Type="String">Erreur</Data><NamedCell
       ss:Name="headerColonneLabelErreur"/></Cell>
     <Cell ss:StyleID="Default"/>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="15">
-    <Cell ss:StyleID="s79"><Data ss:Type="String">numeroAffilie</Data><NamedCell
+    <Cell ss:StyleID="s80"><Data ss:Type="String">numeroAffilie</Data><NamedCell
       ss:Name="numeroAffilie"/></Cell>
-    <Cell ss:StyleID="s81"><Data ss:Type="String">nomPrenom</Data><NamedCell
+    <Cell ss:StyleID="s82"><Data ss:Type="String">nomPrenom</Data><NamedCell
       ss:Name="nomPrenom"/></Cell>
-    <Cell ss:StyleID="s82"><Data ss:Type="String">localite</Data><NamedCell
+    <Cell ss:StyleID="s91"><Data ss:Type="String">localite</Data><NamedCell
       ss:Name="localite"/></Cell>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">periode</Data><NamedCell
+    <Cell ss:StyleID="s84"><Data ss:Type="String">periode</Data><NamedCell
       ss:Name="periode"/></Cell>
-    <Cell ss:StyleID="s84"><Data ss:Type="String">type</Data><NamedCell
+    <Cell ss:StyleID="s89"><Data ss:Type="String">type</Data><NamedCell
       ss:Name="type"/></Cell>
-    <Cell ss:StyleID="s84"><Data ss:Type="String">saisieLe</Data><NamedCell
+    <Cell ss:StyleID="s85"><Data ss:Type="String">saisieLe</Data><NamedCell
       ss:Name="saisieLe"/></Cell>
-    <Cell ss:StyleID="s85"><Data ss:Type="String">erreur</Data><NamedCell
+    <Cell ss:StyleID="s90"><Data ss:Type="String">erreur</Data><NamedCell
       ss:Name="erreur"/></Cell>
     <Cell ss:StyleID="Default"/>
    </Row>
    <Row>
-    <Cell ss:StyleID="s86"/>
-    <Cell ss:Index="5" ss:StyleID="s67"/>
     <Cell ss:StyleID="s87"/>
+    <Cell ss:Index="5" ss:StyleID="s67"/>
+    <Cell ss:StyleID="s88"/>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
