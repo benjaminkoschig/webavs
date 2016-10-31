@@ -453,7 +453,8 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
         CASectionAuxPoursuitesManager managerReqPoursuite = new CASectionAuxPoursuitesManager();
         managerReqPoursuite.setSession(getSession());
         managerReqPoursuite.setForIdSection(getIdSection());
-        managerReqPoursuite.setSoldeDifferentZero(true);
+        // POAVS-294
+//        managerReqPoursuite.setSoldeDifferentZero(true);
         managerReqPoursuite.find();
         CASectionAuxPoursuites sectionAuxPoursuite = (CASectionAuxPoursuites) managerReqPoursuite.getFirstEntity();
 
