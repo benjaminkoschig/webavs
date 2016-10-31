@@ -22,7 +22,7 @@ import java.util.List;
 import ch.globaz.draco.business.domaine.DeclarationSalaireType;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.businessimpl.services.pucs.DeclarationSalaireBuilder;
-import ch.globaz.orion.db.EBPucsFileEntity;
+import ch.globaz.orion.service.EBPucsFileService;
 import ch.globaz.orion.ws.service.AFMassesForAffilie;
 import ch.globaz.orion.ws.service.AppAffiliationService;
 
@@ -49,13 +49,10 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
 
     @Override
     public void retrieve() throws Exception {
-
         findTheNextToValidate();
-        EBPucsFileEntity ebPucsFileEntity = new EBPucsFileEntity();
-        ebPucsFileEntity.setIdEntity(id);
-        ebPucsFileEntity.retrieveWithFile();
+        // PucsFile pucsFile = EBPucsFileService.readWithFile(id, getSession());
 
-        decSal = DeclarationSalaireBuilder.build(ebPucsFileEntity.getInputStream());
+        decSal = DeclarationSalaireBuilder.build(EBPucsFileService.readInputStream(id, getSession()));
 
         // Recherche affiliation
         affiliation = AFAffiliationServices.getAffiliationParitaireByNumero(decSal.getNumeroAffilie(),

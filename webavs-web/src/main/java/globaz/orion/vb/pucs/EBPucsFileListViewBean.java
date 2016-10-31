@@ -15,13 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import ch.globaz.common.domaine.Date;
-import ch.globaz.common.domaine.Montant;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.db.EBPucsFileDefTable;
 import ch.globaz.orion.db.EBPucsFileEntity;
 import ch.globaz.orion.db.EBPucsFileManager;
+import ch.globaz.orion.service.EBPucsFileService;
 import ch.globaz.xmlns.eb.pucs.PucsEntrySummary;
 
 public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
@@ -66,28 +65,7 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
     private void perpareList() {
 
         List<EBPucsFileEntity> list = manager.toList();
-        pucsFilesFinal.clear();
-        for (EBPucsFileEntity entity : list) {
-            PucsFile pucsFile = new PucsFile();
-            pucsFile.setId(entity.getIdFileName());
-
-            pucsFile.setAfSeul(entity.isAfSeul());
-            pucsFile.setAnneeDeclaration(String.valueOf(entity.getAnneeDeclaration()));
-            pucsFile.setCurrentStatus(String.valueOf(entity.getStatut()));
-            pucsFile.setDateDeReception(new Date(entity.getDateReception()).getSwissValue());
-            pucsFile.setDuplicate(entity.isDuplicate());
-            pucsFile.setHandlingUser(entity.getHandlingUser());
-            pucsFile.setIsAffiliationExistante(entity.isAffiliationExistante());
-            pucsFile.setNbSalaires(String.valueOf(entity.getNbSalaire()));
-            pucsFile.setNomAffilie(entity.getNomAffilie());
-            pucsFile.setNumeroAffilie(entity.getNumeroAffilie());
-            pucsFile.setProvenance(DeclarationSalaireProvenance.fromValue(entity.getProvenance()));
-            pucsFile.setSalaireInferieurLimite(entity.getSalaireInferieurLimite());
-            pucsFile.setSizeFileInKo(entity.getSizeFileInKo());
-            pucsFile.setTotalControle(new Montant(entity.getTotalControle()).toStringFormat());
-            pucsFile.setIdDb(entity.getIdEntity());
-            pucsFilesFinal.add(pucsFile);
-        }
+        pucsFilesFinal = EBPucsFileService.entitiesToPucsFile(list);
 
         mapAffiliation = findAffiliations(list);
         mapNumAffiliationParticularite = resolveParticularites(mapAffiliation);

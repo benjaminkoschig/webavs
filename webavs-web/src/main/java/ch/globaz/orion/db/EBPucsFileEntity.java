@@ -1,6 +1,7 @@
 package ch.globaz.orion.db;
 
 import globaz.globall.db.BTransaction;
+import globaz.jade.exception.JadePersistenceException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -34,7 +35,6 @@ public class EBPucsFileEntity extends JadeEntity {
     private Integer niveauSecurite;
     private Boolean salaireInferieurLimite;
     private File file;
-    private InputStream inputStream;
 
     @Override
     protected void writeProperties() {
@@ -81,8 +81,7 @@ public class EBPucsFileEntity extends JadeEntity {
 
     public void retrieveWithFile() throws Exception {
         this.retrieve();
-        Object object = BlobManager.readBlobWithoutContext(CONST_BLOB + id);
-        inputStream = new ByteArrayInputStream((byte[]) object);
+        inputStream = readInputStream();
         // FileInputStream fileInputStream = new FileInputStream(file);
         // File f = new File("D:\\Temp\\ebu\\" + id + ".xml");
         // FileOutputStream fileOutputStream = new FileOutputStream(f);
@@ -93,6 +92,16 @@ public class EBPucsFileEntity extends JadeEntity {
         // outputStream = out;
         // Object object = (InputStream);
         // file = (FileInputStream) BlobMFileWithoutContext(CONST_BLOB + id);
+    }
+
+    public InputStream readInputStream() {
+        Object object;
+        try {
+            object = BlobManager.readBlobWithoutContext(CONST_BLOB + id);
+        } catch (JadePersistenceException e) {
+            throw new RuntimeException(e);
+        }
+        return new ByteArrayInputStream((byte[]) object);
     }
 
     @Override

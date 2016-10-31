@@ -20,10 +20,7 @@ import java.util.TreeMap;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.business.models.pucs.PucsFile;
-import ch.globaz.orion.businessimpl.services.dan.DanServiceImpl;
 import ch.globaz.orion.businessimpl.services.pucs.PucsServiceImpl;
-import ch.globaz.xmlns.eb.dan.Dan;
-import ch.globaz.xmlns.eb.pucs.PucsEntrySummary;
 import com.google.gson.Gson;
 
 /**
@@ -69,15 +66,16 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
         Iterator<String> it = idPucsEntry.iterator();
         while (it.hasNext()) {
             PucsFile pucsFile = EBDanUtils.getDataFromPucsData(it.next());
-            if (pucsFile.getProvenance().isPucs()) {
-                PucsEntrySummary pucs = PucsServiceImpl.getPucsEntry(pucsFile.getId(), getSession());
-                pucsList.add(EBDanUtils.mapPucsfile(pucs));
-            } else if (pucsFile.getProvenance().isDan()) {
-                Dan dan = DanServiceImpl.getDanFile(pucsFile.getId(), getSession());
-                pucsList.add(EBDanUtils.mapDanfile(dan));
-            } else if (pucsFile.getProvenance().isSwissDec()) {
-                pucsList.add(pucsFile);
-            }
+
+            // if (pucsFile.getProvenance().isPucs()) {
+            // PucsEntrySummary pucs = PucsServiceImpl.getPucsEntry(pucsFile.getId(), getSession());
+            // pucsList.add(EBDanUtils.mapPucsfile(pucs));
+            // } else if (pucsFile.getProvenance().isDan()) {
+            // Dan dan = DanServiceImpl.getDanFile(pucsFile.getId(), getSession());
+            // pucsList.add(EBDanUtils.mapDanfile(dan));
+            // } else if (pucsFile.getProvenance().isSwissDec()) {
+            // pucsList.add(pucsFile);
+            // }
         }
         isMiseEnGedDefault = EBProperties.MISE_EN_GED_DEFAULT.getBooleanValue();
         isValidationDefault = EBProperties.VALIDATION_DEFAULT.getBooleanValue();
