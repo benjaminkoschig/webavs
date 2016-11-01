@@ -239,24 +239,6 @@ public class EBDanUtils {
     }
 
     /**
-     * Permet de décomposer la chaine de caractere qui contient toutes les infos d'un fichier pucs
-     * 
-     * @param pucsData
-     *            La chaine de caractere qui contient les infos d'un fichier pucs
-     * @return
-     */
-    public static PucsFile getDataFromPucsData(String json) {
-
-        // PucsFile pucsFile = new Gson().fromJson(json, PucsFile.class);
-        return new Gson().fromJson(json, PucsFile.class);
-        // try {
-        // return (PucsFile) JavaObjectSerializer.convertHexaToObject(json);
-        // } catch (Exception e) {
-        // throw new RuntimeException(e);
-        // }
-    }
-
-    /**
      * Permet de savoir si une personne est dans son année de retraite
      * 
      * @param str_annee

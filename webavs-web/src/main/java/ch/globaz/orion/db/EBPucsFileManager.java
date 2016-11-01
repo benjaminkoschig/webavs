@@ -2,6 +2,7 @@ package ch.globaz.orion.db;
 
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
+import java.util.List;
 import ch.globaz.common.jadedb.JadeManager;
 import ch.globaz.common.sql.SQLWriter;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
@@ -14,8 +15,8 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
     private String likeAffilie;
     private String forStatut;
     private DeclarationSalaireProvenance forProvenance = DeclarationSalaireProvenance.UNDEFINDED;
-
     private String fullText;
+    private List<String> inIds;
 
     @Override
     protected void createWhere(SQLWriter sqlWhere) {
@@ -27,6 +28,7 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
         sqlWhere.and(EBPucsFileDefTable.NUMERO_AFFILIE).like(likeAffilie);
         sqlWhere.and(EBPucsFileDefTable.STATUS).in(forStatut);
         sqlWhere.and(EBPucsFileDefTable.PROVENANCE).equal(provenance);
+        sqlWhere.and(EBPucsFileDefTable.ID).in(inIds);
     }
 
     @Override
@@ -81,5 +83,9 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
 
     public void setFullText(String fullText) {
         this.fullText = fullText;
+    }
+
+    public void setInIds(List<String> ids) {
+        inIds = ids;
     }
 }

@@ -204,6 +204,10 @@ public class PucsFile implements Serializable {
         return currentStatus.isEditable();
     }
 
+    public boolean isATraiter() {
+        return currentStatus.isATraiter();
+    }
+
     @Override
     public String toString() {
         return "PucsFile [anneeDeclaration=" + anneeDeclaration + ", currentStatus=" + currentStatus

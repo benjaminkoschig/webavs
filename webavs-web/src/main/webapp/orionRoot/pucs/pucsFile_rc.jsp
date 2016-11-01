@@ -49,7 +49,7 @@ $(document).ready(function(){
 		if ($('#selectionner_to_handle:checked').val() != null) {
 			$entries.each(function() {
 				var $this = $(this);
-				if($this.hasClass('swissdec')) {
+				if($this.hasClass('atraiter')) {
 					$this.attr('checked', true);
 				}
 			})
@@ -59,36 +59,26 @@ $(document).ready(function(){
 	});
 	
 	$('#simulation').click(function(){
-		removeInputs();
+		var ids = getSelectedIds('atraiter');
 		$("input[name*='userAction']").attr('value', 'orion.pucs.pucsImport.afficher');
+		$("<input type='hidden' name='selectedIds' value='"+ids.join(',')+"'>").appendTo('form');
 		$("<input type='hidden' name='mode' value='simulation'>").appendTo('form');
-		initializeForm();
 		$(document.forms[0]).attr('target','');
 		document.forms[0].submit();
 	});
 	$('#maj').click(function(){
-		removeInputs();
+		var ids = getSelectedIds();
 		$("input[name*='userAction']").attr('value', 'orion.pucs.pucsImport.afficher');
 		$("<input type='hidden' name='mode' value='miseajour'>").appendTo('form');
-		initializeForm();
+		$("<input type='hidden' name='selectedIds' value='"+ids.join(',')+"'>").appendTo('form');
 		$(document.forms[0]).attr('target','');
 		document.forms[0].submit();
 	});
 	$('#ctrlSwissDec').click(function() {
-		var ids = [];
-		var checkboxes = $("input[name*='idPucsEntryToHandle']:checked", window.frames[0].document);
-		checkboxes.each(function() {
-			var $this = $(this);
-			if($this.hasClass('swissdec')) {
-				ids.push($(this).val());
-			}
-		});
-		
+		var ids = getSelectedIds('swissdec');
 		if(ids.length>0) {
-			removeInputs();
 			$("input[name*='userAction']").attr('value', 'orion.swissdec.pucsValidationDetail.afficher');
 			$("<input type='hidden' name='selectedIds' value='"+ids.join(',')+"'>").appendTo('form');
-			initializeForm();
 			$(document.forms[0]).attr('target','');
 			document.forms[0].submit();
 		} else {
@@ -97,17 +87,16 @@ $(document).ready(function(){
 	});
 });
 
-function initializeForm(){
-	$('input[type=checkbox][checked]', window.frames[0].document).each(
-		    function() { 
-		    	$("<input type='hidden' name='idPucsEntry' value='"+$(this).attr('value')+"'>").appendTo('form');
-		    } 
-	);
-}
-function removeInputs(){
-	$("input[name*='idPucsEntry']").each(function(){
-		$(this).remove();
+function getSelectedIds(type) {
+	var ids = [];
+	var checkboxes = $("input[name*='idPucsEntryToHandle']:checked", window.frames[0].document);
+	checkboxes.each(function() {
+		var $this = $(this);
+		if(!type || (type.length>0 && $this.hasClass(type))) {
+			ids.push($(this).val());
+		}
 	});
+	return ids;
 }
 </script>
 

@@ -99,7 +99,7 @@ $(function () {
 			
 			<td class="pucsEntryHandling" style="text-align: center">
 				<%if(!line.hasLock()) {%>
-						<input type="checkbox" class="pucsEntryHandling <% if(line.getPucsFile().isSwissDec()) { out.print("swissdec");} %>" name="idPucsEntryToHandle" value='<%= line.getPucsFile().getIdDb()%>'/>
+						<input type="checkbox" class="pucsEntryHandling <% if(line.getPucsFile().isSwissDec()) { out.print(" swissdec ");} %> <%if(line.getPucsFile().isATraiter()) { out.print(" atraiter "); } %>" name="idPucsEntryToHandle" value='<%= line.getPucsFile().getIdDb()%>'/>
 				<%} else {%>
 					<span><i title="<%=line.getMessageLock() %>" class="icon-lock" ></i></span> 
 				<%}%>

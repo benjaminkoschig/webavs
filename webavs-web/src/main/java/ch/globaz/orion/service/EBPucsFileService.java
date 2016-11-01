@@ -11,6 +11,7 @@ import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.domaine.pucs.EtatPucsFile;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.db.EBPucsFileEntity;
+import ch.globaz.orion.db.EBPucsFileManager;
 
 public class EBPucsFileService {
     public static PucsFile read(String id, BSession session) {
@@ -23,6 +24,21 @@ public class EBPucsFileService {
             throw new RuntimeException(e);
         }
         return convert(entity);
+    }
+
+    public static List<PucsFile> readByIds(List<String> ids, BSession session) {
+        if (ids == null || ids.isEmpty()) {
+            throw new RuntimeException("La liste d'ids est vide");
+        }
+        EBPucsFileManager manager = new EBPucsFileManager();
+        manager.setSession(session);
+        manager.setInIds(ids);
+        List<EBPucsFileEntity> entities = manager.search();
+        List<PucsFile> pucsFiles = new ArrayList<PucsFile>();
+        for (EBPucsFileEntity ebPucsFileEntity : entities) {
+            pucsFiles.add(convert(ebPucsFileEntity));
+        }
+        return pucsFiles;
     }
 
     public static PucsFile readWithFile(String id, BSession session) {

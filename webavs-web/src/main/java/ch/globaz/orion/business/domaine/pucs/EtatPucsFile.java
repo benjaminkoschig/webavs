@@ -43,6 +43,10 @@ public enum EtatPucsFile implements CodeSystemEnum<EtatPucsFile> {
         return TRAITER.equals(this);
     }
 
+    public boolean isATraiter() {
+        return A_TRAITER.equals(this);
+    }
+
     public boolean isEditable() {
         return !isComptabilise() && !isTraite();
     }

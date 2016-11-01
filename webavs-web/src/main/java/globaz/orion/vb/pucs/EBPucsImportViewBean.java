@@ -3,24 +3,28 @@ package globaz.orion.vb.pucs;
 import globaz.framework.bean.FWAJAXViewBeanInterface;
 import globaz.framework.bean.FWListViewBeanInterface;
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.ged.client.JadeGedFacade;
+import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.services.AFAffiliationServices;
 import globaz.orion.utils.EBDanUtils;
 import globaz.orion.vb.EBAbstractViewBean;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.businessimpl.services.pucs.PucsServiceImpl;
+import ch.globaz.orion.service.EBPucsFileService;
+import com.google.common.base.Function;
+import com.google.common.collect.Multimaps;
 import com.google.gson.Gson;
 
 /**
@@ -31,15 +35,18 @@ import com.google.gson.Gson;
 public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXViewBeanInterface {
 
     private static final long serialVersionUID = 1L;
-    private Collection<String> idPucsEntry = new ArrayList<String>();
     private Collection<String> idMiseEnGed = new ArrayList<String>();
     private Collection<String> idValidationDeLaDs = new ArrayList<String>();
     private String mode = "";
-    private List<PucsFile> pucsList = new ArrayList<PucsFile>();
     private Map<String, List<PucsFile>> mapPucsByNumAffilie = new TreeMap<String, List<PucsFile>>();
     private Boolean isMiseEnGedDefault = false;
     private Boolean isValidationDefault = false;
     private String fusionJson = "";
+    private String selectedIds;
+    private List<String> listOfSelectedIds = new ArrayList<String>();
+    private List<PucsFile> pucsFiles = new ArrayList<PucsFile>();
+
+    private Map<String, AFAffiliation> affiliations = new HashMap<String, AFAffiliation>();
 
     public Map<String, List<String>> getPucsToMerge() {
         Gson gson = new Gson();
@@ -58,25 +65,41 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
         if (JadeStringUtil.isBlankOrZero(numAffilie)) {
             return true;
         }
-        return AFAffiliationServices.hasRightAccesSecurity(numAffilie);
+        AFAffiliation affiliation = affiliations.get(numAffilie);
+        if (affiliation != null) {
+            return AFAffiliationServices.hasRightAccesSecurity(affiliation, getSession());
+        } else {
+            return true;
+        }
+    }
+
+    private Map<String, AFAffiliation> findAffiliations(List<PucsFile> list) {
+        List<String> numAffiliations = new ArrayList<String>();
+
+        for (PucsFile pucsFile : list) {
+            numAffiliations.add(pucsFile.getNumeroAffilie());
+        }
+
+        List<AFAffiliation> affiliations = AFAffiliationServices.searchAffiliationByNumeros(numAffiliations,
+                BSessionUtil.getSessionFromThreadContext());
+
+        Map<String, AFAffiliation> map = new HashMap<String, AFAffiliation>();
+
+        for (AFAffiliation afAffiliation : affiliations) {
+            map.put(afAffiliation.getId(), afAffiliation);
+        }
+        return map;
     }
 
     @Override
     public void retrieve() throws Exception {
-        Iterator<String> it = idPucsEntry.iterator();
-        while (it.hasNext()) {
-            PucsFile pucsFile = EBDanUtils.getDataFromPucsData(it.next());
-
-            // if (pucsFile.getProvenance().isPucs()) {
-            // PucsEntrySummary pucs = PucsServiceImpl.getPucsEntry(pucsFile.getId(), getSession());
-            // pucsList.add(EBDanUtils.mapPucsfile(pucs));
-            // } else if (pucsFile.getProvenance().isDan()) {
-            // Dan dan = DanServiceImpl.getDanFile(pucsFile.getId(), getSession());
-            // pucsList.add(EBDanUtils.mapDanfile(dan));
-            // } else if (pucsFile.getProvenance().isSwissDec()) {
-            // pucsList.add(pucsFile);
-            // }
+        if (!JadeStringUtil.isEmpty(selectedIds)) {
+            listOfSelectedIds = Arrays.asList(selectedIds.split(","));
         }
+        if (!listOfSelectedIds.isEmpty()) {
+            pucsFiles = EBPucsFileService.readByIds(listOfSelectedIds, getSession());
+        }
+        affiliations = findAffiliations(pucsFiles);
         isMiseEnGedDefault = EBProperties.MISE_EN_GED_DEFAULT.getBooleanValue();
         isValidationDefault = EBProperties.VALIDATION_DEFAULT.getBooleanValue();
         JadeGedFacade.isInstalled();
@@ -127,56 +150,6 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
         return isValidationDefault;
     }
 
-    public static <V extends List<E>, E> Map<String, List<E>> sortByValues(final Map<String, V> map) {
-        Comparator<String> valueComparator = new Comparator<String>() {
-            @Override
-            public int compare(String k1, String k2) {
-                int compare = map.get(k2).size() - (map.get(k1)).size();
-                // Attention il ne faut pas retourner 0 car si on retourne 0 cela vas écraser l'ancien noeud. On vas
-                // donc perdre des infos dans notre map
-                if (compare == 0) {
-                    compare = k1.compareTo(k2);
-                }
-
-                if (compare == 0) {
-                    compare = -1;
-                }
-                return compare;
-            }
-        };
-        Map<String, List<E>> sortedByValues = new TreeMap<String, List<E>>(valueComparator);
-        for (Entry<String, V> entry : map.entrySet()) {
-            sortedByValues.put(entry.getKey(), entry.getValue());
-        }
-
-        return sortedByValues;
-    }
-
-    public Map<String, List<PucsFile>> getMapPucsByNumAffilie() {
-        if (mapPucsByNumAffilie.isEmpty()) {
-            if (pucsList.isEmpty()) {
-                for (String pucs : idPucsEntry) {
-                    pucsList.add(EBDanUtils.getDataFromPucsData(pucs));
-                }
-            }
-
-            for (PucsFile pucs : pucsList) {
-                String key = pucs.getNumeroAffilie() + "_" + pucs.getAnneeDeclaration() + "_" + pucs.getProvenance()
-                        + "_" + pucs.isForTest() + "_" + pucs.isAfSeul();
-                if (!mapPucsByNumAffilie.containsKey(key)) {
-                    mapPucsByNumAffilie.put(key, new ArrayList<PucsFile>());
-                }
-                mapPucsByNumAffilie.get(key).add(pucs);
-            }
-        }
-
-        return sortByValues(mapPucsByNumAffilie);
-    }
-
-    public Collection<String> getIdPucsEntry() {
-        return idPucsEntry;
-    }
-
     public String getMode() {
         return mode;
     }
@@ -218,4 +191,21 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
         return PucsServiceImpl.NUMERO_INFORM_PUCS_LISIBLE;
     }
 
+    public String getSelectedIds() {
+        return selectedIds;
+    }
+
+    public void setSelectedIds(String selectedIds) {
+        this.selectedIds = selectedIds;
+    }
+
+    public Map<String, Collection<PucsFile>> getMapPucsByNumAffilie() {
+        return Multimaps.index(pucsFiles, new Function<PucsFile, String>() {
+            @Override
+            public String apply(PucsFile pucs) {
+                return pucs.getNumeroAffilie() + "_" + pucs.getAnneeDeclaration() + "_" + pucs.getProvenance() + "_"
+                        + pucs.isForTest() + "_" + pucs.isAfSeul();
+            }
+        }).asMap();
+    }
 }

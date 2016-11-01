@@ -190,7 +190,7 @@ $(function() {
 				<tbody>
 					<c:forEach var="pucsEntry" items="${viewBean.mapPucsByNumAffilie}">
 						<c:forEach var="pucs" varStatus="status" items="${pucsEntry.value}">
-							<tr id="${pucs.id}" class="${pucsEntry.key}"> 
+							<tr id="${pucs.idDb}" class="${pucsEntry.key}"> 
 								<c:if test="${status.first && pucsEntry.value.size() > 1}">
 									<td class="fusions centre" rowspan="${pucsEntry.value.size()}">
 										<c:if test="${viewBean.hasRightAccesSecurity(pucs.numeroAffilie)}">
@@ -217,13 +217,13 @@ $(function() {
 								<td class="centre">${pucs.nbSalaires}</td> 
 								<td class="centre">
 									<c:if test="${viewBean.hasRightAccesSecurity(pucs.numeroAffilie)}">
-										<input class="isMiseEnGed" name="idMiseEnGed" type="checkbox" value="${pucs.id}" <c:if test="${viewBean.isMiseEnGedDefault}">checked="checked"</c:if>>
+										<input class="isMiseEnGed" name="idMiseEnGed" type="checkbox" value="${pucs.idDb}" <c:if test="${viewBean.isMiseEnGedDefault}">checked="checked"</c:if>>
 									</c:if>
 								</td> 
 								<td class="centre">
 									<c:if test="${viewBean.hasRightAccesSecurity(pucs.numeroAffilie)}">
 										<c:if test="${!pucs.afSeul}">
-											<input class="isValidationDeLaDs" name="idValidationDeLaDs" type="checkbox" value="${pucs.id}" <c:if test="${viewBean.isValidationDefault}">checked="checked"</c:if>>
+											<input class="isValidationDeLaDs" name="idValidationDeLaDs" type="checkbox" value="${pucs.idDb}" <c:if test="${viewBean.isValidationDefault}">checked="checked"</c:if>>
 										</c:if>
 										<input class="idPucsEntry" type="hidden" name="idPucsEntry" value='${viewBean.serialize(pucs)}'/>
 									</c:if>
@@ -238,14 +238,14 @@ $(function() {
 			
 								 <c:if test="${viewBean.hasRightAccesSecurity(pucs.numeroAffilie)}">
 										<a data-g-download="docType:pdf,
-													parametres:¦${pucs.id},${pucs.provenance},<%=EtatSwissDecPucsFile.A_TRAITER%>¦,
+													parametres:¦${pucs.idDb},${pucs.provenance},<%=EtatSwissDecPucsFile.A_TRAITER%>¦,
 								                    serviceClassName:ch.globaz.orion.business.services.pucs.PucsService,
 								                    displayOnlyImage:true,
 								                    serviceMethodName:pucFileLisible,
 								                    docName:${viewBean.numeroInforom}_${pucs.numeroAffilie}_${pucs.anneeDeclaration}_declarationSalaire"
 										/>
 										<a data-g-download="docType:xls,
-													parametres:¦${pucs.id},${pucs.provenance},<%=EtatSwissDecPucsFile.A_TRAITER%>¦,
+													parametres:¦${pucs.idDb},${pucs.provenance},<%=EtatSwissDecPucsFile.A_TRAITER%>¦,
 								                    serviceClassName:ch.globaz.orion.business.services.pucs.PucsService,
 								                    displayOnlyImage:true,
 								                    serviceMethodName:pucFileLisibleXls,
@@ -253,7 +253,7 @@ $(function() {
 								                    byPassExtentionXml: true"
 										/>
 										<a data-g-download="docType:xml,
-													parametres:¦${pucs.id},${pucs.provenance},<%=EtatSwissDecPucsFile.A_TRAITER%>¦,
+													parametres:¦${pucs.idDb},${pucs.provenance},<%=EtatSwissDecPucsFile.A_TRAITER%>¦,
 								                    serviceClassName:ch.globaz.orion.business.services.pucs.PucsService,
 								                    displayOnlyImage:true,
 								                    serviceMethodName:pucFileLisibleXml,
