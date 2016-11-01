@@ -2,6 +2,7 @@ package ch.globaz.orion.db;
 
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
+import globaz.jade.client.util.JadeStringUtil;
 import java.util.List;
 import ch.globaz.common.jadedb.JadeManager;
 import ch.globaz.common.sql.SQLWriter;
@@ -29,6 +30,10 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
         sqlWhere.and(EBPucsFileDefTable.STATUS).in(forStatut);
         sqlWhere.and(EBPucsFileDefTable.PROVENANCE).equal(provenance);
         sqlWhere.and(EBPucsFileDefTable.ID).in(inIds);
+        if (fullText != null) {
+            sqlWhere.and(EBPucsFileDefTable.SEARCH_STRING).like(
+                    JadeStringUtil.convertSpecialChars(fullText).toUpperCase());
+        }
     }
 
     @Override

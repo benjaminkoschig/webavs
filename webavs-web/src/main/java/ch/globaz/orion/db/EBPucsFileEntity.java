@@ -38,6 +38,7 @@ public class EBPucsFileEntity extends JadeEntity {
     private Integer niveauSecurite;
     private Boolean salaireInferieurLimite;
     private File file;
+    private String searchString;
 
     @Override
     protected void writeProperties() {
@@ -58,6 +59,7 @@ public class EBPucsFileEntity extends JadeEntity {
         write(EBPucsFileDefTable.DATE_RECEPTION, dateReception);
         write(EBPucsFileDefTable.DUPLICATE, duplicate);
         write(EBPucsFileDefTable.SAL_INF_LIMIT, salaireInferieurLimite);
+        write(EBPucsFileDefTable.SEARCH_STRING, searchString);
     }
 
     @Override
@@ -80,6 +82,7 @@ public class EBPucsFileEntity extends JadeEntity {
         dateReception = read(EBPucsFileDefTable.DATE_RECEPTION);
         duplicate = read(EBPucsFileDefTable.DUPLICATE);
         salaireInferieurLimite = read(EBPucsFileDefTable.SAL_INF_LIMIT);
+        searchString = readString(EBPucsFileDefTable.SEARCH_STRING);
     }
 
     public File retriveFile() {
@@ -277,7 +280,16 @@ public class EBPucsFileEntity extends JadeEntity {
     public String getIdAffiliation() {
         return idAffiliation;
     }
+
     public void setIdAffiliation(String idAffiliation) {
         this.idAffiliation = idAffiliation;
+    }
+
+    public String getSearchString() {
+        return searchString;
+    }
+
+    public void setSearchString(String searchString) {
+        this.searchString = searchString;
     }
 }

@@ -1,6 +1,7 @@
 package globaz.orion.process.importpucs;
 
 import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.db.affiliation.AFAffiliation;
 import java.io.File;
 import java.math.BigDecimal;
@@ -97,8 +98,21 @@ public class PucsItem extends ProcessItem {
         entity.setSizeFileInKo(pucsFile.getSizeFileInKo());
         entity.setTotalControle(new Montant(pucsFile.getTotalControle()).getBigDecimalValue());
         entity.setIdFileName(pucsFile.getId());
+        entity.setSearchString(createSearchString(pucsFile));
         PucsServiceImpl.userHasRight(affiliation, session);
         entity.add();
+    }
+
+    static String createSearchString(PucsFile pucsFile) {
+        String concatenedString = fromNullable(pucsFile.getNumeroAffilie())
+                + fromNullable(pucsFile.getDateDeReception()) + fromNullable(pucsFile.getAnneeDeclaration())
+                + fromNullable(pucsFile.getId()) + fromNullable(pucsFile.getNomAffilie())
+                + fromNullable(pucsFile.getTotalControle());
+        return JadeStringUtil.convertSpecialChars(concatenedString).toUpperCase();
+    }
+
+    static String fromNullable(String str) {
+        return str == null ? "" : str;
     }
 
     @Override
