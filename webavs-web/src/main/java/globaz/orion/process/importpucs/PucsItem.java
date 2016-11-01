@@ -18,10 +18,10 @@ import com.google.common.base.Joiner;
 
 public class PucsItem extends ProcessItem {
 
-    private final PucsFile pucsFile;
-    private final List<AFAffiliation> affiliations;
-    private final BSession session;
-    private final String idJob;
+    protected final PucsFile pucsFile;
+    protected final List<AFAffiliation> affiliations;
+    protected final BSession session;
+    protected final String idJob;
 
     public PucsItem(PucsFile pucsFile, List<AFAffiliation> affiliations, BSession session, String idJob) {
         this.pucsFile = pucsFile;
@@ -42,7 +42,7 @@ public class PucsItem extends ProcessItem {
         return null;
     }
 
-    private Integer resolveCodeSecuriteMax(AFAffiliation affiliation, File file) {
+    private static Integer resolveCodeSecuriteMax(AFAffiliation affiliation, File file, BSession session) {
         String codeSecurity = affiliation.getAccesSecurite();
         // On utilise la dernier numéro du code pour avoir le niveau
         Integer codeSecurites = Integer.parseInt(codeSecurity.substring(codeSecurity.length() - 1));
@@ -66,10 +66,16 @@ public class PucsItem extends ProcessItem {
         return codeSecurites;
     }
 
-    protected void save(PucsFile pucsFile) throws Exception {
-        Integer codeSecurite = resolveCodeSecuriteMax(affiliations.get(0), pucsFile.getFile());
+    protected static void save(PucsFile pucsFile, AFAffiliation affiliation, String idJob, BSession session)
+            throws Exception {
+        Integer codeSecurite = resolveCodeSecuriteMax(affiliation, pucsFile.getFile(), session);
         EBPucsFileEntity entity = new EBPucsFileEntity();
-
+        if (affiliation == null) {
+            // entity.setAffiliationExistante(false));
+        } else {
+            // entity.setAffiliationExistante(true);
+            entity.setIdAffiliation(affiliation.getAffiliationId());
+        }
         entity.setSession(session);
         entity.setIdJob(idJob);
         entity.setNiveauSecurite(codeSecurite);
@@ -82,7 +88,7 @@ public class PucsItem extends ProcessItem {
         entity.setDateReception(new Date(pucsFile.getDateDeReception()).getDate());
         entity.setDuplicate(pucsFile.isDuplicate());
         entity.setHandlingUser(pucsFile.getHandlingUser());
-        entity.setAffiliationExistante(pucsFile.isAffiliationExistante());
+        // entity.setAffiliationExistante(pucsFile.isAffiliationExistante());
         entity.setNbSalaire(Integer.valueOf(pucsFile.getNbSalaires()));
         entity.setNomAffilie(pucsFile.getNomAffilie());
         entity.setNumeroAffilie(pucsFile.getNumeroAffilie());
@@ -91,17 +97,18 @@ public class PucsItem extends ProcessItem {
         entity.setSizeFileInKo(pucsFile.getSizeFileInKo());
         entity.setTotalControle(new Montant(pucsFile.getTotalControle()).getBigDecimalValue());
         entity.setIdFileName(pucsFile.getId());
-        PucsServiceImpl.userHasRight(affiliations.get(0), session);
+        PucsServiceImpl.userHasRight(affiliation, session);
         entity.add();
     }
 
     @Override
     public void treat() throws Exception {
+        AFAffiliation affiliation = null;
         if (pucsFile == null) {
             this.addErrors("PROCESS_IMPORT_PUCSINDB_PUCFILE_NULL");
         } else {
             if (affiliations == null || affiliations.isEmpty()) {
-                this.addErrors("PROCESS_IMPORT_PUCSINDB_AFFILIATION_NOT_FOUND");
+                // this.addErrors("PROCESS_IMPORT_PUCSINDB_AFFILIATION_NOT_FOUND");
             } else if (affiliations.size() > 1) {
                 HashSet<String> ids = new HashSet<String>();
                 for (AFAffiliation aff : affiliations) {
@@ -109,10 +116,12 @@ public class PucsItem extends ProcessItem {
                 }
                 this.addErrors("PROCESS_IMPORT_PUCSINDB_AFFILIATION_TO_MANY", pucsFile.getNumeroAffilie(),
                         Joiner.on(";").join(ids));
+            } else {
+                affiliation = affiliations.get(0);
             }
         }
         if (!hasError()) {
-            save(pucsFile);
+            save(pucsFile, affiliation, idJob, session);
         }
     }
 }

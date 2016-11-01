@@ -2,11 +2,13 @@ package globaz.orion.vb.pucs;
 
 import globaz.globall.db.BIPersistentObject;
 import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliation;
 import globaz.naos.services.AFAffiliationServices;
 import globaz.naos.translation.CodeSystem;
+import globaz.orion.process.importpucs.EBImportSwissDec;
 import globaz.orion.vb.EBAbstractListViewBeanPagination;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import ch.globaz.common.process.byitem.ProcessItemsFactory;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.db.EBPucsFileDefTable;
@@ -70,7 +73,7 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
         mapAffiliation = findAffiliations(list);
         mapNumAffiliationParticularite = resolveParticularites(mapAffiliation);
 
-        // ProcessItemsFactory.newInstance().session((BSession) getISession()).start(new EBImportSwissDec()).build();
+        ProcessItemsFactory.newInstance().session((BSession) getISession()).start(new EBImportSwissDec()).build();
         sortByFusionable();
         // ProcessItemsFactory.newInstance().session((BSession) getISession()).start(new EBImportPucsDan()).build();
     }

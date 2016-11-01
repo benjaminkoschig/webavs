@@ -25,6 +25,7 @@ import ch.globaz.orion.business.exceptions.OrionPucsException;
 import ch.globaz.orion.business.services.pucs.PucsService;
 import ch.globaz.orion.businessimpl.services.ServicesProviders;
 import ch.globaz.orion.businessimpl.services.dan.DanServiceImpl;
+import ch.globaz.orion.service.EBPucsFileService;
 import ch.globaz.orion.ws.service.UtilsService;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
 import ch.globaz.simpleoutputlist.converter.Translater;
@@ -143,7 +144,13 @@ public class PucsServiceImpl implements PucsService {
     @Override
     public String pucFileLisible(String id, String provenance, String etatSwissDecPucsFile) {
         return pucFileLisiblePdf(id, DeclarationSalaireProvenance.valueOf(provenance),
-                EtatSwissDecPucsFile.valueOf(etatSwissDecPucsFile), BSessionUtil.getSessionFromThreadContext());
+                BSessionUtil.getSessionFromThreadContext());
+    }
+
+    @Override
+    public String pucFileLisibleXml(String id, String provenance, String etatSwissDecPucsFile) {
+        File f = EBPucsFileService.retriveFile(id, BSessionUtil.getSessionFromThreadContext());
+        return JadeFilenameUtil.normalizePathComponents(f.getAbsolutePath());
     }
 
     @Override
@@ -152,25 +159,16 @@ public class PucsServiceImpl implements PucsService {
         Locale locale = buildLocale(session);
 
         SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance().local(locale).asXls();
-
-        File file = out(id, DeclarationSalaireProvenance.valueOf(provenance),
-                EtatSwissDecPucsFile.valueOf(etatSwissDecPucsFile), builder, session);
+        ElementsDomParser parser = new ElementsDomParser(EBPucsFileService.readInputStream(id, session));
+        File file = out(DeclarationSalaireProvenance.valueOf(provenance), builder, parser, session);
         return JadeFilenameUtil.normalizePathComponents(file.getAbsolutePath());
     }
 
-    @Override
-    public String pucFileLisibleXml(String id, String provenance, String etatSwissDecPucsFile) {
-        String pathFile = retrieveFile(id, DeclarationSalaireProvenance.valueOf(provenance),
-                EtatSwissDecPucsFile.valueOf(etatSwissDecPucsFile));
-        return JadeFilenameUtil.normalizePathComponents(pathFile);
-    }
-
-    public static String pucFileLisiblePdf(String id, DeclarationSalaireProvenance provenance,
-            EtatSwissDecPucsFile etatSwissDecPucsFile, BSession session) {
+    public static String pucFileLisiblePdf(String id, DeclarationSalaireProvenance provenance, BSession session) {
         Locale locale = buildLocale(session);
         SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance().asPdf().local(locale);
-
-        File file = out(id, provenance, etatSwissDecPucsFile, builder, session);
+        ElementsDomParser parser = new ElementsDomParser(EBPucsFileService.readInputStream(id, session));
+        File file = out(provenance, builder, parser, session);
         return JadeFilenameUtil.normalizePathComponents(file.getAbsolutePath());
     }
 
@@ -178,12 +176,12 @@ public class PucsServiceImpl implements PucsService {
     public String pucsFileLisibleForEbusiness(String id, DeclarationSalaireProvenance provenance, String format,
             String loginName, String userEmail, String langue) {
         Locale locale = new Locale(langue);
-        SimpleOutputListBuilder builder;
+        SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance();
 
         if ("pdf".equals(format)) {
-            builder = SimpleOutputListBuilder.newInstance().asPdf().local(locale);
+            builder.asPdf().local(locale);
         } else if ("xls".equals(format)) {
-            builder = SimpleOutputListBuilder.newInstance().asXls().local(locale);
+            builder.asXls().local(locale);
         } else {
             throw new IllegalArgumentException("the format " + format + " is not allowed");
         }
@@ -196,7 +194,6 @@ public class PucsServiceImpl implements PucsService {
 
         Locale locale = buildLocale(session);
         SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance().asPdf().local(locale);
-
         File file = out(provenance, builder, parser, session);
 
         return JadeFilenameUtil.normalizePathComponents(file.getAbsolutePath());
@@ -209,13 +206,6 @@ public class PucsServiceImpl implements PucsService {
             return lienInstitution.getIdInstitution();
         }
         return null;
-    }
-
-    private static File out(String id, DeclarationSalaireProvenance provenance,
-            EtatSwissDecPucsFile etatSwissDecPucsFile, SimpleOutputListBuilder generator, BSession session) {
-        ElementsDomParser parser = buildElementDomParser(id, provenance, etatSwissDecPucsFile, session.getUserId(),
-                session.getUserEMail(), session.getIdLangueISO());
-        return out(provenance, generator, parser, session);
     }
 
     private static File outForEbusiness(String id, DeclarationSalaireProvenance provenance,
@@ -315,5 +305,4 @@ public class PucsServiceImpl implements PucsService {
         }
         return hasRight;
     }
-
 }

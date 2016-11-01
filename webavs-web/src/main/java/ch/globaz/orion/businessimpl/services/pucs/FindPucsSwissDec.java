@@ -160,22 +160,14 @@ public class FindPucsSwissDec {
     }
 
     /**
-     * Permet de charger un fichier Pucs en passant l'adresse et le nom de celui-ci
+     * Permet de charger un fichier Pucs en passant l'adresse et le nom de celui-ci une
      * 
      * @param remotePucsFileUri Une chemin vers le fichier du type ftp://login:pass/pucs/atraiter/monfichier.xml
      * @return Objet représentant les caractéristique du fichier
-     * @throws JadeServiceLocatorException
-     * @throws JadeServiceActivatorException
-     * @throws NullPointerException
-     * @throws ClassCastException
-     * @throws JadeClassCastException
      */
-    private PucsFile buildPucsByFile(String remotePucsFileUri, BSession session) throws JadeServiceLocatorException,
-            JadeServiceActivatorException, NullPointerException, ClassCastException, JadeClassCastException {
+    private PucsFile buildPucsByFile(String remotePucsFileUri, BSession session) throws Exception {
         String path = JadeFsFacade.readFile(remotePucsFileUri);
         PucsFile pucsFile = buildPucsByFileBy(path, remotePucsFileUri, session);
-
-        // JadeFsFacade.delete(path);
         return pucsFile;
     }
 

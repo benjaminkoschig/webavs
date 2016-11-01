@@ -21,7 +21,7 @@
 	Langues langue = Langues.getLangueDepuisCodeIso(objSession.getIdLangueISO());
 	Map<String, String> map = new LinkedHashMap<String, String>();
 	String codesEnCours = PucsSearchCriteria.CS_TO_HANDLE+","+PucsSearchCriteria.CS_HANDLING+","+EtatSwissDec.A_VALIDE.getValue();
-	map.put(codesEnCours, objSession.getLabel("PUCS_STATUT_EN_CROURS"));
+	map.put(codesEnCours, objSession.getLabel("PUCS_STATUT_EN_COURS"));
 	for(JadeCodeSysteme code: codes){
 	    map.put(code.getIdCodeSysteme(), code.getTraduction(langue));
 	}

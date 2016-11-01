@@ -27,7 +27,7 @@ public class EBImportPucsDan extends ImportPucsPorcess {
 
     @Override
     public String getDescription() {
-        return "Process permettant l'imortation an DB des fichiers pucs";
+        return "Process permettant l'importation en DB des fichiers pucs";
     }
 
     @Override

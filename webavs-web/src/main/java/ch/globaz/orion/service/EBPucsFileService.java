@@ -1,6 +1,7 @@
 package ch.globaz.orion.service;
 
 import globaz.globall.db.BSession;
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,13 @@ public class EBPucsFileService {
         return entity.readInputStream();
     }
 
+    public static File retriveFile(String id, BSession session) {
+        EBPucsFileEntity entity = new EBPucsFileEntity();
+        entity.setIdEntity(id);
+        entity.setSession(session);
+        return entity.retriveFile();
+    }
+
     public static List<PucsFile> entitiesToPucsFile(List<EBPucsFileEntity> list) {
         List<PucsFile> pucsFilesFinal = new ArrayList<PucsFile>();
         for (EBPucsFileEntity entity : list) {
@@ -48,7 +56,6 @@ public class EBPucsFileService {
         pucsFile.setDateDeReception(new Date(entity.getDateReception()).getSwissValue());
         pucsFile.setDuplicate(entity.isDuplicate());
         pucsFile.setHandlingUser(entity.getHandlingUser());
-        pucsFile.setIsAffiliationExistante(entity.isAffiliationExistante());
         pucsFile.setNbSalaires(String.valueOf(entity.getNbSalaire()));
         pucsFile.setNomAffilie(entity.getNomAffilie());
         pucsFile.setNumeroAffilie(entity.getNumeroAffilie());

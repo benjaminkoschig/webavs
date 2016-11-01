@@ -1,9 +1,12 @@
 package ch.globaz.orion.db;
 
 import globaz.globall.db.BTransaction;
+import globaz.jade.common.Jade;
 import globaz.jade.exception.JadePersistenceException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -19,6 +22,7 @@ public class EBPucsFileEntity extends JadeEntity {
     private String id;
     private String idJob;
     private String idFileName;
+    private String idAffiliation;
     private Integer anneeDeclaration;
     private Integer statut;
     private Date dateReception;
@@ -30,17 +34,16 @@ public class EBPucsFileEntity extends JadeEntity {
     private BigDecimal totalControle;
     private Double sizeFileInKo;
     private boolean afSeul;
-    private boolean affiliationExistante;
     private boolean duplicate;
     private Integer niveauSecurite;
     private Boolean salaireInferieurLimite;
     private File file;
-    private InputStream inputStream;
 
     @Override
     protected void writeProperties() {
         writeStringAsNumeric(EBPucsFileDefTable.ID_JOB, idJob);
         write(EBPucsFileDefTable.ID_FILE_NAME, idFileName);
+        writeStringAsNumeric(EBPucsFileDefTable.ID_AFFILIATION, idAffiliation);
         write(EBPucsFileDefTable.ANNEE_DECLARATION, anneeDeclaration);
         write(EBPucsFileDefTable.STATUS, statut);
         write(EBPucsFileDefTable.HANDLING_USER, handlingUser);
@@ -50,7 +53,6 @@ public class EBPucsFileEntity extends JadeEntity {
         write(EBPucsFileDefTable.TOTAL_CONTROLE, totalControle);
         write(EBPucsFileDefTable.SIZE_FILE_IN_KO, sizeFileInKo);
         write(EBPucsFileDefTable.IS_AF_SEUL, afSeul);
-        write(EBPucsFileDefTable.AFFILIATION_EXISTANTE, affiliationExistante);
         write(EBPucsFileDefTable.NIVEAU_SECURITE, niveauSecurite);
         write(EBPucsFileDefTable.PROVENANCE, provenance);
         write(EBPucsFileDefTable.DATE_RECEPTION, dateReception);
@@ -62,6 +64,7 @@ public class EBPucsFileEntity extends JadeEntity {
     protected void readProperties() {
         id = this.read(EBPucsFileDefTable.ID);
         idJob = this.readString(EBPucsFileDefTable.ID_JOB);
+        idAffiliation = this.read(EBPucsFileDefTable.ID_AFFILIATION);
         idFileName = read(EBPucsFileDefTable.ID_FILE_NAME);
         anneeDeclaration = read(EBPucsFileDefTable.ANNEE_DECLARATION);
         statut = read(EBPucsFileDefTable.STATUS);
@@ -72,7 +75,6 @@ public class EBPucsFileEntity extends JadeEntity {
         totalControle = read(EBPucsFileDefTable.TOTAL_CONTROLE);
         sizeFileInKo = read(EBPucsFileDefTable.SIZE_FILE_IN_KO);
         afSeul = read(EBPucsFileDefTable.IS_AF_SEUL);
-        affiliationExistante = read(EBPucsFileDefTable.AFFILIATION_EXISTANTE);
         niveauSecurite = read(EBPucsFileDefTable.NIVEAU_SECURITE);
         provenance = read(EBPucsFileDefTable.PROVENANCE);
         dateReception = read(EBPucsFileDefTable.DATE_RECEPTION);
@@ -80,37 +82,44 @@ public class EBPucsFileEntity extends JadeEntity {
         salaireInferieurLimite = read(EBPucsFileDefTable.SAL_INF_LIMIT);
     }
 
-    public void retrieveWithFile() throws Exception {
-        this.retrieve();
-        inputStream = readInputStream();
-        // FileInputStream fileInputStream = new FileInputStream(file);
-        // File f = new File("D:\\Temp\\ebu\\" + id + ".xml");
-        // FileOutputStream fileOutputStream = new FileOutputStream(f);
-        // fileOutputStream.write((byte[]) object);
+    public File retriveFile() {
+        File f = new File(Jade.getInstance().getHomeDir() + "work/" + id + ".xml");
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(f);
+            fileOutputStream.write(readByte());
 
-        // ByteArrayOutputStream out = new ByteArrayOutputStream();
-        // out.write((byte[]) object);
-        // outputStream = out;
-        // Object object = (InputStream);
-        // file = (FileInputStream) BlobMFileWithoutContext(CONST_BLOB + id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (fileOutputStream != null) {
+                try {
+                    fileOutputStream.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return f;
     }
 
     public InputStream readInputStream() {
+        return new ByteArrayInputStream(readByte());
+    }
+
+    private byte[] readByte() {
         Object object;
         try {
             object = BlobManager.readBlobWithoutContext(CONST_BLOB + id);
         } catch (JadePersistenceException e) {
             throw new RuntimeException(e);
         }
-        return new ByteArrayInputStream((byte[]) object);
+        return (byte[]) object;
     }
 
     @Override
     protected void _beforeAdd(BTransaction transaction) throws Exception {
         super._beforeAdd(transaction);
-        // // ByteStreams.toByteArray(new FileInputStream(file));
-        // BlobManager.addBlob(CONST_BLOB + id, Files.toByteArray(file));
-        // ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buf)
         BlobManager.addBlob(CONST_BLOB + id, Files.toByteArray(file));
     }
 
@@ -233,14 +242,6 @@ public class EBPucsFileEntity extends JadeEntity {
         this.afSeul = afSeul;
     }
 
-    public boolean isAffiliationExistante() {
-        return affiliationExistante;
-    }
-
-    public void setAffiliationExistante(boolean affiliationExistante) {
-        this.affiliationExistante = affiliationExistante;
-    }
-
     public Integer getNiveauSecurite() {
         return niveauSecurite;
     }
@@ -273,8 +274,11 @@ public class EBPucsFileEntity extends JadeEntity {
         this.statut = statut;
     }
 
-    public InputStream getInputStream() {
-        return inputStream;
+    public String getIdAffiliation() {
+        return idAffiliation;
     }
 
+    public void setIdAffiliation(String idAffiliation) {
+        this.idAffiliation = idAffiliation;
+    }
 }

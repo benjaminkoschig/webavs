@@ -202,7 +202,6 @@ $(function() {
 									<td class="fusions"></td>
 								</c:if>
 								<td class="centre">${pucs.numeroAffilie} 
-									<span data-g-note="idExterne:${pucs.id},tableSource: EBPUCS_FILE, inList: false"></span>
 								</td> 
 								<td style="vertical-align: middle;" > 	
 									<c:if test="${pucs.forTest}">
