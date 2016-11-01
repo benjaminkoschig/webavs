@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import ch.globaz.orion.business.models.pucs.PucsFile;
-import ch.globaz.orion.businessimpl.services.pucs.FindPucsSwissDec;
 
 public class EBPucsValidationListViewBean extends EBAbstractViewBean {
 
@@ -20,13 +19,13 @@ public class EBPucsValidationListViewBean extends EBAbstractViewBean {
         if (listPucsFile == null) {
             listPucsFile = new ArrayList<PucsFile>();
         }
-        if ("refuser".equals(getContenu())) {
-            FindPucsSwissDec swissDec = new FindPucsSwissDec(getSession());
-            listPucsFile = swissDec.loadPucsSwissDecRefuser();
-        } else {
-            FindPucsSwissDec swissDec = new FindPucsSwissDec(getSession());
-            listPucsFile = swissDec.loadPucsSwissDecAValider();
-        }
+        // if ("refuser".equals(getContenu())) {
+        // FindPucsSwissDec swissDec = new FindPucsSwissDec(getSession());
+        // listPucsFile = swissDec.loadPucsSwissDecRefuser();
+        // } else {
+        // FindPucsSwissDec swissDec = new FindPucsSwissDec(getSession());
+        // listPucsFile = swissDec.loadPucsSwissDecAValider();
+        // }
 
         sortByNumAffilie(listPucsFile);
 

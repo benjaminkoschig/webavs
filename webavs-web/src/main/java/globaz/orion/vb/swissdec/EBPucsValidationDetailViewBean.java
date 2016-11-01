@@ -64,7 +64,8 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
         } else {
             nextPucsFile = null;
         }
-        decSal = DeclarationSalaireBuilder.build(EBPucsFileService.readInputStream(getCurrentId(), getSession()));
+        decSal = DeclarationSalaireBuilder.build(EBPucsFileService.retriveFileAsInputStream(getCurrentId(),
+                getSession()));
 
         // Recherche affiliation
         affiliation = AFAffiliationServices.getAffiliationParitaireByNumero(decSal.getNumeroAffilie(),

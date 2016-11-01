@@ -15,11 +15,7 @@ import java.util.Map.Entry;
 import ch.globaz.common.dom.ElementsDomParser;
 import ch.globaz.common.domaine.Checkers;
 import ch.globaz.orion.business.constantes.EBProperties;
-import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
-import ch.globaz.orion.business.exceptions.OrionPucsException;
 import ch.globaz.orion.businessimpl.services.merge.MergePucs;
-import ch.globaz.orion.businessimpl.services.pucs.EtatSwissDecPucsFile;
-import ch.globaz.orion.businessimpl.services.pucs.PucsServiceImpl;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
@@ -57,21 +53,6 @@ public class PucsFileMerge {
     @Override
     public String toString() {
         return "PucsFileMerge [pucsFile=" + pucsFile + ", pucsFileToMergded=" + pucsFileToMergded + "]";
-    }
-
-    /**
-     * Permet de récupérer le fichier pucs dans le back web
-     * 
-     * @param id
-     * @param provenance
-     * @throws OrionPucsException
-     * @throws JadeApplicationServiceNotAvailableException
-     * @throws IOException
-     */
-    private String retrieveFile(String id, DeclarationSalaireProvenance provenance, BSession session) throws Exception,
-            JadeApplicationServiceNotAvailableException, IOException {
-        return PucsServiceImpl.retrieveFile(id, provenance, EtatSwissDecPucsFile.A_TRAITER, workDirectory,
-                session.getUserId(), session.getUserEMail(), session.getIdLangueISO());
     }
 
     public static List<PucsFileMerge> build(List<PucsFile> pucsEntrys, Map<String, List<String>> pucsToMerge,
@@ -113,7 +94,9 @@ public class PucsFileMerge {
         try {
             for (PucsFile pucsFile : pucsFileToMergded) {
                 numeroAffilie = pucsFile.getNumeroAffilie();
-                filesRetrieved.put(pucsFile.getId(), retrieveFile(pucsFile.getId(), pucsFile.getProvenance(), session));
+                // EBPucsFileService.retriveFile(id, session)
+                // filesRetrieved.put(pucsFile.getId(), retrieveFile(pucsFile.getId(), pucsFile.getProvenance(),
+                // session));
             }
 
             if (!pucsFileToMergded.isEmpty()) {
@@ -124,9 +107,10 @@ public class PucsFileMerge {
 
                 isMerged = true;
             } else {
-                String filePaht = retrieveFile(pucsFile.getId(), pucsFile.getProvenance(), session);
-                domParser = new ElementsDomParser(filePaht);
-                filesRetrieved.put(pucsFile.getId(), filePaht);
+                String filePath = null;
+                // String filePath = retrieveFile(pucsFile.getId(), pucsFile.getProvenance(), session);
+                domParser = new ElementsDomParser(filePath);
+                filesRetrieved.put(pucsFile.getId(), filePath);
                 pucsFileToMergded.add(pucsFile);
             }
         } catch (Throwable e) {

@@ -19,7 +19,6 @@ import globaz.jade.context.JadeThread;
 import globaz.jade.context.JadeThreadActivator;
 import globaz.jade.ged.client.JadeGedFacade;
 import globaz.jade.i18n.JadeI18n;
-import globaz.jade.job.JadeJob;
 import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.publish.client.JadePublishDocument;
@@ -62,7 +61,6 @@ import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.business.models.pucs.PucsFileMerge;
 import ch.globaz.orion.businessimpl.services.dan.DanServiceImpl;
 import ch.globaz.orion.businessimpl.services.pucs.DeclarationSalaireBuilder;
-import ch.globaz.orion.businessimpl.services.pucs.EtatSwissDecPucsFile;
 import ch.globaz.orion.businessimpl.services.pucs.PucsServiceImpl;
 import com.google.common.base.Throwables;
 import com.google.gson.Gson;
@@ -199,11 +197,6 @@ public class EBTreatPucsFiles extends BProcess {
     public String getMode() {
         return mode;
     }
-
-    // @Override
-    // public String getName() {
-    // return getSession().getLabel("DESCRIPTION_PROCESSUS_TRAITEMENT_PUCS");
-    // }
 
     public BSession getSessionPavo() throws Exception {
         BSession local = getSession();
@@ -487,11 +480,9 @@ public class EBTreatPucsFiles extends BProcess {
                             BSessionUtil.initContext(getSession(), this);
 
                             for (PucsFile pucs : pucsFileMerge.getPucsFileToMergded()) {
-                                String filePath;
-                                ElementsDomParser parser = PucsServiceImpl.buildElementDomParser(pucs.getId(), pucsFile
-                                        .getProvenance(), EtatSwissDecPucsFile.A_TRAITER, getSession().getUserId(),
-                                        getSession().getUserEMail(), getSession().getIdLangueISO());
-                                filePath = PucsServiceImpl.pucFileLisiblePdf(pucsFile.getProvenance(), parser,
+                                ElementsDomParser parser = PucsServiceImpl.buildElementDomParser(pucs.getIdDb(),
+                                        getSession());
+                                String filePath = PucsServiceImpl.pucFileLisiblePdf(pucsFile.getProvenance(), parser,
                                         getSession());
                                 filesPath.put(filePath, parser);
                             }
@@ -500,7 +491,7 @@ public class EBTreatPucsFiles extends BProcess {
                         }
                         if (!pucsFile.isAfSeul()) {
                             if (idValidationDeLaDs.contains(pucsFile.getId()) && !isForSimultation && !hasError) {
-                                ValidationAutomatique.execute((getSessionDraco()), declaration,
+                                ValidationAutomatique.execute(getSessionDraco(), declaration,
                                         pucsFileMerge.getDomParser());
                             }
                         }
@@ -696,42 +687,6 @@ public class EBTreatPucsFiles extends BProcess {
         if (e != null) {
             e.printStackTrace();
         }
-    }
-
-    private void sendMailError1(String mail, Throwable e, JadeJob proces) throws Exception {
-
-        String body = LabelCommonProvider.getLabel("PROCESS_TEXT_MAIL_ERROR") + "\n\n";
-
-        body = body + LabelCommonProvider.getLabel("PROCESS_ERROR") + ": " + e.getMessage();
-
-        body = body + "\n\n\n********************* " + LabelCommonProvider.getLabel("PROCESS_INFORMATION_GLOBAZ")
-                + "*********************\n\n";
-        String bodyGlobaz = "Stack: \t " + Throwables.getStackTraceAsString(e) + "\n\n";
-        // new GsonBuilder().setPrettyPrinting().create()
-        try {
-            bodyGlobaz = bodyGlobaz + "Params:\t " + new Gson().toJson(this) + "\n\n";
-        } catch (Exception e1) {
-            e1.printStackTrace();
-        }
-        try {
-            bodyGlobaz = bodyGlobaz + "Thread messages: "
-                    + new Gson().toJson(JadeThread.logMessagesToLevel(JadeBusinessMessageLevels.ERROR)) + "\n\n";
-        } catch (Exception e1) {
-            e1.printStackTrace();
-        }
-        try {
-            bodyGlobaz = bodyGlobaz + "Session:\t " + new Gson().toJson(getSession()) + "\n\n";
-        } catch (Throwable e1) {
-            e1.printStackTrace();
-        }
-
-        body = body + bodyGlobaz;
-
-        JadeSmtpClient.getInstance().sendMail(mail,
-                proces.getName() + " - " + LabelCommonProvider.getLabel("PROCESS_IN_ERROR"), body, null);
-
-        e.printStackTrace();
-
     }
 
     public void setEmailAdress(String emailAdress) {

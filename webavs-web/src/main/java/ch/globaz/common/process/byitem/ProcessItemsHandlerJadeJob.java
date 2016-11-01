@@ -90,6 +90,23 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
         }
     }
 
+    // final List<PucsFile> pucsFiles = Collections.synchronizedList(new ArrayList<PucsFile>(listRemotePucsFileUri
+    // .size()));
+    //
+    // ExecutorService threadExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
+    // for (String remotePucsFileUri : listRemotePucsFileUri) {
+    // if (JadeFilenameUtil.extractFilenameExtension(remotePucsFileUri).equalsIgnoreCase("xml")) {
+    // threadExecutor.execute(new MyRunnable(remotePucsFileUri, pucsFiles));
+    // }
+    // }
+    //
+    // threadExecutor.shutdown();
+    //
+    // while (!threadExecutor.isTerminated()) {
+    // }
+    //
+    // watch.stop();
+
     public List<T> getItmes() {
         return items;
     }
@@ -138,7 +155,7 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
     }
 
     public void sendMailIfHasError() {
-        this.sendMailIfHasError(translate("PROCESS_ITEMS_UNEXPECTED_ERROR") + " - " + translateName());
+        this.sendMailIfHasError(translate("PROCESS_ITEMS_DETECTED_ERRORS") + " - " + translateName());
     }
 
     private void sendMailIfHasError(String objet) {

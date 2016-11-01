@@ -47,7 +47,7 @@ public class EBPucsFileService {
         return pucsFile;
     }
 
-    public static InputStream readInputStream(String id, BSession session) {
+    public static InputStream retriveFileAsInputStream(String id, BSession session) {
         EBPucsFileEntity entity = new EBPucsFileEntity();
         entity.setIdEntity(id);
         entity.setSession(session);

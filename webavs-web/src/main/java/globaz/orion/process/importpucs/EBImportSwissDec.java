@@ -1,16 +1,20 @@
 package globaz.orion.process.importpucs;
 
+import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeFilenameUtil;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.fs.message.JadeFsFileInfo;
 import java.util.ArrayList;
 import java.util.List;
-import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.common.process.byitem.ProcessItemsHandlerJadeJob;
 import ch.globaz.orion.business.constantes.EBProperties;
-import ch.globaz.orion.business.models.pucs.PucsFile;
-import ch.globaz.orion.businessimpl.services.pucs.FindPucsSwissDec;
 
-public class EBImportSwissDec extends ImportPucsPorcess {
+public class EBImportSwissDec extends ProcessItemsHandlerJadeJob<PucsSwissDecItem> {
+
+    private String uri;
+    private String done;
+    private String error;
+
     @Override
     public String getKey() {
         return "orion.pucs.import.swissDec";
@@ -27,47 +31,17 @@ public class EBImportSwissDec extends ImportPucsPorcess {
     }
 
     @Override
-    public List<PucsFile> loadPucs() {
-        FindPucsSwissDec swissDec = new FindPucsSwissDec(getSession());
-        return swissDec.loadPucsSwissDecATraiter();
-    }
-
-    @Override
-    public List<PucsItem> resolveItems() {
-        List<PucsItem> list = new ArrayList<PucsItem>();
-        for (PucsFile pucsFile : pucsFiles) {
-            list.add(new PucsSwissDecItem(pucsFile, affiliations.get(pucsFile.getNumeroAffilie()), getSession(),
-                    getJobInfos().getIdJob()));
-        }
-        return list;
-    }
-
-    public List<CopyOfPucsSwissDecItem> resolveItems2() {
-        String uri;
-
-        try {
-            uri = EBProperties.PUCS_SWISS_DEC_DIRECTORY.getValue();
-        } catch (PropertiesException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            if (!JadeFsFacade.isFolder(uri)) {
-                throw new RuntimeException("This value is not a valid folder: " + uri);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
+    public List<PucsSwissDecItem> resolveItems() {
         try {
             List<String> listRemotePucsFileUri;
             listRemotePucsFileUri = JadeFsFacade.getFolderChildren(uri);
-            List<CopyOfPucsSwissDecItem> list = new ArrayList<CopyOfPucsSwissDecItem>();
+            List<PucsSwissDecItem> list = new ArrayList<PucsSwissDecItem>();
             for (String remotePucsFileUri : listRemotePucsFileUri) {
                 if (JadeFilenameUtil.extractFilenameExtension(remotePucsFileUri).equalsIgnoreCase("xml")) {
                     JadeFsFileInfo info = JadeFsFacade.getInfo(remotePucsFileUri);
                     if (!info.getIsFolder()) {
-                        list.add(new CopyOfPucsSwissDecItem(remotePucsFileUri, getSession(), getJobInfos().getIdJob()));
+                        list.add(new PucsSwissDecItem(remotePucsFileUri, done, error, getJobInfos().getIdJob(),
+                                getSession()));
                     }
                 }
             }
@@ -75,7 +49,26 @@ public class EBImportSwissDec extends ImportPucsPorcess {
         } catch (Exception e1) {
             throw new RuntimeException(e1);
         }
-
     }
 
+    @Override
+    public void before() {
+        try {
+            uri = EBProperties.PUCS_SWISS_DEC_DIRECTORY.getValue();
+            done = EBProperties.PUCS_SWISS_DEC_DIRECTORY_OK.getValue();
+            error = EBProperties.PUCS_SWISS_DEC_DIRECTORY_KO.getValue();
+            if (!JadeFsFacade.isFolder(uri)) {
+                throw new RuntimeException("This value is not a valid folder: " + uri);
+            }
+            BSessionUtil.initContext(getSession(), this);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void after() {
+        sendMailIfHasError();
+        BSessionUtil.stopUsingContext(this);
+    }
 }

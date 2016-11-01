@@ -70,10 +70,7 @@ public class PucsItem extends ProcessItem {
     protected static void save(PucsFile pucsFile, AFAffiliation affiliation, String idJob, BSession session)
             throws Exception {
         EBPucsFileEntity entity = new EBPucsFileEntity();
-        if (affiliation == null) {
-            // entity.setAffiliationExistante(false));
-        } else {
-            // entity.setAffiliationExistante(true);
+        if (affiliation != null) {
             Integer codeSecurite = resolveCodeSecuriteMax(affiliation, pucsFile.getFile(), session);
             entity.setNiveauSecurite(codeSecurite);
             entity.setIdAffiliation(affiliation.getAffiliationId());
@@ -122,7 +119,8 @@ public class PucsItem extends ProcessItem {
             this.addErrors("PROCESS_IMPORT_PUCSINDB_PUCFILE_NULL");
         } else {
             if (affiliations == null || affiliations.isEmpty()) {
-                // this.addErrors("PROCESS_IMPORT_PUCSINDB_AFFILIATION_NOT_FOUND");
+                this.addErrors("PROCESS_IMPORT_PUCSINDB_AFFILIATION_NOT_FOUND", pucsFile.getNumeroAffilie(),
+                        pucsFile.getAnneeDeclaration());
             } else if (affiliations.size() > 1) {
                 HashSet<String> ids = new HashSet<String>();
                 for (AFAffiliation aff : affiliations) {

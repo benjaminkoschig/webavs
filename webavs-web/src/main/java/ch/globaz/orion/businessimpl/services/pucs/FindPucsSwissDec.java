@@ -3,11 +3,8 @@ package ch.globaz.orion.businessimpl.services.pucs;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeFilenameUtil;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.common.JadeClassCastException;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.fs.message.JadeFsFileInfo;
-import globaz.jade.service.exception.JadeServiceActivatorException;
-import globaz.jade.service.exception.JadeServiceLocatorException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,8 +17,6 @@ import java.util.concurrent.Executors;
 import org.apache.commons.lang.time.StopWatch;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.dom.ElementsDomParser;
-import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.domaine.pucs.EtatPucsFile;
@@ -38,57 +33,6 @@ public class FindPucsSwissDec {
     public FindPucsSwissDec(BSession session) {
         super();
         this.session = session;
-    }
-
-    /**
-     * Permet de lire les fichiers swissdec dans le répertoire "a valider"
-     * 
-     * @return La liste de fichier du répertoire
-     * @throws JadeServiceLocatorException
-     * @throws JadeServiceActivatorException
-     * @throws NullPointerException
-     * @throws ClassCastException
-     * @throws JadeClassCastException
-     * @throws PropertiesException
-     */
-    public List<PucsFile> loadPucsSwissDecRefuser() throws JadeServiceLocatorException, JadeServiceActivatorException,
-            NullPointerException, ClassCastException, JadeClassCastException, PropertiesException {
-        return loadPucsSwissDec(EBProperties.PUCS_SWISS_DEC_DIRECTORY_REFUSER.getValue());
-    }
-
-    /**
-     * Permet de lire les fichiers swissdec dans le répertoire "a valider"
-     * 
-     * @return La liste de fichier du répertoire
-     * @throws JadeServiceLocatorException
-     * @throws JadeServiceActivatorException
-     * @throws NullPointerException
-     * @throws ClassCastException
-     * @throws JadeClassCastException
-     * @throws PropertiesException
-     */
-    public List<PucsFile> loadPucsSwissDecAValider() throws JadeServiceLocatorException, JadeServiceActivatorException,
-            NullPointerException, ClassCastException, JadeClassCastException, PropertiesException {
-        return loadPucsSwissDec(EBProperties.PUCS_SWISS_DEC_DIRECTORY_A_VALIDER.getValue());
-    }
-
-    /**
-     * Permet de lire les fichiers swissdec dans le répertoire "a traiter"
-     * 
-     * @return La liste de fichier du répertoire
-     * @throws JadeServiceLocatorException
-     * @throws JadeServiceActivatorException
-     * @throws NullPointerException
-     * @throws ClassCastException
-     * @throws JadeClassCastException
-     * @throws PropertiesException
-     */
-    public List<PucsFile> loadPucsSwissDecATraiter() {
-        try {
-            return loadPucsSwissDec(EBProperties.PUCS_SWISS_DEC_DIRECTORY.getValue());
-        } catch (PropertiesException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private List<PucsFile> loadPucsSwissDec(String uri) {
