@@ -10,6 +10,7 @@ import globaz.jade.log.JadeLogger;
 import globaz.orion.process.EBTreatPucsFiles;
 import globaz.orion.vb.pucs.EBPucsImportViewBean;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import ch.globaz.orion.business.models.pucs.PucsFile;
@@ -31,7 +32,7 @@ public class EBPucsImportHelper extends FWHelper {
 
             List<PucsFile> pucsEntrys = new ArrayList<PucsFile>();
 
-            for (Entry<String, List<PucsFile>> entry : vb.getMapPucsByNumAffilie().entrySet()) {
+            for (Entry<String, Collection<PucsFile>> entry : vb.getMapPucsByNumAffilie().entrySet()) {
                 pucsEntrys.addAll(entry.getValue());
             }
 
