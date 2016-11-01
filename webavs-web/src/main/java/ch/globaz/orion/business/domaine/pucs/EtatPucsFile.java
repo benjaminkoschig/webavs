@@ -8,11 +8,15 @@ public enum EtatPucsFile implements CodeSystemEnum<EtatPucsFile> {
     A_VALIDE("11020001"),
     REJETE("11020002"),
     A_TRAITER("11020003"),
-    COMPTABILISE("*****");
+    EN_TRAITEMENT("11020004"),
+    UPLOADED(""), // Pour EBU
+    TRAITER(""), // pour EBU
+    COMPTABILISE("11020005"),
+    UNDEFINDED("");
 
     private String value;
 
-    public static final String CODE_FAMILLE = "GEBETSWD";
+    public static final String CODE_FAMILLE = "GEBETPUC";
 
     EtatPucsFile(String csEtat) {
         value = csEtat;

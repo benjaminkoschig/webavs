@@ -36,6 +36,16 @@ public class EBImportPucsDan extends ImportPucsPorcess {
     }
 
     @Override
+    public List<PucsItem> resolveItems() {
+        List<PucsItem> list = new ArrayList<PucsItem>();
+        for (PucsFile pucsFile : pucsFiles) {
+            list.add(new PucsItem(pucsFile, affiliations.get(pucsFile.getNumeroAffilie()), getSession(), getJobInfos()
+                    .getIdJob()));
+        }
+        return list;
+    }
+
+    @Override
     public List<PucsFile> loadPucs() throws FileNotFoundException {
         List<PucsEntrySummary> pucsFilesEbu = loadPucs(getSession());
         List<Dan> danFile = loadDan(getSession());

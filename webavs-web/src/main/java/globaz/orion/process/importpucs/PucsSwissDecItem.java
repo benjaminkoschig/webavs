@@ -15,10 +15,19 @@ public class PucsSwissDecItem extends PucsItem {
 
     @Override
     public void treat() throws Exception {
-        super.treat();
-        String src = EBProperties.PUCS_SWISS_DEC_DIRECTORY.getValue() + pucsFile.getId() + ".xml";
-        String dest = EBProperties.PUCS_SWISS_DEC_DIRECTORY_OK.getValue() + pucsFile.getId().replace(".", "") + ".xml";
-        JadeFsFacade.copyFile(src, dest);
+        try {
+            super.treat();
+        } catch (Exception e) {
+            addException(e);
+        } finally {
+            String src = EBProperties.PUCS_SWISS_DEC_DIRECTORY.getValue() + pucsFile.getId() + ".xml";
+            String path = EBProperties.PUCS_SWISS_DEC_DIRECTORY_OK.getValue();
+            if (hasErrorOrException()) {
+                path = EBProperties.PUCS_SWISS_DEC_DIRECTORY_KO.getValue();
+            }
+            JadeFsFacade.copyFile(src, path + pucsFile.getId().replace(".", "") + ".xml");
+            JadeFsFacade.delete(src);
+        }
     }
 
 }

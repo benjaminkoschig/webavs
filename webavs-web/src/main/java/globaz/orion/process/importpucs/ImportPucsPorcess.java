@@ -17,7 +17,7 @@ public abstract class ImportPucsPorcess extends ProcessItemsHandlerJadeJob<PucsI
 
     private static final long serialVersionUID = 1L;
     protected transient List<PucsFile> pucsFiles;
-    private Map<String, List<AFAffiliation>> affiliations;
+    protected Map<String, List<AFAffiliation>> affiliations;
 
     public abstract List<PucsFile> loadPucs() throws FileNotFoundException;
 
@@ -30,16 +30,6 @@ public abstract class ImportPucsPorcess extends ProcessItemsHandlerJadeJob<PucsI
             throw new RuntimeException(e);
         }
         affiliations = findAffiliations(pucsFiles);
-    }
-
-    @Override
-    public List<PucsItem> resolveItems() {
-        List<PucsItem> list = new ArrayList<PucsItem>();
-        for (PucsFile pucsFile : pucsFiles) {
-            list.add(new PucsItem(pucsFile, affiliations.get(pucsFile.getNumeroAffilie()), getSession(), getJobInfos()
-                    .getIdJob()));
-        }
-        return list;
     }
 
     @Override

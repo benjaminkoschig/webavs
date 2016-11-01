@@ -32,6 +32,16 @@ public class EBImportSwissDec extends ImportPucsPorcess {
         return swissDec.loadPucsSwissDecATraiter();
     }
 
+    @Override
+    public List<PucsItem> resolveItems() {
+        List<PucsItem> list = new ArrayList<PucsItem>();
+        for (PucsFile pucsFile : pucsFiles) {
+            list.add(new PucsSwissDecItem(pucsFile, affiliations.get(pucsFile.getNumeroAffilie()), getSession(),
+                    getJobInfos().getIdJob()));
+        }
+        return list;
+    }
+
     public List<CopyOfPucsSwissDecItem> resolveItems2() {
         String uri;
 

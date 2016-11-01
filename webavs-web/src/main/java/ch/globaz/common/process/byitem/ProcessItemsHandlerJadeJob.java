@@ -155,8 +155,10 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
                 bodyMail.append(getSession().getErrors().toString());
             }
 
-            this.sendMail(objet, bodyMail.toString());
-            this.mailErrorIsSend = true;
+            if (itemsHasError() || getSession().hasErrors()) {
+                this.sendMail(objet, bodyMail.toString());
+                this.mailErrorIsSend = true;
+            }
         }
     }
 

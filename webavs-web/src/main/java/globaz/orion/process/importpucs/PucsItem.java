@@ -68,27 +68,27 @@ public class PucsItem extends ProcessItem {
 
     protected static void save(PucsFile pucsFile, AFAffiliation affiliation, String idJob, BSession session)
             throws Exception {
-        Integer codeSecurite = resolveCodeSecuriteMax(affiliation, pucsFile.getFile(), session);
         EBPucsFileEntity entity = new EBPucsFileEntity();
         if (affiliation == null) {
             // entity.setAffiliationExistante(false));
         } else {
             // entity.setAffiliationExistante(true);
+            Integer codeSecurite = resolveCodeSecuriteMax(affiliation, pucsFile.getFile(), session);
+            entity.setNiveauSecurite(codeSecurite);
             entity.setIdAffiliation(affiliation.getAffiliationId());
         }
         entity.setSession(session);
         entity.setIdJob(idJob);
-        entity.setNiveauSecurite(codeSecurite);
+
         entity.setFile(pucsFile.getFile());
         entity.setAfSeul(pucsFile.isAfSeul());
         entity.setAnneeDeclaration(Integer.valueOf(pucsFile.getAnneeDeclaration()));
         if (pucsFile.getCurrentStatus() != null) {
-            entity.setStatut(Integer.valueOf(pucsFile.getCurrentStatus()));
+            entity.setStatut(Integer.valueOf(pucsFile.getCurrentStatus().getValue()));
         }
         entity.setDateReception(new Date(pucsFile.getDateDeReception()).getDate());
         entity.setDuplicate(pucsFile.isDuplicate());
         entity.setHandlingUser(pucsFile.getHandlingUser());
-        // entity.setAffiliationExistante(pucsFile.isAffiliationExistante());
         entity.setNbSalaire(Integer.valueOf(pucsFile.getNbSalaires()));
         entity.setNomAffilie(pucsFile.getNomAffilie());
         entity.setNumeroAffilie(pucsFile.getNumeroAffilie());

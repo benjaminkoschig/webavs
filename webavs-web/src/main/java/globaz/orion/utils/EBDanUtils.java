@@ -20,8 +20,8 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.globaz.orion.business.domaine.pucs.EtatPucsFile;
 import ch.globaz.orion.business.models.pucs.PucsFile;
-import ch.globaz.orion.business.models.pucs.PucsSearchCriteria;
 import ch.globaz.xmlns.eb.dan.Dan;
 import ch.globaz.xmlns.eb.dan.DanStatutEnum;
 import ch.globaz.xmlns.eb.dan.SexeEnum;
@@ -109,29 +109,29 @@ public class EBDanUtils {
         return num;
     }
 
-    private static String converStatus(PucsStatusEnum status) {
+    private static EtatPucsFile converStatus(PucsStatusEnum status) {
         if (PucsStatusEnum.HANDLED == status) {
-            return PucsSearchCriteria.CS_HANDLED;
+            return EtatPucsFile.TRAITER;
         } else if (PucsStatusEnum.HANDLING == status) {
-            return PucsSearchCriteria.CS_HANDLING;
+            return EtatPucsFile.EN_TRAITEMENT;
         } else if (PucsStatusEnum.REJECTED == status) {
-            return PucsSearchCriteria.CS_REJECTED;
+            return EtatPucsFile.REJETE;
         } else if (PucsStatusEnum.TO_HANDLE == status) {
-            return PucsSearchCriteria.CS_TO_HANDLE;
+            return EtatPucsFile.A_TRAITER;
         } else if (PucsStatusEnum.UPLOADED == status) {
-            return PucsSearchCriteria.CS_UPLOADED;
+            return EtatPucsFile.UPLOADED;
         } else {
-            return "";
+            return EtatPucsFile.UNDEFINDED;
         }
     }
 
-    private static String converStatusDan(DanStatutEnum status) {
+    private static EtatPucsFile converStatusDan(DanStatutEnum status) {
         if (DanStatutEnum.VALIDEE.equals(status)) {
-            return PucsSearchCriteria.CS_TO_HANDLE;
+            return EtatPucsFile.A_TRAITER;
         } else if (DanStatutEnum.EN_TRAITEMENT.equals(status)) {
-            return PucsSearchCriteria.CS_HANDLING;
+            return EtatPucsFile.EN_TRAITEMENT;
         } else {
-            return "";
+            return EtatPucsFile.UNDEFINDED;
         }
     }
 

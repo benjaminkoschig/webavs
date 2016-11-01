@@ -83,7 +83,7 @@ public class EBPucsFileService {
         pucsFile.setId(entity.getIdFileName());
         pucsFile.setAfSeul(entity.isAfSeul());
         pucsFile.setAnneeDeclaration(String.valueOf(entity.getAnneeDeclaration()));
-        pucsFile.setCurrentStatus(String.valueOf(entity.getStatut()));
+        pucsFile.setCurrentStatus(EtatPucsFile.fromValue(String.valueOf(entity.getStatut())));
         pucsFile.setDateDeReception(new Date(entity.getDateReception()).getSwissValue());
         pucsFile.setDuplicate(entity.isDuplicate());
         pucsFile.setHandlingUser(entity.getHandlingUser());

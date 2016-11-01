@@ -9,7 +9,7 @@ public class PucsFile implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String anneeDeclaration = null;
-    private String currentStatus = null;
+    private EtatPucsFile currentStatus = null;
     private String dateDeReception = null;
     private String handlingUser = null;
     private String id = null;
@@ -64,10 +64,6 @@ public class PucsFile implements Serializable {
         return anneeDeclaration;
     }
 
-    public String getCurrentStatus() {
-        return currentStatus;
-    }
-
     public boolean isStatusHandling() {
         return PucsSearchCriteria.CS_HANDLING.equals(currentStatus);
     }
@@ -108,12 +104,12 @@ public class PucsFile implements Serializable {
         this.anneeDeclaration = anneeDeclaration;
     }
 
-    public void setCurrentStatus(String currentStatus) {
-        this.currentStatus = currentStatus;
+    public EtatPucsFile getCurrentStatus() {
+        return currentStatus;
     }
 
     public void setCurrentStatus(EtatPucsFile etat) {
-        currentStatus = etat.getValue();
+        currentStatus = etat;
     }
 
     public void setDateDeReception(String dateDeReception) {
