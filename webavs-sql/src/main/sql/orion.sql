@@ -12,11 +12,11 @@ delete from SCHEMA.FWCOUP where pcosid in(select pcosid from SCHEMA.FWCOSP where
  insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020002, 'D', '', '[de]Rejeté' ,'20051231Globaz'); 
  
  
-CREATE TABLE SCHEMA.EBPUCS_FILE
-(
+CREATE TABLE SCHEMA.EBPUCS_FILE (
    ID decimal(12,0) NOT NULL,
    ID_PROCESS_INFO decimal(12,0) NOT NULL,
    ID_FILE_NAME varchar(256) NOT NULL,
+   ID_AFFILIATION ID decimal(12,0),
    ANNEE_DECLARATION decimal(12,0) NOT NULL,
    STATUS decimal(12,0) NOT NULL,
    DATE_RECEPTION decimal(12,0) NOT NULL,
@@ -27,9 +27,8 @@ CREATE TABLE SCHEMA.EBPUCS_FILE
    PROVENANCE varchar(64) NOT NULL,
    TOTAL_CONTROLE decimal(10,2) NOT NULL,
    SIZE_FILE_IN_KO decimal(12,2),
-   NIVEAU_SECUCITE decimal(3,0),
+   NIVEAU_SECURITE decimal(3,0),
    IS_AF_SEUL decimal(1,0),
-   AFFILIATION_EXISTANTE decimal(1,0),
    DUPLICATE  decimal(1,0),
    SAL_INF_LIMIT  decimal(1,0),
    PSPY char(24),
@@ -37,8 +36,7 @@ CREATE TABLE SCHEMA.EBPUCS_FILE
 );
 
 
-CREATE TABLE SCHEMA.PROCESS_INFO
-(
+CREATE TABLE SCHEMA.PROCESS_INFO (
    ID decimal(12,0) NOT NULL,
    START_DATE decimal(20,0),
    END_DATE decimal(20,0),
