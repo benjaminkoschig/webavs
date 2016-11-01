@@ -210,4 +210,13 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
             }
         }).asMap();
     }
+
+    public Map<String, Collection<PucsFile>> getMapPucsByNumAffilie() {
+        return mapPucsByNumAffilie;
+    }
+
+    public void setMapPucsByNumAffilie(Map<String, Collection<PucsFile>> mapPucsByNumAffilie) {
+        this.mapPucsByNumAffilie = mapPucsByNumAffilie;
+    }
+
 }
