@@ -42,6 +42,7 @@ public class EBActionValidationSwissDec extends FWDefaultServletAction {
 
         try {
             FWViewBeanInterface viewBean = FWViewBeanActionFactory.newInstance(getAction(), dispatcher.getPrefix());
+            EBPucsValidationDetailViewBean vb = (EBPucsValidationDetailViewBean) viewBean;
 
             globaz.globall.http.JSPUtils.setBeanProperties(request, viewBean);
             viewBean = dispatcher.dispatch(viewBean, getAction());
@@ -50,9 +51,9 @@ public class EBActionValidationSwissDec extends FWDefaultServletAction {
             if (viewBean.getMsgType().equals(FWViewBeanInterface.ERROR) == true) {
                 destination = FWDefaultServletAction.ERROR_PAGE;
             } else {
-                destination = "/" + getAction().getApplicationPart() + "?userAction="
-                        + getAction().getApplicationPart() + "." + getAction().getPackagePart()
-                        + ".pucsValidationList.afficher";
+                destination = "/" + getAction().getApplicationPart()
+                        + "?userAction=orion.swissdec.pucsValidationDetail.afficher&id=" + vb.getCurrentId()
+                        + "&selectedIds" + vb.getSelectedIds();
             }
         } catch (Exception e) {
             e.printStackTrace();

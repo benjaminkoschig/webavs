@@ -27,7 +27,6 @@ import ch.globaz.orion.businessimpl.services.pucs.DeclarationSalaireBuilder;
 import ch.globaz.orion.service.EBPucsFileService;
 import ch.globaz.orion.ws.service.AFMassesForAffilie;
 import ch.globaz.orion.ws.service.AppAffiliationService;
-import com.google.common.base.Joiner;
 
 public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
 
@@ -48,13 +47,16 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
     private boolean codeBlocage = false;
     private boolean releveExistant = false;
     private String idReleve = null;
-    private boolean refuser = false;
-    private List<String> selectedIds = new ArrayList<String>();
+    private String selectedIds = null;
+    private List<String> listOfSelectedIds = new ArrayList<String>();
     private PucsFile pucsFile = null;
     private PucsFile nextPucsFile = null;
 
     @Override
     public void retrieve() throws Exception {
+        if (!JadeStringUtil.isEmpty(selectedIds)) {
+            listOfSelectedIds = Arrays.asList(selectedIds.split(","));
+        }
         findTheNextToValidate();
         pucsFile = EBPucsFileService.read(getCurrentId(), getSession());
         if (getNextId() != null && !getNextId().isEmpty()) {
@@ -106,10 +108,10 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
      * @return L'id du fichier PUCS à traiter
      */
     public String getCurrentId() {
-        if (!JadeStringUtil.isEmpty(id)) {
+        if (!JadeStringUtil.isEmpty(id) && !"null".equals(id)) {
             return id;
         } else {
-            return selectedIds.get(0);
+            return listOfSelectedIds.get(0);
         }
     }
 
@@ -120,11 +122,11 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
      *         du traitement de masse.
      */
     public String getNextId() {
-        if (!selectedIds.isEmpty()) {
-            int index = selectedIds.indexOf(getCurrentId());
+        if (!listOfSelectedIds.isEmpty()) {
+            int index = listOfSelectedIds.indexOf(getCurrentId());
             int nextId = index + 1;
-            if (nextId < selectedIds.size()) {
-                return selectedIds.get(nextId);
+            if (nextId < listOfSelectedIds.size()) {
+                return listOfSelectedIds.get(nextId);
             }
         }
         return null;
@@ -411,21 +413,15 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
     }
 
     public boolean isRefuser() {
-        return refuser;
-    }
-
-    public void setRefuser(boolean refuser) {
-        this.refuser = refuser;
+        return pucsFile.isRefuse();
     }
 
     public String getSelectedIds() {
-        return Joiner.on(',').join(selectedIds);
+        return selectedIds;
     }
 
     public void setSelectedIds(String selectedIds) {
-        if (!JadeStringUtil.isEmpty(selectedIds)) {
-            this.selectedIds = Arrays.asList(selectedIds.split(","));
-        }
+        this.selectedIds = selectedIds;
     }
 
     public PucsFile getPucsFile() {
@@ -434,5 +430,9 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
 
     public void setPucsFile(PucsFile pucsFile) {
         this.pucsFile = pucsFile;
+    }
+
+    public boolean isEditable() {
+        return !pucsFile.isEditable();
     }
 }

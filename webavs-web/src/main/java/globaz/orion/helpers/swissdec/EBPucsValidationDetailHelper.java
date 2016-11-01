@@ -7,6 +7,7 @@ import globaz.globall.api.BISession;
 import globaz.globall.db.BSession;
 import globaz.orion.vb.swissdec.EBPucsValidationDetailViewBean;
 import ch.globaz.orion.service.EBPucsFileService;
+import com.sun.star.uno.RuntimeException;
 
 public class EBPucsValidationDetailHelper extends FWHelper {
 
@@ -26,16 +27,31 @@ public class EBPucsValidationDetailHelper extends FWHelper {
 
     private void executeAccepter(FWViewBeanInterface viewBean, FWAction action, BISession session) {
         EBPucsValidationDetailViewBean vb = (EBPucsValidationDetailViewBean) viewBean;
-        EBPucsFileService.accepter(vb.getCurrentId(), (BSession) session);
+        try {
+            vb.retrieve();
+            EBPucsFileService.accepter(vb.getCurrentId(), (BSession) session);
+        } catch (Exception e) {
+            throw new RuntimeException("Unknown error", e);
+        }
     }
 
     private void executeRefuser(FWViewBeanInterface viewBean, FWAction action, BISession session) {
         EBPucsValidationDetailViewBean vb = (EBPucsValidationDetailViewBean) viewBean;
-        EBPucsFileService.rejeter(vb.getCurrentId(), (BSession) session);
+        try {
+            vb.retrieve();
+            EBPucsFileService.rejeter(vb.getCurrentId(), (BSession) session);
+        } catch (Exception e) {
+            throw new RuntimeException("Unknown error", e);
+        }
     }
 
     private void executeAnnulerRefuser(FWViewBeanInterface viewBean, FWAction action, BISession session) {
         EBPucsValidationDetailViewBean vb = (EBPucsValidationDetailViewBean) viewBean;
-        EBPucsFileService.annulerRejeter(vb.getCurrentId(), (BSession) session);
+        try {
+            vb.retrieve();
+            EBPucsFileService.annulerRejeter(vb.getCurrentId(), (BSession) session);
+        } catch (Exception e) {
+            throw new RuntimeException("Unknown error", e);
+        }
     }
 }

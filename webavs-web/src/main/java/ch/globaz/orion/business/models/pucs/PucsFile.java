@@ -196,6 +196,14 @@ public class PucsFile implements Serializable {
         return provenance.isSwissDec();
     }
 
+    public boolean isRefuse() {
+        return currentStatus.isRefuse();
+    }
+
+    public boolean isEditable() {
+        return currentStatus.isEditable();
+    }
+
     @Override
     public String toString() {
         return "PucsFile [anneeDeclaration=" + anneeDeclaration + ", currentStatus=" + currentStatus
@@ -206,5 +214,4 @@ public class PucsFile implements Serializable {
                 + ", isForTest=" + isForTest + ", lock=" + lock + ", isAffiliationExistante=" + isAffiliationExistante
                 + ", duplicate=" + duplicate + "]";
     }
-
 }

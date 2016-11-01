@@ -117,7 +117,7 @@ $(function () {
 			<td align ="right"><%=new FWCurrency(line.getPucsFile().getTotalControle()).toStringFormat()%></td>
 			<td align="center"><%=line.getPucsFile().getNbSalaires()%></td>
 			<td><%=line.getPucsFile().getHandlingUser()==null?"":line.getPucsFile().getHandlingUser()%></td>
-			<td><%=objSession.getCodeLibelle(line.getPucsFile().getCurrentStatus())%></td>
+			<td><%=objSession.getCodeLibelle(line.getPucsFile().getCurrentStatus().getValue())%></td>
 			<td>
 
 			<% if(line.getPucsFile().getProvenance().isPucs()) { %>

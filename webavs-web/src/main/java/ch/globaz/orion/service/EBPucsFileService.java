@@ -66,6 +66,9 @@ public class EBPucsFileService {
     }
 
     private static void changeStatut(String id, EtatPucsFile etat, BSession session) {
+        if (!etat.isEditable()) {
+            throw new RuntimeException("Le fichier ne peut pas être édité car déjà traité");
+        }
         EBPucsFileEntity entity = new EBPucsFileEntity();
         entity.setIdEntity(id);
         entity.setSession(session);

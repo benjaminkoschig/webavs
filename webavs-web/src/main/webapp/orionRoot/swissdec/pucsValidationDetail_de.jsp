@@ -44,23 +44,27 @@
 
 <%@ include file="/jade/notation/notationLibJs.jspf" %> 
 <script type="text/javascript">
+var selectedIds = '${viewBean.selectedIds}';
 
 $(document).ready(function(){
 	$('#accepter').click(function(){
 		$('button[type=button]').attr('disabled',true);
 		document.forms[0].elements('userAction').value="orion.swissdec.pucsValidationDetail.accepter";
+		$("<input type='hidden' name='selectedIds' value='"+selectedIds+"'>").appendTo('form');
 		document.forms[0].submit();
 	});
 	
 	$('#annulerRefus').click(function(){
 		$('button[type=button]').attr('disabled',true);
 		document.forms[0].elements('userAction').value="orion.swissdec.pucsValidationDetail.annulerRefus";
+		$("<input type='hidden' name='selectedIds' value='"+selectedIds+"'>").appendTo('form');
 		document.forms[0].submit();
 	});
 	
 	$('#refuser').click(function(){
 		$('button[type=button]').attr('disabled',true);
 		document.forms[0].elements('userAction').value="orion.swissdec.pucsValidationDetail.refuser";
+		$("<input type='hidden' name='selectedIds' value='"+selectedIds+"'>").appendTo('form');
 		document.forms[0].submit();
 	});
 	
@@ -409,33 +413,35 @@ $(document).ready(function(){
 			
 		</div>
 		
-		<c:if test="${!viewBean.isRefuser() && viewBean.swissDec}">
-		<div class="row-fluid">
-			  <c:if test="${viewBean.hasNext()}">
-				  <div class="span12 text-right">
-				  	<input type="checkbox" id="valideTheNext" name="valideTheNext" checked="checked" /> <ct:FWLabel key="ORION_JSP_GEB0004_TRAITER_PROCHAIN"/></br>
-				  	${viewBean.getNameNextToValidate()} </br>
-				  	&nbsp;
-				  </div>
-			  </c:if>
-			 
-		</div>
-		<div class="row-fluid">
-			  <div class="span12 text-right">
-			  	<c:if test="${viewBean.isAffiliationExistante()}">
-			   	<button type="button" id="accepter" class="btn btn-success"><strong><ct:FWLabel key="ORION_JSP_GEB0004_ACCEPTER"/></strong></button>
-			  	</c:if>
-				<button type="button" id="refuser" class="btn btn-warning"><strong><ct:FWLabel key="ORION_JSP_GEB0004_REJETER"/></strong></button>
-			  </div>
-		</div>
-		</c:if> 
-		<c:if test="${viewBean.isRefuser() && viewBean.swissDec}">
-		<div class="row-fluid">
-			<div class="span12 text-right">
-				<button type="button" id="annulerRefus" class="btn btn-danger"><strong><ct:FWLabel key="ORION_JSP_GEB0004_ANNULER_REFUS"/></strong></button>
+		<c:if test="${!viewBean.isEditable()}">
+			<c:if test="${!viewBean.isRefuser() && viewBean.swissDec}">
+			<div class="row-fluid">
+				  <c:if test="${viewBean.hasNext()}">
+					  <div class="span12 text-right">
+					  	<input type="checkbox" id="valideTheNext" name="valideTheNext" checked="checked" /> <ct:FWLabel key="ORION_JSP_GEB0004_TRAITER_PROCHAIN"/></br>
+					  	${viewBean.getNameNextToValidate()} </br>
+					  	&nbsp;
+					  </div>
+				  </c:if>
+				 
 			</div>
-		</div>
-		</c:if> 
+			<div class="row-fluid">
+				  <div class="span12 text-right">
+				  	<c:if test="${viewBean.isAffiliationExistante()}">
+				   	<button type="button" id="accepter" class="btn btn-success"><strong><ct:FWLabel key="ORION_JSP_GEB0004_ACCEPTER"/></strong></button>
+				  	</c:if>
+					<button type="button" id="refuser" class="btn btn-warning"><strong><ct:FWLabel key="ORION_JSP_GEB0004_REJETER"/></strong></button>
+				  </div>
+			</div>
+			</c:if> 
+			<c:if test="${viewBean.isRefuser() && viewBean.swissDec}">
+			<div class="row-fluid">
+				<div class="span12 text-right">
+					<button type="button" id="annulerRefus" class="btn btn-danger"><strong><ct:FWLabel key="ORION_JSP_GEB0004_ANNULER_REFUS"/></strong></button>
+				</div>
+			</div>
+			</c:if> 
+		</c:if>
 	</div>
 	
 	</form>
