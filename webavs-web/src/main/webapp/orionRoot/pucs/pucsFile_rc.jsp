@@ -1,5 +1,5 @@
+<%@page import="ch.globaz.orion.business.domaine.pucs.EtatPucsFile"%>
 <%@page import="java.util.LinkedHashMap"%>
-<%@page import="ch.globaz.orion.business.domaine.swissdec.EtatSwissDec"%>
 <%@page import="java.util.Map.Entry"%>
 <%@page import="ch.globaz.orion.business.models.pucs.PucsSearchCriteria"%>
 <%@page import="java.util.List"%>
@@ -17,10 +17,10 @@
 	idEcran = "GEB0001";
 	bButtonNew = false;
 	List<JadeCodeSysteme> codes = JadeBusinessServiceLocator.getCodeSystemeService().getFamilleCodeSysteme("EB_PUCS");
-	codes.addAll(JadeBusinessServiceLocator.getCodeSystemeService().getFamilleCodeSysteme(EtatSwissDec.CODE_FAMILLE));
+	codes.addAll(JadeBusinessServiceLocator.getCodeSystemeService().getFamilleCodeSysteme(EtatPucsFile.CODE_FAMILLE));
 	Langues langue = Langues.getLangueDepuisCodeIso(objSession.getIdLangueISO());
 	Map<String, String> map = new LinkedHashMap<String, String>();
-	String codesEnCours = PucsSearchCriteria.CS_TO_HANDLE+","+PucsSearchCriteria.CS_HANDLING+","+EtatSwissDec.A_VALIDE.getValue();
+	String codesEnCours = PucsSearchCriteria.CS_TO_HANDLE+","+PucsSearchCriteria.CS_HANDLING+","+EtatPucsFile.A_VALIDE.getValue();
 	map.put(codesEnCours, objSession.getLabel("PUCS_STATUT_EN_COURS"));
 	for(JadeCodeSysteme code: codes){
 	    map.put(code.getIdCodeSysteme(), code.getTraduction(langue));
@@ -33,6 +33,7 @@
 <%-- tpl:insert attribute="zoneScripts" --%>
 <script>
 bFind = true;
+messageNoSwissDecSelected = '<%=BSessionUtil.getSessionFromThreadContext().getLabel("JSP_NO_SWISSDEC_SELECTED") %>';
 usrAction = "orion.pucs.pucsFile.lister";
 $(document).ready(function(){
 
@@ -44,10 +45,16 @@ $(document).ready(function(){
 		}	
 	});
 	$('#selectionner_to_handle').click(function(){
+		var $entries = $("input[name*='idPucsEntryToHandle']", window.frames[0].document); 
 		if ($('#selectionner_to_handle:checked').val() != null) {
-			$("input[name*='idPucsEntryToHandle']", window.frames[0].document).attr('checked', true);
+			$entries.each(function() {
+				var $this = $(this);
+				if($this.hasClass('swissdec')) {
+					$this.attr('checked', true);
+				}
+			})
 		} else{
-			$("input[name*='idPucsEntryToHandle']", window.frames[0].document).attr('checked', false);
+			$entries.attr('checked', false);
 		}
 	});
 	
@@ -66,6 +73,27 @@ $(document).ready(function(){
 		initializeForm();
 		$(document.forms[0]).attr('target','');
 		document.forms[0].submit();
+	});
+	$('#ctrlSwissDec').click(function() {
+		var ids = [];
+		var checkboxes = $("input[name*='idPucsEntryToHandle']:checked", window.frames[0].document);
+		checkboxes.each(function() {
+			var $this = $(this);
+			if($this.hasClass('swissdec')) {
+				ids.push($(this).val());
+			}
+		});
+		
+		if(ids.length>0) {
+			removeInputs();
+			$("input[name*='userAction']").attr('value', 'orion.swissdec.pucsValidationDetail.afficher');
+			$("<input type='hidden' name='selectedIds' value='"+ids.join(',')+"'>").appendTo('form');
+			initializeForm();
+			$(document.forms[0]).attr('target','');
+			document.forms[0].submit();
+		} else {
+			alert(messageNoSwissDecSelected);
+		}
 	});
 });
 
@@ -169,6 +197,7 @@ function removeInputs(){
 <%-- tpl:insert attribute="zoneButtons" --%>
 <ct:ifhasright element="orion.pucs.pucsImport.afficher" crud="u">
 <input type="button" id="simulation" value="<ct:FWLabel key="PUCS_SIMULATION"/>"/>&nbsp;
+<input type="button" id="ctrlSwissDec" value="<ct:FWLabel key="PUCS_CONTROLE_SWISSDEC"/>"/>&nbsp;
 </ct:ifhasright>
 <ct:ifhasright element="orion.pucs.pucsImport.afficher" crud="u">
 <input type="button" id="maj" value="<ct:FWLabel key="PUCS_MISE_A_JOUR"/>"/>

@@ -24,7 +24,7 @@ import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
-import ch.globaz.orion.business.domaine.swissdec.EtatSwissDec;
+import ch.globaz.orion.business.domaine.pucs.EtatPucsFile;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import com.google.common.io.Closer;
 
@@ -201,7 +201,7 @@ public class FindPucsSwissDec {
             pucsFile.setDateDeReception(ds.getTransmissionDate().getSwissValue());
             pucsFile.setAfSeul(ds.isAfSeul());
             pucsFile.setForTest(ds.isTest());
-            pucsFile.setCurrentStatus(EtatSwissDec.A_VALIDE.getValue());
+            pucsFile.setCurrentStatus(EtatPucsFile.A_VALIDE);
             pucsFile.setDuplicate(ds.isDuplicate());
             pucsFile.setHandlingUser(session.getUserId());
             pucsFile.setFile(file);

@@ -95,10 +95,6 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
         return isValidationDefault;
     }
 
-    public void setIdPucsEntry(Collection<String> idPucsEntry) {
-        this.idPucsEntry = idPucsEntry;
-    }
-
     public void setMode(String mode) {
         this.mode = mode;
     }

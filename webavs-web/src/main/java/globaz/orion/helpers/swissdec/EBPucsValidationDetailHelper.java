@@ -4,9 +4,9 @@ import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWHelper;
 import globaz.globall.api.BISession;
-import globaz.jade.fs.JadeFsFacade;
+import globaz.globall.db.BSession;
 import globaz.orion.vb.swissdec.EBPucsValidationDetailViewBean;
-import ch.globaz.orion.business.constantes.EBProperties;
+import ch.globaz.orion.service.EBPucsFileService;
 
 public class EBPucsValidationDetailHelper extends FWHelper {
 
@@ -24,60 +24,18 @@ public class EBPucsValidationDetailHelper extends FWHelper {
         return super.execute(viewBean, action, session);
     }
 
-    private FWViewBeanInterface executeAccepter(FWViewBeanInterface viewBean, FWAction action, BISession session) {
-
+    private void executeAccepter(FWViewBeanInterface viewBean, FWAction action, BISession session) {
         EBPucsValidationDetailViewBean vb = (EBPucsValidationDetailViewBean) viewBean;
-
-        try {
-            String path = EBProperties.PUCS_SWISS_DEC_DIRECTORY_A_VALIDER.getValue() + "/" + vb.getId() + ".xml";
-            String dest = EBProperties.PUCS_SWISS_DEC_DIRECTORY.getValue() + "/" + vb.getId() + ".xml";
-
-            JadeFsFacade.copyFile(path, dest);
-            JadeFsFacade.delete(path);
-
-        } catch (Exception e) {
-            vb.setMessage(e.getMessage());
-            vb.setMsgType(FWViewBeanInterface.ERROR);
-        }
-
-        return vb;
+        EBPucsFileService.accepter(vb.getCurrentId(), (BSession) session);
     }
 
-    private FWViewBeanInterface executeRefuser(FWViewBeanInterface viewBean, FWAction action, BISession session) {
-
+    private void executeRefuser(FWViewBeanInterface viewBean, FWAction action, BISession session) {
         EBPucsValidationDetailViewBean vb = (EBPucsValidationDetailViewBean) viewBean;
-
-        try {
-            String path = EBProperties.PUCS_SWISS_DEC_DIRECTORY_A_VALIDER.getValue() + "/" + vb.getId() + ".xml";
-            String dest = EBProperties.PUCS_SWISS_DEC_DIRECTORY_REFUSER.getValue() + "/" + vb.getId() + ".xml";
-
-            JadeFsFacade.copyFile(path, dest);
-            JadeFsFacade.delete(path);
-
-        } catch (Exception e) {
-            vb.setMessage(e.getMessage());
-            vb.setMsgType(FWViewBeanInterface.ERROR);
-        }
-
-        return vb;
+        EBPucsFileService.rejeter(vb.getCurrentId(), (BSession) session);
     }
 
-    private FWViewBeanInterface executeAnnulerRefuser(FWViewBeanInterface viewBean, FWAction action, BISession session) {
-
+    private void executeAnnulerRefuser(FWViewBeanInterface viewBean, FWAction action, BISession session) {
         EBPucsValidationDetailViewBean vb = (EBPucsValidationDetailViewBean) viewBean;
-
-        try {
-            String path = EBProperties.PUCS_SWISS_DEC_DIRECTORY_REFUSER.getValue() + "/" + vb.getId() + ".xml";
-            String dest = EBProperties.PUCS_SWISS_DEC_DIRECTORY_A_VALIDER.getValue() + "/" + vb.getId() + ".xml";
-
-            JadeFsFacade.copyFile(path, dest);
-            JadeFsFacade.delete(path);
-
-        } catch (Exception e) {
-            vb.setMessage(e.getMessage());
-            vb.setMsgType(FWViewBeanInterface.ERROR);
-        }
-
-        return vb;
+        EBPucsFileService.annulerRejeter(vb.getCurrentId(), (BSession) session);
     }
 }

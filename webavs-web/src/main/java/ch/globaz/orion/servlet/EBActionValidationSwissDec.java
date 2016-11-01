@@ -5,10 +5,8 @@ import globaz.framework.controller.FWDefaultServletAction;
 import globaz.framework.controller.FWDispatcher;
 import globaz.framework.controller.FWViewBeanActionFactory;
 import globaz.framework.utils.urls.FWUrlsStack;
-import globaz.globall.db.BSession;
 import globaz.orion.vb.swissdec.EBPucsValidationDetailViewBean;
 import java.io.IOException;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,9 +47,6 @@ public class EBActionValidationSwissDec extends FWDefaultServletAction {
             viewBean = dispatcher.dispatch(viewBean, getAction());
             session.setAttribute("viewBean", viewBean);
 
-            /*
-             * choix destination
-             */
             if (viewBean.getMsgType().equals(FWViewBeanInterface.ERROR) == true) {
                 destination = FWDefaultServletAction.ERROR_PAGE;
             } else {
@@ -64,9 +59,6 @@ public class EBActionValidationSwissDec extends FWDefaultServletAction {
             destination = FWDefaultServletAction.ERROR_PAGE;
         }
 
-        /*
-         * redirection vers la destination
-         */
         goSendRedirect(destination, request, response);
     }
 
@@ -85,36 +77,17 @@ public class EBActionValidationSwissDec extends FWDefaultServletAction {
             viewBean = dispatcher.dispatch(viewBean, getAction());
             session.setAttribute("viewBean", viewBean);
 
-            /*
-             * choix destination
-             */
             if (viewBean.getMsgType().equals(FWViewBeanInterface.ERROR) == true) {
                 destination = FWDefaultServletAction.ERROR_PAGE;
             } else {
-
                 EBPucsValidationDetailViewBean vb = (EBPucsValidationDetailViewBean) viewBean;
-
-                BSession sessionOrion = (BSession) session.getAttribute("objSession");
-                List<String> lstIdFichier = (List<String>) sessionOrion.getAttribute("lstIdFichier");
-
-                if (vb.isValideTheNext() && !lstIdFichier.isEmpty()) {
-                    destination = "/" + getAction().getApplicationPart()
-                            + "?userAction=orion.swissdec.pucsValidationDetail.afficher&id=" + lstIdFichier.get(0);
-
-                } else {
-                    destination = "/" + getAction().getApplicationPart() + "?userAction="
-                            + getAction().getApplicationPart() + "." + getAction().getPackagePart()
-                            + ".pucsValidationList.afficher";
-                }
+                destination = getDestinationAccordingToValidationType(vb);
             }
         } catch (Exception e) {
             e.printStackTrace();
             destination = FWDefaultServletAction.ERROR_PAGE;
         }
 
-        /*
-         * redirection vers la destination
-         */
         goSendRedirect(destination, request, response);
     }
 
@@ -130,45 +103,34 @@ public class EBActionValidationSwissDec extends FWDefaultServletAction {
             viewBean = dispatcher.dispatch(viewBean, getAction());
             session.setAttribute("viewBean", viewBean);
 
-            /*
-             * choix destination
-             */
             if (viewBean.getMsgType().equals(FWViewBeanInterface.ERROR) == true) {
                 destination = FWDefaultServletAction.ERROR_PAGE;
             } else {
 
                 EBPucsValidationDetailViewBean vb = (EBPucsValidationDetailViewBean) viewBean;
 
-                BSession sessionOrion = (BSession) session.getAttribute("objSession");
-
-                List<String> lstIdFichier = (List<String>) sessionOrion.getAttribute("lstIdFichier");
-
-                if (vb.isValideTheNext() && !lstIdFichier.isEmpty()) {
-
+                destination = getDestinationAccordingToValidationType(vb);
+                if (vb.wantNext()) {
                     FWUrlsStack urlStack = (FWUrlsStack) session.getAttribute("urlStack");
                     urlStack.pop();
-
-                    destination = "/" + getAction().getApplicationPart()
-                            + "?userAction=orion.swissdec.pucsValidationDetail.afficher&id=" + lstIdFichier.get(0);
-
-                } else {
-
-                    destination = "/" + getAction().getApplicationPart() + "?userAction="
-                            + getAction().getApplicationPart() + "." + getAction().getPackagePart()
-                            + ".pucsValidationList.afficher";
                 }
-
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             destination = FWDefaultServletAction.ERROR_PAGE;
         }
-
-        /*
-         * redirection vers la destination
-         */
         goSendRedirect(destination, request, response);
+    }
+
+    private String getDestinationAccordingToValidationType(EBPucsValidationDetailViewBean vb) {
+        if (vb.wantNext()) {
+            return "/" + getAction().getApplicationPart()
+                    + "?userAction=orion.swissdec.pucsValidationDetail.afficher&id=" + vb.getNextId();
+
+        } else {
+            return "/" + getAction().getApplicationPart() + "?userAction=orion.pucs.pucsFile.chercher";
+        }
     }
 
     @Override

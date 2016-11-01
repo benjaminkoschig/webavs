@@ -18,13 +18,16 @@ import globaz.pyxis.adresse.formater.TIAdresseFormater;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TITiersViewBean;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import ch.globaz.draco.business.domaine.DeclarationSalaireType;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
+import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.businessimpl.services.pucs.DeclarationSalaireBuilder;
 import ch.globaz.orion.service.EBPucsFileService;
 import ch.globaz.orion.ws.service.AFMassesForAffilie;
 import ch.globaz.orion.ws.service.AppAffiliationService;
+import com.google.common.base.Joiner;
 
 public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
 
@@ -46,13 +49,20 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
     private boolean releveExistant = false;
     private String idReleve = null;
     private boolean refuser = false;
+    private List<String> selectedIds = new ArrayList<String>();
+    private PucsFile pucsFile = null;
+    private PucsFile nextPucsFile = null;
 
     @Override
     public void retrieve() throws Exception {
         findTheNextToValidate();
-        // PucsFile pucsFile = EBPucsFileService.readWithFile(id, getSession());
-
-        decSal = DeclarationSalaireBuilder.build(EBPucsFileService.readInputStream(id, getSession()));
+        pucsFile = EBPucsFileService.read(getCurrentId(), getSession());
+        if (getNextId() != null && !getNextId().isEmpty()) {
+            nextPucsFile = EBPucsFileService.read(getNextId(), getSession());
+        } else {
+            nextPucsFile = null;
+        }
+        decSal = DeclarationSalaireBuilder.build(EBPucsFileService.readInputStream(getCurrentId(), getSession()));
 
         // Recherche affiliation
         affiliation = AFAffiliationServices.getAffiliationParitaireByNumero(decSal.getNumeroAffilie(),
@@ -85,6 +95,62 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
             traiteReleve();
         }
 
+    }
+
+    /**
+     * Retourne l'id du fichier PUCS à traiter.
+     * Dans le cas où l'id est saisi, il s'agit de l'id qui sera retourné car il s'agit d'un traitement unitaire
+     * Dans le cas oû l'id n'est pas saisi, il s'agit de récupérer le premier élément de
+     * {@link EBPucsValidationDetailViewBean#selectedIds}
+     * 
+     * @return L'id du fichier PUCS à traiter
+     */
+    public String getCurrentId() {
+        if (!JadeStringUtil.isEmpty(id)) {
+            return id;
+        } else {
+            return selectedIds.get(0);
+        }
+    }
+
+    /**
+     * Retourne l'id du prochain fichier PUCS à traiter en se basant sur les selectedIds
+     * 
+     * @return String représentant le prochain document PUCS à traiter, ou null dans le cas où nous ne sommes pas dans
+     *         du traitement de masse.
+     */
+    public String getNextId() {
+        if (!selectedIds.isEmpty()) {
+            int index = selectedIds.indexOf(getCurrentId());
+            int nextId = index + 1;
+            if (nextId < selectedIds.size()) {
+                return selectedIds.get(nextId);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Retourne si il y a un fichier à traiter après celui-ci
+     * 
+     * @return true si il y a un prochain fichier
+     */
+    public boolean hasNext() {
+        return nextPucsFile != null;
+    }
+
+    /**
+     * Retourne si l'utilisateur souhaite passer au fichier PUCS suivant.
+     * Il est possible de passer au fichier PUCS suivant uniquement si il y a un fichier après l'actuel.
+     * 
+     * @return true si souhaite passer au suivant et qu'il y a un fichier suivant
+     */
+    public boolean wantNext() {
+        return hasNext() && valideTheNext;
+    }
+
+    public boolean isSwissDec() {
+        return pucsFile.isSwissDec();
     }
 
     private void traiteReleve() throws Exception {
@@ -195,14 +261,11 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
     }
 
     public String getNameNextToValidate() {
-
-        List<String> lstIdFichier = (List<String>) getSession().getAttribute("lstIdFichier");
-
-        if (!lstIdFichier.isEmpty()) {
-            return "(" + lstIdFichier.get(0) + ")";
+        if (nextPucsFile != null) {
+            return "(" + nextPucsFile.getId() + ")";
+        } else {
+            return "";
         }
-
-        return "";
     }
 
     public String getPucsFileId() {
@@ -353,5 +416,23 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
 
     public void setRefuser(boolean refuser) {
         this.refuser = refuser;
+    }
+
+    public String getSelectedIds() {
+        return Joiner.on(',').join(selectedIds);
+    }
+
+    public void setSelectedIds(String selectedIds) {
+        if (!JadeStringUtil.isEmpty(selectedIds)) {
+            this.selectedIds = Arrays.asList(selectedIds.split(","));
+        }
+    }
+
+    public PucsFile getPucsFile() {
+        return pucsFile;
+    }
+
+    public void setPucsFile(PucsFile pucsFile) {
+        this.pucsFile = pucsFile;
     }
 }

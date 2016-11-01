@@ -193,7 +193,7 @@ $(document).ready(function(){
 					<div class="panel-heading-infos std-body-height">
 						<dl class="dl-horizontal">
 							<dt><strong><ct:FWLabel key="ORION_JSP_GEB0004_FICHIER"/></strong></dt>
-							<dd>${viewBean.id}.xml</dd>
+							<dd>${viewBean.pucsFile.fileName}.xml</dd>
 							<dt><strong><ct:FWLabel key="ORION_JSP_GEB0004_TRANSMIS_LE"/></strong></dt>
 							<dd>${viewBean.decSal.transmissionDate}</dd>
 							<dt><strong><ct:FWLabel key="ORION_JSP_GEB0004_ANNEE"/></strong></dt>
@@ -208,14 +208,14 @@ $(document).ready(function(){
 						<strong><ct:FWLabel key="ORION_JSP_GEB0004_SWISSDEC"/></strong>
 						<div class="text-right" style="margin: 0; padding: 0; float: right; position: relative;bottom: 7px; right: -12px">
 							<a data-g-download="docType:pdf,
-										parametres:¦${viewBean.id},<%=DeclarationSalaireProvenance.SWISS_DEC%>,<%=etatSwissDecPucsFile%>¦,
+										parametres:¦${viewBean.currentId},<%=DeclarationSalaireProvenance.SWISS_DEC%>,<%=etatSwissDecPucsFile%>¦,
 					                    serviceClassName:ch.globaz.orion.business.services.pucs.PucsService,
 					                    displayOnlyImage:true,
 					                    serviceMethodName:pucFileLisible,
 					                    docName:${viewBean.decSal.numeroAffilie}_${pucs.anneeDeclaration}_declarationSalaire"
 							></a>
 							<a data-g-download="docType:xls,
-										parametres:¦${viewBean.id},<%=DeclarationSalaireProvenance.SWISS_DEC%>,<%=etatSwissDecPucsFile%>¦,
+										parametres:¦${viewBean.currentId},<%=DeclarationSalaireProvenance.SWISS_DEC%>,<%=etatSwissDecPucsFile%>¦,
 					                    serviceClassName:ch.globaz.orion.business.services.pucs.PucsService,
 					                    displayOnlyImage:true,
 					                    serviceMethodName:pucFileLisibleXls,
@@ -223,11 +223,11 @@ $(document).ready(function(){
 					                    byPassExtentionXml: true"
 							></a>
 							<a data-g-download="docType:xml,
-										parametres:¦${viewBean.id},<%=DeclarationSalaireProvenance.SWISS_DEC%>,<%=etatSwissDecPucsFile%>¦,
+										parametres:¦${viewBean.currentId},<%=DeclarationSalaireProvenance.SWISS_DEC%>,<%=etatSwissDecPucsFile%>¦,
 					                    serviceClassName:ch.globaz.orion.business.services.pucs.PucsService,
 					                    displayOnlyImage:true,
 					                    serviceMethodName:pucFileLisibleXml,
-					                    docName:${viewBean.id}"
+					                    docName:${viewBean.currentId}"
 							></a>
 						</div>
 					</div>
@@ -409,13 +409,15 @@ $(document).ready(function(){
 			
 		</div>
 		
-		<c:if test="${!viewBean.isRefuser()}">
+		<c:if test="${!viewBean.isRefuser() && viewBean.swissDec}">
 		<div class="row-fluid">
-			  <div class="span12 text-right">
-			  	<input type="checkbox" id="valideTheNext" name="valideTheNext" /> <ct:FWLabel key="ORION_JSP_GEB0004_TRAITER_PROCHAIN"/></br>
-			  	${viewBean.getNameNextToValidate()} </br>
-			  	&nbsp;
-			  </div>
+			  <c:if test="${viewBean.hasNext()}">
+				  <div class="span12 text-right">
+				  	<input type="checkbox" id="valideTheNext" name="valideTheNext" checked="checked" /> <ct:FWLabel key="ORION_JSP_GEB0004_TRAITER_PROCHAIN"/></br>
+				  	${viewBean.getNameNextToValidate()} </br>
+				  	&nbsp;
+				  </div>
+			  </c:if>
 			 
 		</div>
 		<div class="row-fluid">
@@ -427,7 +429,7 @@ $(document).ready(function(){
 			  </div>
 		</div>
 		</c:if> 
-		<c:if test="${viewBean.isRefuser()}">
+		<c:if test="${viewBean.isRefuser() && viewBean.swissDec}">
 		<div class="row-fluid">
 			<div class="span12 text-right">
 				<button type="button" id="annulerRefus" class="btn btn-danger"><strong><ct:FWLabel key="ORION_JSP_GEB0004_ANNULER_REFUS"/></strong></button>

@@ -5,12 +5,6 @@
 		<label refId="MENU_PRINCIPAL"/>
 		<nodes>
 			<node>
-				<label refId="MENU_VALIDATION_SWISSDEC"/>
-				<action command="/orion" responseTarget="fr_main">
-					<parameter name="userAction" value="orion.swissdec.pucsValidationList.afficher"/>
-				</action>
-			</node>
-			<node>
 				<label refId="LIST_PUCS_FILE"/>
 				<action command="/orion" responseTarget="fr_main">
 					<parameter name="userAction" value="orion.pucs.pucsFile.chercher"/>

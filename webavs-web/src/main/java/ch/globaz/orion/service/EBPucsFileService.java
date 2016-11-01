@@ -8,22 +8,27 @@ import java.util.List;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.globaz.orion.business.domaine.pucs.EtatPucsFile;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.db.EBPucsFileEntity;
 
 public class EBPucsFileService {
-
-    public static PucsFile readWithFile(String id, BSession session) {
+    public static PucsFile read(String id, BSession session) {
         EBPucsFileEntity entity = new EBPucsFileEntity();
         entity.setIdEntity(id);
         entity.setSession(session);
         try {
             entity.retrieve();
-            entity.setFile(entity.retriveFile());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return convert(entity);
+    }
+
+    public static PucsFile readWithFile(String id, BSession session) {
+        PucsFile pucsFile = read(id, session);
+        pucsFile.setFile(retriveFile(id, session));
+        return pucsFile;
     }
 
     public static InputStream readInputStream(String id, BSession session) {
@@ -46,6 +51,31 @@ public class EBPucsFileService {
             pucsFilesFinal.add(convert(entity));
         }
         return pucsFilesFinal;
+    }
+
+    public static void accepter(String id, BSession session) {
+        changeStatut(id, EtatPucsFile.A_TRAITER, session);
+    }
+
+    public static void rejeter(String id, BSession session) {
+        changeStatut(id, EtatPucsFile.REJETE, session);
+    }
+
+    public static void annulerRejeter(String id, BSession session) {
+        changeStatut(id, EtatPucsFile.A_VALIDE, session);
+    }
+
+    private static void changeStatut(String id, EtatPucsFile etat, BSession session) {
+        EBPucsFileEntity entity = new EBPucsFileEntity();
+        entity.setIdEntity(id);
+        entity.setSession(session);
+        try {
+            entity.retrieve();
+            entity.setStatut(Integer.parseInt(etat.getValue()));
+            entity.save();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static PucsFile convert(EBPucsFileEntity entity) {

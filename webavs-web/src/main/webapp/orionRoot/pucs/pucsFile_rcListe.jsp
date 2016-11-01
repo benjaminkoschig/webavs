@@ -40,7 +40,7 @@
 	    width: 14px;
 	}
 
-	
+	c
 	.icon-lock {
 	    background-position: -287px -24px;
 	    background-image: url("../webavs/orionRoot/img/glyphicons-halflings.png");
@@ -55,15 +55,10 @@
 </style>
 <%@ include file="/theme/list/javascripts.jspf" %>
 <script type="text/javascript">
-
 $(function () {
-	$("TBODY").on("click","TD", function (e) {
+	$("TBODY").on("click","TD:not(.pucsEntryHandling)", function (e) {
 		var id = $(this).parent().attr("id");
-		console.log(id)
-		//alret(id)
-		//orion?userAction=orion.swissdec.pucsValidationList.afficher
 		parent.location.href='orion?userAction=orion.swissdec.pucsValidationDetail.afficher&selectedId='+id;
-
 	})
 });
 </script>
@@ -102,19 +97,15 @@ $(function () {
 			%>
 			<tr id="<%=line.getId()%>" class="<%=rowStyle%>" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'rowHighligthed')" onMouseOut="jscss('swap', this, 'rowHighligthed', '<%=rowStyle%>')">
 			
-			<td style="text-align: center;">
-				<%if(!line.hasLock() ){%>
-					<% if(line.getPucsFile().isStatusHandling()) {%>
-						<input type="checkbox" name="idPucsEntryHandling" value='<%= EBDanUtils.createPucsDataForProcess(line.getPucsFile())%>'/>
-					<%} else {%>
-						<input type="checkbox" name="idPucsEntryToHandle" value='<%= EBDanUtils.createPucsDataForProcess(line.getPucsFile())%>'/>
-					<%}%>
+			<td class="pucsEntryHandling" style="text-align: center">
+				<%if(!line.hasLock()) {%>
+						<input type="checkbox" class="pucsEntryHandling <% if(line.getPucsFile().isSwissDec()) { out.print("swissdec");} %>" name="idPucsEntryToHandle" value='<%= line.getPucsFile().getIdDb()%>'/>
 				<%} else {%>
 					<span><i title="<%=line.getMessageLock() %>" class="icon-lock" ></i></span> 
 				<%}%>
 				
 			</td>
-			<td><%=line.getPucsFile().getNumeroAffilie()%> <span data-g-note="idExterne:<%=line.getPucsFile().getIdDb()%>,  tableSource: EBPUCS_FILE, inList: true"> </span></td>
+			<td class="pucsEntryHandling"><%=line.getPucsFile().getNumeroAffilie()%> <span data-g-note="idExterne:<%=line.getPucsFile().getIdDb()%>,  tableSource: EBPUCS_FILE, inList: true"> </span></td>
 			<td> 
 				<%if (line.getPucsFile().isForTest()){%>
 				 	<i title ="<ct:FWLabel key='PUCS_TEST_FILE'/>" class="icon-check"></i>

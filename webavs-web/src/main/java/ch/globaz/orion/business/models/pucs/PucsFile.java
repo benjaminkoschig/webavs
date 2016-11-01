@@ -3,6 +3,7 @@ package ch.globaz.orion.business.models.pucs;
 import java.io.File;
 import java.io.Serializable;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.globaz.orion.business.domaine.pucs.EtatPucsFile;
 
 public class PucsFile implements Serializable {
 
@@ -111,6 +112,10 @@ public class PucsFile implements Serializable {
         this.currentStatus = currentStatus;
     }
 
+    public void setCurrentStatus(EtatPucsFile etat) {
+        currentStatus = etat.getValue();
+    }
+
     public void setDateDeReception(String dateDeReception) {
         this.dateDeReception = dateDeReception;
     }
@@ -185,6 +190,14 @@ public class PucsFile implements Serializable {
 
     public void setAffiliationExistante(boolean isAffiliationExistante) {
         this.isAffiliationExistante = isAffiliationExistante;
+    }
+
+    public String getFileName() {
+        return id;
+    }
+
+    public boolean isSwissDec() {
+        return provenance.isSwissDec();
     }
 
     @Override

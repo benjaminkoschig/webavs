@@ -277,7 +277,6 @@ public class EBPucsFileEntity extends JadeEntity {
     public String getIdAffiliation() {
         return idAffiliation;
     }
-
     public void setIdAffiliation(String idAffiliation) {
         this.idAffiliation = idAffiliation;
     }
