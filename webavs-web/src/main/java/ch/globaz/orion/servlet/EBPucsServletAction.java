@@ -10,6 +10,8 @@ import globaz.framework.servlets.FWServlet;
 import globaz.globall.db.BIPersistentObject;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.orion.process.importpucs.EBImportPucsDan;
+import globaz.orion.process.importpucs.EBImportSwissDec;
 import globaz.orion.vb.pucs.EBPucsFileViewBean;
 import globaz.orion.vb.pucs.EBPucsImportViewBean;
 import java.io.IOException;
@@ -18,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import ch.globaz.common.process.byitem.ProcessItemsFactory;
 
 public class EBPucsServletAction extends EBAbstractServletAction {
 
@@ -74,6 +77,12 @@ public class EBPucsServletAction extends EBAbstractServletAction {
             FWDispatcher dispatcher) throws javax.servlet.ServletException, java.io.IOException {
         if (getAction().getActionPart().equals("changeUser")) {
             _actionChangeUser(session, request, response, dispatcher);
+        } else if (getAction().getActionPart().equals("importInDb")) {
+            BSession bsession = (BSession) ((FWController) session.getAttribute("objController")).getSession();
+            ProcessItemsFactory.newInstance().session(bsession).start(new EBImportSwissDec()).build();
+            ProcessItemsFactory.newInstance().session(bsession).start(new EBImportPucsDan()).build();
+            String destination = "/" + getAction().getApplicationPart() + "?userAction=orion.pucs.pucsFile.chercher";
+            goSendRedirect(destination, request, response);
         }
     }
 

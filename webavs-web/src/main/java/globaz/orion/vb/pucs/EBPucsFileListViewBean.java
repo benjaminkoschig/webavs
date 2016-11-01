@@ -63,16 +63,12 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
     }
 
     private void perpareList() {
-
         List<EBPucsFileEntity> list = manager.toList();
         pucsFilesFinal = EBPucsFileService.entitiesToPucsFile(list);
 
         mapAffiliation = findAffiliations(list);
         mapNumAffiliationParticularite = resolveParticularites(mapAffiliation);
-
-        // ProcessItemsFactory.newInstance().session((BSession) getISession()).start(new EBImportSwissDec()).build();
         sortByFusionable();
-        // ProcessItemsFactory.newInstance().session((BSession) getISession()).start(new EBImportPucsDan()).build();
     }
 
     private Map<String, AFAffiliation> findAffiliations(List<EBPucsFileEntity> list) {

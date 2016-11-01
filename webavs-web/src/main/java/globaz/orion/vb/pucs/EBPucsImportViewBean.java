@@ -38,7 +38,7 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
     private Collection<String> idMiseEnGed = new ArrayList<String>();
     private Collection<String> idValidationDeLaDs = new ArrayList<String>();
     private String mode = "";
-    private Map<String, List<PucsFile>> mapPucsByNumAffilie = new TreeMap<String, List<PucsFile>>();
+    private Map<String, Collection<PucsFile>> mapPucsByNumAffilie = new TreeMap<String, Collection<PucsFile>>();
     private Boolean isMiseEnGedDefault = false;
     private Boolean isValidationDefault = false;
     private String fusionJson = "";
@@ -104,6 +104,7 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
         isValidationDefault = EBProperties.VALIDATION_DEFAULT.getBooleanValue();
         JadeGedFacade.isInstalled();
         getPucsToMerge();
+        mapPucsByNumAffilie = toMapPucsByNumAffilie();
     }
 
     public Boolean getIsMiseEnGedDefault() {
@@ -199,7 +200,8 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
         this.selectedIds = selectedIds;
     }
 
-    public Map<String, Collection<PucsFile>> getMapPucsByNumAffilie() {
+    private Map<String, Collection<PucsFile>> toMapPucsByNumAffilie() {
+
         return Multimaps.index(pucsFiles, new Function<PucsFile, String>() {
             @Override
             public String apply(PucsFile pucs) {

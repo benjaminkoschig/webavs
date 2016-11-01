@@ -85,8 +85,14 @@ public class EBTreatPucsFiles extends BProcess {
     private boolean simulation = false;
     private Map<String, List<String>> pucsToMerge;
     private List<PucsFile> pucsEntrys = new ArrayList<PucsFile>();
+
+    private List<String> idsPucsDb = new ArrayList<String>();
     private Collection<String> idMiseEnGed = new ArrayList<String>();
     private Collection<String> idValidationDeLaDs = new ArrayList<String>();
+
+    public void setIdsPucsDb(List<String> idsPucsDb) {
+        this.idsPucsDb = idsPucsDb;
+    }
 
     public List<PucsFile> getPucsEntrysToLoad() {
         return pucsEntrysToLoad;

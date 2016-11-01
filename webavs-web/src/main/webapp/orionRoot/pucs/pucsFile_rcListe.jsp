@@ -40,7 +40,7 @@
 	    width: 14px;
 	}
 
-	c
+	
 	.icon-lock {
 	    background-position: -287px -24px;
 	    background-image: url("../webavs/orionRoot/img/glyphicons-halflings.png");

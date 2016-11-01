@@ -170,12 +170,25 @@ $(document).ready(function(){
 	color: green;
 }
 
+.ui-dialog{
+	height:650px;
+}
+
+.nbNoteIcone{
+	top :2px !important;
+}
+
+#memo{
+	height: 100px !important;
+}
+
 </style>
 
 <TITLE><%=idEcran%></TITLE>
 </HEAD>
 <body style="background-color: #B3C4DB">
 	<div class="title thDetail text-center" style="width: 100%">
+		<span style="float: left;" data-g-note="idExterne:${viewBean.pucsFile.idDb},  tableSource: EBPUCS_FILE, inList: false"> </span>
 		<ct:FWLabel key="ORION_JSP_GEB0004_TITRE_VALIDATION_FICHIER_SWISSDEC"/>
 		<span class="idEcran"><%=(null==idEcran)?"":idEcran%></span>
 	</div>

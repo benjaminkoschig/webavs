@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import ch.globaz.orion.business.domaine.pucs.EtatPucsFile;
 import ch.globaz.orion.business.exceptions.OrionPucsException;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.business.models.pucs.PucsFileComparator;
@@ -51,6 +52,7 @@ public class EBImportPucsDan extends ImportPucsPorcess {
         List<Dan> danFile = loadDan(getSession());
         List<PucsFile> pucsFiles = mergeList(pucsFilesEbu, danFile);
         for (PucsFile pucsFile : pucsFiles) {
+            pucsFile.setCurrentStatus(EtatPucsFile.A_TRAITER);
             String filePath = PucsServiceImpl.retrieveFile(pucsFile.getId(), pucsFile.getProvenance(),
                     EtatSwissDecPucsFile.A_TRAITER);
             File file = new File(filePath);
