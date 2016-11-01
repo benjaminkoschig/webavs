@@ -18,7 +18,8 @@ public class EBPucsFileService {
         entity.setIdEntity(id);
         entity.setSession(session);
         try {
-            entity.retrieveWithFile();
+            entity.retrieve();
+            entity.setFile(entity.retriveFile());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
