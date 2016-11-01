@@ -1,7 +1,6 @@
 <%@page import="ch.globaz.orion.business.domaine.pucs.EtatPucsFile"%>
 <%@page import="java.util.LinkedHashMap"%>
 <%@page import="java.util.Map.Entry"%>
-<%@page import="ch.globaz.orion.business.models.pucs.PucsSearchCriteria"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
 <%@page import="globaz.globall.db.BSessionUtil"%>
@@ -16,17 +15,15 @@
 <%
 	idEcran = "GEB0001";
 	bButtonNew = false;
-	List<JadeCodeSysteme> codes = JadeBusinessServiceLocator.getCodeSystemeService().getFamilleCodeSysteme("EB_PUCS");
-	codes.addAll(JadeBusinessServiceLocator.getCodeSystemeService().getFamilleCodeSysteme(EtatPucsFile.CODE_FAMILLE));
+	List<JadeCodeSysteme> codes = JadeBusinessServiceLocator.getCodeSystemeService().getFamilleCodeSysteme(EtatPucsFile.CODE_FAMILLE);
 	Langues langue = Langues.getLangueDepuisCodeIso(objSession.getIdLangueISO());
 	Map<String, String> map = new LinkedHashMap<String, String>();
-	String codesEnCours = PucsSearchCriteria.CS_TO_HANDLE+","+PucsSearchCriteria.CS_HANDLING+","+EtatPucsFile.A_VALIDE.getValue();
+	String codesEnCours = EtatPucsFile.A_TRAITER.getValue()+","+EtatPucsFile.EN_TRAITEMENT.getValue()+","+EtatPucsFile.A_VALIDE.getValue();
 	map.put(codesEnCours, objSession.getLabel("PUCS_STATUT_EN_COURS"));
 	for(JadeCodeSysteme code: codes){
 	    map.put(code.getIdCodeSysteme(), code.getTraduction(langue));
 	}
 	
-	//CodeSystemeResolver codeSystemeResolver = new CodeSystemeResolver();
 %>
 <%-- /tpl:insert --%>
 <%@ include file="/theme/find/javascripts.jspf" %>
@@ -56,6 +53,13 @@ $(document).ready(function(){
 		} else{
 			$entries.attr('checked', false);
 		}
+	});
+	
+	$("#importFileInDb").click(function(){
+		alert(3)
+		$("input[name*='userAction']").attr('value', 'orion.pucs.pucsFile.importInDb');
+		$(document.forms[0]).attr('target','');
+		document.forms[0].submit();
 	});
 	
 	$('#simulation').click(function(){
@@ -187,6 +191,8 @@ function getSelectedIds(type) {
 <ct:ifhasright element="orion.pucs.pucsImport.afficher" crud="u">
 <input type="button" id="simulation" value="<ct:FWLabel key="PUCS_SIMULATION"/>"/>&nbsp;
 <input type="button" id="ctrlSwissDec" value="<ct:FWLabel key="PUCS_CONTROLE_SWISSDEC"/>"/>&nbsp;
+<input type="button" id="importFileInDb" value="<ct:FWLabel key="IMPORT_FILE"/>"/>&nbsp;
+
 </ct:ifhasright>
 <ct:ifhasright element="orion.pucs.pucsImport.afficher" crud="u">
 <input type="button" id="maj" value="<ct:FWLabel key="PUCS_MISE_A_JOUR"/>"/>
