@@ -40,6 +40,7 @@ CREATE TABLE SCHEMA.EBPUCS_FILE (
    IS_AF_SEUL decimal(1,0),
    DUPLICATE  decimal(1,0),
    SAL_INF_LIMIT  decimal(1,0),
+   SEARCH_STRING varchar(1000)
    PSPY char(24),
    PRIMARY KEY(ID)
 );
