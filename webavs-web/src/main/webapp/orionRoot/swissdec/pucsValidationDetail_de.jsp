@@ -1,4 +1,4 @@
-<%@page import="ch.globaz.orion.businessimpl.services.pucs.EtatSwissDecPucsFile"%>
+<%@page import="ch.globaz.orion.business.domaine.pucs.EtatPucsFile"%>
 <%@page import="ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance"%>
 <%@ page language="java" import="globaz.globall.http.*" %>
 <%@page import="globaz.jade.common.Jade"%>
@@ -20,9 +20,9 @@
 	String lienDraco = servletContext + "/draco?userAction=draco.declaration.declaration.afficher&selectedId="+viewBean.getIdDeclarationSalaireExistante();
 	String lienReleve = servletContext + "/naos?userAction=naos.releve.apercuReleve.afficher&selectedId="+viewBean.getIdReleve();
 	
-	String etatSwissDecPucsFile = EtatSwissDecPucsFile.A_VALIDER.toString();
+	String etatSwissDecPucsFile = EtatPucsFile.A_VALIDE.toString();
 	if(viewBean.isRefuser()) {
-	    etatSwissDecPucsFile = EtatSwissDecPucsFile.REJETER.toString();
+	    etatSwissDecPucsFile = EtatPucsFile.REJETE.toString();
 	}
 %>
  
