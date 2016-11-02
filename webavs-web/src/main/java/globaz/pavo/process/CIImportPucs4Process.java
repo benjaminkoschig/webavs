@@ -51,7 +51,6 @@ import globaz.pavo.db.inscriptions.declaration.CIImportPucs4DetailResultBean;
 import globaz.pavo.db.inscriptions.declaration.CIImportPucs4DetailResultInscriptionBean;
 import globaz.pavo.db.inscriptions.declaration.CIImportPucs4ResumeBean;
 import globaz.pavo.print.list.CIImportPucs4ResultList;
-import globaz.pavo.service.ebusiness.CIEbusinessAccessInterface;
 import globaz.pavo.util.CIUtil;
 import globaz.webavs.common.CommonExcelmlContainer;
 import java.io.IOException;
@@ -72,6 +71,7 @@ import ch.globaz.orion.business.domaine.pucs.Employee;
 import ch.globaz.orion.business.domaine.pucs.PeriodeSalary;
 import ch.globaz.orion.business.domaine.pucs.SalaryAvs;
 import ch.globaz.orion.business.domaine.pucs.SalaryCaf;
+import ch.globaz.orion.service.EBEbusinessInterface;
 import com.google.common.base.Splitter;
 
 /**
@@ -193,7 +193,7 @@ public class CIImportPucs4Process extends BProcess {
     private TreeMap<String, Object> hNbrInscriptionsTotalControle = new TreeMap<String, Object>();
     private TreeMap<String, Object> hNbrInscriptionsTraites = new TreeMap<String, Object>();
 
-    private static CIEbusinessAccessInterface ebusinessAccessInstance = null;
+    private static EBEbusinessInterface ebusinessAccessInstance = null;
 
     // Cette table contient les journaux déjà crée
     // si le journal existait déjà avant le traitement, la clé est quand même mise dans cette table et la valeur sera
@@ -208,7 +208,7 @@ public class CIImportPucs4Process extends BProcess {
         this.nombreInscriptions = nombreInscriptions;
     }
 
-    public static void initEbusinessAccessInstance(CIEbusinessAccessInterface instance) {
+    public static void initEbusinessAccessInstance(EBEbusinessInterface instance) {
         if (CIImportPucs4Process.ebusinessAccessInstance == null) {
             CIImportPucs4Process.ebusinessAccessInstance = instance;
         }

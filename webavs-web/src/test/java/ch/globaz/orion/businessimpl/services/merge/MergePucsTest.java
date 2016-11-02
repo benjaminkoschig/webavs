@@ -12,22 +12,23 @@ import ch.globaz.orion.business.models.pucs.PucsFile;
 
 public class MergePucsTest {
 
-    // @Test
+    @Ignore
+    @Test
     public void testMerge() throws Exception {
         String workDir = "testsresources\\ch\\globaz\\orion\\businessimpl\\services\\merge\\";
         MergePucs mergePucs = new MergePucs(workDir);
 
         List<PucsFile> files = new ArrayList<PucsFile>();
         PucsFile pucsFile1 = new PucsFile();
-        pucsFile1.setId("testOne");
+        pucsFile1.setFilename("testOne");
         pucsFile1.setProvenance(DeclarationSalaireProvenance.SWISS_DEC);
         PucsFile pucsFile2 = new PucsFile();
-        pucsFile2.setId("testTwo");
+        pucsFile2.setFilename("testTwo");
         pucsFile2.setProvenance(DeclarationSalaireProvenance.SWISS_DEC);
         files.add(pucsFile1);
         files.add(pucsFile2);
 
-        Document document = mergePucs.mergeForAffilie(files).getDocument();
+        Document document = mergePucs.mergeForAffilie(files, null).getDocument();
         String filePath = mergePucs.out("1078865-10", document);
 
         ElementsDomParser parser = new ElementsDomParser(filePath);
@@ -43,15 +44,15 @@ public class MergePucsTest {
 
         List<PucsFile> files = new ArrayList<PucsFile>();
         PucsFile pucsFile1 = new PucsFile();
-        pucsFile1.setId("testOneAfSeul");
+        pucsFile1.setFilename("testOneAfSeul");
         pucsFile1.setProvenance(DeclarationSalaireProvenance.SWISS_DEC);
         PucsFile pucsFile2 = new PucsFile();
-        pucsFile2.setId("testOneTwoAfSeul");
+        pucsFile2.setFilename("testOneTwoAfSeul");
         pucsFile2.setProvenance(DeclarationSalaireProvenance.SWISS_DEC);
         files.add(pucsFile1);
         files.add(pucsFile2);
 
-        Document document = mergePucs.mergeForAffilie(files).getDocument();
+        Document document = mergePucs.mergeForAffilie(files, null).getDocument();
         String filePath = mergePucs.out("1078865-10-Af_Seul", document);
         ElementsDomParser parser = new ElementsDomParser(filePath);
         assertEquals(2, parser.find("Person").getResult().get(0).getLength());
@@ -84,10 +85,10 @@ public class MergePucsTest {
     public void testIsSameProvenance() throws Exception {
         List<PucsFile> files = new ArrayList<PucsFile>();
         PucsFile pucsFile1 = new PucsFile();
-        pucsFile1.setId("testOne");
+        pucsFile1.setFilename("testOne");
         pucsFile1.setProvenance(DeclarationSalaireProvenance.SWISS_DEC);
         PucsFile pucsFile2 = new PucsFile();
-        pucsFile2.setId("testTwo");
+        pucsFile2.setFilename("testTwo");
         pucsFile2.setProvenance(DeclarationSalaireProvenance.SWISS_DEC);
         files.add(pucsFile1);
         files.add(pucsFile2);
@@ -95,7 +96,7 @@ public class MergePucsTest {
         assertTrue(MergePucs.isSameProvenance(files));
 
         PucsFile pucsFile3 = new PucsFile();
-        pucsFile3.setId("testTwo");
+        pucsFile3.setFilename("testTwo");
         pucsFile3.setProvenance(DeclarationSalaireProvenance.DAN);
         files.add(pucsFile3);
 

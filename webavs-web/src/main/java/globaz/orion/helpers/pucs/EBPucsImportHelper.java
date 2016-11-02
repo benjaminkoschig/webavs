@@ -29,6 +29,7 @@ public class EBPucsImportHelper extends FWHelper {
         EBPucsImportViewBean vb = (EBPucsImportViewBean) viewBean;
 
         try {
+            vb.retrieve();
 
             List<PucsFile> pucsEntrys = new ArrayList<PucsFile>();
 

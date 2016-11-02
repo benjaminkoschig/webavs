@@ -5,9 +5,9 @@ import ch.globaz.common.jadedb.TableDefinition;
 public enum EBPucsFileMergedTableDef implements TableDefinition {
     ID("ID", String.class, true),
     ID_PUCS_FILE("ID_PUCS_FILE", String.class),
-    ID_MERGED("ID_PUCS_FILE", String.class);
+    ID_MERGED("ID_MERGED", String.class);
 
-    public static final String TABLE = "EBPUC_FILE_MERGED";
+    public static final String TABLE = "EBPUCS_MERGED";
     private String column;
     private Class<?> type;
     private boolean primaryKey = false;

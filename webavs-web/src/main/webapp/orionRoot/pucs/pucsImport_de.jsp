@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<%@page import="ch.globaz.orion.businessimpl.services.pucs.EtatSwissDecPucsFile"%>
+<%@page import="ch.globaz.orion.business.domaine.pucs.EtatPucsFile"%>
 <%@ page language="java"  import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@page import="globaz.orion.vb.pucs.EBPucsImportViewBean"%>
@@ -166,6 +166,7 @@ $(function() {
 										
 	<tr>
 		<td>
+			<input type="hidden" name="selectedIds" value="${viewBean.selectedIds}" />
 			<input type="hidden" name="mode" value="${viewBean.mode}"/>
 			 <c:if test="${viewBean.isSimulation()}">
 			 	<h2><ct:FWLabel key="MODE_SIMULATION"/></h2>
@@ -238,14 +239,14 @@ $(function() {
 			
 								 <c:if test="${viewBean.hasRightAccesSecurity(pucs.numeroAffilie)}">
 										<a data-g-download="docType:pdf,
-													parametres:¦${pucs.idDb},${pucs.provenance},<%=EtatSwissDecPucsFile.A_TRAITER%>¦,
+													parametres:¦${pucs.idDb},${pucs.provenance},<%=EtatPucsFile.A_TRAITER%>¦,
 								                    serviceClassName:ch.globaz.orion.business.services.pucs.PucsService,
 								                    displayOnlyImage:true,
 								                    serviceMethodName:pucFileLisible,
 								                    docName:${viewBean.numeroInforom}_${pucs.numeroAffilie}_${pucs.anneeDeclaration}_declarationSalaire"
 										/>
 										<a data-g-download="docType:xls,
-													parametres:¦${pucs.idDb},${pucs.provenance},<%=EtatSwissDecPucsFile.A_TRAITER%>¦,
+													parametres:¦${pucs.idDb},${pucs.provenance},<%=EtatPucsFile.A_TRAITER%>¦,
 								                    serviceClassName:ch.globaz.orion.business.services.pucs.PucsService,
 								                    displayOnlyImage:true,
 								                    serviceMethodName:pucFileLisibleXls,
@@ -253,14 +254,13 @@ $(function() {
 								                    byPassExtentionXml: true"
 										/>
 										<a data-g-download="docType:xml,
-													parametres:¦${pucs.idDb},${pucs.provenance},<%=EtatSwissDecPucsFile.A_TRAITER%>¦,
+													parametres:¦${pucs.idDb},${pucs.provenance},<%=EtatPucsFile.A_TRAITER%>¦,
 								                    serviceClassName:ch.globaz.orion.business.services.pucs.PucsService,
 								                    displayOnlyImage:true,
 								                    serviceMethodName:pucFileLisibleXml,
 								                    docName:${pucs.numeroAffilie}_${pucs.anneeDeclaration}_declarationSalaire"
 										/>
 									</c:if>
-						
 								</td>
 							</tr> 
 						</c:forEach>

@@ -58,7 +58,6 @@ import globaz.pavo.db.inscriptions.declaration.CIDeclarationTextIterator;
 import globaz.pavo.db.inscriptions.declaration.CIDeclarationsAnciensClientsIterator;
 import globaz.pavo.db.inscriptions.declaration.ICIDeclarationIterator;
 import globaz.pavo.db.inscriptions.declaration.ICIDeclarationOutput;
-import globaz.pavo.service.ebusiness.CIEbusinessAccessInterface;
 import globaz.pavo.util.CIUtil;
 import globaz.webavs.common.CommonExcelmlContainer;
 import java.io.IOException;
@@ -72,15 +71,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.globaz.orion.service.EBEbusinessInterface;
 import com.google.common.base.Splitter;
 
 public class CIDeclarationPUCS4 extends BProcess {
 
-    private static CIEbusinessAccessInterface ebusinessAccessInstance = null;
+    private static EBEbusinessInterface ebusinessAccessInstance = null;
     private boolean traitementAFSeul = false;
     private DSValideMontantDeclarationProcess theCalculMasseProcess;
 
-    public static void initEbusinessAccessInstance(CIEbusinessAccessInterface instance) {
+    public static void initEbusinessAccessInstance(EBEbusinessInterface instance) {
         if (CIDeclarationPUCS4.ebusinessAccessInstance == null) {
             CIDeclarationPUCS4.ebusinessAccessInstance = instance;
         }

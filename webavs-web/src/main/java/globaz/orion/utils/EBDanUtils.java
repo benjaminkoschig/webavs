@@ -298,7 +298,7 @@ public class EBDanUtils {
 
         pucsRetour.setDateDeReception(globaz.globall.util.JACalendar.format(date, JACalendar.FORMAT_DDsMMsYYYY));
         pucsRetour.setHandlingUser(pucsTemp.getHandLingUser());
-        pucsRetour.setId(String.valueOf(pucsTemp.getIdDan())); //
+        pucsRetour.setFilename(String.valueOf(pucsTemp.getIdDan())); //
         pucsRetour.setNbSalaires(String.valueOf(pucsTemp.getNombreSalaire()));
         pucsRetour.setNomAffilie(pucsTemp.getAffilie().getNom());
         pucsRetour.setNumeroAffilie(pucsTemp.getAffilie().getNumeroAffilie());
@@ -322,7 +322,7 @@ public class EBDanUtils {
         pucsRetour.setCurrentStatus(EBDanUtils.converStatus(pucsTemp.getStatusActuelLabel()));
         pucsRetour.setDateDeReception(pucsTemp.getSoumissionLabel());
         pucsRetour.setHandlingUser(pucsTemp.getHandlingUser());
-        pucsRetour.setId(String.valueOf(pucsTemp.getIdPucsEntry()));
+        pucsRetour.setFilename(String.valueOf(pucsTemp.getIdPucsEntry()));
         pucsRetour.setNomAffilie(pucsTemp.getNomAffilie());
         pucsRetour.setNumeroAffilie(pucsTemp.getNoAffilie());
         pucsRetour.setProvenance(DeclarationSalaireProvenance.PUCS);

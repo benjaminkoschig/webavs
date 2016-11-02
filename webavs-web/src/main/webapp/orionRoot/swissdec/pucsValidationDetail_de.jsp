@@ -210,7 +210,7 @@ $(document).ready(function(){
 					<div class="panel-heading-infos std-body-height">
 						<dl class="dl-horizontal">
 							<dt><strong><ct:FWLabel key="ORION_JSP_GEB0004_FICHIER"/></strong></dt>
-							<dd>${viewBean.pucsFile.fileName}.xml</dd>
+							<dd>${viewBean.pucsFile.filename}.xml</dd>
 							<dt><strong><ct:FWLabel key="ORION_JSP_GEB0004_TRANSMIS_LE"/></strong></dt>
 							<dd>${viewBean.decSal.transmissionDate}</dd>
 							<dt><strong><ct:FWLabel key="ORION_JSP_GEB0004_ANNEE"/></strong></dt>

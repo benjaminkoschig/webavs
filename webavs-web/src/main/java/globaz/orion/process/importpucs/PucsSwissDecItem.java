@@ -81,7 +81,7 @@ public class PucsSwissDecItem extends ProcessItem {
         return buildPucsByFile(filePath, DeclarationSalaireProvenance.SWISS_DEC, session);
     }
 
-    public static PucsFile buildPucsByFile(String filePath, DeclarationSalaireProvenance provenance, BSession session) {
+    private static PucsFile buildPucsByFile(String filePath, DeclarationSalaireProvenance provenance, BSession session) {
         PucsFile pucsFile = new PucsFile();
         Closer closer = Closer.create();
         try {
@@ -92,7 +92,7 @@ public class PucsSwissDecItem extends ProcessItem {
 
             double kilobytes = file.length() / 1024;
             pucsFile.setSizeFileInKo(kilobytes);
-            pucsFile.setId(JadeFilenameUtil.extractFilename(filePath).replace(".xml", ""));
+            pucsFile.setFilename(JadeFilenameUtil.extractFilename(filePath).replace(".xml", ""));
             pucsFile.setProvenance(provenance);
 
             DeclarationSalaire ds = DeclarationSalaireBuilder.builOnlyHead(parser);

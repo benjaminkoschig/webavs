@@ -69,7 +69,7 @@ public class EBImportPucsDan extends ProcessItemsHandlerJadeJob<PucsItem> {
 
         for (PucsFile pucsFile : pucsFiles) {
             pucsFile.setCurrentStatus(EtatPucsFile.A_TRAITER);
-            String filePath = PucsServiceImpl.retrieveFile(pucsFile.getId(), pucsFile.getProvenance());
+            String filePath = PucsServiceImpl.retrieveFile(pucsFile.getFilename(), pucsFile.getProvenance());
             File file = new File(filePath);
             pucsFile.setFile(file);
             list.add(new PucsItem(pucsFile, affiliations.get(pucsFile.getNumeroAffilie()), getSession(), getJobInfos()

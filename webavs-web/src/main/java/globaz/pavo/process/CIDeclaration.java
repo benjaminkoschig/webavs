@@ -23,7 +23,6 @@ import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAStringFormatter;
-import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.fs.JadeFsFacade;
@@ -59,7 +58,6 @@ import globaz.pavo.db.inscriptions.declaration.CIDeclarationTextIterator;
 import globaz.pavo.db.inscriptions.declaration.CIDeclarationsAnciensClientsIterator;
 import globaz.pavo.db.inscriptions.declaration.ICIDeclarationIterator;
 import globaz.pavo.db.inscriptions.declaration.ICIDeclarationOutput;
-import globaz.pavo.service.ebusiness.CIEbusinessAccessInterface;
 import globaz.pavo.util.CIUtil;
 import globaz.webavs.common.CommonExcelmlContainer;
 import java.io.FileInputStream;
@@ -85,6 +83,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.globaz.orion.service.EBEbusinessInterface;
+import ch.globaz.orion.service.EBPucsFileService;
 import ch.swissdec.schema.sd._20130514.salarydeclarationconsumercontainer.DeclareSalaryConsumerType;
 import com.google.common.base.Splitter;
 
@@ -101,7 +101,7 @@ public class CIDeclaration extends BProcess {
     public static String CS_PUCS = "327004";
     public static String CS_PUCS_CCJU = "327015";
     public static String CS_PUCS_II = "327007";
-    private static CIEbusinessAccessInterface ebusinessAccessInstance = null;
+    private static EBEbusinessInterface ebusinessAccessInstance = null;
     private boolean traitementAFSeul = false;
     private DSValideMontantDeclarationProcess theCalculMasseProcess;
 
@@ -133,7 +133,7 @@ public class CIDeclaration extends BProcess {
         return nomPrenom;
     }
 
-    public static void initEbusinessAccessInstance(CIEbusinessAccessInterface instance) {
+    public static void initEbusinessAccessInstance(EBEbusinessInterface instance) {
         if (CIDeclaration.ebusinessAccessInstance == null) {
             CIDeclaration.ebusinessAccessInstance = instance;
         }
@@ -1172,6 +1172,7 @@ public class CIDeclaration extends BProcess {
                                 for (String id : ids) {
                                     CIDeclaration.ebusinessAccessInstance.notifyFinishedPucsFile(id, provenance,
                                             getSession());
+                                    EBPucsFileService.comptabiliserByFilename(id, getSession());
                                 }
 
                             } catch (Exception e) {
@@ -1923,7 +1924,6 @@ public class CIDeclaration extends BProcess {
 
     private void creationReleve(CIDeclarationRecord rec, AFAffiliation affilie, Map<String, String> sommeParCanton)
             throws Exception {
-
 
         String typeReleve = CodeSystem.TYPE_RELEVE_DECOMP_FINAL_COMPTA;
 

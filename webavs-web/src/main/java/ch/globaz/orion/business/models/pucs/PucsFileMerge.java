@@ -1,21 +1,17 @@
 package ch.globaz.orion.business.models.pucs;
 
 import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import ch.globaz.common.dom.ElementsDomParser;
 import ch.globaz.common.domaine.Checkers;
-import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.businessimpl.services.merge.MergePucs;
+import ch.globaz.orion.service.EBPucsFileService;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
@@ -61,7 +57,7 @@ public class PucsFileMerge {
         List<PucsFileMerge> pucsFileMerges = new ArrayList<PucsFileMerge>();
 
         for (PucsFile pucsFile : pucsEntrys) {
-            mapPucsFile.put(pucsFile.getId(), pucsFile);
+            mapPucsFile.put(pucsFile.getIdDb(), pucsFile);
         }
 
         for (Entry<String, List<String>> entry : pucsToMerge.entrySet()) {
@@ -81,24 +77,12 @@ public class PucsFileMerge {
         return pucsFileMerges;
     }
 
-    public PucsFile retriveFileAndMergeIfNeeded() throws JadeApplicationServiceNotAvailableException, IOException,
-            Exception {
-        return this.retriveFileAndMergeIfNeeded(BSessionUtil.getSessionFromThreadContext());
-    }
-
-    public PucsFile retriveFileAndMergeIfNeeded(BSession session) throws JadeApplicationServiceNotAvailableException,
-            IOException, Exception {
+    public PucsFile retriveFileAndMergeIfNeeded(BSession session, boolean isSimulation)
+            throws JadeApplicationServiceNotAvailableException, IOException, Exception {
 
         Checkers.checkNotNull(session, "session");
         String numeroAffilie = pucsFile.getNomAffilie();
         try {
-            for (PucsFile pucsFile : pucsFileToMergded) {
-                numeroAffilie = pucsFile.getNumeroAffilie();
-                // EBPucsFileService.retriveFile(id, session)
-                // filesRetrieved.put(pucsFile.getId(), retrieveFile(pucsFile.getId(), pucsFile.getProvenance(),
-                // session));
-            }
-
             if (!pucsFileToMergded.isEmpty()) {
                 MergePucs mergePucs = new MergePucs(workDirectory);
                 pucsFile = mergePucs.mergeAndBuildPucsFile(pucsFileToMergded.get(0).getNumeroAffilie(),
@@ -106,18 +90,42 @@ public class PucsFileMerge {
                 domParser = mergePucs.getParser();
 
                 isMerged = true;
+                if (!isSimulation) {
+                    addMergeEntry(pucsFileToMergded, session);
+                }
             } else {
-                String filePath = null;
                 // String filePath = retrieveFile(pucsFile.getId(), pucsFile.getProvenance(), session);
-                domParser = new ElementsDomParser(filePath);
-                filesRetrieved.put(pucsFile.getId(), filePath);
+                domParser = new ElementsDomParser(EBPucsFileService.retriveFile(pucsFile.getIdDb(), session));
                 pucsFileToMergded.add(pucsFile);
+            }
+            if (!isSimulation) {
+                changeStatusToEnTraitement(pucsFileToMergded, session);
             }
         } catch (Throwable e) {
             throw new RuntimeException("Error append with this numeroAffilie:" + numeroAffilie, e);
         }
 
         return pucsFile;
+    }
+
+    /**
+     * Ajout d'une entrée dans la table contenant les fichiers mergés.
+     * 
+     * @param pucsFiles Liste des fichiers qui ont été mergés.
+     * @param session
+     */
+    private void addMergeEntry(List<PucsFile> pucsFiles, BSession session) {
+        EBPucsFileService.addMergePucsFile(pucsFiles, session);
+    }
+
+    /**
+     * Changement du statut des fichiers PUCS.
+     * 
+     * @param pucsFiles Liste des fichiers dont le statut doit être changé
+     * @param session
+     */
+    private void changeStatusToEnTraitement(List<PucsFile> pucsFiles, BSession session) {
+        EBPucsFileService.enTraitement(pucsFiles, session);
     }
 
     public String getIdsPucsFileSeparteByComma() {
@@ -127,70 +135,15 @@ public class PucsFileMerge {
                         @Override
                         public String apply(PucsFile pucsFile) {
                             if (pucsFile != null) {
-                                return pucsFile.getId();
+                                return pucsFile.getFilename();
                             } else {
                                 return null;
                             }
                         }
                     }));
         } else {
-            return pucsFile.getId();
+            return pucsFile.getFilename();
         }
-    }
-
-    /**
-     * 
-     * La fonction close va supprimer les fichiers qui ont été déposé dans le workDirectory et déplacer les fichiers de
-     * swissDec dans le répertoire approprié. Si tout c'est bien passé le fichier de swissDec se trouvera dans le
-     * répertoire ok, s'il y a eu une erreur, le fichier sera déposé dans le répertoire ko.
-     * 
-     * Pour les fichiers qui ont été fusionnés, les fichiers sources de type swissDec sont aussi déplacés avec les mêmes
-     * règles définis avant. Le fichier fusionné sera déposé dans un répertoire spécifique. La composition du nom du
-     * fichier est déterminée de la manière suivante: numeroAffilié_dateuuid_f_nombreDeFichiersFusioné. Le nom des
-     * fichiers sources qui ont servi à la fusion est définit de la manière suivante:
-     * nomDuFichier_dateuuid_f_indexFichier_nombreFichierFusioné.
-     * 
-     * @param hasError
-     * @throws Exception
-     */
-    public void close(boolean hasError) throws Exception {
-        SimpleDateFormat format = new SimpleDateFormat("yyyyddMMhhmmssSSS");
-        String uuid = format.format(new Date()) + "_f_";
-        int i = 1;
-        for (PucsFile pucsFile : pucsFileToMergded) {
-            if (pucsFile.getProvenance().isSwissDec()) {
-                String path = EBProperties.PUCS_SWISS_DEC_DIRECTORY.getValue() + pucsFile.getId() + ".xml";
-                String pathToCopie;
-                if (hasError) {
-                    pathToCopie = EBProperties.PUCS_SWISS_DEC_DIRECTORY_KO.getValue();
-                } else {
-                    pathToCopie = EBProperties.PUCS_SWISS_DEC_DIRECTORY_OK.getValue();
-                }
-
-                if (!isMerged) {
-                    uuid = format.format(new Date());
-                }
-
-                String dest = pathToCopie + pucsFile.getId().replace(".", "") + "_" + uuid + i + "_"
-                        + pucsFileToMergded.size() + ".xml";
-
-                JadeFsFacade.copyFile(path, dest);
-                JadeFsFacade.delete(path);
-                JadeFsFacade.delete(workDirectory + pucsFile.getId() + ".xml");
-                i++;
-            }
-        }
-
-        if (isMerged && pucsFile.getProvenance().isSwissDec()) {
-            JadeFsFacade.copyFile(workDirectory + pucsFile.getId() + ".xml",
-                    EBProperties.PUCS_MERGED_DIRECTORY.getValue() + pucsFile.getNumeroAffilie().replaceAll("\\.", "")
-                            + "_" + uuid + pucsFileToMergded.size() + ".xml");
-        }
-
-        for (String path : filesRetrieved.values()) {
-            JadeFsFacade.delete(path);
-        }
-        JadeFsFacade.delete(workDirectory + pucsFile.getId() + ".xml");
     }
 
     public void clearDomParser() {

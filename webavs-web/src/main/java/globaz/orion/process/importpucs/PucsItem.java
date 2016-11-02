@@ -38,7 +38,7 @@ public class PucsItem extends ProcessItem {
     @Override
     public String getDescription() {
         if (pucsFile != null) {
-            return "Id:" + pucsFile.getId() + ", provenance:" + pucsFile.getProvenance();
+            return "Id:" + pucsFile.getFilename() + ", provenance:" + pucsFile.getProvenance();
         }
         return null;
     }
@@ -94,7 +94,7 @@ public class PucsItem extends ProcessItem {
         entity.setSalaireInferieurLimite(pucsFile.hasSalaireInferieurLimite());
         entity.setSizeFileInKo(pucsFile.getSizeFileInKo());
         entity.setTotalControle(new Montant(pucsFile.getTotalControle()).getBigDecimalValue());
-        entity.setIdFileName(pucsFile.getId());
+        entity.setIdFileName(pucsFile.getFilename());
         entity.setSearchString(createSearchString(pucsFile));
         PucsServiceImpl.userHasRight(affiliation, session);
         entity.add();
@@ -103,7 +103,7 @@ public class PucsItem extends ProcessItem {
     static String createSearchString(PucsFile pucsFile) {
         String concatenedString = fromNullable(pucsFile.getNumeroAffilie())
                 + fromNullable(pucsFile.getDateDeReception()) + fromNullable(pucsFile.getAnneeDeclaration())
-                + fromNullable(pucsFile.getId()) + fromNullable(pucsFile.getNomAffilie())
+                + fromNullable(pucsFile.getFilename()) + fromNullable(pucsFile.getNomAffilie())
                 + fromNullable(pucsFile.getTotalControle());
         return JadeStringUtil.convertSpecialChars(concatenedString).toUpperCase();
     }

@@ -265,7 +265,7 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
 
     public String getNameNextToValidate() {
         if (nextPucsFile != null) {
-            return "(" + nextPucsFile.getId() + ")";
+            return "(" + nextPucsFile.getFilename() + ")";
         } else {
             return "";
         }

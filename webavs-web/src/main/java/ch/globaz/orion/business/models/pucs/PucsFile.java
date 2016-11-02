@@ -12,7 +12,7 @@ public class PucsFile implements Serializable {
     private EtatPucsFile currentStatus = null;
     private String dateDeReception = null;
     private String handlingUser = null;
-    private String id = null;
+    private String filename = null;
     private String nbSalaires = null;
     private String nomAffilie = null;
     private String numeroAffilie = null;
@@ -76,8 +76,8 @@ public class PucsFile implements Serializable {
         return handlingUser;
     }
 
-    public String getId() {
-        return id;
+    public String getFilename() {
+        return filename;
     }
 
     public String getNbSalaires() {
@@ -120,8 +120,8 @@ public class PucsFile implements Serializable {
         this.handlingUser = handlingUser;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
     public void setNbSalaires(String nbSalaires) {
@@ -188,10 +188,6 @@ public class PucsFile implements Serializable {
         this.isAffiliationExistante = isAffiliationExistante;
     }
 
-    public String getFileName() {
-        return id;
-    }
-
     public boolean isSwissDec() {
         return provenance.isSwissDec();
     }
@@ -211,7 +207,7 @@ public class PucsFile implements Serializable {
     @Override
     public String toString() {
         return "PucsFile [anneeDeclaration=" + anneeDeclaration + ", currentStatus=" + currentStatus
-                + ", dateDeReception=" + dateDeReception + ", handlingUser=" + handlingUser + ", id=" + id
+                + ", dateDeReception=" + dateDeReception + ", handlingUser=" + handlingUser + ", filename=" + filename
                 + ", nbSalaires=" + nbSalaires + ", nomAffilie=" + nomAffilie + ", numeroAffilie=" + numeroAffilie
                 + ", salaireInferieurLimite=" + salaireInferieurLimite + ", totalControle=" + totalControle
                 + ", provenance=" + provenance + ", sizeFileInKo=" + sizeFileInKo + ", isAfSeul=" + isAfSeul

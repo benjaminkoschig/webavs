@@ -7,8 +7,8 @@ import globaz.framework.secure.FWSecureConstants;
 import globaz.globall.db.BApplication;
 import globaz.pavo.process.CIDeclaration;
 import java.math.BigDecimal;
-import ch.globaz.orion.service.EBEbusinessCIAccessImplementation;
-import ch.globaz.orion.service.EBEbusinessDSAccessImplementation;
+import ch.globaz.orion.service.EBEbusinessImplementation;
+import ch.globaz.orion.service.EBEbusinessInterface;
 
 public class EBApplication extends BApplication {
 
@@ -36,8 +36,9 @@ public class EBApplication extends BApplication {
         FWMenuCache cache = FWMenuCache.getInstance();
         cache.addFile("ORIONMenu.xml");
         // Initialisation de la classe d'accès à EBusiness pour les CI
-        CIDeclaration.initEbusinessAccessInstance(new EBEbusinessCIAccessImplementation());
-        DSProcessValidation.initEbusinessAccessInstance(new EBEbusinessDSAccessImplementation());
+        EBEbusinessInterface ebusinessInterface = new EBEbusinessImplementation();
+        CIDeclaration.initEbusinessAccessInstance(ebusinessInterface);
+        DSProcessValidation.initEbusinessAccessInstance(ebusinessInterface);
     }
 
     @Override

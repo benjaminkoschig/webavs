@@ -18,6 +18,7 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
     private DeclarationSalaireProvenance forProvenance = DeclarationSalaireProvenance.UNDEFINDED;
     private String fullText;
     private List<String> inIds;
+    private String forFilename;
 
     @Override
     protected void createWhere(SQLWriter sqlWhere) {
@@ -34,6 +35,7 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
             sqlWhere.and(EBPucsFileDefTable.SEARCH_STRING).like(
                     JadeStringUtil.convertSpecialChars(fullText).toUpperCase());
         }
+        sqlWhere.and(EBPucsFileDefTable.ID_FILE_NAME).equal(forFilename);
     }
 
     @Override
@@ -92,5 +94,13 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
 
     public void setInIds(List<String> ids) {
         inIds = ids;
+    }
+
+    public String getForFilename() {
+        return forFilename;
+    }
+
+    public void setForFilename(String forFilename) {
+        this.forFilename = forFilename;
     }
 }

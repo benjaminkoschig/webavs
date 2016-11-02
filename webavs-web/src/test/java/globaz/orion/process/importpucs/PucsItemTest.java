@@ -11,7 +11,7 @@ public class PucsItemTest {
         PucsFile pucsFile = mock(PucsFile.class);
         when(pucsFile.getAnneeDeclaration()).thenReturn("2014");
         when(pucsFile.getNomAffilie()).thenReturn("Arnéàa Géêser");
-        when(pucsFile.getId()).thenReturn("méfîchiéèàs.xml");
+        when(pucsFile.getFilename()).thenReturn("méfîchiéèàs.xml");
         String test = PucsItem.createSearchString(pucsFile);
         assertEquals("2014MEFICHIEEAS.XMLARNEAA GEESER", test);
     }

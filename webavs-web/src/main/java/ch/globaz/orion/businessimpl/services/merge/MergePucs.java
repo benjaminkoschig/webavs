@@ -30,6 +30,7 @@ import ch.globaz.common.dom.ElementsDomParser;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.businessimpl.services.pucs.FindPucsSwissDec;
+import ch.globaz.orion.service.EBPucsFileService;
 
 /**
  * Le But de cette class est de prendre en entré plusieurs fichiers xml et d’en faire un puis d'additionner certaine
@@ -71,7 +72,7 @@ public class MergePucs {
                     "Il n'est pas possible de fusionner des fichiers PUCS de proveances différentes");
         }
 
-        parser = mergeForAffilie(pucsFiles);
+        parser = mergeForAffilie(pucsFiles, session);
         String filePath = out(numAffilie, parser.getDocument());
         PucsFile PucsFile = FindPucsSwissDec.buildPucsByFile(filePath, pucsFiles.get(0).getProvenance(), session);
         return PucsFile;
@@ -88,15 +89,16 @@ public class MergePucs {
         return fileName;
     }
 
-    ElementsDomParser mergeForAffilie(List<PucsFile> pucsFiles) {
+    ElementsDomParser mergeForAffilie(List<PucsFile> pucsFiles, BSession session) {
         ElementsDomParser fusion = null;
         for (PucsFile pucsFile : pucsFiles) {
             try {
-                String filePath = workDirectory + pucsFile.getId() + ".xml";
                 if (fusion == null) {
-                    fusion = new ElementsDomParser(filePath);
+                    fusion = new ElementsDomParser(EBPucsFileService.retriveFileAsInputStream(pucsFile.getIdDb(),
+                            session));
                 } else {
-                    ElementsDomParser documentCourant = new ElementsDomParser(filePath);
+                    ElementsDomParser documentCourant = new ElementsDomParser(
+                            EBPucsFileService.retriveFileAsInputStream(pucsFile.getIdDb()));
                     NodeList staff = documentCourant.find("SalaryDeclaration Company Staff Person").getResult().get(0);
                     Node staffFusion = fusion.find("SalaryDeclaration Company Staff").getResult().get(0).item(0);
                     for (int i = 0; i < staff.getLength(); i++) {
@@ -132,7 +134,7 @@ public class MergePucs {
             Element provenance = document.createElement("provenance");
             provenance.appendChild(document.createTextNode(pucsFile.getProvenance().toString()));
             Element id = document.createElement("id");
-            id.appendChild(document.createTextNode(pucsFile.getId()));
+            id.appendChild(document.createTextNode(pucsFile.getFilename()));
             file.appendChild(id);
             file.appendChild(provenance);
             filesMerged.appendChild(file);

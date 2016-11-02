@@ -11,7 +11,7 @@ public class PucsFileMergeTest {
     public void testGetIdsPucsFileSeparteByCommaOneValue() throws Exception {
         List<PucsFile> files = new ArrayList<PucsFile>();
         PucsFile pucsFile1 = new PucsFile();
-        pucsFile1.setId("testOne");
+        pucsFile1.setFilename("testOne");
         files.add(pucsFile1);
 
         PucsFileMerge merger = new PucsFileMerge(files, "");
@@ -22,9 +22,9 @@ public class PucsFileMergeTest {
     public void testGetIdsPucsFileSeparteByComma() throws Exception {
         List<PucsFile> files = new ArrayList<PucsFile>();
         PucsFile pucsFile1 = new PucsFile();
-        pucsFile1.setId("testOne");
+        pucsFile1.setFilename("testOne");
         PucsFile pucsFile2 = new PucsFile();
-        pucsFile2.setId("testTwo");
+        pucsFile2.setFilename("testTwo");
         files.add(pucsFile1);
         files.add(pucsFile2);
         files.add(null);

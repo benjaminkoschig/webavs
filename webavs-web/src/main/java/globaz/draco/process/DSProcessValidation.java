@@ -10,7 +10,6 @@ import globaz.draco.db.declaration.DSLigneDeclarationViewBean;
 import globaz.draco.db.inscriptions.DSInscriptionsIndividuelles;
 import globaz.draco.db.inscriptions.DSInscriptionsIndividuellesManager;
 import globaz.draco.services.DSDeclarationServices;
-import globaz.draco.services.ebusiness.DSEbusinessAccessInterface;
 import globaz.draco.util.DSUtil;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.printing.itext.exception.FWIException;
@@ -51,13 +50,15 @@ import java.util.List;
 import java.util.Set;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.models.pucs.PucsFile;
+import ch.globaz.orion.service.EBEbusinessInterface;
+import ch.globaz.orion.service.EBPucsFileService;
 import com.google.common.base.Splitter;
 
 public class DSProcessValidation extends BProcess implements FWViewBeanInterface {
 
     private static final long serialVersionUID = -3353019454893928164L;
     public final static String CS_DECL_MIXTE = "19170000";
-    private static DSEbusinessAccessInterface ebusinessAccessInstance = null;
+    private static EBEbusinessInterface ebusinessAccessInstance = null;
     private final String CS_PARAMETRES_IM = "10800042";
     private boolean forceEnvoiMail = false;
     private String idDeclaration;
@@ -494,7 +495,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
                 notificationEBusiness(provenance, decl.getIdPucsFile());
             } else {
                 for (PucsFile pucsFile : pucsFileMergded) {
-                    notificationEBusiness(pucsFile.getProvenance(), pucsFile.getId());
+                    notificationEBusiness(pucsFile.getProvenance(), pucsFile.getFilename());
                 }
             }
 
@@ -715,7 +716,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
 
     }
 
-    public static void initEbusinessAccessInstance(DSEbusinessAccessInterface instance) {
+    public static void initEbusinessAccessInstance(EBEbusinessInterface instance) {
         if (DSProcessValidation.ebusinessAccessInstance == null) {
             DSProcessValidation.ebusinessAccessInstance = instance;
         }
@@ -742,12 +743,11 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
         // Si la déclaration a été maj à facturé, elle a été validée
         // On va donc notifier eBusiness
 
+        List<String> ids = Splitter.on(";").trimResults().splitToList(idPucsFile);
         if (provenance.isDan() || provenance.isPucs()) {
 
             if (!JadeStringUtil.isBlankOrZero(idPucsFile) && (DSProcessValidation.ebusinessAccessInstance != null)) {
                 try {
-
-                    List<String> ids = Splitter.on(";").trimResults().splitToList(idPucsFile);
                     for (String id : ids) {
                         DSProcessValidation.ebusinessAccessInstance
                                 .notifyFinishedPucsFile(id, provenance, getSession());
@@ -758,6 +758,9 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
                     setForceEnvoiMail(true);
                 }
             }
+        }
+        for (String id : ids) {
+            EBPucsFileService.comptabiliserByFilename(id, getSession());
         }
     }
 

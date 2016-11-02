@@ -317,7 +317,7 @@ public class EBTreatPucsFiles extends BProcess {
 
                 try {
 
-                    PucsFile pucsFile = pucsFileMerge.retriveFileAndMergeIfNeeded(getSession());
+                    PucsFile pucsFile = pucsFileMerge.retriveFileAndMergeIfNeeded(getSession(), isSimulation());
                     isForSimultation = (pucsFileMerge.getPucsFile().isForTest()) || isSimulation();
 
                     String libelleSimulation = "";
@@ -387,14 +387,15 @@ public class EBTreatPucsFiles extends BProcess {
 
                             // Gestion d'une déclaration de salaire sans salaire
                             gestionDeclarationSalaireSansSalaire(pucsFile.getNbSalaires(), aff,
-                                    pucsFile.getAnneeDeclaration(), pucsFile.getDateDeReception(), pucsFile.getId());
+                                    pucsFile.getAnneeDeclaration(), pucsFile.getDateDeReception(),
+                                    pucsFile.getFilename());
                             // Mise à jour des insitutions
                             if (pucsFileMerge.getPucsFileToMergded().isEmpty()) {
-                                updateInstitution(pucsFile.getId(), idAffiliation, pucsFile.getAnneeDeclaration(),
-                                        pucsFile.getProvenance());
-                            } else {
-                                updateInstitution(pucsFileMerge.getPucsFileToMergded().get(0).getId(), idAffiliation,
+                                updateInstitution(pucsFile.getFilename(), idAffiliation,
                                         pucsFile.getAnneeDeclaration(), pucsFile.getProvenance());
+                            } else {
+                                updateInstitution(pucsFileMerge.getPucsFileToMergded().get(0).getFilename(),
+                                        idAffiliation, pucsFile.getAnneeDeclaration(), pucsFile.getProvenance());
                             }
 
                         } catch (Exception e) {
@@ -441,13 +442,16 @@ public class EBTreatPucsFiles extends BProcess {
                         declaration.setAccepteAnneeEnCours("true");
                         declaration.setAccepteEcrituresNegatives("true");
                         declaration.setAccepteLienDraco(wantLinkDraco());
+                        if ("true".equalsIgnoreCase(wantLinkDraco())) {
+                            // notifier eBusiness
+                        }
                         if (isForSimultation) {
                             declaration.setSimulation("simulation");
                         }
                         declaration.setType(CIDeclaration.CS_PUCS_II);
                         declaration.setIsBatch(new Boolean(true));
 
-                        String file = workDir + pucsFile.getId() + ".xml";
+                        String file = workDir + pucsFile.getIdDb() + ".xml";
 
                         declaration.setProvenance(pucsFile.getProvenance().getValue());
                         declaration.setNumAffilieBase(pucsFile.getNumeroAffilie());
@@ -455,7 +459,7 @@ public class EBTreatPucsFiles extends BProcess {
                         declaration.setSession(getSessionPavo());
                         declaration.setIdsPucsFile(pucsFileMerge.getIdsPucsFileSeparteByComma());
                         declaration.setFilename(file);
-                        declaration.setValidationAutomatique(idValidationDeLaDs.contains(pucsFile.getId()));
+                        declaration.setValidationAutomatique(idValidationDeLaDs.contains(pucsFile.getIdDb()));
                         // on initialise le process pour ne pas avoir un nullPointer
                         CIImportPucsFileProcess ciImportPucsFileProcess = new CIImportPucsFileProcess();
                         declaration.setLauncherImportPucsFileProcess(ciImportPucsFileProcess);
@@ -490,13 +494,13 @@ public class EBTreatPucsFiles extends BProcess {
                             JadeThreadActivator.stopUsingContext(this);
                         }
                         if (!pucsFile.isAfSeul()) {
-                            if (idValidationDeLaDs.contains(pucsFile.getId()) && !isForSimultation && !hasError) {
+                            if (idValidationDeLaDs.contains(pucsFile.getIdDb()) && !isForSimultation && !hasError) {
                                 ValidationAutomatique.execute(getSessionDraco(), declaration,
                                         pucsFileMerge.getDomParser());
                             }
                         }
 
-                        if (idMiseEnGed.contains(pucsFile.getId()) && !hasError) {
+                        if (idMiseEnGed.contains(pucsFile.getIdDb()) && !hasError) {
                             for (Entry<String, ElementsDomParser> entry : filesPath.entrySet()) {
                                 genratePucsFilePdf(pucsFile, declaration, entry.getKey(), entry.getValue(),
                                         isForSimultation);
@@ -514,11 +518,6 @@ public class EBTreatPucsFiles extends BProcess {
                                 getTransaction().rollback();
                             } else {
                                 getTransaction().commit();
-                            }
-
-                            // on déplace aussi les fichiers de type test
-                            if (!isSimulation() || (!isSimulation() && pucsFileMerge.getPucsFile().isForTest())) {
-                                pucsFileMerge.close(exceptionAppend);
                             }
                         }
                     } catch (Exception e) {

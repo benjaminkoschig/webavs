@@ -117,7 +117,7 @@ public class FindPucsSwissDec {
 
     private PucsFile buildPucsByFileBy(String filePath, String remotePucsFileUri, BSession session) {
         PucsFile pucsFile = buildPucsByFile(filePath, DeclarationSalaireProvenance.SWISS_DEC, session);
-        pucsFile.setId(JadeFilenameUtil.extractFilename(remotePucsFileUri).replace(".xml", ""));
+        pucsFile.setFilename(JadeFilenameUtil.extractFilename(remotePucsFileUri).replace(".xml", ""));
         return pucsFile;
 
     }
@@ -133,7 +133,7 @@ public class FindPucsSwissDec {
 
             double kilobytes = file.length() / 1024;
             pucsFile.setSizeFileInKo(kilobytes);
-            pucsFile.setId(JadeFilenameUtil.extractFilename(filePath).replace(".xml", ""));
+            pucsFile.setFilename(JadeFilenameUtil.extractFilename(filePath).replace(".xml", ""));
             pucsFile.setProvenance(provenance);
 
             DeclarationSalaire ds = DeclarationSalaireBuilder.builOnlyHead(parser);
@@ -142,7 +142,9 @@ public class FindPucsSwissDec {
             pucsFile.setNomAffilie(ds.getNom());
             pucsFile.setNumeroAffilie(ds.getNumeroAffilie());
             pucsFile.setTotalControle(ds.getMontantAvs().toStringFormat());
-            pucsFile.setDateDeReception(ds.getTransmissionDate().getSwissValue());
+            if (ds.getTransmissionDate() != null) {
+                pucsFile.setDateDeReception(ds.getTransmissionDate().getSwissValue());
+            }
             pucsFile.setAfSeul(ds.isAfSeul());
             pucsFile.setForTest(ds.isTest());
             pucsFile.setCurrentStatus(EtatPucsFile.A_VALIDE);
