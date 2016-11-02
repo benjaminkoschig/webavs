@@ -98,19 +98,23 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 	
 	// Les prestations ACM_NE sont calculée uniquement pour les cas APG et non maternité	
 	var isAPG = <%=viewBean.isAPG()%>;
+	var isMaternite = <%=viewBean.isMaternite()%>
 	var isPrestationAcmNeEnable = <%=viewBean.isPrestationAcmNeEnable()%>;
+	var isPrestationAcmAlphaEnable = <%=viewBean.isPrestationAcmAlfaEnable().booleanValue()%>;
+	var isPrestationAcm2AlphaEnable = <%=viewBean.isPrestationAcm2AlfaEnable().booleanValue()%>;
 	
 	// Création d'une instance contenant tous les paramètres du droit en cours
 	var viewControllerData = new ViewControllerData();
 	viewControllerData.className = '<%=viewBean.getNameClassForAPRechercherTypeAcmService()%>';
 	viewControllerData.methodName = '<%=viewBean.getNameMethodForAPRechercherTypeAcmService()%>';
 	viewControllerData.isModification = <%=bButtonUpdate%>;
-	viewControllerData.isAcmAlphaEnable = <%=viewBean.isPrestationAcmAlfaEnable().booleanValue()%>;
+	viewControllerData.isAcmAlphaEnable = isPrestationAcmAlphaEnable;
+	viewControllerData.isAcm2AlphaEnable = isMaternite && viewControllerData.isAcmAlphaEnable && isPrestationAcm2AlphaEnable;
 	viewControllerData.isAcmNeEnable = isAPG && isPrestationAcmNeEnable;
 	
 	if (document.forms[0].elements('_method').value == "add"){
 		$('input[type="checkbox"][name="hasAcmAlphaPrestations"]').attr('checked', viewControllerData.isAcmAlphaEnable);
-		$('input[type="checkbox"][name="hasAcm2AlphaPrestations"]').attr('checked', viewControllerData.isAcmAlphaEnable);
+		$('input[type="checkbox"][name="hasAcm2AlphaPrestations"]').attr('checked', viewControllerData.isAcm2AlphaEnable);
 	} else {		
 		$('input[type="checkbox"][name="hasAcmAlphaPrestations"]').attr('checked', <%=viewBean.getHasAcmAlphaPrestations().booleanValue()%>);
 		$('input[type="checkbox"][name="hasAcm2AlphaPrestations"]').attr('checked', <%=viewBean.getHasAcm2AlphaPrestations().booleanValue()%>);
@@ -297,27 +301,6 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 	function checkPeriodeApgPeriodeAff(){
 		parent.warningObj.text = "";
 		<%
-//		boolean dateDebutDroitGreaterOrEqualDateDebutApg = true;
-//		boolean dateDebutDroitLowerOrEqualDateFinApg = true;
-		
-//		if(!globaz.jade.client.util.JadeStringUtil.isNull(viewBean.getDateDebutAffiliation())){
-//			dateDebutDroitGreaterOrEqualDateDebutApg= globaz.globall.db.BSessionUtil.compareDateFirstGreaterOrEqual(viewBean.getSession(), 
-//			                                                                                                        viewBean.getDateDebutDroit(), 
-//			                                                                                                        viewBean.getDateDebutAffiliation());
-//		}
-		
-//		if(!globaz.jade.client.util.JadeStringUtil.isNull(viewBean.getDateFinAffiliation())){
-//			dateDebutDroitLowerOrEqualDateFinApg= globaz.globall.db.BSessionUtil.compareDateFirstLowerOrEqual(viewBean.getSession(), 
-//			                                                                                                  viewBean.getDateDebutDroit(), 
-//			                                                                                                  viewBean.getDateFinAffiliation());
-//		}
-		//Bug 4393
-		//la periode APG n'est pas comprise dans la période d'affiliation
-//		if(!(dateDebutDroitGreaterOrEqualDateDebutApg &&
-//		    (dateDebutDroitLowerOrEqualDateFinApg || 
-//		     globaz.jade.client.util.JadeStringUtil.isEmpty(viewBean.getDateFinAffiliation())))){
-//		     parent.warningObj.text = "<%=FWMessageFormat.format(viewBean.getSession().getLabel("JSP_PERIODE_APG_PAS_DANSPERIODE_AFF"), viewBean.getDateFinAffiliation())"
-		
 		if(JadeDateUtil.isGlobazDate(viewBean.getDateFinAffiliation())){%>
 				parent.warningObj.text = "<%=FWMessageFormat.format(viewBean.getSession().getLabel("JSP_DATE_AFFILIATION_NON_VIDE_NUMAFFILIE"),viewBean.getNumAffilieEmployeur() ,globaz.prestation.tools.PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(viewBean.getDateFinAffiliation()))%>"
 		<%}else {%>
@@ -509,11 +492,10 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 										<LABEL for="hasAcmAlphaPrestations"><ct:FWLabel key="JSP_ACM" /></LABEL>
 										<INPUT type="checkbox" onclick="OnClickACM()" name="hasAcmAlphaPrestations">
 								</DIV>
-								
-								<%if (globaz.apg.util.TypePrestation.TYPE_MATERNITE.equals(viewBean.getTypePrestation())) {%>
-										<LABEL for="hasAcm2AlphaPrestations"><ct:FWLabel key="JSP_ACM2" /></LABEL>
-										<INPUT type="checkbox" onclick="OnClickACM2()" name="hasAcm2AlphaPrestations">
-								<%}%>						
+								<DIV class="prestationAcm2Alpha">
+									<LABEL for="hasAcm2AlphaPrestations"><ct:FWLabel key="JSP_ACM2" /></LABEL>
+									<INPUT type="checkbox" onclick="OnClickACM2()" name="hasAcm2AlphaPrestations">
+								</DIV>
 							</TD>
 						</TR>
 						<TR><TD colspan="6"><HR></TD>

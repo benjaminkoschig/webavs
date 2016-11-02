@@ -10,6 +10,7 @@ ViewControllerData = function(){
 	this.isModification;
 	this.isAcmNeEnable;
 	this.isAcmAlphaEnable;
+	this.isAcm2AlphaEnable;
 	
 	this.validate = function() {
 		if(this.isEmpty(this.className)){
@@ -27,11 +28,13 @@ ViewControllerData = function(){
 		if(this.isEmpty(this.isAcmAlphaEnable)){
 			throw new Error("You must define the isAcmAlphaEnable");
 		}
+		if(this.isEmpty(this.isAcm2AlphaEnable)){
+			throw new Error("You must define the isAcm2AlphaEnable");
+		}
 	};
 	
 	this.isEmpty = function(value){
 		var result = value == null || value == undefined;
-		//console.log("isEmpty ["+value+"] : " + result);
 		return result;
 	};
 };
@@ -56,10 +59,15 @@ ViewController = function(viewControllerData){
 		this.className = viewControllerData.className;
 		this.methodName = viewControllerData.methodName;
 		this.isModification = viewControllerData.isModification;
+		
 		this.isAcmNeEnable = viewControllerData.isAcmNeEnable;
 		this.log("ACM NE enable : " + this.isAcmNeEnable);
+		
 		this.isAcmAlphaEnable = viewControllerData.isAcmAlphaEnable;
 		this.log("ACM ALFA enable : " + this.isAcmAlphaEnable);
+		
+		this.isAcm2AlphaEnable = viewControllerData.isAcm2AlphaEnable;
+		this.log("ACM 2 ALFA enable : " + this.isAcm2AlphaEnable);
 		
 		if (isRetourPyxis) {
 			this.change();
@@ -110,12 +118,21 @@ ViewController = function(viewControllerData){
 		// On set les champs selon le résultat du service
 		if (typeDePrestation === nomTypePrestationAcmAlpha) {
 			$('[name=hasAcmAlphaPrestations]').attr('checked', 'checked');
-			$('[name=hasAcm2AlphaPrestations]').attr('checked', 'checked');
+			
+			if(data.isAcm2AlphaEnable){
+				$('[name=hasAcm2AlphaPrestations]').attr('checked', 'checked');
+				this.showAcm2Alpha();
+			} else {
+				$('[name=hasAcm2AlphaPrestations]').attr('checked', false);
+				this.hideAcm2Alpha();
+			}
+			
 			$('[name=montantJournalierAcmNe]').val('');
 		}
 		else if (typeDePrestation === nomTypePrestationAcmNe  && $('input[name="isVersementEmployeur"]:radio')[0].checked) {
 			$('[name=csAssuranceAssociation]').val(csAssociation); 
 			$('[name=nomAssociation]').val(nomAssociation); 
+			this.hideAcm2Alpha();
 		}
 		else{
 			$('[name=hasAcmAlphaPrestations]').prop('checked',false);
@@ -123,6 +140,7 @@ ViewController = function(viewControllerData){
 			$('[name=csAssuranceAssociation]').val('');
 			$('[name=montantJournalierAcmNe]').val('');
 			this.hideAcmNe();
+			this.hideAcm2Alpha();
 		}
 		
 	};
@@ -152,9 +170,13 @@ ViewController = function(viewControllerData){
 				this.showAcmNe();
 			}
 			this.hideAcmAlpha();
+			this.hideAcm2Alpha();
 		}
 		else if (this.isAcmAlphaEnable){
 			this.showAcmAlpha();
+			if(this.isAcm2AlphaEnable){
+				this.showAcm2Alpha();
+			}
 			this.hideAcmNe();
 		}
 		else {
@@ -198,6 +220,9 @@ ViewController = function(viewControllerData){
 		if (this.isAcmAlphaEnable) {
 			this.showAcmAlpha();	
 		}	
+		if(this.isAcm2AlphaEnable){
+			this.showAcm2Alpha();
+		}
 	};
 	
 	this.isAssociationEmpty = function(){
@@ -210,6 +235,7 @@ ViewController = function(viewControllerData){
 	this.hideAllAcm = function() {
 		this.hideAcmNe();
 		this.hideAcmAlpha();
+		this.hideAcm2Alpha();
 	};
 
 	this.hideAcmNe = function() {
@@ -220,6 +246,10 @@ ViewController = function(viewControllerData){
 	this.hideAcmAlpha = function() {
 		this.log("Hiding ACM ALFA bloc");
 		$('.prestationAcmAlpha').hide();
+	};
+	
+	this.hideAcm2Alpha = function() {
+		this.log("Hiding ACM 2 ALFA bloc");
 		$('.prestationAcm2Alpha').hide();
 	};
 
@@ -231,6 +261,10 @@ ViewController = function(viewControllerData){
 	this.showAcmAlpha = function() {
 		this.log("Show ACM ALFA bloc");
 		$('.prestationAcmAlpha').show();
+	};
+	
+	this.showAcm2Alpha = function() {
+		this.log("Show ACM 2 ALFA bloc");
 		$('.prestationAcm2Alpha').show();
 	};
 	
