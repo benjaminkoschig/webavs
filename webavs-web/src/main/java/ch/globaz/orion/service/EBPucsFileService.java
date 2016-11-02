@@ -80,7 +80,12 @@ public class EBPucsFileService {
         EBPucsFileEntity entity = new EBPucsFileEntity();
         entity.setIdEntity(id);
         entity.setSession(session);
-        return entity.retriveFile();
+        try {
+            entity.retrieve();
+            return entity.retriveFile();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static List<PucsFile> entitiesToPucsFile(List<EBPucsFileEntity> list) {
@@ -135,7 +140,7 @@ public class EBPucsFileService {
         try {
             entity.retrieve();
             EtatPucsFile etatActuel = EtatPucsFile.fromValue(entity.getStatut().toString());
-            if (!etatActuel.isEditable()) {
+            if (etatActuel.isComptabilise()) {
                 throw new RuntimeException("Le fichier ne peut pas être édité car déjà traité");
             }
             entity.setStatut(Integer.parseInt(etat.getValue()));
