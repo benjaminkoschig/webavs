@@ -39,6 +39,10 @@ public enum EtatPucsFile implements CodeSystemEnum<EtatPucsFile> {
         return COMPTABILISE.equals(this);
     }
 
+    public boolean isEnTraitement() {
+        return EN_TRAITEMENT.equals(this);
+    }
+
     public boolean isTraite() {
         return TRAITER.equals(this);
     }
@@ -48,6 +52,6 @@ public enum EtatPucsFile implements CodeSystemEnum<EtatPucsFile> {
     }
 
     public boolean isEditable() {
-        return !isComptabilise() && !isTraite();
+        return !isComptabilise() && !isTraite() && !isEnTraitement();
     }
 }

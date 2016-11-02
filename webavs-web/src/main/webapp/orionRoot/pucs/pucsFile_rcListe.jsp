@@ -108,8 +108,8 @@ $(function () {
 			%>
 			<tr id="<%=line.getId()%>" class="<%=rowStyle%>" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'rowHighligthed')" onMouseOut="jscss('swap', this, 'rowHighligthed', '<%=rowStyle%>')">
 			
-			<td class="pucsEntryHandling" style="text-align: center">
-				<%if(!line.hasLock()) {%>
+			<td class="pucsEntryHandling" style="text-align: center;height:24px;">
+				<%if(!line.hasLock() && line.getPucsFile().isEditable()) {%>
 						<input type="checkbox" class="pucsEntryHandling <% if(line.getPucsFile().isSwissDec()) { out.print(" swissdec ");} %> <%if(line.getPucsFile().isATraiter()) { out.print(" atraiter "); } %>" name="idPucsEntryToHandle" value='<%= line.getPucsFile().getIdDb()%>'/>
 				<%} else {%>
 					<span><i title="<%=line.getMessageLock() %>" class="icon-lock" ></i></span> 
