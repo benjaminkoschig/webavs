@@ -1218,7 +1218,6 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
                 data.addData("SIGNATURE", document.getTextes(9).getTexte(6).getDescription());
             } catch (IndexOutOfBoundsException e) {
                 JadeLogger.warn(this, e.getMessage());
-                data.addData("SIGNATURE", "");
             }
 
         } catch (Exception e) {

@@ -526,7 +526,6 @@ public class RECommunicationMutationOO extends REAbstractJobOO {
             docData.addData("SIGNATURE", getTexte(catalogueLettreCommunicationMutation, 3, 2));
         } catch (RETechnicalException e) {
             JadeLogger.warn(this, e.getMessage());
-            docData.addData("SIGNATURE", "");
         }
 
     }
