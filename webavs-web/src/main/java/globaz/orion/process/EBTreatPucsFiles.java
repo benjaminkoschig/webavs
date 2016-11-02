@@ -451,7 +451,7 @@ public class EBTreatPucsFiles extends BProcess {
                         declaration.setType(CIDeclaration.CS_PUCS_II);
                         declaration.setIsBatch(new Boolean(true));
 
-                        String file = workDir + pucsFile.getIdDb() + ".xml";
+                        String file = workDir + pucsFile.getFilename() + ".xml";
 
                         declaration.setProvenance(pucsFile.getProvenance().getValue());
                         declaration.setNumAffilieBase(pucsFile.getNumeroAffilie());

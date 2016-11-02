@@ -86,7 +86,7 @@ public class EBPucsFileEntity extends JadeEntity {
     }
 
     public File retriveFile() {
-        File f = new File(Jade.getInstance().getHomeDir() + "work/" + id + ".xml");
+        File f = new File(Jade.getInstance().getHomeDir() + "work/" + idFileName + ".xml");
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = new FileOutputStream(f);
