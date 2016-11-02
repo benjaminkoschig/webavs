@@ -68,9 +68,9 @@ public class EBImprimerSaisieDecompteProcess extends BProcess {
     @Override
     protected String getEMailObject() {
         if (isAborted() || getSession().hasErrors()) {
-            return getSession().getLabel("SAISIE_DECOMPTE_KO");
+            return getSession().getLabel("PROCESS_SDD_SAISIE_DECOMPTE_KO");
         } else {
-            return getSession().getLabel("SAISIE_DECOMPTE_OK");
+            return getSession().getLabel("PROCESS_SDD_SAISIE_DECOMPTE_OK");
         }
     }
 
