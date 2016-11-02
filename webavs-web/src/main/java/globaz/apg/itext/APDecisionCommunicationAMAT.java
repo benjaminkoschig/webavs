@@ -721,12 +721,12 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         sitPro.setIdSituationProf(repartition.getIdSituationProfessionnelle());
         sitPro.retrieve();
 
-        Integer nbJoursTotaux = Integer.valueOf(APProperties.PROPERTY_DROIT_ACM_MAT_DUREE_JOURS.getValue());
+        Integer nbJoursTotaux = Integer.valueOf(APProperties.DROIT_ACM_MAT_DUREE_JOURS.getValue());
         if (!sitPro.isNew()) {
             final boolean hasAcm2 = sitPro.getHasAcm2AlphaPrestations();
 
             if (hasAcm2) {
-                nbJoursTotaux += Integer.valueOf(APProperties.PROPERTY_DROIT_ACM2_MAT_DUREE_JOURS.getValue());
+                nbJoursTotaux += Integer.valueOf(APProperties.PRESTATION_ACM_2_NOMBRE_JOURS.getValue());
             }
         }
 
