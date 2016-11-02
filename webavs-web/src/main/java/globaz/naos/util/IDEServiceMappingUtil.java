@@ -1,6 +1,22 @@
 package globaz.naos.util;
 
 import globaz.jade.client.util.JadeStringUtil;
+import idech.admin.bit.xmlns.uid_wse_f._3.RegisterDeregisterItem;
+import idech.admin.bit.xmlns.uid_wse_shared._1.RegisterDeregisterStatus;
+import idech.ech.xmlns.ech_0007_f._6.CantonAbbreviationType;
+import idech.ech.xmlns.ech_0010_f._6.AddressInformationType;
+import idech.ech.xmlns.ech_0010_f._6.CountryType;
+import idech.ech.xmlns.ech_0010_f._6.MailAddressType;
+import idech.ech.xmlns.ech_0046_f._3.AddressType;
+import idech.ech.xmlns.ech_0046_f._3.ContactType;
+import idech.ech.xmlns.ech_0097_f._2.NamedOrganisationIdType;
+import idech.ech.xmlns.ech_0097_f._2.OrganisationIdentificationType;
+import idech.ech.xmlns.ech_0097_f._2.UidOrganisationIdCategorieType;
+import idech.ech.xmlns.ech_0097_f._2.UidStructureType;
+import idech.ech.xmlns.ech_0098_f._3.DatePartiallyKnownType;
+import idech.ech.xmlns.ech_0098_f._3.FoundationType;
+import idech.ech.xmlns.ech_0108_f._3.OrganisationType;
+import idech.ech.xmlns.ech_0108_f._3.UidregInformationType;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import javax.xml.bind.JAXBElement;
@@ -8,8 +24,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import org.apache.axis.types.NonNegativeInteger;
-import ch.admin.bit.xmlns.uid_wse_f._3.RegisterDeregisterItem;
-import ch.admin.bit.xmlns.uid_wse_shared._1.RegisterDeregisterStatus;
 
 public class IDEServiceMappingUtil {
 
