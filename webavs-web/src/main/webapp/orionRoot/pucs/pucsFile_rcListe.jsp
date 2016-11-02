@@ -20,7 +20,7 @@
 	
 	.icon-ok {
 	    background-position: -288px 0;
-	    background-image: url("../webavs/orionRoot/img/glyphicons-halflings.png");
+	    background-image: url("./orionRoot/img/glyphicons-halflings.png");
 	    background-repeat: no-repeat;
 	    display: inline-block;
 	    height: 14px;
@@ -31,7 +31,7 @@
 	
 	.icon-check {
 	  	background-position: -144px -72px;
-	    background-image: url("../webavs/orionRoot/img/glyphicons-halflings.png");
+	    background-image: url("./orionRoot/img/glyphicons-halflings.png");
 	    background-repeat: no-repeat;
 	    display: inline-block;
 	    height: 14px;
@@ -43,7 +43,7 @@
 	
 	.icon-lock {
 	    background-position: -287px -24px;
-	    background-image: url("../webavs/orionRoot/img/glyphicons-halflings.png");
+	    background-image: url("./orionRoot/img/glyphicons-halflings.png");
 	    background-repeat: no-repeat;
 	    display: inline-block;
 	    height: 14px;
@@ -52,6 +52,16 @@
 	    width: 14px;
 	}
 
+	.icon-link {
+	    background-position: -120px -72px;
+	    background-image: url("./orionRoot/img/glyphicons-halflings.png");
+	    background-repeat: no-repeat;
+	    display: inline-block;
+	    height: 14px;
+	    line-height: 14px;
+	    vertical-align: text-top;
+	    width: 14px;
+	}
 </style>
 <%@ include file="/theme/list/javascripts.jspf" %>
 <script type="text/javascript">
@@ -78,6 +88,7 @@ $(function () {
 <th><ct:FWLabel key="NB_SALAIRE"/></th>
 <th><ct:FWLabel key="USER"/></th>
 <th><ct:FWLabel key="STATUT"/></th>
+<th>&nbsp;</th>
 <th><ct:FWLabel key="PUCS_TYPE"/></th>
 <th><ct:FWLabel key="AF_SEUL"/></th>
 <%-- /tpl:insert --%> 
@@ -112,12 +123,13 @@ $(function () {
 				<% } %>
 				<c:out value="${pucsFile.nomAffilie}" />
 			</td>
-			<td align = "center"><%=line.getPucsFile().getDateDeReception()%></td>
-			<td align="center"><%=line.getPucsFile().getAnneeDeclaration()%></td>
-			<td align ="right"><%=new FWCurrency(line.getPucsFile().getTotalControle()).toStringFormat()%></td>
-			<td align="center"><%=line.getPucsFile().getNbSalaires()%></td>
+			<td style="text-align:center"><%=line.getPucsFile().getDateDeReception()%></td>
+			<td style="text-align:center"><%=line.getPucsFile().getAnneeDeclaration()%></td>
+			<td style="text-align:right"><%=new FWCurrency(line.getPucsFile().getTotalControle()).toStringFormat()%></td>
+			<td style="text-align:center"><%=line.getPucsFile().getNbSalaires()%></td>
 			<td><%=line.getPucsFile().getHandlingUser()==null?"":line.getPucsFile().getHandlingUser()%></td>
 			<td><%=objSession.getCodeLibelle(line.getPucsFile().getCurrentStatus().getValue())%></td>
+			<td class="pucsEntryHandling" style="text-align:center" ><i title ="link" class="icon-link"></i></td>
 			<td>
 
 			<% if(line.getPucsFile().getProvenance().isPucs()) { %>
