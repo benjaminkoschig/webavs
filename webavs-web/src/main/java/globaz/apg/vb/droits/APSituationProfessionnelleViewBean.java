@@ -148,6 +148,10 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         return IPRDemande.CS_TYPE_APG.equals(getTypePrestation().toCodeSysteme());
     }
 
+    public boolean isMaternite() {
+        return IPRDemande.CS_TYPE_MATERNITE.equals(getTypePrestation().toCodeSysteme());
+    }
+
     /**
      * getter pour l'attribut affiliation employeur
      * 
@@ -812,6 +816,10 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     public Boolean isPrestationAcmAlfaEnable() throws PropertiesException {
         final String propertyValue = getPropertyValue();
         return APPropertyTypeDePrestationAcmValues.ACM_ALFA.getPropertyValue().equals(propertyValue);
+    }
+
+    public Boolean isPrestationAcm2AlfaEnable() throws PropertiesException {
+        return APProperties.PRESTATION_ACM_2_ACTIF.getBooleanValue();
     }
 
     /**
