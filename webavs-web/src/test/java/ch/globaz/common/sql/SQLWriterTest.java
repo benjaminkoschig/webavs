@@ -244,4 +244,9 @@ public class SQLWriterTest {
         assertThat(SQLWriter.write().and("COL").like("%toto").toSql()).isEqualTo(" COL like '%toto'");
     }
 
+    @Test
+    public void testMax() throws Exception {
+        assertThat(SQLWriter.write().select().max("TOTO").toSql()).isEqualTo("select max(TOTO) ");
+    }
+
 }

@@ -38,11 +38,22 @@ public class SQLWriter {
 
     /**
      * Créer l'instance en définissant le schema qui sera utilisé pour le SQL.
+     * Le "." dans le schéma doit être fourni
      * 
      * @return SQLWriter la nouvelle instance créer
      */
     public static SQLWriter write(String schema) {
         return new SQLWriter(schema);
+    }
+
+    /**
+     * Ajout le mot select ä la requête.
+     * 
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter select() {
+        query.append("select ");
+        return this;
     }
 
     /**
@@ -55,6 +66,21 @@ public class SQLWriter {
     public SQLWriter select(String sqlFragement) {
         query.append("select ").append(sqlFragement);
         return this;
+    }
+
+    /**
+     * Ajout le mot max à la requête et ajoute la colonne dans le max.
+     * 
+     * @param column sur laquelle utilisé le mot clé max
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter max(String column) {
+        query.append("max(" + column + ") ");
+        return this;
+    }
+
+    public SQLWriter max(TableDefinition tableDefinition) {
+        return max(SCHEMA + tableDefinition.getTableName() + "." + tableDefinition.getColumn());
     }
 
     /**
