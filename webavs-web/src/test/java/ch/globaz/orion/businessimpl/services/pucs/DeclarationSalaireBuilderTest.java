@@ -33,7 +33,6 @@ public class DeclarationSalaireBuilderTest {
                 "src/test/resources/ch/globaz/orion/businessimpl/services/pucs/pucs1.xml", buildFormater());
         assertEquals(new Integer(2012), ds.getAnnee());
         assertEquals(null, ds.getNbSalaire());
-        assertEquals(0, null);
         assertEquals(new Montant(208067.2), ds.getMontantAc1());
         assertEquals(new Montant(11784), ds.getMontantAc2());
         assertEquals(new Montant(280851.2), ds.getMontantAvs());
