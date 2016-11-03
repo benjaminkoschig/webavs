@@ -29,7 +29,7 @@ public class EBPucsValidationDetailHelper extends FWHelper {
         EBPucsValidationDetailViewBean vb = (EBPucsValidationDetailViewBean) viewBean;
         try {
             vb.retrieve();
-            EBPucsFileService.accepter(vb.getCurrentId(), (BSession) session);
+            EBPucsFileService.aTraiter(vb.getCurrentId(), (BSession) session);
         } catch (Exception e) {
             throw new RuntimeException("Unknown error", e);
         }
