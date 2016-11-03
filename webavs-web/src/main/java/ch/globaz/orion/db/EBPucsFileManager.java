@@ -26,15 +26,15 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
         if (!forProvenance.isUndefinded()) {
             provenance = forProvenance.getValue();
         }
+
         sqlWhere.and(EBPucsFileDefTable.DATE_RECEPTION).equal(forDateSoumission);
-        sqlWhere.and(EBPucsFileDefTable.NUMERO_AFFILIE).like("%" + likeAffilie + "%");
+        sqlWhere.and(EBPucsFileDefTable.NUMERO_AFFILIE).fullLike(likeAffilie);
         sqlWhere.and(EBPucsFileDefTable.STATUS).in(forStatut);
         sqlWhere.and(EBPucsFileDefTable.PROVENANCE).equal(provenance);
         sqlWhere.and(EBPucsFileDefTable.ID).in(inIds);
-        if (fullText != null) {
-            sqlWhere.and(EBPucsFileDefTable.SEARCH_STRING).like(
-                    JadeStringUtil.convertSpecialChars(fullText).toUpperCase());
-        }
+        sqlWhere.and(EBPucsFileDefTable.SEARCH_STRING).fullLike(
+                JadeStringUtil.convertSpecialChars(fullText).toUpperCase());
+
         sqlWhere.and(EBPucsFileDefTable.ID_FILE_NAME).equal(forFilename);
     }
 

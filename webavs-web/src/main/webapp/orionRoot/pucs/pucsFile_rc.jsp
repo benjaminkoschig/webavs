@@ -1,3 +1,6 @@
+<%@page import="globaz.orion.process.importpucs.EBImportSwissDec"%>
+<%@page import="globaz.orion.process.importpucs.EBImportPucsDan"%>
+<%@page import="ch.globaz.common.process.byitem.ProcessItemsService"%>
 <%@page import="ch.globaz.orion.business.domaine.pucs.EtatPucsFile"%>
 <%@page import="java.util.LinkedHashMap"%>
 <%@page import="java.util.Map.Entry"%>
@@ -24,6 +27,8 @@
 	    map.put(code.getIdCodeSysteme(), code.getTraduction(langue));
 	}
 	
+
+
 %>
 <%-- /tpl:insert --%>
 <%@ include file="/theme/find/javascripts.jspf" %>
@@ -191,7 +196,7 @@ function getSelectedIds(type) {
 <ct:ifhasright element="orion.pucs.pucsImport.afficher" crud="u">
 <input type="button" id="simulation" value="<ct:FWLabel key="PUCS_SIMULATION"/>"/>&nbsp;
 <input type="button" id="ctrlSwissDec" value="<ct:FWLabel key="PUCS_CONTROLE_SWISSDEC"/>"/>&nbsp;
-<input type="button" id="importFileInDb" value="<ct:FWLabel key="IMPORT_FILE"/>"/>&nbsp;
+<input type="button" id="importFileInDb" value="<ct:FWLabel key="PUCS_IMPORT_FILE"/>"/>&nbsp;
 
 </ct:ifhasright>
 <ct:ifhasright element="orion.pucs.pucsImport.afficher" crud="u">

@@ -9,20 +9,22 @@ import com.google.common.base.Joiner;
 
 /**
  * Le but de cette class est de permettre la création de requête ou une partie de requête.
+ * Le comportement est le suivant lors que l'on donne un paramétrer et que celui-ci est vide on ajoute pas le fragment
+ * SQL à l requête.
  * 
  * @author dma
  * 
  */
 public class SQLWriter {
 
-    private final StringBuffer query = new StringBuffer();
+    private final StringBuilder query = new StringBuilder();
     private final String schema;
     private int countAddOperators = 0;
     private String charToReplace = "?";
     private List<String> paramsToUse = new ArrayList<String>();
     private Integer currentIndice;
     private final boolean addSchema;
-    private static final String SCHEMA = "schema.";
+    private static final String CONST_SCHEMA = "schema.";
 
     private SQLWriter(String schema) {
         this.schema = schema;
@@ -44,7 +46,7 @@ public class SQLWriter {
     }
 
     /**
-     * Créer l'instance.
+     * Créer l'instance et définit que lorsque l'on ajoute pour chaque table(sqlFragment) le mot schema devant.
      * 
      * @return SQLWriter la nouvelle instance créer
      */
@@ -96,7 +98,7 @@ public class SQLWriter {
     }
 
     public SQLWriter max(TableDefinition tableDefinition) {
-        query.append("max(" + SCHEMA + tableDefinition.getTableName() + "." + tableDefinition.getColumn() + ") ");
+        query.append("max(" + CONST_SCHEMA + tableDefinition.getTableName() + "." + tableDefinition.getColumn() + ") ");
         return this;
     }
 
@@ -115,7 +117,7 @@ public class SQLWriter {
     private String addSchemaToSql(String sqlFragement) {
         String sql = sqlFragement;
         if (addSchema) {
-            sql = SCHEMA + sqlFragement;
+            sql = CONST_SCHEMA + sqlFragement;
         }
         return sql;
     }
@@ -276,8 +278,18 @@ public class SQLWriter {
         String column = tableDefinition.getTableName() + "." + tableDefinition.getColumn();
 
         this.and();
-        query.append(" ").append(addSchemaToSql(SCHEMA + column));
+        query.append(" ").append(addSchemaToSql(CONST_SCHEMA + column));
 
+        return this;
+    }
+
+    public SQLWriter fullLike(String param) {
+        if (param != null && !param.isEmpty()) {
+            paramsToUse.add(param);
+            query.append(" like '%?%'");
+        } else {
+            rollback();
+        }
         return this;
     }
 
@@ -567,7 +579,7 @@ public class SQLWriter {
     public String toSql() {
         String sql = query.toString();
         if (hasSchema()) {
-            sql = sql.replaceAll(SCHEMA, schema);
+            sql = sql.replaceAll(CONST_SCHEMA, schema);
         }
         return this.replace(sql, paramsToUse);
     }
@@ -587,10 +599,8 @@ public class SQLWriter {
     }
 
     boolean isNotEmpty(Integer... param) {
-        if (param.length == 1) {
-            if (param[0] == null) {
-                return false;
-            }
+        if (param.length == 1 && param[0] == null) {
+            return false;
         }
         return true;
     }
