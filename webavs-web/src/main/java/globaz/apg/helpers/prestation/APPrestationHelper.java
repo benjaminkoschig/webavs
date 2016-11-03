@@ -24,6 +24,7 @@ import globaz.apg.db.droits.APSitProJointEmployeur;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.db.prestation.APCotisation;
+import globaz.apg.db.prestation.APCotisationManager;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.apg.db.prestation.APRepartitionJointPrestationManager;
@@ -37,6 +38,8 @@ import globaz.apg.helpers.droits.APSituationProfessionnelleHelper;
 import globaz.apg.module.calcul.APBaseCalcul;
 import globaz.apg.module.calcul.APBasesCalculBuilder;
 import globaz.apg.module.calcul.APCalculException;
+import globaz.apg.module.calcul.APModuleRepartitionPaiements;
+import globaz.apg.module.calcul.APPrestationCalculee;
 import globaz.apg.module.calcul.APPrestationStandardLamatAcmAlphaData;
 import globaz.apg.module.calcul.standard.APCalculateurPrestationStandardLamatAcmAlpha;
 import globaz.apg.module.calcul.wrapper.APPrestationWrapper;
@@ -62,6 +65,7 @@ import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
+import globaz.globall.util.JADate;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -558,15 +562,64 @@ public class APPrestationHelper extends PRAbstractHelper {
         final List<APPrestationCalculeeAPersister> resultatCalculAPersister = calculateurAcm2
                 .domainToPersistence(entiteesDomainResultatCalcul);
 
-        genererLesCotisation(resultatCalculAPersister);
-        // --> APModuleRepartitionPaiements.genererCotisationsACM
         // Sauvegarde des entités de persistance
         persisterResultatCalculPrestation(resultatCalculAPersister, session, transaction);
+
+        // Génération des cotisations ACM 2
+        genererLesCotisations(session, resultatCalculAPersister);
     }
 
-    private void genererLesCotisation(List<APPrestationCalculeeAPersister> resultatCalculAPersister) {
-        // FIXME DCL générer les cotisations
+    private void genererLesCotisations(final BSession session,
+            List<APPrestationCalculeeAPersister> resultatCalculAPersister) throws Exception {
 
+        // Nous allons générer pour chaque répartition de la prestation des cotisations ACM
+        for (APPrestationCalculeeAPersister prestationCourant : resultatCalculAPersister) {
+
+            for (APRepartitionCalculeeAPersister repartitionCourante : prestationCourant.getRepartitions()) {
+
+                // Mapping de la prestation Entity -> Prestation POJO
+                APPrestationCalculee prestationCalculee = new APPrestationCalculee();
+                prestationCalculee.setDateDebut(new JADate(prestationCourant.getPrestation().getDateDebut()));
+                prestationCalculee.setDateFin(new JADate(prestationCourant.getPrestation().getDateFin()));
+                prestationCalculee.setNombreJoursSoldes(prestationCourant.getPrestation().getNombreJoursSoldes());
+
+                genererCotisationsPourRepartition(session, prestationCalculee,
+                        repartitionCourante.getRepartitionPaiements());
+            }
+        }
+    }
+
+    private void genererCotisationsPourRepartition(final BSession session, final APPrestationCalculee prestation,
+            final APRepartitionPaiements repartition) throws Exception {
+
+        // Génération des cotisations pour la répartition de la prestation courante
+        APModuleRepartitionPaiements module = new APModuleRepartitionPaiements();
+        module.genererCotisationsACM(session, prestation, repartition);
+
+        // Calcul pour avoir le montant NET (montant BRUT + cotisations)
+        FWCurrency montantNet = new FWCurrency(JANumberFormatter.format(repartition.getMontantBrut()));
+        montantNet.add(getMontantTotalCotisation(session, repartition));
+
+        // Mettre à jour le montant NET de la répartition
+        repartition.setMontantNet(montantNet.toString());
+        repartition.update(session.getCurrentThreadTransaction());
+    }
+
+    private FWCurrency getMontantTotalCotisation(BSession session, APRepartitionPaiements repa) throws Exception {
+        FWCurrency result = new FWCurrency(0);
+        APCotisationManager mgr = new APCotisationManager();
+
+        mgr.setSession(session);
+        mgr.setForIdRepartitionBeneficiairePaiement(repa.getIdRepartitionBeneficiairePaiement());
+        mgr.find(BManager.SIZE_NOLIMIT);
+
+        for (Iterator iter = mgr.iterator(); iter.hasNext();) {
+            APCotisation element = (APCotisation) iter.next();
+
+            result.add(element.getMontant());
+        }
+
+        return new FWCurrency(result.toString());
     }
 
     /**

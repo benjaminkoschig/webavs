@@ -914,7 +914,7 @@ public class APModuleRepartitionPaiements {
      * 
      * @throws Exception
      */
-    private void genererCotisationsACM(BSession session, APPrestationCalculee prestation, APRepartitionPaiements repa)
+    public void genererCotisationsACM(BSession session, APPrestationCalculee prestation, APRepartitionPaiements repa)
             throws Exception {
         if (repa.isBeneficiaireEmployeur()) {
             // le beneficiaire est un employeur
