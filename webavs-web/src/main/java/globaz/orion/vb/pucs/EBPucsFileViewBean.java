@@ -33,9 +33,7 @@ public class EBPucsFileViewBean extends EBAbstractViewBean {
         if (!pucsFile.getProvenance().isSwissDec()) {
             pucsFile.setLock(!PucsServiceImpl.userHasRight(afAffiliation, BSessionUtil.getSessionFromThreadContext()));
         }
-        // hasRightAccesSecurity = !pucsFile.isLock();
-
-        hasRightAccesSecurity = true;
+        hasRightAccesSecurity = !pucsFile.isLock();
 
         if (particularites != null) {
             hasParticulariteCodeBlocage = particularites.contains(CodeSystem.PARTIC_AFFILIE_CODE_BLOCAGE_DECFINAL);
