@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.db.EBPucsFileDefTable;
@@ -72,13 +74,13 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
     }
 
     private Map<String, AFAffiliation> findAffiliations(List<EBPucsFileEntity> list) {
-        List<String> numAffiliations = new ArrayList<String>();
+        Set<String> ids = new HashSet<String>();
 
         for (EBPucsFileEntity entity : list) {
-            numAffiliations.add(entity.getNumeroAffilie());
+            ids.add(entity.getIdAffiliation());
         }
 
-        List<AFAffiliation> affiliations = AFAffiliationServices.searchAffiliationByNumeros(numAffiliations,
+        List<AFAffiliation> affiliations = AFAffiliationServices.searchAffiliationByIds(ids,
                 BSessionUtil.getSessionFromThreadContext());
 
         Map<String, AFAffiliation> map = new HashMap<String, AFAffiliation>();

@@ -5,7 +5,6 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.db.affiliation.AFAffiliation;
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.HashSet;
 import java.util.List;
 import ch.globaz.common.dom.ElementsDomParser;
 import ch.globaz.common.domaine.Date;
@@ -20,13 +19,13 @@ import com.google.common.base.Joiner;
 public class PucsItem extends ProcessItem {
 
     protected final PucsFile pucsFile;
-    protected final List<AFAffiliation> affiliations;
+    protected final AFAffiliation affiliation;
     protected final BSession session;
     protected final String idJob;
 
-    public PucsItem(PucsFile pucsFile, List<AFAffiliation> affiliations, BSession session, String idJob) {
+    public PucsItem(PucsFile pucsFile, AFAffiliation affiliation, BSession session, String idJob) {
         this.pucsFile = pucsFile;
-        this.affiliations = affiliations;
+        this.affiliation = affiliation;
         this.session = session;
         this.idJob = idJob;
     }
@@ -86,7 +85,6 @@ public class PucsItem extends ProcessItem {
         }
         entity.setDateReception(new Date(pucsFile.getDateDeReception()).getDate());
         entity.setDuplicate(pucsFile.isDuplicate());
-        entity.setHandlingUser(pucsFile.getHandlingUser());
         entity.setNbSalaire(Integer.valueOf(pucsFile.getNbSalaires()));
         entity.setNomAffilie(pucsFile.getNomAffilie());
         entity.setNumeroAffilie(pucsFile.getNumeroAffilie());
@@ -114,26 +112,20 @@ public class PucsItem extends ProcessItem {
 
     @Override
     public void treat() throws Exception {
-        AFAffiliation affiliation = null;
         if (pucsFile == null) {
             this.addErrors("PROCESS_IMPORT_PUCSINDB_PUCFILE_NULL");
         } else {
-            if (affiliations == null || affiliations.isEmpty()) {
+            if (affiliation == null || affiliation.isNew()) {
                 this.addErrors("PROCESS_IMPORT_PUCSINDB_AFFILIATION_NOT_FOUND", pucsFile.getNumeroAffilie(),
                         pucsFile.getAnneeDeclaration());
-            } else if (affiliations.size() > 1) {
-                HashSet<String> ids = new HashSet<String>();
-                for (AFAffiliation aff : affiliations) {
-                    ids.add(aff.getId());
-                }
-                this.addErrors("PROCESS_IMPORT_PUCSINDB_AFFILIATION_TO_MANY", pucsFile.getNumeroAffilie(),
-                        Joiner.on(";").join(ids));
-            } else {
-                affiliation = affiliations.get(0);
             }
         }
-        if (!hasError()) {
-            save(pucsFile, affiliation, idJob, session);
+        try {
+            if (!hasError()) {
+                save(pucsFile, affiliation, idJob, session);
+            }
+        } finally {
+            EBPucsFileEntity.deleteFileOnWorkDirectory(pucsFile.getFilename());
         }
     }
 }

@@ -26,6 +26,7 @@ public class PucsFile implements Serializable {
     private boolean isAffiliationExistante = false;
     private boolean duplicate = false;
     private String idDb;
+    private String idAffiliation;
     private File file;
 
     public File getFile() {
@@ -206,6 +207,14 @@ public class PucsFile implements Serializable {
 
     public boolean isTraitable() {
         return currentStatus.isTraitable();
+    }
+
+    public String getIdAffiliation() {
+        return idAffiliation;
+    }
+
+    public void setIdAffiliation(String idAffiliation) {
+        this.idAffiliation = idAffiliation;
     }
 
     @Override

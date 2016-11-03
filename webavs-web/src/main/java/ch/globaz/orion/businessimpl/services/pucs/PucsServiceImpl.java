@@ -38,6 +38,9 @@ import ch.globaz.xmlns.eb.pucs.LienInstitution;
 import ch.globaz.xmlns.eb.pucs.PUCSService;
 import ch.globaz.xmlns.eb.pucs.PucsEntrySummary;
 import ch.globaz.xmlns.eb.pucs.PucsSearchOrderByEnum;
+import ch.globaz.xmlns.eb.pucs.PucsStatusEnum;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 public class PucsServiceImpl implements PucsService {
 
@@ -58,7 +61,25 @@ public class PucsServiceImpl implements PucsService {
         } catch (Exception e) {
             throw new OrionPucsException("Impossible de télécharger le ficheir PUCS", e);
         }
+    }
 
+    public static void updateStatusPucs(List<String> idsPucsEntry, PucsStatusEnum pucsStatusEnum, BSession session)
+            throws OrionPucsException {
+        try {
+
+            List<Integer> ids = Lists.transform(idsPucsEntry, new Function<String, Integer>() {
+                @Override
+                public Integer apply(String i) {
+                    return Integer.valueOf(i);
+                }
+            });
+
+            User usr = ServicesProviders.partnerWebServiceProvide(session).readActivUserOrAdminByLoginName(
+                    session.getUserId());
+            ServicesProviders.pucsServiceProvide(session).updateStatusPucs(ids, usr.getUserId(), pucsStatusEnum);
+        } catch (Exception e) {
+            throw new OrionPucsException("Impossible d'obtenir le contenu du fichier", e);
+        }
     }
 
     public static PucsEntrySummary getPucsEntry(String idPucsEntry, BSession session) throws OrionPucsException {

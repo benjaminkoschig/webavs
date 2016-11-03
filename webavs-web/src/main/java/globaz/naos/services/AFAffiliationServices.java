@@ -143,14 +143,14 @@ public final class AFAffiliationServices {
         affiliationManager.setForAnnee(annee);
 
         try {
-            affiliationManager.find();
+            affiliationManager.find(BManager.SIZE_USEDEFAULT);
         } catch (Exception e) {
             throw new AFTechnicalException("Impossible de récupérer l'affiliation paritaire active de numéro : "
                     + affilieNumero, e);
         }
 
-        if (affiliationManager.size() > 0) {
-            return ((AFAffiliation) affiliationManager.getFirstEntity());
+        if (!affiliationManager.isEmpty()) {
+            return (AFAffiliation) affiliationManager.getFirstEntity();
         }
 
         return null;
@@ -271,6 +271,38 @@ public final class AFAffiliationServices {
                 affiliationManager.find(BManager.SIZE_NOLIMIT);
             } catch (Exception e) {
                 throw new AFTechnicalException("Impossible de récupérer les affiliation, numéros : " + in, e);
+            }
+            affiliations = affiliationManager.toList();
+        }
+        return affiliations;
+    }
+
+    /**
+     * Cette méthode retourne des affiliatons en fonction des id d'affilié passé en paramètre
+     */
+    public static List<AFAffiliation> searchAffiliationByIds(Collection<String> ids, BSession session) {
+
+        if (ids == null) {
+            throw new NullPointerException("affilieNumero must be not null");
+        }
+
+        if (session == null) {
+            throw new NullPointerException("session must be not null");
+        }
+
+        List<AFAffiliation> affiliations = new ArrayList<AFAffiliation>();
+        if (!ids.isEmpty()) {
+
+            AFAffiliationManager affiliationManager = new AFAffiliationManager();
+            affiliationManager.setForIdsAffiliation(ids);
+            affiliationManager.setSession(session);
+            affiliationManager.setForTypesAffParitaires();
+
+            try {
+                affiliationManager.find(BManager.SIZE_NOLIMIT);
+            } catch (Exception e) {
+                throw new AFTechnicalException("Impossible de récupérer les affiliation, ids : "
+                        + Joiner.on(",").join(ids), e);
             }
             affiliations = affiliationManager.toList();
         }

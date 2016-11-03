@@ -74,18 +74,18 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
     }
 
     private Map<String, AFAffiliation> findAffiliations(Collection<PucsFile> list) {
-        List<String> numAffiliations = new ArrayList<String>();
+        List<String> ids = new ArrayList<String>();
 
         for (PucsFile pucsFile : list) {
-            numAffiliations.add(pucsFile.getNumeroAffilie());
+            ids.add(pucsFile.getIdAffiliation());
         }
 
-        List<AFAffiliation> affiliations = AFAffiliationServices.searchAffiliationByNumeros(numAffiliations,
+        List<AFAffiliation> affiliationsList = AFAffiliationServices.searchAffiliationByIds(ids,
                 BSessionUtil.getSessionFromThreadContext());
 
         Map<String, AFAffiliation> map = new HashMap<String, AFAffiliation>();
 
-        for (AFAffiliation afAffiliation : affiliations) {
+        for (AFAffiliation afAffiliation : affiliationsList) {
             map.put(afAffiliation.getId(), afAffiliation);
         }
         return map;
@@ -100,6 +100,11 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
             pucsFiles = keepATraiter(searchPucsFilesByIds(listOfSelectedIds));
         }
         affiliations = findAffiliations(pucsFiles);
+        if (isSimulation()) {
+            for (PucsFile pucsFile : pucsFiles) {
+                EBPucsFileService.affectCurrentUser(pucsFile, getSession());
+            }
+        }
         isMiseEnGedDefault = EBProperties.MISE_EN_GED_DEFAULT.getBooleanValue();
         isValidationDefault = EBProperties.VALIDATION_DEFAULT.getBooleanValue();
         JadeGedFacade.isInstalled();

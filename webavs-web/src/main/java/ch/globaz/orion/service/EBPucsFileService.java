@@ -46,6 +46,19 @@ public class EBPucsFileService {
         return pucsFiles;
     }
 
+    public static void affectCurrentUser(PucsFile pucsFile, BSession session) {
+        EBPucsFileEntity entity = new EBPucsFileEntity();
+        entity.setSession(session);
+        entity.setIdEntity(pucsFile.getIdDb());
+        try {
+            entity.retrieve();
+            entity.setHandlingUser(session.getUserId());
+            entity.save();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static PucsFile readByFilename(String filename, BSession session) {
         EBPucsFileManager manager = new EBPucsFileManager();
         manager.setSession(session);
@@ -152,6 +165,7 @@ public class EBPucsFileService {
     private static void changeStatut(String id, EtatPucsFile etat, BSession session) {
         EBPucsFileEntity entity = new EBPucsFileEntity();
         entity.setIdEntity(id);
+        entity.setHandlingUser(session.getUserId());
         entity.setSession(session);
         try {
             entity.retrieve();
@@ -182,6 +196,7 @@ public class EBPucsFileService {
         pucsFile.setSalaireInferieurLimite(entity.getSalaireInferieurLimite());
         pucsFile.setSizeFileInKo(entity.getSizeFileInKo());
         pucsFile.setTotalControle(new Montant(entity.getTotalControle()).toStringFormat());
+        pucsFile.setIdAffiliation(entity.getIdAffiliation());
         pucsFile.setIdDb(entity.getIdEntity());
         return pucsFile;
     }
@@ -201,8 +216,8 @@ public class EBPucsFileService {
     }
 
     private static String getNextIdMerged(BSession session) {
-        String query = SQLWriter.write().select().max(EBPucsFileMergedTableDef.ID_MERGED)
-                .from("SCHEMA." + EBPucsFileMergedTableDef.TABLE).toSql();
+        String query = SQLWriter.writeWithSchema().select().max(EBPucsFileMergedTableDef.ID_MERGED)
+                .from(EBPucsFileMergedTableDef.TABLE).toSql();
         return String.valueOf(QueryExecutor.executeAggregate(query, session).intValue() + 1);
     }
 }

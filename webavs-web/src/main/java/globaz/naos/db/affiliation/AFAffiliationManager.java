@@ -7,6 +7,7 @@ import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.translation.CodeSystem;
 import java.io.Serializable;
+import com.google.common.base.Joiner;
 
 public class AFAffiliationManager extends BManager implements Serializable {
     // détermine les types d'affiliation pour le domaine paritaire
@@ -84,6 +85,8 @@ public class AFAffiliationManager extends BManager implements Serializable {
     private boolean forNumeroIdeNotEmpty = false;
 
     private String forNumeroIde;
+
+    private java.util.Collection<String> forIdsAffiliation;
 
     public String getForNumeroIde() {
         return forNumeroIde;
@@ -518,6 +521,13 @@ public class AFAffiliationManager extends BManager implements Serializable {
             }
             sqlWhere += "MADFIN=0";
         }
+
+        if (forIdsAffiliation != null) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += "MAIAFF in (" + Joiner.on(",").join(forIdsAffiliation) + ")";
+        }
         return sqlWhere;
     }
 
@@ -936,6 +946,14 @@ public class AFAffiliationManager extends BManager implements Serializable {
 
     public void setForDateFinGreater(java.lang.String forDateFinGreater) {
         this.forDateFinGreater = forDateFinGreater;
+    }
+
+    public java.util.Collection<String> getForIdsAffiliation() {
+        return forIdsAffiliation;
+    }
+
+    public void setForIdsAffiliation(java.util.Collection<String> forIdsAffiliation) {
+        this.forIdsAffiliation = forIdsAffiliation;
     }
 
 }

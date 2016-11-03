@@ -3,6 +3,7 @@ package ch.globaz.orion.db;
 import globaz.globall.db.BTransaction;
 import globaz.jade.common.Jade;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.fs.JadeFsFacade;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -85,8 +86,16 @@ public class EBPucsFileEntity extends JadeEntity {
         searchString = readString(EBPucsFileDefTable.SEARCH_STRING);
     }
 
+    public static void deleteFileOnWorkDirectory(String idFileName) {
+        try {
+            JadeFsFacade.delete(createFileName(idFileName));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public File retriveFile() {
-        File f = new File(Jade.getInstance().getHomeDir() + "work/" + idFileName + ".xml");
+        File f = new File(createFileName(idFileName));
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = new FileOutputStream(f);
@@ -104,6 +113,10 @@ public class EBPucsFileEntity extends JadeEntity {
             }
         }
         return f;
+    }
+
+    private static String createFileName(String idFileName) {
+        return Jade.getInstance().getHomeDir() + "work/" + idFileName + ".xml";
     }
 
     public InputStream readInputStream() {
