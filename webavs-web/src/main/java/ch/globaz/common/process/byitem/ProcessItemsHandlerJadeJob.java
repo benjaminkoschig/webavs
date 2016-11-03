@@ -6,6 +6,8 @@ import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +16,7 @@ import ch.globaz.common.jadedb.TransactionWrapper;
 import ch.globaz.common.process.ProcessMailUtils;
 import com.google.common.base.Throwables;
 
-public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends AbstractJadeJob implements Runnable,
+public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends AbstractJadeJob implements
         ProcessItems<T> {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessItem.class);
     private transient List<T> items;
@@ -28,7 +30,7 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
 
     @Override
     public void run() {
-        TransactionWrapper transaction = new TransactionWrapper(getSession());
+        TransactionWrapper transaction = TransactionWrapper.forforceCommit(getSession());
         StopWatch time = new StopWatch();
         ProcessEntity processEntity = new ProcessEntity();
         processEntity.setSession(getSession());
@@ -70,6 +72,7 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
             processEntity.setEndDate(new Date());
 
             processEntity.persist(transaction);
+            transaction.commit();
         } catch (Exception e) {
             try {
                 processEntity.setEtat(ProcessState.ERROR);
@@ -90,22 +93,18 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
         }
     }
 
-    // final List<PucsFile> pucsFiles = Collections.synchronizedList(new ArrayList<PucsFile>(listRemotePucsFileUri
-    // .size()));
-    //
-    // ExecutorService threadExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
-    // for (String remotePucsFileUri : listRemotePucsFileUri) {
-    // if (JadeFilenameUtil.extractFilenameExtension(remotePucsFileUri).equalsIgnoreCase("xml")) {
-    // threadExecutor.execute(new MyRunnable(remotePucsFileUri, pucsFiles));
-    // }
-    // }
-    //
-    // threadExecutor.shutdown();
-    //
-    // while (!threadExecutor.isTerminated()) {
-    // }
-    //
-    // watch.stop();
+    void thread() {
+        items = resolveItems();
+
+        ExecutorService threadExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
+        for (T item : items) {
+            threadExecutor.execute(item);
+        }
+        threadExecutor.shutdown();
+
+        while (!threadExecutor.isTerminated()) {
+        }
+    }
 
     public List<T> getItmes() {
         return items;

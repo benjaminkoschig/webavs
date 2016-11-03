@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class ProcessItem {
+public abstract class ProcessItem implements Runnable {
     private Map<String, List<String>> errors = new HashMap<String, List<String>>();
     private Exception exception;
 
@@ -47,5 +47,14 @@ public abstract class ProcessItem {
 
     public Map<String, List<String>> getErrors() {
         return errors;
+    }
+
+    @Override
+    public void run() {
+        try {
+            treat();
+        } catch (Exception e) {
+            addException(e);
+        }
     }
 }

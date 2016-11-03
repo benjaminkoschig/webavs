@@ -101,20 +101,26 @@ public class TransactionWrapper implements Closeable {
                 LOG.error("Unable to close the bTransaction", e);
             }
             if (autonome) {
-                for (JadeBusinessMessage message : logMessages) {
-                    if (JadeBusinessMessageLevels.ERROR == (message.getLevel())) {
-                        JadeThread.logError(message.getSource(), message.getMessageId(), message.getParameters());
-                    } else if (JadeBusinessMessageLevels.WARN == (message.getLevel())) {
-                        JadeThread.logWarn(message.getSource(), message.getMessageId(), message.getParameters());
-                    } else if (JadeBusinessMessageLevels.INFO == (message.getLevel())) {
-                        JadeThread.logInfo(message.getSource(), message.getMessageId(), message.getParameters());
+                if (logMessages != null) {
+                    for (JadeBusinessMessage message : logMessages) {
+                        if (JadeBusinessMessageLevels.ERROR == (message.getLevel())) {
+                            JadeThread.logError(message.getSource(), message.getMessageId(), message.getParameters());
+                        } else if (JadeBusinessMessageLevels.WARN == (message.getLevel())) {
+                            JadeThread.logWarn(message.getSource(), message.getMessageId(), message.getParameters());
+                        } else if (JadeBusinessMessageLevels.INFO == (message.getLevel())) {
+                            JadeThread.logInfo(message.getSource(), message.getMessageId(), message.getParameters());
+                        }
                     }
                 }
                 if (session != null) {
                     // Pas top car on risque d'avoir des erreur ou warining à double dans le JadeThreadlog. Voir la
                     // fonciton addError ou addWarning
-                    session.addError(errorsInSession);
-                    session.addWarning(warningsInSession);
+                    if (errorsInSession != null && !errorsInSession.isEmpty()) {
+                        session.addError(errorsInSession);
+                    }
+                    if (warningsInSession != null && !warningsInSession.isEmpty()) {
+                        session.addWarning(warningsInSession);
+                    }
                 }
             }
         }
