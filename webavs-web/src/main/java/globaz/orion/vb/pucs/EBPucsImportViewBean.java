@@ -126,7 +126,7 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
     private Collection<PucsFile> keepATraiter(Collection<PucsFile> pucsFiles) {
         List<PucsFile> pucsFilesATraiter = new ArrayList<PucsFile>();
         for (PucsFile pucsFile : pucsFiles) {
-            if (pucsFile.isATraiter()) {
+            if (pucsFile.isTraitable()) {
                 pucsFilesATraiter.add(pucsFile);
             }
         }
