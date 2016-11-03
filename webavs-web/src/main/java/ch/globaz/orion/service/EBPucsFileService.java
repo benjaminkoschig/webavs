@@ -182,11 +182,12 @@ public class EBPucsFileService {
     }
 
     public static void addMergePucsFile(List<PucsFile> pucsFiles, BSession session) {
+        String nextIdMerged = getNextIdMerged(session);
         try {
             for (PucsFile pucsFile : pucsFiles) {
                 EBPucsFileMergedEntity mergedEntity = new EBPucsFileMergedEntity();
                 mergedEntity.setIdPucFile(pucsFile.getIdDb());
-                mergedEntity.setIdMerged(getNextIdMerged(session));
+                mergedEntity.setIdMerged(nextIdMerged);
                 mergedEntity.save();
             }
         } catch (Exception ex) {
