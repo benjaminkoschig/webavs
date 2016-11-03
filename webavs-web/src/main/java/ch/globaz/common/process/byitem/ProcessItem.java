@@ -18,7 +18,7 @@ public abstract class ProcessItem implements Runnable {
         return exception;
     }
 
-    public void addException(Exception exception) {
+    public void catchException(Exception exception) {
         this.exception = exception;
     }
 
@@ -54,7 +54,7 @@ public abstract class ProcessItem implements Runnable {
         try {
             treat();
         } catch (Exception e) {
-            addException(e);
+            catchException(e);
         }
     }
 }

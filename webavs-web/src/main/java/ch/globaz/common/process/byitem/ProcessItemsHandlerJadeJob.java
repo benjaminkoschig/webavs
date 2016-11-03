@@ -126,7 +126,7 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
                 }
 
             } catch (Exception e) {
-                item.addException(e);
+                item.catchException(e);
                 // on stop le process si les entités devient toutes en erreurs ou si il y en à trop.
                 if (mustStopProcess(i)) {
                     this.sendMailIfHasError(translate("PROCESS_ITEMS_TOO_MANY_ERRORS") + " - " + translateName());
