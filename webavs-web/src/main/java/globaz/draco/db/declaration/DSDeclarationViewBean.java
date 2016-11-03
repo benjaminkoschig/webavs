@@ -59,36 +59,38 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import ch.globaz.orion.service.EBPucsFileService;
+import com.google.common.base.Splitter;
 
 public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterface {
-    public final static String CS_AFACTURER = "121002";
-    public final static String CS_AUTOMATIQUE = "123002";
-    public final static String CS_BOUCLEMENT_ACOMPTE = "122003";
-    public final static String CS_COMPLEMENTAIRE = "122002";
-    public final static String CS_COMPTABILISE = "121003";
-    public final static String CS_CONTROLE_EMPLOYEUR = "122004";
-    public final static String CS_DIVIDENDE = "122009";
-    public final static String CS_ICI = "122008";
+    public static final String CS_AFACTURER = "121002";
+    public static final String CS_AUTOMATIQUE = "123002";
+    public static final String CS_BOUCLEMENT_ACOMPTE = "122003";
+    public static final String CS_COMPLEMENTAIRE = "122002";
+    public static final String CS_COMPTABILISE = "121003";
+    public static final String CS_CONTROLE_EMPLOYEUR = "122004";
+    public static final String CS_DIVIDENDE = "122009";
+    public static final String CS_ICI = "122008";
     // réduction AF à ignorer
-    public final static String CS_ID_ASSURANCE_A_IGNORER = "12000007";
-    public final static String CS_LTN = "122005";
+    public static final String CS_ID_ASSURANCE_A_IGNORER = "12000007";
+    public static final String CS_LTN = "122005";
 
-    public final static String CS_LTN_COMPLEMENTAIRE = "122006";
+    public static final String CS_LTN_COMPLEMENTAIRE = "122006";
     // Code Suspendu
-    public final static String CS_MANUELLE = "123001";
+    public static final String CS_MANUELLE = "123001";
     // codes systeme
     // Etat declaration
-    public final static String CS_OUVERT = "121001";
-    public final static String CS_PLAFOND_LTN_AFFILIE = "12000008";
-    public final static String CS_PLAFOND_LTN_ASSURE = "12000009";
+    public static final String CS_OUVERT = "121001";
+    public static final String CS_PLAFOND_LTN_AFFILIE = "12000008";
+    public static final String CS_PLAFOND_LTN_ASSURE = "12000009";
 
     // Type declaration
-    public final static String CS_PRINCIPALE = "122001";
+    public static final String CS_PRINCIPALE = "122001";
 
-    public final static String CS_SALAIRE_DIFFERES = "122007";
+    public static final String CS_SALAIRE_DIFFERES = "122007";
     private static final String ELEMENT_NOT_INTERET_CHOIX = "except.draco.declaration.notInteretChoix";
-    public final static String PROVENANCE_PUCS_CCJU = "3";
-    public final static String PROVENANCE_SWISSDEC = "4";
+    public static final String PROVENANCE_PUCS_CCJU = "3";
+    public static final String PROVENANCE_SWISSDEC = "4";
     private static final long serialVersionUID = 1L;
     private AFAffiliation _affiliation = null;
     private CACompteAnnexe _compteAnnexe = null;
@@ -541,7 +543,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
             DSLigneDeclarationListViewBean ligne = new DSLigneDeclarationListViewBean();
             ligne.setSession(getSession());
             ligne.setForIdDeclaration(getIdDeclaration());
-            ligne.find(transaction);
+            ligne.find(transaction, BManager.SIZE_NOLIMIT);
             for (int i = 0; i < ligne.size(); i++) {
                 DSLigneDeclarationViewBean ligneDec = (DSLigneDeclarationViewBean) ligne.getEntity(i);
                 ligneDec.delete(transaction);
@@ -552,8 +554,7 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
             DSInscriptionsIndividuellesManager inscMgr = new DSInscriptionsIndividuellesManager();
             inscMgr.setSession(getSession());
             inscMgr.setForIdDeclaration(idDeclaration);
-            inscMgr.changeManagerSize(BManager.SIZE_NOLIMIT);
-            inscMgr.find(transaction);
+            inscMgr.find(transaction, BManager.SIZE_NOLIMIT);
             for (int i = 0; i < inscMgr.size(); i++) {
                 DSInscriptionsIndividuelles inscInd = (DSInscriptionsIndividuelles) inscMgr.get(i);
                 inscInd.delete(transaction);
@@ -569,6 +570,18 @@ public class DSDeclarationViewBean extends BEntity implements FWViewBeanInterfac
                     journalASupp.delete(transaction);
                 }
 
+            }
+        }
+
+        if (!JadeStringUtil.isBlankOrZero(idPucsFile)) {
+            List<String> ids = Splitter.on(";").trimResults().splitToList(idPucsFile);
+            for (String id : ids) {
+                try {
+                    EBPucsFileService.aTraiterByFilename(id, getSession());
+                } catch (Exception e) {
+                    JadeLogger.error(this,
+                            "Unabled to change status for idPucsFile : " + id + " Error : " + e.toString());
+                }
             }
         }
     }
