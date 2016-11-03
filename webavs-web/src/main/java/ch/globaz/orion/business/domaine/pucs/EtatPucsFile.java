@@ -52,6 +52,10 @@ public enum EtatPucsFile implements CodeSystemEnum<EtatPucsFile> {
         return A_TRAITER.equals(this);
     }
 
+    public boolean isEnErreur() {
+        return EN_ERREUR.equals(this);
+    }
+
     public boolean isEditable() {
         return !isComptabilise() && !isTraite() && !isEnTraitement();
     }

@@ -2,20 +2,11 @@ package ch.globaz.orion.businessimpl.services.pucs;
 
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeFilenameUtil;
-import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.fs.JadeFsFacade;
-import globaz.jade.fs.message.JadeFsFileInfo;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import org.apache.commons.lang.time.StopWatch;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.dom.ElementsDomParser;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
@@ -33,74 +24,6 @@ public class FindPucsSwissDec {
     public FindPucsSwissDec(BSession session) {
         super();
         this.session = session;
-    }
-
-    private List<PucsFile> loadPucsSwissDec(String uri) {
-        // on accepte que l'URI soit vide car certains clients n'utilisent pas la fonctionnalité SwissDec.
-        if (JadeStringUtil.isBlank(uri)) {
-            return new ArrayList<PucsFile>();
-        }
-
-        StopWatch watch = new StopWatch();
-        watch.start();
-        List<String> listRemotePucsFileUri;
-        try {
-            if (!JadeFsFacade.isFolder(uri)) {
-                throw new RuntimeException("This value is not a valid folder: " + uri);
-            }
-            listRemotePucsFileUri = JadeFsFacade.getFolderChildren(uri);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        final List<PucsFile> pucsFiles = Collections.synchronizedList(new ArrayList<PucsFile>(listRemotePucsFileUri
-                .size()));
-
-        ExecutorService threadExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
-        for (String remotePucsFileUri : listRemotePucsFileUri) {
-            if (JadeFilenameUtil.extractFilenameExtension(remotePucsFileUri).equalsIgnoreCase("xml")) {
-                threadExecutor.execute(new MyRunnable(remotePucsFileUri, pucsFiles));
-            }
-        }
-
-        threadExecutor.shutdown();
-
-        while (!threadExecutor.isTerminated()) {
-        }
-
-        watch.stop();
-        return new ArrayList<PucsFile>(pucsFiles);
-    }
-
-    protected class MyRunnable implements Runnable {
-        private String remotePucsFileUri;
-        private List<PucsFile> pucsFiles;
-
-        public MyRunnable(String remotePucsFileUri, List<PucsFile> pucsFiles) {
-            super();
-            this.remotePucsFileUri = remotePucsFileUri;
-            this.pucsFiles = pucsFiles;
-        }
-
-        @Override
-        public void run() {
-            try {
-                JadeFsFileInfo info = JadeFsFacade.getInfo(remotePucsFileUri);
-                String path = (JadeFilenameUtil.extractPath(remotePucsFileUri)) + "/";
-                String name = JadeFilenameUtil.extractFilename(remotePucsFileUri);
-                String nameConverted = JadeStringUtil.convertSpecialChars(name);
-                if (!nameConverted.equals(name)) {
-                    JadeFsFacade.rename(remotePucsFileUri, JadeStringUtil.convertSpecialChars(name));
-                    name = nameConverted;
-                }
-                if (!info.getIsFolder()) {
-                    PucsFile pucsFile = buildPucsByFile(path + name, session);
-                    pucsFiles.add(pucsFile);
-                }
-            } catch (Exception e) {
-                throw new CommonTechnicalException(e);
-            }
-        }
     }
 
     /**

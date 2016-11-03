@@ -126,6 +126,17 @@ public class SQLWriterTest {
     }
 
     @Test
+    public void testInForString() throws Exception {
+        List<String> l = new ArrayList<String>();
+        l.add("1");
+        assertThat(SQLWriter.write().inForString(l).toSql()).isEqualTo(" in ('1')");
+        l.add("2");
+        assertThat(SQLWriter.write().inForString(l).toSql()).isEqualTo(" in ('1','2')");
+        l.add("3");
+        assertThat(SQLWriter.write().inForString(l).toSql()).isEqualTo(" in ('1','2','3')");
+    }
+
+    @Test
     public void testAppend() throws Exception {
         assertThat(SQLWriter.write().append("(").toSql()).isEqualTo("(");
         assertThat(SQLWriter.write().append("(").append(")").toSql()).isEqualTo("( )");
@@ -241,12 +252,17 @@ public class SQLWriterTest {
 
     @Test
     public void testLike() throws Exception {
-        assertThat(SQLWriter.write().and("COL").like("%toto").toSql()).isEqualTo(" COL like '%toto'");
+        assertThat(SQLWriter.write().and("COL").like("%toto%").toSql()).isEqualTo(" COL like '%toto%'");
     }
 
     @Test
     public void testMax() throws Exception {
         assertThat(SQLWriter.write().select().max("TOTO").toSql()).isEqualTo("select max(TOTO) ");
+    }
+
+    @Test
+    public void testWithSchema() throws Exception {
+        assertThat(SQLWriter.writeWithSchema().select().max("TOTO").toSql()).isEqualTo("select max(schema.TOTO) ");
     }
 
 }

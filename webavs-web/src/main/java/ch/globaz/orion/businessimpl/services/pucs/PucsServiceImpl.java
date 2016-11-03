@@ -191,7 +191,6 @@ public class PucsServiceImpl implements PucsService {
 
     public static String pucFileLisiblePdf(DeclarationSalaireProvenance provenance, ElementsDomParser parser,
             BSession session) {
-
         Locale locale = buildLocale(session);
         SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance().asPdf().local(locale);
         File file = out(provenance, builder, parser, session);

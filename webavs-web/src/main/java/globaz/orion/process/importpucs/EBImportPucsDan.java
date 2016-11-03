@@ -25,12 +25,14 @@ import ch.globaz.xmlns.eb.dan.EBDanException_Exception;
 import ch.globaz.xmlns.eb.pucs.PucsEntrySummary;
 
 public class EBImportPucsDan extends ProcessItemsHandlerJadeJob<PucsItem> {
+    public static final String KEY = "orion.pucs.import.danPucs";
+
     private Map<String, List<AFAffiliation>> affiliations;
-    protected transient List<PucsFile> pucsFiles;
+    private transient List<PucsFile> pucsFiles;
 
     @Override
     public String getKey() {
-        return "orion.pucs.import.danPucs";
+        return KEY;
     }
 
     @Override

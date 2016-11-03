@@ -21,10 +21,17 @@ public class SQLWriter {
     private String charToReplace = "?";
     private List<String> paramsToUse = new ArrayList<String>();
     private Integer currentIndice;
+    private final boolean addSchema;
     private static final String SCHEMA = "schema.";
 
     private SQLWriter(String schema) {
         this.schema = schema;
+        addSchema = false;
+    }
+
+    private SQLWriter(String schema, boolean addSchema) {
+        this.schema = schema;
+        this.addSchema = addSchema;
     }
 
     /**
@@ -34,6 +41,15 @@ public class SQLWriter {
      */
     public static SQLWriter write() {
         return new SQLWriter(null);
+    }
+
+    /**
+     * Créer l'instance.
+     * 
+     * @return SQLWriter la nouvelle instance créer
+     */
+    public static SQLWriter writeWithSchema() {
+        return new SQLWriter(null, true);
     }
 
     /**
@@ -75,12 +91,13 @@ public class SQLWriter {
      * @return SQLWriter utilisé
      */
     public SQLWriter max(String column) {
-        query.append("max(" + column + ") ");
+        query.append("max(" + addSchemaToSql(column) + ") ");
         return this;
     }
 
     public SQLWriter max(TableDefinition tableDefinition) {
-        return max(SCHEMA + tableDefinition.getTableName() + "." + tableDefinition.getColumn());
+        query.append("max(" + SCHEMA + tableDefinition.getTableName() + "." + tableDefinition.getColumn() + ") ");
+        return this;
     }
 
     /**
@@ -91,8 +108,16 @@ public class SQLWriter {
      * @return SQLWriter utilisé
      */
     public SQLWriter from(String sqlFragement) {
-        query.append(" from ").append(sqlFragement);
+        query.append(" from ").append(addSchemaToSql(sqlFragement));
         return this;
+    }
+
+    private String addSchemaToSql(String sqlFragement) {
+        String sql = sqlFragement;
+        if (addSchema) {
+            sql = SCHEMA + sqlFragement;
+        }
+        return sql;
     }
 
     /**
@@ -171,7 +196,7 @@ public class SQLWriter {
      */
     public SQLWriter and(String sqlFramgment) {
         this.and();
-        query.append(" ").append(sqlFramgment);
+        query.append(" ").append(addSchemaToSql(sqlFramgment));
         return this;
     }
 
@@ -221,6 +246,17 @@ public class SQLWriter {
         return this;
     }
 
+    public SQLWriter inForString(Collection<String> list) {
+        if (list != null && !list.isEmpty()) {
+            String params = toStringForIn(list);
+            paramsToUse.add(params);
+            query.append(" in (?)");
+        } else {
+            rollback();
+        }
+        return this;
+    }
+
     SQLWriter rollback() {
         if (currentIndice != null) {
             query.delete(currentIndice, query.length());
@@ -231,24 +267,24 @@ public class SQLWriter {
     }
 
     /**
-     * Ajoute le mot 'and' à la requête si besoin et le sqlFramgment.
+     * Ajoute le mot 'and' à la requête si besoin
      * 
      * @param sqlFramgment
      * @return SQLWriter utilisé
      */
     public SQLWriter and(TableDefinition tableDefinition) {
         String column = tableDefinition.getTableName() + "." + tableDefinition.getColumn();
-        if (hasSchema()) {
-            column = SCHEMA + column;
-        }
-        this.and(column);
+
+        this.and();
+        query.append(" ").append(addSchemaToSql(SCHEMA + column));
+
         return this;
     }
 
     public SQLWriter like(String param) {
         if (param != null && !param.isEmpty()) {
             paramsToUse.add(param);
-            query.append(" like '%?%'");
+            query.append(" like '?'");
         } else {
             rollback();
         }
@@ -321,9 +357,9 @@ public class SQLWriter {
      * @param sqlFragement
      * @return SQLWriter utilisé
      */
-    public SQLWriter or(String sqlFramgment) {
+    public SQLWriter or(String sqlFragment) {
         addOpertor("or");
-        query.append(" ").append(sqlFramgment);
+        query.append(" ").append(addSchemaToSql(sqlFragment));
         return this;
     }
 

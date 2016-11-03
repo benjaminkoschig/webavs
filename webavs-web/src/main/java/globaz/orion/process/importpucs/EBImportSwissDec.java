@@ -10,6 +10,7 @@ import ch.globaz.common.process.byitem.ProcessItemsHandlerJadeJob;
 import ch.globaz.orion.business.constantes.EBProperties;
 
 public class EBImportSwissDec extends ProcessItemsHandlerJadeJob<PucsSwissDecItem> {
+    public static final String KEY = "orion.pucs.import.swissDec";
 
     private String uri;
     private String done;
@@ -17,7 +18,7 @@ public class EBImportSwissDec extends ProcessItemsHandlerJadeJob<PucsSwissDecIte
 
     @Override
     public String getKey() {
-        return "orion.pucs.import.swissDec";
+        return KEY;
     }
 
     @Override

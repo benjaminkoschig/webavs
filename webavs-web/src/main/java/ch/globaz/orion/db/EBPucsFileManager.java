@@ -27,7 +27,7 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
             provenance = forProvenance.getValue();
         }
         sqlWhere.and(EBPucsFileDefTable.DATE_RECEPTION).equal(forDateSoumission);
-        sqlWhere.and(EBPucsFileDefTable.NUMERO_AFFILIE).like(likeAffilie);
+        sqlWhere.and(EBPucsFileDefTable.NUMERO_AFFILIE).like("%" + likeAffilie + "%");
         sqlWhere.and(EBPucsFileDefTable.STATUS).in(forStatut);
         sqlWhere.and(EBPucsFileDefTable.PROVENANCE).equal(provenance);
         sqlWhere.and(EBPucsFileDefTable.ID).in(inIds);

@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import ch.globaz.common.process.byitem.ProcessItemsFactory;
+import ch.globaz.common.process.byitem.ProcessItemsService;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.orion.business.constantes.EBProperties;
 
@@ -81,14 +82,17 @@ public class EBPucsServletAction extends EBAbstractServletAction {
             _actionChangeUser(session, request, response, dispatcher);
         } else if (getAction().getActionPart().equals("importInDb")) {
             BSession bsession = (BSession) ((FWController) session.getAttribute("objController")).getSession();
-            try {
-                if (!EBProperties.PUCS_SWISS_DEC_DIRECTORY.isEmpty()) {
-                    ProcessItemsFactory.newInstance().session(bsession).start(new EBImportSwissDec()).build();
+            Boolean isProcessRunnig = ProcessItemsService.isProcessRunnig(EBImportPucsDan.KEY, EBImportSwissDec.KEY);
+            if (!isProcessRunnig) {
+                try {
+                    if (!EBProperties.PUCS_SWISS_DEC_DIRECTORY.isEmpty()) {
+                        ProcessItemsFactory.newInstance().session(bsession).start(new EBImportSwissDec()).build();
+                    }
+                } catch (PropertiesException e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (PropertiesException e) {
-                throw new RuntimeException(e);
+                ProcessItemsFactory.newInstance().session(bsession).start(new EBImportPucsDan()).build();
             }
-            ProcessItemsFactory.newInstance().session(bsession).start(new EBImportPucsDan()).build();
             String destination = "/" + getAction().getApplicationPart() + "?userAction=orion.pucs.pucsFile.chercher";
             goSendRedirect(destination, request, response);
         }
