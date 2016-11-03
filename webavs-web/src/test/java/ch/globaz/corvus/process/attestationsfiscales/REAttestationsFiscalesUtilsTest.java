@@ -358,6 +358,7 @@ public class REAttestationsFiscalesUtilsTest {
         Assert.assertFalse(REAttestationsFiscalesUtils.isSansDecisionPendantEtApresAnneeFiscale(famille, annee));
     }
 
+    @Ignore
     @Test
     public void hasRenteQuiSeChevauchent() {
 
