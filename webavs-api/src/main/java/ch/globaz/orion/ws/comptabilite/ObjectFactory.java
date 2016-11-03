@@ -39,11 +39,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ApercuCompteAnnexe }
+     * 
+     */
+    public ApercuCompteAnnexe createApercuCompteAnnexe() {
+        return new ApercuCompteAnnexe();
+    }
+
+    /**
      * Create an instance of {@link DownloadFile }
      * 
      */
     public DownloadFile createDownloadFile() {
         return new DownloadFile();
+    }
+
+    /**
+     * Create an instance of {@link ListerApercuCompteAnnexeResponse }
+     * 
+     */
+    public ListerApercuCompteAnnexeResponse createListerApercuCompteAnnexeResponse() {
+        return new ListerApercuCompteAnnexeResponse();
     }
 
     /**
@@ -55,22 +71,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DownloadFileResponse }
-     * 
-     */
-    public DownloadFileResponse createDownloadFileResponse() {
-        return new DownloadFileResponse();
-    }
-
-    /**
-     * Create an instance of {@link ApercuCompteAnnexe }
-     * 
-     */
-    public ApercuCompteAnnexe createApercuCompteAnnexe() {
-        return new ApercuCompteAnnexe();
-    }
-
-    /**
      * Create an instance of {@link GenererExtraitCompteAnnexe }
      * 
      */
@@ -79,19 +79,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link DownloadFileResponse }
+     * 
+     */
+    public DownloadFileResponse createDownloadFileResponse() {
+        return new DownloadFileResponse();
+    }
+
+    /**
      * Create an instance of {@link ListerApercuCompteAnnexe }
      * 
      */
     public ListerApercuCompteAnnexe createListerApercuCompteAnnexe() {
         return new ListerApercuCompteAnnexe();
-    }
-
-    /**
-     * Create an instance of {@link ListerApercuCompteAnnexeResponse }
-     * 
-     */
-    public ListerApercuCompteAnnexeResponse createListerApercuCompteAnnexeResponse() {
-        return new ListerApercuCompteAnnexeResponse();
     }
 
     /**

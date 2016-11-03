@@ -35,19 +35,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DownloadFileResponse }
-     * 
-     */
-    public DownloadFileResponse createDownloadFileResponse() {
-        return new DownloadFileResponse();
-    }
-
-    /**
      * Create an instance of {@link DownloadFile }
      * 
      */
     public DownloadFile createDownloadFile() {
         return new DownloadFile();
+    }
+
+    /**
+     * Create an instance of {@link DownloadFileResponse }
+     * 
+     */
+    public DownloadFileResponse createDownloadFileResponse() {
+        return new DownloadFileResponse();
     }
 
     /**

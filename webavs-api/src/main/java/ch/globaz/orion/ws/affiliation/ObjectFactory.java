@@ -40,11 +40,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FindActiveSuiviCaisseResponse }
+     * Create an instance of {@link WebAvsException }
      * 
      */
-    public FindActiveSuiviCaisseResponse createFindActiveSuiviCaisseResponse() {
-        return new FindActiveSuiviCaisseResponse();
+    public WebAvsException createWebAvsException() {
+        return new WebAvsException();
     }
 
     /**
@@ -64,22 +64,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WebAvsException }
-     * 
-     */
-    public WebAvsException createWebAvsException() {
-        return new WebAvsException();
-    }
-
-    /**
-     * Create an instance of {@link FindActiveSuiviCaisse }
-     * 
-     */
-    public FindActiveSuiviCaisse createFindActiveSuiviCaisse() {
-        return new FindActiveSuiviCaisse();
-    }
-
-    /**
      * Create an instance of {@link FindAdresseCourrierAffilie }
      * 
      */
@@ -93,6 +77,22 @@ public class ObjectFactory {
      */
     public FindCategorieAffiliationResponse createFindCategorieAffiliationResponse() {
         return new FindCategorieAffiliationResponse();
+    }
+
+    /**
+     * Create an instance of {@link FindActiveSuiviCaisse }
+     * 
+     */
+    public FindActiveSuiviCaisse createFindActiveSuiviCaisse() {
+        return new FindActiveSuiviCaisse();
+    }
+
+    /**
+     * Create an instance of {@link FindActiveSuiviCaisseResponse }
+     * 
+     */
+    public FindActiveSuiviCaisseResponse createFindActiveSuiviCaisseResponse() {
+        return new FindActiveSuiviCaisseResponse();
     }
 
     /**

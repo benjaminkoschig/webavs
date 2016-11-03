@@ -44,6 +44,46 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Masse }
+     * 
+     */
+    public Masse createMasse() {
+        return new Masse();
+    }
+
+    /**
+     * Create an instance of {@link FindTauxAssuranceForCotisationResponse }
+     * 
+     */
+    public FindTauxAssuranceForCotisationResponse createFindTauxAssuranceForCotisationResponse() {
+        return new FindTauxAssuranceForCotisationResponse();
+    }
+
+    /**
+     * Create an instance of {@link ExecuterPreRemplissageDan }
+     * 
+     */
+    public ExecuterPreRemplissageDan createExecuterPreRemplissageDan() {
+        return new ExecuterPreRemplissageDan();
+    }
+
+    /**
+     * Create an instance of {@link FindDecompteMois }
+     * 
+     */
+    public FindDecompteMois createFindDecompteMois() {
+        return new FindDecompteMois();
+    }
+
+    /**
+     * Create an instance of {@link ListerMassesActuellesResponse }
+     * 
+     */
+    public ListerMassesActuellesResponse createListerMassesActuellesResponse() {
+        return new ListerMassesActuellesResponse();
+    }
+
+    /**
      * Create an instance of {@link FindDecompteMoisResponse }
      * 
      */
@@ -60,22 +100,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ExecuterPreRemplissageDan }
-     * 
-     */
-    public ExecuterPreRemplissageDan createExecuterPreRemplissageDan() {
-        return new ExecuterPreRemplissageDan();
-    }
-
-    /**
-     * Create an instance of {@link DecompteMensuel }
-     * 
-     */
-    public DecompteMensuel createDecompteMensuel() {
-        return new DecompteMensuel();
-    }
-
-    /**
      * Create an instance of {@link ListerMassesActuelles }
      * 
      */
@@ -84,51 +108,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ListerMassesActuellesResponse }
-     * 
-     */
-    public ListerMassesActuellesResponse createListerMassesActuellesResponse() {
-        return new ListerMassesActuellesResponse();
-    }
-
-    /**
-     * Create an instance of {@link WebAvsException }
-     * 
-     */
-    public WebAvsException createWebAvsException() {
-        return new WebAvsException();
-    }
-
-    /**
-     * Create an instance of {@link ExecuterPreRemplissageDanResponse }
-     * 
-     */
-    public ExecuterPreRemplissageDanResponse createExecuterPreRemplissageDanResponse() {
-        return new ExecuterPreRemplissageDanResponse();
-    }
-
-    /**
-     * Create an instance of {@link Masse }
-     * 
-     */
-    public Masse createMasse() {
-        return new Masse();
-    }
-
-    /**
      * Create an instance of {@link DecompteMensuelLine }
      * 
      */
     public DecompteMensuelLine createDecompteMensuelLine() {
         return new DecompteMensuelLine();
-    }
-
-    /**
-     * Create an instance of {@link FindDecompteMois }
-     * 
-     */
-    public FindDecompteMois createFindDecompteMois() {
-        return new FindDecompteMois();
     }
 
     /**
@@ -156,11 +140,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FindTauxAssuranceForCotisationResponse }
+     * Create an instance of {@link DecompteMensuel }
      * 
      */
-    public FindTauxAssuranceForCotisationResponse createFindTauxAssuranceForCotisationResponse() {
-        return new FindTauxAssuranceForCotisationResponse();
+    public DecompteMensuel createDecompteMensuel() {
+        return new DecompteMensuel();
+    }
+
+    /**
+     * Create an instance of {@link WebAvsException }
+     * 
+     */
+    public WebAvsException createWebAvsException() {
+        return new WebAvsException();
+    }
+
+    /**
+     * Create an instance of {@link ExecuterPreRemplissageDanResponse }
+     * 
+     */
+    public ExecuterPreRemplissageDanResponse createExecuterPreRemplissageDanResponse() {
+        return new ExecuterPreRemplissageDanResponse();
     }
 
     /**
