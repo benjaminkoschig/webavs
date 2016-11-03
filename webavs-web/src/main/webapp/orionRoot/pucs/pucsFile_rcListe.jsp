@@ -66,18 +66,20 @@
 <%@ include file="/theme/list/javascripts.jspf" %>
 <script type="text/javascript">
 $(function () {
-	$("TBODY").on("click","TD:not(.pucsEntryHandling)", function (e) {
+	
+	var $tbody = $("TBODY");
+	
+	$tbody.on("click","TD:not(.pucsEntryHandling):not(.lienExterneDraco):not(.lienExterneNaos)", function (e) {
 		var id = $(this).parent().attr("id");
 		parent.location.href='orion?userAction=orion.swissdec.pucsValidationDetail.afficher&selectedId='+id;
 	})
 	
-	$("TBODY").on("click","TD:.lienExterneDraco", function (e) {
+	$tbody.on("click","TD.lienExterneDraco", function (e) {
 		var numeroAff = $(this).parent().attr("numeroAff");		
 		parent.location.href='draco?userAction=draco.declaration.declaration.chercher&likeNumeroAffilie='+numeroAff;
 	})
 	
-	$("TBODY").on("click","TD:.lienExterneNaos", function (e) {
-		var numeroAff = $(this).parent().attr("numeroAff");
+	$tbody.on("click","TD.lienExterneNaos", function (e) {
 		var idAff = $(this).parent().attr("idAff");		
 		parent.location.href='naos?userAction=naos.releve.apercuReleve.chercher&affiliationId='+idAff;
 	})
