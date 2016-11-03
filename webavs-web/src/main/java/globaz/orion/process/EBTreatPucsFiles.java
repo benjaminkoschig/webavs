@@ -8,6 +8,7 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.hercule.utils.CEUtils;
 import globaz.jade.client.util.JadeDateUtil;
@@ -640,8 +641,25 @@ public class EBTreatPucsFiles extends BProcess {
      */
     private void handleOnError(String mail, Throwable e, BProcess proces, String messageInfo, PucsFileMerge fileMerge)
             throws Exception {
-        EBPucsFileService.enErreur(fileMerge.getPucsFileToMergded(), getSession());
+        changePucsFilesStatusToOnError(fileMerge);
         sendMailError1(mail, e, proces, messageInfo, fileMerge);
+    }
+
+    /**
+     * Démarrage d'une nouvelle transaction afin de mettre les fichiers relatifs au PucsFileMerge en erreur.
+     * 
+     * @param pucsFileMerge Ensemble de fichiers à mettre en erreur
+     * @throws Exception
+     */
+    private void changePucsFilesStatusToOnError(PucsFileMerge pucsFileMerge) throws Exception {
+        BTransaction transaction = new BTransaction(getSession());
+        JadeBusinessMessage[] logMessages = JadeThread.logMessages();
+        JadeThread.logClear();
+        EBPucsFileService.enErreur(pucsFileMerge.getPucsFileToMergded(), transaction);
+        transaction.commit();
+        for (JadeBusinessMessage message : logMessages) {
+            JadeThread.logError(message.getSource(), message.getMessageId(), message.getParameters());
+        }
     }
 
     private void sendMailError1(String mail, Throwable e, BProcess proces, String messageInfo, PucsFileMerge fileMerge)

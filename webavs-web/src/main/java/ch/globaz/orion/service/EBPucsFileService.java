@@ -1,6 +1,7 @@
 package ch.globaz.orion.service;
 
 import globaz.globall.db.BSession;
+import globaz.globall.db.BTransaction;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -122,9 +123,9 @@ public class EBPucsFileService {
         }
     }
 
-    public static void enErreur(List<PucsFile> pucsFiles, BSession session) {
+    public static void enErreur(List<PucsFile> pucsFiles, BTransaction transaction) {
         for (PucsFile pucsFile : pucsFiles) {
-            enErreur(pucsFile.getIdDb(), session);
+            enErreur(pucsFile.getIdDb(), transaction);
         }
     }
 
@@ -150,8 +151,20 @@ public class EBPucsFileService {
         changeStatut(id, EtatPucsFile.A_VALIDE, session);
     }
 
-    public static void enErreur(String id, BSession session) {
-        changeStatut(id, EtatPucsFile.EN_ERREUR, session);
+    public static void enErreur(String id, BTransaction transaction) {
+        EBPucsFileEntity entity = new EBPucsFileEntity();
+        entity.setIdEntity(id);
+        try {
+            entity.retrieve(transaction);
+            EtatPucsFile etatActuel = EtatPucsFile.fromValue(entity.getStatut().toString());
+            if (etatActuel.isComptabilise()) {
+                throw new RuntimeException("Le fichier ne peut pas être édité car déjà traité");
+            }
+            entity.setStatut(Integer.parseInt(EtatPucsFile.EN_ERREUR.getValue()));
+            entity.save();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void comptabiliser(String id, BSession session) {
