@@ -83,7 +83,7 @@ function doOkAction1() {
 		$(".table .checkFusion:checked").each(function(){
 	 		var ids = null;
 	 		var numAffilie = $(this).parent().parent().attr("class");
-	 		var $trs =  $("."+numAffilie.replace("\.","\\."));
+	 		var $trs =  $("."+numAffilie.replace(/\./g,"\\."));
 	 		
 	 		obj[numAffilie] = [];
 	 		$trs.each(function () {
