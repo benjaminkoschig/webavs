@@ -11,7 +11,7 @@
 	EBPucsFileListViewBean viewBean = (EBPucsFileListViewBean) request.getAttribute("viewBean"); 
 
 	size = viewBean.getSize();
-	String changeUserAction = baseLink+"changeUser";
+	String changeUserAction = baseLink+"changeUser";	
 %>
 <%-- /tpl:insert --%>
 
@@ -70,6 +70,17 @@ $(function () {
 		var id = $(this).parent().attr("id");
 		parent.location.href='orion?userAction=orion.swissdec.pucsValidationDetail.afficher&selectedId='+id;
 	})
+	
+	$("TBODY").on("click","TD:.lienExterneDraco", function (e) {
+		var numeroAff = $(this).parent().attr("numeroAff");		
+		parent.location.href='draco?userAction=draco.declaration.declaration.chercher&likeNumeroAffilie='+numeroAff;
+	})
+	
+	$("TBODY").on("click","TD:.lienExterneNaos", function (e) {
+		var numeroAff = $(this).parent().attr("numeroAff");
+		var idAff = $(this).parent().attr("idAff");		
+		parent.location.href='naos?userAction=naos.releve.apercuReleve.chercher&affiliationId='+idAff;
+	})
 });
 </script>
 
@@ -106,7 +117,7 @@ $(function () {
 				EBPucsFileViewBean line = (EBPucsFileViewBean) viewBean.get(i);
 				pageContext.setAttribute("pucsFile", ((EBPucsFileViewBean) viewBean.get(i)).getPucsFile());
 			%>
-			<tr id="<%=line.getId()%>" class="<%=rowStyle%>" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'rowHighligthed')" onMouseOut="jscss('swap', this, 'rowHighligthed', '<%=rowStyle%>')">
+			<tr id="<%=line.getId()%>" numeroAff="<%=line.getPucsFile().getNumeroAffilie()%>" idAff="<%=line.getIdAffiliation()%>" class="<%=rowStyle%>" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'rowHighligthed')" onMouseOut="jscss('swap', this, 'rowHighligthed', '<%=rowStyle%>')">
 			
 			<td class="pucsEntryHandling" style="text-align: center;height:24px;">
 				<%if(!line.hasLock() && line.getPucsFile().isEditable()) {%>
@@ -129,7 +140,12 @@ $(function () {
 			<td style="text-align:center"><%=line.getPucsFile().getNbSalaires()%></td>
 			<td><%=line.getPucsFile().getHandlingUser()==null?"":line.getPucsFile().getHandlingUser()%></td>
 			<td><%=objSession.getCodeLibelle(line.getPucsFile().getCurrentStatus().getValue())%></td>
-			<td class="pucsEntryHandling" style="text-align:center" ><i title ="link" class="icon-link"></i></td>
+			<%if (line.getPucsFile().isAfSeul()){%>
+			<td class="lienExterneNaos" style="text-align:center" ><i title ="link" class="icon-link"></i></td>
+			<% } else { %>
+			<td class="lienExterneDraco" style="text-align:center" ><i title ="link" class="icon-link"></i></td>
+			<% }%>
+			
 			<td>
 
 			<% if(line.getPucsFile().getProvenance().isPucs()) { %>
