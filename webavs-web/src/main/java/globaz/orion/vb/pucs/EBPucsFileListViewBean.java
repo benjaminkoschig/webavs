@@ -80,15 +80,9 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
             ids.add(entity.getIdAffiliation());
         }
 
-        List<AFAffiliation> affiliations = AFAffiliationServices.searchAffiliationByIds(ids,
-                BSessionUtil.getSessionFromThreadContext());
+        return AFAffiliationServices
+                .searchAffiliationByIdsAndGroupById(ids, BSessionUtil.getSessionFromThreadContext());
 
-        Map<String, AFAffiliation> map = new HashMap<String, AFAffiliation>();
-
-        for (AFAffiliation afAffiliation : affiliations) {
-            map.put(afAffiliation.getAffilieNumero(), afAffiliation);
-        }
-        return map;
     }
 
     private Map<String, List<String>> resolveParticularites(Map<String, AFAffiliation> mapAff) {
@@ -101,7 +95,7 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
         for (Entry<String, List<String>> entry : particularites.entrySet()) {
             AFAffiliation afAffiliation = mapAff.get(entry.getKey());
             if (afAffiliation != null) {
-                map.put(afAffiliation.getAffilieNumero(), entry.getValue());
+                map.put(afAffiliation.getAffiliationId(), entry.getValue());
             }
         }
         return map;
@@ -139,8 +133,8 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
     @Override
     public BIPersistentObject get(int idx) {
         PucsFile pucsFile = pucsFilesFinal.get(idx);
-        List<String> particularites = mapNumAffiliationParticularite.get(pucsFile.getNumeroAffilie());
-        AFAffiliation afAffiliation = mapAffiliation.get(pucsFile.getNumeroAffilie());
+        List<String> particularites = mapNumAffiliationParticularite.get(pucsFile.getIdAffiliation());
+        AFAffiliation afAffiliation = mapAffiliation.get(pucsFile.getIdAffiliation());
 
         return pucsFilesFinal.size() > idx ? new EBPucsFileViewBean(pucsFile, particularites, afAffiliation)
                 : new EBPucsFileViewBean();

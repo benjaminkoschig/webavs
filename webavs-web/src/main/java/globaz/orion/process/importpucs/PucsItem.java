@@ -122,6 +122,9 @@ public class PucsItem extends ProcessItem {
         }
         try {
             if (!hasError()) {
+                String filePath = PucsServiceImpl.retrieveFile(pucsFile.getFilename(), pucsFile.getProvenance());
+                File file = new File(filePath);
+                pucsFile.setFile(file);
                 save(pucsFile, affiliation, idJob, session);
             }
         } finally {

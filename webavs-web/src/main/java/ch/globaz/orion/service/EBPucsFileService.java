@@ -1,12 +1,16 @@
 package ch.globaz.orion.service;
 
 import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BTransaction;
+import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.services.AFAffiliationServices;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.sql.QueryExecutor;
@@ -233,4 +237,16 @@ public class EBPucsFileService {
                 .from(EBPucsFileMergedTableDef.TABLE).toSql();
         return String.valueOf(QueryExecutor.executeAggregate(query, session).intValue() + 1);
     }
+
+    public static Map<String, AFAffiliation> findAffiliations(Collection<PucsFile> list) {
+        List<String> ids = new ArrayList<String>();
+
+        for (PucsFile pucsFile : list) {
+            ids.add(pucsFile.getIdAffiliation());
+        }
+
+        return AFAffiliationServices
+                .searchAffiliationByIdsAndGroupById(ids, BSessionUtil.getSessionFromThreadContext());
+    }
+
 }

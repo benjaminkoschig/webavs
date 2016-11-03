@@ -68,10 +68,13 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
                 getSession()));
 
         // Recherche affiliation
-        affiliation = AFAffiliationServices.getAffiliationParitaireByNumero(decSal.getNumeroAffilie(),
-                Integer.toString(decSal.getAnnee()), getSession());
 
-        if (affiliation != null) {
+        affiliation = new AFAffiliation();
+        affiliation.setSession(getSession());
+        affiliation.setAffiliationId(pucsFile.getIdAffiliation());
+        affiliation.retrieve();
+
+        if (!affiliation.isNew()) {
             isAffiliationExistante = true;
 
             numeroIde = AFIDEUtil.formatNumIDE(affiliation.getNumeroIDE());

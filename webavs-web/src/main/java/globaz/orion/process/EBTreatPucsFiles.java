@@ -8,7 +8,6 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.hercule.utils.CEUtils;
 import globaz.jade.client.util.JadeDateUtil;
@@ -55,6 +54,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import ch.globaz.common.LabelCommonProvider;
 import ch.globaz.common.dom.ElementsDomParser;
+import ch.globaz.common.jadedb.TransactionWrapper;
 import ch.globaz.orion.EBApplication;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
@@ -652,14 +652,9 @@ public class EBTreatPucsFiles extends BProcess {
      * @throws Exception
      */
     private void changePucsFilesStatusToOnError(PucsFileMerge pucsFileMerge) throws Exception {
-        BTransaction transaction = new BTransaction(getSession());
-        JadeBusinessMessage[] logMessages = JadeThread.logMessages();
-        JadeThread.logClear();
-        EBPucsFileService.enErreur(pucsFileMerge.getPucsFileToMergded(), transaction);
-        transaction.commit();
-        for (JadeBusinessMessage message : logMessages) {
-            JadeThread.logError(message.getSource(), message.getMessageId(), message.getParameters());
-        }
+        TransactionWrapper transaction = TransactionWrapper.forforceCommit(getSession());
+        EBPucsFileService.enErreur(pucsFileMerge.getPucsFileToMergded(), transaction.getTransaction());
+        transaction.close();
     }
 
     private void sendMailError1(String mail, Throwable e, BProcess proces, String messageInfo, PucsFileMerge fileMerge)

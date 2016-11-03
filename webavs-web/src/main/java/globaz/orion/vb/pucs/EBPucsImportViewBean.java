@@ -3,7 +3,6 @@ package globaz.orion.vb.pucs;
 import globaz.framework.bean.FWAJAXViewBeanInterface;
 import globaz.framework.bean.FWListViewBeanInterface;
 import globaz.framework.bean.FWViewBeanInterface;
-import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.ged.client.JadeGedFacade;
 import globaz.naos.db.affiliation.AFAffiliation;
@@ -73,24 +72,6 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
         }
     }
 
-    private Map<String, AFAffiliation> findAffiliations(Collection<PucsFile> list) {
-        List<String> ids = new ArrayList<String>();
-
-        for (PucsFile pucsFile : list) {
-            ids.add(pucsFile.getIdAffiliation());
-        }
-
-        List<AFAffiliation> affiliationsList = AFAffiliationServices.searchAffiliationByIds(ids,
-                BSessionUtil.getSessionFromThreadContext());
-
-        Map<String, AFAffiliation> map = new HashMap<String, AFAffiliation>();
-
-        for (AFAffiliation afAffiliation : affiliationsList) {
-            map.put(afAffiliation.getId(), afAffiliation);
-        }
-        return map;
-    }
-
     @Override
     public void retrieve() throws Exception {
         if (!JadeStringUtil.isEmpty(selectedIds)) {
@@ -99,7 +80,7 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
         if (!listOfSelectedIds.isEmpty()) {
             pucsFiles = keepATraiter(searchPucsFilesByIds(listOfSelectedIds));
         }
-        affiliations = findAffiliations(pucsFiles);
+        affiliations = EBPucsFileService.findAffiliations(pucsFiles);
         if (isSimulation()) {
             for (PucsFile pucsFile : pucsFiles) {
                 EBPucsFileService.affectCurrentUser(pucsFile, getSession());

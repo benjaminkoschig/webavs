@@ -5,14 +5,9 @@ import globaz.globall.db.BSessionUtil;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.services.AFAffiliationServices;
 import globaz.orion.utils.EBDanUtils;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import ch.globaz.common.process.byitem.ProcessItemsHandlerJadeJob;
 import ch.globaz.orion.business.domaine.pucs.EtatPucsFile;
 import ch.globaz.orion.business.exceptions.OrionPucsException;
@@ -68,9 +63,6 @@ public class EBImportPucsDanProcess extends ProcessItemsHandlerJadeJob<PucsItem>
 
         for (PucsFile pucsFile : pucsFiles) {
             pucsFile.setCurrentStatus(EtatPucsFile.A_TRAITER);
-            String filePath = PucsServiceImpl.retrieveFile(pucsFile.getFilename(), pucsFile.getProvenance());
-            File file = new File(filePath);
-            pucsFile.setFile(file);
             AFAffiliation affiliation = findAffiation(pucsFile);
 
             list.add(new PucsItem(pucsFile, affiliation, getSession(), getJobInfos().getIdJob()));
@@ -121,27 +113,6 @@ public class EBImportPucsDanProcess extends ProcessItemsHandlerJadeJob<PucsItem>
             throw new RuntimeException(e);
         }
         return pucsFileTemp;
-    }
-
-    private Map<String, List<AFAffiliation>> findAffiliations(List<PucsFile> list) {
-        Set<String> numAffiliations = new HashSet<String>();
-
-        for (PucsFile pucsFile : list) {
-            numAffiliations.add(pucsFile.getNumeroAffilie());
-        }
-
-        List<AFAffiliation> listAffiliations = AFAffiliationServices.searchAffiliationByNumeros(numAffiliations,
-                getSession());
-
-        Map<String, List<AFAffiliation>> map = new HashMap<String, List<AFAffiliation>>();
-
-        for (AFAffiliation afAffiliation : listAffiliations) {
-            if (!map.containsKey(afAffiliation.getAffilieNumero())) {
-                map.put(afAffiliation.getAffilieNumero(), new ArrayList<AFAffiliation>());
-            }
-            map.get(afAffiliation.getAffilieNumero()).add(afAffiliation);
-        }
-        return map;
     }
 
 }

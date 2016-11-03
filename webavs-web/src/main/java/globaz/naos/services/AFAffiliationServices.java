@@ -13,7 +13,9 @@ import globaz.naos.exceptions.AFTechnicalException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import ch.globaz.common.domaine.Checkers;
 import com.google.common.base.Joiner;
 
@@ -280,7 +282,7 @@ public final class AFAffiliationServices {
     /**
      * Cette méthode retourne des affiliatons en fonction des id d'affilié passé en paramètre
      */
-    public static List<AFAffiliation> searchAffiliationByIds(Collection<String> ids, BSession session) {
+    public static Map<String, AFAffiliation> searchAffiliationByIdsAndGroupById(Collection<String> ids, BSession session) {
 
         if (ids == null) {
             throw new NullPointerException("affilieNumero must be not null");
@@ -306,7 +308,14 @@ public final class AFAffiliationServices {
             }
             affiliations = affiliationManager.toList();
         }
-        return affiliations;
+
+        Map<String, AFAffiliation> map = new HashMap<String, AFAffiliation>();
+
+        for (AFAffiliation afAffiliation : affiliations) {
+            map.put(afAffiliation.getId(), afAffiliation);
+        }
+
+        return map;
     }
 
     /**
