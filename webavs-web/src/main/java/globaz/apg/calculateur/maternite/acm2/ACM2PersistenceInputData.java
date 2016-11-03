@@ -3,7 +3,6 @@ package globaz.apg.calculateur.maternite.acm2;
 import globaz.apg.db.droits.APSitProJointEmployeur;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.framework.util.FWCurrency;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +16,6 @@ import java.util.Map;
 public class ACM2PersistenceInputData {
     private String idDroit = "";
     private int nombreJoursPrestationACM2;
-    private BigDecimal tauxAVS;
-    private BigDecimal tauxAC;
     /**
      * RMD = Revenu moyen déterminant
      */
@@ -60,22 +57,6 @@ public class ACM2PersistenceInputData {
 
     public int getNombreJoursPrestationACM2() {
         return nombreJoursPrestationACM2;
-    }
-
-    public void setTauxAVS(BigDecimal tauxAVS) {
-        this.tauxAVS = tauxAVS;
-    }
-
-    public BigDecimal getTauxAVS() {
-        return tauxAVS;
-    }
-
-    public void setTauxAC(BigDecimal tauxAC) {
-        this.tauxAC = tauxAC;
-    }
-
-    public BigDecimal getTauxAC() {
-        return tauxAC;
     }
 
     public void addRMDParEmployeur(String idSitPro, FWCurrency rmd) {

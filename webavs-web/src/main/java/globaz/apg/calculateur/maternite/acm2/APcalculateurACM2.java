@@ -1,5 +1,6 @@
 package globaz.apg.calculateur.maternite.acm2;
 
+import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.calculateur.IAPPrestationCalculateur;
@@ -16,7 +17,9 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.prestation.beans.PRPeriode;
+import globaz.prestation.utils.PRDateUtils;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,155 +28,150 @@ public class APcalculateurACM2 implements IAPPrestationCalculateur {
 
     @Override
     public List<Object> calculerPrestation(List<Object> donneesDomainCalcul) throws Exception {
-        List<APRepartitionCalculeeAPersister> list = new LinkedList<APRepartitionCalculeeAPersister>();
+        //
 
         if (donneesDomainCalcul == null || donneesDomainCalcul.size() == 0) {
             throw new Exception("Aucune données pour le calcul des ACM 2");
         }
 
         // On prend le premier employeur pour récupérer certaines données invariable d'un employeur à l'autre
-        ACM2BusinessDataParEmployeur donneesEmployeur = (ACM2BusinessDataParEmployeur) donneesDomainCalcul.get(0);
+        ACM2BusinessDataParEmployeur donneesEmployeurTmp = (ACM2BusinessDataParEmployeur) donneesDomainCalcul.get(0);
 
-        BigDecimal tauxAVS = donneesEmployeur.getTauxAVS();
-        BigDecimal tauxAC = donneesEmployeur.getTauxAC();
-        String idDroit = donneesEmployeur.getIdDroit();
-        int nombreJoursACM2 = donneesEmployeur.getNombreJoursPrestationACM2();
+        String idDroit = donneesEmployeurTmp.getIdDroit();
+        int nombreJoursACM2 = donneesEmployeurTmp.getNombreJoursPrestationACM2();
         PRPeriode periodeACM1 = null;
+        PRPeriode periodeLAMat = null;
 
         /*
          * Calcul du montant journalier de la prestation ACM 2
          * ET recherche de la période ACM 1 -> au moins un des employeurs doit payer des ACM 1 !
          */
-        FWCurrency montantJournalierACM2 = new FWCurrency("0");
+        FWCurrency revenuMoyenDeterminantACM2 = new FWCurrency("0");
         for (Object object : donneesDomainCalcul) {
-            montantJournalierACM2.add(((ACM2BusinessDataParEmployeur) object).getRevenuMoyenDeterminant());
-            if (donneesEmployeur.hasPrestationACM1() && periodeACM1 == null) {
-                periodeACM1 = donneesEmployeur.getPeriodeACM1();
+            revenuMoyenDeterminantACM2.add(((ACM2BusinessDataParEmployeur) object).getRevenuMoyenDeterminant());
+            if (donneesEmployeurTmp.hasPrestationACM1() && periodeACM1 == null) {
+                periodeACM1 = donneesEmployeurTmp.getPeriodeACM1();
+            }
+            if (donneesEmployeurTmp.hasPrestationLAMat() && periodeLAMat == null) {
+                periodeLAMat = donneesEmployeurTmp.getPeriodeACM1();
             }
         }
 
         if (periodeACM1 == null) {
-            // throw new Exception("Aucune période ACM 1 trouvée");
+            throw new Exception("Aucune période ACM 1 trouvée");
         }
-        // Calcul de la période ACM 2
-        String dateDebutACM2 = null;
-        String dateFinACM2 = null;
 
-        // Calcul de la période des ACM 1
+        boolean hasLAMat = periodeLAMat != null;
+
+        // Calcul de la période initiale des ACM 2
         String ddfACM1 = periodeACM1.getDateDeFin();
-        dateDebutACM2 = JadeDateUtil.addDays(ddfACM1, 1);
-        dateFinACM2 = JadeDateUtil.addDays(ddfACM1, nombreJoursACM2);
+        String dateDebutACM2 = JadeDateUtil.addDays(ddfACM1, 1);
+        String dateFinACM2 = JadeDateUtil.addDays(ddfACM1, nombreJoursACM2);
+        PRPeriode periodeACM2 = new PRPeriode(dateDebutACM2, dateFinACM2);
 
-        BigDecimal montantBrut = montantJournalierACM2.getBigDecimalValue().multiply(new BigDecimal(nombreJoursACM2));
-        montantBrut = arrondir(montantBrut);
+        SimpleDateFormat reader = new SimpleDateFormat("dd.MM.yyyy");
+        SimpleDateFormat anneeWriter = new SimpleDateFormat("yyyy");
 
-        APPrestation prestationACreer = new APPrestation();
-        prestationACreer.setDateCalcul(JACalendar.todayJJsMMsAAAA());
-        prestationACreer.setDateDebut(dateDebutACM2);
-        prestationACreer.setDateFin(dateFinACM2);
-        prestationACreer.setEtat(IAPPrestation.CS_ETAT_PRESTATION_OUVERT);
-        prestationACreer.setGenre(APTypeDePrestation.ACM2_ALFA.getCodesystemString());
-        prestationACreer.setIdDroit(idDroit);
-        prestationACreer.setMontantBrut(montantBrut.toString());
-        // TODO gérer arrondis
-        prestationACreer.setMontantJournalier(montantJournalierACM2.toString());
-        prestationACreer.setNombreJoursSoldes(String.valueOf(nombreJoursACM2));
-        prestationACreer.setType(IAPPrestation.CS_TYPE_NORMAL);
+        List<PRPeriode> periodes = new LinkedList<PRPeriode>();
 
-        APPrestationCalculeeAPersister prestationCalculeeAPersister = new APPrestationCalculeeAPersister();
-        prestationCalculeeAPersister.setPrestation(prestationACreer);
+        /*
+         * Analyse de la période des ACM2 pourvoir si on tombe a cheval sur 2 années
+         */
 
-        // Pour chaque employeur
-        for (Object object : donneesDomainCalcul) {
-            ACM2BusinessDataParEmployeur donneesParEmployeur = (ACM2BusinessDataParEmployeur) object;
-            APSitProJointEmployeur sitPro = donneesParEmployeur.getSituationProfJointEmployeur();
-            // BigDecimal montantJournalier = null;
-            // BigDecimal montantBrut = null;
-
-            // /*
-            // * Calcul du montant journalier, 2 cas possible; avec LAMat et sans....
-            // */
-            // String montantJournalierString = null;
-            // if (hasLAMat) {
-            // // TODO
-            // } else {
-            // // FIXME prendre ce revenu
-            // // APPrestation prestation = new APPrestation();
-            // // prestation.getRevenuMoyenDeterminant()
-            // // Pas de LAMat, on prend le montant de la dernière prestation ACM1
-            // montantJournalierString = prestationStandard.get(prestationStandard.size() - 1).getMontantJournalier();
-            // }
-
-            // montantJournalier = new BigDecimal(montantJournalierString);
-
-            // création de la prestation
-
-            // Création de la répartition de paiement, on se base sur la 1ère prestation standard
-            // TODO à valider
-            APRepartitionJointPrestation prestStandard = donneesParEmployeur.getPrestationStandard().get(0);
-            APRepartitionPaiements repartitionPaiements = new APRepartitionPaiements();
-            repartitionPaiements.setDateValeur(JACalendar.todayJJsMMsAAAA());
-            repartitionPaiements.setIdAffilie(sitPro.getIdAffilie());
-            repartitionPaiements.setIdSituationProfessionnelle(sitPro.getIdSitPro());
-            repartitionPaiements.setIdAffilieAdrPmt(prestStandard.getIdAffilieAdrPmt());
-            repartitionPaiements.setIdDomaineAdressePaiement(prestStandard.getIdDomaineAdressePaiement());
-            repartitionPaiements.setIdTiers(prestStandard.getIdTiers());
-            repartitionPaiements.setIdTiersAdressePaiement(prestStandard.getIdTiersAdressePaiement());
-            repartitionPaiements.setNom(prestStandard.getNom());
-            repartitionPaiements.setReferenceInterne(prestStandard.getReferenceInterne());
-            repartitionPaiements.setTypePaiement(prestStandard.getTypePaiement());
-            repartitionPaiements.setTypePrestation(IAPRepartitionPaiements.CS_PAIEMENT_EMPLOYEUR);
-
-            // calcul du montant brut
-            BigDecimal montantBrutRepartition = donneesParEmployeur.getRevenuMoyenDeterminant().getBigDecimalValue()
-                    .multiply(new BigDecimal(nombreJoursACM2));
-            montantBrutRepartition = arrondir(montantBrutRepartition);
-            repartitionPaiements.setMontantBrut(montantBrutRepartition.toString());
-            // repartitionPaiements.setIdRepartitionBeneficiairePaiement();
-            // repartitionPaiements.setTauxRJM(); taux prorata ????
-            // repartitionPaiements.setTypeAssociationAssurance(); spécifique ACM NE ?
-            // TODO repartitionPaiements.chercherAdressePaiement(session);
-            // repartitionPaiements.setAdressePaiement();
-            // TODO voir avec SCR pour le calcul des coti : repartitionPaiements.setMontantVentile();
-
-            // ---------------------------------------- //
-
-            // Création des cotisations
-            List<APCotisation> cotisations = new ArrayList<APCotisation>();
-            // final APCotisation cotisationAvs = creerCotisation(prestationACreer, tauxAVS,
-            // APProperties.ASSURANCE_AVS_PAR_ID.getValue());
-            // cotisations.add(cotisationAvs);
-            //
-            // final APCotisation cotisationAc = creerCotisation(prestationACreer, tauxAC,
-            // APProperties.ASSURANCE_AC_PAR_ID.getValue());
-            // cotisations.add(cotisationAc);
-
-            APRepartitionCalculeeAPersister repartitionCalculeeAPersister = new APRepartitionCalculeeAPersister();
-            repartitionCalculeeAPersister.setRepartitionPaiements(repartitionPaiements);
-            repartitionCalculeeAPersister.setCotisations(cotisations);
-
-            list.add(repartitionCalculeeAPersister);
-
+        // On récupère l'année de la date de début de la période
+        String annee = anneeWriter.format(reader.parse(periodeACM2.getDateDeDebut()));
+        // On créé la date du 31.12 de l'année correspondante
+        String finDeAnnee = "31.12." + annee;
+        boolean result = PRDateUtils.isDateDansLaPeriode(periodeACM2, finDeAnnee);
+        if (result) {
+            PRPeriode p1 = new PRPeriode(periodeACM2.getDateDeDebut(), finDeAnnee);
+            String debutAnnee = JadeDateUtil.addDays(finDeAnnee, 1);
+            PRPeriode p2 = new PRPeriode(debutAnnee, periodeACM2.getDateDeFin());
+            periodes.add(p1);
+            periodes.add(p2);
+        } else {
+            periodes.add(periodeACM2);
         }
 
-        prestationCalculeeAPersister.setRepartitions(list);
-        List<Object> resultat = new ArrayList<Object>();
-        resultat.add(prestationCalculeeAPersister);
-        return resultat;
-    }
+        List<Object> resultatCalcul = new LinkedList<Object>();
 
-    private APCotisation creerCotisation(final APPrestation prestation, final BigDecimal taux, String idExterne) {
-        BigDecimal montantBrutCotisation = new BigDecimal(prestation.getMontantBrut()).multiply(taux);
-        montantBrutCotisation = arrondir(montantBrutCotisation);
-        APCotisation cotisation = new APCotisation();
-        cotisation.setDateDebut(prestation.getDateDebut());
-        cotisation.setDateFin(prestation.getDateFin());
-        cotisation.setMontant(montantBrutCotisation.toString());
-        cotisation.setMontantBrut(prestation.getMontantBrut());
-        cotisation.setTaux(taux.toString());
-        cotisation.setType(APCotisation.TYPE_ASSURANCE);
-        cotisation.setIdExterne(idExterne);
-        return cotisation;
+        // Pour chaque période on créer une prestation
+        for (PRPeriode periode : periodes) {
+            APPrestationCalculeeAPersister prestationCalculeeAPersister = new APPrestationCalculeeAPersister();
+
+            String dateDeDebut = periode.getDateDeDebut();
+            String dateDeFin = periode.getDateDeFin();
+            int nombreDeJours = PRDateUtils.getNbDayBetween(dateDeDebut, dateDeFin);
+            nombreDeJours++;
+
+            BigDecimal montantBrut = revenuMoyenDeterminantACM2.getBigDecimalValue().multiply(
+                    new BigDecimal(nombreDeJours));
+            montantBrut = arrondir(montantBrut);
+
+            APPrestation prestationACreer = new APPrestation();
+            prestationACreer.setDateCalcul(JACalendar.todayJJsMMsAAAA());
+            prestationACreer.setDateDebut(dateDeDebut);
+            prestationACreer.setDateFin(dateDeFin);
+            prestationACreer.setEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
+            prestationACreer.setGenre(APTypeDePrestation.ACM2_ALFA.getCodesystemString());
+            prestationACreer.setIdDroit(idDroit);
+            prestationACreer.setMontantBrut(montantBrut.toString());
+            prestationACreer.setMontantJournalier(revenuMoyenDeterminantACM2.toString());
+            prestationACreer.setNombreJoursSoldes(String.valueOf(nombreDeJours));
+            prestationACreer.setNoRevision(IAPDroitMaternite.CS_REVISION_MATERNITE_2005);
+            prestationACreer.setRevenuMoyenDeterminant(revenuMoyenDeterminantACM2.toString());
+            prestationACreer.setType(IAPPrestation.CS_TYPE_NORMAL);
+
+            prestationCalculeeAPersister.setPrestation(prestationACreer);
+            List<APRepartitionCalculeeAPersister> repartitions = new LinkedList<APRepartitionCalculeeAPersister>();
+            prestationCalculeeAPersister.setRepartitions(repartitions);
+
+            // Pour chaque employeur on créer une répartition
+            for (Object object : donneesDomainCalcul) {
+                APRepartitionCalculeeAPersister repartitionCalculeeAPersister = new APRepartitionCalculeeAPersister();
+                repartitions.add(repartitionCalculeeAPersister);
+
+                ACM2BusinessDataParEmployeur donneesParEmployeur = (ACM2BusinessDataParEmployeur) object;
+                APSitProJointEmployeur sitPro = donneesParEmployeur.getSituationProfJointEmployeur();
+
+                // Création de la répartition de paiement, on se base sur la 1ère prestation standard
+                // TODO à valider
+                APRepartitionJointPrestation prestStandard = donneesParEmployeur.getPrestationStandard().get(0);
+                APRepartitionPaiements repartitionPaiements = new APRepartitionPaiements();
+                repartitionPaiements.setDateValeur(JACalendar.todayJJsMMsAAAA());
+                repartitionPaiements.setIdAffilie(sitPro.getIdAffilie());
+                repartitionPaiements.setIdSituationProfessionnelle(sitPro.getIdSitPro());
+                repartitionPaiements.setIdAffilieAdrPmt(prestStandard.getIdAffilieAdrPmt());
+                repartitionPaiements.setIdDomaineAdressePaiement(prestStandard.getIdDomaineAdressePaiement());
+                repartitionPaiements.setIdTiers(prestStandard.getIdTiers());
+                repartitionPaiements.setIdTiersAdressePaiement(prestStandard.getIdTiersAdressePaiement());
+                repartitionPaiements.setNom(prestStandard.getNom());
+                repartitionPaiements.setReferenceInterne(prestStandard.getReferenceInterne());
+                repartitionPaiements.setTypePaiement(prestStandard.getTypePaiement());
+                repartitionPaiements.setTypePrestation(IAPRepartitionPaiements.CS_PAIEMENT_EMPLOYEUR);
+
+                // calcul du montant brut
+                BigDecimal montantBrutRepartition = donneesParEmployeur.getRevenuMoyenDeterminant()
+                        .getBigDecimalValue().multiply(new BigDecimal(nombreDeJours));
+                montantBrutRepartition = arrondir(montantBrutRepartition);
+                repartitionPaiements.setMontantBrut(montantBrutRepartition.toString());
+                // repartitionPaiements.setIdRepartitionBeneficiairePaiement();
+                // repartitionPaiements.setTauxRJM(); taux prorata ????
+                // repartitionPaiements.setTypeAssociationAssurance(); spécifique ACM NE ?
+                // TODO repartitionPaiements.chercherAdressePaiement(session);
+                // repartitionPaiements.setAdressePaiement();
+
+                // ---------------------------------------- //
+
+                repartitionCalculeeAPersister.setRepartitionPaiements(repartitionPaiements);
+                repartitionCalculeeAPersister.setCotisations(new ArrayList<APCotisation>());
+            }
+
+            prestationCalculeeAPersister.setRepartitions(repartitions);
+            resultatCalcul.add(prestationCalculeeAPersister);
+        }
+
+        return resultatCalcul;
     }
 
     /**
@@ -201,8 +199,6 @@ public class APcalculateurACM2 implements IAPPrestationCalculateur {
 
                 ACM2BusinessDataParEmployeur donneesEmployeur = new ACM2BusinessDataParEmployeur(
                         persistenceInputData.getIdDroit(), persistenceInputData.getNombreJoursPrestationACM2(), sitPro);
-                donneesEmployeur.setTauxAVS(persistenceInputData.getTauxAVS());
-                donneesEmployeur.setTauxAC(persistenceInputData.getTauxAC());
                 donneesEmployeur.setRevenuMoyenDeterminant(persistenceInputData.getRevenuMoyenDeterminant(sitPro
                         .getIdSitPro()));
 

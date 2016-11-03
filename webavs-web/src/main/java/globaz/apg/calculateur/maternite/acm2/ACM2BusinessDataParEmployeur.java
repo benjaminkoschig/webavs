@@ -4,7 +4,6 @@ import globaz.apg.db.droits.APSitProJointEmployeur;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.framework.util.FWCurrency;
 import globaz.prestation.beans.PRPeriode;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,8 +32,6 @@ public class ACM2BusinessDataParEmployeur {
     private String idDroit;
     private int nombreJoursPrestationACM2;
     private APSitProJointEmployeur situationProfJointEmployeur;
-    private BigDecimal tauxAVS;
-    private BigDecimal tauxAC;
     private FWCurrency revenuMoyenDeterminant;
     private List<APRepartitionJointPrestation> prestationStandard;
     private List<APRepartitionJointPrestation> prestationACM1;
@@ -67,9 +64,9 @@ public class ACM2BusinessDataParEmployeur {
     }
 
     /**
-     * Retourne une PRPeriode uniquement si la méthode hasACM1() return <code>true</code> sinon null
+     * Retourne une PRPeriode uniquement si la méthode hasPrestationACM1() return <code>true</code> sinon null
      * 
-     * @return une PRPeriode uniquement si la méthode hasACM1() return <code>true</code> sinon null
+     * @return une PRPeriode uniquement si la méthode hasPrestationACM1() return <code>true</code> sinon null
      */
     public PRPeriode getPeriodeACM1() {
         PRPeriode periodePrestationACM1 = null;
@@ -86,6 +83,25 @@ public class ACM2BusinessDataParEmployeur {
         Collections.sort(prestationLAMat, getComparator());
     }
 
+    /**
+     * Retourne une PRPeriode uniquement si la méthode hasPrestationLAMat() return <code>true</code> sinon null
+     * 
+     * @return une PRPeriode uniquement si la méthode hasPrestationLAMat() return <code>true</code> sinon null
+     */
+    public PRPeriode getPeriodeLAMat() {
+        PRPeriode periode = null;
+        if (hasPrestationLAMat()) {
+            periode = new PRPeriode();
+            periode.setDateDeDebut(prestationLAMat.get(0).getDateDebut());
+            periode.setDateDeFin(prestationLAMat.get(prestationLAMat.size() - 1).getDateFin());
+        }
+        return periode;
+    }
+
+    public boolean hasPrestationLAMat() {
+        return prestationLAMat.size() > 0;
+    }
+
     public List<APRepartitionJointPrestation> getPrestationStandard() {
         return prestationStandard;
     }
@@ -96,22 +112,6 @@ public class ACM2BusinessDataParEmployeur {
 
     public List<APRepartitionJointPrestation> getPrestationLAMat() {
         return prestationLAMat;
-    }
-
-    public BigDecimal getTauxAVS() {
-        return tauxAVS;
-    }
-
-    public void setTauxAVS(BigDecimal tauxAVS) {
-        this.tauxAVS = tauxAVS;
-    }
-
-    public BigDecimal getTauxAC() {
-        return tauxAC;
-    }
-
-    public void setTauxAC(BigDecimal tauxAC) {
-        this.tauxAC = tauxAC;
     }
 
     public FWCurrency getRevenuMoyenDeterminant() {

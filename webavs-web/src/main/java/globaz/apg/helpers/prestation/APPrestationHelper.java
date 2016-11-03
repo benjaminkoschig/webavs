@@ -1049,15 +1049,6 @@ public class APPrestationHelper extends PRAbstractHelper {
 
         final APEntityService servicePersistance = ApgServiceLocator.getEntityService();
 
-        // List<APSitProJointEmployeur> sitProJEmpl = servicePersistance.getSituationProfJointEmployeur(session,
-        // transaction, droit.getIdDroit());
-
-        // for (APSitProJointEmployeur sitPro : sitProJEmpl) {
-        // if (sitPro.getHasAcm2AlphaPrestations()) {
-        //
-        // }
-        // }
-
         // Bean container des données de persistance
         final ACM2PersistenceInputData donneesPersistence = new ACM2PersistenceInputData(droit.getIdDroit(),
                 nombreJoursACM2);
@@ -1066,26 +1057,16 @@ public class APPrestationHelper extends PRAbstractHelper {
         final List<APRepartitionJointPrestation> repartitionNonFiltrees = servicePersistance
                 .getRepartitionJointPrestationDuDroit(session, transaction, droit.getIdDroit());
 
-        APRepartitionJointPrestationManager manager = new APRepartitionJointPrestationManager();
-        manager.setSession(session);
-        manager.setForIdDroit(droit.getIdDroit());
-        manager.find(BManager.SIZE_NOLIMIT);
-        List<APRepartitionJointPrestation> tut = manager.toList();
-
-        System.out.println();
         // On filtre car on ne veut pas les restitutions ou autres. Uniquement les prestations d'allocation
         final List<APRepartitionJointPrestation> repartitionJointRepartitionsFiltree = new ArrayList<APRepartitionJointPrestation>();
 
-        for (APRepartitionJointPrestation repJointPrest : tut) {
-            repartitionJointRepartitionsFiltree.add(repJointPrest);
+        for (APRepartitionJointPrestation repJointPrest : repartitionNonFiltrees) {
             // filtrer les prestations qui vont bien !!!
-            // Pour les prest ACM contenu annonce = 0 !
-            // FIXME COMMENT ENLEVER LES PRESATIONS DFE RESTITUTION
-            // if (IAPAnnonce.CS_DEMANDE_ALLOCATION.equals(repJointPrest.getContenuAnnonce())) {
-            // repartitionJointRepartitionsFiltree.add(repJointPrest);
-            // } else if (IAPAnnonce.CS_DUPLICATA.equals(repJointPrest.getContenuAnnonce())) {
-            // repartitionJointRepartitionsFiltree.add(repJointPrest);
-            // }
+            // FIXME COMMENT ENLEVER LES PRESATIONS DFE RESTITUTION : Pour les prest ACM contenu annonce = 0 !
+            repartitionJointRepartitionsFiltree.add(repJointPrest);
+            if (!IAPAnnonce.CS_PAIEMENT_RETROACTIF.equals(repJointPrest.getContenuAnnonce())
+                    && !IAPAnnonce.CS_RESTITUTION.equals(repJointPrest.getContenuAnnonce())) {
+            }
         }
 
         donneesPersistence.setPrestations(repartitionJointRepartitionsFiltree);
@@ -1094,22 +1075,6 @@ public class APPrestationHelper extends PRAbstractHelper {
         final List<APSitProJointEmployeur> apSitProJoiEmpList = servicePersistance.getSituationProfJointEmployeur(
                 session, transaction, droit.getIdDroit());
         donneesPersistence.setSituationProfessionnelleEmployeur(apSitProJoiEmpList);
-
-        // Récupération des taux
-        String dateDebutDroit = droit.getDateDebutDroit();
-        BigDecimal tauxAVS = getTauxAssurance(APProperties.ASSURANCE_AVS_PAR_ID.getValue(), dateDebutDroit, session);
-        if (tauxAVS == null) {
-            throw new Exception("_Impossible de retrouver le taux pour l'assurance AVS. Id assurance = ["
-                    + APProperties.ASSURANCE_AVS_PAR_ID.getValue() + "]");
-        }
-        donneesPersistence.setTauxAVS(tauxAVS);
-
-        BigDecimal tauxAC = getTauxAssurance(APProperties.ASSURANCE_AC_PAR_ID.getValue(), dateDebutDroit, session);
-        if (tauxAC == null) {
-            throw new Exception("Impossible de retrouver le taux pour l'assurance AC. Id assurance = ["
-                    + APProperties.ASSURANCE_AC_PAR_ID.getValue() + "]");
-        }
-        donneesPersistence.setTauxAC(tauxAC);
 
         for (final APSitProJointEmployeur sitProJointEmployeur : apSitProJoiEmpList) {
             APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
@@ -1125,24 +1090,6 @@ public class APPrestationHelper extends PRAbstractHelper {
                     JANumberFormatter.SUP));
             donneesPersistence.addRMDParEmployeur(sitPro.getIdSituationProf(), revenuMoyenDeterminant);
         }
-
-        // final String dateDebutPrestationStandard = donneesPersistence.getPrestationJointRepartitions().get(0)
-        // .getDateDebut();
-        // for (final APSitProJointEmployeur apSitProJoiEmp : apSitProJoiEmpList) {
-        // // {taux AVS par, taux AC par,taux FNE par}>
-        // final BigDecimal[] taux = new BigDecimal[3];
-        //
-        // taux[0] = getTauxAssurance(APProperties.ASSURANCE_AVS_PAR_ID.getValue(), dateDebutDroit, session);
-        // taux[1] = getTauxAssurance(APProperties.ASSURANCE_AC_PAR_ID.getValue(), dateDebutDroit, session);
-        //
-        // // taux particulier pour l'association FNE
-        // if (APAssuranceTypeAssociation.FNE.isCodeSystemEqual(apSitProJoiEmp.getCsAssuranceAssociation())) {
-        // taux[2] = getTauxAssurance(APProperties.ASSURANCE_FNE_ID.getValue(), dateDebutPrestationStandard,
-        // session);
-        // }
-        //
-        // donneesPersistence.getTaux().put(apSitProJoiEmp.getIdSitPro(), taux);
-        // }
 
         return donneesPersistence;
 
