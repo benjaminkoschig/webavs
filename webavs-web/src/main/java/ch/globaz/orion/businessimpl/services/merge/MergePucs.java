@@ -94,11 +94,10 @@ public class MergePucs {
         for (PucsFile pucsFile : pucsFiles) {
             try {
                 if (fusion == null) {
-                    fusion = new ElementsDomParser(EBPucsFileService.retriveFileAsInputStream(pucsFile.getIdDb(),
-                            session));
+                    fusion = new ElementsDomParser(EBPucsFileService.retriveFile(pucsFile.getIdDb(), session));
                 } else {
-                    ElementsDomParser documentCourant = new ElementsDomParser(
-                            EBPucsFileService.retriveFileAsInputStream(pucsFile.getIdDb()));
+                    ElementsDomParser documentCourant = new ElementsDomParser(EBPucsFileService.retriveFile(
+                            pucsFile.getIdDb(), session));
                     NodeList staff = documentCourant.find("SalaryDeclaration Company Staff Person").getResult().get(0);
                     Node staffFusion = fusion.find("SalaryDeclaration Company Staff").getResult().get(0).item(0);
                     for (int i = 0; i < staff.getLength(); i++) {
