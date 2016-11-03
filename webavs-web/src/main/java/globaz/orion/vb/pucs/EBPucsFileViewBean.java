@@ -16,6 +16,7 @@ public class EBPucsFileViewBean extends EBAbstractViewBean {
     private boolean hasParticulariteCodeBlocage;
     private boolean hasParticulariteFichePartiel;
     private boolean hasRightAccesSecurity = false;
+    private String idAffiliation;
 
     public EBPucsFileViewBean() {
         super();
@@ -26,6 +27,9 @@ public class EBPucsFileViewBean extends EBAbstractViewBean {
         super();
         this.pucsFile = pucsFile;
         id = pucsFile.getIdDb();
+        if (afAffiliation != null) {
+            idAffiliation = afAffiliation.getAffiliationId();
+        }
         if (!pucsFile.getProvenance().isSwissDec()) {
             pucsFile.setLock(!PucsServiceImpl.userHasRight(afAffiliation, BSessionUtil.getSessionFromThreadContext()));
         }
@@ -113,6 +117,10 @@ public class EBPucsFileViewBean extends EBAbstractViewBean {
 
         }
         return message;
+    }
+
+    public String getIdAffiliation() {
+        return idAffiliation;
     }
 
 }

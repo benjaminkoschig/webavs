@@ -84,7 +84,7 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
         Map<String, AFAffiliation> map = new HashMap<String, AFAffiliation>();
 
         for (AFAffiliation afAffiliation : affiliations) {
-            map.put(afAffiliation.getId(), afAffiliation);
+            map.put(afAffiliation.getAffilieNumero(), afAffiliation);
         }
         return map;
     }
