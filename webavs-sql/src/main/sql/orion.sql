@@ -1,4 +1,5 @@
-delete from SCHEMA.FWCOUP where pcosid in(select pcosid from SCHEMA.FWCOSP where pptygr ='GEBETPUC');
+-- D0161 --
+delete from SCHEMA.FWCOUP where pcosid in(select pcosid from  SCHEMA.FWCOSP where pptygr ='GEBETPUC');
  delete from SCHEMA.FWCOSP where pptygr ='GEBETPUC';
 
  insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11000002, 'GEBETPUC', 0,1,3,0, 'Etat des fichier pucs', 0,2,2,2,2,0,0,0,'200512231Globaz'); 
@@ -10,31 +11,34 @@ delete from SCHEMA.FWCOUP where pcosid in(select pcosid from SCHEMA.FWCOSP where
  insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020002, 'F', '', 'Rejeté' ,'20051231Globaz'); 
  insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020002, 'D', '', '[de]Rejeté' ,'20051231Globaz'); 
  insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11020003, 'GEBETPUC', 1 ,2,0,0, 'ATRAITER', 2,2,2,2,2, 2 , 11000002 ,0,'20051231Globaz'); 
- insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020003, 'F', '', 'A Traiter' ,'20051231Globaz'); 
- insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020003, 'D', '', '[de]A Traiter' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020003, 'F', '', 'A traiter' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020003, 'D', '', '[de]A traiter' ,'20051231Globaz'); 
  insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11020004, 'GEBETPUC', 2 ,2,0,0, 'ENTRAITE', 2,2,2,2,2, 2 , 11000002 ,0,'20051231Globaz'); 
- insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020004, 'F', '', 'En traitment' ,'20051231Globaz'); 
- insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020004, 'D', '', '[de]En traitment' ,'20051231Globaz'); 
- insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11020005, 'GEBETPUC', 2 ,2,0,0, 'ENTRAITE', 2,2,2,2,2, 2 , 11000002 ,0,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020004, 'F', '', 'En traitement' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020004, 'D', '', '[de]En traitement' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11020005, 'GEBETPUC', 2 ,2,0,0, 'COMPTABILIS', 2,2,2,2,2, 2 , 11000002 ,0,'20051231Globaz'); 
  insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020005, 'F', '', 'Comptabilisé' ,'20051231Globaz'); 
  insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020005, 'D', '', '[de]Comptabilisé' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11020006, 'GEBETPUC', 2 ,2,0,0, 'ENERREUR', 2,2,2,2,2, 2 , 11000002 ,0,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020006, 'F', '', 'En erreur' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020006, 'D', '', '[de]En erreur' ,'20051231Globaz'); 
  
- 
+delete from SCHEMA.JADEPROP where PROPNAME in('orion.pucs.remotePucsFileDirectoryAValider','orion.pucs.remotePucsFileDirectoryRefuser','orion.pucs.remotePucsFileDirectoryMerged');
  
 CREATE TABLE SCHEMA.EBPUCS_FILE (
    ID decimal(12,0) NOT NULL,
    ID_PROCESS_INFO decimal(12,0) NOT NULL,
-   ID_FILE_NAME varchar(256) NOT NULL,
+   ID_FILE_NAME varchar(256) NOT NULL UNIQUE,
    ID_AFFILIATION decimal(12,0),
    ANNEE_DECLARATION decimal(12,0) NOT NULL,
    STATUS decimal(12,0) NOT NULL,
    DATE_RECEPTION decimal(12,0) NOT NULL,
-   HANDLING_USER varchar(64) NOT NULL,
+   HANDLING_USER varchar(64),
    NOM_AFFILIE varchar(255) NOT NULL,
    NUMERO_AFFILIE varchar(64) NOT NULL,
    NB_SALAIRES decimal(12,0) NOT NULL,
    PROVENANCE varchar(64) NOT NULL,
-   TOTAL_CONTROLE decimal(10,2) NOT NULL,
+   TOTAL_CONTROLE decimal(12,2) NOT NULL,
    SIZE_FILE_IN_KO decimal(12,2),
    NIVEAU_SECURITE decimal(3,0),
    IS_AF_SEUL decimal(1,0),
@@ -69,3 +73,5 @@ CREATE TABLE SCHEMA.EBPUCS_MERGED (
 	PSPY char(24),
 	PRIMARY KEY(ID)
 );
+-- D0161 --
+------------------
