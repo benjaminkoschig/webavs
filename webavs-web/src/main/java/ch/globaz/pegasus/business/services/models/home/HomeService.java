@@ -4,6 +4,7 @@ import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.exceptions.models.home.ChambreMedicaliseeException;
 import ch.globaz.pegasus.business.exceptions.models.home.HomeException;
 import ch.globaz.pegasus.business.exceptions.models.home.MembreFamilleHomeException;
@@ -534,6 +535,6 @@ public interface HomeService extends JadeApplicationService {
             JadePersistenceException, HomeException;
 
     PeriodesPrixChambre getListePrixChambres(String idHome, String idTypeChambre, String dateDebut, String dateFin)
-            throws PrixChambreException, JadePersistenceException, HomeException, PropertiesException;
+            throws PrixChambreException, JadePersistenceException, HomeException, PropertiesException, CalculException;
 
 }

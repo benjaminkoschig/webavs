@@ -8,7 +8,7 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.couple
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.coupleSepare.revenu.StrategieFinalRevenuImmobiliereSeul;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.coupleSepare.revenu.StrategieFinalRevenuSuppressionSeul;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.ProxyFinalDepenseTotalReconnu;
-import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.StrategieFinalDepenseFraisImmobilier;
+import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.ProxyStrategieFinalDepensesFraisImmobilier;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.StrategieFinalDepenseHome;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.StrategieFinalDepenseLoyer;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.revenu.StrategieFinalRevenuAPI;
@@ -26,7 +26,8 @@ public class StrategiesCoupleSepareFinalisationFactory {
         // depense
         StrategiesCoupleSepareFinalisationFactory.strategiesSeulDepense.add(new StrategieFinalDepenseLoyer());
         StrategiesCoupleSepareFinalisationFactory.strategiesSeulDepense.add(new StrategieFinalDepenseHome());
-        StrategiesCoupleSepareFinalisationFactory.strategiesSeulDepense.add(new StrategieFinalDepenseFraisImmobilier());
+        StrategiesCoupleSepareFinalisationFactory.strategiesSeulDepense
+                .add(new ProxyStrategieFinalDepensesFraisImmobilier());
         StrategiesCoupleSepareFinalisationFactory.strategiesSeulDepense.add(new ProxyFinalDepenseTotalReconnu());
 
         // revenu commun

@@ -43,6 +43,7 @@ public class StrategieAllocationImpotent extends StrategieCalculRevenu {
             clePersonneRente = IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_CONJOINT;
 
         }
+
         TupleDonneeRapport nbRentesPrincADomTuple = this.getOrCreateChild(resultatExistant,
                 IPCValeursPlanCalcul.CLE_INTER_NB_RENTES_PRINCIPALES_COUPLE_A_DOM, 1f);
         this.getOrCreateChild(nbRentesPrincADomTuple, donnee.getCsRoleFamille(), 1f);
@@ -56,7 +57,6 @@ public class StrategieAllocationImpotent extends StrategieCalculRevenu {
             if (clePersonneRente.equals(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_REQUERANT)) {
                 context.put(Attribut.TYPE_RENTE_REQUERANT, csTypeRente);
             }
-
             tuple.setLegende(csTypeRente);
         }
 

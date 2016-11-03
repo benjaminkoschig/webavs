@@ -10,7 +10,6 @@ import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.db.tiers.TITiers;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.business.language.LanguageResolver;
@@ -21,9 +20,7 @@ import ch.globaz.pegasus.business.constantes.IPCCatalogueTextes;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.constantes.decision.EtatDecision;
-import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
-import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PersonneDansPlanCalculException;
 import ch.globaz.pegasus.business.models.decision.DecisionApresCalculOO;
 import ch.globaz.pegasus.business.models.home.Home;
@@ -69,17 +66,10 @@ public class PCPlanCalculHandlerOO {
      * @param document
      * @param tupleRoot
      * @return data, instance de DocumentData contenat le plan de calcul
-     * @throws RemoteException
-     * @throws CalculException
-     * @throws JadePersistenceException
-     * @throws JadeApplicationServiceNotAvailableException
-     * @throws PCAccordeeException
-     * @throws DecisionException
+     * @throws Exception
      */
     public DocumentData build(ICTDocument babelDoc, DecisionApresCalculOO dacOO, DocumentData data,
-            TupleDonneeRapport tupleRoot, boolean isMembresFamillesInclus) throws RemoteException, CalculException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException, PCAccordeeException,
-            DecisionException {
+            TupleDonneeRapport tupleRoot, boolean isMembresFamillesInclus) throws Exception {
 
         this.dacOO = dacOO;
         this.babelDoc = babelDoc;

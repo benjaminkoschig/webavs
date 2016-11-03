@@ -26,6 +26,15 @@ public class SimpleBienImmobilierHabitationNonPrincipale extends JadeSimpleModel
     private String partProprieteDenominateur = null;
     private String partProprieteNumerateur = null;
     private String valeurVenale = null;
+    private Boolean isConstructionMoinsDixAns = Boolean.FALSE;
+
+    public Boolean getIsConstructionMoinsDixAns() {
+        return isConstructionMoinsDixAns;
+    }
+
+    public void setIsConstructionMoinsDixAns(Boolean isConstructionMoinsDixAns) {
+        this.isConstructionMoinsDixAns = isConstructionMoinsDixAns;
+    }
 
     public String getAutresTypeBien() {
         return autresTypeBien;

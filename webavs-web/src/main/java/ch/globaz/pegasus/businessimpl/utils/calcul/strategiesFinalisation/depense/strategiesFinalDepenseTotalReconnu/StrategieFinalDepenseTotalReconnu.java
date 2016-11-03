@@ -13,12 +13,12 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.Strate
 
 public class StrategieFinalDepenseTotalReconnu implements StrategieCalculFinalisation {
 
-    private final static String[] champs = { IPCValeursPlanCalcul.CLE_DEPEN_BES_VITA_TOTAL,
+    protected final static String[] champs = { IPCValeursPlanCalcul.CLE_DEPEN_BES_VITA_TOTAL,
             IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL, IPCValeursPlanCalcul.CLE_DEPEN_PENSVERS_TOTAL,
             IPCValeursPlanCalcul.CLE_DEPEN_COT_PSAL_TOTAL, IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_TOTAL,
             IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL, IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_LONGUE_DUREE };
 
-    private final static String[] champsWithRevenuAgricole = { IPCValeursPlanCalcul.CLE_DEPEN_BES_VITA_TOTAL,
+    protected final static String[] champsWithRevenuAgricole = { IPCValeursPlanCalcul.CLE_DEPEN_BES_VITA_TOTAL,
             IPCValeursPlanCalcul.CLE_DEPEN_DEPPERSO_TOTAL, IPCValeursPlanCalcul.CLE_DEPEN_PENSVERS_TOTAL,
             IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_TOTAL, IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL,
             IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_LONGUE_DUREE };
@@ -65,7 +65,7 @@ public class StrategieFinalDepenseTotalReconnu implements StrategieCalculFinalis
 
     }
 
-    private float calculeCouvertureBesoinsVitaux(CalculContext context) throws CalculException {
+    protected float calculeCouvertureBesoinsVitaux(CalculContext context) throws CalculException {
         float result = 0;
 
         int nbEnfants = (Integer) context.get(Attribut.NB_ENFANTS);

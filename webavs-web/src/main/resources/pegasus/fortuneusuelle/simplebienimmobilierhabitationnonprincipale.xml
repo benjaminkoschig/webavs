@@ -22,6 +22,7 @@
 			<field name="montantValeurLocative" mandatory="true" column="CHNMVL" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_VALEUR_LOCATIVE"/>														
 			<field name="montantLoyesEncaisses" column="CHNMLE" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_LOYES_ENCAISSES"/>
 			<field name="montantSousLocation" column="CHNMSL" type="NUMERIC" dataType="NUMERIC(15,2)" comment="MONTANT_SOUS_LOCATION"/>
+			<field name="isConstructionMoinsDixAns" mandatory="true" column="CHBHMA" type="BOOLEAN" comment="IS_HABITATION_MOINS_10_ANS"/>	
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

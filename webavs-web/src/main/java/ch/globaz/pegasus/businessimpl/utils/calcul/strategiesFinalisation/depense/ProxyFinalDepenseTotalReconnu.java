@@ -11,6 +11,7 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.Strate
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.strategiesFinalDepenseTotalReconnu.StrategieFinalDepenseTotalReconnu;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.strategiesFinalDepenseTotalReconnu.StrategieFinalDepenseTotalReconnu201501;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.strategiesFinalDepenseTotalReconnu.StrategieFinalDepenseTotalReconnuVS;
+import ch.globaz.pegasus.utils.PCApplicationUtil;
 
 public class ProxyFinalDepenseTotalReconnu implements StrategieCalculFinalisation {
 
@@ -18,10 +19,10 @@ public class ProxyFinalDepenseTotalReconnu implements StrategieCalculFinalisatio
     public void calcule(TupleDonneeRapport donnee, CalculContext context, Date dateDebut) throws CalculException {
 
         // En fonction de la date postérieur au 01012015, on aiguille sur la nouvelle stratégie
-        if (isForLVPC(dateDebut)) {
-            new StrategieFinalDepenseTotalReconnu201501().calcule(donnee, context, dateDebut);
-        } else if (isCantonVS()) {
+        if (PCApplicationUtil.isCantonVS()) {
             new StrategieFinalDepenseTotalReconnuVS().calcule(donnee, context, dateDebut);
+        } else if (isForLVPC(dateDebut)) {
+            new StrategieFinalDepenseTotalReconnu201501().calcule(donnee, context, dateDebut);
         } else {
             new StrategieFinalDepenseTotalReconnu().calcule(donnee, context, dateDebut);
         }
@@ -37,14 +38,6 @@ public class ProxyFinalDepenseTotalReconnu implements StrategieCalculFinalisatio
             // Prop LVPC deprecated
             // return EPCProperties.LVPC.getBooleanValue()
             // && dateDebut.getTime() >= ProxyCalculDates.DEPENSE_TOTAL_RECONNUES_SWITCH_STRATEGY_DATE.timestamp;
-        } catch (PropertiesException e) {
-            throw new CalculException(e.getMessage());
-        }
-    }
-
-    private boolean isCantonVS() throws CalculException {
-        try {
-            return EPCLoiCantonaleProperty.VALAIS.isLoiCantonPC();
         } catch (PropertiesException e) {
             throw new CalculException(e.getMessage());
         }

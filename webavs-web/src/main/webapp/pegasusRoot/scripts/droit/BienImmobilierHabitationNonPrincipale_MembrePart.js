@@ -19,8 +19,10 @@ function BienImmobilierHabitationNonPrincipalePart(container){
 	
 	// functions	
 	this.afterRetrieve=function($data){
+		
 		 this.detail.find('.typePropriete').val($data.find('csTypePropriete').text()).end()
 			.find('.part').val($data.find('part').text()).end()
+			.find('.isConstructionMoinsDixAns').attr('checked', $data.find('isConstructionMoinsDixAns').text()=='true').end()
 			.find('.typeBien').val($data.find('csTypeBien').text()).end()
 			.find('.autres').val($data.find('autres').text()).end()
 			.find('.valeurLocative').val($data.find('valeurLocative').text()).change().end()
@@ -67,6 +69,8 @@ function BienImmobilierHabitationNonPrincipalePart(container){
 			'bienImmobilierHabitationNonPrincipale.simpleDonneeFinanciereHeader.isDessaisissementRevenu':this.detail.find('.dessaisissementRevenus').prop('checked'),
 			'bienImmobilierHabitationNonPrincipale.simpleDonneeFinanciereHeader.dateDebut':this.detail.find('[name=dateDebut]').val(),
 			'bienImmobilierHabitationNonPrincipale.simpleDonneeFinanciereHeader.dateFin':this.detail.find('[name=dateFin]').val(),
+			'bienImmobilierHabitationNonPrincipale.simpleBienImmobilierHabitationNonPrincipale.isConstructionMoinsDixAns' : this.detail
+			.find('.isConstructionMoinsDixAns').prop('checked'),
 			'doAddPeriode':this.doAddPeriode,
 			'idDroitMembreFamille':this.membreId
 		};

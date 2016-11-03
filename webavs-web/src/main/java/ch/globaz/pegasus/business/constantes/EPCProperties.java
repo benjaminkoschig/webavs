@@ -48,8 +48,7 @@ public enum EPCProperties implements IProperties {
     COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_PC("commune.politique.code.reference.rubrique.pc"),
     COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_RFM("commune.politique.code.reference.rubrique.rfm"),
     MAILS_DEBUG("analyse.error.sendMail"),
-    LOI_CANTONALE_PC("canton.loi.pc"),
-    BIEN_IMMOBILER_MOINS_10_ANS_ACTIF("bien.immobilier.moins.10.ans.actif");
+    LOI_CANTONALE_PC("canton.loi.pc");
 
     private String property;
 

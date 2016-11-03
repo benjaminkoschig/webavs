@@ -40,6 +40,7 @@
 <%@page import="ch.globaz.pegasus.business.models.fortuneusuelle.BienImmobilierServantHabitationPrincipale"%>
 <%@page import="ch.globaz.pegasus.business.models.droit.MembreFamilleEtendu"%>
 <%@page import="globaz.pegasus.utils.PCDroitHandler"%>
+<%@page import="ch.globaz.pegasus.utils.PCApplicationUtil"%>
 
 
 <%
@@ -214,7 +215,7 @@
 								</ct:select>
 							 </td>
 							 <%
-								 if(EPCProperties.BIEN_IMMOBILER_MOINS_10_ANS_ACTIF.getBooleanValue()){
+								 if(PCApplicationUtil.isCantonVS()){
 							 %>
 								<td><ct:FWLabel key="JSP_PC_BIEN_IMMOBILIER_SERVANT_HABITATION_PRINCIPALE_D_CONSTRUCTION_MOINS_10_ANS"/></td>
 								<td><input id="isConstructionMoinsDixAns" name="isConstructionMoinsDixAns" class="isConstructionMoinsDixAns" type="checkbox"/></td>

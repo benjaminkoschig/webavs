@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense;
+package ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense.strategieBienImmoPrincipal;
 
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
@@ -9,6 +9,7 @@ import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.models.calcul.CalculDonneesCC;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext.Attribut;
+import ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense.StrategieCalculDepense;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 
 /**

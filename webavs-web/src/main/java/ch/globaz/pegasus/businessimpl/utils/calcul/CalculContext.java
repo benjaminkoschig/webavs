@@ -52,7 +52,9 @@ public class CalculContext {
         CS_FRANCHISE_REVENUS_PRIVILEGIERS_FAMILLE,
         CS_TAUX_IMPUTATION_LOYER_FRAIS_ACQUISITION,
         CS_TAUX_IMPUTATION_SOUSLOCATIONS_FRAIS_ACUISITION,
-        CS_PLAFOND_ANNUEL_HOME,
+        CS_PLAFOND_ANNUEL_EMS,
+        CS_PLAFOND_ANNUEL_INSTITUTION,
+        CS_PLAFOND_ANNUEL_LITS_ATTENTE,
         DATE_DEBUT_PERIODE,
         DEPENSE_LOYER_PLAFOND_CELIBATAIRE,
         DEPENSE_LOYER_PLAFOND_COUPLE,
@@ -76,9 +78,13 @@ public class CalculContext {
         CS_CATEGORIE_ARGENT_POCHE_LVPC_EMS_NONMED_PSY,
         CS_CATEGORIE_ARGENT_POCHE_LVPC_EMS_NOMMED_AGE_AVANCE,
         FRAIS_ENTRETIEN_IMMEUBLE,
+
         FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS,
         TYPE_RENTE_REQUERANT,
-        MONTANT_TYPE_CHAMBRE_EPS;
+        MONTANT_TYPE_CHAMBRE_EPS,
+        TAUX_BIEN_IMMO_FRACTION_VALEUR_LOCATIVE_BRUTE,
+        TAUX_BIEN_IMMO_FRACTION_VALEUR_LOCATIVE_BRUTE_M10,
+        TAUX_BIEN_IMMO_FRACTION_LOYER_EFFECTIF;
     }
 
     static CalculContext getNewInstance() {
@@ -95,16 +101,16 @@ public class CalculContext {
         return attributs.containsKey(key);
     }
 
-    public boolean keyAlreadyExist(Attribut key) {
-        return attributs.containsKey(key);
-    }
-
     public Object get(Attribut key) throws CalculException {
         if (attributs.containsKey(key)) {
             return attributs.get(key);
         } else {
             throw new CalculException("Couldn't find any value for the given attribute : " + key);
         }
+    }
+
+    public boolean keyAlreadyExist(Attribut key) {
+        return attributs.containsKey(key);
     }
 
     public Set<CasMetier> getCasMetier() {

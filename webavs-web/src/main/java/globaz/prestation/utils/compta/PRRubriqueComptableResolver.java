@@ -160,6 +160,21 @@ public class PRRubriqueComptableResolver {
 
             put(PRSousTypeCodePrestationRFM.RFM_AI_227.getSousTypeCodePrestationAsString(),
                     APIReferenceRubrique.RFM_AI_REGIME); // REGIME_ALIMENTAIRE
+
+            // CCVS Specifique
+            // AI home et dmo
+            put(PRSousTypeCodePrestationRFM.RFM_AI_DOMICILE_206.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.RFM_AI_DOMICILE);
+
+            put(PRSousTypeCodePrestationRFM.RFM_AI_HOME_212.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.RFM_AI_HOME);
+            // AV home et dom
+            put(PRSousTypeCodePrestationRFM.RFM_AVS_DOMICILE_200.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.RFM_AVS_DOMICILE);
+
+            put(PRSousTypeCodePrestationRFM.RFM_AVS_HOME_214.getSousTypeCodePrestationAsString(),
+                    APIReferenceRubrique.RFM_AVS_HOME);
+
         }
     };
 

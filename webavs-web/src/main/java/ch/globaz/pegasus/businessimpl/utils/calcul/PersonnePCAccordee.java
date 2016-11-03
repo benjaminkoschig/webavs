@@ -22,7 +22,6 @@ public class PersonnePCAccordee implements Serializable {
     private String idPersonne = null;
     private Boolean isHome = null;
     final private TupleDonneeRapport rootDonneesConsolidees;
-
     private String typeRenteRequerant = null;
 
     public String getTypeRenteRequerant() {

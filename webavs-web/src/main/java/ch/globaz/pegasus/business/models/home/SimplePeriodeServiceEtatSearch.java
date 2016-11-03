@@ -13,6 +13,25 @@ public class SimplePeriodeServiceEtatSearch extends JadeSearchSimpleModel {
     private String forDateFinCheckPeriode = null;
     private String forIdHome = null;
     private String forIdPeriodeServiceEtat = null;
+    private String forDateDebut = null;
+
+    public String getForDateDebut() {
+        return forDateDebut;
+    }
+
+    public void setForDateDebut(String forDateDebut) {
+        this.forDateDebut = forDateDebut;
+    }
+
+    public String getForDateFin() {
+        return forDateFin;
+    }
+
+    public void setForDateFin(String forDateFin) {
+        this.forDateFin = forDateFin;
+    }
+
+    private String forDateFin = null;
 
     public final static String CHECL_FOR_ANTERIEURS_PERIODES = "checkForAnterieurPeriods";
 

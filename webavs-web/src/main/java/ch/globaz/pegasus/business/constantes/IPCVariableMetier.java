@@ -6,7 +6,11 @@ public interface IPCVariableMetier {
     public static final String CS_AMORTISSEMENT_ANNUEL_DESSAISISSEMENT_FORTUNE = "64008034";
     public static final String CS_ARGENT_POCHE_MEDICALISE = "64008001";
     public static final String CS_ARGENT_POCHE_NON_MEDICALISE = "64008002";
-    public static final String CS_PLAFOND_ANNUEL_HOME = "64008048";
+    public static final String CS_PLAFOND_ANNUEL_EMS = "64008048";
+	public static final String CS_PLAFOND_ANNUEL_HOME = "64008048";
+    public static final String CS_PLAFOND_ANNUEL_INSTITUTION = "64008055";
+    public static final String CS_PLAFOND_ANNUEL_LITS_ATTENTE = "64008056";
+
     public static final String CS_ARGENT_POCHE_HOME_AVS_ANNUEL = "64008046";
     public static final String CS_ARGENT_POCHE_HOME_AI_ANNUEL = "64008047";
 
@@ -54,5 +58,8 @@ public interface IPCVariableMetier {
     public static final String MENSUALISATION_IJ_CHOMAGE = "64008040";
     public static final String MONTANT_MINIMALE_PC = "64008033";
     public static final String VARIABLE_METIER_SUFFIXE_LEGENDE = "_LEGENDE";
+    public static final String TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT = "64008052";
+    public static final String TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT_M10 = "64008053";
+    public static final String TAUX_IMPUTATIONS_LOYER_EFFECTIF = "64008054";
 
 }

@@ -36,6 +36,11 @@ import java.util.Set;
  */
 public class RFComptabiliserDecisionService {
 
+    public void setAjoutDemandesEnComptabiliteTenantCompteDomicileHome(
+            boolean isAjoutDemandesEnComptabiliteTenantCompteDomicileHome) {
+        this.isAjoutDemandesEnComptabiliteTenantCompteDomicileHome = isAjoutDemandesEnComptabiliteTenantCompteDomicileHome;
+    }
+
     private APIGestionComptabiliteExterne compta = null;
     private String dateComptable = "";
     private String dateEcheancePaiement;
@@ -44,7 +49,12 @@ public class RFComptabiliserDecisionService {
     private String idJournalCA = "";
     private String idLot = "";
     private String idOrganeExecution;
-    private boolean isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome = false;
+    private boolean isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome = Boolean.FALSE; // VD, JU
+    private boolean isAjoutDemandesEnComptabiliteTenantCompteDomicileHome = Boolean.FALSE; // spec. VS
+
+    public boolean isAjoutDemandesEnComptabiliteTenantCompteDomicileHome() {
+        return isAjoutDemandesEnComptabiliteTenantCompteDomicileHome;
+    }
 
     private final String LABEL_DECISION_RFM = "Décision RFM";
     private RELot lot = null;
@@ -214,7 +224,8 @@ public class RFComptabiliserDecisionService {
 
         // initialisation des rubriques
         RFModuleComptableFactory factory = RFModuleComptableFactory.getInstance();
-        factory.initIdsRubriques(getSession(), isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome());
+        factory.initIdsRubriques(getSession(), isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome(),
+                isAjoutDemandesEnComptabiliteTenantCompteDomicileHome());
 
         // important pour qu'on ne pointe pas sur le memoryLog de la compta!
         FWMemoryLog initComptaMemoryLog = new FWMemoryLog();

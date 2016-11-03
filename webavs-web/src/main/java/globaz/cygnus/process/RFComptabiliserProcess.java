@@ -42,6 +42,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.cygnus.RFApplicationUtils;
 
 /**
  * 
@@ -62,10 +64,11 @@ public class RFComptabiliserProcess extends BProcess {
     private String idGestionnaire = "";
     private String idLot = "";
     private String idOrganeExecution = "";
-    private boolean isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome = false;
+    private boolean isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome = Boolean.FALSE;// JU, VD
     private boolean isMisAjourLotErreur = true;
     private String numeroOG = "";
     private Set<RFPrestationData> prestationsSet = null;
+    private boolean isAjoutDemandesEnComptabiliteTenantCompteDomicileHome = Boolean.FALSE; // spec. VS
 
     // SEPA iso20002
     private String isoCsTypeAvis;
@@ -82,11 +85,10 @@ public class RFComptabiliserProcess extends BProcess {
 
         try {
 
-            if (RFPropertiesUtils.ajoutDemandesEnComptabiliteSansTenirCompteTypeDeHome()) {
-                setAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome(true);
-            }
+            // définition du type de traitement comptable
+            setTypeTraitementComptabilisation();
 
-            String idTiersFondationSas = RFPropertiesUtils.getIdTiersAvanceSas();
+            String idTiersFondationSas = RFPropertiesUtils.getIdTiersAvanceSas(); // jura
 
             // connexion à Osiris
             BISession sessionOsiris = PRSession.connectSession(getSession(), CAApplication.DEFAULT_APPLICATION_OSIRIS);
@@ -172,6 +174,27 @@ public class RFComptabiliserProcess extends BProcess {
         }
     }
 
+    /**
+     * Définit le type de traitement (client) de comptabilisation en foonction des propriétés
+     * 
+     * @throws PropertiesException si un problème survient au niveau de la remontée des propriétés
+     * @throws Exception si un problème survient
+     */
+    private void setTypeTraitementComptabilisation() throws PropertiesException, Exception {
+        if (RFApplicationUtils.isCantonVS()) {
+            isAjoutDemandesEnComptabiliteTenantCompteDomicileHome = Boolean.TRUE;
+            isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome = Boolean.FALSE;
+        }
+        // distinction sash - spas
+        else if (RFPropertiesUtils.ajoutDemandesEnComptabiliteSansTenirCompteTypeDeHome()) {
+            isAjoutDemandesEnComptabiliteTenantCompteDomicileHome = Boolean.FALSE;
+            isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome = Boolean.TRUE;
+        } else {
+            isAjoutDemandesEnComptabiliteTenantCompteDomicileHome = Boolean.FALSE;
+            isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome = Boolean.FALSE;
+        }
+    }
+
     private JadePublishDocumentInfo createDocInfoDecompte() {
 
         JadePublishDocumentInfo documentInfo = JadePublishDocumentInfoProvider.newInstance(this);
@@ -249,19 +272,18 @@ public class RFComptabiliserProcess extends BProcess {
                 itLotJointPrestationJointOVPrecedante = (RFLotJointPrestationJointOV) lotJointPrestationJointOVManager
                         .getContainer().get(i - 1);
 
-                prestationsSet
-                        .add(new RFPrestationData(itLotJointPrestationJointOVPrecedante.getIdPrestation(),
-                                itLotJointPrestationJointOVPrecedante.getDateMoisAnnee(),
-                                itLotJointPrestationJointOVPrecedante.getMontantTotal(),
-                                itLotJointPrestationJointOVPrecedante.getIdLot(), itLotJointPrestationJointOVPrecedante
-                                        .getCsEtatPrestation(), ordresVersementSet,
+                prestationsSet.add(new RFPrestationData(itLotJointPrestationJointOVPrecedante.getIdPrestation(),
+                        itLotJointPrestationJointOVPrecedante.getDateMoisAnnee(), itLotJointPrestationJointOVPrecedante
+                                .getMontantTotal(), itLotJointPrestationJointOVPrecedante.getIdLot(),
+                        itLotJointPrestationJointOVPrecedante.getCsEtatPrestation(), ordresVersementSet,
                                 itLotJointPrestationJointOVPrecedante.getTypePrestation(),
-                                itLotJointPrestationJointOVPrecedante.getIdDecision(),
-                                itLotJointPrestationJointOVPrecedante.getRemboursementRequerant(),
-                                itLotJointPrestationJointOVPrecedante.getRemboursementConjoint(),
-                                itLotJointPrestationJointOVPrecedante.getIsRI(), itLotJointPrestationJointOVPrecedante
-                                        .getIsLAPRAMS(), itLotJointPrestationJointOVPrecedante.getIdAdressePaiement(),
-                                itLotJointPrestationJointOVPrecedante.getIdTiersBeneficiaire()));
+                        itLotJointPrestationJointOVPrecedante.getIdDecision(), itLotJointPrestationJointOVPrecedante
+                                .getRemboursementRequerant(), itLotJointPrestationJointOVPrecedante
+                                .getRemboursementConjoint(), itLotJointPrestationJointOVPrecedante.getIsRI(),
+                        itLotJointPrestationJointOVPrecedante.getIsLAPRAMS(), itLotJointPrestationJointOVPrecedante
+                                .getIdAdressePaiement(),
+                        itLotJointPrestationJointOVPrecedante.getIdTiersBeneficiaire(),
+                        itLotJointPrestationJointOVPrecedante.getcsGenrePrestation()));
 
                 currentIdPrestation = itLotJointPrestationJointOV.getIdPrestation();
 
@@ -293,7 +315,8 @@ public class RFComptabiliserProcess extends BProcess {
                             .getIdDecision(), itLotJointPrestationJointOV.getRemboursementRequerant(),
                     itLotJointPrestationJointOV.getRemboursementConjoint(), itLotJointPrestationJointOV.getIsRI(),
                     itLotJointPrestationJointOV.getIsLAPRAMS(), itLotJointPrestationJointOV.getIdAdressePaiement(),
-                    itLotJointPrestationJointOV.getIdTiersBeneficiaire()));
+                    itLotJointPrestationJointOV.getIdTiersBeneficiaire(), itLotJointPrestationJointOV
+                            .getcsGenrePrestation()));
         }
     }
 
@@ -434,12 +457,18 @@ public class RFComptabiliserProcess extends BProcess {
         comptabiliser.setIsoCsTypeAvis(getIsoCsTypeAvis());
         comptabiliser.setIsoGestionnaire(getIsoGestionnaire());
         comptabiliser.setIsoHighPriority(getIsoHighPriority());
+        comptabiliser
+                .setAjoutDemandesEnComptabiliteTenantCompteDomicileHome(isAjoutDemandesEnComptabiliteTenantCompteDomicileHome);
 
         return comptabiliser;
     }
 
     public boolean isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome() {
         return isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome;
+    }
+
+    public boolean isAjoutDemandesEnComptabiliteTenantCompteHomeDomicile() {
+        return isAjoutDemandesEnComptabiliteTenantCompteDomicileHome;
     }
 
     public boolean isMisAjourLotErreur() {
@@ -492,9 +521,9 @@ public class RFComptabiliserProcess extends BProcess {
 
     }
 
-    public void setAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome(
-            boolean isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome) {
-        this.isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome = isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome;
+    // set le fonctionnement domicile/home --> CCVS
+    public void setAjoutDemandeTenantCompteDomicileHome(boolean isAjoutDemandeTenantCompteDomicileHome) {
+        isAjoutDemandesEnComptabiliteTenantCompteDomicileHome = isAjoutDemandeTenantCompteDomicileHome;
     }
 
     public void setComptabiliser(RFComptabiliserDecisionService comptabiliser) {

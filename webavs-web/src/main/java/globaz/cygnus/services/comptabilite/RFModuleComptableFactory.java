@@ -36,6 +36,11 @@ public class RFModuleComptableFactory {
         return RFModuleComptableFactory.instance;
     }
 
+    public APIRubrique RFM_AVS_HOME = null;
+    public APIRubrique RFM_AI_HOME = null;
+    public APIRubrique RFM_AVS_DOMICILE = null;
+    public APIRubrique RFM_AI_DOMICILE = null;
+
     public APIRubrique RFM_AIDE_AU_MENAGE_AI = null;
     public APIRubrique RFM_AIDE_AU_MENAGE_AI_SASH = null;
     public APIRubrique RFM_AIDE_AU_MENAGE_AI_SPAS = null;
@@ -225,37 +230,44 @@ public class RFModuleComptableFactory {
     }
 
     /**
-     * Initialise les Id des rubriques
+     * Spécificité JU: sansTenirComteTypeDeHome
+     * VD: tenirComnpteTypeDeHome
+     * VS: tenir compteHome/Domicile
      * 
-     * @param sessionOsiris
-     *            une instance de APIProcessComptabilisation
-     * @throws Exception
-     *             DOCUMENT ME!
+     * @param sessionOsiris la session osiris permettant de comptabiliser
+     * @param isAjoutDemEnComSanTenComTypDeHom spécificiété VD/JU, prise en compte ou non du type de home
+     * @param isAjoutEnTenantCompteDomicileHome spécificité VS, prise en compte ou non de la granularité home/domicile
+     * @throws Exception si zun problème survient
      */
-    public void initIdsRubriques(BISession sessionOsiris, boolean isAjoutDemEnComSanTenComTypDeHom) throws Exception {
+    public void initIdsRubriques(BISession sessionOsiris, boolean isAjoutDemEnComSanTenComTypDeHom,
+            boolean isAjoutEnTenantCompteDomicileHome) throws Exception {
 
         APIReferenceRubrique referenceRubrique = (APIReferenceRubrique) sessionOsiris
                 .getAPIFor(APIReferenceRubrique.class);
 
-        Map<String, APIRubrique> rubriquesSanTenComTypDeHomMap = new HashMap<String, APIRubrique>();
-        Map<String, APIRubrique> rubriquesEnTenComTypDeHomMap = new HashMap<String, APIRubrique>();
+        Map<String, APIRubrique> rubriquesSanTenComTypDeHomMap = new HashMap<String, APIRubrique>();// ccju
+        Map<String, APIRubrique> rubriquesEnTenComTypDeHomMap = new HashMap<String, APIRubrique>();// ccvd
+        Map<String, APIRubrique> rubriquesHomeDomicile = new HashMap<String, APIRubrique>();// ccvs
 
-        // // C
+        // **************************************************** Commun à toutes les caisses
+        // ****************************************************
         RFM_RESTITUTION_AI = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.RFM_AI_A_RESTITUER);
         rubriquesSanTenComTypDeHomMap.put(APIReferenceRubrique.RFM_AI_A_RESTITUER, RFM_RESTITUTION_AI);
         rubriquesEnTenComTypDeHomMap.put(APIReferenceRubrique.RFM_AI_A_RESTITUER, RFM_RESTITUTION_AI);
+        rubriquesHomeDomicile.put(APIReferenceRubrique.RFM_AI_A_RESTITUER, RFM_RESTITUTION_AI);
 
-        // // C
         RFM_RESTITUTION_AVS = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.RFM_AVS_A_RESTITUER);
         rubriquesSanTenComTypDeHomMap.put(APIReferenceRubrique.RFM_AVS_A_RESTITUER, RFM_RESTITUTION_AVS);
         rubriquesEnTenComTypDeHomMap.put(APIReferenceRubrique.RFM_AVS_A_RESTITUER, RFM_RESTITUTION_AVS);
+        rubriquesHomeDomicile.put(APIReferenceRubrique.RFM_AVS_A_RESTITUER, RFM_RESTITUTION_AVS);
 
-        // // C
         RFM_COMPENSATION = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.COMPENSATION_RENTES);
         rubriquesSanTenComTypDeHomMap.put(APIReferenceRubrique.COMPENSATION_RENTES, RFM_COMPENSATION);
         rubriquesEnTenComTypDeHomMap.put(APIReferenceRubrique.COMPENSATION_RENTES, RFM_COMPENSATION);
+        rubriquesHomeDomicile.put(APIReferenceRubrique.COMPENSATION_RENTES, RFM_COMPENSATION);
 
-        // // C
+        // **************************************************** Commun à ccju,ccvd
+        // ****************************************************
         RFM_TIERS_BENEFICIAIRE_MALADIE_AI = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.RFM_AI);
         rubriquesSanTenComTypDeHomMap.put(APIReferenceRubrique.RFM_AI, RFM_TIERS_BENEFICIAIRE_MALADIE_AI);
         rubriquesEnTenComTypDeHomMap.put(APIReferenceRubrique.RFM_AI, RFM_TIERS_BENEFICIAIRE_MALADIE_AI);
@@ -277,7 +289,8 @@ public class RFModuleComptableFactory {
         rubriquesSanTenComTypDeHomMap.put(APIReferenceRubrique.RFM_AVS_MOYENS_AUXILIAIRES, RFM_MOYEN_AUXILIAIRE_AVS);
         rubriquesEnTenComTypDeHomMap.put(APIReferenceRubrique.RFM_AVS_MOYENS_AUXILIAIRES, RFM_MOYEN_AUXILIAIRE_AVS);
 
-        // C
+        // **************************************************** ccju
+        // ****************************************************
         RFM_CCJU_TIERS_FINANCEMENT_SOINS_AI = referenceRubrique
                 .getRubriqueByCodeReference(APIReferenceRubrique.RFM_AI_FINANCEMENT_DES_SOINS);
         rubriquesSanTenComTypDeHomMap.put(APIReferenceRubrique.RFM_AI_FINANCEMENT_DES_SOINS,
@@ -305,8 +318,22 @@ public class RFModuleComptableFactory {
         RFM_CCJU_AVANCE_SAS = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.RFM_AVANCE_SAS);
         rubriquesSanTenComTypDeHomMap.put(APIReferenceRubrique.RFM_AVANCE_SAS, RFM_CCJU_AVANCE_SAS);
 
-        /******************************************************************/
-        //
+        // **************************************************** ccvs
+        // ****************************************************
+        RFM_AVS_HOME = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.RFM_AVS_HOME);
+        rubriquesHomeDomicile.put(APIReferenceRubrique.RFM_AVS_HOME, RFM_AVS_HOME);
+
+        RFM_AVS_DOMICILE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.RFM_AVS_DOMICILE);
+        rubriquesHomeDomicile.put(APIReferenceRubrique.RFM_AVS_DOMICILE, RFM_AVS_DOMICILE);
+
+        RFM_AI_HOME = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.RFM_AI_HOME);
+        rubriquesHomeDomicile.put(APIReferenceRubrique.RFM_AI_HOME, RFM_AI_HOME);
+
+        RFM_AI_DOMICILE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.RFM_AI_DOMICILE);
+        rubriquesHomeDomicile.put(APIReferenceRubrique.RFM_AI_DOMICILE, RFM_AI_DOMICILE);
+
+        // **************************************************** ccvd
+        // ****************************************************
         RFM_RESTITUTION_AIDE_AU_MENAGE_AI = referenceRubrique
                 .getRubriqueByCodeReference(APIReferenceRubrique.RFM_AI_A_RESTITUER_AIDE_AU_MENAGE);
         rubriquesEnTenComTypDeHomMap.put(APIReferenceRubrique.RFM_AI_A_RESTITUER_AIDE_AU_MENAGE,
@@ -900,19 +927,26 @@ public class RFModuleComptableFactory {
         rubriquesEnTenComTypDeHomMap.put(APIReferenceRubrique.RFM_AVS_FRAIS_DE_PENSION_COURT_SEJOUR_SPAS,
                 RFM_FRAIS_DE_PENSION_COURT_SEJOUR_AVS_SPAS);
 
-        isRubriquesInitialisees(isAjoutDemEnComSanTenComTypDeHom, rubriquesSanTenComTypDeHomMap,
-                rubriquesEnTenComTypDeHomMap);
+        isRubriquesInitialisees(isAjoutDemEnComSanTenComTypDeHom, isAjoutEnTenantCompteDomicileHome,
+                rubriquesSanTenComTypDeHomMap, rubriquesEnTenComTypDeHomMap, rubriquesHomeDomicile);
 
     }
 
     private void isRubriquesInitialisees(boolean isAjoutDemEnComSanTenComTypDeHom,
-            Map<String, APIRubrique> rubriquesSanTenComTypDeHomMap,
-            Map<String, APIRubrique> rubriquesEnTenComTypDeHomMap) throws Exception {
+            boolean isAjoutEnTenantCompteDomicileHome, Map<String, APIRubrique> rubriquesSanTenComTypDeHomMap,
+            Map<String, APIRubrique> rubriquesEnTenComTypDeHomMap, Map<String, APIRubrique> rubriquesHomeDomicile)
+            throws Exception {
 
         // Selon la propriété isAjoutDemandeSansTenirCompteTypeDeHome, on test les rubriques devant être initialisées
         List<String> nomRubriqueNullesList = new ArrayList<String>();
         if (isAjoutDemEnComSanTenComTypDeHom) {
             for (Map.Entry<String, APIRubrique> entry : rubriquesSanTenComTypDeHomMap.entrySet()) {
+                if (null == entry.getValue()) {
+                    nomRubriqueNullesList.add(entry.getKey());
+                }
+            }
+        } else if (isAjoutEnTenantCompteDomicileHome) {
+            for (Map.Entry<String, APIRubrique> entry : rubriquesHomeDomicile.entrySet()) {
                 if (null == entry.getValue()) {
                     nomRubriqueNullesList.add(entry.getKey());
                 }

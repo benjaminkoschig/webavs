@@ -12,6 +12,15 @@ public class VariableMetierSearch extends JadeSearchComplexModel {
     private String forLangue = null;
     private String forDateDebut = null;
     private String forDateFin = null;
+    private String forCsTypeVariableMetierIn = null;
+
+    public String getForCsTypeVariableMetierIn() {
+        return forCsTypeVariableMetierIn;
+    }
+
+    public void setForCsTypeVariableMetierIn(String forCsTypeVariableMetierIn) {
+        this.forCsTypeVariableMetierIn = forCsTypeVariableMetierIn;
+    }
 
     public String getForDateDebut() {
         return forDateDebut;

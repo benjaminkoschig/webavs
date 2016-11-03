@@ -46,6 +46,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.APICompteAnnexe;
 import globaz.osiris.api.APIPropositionCompensation;
 import globaz.osiris.api.APISection;
+import globaz.prestation.enums.codeprestation.soustype.PRSousTypeCodePrestationRFM;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRSession;
@@ -57,6 +58,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.cygnus.RFApplicationUtils;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
 
@@ -377,7 +379,10 @@ public class RFGenererPaiementService {
             rePrestationAccordee.setCodePrestation("250");
 
             if (isSousTypesGenrePrestationActif) {
-                if (demandeCourante.getCodeTypeDeSoin().equals(RFUtils.CODE_TYPE_DE_SOIN_REGIME_2_STR)) {
+
+                if (RFApplicationUtils.isCantonVS()) {
+                    setSousTypeForCCVS(qdPrincipale, rePrestationAccordee, IPCPCAccordee.CS_TYPE_PC_INVALIDITE);
+                } else if (demandeCourante.getCodeTypeDeSoin().equals(RFUtils.CODE_TYPE_DE_SOIN_REGIME_2_STR)) {
                     rePrestationAccordee.setSousTypeGenrePrestation("227");
                 } else if (demandeCourante.getCodeTypeDeSoin().equals(RFUtils.CODE_TYPE_DE_SOIN_FRQP_STR)) {
                     rePrestationAccordee.setSousTypeGenrePrestation("215");
@@ -391,7 +396,9 @@ public class RFGenererPaiementService {
             rePrestationAccordee.setCodePrestation("213");
 
             if (isSousTypesGenrePrestationActif) {
-                if (demandeCourante.getCodeTypeDeSoin().equals(RFUtils.CODE_TYPE_DE_SOIN_REGIME_2_STR)) {
+                if (RFApplicationUtils.isCantonVS()) {
+                    setSousTypeForCCVS(qdPrincipale, rePrestationAccordee, IPCPCAccordee.CS_TYPE_PC_SURVIVANT);
+                } else if (demandeCourante.getCodeTypeDeSoin().equals(RFUtils.CODE_TYPE_DE_SOIN_REGIME_2_STR)) {
                     rePrestationAccordee.setSousTypeGenrePrestation("213");
                 } else if (demandeCourante.getCodeTypeDeSoin().equals(RFUtils.CODE_TYPE_DE_SOIN_FRQP_STR)) {
                     rePrestationAccordee.setSousTypeGenrePrestation("201");
@@ -405,7 +412,9 @@ public class RFGenererPaiementService {
             rePrestationAccordee.setCodePrestation("210");
 
             if (isSousTypesGenrePrestationActif) {
-                if (demandeCourante.getCodeTypeDeSoin().equals(RFUtils.CODE_TYPE_DE_SOIN_REGIME_2_STR)) {
+                if (RFApplicationUtils.isCantonVS()) {
+                    setSousTypeForCCVS(qdPrincipale, rePrestationAccordee, IPCPCAccordee.CS_TYPE_PC_VIELLESSE);
+                } else if (demandeCourante.getCodeTypeDeSoin().equals(RFUtils.CODE_TYPE_DE_SOIN_REGIME_2_STR)) {
                     rePrestationAccordee.setSousTypeGenrePrestation("213");
                 } else if (demandeCourante.getCodeTypeDeSoin().equals(RFUtils.CODE_TYPE_DE_SOIN_FRQP_STR)) {
                     rePrestationAccordee.setSousTypeGenrePrestation("201");
@@ -486,6 +495,45 @@ public class RFGenererPaiementService {
 
     }
 
+    private void setSousTypeForCCVS(RFImputationQdsData qdPrincipale, REPrestationsAccordees prestation, String typePc)
+            throws Exception {
+
+        // AI
+        if (typePc.equals(IPCPCAccordee.CS_TYPE_PC_INVALIDITE)) {
+            if (qdPrincipale.getCsGenrePcAccordee().equals(IPCPCAccordee.CS_GENRE_PC_DOMICILE)) {
+                prestation.setSousTypeGenrePrestation(PRSousTypeCodePrestationRFM.RFM_AI_DOMICILE_206
+                        .getSousTypeCodePrestationAsString());
+            } else if (qdPrincipale.getCsGenrePcAccordee().equals(IPCPCAccordee.CS_GENRE_PC_HOME)) {
+                prestation.setSousTypeGenrePrestation(PRSousTypeCodePrestationRFM.RFM_AI_HOME_212
+                        .getSousTypeCodePrestationAsString());
+            } else {
+                throw new Exception(
+                        "RFGenererPaiementService.creationPrestationAccordee: Impossible de détérminer le sous type genre de la prestation accordée (AI) d'après le genre de pcaccordee: "
+                                + qdPrincipale.getCsGenrePcAccordee());
+            }
+
+        }
+        // AVS
+        else if (typePc.equals(IPCPCAccordee.CS_TYPE_PC_VIELLESSE) || typePc.equals(IPCPCAccordee.CS_TYPE_PC_SURVIVANT)) {
+            if (qdPrincipale.getCsGenrePcAccordee().equals(IPCPCAccordee.CS_GENRE_PC_DOMICILE)) {
+                prestation.setSousTypeGenrePrestation(PRSousTypeCodePrestationRFM.RFM_AVS_DOMICILE_200
+                        .getSousTypeCodePrestationAsString());
+            } else if (qdPrincipale.getCsGenrePcAccordee().equals(IPCPCAccordee.CS_GENRE_PC_HOME)) {
+                prestation.setSousTypeGenrePrestation(PRSousTypeCodePrestationRFM.RFM_AVS_HOME_214
+                        .getSousTypeCodePrestationAsString());
+            } else {
+                throw new Exception(
+                        "RFGenererPaiementService.creationPrestationAccordee: Impossible de détérminer le sous type genre de la prestation accordée (AVS) d'après le genre de pcaccordee: "
+                                + qdPrincipale.getCsGenrePcAccordee());
+            }
+        } else {
+            throw new Exception(
+                    "RFGenererPaiementService.creationPrestationAccordee: Impossible de détérminer le sous type genre de la prestation accordée (AVS) d'après le genre de pcaccordee: "
+                            + qdPrincipale.getCsGenrePcAccordee());
+        }
+
+    }
+
     /**
      * 
      * creation de la prestation dans le cas d'un paiement courant (partie rétroactive)
@@ -517,6 +565,7 @@ public class RFGenererPaiementService {
 
         RFImputationQdsData qd = getQdPrincipalMap(qdsAimputerMap, decision.getIdQdPrincipale());
 
+        prest.setcsGenrePrestation(qd.getCsGenrePcAccordee());
         prest.setTypePrestation(qd.getCsTypePcAccordee());
         prest.setIdLot(idLotDecision);
 
@@ -572,6 +621,7 @@ public class RFGenererPaiementService {
 
         RFImputationQdsData qd = getQdPrincipalMap(qdsAimputerMap, decision.getIdQdPrincipale());
 
+        prest.setcsGenrePrestation(qd.getCsGenrePcAccordee());
         prest.setTypePrestation(qd.getCsTypePcAccordee());
 
         if (RFPropertiesUtils.ajoutDemandesEnComptabiliteSansTenirCompteTypeDeHome()) {
@@ -642,6 +692,7 @@ public class RFGenererPaiementService {
             if (!rfQdPriParent.isNew()) {
 
                 prest.setTypePrestation(rfQdPriParent.getCsTypePCAccordee());
+                prest.setcsGenrePrestation(rfQdPriParent.getCsGenrePCAccordee());
                 csTypePcAccordee = rfQdPriParent.getCsTypePCAccordee();
                 csTypeRemboursement = rfQdPriParent.getRemboursementRequerant();
 

@@ -208,6 +208,7 @@ public interface APIReferenceRubrique {
     public final static String RENTES_PONT_RFM_RESTIT = "237154";
 
     public final static String RFM_AI = "237116";// CCJU
+    public final static String RFM_AI_HOME = "237308";// CCVS
 
     public final static String RFM_AI_A_RESTITUER = "237120";// CCJU
     public final static String RFM_AI_A_RESTITUER_AIDE_AU_MENAGE = "237120";
@@ -283,6 +284,10 @@ public interface APIReferenceRubrique {
 
     public final static String RFM_AVANCE_SAS = "237232";// CCJU
     public final static String RFM_AVS = "237115";// CCJU
+    public final static String RFM_AVS_HOME = "237307";// CCVS
+    public final static String RFM_AVS_DOMICILE = "237135";// CCVS
+    public final static String RFM_AI_DOMICILE = "237136";// CCVS
+
     public final static String RFM_AVS_A_RESTITUER = "237119";// CCJU
     public final static String RFM_AVS_A_RESTITUER_AIDE_AU_MENAGE = "237119";
     public final static String RFM_AVS_A_RESTITUER_AIDE_AU_MENAGE_PAR_MEMBRE_FAMILLE = "237119";

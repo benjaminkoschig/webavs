@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import ch.globaz.common.util.prestations.MotifVersementUtil;
+import javax.resource.spi.IllegalStateException;
 import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
 
 /**
@@ -40,7 +41,7 @@ public class ARFModuleComptable implements Comparator {
     public static final int TYPE_RUBRIQUE_RETROACTIF = 1200;
 
     /**
-     * Retourne la rubrique concernée
+     * Retourne la rubrique concernée --> CCVD
      * 
      * @return la rubrique concernée, ou null si non trouvé
      */
@@ -404,7 +405,108 @@ public class ARFModuleComptable implements Comparator {
     }
 
     /**
-     * Retourne la rubrique concernée
+     * Retourne la rubrique conerné en tenant compte du type de lieu de vie : domicile/home --> CCVS
+     * 
+     * @return la rubrique concernée, ou null si non trouvé
+     */
+    public static APIRubrique getRubriqueEnTenantCompteDomicileHome(RFPrestationData prestation, int typeRubrique,
+            String idTypeSoin, boolean isImportation) throws Exception {
+        if (JadeStringUtil.isEmpty(prestation.getTypePrestation()) || JadeStringUtil.isEmpty(idTypeSoin)) {
+            throw new Exception(
+                    "ARFModuleComptable::getRubriqueSansTenirCompteTypeDeHome:paramètres passées à la fonction incorrectes (null) : "
+                            + prestation.getTypePrestation());
+        }
+
+        switch (typeRubrique) {
+
+            case TYPE_RUBRIQUE_NORMAL:
+
+                if (IPCPCAccordee.CS_TYPE_PC_INVALIDITE.equals(prestation.getTypePrestation())) {
+
+                    if (prestation.getCsGenrePrestation().equals(IPCPCAccordee.CS_GENRE_PC_DOMICILE)) {
+                        return RFModuleComptableFactory.getInstance().RFM_AI_DOMICILE;
+                    } else if (prestation.getCsGenrePrestation().equals(IPCPCAccordee.CS_GENRE_PC_HOME)) {
+                        return RFModuleComptableFactory.getInstance().RFM_AI_HOME;
+                    } else {
+
+                        throw new IllegalStateException("The genre of the prestations (ai) is not coherent: "
+                                + prestation.getCsGenrePrestation());
+                    }
+
+                } else {
+
+                    if (IRFGenrePrestations.GENRE_VIEILLESSE.equals(prestation.getTypePrestation())
+                            || IPCPCAccordee.CS_TYPE_PC_VIELLESSE.equals(prestation.getTypePrestation())
+                            || IPCPCAccordee.CS_TYPE_PC_SURVIVANT.equals(prestation.getTypePrestation())) {
+
+                        if (prestation.getCsGenrePrestation().equals(IPCPCAccordee.CS_GENRE_PC_DOMICILE)) {
+                            return RFModuleComptableFactory.getInstance().RFM_AVS_DOMICILE;
+                        } else if (prestation.getCsGenrePrestation().equals(IPCPCAccordee.CS_GENRE_PC_HOME)) {
+                            return RFModuleComptableFactory.getInstance().RFM_AVS_HOME;
+                        } else {
+                            throw new IllegalStateException("The genre of the prestations (avs) is not coherent: "
+                                    + prestation.getCsGenrePrestation());
+                        }
+
+                    } else {
+
+                        throw new Exception(
+                                "ARFModuleComptable::getRubriqueSansTenirCompteTypeDeHome:genre de prestation inconnu : "
+                                        + prestation.getTypePrestation());
+
+                    }
+                }
+
+            case TYPE_RUBRIQUE_RESTITUTION:
+
+                if (IPCPCAccordee.CS_TYPE_PC_INVALIDITE.equals(prestation.getTypePrestation())) {
+
+                    return RFModuleComptableFactory.getInstance().RFM_RESTITUTION_AI;
+                } else {
+                    if (IRFGenrePrestations.GENRE_VIEILLESSE.equals(prestation.getTypePrestation())
+                            || IPCPCAccordee.CS_TYPE_PC_VIELLESSE.equals(prestation.getTypePrestation())
+                            || IPCPCAccordee.CS_TYPE_PC_SURVIVANT.equals(prestation.getTypePrestation())) {
+
+                        return RFModuleComptableFactory.getInstance().RFM_RESTITUTION_AVS;
+
+                    } else {
+
+                        throw new Exception(
+                                "ARFModuleComptable::getRubriqueSansTenirCompteTypeDeHome:genre de prestation inconnu : "
+                                        + prestation.getTypePrestation());
+
+                    }
+                }
+
+            case TYPE_RUBRIQUE_COMPENSATION:
+
+                if (IPCPCAccordee.CS_TYPE_PC_INVALIDITE.equals(prestation.getTypePrestation())) {
+
+                    return RFModuleComptableFactory.getInstance().RFM_COMPENSATION;
+                } else {
+                    if (IRFGenrePrestations.GENRE_VIEILLESSE.equals(prestation.getTypePrestation())
+                            || IPCPCAccordee.CS_TYPE_PC_VIELLESSE.equals(prestation.getTypePrestation())
+                            || IPCPCAccordee.CS_TYPE_PC_SURVIVANT.equals(prestation.getTypePrestation())) {
+
+                        return RFModuleComptableFactory.getInstance().RFM_COMPENSATION;
+
+                    } else {
+
+                        throw new Exception("ARFModuleComptable::getRubrique:genre de prestation inconnu : "
+                                + prestation.getTypePrestation());
+
+                    }
+                }
+            default:
+                throw new Exception(
+                        "ARFModuleComptable::getRubriqueSansTenirCompteTypeDeHome:Type de rubrique inconnu : "
+                                + typeRubrique);
+        }
+
+    }
+
+    /**
+     * Retourne la rubrique concernée --> CCJU
      * 
      * @return la rubrique concernée, ou null si non trouvé
      */
@@ -446,7 +548,7 @@ public class ARFModuleComptable implements Comparator {
                             || IPCPCAccordee.CS_TYPE_PC_VIELLESSE.equals(typePrestation)
                             || IPCPCAccordee.CS_TYPE_PC_SURVIVANT.equals(typePrestation)) {
 
-                        if (IRFTypesDeSoins.CS_MOYENS_AUXILIAIRES_03.equals(idTypeSoin)
+                        if (IRFTypesDeSoins.CS_MOYENS_AUXILIAIRES_03.equals(idTypeSoin) // jura
                                 || IRFTypesDeSoins.CS_MOYENS_AUXILIAIRES_05.equals(idTypeSoin)
                                 || IRFTypesDeSoins.CS_MOYENS_AUXILIAIRES_REMIS_EN_PRET_SUBSIDIAIREMENT_A_L_AI_11
                                         .equals(idTypeSoin)) {
@@ -513,7 +615,7 @@ public class ARFModuleComptable implements Comparator {
                     }
                 }
 
-            case TYPE_RUBRIQUE_AVANCE_SAS:
+            case TYPE_RUBRIQUE_AVANCE_SAS: // ccju type 13
 
                 if (IPCPCAccordee.CS_TYPE_PC_INVALIDITE.equals(typePrestation)) {
 

@@ -108,6 +108,13 @@ public class REModuleComptableFactory {
     public APIRubrique RFM_AI_FRANCHISE_ET_PARTICIPATION_FRQP = null;
     public APIRubrique RFM_AI_REGIME_ALIMENTAIRE = null;
 
+    public APIRubrique RFM_AVS_HOME = null;
+    public APIRubrique RFM_AI_HOME = null;
+    public APIRubrique RFM_AVS_DOMICILE = null;
+    public APIRubrique RFM_AI_DOMICILE = null;
+    public APIRubrique RFM_AVS_A_RESTITUER = null;
+    public APIRubrique RFM_AI_A_RESTITUER = null;
+
     // public APIRubrique RFM_AI_AIDE_AU_MENAGE = null;
     // public APIRubrique RFM_AI_COTISATION_AVS_PARITAIRE = null;
     // public APIRubrique RFM_AI_ENCADREMENT_SOCIO_EDUC_ET_SECURITAIRE = null;
@@ -409,6 +416,12 @@ public class REModuleComptableFactory {
             return RFM_AI_FRANCHISE_ET_PARTICIPATION_FRQP;
         } else if (codeRubrique.equals(APIReferenceRubrique.RFM_AI_REGIME)) {
             return RFM_AI_REGIME_ALIMENTAIRE;
+        } else if (codeRubrique.equals(APIReferenceRubrique.RFM_AI_DOMICILE)) {
+            return RFM_AI_DOMICILE;
+        } else if (codeRubrique.equals(APIReferenceRubrique.RFM_AI_HOME)) {
+            return RFM_AI_HOME;
+        } else if (codeRubrique.equals(APIReferenceRubrique.RFM_AI_A_RESTITUER)) {
+            return RFM_AI_A_RESTITUER;
         }
 
         // AVS
@@ -418,6 +431,12 @@ public class REModuleComptableFactory {
             return RFM_AVS_FRANCHISE_ET_PARTICIPATION_FRQP;
         } else if (codeRubrique.equals(APIReferenceRubrique.RFM_AVS_REGIME)) {
             return RFM_AVS_REGIME_ALIMENTAIRE;
+        } else if (codeRubrique.equals(APIReferenceRubrique.RFM_AVS_DOMICILE)) {
+            return RFM_AVS_DOMICILE;
+        } else if (codeRubrique.equals(APIReferenceRubrique.RFM_AVS_HOME)) {
+            return RFM_AVS_HOME;
+        } else if (codeRubrique.equals(APIReferenceRubrique.RFM_AVS_A_RESTITUER)) {
+            return RFM_AVS_A_RESTITUER;
         }
 
         throw new Exception("Can not return an APIRubrique for requested rubrique [" + codeRubrique
@@ -579,5 +598,12 @@ public class REModuleComptableFactory {
         // this.RFM_AI_FRAIS_PENSION_COURT_SEJOUR = referenceRubrique
         // .getRubriqueByCodeReference(APIReferenceRubrique.RFM_AI_FRAIS_DE_PENSION_COURT_SEJOUR);
         RFM_AI_REGIME_ALIMENTAIRE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.RFM_AI_REGIME);
+
+        RFM_AI_DOMICILE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.RFM_AI_DOMICILE);
+        RFM_AI_HOME = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.RFM_AI_HOME);
+        RFM_AVS_DOMICILE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.RFM_AVS_DOMICILE);
+        RFM_AVS_HOME = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.RFM_AVS_HOME);
+        RFM_AI_A_RESTITUER = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.RFM_AI_A_RESTITUER);
+        RFM_AVS_A_RESTITUER = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.RFM_AVS_A_RESTITUER);
     }
 }

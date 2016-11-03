@@ -5,6 +5,7 @@ package ch.globaz.pegasus.businessimpl.utils.plancalcul;
 
 import globaz.framework.util.FWCurrency;
 import globaz.globall.api.BISession;
+import globaz.globall.db.BSession;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
@@ -15,6 +16,8 @@ import java.util.Collection;
 import java.util.Map;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.business.language.LanguageResolver;
+import ch.globaz.common.constantes.CommonConstLangue;
+import ch.globaz.jade.business.models.Langues;
 import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
 import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
 import ch.globaz.jade.businessimpl.services.codesysteme.JadeCodeSystemeServiceImpl;
@@ -28,6 +31,7 @@ import ch.globaz.pegasus.business.models.pcaccordee.PlanDeCalculWitMembreFamille
 import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
+import ch.globaz.pegasus.utils.PCApplicationUtil;
 
 /**
  * Classe encapsulant les information nécessaires à l'affichage du plan de calcul pc
@@ -200,7 +204,7 @@ public class PCPlanCalculHandler {
         }
     }
 
-    public ArrayList<PCLignePlanCalculHandler> createBlocDepensesReconnues(String langueTiers) throws RemoteException {
+    public ArrayList<PCLignePlanCalculHandler> createBlocDepensesReconnues(String langueTiers) throws Exception {
         PCGroupeDepensesHandler groupeDepenses = new PCGroupeDepensesHandler(tupleRoot);
         return dealLibelle(groupeDepenses.getGroupList(), false, langueTiers);
     }
@@ -209,9 +213,9 @@ public class PCPlanCalculHandler {
      * Creation du bloc fortune et retour de la liste des ligne du plan de calcul
      * 
      * @return ArrayList contenant les lignes du plan de calcul
-     * @throws RemoteException
+     * @throws Exception
      */
-    public ArrayList<PCLignePlanCalculHandler> createBlocFortune(String langueTiers) throws RemoteException {
+    public ArrayList<PCLignePlanCalculHandler> createBlocFortune(String langueTiers) throws Exception {
         PCGroupeFortuneHandler groupeFortune = new PCGroupeFortuneHandler(tupleRoot);
         return dealLibelle(groupeFortune.getGroupList(), false, langueTiers);
     }
@@ -219,15 +223,14 @@ public class PCPlanCalculHandler {
     /**
      * Creation des lignes du bloc final de resume
      * 
-     * @throws RemoteException
+     * @throws Exception
      */
-    public ArrayList<PCLignePlanCalculHandler> createBlocResume(String langueTiers) throws RemoteException {
+    public ArrayList<PCLignePlanCalculHandler> createBlocResume(String langueTiers) throws Exception {
         PCGroupeTotalHandler groupeTotal = new PCGroupeTotalHandler(tupleRoot);
         return dealLibelle(groupeTotal.getGroupList(langueTiers), true, langueTiers);
     }
 
-    public ArrayList<PCLignePlanCalculHandler> createBlocRevenusDeterminants(String langueTiers)
-            throws RemoteException, CalculException {
+    public ArrayList<PCLignePlanCalculHandler> createBlocRevenusDeterminants(String langueTiers) throws Exception {
         PCGroupeRevenusHandler groupeRevenus = new PCGroupeRevenusHandler(tupleRoot);
 
         return dealLibelle(groupeRevenus.getGroupList(), false, langueTiers);
@@ -235,7 +238,12 @@ public class PCPlanCalculHandler {
     }
 
     private ArrayList<PCLignePlanCalculHandler> dealLibelle(ArrayList<PCLignePlanCalculHandler> liste,
-            Boolean isForTotal, String langueTiers) throws RemoteException {
+            Boolean isForTotal, String langueTiers) throws Exception {
+
+        // langue par defaut pour affichage plan calcul usage interne
+        if (null == langueTiers) {
+            langueTiers = CommonConstLangue.LANGUE_ID_FRANCAIS;
+        }
 
         // pour le groupe total, les libelles des lignes ne sont pas reprises des codessystèmes
         if (isForTotal) {
@@ -251,9 +259,8 @@ public class PCPlanCalculHandler {
                 if (ligne != null) {
                     /* Découpage libelle si description */
                     String[] lib = resolveSystemCode(langueTiers, ligne);
-                    /*
-                     * Test des ligne ayant une legende pour l'instant imputation fortune nette, et salaire privilegeie
-                     */
+
+                    // Test des ligne ayant une legende
                     if (ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL)
                             || ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE)) {
                         lib[0] = lib[0].replace("{fraction}", ligne.getLegende());
@@ -261,6 +268,8 @@ public class PCPlanCalculHandler {
 
                     if (ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_DEPEN_FRAISIMM_FRAIS_ENTRETIEN_IMMEUBLE)) {
                         lib[0] = lib[0].replace("{fraction}", ligne.getLegende());
+                        lib[0] = lib[0].replace("{libelle}",
+                                getLibelleForFraisEntretienImmeubleTaux(LanguageResolver.resolveISOCode(langueTiers)));
                     }
 
                     if (ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PLAFOND)) {
@@ -279,6 +288,11 @@ public class PCPlanCalculHandler {
                         lib[0] = PRStringUtils.replaceString(lib[0], PCPlanCalculHandler.AUTRE_RENTE_STRING_TO_REPLACE,
                                 sousTuple.getLegende());
                     }
+
+                    if (ligne.getCsCode().equals(IPCValeursPlanCalcul.CLE_REVEN_RENFORMO_VALEUR_LOCATIVE)) {
+                        lib[0] = lib[0].replace("{libelle}",
+                                getLibelleForValeurLocative(LanguageResolver.resolveISOCode(langueTiers)));
+                    }
                     // si une ligne libelle, pas description
                     if (lib.length == 1) {
                         libelle = lib[0];
@@ -292,6 +306,46 @@ public class PCPlanCalculHandler {
         }
 
         return liste;
+    }
+
+    private String getLibelleForValeurLocative(Langues langues) throws Exception {
+
+        String labelCode = null;
+
+        if (PCApplicationUtil.isCantonVS()) {
+            return ""; // cas du valais aucun ajout au libelle
+        } else {
+            labelCode = "JSP_PC_DECALCUL_D_VALEUR_LOCATIVE";
+        }
+
+        return resolveLabelWithLangue(langues, labelCode);
+    }
+
+    private String getLibelleForFraisEntretienImmeubleTaux(Langues langues) throws Exception {
+
+        String labelCode = null;
+
+        if (PCApplicationUtil.isCantonVS()) {
+            labelCode = "JSP_PC_DECALCUL_D_REV_NET";
+        } else {
+            labelCode = "JSP_PC_DECALCUL_D_REV_BRUT";
+        }
+
+        return resolveLabelWithLangue(langues, labelCode);
+    }
+
+    private String resolveLabelWithLangue(Langues langues, String label) throws Exception {
+        switch (langues) {
+            case Allemand:
+                return ((BSession) session).getApplication().getLabel(label, "de");
+
+            case Francais:
+                return ((BSession) session).getApplication().getLabel(label, "fr");
+
+            default:
+                throw new IllegalArgumentException("The langues passed doesn't allow to resolve the language ["
+                        + langues + "]");
+        }
     }
 
     /**
@@ -330,10 +384,9 @@ public class PCPlanCalculHandler {
      * 
      * @param tupleRoot
      * @param langueTiers
-     * @throws RemoteException
-     * @throws CalculException
+     * @throws Exception
      */
-    public void generateBlocs(TupleDonneeRapport tupleRoot, String langueTiers) throws RemoteException, CalculException {
+    public void generateBlocs(TupleDonneeRapport tupleRoot, String langueTiers) throws Exception {
         this.tupleRoot = tupleRoot;
         blocFortune = createBlocFortune(langueTiers);
         blocRevenusDeterminants = createBlocRevenusDeterminants(langueTiers);
@@ -341,7 +394,7 @@ public class PCPlanCalculHandler {
         blocResume = createBlocResume(langueTiers);
     }
 
-    public void generateBlocs(TupleDonneeRapport tupleRoot) throws RemoteException, CalculException {
+    public void generateBlocs(TupleDonneeRapport tupleRoot) throws Exception {
         this.generateBlocs(tupleRoot, null);
     }
 

@@ -1,4 +1,4 @@
-package ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense;
+package ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.strategieFinalDepensesFraisImmobilier;
 
 import java.util.Date;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;

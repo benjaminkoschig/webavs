@@ -10,7 +10,8 @@ public enum ERFProperties implements IProperties {
     PROPERTY_VERIFIER_ATTESTATION_LIT("verificationAttestation.sousTypesSoins.attestation.ajouter.lit"),
     GESTION_TEXTE_REDIRECTION("gestion.texte.redirection"),
     VERIFIER_ATTESTATION_MAINTIEN_DOMICILE_CONROLE_NOMBRE_HEURE(
-            "verificationAttestation.maintienDomicile.demande.controleNombreHeure");
+            "verificationAttestation.maintienDomicile.demande.controleNombreHeure"),
+    LOI_CANTONALE_RFM("canton.loi.rfm");
 
     private String property;
 

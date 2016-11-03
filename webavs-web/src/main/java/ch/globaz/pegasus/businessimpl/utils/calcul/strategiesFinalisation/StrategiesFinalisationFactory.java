@@ -3,7 +3,7 @@ package ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation;
 import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.ProxyFinalDepenseTotalReconnu;
-import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.StrategieFinalDepenseFraisImmobilier;
+import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.ProxyStrategieFinalDepensesFraisImmobilier;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.StrategieFinalDepenseHome;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense.StrategieFinalDepenseLoyer;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.fortune.ProxyFinalFortuneImmobiliere;
@@ -43,7 +43,7 @@ public class StrategiesFinalisationFactory {
         // depense
         StrategiesFinalisationFactory.strategiesDepense.add(new StrategieFinalDepenseLoyer());
         StrategiesFinalisationFactory.strategiesDepense.add(new StrategieFinalDepenseHome());
-        StrategiesFinalisationFactory.strategiesDepense.add(new StrategieFinalDepenseFraisImmobilier());
+        StrategiesFinalisationFactory.strategiesDepense.add(new ProxyStrategieFinalDepensesFraisImmobilier());
 
         // StrategiesFinalisationFactory.strategiesDepense.add(new StrategieFinalDepenseTotalReconnu());
         StrategiesFinalisationFactory.strategiesDepense.add(new ProxyFinalDepenseTotalReconnu());

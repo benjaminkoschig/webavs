@@ -103,6 +103,55 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
 
     }
 
+    // Traitement spécifique ccvs, on doit tenir compte de l'aspect home-domicile
+    private BIMessage comptabliserDemandeEnTenantCompteDomicileHome(String idCompteAnnexe, String idSectionNormale,
+            String idSectionDette, RFOrdreVersementData ov, RFPrestationData prestation) throws Exception {
+        BIMessage message = null;
+        FWCurrency montant = new FWCurrency(ov.getMontantOrdreVersement());
+
+        if (!montant.isZero()) {
+
+            if (compta != null) {
+
+                APIRubrique rubriqueNormal = null;
+
+                // Ecritures sur la rubrique concernée
+                if (ov.getTypeOrdreVersement().equals(IRFOrdresVersements.CS_TYPE_BENEFICIAIRE_PRINCIPAL)) {
+
+                    rubriqueNormal = ARFModuleComptable.getRubriqueEnTenantCompteDomicileHome(prestation,
+                            ARFModuleComptable.TYPE_RUBRIQUE_NORMAL, ov.getIdTypeSoin(), ov.getIsImportation()
+                                    .booleanValue());
+
+                } else if (ov.getTypeOrdreVersement().equals(IRFOrdresVersements.CS_TYPE_RESTITUTION)) {
+
+                    rubriqueNormal = ARFModuleComptable.getRubriqueEnTenantCompteDomicileHome(prestation,
+                            ARFModuleComptable.TYPE_RUBRIQUE_RESTITUTION, ov.getIdTypeSoin(), ov.getIsImportation()
+                                    .booleanValue());
+
+                } else if (ov.getTypeOrdreVersement().equals(IRFOrdresVersements.CS_TYPE_DETTE)) {
+
+                    rubriqueNormal = ARFModuleComptable.getRubriqueEnTenantCompteDomicileHome(prestation,
+                            ARFModuleComptable.TYPE_RUBRIQUE_COMPENSATION, ov.getIdTypeSoin(), ov.getIsImportation()
+                                    .booleanValue());
+
+                    BigDecimal montantDette = new BigDecimal(montant.toString()).negate();
+
+                    doEcriture(sessionOsiris, compta, montantDette.toString(), rubriqueNormal, idCompteAnnexe,
+                            idSectionDette, dateComptable, null, prestation.getIdDecision());
+                }
+
+                // Ecriture normal
+                message = doEcriture(sessionOsiris, compta, montant.toString(), rubriqueNormal, idCompteAnnexe,
+                        idSectionNormale, dateComptable, null, prestation.getIdDecision());
+
+            } else {
+                throw new Exception("RFModCpt_Normal.comptabiliserDemandeSansTenirCompteTypeDeHome(): API compta null");
+            }
+        }
+
+        return message;
+    }
+
     private BIMessage comptabiliserDemandeSansTenirCompteTypeDeHome(String idCompteAnnexe, String idSectionNormale,
             String idSectionDette, RFOrdreVersementData ov, RFPrestationData prestation) throws Exception {
 
@@ -571,7 +620,8 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
                     compteAnnexe = (APICompteAnnexe) compteAnnexeSectionNormaleObj[0];
                     sectionNormale = (APISection) compteAnnexeSectionNormaleObj[1];
 
-                    // Mise à jour du montant de l'OV, seulement si le type de soin ne se compense pas par défaut
+                    // Mise à jour du montant de l'OV, seulement si le type de soin ne se compense pas par défaut -->
+                    // jura
                     if (!(ov.getIdTypeSoin().equals(IRFTypesDeSoins.CS_MAINTIEN_A_DOMICILE_13) && ov
                             .getIdSousTypeSoin().equals(IRFTypesDeSoins.st_13_AIDE_AU_MENAGE_AVANCES))) {
                         montantOrdreVersementBigDec = montantOrdreVersementBigDec.add(new BigDecimal(ov
@@ -667,12 +717,21 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
                     }
                 }
 
+                // versement ou compenseation
                 if (traiterOv) {
-                    if (process.isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome()) {
+                    if (process.isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome()) { // jura
                         memoryLog.logMessage(comptabiliserDemandeSansTenirCompteTypeDeHome(compteAnnexe
                                 .getIdCompteAnnexe(), sectionNormale.getIdSection(), sectionDette == null ? ""
                                 : sectionDette.getIdSection(), ov, prestationCourante));
-                    } else {
+
+                    } else if (process.isAjoutDemandesEnComptabiliteTenantCompteDomicileHome()) {
+                        memoryLog.logMessage(comptabliserDemandeEnTenantCompteDomicileHome(compteAnnexe
+                                .getIdCompteAnnexe(), sectionNormale.getIdSection(), sectionDette == null ? ""
+                                : sectionDette.getIdSection(), ov, prestationCourante));
+
+                    }
+
+                    else {// vd
 
                         if (!JadeStringUtil.isBlankOrZero(ov.getMontantDepassementQD())
                                 && (new BigDecimal(ov.getMontantDepassementQD()).compareTo(new BigDecimal("0")) != 0)) {
@@ -686,6 +745,7 @@ public class RFModCpt_Normal extends ARFModuleComptable implements IRFModuleComp
                                 : sectionDette.getIdSection(), "", false, ov, prestationCourante));
 
                     }
+
                 }
             }
         }

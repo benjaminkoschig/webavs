@@ -40,13 +40,17 @@ public class VariableMetierBuilder implements ICalculDonneesHorsDroitBuilder {
             IPCVariableMetier.CS_FRACTION_REVENUS_PRIVILEGIES, IPCVariableMetier.CS_TAUX_PENSION_NON_RECONNUE,
             IPCVariableMetier.DEPENSE_LOYER_PLAFOND_CELIBATAIRE, IPCVariableMetier.DEPENSE_LOYER_PLAFOND_COUPLE,
             IPCVariableMetier.MENSUALISATION_IJ_CHOMAGE, IPCVariableMetier.DEPENSE_LOYER_PLAFOND_FAUTEUIL_ROULANT,
-            IPCVariableMetier.CS_PLAFOND_ANNUEL_HOME, IPCVariableMetier.CS_FORFAIT_REVENU_NATURE_TENUE_MENAGE,
+
+            IPCVariableMetier.CS_PLAFOND_ANNUEL_EMS, IPCVariableMetier.CS_FORFAIT_REVENU_NATURE_TENUE_MENAGE,
             IPCVariableMetier.CS_DEDUCTION_FORAITAIRE_IMMOBILIER_ASSURE_HOME_API,
             IPCVariableMetier.CS_AMORTISSEMENT_ANNUEL_DESSAISISSEMENT_FORTUNE,
             IPCVariableMetier.CS_TAUX_IMPUTATION_SOUSLOCATIONS_FRAIS_ACUISITION, IPCVariableMetier.CS_ALLOCATION_NOEL,
             IPCVariableMetier.CS_TAUX_IMPUTATION_LOYER_FRAIS_ACQUISITION, IPCVariableMetier.CS_PLAFOND_ANNUEL_HOME,
-            IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_EPS });
-    private final static List<String> champsVariableMetierAvecFraction = Arrays.asList(new String[] {
+            IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_EPS,
+IPCVariableMetier.CS_PLAFOND_ANNUEL_INSTITUTION, IPCVariableMetier.CS_PLAFOND_ANNUEL_LITS_ATTENTE,
+            IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT,
+            IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT_M10,
+            IPCVariableMetier.TAUX_IMPUTATIONS_LOYER_EFFECTIF });    private final static List<String> champsVariableMetierAvecFraction = Arrays.asList(new String[] {
             IPCVariableMetier.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE,
             IPCVariableMetier.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME,
             IPCVariableMetier.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_MAISON,
@@ -54,7 +58,10 @@ public class VariableMetierBuilder implements ICalculDonneesHorsDroitBuilder {
             IPCVariableMetier.CS_FRACTIONS_FORTUNE_VIEILLESSE_HOME,
             IPCVariableMetier.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON,
             IPCVariableMetier.CS_FRACTION_REVENUS_PRIVILEGIES, IPCVariableMetier.CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE,
-            IPCVariableMetier.CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS });
+            IPCVariableMetier.CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS,
+            IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT,
+            IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT_M10,
+            IPCVariableMetier.TAUX_IMPUTATIONS_LOYER_EFFECTIF });
 
     private VariableMetier tauxOFAS = null;
 

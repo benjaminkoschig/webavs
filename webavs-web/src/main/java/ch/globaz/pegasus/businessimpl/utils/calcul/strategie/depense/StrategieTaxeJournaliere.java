@@ -7,6 +7,7 @@ import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import java.util.List;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
+import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCTaxeJournaliere;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.models.calcul.CalculDonneesCC;
@@ -15,6 +16,7 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext.Attribut;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVariablesMetier;
+import ch.globaz.pegasus.utils.PCApplicationUtil;
 
 /**
  * @author ECO
@@ -56,6 +58,7 @@ public class StrategieTaxeJournaliere extends StrategieCalculDepense {
         String strPrixChambre = null;
         String csMbrFamille = donnee.getCsRoleFamille();
         String strFraisLongueDuree = null;
+        String csPeriodeServiceEtat = null;
 
         CalculDonneesHome homeCalcul = getHomeForTypeChambre(donneesHomes, idTypeChambre);
 
@@ -66,6 +69,7 @@ public class StrategieTaxeJournaliere extends StrategieCalculDepense {
             csTypeChambre = homeCalcul.getCsTypeChambre();
             csCategorieTypeChambre = homeCalcul.getCsCategorieArgentPoche();
             idHome = homeCalcul.getIdHome();
+            csPeriodeServiceEtat = homeCalcul.getCsServiceEtatPeriode();
         }
 
         if (null == csTypeChambre) {
@@ -81,10 +85,12 @@ public class StrategieTaxeJournaliere extends StrategieCalculDepense {
         }
 
         // spécifique valais
-        if (isVs()) {
+        if (PCApplicationUtil.isCantonVS()) {
             // plafond pour le home
-            String plafond = (((ControlleurVariablesMetier) context.get(Attribut.CS_PLAFOND_ANNUEL_HOME))
-                    .getValeurCourante());
+            // String plafond = (((ControlleurVariablesMetier) context.get(Attribut.CS_PLAFOND_ANNUEL_EMS))
+            // .getValeurCourante());
+
+            String plafond = getPlafondForTaxeJournaliere(context, csPeriodeServiceEtat);
 
             if (!donnee.getTaxeJournaliereIsDeplafonner() && isPrixJournalierSuperieurPlafond(strPrixChambre, plafond)) {
                 strPrixChambre = plafond;
@@ -139,5 +145,22 @@ public class StrategieTaxeJournaliere extends StrategieCalculDepense {
         }
 
         return resultatExistant;
+    }
+
+    private String getPlafondForTaxeJournaliere(CalculContext context, String csPeriodeServiceEtat)
+            throws CalculBusinessException, CalculException {
+
+        if (csPeriodeServiceEtat.equals(IPCTaxeJournaliere.CS_PERIODE_SERVICE_ETAT_EMS)) {
+            return (((ControlleurVariablesMetier) context.get(Attribut.CS_PLAFOND_ANNUEL_EMS)).getValeurCourante());
+        } else if (csPeriodeServiceEtat.equals(IPCTaxeJournaliere.CS_PERIODE_SERVICE_ETAT_INSTITUTION)) {
+            return (((ControlleurVariablesMetier) context.get(Attribut.CS_PLAFOND_ANNUEL_INSTITUTION))
+                    .getValeurCourante());
+        } else if (csPeriodeServiceEtat.equals(IPCTaxeJournaliere.CS_PERIODE_SERVICE_ETAT_LITS_ATTENTE)) {
+            return (((ControlleurVariablesMetier) context.get(Attribut.CS_PLAFOND_ANNUEL_LITS_ATTENTE))
+                    .getValeurCourante());
+        } else {
+            throw new CalculException("The plafond cant be found with the cs periode servce etat["
+                    + csPeriodeServiceEtat + "]");
+}
     }
 }

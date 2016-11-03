@@ -69,14 +69,16 @@ public class StrategiesFactory {
 
             // ajout des stratégies
 
-            StrategiesFactory.depenseFactory.container.put(IPCBienImmoPrincipal.CS_TYPE_DONNEE_FINANCIERE,
-                    new ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense.StrategieBienImmoPrincipal());
+            StrategiesFactory.depenseFactory.container
+                    .put(IPCBienImmoPrincipal.CS_TYPE_DONNEE_FINANCIERE,
+                            new ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense.ProxyStrategieBienImmoPrincipal());
 
             StrategiesFactory.depenseFactory.container.put(IPCBienImmoAnnexe.CS_TYPE_DONNEE_FINANCIERE,
-                    new ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense.StrategieBienImmoAnnexe());
+                    new ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense.ProxyStrategieBienImmoAnnexe());
 
-            StrategiesFactory.depenseFactory.container.put(IPCBienImmoNonHabitable.CS_TYPE_DONNEE_FINANCIERE,
-                    new ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense.StrategieBienImmoNonHabitable());
+            StrategiesFactory.depenseFactory.container
+                    .put(IPCBienImmoNonHabitable.CS_TYPE_DONNEE_FINANCIERE,
+                            new ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense.ProxyStrategieBienImmoNonHabitable());
 
             StrategiesFactory.depenseFactory.container.put(IPCCotisationPSAL.CS_TYPE_DONNEE_FINANCIERE,
                     new ch.globaz.pegasus.businessimpl.utils.calcul.strategie.depense.StrategieCotisationPSAL());

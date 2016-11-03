@@ -6,111 +6,16 @@ import java.util.List;
 
 public enum PRSousTypeCodePrestationRFM {
 
-    // Sous types RFM AI
-    // RFM_AI_214(
-    // "214",
-    // 214),
-
+    // stadards
     RFM_AI_215("215", 215, PRDomainDePrestation.AI),
-
-    // RFM_AI_216(
-    // "216",
-    // 216),
-    //
-    // RFM_AI_217(
-    // "217",
-    // 217),
-    //
-    // RFM_AI_218(
-    // "218",
-    // 218),
-    //
-    // RFM_AI_219(
-    // "219",
-    // 219),
-    //
-    // RFM_AI_220(
-    // "220",
-    // 220),
-    //
-    // RFM_AI_221(
-    // "221",
-    // 221),
-    //
-    // RFM_AI_222(
-    // "222",
-    // 222),
-    //
-    // RFM_AI_223(
-    // "223",
-    // 223),
-    //
-    // RFM_AI_224(
-    // "224",
-    // 224),
-    //
-    // RFM_AI_225(
-    // "225",
-    // 225),
-    //
-    // RFM_AI_226(
-    // "226",
-    // 226),
-
     RFM_AI_227("227", 227, PRDomainDePrestation.AI),
-
-    // Sous types RFM AVS
-    // RFM_AVS_200(
-    // "200",
-    // 200),
-
     RFM_AVS_201("201", 201, PRDomainDePrestation.AVS),
+    RFM_AVS_213("213", 213, PRDomainDePrestation.AVS),
 
-    // RFM_AVS_202(
-    // "202",
-    // 202),
-    //
-    // RFM_AVS_203(
-    // "203",
-    // 203),
-    //
-    // RFM_AVS_204(
-    // "204",
-    // 204),
-    //
-    // RFM_AVS_205(
-    // "205",
-    // 205),
-    //
-    // RFM_AVS_206(
-    // "206",
-    // 206),
-    //
-    // RFM_AVS_207(
-    // "207",
-    // 207),
-    //
-    // RFM_AVS_208(
-    // "208",
-    // 208),
-    //
-    // RFM_AVS_209(
-    // "209",
-    // 209),
-    //
-    // RFM_AVS_210(
-    // "210",
-    // 210),
-    //
-    // RFM_AVS_211(
-    // "211",
-    // 211),
-    //
-    // RFM_AVS_212(
-    // "212",
-    // 212),
-
-    RFM_AVS_213("213", 213, PRDomainDePrestation.AVS);
+    RFM_AI_DOMICILE_206("206", 206, PRDomainDePrestation.AI),
+    RFM_AVS_DOMICILE_200("200", 200, PRDomainDePrestation.AVS),
+    RFM_AI_HOME_212("212", 212, PRDomainDePrestation.AI),
+    RFM_AVS_HOME_214("214", 214, PRDomainDePrestation.AVS);
 
     private static PRSousTypeCodePrestationRFM[] convert(List<PRSousTypeCodePrestationRFM> list) {
         PRSousTypeCodePrestationRFM[] array = new PRSousTypeCodePrestationRFM[list.size()];

@@ -80,11 +80,21 @@ public class CalculDonneesCC extends JadeComplexModel {
     private String bienImmoPrincipalPartDenominateur = null;
     private String bienImmoPrincipalPartNumerateur = null;
 
-    private Boolean isBienImmoPrincipalDeMoinsDe10Ans;
+    private Boolean isBienImmoPrincipalDeMoinsDe10Ans = Boolean.FALSE;
+    private Boolean isBienImmoAnnexeDeMoinsDe10Ans = Boolean.FALSE;
 
     private String capitalLPPCsTypePropriete = null;
     private String capitalLPPFractionDenominateur = null;
     private String capitalLPPFractionNumerateur = null;
+
+    public Boolean getIsBienImmoAnnexeDeMoinsDe10Ans() {
+        return isBienImmoAnnexeDeMoinsDe10Ans;
+    }
+
+    public void setIsBienImmoAnnexeDeMoinsDe10Ans(Boolean isBienImmoAnnexeDeMoinsDe10Ans) {
+        this.isBienImmoAnnexeDeMoinsDe10Ans = isBienImmoAnnexeDeMoinsDe10Ans;
+    }
+
     private Boolean capitalLPPIsSansInteret = null;
     private String capitalLPPMontant = null;
 

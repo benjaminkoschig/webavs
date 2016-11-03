@@ -28,6 +28,7 @@ public class RFPrestation extends BEntity {
     public static final String FIELDNAME_DATE_MOIS_ANNEE = "FODMAN";
 
     public static final String FIELDNAME_ETAT = "FOTETA";
+    public static final String FIELDNAME_GENRE_PC = "FOTGEN";
     public static final String FIELDNAME_ID_ADRESSE_PAIEMENT = "FOIADP";
     public static final String FIELDNAME_ID_DECISION = "FOIDEC";
     public static final String FIELDNAME_ID_LOT = "FOILOT";
@@ -60,9 +61,18 @@ public class RFPrestation extends BEntity {
     private String remboursementConjoint = "";
     private String remboursementRequerant = "";
     private String typePrestation = "";
+    private String csGenrePrestation = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
+
+    public String getcsGenrePrestation() {
+        return csGenrePrestation;
+    }
+
+    public void setcsGenrePrestation(String csGenrePrestation) {
+        this.csGenrePrestation = csGenrePrestation;
+    }
 
     /**
      * 
@@ -115,6 +125,7 @@ public class RFPrestation extends BEntity {
         isRI = statement.dbReadBoolean(RFPrestation.FIELDNAME_IS_RI);
         isLAPRAMS = statement.dbReadBoolean(RFPrestation.FIELDNAME_IS_LAPRAMS);
         idTiersBeneficiaire = statement.dbReadNumeric(RFPrestation.FIELDNAME_ID_TIERS_BENEFICIAIRE);
+        csGenrePrestation = statement.dbReadNumeric(RFPrestation.FIELDNAME_GENRE_PC);
     }
 
     /**
@@ -179,6 +190,8 @@ public class RFPrestation extends BEntity {
                 this._dbWriteBoolean(statement.getTransaction(), isRI, BConstants.DB_TYPE_BOOLEAN_CHAR, "isRI"));
         statement.writeField(RFPrestation.FIELDNAME_IS_LAPRAMS, this._dbWriteBoolean(statement.getTransaction(),
                 isLAPRAMS, BConstants.DB_TYPE_BOOLEAN_CHAR, "isLAPRAMS"));
+        statement.writeField(RFPrestation.FIELDNAME_GENRE_PC,
+                this._dbWriteNumeric(statement.getTransaction(), csGenrePrestation, "csGenrePrestation"));
 
         statement.writeField(RFPrestation.FIELDNAME_ID_TIERS_BENEFICIAIRE,
                 this._dbWriteNumeric(statement.getTransaction(), idTiersBeneficiaire, "idTiersBeneficiaire"));

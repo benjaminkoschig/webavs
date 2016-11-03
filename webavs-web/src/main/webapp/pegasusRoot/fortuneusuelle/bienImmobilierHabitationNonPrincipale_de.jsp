@@ -39,6 +39,7 @@
 <%@page import="ch.globaz.pegasus.business.models.fortuneusuelle.BienImmobilierHabitationNonPrincipale"%>
 <%@page import="ch.globaz.pegasus.business.models.droit.MembreFamilleEtendu"%>
 <%@page import="globaz.pegasus.utils.PCDroitHandler"%>
+<%@page import="ch.globaz.pegasus.utils.PCApplicationUtil"%>
 <%
 	//Les labels de cette page commencent par le préfix "JSP_PC_BIEN_IMMOBILIER_HABITATION_NON_PRINCIPALE"
 	idEcran = "PPC0103";
@@ -223,6 +224,14 @@ $(function(){
 					<ct:optionsCodesSystems csFamille="PCTYPBHA"/>					
 				</ct:select>
 			 </td>
+			  <%
+								 if(PCApplicationUtil.isCantonVS()){
+							 %>
+								<td><ct:FWLabel key="JSP_PC_BIEN_IMMOBILIER_HABITATION_NON_PRINCIPALE_D_CONSTRUCTION_MOINS_10_ANS"/></td>
+								<td><input id="isConstructionMoinsDixAns" name="isConstructionMoinsDixAns" class="isConstructionMoinsDixAns" type="checkbox"/></td>
+							<%
+								 }
+							%>
 			<td class="cacherAutres"><ct:FWLabel key="JSP_PC_BIEN_IMMOBILIER_HABITATION_NON_PRINCIPALE_D_AUTRES"/></td>
 			<td class="cacherAutres">
 			<input type="text" class="autres"

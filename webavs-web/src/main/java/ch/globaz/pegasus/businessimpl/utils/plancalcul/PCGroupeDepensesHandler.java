@@ -173,13 +173,18 @@ public class PCGroupeDepensesHandler extends PCGroupeAbstractHandler {
                     // Valeur plafond
                     String cs = IPCValeursPlanCalcul.CLE_DEPEN_FRAISIMM_FRAIS_ENTRETIEN_IMMEUBLE;
                     Float val = getValeur(cs);
-                    String leg = getLegende(cs);
-                    PCValeurPlanCalculHandler valeurForfait = createValeurPlanCalcul(cs, val.toString(), ADDITION,
-                            CSS_SOULIGNE);
 
-                    groupList.get(groupList.size() - 2).setValCol3(VALEUR_VIDE);
+                    if (val > 0.0f) {
+                        String leg = getLegende(cs);
+                        PCValeurPlanCalculHandler valeurForfait = createValeurPlanCalcul(cs, val.toString(), ADDITION,
+                                CSS_SOULIGNE);
 
-                    groupList.add(createLignePlanCalcul(cs, leg, valeurForfait, VALEUR_VIDE, VALEUR_VIDE));
+                        groupList.get(groupList.size() - 2).setValCol3(VALEUR_VIDE);
+
+                        groupList.add(createLignePlanCalcul(cs, leg, valeurForfait, VALEUR_VIDE, VALEUR_VIDE));
+                    } else {
+                        groupList.get(groupList.size() - 1).getValCol1().setCssClass(CSS_SOULIGNE);
+                    }
 
                 } else {
                     // Si interert hypothécaire on supprime la valeur de la colone 3 du plan de calcul, loyer total

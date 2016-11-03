@@ -16,6 +16,17 @@
 			</search-group>
 		</search-definition>
 		
+		<search-definition name="forValableInPeriod">
+			<search-group operator="AND">
+				<search-field name="forIdHome" field-ref="idHome" operation="EQUALS"/>
+				<search-field name="forDateFin" operation="LESS_OR_EQUALS" field-ref="dateDebut"/>
+				<search-group operator="OR">
+					<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="dateFin"/>
+					<search-field name="forDateDebut" operation="NULL" field-ref="dateFin"/>
+				</search-group>		
+			</search-group>
+		</search-definition>
+		
 		<search-definition name="checkForAnterieurPeriods">
 			<search-group operator="AND">
 				<search-field name="forIdPeriodeServiceEtat" field-ref="idSimplePeriodeServiceEtat" operation="NOT_EQUALS"/>

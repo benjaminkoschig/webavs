@@ -17,6 +17,8 @@ import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCHomes;
 import ch.globaz.pegasus.business.constantes.IPCVariableMetier;
+import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCTaxeJournaliere;
+import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.exceptions.models.home.ChambreMedicaliseeException;
 import ch.globaz.pegasus.business.exceptions.models.home.HomeException;
 import ch.globaz.pegasus.business.exceptions.models.home.MembreFamilleHomeException;
@@ -33,6 +35,8 @@ import ch.globaz.pegasus.business.models.home.PeriodeServiceEtatSearch;
 import ch.globaz.pegasus.business.models.home.PrixChambre;
 import ch.globaz.pegasus.business.models.home.PrixChambreSearch;
 import ch.globaz.pegasus.business.models.home.SimpleHome;
+import ch.globaz.pegasus.business.models.home.SimplePeriodeServiceEtat;
+import ch.globaz.pegasus.business.models.home.SimplePeriodeServiceEtatSearch;
 import ch.globaz.pegasus.business.models.home.TypeChambre;
 import ch.globaz.pegasus.business.models.home.TypeChambreSearch;
 import ch.globaz.pegasus.business.models.variablemetier.VariableMetier;
@@ -291,7 +295,8 @@ public class HomeServiceImpl extends PegasusAbstractServiceImpl implements HomeS
 
     @Override
     public PeriodesPrixChambre getListePrixChambres(String idHome, String idTypeChambre, String dateDebut,
-            String dateFin) throws PrixChambreException, JadePersistenceException, HomeException, PropertiesException {
+            String dateFin) throws PrixChambreException, JadePersistenceException, HomeException, PropertiesException,
+            CalculException {
 
         PeriodesPrixChambre returnObject = null;
 
@@ -334,10 +339,27 @@ public class HomeServiceImpl extends PegasusAbstractServiceImpl implements HomeS
     }
 
     private List<VariableMetier> getMontantsPlafondsAdmis(String idTypeChambre, String idHome, String dateDebut,
-            String dateFin) throws JadePersistenceException {
+            String dateFin) throws JadePersistenceException, CalculException {
+
+        SimplePeriodeServiceEtatSearch s = new SimplePeriodeServiceEtatSearch();
+        s.setForIdHome(idHome);
+        s.setForDateDebut(dateDebut);
+        if (!dateFin.equals("0")) {
+            s.setForDateFin(dateFin);
+        }
+        s.setWhereKey("forValableInPeriod");
+        JadePersistenceManager.search(s);
+
+        if (s.getSearchResults().length == 0) {
+            throw new CalculException(
+                    "Cant resolve variables métiers with periode service etat, no periode service etat found with this params: [dateDebut:"
+                            + dateDebut + ", datefin:" + dateFin + ", idHome: " + idHome + "]");
+        }
+        String csTypePeriodeServiceEtat = ((SimplePeriodeServiceEtat) s.getSearchResults()[0]).getCsServiceEtat();
+        String variableMetierForCsServiceEtat = resolveVariableMetierForCsServiceEtat(csTypePeriodeServiceEtat);
 
         VariableMetierSearch vmSearch = new VariableMetierSearch();
-        vmSearch.setForCsTypeVariableMetier(IPCVariableMetier.CS_PLAFOND_ANNUEL_HOME);
+        vmSearch.setForCsTypeVariableMetier(variableMetierForCsServiceEtat);
         vmSearch.setForDateDebut(dateDebut);
 
         if (!dateFin.equals("0")) {
@@ -354,6 +376,19 @@ public class HomeServiceImpl extends PegasusAbstractServiceImpl implements HomeS
         }
 
         return listeEnRetour;
+    }
+
+    private String resolveVariableMetierForCsServiceEtat(String csTypePeriodeServiceEtat) throws CalculException {
+        if (csTypePeriodeServiceEtat.equals(IPCTaxeJournaliere.CS_PERIODE_SERVICE_ETAT_EMS)) {
+            return IPCVariableMetier.CS_PLAFOND_ANNUEL_EMS;
+        } else if (csTypePeriodeServiceEtat.equals(IPCTaxeJournaliere.CS_PERIODE_SERVICE_ETAT_INSTITUTION)) {
+            return IPCVariableMetier.CS_PLAFOND_ANNUEL_INSTITUTION;
+        } else if (csTypePeriodeServiceEtat.equals(IPCTaxeJournaliere.CS_PERIODE_SERVICE_ETAT_LITS_ATTENTE)) {
+            return IPCVariableMetier.CS_PLAFOND_ANNUEL_LITS_ATTENTE;
+        } else {
+            throw new CalculException("The plafond cant be found with the cs periode servce etat["
+                    + csTypePeriodeServiceEtat + "]");
+        }
     }
 
     /*

@@ -27,6 +27,15 @@ public class RFPrestationData implements Serializable {
     private String remboursementConjoint = "";
     private String remboursementRequerant = "";
     private String typePrestation = "";
+    private String csGenrePrestation = "";
+
+    public String getCsGenrePrestation() {
+        return csGenrePrestation;
+    }
+
+    public void setCsGenrePrestation(String csGenrePrestation) {
+        this.csGenrePrestation = csGenrePrestation;
+    }
 
     public RFPrestationData(String idPrestation, String datePrestation, String montantPrestation, String idLot,
             String etatPrestation, Set<RFOrdreVersementData> ordresVersement, String typePrestation, String idDecision,
@@ -47,6 +56,29 @@ public class RFPrestationData implements Serializable {
         this.isRI = isRI;
         this.isLAPRAMS = isLAPRAMS;
         this.idAdresseDePaiement = idAdresseDePaiement;
+    }
+
+    public RFPrestationData(String idPrestation, String datePrestation, String montantPrestation, String idLot,
+            String etatPrestation, Set<RFOrdreVersementData> ordresVersement, String typePrestation, String idDecision,
+            String remboursementRequerant, String remboursementConjoint, Boolean isRI, Boolean isLAPRAMS,
+            String idAdresseDePaiement, String idTiersBeneficiaire, String csGenrePrestation) {
+        super();
+        this.idPrestation = idPrestation;
+        this.datePrestation = datePrestation;
+        this.montantPrestation = montantPrestation;
+        this.idLot = idLot;
+        this.etatPrestation = etatPrestation;
+        this.ordresVersement = ordresVersement;
+        this.typePrestation = typePrestation;
+        this.idDecision = idDecision;
+        this.remboursementConjoint = remboursementConjoint;
+        this.remboursementRequerant = remboursementRequerant;
+        this.idTiersBeneficiaire = idTiersBeneficiaire;
+        this.isRI = isRI;
+        this.isLAPRAMS = isLAPRAMS;
+        this.idAdresseDePaiement = idAdresseDePaiement;
+        this.csGenrePrestation = csGenrePrestation;
+
     }
 
     public String getDatePrestation() {

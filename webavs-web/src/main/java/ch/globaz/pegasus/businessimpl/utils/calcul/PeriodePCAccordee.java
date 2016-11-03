@@ -104,7 +104,11 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             put(IPCVariableMetier.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON,
                     Attribut.CS_FRACTIONS_FORTUNE_VIEILLESSE_MAISON_LEGENDE);
             put(IPCVariableMetier.CS_FRACTION_REVENUS_PRIVILEGIES, Attribut.CS_FRACTION_REVENUS_PRIVILEGIES_LEGENDE);
-            put(IPCVariableMetier.CS_PLAFOND_ANNUEL_HOME, Attribut.CS_PLAFOND_ANNUEL_HOME);
+            put(IPCVariableMetier.CS_PLAFOND_ANNUEL_EMS, Attribut.CS_PLAFOND_ANNUEL_EMS);
+            put(IPCVariableMetier.CS_PLAFOND_ANNUEL_INSTITUTION, Attribut.CS_PLAFOND_ANNUEL_INSTITUTION);
+            put(IPCVariableMetier.CS_PLAFOND_ANNUEL_LITS_ATTENTE, Attribut.CS_PLAFOND_ANNUEL_LITS_ATTENTE);
+
+            ;
             put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_EPS, Attribut.MONTANT_TYPE_CHAMBRE_EPS);
         }
     };
@@ -125,12 +129,18 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
                     Attribut.CS_TAUX_IMPUTATION_LOYER_FRAIS_ACQUISITION);
             put(IPCVariableMetier.CS_TAUX_IMPUTATION_SOUSLOCATIONS_FRAIS_ACUISITION,
                     Attribut.CS_TAUX_IMPUTATION_SOUSLOCATIONS_FRAIS_ACUISITION);
-            put(IPCVariableMetier.CS_PLAFOND_ANNUEL_HOME, Attribut.CS_PLAFOND_ANNUEL_HOME);
+            put(IPCVariableMetier.CS_PLAFOND_ANNUEL_EMS, Attribut.CS_PLAFOND_ANNUEL_EMS);
+            put(IPCVariableMetier.CS_PLAFOND_ANNUEL_INSTITUTION, Attribut.CS_PLAFOND_ANNUEL_INSTITUTION);
+            put(IPCVariableMetier.CS_PLAFOND_ANNUEL_LITS_ATTENTE, Attribut.CS_PLAFOND_ANNUEL_LITS_ATTENTE);
             put(IPCVariableMetier.CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE, Attribut.FRAIS_ENTRETIEN_IMMEUBLE);
             put(IPCVariableMetier.CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS,
                     Attribut.FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS);
             put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_EPS, Attribut.MONTANT_TYPE_CHAMBRE_EPS);
-        }
+			put(IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT,
+                    Attribut.TAUX_BIEN_IMMO_FRACTION_VALEUR_LOCATIVE_BRUTE);
+            put(IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT_M10,
+                    Attribut.TAUX_BIEN_IMMO_FRACTION_VALEUR_LOCATIVE_BRUTE_M10);
+            put(IPCVariableMetier.TAUX_IMPUTATIONS_LOYER_EFFECTIF, Attribut.TAUX_BIEN_IMMO_FRACTION_LOYER_EFFECTIF);        }
     };
     private final static Map<String, Attribut> mappageVarMetFinalisation = new HashMap<String, Attribut>() {
         /**
@@ -190,12 +200,20 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             put(IPCVariableMetier.MENSUALISATION_IJ_CHOMAGE, Attribut.MENSUALISATION_IJ_CHOMAGE);
             put(IPCVariableMetier.CS_TAUX_IMPUTATION_SOUSLOCATIONS_FRAIS_ACUISITION,
                     Attribut.CS_TAUX_IMPUTATION_SOUSLOCATIONS_FRAIS_ACUISITION);
-            put(IPCVariableMetier.CS_PLAFOND_ANNUEL_HOME, Attribut.CS_PLAFOND_ANNUEL_HOME);
+            put(IPCVariableMetier.CS_PLAFOND_ANNUEL_EMS, Attribut.CS_PLAFOND_ANNUEL_EMS);
             put(IPCVariableMetier.CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE, Attribut.FRAIS_ENTRETIEN_IMMEUBLE);
 
             put(IPCVariableMetier.CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS,
                     Attribut.FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS);
             put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_EPS, Attribut.MONTANT_TYPE_CHAMBRE_EPS);
+
+            put(IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT,
+                    Attribut.TAUX_BIEN_IMMO_FRACTION_VALEUR_LOCATIVE_BRUTE);
+            put(IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT_M10,
+                    Attribut.TAUX_BIEN_IMMO_FRACTION_VALEUR_LOCATIVE_BRUTE_M10);
+            put(IPCVariableMetier.TAUX_IMPUTATIONS_LOYER_EFFECTIF, Attribut.TAUX_BIEN_IMMO_FRACTION_LOYER_EFFECTIF);
+            put(IPCVariableMetier.CS_PLAFOND_ANNUEL_INSTITUTION, Attribut.CS_PLAFOND_ANNUEL_INSTITUTION);
+            put(IPCVariableMetier.CS_PLAFOND_ANNUEL_LITS_ATTENTE, Attribut.CS_PLAFOND_ANNUEL_LITS_ATTENTE);
 
         }
     };
@@ -735,7 +753,6 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             if (context.keyAlreadyExist(Attribut.TYPE_RENTE_REQUERANT)) {
                 personne.setTypeRenteRequerant((String) context.get(Attribut.TYPE_RENTE_REQUERANT));
             }
-
         }
 
     }
@@ -865,6 +882,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
         CalculContext context = CalculContext.getNewInstance();
 
         context.put(Attribut.TYPE_RENTE_REQUERANT, getTypeRenteRequerant());
+
         // Si fratrie
         context.put(Attribut.IS_FRATRIE, droit.getDemande().getSimpleDemande().getIsFratrie());
 
