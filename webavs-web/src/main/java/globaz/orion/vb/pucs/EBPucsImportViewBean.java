@@ -24,6 +24,8 @@ import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.businessimpl.services.pucs.PucsServiceImpl;
 import ch.globaz.orion.service.EBPucsFileService;
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Multimaps;
 import com.google.gson.Gson;
 
@@ -44,7 +46,7 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
     private String fusionJson = "";
     private String selectedIds;
     private List<String> listOfSelectedIds = new ArrayList<String>();
-    private List<PucsFile> pucsFiles = new ArrayList<PucsFile>();
+    private Collection<PucsFile> pucsFiles = new ArrayList<PucsFile>();
 
     private Map<String, AFAffiliation> affiliations = new HashMap<String, AFAffiliation>();
 
@@ -73,7 +75,7 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
         }
     }
 
-    private Map<String, AFAffiliation> findAffiliations(List<PucsFile> list) {
+    private Map<String, AFAffiliation> findAffiliations(Collection<PucsFile> list) {
         List<String> numAffiliations = new ArrayList<String>();
 
         for (PucsFile pucsFile : list) {
@@ -97,7 +99,7 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
             listOfSelectedIds = Arrays.asList(selectedIds.split(","));
         }
         if (!listOfSelectedIds.isEmpty()) {
-            pucsFiles = EBPucsFileService.readByIds(listOfSelectedIds, getSession());
+            pucsFiles = keepATraiter(searchPucsFilesByIds(listOfSelectedIds));
         }
         affiliations = findAffiliations(pucsFiles);
         isMiseEnGedDefault = EBProperties.MISE_EN_GED_DEFAULT.getBooleanValue();
@@ -105,6 +107,31 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
         JadeGedFacade.isInstalled();
         getPucsToMerge();
         mapPucsByNumAffilie = toMapPucsByNumAffilie();
+    }
+
+    /**
+     * Recherche les fichiers PUCS selon la liste des ids passés en paramètre.
+     * 
+     * @param idsPucs
+     * @return
+     */
+    private Collection<PucsFile> searchPucsFilesByIds(Collection<String> idsPucs) {
+        return EBPucsFileService.readByIds(idsPucs, getSession());
+    }
+
+    /**
+     * Retourne uniquement les fichiers qui sont au statut à traiter.
+     * Les autres ne doivent pas pouvoir être fusionnés et importés
+     * 
+     * @param pucsFiles Liste de fichiers pucs
+     */
+    private Collection<PucsFile> keepATraiter(Collection<PucsFile> pucsFiles) {
+        return Collections2.filter(pucsFiles, new Predicate<PucsFile>() {
+            @Override
+            public boolean apply(PucsFile pucsFile) {
+                return pucsFile.isATraiter();
+            }
+        });
     }
 
     public Boolean getIsMiseEnGedDefault() {

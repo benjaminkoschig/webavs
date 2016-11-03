@@ -3,7 +3,7 @@ package ch.globaz.orion.db;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
-import java.util.List;
+import java.util.Collection;
 import ch.globaz.common.jadedb.JadeManager;
 import ch.globaz.common.sql.SQLWriter;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
@@ -17,7 +17,7 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
     private String forStatut;
     private DeclarationSalaireProvenance forProvenance = DeclarationSalaireProvenance.UNDEFINDED;
     private String fullText;
-    private List<String> inIds;
+    private Collection<String> inIds;
     private String forFilename;
 
     @Override
@@ -92,7 +92,7 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
         this.fullText = fullText;
     }
 
-    public void setInIds(List<String> ids) {
+    public void setInIds(Collection<String> ids) {
         inIds = ids;
     }
 

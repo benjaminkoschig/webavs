@@ -4,6 +4,7 @@ import globaz.globall.db.BSession;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
@@ -30,7 +31,7 @@ public class EBPucsFileService {
         return convert(entity);
     }
 
-    public static List<PucsFile> readByIds(List<String> ids, BSession session) {
+    public static Collection<PucsFile> readByIds(Collection<String> ids, BSession session) {
         if (ids == null || ids.isEmpty()) {
             throw new RuntimeException("La liste d'ids est vide");
         }
