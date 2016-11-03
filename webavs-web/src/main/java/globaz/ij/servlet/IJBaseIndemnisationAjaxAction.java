@@ -9,7 +9,6 @@ import globaz.ij.vb.controleAbsences.IJBaseIndemnisationAjaxViewBean;
 import globaz.jade.log.JadeLogger;
 import globaz.prestation.servlet.PRHybridAction;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -86,21 +85,12 @@ public class IJBaseIndemnisationAjaxAction extends PRHybridAction {
             HttpServletResponse response, FWViewBeanInterface viewBean) {
         IJBaseIndemnisationAjaxViewBean vb = (IJBaseIndemnisationAjaxViewBean) viewBean;
 
-        try {
-            request.setCharacterEncoding("UTF-8");
-            response.setCharacterEncoding("UTF-8");
-            // request.getCharacterEncoding();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
         String dateDeDebut = request.getParameter("baseIndemnisation.dateDeDebut");
         String dateDeFin = request.getParameter("baseIndemnisation.dateDeFin");
         String joursExternes = request.getParameter("baseIndemnisation.joursExternes");
         String joursInternes = request.getParameter("baseIndemnisation.joursInternes");
         String joursInterruption = request.getParameter("baseIndemnisation.joursInterruption");
         String motifInterruption = request.getParameter("baseIndemnisation.motifInterruption");
-        vb.getCurrentEntity().setRemarque(request.getParameter("baseIndemnisation.remarque"));
 
         vb.getCurrentEntity().setDateDeDebut(dateDeDebut);
         vb.getCurrentEntity().setDateDeFin(dateDeFin);

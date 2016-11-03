@@ -196,7 +196,7 @@ function getSelectedIds(type) {
 <ct:ifhasright element="orion.pucs.pucsImport.afficher" crud="u">
 <input type="button" id="simulation" value="<ct:FWLabel key="PUCS_SIMULATION"/>"/>&nbsp;
 <input type="button" id="ctrlSwissDec" value="<ct:FWLabel key="PUCS_CONTROLE_SWISSDEC"/>"/>&nbsp;
-<input type="button" id="importFileInDb" value="<ct:FWLabel key="PUCS_IMPORT_FILE"/>"/>&nbsp;
+<%-- <input type="button" id="importFileInDb" value="<ct:FWLabel key="PUCS_IMPORT_FILE"/>"/>&nbsp; --%>
 
 </ct:ifhasright>
 <ct:ifhasright element="orion.pucs.pucsImport.afficher" crud="u">
