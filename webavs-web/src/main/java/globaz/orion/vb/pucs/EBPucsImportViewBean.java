@@ -24,8 +24,6 @@ import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.businessimpl.services.pucs.PucsServiceImpl;
 import ch.globaz.orion.service.EBPucsFileService;
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Multimaps;
 import com.google.gson.Gson;
 
@@ -126,12 +124,13 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
      * @param pucsFiles Liste de fichiers pucs
      */
     private Collection<PucsFile> keepATraiter(Collection<PucsFile> pucsFiles) {
-        return Collections2.filter(pucsFiles, new Predicate<PucsFile>() {
-            @Override
-            public boolean apply(PucsFile pucsFile) {
-                return pucsFile.isATraiter();
+        List<PucsFile> pucsFilesATraiter = new ArrayList<PucsFile>();
+        for (PucsFile pucsFile : pucsFiles) {
+            if (pucsFile.isATraiter()) {
+                pucsFilesATraiter.add(pucsFile);
             }
-        });
+        }
+        return pucsFilesATraiter;
     }
 
     public Boolean getIsMiseEnGedDefault() {
