@@ -7,8 +7,8 @@ import ch.globaz.prestation.domaine.constantes.DomaineCodePrestation;
  * Analyseur détectant les familles faisant parties du lot 5.
  * </p>
  * <p>
- * Ce lot comporte les rentes de vieillesse et d'invalidité ayant une décision avec rétro dans l'année en cours
- * uniquement.
+ * Attestations fiscales des rentes de vieillesse et d'invalidité ayant une décision dans l'année avec rétro dans
+ * l'année en cours et précédentes.
  * </p>
  * 
  * @author LGA

@@ -6,9 +6,11 @@ import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadePeriodWrapper;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
+import globaz.prestation.beans.PRPeriode;
 import globaz.prestation.tools.PRDateFormater;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -112,14 +114,12 @@ public class REAttestationsFiscalesUtils {
     }
 
     public static boolean hasPersonneDecedeeDurantAnneeFiscale(REFamillePourAttestationsFiscales famille, String annee) {
-
         JadePeriodWrapper anneeFiscale = new JadePeriodWrapper("01.01." + annee, "31.12." + annee);
         for (RETiersPourAttestationsFiscales unTiers : famille.getTiersBeneficiaires()) {
             if (anneeFiscale.isDateDansLaPeriode(unTiers.getDateDeces())) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -150,6 +150,89 @@ public class REAttestationsFiscalesUtils {
         return false;
     }
 
+    public static boolean hasRenteQuiSeChevauchent(REFamillePourAttestationsFiscales famille, int annee) {
+        Map<String, LinkedList<PRPeriode>> periodesParTiersEtRentes = new HashMap<String, LinkedList<PRPeriode>>();
+        SimpleDateFormat reader = new SimpleDateFormat("MM.yyyy");
+        SimpleDateFormat writter = new SimpleDateFormat("yyyyMM");
+        /*
+         * Regroupement des périodes par tiers bénéficiaire et genre de rente
+         */
+        for (RERentePourAttestationsFiscales rente : famille.getRentesDeLaFamille()) {
+            /*
+             * Si la date de fin est plus petite ou égale à la date de début, on ignore cette rente
+             */
+            if (!JadeStringUtil.isBlankOrZero(rente.getDateDebutDroit())
+                    && !JadeStringUtil.isBlankOrZero(rente.getDateFinDroit())) {
+                try {
+                    int ddd = Integer.valueOf(writter.format(reader.parse(rente.getDateDebutDroit())));
+                    int ddf = Integer.valueOf(writter.format(reader.parse(rente.getDateFinDroit())));
+                    if (ddf <= ddd) {
+                        continue;
+                    }
+                } catch (Exception e) {
+                    logger.warn("Exception lors du contrôle du chevauchement de période pour la rente accordée avec l'id =["
+                            + rente.getIdRenteAccordee() + "]");
+                    continue;
+                }
+            }
+
+            String cle = rente.getIdTiersBeneficiaire() + "-" + rente.getCodePrestation();
+            PRPeriode periode = new PRPeriode(rente.getDateDebutDroit(), rente.getDateFinDroit());
+
+            if (!periodesParTiersEtRentes.containsKey(cle)) {
+                periodesParTiersEtRentes.put(cle, new LinkedList<PRPeriode>());
+            }
+            periodesParTiersEtRentes.get(cle).add(periode);
+        }
+
+        for (String cle : periodesParTiersEtRentes.keySet()) {
+            LinkedList<PRPeriode> periodes = periodesParTiersEtRentes.get(cle);
+
+            /*
+             * 1er test :
+             * Est-ce qu'il y a 2 rentes sans date de fin -> chevauchement obligatoire
+             */
+            int ctr = 0;
+            for (PRPeriode periode : periodes) {
+                if (JadeStringUtil.isBlankOrZero(periode.getDateDeFin())) {
+                    ctr++;
+                }
+            }
+            if (ctr > 1) {
+                return true;
+            }
+
+            /*
+             * 2ème test, on analyse les périodes
+             */
+            Collections.sort(periodes);
+            PRPeriode previous = null;
+            for (PRPeriode periode : periodes) {
+
+                if (previous == null) {
+                    previous = periode;
+                } else {
+                    try {
+                        int dateDebut = Integer.valueOf(writter.format(reader.parse(periode.getDateDeDebut())));
+                        int dateFin = Integer.valueOf(writter.format(reader.parse(previous.getDateDeFin())));
+
+                        if (dateDebut <= dateFin) {
+                            return true;
+                        } else {
+                            previous = periode;
+                        }
+                    } catch (Exception e) {
+                        logger.warn("Exception lors du contrôle du chevauchement des périodes pour le tiers réquérant avec l'id =["
+                                + famille.getTiersRequerant().getIdTiers()
+                                + "]. Périodes ayant poyé problème : 1=["
+                                + previous == null ? "" : previous.toString() + "], 2=[" + periode.toString() + "]");
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * <p>
      * Retournera <code>true</code> si la rente principale de cette famille se termine dans l'année, sans une autre
@@ -161,7 +244,6 @@ public class REAttestationsFiscalesUtils {
      * @return
      */
     public static boolean hasRenteFinissantDansAnnee(REFamillePourAttestationsFiscales famille, String annee) {
-
         Map<String, SortedSet<JadePeriodWrapper>> periodesDesRentesParTiers = new HashMap<String, SortedSet<JadePeriodWrapper>>();
 
         // regroupement des périodes par tiers
@@ -274,29 +356,6 @@ public class REAttestationsFiscalesUtils {
         int fin = Integer.valueOf(writer.format(dateFin));
 
         return fin < debut;
-    }
-
-    public static boolean hasRetroDansAnneeFiscaleOld(REFamillePourAttestationsFiscales famille, String annee) {
-        for (RERentePourAttestationsFiscales uneRente : famille.getRentesDeLaFamille()) {
-
-            CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(uneRente
-                    .getCodePrestation()));
-
-            if (codePrestation.isAPI()) {
-                continue;
-            }
-
-            if (!annee.equals(PRDateFormater.convertDate_JJxMMxAAAA_to_AAAA(uneRente.getDateDecision()))) {
-                continue;
-            }
-
-            String moisDecision = JadeDateUtil.convertDateMonthYear(uneRente.getDateDecision());
-            if (JadeDateUtil.isGlobazDateMonthYear(uneRente.getDateDebutDroit())
-                    && !JadeDateUtil.isDateMonthYearBefore(moisDecision, uneRente.getDateDebutDroit())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -492,16 +551,18 @@ public class REAttestationsFiscalesUtils {
                 }
 
             } catch (ParseException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error(
+                        "Exception thrown when parsing RERentePourAttestationsFiscales dateDebutDroit with idRenteAccordee=["
+                                + rente.getIdRenteAccordee() + "] : " + e.toString(), e);
             }
 
         }
 
         // Si aucune date de début de rente avec rétro n'été trouvée
         if (dateDebutPlusAncienne == YEAR_MONTH_MAX_VALUE) {
-            // TODO
-            throw new IllegalArgumentException("Pas de retro trouvé dans les rentes de la famille");
+            logger.warn("Erreur lors de la recherche de la data de dateDebutPlusAncienne pour les rentes de la famille du tiers requérant =["
+                    + famille.getTiersRequerant().getIdTiers() + "]");
+            return false;
         }
 
         /*

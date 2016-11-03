@@ -54,7 +54,8 @@ public abstract class REAbstractAnalyseurLot5a8 extends REAbstractAnalyseurLot {
                 // Il doit y avoir du rétro, si pas de rétro on retourne false
                 || !REAttestationsFiscalesUtils.hasRetro(famille, getAnneeAsInteger())
                 || REAttestationsFiscalesUtils.hasRenteFinissantDansAnnee(famille, getAnnee())
-                || REAttestationsFiscalesUtils.hasPersonneDecedeeDurantAnneeFiscale(famille, getAnnee())) {
+                || REAttestationsFiscalesUtils.hasPersonneDecedeeDurantAnneeFiscale(famille, getAnnee())
+                || REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, getAnneeAsInteger())) {
             return false;
         }
         // 1 : on exclus la famille si elle possède une décision en décembre de l'année fiscale

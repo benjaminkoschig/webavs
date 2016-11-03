@@ -167,12 +167,14 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                     famillesDuLot5.add(uneFamille);
                 } else if (analyseurLot6.isFamilleDansLot(uneFamille)) {
                     uneFamille.setHasRetroactif(true);
+                    uneFamille.setHasRetroactifSurPlusieursAnnees(true);
                     famillesDuLot6.add(uneFamille);
                 } else if (analyseurLot7.isFamilleDansLot(uneFamille)) {
                     uneFamille.setHasRetroactif(true);
                     famillesDuLot7.add(uneFamille);
                 } else if (analyseurLot8.isFamilleDansLot(uneFamille)) {
                     uneFamille.setHasRetroactif(true);
+                    uneFamille.setHasRetroactifSurPlusieursAnnees(true);
                     famillesDuLot8.add(uneFamille);
                 } else {
                     famillesSansLot.add(uneFamille);
@@ -779,10 +781,15 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         for (REFamillePourAttestationsFiscales uneFamille : values) {
 
             boolean isRenteSurvivant = false;
+            boolean hasAdressePmtAZero = false;
             Map<String, Set<RETiersPourAttestationsFiscales>> tiersParIdAdressePaiement = new HashMap<String, Set<RETiersPourAttestationsFiscales>>();
 
             for (RETiersPourAttestationsFiscales unTiersBeneficiaire : uneFamille.getTiersBeneficiaires()) {
                 for (RERentePourAttestationsFiscales uneRenteDuTiers : unTiersBeneficiaire.getRentes()) {
+
+                    if (JadeStringUtil.isBlankOrZero(uneRenteDuTiers.getIdTiersAdressePaiement())) {
+                        hasAdressePmtAZero = true;
+                    }
 
                     CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(uneRenteDuTiers
                             .getCodePrestation()));
@@ -817,7 +824,11 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                         familles.add(nouvelleFamille);
                     }
                 } else {
-                    uneFamille.setHasPlusieursAdressePaiement(true);
+                    if (hasAdressePmtAZero && tiersParIdAdressePaiement.size() == 2) {
+                        uneFamille.setHasPlusieursAdressePaiement(false);
+                    } else {
+                        uneFamille.setHasPlusieursAdressePaiement(true);
+                    }
                     familles.add(uneFamille);
                 }
             } else {

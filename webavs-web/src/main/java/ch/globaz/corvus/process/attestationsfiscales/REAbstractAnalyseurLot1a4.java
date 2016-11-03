@@ -60,7 +60,8 @@ public abstract class REAbstractAnalyseurLot1a4 extends REAbstractAnalyseurLot {
                 // Il ne doit pas y avoir de rétro, si rétro on retourne false -> ok
                 || REAttestationsFiscalesUtils.hasRetro(famille, getAnneeAsInteger())
                 || REAttestationsFiscalesUtils.hasRenteFinissantDansAnnee(famille, getAnnee())
-                || REAttestationsFiscalesUtils.hasPersonneDecedeeDurantAnneeFiscale(famille, getAnnee())) {
+                || REAttestationsFiscalesUtils.hasPersonneDecedeeDurantAnneeFiscale(famille, getAnnee())
+                || REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, getAnneeAsInteger())) {
             return false;
         }
         boolean result = controllerDateDecisionEtTypeDeRente(famille);

@@ -19,6 +19,7 @@ public class REFamillePourAttestationsFiscales implements Comparable<REFamillePo
     private RETiersPourAttestationsFiscales tiersRequerant;
     private RETiersPourAttestationsFiscales tiersPourCorrespondance;
     private boolean hasRetroactif;
+    private boolean hasRetroactifSurPlusieursAnnees;
 
     public REFamillePourAttestationsFiscales() {
         super();
@@ -108,5 +109,24 @@ public class REFamillePourAttestationsFiscales implements Comparable<REFamillePo
      */
     public boolean getHasRetroactif() {
         return hasRetroactif;
+    }
+
+    /**
+     * Définit si la famille possède une décision dans l'année fiscales avec rétro sur plusieurs années
+     * 
+     * @param hasRetroactifSurPlusieursAnnees
+     */
+    public void setHasRetroactifSurPlusieursAnnees(boolean hasRetroactifSurPlusieursAnnees) {
+        this.hasRetroactifSurPlusieursAnnees = hasRetroactifSurPlusieursAnnees;
+    }
+
+    /**
+     * Définit si la famille possède une décision dans l'année fiscales avec rétro sur plusieurs années
+     * 
+     * @return <code>true</code> si la famille possède une décision dans l'année fiscales avec rétro sur plusieurs
+     *         années
+     */
+    public boolean getHasRetroactifSurPlusieursAnnees() {
+        return hasRetroactifSurPlusieursAnnees;
     }
 }

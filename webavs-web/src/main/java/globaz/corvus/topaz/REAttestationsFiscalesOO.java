@@ -24,10 +24,12 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.api.ITIPersonne;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -97,9 +99,8 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
         return catalogues;
     }
 
-    private DocumentData genererAttestationPourUneFamille(REFamillePourAttestationsFiscales uneFamille)
-            throws Exception {
-        RETiersPourAttestationsFiscales tiersCorrespondance = uneFamille.getTiersPourCorrespondance();
+    private DocumentData genererAttestationPourUneFamille(REFamillePourAttestationsFiscales famille) throws Exception {
+        RETiersPourAttestationsFiscales tiersCorrespondance = famille.getTiersPourCorrespondance();
 
         // remplissage des champs statiques (paragraphes, titres, en-tête de tableau, etc...)
         DocumentData data = getDonneesPreRemplies(catalogueTextesAttestationsFiscales);
@@ -123,7 +124,7 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
         Collection tableauBeneficiaires = new Collection("TableauRenteAccordee");
 
         List<RETiersPourAttestationsFiscales> tiersBeneficiaires = new ArrayList<RETiersPourAttestationsFiscales>(
-                uneFamille.getTiersBeneficiaires());
+                famille.getTiersBeneficiaires());
         // Tri pour avoir la rente principale en haut de la liste
         // puis les complémentaire triées par tiers dans l'ordre alphabétique
         Collections.sort(tiersBeneficiaires, new Comparator<RETiersPourAttestationsFiscales>() {
@@ -150,6 +151,64 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                 return tiers1.compareTo(tiers2);
             }
         });
+
+        boolean hasRetroactifSurPlusieursAnnees = famille.getHasRetroactifSurPlusieursAnnees();
+
+        /*
+         * Dans le cas ou la famille possède du rétro sur plusieurs années, un traitement particulier est requis pour
+         * attester les rentes.
+         * On recherche la date de décision la plus élevée dans l'année fiscales et on atteste toutes les rentes le mois
+         * suivants cette date de décision
+         */
+        Date dateDeDecisionFinale = null;
+        if (hasRetroactifSurPlusieursAnnees) {
+            SimpleDateFormat reader = new SimpleDateFormat("dd.MM.yyyy");
+            SimpleDateFormat yearsWriter = new SimpleDateFormat("yyyy");
+            SimpleDateFormat yearsMonthWriter = new SimpleDateFormat("yyyyMM");
+            int dateDeDecisionInteger = 0;
+            for (RETiersPourAttestationsFiscales tiers : tiersBeneficiaires) {
+                for (RERentePourAttestationsFiscales rente : tiers.getRentes()) {
+                    Date dateDeDecision = null;
+                    // date vide, on s'en bat les ....
+                    if (JadeStringUtil.isBlankOrZero(rente.getDateDecision())) {
+                        continue;
+                    }
+
+                    int year = 0;
+                    int yearMonth = 0;
+
+                    try {
+                        dateDeDecision = reader.parse(rente.getDateDecision());
+                        year = Integer.valueOf(yearsWriter.format(dateDeDecision));
+                        yearMonth = Integer.valueOf(yearsMonthWriter.format(dateDeDecision));
+                    } catch (Exception e) {
+                        // Bon ben pas de bol, problème de données du coup on ignore cette rente
+                        // TODO logger le binz
+                    }
+
+                    // Que les décisions dans l'année fiscales
+                    if (year == 0 || !Integer.valueOf(getAnnee()).equals(year)) {
+                        continue;
+                    }
+
+                    if (yearMonth > dateDeDecisionInteger) {
+                        dateDeDecisionInteger = yearMonth;
+                        dateDeDecisionFinale = dateDeDecision;
+                    }
+
+                }
+            }
+
+            if (dateDeDecisionFinale != null) {
+                int value = Integer.valueOf(yearsMonthWriter.format(dateDeDecisionFinale));
+                value++; // ajout d'un mois
+                dateDeDecisionFinale = yearsMonthWriter.parse(String.valueOf(value));
+            }
+        }
+        /*
+         * Traitement normal
+         */
+
         // création de la liste des rentes accordées pour cette famille
         for (RETiersPourAttestationsFiscales unTiersBeneficiaire : tiersBeneficiaires) {
 
@@ -159,7 +218,16 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
             for (RERentePourAttestationsFiscales uneRenteDuBeneficiaire : unTiersBeneficiaire.getRentes()) {
 
-                String dateMoisDebut = "01." + getMoisDebut(uneRenteDuBeneficiaire);
+                String dateMoisDebut = null;
+
+                if (hasRetroactifSurPlusieursAnnees && dateDeDecisionFinale != null) {
+
+                    SimpleDateFormat writer = new SimpleDateFormat("MM.yyyy");
+                    dateMoisDebut = "01." + writer.format(dateDeDecisionFinale);
+                } else {
+                    dateMoisDebut = "01." + getMoisDebut(uneRenteDuBeneficiaire);
+                }
+
                 String dateMoisFin = getDerniereDateMois(getMoisFin(uneRenteDuBeneficiaire));
                 int nbMois = JadeDateUtil.getNbMonthsBetween(dateMoisDebut, dateMoisFin);
 
@@ -265,15 +333,15 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             }
         }
 
-        if (uneFamille.hasPlusieursAdressePaiement()) {
+        if (famille.hasPlusieursAdressePaiement()) {
             data.addData("PLUSIEURS_ATT_FAMILLE", getTexte(catalogueTextesAttestationsFiscales, 4, 6));
         }
         // Si PC en décembre
-        if (uneFamille.getHasRentePC()) {
+        if (famille.getHasRentePC()) {
             data.addData("HAS_PC_DECEMBRE", getTexte(catalogueTextesAttestationsFiscales, 4, 7));
         }
         // Si rétroactif
-        if (uneFamille.getHasRetroactif()) {
+        if (famille.getHasRetroactif()) {
             String texte = getTexte(catalogueTextesAttestationsFiscales, 4, 8);
             if (!JadeStringUtil.isBlank(texte)) {
                 texte = texte.replace("{annee}", getAnnee());

@@ -357,4 +357,74 @@ public class REAttestationsFiscalesUtilsTest {
         rente2.setDateDecision("01.01.2012");
         Assert.assertFalse(REAttestationsFiscalesUtils.isSansDecisionPendantEtApresAnneeFiscale(famille, annee));
     }
+
+    @Test
+    public void hasRenteQuiSeChevauchent() {
+
+        REFamillePourAttestationsFiscales famille = new REFamillePourAttestationsFiscales();
+        RETiersPourAttestationsFiscales tiers1 = new RETiersPourAttestationsFiscales();
+        tiers1.setIdTiers("1");
+        famille.getMapTiersBeneficiaire().put("1", tiers1);
+
+        RERentePourAttestationsFiscales rente1 = new RERentePourAttestationsFiscales();
+        rente1.setIdTiersBeneficiaire("1");
+        rente1.setIdRenteAccordee("1");
+        rente1.setDateDebutDroit("01.2011");
+        rente1.setDateFinDroit("");
+        tiers1.getMapRentes().put("1", rente1);
+
+        Assert.assertFalse(REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, anneeAsInteger));
+
+        //
+        rente1.setDateDebutDroit("01.2011");
+        rente1.setDateFinDroit("05.2011");
+
+        RERentePourAttestationsFiscales rente2 = new RERentePourAttestationsFiscales();
+        rente2.setIdTiersBeneficiaire("1");
+        rente2.setIdRenteAccordee("2");
+        rente2.setDateDebutDroit("06.2011");
+        rente2.setDateFinDroit("");
+        tiers1.getMapRentes().put("2", rente2);
+
+        Assert.assertFalse(REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, anneeAsInteger));
+        //
+        rente2.setDateDebutDroit("05.2011");
+        rente2.setDateFinDroit("");
+        Assert.assertTrue(REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, anneeAsInteger));
+        //
+        rente2.setDateDebutDroit("06.2011");
+        rente2.setDateDebutDroit("06.2011");
+        Assert.assertFalse(REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, anneeAsInteger));
+        //
+        rente1.setDateDebutDroit("01.2011");
+        rente1.setDateFinDroit("");
+        Assert.assertTrue(REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, anneeAsInteger));
+        //
+        rente1.setDateDebutDroit("01.2011");
+        rente1.setDateFinDroit("05.2011");
+        Assert.assertFalse(REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, anneeAsInteger));
+
+        // test les cas ou la date de fin de la RA est plus petite que la date de début -> doivent être exclus de
+        // l'analyse
+        RERentePourAttestationsFiscales rente3 = new RERentePourAttestationsFiscales();
+        rente3.setIdTiersBeneficiaire("1");
+        rente3.setIdRenteAccordee("3");
+        rente3.setDateDebutDroit("05.2011");
+        rente3.setDateFinDroit("04.2011");
+        tiers1.getMapRentes().put("3", rente3);
+        Assert.assertFalse(REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, anneeAsInteger));
+
+        // test avec 2ème tiers
+        RETiersPourAttestationsFiscales tiers2 = new RETiersPourAttestationsFiscales();
+        tiers2.setIdTiers("2");
+        famille.getMapTiersBeneficiaire().put("2", tiers2);
+
+        RERentePourAttestationsFiscales rente4 = new RERentePourAttestationsFiscales();
+        rente4.setIdTiersBeneficiaire("2");
+        rente4.setIdRenteAccordee("4");
+        rente4.setDateDebutDroit("02.2011");
+        rente4.setDateFinDroit("");
+        tiers2.getMapRentes().put("4", rente4);
+        Assert.assertFalse(REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, anneeAsInteger));
+    }
 }

@@ -7,7 +7,7 @@ import ch.globaz.prestation.domaine.constantes.DomaineCodePrestation;
  * Analyseur détectant les familles faisant parties du lot 5.
  * </p>
  * <p>
- * Ce lot comporte les rentes de survivants ayant une décision avec rétro dans l'année en cours uniquement.
+ * Attestations fiscales des rentes de survivants ayant une décision avec rétro dans l'année en cours et précédentes.
  * </p>
  * 
  * @author LGA

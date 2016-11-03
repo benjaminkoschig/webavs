@@ -244,10 +244,15 @@ public class REAgregateurDonneesPourAttestationsFiscales {
         for (REFamillePourAttestationsFiscales uneFamille : values) {
 
             boolean isRenteSurvivant = false;
+            boolean hasIdAdressePmtAZero = false;
             Map<String, Set<RETiersPourAttestationsFiscales>> tiersParIdAdressePaiement = new HashMap<String, Set<RETiersPourAttestationsFiscales>>();
 
             for (RETiersPourAttestationsFiscales unTiersBeneficiaire : uneFamille.getTiersBeneficiaires()) {
                 for (RERentePourAttestationsFiscales uneRenteDuTiers : unTiersBeneficiaire.getRentes()) {
+
+                    if (JadeStringUtil.isBlankOrZero(uneRenteDuTiers.getIdTiersAdressePaiement())) {
+                        hasIdAdressePmtAZero = true;
+                    }
 
                     CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(uneRenteDuTiers
                             .getCodePrestation()));
@@ -282,7 +287,14 @@ public class REAgregateurDonneesPourAttestationsFiscales {
                         familles.add(nouvelleFamille);
                     }
                 } else {
-                    uneFamille.setHasPlusieursAdressePaiement(true);
+                    /*
+                     * Si size == 2 et un id adresse pmt à zéro on ne met pas le flag à true
+                     */
+                    if (hasIdAdressePmtAZero && tiersParIdAdressePaiement.size() == 2) {
+                        uneFamille.setHasPlusieursAdressePaiement(false);
+                    } else {
+                        uneFamille.setHasPlusieursAdressePaiement(true);
+                    }
                     familles.add(uneFamille);
                 }
             } else {
