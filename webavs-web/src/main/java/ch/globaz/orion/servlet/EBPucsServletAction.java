@@ -10,8 +10,8 @@ import globaz.framework.servlets.FWServlet;
 import globaz.globall.db.BIPersistentObject;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.orion.process.importpucs.EBImportPucsDan;
-import globaz.orion.process.importpucs.EBImportSwissDec;
+import globaz.orion.process.importpucs.EBImportPucsDanProcess;
+import globaz.orion.process.importpucs.EBImportSwissDecProcess;
 import globaz.orion.vb.pucs.EBPucsFileViewBean;
 import globaz.orion.vb.pucs.EBPucsImportViewBean;
 import java.io.IOException;
@@ -82,16 +82,18 @@ public class EBPucsServletAction extends EBAbstractServletAction {
             _actionChangeUser(session, request, response, dispatcher);
         } else if (getAction().getActionPart().equals("importInDb")) {
             BSession bsession = (BSession) ((FWController) session.getAttribute("objController")).getSession();
-            Boolean isProcessRunnig = ProcessItemsService.isProcessRunnig(EBImportPucsDan.KEY, EBImportSwissDec.KEY);
+            Boolean isProcessRunnig = ProcessItemsService.isProcessRunnig(EBImportPucsDanProcess.KEY,
+                    EBImportSwissDecProcess.KEY);
             if (!isProcessRunnig) {
                 try {
                     if (!EBProperties.PUCS_SWISS_DEC_DIRECTORY.isEmpty()) {
-                        ProcessItemsFactory.newInstance().session(bsession).start(new EBImportSwissDec()).build();
+                        ProcessItemsFactory.newInstance().session(bsession).start(new EBImportSwissDecProcess())
+                                .build();
                     }
                 } catch (PropertiesException e) {
                     throw new RuntimeException(e);
                 }
-                ProcessItemsFactory.newInstance().session(bsession).start(new EBImportPucsDan()).build();
+                ProcessItemsFactory.newInstance().session(bsession).start(new EBImportPucsDanProcess()).build();
             }
             String destination = "/" + getAction().getApplicationPart() + "?userAction=orion.pucs.pucsFile.chercher";
             goSendRedirect(destination, request, response);
