@@ -58,7 +58,7 @@ public class PucsSwissDecItem extends ProcessItem {
                 PucsItem.save(pucsFile, affiliation, idJob, session);
             }
         } catch (Exception e) {
-            addException(e);
+            catchException(e);
         } finally {
             String path = remotePathDoneUri;
             if (hasErrorOrException()) {

@@ -41,6 +41,7 @@ import ch.globaz.xmlns.eb.pucs.PucsSearchOrderByEnum;
 import ch.globaz.xmlns.eb.pucs.PucsStatusEnum;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.sun.star.uno.RuntimeException;
 
 public class PucsServiceImpl implements PucsService {
 
@@ -63,8 +64,7 @@ public class PucsServiceImpl implements PucsService {
         }
     }
 
-    public static void updateStatusPucs(List<String> idsPucsEntry, PucsStatusEnum pucsStatusEnum, BSession session)
-            throws OrionPucsException {
+    public static void updateStatusPucs(List<String> idsPucsEntry, PucsStatusEnum pucsStatusEnum, BSession session) {
         try {
 
             List<Integer> ids = Lists.transform(idsPucsEntry, new Function<String, Integer>() {
@@ -78,7 +78,7 @@ public class PucsServiceImpl implements PucsService {
                     session.getUserId());
             ServicesProviders.pucsServiceProvide(session).updateStatusPucs(ids, usr.getUserId(), pucsStatusEnum);
         } catch (Exception e) {
-            throw new OrionPucsException("Impossible d'obtenir le contenu du fichier", e);
+            throw new RuntimeException("Impossible d'obtenir le contenu du fichier", e);
         }
     }
 
