@@ -120,7 +120,12 @@ public class EBPucsFileService {
         comptabiliser(pucsFile.getIdDb(), session);
     }
 
-    public static void accepter(String id, BSession session) {
+    public static void aTraiterByFilename(String filename, BSession session) {
+        PucsFile pucsFile = readByFilename(filename, session);
+        aTraiter(pucsFile.getIdDb(), session);
+    }
+
+    public static void aTraiter(String id, BSession session) {
         changeStatut(id, EtatPucsFile.A_TRAITER, session);
     }
 
