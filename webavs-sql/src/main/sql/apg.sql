@@ -9,4 +9,5 @@ insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcos
 insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 52015005, 'F', 'ACMALPHA2', 'ACM 2', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
 insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 52015005, 'D', 'ACMALPHA2', 'ACM 2', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
 
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.droits.acm2.maternite.dureejours','14');
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.prestation.maternite.acm2.actif','false');
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.prestation.maternite.acm2.nombre.jours','14');

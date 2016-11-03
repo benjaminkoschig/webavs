@@ -10,6 +10,7 @@ import globaz.apg.business.service.APPlausibilitesApgService;
 import globaz.apg.calculateur.APPrestationCalculateurFactory;
 import globaz.apg.calculateur.IAPPrestationCalculateur;
 import globaz.apg.calculateur.acm.alfa.APCalculateurAcmAlphaDonnesPersistence;
+import globaz.apg.calculateur.maternite.acm2.ACM2PersistenceInputData;
 import globaz.apg.calculateur.pojo.APPrestationCalculeeAPersister;
 import globaz.apg.calculateur.pojo.APRepartitionCalculeeAPersister;
 import globaz.apg.db.annonces.APAnnonceAPG;
@@ -25,12 +26,14 @@ import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.db.prestation.APCotisation;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
+import globaz.apg.db.prestation.APRepartitionJointPrestationManager;
 import globaz.apg.db.prestation.APRepartitionPaiements;
 import globaz.apg.enums.APAssuranceTypeAssociation;
 import globaz.apg.enums.APTypeCalculPrestation;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.exceptions.APEntityNotFoundException;
 import globaz.apg.exceptions.APWrongViewBeanTypeException;
+import globaz.apg.helpers.droits.APSituationProfessionnelleHelper;
 import globaz.apg.module.calcul.APBaseCalcul;
 import globaz.apg.module.calcul.APBasesCalculBuilder;
 import globaz.apg.module.calcul.APCalculException;
@@ -52,12 +55,14 @@ import globaz.framework.controller.FWAction;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
+import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
@@ -120,37 +125,13 @@ public class APPrestationHelper extends PRAbstractHelper {
         final APSituationProfessionnelleManager man = new APSituationProfessionnelleManager();
         man.setSession((BSession) session);
         man.setForIdDroit(droit.getIdDroit());
-        man.find();
+        man.find(BManager.SIZE_NOLIMIT);
 
         @SuppressWarnings("unchecked")
         final Iterator<APSituationProfessionnelle> iter = man.iterator();
         while (iter.hasNext()) {
             final APSituationProfessionnelle sitPro = iter.next();
             if (sitPro.getHasAcmAlphaPrestations().booleanValue()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Vrais si la situation prof du droit contient au moins un employeur avec la flag ACM2 a true
-     * 
-     * @param session
-     * @return
-     * @throws Exception
-     */
-    public static boolean hasAcm2FalgInSitPro(final BISession session, final APDroitLAPG droit) throws Exception {
-        final APSituationProfessionnelleManager man = new APSituationProfessionnelleManager();
-        man.setSession((BSession) session);
-        man.setForIdDroit(droit.getIdDroit());
-        man.find();
-
-        @SuppressWarnings("unchecked")
-        final Iterator<APSituationProfessionnelle> iter = man.iterator();
-        while (iter.hasNext()) {
-            final APSituationProfessionnelle sitPro = iter.next();
-            if (sitPro.getHasAcm2AlphaPrestations().booleanValue()) {
                 return true;
             }
         }
@@ -336,6 +317,9 @@ public class APPrestationHelper extends PRAbstractHelper {
             // calcul des ACM NE si la propriété TYPE_DE_PRESTATION_ACM vaut ACM_NE
             calculerPrestationsAcmNe(session, transaction, droit);
 
+            // Calcul des prestations ACM 2 si besoin
+            calculerPrestationsAcm2(session, transaction, droit);
+
             if (!hasErrors(session, transaction)) {
                 transaction.commit();
             }
@@ -400,6 +384,9 @@ public class APPrestationHelper extends PRAbstractHelper {
                     session, transaction);
 
             calculerPrestationsAcmNe(session, transaction, droit);
+
+            // Calcul des prestations ACM 2 si besoin
+            calculerPrestationsAcm2(session, transaction, droit);
 
         } catch (final Exception exception) {
             JadeLogger.error(this, exception);
@@ -485,11 +472,126 @@ public class APPrestationHelper extends PRAbstractHelper {
                 .calculerPrestation(entiteesDomainPourCalculAcmNe);
 
         // Conversion des entités de domain vers des entités de persistance
-        final List<APPrestationCalculeeAPersister> apResPreAcmNeEnt = calculateurAcmNe
+        final List<APPrestationCalculeeAPersister> resultatCalculAPersister = calculateurAcmNe
                 .domainToPersistence(entiteesDomainResultatCalcul);
 
         // Sauvegarde des entités de persistance
-        persisterResultatCalculPrestation(apResPreAcmNeEnt, session, transaction);
+        persisterResultatCalculPrestation(resultatCalculAPersister, session, transaction);
+    }
+
+    /**
+     * Calcul des prestations ACM 2 si la propriété {@link APProperties#PRESTATION_ACM_2_ACTIF} ET que l'on soit dans un
+     * droit maternité</br>
+     * Le calcul sera réalisé pour les situations professionnelle qui le nécéssitent (case à cocher dans l'écran des
+     * sit. prof)</br>
+     * 
+     * 
+     * @see APProperties.PRESTATION_ACM_2_ACTIF
+     * @see APProperties#PRESTATION_ACM_2_NOMBRE_JOURS
+     * @param session
+     * @param transaction
+     * @param droit
+     * @throws Exception
+     */
+    private void calculerPrestationsAcm2(final BSession session, final BTransaction transaction,
+            final APDroitLAPG droitLAPG) throws Exception {
+
+        if (droitLAPG == null) {
+            // TODO internationaliser
+            throw new Exception("APDroitLAPG is null");
+        }
+
+        if (!(droitLAPG instanceof APDroitMaternite)) {
+            return;
+        }
+
+        APDroitMaternite droit = (APDroitMaternite) droitLAPG;
+        /*
+         * Est-ce qu'on à a faire à un droit maternité
+         */
+        if (!JadeStringUtil.isBlankOrZero(droit.getGenreService())) {
+            if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
+                throw new Exception("GenreService must be CS_ALLOCATION_DE_MATERNITE");
+            }
+        }
+
+        /*
+         * Calcul des prestations ACM 2 uniquement si elles ont été activées par la caisse
+         */
+        if (!APProperties.PRESTATION_ACM_2_ACTIF.getBooleanValue()) {
+            return;
+        }
+
+        /*
+         * Est-ce que le nombre de jours définit dans la propriété est valide pour calculer des prestations ACM 2
+         */
+        int nombreJoursACM2 = Integer.valueOf(APProperties.PRESTATION_ACM_2_NOMBRE_JOURS.getValue());
+        if (nombreJoursACM2 <= 0) {
+            // TODO internationaliser
+            throw new Exception("Aucune prestation ACM 2 sera générées car la durée en jours n'est pas correcte ["
+                    + APProperties.PRESTATION_ACM_2_NOMBRE_JOURS.getDescription() + "=" + nombreJoursACM2 + "]");
+        }
+
+        if (!hasSituationProfAvecACM2(session, droit)) {
+            return;
+        }
+
+        // OK -> calcul des prestations ACM 2
+
+        final IAPPrestationCalculateur calculateurAcm2 = APPrestationCalculateurFactory
+                .getCalculateurInstance(APTypeDePrestation.ACM2_ALFA);
+
+        // TODO
+        // Récupération des données depuis la persistence pour le calcul des prestations ACM NE
+        final ACM2PersistenceInputData donnesPersistencePourCalculAcm2 = getDonneesPersistancePourCalculAcm2(droit,
+                nombreJoursACM2, session, transaction);
+
+        // Conversion vers des objets métier (domain) pour le calculateur
+        final List<Object> entiteesDomainPourCalculAcmNe = calculateurAcm2
+                .persistenceToDomain(donnesPersistencePourCalculAcm2);
+
+        // Calcul des prestation ACM NE avec le calculateur approprié
+        final List<Object> entiteesDomainResultatCalcul = calculateurAcm2
+                .calculerPrestation(entiteesDomainPourCalculAcmNe);
+
+        // Conversion des entités de domain vers des entités de persistance
+        final List<APPrestationCalculeeAPersister> resultatCalculAPersister = calculateurAcm2
+                .domainToPersistence(entiteesDomainResultatCalcul);
+
+        genererLesCotisation(resultatCalculAPersister);
+        // --> APModuleRepartitionPaiements.genererCotisationsACM
+        // Sauvegarde des entités de persistance
+        persisterResultatCalculPrestation(resultatCalculAPersister, session, transaction);
+    }
+
+    private void genererLesCotisation(List<APPrestationCalculeeAPersister> resultatCalculAPersister) {
+        // FIXME DCL générer les cotisations
+
+    }
+
+    /**
+     * Analyse les situations prof du droit. Retourne <code>true</code> si au moins une des situations prof nécessite un
+     * calcul de prestations ACM2
+     * 
+     * @param session
+     * @return Retourne <code>true</code> si au moins une des situations prof nécessite un calcul de prestations ACM2
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    public static boolean hasSituationProfAvecACM2(final BISession session, final APDroitLAPG droit) throws Exception {
+        final APSituationProfessionnelleManager man = new APSituationProfessionnelleManager();
+        man.setSession((BSession) session);
+        man.setForIdDroit(droit.getIdDroit());
+        man.find(BManager.SIZE_NOLIMIT);
+
+        final Iterator<APSituationProfessionnelle> iter = man.iterator();
+        while (iter.hasNext()) {
+            final APSituationProfessionnelle sitPro = iter.next();
+            if (sitPro.getHasAcm2AlphaPrestations() != null && sitPro.getHasAcm2AlphaPrestations().booleanValue()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -883,6 +985,117 @@ public class APPrestationHelper extends PRAbstractHelper {
     }
 
     /**
+     * @param idDroit
+     * @param session
+     * @param transaction
+     * @return
+     * @throws Exception
+     */
+    private ACM2PersistenceInputData getDonneesPersistancePourCalculAcm2(final APDroitMaternite droit,
+            int nombreJoursACM2, final BSession session, final BTransaction transaction) throws Exception {
+
+        final APEntityService servicePersistance = ApgServiceLocator.getEntityService();
+
+        // List<APSitProJointEmployeur> sitProJEmpl = servicePersistance.getSituationProfJointEmployeur(session,
+        // transaction, droit.getIdDroit());
+
+        // for (APSitProJointEmployeur sitPro : sitProJEmpl) {
+        // if (sitPro.getHasAcm2AlphaPrestations()) {
+        //
+        // }
+        // }
+
+        // Bean container des données de persistance
+        final ACM2PersistenceInputData donneesPersistence = new ACM2PersistenceInputData(droit.getIdDroit(),
+                nombreJoursACM2);
+
+        // Récupération de toutes les prestations joint repartitions
+        final List<APRepartitionJointPrestation> repartitionNonFiltrees = servicePersistance
+                .getRepartitionJointPrestationDuDroit(session, transaction, droit.getIdDroit());
+
+        APRepartitionJointPrestationManager manager = new APRepartitionJointPrestationManager();
+        manager.setSession(session);
+        manager.setForIdDroit(droit.getIdDroit());
+        manager.find(BManager.SIZE_NOLIMIT);
+        List<APRepartitionJointPrestation> tut = manager.toList();
+
+        System.out.println();
+        // On filtre car on ne veut pas les restitutions ou autres. Uniquement les prestations d'allocation
+        final List<APRepartitionJointPrestation> repartitionJointRepartitionsFiltree = new ArrayList<APRepartitionJointPrestation>();
+
+        for (APRepartitionJointPrestation repJointPrest : tut) {
+            repartitionJointRepartitionsFiltree.add(repJointPrest);
+            // filtrer les prestations qui vont bien !!!
+            // Pour les prest ACM contenu annonce = 0 !
+            // FIXME COMMENT ENLEVER LES PRESATIONS DFE RESTITUTION
+            // if (IAPAnnonce.CS_DEMANDE_ALLOCATION.equals(repJointPrest.getContenuAnnonce())) {
+            // repartitionJointRepartitionsFiltree.add(repJointPrest);
+            // } else if (IAPAnnonce.CS_DUPLICATA.equals(repJointPrest.getContenuAnnonce())) {
+            // repartitionJointRepartitionsFiltree.add(repJointPrest);
+            // }
+        }
+
+        donneesPersistence.setPrestations(repartitionJointRepartitionsFiltree);
+
+        // Situations professionnelles
+        final List<APSitProJointEmployeur> apSitProJoiEmpList = servicePersistance.getSituationProfJointEmployeur(
+                session, transaction, droit.getIdDroit());
+        donneesPersistence.setSituationProfessionnelleEmployeur(apSitProJoiEmpList);
+
+        // Récupération des taux
+        String dateDebutDroit = droit.getDateDebutDroit();
+        BigDecimal tauxAVS = getTauxAssurance(APProperties.ASSURANCE_AVS_PAR_ID.getValue(), dateDebutDroit, session);
+        if (tauxAVS == null) {
+            throw new Exception("_Impossible de retrouver le taux pour l'assurance AVS. Id assurance = ["
+                    + APProperties.ASSURANCE_AVS_PAR_ID.getValue() + "]");
+        }
+        donneesPersistence.setTauxAVS(tauxAVS);
+
+        BigDecimal tauxAC = getTauxAssurance(APProperties.ASSURANCE_AC_PAR_ID.getValue(), dateDebutDroit, session);
+        if (tauxAC == null) {
+            throw new Exception("Impossible de retrouver le taux pour l'assurance AC. Id assurance = ["
+                    + APProperties.ASSURANCE_AC_PAR_ID.getValue() + "]");
+        }
+        donneesPersistence.setTauxAC(tauxAC);
+
+        for (final APSitProJointEmployeur sitProJointEmployeur : apSitProJoiEmpList) {
+            APSituationProfessionnelle sitPro = new APSituationProfessionnelle();
+            sitPro.setSession(session);
+            sitPro.setIdSituationProf(sitProJointEmployeur.getIdSitPro());
+            sitPro.retrieve();
+            if (sitPro.isNew()) {
+                throw new Exception("Impossible de retrouver la sit pro avec l'id [" + sitPro.getIdSituationProf()
+                        + "]");
+            }
+            FWCurrency revenuMoyenDeterminant = APSituationProfessionnelleHelper.getSalaireJournalierVerse(sitPro);
+            revenuMoyenDeterminant = new FWCurrency(JANumberFormatter.format(revenuMoyenDeterminant.toString(), 1, 2,
+                    JANumberFormatter.SUP));
+            donneesPersistence.addRMDParEmployeur(sitPro.getIdSituationProf(), revenuMoyenDeterminant);
+        }
+
+        // final String dateDebutPrestationStandard = donneesPersistence.getPrestationJointRepartitions().get(0)
+        // .getDateDebut();
+        // for (final APSitProJointEmployeur apSitProJoiEmp : apSitProJoiEmpList) {
+        // // {taux AVS par, taux AC par,taux FNE par}>
+        // final BigDecimal[] taux = new BigDecimal[3];
+        //
+        // taux[0] = getTauxAssurance(APProperties.ASSURANCE_AVS_PAR_ID.getValue(), dateDebutDroit, session);
+        // taux[1] = getTauxAssurance(APProperties.ASSURANCE_AC_PAR_ID.getValue(), dateDebutDroit, session);
+        //
+        // // taux particulier pour l'association FNE
+        // if (APAssuranceTypeAssociation.FNE.isCodeSystemEqual(apSitProJoiEmp.getCsAssuranceAssociation())) {
+        // taux[2] = getTauxAssurance(APProperties.ASSURANCE_FNE_ID.getValue(), dateDebutPrestationStandard,
+        // session);
+        // }
+        //
+        // donneesPersistence.getTaux().put(apSitProJoiEmp.getIdSitPro(), taux);
+        // }
+
+        return donneesPersistence;
+
+    }
+
+    /**
      * @param session
      * @param droit
      * @return
@@ -912,7 +1125,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             if (null != taux) {
                 return new BigDecimal(Double.valueOf(taux.getValeurEmployeur()) / Double.valueOf(taux.getFraction()));
             } else {
-                throw new JadePersistenceException("APPrestationHelper.getTauxAssurance(): Taux null");
+                throw new JadePersistenceException("APPrestationHelper.getTauxAssurance() : Taux null");
             }
         } else {
             throw new JadePersistenceException(

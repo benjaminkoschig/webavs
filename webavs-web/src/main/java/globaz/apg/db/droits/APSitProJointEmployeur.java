@@ -430,7 +430,7 @@ public class APSitProJointEmployeur extends BEntity {
         nom = string;
     }
 
-    public boolean isHasAcm2AlphaPrestations() {
+    public boolean getHasAcm2AlphaPrestations() {
         return hasAcm2AlphaPrestations;
     }
 
