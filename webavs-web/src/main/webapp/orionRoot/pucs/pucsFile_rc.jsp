@@ -1,5 +1,5 @@
-<%@page import="globaz.orion.process.importpucs.EBImportSwissDec"%>
-<%@page import="globaz.orion.process.importpucs.EBImportPucsDan"%>
+<%@page import="globaz.orion.process.importpucs.EBImportSwissDecProcess"%>
+<%@page import="globaz.orion.process.importpucs.EBImportPucsDanProcess"%>
 <%@page import="ch.globaz.common.process.byitem.ProcessItemsService"%>
 <%@page import="ch.globaz.orion.business.domaine.pucs.EtatPucsFile"%>
 <%@page import="java.util.LinkedHashMap"%>
