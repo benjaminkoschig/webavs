@@ -12,6 +12,7 @@ public enum EtatPucsFile implements CodeSystemEnum<EtatPucsFile> {
     UPLOADED(""), // Pour EBU
     TRAITER(""), // pour EBU
     COMPTABILISE("11020005"),
+    EN_ERREUR("11020006"),
     UNDEFINDED("");
 
     private String value;

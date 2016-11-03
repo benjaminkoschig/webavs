@@ -57,11 +57,13 @@ import ch.globaz.common.dom.ElementsDomParser;
 import ch.globaz.orion.EBApplication;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.globaz.orion.business.domaine.pucs.EtatPucsFile;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.business.models.pucs.PucsFileMerge;
 import ch.globaz.orion.businessimpl.services.dan.DanServiceImpl;
 import ch.globaz.orion.businessimpl.services.pucs.DeclarationSalaireBuilder;
 import ch.globaz.orion.businessimpl.services.pucs.PucsServiceImpl;
+import ch.globaz.orion.service.EBPucsFileService;
 import com.google.common.base.Throwables;
 import com.google.gson.Gson;
 
@@ -368,7 +370,7 @@ public class EBTreatPucsFiles extends BProcess {
                                 _addError(getSession().getLabel("ERREUR_AUCUNE_COTISATION_AF") + " "
                                         + aff.getAffilieNumero() + " - " + getSession().getLabel("CANTON") + " "
                                         + canton);
-                                this.sendMailError1(emailAdress, null, this, pucsFileMerge);
+                                handleOnError(emailAdress, null, this, pucsFileMerge);
                                 error = true;
 
                             }
@@ -403,7 +405,7 @@ public class EBTreatPucsFiles extends BProcess {
                         } finally {
                             if (isOnError() || getSession().hasErrors() || e1 != null
                                     || getSession().getCurrentThreadTransaction().hasErrors()) {
-                                this.sendMailError1(emailAdress, e1, this,
+                                handleOnError(emailAdress, e1, this,
                                         getSession().getLabel("ERREUR_MAJ_PROV_INSTIT_ERREUR"), pucsFileMerge);
                                 moveFile = false;
                                 hasError = true;
@@ -509,7 +511,7 @@ public class EBTreatPucsFiles extends BProcess {
                     }
                 } catch (Throwable e) {
                     exceptionAppend = true;
-                    sendMailError1(getEmailAdress(), e, this, pucsFileMerge);
+                    handleOnError(getEmailAdress(), e, this, pucsFileMerge);
                 } finally {
 
                     try {
@@ -521,7 +523,7 @@ public class EBTreatPucsFiles extends BProcess {
                             }
                         }
                     } catch (Exception e) {
-                        sendMailError1(getEmailAdress(), e, this, pucsFileMerge);
+                        handleOnError(getEmailAdress(), e, this, pucsFileMerge);
                     }
 
                 }
@@ -618,8 +620,28 @@ public class EBTreatPucsFiles extends BProcess {
                 attachedDocumentLocationArray);
     }
 
-    private void sendMailError1(String mail, Throwable e, BProcess proces, PucsFileMerge fileMerge) throws Exception {
-        this.sendMailError1(mail, e, proces, "", fileMerge);
+    private void handleOnError(String mail, Throwable e, BProcess proces, PucsFileMerge fileMerge) throws Exception {
+        handleOnError(mail, e, proces, "", fileMerge);
+    }
+
+    /**
+     * Traitement global des erreurs pour la gestion des fichiers en erreurs.
+     * Si une erreur se produit :
+     * <ul>
+     * <li>Le/les fichiers PUCS concernés sont passés à l'état {@link EtatPucsFile#EN_ERREUR}
+     * <li>Un mail est envoyé à l'utilisteur avec le protocole des erreurs
+     * 
+     * @param mail
+     * @param e
+     * @param proces
+     * @param
+     * @param fileMerge
+     * @throws Exception
+     */
+    private void handleOnError(String mail, Throwable e, BProcess proces, String messageInfo, PucsFileMerge fileMerge)
+            throws Exception {
+        EBPucsFileService.enErreur(fileMerge.getPucsFileToMergded(), getSession());
+        sendMailError1(mail, e, proces, messageInfo, fileMerge);
     }
 
     private void sendMailError1(String mail, Throwable e, BProcess proces, String messageInfo, PucsFileMerge fileMerge)
