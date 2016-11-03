@@ -2,36 +2,36 @@
 <globaz.jade.jdbc.JadeJdbcDriver>
 	<datasources>
 
-	<datasource name="CCVD_TEST_CLIENTS" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.as400.access.AS400JDBCDriver</driver>
-			<url>jdbc:as400://10.204.22.14</url>
-			<user>gl_agla</user>
-			<password>gl_agla</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 	<datasource name="CCVD_TEST_CLIENTS" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.as400.access.AS400JDBCDriver</driver> -->
+<!-- 			<url>jdbc:as400://10.204.22.14</url> -->
+<!-- 			<user>gl_agla</user> -->
+<!-- 			<password>gl_agla</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 		
-		<datasource name="CCVD_TEST_REPRISE_PCRFM" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.as400.access.AS400JDBCDriver</driver>
-			<url>jdbc:as400://10.204.22.14:CHCLA400</url>
-			<user>ssii</user>
-			<password>ssiiadm</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="CCVD_TEST_REPRISE_PCRFM" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.as400.access.AS400JDBCDriver</driver> -->
+<!-- 			<url>jdbc:as400://10.204.22.14:CHCLA400</url> -->
+<!-- 			<user>ssii</user> -->
+<!-- 			<password>ssiiadm</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
 	<!--  Copie de la base d'integration de la CCVD chez Globaz pour test -->
-	<datasource name="CCVD_INT_TEST_GLOBAZ" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.as400.access.AS400JDBCDriver</driver>
-			<url>jdbc:as400://ASAVS1.intranet-heb.ch/CCVDINT </url>
-			<user>ssii</user>
-			<password>ssiiadm</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 	<datasource name="CCVD_INT_TEST_GLOBAZ" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.as400.access.AS400JDBCDriver</driver> -->
+<!-- 			<url>jdbc:as400://ASAVS1.intranet-heb.ch/CCVDINT </url> -->
+<!-- 			<user>ssii</user> -->
+<!-- 			<password>ssiiadm</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 		
 		<datasource name="DEV2PROD" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
 			<driver>com.ibm.db2.jcc.DB2Driver</driver>
@@ -43,45 +43,45 @@
 			<urlParameter name="prompt" value="false"/>
 		</datasource>
 
-		<datasource name="AMAL_DEV" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver>
-			<url>jdbc:db2://sdevamal1.ju.globaz.ch:51500/amaldev</url>
-			<user>amalidbq</user>
-			<password>amalidbq</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="AMAL_DEV" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver> -->
+<!-- 			<url>jdbc:db2://sdevamal1.ju.globaz.ch:51500/amaldev</url> -->
+<!-- 			<user>amalidbq</user> -->
+<!-- 			<password>amalidbq</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
-		<datasource name="CCVD_DEV" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.as400.access.AS400JDBCDriver</driver>
-			<url>jdbc:as400://ASGLOB2</url>
-			<user>wascnt</user>
-			<password>wascnt</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="CCVD_DEV" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.as400.access.AS400JDBCDriver</driver> -->
+<!-- 			<url>jdbc:as400://ASGLOB2</url> -->
+<!-- 			<user>wascnt</user> -->
+<!-- 			<password>wascnt</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
-		<datasource name="CCJU_DEV" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver>
-			<url>jdbc:db2://sglobdev2.ju.globaz.ch:52023/dev2prod</url>
-			<user>dev2idb2</user>
-			<password>dev2idb2</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="CCJU_DEV" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver> -->
+<!-- 			<url>jdbc:db2://sglobdev2.ju.globaz.ch:52023/dev2prod</url> -->
+<!-- 			<user>dev2idb2</user> -->
+<!-- 			<password>dev2idb2</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
-		<datasource name="CICICAM_DEV" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
-			<url>jdbc:db2://sglobdev1.ju.globaz.ch:52022/dev1prod</url>
-			<user>dev1idb2</user>
-			<password>dev1idb2</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="CICICAM_DEV" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver>  -->
+<!-- 			<url>jdbc:db2://sglobdev1.ju.globaz.ch:52022/dev1prod</url> -->
+<!-- 			<user>dev1idb2</user> -->
+<!-- 			<password>dev1idb2</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
 		<datasource name="CCVD_QA" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
 			<driver>com.ibm.as400.access.AS400JDBCDriver</driver>
@@ -106,35 +106,35 @@
 
 		<!-- Bases de qualité -->
 		
-		<datasource name="FVE_QUALITE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.as400.access.AS400JDBCDriver</driver>
-			<url>jdbc:as400://ASGLOB2</url>
-			<user>ssii</user>
-			<password>ssiiadm</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="FVE_QUALITE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.as400.access.AS400JDBCDriver</driver> -->
+<!-- 			<url>jdbc:as400://ASGLOB2</url> -->
+<!-- 			<user>ssii</user> -->
+<!-- 			<password>ssiiadm</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 		
-		<datasource name="CCB_QUALITE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.as400.access.AS400JDBCDriver</driver>
-			<url>jdbc:as400://ASGLOB2</url>
-			<user>jmc</user>
-			<password>qduna8ro</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="CCB_QUALITE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.as400.access.AS400JDBCDriver</driver> -->
+<!-- 			<url>jdbc:as400://ASGLOB2</url> -->
+<!-- 			<user>jmc</user> -->
+<!-- 			<password>qduna8ro</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
-		<datasource name="CCJU_QUALITE_1_5" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver>
-			<url>jdbc:db2://sccjuwq1.ju.globaz.ch:52004/ccjuqua</url>
-			<user>ccjuidbq</user>
-			<password>ccjuidbq</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="CCJU_QUALITE_1_5" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver> -->
+<!-- 			<url>jdbc:db2://sccjuwq1.ju.globaz.ch:52004/ccjuqua</url> -->
+<!-- 			<user>ccjuidbq</user> -->
+<!-- 			<password>ccjuidbq</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 		
 		<datasource name="CCJU_QUALITE_1_6" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
 			<driver>com.ibm.db2.jcc.DB2Driver</driver>
@@ -146,55 +146,55 @@
 			<urlParameter name="prompt" value="false"/>
 		</datasource>
 		
-		<datasource name="CCJU_PC_RFM_QUALITE_1_6" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver>
-			<url>jdbc:db2://spcrfmq1.ju.globaz.ch:50005/rfmqua</url>
-			<user>db2inst1</user>
-			<password>db2inst1</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="CCJU_PC_RFM_QUALITE_1_6" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver> -->
+<!-- 			<url>jdbc:db2://spcrfmq1.ju.globaz.ch:50005/rfmqua</url> -->
+<!-- 			<user>db2inst1</user> -->
+<!-- 			<password>db2inst1</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
-		<datasource name="CICICAM_QUALITE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
-			<url>jdbc:db2://sciciqa1.ju.globaz.ch:50005/ciciqua</url>
-			<user>db2inst1</user>
-			<password>db2inst1</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="CICICAM_QUALITE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver>  -->
+<!-- 			<url>jdbc:db2://sciciqa1.ju.globaz.ch:50005/ciciqua</url> -->
+<!-- 			<user>db2inst1</user> -->
+<!-- 			<password>db2inst1</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 		
-		<datasource name="CVCI_QUALTIE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver>
-			<url>jdbc:db2://scvciwq1.ju.globaz.ch:52005/cvciqua</url>
-			<user>cvciidbq</user>
-			<password>cvciidbq</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="CVCI_QUALTIE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver> -->
+<!-- 			<url>jdbc:db2://scvciwq1.ju.globaz.ch:52005/cvciqua</url> -->
+<!-- 			<user>cvciidbq</user> -->
+<!-- 			<password>cvciidbq</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
-		<datasource name="FER_QUALITE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
-			<url>jdbc:db2://sferwq2.ju.globaz.ch:52013/ferqu2</url>
-			<user>feridbq</user>
-			<password>feridbq</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="FER_QUALITE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver>  -->
+<!-- 			<url>jdbc:db2://sferwq2.ju.globaz.ch:52013/ferqu2</url> -->
+<!-- 			<user>feridbq</user> -->
+<!-- 			<password>feridbq</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
-		<datasource name="FPV_QUALITE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
-			<url>jdbc:db2://sfpvqa1.ju.globaz.ch:50005/fpvqua</url>
-			<user>db2inst1</user>
-			<password>db2inst1</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="FPV_QUALITE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver>  -->
+<!-- 			<url>jdbc:db2://sfpvqa1.ju.globaz.ch:50005/fpvqua</url> -->
+<!-- 			<user>db2inst1</user> -->
+<!-- 			<password>db2inst1</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 		
 		<datasource name="H51_X_QUALITE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
 			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
@@ -206,165 +206,146 @@
 			<urlParameter name="prompt" value="false"/>
 		</datasource>
 		
-		<datasource name="MEROBA_QUALITE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
-			<url>jdbc:db2://smergewq1.ju.globaz.ch:52021/megequa</url>
-			<user>megeidbq</user>
-			<password>megeidbq</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="MEROBA_QUALITE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver>  -->
+<!-- 			<url>jdbc:db2://smergewq1.ju.globaz.ch:52021/megequa</url> -->
+<!-- 			<user>megeidbq</user> -->
+<!-- 			<password>megeidbq</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
 
-		<datasource name="CCVS_QUALITE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver>
-			<url>jdbc:db2://sccvswq2.ju.globaz.ch:50121/ccvsqua</url>
-			<user>iccvsqua</user>
-			<password>iccvsqua</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="CCVS_QUALITE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver> -->
+<!-- 			<url>jdbc:db2://sccvswq2.ju.globaz.ch:50121/ccvsqua</url> -->
+<!-- 			<user>iccvsqua</user> -->
+<!-- 			<password>iccvsqua</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 		
 		<!-- BASE DE REPRISE -->
 
-		<datasource name="REPRISE_PC" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
-			<url>jdbc:db2:REP2PROD</url>
-			<user>rep2idb2</user>
-			<password>rep2idb2</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="REPRISE_PC" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver>  -->
+<!-- 			<url>jdbc:db2:REP2PROD</url> -->
+<!-- 			<user>rep2idb2</user> -->
+<!-- 			<password>rep2idb2</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
-		<datasource name="REP5PRO2" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>COM.ibm.db2.jdbc.app.DB2Driver</driver>
-			<url>jdbc:db2://sglobre5.ju.globaz.ch:54005/rep5pro2</url>
-			<user><![CDATA[7IdCavkqEMyB7l8iBOC3zA==]]></user>
-			<password><![CDATA[7IdCavkqEMyB7l8iBOC3zA==]]></password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="REP5PRO2" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>COM.ibm.db2.jdbc.app.DB2Driver</driver> -->
+<!-- 			<url>jdbc:db2://sglobre5.ju.globaz.ch:54005/rep5pro2</url> -->
+<!-- 			<user><![CDATA[7IdCavkqEMyB7l8iBOC3zA==]]></user> -->
+<!-- 			<password><![CDATA[7IdCavkqEMyB7l8iBOC3zA==]]></password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 		
 		<!-- Bases d'intégration -->
 
-		<datasource name="CCJU_INTEGRATION_2" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
-			<url>jdbc:db2://sccjuwi2.intranet-heb.ch:51266/ccjuint</url>
-			<user>ccjuidbi</user>
-			<password>ccjuidbi</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="CCJU_INTEGRATION_2" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver>  -->
+<!-- 			<url>jdbc:db2://sccjuwi2.intranet-heb.ch:51266/ccjuint</url> -->
+<!-- 			<user>ccjuidbi</user> -->
+<!-- 			<password>ccjuidbi</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
-		<datasource name="CCJU_INTEGRATION_3" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
-			<url>jdbc:db2://sccjui1.intranet-heb.ch:50005/ccjuint</url>
-			<user>ccjuidbi</user>
-			<password>ccjuidbi</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="CCJU_INTEGRATION_3" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver>  -->
+<!-- 			<url>jdbc:db2://sccjui1.intranet-heb.ch:50005/ccjuint</url> -->
+<!-- 			<user>ccjuidbi</user> -->
+<!-- 			<password>ccjuidbi</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
-		<datasource name="CCJU_INTEGRATION_TEST" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
-			<url>jdbc:db2://ccjui1.intranet-heb.ch:50005/ccjui1</url>
-			<user>db2inst1</user>
-			<password>db2inst1</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="CCJU_INTEGRATION_TEST" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver>  -->
+<!-- 			<url>jdbc:db2://ccjui1.intranet-heb.ch:50005/ccjui1</url> -->
+<!-- 			<user>db2inst1</user> -->
+<!-- 			<password>db2inst1</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 		
-		<datasource name="CICICAM_INTEGRATION" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
-			<url>jdbc:db2://sciciwi1.intranet-heb.ch:51263/ciciint</url>
-			<user>ciciidbi</user>
-			<password>ciciidbi</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="CICICAM_INTEGRATION" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver>  -->
+<!-- 			<url>jdbc:db2://sciciwi1.intranet-heb.ch:51263/ciciint</url> -->
+<!-- 			<user>ciciidbi</user> -->
+<!-- 			<password>ciciidbi</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
-		<datasource name="CVCI_INTEGRATION" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
-			<url>jdbc:db2://scvciwi1.intranet-heb.ch:51261/cvciint</url>
-			<user>cvciidbi</user>
-			<password>cvciidbi</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="CVCI_INTEGRATION" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver>  -->
+<!-- 			<url>jdbc:db2://scvciwi1.intranet-heb.ch:51261/cvciint</url> -->
+<!-- 			<user>cvciidbi</user> -->
+<!-- 			<password>cvciidbi</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
-		<datasource name="H51_4_INTEGRATION" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
-			<url>jdbc:db2://sh514wi1.intranet-heb.ch:51255/h514int</url>
-			<user>h514idbi</user>
-			<password>h514idbi</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="H51_4_INTEGRATION" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver>  -->
+<!-- 			<url>jdbc:db2://sh514wi1.intranet-heb.ch:51255/h514int</url> -->
+<!-- 			<user>h514idbi</user> -->
+<!-- 			<password>h514idbi</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
-		<datasource name="MEROBA_INTEGRATION_1" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
-			<url>jdbc:db2://smergewi1.intranet-heb.ch:51263/megeint</url>
-			<user>megeidbi</user>
-			<password>megeidbi</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="MEROBA_INTEGRATION_1" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver>  -->
+<!-- 			<url>jdbc:db2://smergewi1.intranet-heb.ch:51263/megeint</url> -->
+<!-- 			<user>megeidbi</user> -->
+<!-- 			<password>megeidbi</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
-		<datasource name="MEROBA_INTEGRATION_2" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver> 
-			<url>jdbc:db2://smergewi2.intranet-heb.ch:51302/megeint2</url>
-			<user>megeidbi</user>
-			<password>megeidbi</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="MEROBA_INTEGRATION_2" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver>  -->
+<!-- 			<url>jdbc:db2://smergewi2.intranet-heb.ch:51302/megeint2</url> -->
+<!-- 			<user>megeidbi</user> -->
+<!-- 			<password>megeidbi</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 
-		<datasource name="REPRISE_CCVD_400" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">			
-				<driver>com.ibm.as400.access.AS400JDBCDriver</driver>
-				<!-- CCVD  Reprise  -->
-				<url>jdbc:as400://10.204.22.14</url>
-				<user>gl_agla</user>
-				<password>gl_agla</password>
-				<maxConnections>100</maxConnections>
-				<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-				<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="REPRISE_CCVD_400" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">			 -->
+<!-- 				<driver>com.ibm.as400.access.AS400JDBCDriver</driver> -->
+<!-- 				CCVD  Reprise  -->
+<!-- 				<url>jdbc:as400://10.204.22.14</url> -->
+<!-- 				<user>gl_agla</user> -->
+<!-- 				<password>gl_agla</password> -->
+<!-- 				<maxConnections>100</maxConnections> -->
+<!-- 				<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 				<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
+		
 		
 		<datasource name="DEV5PROD" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
 			<driver>com.ibm.db2.jcc.DB2Driver</driver>
-			<url>jdbc:db2://sglobdev5.ju.globaz.ch:52027/dev5prod</url>
-			<user>dev5idb2</user>
-			<password>dev5idb2</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
-		
-		<datasource name="DATASOURCE_BMSDEV" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver>
-			<url>jdbc:db2://sglobdev3.ju.globaz.ch:52024/dev3prod</url>
-			<user>dev3idb2</user>
-			<password>dev3idb2</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
-		
-		<datasource name="DATASOURCE_BMSAQ" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver>
-			<url>jdbc:db2://sbmsqa1.ju.globaz.ch:50005/bmsqua</url>
+			<url>jdbc:db2://sglobdev5.ju.globaz.ch:50005/dev5prod</url>
 			<user>db2inst1</user>
 			<password>db2inst1</password>
 			<maxConnections>100</maxConnections>
@@ -372,15 +353,35 @@
 			<urlParameter name="prompt" value="false"/>
 		</datasource>
 		
-		<datasource name="DATASOURCE_BMSINT" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver>
-			<url>jdbc:db2://sbmsi1.intranet-heb.ch:50005/bmsint</url>
-			<user>globwrk</user>
-			<password>glob4az</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="DATASOURCE_BMSDEV" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver> -->
+<!-- 			<url>jdbc:db2://sglobdev3.ju.globaz.ch:52024/dev3prod</url> -->
+<!-- 			<user>dev3idb2</user> -->
+<!-- 			<password>dev3idb2</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
+		
+<!-- 		<datasource name="DATASOURCE_BMSAQ" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver> -->
+<!-- 			<url>jdbc:db2://sbmsqa1.ju.globaz.ch:50005/bmsqua</url> -->
+<!-- 			<user>db2inst1</user> -->
+<!-- 			<password>db2inst1</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
+		
+<!-- 		<datasource name="DATASOURCE_BMSINT" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver> -->
+<!-- 			<url>jdbc:db2://sbmsi1.intranet-heb.ch:50005/bmsint</url> -->
+<!-- 			<user>globwrk</user> -->
+<!-- 			<password>glob4az</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 		
 <!-- 		<datasource name="DATASOURCE_BMSPROD" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
 <!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver> -->
@@ -392,15 +393,15 @@
 <!-- 			<urlParameter name="prompt" value="false"/> -->
 <!-- 		</datasource>		 -->
 
-		<datasource name="DATASOURCE_REP3PROD" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
-			<driver>com.ibm.db2.jcc.DB2Driver</driver>
-			<url>jdbc:db2://sglobre3.ju.globaz.ch:54003/rep3prod</url>
-			<user>db2inst1</user>
-			<password>db2inst1</password>
-			<maxConnections>100</maxConnections>
-			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
-			<urlParameter name="prompt" value="false"/>
-		</datasource>
+<!-- 		<datasource name="DATASOURCE_REP3PROD" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect"> -->
+<!-- 			<driver>com.ibm.db2.jcc.DB2Driver</driver> -->
+<!-- 			<url>jdbc:db2://sglobre3.ju.globaz.ch:54003/rep3prod</url> -->
+<!-- 			<user>db2inst1</user> -->
+<!-- 			<password>db2inst1</password> -->
+<!-- 			<maxConnections>100</maxConnections> -->
+<!-- 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation> -->
+<!-- 			<urlParameter name="prompt" value="false"/> -->
+<!-- 		</datasource> -->
 		
 	</datasources>
 </globaz.jade.jdbc.JadeJdbcDriver>

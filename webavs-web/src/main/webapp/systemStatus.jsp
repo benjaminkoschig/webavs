@@ -1,5 +1,6 @@
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<%@page import="java.nio.charset.Charset"%>
 <HTML>
 <HEAD>
 <%@ page
@@ -21,7 +22,11 @@ contentType="text/html; charset=ISO-8859-1"
 	            <TABLE border="0" bgcolor="#B3C4DB">
 	                    <TR>
 	                        <TD width="10"></TD>
-	                        <TD width="1190"><TEXTAREA rows="40" cols="144" readonly="readonly"><%=globaz.globall.db.GlobazServer.getCurrentSystem().getSystemStatus()%></TEXTAREA></TD>
+	                        <TD width="1190">
+	                        	<TEXTAREA rows="40" cols="144" readonly="readonly"><%=globaz.globall.db.GlobazServer.getCurrentSystem().getSystemStatus()%>
+	                    		 \r\n Default Charset= <%=Charset.defaultCharset()%> \r\n;
+	                       	 	</TEXTAREA>
+	                       	</TD>
 	                    </TR>
 	            </TABLE>
             </TD>

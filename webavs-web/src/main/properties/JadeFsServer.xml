@@ -7,7 +7,7 @@
 		<!--  name [REQUIRED]: nom du protocole-->
 		<!--  class [REQUIRED]: classe implementant le protocole (doit implementer JadeFsService)-->
 		<protocol name="JadeFsServiceJDBC" class="globaz.jade.fs.service.jdbc.JadeFsService">
-			<url>jdbc:jade:GLOBAZ_DATASOURCE_400</url>
+			<url>jdbc:jade:CCJU_QUALITE_1_6</url>
 		</protocol>
 		<protocol name="JadeFsServiceSftp" class="globaz.jade.fs.service.jsch.JadeFsService">
 			<!--private.key.1>C:\\Documents and Settings\\DDA\\Bureau\\keys\\id_dsa_513</private.key.1-->

@@ -6,19 +6,12 @@ import globaz.jade.common.Jade;
 import globaz.jade.context.JadeThread;
 import globaz.jade.context.JadeThreadActivator;
 import globaz.jade.log.business.renderer.JadeBusinessMessageRenderer;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map.Entry;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
 import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.pegasus.tests.util.Init;
-import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
-import com.google.common.base.Function;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimaps;
 
 public class Demo {
     private static final Object OBJECT = new Object();
@@ -30,11 +23,18 @@ public class Demo {
         // "select schema.REPRACC.ZTLCPR as code , schema.REPRACC.ZTMPRE as montant from schema.REPRACC where (ZTDFDR=0 or ZTDFDR is null) AND schema.REPRACC.ZTLCPR IN ('110') ",
         // StatPresation.class);
         //
-        // // SimpleOutPutListGenerator<StatPresation> csv = SimpleOuptutListFactory.buildCsv(StatPresation.class,
-        // // Locale.FRENCH);
-        // // File file = xls.generateFileWithHeader("D:/demo/demo", stats);
-        // File file = SimpleOutputListBuilderJade.newInstance().outputNameAndAddPath("demo").asXls()
-        // .addList(statPresations).addTitle("Title", Align.LEFT).build();
+        // SimpleOutputListBuilderJade.newInstance().outputNameAndAddPath("demo").addList(statPresations).asXls().build();
+        // //
+        // //
+        // //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        // .addTitle("Title", Align.LEFT).build();
         // System.out.println(file.getAbsolutePath());
 
         List<StatPresation> statPresations = QueryExecutor
@@ -42,33 +42,31 @@ public class Demo {
                         "select schema.REPRACC.ZTLCPR as code , count(schema.REPRACC.ZTLCPR) as nb, sum(schema.REPRACC.ZTMPRE) as montant from schema.REPRACC where (ZTDFDR=0 or ZTDFDR is null) group by schema.REPRACC.ZTLCPR",
                         StatPresation.class);
 
-        ListMultimap<String, StatPresation> multimap = Multimaps.index(statPresations,
-                new Function<StatPresation, String>() {
-                    @Override
-                    public String apply(StatPresation stat) {
-                        if ("-110-150-113-".contains("-" + stat.getCode() + "-")) {
-                            return "PC";
-                        } else {
-                            return "Autre";
-                        }
-                    }
-                });
+        // ListMultimap<String, StatPresation> multimap = Multimaps.index(statPresations,
+        // new Function<StatPresation, String>() {
+        // @Override
+        // public String apply(StatPresation stat) {
+        // if ("-110-150-113-".contains("-" + stat.getCode() + "-")) {
+        // return "PC";
+        // } else {
+        // return "Autre";
+        // }
+        // }
+        // });
 
-        SimpleOutputListBuilder builder = SimpleOutputListBuilderJade.newInstance().outputNameAndAddPath("demoJump")
-                .asCsv();
-        for (Entry<String, Collection<StatPresation>> entry : multimap.asMap().entrySet()) {
-            builder.addList(entry.getValue()).addSubTitle(entry.getKey()).jump();
-        }
-        builder.build();
-        builder.asPdf().build();
+        // SimpleOutputListBuilder builder = SimpleOutputListBuilderJade.newInstance().outputNameAndAddPath("demoJump");
+        // for (Entry<String, Collection<StatPresation>> entry : multimap.asMap().entrySet()) {
+        // builder.addList(entry.getValue()).addSubTitle(entry.getKey()).jump();
+        // }
 
         // Details details = new Details();
-        // details.add("Nb Ligne", String.valueOf(stats.size()));
+        // details.add("Nb Ligne", "150");
         // details.addEmpty();
         // details.addEmpty();
         // details.addEmpty();
         // details.newLigne();
-        // pdf.addDetails(details);
+        // builder.addHeaderDetails(details);
+        // builder.asXls().addTitle("Title", Align.LEFT).outputName("d://").build();
 
     }
 

@@ -4,7 +4,7 @@
 	<!--homeDir: repertoire de base de l'application, necessaire pour trouver les fichiers de l'application-->
 	<homeDir>D:\workspaces\avs\trunk\webavs-parent\webavs-web\src\main\webapp</homeDir>
 	<!--persistenceDir: repertoire pour la persistance interne, si vide: homeDir + /persistence-->
-	<persistenceDir></persistenceDir>
+	<persistenceDir>D:\persistenceDirWebavs</persistenceDir>
 	<!--logDir: repertoire pour les fichiers LOG de l'application, si vide: homeDir + /logs-->
 	<logDir></logDir>
 	<!--rootUrl: URL pour acceder a la WebApp, inutile si l'application Web n'est pas deployee-->
@@ -35,11 +35,16 @@
 	<!-- 	<defaultJdbcUrl>jdbc:jade:FERCIAM_DEV</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>WEBAVSCIAM</defaultJdbcSchema> -->
 	
-	<!-- 	<defaultJdbcUrl>jdbc:jade:H51X_DEV</defaultJdbcUrl> -->
-	<!-- 	<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
+<!-- 		<defaultJdbcUrl>jdbc:jade:H51X_DEV</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
 	
-<!--  	<defaultJdbcUrl>jdbc:jade:DEV2PROD</defaultJdbcUrl>   -->
-<!--  	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> 	  -->
+ 	<defaultJdbcUrl>jdbc:jade:DEV2PROD</defaultJdbcUrl>  
+ 	<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> 	 
+
+<!--  	<defaultJdbcUrl>jdbc:jade:DEV5PROD</defaultJdbcUrl>   -->
+<!--  	<defaultJdbcSchema>CVCIWEB</defaultJdbcSchema> 	  -->
+
+
 <!-- BASES DE QUALITE -->
 
 <!-- 	<defaultJdbcUrl>jdbc:jade:FVE_QUALITE</defaultJdbcUrl> -->
@@ -57,8 +62,8 @@
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>PC_CCVD</defaultJdbcSchema> -->
 	
-		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl>
-		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>	
+<!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>	 -->
 
 <!-- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
@@ -76,7 +81,7 @@
 	<!-- 	<defaultJdbcSchema>CVCIWEB</defaultJdbcSchema> -->
 	
 <!-- 		<defaultJdbcUrl>jdbc:jade:FERCIAM_QUA</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>WEBAVSCIAM</defaultJdbcSchema> -->
+<!-- 		<defaultJdbcSchema>webavsciam</defaultJdbcSchema> -->
 	
 <!-- 		<defaultJdbcUrl>jdbc:jade:FPV_QUALITE</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>WEBAVSS</defaultJdbcSchema> -->
