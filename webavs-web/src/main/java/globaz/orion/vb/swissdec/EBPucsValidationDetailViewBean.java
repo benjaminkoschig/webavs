@@ -3,6 +3,7 @@ package globaz.orion.vb.swissdec;
 import globaz.draco.db.declaration.DSDeclarationListViewBean;
 import globaz.draco.db.declaration.DSDeclarationViewBean;
 import globaz.globall.db.BManager;
+import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JACalendar;
 import globaz.hercule.service.CETiersService;
 import globaz.jade.client.util.JadeStringUtil;
@@ -24,6 +25,7 @@ import ch.globaz.draco.business.domaine.DeclarationSalaireType;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.businessimpl.services.pucs.DeclarationSalaireBuilder;
+import ch.globaz.orion.businessimpl.services.pucs.PucsServiceImpl;
 import ch.globaz.orion.service.EBPucsFileService;
 import ch.globaz.orion.ws.service.AFMassesForAffilie;
 import ch.globaz.orion.ws.service.AppAffiliationService;
@@ -59,6 +61,7 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
         }
         findTheNextToValidate();
         pucsFile = EBPucsFileService.read(getCurrentId(), getSession());
+
         if (getNextId() != null && !getNextId().isEmpty()) {
             nextPucsFile = EBPucsFileService.read(getNextId(), getSession());
         } else {
@@ -73,6 +76,16 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
         affiliation.setSession(getSession());
         affiliation.setAffiliationId(pucsFile.getIdAffiliation());
         affiliation.retrieve();
+
+        pucsFile.setLock(!PucsServiceImpl.userHasRight(affiliation, BSessionUtil.getSessionFromThreadContext()));
+        if (!pucsFile.isLock()) {
+            pucsFile.setLock(!AFAffiliationServices.hasRightAccesSecurity(pucsFile.getCodeSecuriteCi(),
+                    BSessionUtil.getSessionFromThreadContext()));
+        }
+
+        if (pucsFile.isLock()) {
+            throw new RuntimeException("Access level security not authorized");
+        }
 
         if (!affiliation.isNew()) {
             isAffiliationExistante = true;
