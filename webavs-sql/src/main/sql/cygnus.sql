@@ -37,7 +37,7 @@ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 66002304,
 
 --- nouvelles propriétés cantons VS
 delete from SCHEMA.jadeprop where propname = 'cygnus.canton.loi.rfm';
-insert into SCHEMA.jadeprop (propname, propval) values ('cygnus.canton.loi.rfm', 'VS');
+insert into SCHEMA.jadeprop (propname, propval) values ('cygnus.canton.loi.rfm', '');
 
 -- nouvelle colone table rfprest
  alter table SCHEMA.rfprest add column FOTGEN DECIMAL(8,0);
