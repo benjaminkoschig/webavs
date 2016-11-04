@@ -1538,6 +1538,7 @@ public class AFApercuReleve extends BEntity {
                 line.setAssuranceLibelleAl(donneesFacturation.getAssuranceLibelleAl());
                 line.setAssuranceLibelleFr(donneesFacturation.getAssuranceLibelleFr());
                 line.setAssuranceLibelleIt(donneesFacturation.getAssuranceLibelleIt());
+                line.setTypeAssurance(donneesFacturation.getTypeAssurance());
                 line.setNatureRubrique(donneesFacturation.getNatureRubrique());
                 line.setAssuranceRubriqueId(donneesFacturation.getAssuranceRubriqueId());
                 line.setIdPlan(donneesFacturation.getIdPlanAffiliation());

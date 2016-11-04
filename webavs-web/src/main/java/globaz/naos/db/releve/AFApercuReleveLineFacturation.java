@@ -53,6 +53,7 @@ public class AFApercuReleveLineFacturation implements Cloneable {
     private String tauxGenre = null;
     private String tauxType = null;
     private String typeCalcul = null;
+    private String typeAssurance = null;
 
     // *******************************************************
     // Getter
@@ -413,6 +414,14 @@ public class AFApercuReleveLineFacturation implements Cloneable {
      */
     public void setTypeCalcul(String string) {
         typeCalcul = string;
+    }
+
+    public String getTypeAssurance() {
+        return typeAssurance;
+    }
+
+    public void setTypeAssurance(String typeAssurance) {
+        this.typeAssurance = typeAssurance;
     }
 
 }

@@ -11,6 +11,7 @@ import globaz.naos.db.cotisation.AFCotisation;
 import globaz.naos.db.releve.AFApercuReleve;
 import globaz.naos.db.releve.AFApercuReleveManager;
 import globaz.orion.process.EBDanPreRemplissage;
+import globaz.orion.utils.EBSddUtils;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -192,11 +193,13 @@ public class WebAvsCotisationsServiceImpl implements WebAvsCotisationsService {
             // Récupération des relevés
             decompte = fillCotisationsInformationsWithReleve(numeroAffilie, decompte, session);
 
+            // Préparation des données utiles pour SDD
+            decompte = EBSddUtils.prepareDataForEbusiness(decompte);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        // TODO Return exception pour cas en dehors affiliation
         return decompte;
     }
 

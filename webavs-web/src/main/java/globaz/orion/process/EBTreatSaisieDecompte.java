@@ -11,22 +11,18 @@ import globaz.jade.log.JadeLogger;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationUtil;
 import globaz.naos.db.releve.AFApercuReleve;
-import globaz.naos.db.releve.AFApercuReleveLineFacturation;
 import globaz.naos.db.releve.AFApercuReleveManager;
 import globaz.naos.translation.CodeSystem;
+import globaz.orion.utils.EBSddUtils;
 import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.webavs.common.ICommonConstantes;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,10 +32,8 @@ import ch.globaz.orion.business.models.sdd.RecapSaisieDecompte;
 import ch.globaz.orion.business.models.sdd.RecapSaisieDecompteBuilder;
 import ch.globaz.orion.businessimpl.services.sdd.SddServiceImpl;
 import ch.globaz.xmlns.eb.sdd.DecompteAndLignes;
-import ch.globaz.xmlns.eb.sdd.DecompteEntity;
 import ch.globaz.xmlns.eb.sdd.DecompteStatutEnum;
 import ch.globaz.xmlns.eb.sdd.DecompteTypeEnum;
-import ch.globaz.xmlns.eb.sdd.LigneDeDecompteEntity;
 
 public class EBTreatSaisieDecompte extends BProcess {
 
@@ -61,11 +55,6 @@ public class EBTreatSaisieDecompte extends BProcess {
 
         try {
             List<DecompteAndLignes> listDecomptes = SddServiceImpl.listSddSaisies(getSession());
-
-            // ****TEST*****
-            // List<DecompteAndLignes> listDecomptes = new ArrayList<DecompteAndLignes>();
-            // listDecomptes.add(createDecompteAndLignes());
-            // ****TEST*****
 
             // Pas de saisie, on fait rien
             if (listDecomptes.isEmpty()) {
@@ -194,7 +183,7 @@ public class EBTreatSaisieDecompte extends BProcess {
         releve.generationCotisationList();
 
         // Mise à jour des masses suivant le SDD
-        fillMassesInEachCotisation(decompte.getLignesDeDecompte(), releve);
+        EBSddUtils.computeDataForReleve(decompte.getLignesDeDecompte(), releve);
 
         // Set des la facturation
         releve.setIdExterneFacture("201610000");
@@ -209,19 +198,6 @@ public class EBTreatSaisieDecompte extends BProcess {
         releve.add(getTransaction());
 
         addInfosTraitement(affiliation, decompte, determineTypeReleve(decompte), "");
-    }
-
-    static void fillMassesInEachCotisation(List<LigneDeDecompteEntity> lignes, AFApercuReleve releve) {
-        for (int j = 0; j < releve.getCotisationList().size(); j++) {
-            AFApercuReleveLineFacturation releveLine = releve.getCotisationList().get(j);
-            for (LigneDeDecompteEntity ligne : lignes) {
-                int idAssuranceReleve = Integer.parseInt(releveLine.getCotisationId());
-                if (idAssuranceReleve == ligne.getIdCotisationWebavs() && ligne.getNouvelleMasse() != null) {
-                    releveLine.setMasse(ligne.getNouvelleMasse().doubleValue());
-                }
-            }
-
-        }
     }
 
     static String resolveDateDebut(DecompteAndLignes decompte) {
@@ -422,63 +398,5 @@ public class EBTreatSaisieDecompte extends BProcess {
         }
 
         return "";
-    }
-
-    private DecompteAndLignes createDecompteAndLignes() {
-
-        DecompteEntity d = new DecompteEntity();
-        d.setCreationDate(createDate("20161031"));
-        d.setDateDeSaisie(createDate("20161031"));
-        d.setIdAffiliationWebavs(52561); // 000.6789
-        d.setIdPartner(0);
-        d.setIdUser(0);
-
-        d.setLastModificationDate(createDate("20161031"));
-        d.setMoisDecompte(createDate("20161015"));
-        d.setStatut(DecompteStatutEnum.SAISIE);
-        d.setType(DecompteTypeEnum.PERIODIQUE);
-        d.setVersion(1);
-
-        DecompteAndLignes dl = new DecompteAndLignes();
-        dl.setDecompte(d);
-
-        return dl;
-    }
-
-    private void getLignesDeDecomptesTest(List<LigneDeDecompteEntity> lignes) {
-        LigneDeDecompteEntity line1 = new LigneDeDecompteEntity();
-        line1.setIdCotisationWebavs(53212);
-        line1.setNouvelleMasse(new BigDecimal("112345.15"));
-        lignes.add(line1);
-
-        LigneDeDecompteEntity line2 = new LigneDeDecompteEntity();
-        line2.setIdCotisationWebavs(53213);
-        line2.setNouvelleMasse(new BigDecimal("112345.15"));
-        lignes.add(line2);
-
-        LigneDeDecompteEntity line3 = new LigneDeDecompteEntity();
-        line3.setIdCotisationWebavs(55967);
-        line3.setNouvelleMasse(new BigDecimal("112345.15"));
-        lignes.add(line3);
-
-        LigneDeDecompteEntity line4 = new LigneDeDecompteEntity();
-        line4.setIdCotisationWebavs(56477);
-        line4.setNouvelleMasse(new BigDecimal("112345.15"));
-        lignes.add(line4);
-    }
-
-    private XMLGregorianCalendar createDate(String date) {
-        GregorianCalendar c = new GregorianCalendar();
-        c.setTime(new Date(date).getDate());
-
-        XMLGregorianCalendar xmlDate = null;
-
-        try {
-            xmlDate = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
-        } catch (DatatypeConfigurationException e) {
-            e.printStackTrace();
-        }
-
-        return xmlDate;
     }
 }
