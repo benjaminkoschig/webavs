@@ -43,6 +43,6 @@ alter table SCHEMA.pcbisph add column CHBHMA  NUMERIC(1,0)  NOT NULL DEFAULT 2;
 reorg table SCHEMA.pcbisph ALLOW READ ACCESS;
 
 --- suppression de la propriété moins de 10 ans, obolète
-delete from SCHEMA.jadeprop where propname = 'pegasus.bien.immobilier.moins.10.ans.actif'
+delete from SCHEMA.jadeprop where propname = 'pegasus.bien.immobilier.moins.10.ans.actif';
 
 -- FIN DU REPORT DES SCRIPTS 1.16.0-CCVS-RC2
