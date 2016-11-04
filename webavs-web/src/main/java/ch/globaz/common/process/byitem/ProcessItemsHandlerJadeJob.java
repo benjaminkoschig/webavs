@@ -16,6 +16,15 @@ import ch.globaz.common.jadedb.TransactionWrapper;
 import ch.globaz.common.process.ProcessMailUtils;
 import com.google.common.base.Throwables;
 
+/**
+ * 
+ * Si l'item est n'as pas d'erreur ou d'exception celui-ci est commiter sinon il est rollbacker.
+ * Si une exception est levée au niveau général du processus celui-ci envoie un mail avec l'erreur.
+ * Si après la dixième itération du traitement des items il y a 10 erreurs le processus se stop
+ * 
+ * 
+ * @param <T> C'est l'item que l'on vas traiter
+ */
 public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends AbstractJadeJob implements
         ProcessItems<T> {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessItem.class);
@@ -24,6 +33,11 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
     private boolean isAfterCall = false;
     private ProcessItemsJobInfos jobInfos;
 
+    /**
+     * Permet d'avoir des informations sur le processus lancée.
+     * 
+     * @return ProcessItemsJobInfos
+     */
     public ProcessItemsJobInfos getJobInfos() {
         return jobInfos;
     }
@@ -36,19 +50,24 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
         processEntity.setSession(getSession());
 
         try {
+            processEntity.setKey(getKey());
             processEntity.setEtat(ProcessState.START);
             processEntity.setStartDate(new Date());
             processEntity.setUser(getSession().getUserId());
             processEntity.persist(transaction);
             transaction.commit();
-            jobInfos = new ProcessItemsJobInfos(processEntity.getId());
             time.start();
+            jobInfos = new ProcessItemsJobInfos(processEntity.getId());
+
             before();
-            time.stop();
 
             processEntity.setTimeBefore(time.getTime());
             processEntity.setEtat(ProcessState.START);
+            items = resolveItems();
+            processEntity.setNbEntityTotal(items.size());
             processEntity.persist(transaction);
+            time.stop();
+
             transaction.commit();
 
             time.reset();
@@ -57,7 +76,7 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
             time.stop();
 
             processEntity.setTimeEntity(time.getTime());
-            processEntity.setNbEntityTotal(items.size());
+
             processEntity.setNbEntityInError(this.countNbItemInError());
             processEntity.persist(transaction);
             transaction.commit();
@@ -70,12 +89,12 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
             processEntity.setTimeAfter(time.getTime());
             processEntity.setEtat(ProcessState.FINISH);
             processEntity.setEndDate(new Date());
-
             processEntity.persist(transaction);
             transaction.commit();
         } catch (Exception e) {
             try {
                 processEntity.setEtat(ProcessState.ERROR);
+                processEntity.setEndDate(new Date());
                 processEntity.persist(transaction);
             } catch (Exception e1) {
                 LOG.error("Unable to persist the process state", e1);
@@ -106,12 +125,24 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
         }
     }
 
+    /**
+     * Retourne la liste des items traités ceci peut être null si le processus de traitement n’a pas été exécuté
+     * 
+     * @return List<T>
+     */
     public List<T> getItmes() {
         return items;
     }
 
-    public void entitiesTreat() {
-        items = resolveItems();
+    /**
+     * Permet d’envoyer un mail si des erreurs ou exception sont définies dans les items. Si il y n’y pas d’erreur aucun
+     * mail n’est envoyé.
+     */
+    public void sendMailIfHasError() {
+        this.sendMailIfHasError(translate("PROCESS_ITEMS_DETECTED_ERRORS") + " - " + translateName());
+    }
+
+    private void entitiesTreat() {
         getProgressHelper().setMax(this.items.size());
         Integer i = 0;
         for (T item : items) {
@@ -160,10 +191,6 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
 
     private boolean mustStopProcess(Integer i) {
         return this.countNbItemInError() == 10 && this.countNbItemInError() == i;
-    }
-
-    public void sendMailIfHasError() {
-        this.sendMailIfHasError(translate("PROCESS_ITEMS_DETECTED_ERRORS") + " - " + translateName());
     }
 
     private void sendMailIfHasError(String objet) {

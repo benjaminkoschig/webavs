@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import ch.globaz.common.jadedb.TableDefinition;
-import com.google.common.base.Joiner;
 
 /**
  * Le but de cette class est de permettre la création de requête ou une partie de requête.
@@ -97,6 +96,12 @@ public class SQLWriter {
         return this;
     }
 
+    /**
+     * Ajout le mot max à la requête et ajoute la colonne dans le max.
+     * 
+     * @param column(TableDefinition) sur laquelle utilisé le mot clé max
+     * @return SQLWriter utilisé
+     */
     public SQLWriter max(TableDefinition tableDefinition) {
         query.append("max(" + CONST_SCHEMA + tableDefinition.getTableName() + "." + tableDefinition.getColumn() + ") ");
         return this;
@@ -112,14 +117,6 @@ public class SQLWriter {
     public SQLWriter from(String sqlFragement) {
         query.append(" from ").append(addSchemaToSql(sqlFragement));
         return this;
-    }
-
-    private String addSchemaToSql(String sqlFragement) {
-        String sql = sqlFragement;
-        if (addSchema) {
-            sql = CONST_SCHEMA + sqlFragement;
-        }
-        return sql;
     }
 
     /**
@@ -202,11 +199,12 @@ public class SQLWriter {
         return this;
     }
 
-    int currentIndex() {
-        currentIndice = query.length();
-        return currentIndice;
-    }
-
+    /**
+     * Ajoute le = avec le paramètre définit à la requête SQL
+     * 
+     * @param param String sql
+     * @return SQLWriter utilisé
+     */
     public SQLWriter equal(String param) {
         if (param != null && !param.isEmpty()) {
             paramsToUse.add(param);
@@ -217,6 +215,12 @@ public class SQLWriter {
         return this;
     }
 
+    /**
+     * Ajoute le = avec le paramètre définit à la requête SQL
+     * 
+     * @param param Integer sql
+     * @return SQLWriter utilisé
+     */
     public SQLWriter equal(Integer param) {
         if (param != null) {
             paramsToUse.add(String.valueOf(param));
@@ -227,6 +231,12 @@ public class SQLWriter {
         return this;
     }
 
+    /**
+     * Ajoute le "in(values)" avec le paramètre définit à la requête SQL
+     * 
+     * @param param String sql
+     * @return SQLWriter utilisé
+     */
     public SQLWriter in(String values) {
         if (values != null && !values.isEmpty()) {
             paramsToUse.add(values);
@@ -237,9 +247,15 @@ public class SQLWriter {
         return this;
     }
 
+    /**
+     * Ajoute le "in(x,y,z)" avec le paramètre donnée ajoute les ","
+     * 
+     * @param param String sql
+     * @return SQLWriter utilisé
+     */
     public SQLWriter in(Collection<?> list) {
         if (list != null && !list.isEmpty()) {
-            String params = Joiner.on(",").join(list);
+            String params = toStrForIn(list);
             paramsToUse.add(params);
             query.append(" in (?)");
         } else {
@@ -248,6 +264,12 @@ public class SQLWriter {
         return this;
     }
 
+    /**
+     * Ajoute le "in('x','y','z')" avec le paramètre donnée ajoute les "','"
+     * 
+     * @param param String sql
+     * @return SQLWriter utilisé
+     */
     public SQLWriter inForString(Collection<String> list) {
         if (list != null && !list.isEmpty()) {
             String params = toStringForIn(list);
@@ -255,15 +277,6 @@ public class SQLWriter {
             query.append(" in (?)");
         } else {
             rollback();
-        }
-        return this;
-    }
-
-    SQLWriter rollback() {
-        if (currentIndice != null) {
-            query.delete(currentIndice, query.length());
-            currentIndice = null;
-            countAddOperators--;
         }
         return this;
     }
@@ -283,6 +296,12 @@ public class SQLWriter {
         return this;
     }
 
+    /**
+     * Ajoute le mot 'like %param%' à la requête si besoin
+     * 
+     * @param sqlFramgment
+     * @return SQLWriter utilisé
+     */
     public SQLWriter fullLike(String param) {
         if (param != null && !param.isEmpty()) {
             paramsToUse.add(param);
@@ -293,6 +312,12 @@ public class SQLWriter {
         return this;
     }
 
+    /**
+     * Ajoute le mot 'like param' à la requête si besoin
+     * 
+     * @param sqlFramgment
+     * @return SQLWriter utilisé
+     */
     public SQLWriter like(String param) {
         if (param != null && !param.isEmpty()) {
             paramsToUse.add(param);
@@ -301,10 +326,6 @@ public class SQLWriter {
             rollback();
         }
         return this;
-    }
-
-    private boolean hasSchema() {
-        return schema != null;
     }
 
     /**
@@ -567,10 +588,6 @@ public class SQLWriter {
         return this;
     }
 
-    boolean isQueryEmpty() {
-        return query.length() == 0;
-    }
-
     /**
      * Serialize la requête SQL.
      * 
@@ -584,15 +601,17 @@ public class SQLWriter {
         return this.replace(sql, paramsToUse);
     }
 
+    boolean isQueryEmpty() {
+        return query.length() == 0;
+    }
+
     boolean isNotEmpty(String... param) {
         if (param == null) {
             return false;
         }
 
-        for (String p : param) {
-            if (!(param[0] == null || param[0].length() == 0)) {
-                return true;
-            }
+        if (!(param[0] == null || param[0].length() == 0)) {
+            return true;
         }
 
         return false;
@@ -603,6 +622,10 @@ public class SQLWriter {
             return false;
         }
         return true;
+    }
+
+    static String toStrForIn(Collection<?> params) {
+        return StringUtils.join(params, ",");
     }
 
     static String toStringForIn(Integer... params) {
@@ -633,6 +656,24 @@ public class SQLWriter {
         }
     }
 
+    int currentIndex() {
+        currentIndice = query.length();
+        return currentIndice;
+    }
+
+    SQLWriter rollback() {
+        if (currentIndice != null) {
+            query.delete(currentIndice, query.length());
+            currentIndice = null;
+            countAddOperators--;
+        }
+        return this;
+    }
+
+    int countCharToReplace(String sqlFragment) {
+        return StringUtils.countMatches(sqlFragment, charToReplace);
+    }
+
     private void addOpertor(String operator) {
         currentIndex();
         if (countAddOperators > 0) {
@@ -641,12 +682,20 @@ public class SQLWriter {
         countAddOperators++;
     }
 
-    int countCharToReplace(String sqlFragment) {
-        return StringUtils.countMatches(sqlFragment, charToReplace);
-    }
-
     private String replace(String sql, String p) {
         return StringUtils.replaceOnce(sql, charToReplace, p);
+    }
+
+    private String addSchemaToSql(String sqlFragement) {
+        String sql = sqlFragement;
+        if (addSchema) {
+            sql = CONST_SCHEMA + sqlFragement;
+        }
+        return sql;
+    }
+
+    private boolean hasSchema() {
+        return schema != null;
     }
 
 }

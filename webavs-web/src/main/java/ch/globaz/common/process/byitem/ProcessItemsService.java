@@ -8,10 +8,9 @@ public class ProcessItemsService {
         manager.setForInKeyProcess(Arrays.asList(keyProcess));
         manager.setForEtat(ProcessState.START);
         try {
-            manager.find(10);
+            return manager.getCount() > 0;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return !manager.isEmpty();
     }
 }

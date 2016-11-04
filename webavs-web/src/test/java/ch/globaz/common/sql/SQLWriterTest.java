@@ -2,6 +2,7 @@ package ch.globaz.common.sql;
 
 import static org.fest.assertions.api.Assertions.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
 
@@ -25,24 +26,39 @@ public class SQLWriterTest {
     @Test
     public void testWhereWithParam() throws Exception {
         assertThat(SQLWriter.write().where("field1 == '?'", "param").toSql()).isEqualTo(" where field1 == 'param'");
+        assertThat(SQLWriter.write().where("field1 == '?'", Arrays.asList("p1")).toSql()).isEqualTo(
+                " where field1 == 'p1'");
+        assertThat(SQLWriter.write().where("field1 == '?' and field2 == '?'", "p1", "p2").toSql()).isEqualTo(
+                " where field1 == 'p1' and field2 == 'p2'");
+        assertThat(SQLWriter.write().where("field1 == '?' and field2 == '?'", Arrays.asList("p1", "p2")).toSql())
+                .isEqualTo(" where field1 == 'p1' and field2 == 'p2'");
     }
 
     @Test
     public void testJoin() throws Exception {
         assertThat(SQLWriter.write().join("table1 on tabl1.id = table2.fk").toSql()).isEqualTo(
                 " inner join table1 on tabl1.id = table2.fk");
+        assertThat(SQLWriter.write().join(true, "table1 on tabl1.id = table2.fk").toSql()).isEqualTo(
+                " inner join table1 on tabl1.id = table2.fk");
+        assertThat(SQLWriter.write().join(false, "table1 on tabl1.id = table2.fk").toSql()).isEqualTo("");
     }
 
     @Test
     public void testLeftJoin() throws Exception {
         assertThat(SQLWriter.write().leftJoin("table1 on tabl1.id = table2.fk").toSql()).isEqualTo(
                 " left join table1 on tabl1.id = table2.fk");
+        assertThat(SQLWriter.write().leftJoin(true, "table1 on tabl1.id = table2.fk").toSql()).isEqualTo(
+                " left join table1 on tabl1.id = table2.fk");
+        assertThat(SQLWriter.write().leftJoin(false, "table1 on tabl1.id = table2.fk").toSql()).isEqualTo("");
     }
 
     @Test
     public void testRightJoin() throws Exception {
         assertThat(SQLWriter.write().rightJoin("table1 on tabl1.id = table2.fk").toSql()).isEqualTo(
                 " right join table1 on tabl1.id = table2.fk");
+        assertThat(SQLWriter.write().rightJoin(true, "table1 on tabl1.id = table2.fk").toSql()).isEqualTo(
+                " right join table1 on tabl1.id = table2.fk");
+        assertThat(SQLWriter.write().rightJoin(false, "table1 on tabl1.id = table2.fk").toSql()).isEqualTo("");
     }
 
     @Test
@@ -61,6 +77,11 @@ public class SQLWriterTest {
     }
 
     @Test
+    public void testAndWithTableDefinition() throws Exception {
+        assertThat(SQLWriter.write().and(TableDefTest.COL1).toSql()).isEqualTo(" schema.TABLE.COL1");
+    }
+
+    @Test
     public void testAndWithParam() throws Exception {
         String param = null;
         assertThat(SQLWriter.write().and("toto = ?", param).toSql()).isEqualTo("");
@@ -69,13 +90,22 @@ public class SQLWriterTest {
 
     @Test
     public void testAndWithParams() throws Exception {
-        assertThat(SQLWriter.write().and("in (?,?,?)", "3", "2", "1").toSql()).isEqualTo(" in (3,2,1)");
+        List<String> l = null;
+        assertThat(SQLWriter.write().and("in (?)", l).toSql()).isEqualTo("");
         assertThat(SQLWriter.write().and("in (?)", new ArrayList<String>()).toSql()).isEqualTo("");
-        List<String> l = new ArrayList<String>();
+        assertThat(SQLWriter.write().and("in (?,?,?)", "3", "2", "1").toSql()).isEqualTo(" in (3,2,1)");
+        l = new ArrayList<String>();
         l.add("1");
         l.add("2");
         l.add("3");
         assertThat(SQLWriter.write().and("in (?,?,?)", l).toSql()).isEqualTo(" in (1,2,3)");
+    }
+
+    @Test
+    public void testAndWithParamsInteger() throws Exception {
+        Integer i = null;
+        assertThat(SQLWriter.write().and("in (?,?,?)", 3, 2, 1).toSql()).isEqualTo(" in (3,2,1)");
+        assertThat(SQLWriter.write().and("in (?)", i).toSql()).isEqualTo("");
     }
 
     @Test
@@ -94,13 +124,22 @@ public class SQLWriterTest {
 
     @Test
     public void testOrWithParams() throws Exception {
-        assertThat(SQLWriter.write().or("in (?,?,?)", "3", "2", "1").toSql()).isEqualTo(" in (3,2,1)");
+        List<String> l = null;
+        assertThat(SQLWriter.write().or("in (?)", l).toSql()).isEqualTo("");
         assertThat(SQLWriter.write().or("in (?)", new ArrayList<String>()).toSql()).isEqualTo("");
-        List<String> l = new ArrayList<String>();
+        assertThat(SQLWriter.write().or("in (?,?,?)", "3", "2", "1").toSql()).isEqualTo(" in (3,2,1)");
+        l = new ArrayList<String>();
         l.add("1");
         l.add("2");
         l.add("3");
         assertThat(SQLWriter.write().or("in (?,?,?)", l).toSql()).isEqualTo(" in (1,2,3)");
+    }
+
+    @Test
+    public void testOrWithParamsInteger() throws Exception {
+        Integer i = null;
+        assertThat(SQLWriter.write().or("in (?,?,?)", 3, 2, 1).toSql()).isEqualTo(" in (3,2,1)");
+        assertThat(SQLWriter.write().or("in (?)", i).toSql()).isEqualTo("");
     }
 
     @Test
@@ -111,7 +150,6 @@ public class SQLWriterTest {
         assertThat(SQLWriter.write().isNotEmpty("d")).isTrue();
         assertThat(SQLWriter.write().isNotEmpty("", "", "", "")).isFalse();
         assertThat(SQLWriter.write().isNotEmpty(param, param, param, param)).isFalse();
-
     }
 
     @Test
@@ -123,11 +161,27 @@ public class SQLWriterTest {
         assertThat(SQLWriter.toStringForIn(l)).isEqualTo("'1','2'");
         l.add("3");
         assertThat(SQLWriter.toStringForIn(l)).isEqualTo("'1','2','3'");
+        assertThat(SQLWriter.toStringForIn("1")).isEqualTo("'1'");
+        assertThat(SQLWriter.toStringForIn("1", "2", "3")).isEqualTo("'1','2','3'");
+    }
+
+    @Test
+    public void testToStringForInInteger() throws Exception {
+        List<Integer> l = new ArrayList<Integer>();
+        l.add(1);
+        assertThat(SQLWriter.toStrForIn(l)).isEqualTo("1");
+        l.add(2);
+        assertThat(SQLWriter.toStrForIn(l)).isEqualTo("1,2");
+        l.add(3);
+        assertThat(SQLWriter.toStrForIn(l)).isEqualTo("1,2,3");
+        assertThat(SQLWriter.toStringForIn(1, 2, 3)).isEqualTo("1,2,3");
     }
 
     @Test
     public void testInForString() throws Exception {
         List<String> l = new ArrayList<String>();
+        assertThat(SQLWriter.write().inForString(l).toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().inForString(null).toSql()).isEqualTo("");
         l.add("1");
         assertThat(SQLWriter.write().inForString(l).toSql()).isEqualTo(" in ('1')");
         l.add("2");
@@ -137,14 +191,48 @@ public class SQLWriterTest {
     }
 
     @Test
+    public void testInWithList() throws Exception {
+        List<Integer> l = null;
+        assertThat(SQLWriter.write().in(l).toSql()).isEqualTo("");
+        l = new ArrayList<Integer>();
+        assertThat(SQLWriter.write().in(l).toSql()).isEqualTo("");
+
+        l.add(1);
+        assertThat(SQLWriter.write().in(l).toSql()).isEqualTo(" in (1)");
+        l.add(2);
+        assertThat(SQLWriter.write().in(l).toSql()).isEqualTo(" in (1,2)");
+        l.add(3);
+        assertThat(SQLWriter.write().in(l).toSql()).isEqualTo(" in (1,2,3)");
+    }
+
+    @Test
+    public void testInWithString() throws Exception {
+        String s = null;
+        assertThat(SQLWriter.write().in(s).toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().in("").toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().in("p").toSql()).isEqualTo(" in (p)");
+        assertThat(SQLWriter.write().in("'t','t'").toSql()).isEqualTo(" in ('t','t')");
+
+    }
+
+    @Test
     public void testAppend() throws Exception {
         assertThat(SQLWriter.write().append("(").toSql()).isEqualTo("(");
         assertThat(SQLWriter.write().append("(").append(")").toSql()).isEqualTo("( )");
+        assertThat(SQLWriter.write().append(true, "(").toSql()).isEqualTo("(");
+        assertThat(SQLWriter.write().append(false, "(").toSql()).isEqualTo("");
     }
 
     @Test
     public void testAppendWithParams() throws Exception {
+        String s = null;
+        Integer i = null;
+
         // assertThat(SQLWriter.write().append("select * from", null).toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().append("select * from", s).toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().append("select * from", i).toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().append("select * from t = ?", 2).toSql()).isEqualTo("select * from t = 2");
+
         assertThat(SQLWriter.write().append("select * from", "").toSql()).isEqualTo("");
         assertThat(SQLWriter.write().append("select * from where t1 = '?'", "1").toSql()).isEqualTo(
                 "select * from where t1 = '1'");
@@ -229,8 +317,18 @@ public class SQLWriterTest {
     }
 
     @Test
-    public void testEqual() throws Exception {
-        assertThat(SQLWriter.write().and("tableName").equal("toto").toSql()).isEqualTo(" tableName='toto'");
+    public void testEqualString() throws Exception {
+        String n = null;
+        assertThat(SQLWriter.write().and("col").equal("toto").toSql()).isEqualTo(" col='toto'");
+        assertThat(SQLWriter.write().and("col").equal(n).toSql()).isEqualTo("");
+    }
+
+    @Test
+    public void testEqualInteger() throws Exception {
+        Integer n = null;
+        assertThat(SQLWriter.write().and("col").equal(1).toSql()).isEqualTo(" col=1");
+        assertThat(SQLWriter.write().and("col").equal(n).toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().and("col").equal("").toSql()).isEqualTo("");
     }
 
     @Test
@@ -252,6 +350,9 @@ public class SQLWriterTest {
 
     @Test
     public void testLike() throws Exception {
+        String s = null;
+        assertThat(SQLWriter.write().and("COL").like(s).toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().and("COL").like("").toSql()).isEqualTo("");
         assertThat(SQLWriter.write().and("COL").like("%toto%").toSql()).isEqualTo(" COL like '%toto%'");
     }
 
@@ -261,8 +362,22 @@ public class SQLWriterTest {
     }
 
     @Test
+    public void testMaxtTableDefinition() throws Exception {
+        assertThat(SQLWriter.write().select().max(TableDefTest.COL1).toSql()).isEqualTo(
+                "select max(schema.TABLE.COL1) ");
+    }
+
+    @Test
     public void testWithSchema() throws Exception {
         assertThat(SQLWriter.writeWithSchema().select().max("TOTO").toSql()).isEqualTo("select max(schema.TOTO) ");
+    }
+
+    @Test
+    public void testFullLike() throws Exception {
+        String s = null;
+        assertThat(SQLWriter.writeWithSchema().and("COL").fullLike("").toSql()).isEqualTo("");
+        assertThat(SQLWriter.writeWithSchema().and("COL").fullLike(s).toSql()).isEqualTo("");
+        assertThat(SQLWriter.writeWithSchema().and("COL").fullLike("P").toSql()).isEqualTo(" schema.COL like '%P%'");
     }
 
 }

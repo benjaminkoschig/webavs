@@ -28,6 +28,7 @@ class ProcessEntity extends JadeEntity {
         this.write(ProcessEntityTableDef.TIME_AFTER, timeAfter);
         this.write(ProcessEntityTableDef.NB_ITEM_TOTAL, nbEntityTotal);
         this.write(ProcessEntityTableDef.NB_ITEM_IN_ERROR, nbEntityInError);
+        this.write(ProcessEntityTableDef.USER, user);
         this.write(ProcessEntityTableDef.KEY_PROCES, key);
     }
 
@@ -37,10 +38,11 @@ class ProcessEntity extends JadeEntity {
         endDate = this.readDateTime(ProcessEntityTableDef.END_DATE);
         String setat = this.read(ProcessEntityTableDef.ETAT);
         etat = ProcessState.valueOf(setat);
+        timeEntity = this.read(ProcessEntityTableDef.TIME_ITEM);
         timeBefore = this.read(ProcessEntityTableDef.TIME_BEFORE);
         timeAfter = this.read(ProcessEntityTableDef.TIME_AFTER);
-        startDate = this.read(ProcessEntityTableDef.NB_ITEM_TOTAL);
         nbEntityInError = this.read(ProcessEntityTableDef.NB_ITEM_IN_ERROR);
+        nbEntityTotal = this.read(ProcessEntityTableDef.NB_ITEM_TOTAL);
         user = this.read(ProcessEntityTableDef.USER);
         key = this.read(ProcessEntityTableDef.KEY_PROCES);
     }
@@ -132,4 +134,11 @@ class ProcessEntity extends JadeEntity {
         this.user = user;
     }
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 }

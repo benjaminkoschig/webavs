@@ -84,11 +84,6 @@ public class QueryWriterExecutor {
         return this;
     }
 
-    public QueryWriterExecutor where(String sqlFragement, Collection<String> params) {
-        writer.where(sqlFragement, params);
-        return this;
-    }
-
     public QueryWriterExecutor and(String sqlFragement) {
         writer.and(sqlFragement);
         return this;
