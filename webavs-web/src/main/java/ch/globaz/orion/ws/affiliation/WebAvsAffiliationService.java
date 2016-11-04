@@ -4,6 +4,7 @@ import java.util.List;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import ch.globaz.orion.ws.enums.ModeDeclarationSalaire;
 import ch.globaz.orion.ws.exceptions.WebAvsException;
 
 @WebService
@@ -38,5 +39,19 @@ public interface WebAvsAffiliationService {
      */
     @WebMethod
     public abstract String findAdresseCourrierAffilie(@WebParam(name = "numeroAffilie") String numeroAffilie)
+            throws WebAvsException;
+
+    /**
+     * Vérifie que l'affiliation existe et met à jour le mode de déclaration le cas échéant. Retourne true si succès
+     * 
+     * @param numeroAffilie
+     * @param modeDeclarationSalaire
+     * @return
+     * @throws WebAvsException
+     */
+    @WebMethod
+    public abstract boolean checkAffiliationAndUpdateModeDeclaration(
+            @WebParam(name = "numeroAffilie") String numeroAffilie,
+            @WebParam(name = "modeDeclarationSalaire") ModeDeclarationSalaire modeDeclarationSalaire)
             throws WebAvsException;
 }

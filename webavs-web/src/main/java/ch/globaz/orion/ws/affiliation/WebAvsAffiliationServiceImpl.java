@@ -3,17 +3,21 @@ package ch.globaz.orion.ws.affiliation;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
+import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.naos.db.suiviCaisseAffiliation.AFSuiviCaisseAffiliation;
 import globaz.naos.db.suiviCaisseAffiliation.AFSuiviCaisseAffiliationManager;
+import globaz.naos.translation.CodeSystem;
 import globaz.orion.process.EBDanPreRemplissage;
 import globaz.orion.utils.EBDanUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.jws.WebService;
 import ch.globaz.common.domaine.Checkers;
+import ch.globaz.orion.ws.enums.ModeDeclarationSalaire;
 import ch.globaz.orion.ws.exceptions.WebAvsException;
 import ch.globaz.orion.ws.service.AppAffiliationService;
 import ch.globaz.orion.ws.service.UtilsService;
@@ -99,5 +103,72 @@ public class WebAvsAffiliationServiceImpl implements WebAvsAffiliationService {
             BSessionUtil.stopUsingContext(Thread.currentThread());
         }
         return adresseCourrier;
+    }
+
+    @Override
+    public boolean checkAffiliationAndUpdateModeDeclaration(String numeroAffilie,
+            ModeDeclarationSalaire modeDeclarationSalaire) throws WebAvsException {
+        BSession session = UtilsService.initSession();
+
+        // recherche de l'affiliation
+        AFAffiliationManager affiliationManager = new AFAffiliationManager();
+        affiliationManager.setSession(session);
+        affiliationManager.setForAffilieNumero(numeroAffilie);
+        affiliationManager.setForTypeAffiliation(new String[] { CodeSystem.TYPE_AFFILI_EMPLOY,
+                CodeSystem.TYPE_AFFILI_INDEP_EMPLOY });
+        affiliationManager.setFromDateFin(JACalendar.todayJJsMMsAAAA());
+
+        try {
+            affiliationManager.find(BManager.SIZE_USEDEFAULT);
+            if (affiliationManager.size() > 0) {
+                // récupération de l'affiliation
+                AFAffiliation affiliation = (AFAffiliation) affiliationManager.getFirstEntity();
+
+                // mise à jour du mode de déclaration de salaire de l'affiliation
+                updateModeDeclarationSalaire(session, affiliation, modeDeclarationSalaire);
+                return true;
+            } else {
+                // aucun affiliation trouvée
+                return false;
+            }
+        } catch (Exception e) {
+            JadeLogger.error(this, "technical error when checkAffiliation for numeroAffilie : " + numeroAffilie);
+            throw new WebAvsException("technical error when checkAffiliation for numeroAffilie : " + numeroAffilie);
+        }
+    }
+
+    private void updateModeDeclarationSalaire(BSession session, AFAffiliation aff,
+            ModeDeclarationSalaire modeDeclarationSalaire) throws Exception {
+        String modeDeclarationSalaireWebavs = "";
+
+        // si mode de déclaration est DAN
+        if (ModeDeclarationSalaire.DAN.equals(modeDeclarationSalaire)) {
+            // Si mode mixte (CCVD)
+            if (CodeSystem.DECL_SAL_PRE_MIXTE.equals(aff.getDeclarationSalaire())
+                    || CodeSystem.DECL_SAL_MIXTE_DAN.equals(aff.getDeclarationSalaire())) {
+                modeDeclarationSalaireWebavs = CodeSystem.DECL_SAL_MIXTE_DAN;
+            } else {
+                modeDeclarationSalaireWebavs = CodeSystem.DS_DAN;
+            }
+        }
+
+        // si mode de déclaration est PUCS
+        else if (ModeDeclarationSalaire.PUCS.equals(modeDeclarationSalaire)) {
+            modeDeclarationSalaireWebavs = CodeSystem.DS_ENVOI_PUCS;
+        }
+
+        // mise à jour de l'affiliation
+        if (!aff.isNew()) {
+            // Mise à jour 1-11, si un affilié souhaite un mode déclaration de salaire traditionnel => on ne change rien
+            if (!modeDeclarationSalaireWebavs.equals(aff.getDeclarationSalaire())
+                    && !JadeStringUtil.isBlankOrZero(modeDeclarationSalaireWebavs)) {
+                aff.setDeclarationSalaire(modeDeclarationSalaireWebavs);
+                aff.setSession(session);
+                aff.wantCallValidate(false);
+                aff.wantCallMethodAfter(false);
+                aff.wantCallMethodBefore(false);
+                aff.update(session.getCurrentThreadTransaction());
+            }
+        }
     }
 }
