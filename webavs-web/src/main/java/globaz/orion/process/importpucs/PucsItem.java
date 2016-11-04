@@ -12,8 +12,11 @@ import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.process.byitem.ProcessItem;
 import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.orion.business.models.pucs.PucsFile;
+import ch.globaz.orion.businessimpl.services.dan.DanServiceImpl;
 import ch.globaz.orion.businessimpl.services.pucs.PucsServiceImpl;
 import ch.globaz.orion.db.EBPucsFileEntity;
+import ch.globaz.xmlns.eb.dan.DanStatutEnum;
+import ch.globaz.xmlns.eb.pucs.PucsStatusEnum;
 import com.google.common.base.Joiner;
 
 public class PucsItem extends ProcessItem {
@@ -127,13 +130,11 @@ public class PucsItem extends ProcessItem {
                     pucsFile.setFile(new File(filePath));
                     save(pucsFile, affiliation, idJob, session);
                 } catch (Exception e) {
-                    // if(pucsFile.getProvenance().isPucs()){
-                    // PucsServiceImpl.updateStatusPucs(Arrays.asList(pucsFile.getFilename()), PucsStatusEnum.TO_HANDLE,
-                    // session);
-                    // } else if(pucsFile.getProvenance().isDan()){
-                    // DanServiceImpl.(Arrays.asList(pucsFile.getFilename()), PucsStatusEnum.TO_HANDLE,
-                    // session);
-                    // }
+                    if (pucsFile.getProvenance().isPucs()) {
+                        PucsServiceImpl.updateStatusPucs(pucsFile.getFilename(), PucsStatusEnum.REJECTED, session);
+                    } else if (pucsFile.getProvenance().isDan()) {
+                        DanServiceImpl.updateStatusDan(pucsFile.getFilename(), DanStatutEnum.EN_ERREUR, session);
+                    }
                     catchException(e);
                 }
             }

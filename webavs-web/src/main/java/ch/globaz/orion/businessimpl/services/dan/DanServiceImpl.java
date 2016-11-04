@@ -51,6 +51,17 @@ public class DanServiceImpl {
 
     }
 
+    public static void updateStatusDan(String idDan, DanStatutEnum danStatutEnum, BSession session) {
+        DANService serviceDan = ServicesProviders.danServiceProvide(session);
+        try {
+            serviceDan.updateStatusDan(Integer.valueOf(idDan), Integer.valueOf(session.getUserId()), danStatutEnum);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(e);
+        } catch (EBDanException_Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static List<Dan> listDanFile(String likeNumAffilie, Integer forDateValidation, BSession session)
             throws EBDanException_Exception {
         DANService serviceDan = null;

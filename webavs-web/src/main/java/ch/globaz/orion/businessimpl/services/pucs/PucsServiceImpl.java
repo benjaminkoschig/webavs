@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
@@ -62,6 +63,10 @@ public class PucsServiceImpl implements PucsService {
         } catch (Exception e) {
             throw new OrionPucsException("Impossible de télécharger le ficheir PUCS", e);
         }
+    }
+
+    public static void updateStatusPucs(String idsPucsEntry, PucsStatusEnum pucsStatusEnum, BSession session) {
+        PucsServiceImpl.updateStatusPucs(Arrays.asList(idsPucsEntry), pucsStatusEnum, session);
     }
 
     public static void updateStatusPucs(List<String> idsPucsEntry, PucsStatusEnum pucsStatusEnum, BSession session) {
