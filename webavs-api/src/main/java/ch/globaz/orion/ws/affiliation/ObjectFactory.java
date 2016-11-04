@@ -25,7 +25,9 @@ import javax.xml.namespace.QName;
 public class ObjectFactory {
 
     private final static QName _WebavsException_QNAME = new QName("http://affiliation.ws.orion.globaz.ch/", "WebavsException");
+    private final static QName _CheckAffiliationAndUpdateModeDeclarationResponse_QNAME = new QName("http://affiliation.ws.orion.globaz.ch/", "checkAffiliationAndUpdateModeDeclarationResponse");
     private final static QName _FindAdresseCourrierAffilie_QNAME = new QName("http://affiliation.ws.orion.globaz.ch/", "findAdresseCourrierAffilie");
+    private final static QName _CheckAffiliationAndUpdateModeDeclaration_QNAME = new QName("http://affiliation.ws.orion.globaz.ch/", "checkAffiliationAndUpdateModeDeclaration");
     private final static QName _FindActiveSuiviCaisseResponse_QNAME = new QName("http://affiliation.ws.orion.globaz.ch/", "findActiveSuiviCaisseResponse");
     private final static QName _FindCategorieAffiliationResponse_QNAME = new QName("http://affiliation.ws.orion.globaz.ch/", "findCategorieAffiliationResponse");
     private final static QName _FindActiveSuiviCaisse_QNAME = new QName("http://affiliation.ws.orion.globaz.ch/", "findActiveSuiviCaisse");
@@ -40,11 +42,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link FindActiveSuiviCaisseResponse }
+     * 
+     */
+    public FindActiveSuiviCaisseResponse createFindActiveSuiviCaisseResponse() {
+        return new FindActiveSuiviCaisseResponse();
+    }
+
+    /**
      * Create an instance of {@link WebAvsException }
      * 
      */
     public WebAvsException createWebAvsException() {
         return new WebAvsException();
+    }
+
+    /**
+     * Create an instance of {@link CheckAffiliationAndUpdateModeDeclaration }
+     * 
+     */
+    public CheckAffiliationAndUpdateModeDeclaration createCheckAffiliationAndUpdateModeDeclaration() {
+        return new CheckAffiliationAndUpdateModeDeclaration();
     }
 
     /**
@@ -56,19 +74,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FindCategorieAffiliation }
-     * 
-     */
-    public FindCategorieAffiliation createFindCategorieAffiliation() {
-        return new FindCategorieAffiliation();
-    }
-
-    /**
      * Create an instance of {@link FindAdresseCourrierAffilie }
      * 
      */
     public FindAdresseCourrierAffilie createFindAdresseCourrierAffilie() {
         return new FindAdresseCourrierAffilie();
+    }
+
+    /**
+     * Create an instance of {@link CheckAffiliationAndUpdateModeDeclarationResponse }
+     * 
+     */
+    public CheckAffiliationAndUpdateModeDeclarationResponse createCheckAffiliationAndUpdateModeDeclarationResponse() {
+        return new CheckAffiliationAndUpdateModeDeclarationResponse();
     }
 
     /**
@@ -88,11 +106,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FindActiveSuiviCaisseResponse }
+     * Create an instance of {@link FindCategorieAffiliation }
      * 
      */
-    public FindActiveSuiviCaisseResponse createFindActiveSuiviCaisseResponse() {
-        return new FindActiveSuiviCaisseResponse();
+    public FindCategorieAffiliation createFindCategorieAffiliation() {
+        return new FindCategorieAffiliation();
     }
 
     /**
@@ -105,12 +123,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CheckAffiliationAndUpdateModeDeclarationResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://affiliation.ws.orion.globaz.ch/", name = "checkAffiliationAndUpdateModeDeclarationResponse")
+    public JAXBElement<CheckAffiliationAndUpdateModeDeclarationResponse> createCheckAffiliationAndUpdateModeDeclarationResponse(CheckAffiliationAndUpdateModeDeclarationResponse value) {
+        return new JAXBElement<CheckAffiliationAndUpdateModeDeclarationResponse>(_CheckAffiliationAndUpdateModeDeclarationResponse_QNAME, CheckAffiliationAndUpdateModeDeclarationResponse.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link FindAdresseCourrierAffilie }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://affiliation.ws.orion.globaz.ch/", name = "findAdresseCourrierAffilie")
     public JAXBElement<FindAdresseCourrierAffilie> createFindAdresseCourrierAffilie(FindAdresseCourrierAffilie value) {
         return new JAXBElement<FindAdresseCourrierAffilie>(_FindAdresseCourrierAffilie_QNAME, FindAdresseCourrierAffilie.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CheckAffiliationAndUpdateModeDeclaration }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://affiliation.ws.orion.globaz.ch/", name = "checkAffiliationAndUpdateModeDeclaration")
+    public JAXBElement<CheckAffiliationAndUpdateModeDeclaration> createCheckAffiliationAndUpdateModeDeclaration(CheckAffiliationAndUpdateModeDeclaration value) {
+        return new JAXBElement<CheckAffiliationAndUpdateModeDeclaration>(_CheckAffiliationAndUpdateModeDeclaration_QNAME, CheckAffiliationAndUpdateModeDeclaration.class, null, value);
     }
 
     /**

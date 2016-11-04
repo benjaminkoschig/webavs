@@ -78,4 +78,24 @@ public interface WebAvsAffiliationService {
         throws WebAvsException_Exception
     ;
 
+    /**
+     * 
+     * @param modeDeclarationSalaire
+     * @param numeroAffilie
+     * @return
+     *     returns boolean
+     * @throws WebAvsException_Exception
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "checkAffiliationAndUpdateModeDeclaration", targetNamespace = "http://affiliation.ws.orion.globaz.ch/", className = "ch.globaz.orion.ws.affiliation.CheckAffiliationAndUpdateModeDeclaration")
+    @ResponseWrapper(localName = "checkAffiliationAndUpdateModeDeclarationResponse", targetNamespace = "http://affiliation.ws.orion.globaz.ch/", className = "ch.globaz.orion.ws.affiliation.CheckAffiliationAndUpdateModeDeclarationResponse")
+    public boolean checkAffiliationAndUpdateModeDeclaration(
+        @WebParam(name = "numeroAffilie", targetNamespace = "")
+        String numeroAffilie,
+        @WebParam(name = "modeDeclarationSalaire", targetNamespace = "")
+        ModeDeclarationSalaire modeDeclarationSalaire)
+        throws WebAvsException_Exception
+    ;
+
 }

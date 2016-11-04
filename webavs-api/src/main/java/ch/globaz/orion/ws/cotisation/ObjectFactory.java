@@ -44,35 +44,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Masse }
+     * Create an instance of {@link DecompteMensuelLine }
      * 
      */
-    public Masse createMasse() {
-        return new Masse();
+    public DecompteMensuelLine createDecompteMensuelLine() {
+        return new DecompteMensuelLine();
     }
 
     /**
-     * Create an instance of {@link FindTauxAssuranceForCotisationResponse }
+     * Create an instance of {@link ExecuterPreRemplissageDanResponse }
      * 
      */
-    public FindTauxAssuranceForCotisationResponse createFindTauxAssuranceForCotisationResponse() {
-        return new FindTauxAssuranceForCotisationResponse();
-    }
-
-    /**
-     * Create an instance of {@link ExecuterPreRemplissageDan }
-     * 
-     */
-    public ExecuterPreRemplissageDan createExecuterPreRemplissageDan() {
-        return new ExecuterPreRemplissageDan();
-    }
-
-    /**
-     * Create an instance of {@link FindDecompteMois }
-     * 
-     */
-    public FindDecompteMois createFindDecompteMois() {
-        return new FindDecompteMois();
+    public ExecuterPreRemplissageDanResponse createExecuterPreRemplissageDanResponse() {
+        return new ExecuterPreRemplissageDanResponse();
     }
 
     /**
@@ -84,11 +68,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FindDecompteMoisResponse }
+     * Create an instance of {@link FindTauxAssuranceForCotisation }
      * 
      */
-    public FindDecompteMoisResponse createFindDecompteMoisResponse() {
-        return new FindDecompteMoisResponse();
+    public FindTauxAssuranceForCotisation createFindTauxAssuranceForCotisation() {
+        return new FindTauxAssuranceForCotisation();
+    }
+
+    /**
+     * Create an instance of {@link ExecuterPreRemplissageDan }
+     * 
+     */
+    public ExecuterPreRemplissageDan createExecuterPreRemplissageDan() {
+        return new ExecuterPreRemplissageDan();
     }
 
     /**
@@ -100,35 +92,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ListerMassesActuelles }
+     * Create an instance of {@link FindTauxAssuranceForCotisationResponse }
      * 
      */
-    public ListerMassesActuelles createListerMassesActuelles() {
-        return new ListerMassesActuelles();
+    public FindTauxAssuranceForCotisationResponse createFindTauxAssuranceForCotisationResponse() {
+        return new FindTauxAssuranceForCotisationResponse();
     }
 
     /**
-     * Create an instance of {@link DecompteMensuelLine }
+     * Create an instance of {@link FindDecompteMois }
      * 
      */
-    public DecompteMensuelLine createDecompteMensuelLine() {
-        return new DecompteMensuelLine();
-    }
-
-    /**
-     * Create an instance of {@link FindTauxAssuranceForCotisation }
-     * 
-     */
-    public FindTauxAssuranceForCotisation createFindTauxAssuranceForCotisation() {
-        return new FindTauxAssuranceForCotisation();
-    }
-
-    /**
-     * Create an instance of {@link GenererDocumentPucsLisibleResponse }
-     * 
-     */
-    public GenererDocumentPucsLisibleResponse createGenererDocumentPucsLisibleResponse() {
-        return new GenererDocumentPucsLisibleResponse();
+    public FindDecompteMois createFindDecompteMois() {
+        return new FindDecompteMois();
     }
 
     /**
@@ -140,11 +116,35 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link FindDecompteMoisResponse }
+     * 
+     */
+    public FindDecompteMoisResponse createFindDecompteMoisResponse() {
+        return new FindDecompteMoisResponse();
+    }
+
+    /**
+     * Create an instance of {@link Masse }
+     * 
+     */
+    public Masse createMasse() {
+        return new Masse();
+    }
+
+    /**
      * Create an instance of {@link DecompteMensuel }
      * 
      */
     public DecompteMensuel createDecompteMensuel() {
         return new DecompteMensuel();
+    }
+
+    /**
+     * Create an instance of {@link GenererDocumentPucsLisibleResponse }
+     * 
+     */
+    public GenererDocumentPucsLisibleResponse createGenererDocumentPucsLisibleResponse() {
+        return new GenererDocumentPucsLisibleResponse();
     }
 
     /**
@@ -156,11 +156,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ExecuterPreRemplissageDanResponse }
+     * Create an instance of {@link ListerMassesActuelles }
      * 
      */
-    public ExecuterPreRemplissageDanResponse createExecuterPreRemplissageDanResponse() {
-        return new ExecuterPreRemplissageDanResponse();
+    public ListerMassesActuelles createListerMassesActuelles() {
+        return new ListerMassesActuelles();
     }
 
     /**
