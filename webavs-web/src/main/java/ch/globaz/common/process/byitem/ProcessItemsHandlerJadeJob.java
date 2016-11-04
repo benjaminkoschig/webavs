@@ -134,7 +134,7 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
                 try {
                     getSession().getCurrentThreadTransaction().rollback();
                 } catch (Exception e1) {
-                    e1.printStackTrace();
+                    throw new RuntimeException("IMPOSSIBLE DE ROOLLBACKER :" + e.toString(), e1);
                 }
                 // on stop le process si les entités devient toutes en erreurs ou si il y en à trop.
                 if (mustStopProcess(i)) {
@@ -159,7 +159,7 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
     }
 
     private boolean mustStopProcess(Integer i) {
-        return this.countNbItemInError() == 10 && this.countNbItemInError() == i || this.countNbItemInError() == 100;
+        return this.countNbItemInError() == 10 && this.countNbItemInError() == i;
     }
 
     public void sendMailIfHasError() {
