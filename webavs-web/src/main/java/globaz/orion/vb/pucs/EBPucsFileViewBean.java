@@ -3,6 +3,7 @@ package globaz.orion.vb.pucs;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BSpy;
 import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.services.AFAffiliationServices;
 import globaz.naos.translation.CodeSystem;
 import globaz.orion.vb.EBAbstractViewBean;
 import java.util.List;
@@ -33,6 +34,10 @@ public class EBPucsFileViewBean extends EBAbstractViewBean {
 
         // Gestion du code sécurité !
         pucsFile.setLock(!PucsServiceImpl.userHasRight(afAffiliation, BSessionUtil.getSessionFromThreadContext()));
+        if (!pucsFile.isLock()) {
+            pucsFile.setLock(!AFAffiliationServices.hasRightAccesSecurity(pucsFile.getCodeSecuriteCi(),
+                    BSessionUtil.getSessionFromThreadContext()));
+        }
         hasRightAccesSecurity = !pucsFile.isLock();
 
         // Gestion des particularités.

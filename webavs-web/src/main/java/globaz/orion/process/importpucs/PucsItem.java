@@ -97,7 +97,6 @@ public class PucsItem extends ProcessItem {
         entity.setTotalControle(new Montant(pucsFile.getTotalControle()).getBigDecimalValue());
         entity.setIdFileName(pucsFile.getFilename());
         entity.setSearchString(createSearchString(pucsFile));
-        PucsServiceImpl.userHasRight(affiliation, session);
         entity.add();
     }
 

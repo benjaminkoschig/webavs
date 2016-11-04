@@ -28,6 +28,7 @@ public class PucsFile implements Serializable {
     private String idDb;
     private String idAffiliation;
     private File file;
+    private Integer codeSecuriteCi;
 
     public File getFile() {
         return file;
@@ -215,6 +216,14 @@ public class PucsFile implements Serializable {
 
     public void setIdAffiliation(String idAffiliation) {
         this.idAffiliation = idAffiliation;
+    }
+
+    public Integer getCodeSecuriteCi() {
+        return codeSecuriteCi;
+    }
+
+    public void setCodeSecuriteCi(Integer codeSecuriteCi) {
+        this.codeSecuriteCi = codeSecuriteCi;
     }
 
     @Override

@@ -215,6 +215,7 @@ public class EBPucsFileService {
         pucsFile.setTotalControle(new Montant(entity.getTotalControle()).toStringFormat());
         pucsFile.setIdAffiliation(entity.getIdAffiliation());
         pucsFile.setIdDb(entity.getIdEntity());
+        pucsFile.setCodeSecuriteCi(entity.getNiveauSecurite());
         return pucsFile;
     }
 
