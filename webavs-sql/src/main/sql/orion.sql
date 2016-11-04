@@ -48,8 +48,8 @@ CREATE TABLE SCHEMA.EBPUCS_FILE (
    PSPY char(24),
    PRIMARY KEY(ID)
 );
-
-
+ 
+ 
 CREATE TABLE SCHEMA.PROCESS_INFO (
    ID decimal(12,0) NOT NULL,
    START_DATE decimal(20,0),
@@ -60,7 +60,7 @@ CREATE TABLE SCHEMA.PROCESS_INFO (
    TIME_BEFORE decimal(12,0),
    NB_ITEM_TOTAL decimal(12,0),
    NB_ITEM_IN_ERROR decimal(12,0),
-   KEY_PROCES varchar(16),
+   KEY_PROCES varchar(127),
    USER char(32),
    PSPY char(24),
    PRIMARY KEY(ID)
