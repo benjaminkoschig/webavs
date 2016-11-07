@@ -69,6 +69,10 @@ public class CO04ReceptionPaiement extends CODocumentManager {
      */
     private FWCurrency addMontantIM(List<Map<String, String>> dataSource) {
         FWCurrency totalIM = new FWCurrency("0");
+        if (getInteretCalcule() == null) {
+            return totalIM;
+        }
+
         for (CAInteretManuelVisualComponent im : getInteretCalcule()) {
             Map<String, String> f = new HashMap<String, String>();
             f.put(COParameter.F1, im.getInteretMoratoire().getRubrique().getDescription(getLangue()));
