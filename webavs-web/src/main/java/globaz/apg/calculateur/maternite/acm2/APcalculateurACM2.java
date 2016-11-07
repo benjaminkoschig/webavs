@@ -16,6 +16,7 @@ import globaz.framework.util.FWCurrency;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.beans.PRPeriode;
 import globaz.prestation.utils.PRDateUtils;
 import java.math.BigDecimal;
@@ -36,7 +37,6 @@ public class APcalculateurACM2 implements IAPPrestationCalculateur {
 
         // On prend le premier employeur pour récupérer certaines données invariable d'un employeur à l'autre
         ACM2BusinessDataParEmployeur donneesEmployeurTmp = (ACM2BusinessDataParEmployeur) donneesDomainCalcul.get(0);
-
         String idDroit = donneesEmployeurTmp.getIdDroit();
         int nombreJoursACM2 = donneesEmployeurTmp.getNombreJoursPrestationACM2();
         PRPeriode periodeACM1 = null;
@@ -150,13 +150,32 @@ public class APcalculateurACM2 implements IAPPrestationCalculateur {
                 repartitionPaiements.setTypePaiement(prestStandard.getTypePaiement());
                 repartitionPaiements.setTypePrestation(IAPRepartitionPaiements.CS_NORMAL);
 
+                // Recherche du taux prorata sur le salaire journalier de la situation selon 1 des repartitions
+                // existants
+                String tauxRJM = "";
+                for (APRepartitionJointPrestation repartition : donneesParEmployeur.getPrestationStandard()) {
+                    if (repartition.getIdSituationProfessionnelle().equals(sitPro.getIdSitPro())) {
+                        tauxRJM = repartition.getTauxRJM();
+                        break;
+                    }
+                }
+
+                if (JadeStringUtil.isBlankOrZero(tauxRJM)) {
+                    for (APRepartitionJointPrestation repartition : donneesParEmployeur.getPrestationACM1()) {
+                        if (repartition.getIdSituationProfessionnelle().equals(sitPro.getIdSitPro())) {
+                            tauxRJM = repartition.getTauxRJM();
+                            break;
+                        }
+                    }
+                }
+
                 // calcul du montant brut
                 BigDecimal montantBrutRepartition = donneesParEmployeur.getRevenuMoyenDeterminant()
                         .getBigDecimalValue().multiply(new BigDecimal(nombreDeJours));
                 montantBrutRepartition = arrondir(montantBrutRepartition);
                 repartitionPaiements.setMontantBrut(montantBrutRepartition.toString());
                 // repartitionPaiements.setIdRepartitionBeneficiairePaiement();
-                // repartitionPaiements.setTauxRJM(); taux prorata ????
+                repartitionPaiements.setTauxRJM(tauxRJM);
                 // repartitionPaiements.setTypeAssociationAssurance(); spécifique ACM NE ?
                 // TODO repartitionPaiements.chercherAdressePaiement(session);
                 // repartitionPaiements.setAdressePaiement();
