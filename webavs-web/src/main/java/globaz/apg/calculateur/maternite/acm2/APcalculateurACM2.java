@@ -148,7 +148,7 @@ public class APcalculateurACM2 implements IAPPrestationCalculateur {
                 repartitionPaiements.setNom(prestStandard.getNom());
                 repartitionPaiements.setReferenceInterne(prestStandard.getReferenceInterne());
                 repartitionPaiements.setTypePaiement(prestStandard.getTypePaiement());
-                repartitionPaiements.setTypePrestation(IAPRepartitionPaiements.CS_PAIEMENT_EMPLOYEUR);
+                repartitionPaiements.setTypePrestation(IAPRepartitionPaiements.CS_NORMAL);
 
                 // calcul du montant brut
                 BigDecimal montantBrutRepartition = donneesParEmployeur.getRevenuMoyenDeterminant()
