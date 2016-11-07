@@ -145,7 +145,9 @@ public class SQLWriterTest {
     @Test
     public void testIsNotEmpty() throws Exception {
         String param = null;
+        String[] p = new String[0];
         assertThat(SQLWriter.write().isNotEmpty(param)).isFalse();
+        assertThat(SQLWriter.write().isNotEmpty(p)).isFalse();
         assertThat(SQLWriter.write().isNotEmpty("")).isFalse();
         assertThat(SQLWriter.write().isNotEmpty("d")).isTrue();
         assertThat(SQLWriter.write().isNotEmpty("", "", "", "")).isFalse();

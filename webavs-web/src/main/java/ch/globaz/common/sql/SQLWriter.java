@@ -606,7 +606,7 @@ public class SQLWriter {
     }
 
     boolean isNotEmpty(String... param) {
-        if (param == null) {
+        if (param == null || param.length == 0) {
             return false;
         }
 
