@@ -45,10 +45,6 @@ public class StrategieBienImmoPrincipalVS extends StrategieCalculDepense {
                     IPCValeursPlanCalcul.CLE_INTER_BIEN_IMMOBILIER_HABITATION_PRINCIPALE_MOINS_DE_10_ANS,
                     isConstructionMoins10Ans);
 
-            // part d epropriété
-            float fractionPart = checkAmoutAndParseAsFloat(donnee.getBienImmoPrincipalPartNumerateur())
-                    / checkAmoutAndParseAsFloat(donnee.getBienImmoPrincipalPartDenominateur());
-
             // taux frais entretirn en fonction de l'age du batiment
             float tauxFraisEntretien = getTauxFraisEntretien(isConstructionMoins10Ans, context);
 
@@ -72,13 +68,13 @@ public class StrategieBienImmoPrincipalVS extends StrategieCalculDepense {
             // Gestion des intérêts hypothécaire, sauf droit d'habitation
             if (!isDroitHabitation(donnee.getBienImmoPrincipalCSPropriete())) {
 
-                // montant des intérêts avec fraction liés à la part saisie
-                float montantInteret = checkAmoutAndParseAsFloat(donnee
-                        .getBienImmoPrincipalMontantInteretHypothecaire()) * fractionPart;
-
                 // montant des frais d'entretien --> valeur locative % imputation selon age (+-10 ans) biens immo
                 float partPropriete = checkAmountAndParseAsFloat(donnee.getBienImmoPrincipalPartNumerateur())
                         / checkAmountAndParseAsFloat(donnee.getBienImmoPrincipalPartDenominateur());
+
+                // montant des intérêts avec fraction liés à la part saisie
+                float montantInteret = checkAmoutAndParseAsFloat(donnee
+                        .getBienImmoPrincipalMontantInteretHypothecaire()) * partPropriete;
 
                 float montantFraisEntretien = arronditValeur(checkAmountAndParseAsFloat(donnee
                         .getBienImmoPrincipalMontantValeurLocative()) * tauxFraisEntretien * partPropriete);
@@ -97,11 +93,14 @@ public class StrategieBienImmoPrincipalVS extends StrategieCalculDepense {
                         * Float.parseFloat(((ControlleurVariablesMetier) context
                                 .get(Attribut.TAUX_BIEN_IMMO_FRACTION_LOYER_EFFECTIF)).getValeurCourante()));
 
-                float sommeRevenusLocations = checkAmountAndParseAsFloat(donnee
-                        .getBienImmoPrincipalMontantLoyersEncaisses())
-                        + checkAmountAndParseAsFloat(donnee.getBienImmoPrincipalMontantSousLocation());
+                float loyerEffectifRealisablePart = loyerEffectifRealisable * partPropriete;
 
-                float plafondInteretsHypothecaire = loyerEffectifRealisable - montantFraisEntretien
+                float sommeRevenusLocations = (checkAmountAndParseAsFloat(donnee
+                        .getBienImmoPrincipalMontantLoyersEncaisses()) + checkAmountAndParseAsFloat(donnee
+                        .getBienImmoPrincipalMontantSousLocation()))
+                        * partPropriete;
+
+                float plafondInteretsHypothecaire = loyerEffectifRealisablePart - montantFraisEntretien
                         + sommeRevenusLocations;
 
                 float montanAdmis;

@@ -31,7 +31,8 @@ public class StrategieBienImmoNonHabitableVS extends StrategieCalculDepense {
             float fractionPart = Float.parseFloat(donnee.getBienImmoNonHabitablePartNumerateur())
                     / Float.parseFloat(donnee.getBienImmoNonHabitablePartDenominateur());
 
-            float montantRendements = checkAmountAndParseAsFloat(donnee.getBienImmoNonHabitableMontantRendement());
+            float montantRendements = checkAmountAndParseAsFloat(donnee.getBienImmoNonHabitableMontantRendement())
+                    * fractionPart;
 
             float montantsInteretsHypothecaires = checkAmountAndParseAsFloat(donnee
                     .getBienImmoNonHabitableMontantInteretHypothecaire()) * fractionPart;

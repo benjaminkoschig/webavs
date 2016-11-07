@@ -2789,8 +2789,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
 
             // copie
             if (isCopie) {
-                data.addData(IRFGenererDocumentDecision.CAT_TEXTE_IS_COPIE, PRStringUtils.replaceString(mainDocument
-                        .getTextes(1).getTexte(3).getDescription(), IRFGenererDocumentDecision.IS_COPIE, getCopie()));
+                data.addData(IRFGenererDocumentDecision.CAT_TEXTE_IS_COPIE, mainDocument.getTextes(1).getTexte(3)
+                        .getDescription());
             }
 
             // nss
@@ -3216,8 +3216,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
 
             // copie
             if (isCopie) {
-                data.addData(IRFGenererDocumentDecision.CAT_TEXTE_IS_COPIE, PRStringUtils.replaceString(mainDocument
-                        .getTextes(3).getTexte(1).getDescription(), IRFGenererDocumentDecision.IS_COPIE, getCopie()));
+                data.addData(IRFGenererDocumentDecision.CAT_TEXTE_IS_COPIE, mainDocument.getTextes(3).getTexte(1)
+                        .getDescription());
             }
 
             // nss
@@ -3427,11 +3427,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
 
         // Copie
         if (isCopie) {
-            data.addData(IRFGenererDocumentDecision.CAT_TEXTE_IS_COPIE, PRStringUtils.replaceString(mainDocument
-                    .getTextes(2).getTexte(3).getDescription(), IRFGenererDocumentDecision.IS_COPIE, getCopie()));
-        } else {
-            data.addData(IRFGenererDocumentDecision.CAT_TEXTE_IS_COPIE, PRStringUtils.replaceString(mainDocument
-                    .getTextes(2).getTexte(3).getDescription(), IRFGenererDocumentDecision.IS_COPIE, ""));
+            data.addData(IRFGenererDocumentDecision.CAT_TEXTE_IS_COPIE, mainDocument.getTextes(2).getTexte(3)
+                    .getDescription());
         }
 
         // Nss
@@ -3601,8 +3598,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
 
             // copie
             if (isCopie) {
-                data.addData(IRFGenererDocumentDecision.CAT_TEXTE_IS_COPIE, PRStringUtils.replaceString(mainDocument
-                        .getTextes(1).getTexte(3).getDescription(), IRFGenererDocumentDecision.IS_COPIE, getCopie()));
+                data.addData(IRFGenererDocumentDecision.CAT_TEXTE_IS_COPIE, mainDocument.getTextes(1).getTexte(3)
+                        .getDescription());
             }
 
             // nss

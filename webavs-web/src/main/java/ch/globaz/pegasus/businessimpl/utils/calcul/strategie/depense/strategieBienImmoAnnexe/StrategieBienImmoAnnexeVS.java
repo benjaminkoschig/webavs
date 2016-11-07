@@ -27,7 +27,7 @@ public class StrategieBienImmoAnnexeVS extends StrategieCalculDepense {
         if (!isNuProprietaire(donnee.getBienImmoAnnexeCsTypePropriete())) {
 
             // part de propriété
-            float fractionPart = checkAmoutAndParseAsFloat(donnee.getBienImmoAnnexePartNumerateur())
+            float partPropriete = checkAmoutAndParseAsFloat(donnee.getBienImmoAnnexePartNumerateur())
                     / checkAmoutAndParseAsFloat(donnee.getBienImmoAnnexePartDenominateur());
 
             // L'habitation principale à t'elle moins de 10 ans
@@ -35,7 +35,7 @@ public class StrategieBienImmoAnnexeVS extends StrategieCalculDepense {
 
             // montant des intérêts avec fraction liés à la part saisie
             float montantInteret = checkAmoutAndParseAsFloat(donnee.getBienImmoAnnexeMontantInteretHypothecaire())
-                    * fractionPart;
+                    * partPropriete;
 
             // taux d'imputation de la valeur locative pour le calcul des frais a prendre en compte
             float montantTauxFractionValeurlocativeBrut = (isConstructionMoins10Ans) ? Float
@@ -51,10 +51,12 @@ public class StrategieBienImmoAnnexeVS extends StrategieCalculDepense {
                     * Float.parseFloat(((ControlleurVariablesMetier) context
                             .get(Attribut.TAUX_BIEN_IMMO_FRACTION_LOYER_EFFECTIF)).getValeurCourante()));
 
-            float sommeRevenusLocations = checkAmountAndParseAsFloat(donnee.getBienImmoAnnexeMontantLoyersEncaisses())
-                    + checkAmountAndParseAsFloat(donnee.getBienImmoAnnexeMontantSousLocation());
+            float loyerEffectifRealisablePart = loyerEffectifRealisable * partPropriete;
 
-            float plafondInteretsHypothecaire = loyerEffectifRealisable + sommeRevenusLocations;
+            float sommeRevenusLocations = (checkAmountAndParseAsFloat(donnee.getBienImmoAnnexeMontantLoyersEncaisses()) + checkAmountAndParseAsFloat(donnee
+                    .getBienImmoAnnexeMontantSousLocation())) * partPropriete;
+
+            float plafondInteretsHypothecaire = loyerEffectifRealisablePart + sommeRevenusLocations;
 
             float montanAdmis;
 
