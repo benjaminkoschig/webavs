@@ -393,7 +393,7 @@ public class EBTreatSaisieDecompte extends BProcess {
                         JACalendar.todayJJsMMsAAAA(), true, null);
             }
 
-            return d.getData().get(TIAbstractAdresseDataSource.ADRESSE_VAR_NPA)
+            return d.getData().get(TIAbstractAdresseDataSource.ADRESSE_VAR_NPA) + " "
                     + d.getData().get(TIAbstractAdresseDataSource.ADRESSE_VAR_LOCALITE);
         }
 
