@@ -503,8 +503,8 @@ globazNotation.note = {
 			labelNote: this.i18n("labelnote"),
 			btnNewLabel: this.i18n("btnNewLabel"),
 			labelId: 'N°',
-			labelDate: this.i18n("LabelDate"),
-			labelUser: this.i18n("LabelUser"),
+			labelDate: this.i18n("labelDate"),
+			labelUser: this.i18n("labelUser"),
 			lignes: o_data
 		};
 
