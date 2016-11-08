@@ -53,14 +53,14 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
 
     @Override
     public void find() throws Exception {
-        if (orderBy == null || orderBy.isEmpty() || "DATE_RECEPTION".equalsIgnoreCase(orderBy)) {
-            manager.setOrderBy(EBPucsFileDefTable.DATE_RECEPTION.getColumn() + " DESC");
+        if ("DATE_RECEPTION".equalsIgnoreCase(orderBy)) {
+            manager.setOrderBy(EBPucsFileDefTable.DATE_RECEPTION.getColumn() + " ASC");
         } else if ("NOM_AFFILIE".equalsIgnoreCase(orderBy)) {
             manager.setOrderBy(EBPucsFileDefTable.NOM_AFFILIE.getColumn());
         } else if ("NUMERO_AFFILIE".equalsIgnoreCase(orderBy)) {
             manager.setOrderBy(EBPucsFileDefTable.NUMERO_AFFILIE.getColumn());
         }
-        manager.find(50);
+        manager.find(BManager.SIZE_USEDEFAULT);
         perpareList();
     }
 
@@ -70,7 +70,10 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
 
         mapAffiliation = findAffiliations(list);
         mapNumAffiliationParticularite = resolveParticularites(mapAffiliation);
-        sortByFusionable();
+
+        if (orderBy == null || orderBy.isEmpty()) {
+            sortByFusionable();
+        }
     }
 
     private Map<String, AFAffiliation> findAffiliations(List<EBPucsFileEntity> list) {

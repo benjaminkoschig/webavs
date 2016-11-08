@@ -165,6 +165,7 @@ function getSelectedIds(type) {
 			<option value = ""></option>
 			<option value = "NOM_AFFILIE"><ct:FWLabel key="PUCS_ORDERBY_NOM_AFFILIE"/></option>
 		    <option value = "NUMERO_AFFILIE"><ct:FWLabel key="PUCS_ORDERBY_NUMERO_AFFILIE"/></option>
+		    <option value = "DATE_RECEPTION"><ct:FWLabel key="PUCS_ORDERBY_DATE_RECEPTION"/></option>
 		</select>
 	</td>
 </tr>
