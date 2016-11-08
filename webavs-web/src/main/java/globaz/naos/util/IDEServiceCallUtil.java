@@ -53,7 +53,6 @@ import idech.ech.xmlns.ech_0108_f._3.OrganisationType;
 import java.net.Authenticator;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
-import java.net.URL;
 import java.rmi.RemoteException;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
@@ -129,8 +128,10 @@ public class IDEServiceCallUtil {
 
         Authenticator.setDefault(myauAuthenticator);
 
-        Service service = Service.create(new URL(wsdlWebservice),
-                new QName(namespaceURIWebservice, localPartWebservice));
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+
+        Service service = Service.create(classloader.getResource(wsdlWebservice), new QName(namespaceURIWebservice,
+                localPartWebservice));
 
         IPartnerServices port = service.getPort(IPartnerServices.class);
 
