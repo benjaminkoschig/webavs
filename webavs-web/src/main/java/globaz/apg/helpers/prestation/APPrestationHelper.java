@@ -21,13 +21,13 @@ import globaz.apg.db.droits.APEmployeur;
 import globaz.apg.db.droits.APEnfantAPG;
 import globaz.apg.db.droits.APPeriodeAPG;
 import globaz.apg.db.droits.APSitProJointEmployeur;
+import globaz.apg.db.droits.APSituationFamilialeMat;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.db.prestation.APCotisation;
 import globaz.apg.db.prestation.APCotisationManager;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
-import globaz.apg.db.prestation.APRepartitionJointPrestationManager;
 import globaz.apg.db.prestation.APRepartitionPaiements;
 import globaz.apg.enums.APAssuranceTypeAssociation;
 import globaz.apg.enums.APTypeCalculPrestation;
@@ -520,6 +520,22 @@ public class APPrestationHelper extends PRAbstractHelper {
         }
 
         /*
+         * Recherche de la situation familiale maternité pour savoir si c'est une adoption. Si oui, pas de droit aux
+         * allocations ACM2
+         */
+        APSituationFamilialeMat situationFamilialeMat = new APSituationFamilialeMat();
+        situationFamilialeMat.setSession(session);
+        situationFamilialeMat.setIdDroitMaternite(droit.getIdDroit());
+        situationFamilialeMat.retrieve(transaction);
+        if (situationFamilialeMat.isNew()) {
+            throw new Exception("Impossible de retrouver la situation familiale maternité pour le droit avec l'id ["
+                    + droit.getIdDroit() + "] ");
+        }
+        if (situationFamilialeMat.getIsAdoption() != null && situationFamilialeMat.getIsAdoption().booleanValue()) {
+            return;
+        }
+
+        /*
          * Calcul des prestations ACM 2 uniquement si elles ont été activées par la caisse
          */
         if (!APProperties.PRESTATION_ACM_2_ACTIF.getBooleanValue()) {
@@ -640,8 +656,12 @@ public class APPrestationHelper extends PRAbstractHelper {
         final Iterator<APSituationProfessionnelle> iter = man.iterator();
         while (iter.hasNext()) {
             final APSituationProfessionnelle sitPro = iter.next();
+            // Case ACM2 cochée dans la sit prof
             if (sitPro.getHasAcm2AlphaPrestations() != null && sitPro.getHasAcm2AlphaPrestations().booleanValue()) {
-                return true;
+                // Versement employeur ?
+                if (sitPro.getIsVersementEmployeur() != null && sitPro.getIsVersementEmployeur().booleanValue()) {
+                    return true;
+                }
             }
         }
         return false;
