@@ -125,7 +125,7 @@ public class PucsSwissDecItem extends ProcessItem {
 
     @Override
     public String getDescription() {
-        return remotePathFileSourceUri;
+        return JadeFilenameUtil.extractFilename(remotePathFileSourceUri);
     }
 
 }

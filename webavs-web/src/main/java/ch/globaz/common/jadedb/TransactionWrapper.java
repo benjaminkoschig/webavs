@@ -7,6 +7,7 @@ import globaz.jade.context.JadeThread;
 import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import java.io.Closeable;
+import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +76,15 @@ public class TransactionWrapper implements Closeable {
             btransaction.commit();
         } catch (Exception e) {
             throw new RuntimeException("Unable to commit the transaction", e);
+        }
+    }
+
+    public void forceCommit() {
+        try {
+            btransaction.getConnection().commit();
+        } catch (SQLException e) {
+            throw new RuntimeException("Unable to force the commit transaction", e);
+
         }
     }
 

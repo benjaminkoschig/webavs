@@ -1,5 +1,6 @@
 package ch.globaz.common.process.byitem;
 
+import globaz.globall.db.BTransaction;
 import globaz.jade.job.AbstractJadeJob;
 import globaz.jade.smtp.JadeSmtpClient;
 import java.text.MessageFormat;
@@ -149,13 +150,28 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
             try {
                 i++;
                 getProgressHelper().setCurrent(i);
+                BTransaction transcation = getSession().getCurrentThreadTransaction();
                 item.treat();
+
                 // on stop le process si les entités devient toutes en erreurs ou si il y en à trop.
                 if (mustStopProcess(i)) {
                     this.sendMailIfHasError(translate("PROCESS_ITEMS_TOO_MANY_ERRORS") + " - " + translateName());
                     break;
                 }
-                if (this.itemsHasError()) {
+
+                // Attention les warning ne sont pas gérés.
+                // TODO
+
+                if (transcation.hasErrors()) {
+                    item.addErrors(transcation.getErrors().toString());
+                    transcation.clearErrorBuffer();
+                }
+
+                if (getSession().hasErrors()) {
+                    item.addErrors(getSession().getErrors().toString());
+                }
+
+                if (item.hasErrorOrException()) {
                     getSession().getCurrentThreadTransaction().rollback();
                 } else {
                     getSession().getCurrentThreadTransaction().commit();
