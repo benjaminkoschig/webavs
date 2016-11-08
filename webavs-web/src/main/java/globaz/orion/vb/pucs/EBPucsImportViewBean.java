@@ -23,6 +23,7 @@ import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.businessimpl.services.pucs.PucsServiceImpl;
 import ch.globaz.orion.service.EBPucsFileService;
 import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
 import com.google.gson.Gson;
 
@@ -213,14 +214,14 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
     }
 
     private Map<String, Collection<PucsFile>> toMapPucsByNumAffilie() {
-
-        return Multimaps.index(pucsFiles, new Function<PucsFile, String>() {
+        // on est obligé d'utiliser une hashmap du à un bug de parssing de EL dans webSphere.
+        return Maps.newHashMap(Multimaps.index(pucsFiles, new Function<PucsFile, String>() {
             @Override
             public String apply(PucsFile pucs) {
                 return pucs.getNumeroAffilie() + "_" + pucs.getAnneeDeclaration() + "_" + pucs.getProvenance() + "_"
                         + pucs.isForTest() + "_" + pucs.isAfSeul();
             }
-        }).asMap();
+        }).asMap());
     }
 
     public Map<String, Collection<PucsFile>> getMapPucsByNumAffilie() {
