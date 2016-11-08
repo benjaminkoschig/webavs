@@ -523,7 +523,7 @@ public class RECommunicationMutationOO extends REAbstractJobOO {
         docData = caisseHelper.addSignatureParameters(docData, crBean);
 
         try {
-            docData.addData("SIGNATURE", getTexte(catalogueLettreCommunicationMutation, 3, 2));
+            docData.addData("SIGNATURE", getTexte(catalogueLettreCommunicationMutation, 3, 3));
         } catch (RETechnicalException e) {
             JadeLogger.warn(this, e.getMessage());
         }
