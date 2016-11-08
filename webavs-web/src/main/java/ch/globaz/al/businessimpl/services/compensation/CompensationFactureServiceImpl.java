@@ -200,7 +200,7 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
         Collections.sort(list);
         return list;
     }
-	
+
     // JIRA IN-2732 et WEBAVS-3155: Traitement de simulation de compensation du processus paritaire principale en erreur
     // à cause d'un IN SQL trop grand, on découpe donc notre liste en sous-listes de N éléments
     private static final int IN_MAX = 1000;
@@ -240,7 +240,6 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
 
         checkDoublons(recaps, logger);
 
-		
         /*
          * JIRA IN-2732 et WEBAVS-3155: On découpe le travail en lots de max IN_MAX éléments, pour ne pas faire sauter
          * la requête SQL.
@@ -256,12 +255,12 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
             List<String> lotElements = listIdsRecap.subList(lotIndex * IN_MAX,
                     Math.min((lotIndex + 1) * IN_MAX, listIdsRecap.size()));
             LOG.debug("  searching lot {} with {} elements in the IN criteria", lotIndex, lotElements.size());
-		
+
             CheckAffiliationSearchComplexModel search = new CheckAffiliationSearchComplexModel();
             search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
             // on lance que si il y a des récaps
-            search.setInIdRecap(idsRecap);
-            search = (CheckAffiliationSearchComplexModel) JadePersistenceManager.search(search);        
+            search.setInIdRecap(lotElements);
+            search = (CheckAffiliationSearchComplexModel) JadePersistenceManager.search(search);
 
             // Map contenant les avertissement (key) en cours de traitement dans la boucle for
             Map<String, Object> avertissementEnTraitement = new HashMap<String, Object>();
@@ -284,7 +283,8 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
                         model.getNumeroAffilie(), model.getActiviteAllocataire(), "01." + model.getPeriodeDe());
 
                 if (ALCSDossier.ETAT_RADIE.equals(model.getEtatDossier())) {
-                    // pour le dossier chercher toute les prestation égale ou psostérieure à période A: faire le totales de
+                    // pour le dossier chercher toute les prestation égale ou psostérieure à période A: faire le totales
+                    // de
                     // ces prstations
                     // si le total est égal à 0 pas d'avertissement, sinon avertissement (totale négatif ou positif)
 
@@ -304,8 +304,8 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
                                         .addMessage(
                                                 new JadeBusinessMessage(JadeBusinessMessageLevels.WARN,
                                                         CompensationFactureServiceImpl.class.getName(),
-                                                        "al.protocoles.compensation.dossier.radie", new String[] { model
-                                                                .getIdDossier() }));
+                                                        "al.protocoles.compensation.dossier.radie",
+                                                        new String[] { model.getIdDossier() }));
                             }
                         }
                     } catch (JAException e) {
@@ -318,9 +318,10 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
                     for (String warn : assuranceInfo.getWarningsContainer()) {
                         // Nous insérons dans le mail/liste qu'une seule fois un type d'avertissement pour un affilié
                         if (!avertissementEnTraitement.containsKey(warn)) {
-                            logger.getWarningsLogger(model.getNumeroAffilie(), assuranceInfo.getDesignation()).addMessage(
-                                    new JadeBusinessMessage(JadeBusinessMessageLevels.WARN,
-                                            CompensationFactureServiceImpl.class.getName(), warn, params));
+                            logger.getWarningsLogger(model.getNumeroAffilie(), assuranceInfo.getDesignation())
+                                    .addMessage(
+                                            new JadeBusinessMessage(JadeBusinessMessageLevels.WARN,
+                                                    CompensationFactureServiceImpl.class.getName(), warn, params));
 
                             avertissementEnTraitement.put(warn, assuranceInfo);
                         }
@@ -328,10 +329,11 @@ public class CompensationFactureServiceImpl extends ALAbstractBusinessServiceImp
                 } else if (!assuranceInfo.getCouvert()) {
 
                     logger.getWarningsLogger(model.getNumeroAffilie(), assuranceInfo.getDesignation()).addMessage(
-                            new JadeBusinessMessage(JadeBusinessMessageLevels.WARN, CompensationFactureServiceImpl.class
-                                    .getName(), "al.protocoles.compensation.diagnostique.affilie.inactif", params));
+                            new JadeBusinessMessage(JadeBusinessMessageLevels.WARN,
+                                    CompensationFactureServiceImpl.class.getName(),
+                                    "al.protocoles.compensation.diagnostique.affilie.inactif", params));
                 }
-			}	
+            }
         }
 
         return logger;
