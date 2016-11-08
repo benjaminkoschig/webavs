@@ -145,9 +145,9 @@ $(function () {
 			<td><%=line.getPucsFile().getHandlingUser()==null?"":line.getPucsFile().getHandlingUser()%></td>
 			<td><%=objSession.getCodeLibelle(line.getPucsFile().getCurrentStatus().getValue())%></td>
 			<%if (line.getPucsFile().isAfSeul()){%>
-			<td class="lienExterneNaos" style="text-align:center" ><i title ="<ct:FWLabel key="LINK_RELEVE">" class="icon-link"></i></td>
+			<td class="lienExterneNaos" style="text-align:center" ><i title ="<ct:FWLabel key='LINK_RELEVE'>" class="icon-link"></i></td>
 			<% } else { %>
-			<td class="lienExterneDraco" style="text-align:center" ><i title ="<ct:FWLabel key="LINK_DECLARATION">" class="icon-link"></i></td>
+			<td class="lienExterneDraco" style="text-align:center" ><i title ="<ct:FWLabel key='LINK_DECLARATION'>" class="icon-link"></i></td>
 			<% }%>
 			
 			<td>
