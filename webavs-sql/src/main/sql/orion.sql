@@ -1,27 +1,27 @@
 -- D0161 --
-delete from FWCOUP where pcosid in(select pcosid from FWCOSP where pptygr ='GEBETPUC');
- delete from FWCOSP where pptygr ='GEBETPUC';
+delete from SCHEMA.FWCOUP where pcosid in(select pcosid from SCHEMA.FWCOSP where pptygr ='GEBETPUC');
+ delete from SCHEMA.FWCOSP where pptygr ='GEBETPUC';
 
- insert into FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11000002, 'GEBETPUC', 0,1,3,0, 'Etat des fichier pucs', 0,2,2,2,2,0,0,0,'200512231Globaz'); 
+ insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11000002, 'GEBETPUC', 0,1,3,0, 'Etat des fichier pucs', 0,2,2,2,2,0,0,0,'200512231Globaz'); 
 
- insert into FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11020001, 'GEBETPUC', 1 ,2,0,0, 'A_VALIDE', 2,2,2,2,2, 2 , 11000002 ,0,'20051231Globaz'); 
- insert into FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020001, 'F', '', 'A valider' ,'20051231Globaz'); 
- insert into FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020001, 'D', '', 'Abgelehnt' ,'20051231Globaz'); 
- insert into FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11020002, 'GEBETPUC', 2 ,2,0,0, 'REJETE', 2,2,2,2,2, 2 , 11000002 ,0,'20051231Globaz'); 
- insert into FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020002, 'F', '', 'Rejeté' ,'20051231Globaz'); 
- insert into FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020002, 'D', '', 'Abgelehnt' ,'20051231Globaz'); 
- insert into FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11020003, 'GEBETPUC', 1 ,2,0,0, 'ATRAITER', 2,2,2,2,2, 2 , 11000002 ,0,'20051231Globaz'); 
- insert into FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020003, 'F', '', 'A traiter' ,'20051231Globaz'); 
- insert into FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020003, 'D', '', 'Zu behandeln' ,'20051231Globaz'); 
- insert into FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11020004, 'GEBETPUC', 2 ,2,0,0, 'ENTRAITE', 2,2,2,2,2, 2 , 11000002 ,0,'20051231Globaz'); 
- insert into FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020004, 'F', '', 'En traitement' ,'20051231Globaz'); 
- insert into FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020004, 'D', '', 'In Behandlung' ,'20051231Globaz'); 
- insert into FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11020005, 'GEBETPUC', 2 ,2,0,0, 'COMPTABILIS', 2,2,2,2,2, 2 , 11000002 ,0,'20051231Globaz'); 
- insert into FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020005, 'F', '', 'Comptabilisé' ,'20051231Globaz'); 
- insert into FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020005, 'D', '', 'Verbucht' ,'20051231Globaz'); 
- insert into FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11020006, 'GEBETPUC', 2 ,2,0,0, 'ENERREUR', 2,2,2,2,2, 2 , 11000002 ,0,'20051231Globaz'); 
- insert into FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020006, 'F', '', 'En erreur' ,'20051231Globaz'); 
- insert into FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020006, 'D', '', 'Fehlerhaft' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11020001, 'GEBETPUC', 1 ,2,0,0, 'A_VALIDE', 2,2,2,2,2, 2 , 11000002 ,0,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020001, 'F', '', 'A valider' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020001, 'D', '', 'Abgelehnt' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11020002, 'GEBETPUC', 2 ,2,0,0, 'REJETE', 2,2,2,2,2, 2 , 11000002 ,0,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020002, 'F', '', 'Rejeté' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020002, 'D', '', 'Abgelehnt' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11020003, 'GEBETPUC', 1 ,2,0,0, 'ATRAITER', 2,2,2,2,2, 2 , 11000002 ,0,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020003, 'F', '', 'A traiter' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020003, 'D', '', 'Zu behandeln' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11020004, 'GEBETPUC', 2 ,2,0,0, 'ENTRAITE', 2,2,2,2,2, 2 , 11000002 ,0,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020004, 'F', '', 'En traitement' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020004, 'D', '', 'In Behandlung' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11020005, 'GEBETPUC', 2 ,2,0,0, 'COMPTABILIS', 2,2,2,2,2, 2 , 11000002 ,0,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020005, 'F', '', 'Comptabilisé' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020005, 'D', '', 'Verbucht' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values ( 11020006, 'GEBETPUC', 2 ,2,0,0, 'ENERREUR', 2,2,2,2,2, 2 , 11000002 ,0,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020006, 'F', '', 'En erreur' ,'20051231Globaz'); 
+ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) values ( 11020006, 'D', '', 'Fehlerhaft' ,'20051231Globaz'); 
  
 delete from SCHEMA.JADEPROP where PROPNAME in('orion.pucs.remotePucsFileDirectoryAValider','orion.pucs.remotePucsFileDirectoryRefuser','orion.pucs.remotePucsFileDirectoryMerged');
  
