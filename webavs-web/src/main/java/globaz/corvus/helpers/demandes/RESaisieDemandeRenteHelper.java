@@ -2206,12 +2206,16 @@ public class RESaisieDemandeRenteHelper extends PRAbstractHelper {
 
             // Si aucune rentes accordées trouvées, on se base sur la date de décès du requérant
             if (!hasFoundRenteAcc) {
-                // Prendre le premier jour du mois suivant de la date de décès pour le début de la demande
-                String decesAuPremierDuMoisSuivant = JadeDateUtil.addMonths(dateDecesTiers, 1);
-                decesAuPremierDuMoisSuivant = JadeDateUtil.getFirstDateOfMonth(decesAuPremierDuMoisSuivant);
 
-                if (!JadeStringUtil.isBlankOrZero(decesAuPremierDuMoisSuivant)) {
-                    dateDebutFinal = new JADate(decesAuPremierDuMoisSuivant);
+                if (!JadeStringUtil.isBlankOrZero(dateDecesTiers)) {
+
+                    // Prendre le premier jour du mois suivant de la date de décès pour le début de la demande
+                    String decesAuPremierDuMoisSuivant = JadeDateUtil.addMonths(dateDecesTiers, 1);
+                    decesAuPremierDuMoisSuivant = JadeDateUtil.getFirstDateOfMonth(decesAuPremierDuMoisSuivant);
+
+                    if (!JadeStringUtil.isBlankOrZero(decesAuPremierDuMoisSuivant)) {
+                        dateDebutFinal = new JADate(decesAuPremierDuMoisSuivant);
+                    }
                 }
             }
 
