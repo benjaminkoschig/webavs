@@ -22,6 +22,7 @@ import globaz.apg.db.droits.APEnfantAPG;
 import globaz.apg.db.droits.APPeriodeAPG;
 import globaz.apg.db.droits.APSitProJointEmployeur;
 import globaz.apg.db.droits.APSituationFamilialeMat;
+import globaz.apg.db.droits.APSituationFamilialeMatManager;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.db.prestation.APCotisation;
@@ -523,15 +524,21 @@ public class APPrestationHelper extends PRAbstractHelper {
          * Recherche de la situation familiale maternité pour savoir si c'est une adoption. Si oui, pas de droit aux
          * allocations ACM2
          */
-        APSituationFamilialeMat situationFamilialeMat = new APSituationFamilialeMat();
+        APSituationFamilialeMatManager situationFamilialeMat = new APSituationFamilialeMatManager();
         situationFamilialeMat.setSession(session);
-        situationFamilialeMat.setIdDroitMaternite(droit.getIdDroit());
-        situationFamilialeMat.retrieve(transaction);
-        if (situationFamilialeMat.isNew()) {
-            throw new Exception("Impossible de retrouver la situation familiale maternité pour le droit avec l'id ["
-                    + droit.getIdDroit() + "] ");
+        situationFamilialeMat.setForIdDroitMaternite(droit.getIdDroit());
+        situationFamilialeMat.find(transaction, BManager.SIZE_NOLIMIT);
+
+        boolean isAdoption = true;
+        for (int i = 0; i < situationFamilialeMat.getSize(); i++) {
+            APSituationFamilialeMat situation = (APSituationFamilialeMat) situationFamilialeMat.get(i);
+            if (!situation.getIsAdoption().booleanValue()) {
+                isAdoption = false;
+            }
         }
-        if (situationFamilialeMat.getIsAdoption() != null && situationFamilialeMat.getIsAdoption().booleanValue()) {
+
+        // Pas d'ACM 2 avec que des enfants en cas d'adoption, si un seul n'est pas en cas d'adoption on peut octroyer
+        if (isAdoption) {
             return;
         }
 
