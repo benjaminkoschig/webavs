@@ -51,8 +51,8 @@
 		<ch.globaz.mercato.notification.version>1.0.0</ch.globaz.mercato.notification.version>
 		<itucana.version>0.0.1</itucana.version>
 		<jade.version>5.2.1</jade.version>
-		<pyxis.version>1.23.1-SNAPSHOT</pyxis.version>
-		<simple-output-list.version>1.2.0-SNAPSHOT</simple-output-list.version>
+		<pyxis.version>1.23.1</pyxis.version>
+		<simple-output-list.version>1.2.0</simple-output-list.version>
 		<op.version>5.0.3</op.version>
 		<globaz-external-xsd.version>1.2.0</globaz-external-xsd.version>
 
