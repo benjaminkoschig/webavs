@@ -16,3 +16,6 @@ UPDATE SCHEMA.CIECRIP SET KBTSPE = 0 WHERE KBIECR IN
 	FROM SCHEMA.CIECRIP ec inner join SCHEMA.afaffip af on (ec.KBITIE = af.MAIAFF)
 	where ec.KBTGEN = 310007 AND SUBSTR(ec.KBLESP,1,4) < '2016' and MATTAF = 804004
 );
+
+
+UPDATE SCHEMA.FWCOUP SET PCOLUT = 'Nicht rentenbildendes Einkommen für Nichterwerbstätige Person', PSPY = '20161109DCL' WHERE PCOSID = 312004 AND PLAIDE = 'D';
