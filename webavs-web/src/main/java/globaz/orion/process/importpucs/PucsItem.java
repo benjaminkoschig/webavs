@@ -91,6 +91,7 @@ public class PucsItem extends ProcessItem {
         entity.setNbSalaire(Integer.valueOf(pucsFile.getNbSalaires()));
         entity.setNomAffilie(pucsFile.getNomAffilie());
         entity.setNumeroAffilie(pucsFile.getNumeroAffilie());
+        entity.setForTest(pucsFile.isForTest());
         entity.setProvenance(pucsFile.getProvenance().getValue());
         entity.setSalaireInferieurLimite(pucsFile.hasSalaireInferieurLimite());
         entity.setSizeFileInKo(pucsFile.getSizeFileInKo());

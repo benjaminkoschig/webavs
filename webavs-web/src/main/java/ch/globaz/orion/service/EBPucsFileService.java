@@ -205,6 +205,7 @@ public class EBPucsFileService {
         pucsFile.setCurrentStatus(EtatPucsFile.fromValue(String.valueOf(entity.getStatut())));
         pucsFile.setDateDeReception(new Date(entity.getDateReception()).getSwissValue());
         pucsFile.setDuplicate(entity.isDuplicate());
+        pucsFile.setForTest(entity.isForTest());
         pucsFile.setHandlingUser(entity.getHandlingUser());
         pucsFile.setNbSalaires(String.valueOf(entity.getNbSalaire()));
         pucsFile.setNomAffilie(entity.getNomAffilie());

@@ -40,6 +40,7 @@ public class EBPucsFileEntity extends JadeEntity {
     private Boolean salaireInferieurLimite;
     private File file;
     private String searchString;
+    private boolean forTest;
 
     @Override
     protected void writeProperties() {
@@ -61,6 +62,7 @@ public class EBPucsFileEntity extends JadeEntity {
         write(EBPucsFileDefTable.DUPLICATE, duplicate);
         write(EBPucsFileDefTable.SAL_INF_LIMIT, salaireInferieurLimite);
         write(EBPucsFileDefTable.SEARCH_STRING, searchString);
+        write(EBPucsFileDefTable.FOR_TEST, forTest);
     }
 
     @Override
@@ -84,6 +86,7 @@ public class EBPucsFileEntity extends JadeEntity {
         duplicate = read(EBPucsFileDefTable.DUPLICATE);
         salaireInferieurLimite = read(EBPucsFileDefTable.SAL_INF_LIMIT);
         searchString = readString(EBPucsFileDefTable.SEARCH_STRING);
+        forTest = read(EBPucsFileDefTable.FOR_TEST);
     }
 
     public static void deleteFileOnWorkDirectory(String idFileName) {
@@ -305,4 +308,13 @@ public class EBPucsFileEntity extends JadeEntity {
     public void setSearchString(String searchString) {
         this.searchString = searchString;
     }
+
+    public boolean isForTest() {
+        return forTest;
+    }
+
+    public void setForTest(boolean forTest) {
+        this.forTest = forTest;
+    }
+
 }

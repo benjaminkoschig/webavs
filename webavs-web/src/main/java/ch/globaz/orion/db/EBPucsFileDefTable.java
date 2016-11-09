@@ -23,6 +23,7 @@ public enum EBPucsFileDefTable implements TableDefinition {
     DUPLICATE("DUPLICATE", Boolean.class),
     SAL_INF_LIMIT("SAL_INF_LIMIT", Boolean.class),
     NIVEAU_SECURITE("NIVEAU_SECURITE", Integer.class),
+    FOR_TEST("FOR_TEST", Boolean.class),
     SEARCH_STRING("SEARCH_STRING", String.class);
 
     public static final String TABLE = "EBPUCS_FILE";

@@ -45,6 +45,7 @@ CREATE TABLE SCHEMA.EBPUCS_FILE (
    DUPLICATE  decimal(1,0),
    SAL_INF_LIMIT  decimal(1,0),
    SEARCH_STRING varchar(1000),
+   FOR_TEST  decimal(1,0),
    PSPY char(24),
    PRIMARY KEY(ID)
 );
