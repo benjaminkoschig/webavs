@@ -64,6 +64,7 @@ import ch.globaz.orion.business.models.pucs.PucsFileMerge;
 import ch.globaz.orion.businessimpl.services.dan.DanServiceImpl;
 import ch.globaz.orion.businessimpl.services.pucs.DeclarationSalaireBuilder;
 import ch.globaz.orion.businessimpl.services.pucs.PucsServiceImpl;
+import ch.globaz.orion.service.EBEbusinessInterface;
 import ch.globaz.orion.service.EBPucsFileService;
 import com.google.common.base.Throwables;
 import com.google.gson.Gson;
@@ -90,6 +91,14 @@ public class EBTreatPucsFiles extends BProcess {
     private List<String> idsPucsDb = new ArrayList<String>();
     private Collection<String> idMiseEnGed = new ArrayList<String>();
     private Collection<String> idValidationDeLaDs = new ArrayList<String>();
+
+    private static EBEbusinessInterface ebusinessAccessInstance = null;
+
+    public static void initEbusinessAccessInstance(EBEbusinessInterface instance) {
+        if (EBTreatPucsFiles.ebusinessAccessInstance == null) {
+            EBTreatPucsFiles.ebusinessAccessInstance = instance;
+        }
+    }
 
     public void setIdsPucsDb(List<String> idsPucsDb) {
         this.idsPucsDb = idsPucsDb;
@@ -475,6 +484,13 @@ public class EBTreatPucsFiles extends BProcess {
                         hasError = declaration.isOnError() || declaration.getSession().hasErrors()
                                 || (declaration.getDeclaration() != null && declaration.getDeclaration().hasErrors())
                                 || (declaration.getMemoryLog() != null && declaration.getMemoryLog().hasErrors());
+
+                        if (!hasError && pucsFile.isAfSeul()) {
+                            String filename = pucsFile.getFilename();
+                            ebusinessAccessInstance.notifyFinishedPucsFile(filename, pucsFile.getProvenance()
+                                    .getValue(), getSession());
+                            EBPucsFileService.comptabiliserByFilename(filename, getSession());
+                        }
 
                         if (!declaration.isPUCS4()) {
                             recuperDcoumentEtEnvoiMail(declaration, declaration.getEMailObject());

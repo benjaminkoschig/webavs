@@ -5,6 +5,7 @@ import globaz.framework.controller.FWAction;
 import globaz.framework.menu.FWMenuCache;
 import globaz.framework.secure.FWSecureConstants;
 import globaz.globall.db.BApplication;
+import globaz.orion.process.EBTreatPucsFiles;
 import globaz.pavo.process.CIDeclaration;
 import java.math.BigDecimal;
 import ch.globaz.orion.service.EBEbusinessImplementation;
@@ -39,6 +40,7 @@ public class EBApplication extends BApplication {
         EBEbusinessInterface ebusinessInterface = new EBEbusinessImplementation();
         CIDeclaration.initEbusinessAccessInstance(ebusinessInterface);
         DSProcessValidation.initEbusinessAccessInstance(ebusinessInterface);
+        EBTreatPucsFiles.initEbusinessAccessInstance(ebusinessInterface);
     }
 
     @Override
