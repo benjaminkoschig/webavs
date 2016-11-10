@@ -50,6 +50,8 @@ import ch.globaz.topaz.datajuicer.DocumentData;
 
 public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
+    private static final String SAUT_DE_LIGNE = "\t\n";
+
     /**
      *
      */
@@ -334,17 +336,20 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
         }
 
         if (famille.hasPlusieursAdressePaiement()) {
-            data.addData("PLUSIEURS_ATT_FAMILLE", getTexte(catalogueTextesAttestationsFiscales, 4, 6) + "\n");
+            data.addData("PLUSIEURS_ATT_FAMILLE", getTexte(catalogueTextesAttestationsFiscales, 4, 6) + SAUT_DE_LIGNE);
         }
         // Si PC en décembre
         if (famille.getHasRentePC()) {
-            data.addData("HAS_PC_DECEMBRE", getTexte(catalogueTextesAttestationsFiscales, 4, 7) + "\n");
+            String texte = getTexte(catalogueTextesAttestationsFiscales, 4, 7);
+            texte = texte + SAUT_DE_LIGNE;
+            data.addData("HAS_PC_DECEMBRE", texte);
         }
         // Si rétroactif
         if (famille.getHasRetroactif()) {
             String texte = getTexte(catalogueTextesAttestationsFiscales, 4, 8);
             if (!JadeStringUtil.isBlank(texte)) {
-                texte = texte.replace("{annee}", getAnnee() + "\n");
+                texte = texte.replace("{annee}", getAnnee());
+                texte = texte + SAUT_DE_LIGNE;
             }
             data.addData("HAS_RETROACTIF", texte);
         }
