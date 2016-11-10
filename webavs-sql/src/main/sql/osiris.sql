@@ -34,6 +34,7 @@ INSERT INTO SCHEMA.CARERUP (IDREFRUBRIQUE,IDRUBRIQUE,IDCODEREFERENCE, PSPY) VALU
 
 UPDATE SCHEMA.FWINCP set PINCVA = (select max(IDREFRUBRIQUE) from SCHEMA.CARERUP) WHERE PINCID = 'CARERUP';
 
+-- FIN DU REPORT DES SCRIPTS 1.16.0-CCVS-RC3
 -- S160614_001 Création d'une nouvelle rubrique EPS - Paiements
 insert into SCHEMA.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (237309,'OSIREFRUB',1,1,0,0,'PC_AVS_HOME_EPS',2, 2,2,2,2,2,10200037,0,'spy');
 insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237309,'D','','ELKK AHV im Heim EPS','spy');
