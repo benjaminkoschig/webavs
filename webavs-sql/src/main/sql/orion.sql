@@ -74,5 +74,8 @@ CREATE TABLE SCHEMA.EBPUCS_MERGED (
 	PSPY char(24),
 	PRIMARY KEY(ID)
 );
+
+-- Correction de traduction CS
+UPDATE SCHEMA.FWCOUP SET PCOLUT = 'Zu validieren' WHERE PCOSID = 11020001 AND PLAIDE = 'D';
 -- D0161 --
 ------------------
