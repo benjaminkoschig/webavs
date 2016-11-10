@@ -206,6 +206,10 @@ public class PucsFile implements Serializable {
         return currentStatus.isATraiter();
     }
 
+    public boolean isAValider() {
+        return currentStatus.isAValider();
+    }
+
     public boolean isTraitable() {
         return currentStatus.isTraitable();
     }

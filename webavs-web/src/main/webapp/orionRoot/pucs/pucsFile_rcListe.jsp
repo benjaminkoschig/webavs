@@ -136,7 +136,7 @@ $(function () {
 			
 			<td class="pucsEntryHandling" style="text-align: center;height:24px;">
 				<%if(!line.hasLock() && line.getPucsFile().isEditable()) {%>
-						<input type="checkbox" class="pucsEntryHandling <% if(line.getPucsFile().isSwissDec()) { out.print(" swissdec ");} %> <%if(line.getPucsFile().isATraiter()) { out.print(" atraiter "); } %>" name="idPucsEntryToHandle" value='<%= line.getPucsFile().getIdDb()%>'/>
+						<input type="checkbox" class="pucsEntryHandling <% if(line.getPucsFile().isSwissDec()) { out.print(" swissdec ");} %> <%if(line.getPucsFile().isATraiter()) { out.print(" atraiter "); } %> <%if(line.getPucsFile().isAValider()) {out.print(" avalider ");} %>" name="idPucsEntryToHandle" value='<%= line.getPucsFile().getIdDb()%>'/>
 				<%} else {%>
 					<span><i title="<%=line.getMessageLock() %>" class="icon-lock" ></i></span> 
 				<%}%>

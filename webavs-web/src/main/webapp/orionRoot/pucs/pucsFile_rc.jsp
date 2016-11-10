@@ -40,11 +40,17 @@ usrAction = "orion.pucs.pucsFile.lister";
 $(document).ready(function(){
 
 	$('#selectionner_all_handling').click(function(){
+		var $entries = $("input[name*='idPucsEntryToHandle']", window.frames[0].document); 
 		if ($('#selectionner_all_handling:checked').val() != null) {
-			$("input[name*='idPucsEntryHandling']", window.frames[0].document).attr('checked', true);
-		}else{	
-			$("input[name*='idPucsEntryHandling']", window.frames[0].document).attr('checked', false);
-		}	
+			$entries.each(function() {
+				var $this = $(this);
+				if($this.hasClass('avalider')) {
+					$this.attr('checked', true);
+				}
+			})
+		} else{
+			$entries.attr('checked', false);
+		}
 	});
 	$('#selectionner_to_handle').click(function(){
 		var $entries = $("input[name*='idPucsEntryToHandle']", window.frames[0].document); 
@@ -120,7 +126,8 @@ function getSelectedIds(type) {
 
 <tr>
 	<td>
-		<input type="checkbox" id="selectionner_all_handling"/><ct:FWLabel key="FICHIERS_TRAITEMENT"/>
+		<input type="checkbox" id="selectionner_all_handling"/>
+		<ct:FWLabel key="FICHIERS_AVALIDER"/>
 	</td>
 	<td>
 		&nbsp;

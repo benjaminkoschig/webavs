@@ -81,7 +81,7 @@ public class PucsFileMerge {
             throws JadeApplicationServiceNotAvailableException, IOException, Exception {
 
         Checkers.checkNotNull(session, "session");
-        String numeroAffilie = pucsFile.getNomAffilie();
+        String numeroAffilie = pucsFile.getNumeroAffilie();
         try {
             if (!pucsFileToMergded.isEmpty()) {
                 MergePucs mergePucs = new MergePucs(workDirectory);

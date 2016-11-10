@@ -227,6 +227,7 @@ public class EBPucsFileService {
                 EBPucsFileMergedEntity mergedEntity = new EBPucsFileMergedEntity();
                 mergedEntity.setIdPucFile(pucsFile.getIdDb());
                 mergedEntity.setIdMerged(nextIdMerged);
+                mergedEntity.setSession(session);
                 mergedEntity.save();
             }
         } catch (Exception ex) {
