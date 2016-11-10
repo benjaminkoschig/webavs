@@ -182,7 +182,6 @@ public class EBPucsFileService {
     private static void changeStatut(String id, EtatPucsFile etat, BSession session) {
         EBPucsFileEntity entity = new EBPucsFileEntity();
         entity.setIdEntity(id);
-        entity.setHandlingUser(session.getUserId());
         entity.setSession(session);
         try {
             entity.retrieve();
@@ -190,6 +189,7 @@ public class EBPucsFileService {
             if (etatActuel.isComptabilise()) {
                 throw new RuntimeException("Le fichier ne peut pas être édité car déjà traité");
             }
+            entity.setHandlingUser(session.getUserId());
             entity.setStatut(Integer.parseInt(etat.getValue()));
             entity.save();
         } catch (Exception e) {
