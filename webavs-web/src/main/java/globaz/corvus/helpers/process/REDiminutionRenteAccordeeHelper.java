@@ -1,5 +1,6 @@
 package globaz.corvus.helpers.process;
 
+import globaz.corvus.api.diminution.IREDiminution;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.process.REDiminutionRenteAccordeeProcess;
 import globaz.corvus.vb.process.REDiminutionRenteAccordeeViewBean;
@@ -43,7 +44,12 @@ public class REDiminutionRenteAccordeeHelper extends PRAbstractHelper {
             process.setCsCodeTraitement(vb.getCsCodeTraitement());
             process.setDateFinDroit(vb.getDateFinDroit());
             process.setEMailAddress(session.getUserEMail());
-            BProcessLauncher.start(process);
+            // ne lancer en batch que si concerne une diminution, et donc un traitement en compta
+            if (IREDiminution.CS_GENRE_TRATEMENT_DIM_RESTITUTION.equals(process.getCsCodeTraitement())) {
+                BProcessLauncher.start(process);
+            } else {
+                process.executeProcess();
+            }
         } catch (Exception e) {
             vb.setMsgType(FWViewBeanInterface.ERROR);
             vb.setMessage(e.toString());
