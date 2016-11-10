@@ -106,7 +106,6 @@ public class PucsSwissDecItem extends ProcessItem {
             pucsFile.setForTest(ds.isTest());
             pucsFile.setCurrentStatus(EtatPucsFile.A_VALIDE);
             pucsFile.setDuplicate(ds.isDuplicate());
-            pucsFile.setHandlingUser(session.getUserId());
             pucsFile.setFile(file);
             if (ds.isAfSeul()) {
                 pucsFile.setTotalControle(ds.getMontantCaf().toStringFormat());
