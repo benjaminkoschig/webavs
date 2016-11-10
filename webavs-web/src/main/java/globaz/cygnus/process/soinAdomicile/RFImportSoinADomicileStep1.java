@@ -20,13 +20,14 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.jade.process.business.JadeProcessServiceLocator;
 import ch.globaz.jade.process.business.bean.JadeProcessEntity;
 import ch.globaz.jade.process.business.bean.JadeProcessStep;
@@ -36,6 +37,10 @@ import ch.globaz.jade.process.business.interfaceProcess.step.JadeProcessStepBefo
 import ch.globaz.jade.process.business.interfaceProcess.step.JadeProcessStepInfoCurrentStep;
 import ch.globaz.jade.process.business.interfaceProcess.step.JadeProcessStepInterface;
 import ch.globaz.jade.process.businessimpl.models.JadeProcessExecut;
+import ch.globaz.pegasus.business.exceptions.models.home.HomeException;
+import ch.globaz.pegasus.business.models.home.SimpleHome;
+import ch.globaz.pegasus.business.models.home.SimpleHomeSearch;
+import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pyxis.business.model.AdresseTiersDetail;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import ch.globaz.pyxis.business.services.PyxisCrudServiceLocator;
@@ -51,19 +56,27 @@ public class RFImportSoinADomicileStep1 implements JadeProcessStepInterface, Jad
     private Map<LigneFichier, RFDemande> demandesAcreer = new HashMap<LigneFichier, RFDemande>();
     private boolean hasErrors = false;
 
-    private String findTiersAdministration(String nom) {
-        List<String> ids = QueryExecutor
-                .execute(
-                        "SELECT ID_TIERS FROM (SELECT "
-                                + "case when TITIERP1.HTLDU2 is not null then TRIM(TITIERP1.HTLDU1)||' '|| TRIM(TITIERP1.HTLDU2) "
-                                + "ELSE TITIERP1.HTLDU1 end as libelle,  TITIERP1.HTITIE as ID_TIERS  "
-                                + "FROM SCHEMA.TIADMIP TIADMIP1 "
-                                + "INNER JOIN SCHEMA .TITIERP TITIERP1 ON ( TIADMIP1.HTITIE=TITIERP1.HTITIE )) where libelle = '"
-                                + nom.toUpperCase() + "' or   libelle = '"
-                                + JadeStringUtil.convertSpecialChars(nom).toUpperCase() + "' ", String.class);
+    private SimpleHome findHome(String noIdentification) throws HomeException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException {
 
-        if (ids.size() == 1) {
-            return ids.get(0);
+        SimpleHomeSearch search = new SimpleHomeSearch();
+        search.setForNoIdentification(noIdentification);
+
+        JadeAbstractModel[] results = PegasusImplServiceLocator.getSimpleHomeService().search(search)
+                .getSearchResults();
+
+        // List<String> ids = QueryExecutor
+        // .execute(
+        // "SELECT ID_TIERS FROM (SELECT "
+        // + "case when TITIERP1.HTLDU2 is not null then TRIM(TITIERP1.HTLDU1)||' '|| TRIM(TITIERP1.HTLDU2) "
+        // + "ELSE TITIERP1.HTLDU1 end as libelle,  TITIERP1.HTITIE as ID_TIERS  "
+        // + "FROM SCHEMA.TIADMIP TIADMIP1 "
+        // + "INNER JOIN SCHEMA .TITIERP TITIERP1 ON ( TIADMIP1.HTITIE=TITIERP1.HTITIE )) where libelle = '"
+        // + nom.toUpperCase() + "' or   libelle = '"
+        // + JadeStringUtil.convertSpecialChars(nom).toUpperCase() + "' ", String.class);
+
+        if (results.length == 1) {
+            return ((SimpleHome) results[0]);
         }
         // AdministrationSearchComplexModel search = new AdministrationSearchComplexModel();
         // search.setForDesignation1Like(nom);
@@ -96,11 +109,12 @@ public class RFImportSoinADomicileStep1 implements JadeProcessStepInterface, Jad
             for (LigneFichier ligne : lignes) {
                 try {
 
-                    String idAdministration = findTiersAdministration(ligne.getNomService());
+                    // String idAdministration = findHome(ligne.getNomService());
+                    SimpleHome home = findHome(ligne.getNoIdentification());
 
-                    if (idAdministration == null) {
+                    if (home == null) {
                         ligne.addErrors("ADMINISTRATION_NON_TROUVER");
-                    } else if (!hasAdressePaiement(idAdministration)) {
+                    } else if (!hasAdressePaiement(home.getIdTiersHome())) {
                         ligne.addErrors("ADMINISTRATION_ADRESSE_DE_PAIEMENT_NON_TROUVE");
                     }
 
@@ -120,7 +134,7 @@ public class RFImportSoinADomicileStep1 implements JadeProcessStepInterface, Jad
 
                     if (!ligne.hasError() && !hasErrors) {
                         RFPrDemandeJointDossier dossier = findDossierOrCreate(String.valueOf(personneAvs.getId()));
-                        demandesAcreer.put(ligne, createDemande(ligne, dossier, idAdministration));
+                        demandesAcreer.put(ligne, createDemande(ligne, dossier, home.getIdTiersHome()));
                     } else {
                         hasErrors = true;
                     }

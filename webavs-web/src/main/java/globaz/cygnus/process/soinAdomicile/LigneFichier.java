@@ -29,6 +29,7 @@ public class LigneFichier implements LigneImport {
     private final Integer numeroLigne;
     private final NSS numNss;
     private final Periode periode;
+    private final String noIdentification;
 
     /**
      * Constructeur
@@ -40,7 +41,7 @@ public class LigneFichier implements LigneImport {
         numeroLigne = numLigne;
         orginalValues = valueTab;
         if (isLigneComplete(valueTab)) {
-
+            noIdentification = toString(CellMappingSoinDomicile.NO_ID_HOME);
             numNss = new NSS(valueTab[CellMappingSoinDomicile.NSS.getIndex()]);
             nomService = toString(CellMappingSoinDomicile.SERVICE);
             fraisJournalier = newMontant(CellMappingSoinDomicile.FRAIS_JOURNALIER);
@@ -58,6 +59,7 @@ public class LigneFichier implements LigneImport {
             checkValues();
         } else {
             addErrors("LIGNE_INCOMPLETE");
+            noIdentification = null;
             periode = null;
             numNss = null;
             nomService = null;
@@ -71,6 +73,10 @@ public class LigneFichier implements LigneImport {
         if (!isValid()) {
             errors.clear();
         }
+    }
+
+    public String getNoIdentification() {
+        return noIdentification;
     }
 
     @Override

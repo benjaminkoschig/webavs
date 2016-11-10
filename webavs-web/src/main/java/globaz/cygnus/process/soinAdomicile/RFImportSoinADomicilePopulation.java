@@ -26,7 +26,7 @@ public class RFImportSoinADomicilePopulation extends JadeProcessPopulationByFile
     private Map<RFProcessImportFinancementSoinEnum, String> properties = null;
 
     @Override
-    @BusinessKey(unique = false)
+    @BusinessKey(unique = true)
     public String getBusinessKey() {
         String line;
         BufferedReader reader;

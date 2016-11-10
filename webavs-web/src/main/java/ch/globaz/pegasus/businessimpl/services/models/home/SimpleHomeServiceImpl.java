@@ -29,6 +29,16 @@ public class SimpleHomeServiceImpl extends PegasusAbstractServiceImpl implements
         return JadePersistenceManager.count(search);
     }
 
+    @Override
+    public SimpleHomeSearch search(SimpleHomeSearch search) throws HomeException, JadePersistenceException {
+
+        if (search == null) {
+            throw new HomeException("Unable to search simpleDroit, the search model passed is null!");
+        }
+
+        return (SimpleHomeSearch) JadePersistenceManager.search(search);
+    }
+
     /*
      * (non-Javadoc)
      * 

@@ -71,4 +71,13 @@ public interface SimpleHomeService extends JadeApplicationService {
      *             Levée en cas de problème dans la couche de persistence
      */
     public SimpleHome update(SimpleHome home) throws HomeException, JadePersistenceException;
+
+    /**
+     * 
+     * @param search le modèle rechercher
+     * @return le résultat de la requete
+     * @throws HomeException si problème "métier"
+     * @throws JadePersistenceException si problème "technique"
+     */
+    public SimpleHomeSearch search(SimpleHomeSearch search) throws HomeException, JadePersistenceException;
 }

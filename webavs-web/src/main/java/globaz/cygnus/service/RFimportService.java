@@ -20,7 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import ch.globaz.common.domaine.Montant;
+import com.google.common.base.Predicate;
 import com.google.common.base.Throwables;
+import com.google.common.collect.Iterables;
 
 public class RFimportService implements Comparable<RFLigneFichierExcel> {
 
@@ -291,6 +293,15 @@ public class RFimportService implements Comparable<RFLigneFichierExcel> {
         StringBuilder bodyMail = new StringBuilder();
         List<LigneImport> listeTrieesParNumeroLigne = createListAndSortByNumeroDeLigne(map);
 
+        Iterable<LigneImport> listeEnErreur = Iterables.filter(listeTrieesParNumeroLigne, new Predicate<LigneImport>() {
+
+            @Override
+            public boolean apply(LigneImport input) {
+                return !input.getErrors().isEmpty();
+            }
+
+        });
+
         // Si aucune erreur, chargement des lignes traités dans le body du mail.
         if (!session.hasErrors()) {
             if (hasError(map)) {
@@ -300,7 +311,7 @@ public class RFimportService implements Comparable<RFLigneFichierExcel> {
                 bodyMail.append("<b>" + session.getLabel("MAIL_RF_IMPORT_FINANCEMENT_SOIN_LIGNES_EN_ERREURS") + "</b>");
 
                 bodyMail.append("\n");
-                for (LigneImport ligne : listeTrieesParNumeroLigne) {
+                for (LigneImport ligne : listeEnErreur) {
                     // Incrémentation du numéro de ligne de 1, pour être juste avec la ligne du fichier importé
                     bodyMail.append("\n<b> Ligne " + (ligne.getNumeroLigne()) + " en erreur : </b>"
                             + ligne.getDescription());

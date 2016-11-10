@@ -9,6 +9,7 @@ package globaz.cygnus.process.soinAdomicile;
  */
 
 enum CellMappingSoinDomicile {
+    NO_ID_HOME(0),
     SERVICE(1),
     NSS(2),
     NOM_PRENOM(3),

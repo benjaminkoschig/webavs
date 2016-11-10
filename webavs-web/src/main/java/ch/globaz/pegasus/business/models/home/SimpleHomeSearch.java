@@ -8,6 +8,15 @@ public class SimpleHomeSearch extends JadeSearchSimpleModel {
      */
     private static final long serialVersionUID = 1L;
     private String forIdHome = null;
+    private String forNoIdentification = null;
+
+    public String getForNoIdentification() {
+        return forNoIdentification;
+    }
+
+    public void setForNoIdentification(String forNoIdentification) {
+        this.forNoIdentification = forNoIdentification;
+    }
 
     /**
      * @return the forIdHome
