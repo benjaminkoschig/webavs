@@ -34,4 +34,36 @@ INSERT INTO SCHEMA.CARERUP (IDREFRUBRIQUE,IDRUBRIQUE,IDCODEREFERENCE, PSPY) VALU
 
 UPDATE SCHEMA.FWINCP set PINCVA = (select max(IDREFRUBRIQUE) from SCHEMA.CARERUP) WHERE PINCID = 'CARERUP';
 
--- FIN DU REPORT DES SCRIPTS 1.16.0-CCVS-RC3
+-- S160614_001 Création d'une nouvelle rubrique EPS - Paiements
+insert into SCHEMA.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (237309,'OSIREFRUB',1,1,0,0,'PC_AVS_HOME_EPS',2, 2,2,2,2,2,10200037,0,'spy');
+insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237309,'D','','ELKK AHV im Heim EPS','spy');
+insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237309,'F','','PC AVS en home EPS','spy');
+
+insert into SCHEMA.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (237310,'OSIREFRUB',1,1,0,0,'PC_AVS_HOME_HC_EPS',2, 2,2,2,2,2,10200037,0,'spy');
+insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237310,'D','','ELKK AHV im Heim ausserhalb Kantons EPS','spy');
+insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237310,'F','','PC AVS en home Hors canton EPS','spy');
+
+insert into SCHEMA.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (237311,'OSIREFRUB',1,1,0,0,'PC_AVS_HOME_EPS',2, 2,2,2,2,2,10200037,0,'spy');
+insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237311,'D','','ELKK IV im Heim EPS','spy');
+insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237311,'F','','PC AI en home EPS','spy');
+
+insert into SCHEMA.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (237312,'OSIREFRUB',1,1,0,0,'PC_AVS_HOME_HC_EPS',2, 2,2,2,2,2,10200037,0,'spy');
+insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237312,'D','','ELKK IV im Heim ausserhalb Kantons EPS','spy');
+insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237312,'F','','PC AI en home Hors canton EPS','spy');
+
+-- S160614_001 Création d'une nouvelle rubrique EPS - Restitutions
+insert into SCHEMA.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (237313,'OSIREFRUB',1,1,0,0,'PC_AVS_HOME_EPS',2, 2,2,2,2,2,10200037,0,'spy');
+insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237313,'D','','ELKK AHV im Heim EPS zu situieren','spy');
+insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237313,'F','','PC AVS en home EPS à restituer','spy');
+
+insert into SCHEMA.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (237314,'OSIREFRUB',1,1,0,0,'PC_AVS_HOME_HC_EPS',2, 2,2,2,2,2,10200037,0,'spy');
+insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237314,'D','','ELKK AHV im Heim ausserhalb Kantons EPS zu situieren','spy');
+insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237314,'F','','PC AVS en home Hors canton EPS à restituer','spy');
+
+insert into SCHEMA.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (237315,'OSIREFRUB',1,1,0,0,'PC_AVS_HOME_EPS',2, 2,2,2,2,2,10200037,0,'spy');
+insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237315,'D','','ELKK IV im Heim EPS zu situieren','spy');
+insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237315,'F','','PC AI en home EPS à restituer','spy');
+
+insert into SCHEMA.fwcosp (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) values (237316,'OSIREFRUB',1,1,0,0,'PC_AVS_HOME_HC_EPS',2, 2,2,2,2,2,10200038,0,'spy');
+insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237316,'D','','ELKK IV im Heim ausserhalb Kantons EPS zu situieren','spy');
+insert into SCHEMA.fwcoup (pcosid,plaide,pcouid,pcolut,pspy) values (237316,'F','','PC AI en home Hors canton EPS à restituer','spy');
