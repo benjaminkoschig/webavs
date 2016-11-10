@@ -216,7 +216,7 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
         for (PucsFile pucs : pucsFiles) {
             String key = pucs.getNumeroAffilie() + "_" + pucs.getAnneeDeclaration() + "_" + pucs.getProvenance() + "_"
                     + pucs.isForTest() + "_" + pucs.isAfSeul();
-            if (map.containsKey(key)) {
+            if (!map.containsKey(key)) {
                 map.put(key, new ArrayList<PucsFile>());
             }
             map.get(key).add(pucs);
