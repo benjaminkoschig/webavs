@@ -278,7 +278,6 @@ public class LotServiceImpl extends PegasusAbstractServiceImpl implements LotSer
                 comptabiliserLotProcess.setIdLot(idLot);
                 comptabiliserLotProcess.setIdOrganeExecution(idOrganeExecution);
                 comptabiliserLotProcess.setNumeroOG("1");
-                comptabiliserLotProcess.setLibelleJournal(null);
                 comptabiliserLotProcess.setDateValeur(dateComptable);
                 comptabiliserLotProcess.setDateEcheance(dateEcheancePaiement);
                 try {

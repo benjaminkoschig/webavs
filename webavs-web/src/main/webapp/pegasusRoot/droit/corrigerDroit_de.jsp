@@ -120,6 +120,7 @@
 			</div>
 			
 			<input type="hidden" name="isComptabilisationAuto" id="isComptabilisationAuto" value="<%=viewBean.isComptabilisationAuto()%>"/>
+			<INPUT type="hidden" name="mailProcessCompta" id="mailProcessCompta" value="<%=viewBean.getMailProcessCompta()%>"/>
 		</TD>
 	</TR>
 <%-- /tpl:put --%>

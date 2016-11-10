@@ -1,5 +1,6 @@
 package globaz.pegasus.process.lot;
 
+import globaz.jade.job.common.JadeJobQueueNames;
 import globaz.pegasus.process.PCAbstractJob;
 import globaz.pegasus.process.lot.ComptabiliserProcessMailHandler.PROCESS_TYPE;
 import java.util.ArrayList;
@@ -27,7 +28,6 @@ public class PCValidationDecisionsComptabiliserLotProcess extends PCAbstractJob 
 
     private String idOrganeExecution = "";
     private String numeroOG = "";
-    private String libelleJournal = "";
     private String dateValeur = "";
     private String dateEcheance = "";
     private String mailAdress = "";
@@ -45,17 +45,20 @@ public class PCValidationDecisionsComptabiliserLotProcess extends PCAbstractJob 
     @Override
     protected void process() throws Exception {
         try {
-            PegasusServiceLocator.getLotService().comptabiliserLot(idLot, idOrganeExecution, numeroOG, libelleJournal,
+            PegasusServiceLocator.getLotService().comptabiliserLot(idLot, idOrganeExecution, numeroOG, null,
                     dateValeur, dateEcheance);
         } catch (Exception e) {
             this.addError(e);
         } finally {
-
             SimpleLot simpleLot = CorvusServiceLocator.getLotService().read(idLot);
-
             sendProcessMail(PROCESS_TYPE.COMPTABILISATION, simpleLot, null);
         }
     }
+
+    @Override
+    public String jobQueueName() {
+        return JadeJobQueueNames.SYSTEM_BATCH_JOB_QUEUE;
+    };
 
     /**
      * Envoi du mail suite au process
@@ -93,11 +96,6 @@ public class PCValidationDecisionsComptabiliserLotProcess extends PCAbstractJob 
         this.numeroOG = numeroOG;
     }
 
-    public void setLibelleJournal(String libelleJournal) {
-        this.libelleJournal = libelleJournal;
-
-    }
-
     public void setDateValeur(String dateComptable) {
         dateValeur = dateComptable;
     }
@@ -119,16 +117,16 @@ public class PCValidationDecisionsComptabiliserLotProcess extends PCAbstractJob 
         return numeroOG;
     }
 
-    public String getLibelleJournal() {
-        return libelleJournal;
-    }
-
     public String getDateValeur() {
         return dateValeur;
     }
 
     public String getDateEcheance() {
         return dateEcheance;
+    }
+
+    public String getMailAdress() {
+        return mailAdress;
     }
 
     public void setMailAdress(String mailProcessCompta) {

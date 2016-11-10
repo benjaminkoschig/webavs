@@ -377,7 +377,6 @@ public class ValidationDecisionServiceImpl extends PegasusAbstractServiceImpl im
                     comptabiliserLotProcess.setIdLot(idLot);
                     comptabiliserLotProcess.setIdOrganeExecution(idOrganeExecution);
                     comptabiliserLotProcess.setNumeroOG("1");
-                    comptabiliserLotProcess.setLibelleJournal(null);
                     comptabiliserLotProcess.setDateValeur(dateComptable);
                     comptabiliserLotProcess.setDateEcheance(dateEcheancePaiement);
                     try {
