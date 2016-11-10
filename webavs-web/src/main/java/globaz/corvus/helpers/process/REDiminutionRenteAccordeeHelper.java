@@ -6,6 +6,7 @@ import globaz.corvus.vb.process.REDiminutionRenteAccordeeViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.globall.api.BISession;
+import globaz.globall.db.BProcessLauncher;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.smtp.JadeSmtpClient;
@@ -42,7 +43,7 @@ public class REDiminutionRenteAccordeeHelper extends PRAbstractHelper {
             process.setCsCodeTraitement(vb.getCsCodeTraitement());
             process.setDateFinDroit(vb.getDateFinDroit());
             process.setEMailAddress(session.getUserEMail());
-            process.executeProcess();
+            BProcessLauncher.start(process);
         } catch (Exception e) {
             vb.setMsgType(FWViewBeanInterface.ERROR);
             vb.setMessage(e.toString());
