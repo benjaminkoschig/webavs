@@ -98,6 +98,14 @@ public class EBPucsFileViewBean extends EBAbstractViewBean {
         // nothing
     }
 
+    public Boolean hasParticularite() {
+        return hasParticulariteFichePartiel || hasParticulariteCodeBlocage;
+    }
+
+    public boolean isVisible() {
+        return hasRightAccesSecurity;
+    }
+
     public boolean hasLock() {
         return !hasRightAccesSecurity || hasParticulariteFichePartiel || hasParticulariteCodeBlocage;
     }

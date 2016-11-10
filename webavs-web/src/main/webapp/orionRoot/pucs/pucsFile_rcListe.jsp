@@ -62,6 +62,17 @@
 	    vertical-align: text-top;
 	    width: 14px;
 	}
+
+	.icon-warning-sign {
+	    background-position: -144px -120px;
+	    background-image: url("./orionRoot/img/glyphicons-halflings.png");
+	    background-repeat: no-repeat;
+	    display: inline-block;
+	    height: 14px;
+	    line-height: 14px;
+	    vertical-align: text-top;
+	    width: 14px;
+	}
 </style>
 <%@ include file="/theme/list/javascripts.jspf" %>
 <script type="text/javascript">
@@ -71,7 +82,7 @@ $(function () {
 	
 	$tbody.on("click","TD:not(.pucsEntryHandling):not(.lienExterneDraco):not(.lienExterneNaos)", function (e) {
 		var id = $(this).parent().attr("id");
-		if($(this).parent().attr("lock")=='false'){
+		if($(this).parent().attr("isVisible")=='true'){
 			parent.location.href='orion?userAction=orion.swissdec.pucsValidationDetail.afficher&selectedId='+id;
 		}
 	})
@@ -121,7 +132,7 @@ $(function () {
 				EBPucsFileViewBean line = (EBPucsFileViewBean) viewBean.get(i);
 				pageContext.setAttribute("pucsFile", ((EBPucsFileViewBean) viewBean.get(i)).getPucsFile());
 			%>
-			<tr id="<%=line.getId()%>" lock="<%=line.hasLock()%>" numeroAff="<%=line.getPucsFile().getNumeroAffilie()%>" idAff="<%=line.getIdAffiliation()%>" class="<%=rowStyle%>" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'rowHighligthed')" onMouseOut="jscss('swap', this, 'rowHighligthed', '<%=rowStyle%>')">
+			<tr id="<%=line.getId()%>" lock="<%=line.hasLock()%>" isVisible="<%=line.isVisible()%>" numeroAff="<%=line.getPucsFile().getNumeroAffilie()%>" idAff="<%=line.getIdAffiliation()%>" class="<%=rowStyle%>" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'rowHighligthed')" onMouseOut="jscss('swap', this, 'rowHighligthed', '<%=rowStyle%>')">
 			
 			<td class="pucsEntryHandling" style="text-align: center;height:24px;">
 				<%if(!line.hasLock() && line.getPucsFile().isEditable()) {%>
@@ -136,6 +147,9 @@ $(function () {
 				<%if (line.getPucsFile().isForTest()){%>
 				 	<i title ="<ct:FWLabel key='PUCS_TEST_FILE'/>" class="icon-check"></i>
 				<% } %>
+				<% if(line.getPucsFile().isDuplicate()){ %> 
+					<i title ="<ct:FWLabel key='ORION_JSP_GEB0004_PUCS_DUPLICATE'/>"  class="icon-warning-sign"></i>
+				<%} %>
 				<c:out value="${pucsFile.nomAffilie}" />
 			</td>
 			<td style="text-align:center"><%=line.getPucsFile().getDateDeReception()%></td>
