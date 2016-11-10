@@ -186,8 +186,10 @@ public class EBPucsFileService {
         try {
             entity.retrieve();
             EtatPucsFile etatActuel = EtatPucsFile.fromValue(entity.getStatut().toString());
-            if (etatActuel.isComptabilise()) {
-                throw new RuntimeException("Le fichier ne peut pas être édité car déjà traité");
+            if (etatActuel.isComptabilise() && !etat.isComptabilise()) {
+                throw new RuntimeException("Le fichier " + entity.getIdFileName()
+                        + " ne peut pas changer de statut car déjà il est déja traité(comptabilisé). Affililé: "
+                        + entity.getNumeroAffilie() + ", ID: " + entity.getIdEntity());
             }
             entity.setHandlingUser(session.getUserId());
             entity.setStatut(Integer.parseInt(etat.getValue()));

@@ -489,13 +489,16 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
             // Notification EBusiness
             // ------------------------
 
-            if (pucsFileMergded.isEmpty()) {
-                DeclarationSalaireProvenance provenance = DeclarationSalaireProvenance.fromValueWithOutException(decl
-                        .getProvenance());
-                notificationEBusiness(provenance, decl.getIdPucsFile());
-            } else {
-                for (PucsFile pucsFile : pucsFileMergded) {
-                    notificationEBusiness(pucsFile.getProvenance(), pucsFile.getFilename());
+            if (!getSession().hasErrors() && !isOnError()) {
+                if (pucsFileMergded.isEmpty()) {
+                    DeclarationSalaireProvenance provenance = DeclarationSalaireProvenance
+                            .fromValueWithOutException(decl.getProvenance());
+
+                    notificationEBusiness(provenance, decl.getIdPucsFile());
+                } else {
+                    for (PucsFile pucsFile : pucsFileMergded) {
+                        notificationEBusiness(pucsFile.getProvenance(), pucsFile.getFilename());
+                    }
                 }
             }
 
@@ -749,12 +752,18 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
             if (!JadeStringUtil.isBlankOrZero(idPucsFile) && (DSProcessValidation.ebusinessAccessInstance != null)) {
                 try {
                     for (String id : ids) {
-                        DSProcessValidation.ebusinessAccessInstance
-                                .notifyFinishedPucsFile(id, provenance, getSession());
+                        PucsFile pucsFile = EBPucsFileService.read(id, getSession());
+                        // On ne veut pas notifier plusieurs fois eBusiness dans le cadre déclarations des salaires
+                        // complémentaires.
+                        if (!pucsFile.getCurrentStatus().isComptabilise()) {
+                            DSProcessValidation.ebusinessAccessInstance.notifyFinishedPucsFile(id, provenance,
+                                    getSession());
+                        }
                     }
 
                 } catch (Exception e) {
-                    getMemoryLog().logMessage("unable to change status", FWMessage.FATAL, "Déclaration");
+                    getMemoryLog().logMessage("Unable to change status in eBusiness for the idPucsFile: " + idPucsFile,
+                            FWMessage.FATAL, "Déclaration");
                     setForceEnvoiMail(true);
                 }
             }
