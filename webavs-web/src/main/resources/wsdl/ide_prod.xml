@@ -1,0 +1,2155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions name="PartnerServices" targetNamespace="http://www.uid.admin.ch/xmlns/uid-wse" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:tns="http://www.uid.admin.ch/xmlns/uid-wse" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata">
+	<wsdl:types>
+		<xsd:schema elementFormDefault="qualified" targetNamespace="http://www.uid.admin.ch/xmlns/uid-wse">
+			<xsd:element name="GetOrganisationSample">
+				<xsd:complexType/>
+			</xsd:element>
+			<xsd:element name="GetOrganisationSampleResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="GetOrganisationSampleResult" type="q1:organisationType" xmlns:q1="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Search">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="searchParameters" type="q2:organisationType" xmlns:q2="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="maxNumberOfRecords" type="xsd:int"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="searchMode" type="q3:searchMode" xmlns:q3="http://www.bit.admin.ch/xmlns/uid-wse-shared/1"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="SearchResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="SearchResult" type="tns:ArrayOfRatedOrganisation"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:complexType name="ArrayOfRatedOrganisation">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="ratedOrganisation" nillable="true" type="q4:ratedOrganisation" xmlns:q4="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="Create">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="organisation" type="q5:organisationType" xmlns:q5="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="CreateResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="CreateResult" type="q6:organisationType" xmlns:q6="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Update">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="organisation" type="q7:organisationType" xmlns:q7="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="UpdateResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="UpdateResult" type="q8:organisationType" xmlns:q8="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Delete">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="organisation" type="q9:organisationType" xmlns:q9="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="DeleteResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="DeleteResult" type="q10:organisationType" xmlns:q10="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Reactivate">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="uid" type="q11:uidStructureType" xmlns:q11="http://www.ech.ch/xmlns/eCH-0097-f/2"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="ReactivateResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="ReactivateResult" type="q12:organisationType" xmlns:q12="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Register">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="uidList" type="tns:ArrayOfUidStructureType"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:complexType name="ArrayOfUidStructureType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="uidStructureType" nillable="true" type="q13:uidStructureType" xmlns:q13="http://www.ech.ch/xmlns/eCH-0097-f/2"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="RegisterResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="RegisterResult" type="q14:registerDeregisterResult" xmlns:q14="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Deregister">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="uidList" type="tns:ArrayOfUidStructureType"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="DeregisterResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="DeregisterResult" type="q15:registerDeregisterResult" xmlns:q15="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Subscribe">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="uidList" type="tns:ArrayOfUidStructureType"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="SubscribeResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="SubscribeResult" type="q16:registerDeregisterResult" xmlns:q16="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Unsubscribe">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="uidList" type="tns:ArrayOfUidStructureType"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="UnsubscribeResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="UnsubscribeResult" type="q17:registerDeregisterResult" xmlns:q17="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetInfoAboChanges">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="dateFrom" type="xsd:dateTime"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="dateTo" type="xsd:dateTime"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetInfoAboChangesResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="GetInfoAboChangesResult" type="q18:uidWse" xmlns:q18="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetInfoAboMessages">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="dateFrom" type="xsd:dateTime"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="dateTo" type="xsd:dateTime"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:complexType name="ArrayOfInfoAboMessage">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="infoAboMessage" nillable="true" type="q19:infoAboMessage" xmlns:q19="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="GetInfoAboMessagesResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="GetInfoAboMessagesResult" type="tns:ArrayOfInfoAboMessage"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetInfoAboMessagesByType">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="dateFrom" type="xsd:dateTime"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="dateTo" type="xsd:dateTime"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="messagetypes" type="tns:ArrayOfUidInfoAboMessageTypeType"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:complexType name="ArrayOfUidInfoAboMessageTypeType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="uidInfoAboMessageTypeType" type="q20:uidInfoAboMessageTypeType" xmlns:q20="http://www.ech.ch/xmlns/eCH-0116-f/2"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="GetInfoAboMessagesByTypeResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="GetInfoAboMessagesByTypeResult" type="tns:ArrayOfInfoAboMessage"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetInfoAboMessageByUUID">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="uuid" type="q21:guid" xmlns:q21="http://microsoft.com/wsdl/types/"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetInfoAboMessageByUUIDResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="GetInfoAboMessageByUUIDResult" type="q22:infoAboMessage" xmlns:q22="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetRegisterResult">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="taskId" type="xsd:unsignedInt"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetRegisterResultResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="GetRegisterResultResult" type="q23:registerDeregisterResult" xmlns:q23="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetDeregisterResult">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="taskId" type="xsd:unsignedInt"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetDeregisterResultResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="GetDeregisterResultResult" type="q24:registerDeregisterResult" xmlns:q24="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetSubscribeResult">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="taskId" type="xsd:unsignedInt"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetSubscribeResultResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="GetSubscribeResultResult" type="q25:registerDeregisterResult" xmlns:q25="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetUnsubscribeResult">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="taskId" type="xsd:unsignedInt"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetUnsubscribeResultResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="GetUnsubscribeResultResult" type="q26:registerDeregisterResult" xmlns:q26="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="UpdateScheduled">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="organisation" type="q27:organisationType" xmlns:q27="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="scheduledDate" type="xsd:dateTime"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="UpdateScheduledResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="UpdateScheduledResult" type="q28:scheduledTaskItem" xmlns:q28="http://www.bit.admin.ch/xmlns/uid-wse-shared/1"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="DeleteScheduled">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="organisation" type="q29:organisationType" xmlns:q29="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="scheduledDate" type="xsd:dateTime"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="DeleteScheduledResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="DeleteScheduledResult" type="q30:scheduledTaskItem" xmlns:q30="http://www.bit.admin.ch/xmlns/uid-wse-shared/1"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="RegisterScheduled">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="uidList" type="tns:ArrayOfUidStructureType"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="scheduledDate" type="xsd:dateTime"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="RegisterScheduledResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="RegisterScheduledResult" type="q31:scheduledTaskItem" xmlns:q31="http://www.bit.admin.ch/xmlns/uid-wse-shared/1"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="DeregisterScheduled">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="uidList" type="tns:ArrayOfUidStructureType"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="scheduledDate" type="xsd:dateTime"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="DeregisterScheduledResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="DeregisterScheduledResult" type="q32:scheduledTaskItem" xmlns:q32="http://www.bit.admin.ch/xmlns/uid-wse-shared/1"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetAllScheduldedTasks">
+				<xsd:complexType/>
+			</xsd:element>
+			<xsd:complexType name="ArrayOfScheduledTaskItem">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="scheduledTaskItem" nillable="true" type="q33:scheduledTaskItem" xmlns:q33="http://www.bit.admin.ch/xmlns/uid-wse-shared/1"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="GetAllScheduldedTasksResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="GetAllScheduldedTasksResult" type="tns:ArrayOfScheduledTaskItem"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetScheduledTasksByType">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="type" type="q34:scheduledTaskType" xmlns:q34="http://www.bit.admin.ch/xmlns/uid-wse-shared/1"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetScheduledTasksByTypeResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="GetScheduledTasksByTypeResult" type="tns:ArrayOfScheduledTaskItem"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="CancelScheduldedTask">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="taskId" type="xsd:unsignedInt"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="CancelScheduldedTaskResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="CancelScheduldedTaskResult" type="xsd:boolean"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:schema>
+		<xsd:schema elementFormDefault="qualified" targetNamespace="http://www.ech.ch/xmlns/eCH-0108-f/3">
+			<xsd:complexType name="organisationType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="organisation" type="q35:organisationType" xmlns:q35="http://www.ech.ch/xmlns/eCH-0098-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="uidregInformation" type="q36:uidregInformationType" xmlns:q36="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="commercialRegisterInformation" type="q37:commercialRegisterInformationType" xmlns:q37="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="vatRegisterInformation" type="q38:vatRegisterInformationType" xmlns:q38="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="organisationMunicipality" type="q39:swissMunicipalityType" xmlns:q39="http://www.ech.ch/xmlns/eCH-0007-f/6"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="cantonAbbreviationMainAddress" type="q40:cantonAbbreviationType" xmlns:q40="http://www.ech.ch/xmlns/eCH-0007-f/6"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="cantonAbbreviationAdditionalAddress" type="q41:cantonAbbreviationType" xmlns:q41="http://www.ech.ch/xmlns/eCH-0007-f/6"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="uidregInformationType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="uidregStatusEnterpriseDetail" type="q42:uidregStatusEnterpriseDetailType" xmlns:q42="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="uidregPublicStatus" type="q43:uidregPublicStatusType" xmlns:q43="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="uidregOrganisationType" type="q44:uidregOrganisationTypeType" xmlns:q44="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="uidregLiquidationReason" type="q45:uidregLiquidationReasonType" xmlns:q45="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="uidregSource" type="q46:uidStructureType" xmlns:q46="http://www.ech.ch/xmlns/eCH-0097-f/2"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="uidReplacement" type="q47:uidStructureType" xmlns:q47="http://www.ech.ch/xmlns/eCH-0097-f/2"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="uidHeadQuarter" type="q48:uidStructureType" xmlns:q48="http://www.ech.ch/xmlns/eCH-0097-f/2"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="uidregStatusEnterpriseDetailType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="1"/>
+					<xsd:enumeration value="2"/>
+					<xsd:enumeration value="3"/>
+					<xsd:enumeration value="4"/>
+					<xsd:enumeration value="5"/>
+					<xsd:enumeration value="6"/>
+					<xsd:enumeration value="7"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:simpleType name="uidregPublicStatusType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="0"/>
+					<xsd:enumeration value="1"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:simpleType name="uidregOrganisationTypeType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="1"/>
+					<xsd:enumeration value="2"/>
+					<xsd:enumeration value="3"/>
+					<xsd:enumeration value="4"/>
+					<xsd:enumeration value="5"/>
+					<xsd:enumeration value="6"/>
+					<xsd:enumeration value="7"/>
+					<xsd:enumeration value="8"/>
+					<xsd:enumeration value="9"/>
+					<xsd:enumeration value="10"/>
+					<xsd:enumeration value="11"/>
+					<xsd:enumeration value="12"/>
+					<xsd:enumeration value="13"/>
+					<xsd:enumeration value="14"/>
+					<xsd:enumeration value="15"/>
+					<xsd:enumeration value="16"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:simpleType name="uidregLiquidationReasonType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="1"/>
+					<xsd:enumeration value="2"/>
+					<xsd:enumeration value="3"/>
+					<xsd:enumeration value="4"/>
+					<xsd:enumeration value="5"/>
+					<xsd:enumeration value="6"/>
+					<xsd:enumeration value="7"/>
+					<xsd:enumeration value="8"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="commercialRegisterInformationType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="commercialRegisterStatus" type="q49:commercialRegisterStatusType" xmlns:q49="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="commercialRegisterEntryStatus" type="q50:commercialRegisterEntryStatusType" xmlns:q50="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="commercialRegisterNameTranslation" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="commercialRegisterEntryDate" type="xsd:date"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="commercialRegisterLiquidationDate" type="xsd:date"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="commercialRegisterEnterpriseType" type="q51:commercialRegisterEnterpriseTypeType" xmlns:q51="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="commercialRegisterStatusType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="1"/>
+					<xsd:enumeration value="2"/>
+					<xsd:enumeration value="3"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:simpleType name="commercialRegisterEntryStatusType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="1"/>
+					<xsd:enumeration value="2"/>
+					<xsd:enumeration value="3"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:simpleType name="commercialRegisterEnterpriseTypeType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="1"/>
+					<xsd:enumeration value="2"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="vatRegisterInformationType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="vatStatus" type="q52:vatStatusType" xmlns:q52="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="vatEntryStatus" type="q53:vatEntryStatusType" xmlns:q53="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="vatEntryDate" type="xsd:date"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="vatLiquidationDate" type="xsd:date"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="uidVat" type="q54:uidStructureType" xmlns:q54="http://www.ech.ch/xmlns/eCH-0097-f/2"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="vatStatusType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="1"/>
+					<xsd:enumeration value="2"/>
+					<xsd:enumeration value="3"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:simpleType name="vatEntryStatusType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="1"/>
+					<xsd:enumeration value="2"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:schema>
+		<xsd:schema elementFormDefault="qualified" targetNamespace="http://www.ech.ch/xmlns/eCH-0098-f/3">
+			<xsd:complexType name="organisationType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="organisationIdentification" type="q55:organisationIdentificationType" xmlns:q55="http://www.ech.ch/xmlns/eCH-0097-f/2"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="uidBrancheText" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="nogaCode" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="foundation" type="q56:foundationType" xmlns:q56="http://www.ech.ch/xmlns/eCH-0098-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="liquidation" type="q57:liquidationType" xmlns:q57="http://www.ech.ch/xmlns/eCH-0098-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="contact" type="q58:contactType" xmlns:q58="http://www.ech.ch/xmlns/eCH-0046-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="languageOfCorrespondance" type="xsd:token"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="foundationType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="foundationDate" type="q59:datePartiallyKnownType" xmlns:q59="http://www.ech.ch/xmlns/eCH-0098-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="foundationReason" type="q60:foundationReasonType" xmlns:q60="http://www.ech.ch/xmlns/eCH-0098-f/3"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="datePartiallyKnownType">
+				<xsd:sequence>
+					<xsd:choice minOccurs="1" maxOccurs="1">
+						<xsd:element minOccurs="0" maxOccurs="1" name="year" type="xsd:gYear"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="yearMonth" type="xsd:gYearMonth"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="yearMonthDay" type="xsd:date"/>
+					</xsd:choice>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="foundationReasonType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="1"/>
+					<xsd:enumeration value="2"/>
+					<xsd:enumeration value="3"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="liquidationType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="liquidationDate" type="q61:datePartiallyKnownType" xmlns:q61="http://www.ech.ch/xmlns/eCH-0098-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="liquidationStartDate" type="q62:datePartiallyKnownType" xmlns:q62="http://www.ech.ch/xmlns/eCH-0098-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="liquidationReason" type="q63:liquidationReasonType" xmlns:q63="http://www.ech.ch/xmlns/eCH-0098-f/3"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="liquidationReasonType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="1"/>
+					<xsd:enumeration value="2"/>
+					<xsd:enumeration value="3"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:schema>
+		<xsd:schema elementFormDefault="qualified" targetNamespace="http://www.ech.ch/xmlns/eCH-0097-f/2">
+			<xsd:complexType name="organisationIdentificationType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="uid" type="q64:uidStructureType" xmlns:q64="http://www.ech.ch/xmlns/eCH-0097-f/2"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="localOrganisationId" type="q65:namedOrganisationIdType" xmlns:q65="http://www.ech.ch/xmlns/eCH-0097-f/2"/>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="OtherOrganisationId" type="q66:namedOrganisationIdType" xmlns:q66="http://www.ech.ch/xmlns/eCH-0097-f/2"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="organisationName" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="organisationLegalName" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="organisationAdditionalName" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="legalForm" type="xsd:string"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="uidStructureType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="uidOrganisationIdCategorie" type="q67:uidOrganisationIdCategorieType" xmlns:q67="http://www.ech.ch/xmlns/eCH-0097-f/2"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="uidOrganisationId" type="xsd:nonNegativeInteger"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="uidOrganisationIdCategorieType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="CHE"/>
+					<xsd:enumeration value="ADM"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="namedOrganisationIdType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="organisationIdCategory" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="organisationId" type="xsd:token"/>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+		<xsd:schema elementFormDefault="qualified" targetNamespace="http://www.ech.ch/xmlns/eCH-0116-f/2">
+			<xsd:complexType name="reportingRegister">
+				<xsd:complexContent mixed="false">
+					<xsd:extension base="q68:uidStructureType" xmlns:q68="http://www.ech.ch/xmlns/eCH-0097-f/2"/>
+				</xsd:complexContent>
+			</xsd:complexType>
+			<xsd:simpleType name="uidInfoAboMessageTypeType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="1"/>
+					<xsd:enumeration value="2"/>
+					<xsd:enumeration value="3"/>
+					<xsd:enumeration value="4"/>
+					<xsd:enumeration value="5"/>
+					<xsd:enumeration value="6"/>
+					<xsd:enumeration value="7"/>
+					<xsd:enumeration value="8"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:schema>
+		<xsd:schema elementFormDefault="qualified" targetNamespace="http://www.ech.ch/xmlns/eCH-0046-f/3">
+			<xsd:complexType name="contactType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="localID" type="q69:namedPersonIdType" xmlns:q69="http://www.ech.ch/xmlns/eCH-0044-f/4"/>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="address" type="q70:addressType" xmlns:q70="http://www.ech.ch/xmlns/eCH-0046-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="email" type="q71:emailType" xmlns:q71="http://www.ech.ch/xmlns/eCH-0046-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="phone" type="q72:phoneType" xmlns:q72="http://www.ech.ch/xmlns/eCH-0046-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="internet" type="q73:internetType" xmlns:q73="http://www.ech.ch/xmlns/eCH-0046-f/3"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="addressType">
+				<xsd:sequence>
+					<xsd:choice minOccurs="1" maxOccurs="1">
+						<xsd:element minOccurs="1" maxOccurs="1" name="addressCategory" type="q74:addressCategoryType" xmlns:q74="http://www.ech.ch/xmlns/eCH-0046-f/3"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="otherAddressCategory" type="xsd:token"/>
+					</xsd:choice>
+					<xsd:element minOccurs="0" maxOccurs="1" name="postalAddress" type="q75:mailAddressType" xmlns:q75="http://www.ech.ch/xmlns/eCH-0010-f/6"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="validity" type="q76:dateRangeType" xmlns:q76="http://www.ech.ch/xmlns/eCH-0046-f/3"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="addressCategoryType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="1"/>
+					<xsd:enumeration value="2"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="dateRangeType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="dateFrom" type="xsd:date"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="dateTo" type="xsd:date"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="emailType">
+				<xsd:sequence>
+					<xsd:choice minOccurs="1" maxOccurs="1">
+						<xsd:element minOccurs="1" maxOccurs="1" name="emailCategory" type="q77:emailCategoryType" xmlns:q77="http://www.ech.ch/xmlns/eCH-0046-f/3"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="otherEmailCategory" type="xsd:token"/>
+					</xsd:choice>
+					<xsd:element minOccurs="0" maxOccurs="1" name="emailAddress" type="xsd:string"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="validity" type="q78:dateRangeType" xmlns:q78="http://www.ech.ch/xmlns/eCH-0046-f/3"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="emailCategoryType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="1"/>
+					<xsd:enumeration value="2"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="phoneType">
+				<xsd:sequence>
+					<xsd:choice minOccurs="1" maxOccurs="1">
+						<xsd:element minOccurs="0" maxOccurs="1" name="otherPhoneCategory" type="xsd:token"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="phoneCategory" type="q79:phoneCategoryType" xmlns:q79="http://www.ech.ch/xmlns/eCH-0046-f/3"/>
+					</xsd:choice>
+					<xsd:element minOccurs="0" maxOccurs="1" name="phoneNumber" type="xsd:string"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="validity" type="q80:dateRangeType" xmlns:q80="http://www.ech.ch/xmlns/eCH-0046-f/3"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="phoneCategoryType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="1"/>
+					<xsd:enumeration value="2"/>
+					<xsd:enumeration value="3"/>
+					<xsd:enumeration value="4"/>
+					<xsd:enumeration value="5"/>
+					<xsd:enumeration value="6"/>
+					<xsd:enumeration value="7"/>
+					<xsd:enumeration value="8"/>
+					<xsd:enumeration value="9"/>
+					<xsd:enumeration value="10"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="internetType">
+				<xsd:sequence>
+					<xsd:choice minOccurs="1" maxOccurs="1">
+						<xsd:element minOccurs="1" maxOccurs="1" name="internetCategory" type="q81:internetCategoryType" xmlns:q81="http://www.ech.ch/xmlns/eCH-0046-f/3"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="otherInternetCategory" type="xsd:token"/>
+					</xsd:choice>
+					<xsd:element minOccurs="0" maxOccurs="1" name="internetAddress" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="validity" type="q82:dateRangeType" xmlns:q82="http://www.ech.ch/xmlns/eCH-0046-f/3"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="internetCategoryType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="1"/>
+					<xsd:enumeration value="2"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:schema>
+		<xsd:schema elementFormDefault="qualified" targetNamespace="http://www.ech.ch/xmlns/eCH-0044-f/4">
+			<xsd:complexType name="namedPersonIdType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="personIdCategory" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="personId" type="xsd:token"/>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+		<xsd:schema elementFormDefault="qualified" targetNamespace="http://www.ech.ch/xmlns/eCH-0010-f/6">
+			<xsd:complexType name="mailAddressType">
+				<xsd:sequence>
+					<xsd:choice minOccurs="1" maxOccurs="1">
+						<xsd:element minOccurs="0" maxOccurs="1" name="organisation" type="q83:organisationMailAddressInfoType" xmlns:q83="http://www.ech.ch/xmlns/eCH-0010-f/6"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="person" type="q84:personMailAddressInfoType" xmlns:q84="http://www.ech.ch/xmlns/eCH-0010-f/6"/>
+					</xsd:choice>
+					<xsd:element minOccurs="0" maxOccurs="1" name="addressInformation" type="q85:addressInformationType" xmlns:q85="http://www.ech.ch/xmlns/eCH-0010-f/6"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="organisationMailAddressInfoType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="organisationName" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="organisationNameAddOn1" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="organisationNameAddOn2" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="mrMrs" type="q86:mrMrsType" xmlns:q86="http://www.ech.ch/xmlns/eCH-0010-f/6"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="title" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="firstName" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="lastName" type="xsd:token"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="mrMrsType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="1"/>
+					<xsd:enumeration value="2"/>
+					<xsd:enumeration value="3"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="personMailAddressInfoType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="mrMrs" type="q87:mrMrsType" xmlns:q87="http://www.ech.ch/xmlns/eCH-0010-f/6"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="title" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="firstName" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="lastName" type="xsd:token"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="addressInformationType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="addressLine1" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="addressLine2" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="street" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="houseNumber" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="dwellingNumber" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="postOfficeBoxNumber" type="xsd:unsignedInt"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="postOfficeBoxText" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="locality" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="town" type="xsd:token"/>
+					<xsd:choice minOccurs="0" maxOccurs="unbounded">
+						<xsd:element minOccurs="0" maxOccurs="1" name="foreignZipCode" type="xsd:token"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="swissZipCode" type="xsd:unsignedInt"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="swissZipCodeAddOn" type="xsd:string"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="swissZipCodeId" type="xsd:int"/>
+					</xsd:choice>
+					<xsd:element minOccurs="0" maxOccurs="1" name="country" type="q88:countryType" xmlns:q88="http://www.ech.ch/xmlns/eCH-0010-f/6"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="countryType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="countryId" type="xsd:integer"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="countryIdISO2" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="countryNameShort" type="xsd:token"/>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+		<xsd:schema elementFormDefault="qualified" targetNamespace="http://www.ech.ch/xmlns/eCH-0007-f/6">
+			<xsd:complexType name="swissMunicipalityType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="municipalityId" type="xsd:int"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="municipalityName" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="cantonAbbreviation" type="q89:cantonAbbreviationType" xmlns:q89="http://www.ech.ch/xmlns/eCH-0007-f/6"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="historyMunicipalityId" type="xsd:int"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="cantonAbbreviationType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="ZH"/>
+					<xsd:enumeration value="BE"/>
+					<xsd:enumeration value="LU"/>
+					<xsd:enumeration value="UR"/>
+					<xsd:enumeration value="SZ"/>
+					<xsd:enumeration value="OW"/>
+					<xsd:enumeration value="NW"/>
+					<xsd:enumeration value="GL"/>
+					<xsd:enumeration value="ZG"/>
+					<xsd:enumeration value="FR"/>
+					<xsd:enumeration value="SO"/>
+					<xsd:enumeration value="BS"/>
+					<xsd:enumeration value="BL"/>
+					<xsd:enumeration value="SH"/>
+					<xsd:enumeration value="AR"/>
+					<xsd:enumeration value="AI"/>
+					<xsd:enumeration value="SG"/>
+					<xsd:enumeration value="GR"/>
+					<xsd:enumeration value="AG"/>
+					<xsd:enumeration value="TG"/>
+					<xsd:enumeration value="TI"/>
+					<xsd:enumeration value="VD"/>
+					<xsd:enumeration value="VS"/>
+					<xsd:enumeration value="NE"/>
+					<xsd:enumeration value="GE"/>
+					<xsd:enumeration value="JU"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:schema>
+		<xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/">
+			<xs:element name="anyType" nillable="true" type="xs:anyType"/>
+			<xs:element name="anyURI" nillable="true" type="xs:anyURI"/>
+			<xs:element name="base64Binary" nillable="true" type="xs:base64Binary"/>
+			<xs:element name="boolean" nillable="true" type="xs:boolean"/>
+			<xs:element name="byte" nillable="true" type="xs:byte"/>
+			<xs:element name="dateTime" nillable="true" type="xs:dateTime"/>
+			<xs:element name="decimal" nillable="true" type="xs:decimal"/>
+			<xs:element name="double" nillable="true" type="xs:double"/>
+			<xs:element name="float" nillable="true" type="xs:float"/>
+			<xs:element name="int" nillable="true" type="xs:int"/>
+			<xs:element name="long" nillable="true" type="xs:long"/>
+			<xs:element name="QName" nillable="true" type="xs:QName"/>
+			<xs:element name="short" nillable="true" type="xs:short"/>
+			<xs:element name="string" nillable="true" type="xs:string"/>
+			<xs:element name="unsignedByte" nillable="true" type="xs:unsignedByte"/>
+			<xs:element name="unsignedInt" nillable="true" type="xs:unsignedInt"/>
+			<xs:element name="unsignedLong" nillable="true" type="xs:unsignedLong"/>
+			<xs:element name="unsignedShort" nillable="true" type="xs:unsignedShort"/>
+			<xs:element name="char" nillable="true" type="tns:char"/>
+			<xs:simpleType name="char">
+				<xs:restriction base="xs:int"/>
+			</xs:simpleType>
+			<xs:element name="duration" nillable="true" type="tns:duration"/>
+			<xs:simpleType name="duration">
+				<xs:restriction base="xs:duration">
+					<xs:pattern value="\-?P(\d*D)?(T(\d*H)?(\d*M)?(\d*(\.\d*)?S)?)?"/>
+					<xs:minInclusive value="-P10675199DT2H48M5.4775808S"/>
+					<xs:maxInclusive value="P10675199DT2H48M5.4775807S"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:element name="guid" nillable="true" type="tns:guid"/>
+			<xs:simpleType name="guid">
+				<xs:restriction base="xs:string">
+					<xs:pattern value="[\da-fA-F]{8}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{12}"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:attribute name="FactoryType" type="xs:QName"/>
+			<xs:attribute name="Id" type="xs:ID"/>
+			<xs:attribute name="Ref" type="xs:IDREF"/>
+		</xs:schema>
+		<xsd:schema elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService" xmlns:tns="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService">
+			<xsd:complexType name="SecurityFault">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" name="Error" nillable="true" type="xsd:string"/>
+					<xsd:element minOccurs="0" name="ErrorDetail" nillable="true" type="xsd:string"/>
+					<xsd:element minOccurs="0" name="Operation" nillable="true" type="xsd:string"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="SecurityFault" nillable="true" type="tns:SecurityFault"/>
+			<xsd:complexType name="BusinessFault">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" name="Error" nillable="true" type="xsd:string"/>
+					<xsd:element minOccurs="0" name="ErrorDetail" nillable="true" type="xsd:string"/>
+					<xsd:element minOccurs="0" name="Operation" nillable="true" type="xsd:string"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="BusinessFault" nillable="true" type="tns:BusinessFault"/>
+			<xsd:complexType name="InfrastructureFault">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" name="Error" nillable="true" type="xsd:string"/>
+					<xsd:element minOccurs="0" name="ErrorDetail" nillable="true" type="xsd:string"/>
+					<xsd:element minOccurs="0" name="Operation" nillable="true" type="xsd:string"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="InfrastructureFault" nillable="true" type="tns:InfrastructureFault"/>
+		</xsd:schema>
+		<xsd:schema elementFormDefault="qualified" targetNamespace="http://www.bit.admin.ch/xmlns/uid-wse-shared/1">
+			<xsd:simpleType name="searchMode">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="Normal"/>
+					<xsd:enumeration value="Fuzzy"/>
+					<xsd:enumeration value="Auto"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:simpleType name="registerDeregisterStatus">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="Success"/>
+					<xsd:enumeration value="UidNotFound"/>
+					<xsd:enumeration value="InvalidParameter"/>
+					<xsd:enumeration value="Duplicate"/>
+					<xsd:enumeration value="NotRegistered"/>
+					<xsd:enumeration value="AlreadyRegistered"/>
+					<xsd:enumeration value="AlreadyRegisteredAsActiveUIDService"/>
+					<xsd:enumeration value="ReactivationRequired"/>
+					<xsd:enumeration value="DeletionRequired"/>
+					<xsd:enumeration value="RegistrationNotAllowed"/>
+					<xsd:enumeration value="UnsubscribeNotAllowed"/>
+					<xsd:enumeration value="SystemError"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="scheduledTaskItem">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="taskId" type="xsd:unsignedInt"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="taskType" type="q90:scheduledTaskType" xmlns:q90="http://www.bit.admin.ch/xmlns/uid-wse-shared/1"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="scheduledDate" type="xsd:date"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="scheduledTaskType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="Register"/>
+					<xsd:enumeration value="Deregister"/>
+					<xsd:enumeration value="Update"/>
+					<xsd:enumeration value="Delete"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:schema>
+		<xsd:schema elementFormDefault="qualified" targetNamespace="http://www.bit.admin.ch/xmlns/uid-wse-f/3">
+			<xsd:complexType name="ratedOrganisation">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="organisation" type="q91:organisationType" xmlns:q91="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="rating" type="xsd:int"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="registerDeregisterResult">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="taskId" type="xsd:int"/>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="items" type="q92:registerDeregisterItem" xmlns:q92="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="remark" type="xsd:string"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="registerDeregisterItem">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="uid" type="q93:uidStructureType" xmlns:q93="http://www.ech.ch/xmlns/eCH-0097-f/2"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="status" type="q94:registerDeregisterStatus" xmlns:q94="http://www.bit.admin.ch/xmlns/uid-wse-shared/1"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="uidWse">
+				<xsd:sequence>
+					<xsd:choice minOccurs="1" maxOccurs="1">
+						<xsd:element minOccurs="0" maxOccurs="1" name="uidWseInfoAbo" type="q95:uidWseInfoAboType" xmlns:q95="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="uidWseOrganisationRequest" type="q96:uidWseOrganisationRequestType" xmlns:q96="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="uidWseResponse" type="q97:uidWseResponseType" xmlns:q97="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="uidWseUIDRequest" type="q98:uidWseUIDRequestType" xmlns:q98="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+					</xsd:choice>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="uidWseInfoAboType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="uidInfoAboChanges" type="q99:uidInfoAboChangeType" xmlns:q99="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="uidInfoAboChangeType">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="uidInfoAboMessageType" type="q100:uidMessageType" xmlns:q100="http://www.bit.admin.ch/xmlns/uid-wse-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="entries" type="q101:organisationType" xmlns:q101="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="uidMessageType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="1"/>
+					<xsd:enumeration value="2"/>
+					<xsd:enumeration value="3"/>
+					<xsd:enumeration value="4"/>
+					<xsd:enumeration value="5"/>
+					<xsd:enumeration value="6"/>
+					<xsd:enumeration value="20"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="uidWseOrganisationRequestType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="organisation" type="q102:organisationType" xmlns:q102="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="extension"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="uidWseResponseType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="organisation" type="q103:organisationType" xmlns:q103="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="extension"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="uidWseUIDRequestType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="uid" type="q104:uidStructureType" xmlns:q104="http://www.ech.ch/xmlns/eCH-0097-f/2"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="extension"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="infoAboMessage">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="messageId" type="xsd:token"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="reportingRegister" type="q105:uidStructureType" xmlns:q105="http://www.ech.ch/xmlns/eCH-0097-f/2"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="organisation" type="q106:organisationType" xmlns:q106="http://www.ech.ch/xmlns/eCH-0108-f/3"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="messageType" type="q107:uidInfoAboMessageTypeType" xmlns:q107="http://www.ech.ch/xmlns/eCH-0116-f/2"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="eventDate" type="xsd:date"/>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+		<xsd:schema elementFormDefault="qualified" targetNamespace="http://microsoft.com/wsdl/types/">
+			<xsd:simpleType name="guid">
+				<xsd:restriction base="xsd:string">
+					<xsd:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="IPartnerServices_GetOrganisationSample_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetOrganisationSample"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetOrganisationSample_OutputMessage">
+		<wsdl:part name="parameters" element="tns:GetOrganisationSampleResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetOrganisationSample_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q108:SecurityFault" xmlns:q108="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetOrganisationSample_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q109:BusinessFault" xmlns:q109="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetOrganisationSample_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q110:InfrastructureFault" xmlns:q110="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Search_InputMessage">
+		<wsdl:part name="parameters" element="tns:Search"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Search_OutputMessage">
+		<wsdl:part name="parameters" element="tns:SearchResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Search_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q111:SecurityFault" xmlns:q111="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Search_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q112:BusinessFault" xmlns:q112="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Search_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q113:InfrastructureFault" xmlns:q113="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Create_InputMessage">
+		<wsdl:part name="parameters" element="tns:Create"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Create_OutputMessage">
+		<wsdl:part name="parameters" element="tns:CreateResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Create_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q114:SecurityFault" xmlns:q114="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Create_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q115:BusinessFault" xmlns:q115="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Create_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q116:InfrastructureFault" xmlns:q116="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Update_InputMessage">
+		<wsdl:part name="parameters" element="tns:Update"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Update_OutputMessage">
+		<wsdl:part name="parameters" element="tns:UpdateResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Update_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q117:SecurityFault" xmlns:q117="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Update_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q118:BusinessFault" xmlns:q118="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Update_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q119:InfrastructureFault" xmlns:q119="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Delete_InputMessage">
+		<wsdl:part name="parameters" element="tns:Delete"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Delete_OutputMessage">
+		<wsdl:part name="parameters" element="tns:DeleteResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Delete_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q120:SecurityFault" xmlns:q120="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Delete_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q121:BusinessFault" xmlns:q121="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Delete_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q122:InfrastructureFault" xmlns:q122="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Reactivate_InputMessage">
+		<wsdl:part name="parameters" element="tns:Reactivate"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Reactivate_OutputMessage">
+		<wsdl:part name="parameters" element="tns:ReactivateResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Reactivate_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q123:SecurityFault" xmlns:q123="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Reactivate_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q124:BusinessFault" xmlns:q124="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Reactivate_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q125:InfrastructureFault" xmlns:q125="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Register_InputMessage">
+		<wsdl:part name="parameters" element="tns:Register"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Register_OutputMessage">
+		<wsdl:part name="parameters" element="tns:RegisterResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Register_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q126:SecurityFault" xmlns:q126="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Register_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q127:BusinessFault" xmlns:q127="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Register_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q128:InfrastructureFault" xmlns:q128="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Deregister_InputMessage">
+		<wsdl:part name="parameters" element="tns:Deregister"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Deregister_OutputMessage">
+		<wsdl:part name="parameters" element="tns:DeregisterResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Deregister_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q129:SecurityFault" xmlns:q129="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Deregister_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q130:BusinessFault" xmlns:q130="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Deregister_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q131:InfrastructureFault" xmlns:q131="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Subscribe_InputMessage">
+		<wsdl:part name="parameters" element="tns:Subscribe"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Subscribe_OutputMessage">
+		<wsdl:part name="parameters" element="tns:SubscribeResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Subscribe_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q132:SecurityFault" xmlns:q132="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Subscribe_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q133:BusinessFault" xmlns:q133="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Subscribe_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q134:InfrastructureFault" xmlns:q134="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Unsubscribe_InputMessage">
+		<wsdl:part name="parameters" element="tns:Unsubscribe"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Unsubscribe_OutputMessage">
+		<wsdl:part name="parameters" element="tns:UnsubscribeResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Unsubscribe_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q135:SecurityFault" xmlns:q135="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Unsubscribe_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q136:BusinessFault" xmlns:q136="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_Unsubscribe_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q137:InfrastructureFault" xmlns:q137="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboChanges_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetInfoAboChanges"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboChanges_OutputMessage">
+		<wsdl:part name="parameters" element="tns:GetInfoAboChangesResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboChanges_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q138:SecurityFault" xmlns:q138="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboChanges_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q139:BusinessFault" xmlns:q139="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboChanges_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q140:InfrastructureFault" xmlns:q140="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboMessages_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetInfoAboMessages"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboMessages_OutputMessage">
+		<wsdl:part name="parameters" element="tns:GetInfoAboMessagesResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboMessages_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q141:SecurityFault" xmlns:q141="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboMessages_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q142:BusinessFault" xmlns:q142="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboMessages_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q143:InfrastructureFault" xmlns:q143="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboMessagesByType_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetInfoAboMessagesByType"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboMessagesByType_OutputMessage">
+		<wsdl:part name="parameters" element="tns:GetInfoAboMessagesByTypeResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboMessagesByType_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q144:SecurityFault" xmlns:q144="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboMessagesByType_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q145:BusinessFault" xmlns:q145="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboMessagesByType_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q146:InfrastructureFault" xmlns:q146="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboMessageByUUID_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetInfoAboMessageByUUID"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboMessageByUUID_OutputMessage">
+		<wsdl:part name="parameters" element="tns:GetInfoAboMessageByUUIDResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboMessageByUUID_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q147:SecurityFault" xmlns:q147="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboMessageByUUID_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q148:BusinessFault" xmlns:q148="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetInfoAboMessageByUUID_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q149:InfrastructureFault" xmlns:q149="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetRegisterResult_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetRegisterResult"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetRegisterResult_OutputMessage">
+		<wsdl:part name="parameters" element="tns:GetRegisterResultResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetRegisterResult_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q150:SecurityFault" xmlns:q150="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetRegisterResult_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q151:BusinessFault" xmlns:q151="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetRegisterResult_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q152:InfrastructureFault" xmlns:q152="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetDeregisterResult_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetDeregisterResult"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetDeregisterResult_OutputMessage">
+		<wsdl:part name="parameters" element="tns:GetDeregisterResultResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetDeregisterResult_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q153:SecurityFault" xmlns:q153="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetDeregisterResult_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q154:BusinessFault" xmlns:q154="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetDeregisterResult_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q155:InfrastructureFault" xmlns:q155="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetSubscribeResult_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetSubscribeResult"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetSubscribeResult_OutputMessage">
+		<wsdl:part name="parameters" element="tns:GetSubscribeResultResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetSubscribeResult_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q156:SecurityFault" xmlns:q156="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetSubscribeResult_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q157:BusinessFault" xmlns:q157="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetSubscribeResult_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q158:InfrastructureFault" xmlns:q158="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetUnsubscribeResult_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetUnsubscribeResult"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetUnsubscribeResult_OutputMessage">
+		<wsdl:part name="parameters" element="tns:GetUnsubscribeResultResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetUnsubscribeResult_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q159:SecurityFault" xmlns:q159="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetUnsubscribeResult_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q160:BusinessFault" xmlns:q160="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetUnsubscribeResult_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q161:InfrastructureFault" xmlns:q161="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_UpdateScheduled_InputMessage">
+		<wsdl:part name="parameters" element="tns:UpdateScheduled"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_UpdateScheduled_OutputMessage">
+		<wsdl:part name="parameters" element="tns:UpdateScheduledResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_UpdateScheduled_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q162:SecurityFault" xmlns:q162="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_UpdateScheduled_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q163:BusinessFault" xmlns:q163="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_UpdateScheduled_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q164:InfrastructureFault" xmlns:q164="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_DeleteScheduled_InputMessage">
+		<wsdl:part name="parameters" element="tns:DeleteScheduled"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_DeleteScheduled_OutputMessage">
+		<wsdl:part name="parameters" element="tns:DeleteScheduledResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_DeleteScheduled_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q165:SecurityFault" xmlns:q165="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_DeleteScheduled_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q166:BusinessFault" xmlns:q166="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_DeleteScheduled_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q167:InfrastructureFault" xmlns:q167="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_RegisterScheduled_InputMessage">
+		<wsdl:part name="parameters" element="tns:RegisterScheduled"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_RegisterScheduled_OutputMessage">
+		<wsdl:part name="parameters" element="tns:RegisterScheduledResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_RegisterScheduled_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q168:SecurityFault" xmlns:q168="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_RegisterScheduled_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q169:BusinessFault" xmlns:q169="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_RegisterScheduled_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q170:InfrastructureFault" xmlns:q170="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_DeregisterScheduled_InputMessage">
+		<wsdl:part name="parameters" element="tns:DeregisterScheduled"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_DeregisterScheduled_OutputMessage">
+		<wsdl:part name="parameters" element="tns:DeregisterScheduledResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_DeregisterScheduled_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q171:SecurityFault" xmlns:q171="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_DeregisterScheduled_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q172:BusinessFault" xmlns:q172="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_DeregisterScheduled_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q173:InfrastructureFault" xmlns:q173="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetAllScheduldedTasks_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetAllScheduldedTasks"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetAllScheduldedTasks_OutputMessage">
+		<wsdl:part name="parameters" element="tns:GetAllScheduldedTasksResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetAllScheduldedTasks_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q174:SecurityFault" xmlns:q174="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetAllScheduldedTasks_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q175:BusinessFault" xmlns:q175="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetAllScheduldedTasks_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q176:InfrastructureFault" xmlns:q176="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetScheduledTasksByType_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetScheduledTasksByType"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetScheduledTasksByType_OutputMessage">
+		<wsdl:part name="parameters" element="tns:GetScheduledTasksByTypeResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetScheduledTasksByType_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q177:SecurityFault" xmlns:q177="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetScheduledTasksByType_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q178:BusinessFault" xmlns:q178="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_GetScheduledTasksByType_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q179:InfrastructureFault" xmlns:q179="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_CancelScheduldedTask_InputMessage">
+		<wsdl:part name="parameters" element="tns:CancelScheduldedTask"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_CancelScheduldedTask_OutputMessage">
+		<wsdl:part name="parameters" element="tns:CancelScheduldedTaskResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_CancelScheduldedTask_SecurityFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q180:SecurityFault" xmlns:q180="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_CancelScheduldedTask_BusinessFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q181:BusinessFault" xmlns:q181="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:message name="IPartnerServices_CancelScheduldedTask_InfrastructureFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q182:InfrastructureFault" xmlns:q182="http://schemas.datacontract.org/2004/07/CH.Admin.BIT.UID.PublicWebService"/>
+	</wsdl:message>
+	<wsdl:portType name="IPartnerServices">
+		<wsdl:operation name="GetOrganisationSample">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Returns a data sample to demonstrate the structure of eCH-0108:organisationType. The sample contains all mapped fields. All data is fictional. &#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;returns&gt;Data sample&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetOrganisationSample" message="tns:IPartnerServices_GetOrganisationSample_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetOrganisationSampleResponse" message="tns:IPartnerServices_GetOrganisationSample_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetOrganisationSampleSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_GetOrganisationSample_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetOrganisationSampleBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_GetOrganisationSample_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetOrganisationSampleInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_GetOrganisationSample_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="Search">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Search for UID-Einheiten &#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="searchParameters"&gt;Search parameters formated as eCH-0108-3-0f document.&lt;/param&gt;&#xD;
+            &lt;param name="maxNumberOfRecords"&gt;Number of records to be returned (max 200)&lt;/param&gt;&#xD;
+            &lt;param name="searchMode"&gt;Use 'Fuzzy' to receive a resultlist with a match rating. If searchMode is 'Fuzzy', only the companyname and the main addressfields are considered, all other searchParameters will be ignored. &#xD;
+            If searchMode is 'Simple' rating will always be 100.&lt;/param&gt;&#xD;
+            &lt;returns&gt;List of organisations matching the provided searchParameters.&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Search" message="tns:IPartnerServices_Search_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/SearchResponse" message="tns:IPartnerServices_Search_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/SearchSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_Search_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/SearchBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_Search_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/SearchInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_Search_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="Create">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Create a new entry in the UID register.&#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="organisation"&gt;Data of the organisation to be stored in the UID register&lt;/param&gt;&#xD;
+            &lt;returns&gt;The newly created UID entity, including the assigned UID. If UID status is "provisional" you will be informed via InfoAbo when the data has been verified.&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Create" message="tns:IPartnerServices_Create_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/CreateResponse" message="tns:IPartnerServices_Create_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/CreateSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_Create_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/CreateBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_Create_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/CreateInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_Create_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="Update">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Apply modifications to a UID entity&#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="organisation"&gt;UID entity to be modified.&lt;/param&gt;&#xD;
+            &lt;returns&gt;The updated UID entity, including the UID status assigned in the register. If UID status is "in mutation" you will be informed via InfoAbo when the mutation has been verified.&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Update" message="tns:IPartnerServices_Update_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/UpdateResponse" message="tns:IPartnerServices_Update_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/UpdateSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_Update_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/UpdateBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_Update_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/UpdateInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_Update_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="Delete">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Delete a UID entity from the UID register. This will not remove the data from the register, but only set the UID status to 'deleted'&#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="organisation"&gt;UID entity to be deleted. Only the deletereason will be extracted. To report additional changes use Update method.&lt;/param&gt;&#xD;
+            &lt;returns&gt;The deleted UID entity, including the UID status assigned in the register. If UID status is "in mutation" you will be informed via InfoAbo when the deletion has been verified.&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Delete" message="tns:IPartnerServices_Delete_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeleteResponse" message="tns:IPartnerServices_Delete_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeleteSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_Delete_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeleteBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_Delete_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeleteInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_Delete_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="Reactivate">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Reactive a UID entity with UID status 'deleted'&#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="uid"&gt;UID of the entity to be reactivated&lt;/param&gt;&#xD;
+            &lt;returns&gt;The reactivedted UID entity, including the UID status assigned in the register. If UID status is "in reactivation" you will be informed via InfoAbo when the reactivation has been verified.&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Reactivate" message="tns:IPartnerServices_Reactivate_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/ReactivateResponse" message="tns:IPartnerServices_Reactivate_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/ReactivateSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_Reactivate_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/ReactivateBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_Reactivate_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/ReactivateInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_Reactivate_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="Register">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Register yourself as to a list of UID entities. A registration always includes a subscription to the InfoAbo of the entity.&#xD;
+            Requests with less than 100 entities are processed immediately, larger requests will be queued for background processing. &#xD;
+            The return value includes a taskId to retrieve the resulting data later on. &#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="uidList"&gt;List of UIDs to be registred to&lt;/param&gt;&#xD;
+            &lt;returns&gt;Result of the registration process. Just taskId if the request is queued&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Register" message="tns:IPartnerServices_Register_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/RegisterResponse" message="tns:IPartnerServices_Register_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/RegisterSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_Register_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/RegisterBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_Register_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/RegisterInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_Register_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="Deregister">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Deregister from a list of UID entities. The deregistration will also delete the related InfoAbo subscription.&#xD;
+            Requests with less than 100 entities are processed immediately, larger requests will be queued for background processing. &#xD;
+            The return value includes a taskId to retrieve the resulting data later on. &#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="uidList"&gt;List of UIDs to be deregistred from&lt;/param&gt;&#xD;
+            &lt;returns&gt;Result of the deregistration process. Just taskId if the request is queued&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Deregister" message="tns:IPartnerServices_Deregister_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeregisterResponse" message="tns:IPartnerServices_Deregister_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeregisterSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_Deregister_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeregisterBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_Deregister_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeregisterInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_Deregister_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="Subscribe">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Subscribe yourself as to the InfoAbo of a list of UID entities.&#xD;
+            Requests with less than 100 entities are processed immediately, larger requests will be queued for background processing. &#xD;
+            The return value includes a taskId to retrieve the resulting data later on. &#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="uidList"&gt;List of UIDs to be subscribed to&lt;/param&gt;&#xD;
+            &lt;returns&gt;Result of the subscription process. Just taskId if the request is queued&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Subscribe" message="tns:IPartnerServices_Subscribe_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/SubscribeResponse" message="tns:IPartnerServices_Subscribe_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/SubscribeSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_Subscribe_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/SubscribeBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_Subscribe_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/SubscribeInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_Subscribe_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="Unsubscribe">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Unsubscribe from a the InfoAbo of a list of UID entities. If the InfoAbo subscription is related to a registration, unsubscribing will fail, since you must not have a registration without an InfoAbo subscription.&#xD;
+            Requests with less than 100 entities are processed immediately, larger requests will be queued for background processing. &#xD;
+            The return value includes a taskId to retrieve the resulting data later on. &#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="uidList"&gt;List of UIDs to be unsubscribed from&lt;/param&gt;&#xD;
+            &lt;returns&gt;Result of the unsubscribe process. Just taskId if the request is queued&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Unsubscribe" message="tns:IPartnerServices_Unsubscribe_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/UnsubscribeResponse" message="tns:IPartnerServices_Unsubscribe_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/UnsubscribeSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_Unsubscribe_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/UnsubscribeBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_Unsubscribe_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/UnsubscribeInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_Unsubscribe_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetInfoAboChanges">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Get all your registered UID entities which have changed within the given period. &#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="dateFrom"&gt;Begin of requested period&lt;/param&gt;&#xD;
+            &lt;param name="dateTo"&gt;End of requested period&lt;/param&gt;&#xD;
+            &lt;returns&gt;List of changed UID entities, grouped by uidInfoAboMessageType (refer to documentation of eCH-0116 for further information)&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboChanges" message="tns:IPartnerServices_GetInfoAboChanges_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboChangesResponse" message="tns:IPartnerServices_GetInfoAboChanges_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboChangesSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_GetInfoAboChanges_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboChangesBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_GetInfoAboChanges_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboChangesInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_GetInfoAboChanges_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetInfoAboMessages">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Get all your InfoAbo messages for the given period. &#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="dateFrom"&gt;Begin of requested period&lt;/param&gt;&#xD;
+            &lt;param name="dateTo"&gt;End of requested period&lt;/param&gt;&#xD;
+            &lt;returns&gt;List of InfoAbo messages&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessages" message="tns:IPartnerServices_GetInfoAboMessages_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessagesResponse" message="tns:IPartnerServices_GetInfoAboMessages_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessagesSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_GetInfoAboMessages_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessagesBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_GetInfoAboMessages_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessagesInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_GetInfoAboMessages_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetInfoAboMessagesByType">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Get all your InfoAbo messages for the given period. &#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="dateFrom"&gt;Begin of requested period&lt;/param&gt;&#xD;
+            &lt;param name="dateTo"&gt;End of requested period&lt;/param&gt;&#xD;
+            &lt;param name="messagetypes"&gt;End of requested period&lt;/param&gt;&#xD;
+            &lt;returns&gt;List of InfoAbo messages&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessagesByType" message="tns:IPartnerServices_GetInfoAboMessagesByType_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessagesByTypeResponse" message="tns:IPartnerServices_GetInfoAboMessagesByType_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessagesByTypeSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_GetInfoAboMessagesByType_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessagesByTypeBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_GetInfoAboMessagesByType_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessagesByTypeInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_GetInfoAboMessagesByType_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetInfoAboMessageByUUID">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Get a specific InfoAbo message by its UUID &#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="uuid"&gt;uuid of the requested message&lt;/param&gt;&#xD;
+            &lt;returns&gt;A single InfoAbo message&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessageByUUID" message="tns:IPartnerServices_GetInfoAboMessageByUUID_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessageByUUIDResponse" message="tns:IPartnerServices_GetInfoAboMessageByUUID_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessageByUUIDSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_GetInfoAboMessageByUUID_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessageByUUIDBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_GetInfoAboMessageByUUID_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessageByUUIDInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_GetInfoAboMessageByUUID_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetRegisterResult">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Get the result of a Registration request&#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="taskId"&gt;Id of the requested task&lt;/param&gt;&#xD;
+            &lt;returns&gt;Result of the processed Registration data&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetRegisterResult" message="tns:IPartnerServices_GetRegisterResult_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetRegisterResultResponse" message="tns:IPartnerServices_GetRegisterResult_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetRegisterResultSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_GetRegisterResult_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetRegisterResultBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_GetRegisterResult_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetRegisterResultInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_GetRegisterResult_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetDeregisterResult">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Get the result of a Deregistration request&#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="taskId"&gt;Id of the requested task&lt;/param&gt;&#xD;
+            &lt;returns&gt;Result of the processed Deregistration data&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetDeregisterResult" message="tns:IPartnerServices_GetDeregisterResult_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetDeregisterResultResponse" message="tns:IPartnerServices_GetDeregisterResult_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetDeregisterResultSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_GetDeregisterResult_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetDeregisterResultBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_GetDeregisterResult_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetDeregisterResultInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_GetDeregisterResult_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetSubscribeResult">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Get the result of a Subscribe request&#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="taskId"&gt;Id of the requested task&lt;/param&gt;&#xD;
+            &lt;returns&gt;Result of the processed Subscribe data&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetSubscribeResult" message="tns:IPartnerServices_GetSubscribeResult_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetSubscribeResultResponse" message="tns:IPartnerServices_GetSubscribeResult_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetSubscribeResultSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_GetSubscribeResult_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetSubscribeResultBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_GetSubscribeResult_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetSubscribeResultInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_GetSubscribeResult_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetUnsubscribeResult">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Get the result of a Unsubscribe request&#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="taskId"&gt;Id of the requested task&lt;/param&gt;&#xD;
+            &lt;returns&gt;Result of the processed Unsubscribe data&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetUnsubscribeResult" message="tns:IPartnerServices_GetUnsubscribeResult_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetUnsubscribeResultResponse" message="tns:IPartnerServices_GetUnsubscribeResult_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetUnsubscribeResultSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_GetUnsubscribeResult_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetUnsubscribeResultBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_GetUnsubscribeResult_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetUnsubscribeResultInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_GetUnsubscribeResult_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="UpdateScheduled">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Pre-register a modification to be executed at the given date. &#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="organisation"&gt;UID entity data formated as eCH-0108 document&lt;/param&gt;&#xD;
+            &lt;param name="scheduledDate"&gt;Date when the update shall be executed&lt;/param&gt;&#xD;
+            &lt;returns&gt;Information about the created task, including taskId for further reference. You will be informed via InfoAbo when the data has been processed&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/UpdateScheduled" message="tns:IPartnerServices_UpdateScheduled_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/UpdateScheduledResponse" message="tns:IPartnerServices_UpdateScheduled_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/UpdateScheduledSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_UpdateScheduled_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/UpdateScheduledBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_UpdateScheduled_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/UpdateScheduledInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_UpdateScheduled_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="DeleteScheduled">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Pre-register a deletion to be executed at the given date. &#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="organisation"&gt;UID entity data formated as eCH-0108 document&lt;/param&gt;&#xD;
+            &lt;param name="scheduledDate"&gt;Date when the deletion shall be executed&lt;/param&gt;&#xD;
+            &lt;returns&gt;Information about the created task, including taskId for further reference. You will be informed via InfoAbo when the data has been processed&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeleteScheduled" message="tns:IPartnerServices_DeleteScheduled_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeleteScheduledResponse" message="tns:IPartnerServices_DeleteScheduled_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeleteScheduledSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_DeleteScheduled_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeleteScheduledBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_DeleteScheduled_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeleteScheduledInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_DeleteScheduled_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="RegisterScheduled">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Pre-register a list of UIDs to be registered to at the given date. &#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="uidList"&gt;List of UIDs to be registred to&lt;/param&gt;&#xD;
+            &lt;param name="scheduledDate"&gt;Date when the registrations shall be executed&lt;/param&gt;&#xD;
+            &lt;returns&gt;Information about the created task, including taskId for further reference.&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/RegisterScheduled" message="tns:IPartnerServices_RegisterScheduled_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/RegisterScheduledResponse" message="tns:IPartnerServices_RegisterScheduled_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/RegisterScheduledSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_RegisterScheduled_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/RegisterScheduledBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_RegisterScheduled_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/RegisterScheduledInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_RegisterScheduled_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="DeregisterScheduled">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Pre-register a list of UIDs to be deregistered from at the given date. &#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="uidList"&gt;List of UIDs to be deregistered from&lt;/param&gt;&#xD;
+            &lt;param name="scheduledDate"&gt;Date when the deregistrations shall be executed&lt;/param&gt;&#xD;
+            &lt;returns&gt;Information about the created task, including taskId for further reference.&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeregisterScheduled" message="tns:IPartnerServices_DeregisterScheduled_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeregisterScheduledResponse" message="tns:IPartnerServices_DeregisterScheduled_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeregisterScheduledSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_DeregisterScheduled_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeregisterScheduledBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_DeregisterScheduled_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeregisterScheduledInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_DeregisterScheduled_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetAllScheduldedTasks">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Get a list of all your pending scheduled tasks.&#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;returns&gt;List of scheduled tasks&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetAllScheduldedTasks" message="tns:IPartnerServices_GetAllScheduldedTasks_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetAllScheduldedTasksResponse" message="tns:IPartnerServices_GetAllScheduldedTasks_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetAllScheduldedTasksSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_GetAllScheduldedTasks_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetAllScheduldedTasksBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_GetAllScheduldedTasks_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetAllScheduldedTasksInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_GetAllScheduldedTasks_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetScheduledTasksByType">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Get a list of all your pending scheduled tasks of a given type&#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="type"&gt;Type of the requested tasks&lt;/param&gt;&#xD;
+            &lt;returns&gt;List of scheduled tasks&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetScheduledTasksByType" message="tns:IPartnerServices_GetScheduledTasksByType_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetScheduledTasksByTypeResponse" message="tns:IPartnerServices_GetScheduledTasksByType_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetScheduledTasksByTypeSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_GetScheduledTasksByType_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetScheduledTasksByTypeBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_GetScheduledTasksByType_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetScheduledTasksByTypeInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_GetScheduledTasksByType_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="CancelScheduldedTask">
+			<wsdl:documentation>&lt;summary&gt;&#xD;
+            Delete a pending scheduled task. To modify a pending task please delete the existing task and create a new one&#xD;
+            &lt;/summary&gt;&#xD;
+            &lt;param name="taskId"&gt;Id of the task to be deleted&lt;/param&gt;&#xD;
+            &lt;returns&gt;'true' if deletion was successfull. Errors are returned as faults, so don't wait for a 'false'.&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/CancelScheduldedTask" message="tns:IPartnerServices_CancelScheduldedTask_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/CancelScheduldedTaskResponse" message="tns:IPartnerServices_CancelScheduldedTask_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/CancelScheduldedTaskSecurityFaultFault" name="SecurityFaultFault" message="tns:IPartnerServices_CancelScheduldedTask_SecurityFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/CancelScheduldedTaskBusinessFaultFault" name="BusinessFaultFault" message="tns:IPartnerServices_CancelScheduldedTask_BusinessFaultFault_FaultMessage"/>
+			<wsdl:fault wsaw:Action="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/CancelScheduldedTaskInfrastructureFaultFault" name="InfrastructureFaultFault" message="tns:IPartnerServices_CancelScheduldedTask_InfrastructureFaultFault_FaultMessage"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="BasicHttpBinding_IPartnerServices" type="tns:IPartnerServices">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="GetOrganisationSample">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetOrganisationSample" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="Search">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Search" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="Create">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Create" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="Update">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Update" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="Delete">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Delete" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="Reactivate">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Reactivate" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="Register">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Register" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="Deregister">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Deregister" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="Subscribe">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Subscribe" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="Unsubscribe">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/Unsubscribe" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetInfoAboChanges">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboChanges" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetInfoAboMessages">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessages" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetInfoAboMessagesByType">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessagesByType" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetInfoAboMessageByUUID">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetInfoAboMessageByUUID" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetRegisterResult">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetRegisterResult" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetDeregisterResult">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetDeregisterResult" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetSubscribeResult">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetSubscribeResult" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetUnsubscribeResult">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetUnsubscribeResult" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="UpdateScheduled">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/UpdateScheduled" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="DeleteScheduled">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeleteScheduled" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="RegisterScheduled">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/RegisterScheduled" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="DeregisterScheduled">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/DeregisterScheduled" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetAllScheduldedTasks">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetAllScheduldedTasks" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetScheduledTasksByType">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/GetScheduledTasksByType" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CancelScheduldedTask">
+			<soap:operation soapAction="http://www.uid.admin.ch/xmlns/uid-wse/IPartnerServices/CancelScheduldedTask" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="SecurityFaultFault">
+				<soap:fault name="SecurityFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessFaultFault">
+				<soap:fault name="BusinessFaultFault" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="InfrastructureFaultFault">
+				<soap:fault name="InfrastructureFaultFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="PartnerServices">
+		<wsdl:port name="BasicHttpBinding_IPartnerServices" binding="tns:BasicHttpBinding_IPartnerServices">
+			<soap:address location="https://www.uid-wse.admin.ch/V3.0/PartnerServices.svc"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>
