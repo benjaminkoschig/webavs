@@ -487,8 +487,10 @@ public class EBTreatPucsFiles extends BProcess {
 
                         if (!hasError && pucsFile.isAfSeul()) {
                             String filename = pucsFile.getFilename();
-                            ebusinessAccessInstance.notifyFinishedPucsFile(filename, pucsFile.getProvenance()
-                                    .getValue(), getSession());
+                            if (pucsFile.getProvenance().isFromEbusiness()) {
+                                ebusinessAccessInstance.notifyFinishedPucsFile(filename, pucsFile.getProvenance(),
+                                        getSession());
+                            }
                             EBPucsFileService.comptabiliserByFilename(filename, getSession());
                         }
 

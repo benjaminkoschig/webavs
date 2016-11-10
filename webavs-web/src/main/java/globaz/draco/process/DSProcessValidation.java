@@ -752,7 +752,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
             if (!JadeStringUtil.isBlankOrZero(idPucsFile) && (DSProcessValidation.ebusinessAccessInstance != null)) {
                 try {
                     for (String id : ids) {
-                        PucsFile pucsFile = EBPucsFileService.read(id, getSession());
+                        PucsFile pucsFile = EBPucsFileService.readByFilename(id, getSession());
                         // On ne veut pas notifier plusieurs fois eBusiness dans le cadre déclarations des salaires
                         // complémentaires.
                         if (!pucsFile.getCurrentStatus().isComptabilise()) {

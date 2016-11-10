@@ -35,6 +35,10 @@ public enum DeclarationSalaireProvenance {
         return PUCS.equals(this);
     }
 
+    public boolean isFromEbusiness() {
+        return isDan() || isPucs();
+    }
+
     public boolean isUndefinded() {
         return UNDEFINDED.equals(this);
     }
