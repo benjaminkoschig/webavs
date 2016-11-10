@@ -229,14 +229,14 @@ $(document).ready(function(){
 					                    serviceClassName:ch.globaz.orion.business.services.pucs.PucsService,
 					                    displayOnlyImage:true,
 					                    serviceMethodName:pucFileLisible,
-					                    docName:${viewBean.decSal.numeroAffilie}_${pucs.anneeDeclaration}_declarationSalaire"
+					                    docName:${viewBean.numeroInforom}_${viewBean.decSal.numeroAffilie}_${viewBean.decSal.annee}_declarationSalaire"
 							></a>
 							<a data-g-download="docType:xls,
 										parametres:¦${viewBean.currentId},<%=DeclarationSalaireProvenance.SWISS_DEC%>,<%=etatSwissDecPucsFile%>¦,
 					                    serviceClassName:ch.globaz.orion.business.services.pucs.PucsService,
 					                    displayOnlyImage:true,
 					                    serviceMethodName:pucFileLisibleXls,
-					                    docName:${viewBean.decSal.numeroAffilie}_${viewBean.decSal.annee}_declarationSalaire,
+					                    docName:${viewBean.numeroInforom}_${viewBean.decSal.numeroAffilie}_${viewBean.decSal.annee}_declarationSalaire,
 					                    byPassExtentionXml: true"
 							></a>
 							<a data-g-download="docType:xml,
@@ -244,7 +244,7 @@ $(document).ready(function(){
 					                    serviceClassName:ch.globaz.orion.business.services.pucs.PucsService,
 					                    displayOnlyImage:true,
 					                    serviceMethodName:pucFileLisibleXml,
-					                    docName:${viewBean.currentId}"
+					                    docName:${viewBean.decSal.numeroAffilie}_${viewBean.decSal.annee}"
 							></a>
 						</div>
 					</div>

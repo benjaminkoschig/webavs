@@ -287,6 +287,10 @@ public class EBPucsValidationDetailViewBean extends EBAbstractViewBean {
         }
     }
 
+    public String getNumeroInforom() {
+        return PucsServiceImpl.NUMERO_INFORM_PUCS_LISIBLE;
+    }
+
     public String getPucsFileId() {
         return pucsFileId;
     }
