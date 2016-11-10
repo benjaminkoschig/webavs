@@ -98,7 +98,7 @@ globazNotation.note = {
 
 		dialogue: '<div id="notationDialogContent" class="ui-widget notationNote" style="overflow:hidden" >' + 
 					'<div id="notationTablelNote" class="content">' + 
-						'<span class="ajouter">Ajouter</span>' + 
+						'<span class="ajouter">{{btnAddLabel}}</span>' + 
 						'<table width="100%" class="" >' + 
 							'<thead>' + 
 								'<tr><th>{{labelDate}}</th><th>{{labelUser}}</th><th>{{labelDescription}}</th><th> {{labelAction}} </th></tr>' + 
@@ -502,6 +502,7 @@ globazNotation.note = {
 			labelAction: this.i18n("labelAction"),
 			labelNote: this.i18n("labelnote"),
 			btnNewLabel: this.i18n("btnNewLabel"),
+			btnAddLabel: this.i18n("btnAddLabel"),
 			labelId: 'N°',
 			labelDate: this.i18n("labelDate"),
 			labelUser: this.i18n("labelUser"),
