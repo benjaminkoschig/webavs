@@ -105,7 +105,7 @@ public class PucsItem extends ProcessItem {
         String concatenedString = fromNullable(pucsFile.getNumeroAffilie())
                 + fromNullable(pucsFile.getDateDeReception()) + fromNullable(pucsFile.getAnneeDeclaration())
                 + fromNullable(pucsFile.getFilename()) + fromNullable(pucsFile.getNomAffilie())
-                + fromNullable(pucsFile.getTotalControle());
+                + fromNullable(pucsFile.getTotalControle()) + fromNullable(pucsFile.getNbSalaires());
         return JadeStringUtil.convertSpecialChars(concatenedString).toUpperCase();
     }
 
