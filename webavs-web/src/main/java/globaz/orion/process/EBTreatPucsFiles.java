@@ -327,9 +327,8 @@ public class EBTreatPucsFiles extends BProcess {
                 // JadeThread.logClear();
                 boolean isForSimultation = isSimulation();
 
+                PucsFile pucsFile = pucsFileMerge.retriveFileAndMergeIfNeeded(getSession(), isSimulation());
                 try {
-
-                    PucsFile pucsFile = pucsFileMerge.retriveFileAndMergeIfNeeded(getSession(), isSimulation());
                     isForSimultation = (pucsFileMerge.getPucsFile().isForTest()) || isSimulation();
 
                     String libelleSimulation = "";
@@ -370,6 +369,7 @@ public class EBTreatPucsFiles extends BProcess {
                                             + getSession().getLabel("PROCES_IMPORTATION_ERREUR_AUCUN_JOURNAL_EXISTANT")
                                             + " : " + pucsFile.getNumeroAffilie(),
                                     getSession().getLabel("PROCES_IMPORTATION_ERREUR_AUCUN_JOURNAL_EXISTANT"), null);
+                            hasError = true;
                             continue;
                         }
 
@@ -492,10 +492,6 @@ public class EBTreatPucsFiles extends BProcess {
                                         getSession());
                             }
                             EBPucsFileService.comptabiliserByFilename(filename, getSession());
-                        } else if (hasError && pucsFile.isAfSeul()) {
-                            TransactionWrapper transaction = TransactionWrapper.forforceCommit(getSession());
-                            EBPucsFileService.enErreur(pucsFile.getIdDb(), transaction.getTransaction());
-                            transaction.forceCommit();
                         }
 
                         if (!declaration.isPUCS4()) {
@@ -534,7 +530,9 @@ public class EBTreatPucsFiles extends BProcess {
                     exceptionAppend = true;
                     handleOnError(getEmailAdress(), e, this, pucsFileMerge);
                 } finally {
-
+                    if (hasError) {
+                        changePucsFilesStatusToOnError(pucsFileMerge);
+                    }
                     try {
                         if (moveFile || pucsFileMerge.getPucsFile().isForTest()) {
                             if (exceptionAppend || hasError || isForSimultation) {
@@ -672,9 +670,11 @@ public class EBTreatPucsFiles extends BProcess {
      * @throws Exception
      */
     private void changePucsFilesStatusToOnError(PucsFileMerge pucsFileMerge) throws Exception {
-        TransactionWrapper transaction = TransactionWrapper.forforceCommit(getSession());
-        EBPucsFileService.enErreur(pucsFileMerge.getPucsFileToMergded(), transaction.getTransaction());
-        transaction.close();
+        if (!isSimulation()) {
+            TransactionWrapper transaction = TransactionWrapper.forforceCommit(getSession());
+            EBPucsFileService.enErreur(pucsFileMerge.getPucsFileToMergded(), transaction.getTransaction());
+            transaction.close();
+        }
     }
 
     private void sendMailError1(String mail, Throwable e, BProcess proces, String messageInfo, PucsFileMerge fileMerge)
