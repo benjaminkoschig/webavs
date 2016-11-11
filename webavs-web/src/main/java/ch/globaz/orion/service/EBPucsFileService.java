@@ -133,6 +133,12 @@ public class EBPucsFileService {
         }
     }
 
+    public static void enErreur(List<PucsFile> pucsFiles, BSession session) {
+        for (PucsFile pucsFile : pucsFiles) {
+            enErreur(pucsFile.getIdDb(), session);
+        }
+    }
+
     public static void comptabiliserByFilename(String filename, BSession session) {
         PucsFile pucsFile = readByFilename(filename, session);
         comptabiliser(pucsFile.getIdDb(), session);
@@ -189,6 +195,10 @@ public class EBPucsFileService {
             throw new RuntimeException(e);
         }
         return entity;
+    }
+
+    public static void enErreur(String id, BSession session) {
+        changeStatut(id, EtatPucsFile.EN_ERREUR, session);
     }
 
     public static void comptabiliser(String id, BSession session) {
