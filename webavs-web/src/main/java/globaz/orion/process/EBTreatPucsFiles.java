@@ -328,6 +328,8 @@ public class EBTreatPucsFiles extends BProcess {
                 boolean isForSimultation = isSimulation();
 
                 PucsFile pucsFile = pucsFileMerge.retriveFileAndMergeIfNeeded(getSession(), isSimulation());
+                // On commit la transaction, on ne sait pas pourquoi mais ça permet d'éviter un deadlock.
+                getSession().getCurrentThreadTransaction().commit();
                 try {
                     isForSimultation = (pucsFileMerge.getPucsFile().isForTest()) || isSimulation();
 
@@ -349,6 +351,7 @@ public class EBTreatPucsFiles extends BProcess {
                                 pucsFile.getNumeroAffilie() + " : " + getSession().getLabel("ERREUR_AFF_INACTIF")
                                         + pucsFile.getAnneeDeclaration(), null);
                         exceptionAppend = true;
+                        hasError = true;
                         continue;
                     }
 
@@ -486,12 +489,14 @@ public class EBTreatPucsFiles extends BProcess {
                                 || (declaration.getMemoryLog() != null && declaration.getMemoryLog().hasErrors());
 
                         if (!hasError && pucsFile.isAfSeul()) {
-                            String filename = pucsFile.getFilename();
-                            if (pucsFile.getProvenance().isFromEbusiness()) {
-                                ebusinessAccessInstance.notifyFinishedPucsFile(filename, pucsFile.getProvenance(),
-                                        getSession());
+                            for (PucsFile pf : pucsFileMerge.getPucsFileToMergded()) {
+                                String filename = pf.getFilename();
+                                if (pucsFile.getProvenance().isFromEbusiness()) {
+                                    ebusinessAccessInstance.notifyFinishedPucsFile(filename, pucsFile.getProvenance(),
+                                            getSession());
+                                }
+                                EBPucsFileService.comptabiliserByFilename(filename, getSession());
                             }
-                            EBPucsFileService.comptabiliserByFilename(filename, getSession());
                         }
 
                         if (!declaration.isPUCS4()) {
@@ -530,9 +535,6 @@ public class EBTreatPucsFiles extends BProcess {
                     exceptionAppend = true;
                     handleOnError(getEmailAdress(), e, this, pucsFileMerge);
                 } finally {
-                    if (hasError) {
-                        changePucsFilesStatusToOnError(pucsFileMerge);
-                    }
                     try {
                         if (moveFile || pucsFileMerge.getPucsFile().isForTest()) {
                             if (exceptionAppend || hasError || isForSimultation) {
@@ -544,7 +546,9 @@ public class EBTreatPucsFiles extends BProcess {
                     } catch (Exception e) {
                         handleOnError(getEmailAdress(), e, this, pucsFileMerge);
                     }
-
+                    if (hasError) {
+                        changePucsFilesStatusToOnError(pucsFileMerge);
+                    }
                 }
             }
         } finally {
@@ -671,8 +675,11 @@ public class EBTreatPucsFiles extends BProcess {
      */
     private void changePucsFilesStatusToOnError(PucsFileMerge pucsFileMerge) throws Exception {
         if (!isSimulation()) {
+            // On utilise le TransactionWrapper afin de supprimer toute les erreurs de la session.
+            // La transaction créée en tant que tel n'est pas utilisée. Sinon un deadlock est présent dans le cas où
+            // l'on utilise une nouvelle transaction
             TransactionWrapper transaction = TransactionWrapper.forforceCommit(getSession());
-            EBPucsFileService.enErreur(pucsFileMerge.getPucsFileToMergded(), transaction.getTransaction());
+            EBPucsFileService.enErreur(pucsFileMerge.getPucsFileToMergded(), getSession());
             transaction.close();
         }
     }
