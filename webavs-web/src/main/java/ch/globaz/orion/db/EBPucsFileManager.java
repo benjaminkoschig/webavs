@@ -36,7 +36,6 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
             sqlWhere.and(EBPucsFileDefTable.SEARCH_STRING).fullLike(
                     JadeStringUtil.convertSpecialChars(fullText).toUpperCase());
         }
-
         sqlWhere.and(EBPucsFileDefTable.ID_FILE_NAME).equal(forFilename);
     }
 

@@ -156,19 +156,39 @@ public class EBPucsFileService {
     }
 
     public static void enErreur(String id, BTransaction transaction) {
+        changeStatut(id, EtatPucsFile.EN_ERREUR, transaction);
+    }
+
+    public static void aTraiter(String id, BTransaction transaction) {
+        changeStatut(id, EtatPucsFile.A_TRAITER, transaction);
+    }
+
+    public static void changeStatut(String id, EtatPucsFile etat, BTransaction transaction) {
+        EBPucsFileEntity entity = read(id, transaction);
+        if (entity == null || entity.isNew()) {
+            throw new RuntimeException("Aucun PucsFile n'a été trouvé pour l'id " + id);
+        }
+        EtatPucsFile etatActuel = EtatPucsFile.fromValue(entity.getStatut().toString());
+        if (etatActuel.isComptabilise()) {
+            throw new RuntimeException("Le fichier ne peut pas être édité car déjà traité");
+        }
+        entity.setStatut(Integer.parseInt(etat.getValue()));
+        try {
+            entity.save(transaction);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static EBPucsFileEntity read(String id, BTransaction transaction) {
         EBPucsFileEntity entity = new EBPucsFileEntity();
         entity.setIdEntity(id);
         try {
             entity.retrieve(transaction);
-            EtatPucsFile etatActuel = EtatPucsFile.fromValue(entity.getStatut().toString());
-            if (etatActuel.isComptabilise()) {
-                throw new RuntimeException("Le fichier ne peut pas être édité car déjà traité");
-            }
-            entity.setStatut(Integer.parseInt(EtatPucsFile.EN_ERREUR.getValue()));
-            entity.save();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        return entity;
     }
 
     public static void comptabiliser(String id, BSession session) {
@@ -185,6 +205,9 @@ public class EBPucsFileService {
         entity.setSession(session);
         try {
             entity.retrieve();
+            if (entity == null || entity.isNew()) {
+                throw new RuntimeException("Aucun PucsFile n'a été trouvé pour l'id " + id);
+            }
             EtatPucsFile etatActuel = EtatPucsFile.fromValue(entity.getStatut().toString());
             if (etatActuel.isComptabilise() && !etat.isComptabilise()) {
                 throw new RuntimeException("Le fichier " + entity.getIdFileName()

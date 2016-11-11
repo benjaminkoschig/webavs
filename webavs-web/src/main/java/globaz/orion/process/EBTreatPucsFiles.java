@@ -492,13 +492,15 @@ public class EBTreatPucsFiles extends BProcess {
                                         getSession());
                             }
                             EBPucsFileService.comptabiliserByFilename(filename, getSession());
+                        } else if (hasError && pucsFile.isAfSeul()) {
+                            TransactionWrapper transaction = TransactionWrapper.forforceCommit(getSession());
+                            EBPucsFileService.enErreur(pucsFile.getIdDb(), transaction.getTransaction());
+                            transaction.forceCommit();
                         }
 
                         if (!declaration.isPUCS4()) {
                             recuperDcoumentEtEnvoiMail(declaration, declaration.getEMailObject());
                         }
-
-                        // on fait le fichier avant car cela notifiy e-business et met le cas en traitement.
 
                         Map<String, ElementsDomParser> filesPath = new HashMap<String, ElementsDomParser>();
                         try {
