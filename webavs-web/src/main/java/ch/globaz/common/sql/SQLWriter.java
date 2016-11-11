@@ -207,7 +207,8 @@ public class SQLWriter {
      */
     public SQLWriter equal(String param) {
         if (param != null && !param.isEmpty()) {
-            paramsToUse.add(param);
+            String sanitized = replaceQuotes(param);
+            paramsToUse.add(sanitized);
             query.append("='?'");
         } else {
             rollback();
@@ -233,6 +234,8 @@ public class SQLWriter {
 
     /**
      * Ajoute le "in(values)" avec le paramètre définit à la requête SQL
+     * Attention : Les guillemets et les doubles guillemets ne sont pas remplacés par les caractères suivants : '¬' et
+     * '¢'
      * 
      * @param param String sql
      * @return SQLWriter utilisé
@@ -249,6 +252,8 @@ public class SQLWriter {
 
     /**
      * Ajoute le "in(x,y,z)" avec le paramètre donnée ajoute les ","
+     * Attention : Les guillemets et les doubles guillemets ne sont pas remplacés par les caractères suivants : '¬' et
+     * '¢'
      * 
      * @param param String sql
      * @return SQLWriter utilisé
@@ -266,6 +271,8 @@ public class SQLWriter {
 
     /**
      * Ajoute le "in('x','y','z')" avec le paramètre donnée ajoute les "','"
+     * Attention : Les guillemets et les doubles guillemets ne sont pas remplacés par les caractères suivants : '¬' et
+     * '¢'
      * 
      * @param param String sql
      * @return SQLWriter utilisé
@@ -304,7 +311,8 @@ public class SQLWriter {
      */
     public SQLWriter fullLike(String param) {
         if (param != null && !param.isEmpty()) {
-            paramsToUse.add(param);
+            String sanitized = replaceQuotes(param);
+            paramsToUse.add(sanitized);
             query.append(" like '%?%'");
         } else {
             rollback();
@@ -320,7 +328,8 @@ public class SQLWriter {
      */
     public SQLWriter like(String param) {
         if (param != null && !param.isEmpty()) {
-            paramsToUse.add(param);
+            String sanitized = replaceQuotes(param);
+            paramsToUse.add(sanitized);
             query.append(" like '?'");
         } else {
             rollback();
@@ -599,6 +608,10 @@ public class SQLWriter {
             sql = sql.replaceAll(CONST_SCHEMA, schema);
         }
         return this.replace(sql, paramsToUse);
+    }
+
+    private String replaceQuotes(String param) {
+        return param.replace('\'', '¬').replace('"', '¢');
     }
 
     boolean isQueryEmpty() {

@@ -214,6 +214,7 @@ public class SQLWriterTest {
         assertThat(SQLWriter.write().in("").toSql()).isEqualTo("");
         assertThat(SQLWriter.write().in("p").toSql()).isEqualTo(" in (p)");
         assertThat(SQLWriter.write().in("'t','t'").toSql()).isEqualTo(" in ('t','t')");
+        assertThat(SQLWriter.write().in("'t','t'").toSql()).isEqualTo(" in ('t','t')");
 
     }
 
@@ -323,6 +324,7 @@ public class SQLWriterTest {
         String n = null;
         assertThat(SQLWriter.write().and("col").equal("toto").toSql()).isEqualTo(" col='toto'");
         assertThat(SQLWriter.write().and("col").equal(n).toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().and("col").equal("'P\"").toSql()).isEqualTo(" col='¬P¢'");
     }
 
     @Test
@@ -356,6 +358,7 @@ public class SQLWriterTest {
         assertThat(SQLWriter.write().and("COL").like(s).toSql()).isEqualTo("");
         assertThat(SQLWriter.write().and("COL").like("").toSql()).isEqualTo("");
         assertThat(SQLWriter.write().and("COL").like("%toto%").toSql()).isEqualTo(" COL like '%toto%'");
+        assertThat(SQLWriter.write().and("COL").like("%'P\"%").toSql()).isEqualTo(" COL like '%¬P¢%'");
     }
 
     @Test
@@ -380,6 +383,7 @@ public class SQLWriterTest {
         assertThat(SQLWriter.writeWithSchema().and("COL").fullLike("").toSql()).isEqualTo("");
         assertThat(SQLWriter.writeWithSchema().and("COL").fullLike(s).toSql()).isEqualTo("");
         assertThat(SQLWriter.writeWithSchema().and("COL").fullLike("P").toSql()).isEqualTo(" schema.COL like '%P%'");
+        assertThat(SQLWriter.writeWithSchema().and("COL").fullLike("'P\"").toSql()).isEqualTo(
+                " schema.COL like '%¬P¢%'");
     }
-
 }
