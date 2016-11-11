@@ -313,8 +313,7 @@ public class REAttestationsFiscalesUtils {
         }
 
         if (!hasAuMoinsUnePeriodeValable) {
-            // FIXME pourquoi retourner (période finis dans l'année) true si aucune période trouvée
-            return true;
+            return hasUniquementRenteComplementaireAvecDateFin(famille, annee);
         }
         if (hasUniquementRenteComplementaireAvecDateFin(famille, annee)) {
             return true;
