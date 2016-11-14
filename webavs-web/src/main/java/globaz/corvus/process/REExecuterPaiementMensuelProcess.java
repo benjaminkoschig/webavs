@@ -35,6 +35,7 @@ import globaz.globall.util.JATime;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.osiris.api.APIGestionRentesExterne;
@@ -632,7 +633,7 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                         // pas de CA) on met la RA en erreur !!!
                         doMiseEnErreurRA(getSession(), rente.getIdRenteAccordee(), e.toString());
                         getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, this.getClass().toString());
-                        e.printStackTrace();
+                        JadeLogger.error(this, e);
                         --nombreDeRentesVersees;
                         isErreursDetectee = true;
                         currentRaEnErreur = true;
@@ -709,7 +710,7 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                         } catch (Exception e) {
                             --nombreDeRentesVersees;
                             isErreursDetectee = true;
-                            e.printStackTrace();
+                            JadeLogger.error(this, e);
                             getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, this.getClass().toString());
                         }
 
@@ -770,7 +771,7 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                 } catch (Exception e) {
                     --nombreDeRentesVersees;
                     isErreursDetectee = true;
-                    e.printStackTrace();
+                    JadeLogger.error(this, e);
                     getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, this.getClass().toString());
                 }
 
