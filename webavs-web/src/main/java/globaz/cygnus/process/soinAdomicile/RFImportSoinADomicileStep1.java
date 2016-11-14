@@ -213,9 +213,8 @@ public class RFImportSoinADomicileStep1 implements JadeProcessStepInterface, Jad
             }
 
         } catch (Exception e) {
-            JadeLogger.error(this, e.toString());
+            JadeLogger.error(this, e);
             session.addError(e.toString());
-            e.printStackTrace();
         } finally {
 
             // envoi mail
@@ -240,7 +239,7 @@ public class RFImportSoinADomicileStep1 implements JadeProcessStepInterface, Jad
                 entry.getValue().add(BSessionUtil.getSessionFromThreadContext().getCurrentThreadTransaction());
             } catch (Exception e) {
                 entry.getKey().addErrors("Impossible de créer la demande - " + e.toString());
-                e.printStackTrace();
+                JadeLogger.error("Impossible de créer la demande", e);
             }
         }
     }

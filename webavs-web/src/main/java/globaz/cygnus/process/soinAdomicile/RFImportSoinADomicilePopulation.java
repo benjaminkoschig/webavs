@@ -8,6 +8,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.fs.JadeFsFacade;
+import globaz.jade.log.JadeLogger;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -62,7 +63,7 @@ public class RFImportSoinADomicilePopulation extends JadeProcessPopulationByFile
                 try {
                     fileInputStream.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    JadeLogger.error("Unable to clore the file", e);
                 }
             }
         }

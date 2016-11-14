@@ -3,6 +3,7 @@ package ch.globaz.orion.businessimpl.services.pucs;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeFilenameUtil;
 import globaz.jade.fs.JadeFsFacade;
+import globaz.jade.log.JadeLogger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -94,8 +95,7 @@ public class FindPucsSwissDec {
             try {
                 closer.close();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                JadeLogger.error("Unable to close the file", e);
             }
         }
         return pucsFile;

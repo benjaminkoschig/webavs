@@ -8,6 +8,7 @@ import globaz.globall.api.BISession;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.context.JadeThread;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.prestation.tools.PRStringUtils;
@@ -48,9 +49,9 @@ public abstract class RFImporterDemandeHelper extends FWHelper {
                 JadeSmtpClient.getInstance().sendMail(vb.getEMailAddress(),
                         bSession.getLabel("MAIL_RF_IMPORT_FINANCEMENT_SOIN_TITRE_ERREUR_IMPORTATION_A_DOUBLE"),
                         loadMessage(bSession, vb.getFileName(), e).toString(), null);
-                e.printStackTrace();
+                JadeLogger.error("Error in process a mail is sended", e);
             } catch (Exception e1) {
-                e1.printStackTrace();
+                throw new RuntimeException(e1);
             }
         } finally {
             BSessionUtil.stopUsingContext(this);
