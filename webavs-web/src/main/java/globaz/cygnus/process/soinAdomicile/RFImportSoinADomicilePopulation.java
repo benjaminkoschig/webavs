@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ch.globaz.jade.process.annotation.BusinessKey;
 import ch.globaz.jade.process.business.bean.JadeProcessEntity;
 import ch.globaz.jade.process.business.interfaceProcess.population.JadeProcessPopulationByFileCsv;
@@ -25,6 +27,8 @@ public class RFImportSoinADomicilePopulation extends JadeProcessPopulationByFile
         JadeProcessPopulationNeedProperties<RFProcessImportFinancementSoinEnum> {
 
     private Map<RFProcessImportFinancementSoinEnum, String> properties = null;
+
+    private static final Logger logger = LoggerFactory.getLogger(RFImportSoinADomicilePopulation.class);
 
     @Override
     @BusinessKey(unique = true)
@@ -57,7 +61,7 @@ public class RFImportSoinADomicilePopulation extends JadeProcessPopulationByFile
                 }
                 md5 = DigestUtils.md5Hex(s.toString());
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Exception thrown when reading file [" + file + "] : " + e.toString(), e);
                 JadeProcessCommonUtils.addError(e);
             } finally {
                 try {

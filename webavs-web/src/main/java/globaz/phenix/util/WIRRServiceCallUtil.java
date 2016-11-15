@@ -14,6 +14,8 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import wirrch.admin.bsv.xmlns.ebsv_2028_000101._1.Delivery;
 import wirrch.admin.ws.zas.regcent.nrr._0.NRRQueryServicePortType;
 import ch.globaz.common.properties.CommonProperties;
@@ -23,6 +25,7 @@ public class WIRRServiceCallUtil {
     private static final String SSL_SOCKET_FACTORY_ORACLE_JDK = "com.sun.xml.ws.transport.https.client.SSLSocketFactory";
     private static final String SSL_SOCKET_FACTORY_JAX_WS_RI = "com.sun.xml.internal.ws.transport.https.client.SSLSocketFactory";
     private static final String WIRR_WSDL_RESOURCE_PATH = "wsdl/wirr_wsdl.xml";
+    private static final Logger logger = LoggerFactory.getLogger(WIRRServiceCallUtil.class);
 
     private static final void logCallWIRR(BSession session, Delivery requestDelivery) {
 
@@ -41,13 +44,13 @@ public class WIRRServiceCallUtil {
             logWIRREntity.add(wirrTransaction);
 
         } catch (Exception e) {
-            System.out.println("Error in login call to webservice WIRR : " + e.getMessage());
+            logger.error("Error in login call to webservice WIRR : " + e.toString(), e);
         } finally {
 
             try {
 
                 if (wirrTransaction.isRollbackOnly() || wirrTransaction.hasErrors()) {
-                    System.out.println("WIRRTransaction has errors : " + wirrTransaction.getErrors().toString());
+                    logger.error("WIRRTransaction has errors : " + wirrTransaction.getErrors().toString());
                     wirrTransaction.rollback();
                 } else {
                     wirrTransaction.commit();
@@ -56,7 +59,7 @@ public class WIRRServiceCallUtil {
                 wirrTransaction.closeTransaction();
 
             } catch (Exception e2) {
-                System.out.println("Error with WIRRTransaction : " + e2.getMessage());
+                logger.error("Error with WIRRTransaction : " + e2.toString(), e2);
             }
 
         }
@@ -115,8 +118,9 @@ public class WIRRServiceCallUtil {
             }
 
             wirrDataBean.setHasTechnicalError(true);
-            wirrDataBean.setMessageForUser(session.getLabel("ERROR_REASON_DETAILED_UNEXCEPTED_ERROR"));
-            e.printStackTrace();
+            String message = session.getLabel("ERROR_REASON_DETAILED_UNEXCEPTED_ERROR");
+            wirrDataBean.setMessageForUser(message);
+            logger.error(message, e);
         } finally {
 
             if (wirrDataBean == null) {
@@ -124,15 +128,20 @@ public class WIRRServiceCallUtil {
             }
 
             if (wirrDataBean.hasTechnicalError()) {
-                System.out.println(wirrDataBean.getErrorReason());
-                System.out.println(wirrDataBean.getErrorDetailedReason());
-                System.out.println(wirrDataBean.getErrorComment());
+                StringBuilder sb = new StringBuilder();
+                sb.append("TechnicalError as occurr : errorReason = [");
+                sb.append(wirrDataBean.getErrorReason());
+                sb.append("] ");
+                sb.append("errorDetailedReason = [");
+                sb.append(wirrDataBean.getErrorDetailedReason());
+                sb.append("] ");
+                sb.append("errorComment = [");
+                sb.append(wirrDataBean.getErrorComment());
+                sb.append("]");
+                logger.error(sb.toString());
             }
-
         }
-
         return wirrDataBean;
-
     }
 
 }
