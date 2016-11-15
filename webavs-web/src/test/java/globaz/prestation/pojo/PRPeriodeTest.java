@@ -4,6 +4,7 @@ import globaz.prestation.beans.PRPeriode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class PRPeriodeTest {
@@ -22,8 +23,11 @@ public class PRPeriodeTest {
         printPeriodeList(list);
         System.out.println("----------------------");
         Collections.sort(list);
+        Assert.assertTrue(list.get(0).getDateDeDebut().equals("01.01.2012"));
+        Assert.assertTrue(list.get(1).getDateDeDebut().equals("01.01.2013"));
+        Assert.assertTrue(list.get(2).getDateDeDebut().equals("01.01.2013"));
+        Assert.assertTrue(list.get(3).getDateDeDebut().equals("01.02.2013"));
         printPeriodeList(list);
-        // TODO finaliser test
     }
 
     private void printPeriodeList(List<PRPeriode> periodes) {

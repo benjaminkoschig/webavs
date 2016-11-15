@@ -405,14 +405,35 @@ public class REAttestationsFiscalesUtilsTest {
         rente1.setDateFinDroit("05.2011");
         Assert.assertFalse(REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, anneeAsInteger));
 
-        // test les cas ou la date de fin de la RA est plus petite que la date de début -> doivent être exclus de
-        // l'analyse
+        // Test avec 3 périodes
         RERentePourAttestationsFiscales rente3 = new RERentePourAttestationsFiscales();
         rente3.setIdTiersBeneficiaire("1");
         rente3.setIdRenteAccordee("3");
+        tiers1.getMapRentes().put("3", rente3);
+
+        rente1.setDateDebutDroit("01.2013");
+        rente1.setDateFinDroit("05.2013");
+
+        rente2.setDateDebutDroit("06.2011");
+        rente2.setDateDebutDroit("06.2012");
+
+        rente3.setDateDebutDroit("01.2011");
+        rente3.setDateFinDroit("05.2011");
+
+        Assert.assertFalse(REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, anneeAsInteger));
+
+        rente3.setDateDebutDroit("01.2011");
+        rente3.setDateFinDroit("06.2011");
+        Assert.assertTrue(REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, anneeAsInteger));
+
+        rente3.setDateDebutDroit("01.2011");
+        rente3.setDateFinDroit("");
+        Assert.assertTrue(REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, anneeAsInteger));
+
+        // test les cas ou la date de fin de la RA est plus petite que la date de début -> doivent être exclus de
+        // l'analyse
         rente3.setDateDebutDroit("05.2011");
         rente3.setDateFinDroit("04.2011");
-        tiers1.getMapRentes().put("3", rente3);
         Assert.assertFalse(REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, anneeAsInteger));
 
         // test avec 2ème tiers

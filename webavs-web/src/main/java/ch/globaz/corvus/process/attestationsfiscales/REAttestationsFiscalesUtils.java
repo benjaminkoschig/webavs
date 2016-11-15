@@ -152,8 +152,10 @@ public class REAttestationsFiscalesUtils {
 
     public static boolean hasRenteQuiSeChevauchent(REFamillePourAttestationsFiscales famille, int annee) {
         Map<String, LinkedList<PRPeriode>> periodesParTiersEtRentes = new HashMap<String, LinkedList<PRPeriode>>();
-        SimpleDateFormat reader = new SimpleDateFormat("MM.yyyy");
-        SimpleDateFormat writter = new SimpleDateFormat("yyyyMM");
+        SimpleDateFormat reader1 = new SimpleDateFormat("MM.yyyy");
+        SimpleDateFormat writter1 = new SimpleDateFormat("yyyyMM");
+        SimpleDateFormat reader2 = new SimpleDateFormat("dd.MM.yyyy");
+        SimpleDateFormat writter2 = new SimpleDateFormat("yyyyMMdd");
         /*
          * Regroupement des périodes par tiers bénéficiaire et genre de rente
          */
@@ -164,8 +166,8 @@ public class REAttestationsFiscalesUtils {
             if (!JadeStringUtil.isBlankOrZero(rente.getDateDebutDroit())
                     && !JadeStringUtil.isBlankOrZero(rente.getDateFinDroit())) {
                 try {
-                    int ddd = Integer.valueOf(writter.format(reader.parse(rente.getDateDebutDroit())));
-                    int ddf = Integer.valueOf(writter.format(reader.parse(rente.getDateFinDroit())));
+                    int ddd = Integer.valueOf(writter1.format(reader1.parse(rente.getDateDebutDroit())));
+                    int ddf = Integer.valueOf(writter1.format(reader1.parse(rente.getDateFinDroit())));
                     if (ddf <= ddd) {
                         continue;
                     }
@@ -177,7 +179,7 @@ public class REAttestationsFiscalesUtils {
             }
 
             String cle = rente.getIdTiersBeneficiaire() + "-" + rente.getCodePrestation();
-            PRPeriode periode = new PRPeriode(rente.getDateDebutDroit(), rente.getDateFinDroit());
+            PRPeriode periode = new PRPeriode("01." + rente.getDateDebutDroit(), "01." + rente.getDateFinDroit());
 
             if (!periodesParTiersEtRentes.containsKey(cle)) {
                 periodesParTiersEtRentes.put(cle, new LinkedList<PRPeriode>());
@@ -213,8 +215,8 @@ public class REAttestationsFiscalesUtils {
                     previous = periode;
                 } else {
                     try {
-                        int dateDebut = Integer.valueOf(writter.format(reader.parse(periode.getDateDeDebut())));
-                        int dateFin = Integer.valueOf(writter.format(reader.parse(previous.getDateDeFin())));
+                        int dateDebut = Integer.valueOf(writter2.format(reader2.parse(periode.getDateDeDebut())));
+                        int dateFin = Integer.valueOf(writter2.format(reader2.parse(previous.getDateDeFin())));
 
                         if (dateDebut <= dateFin) {
                             return true;
