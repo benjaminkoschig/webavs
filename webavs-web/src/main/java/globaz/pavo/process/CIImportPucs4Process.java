@@ -1647,7 +1647,7 @@ public class CIImportPucs4Process extends BProcess {
                         if (affiliation != null && !affiliation.isNew()) {
                             affiliation.setDeclarationSalaire(CodeSystem.DS_SWISSDEC);
                             affiliation.setWantGenerationSuiviLAALPP(false);
-                            affiliation.update(getTransaction());
+                            affiliation.update(transactionJournalDS);
                         }
                     }
 
