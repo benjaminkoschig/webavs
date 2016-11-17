@@ -543,11 +543,14 @@ public class EBTreatPucsFiles extends BProcess {
                                 getTransaction().commit();
                             }
                         }
+
                     } catch (Exception e) {
                         handleOnError(getEmailAdress(), e, this, pucsFileMerge);
                     }
                     if (hasError) {
                         changePucsFilesStatusToOnError(pucsFileMerge);
+                    } else if (pucsFileMerge.getPucsFile().isForTest()) {
+                        EBPucsFileService.comptabiliser(pucsFileMerge.getPucsFileToMergded(), getSession());
                     }
                 }
             }

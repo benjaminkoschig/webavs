@@ -72,6 +72,7 @@ import ch.globaz.orion.business.domaine.pucs.PeriodeSalary;
 import ch.globaz.orion.business.domaine.pucs.SalaryAvs;
 import ch.globaz.orion.business.domaine.pucs.SalaryCaf;
 import ch.globaz.orion.service.EBEbusinessInterface;
+import ch.globaz.orion.service.EBPucsFileService;
 import com.google.common.base.Splitter;
 
 /**
@@ -1893,6 +1894,7 @@ public class CIImportPucs4Process extends BProcess {
                         for (String id : ids) {
                             CIImportPucs4Process.ebusinessAccessInstance.notifyFinishedPucsFile(id, provenance,
                                     getSession());
+                            EBPucsFileService.comptabiliserByFilename(id, getSession());
                         }
 
                     } catch (Exception e) {
