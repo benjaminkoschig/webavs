@@ -3,6 +3,7 @@ package ch.globaz.orion.service;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BTransaction;
+import globaz.jade.log.JadeLogger;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.services.AFAffiliationServices;
 import java.io.File;
@@ -69,11 +70,14 @@ public class EBPucsFileService {
         manager.setSession(session);
         manager.setForFilename(filename);
         List<EBPucsFileEntity> entities = manager.search();
-        List<PucsFile> pucsFiles = new ArrayList<PucsFile>();
-        for (EBPucsFileEntity ebPucsFileEntity : entities) {
-            pucsFiles.add(convert(ebPucsFileEntity));
+        if (!entities.isEmpty()) {
+            List<PucsFile> pucsFiles = new ArrayList<PucsFile>();
+            for (EBPucsFileEntity ebPucsFileEntity : entities) {
+                pucsFiles.add(convert(ebPucsFileEntity));
+            }
+            return pucsFiles.get(0);
         }
-        return pucsFiles.get(0);
+        return null;
     }
 
     public static PucsFile readWithFile(String id, BSession session) {
@@ -141,12 +145,26 @@ public class EBPucsFileService {
 
     public static void comptabiliserByFilename(String filename, BSession session) {
         PucsFile pucsFile = readByFilename(filename, session);
-        comptabiliser(pucsFile.getIdDb(), session);
+        // On est fait se test pour gérer la rétrocomptabilité des ancienne DS.
+        // se test pour être supprimé en 2017
+        if (pucsFile != null) {
+            comptabiliser(pucsFile.getIdDb(), session);
+        } else {
+            JadeLogger.warn(new EBPucsFileService(),
+                    "Aucune entrée trouvée dans la table des pucs_file avec ce fileName: " + filename);
+        }
     }
 
     public static void aTraiterByFilename(String filename, BSession session) {
         PucsFile pucsFile = readByFilename(filename, session);
-        aTraiter(pucsFile.getIdDb(), session);
+        // On est fait se test pour gérer la rétrocomptabilité des ancienne DS.
+        // se test pour être supprimé en 2017
+        if (pucsFile != null) {
+            aTraiter(pucsFile.getIdDb(), session);
+        } else {
+            JadeLogger.warn(new EBPucsFileService(),
+                    "Aucune entrée trouvée dans la table des pucs_file avec ce fileName: " + filename);
+        }
     }
 
     public static void aTraiter(String id, BSession session) {

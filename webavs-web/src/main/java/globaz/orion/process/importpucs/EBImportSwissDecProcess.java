@@ -2,6 +2,7 @@ package globaz.orion.process.importpucs;
 
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeFilenameUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.fs.message.JadeFsFileInfo;
 import java.util.ArrayList;
@@ -58,8 +59,27 @@ public class EBImportSwissDecProcess extends ProcessItemsHandlerJadeJob<PucsSwis
             uri = EBProperties.PUCS_SWISS_DEC_DIRECTORY.getValue();
             done = EBProperties.PUCS_SWISS_DEC_DIRECTORY_OK.getValue();
             error = EBProperties.PUCS_SWISS_DEC_DIRECTORY_KO.getValue();
+
+            if (JadeStringUtil.isEmpty(uri)) {
+                throw new RuntimeException("The property " + EBProperties.PUCS_SWISS_DEC_DIRECTORY.getProperty()
+                        + " is empty");
+            }
+            if (JadeStringUtil.isEmpty(done)) {
+                throw new RuntimeException("The property " + EBProperties.PUCS_SWISS_DEC_DIRECTORY_OK.getProperty()
+                        + " is empty");
+            }
+            if (JadeStringUtil.isEmpty(error)) {
+                throw new RuntimeException("The property " + EBProperties.PUCS_SWISS_DEC_DIRECTORY_KO.getProperty()
+                        + " is empty");
+            }
             if (!JadeFsFacade.isFolder(uri)) {
                 throw new RuntimeException("This value is not a valid folder: " + uri);
+            }
+            if (!JadeFsFacade.isFolder(done)) {
+                throw new RuntimeException("This value is not a valid folder: " + done);
+            }
+            if (!JadeFsFacade.isFolder(error)) {
+                throw new RuntimeException("This value is not a valid folder: " + error);
             }
             BSessionUtil.initContext(getSession(), this);
         } catch (Exception e) {

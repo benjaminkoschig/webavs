@@ -755,7 +755,9 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
                         PucsFile pucsFile = EBPucsFileService.readByFilename(id, getSession());
                         // On ne veut pas notifier plusieurs fois eBusiness dans le cadre déclarations des salaires
                         // complémentaires.
-                        if (!pucsFile.getCurrentStatus().isComptabilise()) {
+                        // On est fait se test pucsFile == null pour gérer la rétrocomptabilité des ancienne DS.
+                        // se test pour être supprimé en 2017
+                        if (pucsFile == null || !pucsFile.getCurrentStatus().isComptabilise()) {
                             DSProcessValidation.ebusinessAccessInstance.notifyFinishedPucsFile(id, provenance,
                                     getSession());
                         }
