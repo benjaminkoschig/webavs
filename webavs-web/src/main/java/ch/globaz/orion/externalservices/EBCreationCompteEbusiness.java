@@ -5,6 +5,7 @@ import globaz.globall.db.BEntity;
 import globaz.naos.db.affiliation.AFAffiliation;
 import ch.globaz.orion.businessimpl.services.ServicesProviders;
 import ch.globaz.xmlns.eb.partnerweb.PartnerWebService;
+import ch.globaz.xmlns.eb.partnerweb.ProvenanceEnum;
 
 public class EBCreationCompteEbusiness extends BAbstractEntityExternalService {
 
@@ -15,7 +16,7 @@ public class EBCreationCompteEbusiness extends BAbstractEntityExternalService {
 
             PartnerWebService partnerWebService = ServicesProviders.partnerWebServiceProvide(entity.getSession());
             partnerWebService.createAffilieAndAdminLight(affiliation.getRaisonSocialeCourt(),
-                    affiliation.getAffilieNumero(), affiliation.getRaisonSociale());
+                    affiliation.getAffilieNumero(), affiliation.getRaisonSociale(), ProvenanceEnum.WEBAVS);
         }
     }
 
