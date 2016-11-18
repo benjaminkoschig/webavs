@@ -593,7 +593,6 @@ public class RETraiterLotDecisionsProcess extends BProcess {
                 libelleOG = "ISO20022 - " + libelleOG;
             } else {
                 int n = Integer.parseInt(numeroOG);
-                n++;
                 if (n < 10) {
                     libelleOG = "OPAE 0" + n + " - " + libelleOG;
                 } else {
