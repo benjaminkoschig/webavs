@@ -23,6 +23,7 @@ public class AFApercuReleveLineFacturation implements Cloneable {
     private String assuranceLibelleIt = null;
     private String assuranceReferenceId = null;
     private String assuranceRubriqueId = null;
+    private String assuranceCanton = null;
     private Boolean blocageEnvoi = new Boolean(false);
     private String cotisationId = null;
     private String debutPeriode = null;
@@ -422,6 +423,14 @@ public class AFApercuReleveLineFacturation implements Cloneable {
 
     public void setTypeAssurance(String typeAssurance) {
         this.typeAssurance = typeAssurance;
+    }
+
+    public String getAssuranceCanton() {
+        return assuranceCanton;
+    }
+
+    public void setAssuranceCanton(String assuranceCanton) {
+        this.assuranceCanton = assuranceCanton;
     }
 
 }

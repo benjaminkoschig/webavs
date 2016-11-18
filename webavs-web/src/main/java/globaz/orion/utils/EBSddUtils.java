@@ -18,7 +18,10 @@ public final class EBSddUtils {
             CodeSystem.TYPE_ASS_COTISATION_AC2);
 
     private static final List<String> ASSURANCE_AF = Arrays.asList(CodeSystem.TYPE_ASS_PC_FAMILLE,
-            CodeSystem.TYPE_ASS_FFPP_MASSE, CodeSystem.TYPE_ASS_CPS_AUTRE, CodeSystem.TYPE_ASS_CPS_GENERAL);
+            CodeSystem.TYPE_ASS_CPS_AUTRE, CodeSystem.TYPE_ASS_CPS_GENERAL);
+
+    private static final List<String> ASSURANCE_FFPP = Arrays.asList(CodeSystem.TYPE_ASS_FFPP,
+            CodeSystem.TYPE_ASS_FFPP_MASSE);
 
     private EBSddUtils() {
         // vide
@@ -58,7 +61,8 @@ public final class EBSddUtils {
 
             if (ASSURANCE_AF.contains(releveLine.getTypeAssurance())) {
                 releveLine.setMasse(masseAf.doubleValue());
-            } else if (!ALLOWED_MASSES_FOR_SDD.contains(releveLine.getTypeAssurance())) {
+            } else if (!ALLOWED_MASSES_FOR_SDD.contains(releveLine.getTypeAssurance())
+                    && !ASSURANCE_FFPP.contains(releveLine.getTypeAssurance())) {
                 releveLine.setMasse(masseAvs.doubleValue());
             } else {
                 fillMasseForReleveLine(lignes, releveLine);

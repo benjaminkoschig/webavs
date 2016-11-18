@@ -11,9 +11,12 @@ import globaz.jade.log.JadeLogger;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationUtil;
 import globaz.naos.db.releve.AFApercuReleve;
+import globaz.naos.db.releve.AFApercuReleveLineFacturation;
 import globaz.naos.db.releve.AFApercuReleveManager;
 import globaz.naos.translation.CodeSystem;
 import globaz.orion.utils.EBSddUtils;
+import globaz.osiris.db.comptes.CACompteur;
+import globaz.osiris.db.comptes.CACompteurManager;
 import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.constantes.IConstantes;
@@ -185,11 +188,11 @@ public class EBTreatSaisieDecompte extends BProcess {
         // Mise à jour des masses suivant le SDD
         EBSddUtils.computeDataForReleve(decompte.getLignesDeDecompte(), releve);
 
-        // Set des la facturation
-        releve.setIdExterneFacture("201610000");
-        releve.setIdSousTypeFacture("227010");
-
         releve.setWantControleCotisation(false);
+
+        // TRaite la problèmatique de la FFPP masse salariale.
+        // La FFPP capitation est gérée par la génération de la liste des cotisations.
+        traiteFFPP(releve);
 
         // Calcul des cotisations
         releve.calculeCotisation();
@@ -198,6 +201,72 @@ public class EBTreatSaisieDecompte extends BProcess {
         releve.add(getTransaction());
 
         addInfosTraitement(affiliation, decompte, determineTypeReleve(decompte), "");
+    }
+
+    /**
+     * Traite la problèmatique de la cotisation FFPP
+     * 
+     * @param releve
+     * @throws Exception
+     */
+    private void traiteFFPP(AFApercuReleve releve) throws Exception {
+
+        // Si on est en présence d'un relevé complémentaire, on ne fait pas de calcul.
+        if (CodeSystem.TYPE_RELEVE_COMPLEMENT.equals(releve.getType())) {
+            return;
+        }
+
+        for (AFApercuReleveLineFacturation lineFacturation : releve.getCotisationList()) {
+            // Assurance de type FFPP (Masse salariale)
+            if (CodeSystem.TYPE_ASS_FFPP_MASSE.equals(lineFacturation.getTypeAssurance())) {
+                traiteFFPPMasseSalariale(releve, lineFacturation);
+            }
+        }
+    }
+
+    private void traiteFFPPMasseSalariale(AFApercuReleve releve, AFApercuReleveLineFacturation lineFacturation)
+            throws Exception {
+        String masseNMoins1 = "";
+
+        try {
+
+            String idRubriqueAssuranceAf = null;
+            // REcherche cotisation AF du même canton que la FFPP
+            for (AFApercuReleveLineFacturation line : releve.getCotisationList()) {
+                if (CodeSystem.TYPE_ASS_COTISATION_AF.equals(line.getTypeAssurance())
+                        && lineFacturation.getAssuranceCanton().equals(line.getAssuranceCanton())) {
+                    idRubriqueAssuranceAf = line.getAssuranceRubriqueId();
+                }
+            }
+
+            // Aucune rubrique trouvé, on ne fait rien
+            if (idRubriqueAssuranceAf == null) {
+                return;
+            }
+
+            int anneeCompteurMoins1 = Integer.parseInt(releve.getDateDebut().substring(6)) - 1;
+
+            // Recherche à N-1 la valeur du compteur AF
+            CACompteurManager manager = new CACompteurManager();
+            manager.setSession(getSession());
+            manager.setForAnnee(Integer.toString(anneeCompteurMoins1));
+            manager.setForIdRubrique(idRubriqueAssuranceAf);
+
+            manager.find(BManager.SIZE_USEDEFAULT);
+
+            if (!manager.isEmpty()) {
+                CACompteur compteur = (CACompteur) manager.getFirstEntity();
+                masseNMoins1 = compteur.getCumulMasse();
+            }
+
+        } catch (Exception e) {
+            JadeLogger.error(this, "Impossible de récupérer les compteurs AF pour " + releve.getAffilieNumero() + " : "
+                    + e.toString());
+            throw e;
+        }
+
+        // Affectation de la masse dans le compteur AF
+        lineFacturation.setMasse(masseNMoins1);
     }
 
     static String resolveDateDebut(DecompteAndLignes decompte) {
@@ -376,12 +445,11 @@ public class EBTreatSaisieDecompte extends BProcess {
         try {
             tiers.retrieve();
         } catch (Exception e) {
-            tiers = null;
             throw new Exception("Technical Exception, Unabled to retrieve the tiers ( idTiers = "
                     + affiliation.getIdTiers() + ")", e);
         }
 
-        if (tiers != null && !tiers.isNew()) {
+        if (!tiers.isNew()) {
 
             TIAdresseDataSource d = tiers.getAdresseAsDataSource(IConstantes.CS_AVOIR_ADRESSE_DOMICILE,
                     IConstantes.CS_APPLICATION_DEFAUT, affiliation.getAffilieNumero(), JACalendar.todayJJsMMsAAAA(),
