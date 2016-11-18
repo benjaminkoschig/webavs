@@ -214,21 +214,22 @@ public class WebAvsCotisationsServiceImpl implements WebAvsCotisationsService {
 
         if (!manager.isEmpty()) {
 
-            AFApercuReleve releve = (AFApercuReleve) manager.getFirstEntity();
+            List<AFApercuReleve> lstReleves = manager.toList();
+            for (AFApercuReleve releve : lstReleves) {
 
-            AFReleveForSddManager managerSdd = new AFReleveForSddManager();
-            managerSdd.setSession(session);
-            managerSdd.setForIdReleve(releve.getIdReleve());
+                AFReleveForSddManager managerSdd = new AFReleveForSddManager();
+                managerSdd.setSession(session);
+                managerSdd.setForIdReleve(releve.getIdReleve());
+                managerSdd.find(BManager.SIZE_USEDEFAULT);
 
-            managerSdd.find(BManager.SIZE_USEDEFAULT);
+                if (!managerSdd.isEmpty()) {
 
-            if (!managerSdd.isEmpty()) {
+                    decompte.setDejaEtabli(true);
 
-                decompte.setDejaEtabli(true);
-
-                List<AFReleveForSdd> listReleve = managerSdd.toList();
-                for (AFReleveForSdd releveSdd : listReleve) {
-                    fillDecompteMensuelWithReleve(decompte, releveSdd);
+                    List<AFReleveForSdd> listReleve = managerSdd.toList();
+                    for (AFReleveForSdd releveSdd : listReleve) {
+                        fillDecompteMensuelWithReleve(decompte, releveSdd);
+                    }
                 }
             }
         }
@@ -263,7 +264,8 @@ public class WebAvsCotisationsServiceImpl implements WebAvsCotisationsService {
             int idRubrique = Integer.parseInt(releveSdd.getIdRubrique());
 
             if (line.getIdRubrique() == idRubrique) {
-                line.setMasse(releveSdd.getMasseFacture());
+                BigDecimal masseCalcule = line.getMasse().add(releveSdd.getMasseFacture());
+                line.setMasse(masseCalcule);
             }
         }
 

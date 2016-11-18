@@ -32,8 +32,8 @@ public class AFReleveForSddManager extends BManager {
             sqlBuffer.append(getForIdReleve());
         }
 
-        // --etat comptabilisé
-        sqlBuffer.append(" and rel.MMETAT = 827003");
+        // --etat facturé et comptabilisé
+        sqlBuffer.append(" and rel.MMETAT in (827002,827003) ");
 
         return sqlBuffer.toString();
     }
