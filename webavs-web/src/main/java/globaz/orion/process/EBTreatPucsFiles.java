@@ -483,11 +483,10 @@ public class EBTreatPucsFiles extends BProcess {
                         if (!isForSimultation || (isForSimultation && !pucsFile.isAfSeul())) {
                             declaration.executeProcess();
                         }
-
                         hasError = declaration.isOnError() || declaration.getSession().hasErrors()
                                 || (declaration.getDeclaration() != null && declaration.getDeclaration().hasErrors())
-                                || (declaration.getMemoryLog() != null && declaration.getMemoryLog().hasErrors());
-
+                                || (declaration.getMemoryLog() != null && declaration.getMemoryLog().hasErrors())
+                                || declaration.isImportPucs4OnError();
                         if (!hasError && pucsFile.isAfSeul()) {
                             for (PucsFile pf : pucsFileMerge.getPucsFileToMergded()) {
                                 String filename = pf.getFilename();

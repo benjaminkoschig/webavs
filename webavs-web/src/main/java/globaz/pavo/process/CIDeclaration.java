@@ -221,6 +221,8 @@ public class CIDeclaration extends BProcess {
 
     private DSDeclarationViewBean declaration = null;
 
+    private CIImportPucs4Process importPucs4Process;
+
     public CIDeclaration() {
         super();
     }
@@ -321,7 +323,7 @@ public class CIDeclaration extends BProcess {
 
     private boolean executeImportPucs4Process() throws Exception {
 
-        CIImportPucs4Process importPucs4Process = new CIImportPucs4Process();
+        importPucs4Process = new CIImportPucs4Process();
         importPucs4Process.setSession(getSession());
         importPucs4Process.setEMailAddress(getEMailAddress());
         importPucs4Process.setDeclarationSalaire(convertPucs4FileToDeclarationSalaire());
@@ -358,7 +360,10 @@ public class CIDeclaration extends BProcess {
         }
 
         return true;
+    }
 
+    public boolean isImportPucs4OnError() {
+        return importPucs4Process != null && importPucs4Process.isMemoryLogEnErreur();
     }
 
     @Override

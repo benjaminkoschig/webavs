@@ -2132,4 +2132,8 @@ public class CIImportPucs4Process extends BProcess {
         }
     }
 
+    public boolean isMemoryLogEnErreur() {
+        return getMemoryLog().hasErrors();
+    }
+
 }
