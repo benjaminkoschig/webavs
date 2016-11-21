@@ -395,7 +395,7 @@ public class PCPlanCalculHandler {
     }
 
     public void generateBlocs(TupleDonneeRapport tupleRoot) throws Exception {
-        this.generateBlocs(tupleRoot, null);
+        this.generateBlocs(tupleRoot, session.getIdLangue());
     }
 
     /**
