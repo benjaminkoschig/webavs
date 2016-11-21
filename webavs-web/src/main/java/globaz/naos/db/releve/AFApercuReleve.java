@@ -1544,6 +1544,7 @@ public class AFApercuReleve extends BEntity {
                 line.setIdPlan(donneesFacturation.getIdPlanAffiliation());
                 line.setLibellePlan(donneesFacturation.getLibelleFacture());
                 line.setAssuranceCanton(donneesFacturation.getAssuranceCanton());
+                line.setPeriodiciteCoti(donneesFacturation.getPeriodiciteCoti());
 
                 String libelleInfoRom280 = "";
                 if (!JadeStringUtil.isBlank(donneesFacturation.getLibellePlan())) {

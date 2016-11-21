@@ -55,6 +55,7 @@ public class AFApercuReleveLineFacturation implements Cloneable {
     private String tauxType = null;
     private String typeCalcul = null;
     private String typeAssurance = null;
+    private String periodiciteCoti = null;
 
     // *******************************************************
     // Getter
@@ -431,6 +432,14 @@ public class AFApercuReleveLineFacturation implements Cloneable {
 
     public void setAssuranceCanton(String assuranceCanton) {
         this.assuranceCanton = assuranceCanton;
+    }
+
+    public String getPeriodiciteCoti() {
+        return periodiciteCoti;
+    }
+
+    public void setPeriodiciteCoti(String periodiciteCoti) {
+        this.periodiciteCoti = periodiciteCoti;
     }
 
 }

@@ -59,7 +59,7 @@ public final class EBSddUtils {
         for (int j = 0; j < releve.getCotisationList().size(); j++) {
             AFApercuReleveLineFacturation releveLine = releve.getCotisationList().get(j);
 
-            if (ASSURANCE_AF.contains(releveLine.getTypeAssurance())) {
+            if (isPrendreEnCompteMasseAF(releveLine)) {
                 releveLine.setMasse(masseAf.doubleValue());
             } else if (!ALLOWED_MASSES_FOR_SDD.contains(releveLine.getTypeAssurance())
                     && !ASSURANCE_FFPP.contains(releveLine.getTypeAssurance())) {
@@ -68,6 +68,22 @@ public final class EBSddUtils {
                 fillMasseForReleveLine(lignes, releveLine);
             }
         }
+    }
+
+    private static boolean isPrendreEnCompteMasseAF(AFApercuReleveLineFacturation releveLine) {
+
+        // Si c'est une assurance qui est facturé sur la masse AF
+        if (ASSURANCE_AF.contains(releveLine.getTypeAssurance())) {
+            return true;
+        }
+
+        // Si on est dans le cas d'une assurance FFPP masse salariale de périodicité mensuelle
+        if (CodeSystem.TYPE_ASS_FFPP_MASSE.equals(releveLine.getTypeAssurance())
+                && CodeSystem.PERIODICITE_MENSUELLE.equals(releveLine.getPeriodiciteCoti())) {
+            return true;
+        }
+
+        return false;
     }
 
     private static void fillMasseForReleveLine(List<LigneDeDecompteEntity> lignes,

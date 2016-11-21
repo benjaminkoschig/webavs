@@ -204,7 +204,7 @@ public class EBTreatSaisieDecompte extends BProcess {
     }
 
     /**
-     * Traite la problèmatique de la cotisation FFPP
+     * Traite la problèmatique de la cotisation FFPP masse salariale annuelle
      * 
      * @param releve
      * @throws Exception
@@ -217,8 +217,9 @@ public class EBTreatSaisieDecompte extends BProcess {
         }
 
         for (AFApercuReleveLineFacturation lineFacturation : releve.getCotisationList()) {
-            // Assurance de type FFPP (Masse salariale)
-            if (CodeSystem.TYPE_ASS_FFPP_MASSE.equals(lineFacturation.getTypeAssurance())) {
+            // Assurance de type FFPP (Masse salariale) && de périodicité annuel
+            if (CodeSystem.TYPE_ASS_FFPP_MASSE.equals(lineFacturation.getTypeAssurance())
+                    && !CodeSystem.PERIODICITE_MENSUELLE.equals(lineFacturation.getPeriodiciteCoti())) {
                 traiteFFPPMasseSalariale(releve, lineFacturation);
             }
         }
