@@ -1,12 +1,15 @@
 package globaz.orion.process;
 
+import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
+import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.util.JACalendar;
 import globaz.hercule.utils.CEUtils;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationUtil;
@@ -17,6 +20,7 @@ import globaz.naos.translation.CodeSystem;
 import globaz.orion.utils.EBSddUtils;
 import globaz.osiris.db.comptes.CACompteur;
 import globaz.osiris.db.comptes.CACompteurManager;
+import globaz.osiris.db.services.controleemployeur.CACompteAnnexeService;
 import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.constantes.IConstantes;
@@ -211,8 +215,17 @@ public class EBTreatSaisieDecompte extends BProcess {
      */
     private void traiteFFPP(AFApercuReleve releve) throws Exception {
 
-        // Si on est en présence d'un relevé complémentaire, on ne fait pas de calcul.
+        // Si on est en présence d'un relevé complémentaire
         if (CodeSystem.TYPE_RELEVE_COMPLEMENT.equals(releve.getType())) {
+
+            // On s'assure que l'on recalcul par la FFPP capitation
+            for (AFApercuReleveLineFacturation lineFacturation : releve.getCotisationList()) {
+                // Assurance de type FFPP (Capitation)
+                if (CodeSystem.TYPE_ASS_FFPP.equals(lineFacturation.getTypeAssurance())) {
+                    lineFacturation.setMontantCalculer(0);
+                }
+            }
+
             return;
         }
 
@@ -251,6 +264,7 @@ public class EBTreatSaisieDecompte extends BProcess {
             CACompteurManager manager = new CACompteurManager();
             manager.setSession(getSession());
             manager.setForAnnee(Integer.toString(anneeCompteurMoins1));
+            manager.setForIdCompteAnnexe(retreaveIdCompteAnnexe(getSession(), releve.getAffilieNumero()));
             manager.setForIdRubrique(idRubriqueAssuranceAf);
 
             manager.find(BManager.SIZE_USEDEFAULT);
@@ -268,6 +282,23 @@ public class EBTreatSaisieDecompte extends BProcess {
 
         // Affectation de la masse dans le compteur AF
         lineFacturation.setMasse(masseNMoins1);
+    }
+
+    public String retreaveIdCompteAnnexe(BSession session, String numeroAffilie) throws Exception {
+
+        String roleForAffilie = CaisseHelperFactory.getInstance().getRoleForAffilieParitaire(session.getApplication());
+        if (JadeStringUtil.isEmpty(roleForAffilie)) {
+            throw new Exception("unable to load propertie roleForAffilie");
+        }
+
+        String idCompteAnnexe;
+        try {
+            idCompteAnnexe = CACompteAnnexeService.getIdCompteAnnexeByRole(getSession(), roleForAffilie, numeroAffilie);
+        } catch (Exception e) {
+            idCompteAnnexe = null;
+        }
+
+        return idCompteAnnexe;
     }
 
     static String resolveDateDebut(DecompteAndLignes decompte) {
