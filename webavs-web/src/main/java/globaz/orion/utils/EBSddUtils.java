@@ -14,11 +14,10 @@ import ch.globaz.xmlns.eb.sdd.LigneDeDecompteEntity;
 public final class EBSddUtils {
 
     private static final List<String> ALLOWED_MASSES_FOR_SDD = Arrays.asList(CodeSystem.TYPE_ASS_COTISATION_AVS_AI,
-            CodeSystem.TYPE_ASS_COTISATION_AF, CodeSystem.TYPE_ASS_MATERNITE, CodeSystem.TYPE_ASS_COTISATION_AC,
-            CodeSystem.TYPE_ASS_COTISATION_AC2);
+            CodeSystem.TYPE_ASS_COTISATION_AF, CodeSystem.TYPE_ASS_COTISATION_AC, CodeSystem.TYPE_ASS_COTISATION_AC2);
 
     private static final List<String> ASSURANCE_AF = Arrays.asList(CodeSystem.TYPE_ASS_PC_FAMILLE,
-            CodeSystem.TYPE_ASS_CPS_AUTRE, CodeSystem.TYPE_ASS_CPS_GENERAL);
+            CodeSystem.TYPE_ASS_CPS_AUTRE, CodeSystem.TYPE_ASS_CPS_GENERAL, CodeSystem.TYPE_ASS_PREVHOR);
 
     private static final List<String> ASSURANCE_FFPP = Arrays.asList(CodeSystem.TYPE_ASS_FFPP,
             CodeSystem.TYPE_ASS_FFPP_MASSE);
