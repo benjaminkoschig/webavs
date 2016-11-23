@@ -51,6 +51,28 @@
 	    vertical-align: text-top;
 	    width: 14px;
 	}
+	
+	.icon-inprogress {
+	    background-position: -48px -24px;
+	    background-image: url("./orionRoot/img/glyphicons-halflings.png");
+	    background-repeat: no-repeat;
+	    display: inline-block;
+	    height: 14px;
+	    line-height: 14px;
+	    vertical-align: text-top;
+	    width: 14px;
+	}
+	
+	.icon-finish {
+	    background-position: -287px -0px;
+	    background-image: url("./orionRoot/img/glyphicons-halflings.png");
+	    background-repeat: no-repeat;
+	    display: inline-block;
+	    height: 14px;
+	    line-height: 14px;
+	    vertical-align: text-top;
+	    width: 14px;
+	}
 
 	.icon-link {
 	    background-position: -120px -72px;
@@ -121,26 +143,22 @@ $(function () {
 <%@ include file="/theme/list/tableHeader.jspf" %>
 <%-- tpl:insert attribute="zoneCondition" --%>
 <%-- /tpl:insert --%>
-	<%
-			if (condition) {
-				rowStyle = "row";
-			} else {
-				rowStyle = "rowOdd";
-			}
+	<%		rowStyle = (condition) ? "row" : "rowOdd";
+			EBPucsFileViewBean line = (EBPucsFileViewBean) viewBean.get(i);
+			pageContext.setAttribute("pucsFile", ((EBPucsFileViewBean) viewBean.get(i)).getPucsFile());
 	%>
-			<%
-				EBPucsFileViewBean line = (EBPucsFileViewBean) viewBean.get(i);
-				pageContext.setAttribute("pucsFile", ((EBPucsFileViewBean) viewBean.get(i)).getPucsFile());
-			%>
 			<tr id="<%=line.getId()%>" lock="<%=line.hasLock()%>" isVisible="<%=line.isVisible()%>" numeroAff="<%=line.getPucsFile().getNumeroAffilie()%>" idAff="<%=line.getIdAffiliation()%>" class="<%=rowStyle%>" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'rowHighligthed')" onMouseOut="jscss('swap', this, 'rowHighligthed', '<%=rowStyle%>')">
 			
 			<td class="pucsEntryHandling" style="text-align: center;height:24px;">
 				<%if(!line.hasLock() && line.getPucsFile().isEditable()) {%>
-						<input type="checkbox" class="pucsEntryHandling <% if(line.getPucsFile().isSwissDec()) { out.print(" swissdec ");} %> <%if(line.getPucsFile().isATraiter()) { out.print(" atraiter "); } %> <%if(line.getPucsFile().isAValider()) {out.print(" avalider ");} %>" name="idPucsEntryToHandle" value='<%= line.getPucsFile().getIdDb()%>'/>
+					<input type="checkbox" class="pucsEntryHandling <% if(line.getPucsFile().isSwissDec()) { out.print(" swissdec ");} %> <%if(line.getPucsFile().isATraiter()) { out.print(" atraiter "); } %> <%if(line.getPucsFile().isAValider()) {out.print(" avalider ");} %>" name="idPucsEntryToHandle" value='<%= line.getPucsFile().getIdDb()%>'/>
+				<%} else if(!line.hasLock() && line.getPucsFile().getCurrentStatus().isEnTraitement()) {%>
+					<span><i title="<%=line.getMessageLock() %>" class="icon-inprogress" ></i></span>
+				<%} else if(!line.hasLock() && line.getPucsFile().getCurrentStatus().isComptabilise()) {%>
+					<span><i title="<%=line.getMessageLock() %>" class="icon-finish" ></i></span>
 				<%} else {%>
-					<span><i title="<%=line.getMessageLock() %>" class="icon-lock" ></i></span> 
-				<%}%>
-				
+					<span><i title="<%=line.getMessageLock() %>" class="icon-lock" ></i></span>
+				<%} %>
 			</td>
 			<td class="pucsEntryHandling"><%=line.getPucsFile().getNumeroAffilie()%> <span data-g-note="idExterne:<%=line.getPucsFile().getIdDb()%>,  tableSource: EBPUCS_FILE, inList: true"> </span></td>
 			<td> 
