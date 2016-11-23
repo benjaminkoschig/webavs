@@ -203,6 +203,7 @@ public class CodeSystem {
     public static final String GEN_PARAM_ASS_FRANCHISE_MENSUEL = "826014";
     public static final String GEN_PARAM_ASS_PLAFOND = "826002";
     public static final String GEN_PARAM_ASS_PLANCHER = "826015";
+    public static final String GEN_PARAM_ASS_MASSE_MINIMUM = "826016";
     public static final String GEN_PARAM_ASS_REDUCTION = "826008";
     public static final String GEN_PARAM_ASS_REMISE = "826009";
     public static final String GEN_PARAM_ASS_REVENU_MAX = "826012";
