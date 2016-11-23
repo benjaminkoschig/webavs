@@ -37,9 +37,10 @@ public class TransactionWrapper implements Closeable {
      */
     public static TransactionWrapper forforceCommit(BSession session) {
         JadeBusinessMessage[] logs = JadeThread.logMessages();
+        JadeThread.logClear();
         String errors = session.getErrors().toString();
         String warnings = session.getWarnings().toString();
-        JadeThread.logClear();
+
         TransactionWrapper transaction = new TransactionWrapper(session);
         transaction.autonome = true;
         transaction.errorsInSession = errors;
