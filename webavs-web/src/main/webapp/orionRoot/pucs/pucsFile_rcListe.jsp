@@ -88,8 +88,9 @@ $(function () {
 	})
 	
 	$tbody.on("click","TD.lienExterneDraco", function (e) {
-		var numeroAff = $(this).parent().attr("numeroAff");		
-		parent.location.href='draco?userAction=draco.declaration.declaration.chercher&likeNumeroAffilie='+numeroAff;
+		var numeroAff = $(this).parent().attr("numeroAff");	
+		var forAnnee = $(this).parent().attr("forAnnee");	
+		parent.location.href='draco?userAction=draco.declaration.declaration.chercher&likeNumeroAffilie='+numeroAff+'&forAnnee='+forAnnee+"&forEtat=";
 	})
 	
 	$tbody.on("click","TD.lienExterneNaos", function (e) {
@@ -132,7 +133,7 @@ $(function () {
 				EBPucsFileViewBean line = (EBPucsFileViewBean) viewBean.get(i);
 				pageContext.setAttribute("pucsFile", ((EBPucsFileViewBean) viewBean.get(i)).getPucsFile());
 			%>
-			<tr id="<%=line.getId()%>" lock="<%=line.hasLock()%>" isVisible="<%=line.isVisible()%>" numeroAff="<%=line.getPucsFile().getNumeroAffilie()%>" idAff="<%=line.getIdAffiliation()%>" class="<%=rowStyle%>" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'rowHighligthed')" onMouseOut="jscss('swap', this, 'rowHighligthed', '<%=rowStyle%>')">
+			<tr id="<%=line.getId()%>" lock="<%=line.hasLock()%>" isVisible="<%=line.isVisible()%>" numeroAff="<%=line.getPucsFile().getNumeroAffilie()%>" idAff="<%=line.getIdAffiliation()%>" forAnnee="<%=line.getPucsFile().getAnneeDeclaration()%>" class="<%=rowStyle%>" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'rowHighligthed')" onMouseOut="jscss('swap', this, 'rowHighligthed', '<%=rowStyle%>')">
 			
 			<td class="pucsEntryHandling" style="text-align: center;height:24px;">
 				<%if(!line.hasLock() && line.getPucsFile().isEditable()) {%>
