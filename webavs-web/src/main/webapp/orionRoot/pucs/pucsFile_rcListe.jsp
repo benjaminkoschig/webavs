@@ -90,7 +90,7 @@ $(function () {
 	$tbody.on("click","TD.lienExterneDraco", function (e) {
 		var numeroAff = $(this).parent().attr("numeroAff");	
 		var forAnnee = $(this).parent().attr("forAnnee");	
-		parent.location.href='draco?userAction=draco.declaration.declaration.chercher&likeNumeroAffilie='+numeroAff+'&forAnnee='+forAnnee+"&forEtat=";
+		parent.location.href='draco?userAction=draco.declaration.declaration.chercher&likeNumeroAffilie='+numeroAff+"&forSelectionTri=1&forEtat=";
 	})
 	
 	$tbody.on("click","TD.lienExterneNaos", function (e) {
