@@ -198,6 +198,7 @@ public final class CPProcessCommunicationRetourImprimer extends BProcess {
                 decision = new CPImpressionCommunicationRetourDetailFiscSEDEX_Doc(this);
                 ((CPImpressionCommunicationRetourDetailFiscSEDEX_Doc) decision)
                         .setManager((CPCommunicationFiscaleRetourSEDEXManager) comManager);
+                ((CPImpressionCommunicationRetourDetailFiscSEDEX_Doc) decision).setWantDetail(getWantDetail());
 
             } else if (journal.getCanton().equalsIgnoreCase(IConstantes.CS_LOCALITE_CANTON_GENEVE)) {
                 decision = new CPImpressionCommunicationRetourDetailFiscGE_Doc(this);
