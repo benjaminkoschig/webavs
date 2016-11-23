@@ -8,11 +8,14 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.util.JACalendar;
+import globaz.globall.util.JANumberFormatter;
 import globaz.hercule.utils.CEUtils;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationUtil;
+import globaz.naos.db.parametreAssurance.AFParametreAssurance;
+import globaz.naos.db.parametreAssurance.AFParametreAssuranceManager;
 import globaz.naos.db.releve.AFApercuReleve;
 import globaz.naos.db.releve.AFApercuReleveLineFacturation;
 import globaz.naos.db.releve.AFApercuReleveManager;
@@ -280,11 +283,62 @@ public class EBTreatSaisieDecompte extends BProcess {
             throw e;
         }
 
-        // Affectation de la masse dans le compteur AF
-        lineFacturation.setMasse(masseNMoins1);
+        // Gestion masse minimum
+        Double masseMinimumParametre = findMasseMinimum(lineFacturation.getAssuranceId(), releve.getDateDebut());
+        if (masseMinimumParametre != null) {
+
+            double masseTaxe = Double.parseDouble(masseNMoins1);
+            if (masseTaxe > masseMinimumParametre.doubleValue()) {
+                // Affectation de la masse dans le compteur AF
+                lineFacturation.setMasse(masseNMoins1);
+            }
+
+        } else {
+            // Affectation de la masse dans le compteur AF
+            lineFacturation.setMasse(masseNMoins1);
+        }
     }
 
-    public String retreaveIdCompteAnnexe(BSession session, String numeroAffilie) throws Exception {
+    /**
+     * Recherche de la masse minimum pour taxer la FFPP
+     * 
+     * @param idAssurance
+     * @param date
+     * @return
+     * @throws Exception
+     */
+    private Double findMasseMinimum(String idAssurance, String date) throws Exception {
+        AFParametreAssuranceManager paramManager = new AFParametreAssuranceManager();
+        paramManager.setSession(getSession());
+        paramManager.setForIdAssurance(idAssurance);
+        paramManager.setForGenre(CodeSystem.GEN_PARAM_ASS_MASSE_MINIMUM);
+        paramManager.setForDate(date);
+        paramManager.find(BManager.SIZE_USEDEFAULT);
+
+        Double masseMinimum = null;
+        if (!paramManager.isEmpty()) {
+            AFParametreAssurance param = (AFParametreAssurance) paramManager.getFirstEntity();
+
+            try {
+                masseMinimum = Double.parseDouble(JANumberFormatter.deQuote(param.getValeur()));
+            } catch (NumberFormatException e) {
+                JadeLogger.error(this, "Propriété Masse minimum incorrect : " + param.getValeurNum());
+            }
+
+        }
+
+        return masseMinimum;
+    }
+
+    /**
+     * Récupération de l'id Compte annexe de l'affilié
+     * 
+     * @param session
+     * @param numeroAffilie
+     * @return
+     * @throws Exception
+     */
+    private String retreaveIdCompteAnnexe(BSession session, String numeroAffilie) throws Exception {
 
         String roleForAffilie = CaisseHelperFactory.getInstance().getRoleForAffilieParitaire(session.getApplication());
         if (JadeStringUtil.isEmpty(roleForAffilie)) {
@@ -425,7 +479,7 @@ public class EBTreatSaisieDecompte extends BProcess {
 
         }
 
-        return "";
+        return libelleTypeRevle.get(typeReleve);
     }
 
     private void listeExcelSaisieDecompte() throws Exception {
