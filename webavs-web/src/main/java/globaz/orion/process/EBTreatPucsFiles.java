@@ -564,6 +564,7 @@ public class EBTreatPucsFiles extends BProcess {
         getTransaction().clearErrorBuffer();
         getTransaction().clearWarningBuffer();
         getMemoryLog().clear();
+        JadeThread.logClear();
     }
 
     private void genratePucsFilePdf(PucsFile pucsFile, CIDeclaration declaration, String filePath,
