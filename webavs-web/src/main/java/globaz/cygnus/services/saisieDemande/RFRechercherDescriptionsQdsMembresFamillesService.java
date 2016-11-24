@@ -360,7 +360,7 @@ public class RFRechercherDescriptionsQdsMembresFamillesService {
 
             if (((BSession) session).getApplication().getCalendar().isValid(dateFacture)) {
 
-                boolean idQdPrincipaleDefini = JadeStringUtil.isBlankOrZero(idQdPrincipale);
+                boolean idQdPrincipaleDefini = !JadeStringUtil.isBlankOrZero(idQdPrincipale);
 
                 if (!idQdPrincipaleDefini || (etatFormulaireDemande.equals("add") && idQdPrincipaleDefini)) {
                     rfPerValQdPriMgr.setForAnneeQd(PRDateFormater.convertDate_JJxMMxAAAA_to_AAAA(dateFacture));
