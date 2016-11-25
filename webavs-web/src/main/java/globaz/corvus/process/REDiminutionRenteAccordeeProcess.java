@@ -75,14 +75,17 @@ public class REDiminutionRenteAccordeeProcess extends BProcess {
 
     public REDiminutionRenteAccordeeProcess() throws Exception {
         this(new BSession(REApplication.DEFAULT_APPLICATION_CORVUS));
+        setSendCompletionMail(false);
     }
 
     public REDiminutionRenteAccordeeProcess(final BProcess parent) throws Exception {
         super(parent);
+        setSendCompletionMail(false);
     }
 
     public REDiminutionRenteAccordeeProcess(final BSession session) throws Exception {
         super(session);
+        setSendCompletionMail(false);
     }
 
     @Override
@@ -406,7 +409,7 @@ public class REDiminutionRenteAccordeeProcess extends BProcess {
 
     @Override
     protected void _validate() throws Exception {
-        setSendCompletionMail(false);
+
         setSendMailOnError(true);
         setControleTransaction(getTransaction() == null);
 
