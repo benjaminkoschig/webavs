@@ -349,6 +349,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
         CASectionAuxPoursuites sectionAuxPoursuite = getSectionAuxPoursuites();
         String dateExecution = "";
 
+        // POAVS-223 ajout de && !isRDPProcess
         boolean isNouveauCDP = isNouveauCDP(sectionAuxPoursuite) && !isRDPProcess;
 
         // si le nouveau régime est activé
@@ -454,7 +455,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
         managerReqPoursuite.setSession(getSession());
         managerReqPoursuite.setForIdSection(getIdSection());
         // POAVS-294
-//        managerReqPoursuite.setSoldeDifferentZero(true);
+        // managerReqPoursuite.setSoldeDifferentZero(true);
         managerReqPoursuite.find();
         CASectionAuxPoursuites sectionAuxPoursuite = (CASectionAuxPoursuites) managerReqPoursuite.getFirstEntity();
 

@@ -31,7 +31,6 @@ import globaz.osiris.db.journal.comptecourant.CAJoinCompteCourantOperation;
 import globaz.osiris.external.IntRole;
 import globaz.osiris.process.interetmanuel.CAProcessInteretMoratoireManuel;
 import globaz.osiris.process.interetmanuel.visualcomponent.CAInteretManuelVisualComponent;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -111,6 +110,7 @@ public class COTaxeDefaut implements ICOTaxeProducer {
             parametres = null;
         }
 
+        // POAVS-223
         FWCurrency mntInteret = new FWCurrency(0);
         CAProcessInteretMoratoireManuel process = new CAProcessInteretMoratoireManuel();
         process.setSession(session);
@@ -120,16 +120,16 @@ public class COTaxeDefaut implements ICOTaxeProducer {
         process.setIsRDPProcess(true);
         process.executeProcess();
         List<CAInteretManuelVisualComponent> listInteret = process.getVisualComponents();
-	    for (CAInteretManuelVisualComponent i : listInteret) {
-	    	mntInteret.add(i.montantInteretTotalCalcule());
-	    }
+        for (CAInteretManuelVisualComponent i : listInteret) {
+            mntInteret.add(i.montantInteretTotalCalcule());
+        }
 
         FWCurrency soldeInteret = mntInteret;
         soldeInteret.add(contentieux.getSection().getSolde());
-        
+
         // Montant déterminant de section
         if (calculTaxe.getBaseTaxe().equalsIgnoreCase(COCalculTaxe.SECTION)) {
-            taxe.setMontantBase(JANumberFormatter.deQuote(soldeInteret.toString())); 
+            taxe.setMontantBase(JANumberFormatter.deQuote(soldeInteret.toString()));
         } else if (calculTaxe.getBaseTaxe().equalsIgnoreCase(COCalculTaxe.MASSE)) {
             String masseCompteur = giveMasseCompteur(session, contentieux, parametres);
 

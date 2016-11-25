@@ -35,7 +35,6 @@ import globaz.osiris.process.interetmanuel.visualcomponent.CAInteretManuelVisual
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TITiers;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -268,12 +267,14 @@ public abstract class COTransitionAction {
      * @return la liste des interets manuel ou null
      * @throws Exception
      */
-    public List<CAInteretManuelVisualComponent> giveDecisionIM(BTransaction transaction, COContentieux contentieux, String date) throws Exception {
+    public List<CAInteretManuelVisualComponent> giveDecisionIM(BTransaction transaction, COContentieux contentieux,
+            String date) throws Exception {
 
         if (contentieux == null) {
             return null;
         }
-        
+
+        // POAVS-223
         if (!isNouveauRegime(transaction.getSession(), contentieux.getDateExecution())) {
             return null;
         }
@@ -297,7 +298,7 @@ public abstract class COTransitionAction {
 
         return liste;
     }
-    
+
     public Boolean isNouveauRegime(BSession session, String dateExecution) {
         try {
             String dateProduction = session.getApplication().getProperty("dateProductionNouveauCDP");
