@@ -58,7 +58,8 @@ public class REDiminutionRenteAccordeeHelper extends PRAbstractHelper {
             // BZ 4232 : Comme le process n'est pas envoyé au serveur de job, envoyer le mail manuellement.
             try {
 
-                if (process != null) {
+                if (process != null
+                        && !IREDiminution.CS_GENRE_TRATEMENT_DIM_RESTITUTION.equals(process.getCsCodeTraitement())) {
                     JadeSmtpClient.getInstance().sendMail(process.getEMailAddress(), process.getEMailObject(),
                             process.getMemoryLog().getMessagesInString(), null);
                 }
