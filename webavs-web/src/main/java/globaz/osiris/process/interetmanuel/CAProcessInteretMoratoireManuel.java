@@ -1,11 +1,8 @@
 package globaz.osiris.process.interetmanuel;
 
-import globaz.aquila.db.rdp.CORequisitionPoursuiteUtil;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
-import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BProcess;
-import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JACalendar;
@@ -19,7 +16,6 @@ import globaz.osiris.db.comptes.CAJournal;
 import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.db.comptes.impl.CASectionAVS;
 import globaz.osiris.db.contentieux.CASectionAuxPoursuites;
-import globaz.osiris.db.contentieux.CASectionAuxPoursuitesManager;
 import globaz.osiris.db.interet.tardif.CAInteretTardif;
 import globaz.osiris.db.interet.tardif.CAInteretTardifFactory;
 import globaz.osiris.db.interet.util.CAInteretUtil;
@@ -55,6 +51,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
     private String numeroFactureGroupe = new String();
     private Boolean simulationMode = new Boolean(true);
     private Boolean isRDPProcess = false;
+    private boolean forceSoumis = false;
 
     private CAInteretManuelVisualComponent visualComponent = null;
     private ArrayList<CAInteretManuelVisualComponent> visualComponents = new ArrayList<CAInteretManuelVisualComponent>();
@@ -269,9 +266,13 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                     interetTardif.getIdSection(), interetTardif.getIdJournal());
 
             if (interet.isNew()) {
-                // Mise à jour de l'intérêt tardif "standard" créé précédement
-                // pour l'indentifé comme "manuel"
-                interet.setMotifcalcul(CAInteretMoratoire.CS_MANUEL);
+                if (isForceSoumis()) {
+                    interet.setMotifcalcul(CAInteretMoratoire.CS_EXEMPTE);
+                } else {
+                    // Mise à jour de l'intérêt tardif "standard" créé précédement
+                    // pour l'indentifé comme "manuel"
+                    interet.setMotifcalcul(CAInteretMoratoire.CS_MANUEL);
+                }
                 interet.setNumeroFactureGroupe(getNumeroFactureGroupe());
 
                 FWCurrency montantSoumis = CAInteretUtil.getMontantSoumisParPlans(getTransaction(), getIdSection(),
@@ -293,6 +294,14 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
             throw new Exception(getSession().getLabel("IM_MANUEL_AUCUN_CALCUL"));
         }
 
+    }
+
+    private boolean isForceSoumis() {
+        return forceSoumis;
+    }
+
+    public void setForceSoumis(boolean forceSoumis) {
+        this.forceSoumis = forceSoumis;
     }
 
     /**
@@ -346,11 +355,14 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
 
         FWCurrency montantCumule = new FWCurrency();
         JADate dateCalculDebutInteret;
-        CASectionAuxPoursuites sectionAuxPoursuite = getSectionAuxPoursuites();
+        // POAVS-223
+        boolean aControlerManuellement = false;
+        CASectionAuxPoursuites sectionAuxPoursuite = CAInteretTardif.getSectionAuxPoursuites(getSession(),
+                getIdSection());
         String dateExecution = "";
 
         // POAVS-223 ajout de && !isRDPProcess
-        boolean isNouveauCDP = isNouveauCDP(sectionAuxPoursuite) && !isRDPProcess;
+        boolean isNouveauCDP = CAInteretTardif.isNouveauCDP(sectionAuxPoursuite) && !isRDPProcess;
 
         // si le nouveau régime est activé
         if (isNouveauCDP) {
@@ -363,7 +375,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
             }
 
             // si le canton n'est pas exclu du nouveau régime on applique le nouveau régime
-            if (!isOfficeExcluDuNouveauRegime(cantonOfficePoursuite)) {
+            if (!CAInteretTardif.isOfficeExcluDuNouveauRegime(cantonOfficePoursuite, getSession())) {
                 dateExecution = JadeDateUtil.addDays(sectionAuxPoursuite.getHistorique().getDateExecution(), 1);
                 dateCalculDebutInteret = new JADate(dateExecution);
             } else {
@@ -400,7 +412,25 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                 }
 
                 montantSoumis.add(ecriture.getMontantToCurrency());
+            } else if (ecriture.getMontantToCurrency().isPositive()) {
+                // POAVS-223
+                aControlerManuellement = true;
             }
+        }
+
+        // POAVS-223
+        if (aControlerManuellement) {
+            interet.setMotifcalcul(CAInteretMoratoire.CS_A_CONTROLER);
+        } else {
+            FWCurrency limiteExempte = new FWCurrency(CAInteretUtil.getLimiteExempteInteretMoratoire(getSession(),
+                    getTransaction()));
+
+            if (montantCumule.compareTo(limiteExempte) == 1) {
+                interet.setMotifcalcul(CAInteretMoratoire.CS_SOUMIS);
+            }
+        }
+        if (!interet.isNew()) {
+            interet.update(getTransaction());
         }
 
         if (montantSoumis.isPositive()
@@ -415,51 +445,6 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
             }
 
         }
-    }
-
-    public Boolean isOfficeExcluDuNouveauRegime(String cantonOfficePoursuite) throws RemoteException, Exception {
-        return CORequisitionPoursuiteUtil.isOfficeDontWantToUseNewRegime(getSessionAquila(getSession()),
-                cantonOfficePoursuite);
-    }
-
-    private static BSession getSessionAquila(BSession session) throws RemoteException, Exception {
-        return (BSession) GlobazSystem.getApplication("AQUILA").newSession(session);
-    }
-
-    /**
-     * Retourne true si la date d'exécution de la section aux poursuites est après la date de mise en production du
-     * nouveau CDP (propriété en DB - dateProductionNouveauCDP)
-     * Attention retourne false si la section aux poursuites est null
-     * 
-     * @param sectionAuxPoursuite
-     * @return
-     * @throws RemoteException
-     * @throws Exception
-     */
-    private boolean isNouveauCDP(CASectionAuxPoursuites sectionAuxPoursuite) throws RemoteException, Exception {
-        boolean isNouveauCDP = false;
-        if (sectionAuxPoursuite != null) {
-
-            String dateProductionNouveauCDP = GlobazSystem.getApplication("AQUILA").getProperty(
-                    "dateProductionNouveauCDP");
-
-            isNouveauCDP = !JadeStringUtil.isBlank(dateProductionNouveauCDP)
-                    && !JadeDateUtil.isDateBefore(sectionAuxPoursuite.getHistorique().getDateExecution(),
-                            dateProductionNouveauCDP);
-        }
-        return isNouveauCDP;
-    }
-
-    private CASectionAuxPoursuites getSectionAuxPoursuites() throws Exception {
-        CASectionAuxPoursuitesManager managerReqPoursuite = new CASectionAuxPoursuitesManager();
-        managerReqPoursuite.setSession(getSession());
-        managerReqPoursuite.setForIdSection(getIdSection());
-        // POAVS-294
-        // managerReqPoursuite.setSoldeDifferentZero(true);
-        managerReqPoursuite.find();
-        CASectionAuxPoursuites sectionAuxPoursuite = (CASectionAuxPoursuites) managerReqPoursuite.getFirstEntity();
-
-        return sectionAuxPoursuite;
     }
 
     public String getDateFin() {

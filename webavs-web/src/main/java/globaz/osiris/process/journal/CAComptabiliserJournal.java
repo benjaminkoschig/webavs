@@ -414,7 +414,7 @@ public class CAComptabiliserJournal {
                     || APIOperation.PROVPMT_SOLDEOF.equals(ecrPmt.getProvenancePmt())) {
 
                 FWCurrency soldeSection = new FWCurrency(ecrPmt.getSection().getSolde());
-                ArrayList<CAInteretManuelVisualComponent> liste = calculIMManuel(context, ecrPmt);
+                ArrayList<CAInteretManuelVisualComponent> liste = calculIMManuel(context, ecrPmt, false);
                 if (soldeSection.isNegative() && !liste.isEmpty()) {
                     FWCurrency totalIM = interetTotalIM(liste);
                     BigDecimal diff = soldeSection.getBigDecimalValue().abs().subtract(totalIM.getBigDecimalValue());
@@ -431,6 +431,11 @@ public class CAComptabiliserJournal {
                 } else {
                     interetRejet(context, liste);
                 }
+            } else
+            // POAVS-223
+            if (CAInteretTardif.isNouveauCalculPoursuite(context.getSession(), ecrPmt.getSection())) {
+                // Simuler IM
+                calculIMManuel(context, ecrPmt, true);
             }
 
         }
@@ -447,11 +452,15 @@ public class CAComptabiliserJournal {
     private void calculerInteretTardif(BProcess context, CAJournal journal, CASectionJournal sectionDuJournal)
             throws Exception {
         CAInteretTardif interetTardif = CAInteretTardifFactory.getInteretTardif(sectionDuJournal.getCategorieSection());
+        if (interetTardif == null) {
+            return;
+        }
 
-        if (interetTardif != null) {
-            interetTardif.setIdSection(sectionDuJournal.getIdSection());
+        interetTardif.setIdSection(sectionDuJournal.getIdSection());
+
+        if (!CAInteretTardif.isNouveauCalculPoursuite(context.getSession(),
+            interetTardif.getSection(context.getSession(), context.getTransaction()))) {
             interetTardif.setIdJournal(journal.getIdJournal());
-
             interetTardif.calculer(context.getSession(), context.getTransaction());
         }
     }
@@ -463,7 +472,8 @@ public class CAComptabiliserJournal {
      * @return
      * @throws Exception
      */
-    private ArrayList<CAInteretManuelVisualComponent> calculIMManuel(BProcess context, CAPaiement pmt) throws Exception {
+    private ArrayList<CAInteretManuelVisualComponent> calculIMManuel(BProcess context, CAPaiement pmt,
+            boolean forceSoumis) throws Exception {
         // Calcul IM
         CAProcessInteretMoratoireManuel process = new CAProcessInteretMoratoireManuel();
         process.setSession(context.getSession());
@@ -472,6 +482,8 @@ public class CAComptabiliserJournal {
         process.setIdSection(pmt.getIdSection());
         process.setIdJournal(pmt.getIdJournal());
         process.setSimulationMode(false);
+        process.setForceSoumis(forceSoumis);
+
         try {
             process.executeProcess();
         } catch (Exception e) {

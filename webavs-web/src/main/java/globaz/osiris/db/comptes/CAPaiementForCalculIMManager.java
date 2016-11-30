@@ -12,7 +12,6 @@ import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.osiris.api.APIOperation;
 
 /**
  * @author sel
@@ -95,16 +94,17 @@ public class CAPaiementForCalculIMManager extends BManager {
         sqlWhere.append(CAOperation.TABLE_CAOPERP).append(".").append(CAOperation.FIELD_IDTYPEOPERATION);
         sqlWhere.append(CAPaiementForCalculIMManager.LIKE).append("'EP%'");
 
-        sqlWhere.append(CAPaiementForCalculIMManager.AND);
-        sqlWhere.append(" (");
-        sqlWhere.append(CAOperation.TABLE_CAOPERP).append(".").append(CAOperation.FIELD_PROVENANCEPMT);
-        sqlWhere.append(" = ");
-        sqlWhere.append(APIOperation.PROVPMT_SOLDEOF);
-        sqlWhere.append(CAPaiementForCalculIMManager.OR);
-        sqlWhere.append(CAOperation.TABLE_CAOPERP).append(".").append(CAOperation.FIELD_PROVENANCEPMT);
-        sqlWhere.append(" = ");
-        sqlWhere.append(APIOperation.PROVPMT_SOLDEOP);
-        sqlWhere.append(") ");
+        // POAVS-223
+        // sqlWhere.append(CAPaiementForCalculIMManager.AND);
+        // sqlWhere.append(" (");
+        // sqlWhere.append(CAOperation.TABLE_CAOPERP).append(".").append(CAOperation.FIELD_PROVENANCEPMT);
+        // sqlWhere.append(" = ");
+        // sqlWhere.append(APIOperation.PROVPMT_SOLDEOF);
+        // sqlWhere.append(CAPaiementForCalculIMManager.OR);
+        // sqlWhere.append(CAOperation.TABLE_CAOPERP).append(".").append(CAOperation.FIELD_PROVENANCEPMT);
+        // sqlWhere.append(" = ");
+        // sqlWhere.append(APIOperation.PROVPMT_SOLDEOP);
+        // sqlWhere.append(") ");
 
         // sqlWhere.append(CAPaiementForCalculIMManager.AND);
         // sqlWhere.append(CAOperation.TABLE_CAOPERP).append(".").append(CAOperation.FIELD_ETAT);

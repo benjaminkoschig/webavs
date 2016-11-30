@@ -1,11 +1,19 @@
 package globaz.osiris.db.interet.tardif;
 
+import globaz.aquila.db.rdp.CORequisitionPoursuiteUtil;
 import globaz.framework.util.FWCurrency;
+import globaz.framework.util.FWMessage;
+import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JADate;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASection;
+import globaz.osiris.db.contentieux.CASectionAuxPoursuites;
+import globaz.osiris.db.contentieux.CASectionAuxPoursuitesManager;
 import globaz.osiris.db.interet.util.CAInteretUtil;
 import globaz.osiris.db.interet.util.ecriturenonsoumise.CAEcritureNonSoumise;
 import globaz.osiris.db.interet.util.ecriturenonsoumise.CAEcritureNonSoumiseManager;
@@ -14,6 +22,8 @@ import globaz.osiris.db.interet.util.planparsection.CAPlanParSectionManager;
 import globaz.osiris.db.interets.CADetailInteretMoratoire;
 import globaz.osiris.db.interets.CAInteretMoratoire;
 import globaz.osiris.translation.CACodeSystem;
+import globaz.osiris.utils.CATiersUtil;
+import java.rmi.RemoteException;
 
 public abstract class CAInteretTardif {
 
@@ -267,6 +277,78 @@ public abstract class CAInteretTardif {
                 }
             }
         }
+    }
+
+    /**
+     * Retourne true si la date d'exécution de la section aux poursuites est après la date de mise en production du
+     * nouveau CDP (propriété en DB - dateProductionNouveauCDP)
+     * Attention retourne false si la section aux poursuites est null
+     * 
+     * @param sectionAuxPoursuite
+     * @return
+     * @throws RemoteException
+     * @throws Exception
+     */
+    public static boolean isNouveauCDP(CASectionAuxPoursuites sectionAuxPoursuite) throws RemoteException, Exception {
+        boolean isNouveauCDP = false;
+        if (sectionAuxPoursuite != null) {
+
+            String dateProductionNouveauCDP = GlobazSystem.getApplication("AQUILA").getProperty(
+                    "dateProductionNouveauCDP");
+
+            isNouveauCDP = !JadeStringUtil.isBlank(dateProductionNouveauCDP)
+                    && !JadeDateUtil.isDateBefore(sectionAuxPoursuite.getHistorique().getDateExecution(),
+                            dateProductionNouveauCDP);
+        }
+        return isNouveauCDP;
+    }
+
+    public static boolean isNouveauCalculPoursuite(BSession session, CASection section) throws Exception {
+        if (section == null) {
+            return false;
+        }
+        CASectionAuxPoursuites sectionAuxPoursuite = getSectionAuxPoursuites(session, section.getIdSection());
+
+        // POAVS-223 ajout de && !isRDPProcess
+        boolean isNouveauCDP = isNouveauCDP(sectionAuxPoursuite);
+
+        // si le nouveau régime est activé
+        if (isNouveauCDP) {
+            // récupération du canton de l'office des poursuites relatif au tiers
+            String cantonOfficePoursuite = CATiersUtil.getCantonOfficePoursuite(session, section.getCompteAnnexe()
+                    .getTiers(), section.getIdExterne(), section.getCompteAnnexe().getIdExterneRole());
+            if (JadeStringUtil.isBlank(cantonOfficePoursuite)) {
+                JadeLogger.warn(FWMessage.ERREUR, session.getLabel("IM_ERR_OP_INTROUVABLE"));
+            }
+
+            // si le canton n'est pas exclu du nouveau régime on applique le nouveau régime
+            if (!isOfficeExcluDuNouveauRegime(cantonOfficePoursuite, session)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static CASectionAuxPoursuites getSectionAuxPoursuites(BSession session, String idSection) throws Exception {
+        CASectionAuxPoursuitesManager managerReqPoursuite = new CASectionAuxPoursuitesManager();
+        managerReqPoursuite.setSession(session);
+        managerReqPoursuite.setForIdSection(idSection);
+        // POAVS-294
+        // managerReqPoursuite.setSoldeDifferentZero(true);
+        managerReqPoursuite.find();
+        CASectionAuxPoursuites sectionAuxPoursuite = (CASectionAuxPoursuites) managerReqPoursuite.getFirstEntity();
+
+        return sectionAuxPoursuite;
+    }
+
+    public static Boolean isOfficeExcluDuNouveauRegime(String cantonOfficePoursuite, BSession session)
+            throws RemoteException, Exception {
+        return CORequisitionPoursuiteUtil.isOfficeDontWantToUseNewRegime(getSessionAquila(session),
+                cantonOfficePoursuite);
+    }
+
+    private static BSession getSessionAquila(BSession session) throws RemoteException, Exception {
+        return (BSession) GlobazSystem.getApplication("AQUILA").newSession(session);
     }
 
 }
