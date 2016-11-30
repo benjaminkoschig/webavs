@@ -336,6 +336,15 @@ public class SQLWriterTest {
     }
 
     @Test
+    public void testEqualForDate() throws Exception {
+        String date = null;
+        assertThat(SQLWriter.write().and("col").equalForDate(date).toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().and("col").equalForDate("").toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().and("col").equalForDate("10.2015").toSql()).isEqualTo(" col=201510");
+        assertThat(SQLWriter.write().and("col").equalForDate("01.10.2015").toSql()).isEqualTo(" col=20151001");
+    }
+
+    @Test
     public void testCurrentIndex() throws Exception {
         assertThat(SQLWriter.write().append("12345").currentIndex()).isEqualTo(5);
     }
@@ -386,4 +395,23 @@ public class SQLWriterTest {
         assertThat(SQLWriter.writeWithSchema().and("COL").fullLike("'P\"").toSql()).isEqualTo(
                 " schema.COL like '%¬P¢%'");
     }
+
+    @Test
+    public void testIsNullOrZero() throws Exception {
+        assertThat(SQLWriter.write().isNullOrZero("COL").toSql()).isEqualTo(" (COL IS NULL OR COL=0)");
+    }
+
+    @Test
+    public void testIsNotNullOrZero() throws Exception {
+        assertThat(SQLWriter.write().isNotNullOrZero("COL").toSql()).isEqualTo(" (COL IS NOT NULL AND COL<>0)");
+    }
+
+    @Test
+    public void testDatToGlobazFormat() throws Exception {
+        assertThat(SQLWriter.write().datToGlobazFormat("10.2015")).isEqualTo(201510);
+        assertThat(SQLWriter.write().datToGlobazFormat("2.2015")).isEqualTo(201502);
+        assertThat(SQLWriter.write().datToGlobazFormat("01.10.2015")).isEqualTo(20151001);
+        assertThat(SQLWriter.write().datToGlobazFormat("1.10.2015")).isEqualTo(20151001);
+    }
+
 }
