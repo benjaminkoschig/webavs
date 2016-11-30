@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
+import ch.globaz.common.domaine.Date;
 import ch.globaz.common.jadedb.TableDefinition;
 
 /**
@@ -218,6 +219,22 @@ public class SQLWriter {
 
     /**
      * Ajoute le = avec le paramètre définit à la requête SQL
+     * et transforme la chaine de caractère en date globaz.
+     * EX: 10.2015 = > 201510, 01.10.2015 =>20151001
+     * 
+     * @param param String sql
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter equalForDate(String param) {
+        Integer date = null;
+        if (param != null && !param.isEmpty()) {
+            date = datToGlobazFormat(param);
+        }
+        return equal(date);
+    }
+
+    /**
+     * Ajoute le = avec le paramètre définit à la requête SQL
      * 
      * @param param Integer sql
      * @return SQLWriter utilisé
@@ -300,6 +317,28 @@ public class SQLWriter {
         this.and();
         query.append(" ").append(addSchemaToSql(CONST_SCHEMA + column));
 
+        return this;
+    }
+
+    public SQLWriter isNullOrZero(TableDefinition tableDefinition) {
+        String column = tableDefinition.getTableName() + "." + tableDefinition.getColumn();
+        return isNullOrZero(column);
+    }
+
+    public SQLWriter isNullOrZero(String column) {
+        query.append(" (").append(addSchemaToSql(column)).append(" IS NULL").append(" OR ")
+                .append(addSchemaToSql(column)).append("=0)");
+        return this;
+    }
+
+    public SQLWriter isNotNullOrZero(TableDefinition tableDefinition) {
+        String column = tableDefinition.getTableName() + "." + tableDefinition.getColumn();
+        return isNotNullOrZero(column);
+    }
+
+    public SQLWriter isNotNullOrZero(String column) {
+        query.append(" (").append(addSchemaToSql(column)).append(" IS NOT NULL").append(" AND ")
+                .append(addSchemaToSql(column)).append("<>0)");
         return this;
     }
 
@@ -687,6 +726,15 @@ public class SQLWriter {
         return StringUtils.countMatches(sqlFragment, charToReplace);
     }
 
+    Integer datToGlobazFormat(String param) {
+        Date date = new Date(param);
+        String value = date.getValue();
+        if (param.length() == 6 || param.length() == 7) {
+            value = date.getValueMonth();
+        }
+        return Integer.valueOf(value);
+    }
+
     private void addOpertor(String operator) {
         currentIndex();
         if (countAddOperators > 0) {
@@ -710,5 +758,4 @@ public class SQLWriter {
     private boolean hasSchema() {
         return schema != null;
     }
-
 }

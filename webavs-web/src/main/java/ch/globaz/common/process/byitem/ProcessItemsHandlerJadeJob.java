@@ -4,6 +4,7 @@ import globaz.globall.db.BTransaction;
 import globaz.jade.job.AbstractJadeJob;
 import globaz.jade.smtp.JadeSmtpClient;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
@@ -29,9 +30,9 @@ import com.google.common.base.Throwables;
 public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends AbstractJadeJob implements
         ProcessItems<T> {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessItem.class);
-    private transient List<T> items;
+    private transient List<T> items = new ArrayList<T>();
     private boolean mailErrorIsSend = false;
-    private boolean isAfterCall = false;
+
     private ProcessItemsJobInfos jobInfos;
 
     /**
@@ -49,7 +50,7 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
         StopWatch time = new StopWatch();
         ProcessEntity processEntity = new ProcessEntity();
         processEntity.setSession(getSession());
-
+        boolean isAfterCall = false;
         try {
             processEntity.setKey(getKey());
             processEntity.setEtat(ProcessState.START);
@@ -84,7 +85,7 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
             time.reset();
             time.start();
             after();
-            this.isAfterCall = true;
+            isAfterCall = true;
             time.stop();
 
             processEntity.setTimeAfter(time.getTime());
@@ -107,7 +108,7 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
             }
         } finally {
             transaction.close();
-            if (!this.isAfterCall) {
+            if (!isAfterCall) {
                 after();
             }
         }
@@ -249,9 +250,11 @@ public abstract class ProcessItemsHandlerJadeJob<T extends ProcessItem> extends 
     }
 
     private boolean itemsHasError() {
-        for (T item : items) {
-            if (item.hasErrorOrException()) {
-                return true;
+        if (items != null) {
+            for (T item : items) {
+                if (item.hasErrorOrException()) {
+                    return true;
+                }
             }
         }
         return false;
