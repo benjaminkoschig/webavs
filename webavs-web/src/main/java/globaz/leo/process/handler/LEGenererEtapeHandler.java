@@ -9,7 +9,6 @@ package globaz.leo.process.handler;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
-import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.leo.db.data.LEEnvoiDataSource;
 import globaz.leo.process.generation.ILEGeneration;
@@ -40,7 +39,7 @@ public class LEGenererEtapeHandler {
         ILEGeneration generateur = docHandler.chargeGenerateurDocument(envoiDS, session);
 
         if (generateur != null) {
-            generateur.setDateImpression(JACalendar.todayJJsMMsAAAA());
+            // generateur.setDateImpression(JACalendar.todayJJsMMsAAAA());
             if (parent != null && !JadeStringUtil.isEmpty(parent.getEMailAddress())) {
                 generateur.setEMailAddress(parent.getEMailAddress());
             } else {
