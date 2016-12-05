@@ -658,7 +658,7 @@
 						<label refId="MENU_OPTIONS_DOSSIER_JOURNALISATION"/>
 						<action command="/libra" responseTarget="fr_main">
 							<parameter name="userAction" value="libra.dossiers.afficher"/>
-							<parameter name="selectedId"/>
+							<parameter name="idExterne"/>
 							<!-- dossier.chercher&searchModel.forLien=2321 -->
 						</action>
 					</node>
