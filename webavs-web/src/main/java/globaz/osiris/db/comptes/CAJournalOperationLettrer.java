@@ -78,7 +78,7 @@ public class CAJournalOperationLettrer extends BProcess {
     @Override
     protected boolean _executeProcess() {
         CASection sourceSection = getSourceSection();
-
+        boolean atLeastOne = false;
         if (sourceSection != null) {
             FWCurrency montantMax = new FWCurrency(getMontantMaxALettrer());
             if (!montantMax.isNegative()) {
@@ -95,7 +95,7 @@ public class CAJournalOperationLettrer extends BProcess {
                 return false;
             }
             if (mode.equals(CAJournalOperationLettrer.MODE_AUTOMATIC)) {
-                sourceSection.automaticLettrage(null, getCompteAnnexe(), null, getMontantMaxALettrer());
+                atLeastOne = sourceSection.automaticLettrage(null, getCompteAnnexe(), null, getMontantMaxALettrer());
             } else if (mode.equals(CAJournalOperationLettrer.MODE_MANUAL)) {
                 CASection section = getSection(getManualSection());
 
@@ -103,7 +103,8 @@ public class CAJournalOperationLettrer extends BProcess {
                     return false;
                 }
 
-                sourceSection.manualLettrage(null, getCompteAnnexe(), section, null, getMontantMaxALettrer());
+                atLeastOne = sourceSection.manualLettrage(null, getCompteAnnexe(), section, null,
+                        getMontantMaxALettrer());
             } else {
                 return false;
             }
@@ -120,6 +121,10 @@ public class CAJournalOperationLettrer extends BProcess {
                         FWMessage.FATAL, this.getClass().getName());
                 return false;
             } else {
+                if (!atLeastOne) {
+                    getMemoryLog().logMessage(getSession().getLabel("LETTRAGE_INFO_AUCUN_SOLDE"),
+                            FWMessage.INFORMATION, this.getClass().getName());
+                }
                 return true;
             }
         } else {

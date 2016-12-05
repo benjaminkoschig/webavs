@@ -943,8 +943,9 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
      * @param compteAnnexe
      * @param journal
      */
-    public void automaticLettrage(BTransaction transaction, CACompteAnnexe compteAnnexe, CAJournal journal,
+    public boolean automaticLettrage(BTransaction transaction, CACompteAnnexe compteAnnexe, CAJournal journal,
             String montantMax) {
+        boolean atLeastOne = false;
         boolean useOwnTransaction = false;
         try {
             // Refuser si section pas instanciée
@@ -969,7 +970,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
                 throw new Exception(getSession().getLabel(CASection.LABEL_SECTION_NON_RENSEIGNEE));
             }
 
-            doLettrageSectionParDate(transaction, compteAnnexe, journal, list, montantMax);
+            atLeastOne = doLettrageSectionParDate(transaction, compteAnnexe, journal, list, montantMax);
 
         } catch (Exception e) {
             _addError(transaction, e.getMessage());
@@ -993,6 +994,7 @@ public class CASection extends BEntity implements Serializable, APISection, IntR
                 }
             }
         }
+        return atLeastOne;
     }
 
     /**
