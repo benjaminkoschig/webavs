@@ -244,7 +244,7 @@
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font reportFont="Arial_Normal" size="10" isBold="true"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[new String("Confidentiel")]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_HEADER_CONFIDENTIEL}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
