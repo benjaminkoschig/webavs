@@ -15,6 +15,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThreadActivator;
 import globaz.jade.context.JadeThreadContext;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.musca.application.FAApplication;
 import globaz.musca.db.facturation.FAAfact;
@@ -804,7 +805,7 @@ public final class AFProcessFacturationCAPCGAS extends BProcess {
 
                             if (isAssuranceCAPWithAF(theAssurance)) {
                                 double montantAFAFacturer = getMontantAFAFacturer(anneeFacturation, idAffiliation,
-                                        nbMoisAFacturer);
+                                        nbMoisAFacturer, aLine.getDebutPeriode(), aLine.getFinPeriode());
 
                                 // Comme l'allocation familiale se trouve dans un afact négatif séparé
                                 // Il faut augmenter l'afact de cotisation avec la valeur de l'allocation familiale
@@ -1008,7 +1009,7 @@ public final class AFProcessFacturationCAPCGAS extends BProcess {
 
                     if (isAssuranceCAPWithAF(theAssurance)) {
                         double montantAFAFacturer = getMontantAFAFacturer(anneeFacturation, idAffiliation,
-                                nbMoisAFacturer);
+                                nbMoisAFacturer, aLine.getDebutPeriode(), aLine.getFinPeriode());
 
                         // Comme l'allocation familiale se trouve dans un afact négatif séparé
                         // Il faut augmenter l'afact de cotisation avec la valeur de l'allocation familiale
@@ -1151,8 +1152,8 @@ public final class AFProcessFacturationCAPCGAS extends BProcess {
         return idModuleFacturationCAPCGAS;
     }
 
-    private double getMontantAFAFacturer(String anneeFacturation, String idAffiliation, int nbMoisAFacturer)
-            throws Exception {
+    private double getMontantAFAFacturer(String anneeFacturation, String idAffiliation, int nbMoisAFacturer,
+            String debutPeriode, String finPeriode) throws Exception {
 
         try {
 
@@ -1170,7 +1171,17 @@ public final class AFProcessFacturationCAPCGAS extends BProcess {
 
             decisionCAPSearchModel = decisionCAPService.search(decisionCAPSearchModel);
 
-            SimpleDecisionCAP decisionCAP = (SimpleDecisionCAP) decisionCAPSearchModel.getSearchResults()[0];
+            SimpleDecisionCAP decisionCAP = null;
+            for (JadeAbstractModel abstractModel : decisionCAPSearchModel.getSearchResults()) {
+                decisionCAP = (SimpleDecisionCAP) abstractModel;
+
+                if (BSessionUtil.compareDateFirstLowerOrEqual(getSession(), decisionCAP.getDateDebut(), debutPeriode)
+                        && BSessionUtil
+                                .compareDateFirstLowerOrEqual(getSession(), finPeriode, decisionCAP.getDateFin())) {
+                    break;
+                }
+
+            }
 
             double montantAFAFacturer = decisionCAPService.getMontantAFAFacturer(decisionCAP, nbMoisAFacturer);
 

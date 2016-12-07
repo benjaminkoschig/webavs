@@ -1312,18 +1312,30 @@ public class DecisionCAPServiceImpl implements DecisionCAPService {
         return decisionCap;
     }
 
-    private void updateCotisationAffiliation(SimpleDecisionCAP decisionCap) throws Exception {
+    private AffiliationAssuranceSearchComplexModel searchCotisation(String whereKey, String dateReference,
+            String idAffiliation) throws JadeApplicationServiceNotAvailableException, JadePersistenceException {
 
         AffiliationAssuranceSearchComplexModel affiliationAssuranceSearchModel = new AffiliationAssuranceSearchComplexModel();
-        affiliationAssuranceSearchModel.setWhereKey("searchCotisationCAPCGASToUpdateAfterDecision");
-        affiliationAssuranceSearchModel.setForIdAffiliation(decisionCap.getIdAffiliation());
+
+        affiliationAssuranceSearchModel.setWhereKey(whereKey);
+        affiliationAssuranceSearchModel.setForIdAffiliation(idAffiliation);
         affiliationAssuranceSearchModel.setForGenreAssurance(CodeSystem.GENRE_ASS_PERSONNEL);
 
         affiliationAssuranceSearchModel.setInTypeAssurance(CodeSystem.getListTypeAssuranceCAP());
 
-        affiliationAssuranceSearchModel.setForDateCotisationDebutLessEqualFinGreaterNull(decisionCap.getDateDebut());
+        affiliationAssuranceSearchModel.setForDateCotisationDebutLessEqualFinGreaterNull(dateReference);
         affiliationAssuranceSearchModel = AFBusinessServiceLocator.getAffiliationService().searchAffiliationAssurance(
                 affiliationAssuranceSearchModel);
+
+        return affiliationAssuranceSearchModel;
+
+    }
+
+    private void updateCotisationAffiliation(SimpleDecisionCAP decisionCap) throws Exception {
+
+        AffiliationAssuranceSearchComplexModel affiliationAssuranceSearchModel = searchCotisation(
+                "searchCotisationCAPCGASToUpdateAfterDecision", decisionCap.getDateDebut(),
+                decisionCap.getIdAffiliation());
 
         if (affiliationAssuranceSearchModel.getSize() <= 0) {
             throw new AurigaException("auriga.update.cotisation.affiliation.aucune.cotisation.active",
@@ -1337,9 +1349,20 @@ public class DecisionCAPServiceImpl implements DecisionCAPService {
         CotisationSimpleModel cotisationToUpdate = ((AffiliationAssuranceComplexModel) affiliationAssuranceSearchModel
                 .getSearchResults()[0]).getCotisation();
 
+        AffiliationSimpleModel affiliation = ((AffiliationAssuranceComplexModel) affiliationAssuranceSearchModel
+                .getSearchResults()[0]).getAffiliation();
+
         int anneeCotisationToUpdate = JACalendar.getYear(cotisationToUpdate.getDateDebut());
         int anneeDecisionCap = Integer.valueOf(decisionCap.getAnnee());
 
+        boolean isDecisionPartielleForAnneeCouranteWithoutRadiation = anneeDecisionCap == JACalendar.getYear(JACalendar
+                .todayJJsMMsAAAA());
+        isDecisionPartielleForAnneeCouranteWithoutRadiation = isDecisionPartielleForAnneeCouranteWithoutRadiation
+                && !decisionCap.getDateFin().startsWith("31.12");
+        isDecisionPartielleForAnneeCouranteWithoutRadiation = isDecisionPartielleForAnneeCouranteWithoutRadiation
+                && JadeStringUtil.isBlankOrZero(affiliation.getDateFin());
+
+        // Cas décision pour une année future
         if (anneeDecisionCap > anneeCotisationToUpdate
                 && anneeDecisionCap > JACalendar.getYear(JACalendar.todayJJsMMsAAAA())) {
 
@@ -1352,16 +1375,8 @@ public class DecisionCAPServiceImpl implements DecisionCAPService {
 
             }
 
-            AffiliationAssuranceSearchComplexModel affiliationAssuranceChevauchementSearchModel = new AffiliationAssuranceSearchComplexModel();
-            affiliationAssuranceChevauchementSearchModel.setWhereKey("searchCotisationCAPCGASChevauchement");
-            affiliationAssuranceChevauchementSearchModel.setForIdAffiliation(decisionCap.getIdAffiliation());
-            affiliationAssuranceChevauchementSearchModel.setForGenreAssurance(CodeSystem.GENRE_ASS_PERSONNEL);
-            affiliationAssuranceChevauchementSearchModel.setInTypeAssurance(CodeSystem.getListTypeAssuranceCAP());
-            affiliationAssuranceChevauchementSearchModel
-                    .setForDateFinCotisationGreaterEqual(decisionCap.getDateDebut());
-
-            affiliationAssuranceChevauchementSearchModel = AFBusinessServiceLocator.getAffiliationService()
-                    .searchAffiliationAssurance(affiliationAssuranceChevauchementSearchModel);
+            AffiliationAssuranceSearchComplexModel affiliationAssuranceChevauchementSearchModel = searchCotisation(
+                    "searchCotisationCAPCGASChevauchement", decisionCap.getDateDebut(), decisionCap.getIdAffiliation());
 
             if (affiliationAssuranceChevauchementSearchModel.getSize() >= 1) {
                 throw new AurigaException(
@@ -1369,42 +1384,111 @@ public class DecisionCAPServiceImpl implements DecisionCAPService {
                         decisionCap.getDateDebut());
             }
 
-            BSession session = BSessionUtil.getSessionFromThreadContext();
+            createNewCotisationForFacturationPeriodique(cotisationToUpdate, decisionCap, decisionCap.getDateDebut(), "");
 
-            Boolean isExceptionPeriodicite = BConstants.DB_BOOLEAN_TRUE.equalsIgnoreCase(cotisationToUpdate
-                    .getExceptionPeriodicite());
-            Boolean isMaisonMere = BConstants.DB_BOOLEAN_TRUE.equalsIgnoreCase(cotisationToUpdate.getMaisonMere());
+        } else if (isDecisionPartielleForAnneeCouranteWithoutRadiation) {
 
-            AFCotisation newCotisation = new AFCotisation();
-            newCotisation.setSession(session);
-            newCotisation.setAdhesionId(cotisationToUpdate.getAdhesionId());
-            newCotisation.setAnneeDecision(cotisationToUpdate.getAnneeDecision());
-            newCotisation.setAssuranceId(cotisationToUpdate.getAssuranceId());
-            newCotisation.setCategorieTauxId(cotisationToUpdate.getCategorieTauxId());
-            newCotisation.setDateDebut(decisionCap.getDateDebut());
-            newCotisation.setExceptionPeriodicite(isExceptionPeriodicite);
-            newCotisation.setMaisonMere(isMaisonMere);
-            newCotisation.setMasseAnnuelle(cotisationToUpdate.getMasseAnnuelle());
-            newCotisation.setMontantAnnuel(decisionCap.getCotisationAnnuelle());
-            newCotisation.setMontantTrimestriel(decisionCap.getCotisationTrimestrielle());
-            newCotisation.setMontantMensuel(decisionCap.getCotisationMensuelle());
-            newCotisation.setMontantSemestriel(cotisationToUpdate.getMontantSemestriel());
-            newCotisation.setPeriodicite(cotisationToUpdate.getPeriodicite());
-            newCotisation.setPlanAffiliationId(cotisationToUpdate.getPlanAffiliationId());
-            newCotisation.setPlanCaisseId(cotisationToUpdate.getPlanCaisseId());
-            newCotisation.setTauxAssuranceId(cotisationToUpdate.getTauxAssuranceId());
-            newCotisation.setTraitementMoisAnnee(cotisationToUpdate.getTraitementMoisAnnee());
+            AffiliationAssuranceSearchComplexModel cotisationSuivanteSearchModel = searchCotisation(
+                    "searchCotisationCAPCGASToUpdateAfterDecision", decisionCap.getDateFin(),
+                    decisionCap.getIdAffiliation());
 
-            newCotisation.add();
+            if (cotisationSuivanteSearchModel.getSize() <= 0) {
+
+                cotisationToUpdate.setDateFin(decisionCap.getDateFin());
+                cotisationToUpdate.setMotifFin(CodeSystem.MOTIF_FIN_MASSE);
+                cotisationToUpdate = setNewMontantForFacturationPeriodiqueInCotisation(cotisationToUpdate, decisionCap);
+
+                cotisationToUpdate = (CotisationSimpleModel) JadePersistenceManager.update(cotisationToUpdate);
+
+            } else {
+
+                CotisationSimpleModel cotisationSuivante = ((AffiliationAssuranceComplexModel) affiliationAssuranceSearchModel
+                        .getSearchResults()[0]).getCotisation();
+
+                if (cotisationToUpdate.getCotisationId().equalsIgnoreCase(cotisationSuivante.getCotisationId())) {
+
+                    String dateDebutForNewCotisation = cotisationToUpdate.getDateDebut();
+
+                    cotisationToUpdate.setDateDebut(new JACalendarGregorian().addDays(decisionCap.getDateFin(), 1));
+
+                    cotisationToUpdate = (CotisationSimpleModel) JadePersistenceManager.update(cotisationToUpdate);
+
+                    createNewCotisationForFacturationPeriodique(cotisationToUpdate, decisionCap,
+                            dateDebutForNewCotisation, decisionCap.getDateFin());
+
+                } else {
+
+                    cotisationSuivante.setDateDebut(new JACalendarGregorian().addDays(decisionCap.getDateFin(), 1));
+
+                    cotisationSuivante = (CotisationSimpleModel) JadePersistenceManager.update(cotisationSuivante);
+
+                    cotisationToUpdate.setDateFin(decisionCap.getDateFin());
+                    cotisationToUpdate.setMotifFin(CodeSystem.MOTIF_FIN_MASSE);
+                    cotisationToUpdate = setNewMontantForFacturationPeriodiqueInCotisation(cotisationToUpdate,
+                            decisionCap);
+
+                    cotisationToUpdate = (CotisationSimpleModel) JadePersistenceManager.update(cotisationToUpdate);
+
+                }
+
+            }
 
         } else {
 
-            cotisationToUpdate.setMontantAnnuel(decisionCap.getCotisationAnnuelle());
-            cotisationToUpdate.setMontantTrimestriel(decisionCap.getCotisationTrimestrielle());
-            cotisationToUpdate.setMontantMensuel(decisionCap.getCotisationMensuelle());
+            cotisationToUpdate = setNewMontantForFacturationPeriodiqueInCotisation(cotisationToUpdate, decisionCap);
 
             JadePersistenceManager.update(cotisationToUpdate);
         }
+
+    }
+
+    private CotisationSimpleModel setNewMontantForFacturationPeriodiqueInCotisation(
+            CotisationSimpleModel cotisationToUpdate, SimpleDecisionCAP decisionCap) {
+
+        cotisationToUpdate.setMontantAnnuel(decisionCap.getCotisationAnnuelle());
+        cotisationToUpdate.setMontantTrimestriel(decisionCap.getCotisationTrimestrielle());
+        cotisationToUpdate.setMontantMensuel(decisionCap.getCotisationMensuelle());
+
+        return cotisationToUpdate;
+
+    }
+
+    private void createNewCotisationForFacturationPeriodique(CotisationSimpleModel cotisationModele,
+            SimpleDecisionCAP decisionCap, String dateDebut, String dateFin) throws Exception {
+
+        BSession session = BSessionUtil.getSessionFromThreadContext();
+
+        Boolean isExceptionPeriodicite = BConstants.DB_BOOLEAN_TRUE.equalsIgnoreCase(cotisationModele
+                .getExceptionPeriodicite());
+        Boolean isMaisonMere = BConstants.DB_BOOLEAN_TRUE.equalsIgnoreCase(cotisationModele.getMaisonMere());
+
+        AFCotisation newCotisation = new AFCotisation();
+        newCotisation.setSession(session);
+        newCotisation.setAdhesionId(cotisationModele.getAdhesionId());
+        newCotisation.setAnneeDecision(cotisationModele.getAnneeDecision());
+        newCotisation.setAssuranceId(cotisationModele.getAssuranceId());
+        newCotisation.setCategorieTauxId(cotisationModele.getCategorieTauxId());
+        newCotisation.setDateDebut(dateDebut);
+
+        if (!JadeStringUtil.isBlankOrZero(dateFin)) {
+            newCotisation.setMotifFin(CodeSystem.MOTIF_FIN_MASSE);
+            newCotisation.setDateFin(dateFin);
+        }
+
+        newCotisation.setExceptionPeriodicite(isExceptionPeriodicite);
+        newCotisation.setMaisonMere(isMaisonMere);
+        newCotisation.setMasseAnnuelle(cotisationModele.getMasseAnnuelle());
+        newCotisation.setMontantAnnuel(decisionCap.getCotisationAnnuelle());
+        newCotisation.setMontantTrimestriel(decisionCap.getCotisationTrimestrielle());
+        newCotisation.setMontantMensuel(decisionCap.getCotisationMensuelle());
+        newCotisation.setMontantSemestriel(cotisationModele.getMontantSemestriel());
+        newCotisation.setPeriodicite(cotisationModele.getPeriodicite());
+        newCotisation.setPlanAffiliationId(cotisationModele.getPlanAffiliationId());
+        newCotisation.setPlanCaisseId(cotisationModele.getPlanCaisseId());
+        newCotisation.setTauxAssuranceId(cotisationModele.getTauxAssuranceId());
+        newCotisation.setTraitementMoisAnnee(cotisationModele.getTraitementMoisAnnee());
+
+        newCotisation.add();
 
     }
 
