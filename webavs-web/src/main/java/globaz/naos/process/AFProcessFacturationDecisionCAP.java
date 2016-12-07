@@ -251,8 +251,13 @@ public class AFProcessFacturationDecisionCAP extends BProcess {
             nbMoisAFacturer = (moisFinDecision - moisDebutDecision) + 1;
         }
 
+        AFAssurance PreviousAssurance = null;
+        if (!JadeStringUtil.isBlankOrZero(decisionCap.getIdDecisionRectifiee()) && calculAFRectif) {
+            PreviousAssurance = retrieveAssuranceOfDecisionCapRectifiee(decisionCap);
+        }
+
         // Cas avec AF
-        if (isAssuranceCAPWithAF(assurance)) {
+        if (isAssuranceCAPWithAF(assurance) || (PreviousAssurance != null && isAssuranceCAPWithAF(PreviousAssurance))) {
             String idTypeAfactAF = CodeSystem.TYPE_FACT_FACT_STANDARD;
             double montantAFDejaFacture = 0;
             CARubrique rubriqueAllocationEnfant = loadRubriqueAllocationEnfantCAP(decisionCap.getAnnee());
@@ -545,6 +550,30 @@ public class AFProcessFacturationDecisionCAP extends BProcess {
             listDecisionCapFacturee.add(decisionCap);
         }
         return listDecisionCapFacturee;
+    }
+
+    private AFAssurance retrieveAssuranceOfDecisionCapRectifiee(SimpleDecisionCAP decisionCapRectificative)
+            throws Exception {
+
+        try {
+
+            // initialisation du thread context et utilisation du contextjdbc
+            JadeThreadContext threadContext = AFAffiliationUtil.initContext(getSession());
+            JadeThreadActivator.startUsingJdbcContext(Thread.currentThread(), threadContext.getContext());
+
+            DecisionCAPService decisionCAPService = AurigaServiceLocator.getDecisionCAPService();
+            SimpleDecisionCAP decisionCAPRectifiee = decisionCAPService.read(decisionCapRectificative
+                    .getIdDecisionRectifiee());
+
+            return readAssurance(decisionCAPRectifiee.getIdAssurance());
+
+        } finally {
+
+            // stopper l'utilisation du context
+            JadeThreadActivator.stopUsingContext(Thread.currentThread());
+
+        }
+
     }
 
     /**
