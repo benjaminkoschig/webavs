@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import org.apache.log4j.Logger;
 import ch.globaz.common.domaine.Checkers;
 import ch.globaz.corvus.domaine.DemandeRente;
 import ch.globaz.jade.business.models.Langues;
@@ -485,7 +486,18 @@ public class REConfirmationAjournementOO extends REAbstractJobOO {
 
         // Ajoute dans l'entête de la lettre qui a traité le dossier si nécessaire
         if ("true".equals(getSession().getApplication().getProperty("isAfficherDossierTraitePar"))) {
-            crBean.setNomCollaborateur(getSession().getUserFullName());
+
+            String messageDossierTraitePar;
+            try {
+                messageDossierTraitePar = getBabelContainer().getTexte(catalogueLettreConfirmationAjournement, 1, 7);
+                messageDossierTraitePar += " " + getSession().getUserFullName();
+            } catch (Exception e) {
+                Logger.getLogger(REDecisionOO.class).info(e.getMessage(), e);
+                // Fait en sorte que la position/niveau n'est pas obligatoire, mais pris en compte si est défini
+                messageDossierTraitePar = getSession().getUserFullName();
+            }
+
+            crBean.setNomCollaborateur(messageDossierTraitePar);
             crBean.setTelCollaborateur(getSession().getUserInfo().getPhone());
         }
 
