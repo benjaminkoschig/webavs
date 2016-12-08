@@ -20,6 +20,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.application.PRAbstractApplication;
 import globaz.prestation.clone.factory.IPRCloneable;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.constantes.IConstantes;
 
@@ -166,12 +167,27 @@ public class APDroitMaternite extends APDroitLAPG implements IPRCloneable {
         pMgr.setForEtat(IAPPrestation.CS_ETAT_PRESTATION_ANNULE);
         pMgr.find(transaction, BManager.SIZE_NOLIMIT);
 
+        boolean foundPrestation = !pMgr.getContainer().isEmpty();
+
         for (Object prest : pMgr.getContainer()) {
             APPrestation prestation = (APPrestation) prest;
             prestation.setSession(getSession());
             prestation.setEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
             prestation.update(transaction);
         }
+
+        // Dans ce cas, le droit parent doit être remis dans l'état
+        // 'PARTIEL'.
+        if (foundPrestation) {
+            APDroitLAPG parent = new APDroitLAPG();
+            parent.setSession(getSession());
+            parent.setIdDroit(idDroitMat);
+            parent.retrieve(transaction);
+            PRAssert.notIsNew(parent, null);
+            parent.setEtat(IAPDroitLAPG.CS_ETAT_DROIT_PARTIEL);
+            parent.update(transaction);
+        }
+
     }
 
     @Override
