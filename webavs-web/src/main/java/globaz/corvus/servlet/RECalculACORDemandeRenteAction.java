@@ -14,13 +14,13 @@ import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.log.JadeLogger;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.servlet.PRDefaultAction;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -274,17 +274,27 @@ public class RECalculACORDemandeRenteAction extends PRDefaultAction {
                 "calculAcor.save");
 
         if ("true".equals(isActive)) {
+
             try {
                 String path = GlobazSystem.getApplication(REApplication.DEFAULT_APPLICATION_CORVUS).getProperty(
                         "calculAcor.path");
+
+                if (JadeStringUtil.isEmpty(path)) {
+                    throw new Exception(
+                            "Can not save the 'feuille de calculc ACOR' because property [calculAcor.path] is empty");
+                }
+
+                if (!path.endsWith("\\") && !path.endsWith("/")) {
+                    path += File.separatorChar;
+                }
+
                 if (caViewBean.getContenuFeuilleCalculXML() != null) {
                     Date d = new Date();
-                    String fileName = JadeDateUtil.getYMDDate(d) + "-" + d.getTime() + ".xml";
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+                    String filePath = path + JadeDateUtil.getYMDDate(d) + "-" + d.getTime() + ".xml";
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
                     writer.write(caViewBean.getContenuFeuilleCalculXML());
                     writer.newLine();
                     writer.close();
-                    JadeFsFacade.copyFile(fileName, path + fileName);
                 }
             } catch (Exception exception) {
                 // BZ 8253 - la description de l'exception est transmise au
