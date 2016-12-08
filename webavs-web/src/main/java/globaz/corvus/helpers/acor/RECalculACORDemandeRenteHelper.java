@@ -26,8 +26,6 @@ import globaz.corvus.db.ci.RERassemblementCIManager;
 import globaz.corvus.db.demandes.REDemandeRente;
 import globaz.corvus.db.demandes.REDemandeRenteAPI;
 import globaz.corvus.db.demandes.REDemandeRenteInvalidite;
-import globaz.corvus.db.demandes.REDemandeRenteJointDemande;
-import globaz.corvus.db.demandes.REDemandeRenteJointDemandeManager;
 import globaz.corvus.db.demandes.REDemandeRenteSurvivant;
 import globaz.corvus.db.demandes.REDemandeRenteVieillesse;
 import globaz.corvus.db.demandes.REPeriodeAPI;
@@ -60,7 +58,6 @@ import globaz.corvus.vb.acor.RECalculACORDemandeRenteViewBean;
 import globaz.corvus.vb.annonces.REAnnoncePonctuelleViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
-import globaz.ged.AirsConstants;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BManager;
@@ -78,9 +75,7 @@ import globaz.hera.api.ISFRelationFamiliale;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.ged.client.JadeGedFacade;
 import globaz.jade.log.JadeLogger;
-import globaz.jade.service.JadeTarget;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.acor.PRACORException;
 import globaz.prestation.acor.PRAcorFileContent;
@@ -93,10 +88,8 @@ import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRDateFormater;
-import globaz.prestation.tools.PRStringUtils;
 import globaz.prestation.utils.PRDateUtils;
 import globaz.prestation.utils.PRDateUtils.PRDateEquality;
-import globaz.pyxis.db.tiers.TITiersViewBean;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -109,7 +102,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import javax.servlet.ServletException;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -1038,7 +1030,6 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                         } else {
                             isDateEcheance = true;
                         }
-
                     }
                 }
 
@@ -1808,8 +1799,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
              * Dispatch des rentes accordées devant être déplacé dans une autre demande
              * Try/catch suivant uniquement pour donner du context à l'exception
              */
+            long idDemande = 0;
             try {
-                long idDemande = 0;
                 /*
                  * Si la demande à été copiée dans le traitement précédent, on travaille avec la copie de la demande
                  */
@@ -1839,46 +1830,42 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
              * vérifie que les rentes versées à tort soient bien rattachées à la bonne demande (en comparant la demande
              * sur laquelle est rattaché la rente du nouveau droit ayant permis de calculer cette rente versée à tort)
              */
-            for (String idDemandeRente : mapDemandeReset.keySet()) {
 
-                RERenteVerseeATortManager renteVerseeATortManager = new RERenteVerseeATortManager();
-                renteVerseeATortManager.setForIdDemandeRente(Long.parseLong(idDemandeRente));
-                renteVerseeATortManager.find(BManager.SIZE_NOLIMIT);
+            RERenteVerseeATortManager renteVerseeATortManager = new RERenteVerseeATortManager();
+            renteVerseeATortManager.setForIdDemandeRente(idDemande);
+            renteVerseeATortManager.find(BManager.SIZE_NOLIMIT);
 
-                for (RERenteVerseeATort uneRenteVerseeATort : renteVerseeATortManager.getContainerAsList()) {
+            for (RERenteVerseeATort uneRenteVerseeATort : renteVerseeATortManager.getContainerAsList()) {
 
-                    /*
-                     * Dans le cas où il n'y a pas d'ID de rente du nouveau droit (c'est à dire qu'il y avait un trou
-                     * dans
-                     * la période du nouveau droit), on ne fait rien pour la rente versée à tort
-                     */
-                    if (uneRenteVerseeATort.getIdRenteAccordeeNouveauDroit() == null) {
-                        continue;
-                    }
+                /*
+                 * Dans le cas où il n'y a pas d'ID de rente du nouveau droit (c'est à dire qu'il y avait un trou
+                 * dans
+                 * la période du nouveau droit), on ne fait rien pour la rente versée à tort
+                 */
+                if (uneRenteVerseeATort.getIdRenteAccordeeNouveauDroit() == null) {
+                    continue;
+                }
 
-                    RERenteAccordee renteAccordee = new RERenteAccordee();
-                    renteAccordee.setIdPrestationAccordee(uneRenteVerseeATort.getIdRenteAccordeeNouveauDroit()
-                            .toString());
-                    renteAccordee.retrieve();
+                RERenteAccordee renteAccordee = new RERenteAccordee();
+                renteAccordee.setIdPrestationAccordee(uneRenteVerseeATort.getIdRenteAccordeeNouveauDroit().toString());
+                renteAccordee.retrieve();
 
-                    REBasesCalcul baseCalcul = new REBasesCalcul();
-                    baseCalcul.setIdBasesCalcul(renteAccordee.getIdBaseCalcul());
-                    baseCalcul.retrieve();
+                REBasesCalcul baseCalcul = new REBasesCalcul();
+                baseCalcul.setIdBasesCalcul(renteAccordee.getIdBaseCalcul());
+                baseCalcul.retrieve();
 
-                    REDemandeRente demandeRente2 = new REDemandeRente();
-                    demandeRente2.setIdRenteCalculee(baseCalcul.getIdRenteCalculee());
-                    demandeRente2.setAlternateKey(REDemandeRente.ALTERNATE_KEY_ID_RENTE_CALCULEE);
-                    demandeRente2.retrieve();
+                REDemandeRente demandeRente2 = new REDemandeRente();
+                demandeRente2.setIdRenteCalculee(baseCalcul.getIdRenteCalculee());
+                demandeRente2.setAlternateKey(REDemandeRente.ALTERNATE_KEY_ID_RENTE_CALCULEE);
+                demandeRente2.retrieve();
 
-                    // si la demande sur laquelle est liée la rente accordée est différente de la demande de la rente
-                    // versée
-                    // à tort, on met à jour la rente versée à tort pour refléter la rente accordée
-                    if (!uneRenteVerseeATort.getIdDemandeRente().equals(
-                            Long.parseLong(demandeRente2.getIdDemandeRente()))) {
-                        uneRenteVerseeATort.retrieve();
-                        uneRenteVerseeATort.setIdDemandeRente(Long.parseLong(demandeRente2.getIdDemandeRente()));
-                        uneRenteVerseeATort.update();
-                    }
+                // si la demande sur laquelle est liée la rente accordée est différente de la demande de la rente
+                // versée
+                // à tort, on met à jour la rente versée à tort pour refléter la rente accordée
+                if (!uneRenteVerseeATort.getIdDemandeRente().equals(Long.parseLong(demandeRente2.getIdDemandeRente()))) {
+                    uneRenteVerseeATort.retrieve();
+                    uneRenteVerseeATort.setIdDemandeRente(Long.parseLong(demandeRente2.getIdDemandeRente()));
+                    uneRenteVerseeATort.update();
                 }
             }
 
@@ -2377,396 +2364,6 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
     private void doMigrationBasesCalculRentesAccordee(final BSession session, final BTransaction transaction,
             final List<Long> rentesAccordees, final RECalculACORDemandeRenteViewBean viewBean) throws Exception {
-
-        /*
-         * A la fin de l'importation, parcourir les rentes accordées de la demande pour éventuellement dispatcher
-         * certaines bc-ra-pd dans d'autres demandes
-         * 
-         * Traitement :
-         * 
-         * 1) On parcourt toutes les ra et stocke à chaque passage s'il y a une rente principale (10/20/13/23/50/70) 2)
-         * Si lors de l'itération il y a des rentes principales : --> si type différent de la demande de rente --> si
-         * idTiersBeneficiaire RA != idTiersRequerant RA
-         * 
-         * --> On va chercher une demande de rente pour le type de RA et l'idTiersBeneficiaire pour y mettre la ra, la
-         * bc, les pd ainsi que toutes les rentes complémentaires (54,55,etc...)
-         */
-
-        // La demande principale n'est plus forcément référencée dans le
-        // viewbean correctement, car en cas de création
-        // d'une nouvelle demande (clonage), le viewBean point toujours sur
-        // l'ancienne !!!
-
-        // Récupération de la demande de rente principal (le clone en cas de
-        // calcul d'une demande validée).
-        RERenteAccordee rrra = new RERenteAccordee();
-        rrra.setSession(session);
-        rrra.setIdPrestationAccordee(rentesAccordees.get(0).toString());
-        rrra.retrieve(transaction);
-
-        REBasesCalcul bc = new REBasesCalcul();
-        bc.setSession(session);
-        bc.setIdBasesCalcul(rrra.getIdBaseCalcul());
-        bc.retrieve(transaction);
-
-        REDemandeRente demandeRentePrincipale = new REDemandeRente();
-        demandeRentePrincipale.setSession(session);
-        demandeRentePrincipale.setAlternateKey(REDemandeRente.ALTERNATE_KEY_ID_RENTE_CALCULEE);
-        demandeRentePrincipale.setIdRenteCalculee(bc.getIdRenteCalculee());
-        demandeRentePrincipale.retrieve(transaction);
-        viewBean.setIdDemandeRente(demandeRentePrincipale.getIdDemandeRente());
-
-        mapDemandeReset.put(demandeRentePrincipale.getIdDemandeRente(), demandeRentePrincipale.getIdRenteCalculee());
-
-        RERenteAccJoinTblTiersJoinDemRenteManager raMgr = new RERenteAccJoinTblTiersJoinDemRenteManager();
-        raMgr.setSession(session);
-        raMgr.setForNoDemandeRente(demandeRentePrincipale.getIdDemandeRente());
-        raMgr.find(transaction);
-
-        /*
-         * Si le genre de rente est différent et qu'il n'existe aucune demande de ce type (même validée), il faut
-         * bloquer le calcul et indiquer l'erreur à l'utilisateur avec le détail de ce qu'il manque !
-         * 
-         * Cas 1 : Si idTiersDifférent, quel que soit le type, si pas de demande pour l'autre tiers, afficher erreur
-         * -------
-         * 
-         * Cas 2 : Si type différent, même pour le même tiers, si pas de demande pour l'autre type, afficher erreur
-         * -------
-         */
-
-        for (RERenteAccJoinTblTiersJoinDemandeRente ra : raMgr.getContainerAsList()) {
-
-            String msgError = session.getLabel("ERREUR_MANQUE_DEMANDE_RENTE");
-
-            PRTiersWrapper tier = PRTiersHelper.getTiersParId(session, ra.getIdTiersBaseCalcul());
-            if (tier != null) {
-                msgError = PRStringUtils.replaceString(
-                        msgError,
-                        "{nomPrenomTiers}",
-                        tier.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
-                                + tier.getProperty(PRTiersWrapper.PROPERTY_PRENOM));
-            }
-
-            // idTiers différents
-            if (!ra.getIdTiersBaseCalcul().equals(ra.getIdTierRequerant())) {
-
-                // recherche d'une demande avec l'idTiersBeneficiaire et le
-                // genre de la ra
-                REDemandeRenteJointDemandeManager demandeMgr = new REDemandeRenteJointDemandeManager();
-                demandeMgr.setSession(session);
-                demandeMgr.setForIdTiersRequ(ra.getIdTiersBaseCalcul());
-                demandeMgr.setForCsEtatDemande("");
-                demandeMgr.setForCsEtatDemandeIn(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_AU_CALCUL + ", "
-                        + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE + ", "
-                        + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_ENREGISTRE);
-
-                if (ra.isRAVieillesse().booleanValue()) {
-                    demandeMgr.setForCsTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE);
-                }
-
-                if (ra.isRAInvalidite().booleanValue()) {
-                    demandeMgr.setForCsTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE);
-                }
-
-                if (ra.isRASurvivant().booleanValue()) {
-                    demandeMgr.setForCsTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_SURVIVANT);
-                }
-
-                demandeMgr.find(transaction);
-
-                if (!demandeMgr.isEmpty()) {
-                    traitementDeplacementBCRAPD(
-                            ((REDemandeRenteJointDemande) demandeMgr.getFirstEntity()).getIdDemandeRente(),
-                            ra.getIdBaseCalcul(), session, transaction);
-                } else {
-                    demandeMgr.setForCsEtatDemande("");
-                    demandeMgr.setForCsEtatDemandeIn(null);
-                    demandeMgr.find();
-                    if (demandeMgr.isEmpty()) {
-                        msgError = PRStringUtils.replaceString(msgError, "{typeDemande}",
-                                session.getCodeLibelle(demandeMgr.getForCsType()));
-                        viewBean.setMsgType(FWViewBeanInterface.ERROR);
-                        viewBean.setMessage(msgError);
-                    } else {
-
-                        // BZ 4870
-                        // Si la demande qui vient d'être calculée a une rente ajournée (10)
-                        // et également une autre rente 10 non ajournée
-                        // on arrive ici si cette rente 10 doit être déplacée dans une copie de la demande
-                        // initiale (celle qui est validée et en cours)
-
-                        RERenteAccJoinTblTiersJoinDemRenteManager raMgr2 = new RERenteAccJoinTblTiersJoinDemRenteManager();
-                        raMgr2.setContainer(raMgr.getContainer());
-
-                        boolean is10ajournee = false;
-                        boolean is10calculee = false;
-
-                        for (RERenteAccJoinTblTiersJoinDemandeRente ra2 : raMgr2.getContainerAsList()) {
-
-                            if (ra2.getCsEtat().equals(IREPrestationAccordee.CS_ETAT_AJOURNE)
-                                    && ra2.getCodePrestation().equals("10")) {
-                                is10ajournee = true;
-                            }
-
-                            if (ra2.getCsEtat().equals(IREPrestationAccordee.CS_ETAT_CALCULE)
-                                    && ra2.getCodePrestation().equals("10")) {
-                                is10calculee = true;
-                            }
-
-                        }
-
-                        REDemandeRente demandeCopiee = new REDemandeRente();
-
-                        if (is10ajournee && is10calculee) {
-
-                            // Rechercher la demande à copier dans le demandeMgr
-                            for (int i = 0; i < demandeMgr.size(); i++) {
-                                REDemandeRenteJointDemande dem = (REDemandeRenteJointDemande) demandeMgr.get(i);
-
-                                if (dem.getCsEtatDemande().equals(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_VALIDE)
-                                        && JadeStringUtil.isBlankOrZero(dem.getDateFin())) {
-
-                                    // Copier la demande
-                                    REDemandeRente demande = REDemandeRente.loadDemandeRente(session, transaction,
-                                            dem.getIdDemandeRente(), dem.getCsTypeDemande());
-                                    demandeCopiee = REDemandeRegles.copierDemandeRente(session, transaction, demande);
-
-                                }
-                            }
-
-                            REDemandeRenteJointDemandeManager demandeMgr2 = new REDemandeRenteJointDemandeManager();
-                            demandeMgr2.setForIdDemandeRente(demandeCopiee.getIdDemandeRente());
-                            demandeMgr2.setSession(session);
-                            demandeMgr2.find();
-
-                            // Déplacer les bc-ra-pd
-                            traitementDeplacementBCRAPD(
-                                    ((REDemandeRenteJointDemande) demandeMgr2.getFirstEntity()).getIdDemandeRente(),
-                                    ra.getIdBaseCalcul(), session, transaction);
-
-                            try {
-                                // propagation du dossier GED, bz-6572
-                                if (JadeGedFacade.isInstalled()) {
-
-                                    JadeTarget target = JadeGedFacade.getInstance().getTarget("JadeGedFacade");
-                                    if (globaz.jade.ged.adapter.airs.JadeGedAdapter.class.isAssignableFrom(target
-                                            .getClass())) {
-
-                                        Properties properties = new Properties();
-
-                                        TITiersViewBean t = new TITiersViewBean();
-                                        t.setSession(session);
-                                        t.setIdTiers(viewBean.getIdTiers());
-                                        t.retrieve();
-
-                                        String p1, p2, p3, p4, p5 = "";
-                                        p1 = JadeStringUtil.removeChar(t.getNumAffilieActuel(), '.');
-                                        p1 = JadeStringUtil.removeChar(p1, '-');
-
-                                        p2 = JadeStringUtil.removeChar(t.getNumAvsActuel(), '.');
-                                        p3 = t.getDesignation1();
-                                        p4 = t.getDesignation2();
-                                        p5 = t.getLocaliteLong();
-
-                                        if (JadeStringUtil.isBlankOrZero(p1)) {
-                                            p1 = "";
-                                        }
-
-                                        if (JadeStringUtil.isBlankOrZero(p2)) {
-                                            p2 = "";
-                                        }
-
-                                        if (JadeStringUtil.isBlankOrZero(p3)) {
-                                            p3 = "";
-                                        }
-
-                                        if (JadeStringUtil.isBlankOrZero(p4)) {
-                                            p4 = "";
-                                        }
-
-                                        if (JadeStringUtil.isBlankOrZero(p5)) {
-                                            p5 = "";
-                                        }
-
-                                        properties.setProperty(AirsConstants.NAFF, p1);
-                                        properties.setProperty(AirsConstants.NNSS, p2);
-                                        properties.setProperty(AirsConstants.NOM, p3);
-                                        properties.setProperty(AirsConstants.PRENOM, p4);
-                                        properties.setProperty(AirsConstants.NPA, p5);
-                                        JadeGedFacade.propagate(properties);
-                                    }
-                                }
-                            } catch (Exception e) {
-                                System.out.println(e.toString());
-                            }
-
-                        }
-                    }
-                }
-
-            } else {
-                // IdTiers identique entre demande et RA
-                // type différent entre la ra et la demande
-                if ((ra.isRAVieillesse().booleanValue())
-                        && !demandeRentePrincipale.getCsTypeDemandeRente().equals(
-                                IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE)) {
-
-                    // recherche d'une demande de type vieillesse avec
-                    // l'idTierBeneficiaire de la ra
-                    REDemandeRenteJointDemandeManager demandeMgr = new REDemandeRenteJointDemandeManager();
-                    demandeMgr.setSession(session);
-                    demandeMgr.setForIdTiersRequ(ra.getIdTiersBaseCalcul());
-                    demandeMgr.setForCsEtatDemande("");
-                    demandeMgr.setForCsEtatDemandeIn(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_AU_CALCUL + ", "
-                            + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE + ", "
-                            + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_ENREGISTRE);
-                    demandeMgr.setForCsTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE);
-                    demandeMgr.find(transaction);
-
-                    if (!demandeMgr.isEmpty()) {
-                        traitementDeplacementBCRAPD(
-                                ((REDemandeRenteJointDemande) demandeMgr.getFirstEntity()).getIdDemandeRente(),
-                                ra.getIdBaseCalcul(), session, transaction);
-                    } else {
-                        demandeMgr.setForCsEtatDemande("");
-                        demandeMgr.setForCsEtatDemandeIn(null);
-                        demandeMgr.find();
-                        if (demandeMgr.isEmpty()) {
-                            msgError = PRStringUtils.replaceString(msgError, "{typeDemande}",
-                                    session.getCodeLibelle(demandeMgr.getForCsType()));
-                            viewBean.setMsgType(FWViewBeanInterface.ERROR);
-                            viewBean.setMessage(msgError);
-                        }
-                    }
-
-                } else if ((ra.isRAInvalidite().booleanValue())
-                        && !demandeRentePrincipale.getCsTypeDemandeRente().equals(
-                                IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE)) {
-
-                    // recherche d'une demande de type invalidité avec
-                    // l'idTierBeneficiaire de la ra
-                    REDemandeRenteJointDemandeManager demandeMgr = new REDemandeRenteJointDemandeManager();
-                    demandeMgr.setSession(session);
-                    demandeMgr.setForIdTiersRequ(ra.getIdTiersBaseCalcul());
-                    demandeMgr.setForCsEtatDemande("");
-                    demandeMgr.setForCsEtatDemandeIn(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_AU_CALCUL + ", "
-                            + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE + ", "
-                            + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_ENREGISTRE);
-                    demandeMgr.setForCsTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE);
-                    demandeMgr.find(transaction);
-
-                    if (!demandeMgr.isEmpty()) {
-                        traitementDeplacementBCRAPD(
-                                ((REDemandeRenteJointDemande) demandeMgr.getFirstEntity()).getIdDemandeRente(),
-                                ra.getIdBaseCalcul(), session, transaction);
-                    } else {
-                        demandeMgr.setForCsEtatDemande("");
-                        demandeMgr.setForCsEtatDemandeIn(null);
-                        demandeMgr.find();
-                        if (demandeMgr.isEmpty()) {
-                            msgError = PRStringUtils.replaceString(msgError, "{typeDemande}",
-                                    session.getCodeLibelle(demandeMgr.getForCsType()));
-                            viewBean.setMsgType(FWViewBeanInterface.ERROR);
-                            viewBean.setMessage(msgError);
-                        }
-                    }
-
-                } else if ((ra.isRASurvivant().booleanValue())
-                        && !demandeRentePrincipale.getCsTypeDemandeRente().equals(
-                                IREDemandeRente.CS_TYPE_DEMANDE_RENTE_SURVIVANT)) {
-
-                    // recherche d'une demande de type survivant avec
-                    // l'idTierBeneficiaire de la ra
-                    REDemandeRenteJointDemandeManager demandeMgr = new REDemandeRenteJointDemandeManager();
-                    demandeMgr.setSession(session);
-                    demandeMgr.setForIdTiersRequ(ra.getIdTiersBaseCalcul());
-                    demandeMgr.setForCsEtatDemande("");
-                    demandeMgr.setForCsEtatDemandeIn(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_AU_CALCUL + ", "
-                            + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE + ", "
-                            + IREDemandeRente.CS_ETAT_DEMANDE_RENTE_ENREGISTRE);
-                    demandeMgr.setForCsTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_SURVIVANT);
-                    demandeMgr.find(transaction);
-
-                    if (!demandeMgr.isEmpty()) {
-                        traitementDeplacementBCRAPD(
-                                ((REDemandeRenteJointDemande) demandeMgr.getFirstEntity()).getIdDemandeRente(),
-                                ra.getIdBaseCalcul(), session, transaction);
-                    } else {
-                        demandeMgr.setForCsEtatDemande("");
-                        demandeMgr.setForCsEtatDemandeIn(null);
-                        demandeMgr.find();
-                        if (demandeMgr.isEmpty()) {
-                            msgError = PRStringUtils.replaceString(msgError, "{typeDemande}",
-                                    session.getCodeLibelle(demandeMgr.getForCsType()));
-                            viewBean.setMsgType(FWViewBeanInterface.ERROR);
-                            viewBean.setMessage(msgError);
-                        }
-                    }
-
-                }
-
-            }
-
-        }
-
-        // Mettre à jour toutes les demandes qui ont été modifiées
-        for (String idDemandeRente : mapDemandeReset.keySet()) {
-
-            REDemandeRente demRente = new REDemandeRente();
-            demRente.setIdDemandeRente(idDemandeRente);
-            demRente.setSession(session);
-            demRente.retrieve(transaction);
-
-            demRente.setCsEtat(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_CALCULE);
-            demRente.setIdRenteCalculee(mapDemandeReset.get(idDemandeRente));
-
-            RERenteAccJoinTblTiersJoinDemRenteManager raMgr2 = new RERenteAccJoinTblTiersJoinDemRenteManager();
-            raMgr2.setSession(session);
-            raMgr2.setForNoDemandeRente(demRente.getIdDemandeRente());
-            raMgr2.find(transaction);
-
-            String dd = DATE_DEBUT_DEMANDE;
-            String df = DATE_FIN_DEMANDE;
-            boolean isPeriodeInfinie = false;
-            JACalendar cal = new JACalendarGregorian();
-
-            for (RERenteAccJoinTblTiersJoinDemandeRente ra2 : raMgr2.getContainerAsList()) {
-
-                if (cal.compare(dd, ra2.getDateDebutDroit()) == JACalendar.COMPARE_SECONDLOWER) {
-                    dd = ra2.getDateDebutDroit();
-                }
-
-                if (JadeStringUtil.isBlankOrZero(ra2.getDateFinDroit())) {
-                    isPeriodeInfinie = true;
-                } else {
-                    // pour la date de fin, il faut prendre le dernier jour du
-                    // mois et non pas le premier
-                    // comme le fait les JADate
-                    JACalendarGregorian calendar = new JACalendarGregorian();
-                    JADate ra2Df = calendar.addMonths(new JADate(ra2.getDateFinDroit()), 1);
-                    ra2Df = calendar.addDays(ra2Df, -1);
-
-                    if (cal.compare(df, ra2Df.toStr(".")) == JACalendar.COMPARE_SECONDUPPER) {
-                        df = ra2Df.toStr(".");
-                    }
-                }
-            }
-
-            // Rechercher toutes les ra pour avoir la plus petite date de début
-            demRente.setDateDebut(dd);
-            // et la plus grande date de fin (ou vide)
-            if (isPeriodeInfinie) {
-                demRente.setDateFin("");
-            } else {
-                demRente.setDateFin(df);
-            }
-
-            demRente.setDateTraitement(REACORParser.retrieveDateTraitement(demRente));
-
-            demRente.update(transaction);
-
-        }
-
     }
 
     private void doTraitementCIAdd(final BSession session, final BITransaction transaction, final KeyAP k,
