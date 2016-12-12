@@ -415,19 +415,17 @@ public final class CPProcessFacturation extends BProcess {
                                             + getDecision().getIdDecision());
                                 }
                                 afact.setNumCaisse(numCaisse);
-                                afact.setIdTypeAfact(FAAfact.CS_AFACT_STANDART);
+
                                 if (Boolean.TRUE.equals(getDecision().isComplementaire())) {
                                     float miseEnCompteDejaFacture = Float.parseFloat(JANumberFormatter
                                             .deQuote(CPToolBox.rechMontantFacture(getSession(), getTransaction(),
                                                     getCompteAnnexe().getIdCompteAnnexe(), afact.getIdRubrique(),
                                                     getDecision().getAnneeDecision())));
-                                    // miseEnCompteDejaFacture = (float) 0 -
-                                    // miseEnCompteDejaFacture;
-                                    FWCurrency varCurrency = new FWCurrency(miseEnCompte);
-                                    varCurrency.sub(new FWCurrency(miseEnCompteDejaFacture));
-                                    miseEnCompte = varCurrency.floatValue();
-                                    afact.setMontantFacture(Float.toString(miseEnCompte));
+                                    afact.setIdTypeAfact(FAAfact.CS_AFACT_TABLEAU);
+                                    afact.setMontantInitial(Float.toString(miseEnCompte));
+                                    afact.setMontantDejaFacture(Float.toString(miseEnCompteDejaFacture));
                                 } else {
+                                    afact.setIdTypeAfact(FAAfact.CS_AFACT_STANDART);
                                     afact.setMontantFacture(Float.toString(miseEnCompte));
 
                                 }
