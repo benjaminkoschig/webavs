@@ -533,15 +533,16 @@ public class CETraitementReinjectionProcess extends BProcess {
                 if (JadeStringUtil.isEmpty(visaReviseur)) {
                     transaction.addErrors(getSession().getLabel("REINJECTION_ERROR_CONTROLE_EXISTE_SANS_REVISEUR")
                             + " : " + numAffilie);
-                }
-                String idReviseur = retrieveIdReviseur(getSession(), transaction, visaReviseur);
-                if (!JadeStringUtil.isBlankOrZero(idReviseur)) {
-                    controle.setIdReviseur(idReviseur);
-                    controle.update(transaction);
                 } else {
-                    transaction.addErrors(getSession().getLabel("REINJECTION_REVISEUR_INCONNU") + " : " + numAffilie);
+                    String idReviseur = retrieveIdReviseur(getSession(), transaction, visaReviseur);
+                    if (!JadeStringUtil.isBlankOrZero(idReviseur)) {
+                        controle.setIdReviseur(idReviseur);
+                        controle.update(transaction);
+                    } else {
+                        transaction.addErrors(getSession().getLabel("REINJECTION_REVISEUR_INCONNU") + " : "
+                                + numAffilie);
+                    }
                 }
-
             } else if (!transaction.hasErrors()) {
                 // Comme le contrôle n'est pas existant on l'insère en BD
                 CEControleEmployeur newControle = new CEControleEmployeur();
