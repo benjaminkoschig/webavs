@@ -249,7 +249,8 @@ public class IJCorrigerDepuisPrononce {
     private boolean isDateCorrectionEntreDateDebutEtFinPrononce(final String dateCorrection,
             final String dateDebutPrononce, final String dateFinPrononce) throws JAException {
         if ((myJACalendar.compare(dateDebutPrononce, dateCorrection) == JACalendar.COMPARE_FIRSTLOWER)
-                && (myJACalendar.compare(dateFinPrononce, dateCorrection) == JACalendar.COMPARE_FIRSTUPPER)) {
+                && (myJACalendar.compare(dateFinPrononce, dateCorrection) == JACalendar.COMPARE_FIRSTUPPER || myJACalendar
+                        .compare(dateFinPrononce, dateCorrection) == JACalendar.COMPARE_EQUALS)) {
 
             return true;
         } else {
@@ -264,16 +265,6 @@ public class IJCorrigerDepuisPrononce {
         if (myJACalendar.compare(dateDebutPrononce, dateCorrection) == JACalendar.COMPARE_EQUALS) {
             corrigePrononceErreur = CorrigerPrononceErreur.DATE_EGAL_DEBUT;
             CorrigerPrononceErreur.DATE_EGAL_DEBUT.addErreur(dateCorrection, dateDebutPrononce, dateFinPrononce);
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isDateFinPrononceEgalDateCorrection(final String dateCorrection, final String dateDebutPrononce,
-            final String dateFinPrononce) throws JAException {
-        if (myJACalendar.compare(dateFinPrononce, dateCorrection) == JACalendar.COMPARE_EQUALS) {
-            corrigePrononceErreur = CorrigerPrononceErreur.DATE_EGAL_FIN;
-            CorrigerPrononceErreur.DATE_EGAL_FIN.addErreur(dateCorrection, dateDebutPrononce, dateFinPrononce);
             return false;
         }
         return true;
@@ -320,9 +311,6 @@ public class IJCorrigerDepuisPrononce {
 
         checkArgument(dateCorrection);
 
-        String dateBaseIndemnDebutErreur = new String();
-        String dateBaseIndemnFinErreur = new String();
-
         // Comparaison des dates
         for (int i = 0; i < baseIndemnisationManager.size(); i++) {
             IJBaseIndemnisation baseIndemnisation = (IJBaseIndemnisation) baseIndemnisationManager.getEntity(i);
@@ -336,12 +324,9 @@ public class IJCorrigerDepuisPrononce {
                     && ((myJACalendar.compare(baseIndemnisation.getDateFinPeriode(), dateCorrection) == JACalendar.COMPARE_FIRSTUPPER) || (myJACalendar
                             .compare(baseIndemnisation.getDateFinPeriode(), dateCorrection) == JACalendar.COMPARE_EQUALS))) {
 
-                dateBaseIndemnDebutErreur = baseIndemnisation.getDateDebutPeriode();
-                dateBaseIndemnFinErreur = baseIndemnisation.getDateFinPeriode();
-
                 corrigePrononceErreur = CorrigerPrononceErreur.DATE_DANS_BASE;
-                CorrigerPrononceErreur.DATE_DANS_BASE.addErreur(dateCorrection, dateBaseIndemnDebutErreur,
-                        dateBaseIndemnFinErreur);
+                CorrigerPrononceErreur.DATE_DANS_BASE.addErreur(dateCorrection,
+                        baseIndemnisation.getDateDebutPeriode(), baseIndemnisation.getDateFinPeriode());
 
                 return false;
             } else {
@@ -349,14 +334,6 @@ public class IJCorrigerDepuisPrononce {
                     continue;
                 }
             }
-
-            if ((myJACalendar.compare(baseIndemnisation.getDateDebutPeriode(), dateCorrection) == JACalendar.COMPARE_FIRSTLOWER)
-                    || ((myJACalendar.compare(baseIndemnisation.getDateFinPeriode(), dateCorrection) == JACalendar.COMPARE_EQUALS) && ((myJACalendar
-                            .compare(baseIndemnisation.getDateFinPeriode(), dateCorrection) == JACalendar.COMPARE_FIRSTUPPER)))) {
-                dateBaseIndemnDebutErreur = baseIndemnisation.getDateDebutPeriode();
-                dateBaseIndemnFinErreur = baseIndemnisation.getDateFinPeriode();
-            }
-
         }
 
         return true;
@@ -378,11 +355,7 @@ public class IJCorrigerDepuisPrononce {
         checkArgument(dateDebutPrononce);
         checkArgument(dateFinPrononce);
 
-        if (isDateDebutPrononceEgalDateCorrection(dateCorrection, dateDebutPrononce, dateFinPrononce) == false) {
-            return false;
-        }
-
-        if (isDateFinPrononceEgalDateCorrection(dateCorrection, dateDebutPrononce, dateFinPrononce) == false) {
+        if (!isDateDebutPrononceEgalDateCorrection(dateCorrection, dateDebutPrononce, dateFinPrononce)) {
             return false;
         }
 

@@ -171,4 +171,38 @@ public class IJCorrigeDepuisPrononceTest {
 
         Assert.assertTrue(resultat);
     }
+
+    /**
+     * Test Date dans le prononcé avec date correction = date de début
+     */
+    @Test
+    public void testVerifierDateCorrectionDansPrononceCasDateCorrectionMemeQueDebut() throws IllegalArgumentException,
+            Exception {
+
+        String dateCorrection = "01.07.2013";
+        String dateDebutPrononce = "01.07.2013";
+        String dateFinPrononce = "31.07.2013";
+
+        boolean resultat = new IJCorrigerDepuisPrononce().verifierDateCorrectionDansPrononce(dateCorrection,
+                dateDebutPrononce, dateFinPrononce);
+
+        Assert.assertFalse(resultat);
+    }
+
+    /**
+     * Test Date dans le prononcé avec date correction = date de fin
+     */
+    @Test
+    public void testVerifierDateCorrectionDansPrononceCasDateCorrectionMemeQueFin() throws IllegalArgumentException,
+            Exception {
+
+        String dateCorrection = "31.07.2013";
+        String dateDebutPrononce = "01.07.2013";
+        String dateFinPrononce = "31.07.2013";
+
+        boolean resultat = new IJCorrigerDepuisPrononce().verifierDateCorrectionDansPrononce(dateCorrection,
+                dateDebutPrononce, dateFinPrononce);
+
+        Assert.assertTrue(resultat);
+    }
 }
