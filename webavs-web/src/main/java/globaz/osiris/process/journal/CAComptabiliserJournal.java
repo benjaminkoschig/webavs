@@ -459,7 +459,7 @@ public class CAComptabiliserJournal {
         interetTardif.setIdSection(sectionDuJournal.getIdSection());
 
         if (!CAInteretTardif.isNouveauCalculPoursuite(context.getSession(),
-            interetTardif.getSection(context.getSession(), context.getTransaction()))) {
+                interetTardif.getSection(context.getSession(), context.getTransaction()))) {
             interetTardif.setIdJournal(journal.getIdJournal());
             interetTardif.calculer(context.getSession(), context.getTransaction());
         }
@@ -587,20 +587,14 @@ public class CAComptabiliserJournal {
             String modeTraitementBulletinNeutreParDefaut = CAApplication.getApplicationOsiris().getCAParametres()
                     .getModeParDefautBulletinNeutre();
 
-            // System.out.println("oca>> Start processIterationForActivation " + new Date());
             if (!processIterationForActivation(context, readTransaction, journal, modeTraitementBulletinNeutreParDefaut)
                     || context.isAborted()) {
                 return false;
             }
-            // System.out.println("oca>> Completed  " + new Date());
 
-            // System.out.println("oca>> Start calculerInteretsOP " + new Date());
             calculerInteretsOP(context, journal.getIdJournal());
-            // System.out.println("oca>> Completed  " + new Date());
 
-            // System.out.println("oca>> Start processIterationForLissage " + new Date());
             processIterationForLissage(context, readTransaction, journal);
-            // System.out.println("oca>> Completed  " + new Date());
 
             if (context.isAborted()) {
                 return false;
@@ -615,16 +609,12 @@ public class CAComptabiliserJournal {
                 }
             }
 
-            // System.out.println("oca>> Start processIterationForComptabilisation " + new Date());
             processIterationForComptabilisation(context, readTransaction, journal, journalCg);
-            // System.out.println("oca>> Completed  " + new Date());
 
             if (context.isAborted()) {
                 return false;
             }
-            // System.out.println("oca>> Start calculerInteretsMoratoires " + new Date());
             calculerInteretsMoratoires(context, readTransaction, journal);
-            // System.out.println("oca>> Completed  " + new Date());
 
             if (context.isAborted()) {
                 return false;

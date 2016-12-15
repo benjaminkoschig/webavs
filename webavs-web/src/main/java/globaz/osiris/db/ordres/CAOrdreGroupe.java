@@ -1246,6 +1246,14 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                 if (!getJournal().getEtat().equals(CAJournal.COMPTABILISE)) {
                     // Demander la comptabilisation du journal
                     if (!new CAComptabiliserJournal().comptabiliser(context, getJournal())) {
+                        // WEBAVS-3505 les erreurs du journal n'apparaissent pas dans le mail, remonter pour info la
+                        // première
+                        // (validation de l'OG complet)
+                        if (getJournal().getMemoryLog() != null && getJournal().getMemoryLog().size() > 0) {
+                            _addError(context.getTransaction(), getJournal().getMemoryLog().getMessage(0)
+                                    .getComplement()
+                                    + "\n...");
+                        }
                         _addError(context.getTransaction(), getSession().getLabel("5226"));
                         return;
                     }
