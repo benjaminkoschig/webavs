@@ -125,7 +125,7 @@
 	if (!decisions.isEmpty() && decisions.getNbDecisionInvalidables() == 0) {
 %>
 	<td class="mtd">
-		<input title="-" type="checkbox" name="checkBox" value="<%=dem.getIdDemandeRente()%>" onclick="onButtonDisabled();" />
+		<input title="-" type="checkbox" name="checkBox" value="<%=dem.getIdDemandeRente()%>_<%=dem.getIdDemandePrestation() %>" onclick="onButtonDisabled();" />
 	</td>
 	<td class="mtd" nowrap><%=dem.getDetailRequerantDecede()%></td>
 	<td colspan="10" nowrap>&nbsp;</td>

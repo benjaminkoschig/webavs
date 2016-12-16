@@ -1,8 +1,6 @@
 package globaz.corvus.helpers.decisions;
 
 import globaz.corvus.db.decisions.REDecisionEntity;
-import globaz.corvus.db.demandes.REDemandeRente;
-import globaz.corvus.db.demandes.REDemandeRenteManager;
 import globaz.corvus.helpers.process.REValiderDecisionsHelper;
 import globaz.corvus.vb.decisions.REDecisionsListViewBean;
 import globaz.corvus.vb.demandes.REDemandeRenteJointDemandeViewBean;
@@ -29,7 +27,14 @@ public class REValiderGroupeDecisionsHelper extends PRAbstractHelper {
 
         try {
             // Pour chaque demande sélectionnée
-            for (String idDemandeRente : vb.getListeIdDemande()) {
+            for (String idDemandeRenteToSplit : vb.getListeIdDemande()) {
+
+                // WEBAVS - 3497 -> on a besoin de l'idDemandePrestation pour faire le lien avec PRDEMAP || split de
+                // idDemandeRente_idDemandePrestation
+                String[] tableIDsSplitted = idDemandeRenteToSplit.split("_");
+
+                String idDemandeRente = tableIDsSplitted[0];
+                String idDemandePrestation = tableIDsSplitted[1];
 
                 /*
                  * LGA : BZ 6744 -6984 -4570
@@ -49,20 +54,11 @@ public class REValiderGroupeDecisionsHelper extends PRAbstractHelper {
                 if (mgr.isEmpty()) {
                     errorMessageBuilder.append("Pas de décision pour la demande : ").append(vb.getIdDemandeRente());
                 } else {
-
-                    // récupérer la demande
-                    REDemandeRenteManager demandeRenteManager = new REDemandeRenteManager();
-                    demandeRenteManager.setForIdDemandeRente(idDemandeRente);
-                    demandeRenteManager.setSession((BSession) session);
-                    demandeRenteManager.find(transaction, BManager.SIZE_NOLIMIT);
-
-                    REDemandeRente demandeRente = (REDemandeRente) demandeRenteManager.getFirstEntity();
-
                     REDecisionEntity decision = (REDecisionEntity) mgr.getFirstEntity();
 
                     PRDemande demande = new PRDemande();
                     demande.setSession((BSession) session);
-                    demande.setIdDemande(demandeRente.getIdDemandePrestation());
+                    demande.setIdDemande(idDemandePrestation);
                     demande.retrieve();
 
                     if (!demande.isNew()) {

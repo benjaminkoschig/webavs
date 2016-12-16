@@ -57,6 +57,7 @@ public class REValiderGroupeDecisionsManager extends PRAbstractManager {
         sql.append(REDemandeRente.FIELDNAME_CS_ETAT).append(", ");
         sql.append(REDemandeRente.FIELDNAME_ID_GESTIONNAIRE).append(", ");
         sql.append(REDemandeRente.FIELDNAME_ID_DEMANDE_RENTE).append(", ");
+        sql.append(REDemandeRente.FIELDNAME_ID_DEMANDE_PRESTATION).append(", ");
         sql.append(REDemandeRente.FIELDNAME_ID_RENTE_CALCULEE).append(", ");
         sql.append(REDemandeRente.FIELDNAME_CS_TYPE_CALCUL).append(", ");
         sql.append(REDemandeRenteJointDemande.FIELDNAME_NUM_AVS).append(", ");
