@@ -3,13 +3,17 @@
  */
 package globaz.corvus.helpers.process;
 
+import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.process.REEnvoyerAnnoncesProcess;
+import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.vb.process.REEnvoyerAnnoncesViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWHelper;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BSession;
+import globaz.globall.util.JADate;
+import globaz.globall.util.JAException;
 
 /**
  * <H1>Description</H1>
@@ -31,12 +35,51 @@ public class REEnvoyerAnnoncesHelper extends FWHelper {
     protected void _start(FWViewBeanInterface viewBean, FWAction action, BISession session) {
         REEnvoyerAnnoncesViewBean eaViewBean = (REEnvoyerAnnoncesViewBean) viewBean;
 
-        REEnvoyerAnnoncesProcess process = new REEnvoyerAnnoncesProcess((BSession) session);
+        if (valider((BSession) session, viewBean)) {
+            REEnvoyerAnnoncesProcess process = new REEnvoyerAnnoncesProcess((BSession) session);
 
-        process.setEMailAddress(eaViewBean.getEMailAddress());
-        process.setForDateEnvoi(eaViewBean.getForDateEnvoi());
-        process.setForMoisAnneeComptable(eaViewBean.getForMoisAnneeComptable());
-        process.setIsForAnnoncesSubsequentes(false);
-        process.start();
+            process.setEMailAddress(eaViewBean.getEMailAddress());
+            process.setForDateEnvoi(eaViewBean.getForDateEnvoi());
+            process.setForMoisAnneeComptable(eaViewBean.getForMoisAnneeComptable());
+            process.setIsForAnnoncesSubsequentes(false);
+            process.start();
+        }
     }
+
+    /**
+     * Valider les données du viewBean pour empêcher les process foireux
+     * 
+     * @param session
+     * @param viewBean référence vers le viewBean (doit être un REEnvoyerAnnoncesViewBean)
+     * @return false si non validé, les messages d'erreurs sont remontés dans le viewBean
+     */
+    private boolean valider(BSession session, FWViewBeanInterface viewBean) {
+        REEnvoyerAnnoncesViewBean eaViewBean = (REEnvoyerAnnoncesViewBean) viewBean;
+        if (!eaViewBean.getForMoisAnneeComptable().matches("^(0[1-9]{1}|1[0-2]{1}).\\d{4}$")) {
+            viewBean.setMsgType(FWViewBeanInterface.ERROR);
+            viewBean.setMessage(session.getLabel("VALID_MOIS_ANNEE_COMPTABLE"));
+            return false;
+        } else {
+            String dateDernierPaiement = REPmtMensuel.getDateDernierPmt(session);
+            if (REPmtMensuel.DATE_NON_TROUVEE_POUR_DERNIER_PAIEMENT.equals(dateDernierPaiement)) {
+                String message = session.getLabel("ERREUR_IMPOSSIBLE_RETROUVER_DATE_DERNIER_PAIEMENT");
+                throw new RETechnicalException(message);
+            }
+            try {
+                JADate moisEncours = new JADate(dateDernierPaiement);
+                int encours = moisEncours.getYear() * 12 + moisEncours.getMonth();
+                JADate dateProcess = new JADate(eaViewBean.getForMoisAnneeComptable());
+                int moisProcess = dateProcess.getYear() * 12 + dateProcess.getMonth();
+                if (encours - moisProcess > 1 || encours - moisProcess < 0) {
+                    viewBean.setMsgType(FWViewBeanInterface.ERROR);
+                    viewBean.setMessage(session.getLabel("VALID_MOIS_ANNEE_COMPTABLE"));
+                    return false;
+                }
+            } catch (JAException e) {
+                throw new RETechnicalException(e);
+            }
+        }
+        return true;
+    }
+
 }

@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ch.admin.ofit.anakin.donnee.AnnonceErreur;
 
 /**
@@ -39,6 +41,8 @@ import ch.admin.ofit.anakin.donnee.AnnonceErreur;
  * @author JJE
  */
 public class REEnvoyerAnnoncesProcess extends BProcess {
+
+    private static final Logger LOG = LoggerFactory.getLogger(REEnvoyerAnnoncesProcess.class);
 
     // ~ Static fields/initializers
     // -------------------------------------------------------------------------------------
@@ -123,7 +127,6 @@ public class REEnvoyerAnnoncesProcess extends BProcess {
             // mois et annee Comptable est différent
 
             // si il ne s'agit pas d'une réannonce
-            // if (JAUtil.isDateEmpty(forDateEnvoi)) {
             mgr = new REAnnoncesAbstractLevel1AManager();
             mgr.setHasAvsHistory(false);
             mgr.setSession(session);
@@ -145,7 +148,7 @@ public class REEnvoyerAnnoncesProcess extends BProcess {
                 try {
                     prepareEnvoieAnnonce(annonce);
                 } catch (Exception ex) {
-                    String err = "";
+                    String err;
                     if (ex.getMessage() != null) {
                         err = ex.getMessage();
                     } else {
@@ -232,20 +235,18 @@ public class REEnvoyerAnnoncesProcess extends BProcess {
             envoieAnnonces();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            String message = getSession().getLabel("ENVOYER_ANNONCES");
+            LOG.warn(message, e);
 
             StringBuilder messageBuilder = new StringBuilder();
 
-            getMemoryLog().logMessage(messageBuilder.toString(), FWMessage.ERREUR,
-                    getSession().getLabel("ENVOYER_ANNONCES"));
-            getMemoryLog()
-                    .logMessage(e.toString() + "}\n", FWMessage.ERREUR, getSession().getLabel("ENVOYER_ANNONCES"));
+            getMemoryLog().logMessage(messageBuilder.toString(), FWMessage.ERREUR, message);
+            getMemoryLog().logMessage(e.toString() + "}\n", FWMessage.ERREUR, message);
 
             try {
                 getTransaction().rollback();
             } catch (Exception e1) {
-                e1.printStackTrace();
-                System.out.println(e1.toString());
+                LOG.error(message, e);
             }
             return false;
         }
@@ -285,7 +286,7 @@ public class REEnvoyerAnnoncesProcess extends BProcess {
 
         Iterator<Map<String, String>> iter = annoncesAEnvoyer.iterator();
         String currentNSS = "";
-        String previousNSS = "";
+        String previousNSS;
 
         while (iter.hasNext()) {
             previousNSS = currentNSS;
@@ -314,7 +315,7 @@ public class REEnvoyerAnnoncesProcess extends BProcess {
 
                         errorMsg += " !arc.préc! : " + previousNSS;
                     }
-                    throw new Exception(errorMsg);
+                    throw new Exception(errorMsg, e);
                 } else {
                     throw e;
                 }

@@ -153,7 +153,6 @@ public class REEnvoyerAnnoncesViewBean extends PRAbstractViewBeanSupport {
      */
     @Override
     public boolean validate() {
-        // TODO
         return true;
     }
 }
