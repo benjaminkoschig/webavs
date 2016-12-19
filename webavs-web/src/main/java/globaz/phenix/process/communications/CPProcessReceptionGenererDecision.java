@@ -217,9 +217,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                     && !isAborted()) {
                 traitementConjoint = false;
                 // Si etat = générer => suppression des décisions
-                // if(CPCommunicationFiscaleRetourViewBean.CS_GENERER.equalsIgnoreCase(retour.getStatus())){
                 retour.setJournalRetour(getJournal());
-                // }
                 String canton = getJournal().getCanton();
                 if (CPJournalRetour.CS_CANTON_SEDEX.equalsIgnoreCase(canton)) {
                     CPSedexContribuable contri = new CPSedexContribuable();
@@ -623,11 +621,6 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                 cotisation = cotisation._retourCotisation(getTransaction(), affiliation.getAffiliationId(),
                         newDecision.getAnneeDecision(), globaz.naos.translation.CodeSystem.GENRE_ASS_PERSONNEL,
                         globaz.naos.translation.CodeSystem.TYPE_ASS_COTISATION_AVS_AI);
-                // if (cotisation==null){
-                // retour.setStatus(CPCommunicationFiscaleRetourViewBean.CS_ERREUR);
-                // retour._logMessage(getTransaction(), retour.getIdLog(),
-                // "Assurance AVS introuvable", FWMessage.ERREUR);
-                // }
             }
             int anneeDebut = 0;
             if (!retour.getStatus().equalsIgnoreCase(CPCommunicationFiscaleRetourViewBean.CS_ERREUR)) {
@@ -987,14 +980,12 @@ public class CPProcessReceptionGenererDecision extends BProcess {
             }
             // Ramener au prorata de la période de l'exercice pour le
             // mode de taxation postnumerando
-            // if (decision.isProrata().equals(new Boolean(true))){
             interet = Float.parseFloat(CPToolBox.prorataInteret(newDecision.getDebutExercice1(),
                     newDecision.getFinExercice1(), Float.toString(interet)));
             interet = JANumberFormatter.round(interet, 1, 0, JANumberFormatter.INF);
             if (interet < 0) {
                 interet = 0;
             }
-            // }
         }
         return interet;
     }
@@ -1642,6 +1633,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                     newDecision.setRevenuAutre1(mRevenuAgricole.toString());
                 } else {
                     String renteContribuable = "0";
+
                     if (!JadeStringUtil.isEmpty(donnee.getPensionIncome())) {
                         renteContribuable = donnee.getPensionIncome();
                     }
@@ -1654,6 +1646,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                             + Double.valueOf(JANumberFormatter.deQuote(renteConjoint)).doubleValue();
                     newDecision.setRevenu1(String.valueOf(renteCouple));
                     newDecision.setRevenu2("");
+                    newDecision.setRevenuAutre1(""); // pour K150708_003
                 }
             }
             // incident I130822_024 -> dans inforom 550: Ne plus cumuler les revenus IND et TSE
