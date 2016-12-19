@@ -403,4 +403,9 @@ public class CAParametres {
         return getModeParDefautBulletinNeutre().equalsIgnoreCase(CACompteAnnexe.CS_BN_INACTIF);
     }
 
+    public boolean isModeRecalculSoldesSectionsCompteAnnexes() {
+        return Boolean.valueOf(applictation.getProperty(CAApplication.PROPERTY_OSIRIS_RECALCUL_SOLDES, "true"))
+                .booleanValue();
+    }
+
 }

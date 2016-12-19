@@ -16,6 +16,7 @@ import globaz.globall.shared.GlobazValueObject;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.helios.api.ICGEcritureDouble;
+import globaz.helios.process.journal.CAJournalProcessUtils;
 import globaz.jade.client.util.JadeListUtil;
 import globaz.jade.client.util.JadeListUtil.LotExec;
 import globaz.jade.client.util.JadeStringUtil;
@@ -660,6 +661,11 @@ public class CAComptabiliserJournal {
                 }
             }
         }
+
+        // Vérification et modification si besoin du montant de la section si elle n'est pas en ligne avec les sommes de
+        // ces opérations
+        CAJournalProcessUtils.manageControleDesSoldesOperationACompteAnnexe(journal.getSession(),
+                journal.getIdJournal());
 
         // Retourner vrai si le journal est comptabilisé
         return journal.getEtat().equals(CAJournal.COMPTABILISE);

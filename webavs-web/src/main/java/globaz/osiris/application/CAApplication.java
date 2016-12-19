@@ -77,36 +77,38 @@ import java.io.Serializable;
 public class CAApplication extends globaz.globall.db.BApplication implements Serializable {
     private static final long serialVersionUID = -5123634731506588523L;
     private static BIApplication appPhenix = null;
-    public final static String DEFAULT_APPLICATION_OSIRIS = "OSIRIS";
-    public final static String DEFAULT_OSIRIS_NAME = "osiris";
-    public final static String DEFAULT_OSIRIS_ROOT = "osirisRoot";
-    public final static String PROPERTY_BULLETIN_SOLDE_MONTANT_MINIME = "bulletinSoldeMontantMinime";
-    public final static String PROPERTY_IMPRESSION_BULLETIN_SOLDE_APRES_COMPTABILISATION = "impressionBulletinSoldeApresComptabilisation";
-    public final static String PROPERTY_LIMITE_IMPRESSION_ECRITURES_JOURNAL = "limiteImpressionEcrituresJournal";
+    public static final String DEFAULT_APPLICATION_OSIRIS = "OSIRIS";
+    public static final String DEFAULT_OSIRIS_NAME = "osiris";
+    public static final String DEFAULT_OSIRIS_ROOT = "osirisRoot";
+    public static final String PROPERTY_BULLETIN_SOLDE_MONTANT_MINIME = "bulletinSoldeMontantMinime";
+    public static final String PROPERTY_IMPRESSION_BULLETIN_SOLDE_APRES_COMPTABILISATION = "impressionBulletinSoldeApresComptabilisation";
+    public static final String PROPERTY_LIMITE_IMPRESSION_ECRITURES_JOURNAL = "limiteImpressionEcrituresJournal";
 
-    public final static String PROPERTY_OSIRIS_ANCIEN_NO_ADHERENT_BVR = "osiris.class.CAReferenceBVRParserOLD.noAdherentBVR";
-    public final static String PROPERTY_OSIRIS_APERCU_JOURNAUX_USER = "apercuJournauxUser";
-    public final static String PROPERTY_OSIRIS_BULLETIN_NEUTRE = "bulletinNeutre";
-    public final static String PROPERTY_OSIRIS_CHECK_MONTANT_A_REMBOURSER = "checkMontantARembourser";
-    public final static String PROPERTY_OSIRIS_COMPTABILITE_AVS = "osiris.application.comptabiliteAvs";
-    public final static String PROPERTY_OSIRIS_CONTENTIEUX_AQUILA = "contentieuxAquila";
-    public final static String PROPERTY_OSIRIS_CTX_AVS_UNIQUEMENT = "contentieuxAvsUniquement";
-    public final static String PROPERTY_OSIRIS_DATE_VALEUR_BVR = "dateValeurBVR";
+    public static final String PROPERTY_OSIRIS_ANCIEN_NO_ADHERENT_BVR = "osiris.class.CAReferenceBVRParserOLD.noAdherentBVR";
+    public static final String PROPERTY_OSIRIS_APERCU_JOURNAUX_USER = "apercuJournauxUser";
+    public static final String PROPERTY_OSIRIS_BULLETIN_NEUTRE = "bulletinNeutre";
+    public static final String PROPERTY_OSIRIS_CHECK_MONTANT_A_REMBOURSER = "checkMontantARembourser";
+    public static final String PROPERTY_OSIRIS_COMPTABILITE_AVS = "osiris.application.comptabiliteAvs";
+    public static final String PROPERTY_OSIRIS_CONTENTIEUX_AQUILA = "contentieuxAquila";
+    public static final String PROPERTY_OSIRIS_CTX_AVS_UNIQUEMENT = "contentieuxAvsUniquement";
+    public static final String PROPERTY_OSIRIS_DATE_VALEUR_BVR = "dateValeurBVR";
     // propriétés de l'application
-    public final static String PROPERTY_OSIRIS_EXTERNAL_APPLICATION = "osiris.application.externalApplication";
-    public final static String PROPERTY_OSIRIS_FORMAT_ADMIN_NUM_AFFILIE = "formatAdminNumAffilie";
-    public final static String PROPERTY_OSIRIS_IMPRESSIONCONFIDENTIEL = "impressionConfidentiel";
-    public final static String PROPERTY_OSIRIS_INTERET_NOUVEAU_MODE_CALCUL = "interetNouveauModeCalcul";
+    public static final String PROPERTY_OSIRIS_EXTERNAL_APPLICATION = "osiris.application.externalApplication";
+    public static final String PROPERTY_OSIRIS_FORMAT_ADMIN_NUM_AFFILIE = "formatAdminNumAffilie";
+    public static final String PROPERTY_OSIRIS_IMPRESSIONCONFIDENTIEL = "impressionConfidentiel";
+    public static final String PROPERTY_OSIRIS_INTERET_NOUVEAU_MODE_CALCUL = "interetNouveauModeCalcul";
     public static final String PROPERTY_OSIRIS_INTERET_REMUNERATOIRE_ACTIF = "interetRemuneratoireActif";
-    public final static String PROPERTY_OSIRIS_INTERETSURCOTARRSURSECTIONSEPAREE = "interetSurCotArrSurSectionSeparee";
-    public final static String PROPERTY_OSIRIS_RAPPEL_SUR_PLAN = "rappelSurPlan";
-    public final static String PROPERTY_OSIRIS_INCREMENTER_NUM_SECTION_RECOUVREMENT = "incrementerNumSectionRecouvrement";
+    public static final String PROPERTY_OSIRIS_INTERETSURCOTARRSURSECTIONSEPAREE = "interetSurCotArrSurSectionSeparee";
+    public static final String PROPERTY_OSIRIS_RAPPEL_SUR_PLAN = "rappelSurPlan";
+    public static final String PROPERTY_OSIRIS_INCREMENTER_NUM_SECTION_RECOUVREMENT = "incrementerNumSectionRecouvrement";
 
     public static final String PROPERTY_OSIRIS_REQUISITION_A_ADRESSE_DOMICILE = "requisitionAAdresseDomicile";
 
-    public final static String PROPERTY_PHENIX_FACTURE_PAR_ANNEE = "factureParAnnee";
+    public static final String PROPERTY_PHENIX_FACTURE_PAR_ANNEE = "factureParAnnee";
 
-    public final static String PROPERTY_OSIRIS_MODE_TRAITEMENT_BULLETIN_NEUTRE = "modeBulletinNeutre";
+    public static final String PROPERTY_OSIRIS_MODE_TRAITEMENT_BULLETIN_NEUTRE = "modeBulletinNeutre";
+
+    public static final String PROPERTY_OSIRIS_RECALCUL_SOLDES = "recalcul.soldes.compteAnnexe.section";
 
     /**
      * Renvoie une instance de l'application enregistrée dans le système

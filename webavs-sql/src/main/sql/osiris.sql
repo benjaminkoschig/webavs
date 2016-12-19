@@ -1,0 +1,1 @@
+INSERT INTO SCHEMA.JADEPROP (PROPNAME, PROPVAL) VALUES ('osiris.recalcul.soldes.compteAnnexe.section', 'true');

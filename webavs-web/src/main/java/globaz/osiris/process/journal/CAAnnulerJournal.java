@@ -6,6 +6,7 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BTransaction;
 import globaz.helios.api.ICGJournal;
+import globaz.helios.process.journal.CAJournalProcessUtils;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.osiris.api.APIOperation;
@@ -110,6 +111,11 @@ public class CAAnnulerJournal {
                 }
             }
         }
+
+        // Vérification et modification si besoin du montant de la section si elle n'est pas en ligne avec les sommes de
+        // ces opérations
+        CAJournalProcessUtils.manageControleDesSoldesOperationACompteAnnexe(journal.getSession(),
+                journal.getIdJournal());
     }
 
     /**
@@ -142,9 +148,6 @@ public class CAAnnulerJournal {
 
                 if (im.getIdGenreInteret().equals(CAGenreInteret.CS_TYPE_TARDIF)) {
                     im.delete(context.getTransaction());
-                    // Inforom321 - suppression du test
-                    // } else {
-                    // this.resetInteretMoratoireToAttentePaiement(context, im);
                 }
 
                 context.incProgressCounter();
@@ -349,47 +352,6 @@ public class CAAnnulerJournal {
             return true;
         }
     }
-
-    /**
-     * Inforom321 - suppression de la méthode<br>
-     * Efface les détails créés par la compta. aux et reset l'intérêt moratoire en attente de paiement.
-     * 
-     * @param context
-     * @param im
-     * @throws Exception
-     */
-    // private void resetInteretMoratoireToAttentePaiement(BProcess context, CAInteretMoratoire im) throws Exception {
-    // if (!im.getIdJournalCalcul().equals(im.getIdJournalFacturation())
-    // && !im.getIdSection().equals(im.getIdSectionFacture())) {
-    // CADetailInteretMoratoireManager manager = new CADetailInteretMoratoireManager();
-    // manager.setSession(context.getSession());
-    //
-    // manager.setForIdInteretMoratoire(im.getIdInteretMoratoire());
-    //
-    // manager.find(context.getTransaction(), BManager.SIZE_NOLIMIT);
-    //
-    // String saveIdPassageFacturation = "";
-    //
-    // if (!manager.isEmpty()) {
-    // for (int j = 0; j < manager.size(); j++) {
-    // CADetailInteretMoratoire detail = (CADetailInteretMoratoire) manager.get(j);
-    //
-    // if (JadeStringUtil.isIntegerEmpty(detail.getIdJournalFacturation())) {
-    // detail.delete(context.getTransaction());
-    // } else {
-    // saveIdPassageFacturation = detail.getIdJournalFacturation();
-    // }
-    // }
-    //
-    // im.setIdJournalCalcul(saveIdPassageFacturation);
-    // im.setIdJournalFacturation(saveIdPassageFacturation);
-    // im.setIdSection(im.getIdSectionFacture());
-    // im.setMotifcalcul(CAInteretMoratoire.CS_ATTENTE_PAIEMENT);
-    //
-    // im.update(context.getTransaction());
-    // }
-    // }
-    // }
 
     /**
      * Set l'état du journal à "Traitement". <br>
