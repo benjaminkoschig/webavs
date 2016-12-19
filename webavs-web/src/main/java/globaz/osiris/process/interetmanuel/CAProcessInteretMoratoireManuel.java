@@ -28,7 +28,6 @@ import globaz.osiris.db.interets.CAInteretMoratoire;
 import globaz.osiris.db.interets.CAInteretMoratoireManager;
 import globaz.osiris.process.interetmanuel.visualcomponent.CAInteretManuelVisualComponent;
 import globaz.osiris.utils.CATiersUtil;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 /**
@@ -371,7 +370,8 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
             String cantonOfficePoursuite = CATiersUtil.getCantonOfficePoursuite(getSession(), section.getCompteAnnexe()
                     .getTiers(), section.getIdExterne(), section.getCompteAnnexe().getIdExterneRole());
             if (JadeStringUtil.isBlank(cantonOfficePoursuite)) {
-                JadeLogger.warn(FWMessage.ERREUR, getSession().getLabel("IM_ERR_OP_INTROUVABLE"));
+                JadeLogger.warn(FWMessage.ERREUR, getSession().getLabel("IM_ERR_OP_INTROUVABLE") + " : "
+                        + section.getCompteAnnexe().getIdExterneRole() + " / " + section.getIdExterne());
             }
 
             // si le canton n'est pas exclu du nouveau régime on applique le nouveau régime

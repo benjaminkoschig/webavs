@@ -411,10 +411,10 @@ public class CAComptabiliserJournal {
                 throw new Exception("Error calculerInteretsOP - ecrPmt not found !");
             }
 
+            FWCurrency soldeSection = new FWCurrency(ecrPmt.getSection().getSolde());
             if (APIOperation.PROVPMT_SOLDEOP.equals(ecrPmt.getProvenancePmt())
                     || APIOperation.PROVPMT_SOLDEOF.equals(ecrPmt.getProvenancePmt())) {
 
-                FWCurrency soldeSection = new FWCurrency(ecrPmt.getSection().getSolde());
                 ArrayList<CAInteretManuelVisualComponent> liste = calculIMManuel(context, ecrPmt, false);
                 if (soldeSection.isNegative() && !liste.isEmpty()) {
                     FWCurrency totalIM = interetTotalIM(liste);
@@ -432,13 +432,13 @@ public class CAComptabiliserJournal {
                 } else {
                     interetRejet(context, liste);
                 }
-            } else
-            // POAVS-223
-            if (CAInteretTardif.isNouveauCalculPoursuite(context.getSession(), ecrPmt.getSection())) {
-                // Simuler IM
-                calculIMManuel(context, ecrPmt, true);
+            } else if (!soldeSection.isPositive()) {
+                // POAVS-223
+                if (CAInteretTardif.isNouveauCalculPoursuite(context.getSession(), ecrPmt.getSection())) {
+                    // Simuler IM
+                    calculIMManuel(context, ecrPmt, true);
+                }
             }
-
         }
     }
 

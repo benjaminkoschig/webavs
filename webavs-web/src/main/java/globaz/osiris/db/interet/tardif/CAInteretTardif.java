@@ -318,7 +318,8 @@ public abstract class CAInteretTardif {
             String cantonOfficePoursuite = CATiersUtil.getCantonOfficePoursuite(session, section.getCompteAnnexe()
                     .getTiers(), section.getIdExterne(), section.getCompteAnnexe().getIdExterneRole());
             if (JadeStringUtil.isBlank(cantonOfficePoursuite)) {
-                JadeLogger.warn(FWMessage.ERREUR, session.getLabel("IM_ERR_OP_INTROUVABLE"));
+                JadeLogger.warn(FWMessage.ERREUR, session.getLabel("IM_ERR_OP_INTROUVABLE") + " : "
+                        + section.getCompteAnnexe().getIdExterneRole() + " / " + section.getIdExterne());
             }
 
             // si le canton n'est pas exclu du nouveau régime on applique le nouveau régime

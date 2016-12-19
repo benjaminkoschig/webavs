@@ -270,7 +270,7 @@ public class COActionBatch extends CODefaultServletAction {
                 transition.setIdTransition(transitionViewBean.getIdTransition());
                 transition.setSession(sessionb);
                 transition.retrieve();
-                
+
                 // POAVS-223
                 boolean requisitionPoursuite = ICOEtape.CS_REQUISITION_DE_POURSUITE_ENVOYEE.equals(transition
                         .getEtapeSuivante().getLibEtape());
@@ -466,7 +466,7 @@ public class COActionBatch extends CODefaultServletAction {
      */
     private COTransitionViewBean getTransitionViewBean(HttpSession session, HttpServletRequest request) {
         COTransitionViewBean transitionViewBean = (COTransitionViewBean) session.getAttribute("viewBean");
-
+        List<CAInteretManuelVisualComponent> listInterer = new ArrayList<CAInteretManuelVisualComponent>();
         // imputer les frais ou non
         for (int i = 0; i < transitionViewBean.getTaxes().size(); i++) {
             String imput = request.getParameter("imputer" + i);
@@ -479,16 +479,17 @@ public class COActionBatch extends CODefaultServletAction {
         }
 
         transitionViewBean.setFraisEtInterets(fraisEtInterets(request, transitionViewBean));
+        if (transitionViewBean.getInteretCalcule() != null) {
+            for (int i = 0; i < transitionViewBean.getInteretCalcule().size(); i++) {
+                String imput = request.getParameter("imputerIM" + i);
 
-        for (int i = 0; (transitionViewBean.getInteretCalcule() != null)
-                && (i < transitionViewBean.getInteretCalcule().size()); i++) {
-            String imput = request.getParameter("imputerIM" + i);
-
-            if (!((imput != null) && imput.equalsIgnoreCase("on"))) {
-                transitionViewBean.getInteretCalcule().remove(i);
+                if (imput != null && imput.equalsIgnoreCase("on")) {
+                    listInterer.add(transitionViewBean.getInteretCalcule().get(i));
+                }
             }
-        }
 
+            transitionViewBean.setInteretCalcule(listInterer);
+        }
         return transitionViewBean;
     }
 
@@ -508,14 +509,14 @@ public class COActionBatch extends CODefaultServletAction {
             return null;
         }
 
-        boolean requisitionPoursuite = ICOEtape.CS_REQUISITION_DE_POURSUITE_ENVOYEE.equals(transition
-                .getEtapeSuivante().getLibEtape());
-
         // POAVS-223 ajout && !isNouveauRegime(
         if (!ICOEtape.CS_FRAIS_ET_INTERETS_RECLAMES.equals(transition.getEtapeSuivante().getLibEtape())
-                && !isNouveauRegime(session, contentieux.getDateExecution())) {
+                || !isNouveauRegime(session, contentieux.getDateExecution())) {
             return null;
         }
+
+        boolean requisitionPoursuite = ICOEtape.CS_REQUISITION_DE_POURSUITE_ENVOYEE.equals(transition
+                .getEtapeSuivante().getLibEtape());
 
         ArrayList<CAInteretManuelVisualComponent> liste = new ArrayList<CAInteretManuelVisualComponent>();
         CAInteretMoratoireManager managerIM = findIMExistant(session, contentieux);
