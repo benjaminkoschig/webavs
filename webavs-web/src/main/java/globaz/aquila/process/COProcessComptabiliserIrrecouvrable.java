@@ -9,6 +9,7 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.smtp.JadeSmtpClient;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.osiris.api.APICompteAnnexe;
@@ -55,7 +56,7 @@ public class COProcessComptabiliserIrrecouvrable extends BProcess {
     int anneeLimite = 0;
     private String idCompteAnnexe;
     private String idCompteIndividuelAffilie;
-    private String libelleMail;
+    private String libelleMail = "";
     private Map<CAKeyPosteContainer, CAPoste> postesMap;
     private Boolean wantTraiterAmortissementCi;
 
@@ -196,114 +197,131 @@ public class COProcessComptabiliserIrrecouvrable extends BProcess {
         // chargement du compte annexe
         CACompteAnnexe compteAnnexe = COProcessComptabiliserIrrecouvrable.retrieveCompteAnnexe(idCompteAnnexe,
                 sessionOsiris);
-        if (wantTraiterAmortissementCi) {
-            // Recherche de l'année limite d'inscription CI - Paramètre
-            if (JadeStringUtil.isIntegerEmpty(Integer.toString(anneeLimite))) {
-                anneeLimite = Integer.parseInt(CPToolBox.anneeLimite(getTransaction()));
-            }
-            if (!checkJournalAnneeLimiteExistant(anneeLimite)) {
-                throw new Exception("Le journal CI de type cotisation personnelle n'existe pas pour l'année limite");
-            }
-        }
-
-        // création du journal de comptabilité
-        List<Integer> anneeATraiterList = determinerAnneeATraiter();
-        libelleMail = creerLibelle(compteAnnexe, anneeATraiterList);
-        String libelleJournal;
-        if (libelleMail.length() > 40) {
-            libelleJournal = libelleMail.substring(0, 39);
-        } else {
-            libelleJournal = new String(libelleMail);
-        }
-        creerJournalComptabiliteAuxiliaire(gestionComptaExterne, libelleJournal);
-
-        // déterminer l'id de la caisse prof
-        String idCaisseProf = determinerIdCaisseProf(sessionOsiris);
-
-        // création de la section irrécouvrable
-        Integer annee = determinerAnneeMax(anneeATraiterList);
-        CASection sectionIrrecouvrable = (CASection) creerSectionIrrecouvrable(sessionOsiris, gestionComptaExterne,
-                compteAnnexe, annee, idCaisseProf);
-
-        // parcours de tous les postes
-        for (Map.Entry<CAKeyPosteContainer, CAPoste> posteEntry : postesMap.entrySet()) {
-            CAPoste poste = posteEntry.getValue();
-            BigDecimal montantSoldeTotalPoste = new BigDecimal(0);
-            Integer anneePoste = poste.getAnnee();
-
-            // parcours de toutes les lignes du poste
-            List<CALigneDePoste> ligneDePosteList = poste.getLignesDePosteList();
-            for (CALigneDePoste ligneDePoste : ligneDePosteList) {
-                // montant solde pour la ligne
-                BigDecimal montantSoldeLigne = ligneDePoste.getMontantDu().subtract(ligneDePoste.getMontantAffecte());
-
-                // calcul du solde total pour le poste
-                montantSoldeTotalPoste = montantSoldeTotalPoste.add(montantSoldeLigne);
-
-                if (montantSoldeTotalPoste.signum() != 0) {
-                    COKeyIdSection keyIdSection = new COKeyIdSection(ligneDePoste.getIdSection());
-                    if (montantSoldeSectionMap.containsKey(keyIdSection)) {
-                        BigDecimal montantSoldeSection = montantSoldeSectionMap.get(keyIdSection);
-                        montantSoldeSection = montantSoldeSection.add(montantSoldeLigne);
-                        montantSoldeSectionMap.put(keyIdSection, montantSoldeSection);
-                    } else {
-                        montantSoldeSectionMap.put(keyIdSection, montantSoldeLigne);
-                    }
+        try {
+            if (wantTraiterAmortissementCi) {
+                // Recherche de l'année limite d'inscription CI - Paramètre
+                if (JadeStringUtil.isIntegerEmpty(Integer.toString(anneeLimite))) {
+                    anneeLimite = Integer.parseInt(CPToolBox.anneeLimite(getTransaction()));
+                }
+                if (!checkJournalAnneeLimiteExistant(anneeLimite)) {
+                    throw new Exception("Le journal CI de type cotisation personnelle n'existe pas pour l'année limite");
                 }
             }
 
-            if (montantSoldeTotalPoste.signum() != 0) {
-                // ajouter l'écriture à la section irrécouvrable
-                ajouterEcritureDansSection(gestionComptaExterne, sectionIrrecouvrable.getIdSection(),
-                        poste.getIdRubriqueIrrecouvrable(), montantSoldeTotalPoste.toString(), APIEcriture.CREDIT,
-                        APIOperation.CAECRITURE, "", anneePoste);
+            // création du journal de comptabilité
+            List<Integer> anneeATraiterList = determinerAnneeATraiter();
+            libelleMail = creerLibelle(compteAnnexe, anneeATraiterList);
+            String libelleJournal;
+            if (libelleMail.length() > 40) {
+                libelleJournal = libelleMail.substring(0, 39);
+            } else {
+                libelleJournal = new String(libelleMail);
             }
-        }
+            creerJournalComptabiliteAuxiliaire(gestionComptaExterne, libelleJournal);
 
-        // compensation des sections
-        // récupération de la rubrique de compensation irrécouvrable
-        APIReferenceRubrique referenceRubrique = (APIReferenceRubrique) sessionOsiris
-                .getAPIFor(APIReferenceRubrique.class);
-        String idRubriqueCompensation = "";
-        if (referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.COMPENSATION_IRRECOUVRABLE) != null) {
-            idRubriqueCompensation = referenceRubrique.getRubriqueByCodeReference(
-                    APIReferenceRubrique.COMPENSATION_IRRECOUVRABLE).getIdRubrique();
-        } else {
-            getTransaction().addErrors(
-                    sessionOsiris.getLabel("CODE_REFERENCE_NON_ATTRIBUE") + " "
-                            + APIReferenceRubrique.COMPENSATION_IRRECOUVRABLE);
-        }
+            // déterminer l'id de la caisse prof
+            String idCaisseProf = determinerIdCaisseProf(sessionOsiris);
 
-        // créer les écritures de compensation
-        for (Map.Entry<COKeyIdSection, BigDecimal> montantSoldeSectionEntry : montantSoldeSectionMap.entrySet()) {
-            COKeyIdSection keyIdSection = montantSoldeSectionEntry.getKey();
-            String idSection = keyIdSection.getIdSection();
-            BigDecimal montantSoldeSection = montantSoldeSectionEntry.getValue();
+            // création de la section irrécouvrable
+            Integer annee = determinerAnneeMax(anneeATraiterList);
+            CASection sectionIrrecouvrable = (CASection) creerSectionIrrecouvrable(sessionOsiris, gestionComptaExterne,
+                    compteAnnexe, annee, idCaisseProf);
 
-            CASection section = COProcessComptabiliserIrrecouvrable.retrieveSection(idSection, sessionOsiris);
-            ajouterMotifIrrecSection(sessionOsiris, section);
+            // parcours de tous les postes
+            for (Map.Entry<CAKeyPosteContainer, CAPoste> posteEntry : postesMap.entrySet()) {
+                CAPoste poste = posteEntry.getValue();
+                BigDecimal montantSoldeTotalPoste = new BigDecimal(0);
+                Integer anneePoste = poste.getAnnee();
 
-            if (!JadeStringUtil.isBlankOrZero(section.getSolde())) {
-                ajouterEcrituresCompensation(gestionComptaExterne, section, sectionIrrecouvrable,
-                        idRubriqueCompensation, section.getSolde());
+                // parcours de toutes les lignes du poste
+                List<CALigneDePoste> ligneDePosteList = poste.getLignesDePosteList();
+                for (CALigneDePoste ligneDePoste : ligneDePosteList) {
+                    // montant solde pour la ligne
+                    BigDecimal montantSoldeLigne = ligneDePoste.getMontantDu().subtract(
+                            ligneDePoste.getMontantAffecte());
+
+                    // calcul du solde total pour le poste
+                    montantSoldeTotalPoste = montantSoldeTotalPoste.add(montantSoldeLigne);
+
+                    if (montantSoldeTotalPoste.signum() != 0) {
+                        COKeyIdSection keyIdSection = new COKeyIdSection(ligneDePoste.getIdSection());
+                        if (montantSoldeSectionMap.containsKey(keyIdSection)) {
+                            BigDecimal montantSoldeSection = montantSoldeSectionMap.get(keyIdSection);
+                            montantSoldeSection = montantSoldeSection.add(montantSoldeLigne);
+                            montantSoldeSectionMap.put(keyIdSection, montantSoldeSection);
+                        } else {
+                            montantSoldeSectionMap.put(keyIdSection, montantSoldeLigne);
+                        }
+                    }
+                }
+
+                if (montantSoldeTotalPoste.signum() != 0) {
+                    // ajouter l'écriture à la section irrécouvrable
+                    ajouterEcritureDansSection(gestionComptaExterne, sectionIrrecouvrable.getIdSection(),
+                            poste.getIdRubriqueIrrecouvrable(), montantSoldeTotalPoste.toString(), APIEcriture.CREDIT,
+                            APIOperation.CAECRITURE, "", anneePoste);
+                }
             }
-        }
 
-        // mise à jour du compte annexe avec le motif irrécouvrable
-        ajouterMotifIrrecCompteAnnexe(sessionOsiris, compteAnnexe);
+            // compensation des sections
+            // récupération de la rubrique de compensation irrécouvrable
+            APIReferenceRubrique referenceRubrique = (APIReferenceRubrique) sessionOsiris
+                    .getAPIFor(APIReferenceRubrique.class);
+            String idRubriqueCompensation = "";
+            if (referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.COMPENSATION_IRRECOUVRABLE) != null) {
+                idRubriqueCompensation = referenceRubrique.getRubriqueByCodeReference(
+                        APIReferenceRubrique.COMPENSATION_IRRECOUVRABLE).getIdRubrique();
+            } else {
+                getTransaction().addErrors(
+                        sessionOsiris.getLabel("CODE_REFERENCE_NON_ATTRIBUE") + " "
+                                + APIReferenceRubrique.COMPENSATION_IRRECOUVRABLE);
+            }
 
-        // Traiter amortissements CI
-        if (wantTraiterAmortissementCi) {
-            passerInscriptionsCi();
-        }
+            // créer les écritures de compensation
+            for (Map.Entry<COKeyIdSection, BigDecimal> montantSoldeSectionEntry : montantSoldeSectionMap.entrySet()) {
+                COKeyIdSection keyIdSection = montantSoldeSectionEntry.getKey();
+                String idSection = keyIdSection.getIdSection();
+                BigDecimal montantSoldeSection = montantSoldeSectionEntry.getValue();
 
-        // comptabilisation du journal si pas d'erreurs
-        if (getTransaction().hasErrors()) {
-            setSendMailOnError(true);
-            getTransaction().rollback();
-        } else {
-            gestionComptaExterne.comptabiliser();
-            getTransaction().commit();
+                CASection section = COProcessComptabiliserIrrecouvrable.retrieveSection(idSection, sessionOsiris);
+                ajouterMotifIrrecSection(sessionOsiris, section);
+
+                if (!JadeStringUtil.isBlankOrZero(section.getSolde())) {
+                    ajouterEcrituresCompensation(gestionComptaExterne, section, sectionIrrecouvrable,
+                            idRubriqueCompensation, section.getSolde());
+                }
+            }
+
+            // mise à jour du compte annexe avec le motif irrécouvrable
+            ajouterMotifIrrecCompteAnnexe(sessionOsiris, compteAnnexe);
+
+            // Traiter amortissements CI
+            if (wantTraiterAmortissementCi) {
+                passerInscriptionsCi();
+            }
+
+            // comptabilisation du journal si pas d'erreurs
+            if (getTransaction().hasErrors()) {
+                setSendMailOnError(true);
+                getTransaction().rollback();
+            } else {
+                gestionComptaExterne.comptabiliser();
+                getTransaction().commit();
+            }
+
+        } catch (Exception e) {
+            // Si une exception est cachée, on renvoit l'erreur sous forme de mail -> workaround pour les throw
+            // exception qui ne remontent pas par mail.
+            if (libelleMail.equals("")) {
+                libelleMail = createLibelleForException(compteAnnexe);
+            }
+            String body = libelleMail + "\n" + getSession().getLabel("IRRECOUVRABLE_PROCESS_ERROR") + " : "
+                    + e.getMessage();
+            // envoi du mail par JadeSMTP
+            JadeSmtpClient.getInstance().sendMail(getEMailAddress(),
+                    libelleMail + " - " + getSession().getLabel("IRRECOUVRABLE_PROCESS_ERROR"), body, null);
+
+            throw new Exception(e.getMessage());
         }
 
         return true;
@@ -500,6 +518,20 @@ public class COProcessComptabiliserIrrecouvrable extends BProcess {
             }
         }
 
+        return libelle;
+    }
+
+    private String createLibelleForException(final APICompteAnnexe compteAnnexe) {
+        String libelle = getSession().getLabel("IRRECOUVRABLE_PREFIXE_LIBELLE_JOURNAL");
+        if (compteAnnexe != null) {
+            String role = compteAnnexe.getRole().getDescription();
+            String numeroAffilie = compteAnnexe.getIdExterneRole();
+            String description = compteAnnexe.getDescription();
+
+            libelle += " " + role;
+            libelle += " " + numeroAffilie;
+            libelle += " " + description;
+        }
         return libelle;
     }
 
