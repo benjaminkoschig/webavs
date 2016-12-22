@@ -276,7 +276,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             throw new Exception("Any edition mode was specified for the APDroitAPG edition");
         }
 
-        final List<PRPeriode> periodes = viewBean.getPeriodes();
+        final List<PRPeriode> periodes = validerNombreJoursSoldes(viewBean);
+
         List<String> datesDeDebut = new ArrayList<String>();
         List<String> datesDeFin = new ArrayList<String>();
         for (int ctr = 0; ctr < periodes.size(); ctr++) {
@@ -357,6 +358,23 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
         remplacerPeriodesDroitAPG(session, transaction, droitAPG.getIdDroit(), viewBean.getPeriodes());
         return droitAPG;
+    }
+
+    private List<PRPeriode> validerNombreJoursSoldes(final APDroitAPGPViewBean viewBean) throws Exception {
+        final List<PRPeriode> periodes = viewBean.getPeriodes();
+
+        if (periodes == null || periodes.isEmpty()) {
+            throw new Exception("Aucne périodes définie pour le droit. Au moins une période doit être définie.");
+        }
+
+        int nombreDeJoursPeriodes = 0;
+        for (PRPeriode periode : periodes) {
+            nombreDeJoursPeriodes += (PRDateUtils.getNbDayBetween(periode.getDateDeDebut(), periode.getDateDeFin()) + 1);
+        }
+        if (Integer.valueOf(viewBean.getNbrJourSoldes()) > nombreDeJoursPeriodes) {
+            throw new Exception("Le nombre de jours soldés dépasse le nombre de jours des périodes saisies");
+        }
+        return periodes;
     }
 
     @Override
