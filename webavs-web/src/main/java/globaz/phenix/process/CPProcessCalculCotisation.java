@@ -3437,6 +3437,9 @@ public final class CPProcessCalculCotisation extends BProcess {
                         moisFin = JACalendar.getMonth(getDonneeBase().getFinExercice1()) + 12;
                     }
                 } else {
+                    // Voir CPProcessCalculCotisationTest, si un changement se fait dans cette partie de code, il
+                    // faudrait adapter le
+                    // test unitaire
                     moisDebut = JACalendar.getMonth(decision.getDebutDecision());
                     moisFin = JACalendar.getMonth(decision.getFinDecision());
                     int varNum = Integer.parseInt(decision.getNombreMoisTotalDecision());
@@ -3454,6 +3457,11 @@ public final class CPProcessCalculCotisation extends BProcess {
                                 moisDebut = 1;
                                 moisFin = varNum;
                             }
+                        }
+                        // Nouveau code pour corriger la problématique des rentiers (K160704_001)
+                        if (decision.getAnneeDecision().equalsIgnoreCase(Integer.toString(anneeAvs))
+                                && moisDebut < (JACalendar.getMonth(dateAvs) + 1)) {
+                            moisDebut = JACalendar.getMonth(dateAvs) + 1;
                         }
                     }
                     if (decision.getAnneeDecision().equalsIgnoreCase(Integer.toString(anneeAvs))
