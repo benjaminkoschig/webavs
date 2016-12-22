@@ -2102,11 +2102,9 @@ public class REValiderDecisionHandler {
 
             // On recherche l'annonce d'augmentation créé lors de la validation
             // du courant.
-            // Si inexistante, erreur !!!
+            // Si inexistante, on la créée
             if (annonceMgr.size() == 0) {
-                throw new Exception(
-                        "Aucune annonce trouvée, au moins une annonce doit exister, lors de la validation du courant pour la décision no : "
-                                + decision.getIdDecision());
+                createAnnonce4x(session, transaction, idRA);
             }
 
             for (REAnnonceRente annonce : annonceMgr.getContainerAsList()) {
