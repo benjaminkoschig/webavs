@@ -32,6 +32,8 @@ import globaz.pyxis.db.tiers.TIHistoNumAvsListViewBean;
 import globaz.pyxis.db.tiers.TIHistoriqueAvs;
 import globaz.webavs.common.CommonExcelmlContainer;
 import java.math.BigDecimal;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @revision SCO 15 déc. 2010
@@ -42,6 +44,7 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
             BigDecimal montantCINoAVSNoAffilie, CPListeExcelConcordanceCotPersCIProcess process,
             CPDecisionForCompareCI entity, CPDecisionForCompareCI entityPrecedente,
             CPDecisionForCompareCI entitySuivante, CommonExcelmlContainer container, int i) throws Exception {
+
         BigDecimal difference1 = montantCp.subtract(montantCINoAffilie);
         BigDecimal difference2 = montantCp.subtract(montantCINoAVSNoAffilie);
         BigDecimal limInf = new BigDecimal(process.getFromDiffAdmise());
@@ -70,15 +73,11 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
         // Catégorie 5b : Autre sans écriture clôturées.
         // Catégorie 6 : L'affilié n'a pas de numéro AVS pour l'année
 
-        if (entityPrecedente != null) {
-            if (entityPrecedente.getNumAffilie().equals(entity.getNumAffilie())) {
-                return "2";
-            }
+        if (entityPrecedente != null && entityPrecedente.getNumAffilie().equals(entity.getNumAffilie())) {
+            return "2";
         }
-        if (entitySuivante != null) {
-            if (entitySuivante.getNumAffilie().equals(entity.getNumAffilie())) {
-                return "2";
-            }
+        if (entitySuivante != null && entitySuivante.getNumAffilie().equals(entity.getNumAffilie())) {
+            return "2";
         }
 
         if (JadeStringUtil.isBlank(entity.getNumAVS())) {
@@ -110,6 +109,7 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
             ecritureMana.setForIdTiers(entity.getIdTiers());
             ecritureMana.setForNotNumAffilie(entity.getNumAffilie());
             ecritureMana.find();
+
             if (ecritureMana.size() > 0) {
                 return "4";
             }
@@ -118,6 +118,7 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
         if (entity.getMontantCP().intValue() < 0) {
             return "5a";
         }
+
         if (ecritureMana.hasEcritureCloturer(entity.getIdCI(), entity.getAnnee(), process.getTransaction())) {
             return "5a";
         } else {
@@ -153,11 +154,7 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
 
     private static void loadDetail(int i, CommonExcelmlContainer container, CPDecisionForCompareCI entity,
             CPDecisionForCompareCI entityPrecedente, CPDecisionForCompareCI entitySuivante,
-            CPListeExcelConcordanceCotPersCIProcess process) throws Exception, Exception {
-
-        if (JadeStringUtil.isBlankOrZero(entity.getNumAVS())) {
-
-        }
+            CPListeExcelConcordanceCotPersCIProcess process) throws Exception {
 
         String categorie = CPXmlmlMappingListeConcordanceCICotPers.getCategorie(entity, entityPrecedente,
                 entitySuivante, process);
@@ -196,7 +193,6 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
                                 ACaisseReportHelper.JASP_PROP_NOM_CAISSE
                                         + process.getSession().getIdLangueISO().toUpperCase()));
 
-        // container.put(ICPListeColumns.HEADER_NOM_CAISSE, JadeThread.getMessage("nom.caisse"));
         container.put(ICPListeColumns.HEADER_NUM_INFOROM, CPListeExcelConcordanceCotPersCIProcess.NUMERO_INFOROM);
         container.put(ICPListeColumns.HEADER_NOM_LISTE, process.getSession().getLabel("LISTE_CONCORDANCE_COTPERD_CI"));
         container.put(ICPListeColumns.HEADER_ANNEE, process.getForAnnee());
@@ -218,19 +214,10 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
         container.put(ICPListeColumns.HEADER_REINJECTABLE_5a, process.getSession().getLabel("NON_REINJECTABLE"));
         container.put(ICPListeColumns.HEADER_REINJECTABLE_5b, "");
         container.put(ICPListeColumns.HEADER_REINJECTABLE_6, process.getSession().getLabel("NON_REINJECTABLE"));
-
-        // /**
-        // * astuce temporaire pour que le fichier xls généré contienne les lignes blanches d'entête du modèle xml
-        // */
-        // container.put(ICPListeColumns.HEADER_BLANK_1, "");
-        // container.put(ICPListeColumns.HEADER_BLANK_2, "");
-        // container.put(ICPListeColumns.HEADER_BLANK_3, "");
-
     }
 
     public static CommonExcelmlContainer loadResults(CPDecisionForCompareCIManager manager,
-            CPListeExcelConcordanceCotPersCIProcess process, JadePublishDocumentInfo docInfo) throws Exception,
-            Exception {
+            CPListeExcelConcordanceCotPersCIProcess process, JadePublishDocumentInfo docInfo) throws Exception {
         CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         CPXmlmlMappingListeConcordanceCICotPers.loadHeader(container, process, docInfo);
@@ -238,6 +225,7 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
         CPDecisionForCompareCI entityPrecedenteLister = null;
         CPDecisionForCompareCI entitySuivante = null;
         CPDecisionForCompareCI entity = null;
+
         for (int i = 0; (i < manager.size()) && !process.isAborted(); i++) {
 
             entity = (CPDecisionForCompareCI) manager.getEntity(i);
@@ -310,12 +298,22 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
 
     public static BigDecimal retourneMontantAffilieEnCours(String numAffilie,
             CPListeExcelConcordanceCotPersCIProcess process) throws Exception {
+
         BigDecimal montantCPBD = new BigDecimal("0");
         BigDecimal montantCP = new BigDecimal("0");
         String montantCiDecision = "";
         BStatement statement = null;
         CPDecisionAffiliationCalcul decision = null;
-        // CPDecisionAffiliationCalcul decisionPrecedente = null;
+
+        // Si la transaction se met en erreurs, il nous faut pouvoir continuer à faire des requêtes pour les prochains
+        // cas. Corrections pour le K150624_002, quand la transaction est en erreur, tous les valeurs suivantes se
+        // mettaient à zéro car le manager ne pouvait plus se lancer correctement
+        if (process.getTransaction().hasErrors() || process.getTransaction().hasWarnings()) {
+            process.getSession().getCurrentThreadTransaction().clearErrorBuffer();
+            process.getSession().getCurrentThreadTransaction().clearWarningBuffer();
+            process.getTransaction().clearErrorBuffer();
+            process.getTransaction().clearWarningBuffer();
+        }
 
         CPDecisionAffiliationCalculManager manager = new CPDecisionAffiliationCalculManager();
         manager.setSession(process.getSession());
@@ -447,9 +445,11 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
 
                 process.incProgressCounter();
             } catch (Exception e) {
-                process.getMemoryLog().logMessage(
-                        decision.getNumAffilie() + " - " + decision.getAnneeDecision() + " - "
-                                + decision.getIdDecision(), FWMessage.INFORMATION, process.getClass().getName());
+                final String message = decision.getNumAffilie() + " - " + decision.getAnneeDecision() + " - "
+                        + decision.getIdDecision();
+
+                Logger.getLogger(process.getClass().getName()).log(Level.INFO, message, e);
+                process.getMemoryLog().logMessage(message, FWMessage.INFORMATION, process.getClass().getName());
             }
         }
         manager.cursorClose(statement);
@@ -466,7 +466,7 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
             CPListeExcelConcordanceCotPersCIProcess process) {
         CICompteIndividuelUtil util = new CICompteIndividuelUtil();
         util.setSession(process.getSession());
-        // return util.getSommeParAnneeIdAffilie(numAffilie, this.annee);
+
         return util.getSommeParAnneeNoAffilie(numAffilie, annee);
 
     }
@@ -475,6 +475,7 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
             CPListeExcelConcordanceCotPersCIProcess process) {
         CICompteIndividuelUtil util = new CICompteIndividuelUtil();
         util.setSession(process.getSession());
+
         return util.getSommeParAnneeNoAffilieNoAVS(numAVS, numAffilie, annee);
     }
 
