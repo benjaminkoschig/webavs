@@ -84,7 +84,8 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
             TIHistoNumAvsListViewBean numAvsManager = new TIHistoNumAvsListViewBean();
             numAvsManager.setSession(process.getSession());
             numAvsManager.setForIdTiers(entity.getIdTiers());
-            numAvsManager.setForDateDebutGreaterOrEqualsTo(entity.getAnnee() + "0101");
+            // Correction de la date qui était mal formatté pour donner au manager (K150624_002)
+            numAvsManager.setForDateDebutGreaterOrEqualsTo("01.01." + entity.getAnnee());
             numAvsManager.find();
 
             if (numAvsManager.size() == 0) {
@@ -306,7 +307,7 @@ public class CPXmlmlMappingListeConcordanceCICotPers {
         CPDecisionAffiliationCalcul decision = null;
 
         // Si la transaction se met en erreurs, il nous faut pouvoir continuer à faire des requêtes pour les prochains
-        // cas. Corrections pour le K150624_002, quand la transaction est en erreur, tous les valeurs suivantes se
+        // cas. Corrections pour le (K150624_002), quand la transaction est en erreur, tous les valeurs suivantes se
         // mettaient à zéro car le manager ne pouvait plus se lancer correctement
         if (process.getTransaction().hasErrors() || process.getTransaction().hasWarnings()) {
             process.getSession().getCurrentThreadTransaction().clearErrorBuffer();
