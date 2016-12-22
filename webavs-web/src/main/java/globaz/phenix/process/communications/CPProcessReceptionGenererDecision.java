@@ -1449,6 +1449,9 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                     moisFin = JACalendar.getMonth(newDecision.getFinExercice1()) + 12;
                 }
             } else {
+                // Voir CPProcessReceptionGenererDecisionTest, si un changement se fait dans cette partie de code, il
+                // faudrait adapter le
+                // test unitaire
                 moisDebut = JACalendar.getMonth(newDecision.getDebutDecision());
                 moisFin = JACalendar.getMonth(newDecision.getFinDecision());
                 int varNum = Integer.parseInt(newDecision.getNombreMoisTotalDecision());
@@ -1466,6 +1469,11 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                             moisDebut = 1;
                             moisFin = varNum;
                         }
+                    }
+                    // Nouveau code pour corriger la problématique des rentiers (K160704_001)
+                    if (newDecision.getAnneeDecision().equalsIgnoreCase(Integer.toString(anneeAvs))
+                            && moisDebut < (JACalendar.getMonth(dateAvs) + 1)) {
+                        moisDebut = JACalendar.getMonth(dateAvs) + 1;
                     }
                 }
                 if (newDecision.getAnneeDecision().equalsIgnoreCase(Integer.toString(anneeAvs))
