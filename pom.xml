@@ -55,6 +55,7 @@
 		<simple-output-list.version>1.2.0</simple-output-list.version>
 		<op.version>5.0.3</op.version>
 		<globaz-external-xsd.version>1.2.0</globaz-external-xsd.version>
+		<ebback-api.version>8.0.0</ebback-api.version>
 
 
 		<!-- CONTINUOUS INTEGRATION -->
@@ -331,7 +332,7 @@
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>ebback-api</artifactId>
-				<version>8.0.0</version>
+				<version>${ebback-api.version}</version>
 			</dependency>
 
 			<dependency>
