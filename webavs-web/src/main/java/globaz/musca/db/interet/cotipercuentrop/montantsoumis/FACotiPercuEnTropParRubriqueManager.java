@@ -47,9 +47,17 @@ public class FACotiPercuEnTropParRubriqueManager extends FASumMontantSoumisParPl
         where.append(getGroupBy());
 
         where.append(",b." + FAAfact.FIELD_IDRUBRIQUE + ", a." + FAEnteteFacture.FIELD_IDEXTERNEROLE + ", a."
-                + FAEnteteFacture.FIELD_IDROLE + ", a." + FAEnteteFacture.FIELD_IDSOUSTYPE + " ");
+                + FAEnteteFacture.FIELD_IDROLE + ", a." + FAEnteteFacture.FIELD_IDSOUSTYPE + " and ");
 
-        where.append(getHaving());
+        // K150915_057
+        // n'appliquer que dans le cas des Contrôle employeur (FACotiPercuEnTropParRubriqueManager)
+        // where.append(getHaving());
+        if (isForMontantPositif()) {
+            where.append("b." + FAAfact.FIELD_MONTANTFACTURE + " > 0 ");
+        } else {
+            where.append("b." + FAAfact.FIELD_MONTANTFACTURE + " < 0 ");
+        }
+
         where.append(getOrder());
 
         return where.toString();
