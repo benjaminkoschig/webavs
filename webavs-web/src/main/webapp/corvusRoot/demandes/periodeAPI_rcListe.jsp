@@ -10,6 +10,7 @@
 	// Les labels de cette page commencent par LABEL_JSP_PER_API_L
 	
 	String isModifiable = request.getParameter("modifiable");
+	
 	if (null==isModifiable){
 		isModifiable = "true";
 	}
@@ -21,9 +22,13 @@
 <%@page import="globaz.framework.secure.FWSecureConstants"%>
 <SCRIPT language="JavaScript">
 function supprimerPeriode(id){
-    if (window.confirm("<ct:FWLabel key='JSP_DELETE_MESSAGE_INFO'/>")){
-        location.href="<%=request.getContextPath()%>/corvus?userAction=corvus.demandes.saisieDemandeRente.actionSupprimerPeriodeAPI&selectedId="+id;
-    }
+	if(parent.document.forms[0].elements('modifie').value == "true"){
+	    if (window.confirm("<ct:FWLabel key='JSP_DELETE_MESSAGE_INFO'/>")){
+	        location.href="<%=request.getContextPath()%>/corvus?userAction=corvus.demandes.saisieDemandeRente.actionSupprimerPeriodeAPI&selectedId="+id;
+	    }
+	}else{
+		window.alert("<ct:FWLabel key='JSP_DELETE_MESSAGE_ALERT'/>");
+	}
 }
 
 function afficherPeriode(id){
