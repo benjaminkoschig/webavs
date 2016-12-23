@@ -970,4 +970,8 @@ public class REACORDemandeAdapter extends PRAbstractPlatAdapter {
         }
     }
 
+    public boolean isDemandeSurvivant() {
+        return IREDemandeRente.CS_TYPE_DEMANDE_RENTE_SURVIVANT.equals(demande.getCsTypeDemandeRente());
+    }
+
 }
