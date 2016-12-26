@@ -118,7 +118,8 @@ public class SingleBillagBuilder extends AbstractDemandeBuilder implements Deman
         // data = this.buildHeader(data, false);
         // Attestations
         data.addData("TITRE_BILLAG", this.babelDoc.getTextes(18).getTexte(10).getDescription());
-        data.addData("POLITESSE_BILLAG", new StringBuilder(getTitreTiers()).append(VIRGULE).toString());
+        data.addData("POLITESSE_BILLAG",
+                new StringBuilder(addCommaIFFrench(getTitreTiers(), getTiersFromIdTiers().getLangue())).toString());
         data.addData("PAR1_BILLAG", this.babelDoc.getTextes(18).getTexte(30).getDescription());
         data.addData("PAR2_BILLAG", PRStringUtils.replaceString(this.babelDoc.getTextes(18).getTexte(40)
                 .getDescription(), SingleBillagBuilder.DATE_DEBUT, this.dateDebutPc));
@@ -293,6 +294,15 @@ public class SingleBillagBuilder extends AbstractDemandeBuilder implements Deman
         this.dateDoc = dateDoc;
         dateDebutPc = dateDebut;
         this.gestionnaire = gestionnaire;
+    }
+
+    private String addCommaIFFrench(String formulePolitesse, String codeIsoLangue) {
+        Langues langue = LanguageResolver.resolveISOCode(codeIsoLangue);
+        if (Langues.Francais.equals(langue)) {
+            return formulePolitesse + ",";
+        } else {
+            return formulePolitesse;
+        }
     }
 
 }
