@@ -657,7 +657,8 @@ public class REDemandeCompensationOO extends AbstractJadeJob {
                         + PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(dateFin);
 
                 if (getAfficherTauxInv().booleanValue()) {
-                    detailPeriode += ", taux de l'invalidité : " + keyPeriode.tauxInvalidite + "%";
+                    detailPeriode += document.getTextes(6).getTexte(8).getDescriptionBrut() + " "
+                            + keyPeriode.tauxInvalidite + "%";
                 }
 
                 line1 = new DataList("lignePeriode");
