@@ -49,6 +49,8 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementDataManager;
 import globaz.pyxis.db.tiers.TIAdministrationAdresse;
 import globaz.pyxis.db.tiers.TIAdministrationAdresseManager;
+import globaz.pyxis.db.tiers.TIAdministrationManager;
+import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 import globaz.pyxis.db.tiers.TIPersonneAvsManager;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.db.tiers.TITiersViewBean;
@@ -62,6 +64,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -2088,6 +2091,31 @@ public class PRTiersHelper {
         }
 
         return mapCommuneParIdTiers;
+    }
+
+    public static TIAdministrationViewBean resolveAdminFromTiersLanguage(PRTiersWrapper tiers,
+
+    TIAdministrationManager tiAdministrationMgr) {
+
+        TIAdministrationViewBean tiAdministration = null;
+
+        // On prend l'entité égale à la langue du tiers
+        for (Iterator<TIAdministrationViewBean> iterAdministration = tiAdministrationMgr.iterator(); iterAdministration
+                .hasNext();) {
+
+            TIAdministrationViewBean tiAdmin = iterAdministration.next();
+
+            if ((tiers != null && tiAdmin.getLangue().equals(tiers.getLangue()))) {
+                tiAdministration = tiAdmin;
+                break;
+            }
+
+        }
+
+        if (tiAdministration == null) {
+            tiAdministration = (TIAdministrationViewBean) tiAdministrationMgr.getFirstEntity();
+        }
+        return tiAdministration;
     }
 
 }
