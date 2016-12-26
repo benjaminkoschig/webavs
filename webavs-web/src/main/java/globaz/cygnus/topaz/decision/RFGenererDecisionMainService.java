@@ -39,7 +39,8 @@ import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.log.JadeLogger;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.print.server.JadePrintDocumentContainer;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
@@ -54,6 +55,7 @@ import globaz.pyxis.adresse.formater.ITIAdresseFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import globaz.pyxis.db.tiers.TITiers;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -66,9 +68,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import ch.globaz.al.business.constantes.ALCSAllocataire;
+import ch.globaz.common.business.language.LanguageResolver;
 import ch.globaz.common.codesystem.CodeSystem;
 import ch.globaz.common.codesystem.CodeSystemUtils;
 import ch.globaz.cygnus.business.constantes.ERFProperties;
+import ch.globaz.jade.business.models.Langues;
 import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DataList;
 import ch.globaz.topaz.datajuicer.DocumentData;
@@ -368,8 +372,9 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
                         for (RFCopieDecisionsValidationData copie : decisionDocument.getCopieDecision()) {
 
                             // Récupération de chaque adresse
-                            adresse = PRTiersHelper.getAdresseDomicileFormatee(getSessionCygnus(),
-                                    copie.getIdDestinataire()).replaceAll("\n", ", ");
+                            adresse = PRTiersHelper.getAdresseCourrierFormatee(getSessionCygnus(),
+                                    copie.getIdDestinataire(), "",
+                                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE).replaceAll("\n", ", ");
 
                             if (!JadeStringUtil.isEmpty(adresse)) {
 
@@ -714,7 +719,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
                 CaisseHeaderReportBean crBean = new CaisseHeaderReportBean();
 
                 // Recherche de l'adresse du tiers
-                String adresse = PRTiersHelper.getAdresseDomicileFormatee(getSessionCygnus(), idTiers).toString();
+                String adresse = PRTiersHelper.getAdresseCourrierFormatee(getSessionCygnus(), idTiers, "",
+                        IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE).toString();
 
                 crBean.setAdresse(adresse);
 
@@ -888,8 +894,9 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
                     .getDescription());
 
             // %=adresseVersement=%
-            String adresseTiersPaiement = PRTiersHelper.getAdresseDomicileFormatee(getSessionCygnus(),
-                    decisionDocument.getIdTiersAdressePaiement());
+            String adresseTiersPaiement = PRTiersHelper.getAdresseCourrierFormatee(getSessionCygnus(),
+                    decisionDocument.getIdTiersAdressePaiement(), "",
+                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE);
             data.addData(IRFGenererDocumentDecision.CAT_TEXTE_ADRESSE_VERSEMENT, PRStringUtils.replaceString(
                     mainDocument.getTextes(5).getTexte(4).getDescription(), IRFGenererDocumentDecision.ADRESSE,
                     adresseTiersPaiement));
@@ -1422,7 +1429,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
             CaisseHeaderReportBean crBean = new CaisseHeaderReportBean();
 
             // Recherche de l'adresse du tiers
-            String adresse = PRTiersHelper.getAdresseDomicileFormatee(getSessionCygnus(), idTiers).toString();
+            String adresse = PRTiersHelper.getAdresseCourrierFormatee(getSessionCygnus(), idTiers, "",
+                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE).toString();
 
             crBean.setAdresse(adresse);
 
@@ -1649,11 +1657,15 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
                 // Création des paramètres pour l'en-tête
                 chargerDonneesEnTete();
 
+                // récupération de la formule de politesse associée à la langue du tiers
+                String formulePolitesse = resolveFormulePolitesse();
+
                 // Recherche du document qui va être généré
                 // Si décision de restitution
                 if (isDecisionRestitution) {
                     // appel de méthode de remplissage du document
-                    remplirDocumentPaiementRestitution(container, miseEnGed, catalogueMultiLangue, copie);
+                    remplirDocumentPaiementRestitution(container, miseEnGed, catalogueMultiLangue, formulePolitesse,
+                            copie);
                     // Ajout des copies
                     ajoutCopiesAnnexes();
                 }
@@ -1661,7 +1673,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
                 // Sinon si décision ponctuelle
                 else if (isDecisionPonctuelle) {
                     // appel de méthode de remplissage du document
-                    remplirDocumentPaiementPonctuel(container, miseEnGed, catalogueMultiLangue, copie);
+                    remplirDocumentPaiementPonctuel(container, miseEnGed, catalogueMultiLangue, formulePolitesse, copie);
 
                     // Ajout des copies
                     ajoutCopiesAnnexes();
@@ -1675,7 +1687,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
                         // initialisation des champs liés à la décision de régime
                         initialiserChampsPaiementDecisionRegime();
                         // appel de méthode de remplissage du document
-                        remplirDocumentPaiementMensuelRegime(container, miseEnGed, catalogueMultiLangue, copie);
+                        remplirDocumentPaiementMensuelRegime(container, miseEnGed, catalogueMultiLangue,
+                                formulePolitesse, copie);
                         // Ajout des copies
                         ajoutCopiesAnnexes();
                     }
@@ -1703,7 +1716,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
 
     public String getAdresseCourrier() throws Exception {
 
-        String adresse = PRTiersHelper.getAdresseDomicileFormatee(getSessionCygnus(), idTiers);
+        String adresse = PRTiersHelper.getAdresseCourrierFormatee(getSessionCygnus(), idTiers, "",
+                IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE);
 
         return adresse;
     }
@@ -2524,7 +2538,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
      * @throws Exception
      */
     protected void remplirCorpsDocumentDecisionMensuelleRegime(JadePrintDocumentContainer container, boolean miseEnGed,
-            StringBuilder formatedDatesReception, RFCopieDecisionsValidationData... copie) throws Exception {
+            StringBuilder formatedDatesReception, String formulePolitesse, RFCopieDecisionsValidationData... copie)
+            throws Exception {
 
         // resumé décision
         data.addData(IRFGenererDocumentDecision.CAT_TEXTE_RESUME_DECISION_LIGNE1, PRStringUtils.replaceString(
@@ -2583,7 +2598,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
 
         // Titre
         data.addData(IRFGenererDocumentDecision.CAT_TEXTE_TITRE, PRStringUtils.replaceString(mainDocument.getTextes(4)
-                .getTexte(1).getDescription(), IRFGenererDocumentDecision.TIERS_TITRE, getTitreComplet()));
+                .getTexte(1).getDescription(), IRFGenererDocumentDecision.TIERS_TITRE, formulePolitesse));
 
         // Paragraphe 1
         data.addData(IRFGenererDocumentDecision.CAT_TEXTE_PARAGRAPHE1, PRStringUtils.replaceString(mainDocument
@@ -2676,7 +2691,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
 
         // Salutations
         data.addData(IRFGenererDocumentDecision.CAT_TEXTE_SALUTATIONS, PRStringUtils.replaceString(mainDocument
-                .getTextes(10).getTexte(1).getDescription(), IRFGenererDocumentDecision.TIERS_TITRE, getTitreComplet()));
+                .getTextes(10).getTexte(1).getDescription(), IRFGenererDocumentDecision.TIERS_TITRE, formulePolitesse));
 
         // ------------------------------------------------------------------------------------------------------------
 
@@ -2751,7 +2766,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
      */
     protected void remplirCorpsDocumentDecisionMensuelleRegimeAvecExcedantOctroi(JadePrintDocumentContainer container,
             RFDemandeValidationData demande, boolean miseEnGed, StringBuilder formatedDatesReception,
-            RFCopieDecisionsValidationData... copie) throws Exception {
+            String formulePolitesse, RFCopieDecisionsValidationData... copie) throws Exception {
         try {
             // Appel du CaisseHeaderReport pour utiliser les fichiers de properties
             CaisseHeaderReportBean crBean = new CaisseHeaderReportBean();
@@ -2808,9 +2823,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
                     .getDescription());
 
             // Titre tiers
-            PRTiersWrapper tiersWrapperTitre = PRTiersHelper.getTiersParId(getSessionCygnus(), getIdTiers());
-            data.addData(IRFGenererDocumentDecision.CAT_TEXTE_TITRE,
-                    sessionCygnus.getCodeLibelle(tiersWrapperTitre.getTitre()) + ",");
+            String formulePolitesseWithComma = addCommaIFFrench(formulePolitesse);
+            data.addData(IRFGenererDocumentDecision.CAT_TEXTE_TITRE, formulePolitesseWithComma);
 
             // paragraphe 1
             data.addData(IRFGenererDocumentDecision.CAT_TEXTE_PARAGRAPHE1, PRStringUtils.replaceString(mainDocument
@@ -3094,7 +3108,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
             // paragraphe 10 : Salutations
             data.addData(IRFGenererDocumentDecision.CAT_TEXTE_SALUTATIONS, PRStringUtils.replaceString(mainDocument
                     .getTextes(8).getTexte(5).getDescription(), IRFGenererDocumentDecision.CAT_TEXTE_TITRE_TIERS,
-                    sessionCygnus.getCodeLibelle(tiersWrapperTitre.getTitre())));
+                    formulePolitesse));
 
             // paragraphe 11
             data.addData(IRFGenererDocumentDecision.CAT_TEXTE_PARAGRAPHE11_TITRE, mainDocument.getTextes(9).getTexte(1)
@@ -3178,7 +3192,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
      */
     protected void remplirCorpsDocumentDecisionMensuelleRegimeAvecExcedantRefus(JadePrintDocumentContainer container,
             RFDemandeValidationData demande, boolean miseEnGed, StringBuilder formatedDatesReception,
-            RFCopieDecisionsValidationData... copie) throws Exception {
+            String formulePolitesse, RFCopieDecisionsValidationData... copie) throws Exception {
 
         try {
             // Appel du CaisseHeaderReport pour utiliser les fichiers de properties
@@ -3235,9 +3249,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
                     .getDescription());
 
             // Titre tiers
-            PRTiersWrapper tiersWrapperTitre = PRTiersHelper.getTiersParId(getSessionCygnus(), getIdTiers());
-            data.addData(IRFGenererDocumentDecision.CAT_TEXTE_TITRE,
-                    session.getCodeLibelle(tiersWrapperTitre.getTitre()) + ",");
+            String formulePolitesseWithComma = addCommaIFFrench(formulePolitesse);
+            data.addData(IRFGenererDocumentDecision.CAT_TEXTE_TITRE, formulePolitesseWithComma);
 
             // paragraphe 1
             data.addData(IRFGenererDocumentDecision.CAT_TEXTE_PARAGRAPHE1, PRStringUtils.replaceString(mainDocument
@@ -3307,7 +3320,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
             // Paragraphe 6 : Salutations
             data.addData(IRFGenererDocumentDecision.CAT_TEXTE_SALUTATIONS, PRStringUtils.replaceString(mainDocument
                     .getTextes(5).getTexte(7).getDescription(), IRFGenererDocumentDecision.CAT_TEXTE_TITRE_TIERS,
-                    getTitreComplet()));
+                    formulePolitesse));
 
             // paragraphe 7
             data.addData(IRFGenererDocumentDecision.CAT_TEXTE_PARAGRAPHE7_TITRE, mainDocument.getTextes(5).getTexte(8)
@@ -3389,7 +3402,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
      * @throws Exception
      */
     protected void remplirCorpsDocumentDecisionPonctuelle(boolean miseEnGed, StringBuilder formatedDatesReception,
-            RFCopieDecisionsValidationData... copie) throws Exception {
+            String formulePolitesse, RFCopieDecisionsValidationData... copie) throws Exception {
 
         // adresse
         data.addData(IRFGenererDocumentDecision.CAT_TEXTE_ADRESSE, PRStringUtils.replaceString(mainDocument
@@ -3465,14 +3478,12 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
 
         // Titre
         data.addData(IRFGenererDocumentDecision.CAT_TEXTE_TITRE, PRStringUtils.replaceString(mainDocument.getTextes(4)
-                .getTexte(1).getDescription(), IRFGenererDocumentDecision.TIERS_TITRE,
-                sexe.equals("516001") ? mainDocument.getTextes(11).getTexte(6).getDescription() : mainDocument
-                        .getTextes(11).getTexte(7).getDescription()));
+                .getTexte(1).getDescription(), IRFGenererDocumentDecision.TIERS_TITRE, formulePolitesse));
 
         // Paragraphe 1
         data.addData(IRFGenererDocumentDecision.CAT_TEXTE_PARAGRAPHE1, PRStringUtils.replaceString(mainDocument
                 .getTextes(4).getTexte(2).getDescription(), IRFGenererDocumentDecision.DATE_RECEPTION,
-                formatedDatesReception.toString() + "."));
+                formatedDatesReception.toString() + addDotIFFrench()));
 
         // Paragraphe 2
         data.addData(IRFGenererDocumentDecision.CAT_TEXTE_PARAGRAPHE2, mainDocument.getTextes(4).getTexte(3)
@@ -3534,9 +3545,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
 
         // Salutations
         data.addData(IRFGenererDocumentDecision.CAT_TEXTE_SALUTATIONS, PRStringUtils.replaceString(mainDocument
-                .getTextes(4).getTexte(8).getDescription(), IRFGenererDocumentDecision.TIERS_TITRE,
-                sexe.equals("516001") ? mainDocument.getTextes(11).getTexte(6).getDescription() : mainDocument
-                        .getTextes(11).getTexte(7).getDescription()));
+                .getTextes(4).getTexte(8).getDescription(), IRFGenererDocumentDecision.TIERS_TITRE, formulePolitesse));
 
     }
 
@@ -3553,7 +3562,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
      * @throws Exception
      */
     protected void remplirCorpsDocumentDecisionRestitution(JadePrintDocumentContainer container, boolean miseEnGed,
-            StringBuilder formatedDatesReception, RFCopieDecisionsValidationData... copie) throws Exception {
+            StringBuilder formatedDatesReception, String formulePolitesse, RFCopieDecisionsValidationData... copie)
+            throws Exception {
 
         try {
 
@@ -3613,19 +3623,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
                             IRFGenererDocumentDecision.TIERS_PRENOM, prenom));
 
             // Titre tiers
-            PRTiersWrapper tiersWrapperTitre = PRTiersHelper.getTiersParId(getSessionCygnus(), getIdTiers());
-            String titreTraduit = "";
-            try {
-                CodeSystem codeSystem = CodeSystemUtils.searchTiersLanguageAndCodeSystemTraduction(
-                        tiersWrapperTitre.getTitre(), sessionCygnus, getIdTiers());
-
-                titreTraduit = codeSystem.getTraduction();
-            } catch (Exception e) {
-                JadeLogger.info(e, e.getMessage());
-                titreTraduit = getSession().getCodeLibelle(tiersWrapperTitre.getTitre());
-            }
-
-            data.addData(IRFGenererDocumentDecision.CAT_TEXTE_TITRE, titreTraduit);
+            String formulePolitesseWithComma = addCommaIFFrench(formulePolitesse);
+            data.addData(IRFGenererDocumentDecision.CAT_TEXTE_TITRE, formulePolitesseWithComma);
 
             // paragraphe 1
             rfGenererDecisionRestitutionService.loadDateDebutQds(decisionDocument, getSession());
@@ -3690,7 +3689,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
             // paragraphe salutation
             data.addData(IRFGenererDocumentDecision.CAT_TEXTE_SALUTATIONS, PRStringUtils.replaceString(mainDocument
                     .getTextes(4).getTexte(4).getDescription(), IRFGenererDocumentDecision.CAT_TEXTE_TITRE_TIERS,
-                    sessionCygnus.getCodeLibelle(tiersWrapperTitre.getTitre())));
+                    formulePolitesse));
 
             // Texte "remarque au verso"
             if (isMontantARestituer) {
@@ -3878,8 +3877,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
      * @throws Exception
      */
     public void remplirDocumentPaiementMensuelRegime(JadePrintDocumentContainer container, boolean miseEnGed,
-            Hashtable<String, ICTDocument> catalogueMultiLangue, RFCopieDecisionsValidationData... copie)
-            throws Exception {
+            Hashtable<String, ICTDocument> catalogueMultiLangue, String formulePolitesse,
+            RFCopieDecisionsValidationData... copie) throws Exception {
         try {
 
             RFDemandeValidationData demande = decisionDocument.getDecisionDemande().get(0);
@@ -3927,7 +3926,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
 
                 // Appel de la methode de construction de la décision
                 selectionnerMethodeDeRemplissageDecisionRegime(container, decisionToPrint, demande, miseEnGed,
-                        formatedDatesReception, copie);
+                        formatedDatesReception, formulePolitesse, copie);
 
                 // test si il faut ajout le tableau d'annexes et copies en bas de page
                 Boolean annexes = false;
@@ -3961,8 +3960,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
     }
 
     public void remplirDocumentPaiementPonctuel(JadePrintDocumentContainer container, boolean miseEnGed,
-            Hashtable<String, ICTDocument> catalogueMultiLangue, RFCopieDecisionsValidationData... copie)
-            throws Exception {
+            Hashtable<String, ICTDocument> catalogueMultiLangue, String formulePolitesse,
+            RFCopieDecisionsValidationData... copie) throws Exception {
         try {
 
             // Récupération des infos tiers adresse de paiement.
@@ -3987,7 +3986,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
             chargerTypeCatalogueTexteDecision(catalogueMultiLangue, decisionToPrint);
 
             // Selection de la methode de remplisage du document
-            remplirCorpsDocumentDecisionPonctuelle(miseEnGed, formatedDatesReception, copie);
+            remplirCorpsDocumentDecisionPonctuelle(miseEnGed, formatedDatesReception, formulePolitesse, copie);
 
             // Appel de la méthode pour construire le décompte en seconde page d'une décision ponctuelle
             // this.ajoutDecompte(copie);
@@ -4091,8 +4090,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
     }
 
     public void remplirDocumentPaiementRestitution(JadePrintDocumentContainer container, boolean miseEnGed,
-            Hashtable<String, ICTDocument> catalogueMultiLangue, RFCopieDecisionsValidationData... copie)
-            throws Exception {
+            Hashtable<String, ICTDocument> catalogueMultiLangue, String formulePolitesse,
+            RFCopieDecisionsValidationData... copie) throws Exception {
         try {
 
             // fusionner toutes les dates des demandes pour paragraphe1
@@ -4122,7 +4121,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
             // ...selection du catalogue de texte
             setMainDocument(catalogueMultiLangue.get(IRFCatalogueTexte.CS_DECISION_RESTITUTION + "_" + codeIsoLangue));
 
-            remplirCorpsDocumentDecisionRestitution(container, miseEnGed, formatedDatesReception, copie);
+            remplirCorpsDocumentDecisionRestitution(container, miseEnGed, formatedDatesReception, formulePolitesse,
+                    copie);
 
             // test si il faut ajouter la signature au tiers en copie
             if ((copie.length == 0) || copie[0].getHasSignature()) {
@@ -4164,22 +4164,24 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
      */
     private void selectionnerMethodeDeRemplissageDecisionRegime(JadePrintDocumentContainer container,
             RFTypeDecisionEnum decisionEnum, RFDemandeValidationData demande, boolean miseEnGed,
-            StringBuilder formatedDatesReception, RFCopieDecisionsValidationData... copie) throws Exception {
+            StringBuilder formatedDatesReception, String formulePolitesse, RFCopieDecisionsValidationData... copie)
+            throws Exception {
 
         switch (decisionEnum) {
 
             case RFM_DECISION_REGIME_AVEC_EXCEDENT_OCTROI:
                 remplirCorpsDocumentDecisionMensuelleRegimeAvecExcedantOctroi(container, demande, miseEnGed,
-                        formatedDatesReception, copie);
+                        formatedDatesReception, formulePolitesse, copie);
                 break;
 
             case RFM_DECISION_REGIME_AVEC_EXCEDENT_REFUS:
                 remplirCorpsDocumentDecisionMensuelleRegimeAvecExcedantRefus(container, demande, miseEnGed,
-                        formatedDatesReception, copie);
+                        formatedDatesReception, formulePolitesse, copie);
                 break;
 
             case RFM_DECISION_REGIME_SANS_EXCEDENT_OCTROI:
-                remplirCorpsDocumentDecisionMensuelleRegime(container, miseEnGed, formatedDatesReception, copie);
+                remplirCorpsDocumentDecisionMensuelleRegime(container, miseEnGed, formatedDatesReception,
+                        formulePolitesse, copie);
                 hasTableauVersementEtDecompteCopie(copie);
                 break;
 
@@ -4308,6 +4310,53 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
 
     public void setVille(String ville) {
         this.ville = ville;
+    }
+
+    /**
+     * Cette méthode permet de récupérer un tiers par son id.
+     * 
+     * @return un tiers (TITiers)
+     * @throws JadePersistenceException
+     * @throws JadeApplicationException
+     */
+    private TITiers getTiersFromIdTiers() throws JadePersistenceException, JadeApplicationException {
+        TITiers tiers = new TITiers();
+        tiers.setId(getIdTiers());
+        tiers.setSession(getSession());
+        try {
+            tiers.retrieve();
+            return tiers;
+        } catch (Exception e) {
+            throw new JadePersistenceException("an error happened while loading the tiers with the following id : "
+                    + idTiers, e);
+        }
+    }
+
+    private String resolveFormulePolitesse() throws Exception {
+        TITiers tiers = getTiersFromIdTiers();
+        String formulePolitesse = tiers.getFormulePolitesse(LanguageResolver.resolveCodeSystemFromLanguage(tiers
+                .getLangue()));
+        return formulePolitesse;
+    }
+
+    private String addCommaIFFrench(String formulePolitesse) {
+        Langues langue = LanguageResolver.resolveISOCode(codeIsoLangue);
+
+        if (Langues.Francais.equals(langue)) {
+            return formulePolitesse + ",";
+        } else {
+            return formulePolitesse;
+        }
+    }
+
+    private String addDotIFFrench() {
+        Langues langue = LanguageResolver.resolveISOCode(codeIsoLangue);
+
+        if (Langues.Francais.equals(langue)) {
+            return ".";
+        } else {
+            return "";
+        }
     }
 
 }
