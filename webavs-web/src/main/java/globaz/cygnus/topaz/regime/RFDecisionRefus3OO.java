@@ -12,6 +12,7 @@ import globaz.cygnus.process.RFDocumentsProcess;
 import globaz.cygnus.topaz.RFAbstractDocumentOO;
 import globaz.cygnus.topaz.decision.RFGenererDecisionMainService;
 import globaz.cygnus.vb.decisions.RFCopieDecisionsValidationData;
+import globaz.externe.IPRConstantesExternes;
 import globaz.framework.util.FWMemoryLog;
 import globaz.globall.util.JACalendar;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
@@ -66,7 +67,8 @@ public class RFDecisionRefus3OO extends RFAbstractDocumentOO {
             CaisseHeaderReportBean crBean = new CaisseHeaderReportBean();
 
             // Recherche de l'adresse du tiers
-            String adresse = PRTiersHelper.getAdresseDomicileFormatee(getSession(), idTiers).toString();
+            String adresse = PRTiersHelper.getAdresseCourrierFormatee(getSession(), idTiers, "",
+                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE).toString();
 
             crBean.setAdresse(adresse);
 
@@ -122,7 +124,8 @@ public class RFDecisionRefus3OO extends RFAbstractDocumentOO {
             CaisseHeaderReportBean crBean = new CaisseHeaderReportBean();
 
             // Recherche de l'adresse du tiers
-            String adresse = PRTiersHelper.getAdresseDomicileFormatee(session, idTiers).toString();
+            String adresse = PRTiersHelper.getAdresseCourrierFormatee(session, idTiers, "",
+                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE).toString();
 
             crBean.setAdresse(adresse);
 
