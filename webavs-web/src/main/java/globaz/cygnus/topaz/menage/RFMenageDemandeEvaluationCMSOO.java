@@ -60,7 +60,8 @@ public class RFMenageDemandeEvaluationCMSOO extends RFAbstractDocumentOO {
             CaisseHeaderReportBean crBean = new CaisseHeaderReportBean();
 
             // Recherche de l'adresse du tiers
-            String adresse = PRTiersHelper.getAdresseDomicileFormatee(session, idTiers).toString();
+            String adresse = PRTiersHelper.getAdresseCourrierFormatee(session, idTiers, "",
+                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE).toString();
 
             crBean.setAdresse(adresse);
 
@@ -111,7 +112,8 @@ public class RFMenageDemandeEvaluationCMSOO extends RFAbstractDocumentOO {
             nom = tiersWrapper.getProperty(PRTiersWrapper.PROPERTY_NOM);
             prenom = tiersWrapper.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
             sexe = tiersWrapper.getProperty(PRTiersWrapper.PROPERTY_SEXE);
-            adresse = PRTiersHelper.getAdresseDomicileFormatee(session, idTiers).toString();
+            adresse = PRTiersHelper.getAdresseCourrierFormatee(session, idTiers, "",
+                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE).toString();
 
             // Chargement des catalogues de texte
             chargerCatalogueTexte();
