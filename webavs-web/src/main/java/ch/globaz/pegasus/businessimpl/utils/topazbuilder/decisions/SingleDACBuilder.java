@@ -518,7 +518,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
     private DocumentData buildBlocSalutations(DocumentData data, TITiers tiersBeneficiaire) {
         // les salutations doivent être gérées de manières différente qu'on soit en allemand ou en français
         if (tiersBeneficiaire.getLangueIso().equalsIgnoreCase(CommonConstLangue.LANGUE_ISO_ALLEMAND)) {
-            data.addData("SALUTATIONS", babelDoc.getTextes(11).getTexte(10).getDescription() + ".");
+            data.addData("SALUTATIONS", babelDoc.getTextes(11).getTexte(10).getDescription());
         } else {
             data.addData("SALUTATIONS", babelDoc.getTextes(11).getTexte(10).getDescription() + " "
                     + resolveFormulePolitesse(tiersBeneficiaire) + " "
@@ -1526,7 +1526,17 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
                             + tiersBeneficiaire.getId() + "]");
         }
 
-        return formulePolitesse += ",";
+        return addCommaIFFrench(formulePolitesse,
+                LanguageResolver.resolveISOCodeToString(tiersBeneficiaire.getLangue()));
+    }
+
+    private String addCommaIFFrench(String formulePolitesse, String codeIsoLangue) {
+        Langues langue = LanguageResolver.resolveISOCode(codeIsoLangue);
+        if (Langues.Francais.equals(langue)) {
+            return formulePolitesse + ",";
+        } else {
+            return formulePolitesse;
+        }
     }
 
 }
