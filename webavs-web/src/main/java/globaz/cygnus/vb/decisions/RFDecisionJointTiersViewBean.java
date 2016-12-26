@@ -8,11 +8,11 @@ import globaz.babel.api.ICTDocument;
 import globaz.commons.nss.NSUtil;
 import globaz.cygnus.api.codesystem.IRFCatalogueTexte;
 import globaz.cygnus.api.decisions.IRFDecisions;
-import globaz.cygnus.application.RFApplication;
 import globaz.cygnus.db.decisions.RFDecision;
 import globaz.cygnus.db.decisions.RFDecisionJointTiers;
 import globaz.cygnus.services.RFMembreFamilleService;
 import globaz.cygnus.utils.RFUtils;
+import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.security.FWSecurityLoginException;
 import globaz.framework.util.FWCurrency;
@@ -161,7 +161,8 @@ public class RFDecisionJointTiersViewBean extends RFDecisionJointTiers implement
 
     public String getAdresseCourrier(String idTiers, BISession session) throws Exception {
 
-        String adresse = PRTiersHelper.getAdresseDomicileFormatee(session, idTiers);
+        String adresse = PRTiersHelper.getAdresseCourrierFormatee(session, idTiers, "",
+                IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE);
         // remplacer les retours à la ligne par **
         adresse = adresse.replaceAll("\n", "**");
         adresse = adresse.replaceAll("\\s*", "");
@@ -172,7 +173,7 @@ public class RFDecisionJointTiersViewBean extends RFDecisionJointTiers implement
     // renvoi l'adresse formatée
     public String getAdresseEnvoiCourrier() throws Exception {
         String adresse = PRTiersHelper.getAdresseCourrierFormatee(getSession(), getIdTiers(), "",
-                RFApplication.DEFAULT_APPLICATION_CYGNUS);
+                IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE);
         return adresse.replaceAll("\n", "<br>");
     }
 
