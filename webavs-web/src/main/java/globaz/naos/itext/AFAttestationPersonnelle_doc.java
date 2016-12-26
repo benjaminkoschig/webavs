@@ -87,7 +87,7 @@ public class AFAttestationPersonnelle_doc extends FWIDocumentManager {
 
     private void setHeader(CaisseHeaderReportBean bean, TITiersViewBean tiers) throws Exception {
         bean.setAdresse(tiers.getAdresseAsString(IConstantes.CS_AVOIR_ADRESSE_COURRIER,
-                ICommonConstantes.CS_APPLICATION_COTISATION));
+                ICommonConstantes.CS_APPLICATION_COTISATION, JACalendar.todayJJsMMsAAAA(), numAffilie));
         bean.setDate(bean.getDate());
         bean.setNoAvs(tiers.getNumAvsActuel());
         bean.setConfidentiel(true);
