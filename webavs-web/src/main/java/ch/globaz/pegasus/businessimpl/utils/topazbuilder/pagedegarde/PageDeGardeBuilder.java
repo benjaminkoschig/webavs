@@ -13,6 +13,7 @@ import ch.globaz.common.document.TextMerger;
 import ch.globaz.common.document.babel.BabelTextDefinition;
 import ch.globaz.common.document.babel.TextMergerBabelTopaz;
 import ch.globaz.common.domaine.Checkers;
+import ch.globaz.jade.business.models.Langues;
 import ch.globaz.pegasus.businessimpl.utils.PegasusDateUtil;
 import ch.globaz.pegasus.businessimpl.utils.PegasusUtil;
 import ch.globaz.pegasus.businessimpl.utils.topazbuilder.AbstractPegasusBuilder;
@@ -138,7 +139,8 @@ public class PageDeGardeBuilder extends AbstractPegasusBuilder {
             // politesse du catalogue de texte
             formulePolitesse = textGiver.resolveText(pageDeGardeText.getPolitesse());
         } else {
-            formulePolitesse += ",";
+            formulePolitesse = addCommaIFFrench(formulePolitesse,
+                    LanguageResolver.resolveISOCodeToString(tiers.getLangue()));
         }
 
         return formulePolitesse;
@@ -194,5 +196,14 @@ public class PageDeGardeBuilder extends AbstractPegasusBuilder {
         textMerger.addTextToDocument(pageDeGardeText.getDateEtLieu(dateForPG));
 
         return data;
+    }
+
+    private String addCommaIFFrench(String formulePolitesse, String codeIsoLangue) {
+        Langues langue = LanguageResolver.resolveISOCode(codeIsoLangue);
+        if (Langues.Francais.equals(langue)) {
+            return formulePolitesse + ",";
+        } else {
+            return formulePolitesse;
+        }
     }
 }
