@@ -1132,7 +1132,12 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
         tiAdminCaisseMgr.setForGenreAdministration(CaisseHelperFactory.CS_CAISSE_COMPENSATION);
         tiAdminCaisseMgr.find();
 
-        TIAdministrationViewBean tiAdminCaisse = (TIAdministrationViewBean) tiAdminCaisseMgr.getFirstEntity();
+        // on récupère le tiers bénéficiaire pour en connaître sa langue
+        PRTiersWrapper tiersBeneficiaire = PRTiersHelper.getTiersById(session,
+                decision.getIdTiersBeneficiairePrincipal());
+
+        TIAdministrationViewBean tiAdminCaisse = PRTiersHelper.resolveAdminFromTiersLanguage(tiersBeneficiaire,
+                tiAdminCaisseMgr);
 
         String idTiersCaisse = "";
         if (tiAdminCaisse != null) {
@@ -1420,8 +1425,12 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
         tiAdministrationMgr.setForCodeAdministration(noOfficeAI);
         tiAdministrationMgr.setForGenreAdministration("509004");
         tiAdministrationMgr.find();
+        // on récupère le tiers bénéficiaire pour en connaître sa langue
+        PRTiersWrapper tiersBeneficiaire = PRTiersHelper.getTiersById(session,
+                decision.getIdTiersBeneficiairePrincipal());
 
-        TIAdministrationViewBean tiAdministration = (TIAdministrationViewBean) tiAdministrationMgr.getFirstEntity();
+        TIAdministrationViewBean tiAdministration = PRTiersHelper.resolveAdminFromTiersLanguage(tiersBeneficiaire,
+                tiAdministrationMgr);
 
         if (null != tiAdministration) {
 
