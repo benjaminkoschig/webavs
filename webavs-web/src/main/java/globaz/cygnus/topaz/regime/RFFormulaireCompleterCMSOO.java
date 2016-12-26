@@ -10,6 +10,7 @@ import globaz.cygnus.api.codesystem.IRFCatalogueTexte;
 import globaz.cygnus.process.RFDocumentsProcess;
 import globaz.cygnus.topaz.RFAbstractDocumentOO;
 import globaz.cygnus.vb.decisions.RFCopieDecisionsValidationData;
+import globaz.externe.IPRConstantesExternes;
 import globaz.globall.util.JACalendar;
 import globaz.jade.print.server.JadePrintDocumentContainer;
 import globaz.prestation.db.infos.PRInfoCompl;
@@ -84,7 +85,8 @@ public class RFFormulaireCompleterCMSOO extends RFAbstractDocumentOO {
             CaisseHeaderReportBean crBean = new CaisseHeaderReportBean();
 
             // Recherche de l'adresse du tiers
-            String adresse = PRTiersHelper.getAdresseDomicileFormatee(session, idTiers).toString();
+            String adresse = PRTiersHelper.getAdresseCourrierFormatee(session, idTiers, "",
+                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE).toString();
 
             crBean.setAdresse(adresse);
 
@@ -132,7 +134,8 @@ public class RFFormulaireCompleterCMSOO extends RFAbstractDocumentOO {
             nom = tiersWrapper.getProperty(PRTiersWrapper.PROPERTY_NOM);
             prenom = tiersWrapper.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
             titre = tiersWrapper.getProperty(PRTiersWrapper.PROPERTY_TITRE);
-            adresseComplete = PRTiersHelper.getAdresseCourrierFormatee(getSession(), idTiers, null, "");
+            adresseComplete = PRTiersHelper.getAdresseCourrierFormatee(getSession(), idTiers, null,
+                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE);
 
             PRInfoCompl pr = new PRInfoCompl();
             Vector v = new Vector();
