@@ -26,6 +26,8 @@ import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 import java.util.Hashtable;
 import java.util.Map;
+import ch.globaz.common.business.language.LanguageResolver;
+import ch.globaz.jade.business.models.Langues;
 import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DataList;
 import ch.globaz.topaz.datajuicer.DocumentData;
@@ -158,7 +160,7 @@ public class RFLettreEnTeteOO {
         if (getDomaineLettreEnTete().equals(RFLettreEnTeteOO.DOMAINE_CYGNUS)) {
             adresse = PRTiersHelper.getAdresseCourrierFormatee(getSession(),
                     tierAdresse.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), getIdAffilie(),
-                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG);
+                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE);
 
             // Si langue français, utilisation du texte en français
             if (IRFCodesIsoLangue.LANGUE_ISO_FR.equals(getSession().getCode(
@@ -488,7 +490,7 @@ public class RFLettreEnTeteOO {
             // this.data.addData("NSS_BENEFICIAIRE", this.tierAdresse.getNSS());
 
             // Insertion du titre de l'ayant droit
-            data.addData("titreTiers", buffer.toString());
+            data.addData("titreTiers", addCommaIFFrench(buffer.toString(), tiersTitre.getLangue()));
 
             // Insertion du texte
             data.addData("TEXTE_LETTRE", document.getTextes(2).getTexte(2).getDescription());
@@ -580,6 +582,15 @@ public class RFLettreEnTeteOO {
 
     public void setTierAdresse(PRTiersWrapper tierAdresse) {
         this.tierAdresse = tierAdresse;
+    }
+
+    private String addCommaIFFrench(String formulePolitesse, String codeIsoLangue) {
+        Langues langue = LanguageResolver.resolveISOCode(codeIsoLangue);
+        if (Langues.Francais.equals(langue)) {
+            return formulePolitesse + ",";
+        } else {
+            return formulePolitesse;
+        }
     }
 
 }
