@@ -359,8 +359,8 @@ public class REImprimerDecisionProcess extends AbstractJadeJob {
                 tiAdministrationMgr.setForGenreAdministration("509004");
                 tiAdministrationMgr.find();
 
-                TIAdministrationViewBean tiAdministration = (TIAdministrationViewBean) tiAdministrationMgr
-                        .getFirstEntity();
+                TIAdministrationViewBean tiAdministration = PRTiersHelper.resolveAdminFromTiersLanguage(tier,
+                        tiAdministrationMgr);
 
                 if (null != tiAdministration) {
 
