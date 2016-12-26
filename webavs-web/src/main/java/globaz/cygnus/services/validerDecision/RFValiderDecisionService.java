@@ -3,6 +3,7 @@ package globaz.cygnus.services.validerDecision;
 import globaz.cygnus.db.decisions.RFDecisionJointDemandeJointMotifRefusJointTiersValidationManager;
 import globaz.cygnus.exceptions.RFBusinessException;
 import globaz.cygnus.topaz.decision.RFGenererDecisionServiceOO;
+import globaz.externe.IPRConstantesExternes;
 import globaz.framework.util.FWMemoryLog;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
@@ -106,7 +107,8 @@ public class RFValiderDecisionService extends RFValiderDecisionMiseAJourEntities
                 decision.setNom(tiersWrapper.getNom());
                 decision.setPrenom(tiersWrapper.getPrenom());
                 decision.setTitre(tiersWrapper.getTitre());
-                decision.setAdresse(PRTiersHelper.getAdresseCourrierFormatee(session, decision.getIdTiers(), "", ""));
+                decision.setAdresse(PRTiersHelper.getAdresseCourrierFormatee(session, decision.getIdTiers(), "",
+                        IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE));
                 decision.setLangueTiers(session.getCode(tiersWrapper.getLangue()));
                 if (JadeStringUtil.isBlank(decision.getAdresse())) {
                     decisionsSansAdresses.add(decision);
