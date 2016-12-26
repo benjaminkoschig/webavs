@@ -326,14 +326,19 @@ public class SingleTransfertSuppressionPCBuilder extends SingleTransfertPCAbstra
             // champs à remplir
             data.addData("TITRE", babelDoc.getTextes(niveauBabelGeneral).getTexte(1).getDescription());
             String formulePolitesseTiers = "";
+            String formulePolitesseTiersWithComa = "";
             try {
                 TITiers tiers = loadTiers(membre.getTiers().getIdTiers());
                 formulePolitesseTiers = tiers.getFormulePolitesse(LanguageResolver.resolveCodeSystemFromLanguage(tiers
                         .getLangue()));
+
+                formulePolitesseTiersWithComa = addCommaIFFrench(formulePolitesseTiers,
+                        LanguageResolver.resolveISOCodeToString(tiers.getLangue()));
+
             } catch (Exception e) {
                 throw new TransfertDossierException("An error happened while trying to load the tiers", e);
             }
-            data.addData("TITRE_POLITESSE", formulePolitesseTiers + ",");
+            data.addData("TITRE_POLITESSE", formulePolitesseTiersWithComa);
 
             // prestations
             data.addData("CONTENU0", babelDoc.getTextes(niveauBabelGeneral).getTexte(2).getDescription());
@@ -509,7 +514,7 @@ public class SingleTransfertSuppressionPCBuilder extends SingleTransfertPCAbstra
                         + PegasusDateUtil.getLitteralDateByTiersLanguage(dateDecision, babelDoc.getCodeIsoLangue()));
 
         if (isCopie) {
-            data.addData("IS_COPIE", "COPIE");
+            data.addData("IS_COPIE", babelDoc.getTextes(19).getTexte(5).getDescription());
         }
 
         AdresseTiersDetail adresseTiersDetail = PegasusUtil.getAdresseCascadeByType(
@@ -562,6 +567,7 @@ public class SingleTransfertSuppressionPCBuilder extends SingleTransfertPCAbstra
 
     private DocumentData buildSignatures(DocumentData data) {
         data.addData("signature", "STANDARD");
+        data.addData("SIGNATURE_NOM_CAISSE", babelDoc.getTextes(19).getTexte(2).getDescription());
         return data;
     }
 
@@ -781,6 +787,15 @@ public class SingleTransfertSuppressionPCBuilder extends SingleTransfertPCAbstra
                     .contains(getCodeAdmin(idNouvelleCaisse)));
         } catch (Exception e) {
             throw new TransfertDossierException("Couldn't get property!", e);
+        }
+    }
+
+    private String addCommaIFFrench(String formulePolitesse, String codeIsoLangue) {
+        Langues langue = LanguageResolver.resolveISOCode(codeIsoLangue);
+        if (Langues.Francais.equals(langue)) {
+            return formulePolitesse + ",";
+        } else {
+            return formulePolitesse;
         }
     }
 
