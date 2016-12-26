@@ -56,7 +56,8 @@ public class RFDentistesLettreAssureReponseMedecinDevisOO extends RFAbstractDocu
             CaisseHeaderReportBean crBean = new CaisseHeaderReportBean();
 
             // Recherche de l'adresse du tiers
-            String adresse = PRTiersHelper.getAdresseDomicileFormatee(session, idTiers).toString();
+            String adresse = PRTiersHelper.getAdresseCourrierFormatee(session, idTiers, "",
+                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE).toString();
 
             crBean.setAdresse(adresse);
 
