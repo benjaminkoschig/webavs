@@ -162,13 +162,13 @@ public class RFGenererDecisionRestitutionService {
         String typeAssurance = null;
         try {
             if (genrePrestation.equals("64027003")) {
-                if (langueTiers == "DE") {
+                if ("DE".equals(langueTiers)) {
                     typeAssurance = "IV";
                 } else {
                     typeAssurance = "AI";
                 }
             } else {
-                if (langueTiers == "DE") {
+                if ("DE".equals(langueTiers)) {
                     typeAssurance = "AHV";
                 } else {
                     typeAssurance = "AVS";
