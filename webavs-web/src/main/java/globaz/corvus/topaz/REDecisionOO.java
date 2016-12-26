@@ -364,7 +364,7 @@ public class REDecisionOO extends REAbstractJobOO {
         tiAdministrationMgr.setForGenreAdministration("509004");
         tiAdministrationMgr.find();
 
-        tiAdministration = (TIAdministrationViewBean) tiAdministrationMgr.getFirstEntity();
+        tiAdministration = PRTiersHelper.resolveAdminFromTiersLanguage(tiers, tiAdministrationMgr);
 
         // BZ 5220, recherche de l'adresse en cascade en fonction du paramètre isWantAdresseCourrier
         // se trouvant dans le fichier corvus.properties
