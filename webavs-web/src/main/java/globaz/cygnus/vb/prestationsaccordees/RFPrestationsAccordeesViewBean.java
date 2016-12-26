@@ -2,7 +2,6 @@ package globaz.cygnus.vb.prestationsaccordees;
 
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
-import globaz.cygnus.application.RFApplication;
 import globaz.cygnus.db.paiement.RFPrestationAccordeeJointTiers;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -50,7 +49,7 @@ public class RFPrestationsAccordeesViewBean extends RFPrestationAccordeeJointTie
 
             if (tier != null) {
                 String adresse = PRTiersHelper.getAdresseCourrierFormatee(getSession(), idTiers, "",
-                        RFApplication.DEFAULT_APPLICATION_CYGNUS);
+                        IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE);
 
                 return adresse.replaceAll("\n", "<br>");
 
