@@ -1958,31 +1958,26 @@ public class REDecisionOO extends REAbstractJobOO {
                             newTable.add(line1);
                         }
 
-                        if ((montantRentesDejaVersees.compareTo(BigDecimal.ZERO) > 0)
-                                || (montantParTypeRenteVerseeATort.size() > 0)) {
-                            // Voir s'il y a une restitution
-                            RESoldePourRestitutionManager soldeMgr = new RESoldePourRestitutionManager();
-                            soldeMgr.setSession(getSession());
-                            soldeMgr.setForIdPrestation(getDecision().getPrestation(
-                                    getSession().getCurrentThreadTransaction()).getIdPrestation());
-                            soldeMgr.find();
+                        // Voir s'il y a une restitution
+                        RESoldePourRestitutionManager soldeMgr = new RESoldePourRestitutionManager();
+                        soldeMgr.setSession(getSession());
+                        soldeMgr.setForIdPrestation(getDecision().getPrestation(
+                                getSession().getCurrentThreadTransaction()).getIdPrestation());
+                        soldeMgr.find();
 
-                            if (!soldeMgr.isEmpty()) {
+                        if (!soldeMgr.isEmpty()) {
 
-                                // BZ 5340
-                                for (int i = 0; i < soldeMgr.size(); i++) {
-                                    if (soldePourRestitution == null) {
-                                        soldePourRestitution = (RESoldePourRestitution) soldeMgr.get(i);
-                                    } else {
-                                        RESoldePourRestitution unSolde = (RESoldePourRestitution) soldeMgr.get(i);
+                            // BZ 5340
+                            for (int i = 0; i < soldeMgr.size(); i++) {
+                                if (soldePourRestitution == null) {
+                                    soldePourRestitution = (RESoldePourRestitution) soldeMgr.get(i);
+                                } else {
+                                    RESoldePourRestitution unSolde = (RESoldePourRestitution) soldeMgr.get(i);
 
-                                        FWCurrency montantMensuelARetenir = new FWCurrency(
-                                                soldePourRestitution.getMontantMensuelARetenir());
-                                        montantMensuelARetenir.add(Double.parseDouble(unSolde
-                                                .getMontantMensuelARetenir()));
-                                        soldePourRestitution.setMontantMensuelARetenir(montantMensuelARetenir
-                                                .toString());
-                                    }
+                                    FWCurrency montantMensuelARetenir = new FWCurrency(
+                                            soldePourRestitution.getMontantMensuelARetenir());
+                                    montantMensuelARetenir.add(Double.parseDouble(unSolde.getMontantMensuelARetenir()));
+                                    soldePourRestitution.setMontantMensuelARetenir(montantMensuelARetenir.toString());
                                 }
                             }
                         }
@@ -2198,10 +2193,6 @@ public class REDecisionOO extends REAbstractJobOO {
         if (ovMgr.isEmpty() || isDepartFutur) {
             data.addData("TEXTE_VERSEMENT", getTexte(catalogeDeTexteDecision, 3, 2));
         }
-
-        // if (!isPeriodeInfinie){
-        //
-        // }
 
         DataList line1 = new DataList("par");
         line1.addData("TEXTE_PAR", getTexte(catalogeDeTexteDecision, 3, 3));
@@ -2664,10 +2655,6 @@ public class REDecisionOO extends REAbstractJobOO {
                 buffer.append(getTexte(catalogeDeTexteDecision, 6, 6));
             }
             if (getDecision().getIsSansBonneFoi().booleanValue()) {
-                /*
-                 * if (!isRemarqueCompensation){ => Selon BZ 4437 et RJE, enlever la condition ci-dessus, plus utile
-                 * après le BZ (Si compensation inter-décision, la remarque ne s'éditait pas)
-                 */
                 // si pas bonne foi
                 if (buffer.length() > 0) {
                     buffer.append("\r\r");
