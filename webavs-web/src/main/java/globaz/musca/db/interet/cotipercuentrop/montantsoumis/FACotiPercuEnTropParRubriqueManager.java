@@ -3,6 +3,7 @@ package globaz.musca.db.interet.cotipercuentrop.montantsoumis;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.musca.application.FAApplication;
 import globaz.musca.db.facturation.FAAfact;
 import globaz.musca.db.facturation.FAEnteteFacture;
@@ -30,9 +31,13 @@ public class FACotiPercuEnTropParRubriqueManager extends FASumMontantSoumisParPl
      */
     @Override
     protected String _getWhere(BStatement statement) {
-        StringBuffer where = new StringBuffer();
+        StringBuilder where = new StringBuilder();
 
         where.append(getWhere());
+
+        // K150915_057, déplacement du having sum(...) > | < 0 dans le where pour les cotisations perçues en trop.
+        where.append(" and b." + FAAfact.FIELD_MONTANTFACTURE);
+        where.append(isForMontantPositif() ? " > " : " < ").append(" 0 ");
 
         try {
             FAApplication app = new FAApplication();
@@ -41,22 +46,14 @@ public class FACotiPercuEnTropParRubriqueManager extends FASumMontantSoumisParPl
                 where.append(" and b." + FAAfact.FIELD_ANNEECOTISATION + " >= " + getFromAnneeCotisation() + " ");
             }
         } catch (Exception e) {
+            JadeLogger.info(e, e.getMessage());
             // do nothing
         }
 
         where.append(getGroupBy());
 
         where.append(",b." + FAAfact.FIELD_IDRUBRIQUE + ", a." + FAEnteteFacture.FIELD_IDEXTERNEROLE + ", a."
-                + FAEnteteFacture.FIELD_IDROLE + ", a." + FAEnteteFacture.FIELD_IDSOUSTYPE + " and ");
-
-        // K150915_057
-        // n'appliquer que dans le cas des Contrôle employeur (FACotiPercuEnTropParRubriqueManager)
-        // where.append(getHaving());
-        if (isForMontantPositif()) {
-            where.append("b." + FAAfact.FIELD_MONTANTFACTURE + " > 0 ");
-        } else {
-            where.append("b." + FAAfact.FIELD_MONTANTFACTURE + " < 0 ");
-        }
+                + FAEnteteFacture.FIELD_IDROLE + ", a." + FAEnteteFacture.FIELD_IDSOUSTYPE + " ");
 
         where.append(getOrder());
 
