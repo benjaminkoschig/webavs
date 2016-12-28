@@ -119,7 +119,7 @@ public class REAPICalculateur {
 
             int annee = new JADate(periode.getDateDebutInvalidite()).getYear();
 
-            REMontantPrestationAPIParPeriode plusGrandePeriodeCommune = loadPGPC(session, annee, periode);
+            REMontantPrestationAPIParPeriode plusGrandePeriodeCommune = loadPGPC(annee, periode);
             if (plusGrandePeriodeCommune != null) {
                 if (!JadeStringUtil.isBlankOrZero(dateDeces)
                         && (JadeDateUtil.isDateBefore(dateDeces, plusGrandePeriodeCommune.getDateFin()) || JadeStringUtil
@@ -131,7 +131,7 @@ public class REAPICalculateur {
 
             while ((cal.compare("31.12." + String.valueOf(annee), plusGrandePeriodeCommune.getDateFin()) == JACalendar.COMPARE_EQUALS)
                     && (cal.compare("31.12." + String.valueOf(annee), dernierJourAnneeEnCours) == JACalendar.COMPARE_FIRSTLOWER)) {
-                plusGrandePeriodeCommune = loadPGPC(session, ++annee, periode);
+                plusGrandePeriodeCommune = loadPGPC(++annee, periode);
                 if (plusGrandePeriodeCommune != null) {
 
                     if (!JadeStringUtil.isBlankOrZero(plusGrandePeriodeCommune.getDateFin())
@@ -161,7 +161,9 @@ public class REAPICalculateur {
 
         // Calcul des montants pour chaque sous période.
         for (Iterator<REMontantPrestationAPIParPeriode> iter = sousPeriodes.iterator(); iter.hasNext();) {
+
             REMontantPrestationAPIParPeriode element = iter.next();
+
             // Recherche des montants API en fonction de l'année
             REMontantReferenceAPI montantRefAPI = getMontantAPI(element.getDateDebut());
 
@@ -216,35 +218,34 @@ public class REAPICalculateur {
 
             if ((typePrestation == 94 || typePrestation == 95)
                     && (typePrestationPrecedent == 91 || typePrestationPrecedent == 95)) {
-                montant = renteMin.multiply(new BigDecimal(0.2));
+                montant = renteMin.multiply(BigDecimal.valueOf(0.2));
                 montant = montant.divide(BigDecimal.valueOf(2));
 
                 if (!isDateDebutPeriodeGreaterEgalJuillet2014) {
                     element.setCodeCasSpecial("91");
                 }
-
-            } else if (typePrestation == 97 && typePrestationPrecedent == 86
+            } else if (typePrestation == 97 && typePrestationPrecedent == 86 && !periodeAPI.getIsResidenceHome()
                     && isDateDebutPeriodeGreaterEgalJuillet2014) {
-                montant = renteMax.multiply(new BigDecimal(0.5));
+                montant = renteMax.multiply(BigDecimal.valueOf(0.5));
                 element.setCodeCasSpecial("40");
             } else if ((typePrestation < 89)
                     && IREDemandeRente.CS_DEGRE_IMPOTENCE_FAIBLE.equals(periodeAPI.getCsDegreImpotence())) {
-                montant = renteMax.multiply(new BigDecimal(0.2));
+                montant = renteMax.multiply(BigDecimal.valueOf(0.2));
             } else if ((typePrestation >= 89)
                     && IREDemandeRente.CS_DEGRE_IMPOTENCE_FAIBLE.equals(periodeAPI.getCsDegreImpotence())) {
-                montant = renteMin.multiply(new BigDecimal(0.2));
+                montant = renteMin.multiply(BigDecimal.valueOf(0.2));
             } else if ((typePrestation < 89)
                     && IREDemandeRente.CS_DEGRE_IMPOTENCE_MOYEN.equals(periodeAPI.getCsDegreImpotence())) {
-                montant = renteMax.multiply(new BigDecimal(0.5));
+                montant = renteMax.multiply(BigDecimal.valueOf(0.5));
             } else if ((typePrestation >= 89)
                     && IREDemandeRente.CS_DEGRE_IMPOTENCE_MOYEN.equals(periodeAPI.getCsDegreImpotence())) {
-                montant = renteMin.multiply(new BigDecimal(0.5));
+                montant = renteMin.multiply(BigDecimal.valueOf(0.5));
             } else if ((typePrestation < 89)
                     && IREDemandeRente.CS_DEGRE_IMPOTENCE_GRAVE.equals(periodeAPI.getCsDegreImpotence())) {
-                montant = renteMax.multiply(new BigDecimal(0.8));
+                montant = renteMax.multiply(BigDecimal.valueOf(0.8));
             } else if ((typePrestation >= 89)
                     && IREDemandeRente.CS_DEGRE_IMPOTENCE_GRAVE.equals(periodeAPI.getCsDegreImpotence())) {
-                montant = renteMin.multiply(new BigDecimal(0.8));
+                montant = renteMin.multiply(BigDecimal.valueOf(0.8));
             }
 
             // InfoRom403 : dans le cas d'API 91/92/93, si la période chevauche les dates 01.01.2011 - 31.12.2012,
@@ -429,8 +430,7 @@ public class REAPICalculateur {
      * @throws Exception
      */
 
-    private REMontantPrestationAPIParPeriode loadPGPC(BSession session, int annee, REPeriodeAPI periode)
-            throws Exception {
+    private REMontantPrestationAPIParPeriode loadPGPC(int annee, REPeriodeAPI periode) throws Exception {
 
         JACalendar cal = new JACalendarGregorian();
 
