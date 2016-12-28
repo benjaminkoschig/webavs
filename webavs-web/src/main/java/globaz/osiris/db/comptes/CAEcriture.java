@@ -214,10 +214,9 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
                 }
             }
 
-            // Inforom 313
             // Mettre à jour les échéances
             if (APIRubrique.COMPTE_FINANCIER.equals(getCompte().getNatureRubrique())
-                    || APIRubrique.COMPTE_COMPENSATION.equals(getCompte().getNatureRubrique())) {
+                    || isCompensationAvecSectionsPlanRecouvrementDifferents(tr)) {
                 if ((new FWCurrency(getMontant())).isNegative()) {
                     try {
                         if (CAPlanRecouvrement.CS_ACTIF
@@ -394,6 +393,45 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
                 }
             }
         }
+    }
+
+    /**
+     * Savoir si nous somme sur une nature rubrique de COMPENSATION et que la compensation se fait sur deux
+     * sections avec des plans de recouvrement différents.
+     * 
+     * @return True si compensation et deux sections qui ne sont pas sur le même plan de recouvrement, False si
+     *         compensation et deux sections qui ont le même plan de recouvrement ou autres nature rubrique.
+     */
+    private boolean isCompensationAvecSectionsPlanRecouvrementDifferents(BTransaction tr) {
+        boolean isValid = true;
+
+        // Si autre rubrique que COMPENSATION alors on retourne false
+        if (!APIRubrique.COMPTE_COMPENSATION.equals(getCompte().getNatureRubrique())) {
+            return false;
+        }
+
+        try {
+            // Chargement de la section source ou cible de la compensation
+            CASection sectionCompensation = new CASection();
+            sectionCompensation.setSession(getSession());
+            sectionCompensation.setIdSection(getIdSectionCompensation());
+            sectionCompensation.retrieve();
+
+            if (!sectionCompensation.isNew()) {
+                final String idPlanSection = getSection().getIdPlanRecouvrement();
+                final String idPlanSectionComp = sectionCompensation.getIdPlanRecouvrement();
+
+                // Si les deux sections n'ont pas le même id plan de recouvrement, alors nous somme sur une
+                // compensation avec different plan de recouvrement
+                isValid = !idPlanSection.equals(idPlanSectionComp);
+            }
+        } catch (Exception e) {
+            JadeLogger.error(this, e);
+            _addError(tr, "Impossible to load CASection.id : " + getIdSectionCompensation() + " for CAEcriture.id : "
+                    + getIdOperation() + " " + e.getMessage());
+        }
+
+        return isValid;
     }
 
     @Override
