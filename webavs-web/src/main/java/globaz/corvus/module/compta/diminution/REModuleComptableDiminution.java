@@ -143,6 +143,16 @@ public class REModuleComptableDiminution extends AREModuleComptable {
             final RERenteAccordee ra, final String csGenreTraitementDiminution, final String dateRecap)
             throws Exception {
 
+        // on vérifie si la rente accordée n'a pas déjà été diminuée. Cela permet d'éviter de créer des diminutions à
+        // double.
+        if (!JadeStringUtil.isBlankOrZero(ra.getDateFinDroit())) {
+            String message = java.text.MessageFormat.format(
+                    session.getLabel("ERREUR_RENTE_ACCORDEE_DEJA_DIMINUEE"),
+                    new Object[] { ra.getCodePrestation(), ra.getMontantPrestation(), ra.getIdTiersBeneficiaire(),
+                            ra.getDateFinDroit() });
+            throw new RETechnicalException(message);
+        }
+
         FWMemoryLog memoryLog = new FWMemoryLog();
         memoryLog.logMessage(session.getLabel("ERREUR_TRAITEMENT_DIM_RA"), FWMessage.INFORMATION, this.getClass()
                 .getName());
