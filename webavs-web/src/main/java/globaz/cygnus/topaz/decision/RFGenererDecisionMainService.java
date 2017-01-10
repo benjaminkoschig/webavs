@@ -287,8 +287,9 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
                         for (RFCopieDecisionsValidationData copie : decisionDocument.getCopieDecision()) {
 
                             // Récupération de chaque adresse
-                            adresse = PRTiersHelper.getAdresseDomicileFormatee(getSessionCygnus(),
-                                    copie.getIdDestinataire()).replaceAll("\n", ", ");
+                            adresse = PRTiersHelper.getAdresseCourrierFormatee(getSessionCygnus(),
+                                    copie.getIdDestinataire(), "",
+                                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE).replaceAll("\n", ", ");
 
                             if (!JadeStringUtil.isEmpty(adresse)) {
 
