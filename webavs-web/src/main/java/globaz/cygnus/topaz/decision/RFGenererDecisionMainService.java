@@ -485,7 +485,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
                         }
 
                         // Si présent, chargement du texte saisie manuellement dans l'écran
-                        if (!JadeStringUtil.isEmpty(decisionDocument.getTexteRemarque())) {
+                        if (!JadeStringUtil.isEmpty(decisionDocument.getTexteAnnexe())) {
                             DataList ligneTexteLibreAnnexe = new DataList(
                                     IRFGenererDocumentDecision.CAT_TEXTE_ANNEXE_TEXTE_DATA);
                             // Vérification que le texte saisie à la main se termine par un "."
