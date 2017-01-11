@@ -358,17 +358,22 @@ public class CO01RequisitionPoursuite extends CODocumentRequisition {
     }
 
     private void verificationIMDejaPresent(COContentieux contentieux) throws COTransitionException {
+        FWCurrency cumulMontantInteret = new FWCurrency(0);
         for (Map<String, String> creance : listDataSourceCreances) {
             if (creance.get(CARubrique.FIELD_NATURERUBRIQUE).equals(APIRubrique.INTERETS_MORATOIRES)) {
-                getDocumentInfo().setRejectDocument(true);
-                getDocumentInfo().setPublishDocument(false);
-                getSession().addError(getSession().getLabel("RDP_IMEXISTANT_EXTRAITCOMPTE"));
-                getDocumentInfo().setPreventFromPublish(false);
-                getDocumentInfo().setDocumentNotes(
-                        getSession().getLabel("RDP_IMEXISTANT_EXTRAITCOMPTE") + " - "
-                                + contentieux.getCompteAnnexe().getIdExterneRole() + "/"
-                                + contentieux.getSection().getIdExterne());
+                cumulMontantInteret.add(new FWCurrency(creance.get(COParameter.F2)));
+
             }
+        }
+        if (!cumulMontantInteret.isZero()) {
+            getDocumentInfo().setRejectDocument(true);
+            getDocumentInfo().setPublishDocument(false);
+            getSession().addError(getSession().getLabel("RDP_IMEXISTANT_EXTRAITCOMPTE"));
+            getDocumentInfo().setPreventFromPublish(false);
+            getDocumentInfo().setDocumentNotes(
+                    getSession().getLabel("RDP_IMEXISTANT_EXTRAITCOMPTE") + " - "
+                            + contentieux.getCompteAnnexe().getIdExterneRole() + "/"
+                            + contentieux.getSection().getIdExterne());
         }
     }
 
