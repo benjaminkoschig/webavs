@@ -1,7 +1,7 @@
 package ch.globaz.pegasus.businessimpl.utils.topazbuilder.transfertDossier;
 
+import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.externe.IPRConstantesExternes;
-import globaz.globall.db.BSessionUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractModel;
@@ -17,6 +17,7 @@ import ch.globaz.babel.business.services.BabelServiceLocator;
 import ch.globaz.common.business.models.CTDocumentImpl;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.pegasus.business.constantes.transfertdossier.TransfertDossierBuilderType;
+import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.exceptions.models.transfertdossier.TransfertDossierException;
 import ch.globaz.pegasus.business.models.demande.Demande;
@@ -47,7 +48,8 @@ public class TransfertDossierSuppressionPCBuilder extends TransfertDossierAbstra
     private List<PCAccordee> pcAccordees;
 
     @Override
-    public JadePrintDocumentContainer build(JadePublishDocumentInfo pubInfo) throws TransfertDossierException {
+    public JadePrintDocumentContainer build(JadePublishDocumentInfo pubInfo) throws TransfertDossierException,
+            DecisionException {
 
         JadePrintDocumentContainer allDoc = new JadePrintDocumentContainer();
 
@@ -56,18 +58,43 @@ public class TransfertDossierSuppressionPCBuilder extends TransfertDossierAbstra
         allDoc = new SingleTransfertSuppressionPCBuilder().build(documentsBabelTransfertDossier,
                 documentsBabelPageGardeCopiePC, allDoc, idGestionnaire, requerant, idNouvelleCaisse, motifTransfert,
                 dateDecision, dateSuppression, derniereAdresse, motifContact, annexes, copies, pcAccordees, idDroit);
-
-        String title = BSessionUtil.getSessionFromThreadContext().getLabel("PROCESS_TRANSFERT_DOSSIER_SUPPRESSION");
+        String title = getSession().getLabel("PROCESS_TRANSFERT_DOSSIER_SUPPRESSION");
         String nomPrenomTiers = PegasusUtil.formatNomPrenom(requerant.getTiers());
         title = PRStringUtils.replaceString(title, "{0}", nomPrenomTiers);
 
         preparePubInfo(pubInfo);
         pubInfo.setDocumentTitle(title);
         pubInfo.setDocumentSubject(title);
-
+        loadPixisInfoForPubInfo(requerant.getTiers().getIdTiers(), pubInfo);
         allDoc.setMergedDocDestination(pubInfo);
 
         return allDoc;
+    }
+
+    /**
+     * Chargement du container de transfert pour le remplissage de pixis
+     * 
+     * @param idTiers
+     *            l'identifiant du tiers concerné pour les informations
+     * @throws DecisionException
+     *             si un problème survient lors du remplissge
+     */
+    private void loadPixisInfoForPubInfo(String idTiers, JadePublishDocumentInfo pubInfo) throws DecisionException {
+        try {
+            TIDocumentInfoHelper.fill(pubInfo, idTiers, getSession(), null, null, null);
+        } catch (Exception e) {
+            throw new DecisionException(
+                    "An error happened during filling the document with pyxis informations for the following idTiers:["
+                            + idTiers + "]", e);
+        }
+    }
+
+    @Override
+    protected void preparePubInfo(JadePublishDocumentInfo pubInfo) {
+        super.preparePubInfo(pubInfo);
+        pubInfo.setDocumentType(IPRConstantesExternes.PC_REF_INFOROM_DECISION_TRANSFERT_DOSSIER);
+        pubInfo.setDocumentTypeNumber(IPRConstantesExternes.PC_REF_INFOROM_DECISION_TRANSFERT_DOSSIER);
+        pubInfo.setArchiveDocument(true);
     }
 
     private void loadDBEntity() throws TransfertDossierException {
