@@ -11,6 +11,7 @@ import globaz.cygnus.process.RFListeRecapitulativePaiementsProcess;
 import globaz.cygnus.utils.RFExcelmlUtils;
 import globaz.cygnus.utils.RFPropertiesUtils;
 import globaz.cygnus.utils.RFXmlmlContainer;
+import globaz.externe.IPRConstantesExternes;
 import globaz.framework.util.FWMemoryLog;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BSession;
@@ -91,8 +92,12 @@ public class RFListeRecapitulativePaiementsService {
         docInfo.setDocumentTitle(nomDoc);
         docInfo.setDocumentSubject(nomDoc);
         docInfo.setDocumentNotes(getSession().getLabel("PROCESS_LISTE_RECAP_PAIEMENTS"));
+        docInfo.setDocumentType(IPRConstantesExternes.RFM_LISTE_RECAP_PAIEMENT);
+        docInfo.setDocumentTypeNumber(IPRConstantesExternes.RFM_LISTE_RECAP_PAIEMENT);
+        // passage de la période de la récap en paramètre
+        docInfo.setDocumentProperty("cygnus.recap.periode", datePeriode);
         docInfo.setPublishDocument(true);
-        docInfo.setArchiveDocument(false);
+        docInfo.setArchiveDocument(true);
         process.registerAttachedDocument(docInfo, docPath);
 
     }
