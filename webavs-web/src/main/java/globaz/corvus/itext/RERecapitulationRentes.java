@@ -67,6 +67,8 @@ public class RERecapitulationRentes extends FWIDocumentManager {
 
             // on ajoute au doc info le numéro de référence inforom
             getDocumentInfo().setDocumentTypeNumber(IRENoDocumentInfoRom.LISTE_RECAPITULATION_RENTES);
+            // ajout de la période pour la mise en GED
+            getDocumentInfo().setDocumentProperty("corvus.recap.periode", reDetRecMenViewBean.getDateRapport());
 
             // le document est effacé à la fin du process
             setDeleteOnExit(true);
