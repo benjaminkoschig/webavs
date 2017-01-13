@@ -23,10 +23,12 @@ import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManage
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.db.rentesaccordees.RERenteCalculee;
+import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.process.REDebloquerMontantRenteAccordeeProcess;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.REPostItsFilteringUtils;
 import globaz.corvus.utils.beneficiaire.principal.REBeneficiairePrincipal;
+import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
 import globaz.corvus.vb.process.REDebloquerMontantRAViewBean;
 import globaz.corvus.vb.rentesaccordees.RERenteAccordeeJointDemandeRenteListViewBean;
 import globaz.corvus.vb.rentesaccordees.RERenteAccordeeJointDemandeRenteViewBean;
@@ -36,12 +38,11 @@ import globaz.framework.controller.FWAction;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BIPersistentObjectList;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
-import globaz.globall.util.JACalendarGregorian;
-import globaz.globall.util.JADate;
 import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.external.SFSituationFamilialeFactory;
@@ -58,7 +59,11 @@ import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
@@ -689,22 +694,29 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
         viewBean.setIdTiersFamille(idMembreFamille);
     }
 
+    /**
+     * Le nom de cette méthode est provisoire.
+     * Le but de cette méthode est de permettre la mise à jour des informations comptables liées à une rente accordée.
+     * 
+     * @throws Exception
+     */
     private void doMajInfoCompta(final BSession session, final BTransaction transaction, final String idRA,
-            final String idt) throws Exception {
+            final String newIDAdressePaiement) throws Exception {
 
-        // Récupération de la rente accordée
+        // Récupérer la rente accordée du tiers bénéficiaire
         RERenteAccordee ra = new RERenteAccordee();
         ra.setSession(session);
         ra.setIdPrestationAccordee(idRA);
         ra.retrieve(transaction);
         PRAssert.notIsNew(ra, null);
 
-        // Récupération des informations du tiers en cours (TEC)
-        REInformationsComptabilite icTEC = ra.loadInformationsComptabilite();
+        // Récupérer les informations comptables du tiers en cours (TEC)
+        REInformationsComptabilite infoComptaTEC = ra.loadInformationsComptabilite();
         String idTEC = ra.getIdTiersBeneficiaire();
 
         REDemandeRente demande = getDemandeRente(session, transaction, ra.getIdPrestationAccordee());
 
+        // Récupérer l'id du tiers requérant de la demande
         String idTiersRequerant = demande.loadDemandePrestation(transaction).getIdTiers();
 
         // Récupération des membres de la famille du tiers requérant
@@ -715,392 +727,485 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
         ISFMembreFamilleRequerant[] membres = sf.getMembresFamilleRequerant(idTiersRequerant);
 
         if (membres == null) {
-            throw new Exception(session.getLabel("ERREUR_ASSURE_EXISTE_PAS_DS_FAMILLE"));
+            throw new RETechnicalException(session.getLabel("ERREUR_ASSURE_EXISTE_PAS_DS_FAMILLE"));
         }
 
-        /*
+        /**
+         * 1. VERIFIER LE GROUPE LEVEL DU TEC
+         * 2. COMMUTER DANS LE BON LEVEL
          * 
-         * Identification du cas à traiter....
          */
-        boolean isMembreFamilleReferenced = false;
-        boolean isReferencedButNotAFamilyMember = false;
 
+        int groupLevelTEC = REBeneficiairePrincipal.getGroupLevel(session, transaction, idRA);
+
+        checkGroupLevelAndCommuteToLevelTreat(session, transaction, idRA, newIDAdressePaiement, infoComptaTEC, idTEC,
+                membres, groupLevelTEC);
+
+    }
+
+    /**
+     * Cette méthode permet de vérifier dans quel Group level on se trouve et d'appeler le bon traitement en fonction de
+     * cela
+     * 
+     * @param session
+     * @param idRA
+     * @param idt
+     * @param icTEC
+     * @param membres
+     * @param groupLevelTEC
+     * @throws Exception
+     */
+    private void checkGroupLevelAndCommuteToLevelTreat(final BSession session, final BTransaction transaction,
+            final String idRA, final String newIDAdressePaiement, REInformationsComptabilite infoComptaTEC,
+            String idTEC, ISFMembreFamilleRequerant[] membres, int groupLevelTEC) throws Exception {
+        if (groupLevelTEC == 1 || groupLevelTEC == 2 || groupLevelTEC == 4 || groupLevelTEC == 5) {
+            treatGroupLevels(session, transaction, infoComptaTEC, idTEC, newIDAdressePaiement, membres);
+        } else {
+            String message = java.text.MessageFormat.format(session.getLabel("GROUP_LEVEL_NOT_RECOGNISED"),
+                    new Object[] { groupLevelTEC, idRA });
+            throw new RETechnicalException(message);
+        }
+    }
+
+    /**
+     * Méthode de traitement de groupe de niveau 1 dans le rentes.
+     * Cette méthode effectue le travail suivant -> mise à jour de l'adresse de paiement niveau 1 (+ éventuellement le
+     * CA)
+     * Vérification des rentes liées -> Si niveau 5 dans la situation familiale ALORS vérification pour mise à jour du
+     * CA
+     * 
+     * @param session
+     * @param transaction
+     * @param icTEC : info comptable du tiers en cours
+     * @param idTEC : identifiant unique du tiers bénéficiaire en cours
+     * @param newIDAdressePaiement : nouvel id adresse paiement
+     * @param membres : membres de la situation familiale liés au tiers requérant
+     * @throws Exception
+     */
+    private void treatGroupLevels(final BSession session, final BTransaction transaction,
+            REInformationsComptabilite infoComptaTEC, String idTEC, String newIDAdressePaiement,
+            ISFMembreFamilleRequerant[] membres) throws Exception {
+
+        updateAdressePaiementForTEC(session, transaction, infoComptaTEC, idTEC, newIDAdressePaiement);
+        /**
+         * 
+         * 2. Vérifier les niveaux inférieurs de la situation familiale
+         * 
+         */
+        // Préparation d'une MAP triée par groupe level
+        Map<Integer, List<RERenteAccJoinTblTiersJoinDemandeRente>> mapSFSortedByGroupLevel = prepareMapSortedByGroupLevel(
+                session, transaction, membres);
+
+        // Si la map contient des niveaux 5, on traite les cas.
+        if (mapSFSortedByGroupLevel.containsKey(5)) {
+            List<RERenteAccJoinTblTiersJoinDemandeRente> listCAToDefine = new ArrayList<RERenteAccJoinTblTiersJoinDemandeRente>();
+            // parcourt de toutes les rentes contenues dans cette liste et traitement
+            for (RERenteAccJoinTblTiersJoinDemandeRente ra : mapSFSortedByGroupLevel.get(5)) {
+                boolean isInCAToDefineList = false;
+                if (isSpecifiqueRenteType(ra)) {
+                    // on vérifie si la rente accordée contient un NSS complémentaire 2
+                    if (!JadeStringUtil.isBlankOrZero(ra.getIdTiersComplementaire2())) {
+
+                        isInCAToDefineList = updateCAForNSSComplementaire2InEveryParentLevels(mapSFSortedByGroupLevel,
+                                ra, session, transaction);
+
+                    } else {
+                        // stocker la RA dans une liste temporaire afin de la retraiter plus tard dans ce processus.
+                        isInCAToDefineList = true;
+                    }
+
+                } else {
+                    isInCAToDefineList = verifyRenteParentByIdTiersBaseCalcul(session, transaction, ra);
+                }
+
+                if (isInCAToDefineList) {
+                    listCAToDefine.add(ra);
+                }
+            }
+            // Si on a plus d'un cas dans la liste des cas temporaire, on compare les cas et on met à jour en fonction
+            // des id adresse paiement semblables
+            if (listCAToDefine.size() > 1) {
+                treatTempCAToDefineListFromLevel5(session, transaction, listCAToDefine);
+            }
+
+        }
+
+    }
+
+    /**
+     * @param session
+     * @param transaction
+     * @param infoComptaTEC
+     * @param idTEC
+     * @param newIDAdressePaiement
+     * @throws Exception
+     */
+    private void updateAdressePaiementForTEC(final BSession session, final BTransaction transaction,
+            REInformationsComptabilite infoComptaTEC, String idTEC, String newIDAdressePaiement) throws Exception {
+        /**
+         * 1. Mettre à jour l'adresse de paiement du tiers en cours (TEC) + CA
+         */
+        infoComptaTEC.setIdTiersAdressePmt(newIDAdressePaiement);
+        // vérifier si le compte annexe est identique au CA lié au NSS du tiers courant -> sinon, mise à jour:
+        // Création du CA pour le TEC si non existant -> l'update de l'info compta est délégué à cette méthode.
+        REInfoCompta.initCompteAnnexe_noCommit(session, transaction, idTEC, infoComptaTEC,
+                IREValidationLevel.VALIDATION_LEVEL_ALL);
+    }
+
+    /**
+     * Cette méthode permet de vérifier si le tiers a un parent en récupérant l'id de base de calcul.
+     * S'il y a bien un tiers parent de niveau supérieur, on prend le tiers au niveau le plus élevé et on compare les
+     * comptes annexes.
+     * Si le compte annexe est différent, on récupère celui du tiers base de calcul et on l'assigne au fils (niveau 5).
+     * 
+     * Cette méthode est prévue pour tous les types de rentes sauf les suivants : 13, 14, 15, 16, 23, 24, 25, 26
+     * 
+     * @param session
+     * @param transaction
+     * @param ra
+     * @param isInCAToDefineList
+     * @return
+     * @throws Exception
+     */
+    private boolean verifyRenteParentByIdTiersBaseCalcul(final BSession session, final BTransaction transaction,
+            RERenteAccJoinTblTiersJoinDemandeRente ra) throws Exception {
+        // récupérer la base de calcul
+        REBasesCalcul baseCalcul = new REBasesCalcul();
+        baseCalcul.setSession(session);
+        baseCalcul.setIdBasesCalcul(ra.getIdBaseCalcul());
+        baseCalcul.retrieve(transaction);
+
+        boolean isInCAToDefineList = false;
+
+        // Si l'id tiers base de calcul est différent à l'id tiers bénéficiaire de la RA, il faut charger la
+        // rente du tiers base calcul et comparer les info comptable
+        if (!ra.getIdTiersBeneficiaire().equals(baseCalcul.getIdTiersBaseCalcul())) {
+
+            RERenteAccJoinTblTiersJoinDemRenteManager mgr = new RERenteAccJoinTblTiersJoinDemRenteManager();
+            mgr.setSession(session);
+            mgr.setForIdTiersBeneficiaire(baseCalcul.getIdTiersBaseCalcul());
+            mgr.setForCsEtatIn(IREPrestationAccordee.CS_ETAT_VALIDE + ", " + IREPrestationAccordee.CS_ETAT_PARTIEL);
+            mgr.setForMoisFinRANotEmptyAndHigherOrEgal(REPmtMensuel.getDateDernierPmt(session));
+            mgr.find(transaction, BManager.SIZE_NOLIMIT);
+
+            Map<Integer, String> mapIdCASortedByGroupLevel = new HashMap<Integer, String>();
+
+            // pour chaque rente on vérifie le level. On prend la référence compte annexe de la rente de
+            // niveau le plus fort
+            Integer bestLevel = 4;
+            for (int i = 0; i < mgr.size(); i++) {
+                RERenteAccJoinTblTiersJoinDemandeRente raRefRente = (RERenteAccJoinTblTiersJoinDemandeRente) mgr
+                        .getEntity(i);
+                REInformationsComptabilite infoComptaRefRente = raRefRente.loadInformationsComptabilite();
+
+                int groupLevelRefRente = REBeneficiairePrincipal.getGroupLevel(session, transaction,
+                        getIdsRaTiers(session, transaction, raRefRente.getIdTiersBeneficiaire()));
+
+                mapIdCASortedByGroupLevel.put(groupLevelRefRente, infoComptaRefRente.getIdCompteAnnexe());
+
+                if (groupLevelRefRente < bestLevel) {
+                    bestLevel = groupLevelRefRente;
+                }
+
+            }
+
+            String idCAToChange = null;
+            // on récupère le meilleur niveau de la map
+            if (mapIdCASortedByGroupLevel.containsKey(bestLevel)) {
+                idCAToChange = mapIdCASortedByGroupLevel.get(bestLevel);
+            }
+
+            if (idCAToChange != null) {
+                // On charge les informations comptables de la rente accordée du tiers membre famille en
+                // cours
+                REInformationsComptabilite infoComptaRenteMembreFamille = ra.loadInformationsComptabilite();
+
+                if (!infoComptaRenteMembreFamille.getIdCompteAnnexe().equals(idCAToChange)) {
+
+                    infoComptaRenteMembreFamille.setIdCompteAnnexe(idCAToChange);
+                    infoComptaRenteMembreFamille.setSession(session);
+                    infoComptaRenteMembreFamille.update(transaction);
+                }
+
+            } else {
+                // on a trouvé aucune rente, dans ce cas on délègue la liste des définitions de niveau 5
+                isInCAToDefineList = true;
+            }
+        }
+        return isInCAToDefineList;
+    }
+
+    /**
+     * 
+     * Cette méthode vérifie les cas de figures pour lequels il est nécessaire de comparer les niveaux 5 entre eux.
+     * 
+     * On vérifie si des rentes de niveau 5 pointent sur le même id adresse paiement. Si c'est le cas, on va vérifier
+     * quel est le tiers le plus jeune.
+     * 
+     * On met ensuite à jour tous les CA pointant sur la même adresse de paiement avec l'id du tiers le plus jeune.
+     * 
+     * @param session
+     * @param transaction
+     * @param listCAToDefine
+     * @throws Exception
+     */
+    private void treatTempCAToDefineListFromLevel5(final BSession session, final BTransaction transaction,
+            List<RERenteAccJoinTblTiersJoinDemandeRente> listCAToDefine) throws Exception {
+        Map<String, List<RERenteAccJoinTblTiersJoinDemandeRente>> mapRAByIDAdressePaiement = transformListToSortedMapByIdAdressePaiement(listCAToDefine);
+        for (Map.Entry<String, List<RERenteAccJoinTblTiersJoinDemandeRente>> entry : mapRAByIDAdressePaiement
+                .entrySet()) {
+            // Si on a plus d'un élément qui pointe sur la même adresse de paiement, on doit effectuer un
+            // traitement spécifique (vérification des âges)
+            if (entry.getValue().size() > 1) {
+                Integer tempAge = 0;
+                RERenteAccJoinTblTiersJoinDemandeRente tempRefRente = null;
+                // itérer sur toutes les rentes :
+                for (RERenteAccJoinTblTiersJoinDemandeRente ra : entry.getValue()) {
+
+                    // Récupérer le tiers rentier
+                    PRTiersWrapper tiersFamille = PRTiersHelper.getTiersParId(session, ra.getIdTiersBeneficiaire());
+                    // On prend le tiers le plus jeune
+                    Integer dateNaissanceTiers = Integer.parseInt(tiersFamille.getDateNaissance());
+                    if (dateNaissanceTiers > tempAge) {
+                        tempAge = dateNaissanceTiers;
+                        tempRefRente = ra;
+                    }
+                }
+                if (tempRefRente != null) {
+                    // Une fois que l'on a la rente de référence, on l'enlève de la liste.
+                    entry.getValue().remove(tempRefRente);
+                    // On charge ensuite les informations comptable de la rente de référence
+                    REInformationsComptabilite raInfoComptableRefRente = tempRefRente.loadInformationsComptabilite();
+                    // re- parcourt de la liste des rentes pour mise à jour des info comptables
+                    for (RERenteAccJoinTblTiersJoinDemandeRente ra : entry.getValue()) {
+
+                        REInformationsComptabilite raInfoComptable = ra.loadInformationsComptabilite();
+
+                        if (!raInfoComptable.getIdCompteAnnexe().equals(raInfoComptableRefRente.getIdCompteAnnexe())) {
+
+                            raInfoComptable.setIdCompteAnnexe(raInfoComptableRefRente.getIdCompteAnnexe());
+                            raInfoComptable.setSession(session);
+                            raInfoComptable.update(transaction);
+                        }
+
+                    }
+
+                }
+            }
+        }
+    }
+
+    /**
+     * 
+     * Cette méthode parcourt une liste de rentes accordées passés en paramètre et créer une map de type String - LIST
+     * avec l'id tiers adresse de paiement comme clé.
+     * 
+     * Cela permet d'effectuer un premier tri et de voir quels tiers partagent la même adresse de paiement.
+     * 
+     * @return Map<String, List<RERenteAccJoinTblTiersJoinDemandeRente>>
+     */
+    private Map<String, List<RERenteAccJoinTblTiersJoinDemandeRente>> transformListToSortedMapByIdAdressePaiement(
+            List<RERenteAccJoinTblTiersJoinDemandeRente> listCAToDefine) {
+
+        Map<String, List<RERenteAccJoinTblTiersJoinDemandeRente>> mapRAByIDAdressePaiement = new HashMap<String, List<RERenteAccJoinTblTiersJoinDemandeRente>>();
+
+        for (RERenteAccJoinTblTiersJoinDemandeRente ra : listCAToDefine) {
+
+            if (!mapRAByIDAdressePaiement.containsKey(ra.getIdTiersAdressePmt())) {
+                List<RERenteAccJoinTblTiersJoinDemandeRente> raSortedList = new ArrayList<RERenteAccJoinTblTiersJoinDemandeRente>();
+                raSortedList.add(ra);
+                mapRAByIDAdressePaiement.put(ra.getIdTiersAdressePmt(), raSortedList);
+
+            } else {
+
+                mapRAByIDAdressePaiement.get(ra.getIdTiersAdressePmt()).add(ra);
+            }
+        }
+        return mapRAByIDAdressePaiement;
+    }
+
+    /**
+     * Cette méthode s'occupe de vérifier si le tiers membres famille a un parent dans le niveau 1, 2 ou 4.
+     * 
+     * Si c'est le cas, une comparaison des idCompteAnnexe est effectuée afin de voir si le tiers pointe sur le même
+     * compte annexe que son parent.
+     * 
+     * Si le tiers ne pointe pas sur le même compte annexe que son parent, le compte annexe est mis à jour en prenant
+     * celui du parent.
+     * 
+     * Cette méthode retourne un booléen qui permet de tracer l'update réalisé en cas de mise à jour de compte annexe.
+     * 
+     * @param mapSFSortedByGroupLevel
+     * @param raMbrf
+     * @param session
+     * @param transaction
+     * @return
+     * @throws Exception
+     */
+    private boolean updateCAForNSSComplementaire2InEveryParentLevels(
+            Map<Integer, List<RERenteAccJoinTblTiersJoinDemandeRente>> mapSFSortedByGroupLevel,
+            RERenteAccJoinTblTiersJoinDemandeRente raMbrf, final BSession session, final BTransaction transaction)
+            throws Exception {
+        // booléen permettant de dire si le cas doit être à nouveau traité dans la liste temporaire pour les niveaux 5.
+        boolean isInCAToDefineList = true;
+        // vérification level 1
+        RERenteAccJoinTblTiersJoinDemandeRente raToCheck = findIdNSSComplementaire2InSpecifiedLowerLevel(
+                mapSFSortedByGroupLevel, raMbrf, 1);
+        // Si on a rien trouvé à ce niveau, on vérifie le level 2
+        if (raToCheck == null) {
+            raToCheck = findIdNSSComplementaire2InSpecifiedLowerLevel(mapSFSortedByGroupLevel, raMbrf, 2);
+        }
+        // Si le niveau 2 n'a rien donné on vérifie le niveau final 4
+        if (raToCheck == null) {
+            raToCheck = findIdNSSComplementaire2InSpecifiedLowerLevel(mapSFSortedByGroupLevel, raMbrf, 4);
+        }
+        // Si après tous les tests on a bien une rente accordée, on va la récupérer et vérifier si l'id compte annexe
+        // est identique à celui du membre famille en cours
+        if (raToCheck != null) {
+
+            REInformationsComptabilite infoComptableTiersHigherLevel = raToCheck.loadInformationsComptabilite();
+            REInformationsComptabilite infoComptableTiersMembreFamille = raMbrf.loadInformationsComptabilite();
+
+            if (!infoComptableTiersHigherLevel.getIdCompteAnnexe().equals(
+                    infoComptableTiersMembreFamille.getIdCompteAnnexe())) {
+                // Si les idCompteAnnexe sont différents, on récupère celui du parent
+                infoComptableTiersMembreFamille.setIdCompteAnnexe(infoComptableTiersHigherLevel.getIdCompteAnnexe());
+                infoComptableTiersMembreFamille.setSession(session);
+                infoComptableTiersMembreFamille.update(transaction);
+
+                isInCAToDefineList = false;
+            }
+
+        }
+
+        return isInCAToDefineList;
+
+    }
+
+    /**
+     * Cette méthode permet de rechercher les cas de rentes égales au NSS complémentaire et qui se trouvent dans le
+     * niveau spécifié.
+     * 
+     * @param mapSFSortedByGroupLevel
+     * @param raMbrf
+     * @param levelNumber
+     * @return
+     */
+    private RERenteAccJoinTblTiersJoinDemandeRente findIdNSSComplementaire2InSpecifiedLowerLevel(
+            Map<Integer, List<RERenteAccJoinTblTiersJoinDemandeRente>> mapSFSortedByGroupLevel,
+            RERenteAccJoinTblTiersJoinDemandeRente raMbrf, int levelNumber) {
+
+        RERenteAccJoinTblTiersJoinDemandeRente raToReturn = null;
+
+        if (mapSFSortedByGroupLevel.containsKey(levelNumber)) {
+
+            for (RERenteAccJoinTblTiersJoinDemandeRente ra : mapSFSortedByGroupLevel.get(levelNumber)) {
+
+                // Si le bénéficiaire de la rente de niveau 1 est égal à l'id NSS complémentaire 2 de la rente du membre
+                // famille niveau 5, on va comparer les CA et mettre à jour si nécessaire.
+                if (ra.getIdTiersBeneficiaire().equals(raMbrf.getIdTiersComplementaire2())) {
+
+                    raToReturn = ra;
+                    break;
+                }
+            }
+        }
+        return raToReturn;
+    }
+
+    /**
+     * Méthode qui permet de vérifier si la rente se trouve dans les types 14, 15, 16, 24, 25, 26.
+     * Si c'est le cas, le traitement des rentes de niveau 5 doit se faire d'une façon différente.
+     * 
+     * @param ra
+     * @return isSpecifiqueType -> booléen
+     */
+    private boolean isSpecifiqueRenteType(RERenteAccJoinTblTiersJoinDemandeRente ra) {
+
+        boolean isSpecifiqueType = false;
+        Map<String, String> mapGenrePrestation = new HashMap<String, String>();
+
+        mapGenrePrestation.put(REGenresPrestations.GENRE_14, REGenresPrestations.GENRE_14);
+        mapGenrePrestation.put(REGenresPrestations.GENRE_15, REGenresPrestations.GENRE_15);
+        mapGenrePrestation.put(REGenresPrestations.GENRE_16, REGenresPrestations.GENRE_16);
+        mapGenrePrestation.put(REGenresPrestations.GENRE_24, REGenresPrestations.GENRE_24);
+        mapGenrePrestation.put(REGenresPrestations.GENRE_25, REGenresPrestations.GENRE_25);
+        mapGenrePrestation.put(REGenresPrestations.GENRE_26, REGenresPrestations.GENRE_26);
+
+        if (mapGenrePrestation.containsKey(ra.getCodePrestation())) {
+
+            isSpecifiqueType = true;
+        }
+        return isSpecifiqueType;
+    }
+
+    /**
+     * Cette méthode permet de créer une structure de données mappée sur les niveaux de rentes.
+     * Chaque rente se trouve dans un certain niveau. On détermine pour chaque rente le niveau et on créer une map en
+     * fonction du niveau :
+     * 
+     * EX: nom objet = rente1 niveau = 1 -> ajout de l'objet à la liste listLevel1.add(rente1) -> ajout de la liste à la
+     * map -> [1
+     * : listLevel1]
+     * 
+     * @param session
+     * @param transaction
+     * @param membres
+     * @throws Exception
+     */
+    private Map<Integer, List<RERenteAccJoinTblTiersJoinDemandeRente>> prepareMapSortedByGroupLevel(BSession session,
+            final BTransaction transaction, ISFMembreFamilleRequerant[] membres) throws Exception {
+
+        // Instantiation d'une map afin de mémoriser les différents cas de situation familiale par groupe
+        Map<Integer, List<RERenteAccJoinTblTiersJoinDemandeRente>> mapSFByGroupLevel = new HashMap<Integer, List<RERenteAccJoinTblTiersJoinDemandeRente>>();
+        // On prépare une nouvelle liste par groupe level
+        List<RERenteAccJoinTblTiersJoinDemandeRente> listRAGroupLevel1 = new ArrayList<RERenteAccJoinTblTiersJoinDemandeRente>();
+        List<RERenteAccJoinTblTiersJoinDemandeRente> listRAGroupLevel2 = new ArrayList<RERenteAccJoinTblTiersJoinDemandeRente>();
+        List<RERenteAccJoinTblTiersJoinDemandeRente> listRAGroupLevel4 = new ArrayList<RERenteAccJoinTblTiersJoinDemandeRente>();
+        List<RERenteAccJoinTblTiersJoinDemandeRente> listRAGroupLevel5 = new ArrayList<RERenteAccJoinTblTiersJoinDemandeRente>();
+        // Ajout des niveaux acceptés et des listes associés
+        mapSFByGroupLevel.put(1, listRAGroupLevel1);
+        mapSFByGroupLevel.put(2, listRAGroupLevel2);
+        mapSFByGroupLevel.put(4, listRAGroupLevel4);
+        mapSFByGroupLevel.put(5, listRAGroupLevel5);
+
+        // Marqueur permettant de spécifier si un groupe level 5 est existant
+        boolean hasGroupLevel5 = false;
+        // On parcourt tous les membres de la famille et on récupère la liste des rentes de chaque membre.
         for (int i = 0; i < membres.length; i++) {
             ISFMembreFamilleRequerant mbr = membres[i];
-
-            if (JadeStringUtil.isBlankOrZero(mbr.getIdTiers())) {
-                continue;
-            }
-            // skip du requérant...
-            if (ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT.equals(mbr.getRelationAuRequerant())) {
-                continue;
-            }
-
-            // Récupération des infoCompta des membre de famille...
+            // Pour chaque membre famille, on récupère toutes les rentes en cours
             RERenteAccJoinTblTiersJoinDemRenteManager mgr = new RERenteAccJoinTblTiersJoinDemRenteManager();
             mgr.setSession(session);
             mgr.setForIdTiersBeneficiaire(mbr.getIdTiers());
-            // mgr.setForNoDemandeRente(demande.getIdDemandeRente());
             mgr.setForCsEtatIn(IREPrestationAccordee.CS_ETAT_VALIDE + ", " + IREPrestationAccordee.CS_ETAT_PARTIEL);
             mgr.setForMoisFinRANotEmptyAndHigherOrEgal(REPmtMensuel.getDateDernierPmt(session));
-            mgr.find(transaction);
-
+            mgr.find(transaction, BManager.SIZE_NOLIMIT);
+            // On parcourt chaque rente trouvée afin d'en déterminer le groupe level
             for (int j = 0; j < mgr.size(); j++) {
                 RERenteAccJoinTblTiersJoinDemandeRente raMbrF = (RERenteAccJoinTblTiersJoinDemandeRente) mgr
                         .getEntity(j);
-                REInformationsComptabilite icMbrF = raMbrF.loadInformationsComptabilite();
-                if (idt.equals(raMbrF.getIdTiersBeneficiaire())) {
-                    isMembreFamilleReferenced = true;
+
+                int groupLevelMbrFamille = REBeneficiairePrincipal.getGroupLevel(session, transaction,
+                        getIdsRaTiers(session, transaction, raMbrF.getIdTiersBeneficiaire()));
+
+                if (mapSFByGroupLevel.containsKey(groupLevelMbrFamille)) {
+                    mapSFByGroupLevel.get(groupLevelMbrFamille).add(raMbrF);
                 }
-                if (idt.equals(icMbrF.getIdTiersAdressePmt())) {
-                    isReferencedButNotAFamilyMember = true;
-                }
-            }
-        }
 
-        /*
-         * Cas a) idt ne correspond à aucun des membres de la famille et n'est référencé par aucun des mbr. de la
-         * famille...
-         */
-        if (!isMembreFamilleReferenced && !isReferencedButNotAFamilyMember) {
-
-            doTraitementCasA(session, transaction, idt, idTEC, icTEC, membres);
-
-        }
-        /*
-         * Cas b) idt correspond à un ou plusieurs des mbres de famille
-         */
-        else if (isMembreFamilleReferenced) {
-
-            doTraitementCasB(session, transaction, idt, idTEC, icTEC, membres);
-
-        }
-        /*
-         * Cas c) idt ne correspond à aucun membre de famille, mais est référencé
-         */
-        else if (!isMembreFamilleReferenced && isReferencedButNotAFamilyMember) {
-
-            doTraitementCasC(session, transaction, idt, idTEC, icTEC, membres);
-
-        } else {
-            throw new Exception(session.getLabel("ERREUR_CAS_NON_PRISENCOMPTE_TRAITEMENT"));
-        }
-
-        if ((IREPrestationAccordee.CS_ETAT_VALIDE.equals(ra.getCsEtat()) || IREPrestationAccordee.CS_ETAT_PARTIEL
-                .equals(ra.getCsEtat()))
-
-        &&
-
-        JadeStringUtil.isBlankOrZero(ra.getDateFinDroit())) {
-
-            icTEC.retrieve(transaction);
-
-            if (JadeStringUtil.isBlankOrZero(icTEC.getIdCompteAnnexe())) {
-                throw new Exception("Aucun compte annexe pour la RA # " + ra.getIdPrestationAccordee()
-                        + ". Veuillez informer GLOBAZ immédiatement de ce problème, merci.");
-            }
-        }
-
-    }
-
-    private void doTraitementCasA(final BSession session, final BTransaction transaction, final String idt,
-            final String idTEC, final REInformationsComptabilite icTEC, final ISFMembreFamilleRequerant[] membresFamille)
-            throws Exception {
-
-        // Création du CA pour le TEC si non existant
-        REInfoCompta.initCompteAnnexe_noCommit(session, transaction, idTEC, icTEC,
-                IREValidationLevel.VALIDATION_LEVEL_ALL);
-
-        icTEC.retrieve(transaction);
-
-        icTEC.setIdTiersAdressePmt(idt);
-        icTEC.update(transaction);
-
-        int groupLevelTEC = REBeneficiairePrincipal.getGroupLevel(session, transaction,
-                getIdsRaTiers(session, transaction, idTEC));
-
-        // Parcous de tous les membres de la famille...
-        for (int i = 0; i < membresFamille.length; i++) {
-            ISFMembreFamilleRequerant mbr = membresFamille[i];
-            // skip du requérant...
-            if (ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT.equals(mbr.getRelationAuRequerant())) {
-                continue;
-            }
-
-            if (JadeStringUtil.isBlankOrZero(mbr.getIdTiers())) {
-                continue;
-            }
-
-            // Récupération des infoCompta des membre de famille...
-            RERenteAccJoinTblTiersJoinDemRenteManager mgr = new RERenteAccJoinTblTiersJoinDemRenteManager();
-            mgr.setSession(session);
-            mgr.setForIdTiersBeneficiaire(mbr.getIdTiers());
-            // mgr.setForNoDemandeRente(demande.getIdDemandeRente());
-            mgr.setForCsEtatIn(IREPrestationAccordee.CS_ETAT_VALIDE + ", " + IREPrestationAccordee.CS_ETAT_PARTIEL);
-            mgr.setForMoisFinRANotEmptyAndHigherOrEgal(REPmtMensuel.getDateDernierPmt(session));
-            mgr.find(transaction);
-
-            for (int j = 0; j < mgr.size(); j++) {
-                RERenteAccJoinTblTiersJoinDemandeRente raMbrF = (RERenteAccJoinTblTiersJoinDemandeRente) mgr
-                        .getEntity(j);
-                REInformationsComptabilite icMbrF = raMbrF.loadInformationsComptabilite();
-                if (idTEC.equals(icMbrF.getIdTiersAdressePmt())) {
-
-                    int groupLevelMbrFamille = REBeneficiairePrincipal.getGroupLevel(session, transaction,
-                            getIdsRaTiers(session, transaction, raMbrF.getIdTiersBeneficiaire()));
-
-                    boolean isMbrFamillePlusVieux = false;
-                    if (groupLevelMbrFamille == groupLevelTEC) {
-                        PRTiersWrapper mbrFamille = PRTiersHelper.getTiersParId(session,
-                                raMbrF.getIdTiersBeneficiaire());
-                        JADate dnMF = new JADate(mbrFamille.getProperty(PRTiersWrapper.PROPERTY_DATE_NAISSANCE));
-
-                        PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, idTEC);
-                        JADate dnTEC = new JADate(tw.getProperty(PRTiersWrapper.PROPERTY_DATE_NAISSANCE));
-
-                        JACalendar cal = new JACalendarGregorian();
-                        if (cal.compare(dnMF, dnTEC) == JACalendar.COMPARE_FIRSTLOWER) {
-                            isMbrFamillePlusVieux = true;
-                        }
-
-                    }
-
-                    // Les deux mbr de famille sont de même niveau et ont les deux une rente principale
-                    if ((groupLevelMbrFamille == groupLevelTEC) && (groupLevelTEC == 1)) {
-
-                        // Création du CA pour le TEC si non existant
-                        REInfoCompta.initCompteAnnexe_noCommit(session, transaction, idTEC, icTEC,
-                                IREValidationLevel.VALIDATION_LEVEL_ALL);
-                        icTEC.retrieve(transaction);
-                        icTEC.setIdTiersAdressePmt(idt);
-                        icTEC.update(transaction);
-                    }
-
-                    // Le membre de famille est de niveau inférieur ou de même
-                    // niveau, mais plus vieux...
-                    else if ((groupLevelMbrFamille < groupLevelTEC)
-                            || ((groupLevelMbrFamille == groupLevelTEC) && isMbrFamillePlusVieux)) {
-
-                        icMbrF.setIdTiersAdressePmt(idt);
-                        icMbrF.setIdCompteAnnexe(icTEC.getIdCompteAnnexe());
-                        icMbrF.update(transaction);
-                    } else {
-                        icMbrF.setIdTiersAdressePmt(idt);
-                        icMbrF.update(transaction);
-                    }
-
+                if (groupLevelMbrFamille == 5) {
+                    hasGroupLevel5 = true;
                 }
             }
         }
 
-    }
-
-    private void doTraitementCasB(final BSession session, final BTransaction transaction, final String idt,
-            final String idTEC, final REInformationsComptabilite icTEC, final ISFMembreFamilleRequerant[] membresFamille)
-            throws Exception {
-
-        icTEC.retrieve(transaction);
-        icTEC.setIdTiersAdressePmt(idt);
-        icTEC.update(transaction);
-
-        int groupLevelTEC = REBeneficiairePrincipal.getGroupLevel(session, transaction,
-                getIdsRaTiers(session, transaction, idTEC));
-
-        // Parcous de tous les membres de la famille
-        for (int i = 0; i < membresFamille.length; i++) {
-            ISFMembreFamilleRequerant mbr = membresFamille[i];
-
-            if (JadeStringUtil.isBlankOrZero(mbr.getIdTiers())) {
-                continue;
-            }
-
-            // skip du requérant...
-            if (ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT.equals(mbr.getRelationAuRequerant())) {
-                continue;
-            }
-
-            // Récupération des infoCompta des membre de famille...
-            RERenteAccJoinTblTiersJoinDemRenteManager mgr = new RERenteAccJoinTblTiersJoinDemRenteManager();
-            mgr.setSession(session);
-            mgr.setForIdTiersBeneficiaire(mbr.getIdTiers());
-            // mgr.setForNoDemandeRente(demande.getIdDemandeRente());
-            mgr.setForCsEtatIn(IREPrestationAccordee.CS_ETAT_VALIDE + ", " + IREPrestationAccordee.CS_ETAT_PARTIEL);
-            mgr.setForMoisFinRANotEmptyAndHigherOrEgal(REPmtMensuel.getDateDernierPmt(session));
-            mgr.find(transaction);
-
-            // Parcous de tous les membres référencés...
-            for (int j = 0; j < mgr.size(); j++) {
-                RERenteAccJoinTblTiersJoinDemandeRente raMbrF = (RERenteAccJoinTblTiersJoinDemandeRente) mgr
-                        .getEntity(j);
-                REInformationsComptabilite icMbrF = raMbrF.loadInformationsComptabilite();
-
-                if (idTEC.equals(raMbrF.getIdTiersBeneficiaire()) || idt.equals(raMbrF.getIdTiersBeneficiaire())) {
-
-                    int groupLevelMbrFamille = REBeneficiairePrincipal.getGroupLevel(session, transaction,
-                            getIdsRaTiers(session, transaction, raMbrF.getIdTiersBeneficiaire()));
-
-                    // Le membre de famille est de meme niveau que le
-                    // tiersEnCours, et sont tous les deux de niveau 1 (rente
-                    // principale)
-                    // Dans ce cas, on ne met pas à jours le compte annexe,
-                    // chacun garde son propre compte.
-                    if ((groupLevelMbrFamille == groupLevelTEC) && (groupLevelMbrFamille == 1)) {
-                        continue;
-                    }
-                    boolean isMbrFamillePlusVieux = false;
-                    if (groupLevelMbrFamille == groupLevelTEC) {
-                        PRTiersWrapper mbrFamille = PRTiersHelper.getTiersParId(session,
-                                raMbrF.getIdTiersBeneficiaire());
-                        JADate dnMF = new JADate(mbrFamille.getProperty(PRTiersWrapper.PROPERTY_DATE_NAISSANCE));
-
-                        PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, idTEC);
-                        JADate dnTEC = new JADate(tw.getProperty(PRTiersWrapper.PROPERTY_DATE_NAISSANCE));
-
-                        JACalendar cal = new JACalendarGregorian();
-                        if (cal.compare(dnMF, dnTEC) == JACalendar.COMPARE_FIRSTLOWER) {
-                            isMbrFamillePlusVieux = true;
-                        }
-
-                    }
-
-                    // Le membre de famille est de niveau inférieur ou de même
-                    // niveau, mais plus vieux...
-                    if ((groupLevelMbrFamille < groupLevelTEC)
-                            || ((groupLevelMbrFamille == groupLevelTEC) && isMbrFamillePlusVieux)) {
-
-                        // Création du CA pour le TEC si non existant
-                        REInfoCompta.initCompteAnnexe_noCommit(session, transaction, idTEC, icTEC,
-                                IREValidationLevel.VALIDATION_LEVEL_ALL);
-                        icTEC.retrieve(transaction);
-                        icTEC.setIdTiersAdressePmt(idt);
-                        icTEC.wantCallMethodBefore(false);
-                        icTEC.update(transaction);
-
-                        icMbrF.setIdTiersAdressePmt(idt);
-                        icMbrF.wantCallMethodBefore(false);
-                        icMbrF.update(transaction);
-
-                    } else {
-                        String idCptAnnexe = null;
-                        if (icMbrF.getIdTiersAdressePmt().equals(idt)) {
-                            idCptAnnexe = icMbrF.getIdCompteAnnexe();
-                        } else {
-                            // Création du CA pour le TEC si non existant
-                            idCptAnnexe = REInfoCompta.initCompteAnnexe_noCommit(session, transaction, idTEC, icTEC,
-                                    IREValidationLevel.VALIDATION_LEVEL_ALL);
-                        }
-                        icTEC.retrieve(transaction);
-                        icTEC.setIdCompteAnnexe(idCptAnnexe);
-                        icTEC.setIdTiersAdressePmt(idt);
-                        icTEC.update(transaction);
-                    }
-                }
-            }
-
+        if (!hasGroupLevel5) {
+            // Si on n'a pas de groupe level 5, on supprime l'entrée dans la map car un test est fait plus loin sur
+            // cette entrée
+            mapSFByGroupLevel.remove(5);
         }
-    }
 
-    private void doTraitementCasC(final BSession session, final BTransaction transaction, final String idt,
-            final String idTEC, final REInformationsComptabilite icTEC, final ISFMembreFamilleRequerant[] membresFamille)
-            throws Exception {
-        icTEC.retrieve(transaction);
-        icTEC.setIdTiersAdressePmt(idt);
-        icTEC.update(transaction);
-
-        int groupLevelTEC = REBeneficiairePrincipal.getGroupLevel(session, transaction,
-                getIdsRaTiers(session, transaction, idTEC));
-
-        // Parcous de tous les membres de la famille
-        for (int i = 0; i < membresFamille.length; i++) {
-            ISFMembreFamilleRequerant mbr = membresFamille[i];
-            // skip du requérant...
-            if (ISFSituationFamiliale.CS_TYPE_RELATION_REQUERANT.equals(mbr.getRelationAuRequerant())) {
-                continue;
-            }
-
-            if (JadeStringUtil.isBlankOrZero(mbr.getIdTiers())) {
-                continue;
-            }
-
-            // Récupération des infoCompta des membre de famille...
-            RERenteAccJoinTblTiersJoinDemRenteManager mgr = new RERenteAccJoinTblTiersJoinDemRenteManager();
-            mgr.setSession(session);
-            mgr.setForIdTiersBeneficiaire(mbr.getIdTiers());
-            // mgr.setForNoDemandeRente(demande.getIdDemandeRente());
-            mgr.setForCsEtatIn(IREPrestationAccordee.CS_ETAT_VALIDE + ", " + IREPrestationAccordee.CS_ETAT_PARTIEL);
-            mgr.setForMoisFinRANotEmptyAndHigherOrEgal(REPmtMensuel.getDateDernierPmt(session));
-            mgr.find(transaction);
-
-            // Parcous de tous les membres référencés...
-            for (int j = 0; j < mgr.size(); j++) {
-                RERenteAccJoinTblTiersJoinDemandeRente raMbrF = (RERenteAccJoinTblTiersJoinDemandeRente) mgr
-                        .getEntity(j);
-                REInformationsComptabilite icMbrF = raMbrF.loadInformationsComptabilite();
-
-                if (idt.equals(icMbrF.getIdTiersAdressePmt())) {
-
-                    int groupLevelMbrFamille = REBeneficiairePrincipal.getGroupLevel(session, transaction,
-                            getIdsRaTiers(session, transaction, raMbrF.getIdTiersBeneficiaire()));
-
-                    boolean isMbrFamillePlusVieux = false;
-                    if (groupLevelMbrFamille == groupLevelTEC) {
-                        PRTiersWrapper mbrFamille = PRTiersHelper.getTiersParId(session,
-                                raMbrF.getIdTiersBeneficiaire());
-                        JADate dnMF = new JADate(mbrFamille.getProperty(PRTiersWrapper.PROPERTY_DATE_NAISSANCE));
-
-                        PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, idTEC);
-                        JADate dnTEC = new JADate(tw.getProperty(PRTiersWrapper.PROPERTY_DATE_NAISSANCE));
-
-                        JACalendar cal = new JACalendarGregorian();
-                        if (cal.compare(dnMF, dnTEC) == JACalendar.COMPARE_FIRSTLOWER) {
-                            isMbrFamillePlusVieux = true;
-                        }
-
-                    }
-
-                    // Les deux mbr de famille sont de même niveau et ont les deux une rente principale
-                    if ((groupLevelMbrFamille == groupLevelTEC) && (groupLevelTEC == 1)) {
-
-                        // Création du CA pour le TEC si non existant
-                        REInfoCompta.initCompteAnnexe_noCommit(session, transaction, idTEC, icTEC,
-                                IREValidationLevel.VALIDATION_LEVEL_ALL);
-
-                        icTEC.retrieve(transaction);
-                        icTEC.setIdTiersAdressePmt(idt);
-                        icTEC.update(transaction);
-                    }
-
-                    // Le membre de famille est de niveau inférieur ou de même
-                    // niveau, mais plus vieux...
-                    else if ((groupLevelMbrFamille < groupLevelTEC)
-                            || ((groupLevelMbrFamille == groupLevelTEC) && isMbrFamillePlusVieux)) {
-
-                        // Création du CA pour le TEC si non existant
-
-                        REInfoCompta.initCompteAnnexe_noCommit(session, transaction, idTEC, icTEC,
-                                IREValidationLevel.VALIDATION_LEVEL_ALL);
-
-                        icTEC.retrieve(transaction);
-                        icTEC.setIdTiersAdressePmt(idt);
-                        icTEC.update(transaction);
-
-                        icMbrF.setIdTiersAdressePmt(idt);
-                        icMbrF.setIdCompteAnnexe(icTEC.getIdCompteAnnexe());
-                        icMbrF.update(transaction);
-
-                    }
-                    // De niveau supérieur
-                    else {
-                        String idCptAnnexe = null;
-                        idCptAnnexe = icMbrF.getIdCompteAnnexe();
-                        icTEC.retrieve(transaction);
-                        icTEC.setIdCompteAnnexe(idCptAnnexe);
-                        icTEC.setIdTiersAdressePmt(idt);
-                        icTEC.update(transaction);
-                    }
-                }
-            }
-        }
+        return mapSFByGroupLevel;
     }
 
     /**

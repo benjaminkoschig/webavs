@@ -185,6 +185,48 @@ public class REBeneficiairePrincipal {
         return groupLevel;
     }
 
+    /**
+     * @param session
+     * @param transaction
+     * @param idsRA
+     * @return
+     * @throws Exception
+     */
+    public static int getGroupLevel(BSession session, BITransaction transaction, String idRA) throws Exception {
+        /*
+         * 1. les prestations 10, 13, 20, 23, 50, 70, 72 sont considérées comme le tri 1
+         * 2. les prestations 81, 82, 83, 84, 85, 86, 87, 88, 91, 92, 93, 95, 96, 97 sont considérées comme le tri 2
+         * 3. les prestations 33, 53, 73 sont considérées comme le tri 4
+         * 4. les prestations 14, 15, 16, 24, 25, 26, 34, 35, 45, 54, 55, 74, 75 sont considérées comme le tri 5
+         */
+
+        // Récupération du bénéficiaire principal
+        // Priorité au groupe 1, puis 2, 4 et 5
+
+        int groupLevel = 100;
+
+        RERenteAccordee ra = REBeneficiairePrincipal.retrieveRA(session, transaction, Long.parseLong(idRA));
+
+        if (REGenrePrestationEnum.groupe1.contains(ra.getCodePrestation())) {
+            groupLevel = 1;
+
+        } else if (REGenrePrestationEnum.groupe2.contains(ra.getCodePrestation())) {
+            if (groupLevel > 2) {
+                groupLevel = 2;
+            }
+        } else if (REGenrePrestationEnum.groupe4.contains(ra.getCodePrestation())) {
+            if (groupLevel > 4) {
+                groupLevel = 4;
+            }
+        } else if (REGenrePrestationEnum.groupe5.contains(ra.getCodePrestation())) {
+
+            if (groupLevel > 5) {
+                groupLevel = 5;
+            }
+        }
+        return groupLevel;
+    }
+
     // Retourne la plus grande date de fin de toutes les RA passée en paramètres
     // null si pas de date de fin
     private static JADate getMaxDateFinRentesAccordees(BSession session, BITransaction transaction,
