@@ -1,6 +1,7 @@
 package ch.globaz.pegasus.businessimpl.utils.topazbuilder.transfertDossier;
 
 import globaz.babel.api.ICTDocument;
+import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeDateUtil;
@@ -19,6 +20,7 @@ import ch.globaz.common.business.language.LanguageResolver;
 import ch.globaz.common.business.models.CTDocumentImpl;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
+import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
 import ch.globaz.pegasus.business.exceptions.models.transfertdossier.TransfertDossierException;
 import ch.globaz.pegasus.business.models.demande.Demande;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
@@ -41,7 +43,7 @@ public class DefaultTransfertRentePCBuilder extends AbstractPegasusBuilder {
 
     public JadePrintDocumentContainer build(JadePublishDocumentInfo pubInfo, String idDemandePC, String email,
             String idGestionnaire, String idAgence, String noAgence, String dateTransfert, String dateAnnonce)
-            throws TransfertDossierException {
+            throws TransfertDossierException, DecisionException {
 
         idCaisseAgence = idAgence;
         this.idDemandePC = idDemandePC;
@@ -62,7 +64,7 @@ public class DefaultTransfertRentePCBuilder extends AbstractPegasusBuilder {
 
         pubInfo.setOwnerEmail(email);
         pubInfo.setPublishProperty(JadePublishDocumentInfo.MAIL_TO, email);
-        pubInfo.setArchiveDocument(false);
+        pubInfo.setArchiveDocument(true);
         pubInfo.setPublishDocument(true);
         pubInfo.setDocumentType(noDocument);
         pubInfo.setDocumentTypeNumber(noDocument);
@@ -70,6 +72,8 @@ public class DefaultTransfertRentePCBuilder extends AbstractPegasusBuilder {
 
         pubInfo.setDocumentTitle(title);
         pubInfo.setDocumentSubject(title);
+        // ajout des propriétés de publication liées au tiers requérant.
+        loadPixisInfoForPubInfo(requerant.getTiers().getIdTiers(), pubInfo);
 
         allDoc.setMergedDocDestination(pubInfo);
 
@@ -119,6 +123,24 @@ public class DefaultTransfertRentePCBuilder extends AbstractPegasusBuilder {
             throw new TransfertDossierException("Error while loading catalogue Babel!", e);
         }
 
+    }
+
+    /**
+     * Chargement du container de transfert pour le remplissage de pixis
+     * 
+     * @param idTiers
+     *            l'identifiant du tiers concerné pour les informations
+     * @throws DecisionException
+     *             si un problème survient lors du remplissge
+     */
+    private void loadPixisInfoForPubInfo(String idTiers, JadePublishDocumentInfo pubInfo) throws DecisionException {
+        try {
+            TIDocumentInfoHelper.fill(pubInfo, idTiers, getSession(), null, null, null);
+        } catch (Exception e) {
+            throw new DecisionException(
+                    "An error happened during filling the document with pyxis informations for the following idTiers:["
+                            + idTiers + "]", e);
+        }
     }
 
 }
