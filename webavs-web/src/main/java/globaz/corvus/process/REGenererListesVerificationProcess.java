@@ -4,6 +4,7 @@
 package globaz.corvus.process;
 
 import globaz.corvus.api.lots.IRELot;
+import globaz.corvus.api.topaz.IRENoDocumentInfoRom;
 import globaz.corvus.db.lots.RELot;
 import globaz.corvus.db.lots.RELotManager;
 import globaz.corvus.itext.REListeAdrPaiementRentesEnErreur;
@@ -264,8 +265,11 @@ public class REGenererListesVerificationProcess extends BProcess {
             try {
                 // Fusion des documents
                 JadePublishDocumentInfo info = createDocumentInfo();
+                info.setDocumentType(IRENoDocumentInfoRom.LISTE_RECAPITULATIVE_DU_PAIEMENT);
+                info.setDocumentTypeNumber(IRENoDocumentInfoRom.LISTE_RECAPITULATIVE_DU_PAIEMENT);
+                info.setDocumentProperty("corvus.verif.periode", moisAnnee);
                 info.setPublishDocument(true);
-                info.setArchiveDocument(false);
+                info.setArchiveDocument(true);
 
                 this.mergePDF(info, true, 500, false, REGenererListesVerificationProcess.PROPERTY_DOCUMENT_ORDER);
 
