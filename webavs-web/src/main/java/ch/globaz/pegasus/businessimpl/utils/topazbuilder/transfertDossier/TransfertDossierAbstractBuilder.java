@@ -6,10 +6,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import ch.globaz.pegasus.business.services.transfertDossier.ITransfertDossierBuilder;
+import ch.globaz.pegasus.businessimpl.utils.topazbuilder.AbstractPegasusBuilder;
 import ch.globaz.pyxis.business.model.LocaliteSimpleModel;
 import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
 
-public abstract class TransfertDossierAbstractBuilder implements ITransfertDossierBuilder {
+public abstract class TransfertDossierAbstractBuilder extends AbstractPegasusBuilder implements
+        ITransfertDossierBuilder {
 
     public static final String DATE_SUR_DOCUMENT = "date sur document";
     public static final String DATE_TRANSFERT = "date transfert";
