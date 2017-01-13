@@ -65,6 +65,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import ch.globaz.common.domaine.Date;
 import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.corvus.domaine.DemandeRente;
@@ -957,7 +958,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
             // Si on a plus d'un élément qui pointe sur la même adresse de paiement, on doit effectuer un
             // traitement spécifique (vérification des âges)
             if (entry.getValue().size() > 1) {
-                Integer tempAge = 0;
+                Date tempDateNaissance = new Date("01.01.1900");
                 RERenteAccJoinTblTiersJoinDemandeRente tempRefRente = null;
                 // itérer sur toutes les rentes :
                 for (RERenteAccJoinTblTiersJoinDemandeRente ra : entry.getValue()) {
@@ -965,9 +966,10 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
                     // Récupérer le tiers rentier
                     PRTiersWrapper tiersFamille = PRTiersHelper.getTiersParId(session, ra.getIdTiersBeneficiaire());
                     // On prend le tiers le plus jeune
-                    Integer dateNaissanceTiers = Integer.parseInt(tiersFamille.getDateNaissance());
-                    if (dateNaissanceTiers > tempAge) {
-                        tempAge = dateNaissanceTiers;
+                    Date dateMbrfm = new Date(tiersFamille.getDateNaissance());
+
+                    if (dateMbrfm.compareTo(tempDateNaissance) > 0) {
+                        tempDateNaissance = dateMbrfm;
                         tempRefRente = ra;
                     }
                 }
