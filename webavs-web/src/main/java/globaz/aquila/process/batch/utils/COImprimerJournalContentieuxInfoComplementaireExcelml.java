@@ -4,14 +4,13 @@ import globaz.aquila.db.access.batch.COEtape;
 import globaz.aquila.db.access.poursuite.COContentieux;
 import globaz.draco.db.declaration.DSDeclarationListViewBean;
 import globaz.draco.db.declaration.DSDeclarationViewBean;
-import globaz.framework.db.postit.FWNoteP;
-import globaz.framework.db.postit.FWNotePManager;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.osiris.db.comptes.CACompteAnnexe;
+import globaz.osiris.db.comptes.CACompteAnnexeManager;
 import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.db.comptes.CASectionManager;
 import java.math.BigDecimal;
@@ -33,7 +32,7 @@ public class COImprimerJournalContentieuxInfoComplementaireExcelml extends COAbs
     public static final String EXCELML_MODEL_COL_SECT_RECENTE_PAYE = "COL_SECT_RECENTE_PAYE";
     public static final String EXCELML_MODEL_COL_CREDIT_EXISTANT = "COL_CREDIT_EXISTANT";
     public static final String EXCELML_MODEL_COL_DATE_RADIATION = "COL_DATE_RADIATION";
-    public static final String EXCELML_MODEL_COL_POSTIT_CA = "COL_POSTIT_CA";
+    public static final String EXCELML_MODEL_COL_REMARQUE_CA = "COL_REMARQUE_CA";
 
     /**
      * @param theDateReference
@@ -86,8 +85,8 @@ public class COImprimerJournalContentieuxInfoComplementaireExcelml extends COAbs
             // La date de radiation de l'affiliation
             infosSupp.put(EXCELML_MODEL_COL_DATE_RADIATION, resolveDateFinAffiliation(affiliation));
 
-            // Le texte du post-it sur le compte annexe
-            infosSupp.put(EXCELML_MODEL_COL_POSTIT_CA, findPostItDescription(session, idCompteAnnexe, numeroAffilie));
+            // Le texte de la remarque sur le compte annexe
+            infosSupp.put(EXCELML_MODEL_COL_REMARQUE_CA, findRemarque(session, idCompteAnnexe, numeroAffilie));
 
             for (Map.Entry<String, String> entry : infosSupp.entrySet()) {
                 getContainerJournalContentieuxExcelml().put(entry.getKey(), entry.getValue());
@@ -101,7 +100,7 @@ public class COImprimerJournalContentieuxInfoComplementaireExcelml extends COAbs
             getContainerJournalContentieuxExcelml().put(EXCELML_MODEL_COL_NBRE_PO_ENCOURS, "");
             getContainerJournalContentieuxExcelml().put(EXCELML_MODEL_COL_SECT_RECENTE_PAYE, "");
             getContainerJournalContentieuxExcelml().put(EXCELML_MODEL_COL_DATE_RADIATION, "");
-            getContainerJournalContentieuxExcelml().put(EXCELML_MODEL_COL_POSTIT_CA, "");
+            getContainerJournalContentieuxExcelml().put(EXCELML_MODEL_COL_REMARQUE_CA, "");
 
             throw new CommonTechnicalException(e);
         }
@@ -203,39 +202,33 @@ public class COImprimerJournalContentieuxInfoComplementaireExcelml extends COAbs
     }
 
     /**
-     * Recherche des post-it du compte annexe
+     * Recherche la remarque du compte annexe
      * 
      * @param session
      * @param idCompteAnnexe
      * @param numeroAffilie
      * @return
      */
-    private String findPostItDescription(BSession session, String idCompteAnnexe, String numeroAffilie) {
+    private String findRemarque(BSession session, String idCompteAnnexe, String numeroAffilie) {
 
-        FWNotePManager manager = new FWNotePManager();
-        manager.setSession(session);
-        manager.setForTableSource("CACPTAP");
-        manager.setForSourceId(idCompteAnnexe);
+        CACompteAnnexeManager managerCpt = new CACompteAnnexeManager();
+        managerCpt.setSession(session);
+        managerCpt.setForIdCompteAnnexeIn(idCompteAnnexe);
 
-        StringBuilder postIt = new StringBuilder();
+        String remarque = "";
         try {
-            manager.find(BManager.SIZE_NOLIMIT);
+            managerCpt.find(BManager.SIZE_NOLIMIT);
 
-            if (manager.size() > 0) {
-                for (int i = 0; i < manager.size(); i++) {
-                    FWNoteP note = (FWNoteP) manager.get(i);
-                    if (!JadeStringUtil.isEmpty(postIt.toString())) {
-                        postIt.append("\n");
-                    }
-                    postIt.append(note.getDescription());
-                }
+            if (managerCpt.size() > 0) {
+                CACompteAnnexe cptAnnexe = (CACompteAnnexe) managerCpt.getFirstEntity();
+                remarque = cptAnnexe.getRemarque();
             }
 
-            return postIt.toString();
+            return remarque;
 
         } catch (Exception e) {
             throw new CommonTechnicalException(
-                    "Impossible de récupérer les post-i pour le compte annexe de l'affilié : " + numeroAffilie, e);
+                    "Impossible de récupérer la remarque pour le compte annexe de l'affilié : " + numeroAffilie, e);
         }
 
     }

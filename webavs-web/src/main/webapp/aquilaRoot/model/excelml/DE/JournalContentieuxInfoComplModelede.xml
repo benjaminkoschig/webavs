@@ -197,16 +197,6 @@
    <NumberFormat ss:Format="0"/>
   </Style>
   <Style ss:ID="s94">
-   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
-    ss:Bold="1"/>
-   <NumberFormat/>
-  </Style>
-  <Style ss:ID="s95">
-   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
-    ss:Bold="1"/>
-   <NumberFormat ss:Format="Standard"/>
-  </Style>
-  <Style ss:ID="s96">
    <Alignment ss:Vertical="Center" ss:WrapText="1"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -215,6 +205,16 @@
     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
    </Borders>
    <Font ss:FontName="Calibri" x:Family="Swiss" ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s95">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+   <NumberFormat/>
+  </Style>
+  <Style ss:ID="s96">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+   <NumberFormat ss:Format="Standard"/>
   </Style>
  </Styles>
  <Names>
@@ -239,7 +239,7 @@
   <NamedRange ss:Name="COL_NOM_AFFILIE" ss:RefersTo="=Feuil1!R9C2"/>
   <NamedRange ss:Name="COL_NUMERO_AFFILIE" ss:RefersTo="=Feuil1!R9C1"/>
   <NamedRange ss:Name="COL_NUMERO_SECTION" ss:RefersTo="=Feuil1!R9C4"/>
-  <NamedRange ss:Name="COL_POSTIT_CA" ss:RefersTo="=Feuil1!R9C21"/>
+  <NamedRange ss:Name="COL_REMARQUE_CA" ss:RefersTo="=Feuil1!R9C21"/>
   <NamedRange ss:Name="COL_ROLE_AFFILIE" ss:RefersTo="=Feuil1!R9C3"/>
   <NamedRange ss:Name="COL_SECT_RECENTE_PAYE" ss:RefersTo="=Feuil1!R9C18"/>
   <NamedRange ss:Name="COL_SOLDE_COMPTE" ss:RefersTo="=Feuil1!R9C8"/>
@@ -263,7 +263,7 @@
    <Column ss:Width="117"/>
    <Column ss:Width="66"/>
    <Column ss:Width="63.75"/>
-   <Column ss:Width="112.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="131.25"/>
    <Row ss:AutoFitHeight="0" ss:Height="18.75">
     <Cell ss:MergeAcross="8" ss:StyleID="s66"><Data ss:Type="String">?Journal contentieux</Data></Cell>
    </Row>
@@ -362,7 +362,7 @@
     <Cell ss:StyleID="s83"><Data ss:Type="String">?Section plus récente payée</Data></Cell>
     <Cell ss:StyleID="s83"><Data ss:Type="String">?Crédit existant</Data></Cell>
     <Cell ss:StyleID="s83"><Data ss:Type="String">?Date radiation</Data></Cell>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">?Post-it du compte annexe</Data></Cell>
+    <Cell ss:StyleID="s83"><Data ss:Type="String">?Remarque du compte annexe</Data></Cell>
     <Cell ss:StyleID="s84"/>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="72.75" ss:StyleID="s86">
@@ -401,11 +401,11 @@
     <Cell ss:StyleID="s90"><NamedCell ss:Name="COL_SECT_RECENTE_PAYE"/></Cell>
     <Cell ss:StyleID="s90"><NamedCell ss:Name="COL_CREDIT_EXISTANT"/></Cell>
     <Cell ss:StyleID="s90"><NamedCell ss:Name="COL_DATE_RADIATION"/></Cell>
-    <Cell ss:StyleID="s96"><NamedCell ss:Name="COL_POSTIT_CA"/></Cell>
+    <Cell ss:StyleID="s94"><NamedCell ss:Name="COL_REMARQUE_CA"/></Cell>
    </Row>
    <Row ss:Index="13" ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s94"/>
-    <Cell ss:Index="8" ss:StyleID="s95"/>
+    <Cell ss:StyleID="s95"/>
+    <Cell ss:Index="8" ss:StyleID="s96"/>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -428,6 +428,7 @@
    </Print>
    <Zoom>85</Zoom>
    <Selected/>
+   <LeftColumnVisible>9</LeftColumnVisible>
    <Panes>
     <Pane>
      <Number>3</Number>

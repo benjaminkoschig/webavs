@@ -224,7 +224,7 @@
   <NamedRange ss:Name="COL_NOM_AFFILIE" ss:RefersTo="=Feuil1!R9C2"/>
   <NamedRange ss:Name="COL_NUMERO_AFFILIE" ss:RefersTo="=Feuil1!R9C1"/>
   <NamedRange ss:Name="COL_NUMERO_SECTION" ss:RefersTo="=Feuil1!R9C4"/>
-  <NamedRange ss:Name="COL_POSTIT_CA" ss:RefersTo="=Feuil1!R9C21"/>
+  <NamedRange ss:Name="COL_REMARQUE_CA" ss:RefersTo="=Feuil1!R9C21"/>
   <NamedRange ss:Name="COL_ROLE_AFFILIE" ss:RefersTo="=Feuil1!R9C3"/>
   <NamedRange ss:Name="COL_SECT_RECENTE_PAYE" ss:RefersTo="=Feuil1!R9C18"/>
   <NamedRange ss:Name="COL_SOLDE_COMPTE" ss:RefersTo="=Feuil1!R9C8"/>
@@ -247,7 +247,7 @@
    <Column ss:Width="90"/>
    <Column ss:Width="115.5"/>
    <Column ss:Width="65.25" ss:Span="1"/>
-   <Column ss:Index="21" ss:StyleID="s64" ss:Width="109.5"/>
+   <Column ss:Index="21" ss:StyleID="s64" ss:AutoFitWidth="0" ss:Width="126.75"/>
    <Row ss:AutoFitHeight="0" ss:Height="18.75">
     <Cell ss:MergeAcross="8" ss:StyleID="s66"><Data ss:Type="String">Journal contentieux</Data></Cell>
    </Row>
@@ -351,7 +351,7 @@
     <Cell ss:StyleID="s83"><Data ss:Type="String">Section plus récente payée</Data></Cell>
     <Cell ss:StyleID="s83"><Data ss:Type="String">Crédit existant</Data></Cell>
     <Cell ss:StyleID="s83"><Data ss:Type="String">Date radiation</Data></Cell>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">Post-it du compte annexe</Data></Cell>
+    <Cell ss:StyleID="s83"><Data ss:Type="String">Remarque du compte annexe</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="72.75" ss:StyleID="s85">
     <Cell ss:StyleID="s87"><Data ss:Type="String"> </Data><NamedCell
@@ -389,7 +389,7 @@
     <Cell ss:StyleID="s89"><NamedCell ss:Name="COL_SECT_RECENTE_PAYE"/></Cell>
     <Cell ss:StyleID="s89"><NamedCell ss:Name="COL_CREDIT_EXISTANT"/></Cell>
     <Cell ss:StyleID="s89"><NamedCell ss:Name="COL_DATE_RADIATION"/></Cell>
-    <Cell ss:StyleID="s91"><NamedCell ss:Name="COL_POSTIT_CA"/></Cell>
+    <Cell ss:StyleID="s91"><NamedCell ss:Name="COL_REMARQUE_CA"/></Cell>
    </Row>
    <Row ss:Index="13" ss:AutoFitHeight="0">
     <Cell ss:StyleID="s93"/>
@@ -416,10 +416,12 @@
    </Print>
    <Zoom>85</Zoom>
    <Selected/>
+   <LeftColumnVisible>9</LeftColumnVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>8</ActiveRow>
+     <ActiveRow>14</ActiveRow>
+     <ActiveCol>20</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
