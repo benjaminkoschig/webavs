@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.jws.WebService;
 import ch.globaz.common.domaine.Checkers;
-import ch.globaz.orion.ws.enums.ModeDeclarationSalaire;
+import ch.globaz.orion.ws.enums.ModeDeclarationSalaireWebAvs;
 import ch.globaz.orion.ws.exceptions.WebAvsException;
 import ch.globaz.orion.ws.service.AppAffiliationService;
 import ch.globaz.orion.ws.service.UtilsService;
@@ -107,7 +107,7 @@ public class WebAvsAffiliationServiceImpl implements WebAvsAffiliationService {
 
     @Override
     public boolean checkAffiliationAndUpdateModeDeclaration(String numeroAffilie,
-            ModeDeclarationSalaire modeDeclarationSalaire) throws WebAvsException {
+            ModeDeclarationSalaireWebAvs modeDeclarationSalaireWebAvs) throws WebAvsException {
         BSession session = UtilsService.initSession();
 
         // recherche de l'affiliation
@@ -125,7 +125,7 @@ public class WebAvsAffiliationServiceImpl implements WebAvsAffiliationService {
                 AFAffiliation affiliation = (AFAffiliation) affiliationManager.getFirstEntity();
 
                 // mise à jour du mode de déclaration de salaire de l'affiliation
-                updateModeDeclarationSalaire(session, affiliation, modeDeclarationSalaire);
+                updateModeDeclarationSalaire(session, affiliation, modeDeclarationSalaireWebAvs);
                 return true;
             } else {
                 // aucun affiliation trouvée
@@ -138,11 +138,11 @@ public class WebAvsAffiliationServiceImpl implements WebAvsAffiliationService {
     }
 
     private void updateModeDeclarationSalaire(BSession session, AFAffiliation aff,
-            ModeDeclarationSalaire modeDeclarationSalaire) throws Exception {
+            ModeDeclarationSalaireWebAvs modeDeclarationSalaireWebAvs) throws Exception {
         String modeDeclarationSalaireWebavs;
 
         // si le mode de déclaration est DAN
-        if (ModeDeclarationSalaire.DAN.equals(modeDeclarationSalaire)) {
+        if (ModeDeclarationSalaireWebAvs.DAN.equals(modeDeclarationSalaireWebAvs)) {
             // Si mode mixte (CCVD)
             if (CodeSystem.DECL_SAL_PRE_MIXTE.equals(aff.getDeclarationSalaire())
                     || CodeSystem.DECL_SAL_MIXTE_DAN.equals(aff.getDeclarationSalaire())) {
@@ -153,7 +153,7 @@ public class WebAvsAffiliationServiceImpl implements WebAvsAffiliationService {
         }
 
         // si le mode de déclaration est PUCS
-        else if (ModeDeclarationSalaire.PUCS.equals(modeDeclarationSalaire)) {
+        else if (ModeDeclarationSalaireWebAvs.PUCS.equals(modeDeclarationSalaireWebAvs)) {
             modeDeclarationSalaireWebavs = CodeSystem.DS_ENVOI_PUCS;
         }
 
@@ -174,24 +174,23 @@ public class WebAvsAffiliationServiceImpl implements WebAvsAffiliationService {
     }
 
     @Override
-    public ModeDeclarationSalaire findModeDeclarationSalairesAffilie(String numeroAffilie) throws WebAvsException {
+    public ModeDeclarationSalaireWebAvs findModeDeclarationSalairesAffilie(String numeroAffilie) throws WebAvsException {
         AFAffiliation affiliation = AppAffiliationService.findAffiliation(numeroAffilie);
         if (affiliation != null) {
             String modeDeclarationSalaireWebavs = affiliation.getDeclarationSalaire();
-            System.out.println("mode declaration : " + modeDeclarationSalaireWebavs);
 
             // si mode PUCS
             if (CodeSystem.DS_ENVOI_PUCS.equals(modeDeclarationSalaireWebavs)) {
-                return ModeDeclarationSalaire.PUCS;
+                return ModeDeclarationSalaireWebAvs.PUCS;
             }
             // si mode DAN
             else if (CodeSystem.DECL_SAL_MIXTE_DAN.equals(modeDeclarationSalaireWebavs)
                     || CodeSystem.DS_DAN.equals(modeDeclarationSalaireWebavs)) {
-                return ModeDeclarationSalaire.DAN;
+                return ModeDeclarationSalaireWebAvs.DAN;
             }
             // si autre mode
             else {
-                return ModeDeclarationSalaire.AUTRE;
+                return ModeDeclarationSalaireWebAvs.AUTRE;
             }
         } else {
             throw new WebAvsException("unable to define mode. Affiliation not found for numeroAffilie : "
