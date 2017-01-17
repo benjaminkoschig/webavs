@@ -54,4 +54,16 @@ public interface WebAvsAffiliationService {
             @WebParam(name = "numeroAffilie") String numeroAffilie,
             @WebParam(name = "modeDeclarationSalaire") ModeDeclarationSalaire modeDeclarationSalaire)
             throws WebAvsException;
+
+    /**
+     * Retourne le mode de déclaration de salaire de l'affilié
+     * 
+     * @param numeroAffilie
+     * @return
+     * @throws WebAvsException
+     */
+    @WebMethod
+    public abstract ModeDeclarationSalaire findModeDeclarationSalairesAffilie(
+            @WebParam(name = "numeroAffilie") String numeroAffilie) throws WebAvsException;
+
 }

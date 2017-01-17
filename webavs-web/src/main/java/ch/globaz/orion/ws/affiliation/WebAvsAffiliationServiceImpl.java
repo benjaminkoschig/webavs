@@ -139,9 +139,9 @@ public class WebAvsAffiliationServiceImpl implements WebAvsAffiliationService {
 
     private void updateModeDeclarationSalaire(BSession session, AFAffiliation aff,
             ModeDeclarationSalaire modeDeclarationSalaire) throws Exception {
-        String modeDeclarationSalaireWebavs = "";
+        String modeDeclarationSalaireWebavs;
 
-        // si mode de déclaration est DAN
+        // si le mode de déclaration est DAN
         if (ModeDeclarationSalaire.DAN.equals(modeDeclarationSalaire)) {
             // Si mode mixte (CCVD)
             if (CodeSystem.DECL_SAL_PRE_MIXTE.equals(aff.getDeclarationSalaire())
@@ -152,23 +152,50 @@ public class WebAvsAffiliationServiceImpl implements WebAvsAffiliationService {
             }
         }
 
-        // si mode de déclaration est PUCS
+        // si le mode de déclaration est PUCS
         else if (ModeDeclarationSalaire.PUCS.equals(modeDeclarationSalaire)) {
             modeDeclarationSalaireWebavs = CodeSystem.DS_ENVOI_PUCS;
         }
 
-        // mise à jour de l'affiliation
-        if (!aff.isNew()) {
-            // Mise à jour 1-11, si un affilié souhaite un mode déclaration de salaire traditionnel => on ne change rien
-            if (!modeDeclarationSalaireWebavs.equals(aff.getDeclarationSalaire())
-                    && !JadeStringUtil.isBlankOrZero(modeDeclarationSalaireWebavs)) {
-                aff.setDeclarationSalaire(modeDeclarationSalaireWebavs);
-                aff.setSession(session);
-                aff.wantCallValidate(false);
-                aff.wantCallMethodAfter(false);
-                aff.wantCallMethodBefore(false);
-                aff.update(session.getCurrentThreadTransaction());
+        // si le mode de déclaration est autre que DAN ou PUCS, on ne met pas à jour l'affiliation
+        else {
+            return;
+        }
+
+        // mise à jour de l'affiliation (1-11)
+        if (!aff.isNew() && !modeDeclarationSalaireWebavs.equals(aff.getDeclarationSalaire())) {
+            aff.setDeclarationSalaire(modeDeclarationSalaireWebavs);
+            aff.setSession(session);
+            aff.wantCallValidate(false);
+            aff.wantCallMethodAfter(false);
+            aff.wantCallMethodBefore(false);
+            aff.update(session.getCurrentThreadTransaction());
+        }
+    }
+
+    @Override
+    public ModeDeclarationSalaire findModeDeclarationSalairesAffilie(String numeroAffilie) throws WebAvsException {
+        AFAffiliation affiliation = AppAffiliationService.findAffiliation(numeroAffilie);
+        if (affiliation != null) {
+            String modeDeclarationSalaireWebavs = affiliation.getDeclarationSalaire();
+            System.out.println("mode declaration : " + modeDeclarationSalaireWebavs);
+
+            // si mode PUCS
+            if (CodeSystem.DS_ENVOI_PUCS.equals(modeDeclarationSalaireWebavs)) {
+                return ModeDeclarationSalaire.PUCS;
             }
+            // si mode DAN
+            else if (CodeSystem.DECL_SAL_MIXTE_DAN.equals(modeDeclarationSalaireWebavs)
+                    || CodeSystem.DS_DAN.equals(modeDeclarationSalaireWebavs)) {
+                return ModeDeclarationSalaire.DAN;
+            }
+            // si autre mode
+            else {
+                return ModeDeclarationSalaire.AUTRE;
+            }
+        } else {
+            throw new WebAvsException("unable to define mode. Affiliation not found for numeroAffilie : "
+                    + numeroAffilie);
         }
     }
 }

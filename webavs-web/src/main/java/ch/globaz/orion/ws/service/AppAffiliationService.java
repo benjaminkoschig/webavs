@@ -10,6 +10,7 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.naos.services.AFAffiliationServices;
 import globaz.naos.translation.CodeSystem;
 import globaz.pyxis.application.TIApplication;
@@ -19,6 +20,7 @@ import java.util.List;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.domaine.Checkers;
 import ch.globaz.naos.business.service.AFBusinessServiceLocator;
+import ch.globaz.orion.ws.exceptions.WebAvsException;
 import ch.globaz.pyxis.business.model.AdresseTiersDetail;
 import ch.globaz.pyxis.business.service.AdresseService;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
@@ -283,5 +285,32 @@ public class AppAffiliationService {
         }
 
         return adresseCourrier;
+    }
+
+    public static AFAffiliation findAffiliation(String numeroAffilie) throws WebAvsException {
+        BSession session = UtilsService.initSession();
+
+        // recherche de l'affiliation
+        AFAffiliationManager affiliationManager = new AFAffiliationManager();
+        affiliationManager.setSession(session);
+        affiliationManager.setForAffilieNumero(numeroAffilie);
+        affiliationManager.setForTypeAffiliation(new String[] { CodeSystem.TYPE_AFFILI_EMPLOY,
+                CodeSystem.TYPE_AFFILI_INDEP_EMPLOY });
+        affiliationManager.setFromDateFin(JACalendar.todayJJsMMsAAAA());
+
+        try {
+            affiliationManager.find(BManager.SIZE_USEDEFAULT);
+            if (affiliationManager.size() > 0) {
+                // récupération de l'affiliation
+                return (AFAffiliation) affiliationManager.getFirstEntity();
+            } else {
+                // aucun affiliation trouvée
+                return null;
+            }
+        } catch (Exception e) {
+            JadeLogger.error(AppAffiliationService.class, "technical error when findAffiliation for numeroAffilie : "
+                    + numeroAffilie);
+            throw new WebAvsException("technical error when findAffiliation for numeroAffilie : " + numeroAffilie);
+        }
     }
 }
