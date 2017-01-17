@@ -14,4 +14,15 @@ public interface WebAvsCommonService {
      */
     @WebMethod
     public abstract byte[] downloadFile(@WebParam(name = "filepath") String filepath);
+
+    /**
+     * Permet de retourner l'âge de la retraite en fonction du sexe et de la date de naissance
+     * 
+     * @param sexe
+     * @param dateNaissance
+     * @return
+     */
+    @WebMethod
+    public abstract String findAgeRetraite(@WebParam(name = "sexe") String sexe,
+            @WebParam(name = "dateNaissance") String dateNaissance);
 }
