@@ -68,6 +68,9 @@ public class RERenteAccordeeFamille extends BEntity {
 
         sql.append(tableRenteAccordee).append(".").append(RERenteAccordee.FIELDNAME_ID_BASE_CALCUL).append(",");
 
+        // FIX missing data
+        sql.append(tableRenteAccordee).append(".").append(RERenteAccordee.FIELDNAME_ID_TIERS_BASE_CALCUL).append(",");
+
         sql.append(tablePrestationAccordee).append(".").append(REPrestationsAccordees.FIELDNAME_ID_TIERS_BENEFICIAIRE)
                 .append(",");
         sql.append(tablePrestationAccordee).append(".").append(REPrestationsAccordees.FIELDNAME_ID_PRESTATION_ACCORDEE)

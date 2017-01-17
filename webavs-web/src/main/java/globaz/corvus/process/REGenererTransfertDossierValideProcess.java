@@ -27,6 +27,7 @@ import globaz.jade.print.server.JadePrintDocumentContainer;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.db.infos.PRInfoCompl;
+import globaz.prestation.enums.codeprestation.type.PRCodePrestationSurvivant;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.itext.PRLettreEnTete;
@@ -92,12 +93,12 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
         return idTiersExConjoints;
     }
 
-    private REChangementCaisseOO createDocumentChangementCopie() throws Exception {
+    private REChangementCaisseOO createDocumentChangementCopie(String idTiersChangementCaisse) throws Exception {
 
         REChangementCaisseOO changementOriginale = new REChangementCaisseOO();
 
         changementOriginale.setSession(getSession());
-        changementOriginale.setIdTiers(getIdTiersDemande());
+        changementOriginale.setIdTiers(idTiersChangementCaisse);
         changementOriginale.setNumCaisse(getNumCaisse());
         changementOriginale.setNumAgence(getNumAgence());
         changementOriginale.setDateEnvoi(getDateEnvoi());
@@ -111,12 +112,12 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
 
     }
 
-    private REChangementCaisseOO createDocumentChangementOriginale() throws Exception {
+    private REChangementCaisseOO createDocumentChangementOriginale(String idTiersChangementCaisse) throws Exception {
 
         REChangementCaisseOO changementOriginale = new REChangementCaisseOO();
 
         changementOriginale.setSession(getSession());
-        changementOriginale.setIdTiers(getIdTiersDemande());
+        changementOriginale.setIdTiers(idTiersChangementCaisse);
         changementOriginale.setNumCaisse(getNumCaisse());
         changementOriginale.setNumAgence(getNumAgence());
         changementOriginale.setDateEnvoi(getDateEnvoi());
@@ -410,14 +411,17 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                         continue;
                     }
 
-                    if (map.containsKey(ra.getIdTiersAdressePaiement() + ra.getIdDomaineApplicationAdressePaiement())) {
-                        List<RERenteAccordeeFamille> list = map.get(ra.getIdTiersAdressePaiement()
-                                + ra.getIdDomaineApplicationAdressePaiement());
+                    boolean isSurvivant = PRCodePrestationSurvivant.isCodePrestationSurvivant(ra.getCodePrestation());
+                    String key = ra.getIdTiersAdressePaiement() + "-" + ra.getIdDomaineApplicationAdressePaiement()
+                            + "-" + String.valueOf(isSurvivant);
+
+                    if (map.containsKey(key)) {
+                        List<RERenteAccordeeFamille> list = map.get(key);
                         list.add(ra);
                     } else {
                         List<RERenteAccordeeFamille> list = new ArrayList<RERenteAccordeeFamille>();
                         list.add(ra);
-                        map.put(ra.getIdTiersAdressePaiement() + ra.getIdDomaineApplicationAdressePaiement(), list);
+                        map.put(key, list);
                     }
                 }
 
@@ -490,6 +494,27 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
 
                     RERenteAccordeeFamille ra = list.get(0);
 
+                    // Dans le cas de rentes de survivants, on recherche le nss de la base de calcul (cas particulier
+                    // des rentes de survivants)
+                    String idTiersChangementCaisse = null;
+                    boolean isSurvivant = PRCodePrestationSurvivant.isCodePrestationSurvivant(ra.getCodePrestation());
+                    if (isSurvivant) {
+                        idTiersChangementCaisse = ra.getIdTiersBaseCalcul();
+                        if (JadeStringUtil.isBlankOrZero(idTiersChangementCaisse)) {
+                            REBasesCalcul bc = new REBasesCalcul();
+                            bc.setSession(getSession());
+                            bc.setIdBasesCalcul(ra.getIdBaseCalcul());
+                            bc.retrieve();
+                            idTiersChangementCaisse = bc.getIdTiersBaseCalcul();
+                        }
+                    } else {
+                        idTiersChangementCaisse = ra.getIdTiersBeneficiaire();
+                    }
+                    if (JadeStringUtil.isBlankOrZero(idTiersChangementCaisse)) {
+                        throw new Exception(
+                                "Impossible de retrouver l'idTiers pour le document ChangementCaisse pour la rente accordée ["
+                                        + ra.getIdRenteAccordee() + "]");
+                    }
                     setIdTiersDemande(ra.getIdTiersBeneficiaire());
 
                     // Test pour savoir si une copie doit être faite à l'agence
@@ -596,7 +621,7 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                     if (!isOnlyRaCompl) {
                         // 2. Création du document de changement de caisse
                         // originale
-                        changementCaisse = createDocumentChangementOriginale();
+                        changementCaisse = createDocumentChangementOriginale(idTiersChangementCaisse);
                         mergedDoc.addDocument(changementCaisse.getDocumentData(), docInfoChangementCaisse);
                     }
 
@@ -611,7 +636,7 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                     if (!isOnlyRaCompl) {
                         // 5. Création du document de changement de caisse copie
                         // pour la nouvelle caisse
-                        REChangementCaisseOO changementCopie = createDocumentChangementCopie();
+                        REChangementCaisseOO changementCopie = createDocumentChangementCopie(idTiersChangementCaisse);
                         mergedDoc.addDocument(changementCopie.getDocumentData(), docInfoCopieChangementCaisse);
                     }
 
@@ -633,7 +658,7 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                         if (!isOnlyRaCompl) {
                             // 9. Création du document de changement de caisse
                             // copie pour la nouvelle caisse
-                            REChangementCaisseOO changementCopieOfficeAi = createDocumentChangementCopie();
+                            REChangementCaisseOO changementCopieOfficeAi = createDocumentChangementCopie(idTiersChangementCaisse);
                             mergedDoc.addDocument(changementCopieOfficeAi.getDocumentData(),
                                     docInfoCopieChangementCaisse);
                         }
