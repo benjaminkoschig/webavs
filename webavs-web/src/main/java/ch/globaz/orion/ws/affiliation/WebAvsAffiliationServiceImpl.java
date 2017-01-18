@@ -179,26 +179,31 @@ public class WebAvsAffiliationServiceImpl implements WebAvsAffiliationService {
             throw new IllegalArgumentException("numeroAffilie must be defined");
         }
 
+        // récupération de l'affiliation
         AFAffiliation affiliation = AppAffiliationService.findAffiliation(numeroAffilie);
-        if (affiliation != null) {
-            String modeDeclarationSalaireWebavs = affiliation.getDeclarationSalaire();
-
-            // si mode PUCS
-            if (CodeSystem.DS_ENVOI_PUCS.equals(modeDeclarationSalaireWebavs)) {
-                return ModeDeclarationSalaireWebAvs.PUCS;
-            }
-            // si mode DAN
-            else if (CodeSystem.DECL_SAL_MIXTE_DAN.equals(modeDeclarationSalaireWebavs)
-                    || CodeSystem.DS_DAN.equals(modeDeclarationSalaireWebavs)) {
-                return ModeDeclarationSalaireWebAvs.DAN;
-            }
-            // si autre mode
-            else {
-                return ModeDeclarationSalaireWebAvs.AUTRE;
-            }
-        } else {
+        if (affiliation == null) {
             throw new WebAvsException("unable to define mode. Affiliation not found for numeroAffilie : "
                     + numeroAffilie);
         }
+
+        // récupération du mode de déclaration
+        String modeDeclarationSalaireWebAvsCs = affiliation.getDeclarationSalaire();
+
+        ModeDeclarationSalaireWebAvs modeDeclarationSalaireWebAvs;
+        // si mode PUCS
+        if (CodeSystem.DS_ENVOI_PUCS.equals(modeDeclarationSalaireWebAvsCs)) {
+            modeDeclarationSalaireWebAvs = ModeDeclarationSalaireWebAvs.PUCS;
+        }
+        // si mode DAN
+        else if (CodeSystem.DECL_SAL_MIXTE_DAN.equals(modeDeclarationSalaireWebAvsCs)
+                || CodeSystem.DS_DAN.equals(modeDeclarationSalaireWebAvsCs)) {
+            modeDeclarationSalaireWebAvs = ModeDeclarationSalaireWebAvs.DAN;
+        }
+        // si autre mode
+        else {
+            modeDeclarationSalaireWebAvs = ModeDeclarationSalaireWebAvs.AUTRE;
+        }
+
+        return modeDeclarationSalaireWebAvs;
     }
 }
