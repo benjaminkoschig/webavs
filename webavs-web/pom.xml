@@ -537,6 +537,10 @@
 			<artifactId>simple-output-list</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>ch.globaz</groupId>
+			<artifactId>sql-class-mapper-jade-bridge</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>jep</groupId>
 			<artifactId>jep</artifactId>
 		</dependency>
