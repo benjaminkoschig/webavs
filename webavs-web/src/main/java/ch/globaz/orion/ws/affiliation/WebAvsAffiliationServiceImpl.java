@@ -175,6 +175,10 @@ public class WebAvsAffiliationServiceImpl implements WebAvsAffiliationService {
 
     @Override
     public ModeDeclarationSalaireWebAvs findModeDeclarationSalairesAffilie(String numeroAffilie) throws WebAvsException {
+        if (JadeStringUtil.isEmpty(numeroAffilie)) {
+            throw new IllegalArgumentException("numeroAffilie must be defined");
+        }
+
         AFAffiliation affiliation = AppAffiliationService.findAffiliation(numeroAffilie);
         if (affiliation != null) {
             String modeDeclarationSalaireWebavs = affiliation.getDeclarationSalaire();
