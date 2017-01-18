@@ -287,7 +287,7 @@
 					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font reportFont="Arial_Bold" pdfFontName="Helvetica-BoldOblique" size="8" isItalic="true"/>
 					</textElement>
-				<text><![CDATA[Avenue Eugène-Pittard 24 - Case postale 264 - 1211 Genève 12 Tél 022/702.03.04 - Fax. 022/702.03.00
+				<text><![CDATA[Avenue Eugène-Pittard 24 - Case postale 264 - 1211 Genève 12 Tél 022/702.03.04 - Fax. 022/702.03.00 - E-mail : meroba@mbg.ch
 
 ]]></text>
 				</staticText>
