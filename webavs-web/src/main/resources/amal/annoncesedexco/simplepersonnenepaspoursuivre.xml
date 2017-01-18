@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.annoncesedexco.SimplePersonneANePasPoursuivre">
+		<description>Personnes à ne pas poursuivre</description>
+		<table name="MAPERNPP" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idPersonneNPP" column="ID" comment="clé primaire"/>
+			<field name="idFamille" column="IDFAMI" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="id famille"/>
+			<field name="flagEnvoi" column="FLAG_ENVOI" type="BOOLEAN" comment="Flag envoi"/>			
+			<field name="flagReponse" column="FLAG_REPONSE" type="BOOLEAN" comment="Flag réponse"/>			
+		</fields>
+		
+	</simple-model>
+</model-mapping>

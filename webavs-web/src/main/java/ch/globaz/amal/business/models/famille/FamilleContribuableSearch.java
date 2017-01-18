@@ -29,6 +29,7 @@ public class FamilleContribuableSearch extends JadeSearchComplexModel {
     private String forNumeroContribuable = null;
     private List inNumerosContribuables = null;
     private List inTypeDemande = null;
+    private Boolean isOnListePersonneNePasPoursuivre = false;
 
     public FamilleContribuableSearch() {
         forIdContribuable = new String();
@@ -143,6 +144,14 @@ public class FamilleContribuableSearch extends JadeSearchComplexModel {
 
     public void setInTypeDemande(List inTypeDemande) {
         this.inTypeDemande = inTypeDemande;
+    }
+
+    public Boolean getIsOnListePersonneNePasPoursuivre() {
+        return isOnListePersonneNePasPoursuivre;
+    }
+
+    public void setIsOnListePersonneNePasPoursuivre(Boolean isOnListePersonneNePasPoursuivre) {
+        this.isOnListePersonneNePasPoursuivre = isOnListePersonneNePasPoursuivre;
     }
 
     /*

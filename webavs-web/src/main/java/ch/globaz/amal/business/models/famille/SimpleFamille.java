@@ -33,6 +33,7 @@ public class SimpleFamille extends JadeSimpleModel implements Cloneable {
     private String tauxDeductIfd = null;
     private String typeAvisRIP = null;
     private String typeNoPersonne = null;
+    private Boolean flagEnvoiNPP = null;
 
     @Override
     public SimpleFamille clone() throws CloneNotSupportedException {
@@ -374,6 +375,14 @@ public class SimpleFamille extends JadeSimpleModel implements Cloneable {
      */
     public void setTypeNoPersonne(String typeNoPersonne) {
         this.typeNoPersonne = typeNoPersonne;
+    }
+
+    public Boolean getFlagEnvoiNPP() {
+        return flagEnvoiNPP;
+    }
+
+    public void setFlagEnvoiNPP(Boolean flagEnvoiNPP) {
+        this.flagEnvoiNPP = flagEnvoiNPP;
     }
 
 }

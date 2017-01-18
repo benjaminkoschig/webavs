@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<model-mapping import="amal/annoncesedexco/simpleannoncesedexco.xml"/>
+	<model-mapping import="amal/annoncesedexco/simpleannoncesedexcoxml.xml"/>
+	<model-mapping import="amal/annoncesedexco/simplepersonnenepaspoursuivre.xml"/>
+</model-mapping>

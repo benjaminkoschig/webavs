@@ -20,4 +20,5 @@
 	<model-mapping import="amal/caissemaladie/caissemaladiepackage.xml"/>		
 	<model-mapping import="amal/primesassurance/primesassurancepackage.xml"/>
 	<model-mapping import="amal/annoncesedex/annoncesedexpackage.xml"/>
+	<model-mapping import="amal/annoncesedexco/annoncesedexcopackage.xml"/>
 </model-mapping>
