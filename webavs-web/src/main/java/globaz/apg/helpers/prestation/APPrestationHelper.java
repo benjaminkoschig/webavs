@@ -128,7 +128,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      */
     public static boolean hasAcmFalgInSitPro(final BISession session, final APDroitLAPG droit) throws Exception {
 
-        if (droit != null) {
+        if (null != droit && null != droit.getIdDroit()) {
             final APSituationProfessionnelleManager man = new APSituationProfessionnelleManager();
             man.setSession((BSession) session);
             man.setForIdDroit(droit.getIdDroit());
