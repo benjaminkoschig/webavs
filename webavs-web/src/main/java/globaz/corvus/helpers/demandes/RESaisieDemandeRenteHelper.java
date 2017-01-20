@@ -2058,208 +2058,211 @@ public class RESaisieDemandeRenteHelper extends PRAbstractHelper {
     private FWViewBeanInterface doMAJPeriodeDemandeRente(BSession session, BTransaction transaction,
             RESaisieDemandeRenteViewBean vb) throws Exception {
 
-        RERenteAccJoinTblTiersJoinDemRenteManager managerRenteAcc = new RERenteAccJoinTblTiersJoinDemRenteManager();
-        managerRenteAcc.setSession(session);
-        managerRenteAcc.setForNoDemandeRente(vb.getIdDemandeRente());
-        managerRenteAcc.find(BManager.SIZE_NOLIMIT);
+        if (JadeStringUtil.isEmpty(vb.getIdDemandeRente())) {
+            RERenteAccJoinTblTiersJoinDemRenteManager managerRenteAcc = new RERenteAccJoinTblTiersJoinDemRenteManager();
+            managerRenteAcc.setSession(session);
+            managerRenteAcc.setForNoDemandeRente(vb.getIdDemandeRente());
+            managerRenteAcc.find(BManager.SIZE_NOLIMIT);
 
-        boolean hasFoundRenteAcc = false;
-        JADate dateDebutFinal = null;
-        JADate dateFinFinal = null;
-        REDemandeRente dem = null;
+            boolean hasFoundRenteAcc = false;
+            JADate dateDebutFinal = null;
+            JADate dateFinFinal = null;
+            REDemandeRente dem = null;
 
-        JACalendar cal = new JACalendarGregorian();
+            JACalendar cal = new JACalendarGregorian();
 
-        /**
-         * RECHERCHE DES RENTES ACCORDÉES, SI ON TROUVE AU MOINS 1, ON NE FAIT RIEN D'AUTRE QUE PRENDRE LES DATES
-         * LIMITES.
-         */
-        if (managerRenteAcc.size() > 0) {
-            boolean hasFoundDateSansFin = false;
-            for (int i = 0; i < managerRenteAcc.size(); i++) {
-                RERenteAccJoinTblTiersJoinDemandeRente renteAccordee = (RERenteAccJoinTblTiersJoinDemandeRente) managerRenteAcc
-                        .get(i);
-
-                // Gestion de la date de début
-                if (!JadeStringUtil.isBlankOrZero(renteAccordee.getDateDebutDroit())) {
-                    final JADate dateDebutCurrent = new JADate(renteAccordee.getDateDebutDroit());
-                    dateDebutFinal = takeLowerDateDebut(dateDebutFinal, cal, dateDebutCurrent);
-                }
-
-                // Gestion de la date de fin, si au moins une fois une date de fin vide alors on la prend comme
-                // référence
-                if (!JadeStringUtil.isBlankOrZero(renteAccordee.getDateFinDroit()) && !hasFoundDateSansFin) {
-                    final JADate datefinCurrent = new JADate(renteAccordee.getDateFinDroit());
-                    dateFinFinal = takeUpperDateFin(dateFinFinal, cal, datefinCurrent);
-                } else {
-                    hasFoundDateSansFin = true;
-                    dateFinFinal = null;
-                }
-            }
-
-            hasFoundRenteAcc = true;
-        }
-
-        PRTiersWrapper tiers = PRTiersHelper.getTiersParId(session, vb.getIdTiers());
-        String dateDecesTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_DATE_DECES);
-
-        /**
-         * DEMANDE RENTE INVALIDITÉ
-         */
-        if (isSameTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE, vb.getCsTypeDemandeRente())) {
-            dem = new REDemandeRenteInvalidite();
-            dem.setSession(session);
-            dem.setIdDemandeRente(vb.getIdDemandeRente());
-            dem.retrieve(transaction);
-
-            // Si aucune rentes accordées trouvées, on se base sur les périodes d'invalidités pour les dates limites
-            if (!hasFoundRenteAcc) {
-                REPeriodeInvaliditeManager mgr = new REPeriodeInvaliditeManager();
-                mgr.setSession(session);
-                mgr.setForIdDemandeRente(dem.getIdDemandeRente());
-                mgr.find(transaction, BManager.SIZE_USEDEFAULT);
-
+            /**
+             * RECHERCHE DES RENTES ACCORDÉES, SI ON TROUVE AU MOINS 1, ON NE FAIT RIEN D'AUTRE QUE PRENDRE LES DATES
+             * LIMITES.
+             */
+            if (managerRenteAcc.size() > 0) {
                 boolean hasFoundDateSansFin = false;
-                for (int i = 0; i < mgr.size(); i++) {
-
-                    REPeriodeInvalidite periode = (REPeriodeInvalidite) mgr.get(i);
+                for (int i = 0; i < managerRenteAcc.size(); i++) {
+                    RERenteAccJoinTblTiersJoinDemandeRente renteAccordee = (RERenteAccJoinTblTiersJoinDemandeRente) managerRenteAcc
+                            .get(i);
 
                     // Gestion de la date de début
-                    if (!JadeStringUtil.isBlankOrZero(periode.getDateDebutInvalidite())) {
-                        final JADate dateDebutCurrent = new JADate(periode.getDateDebutInvalidite());
+                    if (!JadeStringUtil.isBlankOrZero(renteAccordee.getDateDebutDroit())) {
+                        final JADate dateDebutCurrent = new JADate(renteAccordee.getDateDebutDroit());
                         dateDebutFinal = takeLowerDateDebut(dateDebutFinal, cal, dateDebutCurrent);
                     }
 
                     // Gestion de la date de fin, si au moins une fois une date de fin vide alors on la prend comme
                     // référence
-                    if (!JadeStringUtil.isBlankOrZero(periode.getDateFinInvalidite()) && !hasFoundDateSansFin) {
-                        final JADate datefinCurrent = new JADate(periode.getDateFinInvalidite());
+                    if (!JadeStringUtil.isBlankOrZero(renteAccordee.getDateFinDroit()) && !hasFoundDateSansFin) {
+                        final JADate datefinCurrent = new JADate(renteAccordee.getDateFinDroit());
                         dateFinFinal = takeUpperDateFin(dateFinFinal, cal, datefinCurrent);
                     } else {
                         hasFoundDateSansFin = true;
                         dateFinFinal = null;
                     }
-
                 }
 
-                // La date de décès fait foi
-                if (JadeDateUtil.isGlobazDate(dateDecesTiers)) {
-                    dateFinFinal = new JADate(JadeDateUtil.getLastDateOfMonth(dateDecesTiers));
+                hasFoundRenteAcc = true;
+            }
+
+            PRTiersWrapper tiers = PRTiersHelper.getTiersParId(session, vb.getIdTiers());
+            String dateDecesTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_DATE_DECES);
+
+            /**
+             * DEMANDE RENTE INVALIDITÉ
+             */
+            if (isSameTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE, vb.getCsTypeDemandeRente())) {
+                dem = new REDemandeRenteInvalidite();
+                dem.setSession(session);
+                dem.setIdDemandeRente(vb.getIdDemandeRente());
+                dem.retrieve(transaction);
+
+                // Si aucune rentes accordées trouvées, on se base sur les périodes d'invalidités pour les dates limites
+                if (!hasFoundRenteAcc) {
+                    REPeriodeInvaliditeManager mgr = new REPeriodeInvaliditeManager();
+                    mgr.setSession(session);
+                    mgr.setForIdDemandeRente(dem.getIdDemandeRente());
+                    mgr.find(transaction, BManager.SIZE_USEDEFAULT);
+
+                    boolean hasFoundDateSansFin = false;
+                    for (int i = 0; i < mgr.size(); i++) {
+
+                        REPeriodeInvalidite periode = (REPeriodeInvalidite) mgr.get(i);
+
+                        // Gestion de la date de début
+                        if (!JadeStringUtil.isBlankOrZero(periode.getDateDebutInvalidite())) {
+                            final JADate dateDebutCurrent = new JADate(periode.getDateDebutInvalidite());
+                            dateDebutFinal = takeLowerDateDebut(dateDebutFinal, cal, dateDebutCurrent);
+                        }
+
+                        // Gestion de la date de fin, si au moins une fois une date de fin vide alors on la prend comme
+                        // référence
+                        if (!JadeStringUtil.isBlankOrZero(periode.getDateFinInvalidite()) && !hasFoundDateSansFin) {
+                            final JADate datefinCurrent = new JADate(periode.getDateFinInvalidite());
+                            dateFinFinal = takeUpperDateFin(dateFinFinal, cal, datefinCurrent);
+                        } else {
+                            hasFoundDateSansFin = true;
+                            dateFinFinal = null;
+                        }
+
+                    }
+
+                    // La date de décès fait foi
+                    if (JadeDateUtil.isGlobazDate(dateDecesTiers)) {
+                        dateFinFinal = new JADate(JadeDateUtil.getLastDateOfMonth(dateDecesTiers));
+                    }
+                }
+
+                /**
+                 * DEMANDE RENTE API
+                 */
+            } else if (isSameTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_API, vb.getCsTypeDemandeRente())) {
+                dem = new REDemandeRenteAPI();
+                dem.setSession(session);
+                dem.setIdDemandeRente(vb.getIdDemandeRente());
+                dem.retrieve(transaction);
+
+                // Si aucune rentes accordées trouvées, on se base sur les périodes API pour les dates limites
+                if (!hasFoundRenteAcc) {
+
+                    REPeriodeAPIManager mgr = new REPeriodeAPIManager();
+                    mgr.setSession(session);
+                    mgr.setForIdDemandeRente(dem.getIdDemandeRente());
+                    mgr.find(transaction, BManager.SIZE_USEDEFAULT);
+
+                    boolean hasFoundDateSansFin = false;
+                    // Recherche de la limite de la date début la plus petite et la date de fin la plus grande des
+                    // périodes
+                    for (int i = 0; i < mgr.size(); i++) {
+
+                        REPeriodeAPI p = (REPeriodeAPI) mgr.get(i);
+
+                        // Gestion de la date de début
+                        if (!JadeStringUtil.isBlankOrZero(p.getDateDebutInvalidite())) {
+                            final JADate idd = new JADate(p.getDateDebutInvalidite());
+                            dateDebutFinal = takeLowerDateDebut(dateDebutFinal, cal, idd);
+                        }
+
+                        // Gestion de la date de fin, si au moins une fois une date de fin vide alors on la prend comme
+                        // référence
+                        if (!JadeStringUtil.isBlankOrZero(p.getDateFinInvalidite()) && !hasFoundDateSansFin) {
+                            final JADate idf = new JADate(p.getDateFinInvalidite());
+                            dateFinFinal = takeUpperDateFin(dateFinFinal, cal, idf);
+                        } else {
+                            hasFoundDateSansFin = true;
+                            dateFinFinal = null;
+                        }
+                    }
+
+                    // La date de décès fait foi
+                    if (JadeDateUtil.isGlobazDate(dateDecesTiers)) {
+                        // On prend le dernier jour du mois de son décès
+                        dateFinFinal = new JADate(JadeDateUtil.getLastDateOfMonth(dateDecesTiers));
+                    }
+                }
+
+                /**
+                 * DEMANDE RENTE SURVIVANT
+                 */
+            } else if (isSameTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_SURVIVANT, vb.getCsTypeDemandeRente())) {
+                dem = new REDemandeRenteSurvivant();
+                dem.setSession(session);
+                dem.setIdDemandeRente(vb.getIdDemandeRente());
+                dem.retrieve(transaction);
+
+                // Si aucune rentes accordées trouvées, on se base sur la date de décès du requérant
+                if (!hasFoundRenteAcc) {
+
+                    if (!JadeStringUtil.isBlankOrZero(dateDecesTiers)) {
+
+                        // Prendre le premier jour du mois suivant de la date de décès pour le début de la demande
+                        String decesAuPremierDuMoisSuivant = JadeDateUtil.addMonths(dateDecesTiers, 1);
+                        decesAuPremierDuMoisSuivant = JadeDateUtil.getFirstDateOfMonth(decesAuPremierDuMoisSuivant);
+
+                        if (!JadeStringUtil.isBlankOrZero(decesAuPremierDuMoisSuivant)) {
+                            dateDebutFinal = new JADate(decesAuPremierDuMoisSuivant);
+                        }
+                    }
+                }
+
+                /**
+                 * DEMANDE RENTE VIEILLESSE
+                 */
+            } else if (isSameTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE, vb.getCsTypeDemandeRente())) {
+                dem = new REDemandeRenteVieillesse();
+                dem.setSession(session);
+                dem.setIdDemandeRente(vb.getIdDemandeRente());
+                dem.retrieve(transaction);
+
+                // Si aucune rentes accordées trouvées, alors on se base sur le calcul de la date de la retraite du
+                // requérant
+                if (!hasFoundRenteAcc) {
+                    // Si la date est non valide selon date globaz, (possible) car c'est un requérant que l'on connait
+                    // que
+                    // l'année mais par forcément le jour ou le mois, alors nous lui affectons 01.07.ANNEE
+                    String dateNaissance = majDateNaissanceIfNoValid(vb.getDateNaissanceRequerant());
+
+                    // On calcule la date de la retraite pour le mettre dans la date de début
+                    final String dateRetraite = calculDateRetraite(vb, new JADate(dateNaissance));
+
+                    if (!JadeStringUtil.isBlankOrZero(dateRetraite)) {
+                        dateDebutFinal = new JADate(dateRetraite);
+                    }
                 }
             }
 
-            /**
-             * DEMANDE RENTE API
-             */
-        } else if (isSameTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_API, vb.getCsTypeDemandeRente())) {
-            dem = new REDemandeRenteAPI();
-            dem.setSession(session);
-            dem.setIdDemandeRente(vb.getIdDemandeRente());
-            dem.retrieve(transaction);
-
-            // Si aucune rentes accordées trouvées, on se base sur les périodes API pour les dates limites
-            if (!hasFoundRenteAcc) {
-
-                REPeriodeAPIManager mgr = new REPeriodeAPIManager();
-                mgr.setSession(session);
-                mgr.setForIdDemandeRente(dem.getIdDemandeRente());
-                mgr.find(transaction, BManager.SIZE_USEDEFAULT);
-
-                boolean hasFoundDateSansFin = false;
-                // Recherche de la limite de la date début la plus petite et la date de fin la plus grande des périodes
-                for (int i = 0; i < mgr.size(); i++) {
-
-                    REPeriodeAPI p = (REPeriodeAPI) mgr.get(i);
-
-                    // Gestion de la date de début
-                    if (!JadeStringUtil.isBlankOrZero(p.getDateDebutInvalidite())) {
-                        final JADate idd = new JADate(p.getDateDebutInvalidite());
-                        dateDebutFinal = takeLowerDateDebut(dateDebutFinal, cal, idd);
-                    }
-
-                    // Gestion de la date de fin, si au moins une fois une date de fin vide alors on la prend comme
-                    // référence
-                    if (!JadeStringUtil.isBlankOrZero(p.getDateFinInvalidite()) && !hasFoundDateSansFin) {
-                        final JADate idf = new JADate(p.getDateFinInvalidite());
-                        dateFinFinal = takeUpperDateFin(dateFinFinal, cal, idf);
-                    } else {
-                        hasFoundDateSansFin = true;
-                        dateFinFinal = null;
-                    }
+            // Si la demande est null, c'est que l'on n'a pas passé par un des 4 types de rentes
+            if (dem != null) {
+                if (dateDebutFinal != null) {
+                    dem.setDateDebut(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dateDebutFinal.toStrAMJ()));
                 }
 
-                // La date de décès fait foi
-                if (JadeDateUtil.isGlobazDate(dateDecesTiers)) {
-                    // On prend le dernier jour du mois de son décès
-                    dateFinFinal = new JADate(JadeDateUtil.getLastDateOfMonth(dateDecesTiers));
+                if ((dateFinFinal == null)
+                        || (cal.compare(dateFinFinal, new JADate("31.12.2099")) == JACalendar.COMPARE_EQUALS)) {
+                    dem.setDateFin("");
+                } else {
+                    dem.setDateFin(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dateFinFinal.toStrAMJ()));
                 }
-            }
 
-            /**
-             * DEMANDE RENTE SURVIVANT
-             */
-        } else if (isSameTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_SURVIVANT, vb.getCsTypeDemandeRente())) {
-            dem = new REDemandeRenteSurvivant();
-            dem.setSession(session);
-            dem.setIdDemandeRente(vb.getIdDemandeRente());
-            dem.retrieve(transaction);
-
-            // Si aucune rentes accordées trouvées, on se base sur la date de décès du requérant
-            if (!hasFoundRenteAcc) {
-
-                if (!JadeStringUtil.isBlankOrZero(dateDecesTiers)) {
-
-                    // Prendre le premier jour du mois suivant de la date de décès pour le début de la demande
-                    String decesAuPremierDuMoisSuivant = JadeDateUtil.addMonths(dateDecesTiers, 1);
-                    decesAuPremierDuMoisSuivant = JadeDateUtil.getFirstDateOfMonth(decesAuPremierDuMoisSuivant);
-
-                    if (!JadeStringUtil.isBlankOrZero(decesAuPremierDuMoisSuivant)) {
-                        dateDebutFinal = new JADate(decesAuPremierDuMoisSuivant);
-                    }
-                }
-            }
-
-            /**
-             * DEMANDE RENTE VIEILLESSE
-             */
-        } else if (isSameTypeDemande(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE, vb.getCsTypeDemandeRente())) {
-            dem = new REDemandeRenteVieillesse();
-            dem.setSession(session);
-            dem.setIdDemandeRente(vb.getIdDemandeRente());
-            dem.retrieve(transaction);
-
-            // Si aucune rentes accordées trouvées, alors on se base sur le calcul de la date de la retraite du
-            // requérant
-            if (!hasFoundRenteAcc) {
-                // Si la date est non valide selon date globaz, (possible) car c'est un requérant que l'on connait que
-                // l'année mais par forcément le jour ou le mois, alors nous lui affectons 01.07.ANNEE
-                String dateNaissance = majDateNaissanceIfNoValid(vb.getDateNaissanceRequerant());
-
-                // On calcule la date de la retraite pour le mettre dans la date de début
-                final String dateRetraite = calculDateRetraite(vb, new JADate(dateNaissance));
-
-                if (!JadeStringUtil.isBlankOrZero(dateRetraite)) {
-                    dateDebutFinal = new JADate(dateRetraite);
-                }
+                dem.update(transaction);
             }
         }
-
-        // Si la demande est null, c'est que l'on n'a pas passé par un des 4 types de rentes
-        if (dem != null) {
-            if (dateDebutFinal != null) {
-                dem.setDateDebut(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dateDebutFinal.toStrAMJ()));
-            }
-
-            if ((dateFinFinal == null)
-                    || (cal.compare(dateFinFinal, new JADate("31.12.2099")) == JACalendar.COMPARE_EQUALS)) {
-                dem.setDateFin("");
-            } else {
-                dem.setDateFin(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dateFinFinal.toStrAMJ()));
-            }
-
-            dem.update(transaction);
-        }
-
         return vb;
     }
 
