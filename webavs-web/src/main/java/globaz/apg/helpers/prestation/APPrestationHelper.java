@@ -127,17 +127,20 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @throws Exception
      */
     public static boolean hasAcmFalgInSitPro(final BISession session, final APDroitLAPG droit) throws Exception {
-        final APSituationProfessionnelleManager man = new APSituationProfessionnelleManager();
-        man.setSession((BSession) session);
-        man.setForIdDroit(droit.getIdDroit());
-        man.find(BManager.SIZE_NOLIMIT);
 
-        @SuppressWarnings("unchecked")
-        final Iterator<APSituationProfessionnelle> iter = man.iterator();
-        while (iter.hasNext()) {
-            final APSituationProfessionnelle sitPro = iter.next();
-            if (sitPro.getHasAcmAlphaPrestations().booleanValue()) {
-                return true;
+        if (droit != null) {
+            final APSituationProfessionnelleManager man = new APSituationProfessionnelleManager();
+            man.setSession((BSession) session);
+            man.setForIdDroit(droit.getIdDroit());
+            man.find(BManager.SIZE_NOLIMIT);
+
+            @SuppressWarnings("unchecked")
+            final Iterator<APSituationProfessionnelle> iter = man.iterator();
+            while (iter.hasNext()) {
+                final APSituationProfessionnelle sitPro = iter.next();
+                if (sitPro.getHasAcmAlphaPrestations().booleanValue()) {
+                    return true;
+                }
             }
         }
         return false;
