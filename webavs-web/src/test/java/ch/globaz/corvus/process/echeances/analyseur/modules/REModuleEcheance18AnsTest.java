@@ -34,14 +34,37 @@ public class REModuleEcheance18AnsTest extends REModuleAnalyseEcheanceTest {
     }
 
     @Test
+    public void renteEnCoursPasPeriodeEtudesDateEcheanceFutur() {
+        // l'enfant a 18 ans dans le mois courant, n'a pas de période d'études et a une date échéance dans le futur
+        entity.setDateNaissanceTiers("01.01.1994");
+        rente.setDateEcheance("02.2012");
+        assertFalse(module, entity, "01.2012");
+
+        // l'enfant a 18 ans dans le mois courant, n'a pas de période d'études et a une date échéance dans le mois
+        // courant
+        rente.setDateEcheance("01.2012");
+        assertTrue(module, entity, "01.2012", REMotifEcheance.Echeance18ans);
+
+        // l'enfant a déjà eu 18 ans, n'a pas de période d'études et la date d'échéance de sa rente arrive à terme dans
+        // le mois courant
+        entity.setDateNaissanceTiers("01.01.1993");
+        rente.setDateEcheance("01.2012");
+        assertTrue(module, entity, "01.2012", REMotifEcheance.Echeance18ans);
+
+        // l'enfant a déjà eu 18 ans, n'a pas de période d'études et la date d'échéance de sa rente n'arrive pas encore
+        // à terme dans le mois courant
+        entity.setDateNaissanceTiers("01.01.1993");
+        rente.setDateEcheance("02.2012");
+        assertFalse(module, entity, "01.2012");
+    }
+
+    @Test
     public void avecPeriodeAntierieureEtDateEcheanceDansLeMoisDeTraitement() {
 
-        REPeriodeEcheances periodeAnterieure = new REPeriodeEcheances("1", "01.08.2012", "31.07.2013",
-                ISFPeriode.CS_TYPE_PERIODE_ETUDE);
-        entity.getPeriodes().add(periodeAnterieure);
-
+        // l'enfant a 18 ans dans le mois courant et a une période d'étude dépassée
+        entity.getPeriodes().add(
+                new REPeriodeEcheances("1", "01.08.2012", "31.07.2013", ISFPeriode.CS_TYPE_PERIODE_ETUDE));
         entity.setDateNaissanceTiers("09.03.1996");
-
         assertTrue(module, entity, "03.2014", REMotifEcheance.Echeance18ans);
     }
 
@@ -52,11 +75,11 @@ public class REModuleEcheance18AnsTest extends REModuleAnalyseEcheanceTest {
                 ISFPeriode.CS_TYPE_PERIODE_ETUDE);
         entity.getPeriodes().add(periodeFuture);
 
-        // 18 ans
+        // l'enfant a 18 ans dans le mois courant, à une période d'étude dans le futur sans trou
         entity.setDateNaissanceTiers("01.01.1994");
-
         assertFalse(module, entity, "01.2012");
 
+        // l'enfant a 18 ans dans le mois courant, à une période d'étude qui reprend le droit
         periodeFuture.setDateDebut("31.01.2012");
         assertFalse(module, entity, "01.2012");
     }
@@ -64,13 +87,10 @@ public class REModuleEcheance18AnsTest extends REModuleAnalyseEcheanceTest {
     @Test
     public void avecTrouDansLesPeriodes() {
 
-        REPeriodeEcheances periodeFuture = new REPeriodeEcheances("1", "01.03.2012", "31.12.2012",
-                ISFPeriode.CS_TYPE_PERIODE_ETUDE);
-        entity.getPeriodes().add(periodeFuture);
-
-        // 18 ans
+        // l'enfant a 18 ans dans le mois courant, à une période d'étude dans le futur (plus loin)
+        entity.getPeriodes().add(
+                new REPeriodeEcheances("1", "01.03.2012", "31.12.2012", ISFPeriode.CS_TYPE_PERIODE_ETUDE));
         entity.setDateNaissanceTiers("01.01.1994");
-
         assertTrue(module, entity, "01.2012", REMotifEcheance.Echeance18ans);
     }
 
