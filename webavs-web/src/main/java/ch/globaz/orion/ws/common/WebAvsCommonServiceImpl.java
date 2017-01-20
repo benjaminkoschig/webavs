@@ -2,6 +2,7 @@ package ch.globaz.orion.ws.common;
 
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import java.io.File;
 import java.io.IOException;
 import javax.jws.WebService;
@@ -24,15 +25,12 @@ public class WebAvsCommonServiceImpl implements WebAvsCommonService {
     }
 
     @Override
-    public String findAgeRetraite(String sexe, String dateNaissance) {
+    public String findDateRetraite(String sexe, String dateNaissance) {
         if ((sexe != null && !JadeStringUtil.isBlankOrZero(sexe))
                 && (dateNaissance != null && !JadeStringUtil.isBlankOrZero(dateNaissance))) {
-            String ageRetraite = null;
-
-            return null;
+            return PRTiersHelper.getDateDebutDroitAVS(dateNaissance, sexe);
         } else {
             throw new IllegalArgumentException();
         }
-
     }
 }
