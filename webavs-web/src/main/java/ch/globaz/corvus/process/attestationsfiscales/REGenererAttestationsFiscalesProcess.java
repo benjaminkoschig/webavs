@@ -754,7 +754,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         request.append(" AND pcAccordee.CUTETA = 64029002");
         request.append(" AND repraccPC.ZTTGEN = 52849002");
         request.append(" AND pcAccordee.CUBSUP <> 1");
-        request.append(" AND pcAccordee.CUDDEB <" + String.valueOf(++annee) + "00"); // année + 1
+        request.append(" AND pcAccordee.CUDDEB <" + String.valueOf((annee + 1)) + "00"); // année + 1
         request.append(" AND (pcAccordee.CUDFIN is null OR pcAccordee.CUDFIN =0 OR pcAccordee.CUDFIN = " + annee
                 + "12)");
         return request.toString();
