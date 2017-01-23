@@ -33,6 +33,7 @@ import globaz.pavo.translation.CodeSystem;
 import globaz.pavo.util.CIUtil;
 import globaz.pyxis.db.tiers.TIPersonneAvsManager;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DSInscriptionsIndividuelles extends BEntity {
@@ -540,7 +541,8 @@ public class DSInscriptionsIndividuelles extends BEntity {
         try {
             parsePeriode();
 
-            if (Integer.parseInt(jourFin) > Integer.parseInt(determineJourFin())) {
+            if (Integer.parseInt(jourFin) > Integer.parseInt(determineJourFin()) && Integer.parseInt(jourFin) != 66
+                    && Integer.parseInt(jourFin) != 77 && Integer.parseInt(jourFin) != 99) {
 
                 _addError(statement.getTransaction(), getSession().getLabel("PERIODE_INVALIDE"));
             }
@@ -726,6 +728,8 @@ public class DSInscriptionsIndividuelles extends BEntity {
     }
 
     private void calculAc1() throws Exception {
+        boolean isPeriodeSpeciale = false;
+        String periodeSpeciale = "";
         jourDebut = JadeStringUtil.rightJustifyInteger(jourDebut, 2);
         jourFin = JadeStringUtil.rightJustifyInteger(jourFin, 2);
         moisDebut = JadeStringUtil.rightJustifyInteger(moisDebut, 2);
@@ -735,11 +739,28 @@ public class DSInscriptionsIndividuelles extends BEntity {
             anneeInsc = declaration.getAnnee();
         }
 
+        if ("66".equals(jourDebut) || "77".equals(jourDebut) || "99".equals(jourDebut)) {
+            isPeriodeSpeciale = true;
+
+            periodeSpeciale = jourDebut; // Prend soit 66,77 ou 99
+
+            jourDebut = "01";
+            moisDebut = "01";
+
+            jourFin = "31";
+            moisFin = "12";
+
+            periodeDebut = jourDebut + "." + moisDebut;
+            periodeFin = jourFin + "." + moisFin;
+        }
+
         // Maintenant il faut savoir si la personne est soumise à l'AC
         if (getSoumis().booleanValue() && !numeroAvs.startsWith("00000")) {
             String dateRetraite = CIUtil.getDateRetraiteAc(numeroAvs, Integer.parseInt(anneeInsc), getSession());
+
             String dateDebut = jourDebut + "." + moisDebut + "." + anneeInsc;
             String dateFin = jourFin + "." + moisFin + "." + anneeInsc;
+
             if (BSessionUtil.compareDateFirstLowerOrEqual(getSession(), dateFin, dateRetraite)) {
                 // soumis car la date de fin est plus petite que la date de
                 // retraite
@@ -837,6 +858,7 @@ public class DSInscriptionsIndividuelles extends BEntity {
                 // Récupérer le nb de jour pour la période
                 if (JadeStringUtil.isIntegerEmpty(periodeDebut)) {
                     periodeDebut = jourDebut + "." + moisDebut;
+                    String totot = "";
                 }
                 if (JadeStringUtil.isIntegerEmpty(periodeFin)) {
                     periodeFin = jourFin + "." + moisFin;
@@ -881,6 +903,21 @@ public class DSInscriptionsIndividuelles extends BEntity {
             }
             // On a le montant pour la période
         }
+
+        if (isPeriodeSpeciale) // On remet les nombre à 66,77 ou 99 pour l'inscription dans la BDD
+        {
+            jourDebut = periodeSpeciale;
+            moisDebut = periodeSpeciale;
+
+            jourFin = periodeSpeciale;
+            moisFin = periodeSpeciale;
+
+            periodeDebut = periodeSpeciale + "." + periodeSpeciale;
+            periodeFin = periodeDebut;
+
+            isPeriodeSpeciale = false;
+        }
+
     }
 
     private boolean checkChevauchement(DSInscriptionsIndividuelles inscToCheck) {
@@ -1402,37 +1439,61 @@ public class DSInscriptionsIndividuelles extends BEntity {
      * @author jmc
      * 
      *         Méthode qui parse la période pour séparer les jours et les mois
+     * 
+     *         Lors du cas 66,77 ou 99 on parse automatiquement a double (par ex. 99.99) et change les 2 champs (début
+     *         et fin)
      */
     private void parsePeriode() {
-        int indexPointFin = periodeFin.indexOf(".");
-        if (indexPointFin > 0) {
-            jourFin = periodeFin.substring(0, indexPointFin);
-            moisFin = periodeFin.substring(indexPointFin + 1);
-            moisFin = JadeStringUtil.rightJustifyInteger(moisFin, 2);
-        } else {
-            if (JadeStringUtil.isIntegerEmpty(periodeFin)) {
-                moisFin = "12";
-            } else {
-                moisFin = periodeFin;
-            }
-            moisFin = JadeStringUtil.rightJustifyInteger(moisFin, 2);
+        ArrayList<Integer> listePeriodeNombreSpeciaux = new ArrayList<Integer>();
+        listePeriodeNombreSpeciaux.add(66);
+        listePeriodeNombreSpeciaux.add(77);
+        listePeriodeNombreSpeciaux.add(99);
 
-            jourFin = determineJourFin();
-        }
-        int indexPointDebut = periodeDebut.indexOf(".");
+        int indexPointDebut = periodeDebut.indexOf('.');
+        int indexPointFin = periodeFin.indexOf('.');
+
         if (indexPointDebut > 0) {
             jourDebut = periodeDebut.substring(0, indexPointDebut);
             moisDebut = periodeDebut.substring(indexPointDebut + 1);
             moisDebut = JadeStringUtil.rightJustifyInteger(moisDebut, 2);
         } else {
-            if (JadeStringUtil.isIntegerEmpty(periodeDebut)) {
-                moisDebut = "01";
-            } else {
+            // Si 66,77 ou 99 met les jours et mois à la même valeur + test si empty pour aller plus loin
+            if (periodeDebut != "" && listePeriodeNombreSpeciaux.contains(Integer.parseInt(periodeDebut))) {
+                moisFin = periodeDebut;
+                jourFin = periodeDebut;
                 moisDebut = periodeDebut;
-                moisDebut = JadeStringUtil.rightJustifyInteger(moisDebut, 2);
-
+                jourDebut = periodeDebut;
+            } else {
+                if (JadeStringUtil.isIntegerEmpty(periodeDebut)) {
+                    moisDebut = "01";
+                } else {
+                    moisDebut = periodeDebut;
+                    moisDebut = JadeStringUtil.rightJustifyInteger(moisDebut, 2);
+                }
+                jourDebut = "01";
             }
-            jourDebut = "01";
+        }
+
+        if (indexPointFin > 0) {
+            jourFin = periodeFin.substring(0, indexPointFin);
+            moisFin = periodeFin.substring(indexPointFin + 1);
+            moisFin = JadeStringUtil.rightJustifyInteger(moisFin, 2);
+        } else {
+            // Si 66,77 ou 99 met les jours et mois à la même valeur + test si empty pour aller plus loin
+            if (periodeFin != "" && listePeriodeNombreSpeciaux.contains(Integer.parseInt(periodeFin))) {
+                moisFin = periodeFin;
+                jourFin = periodeFin;
+                moisDebut = periodeFin;
+                jourDebut = periodeFin;
+            } else {
+                if (JadeStringUtil.isIntegerEmpty(periodeFin)) {
+                    moisFin = "12";
+                } else {
+                    moisFin = periodeFin;
+                }
+                moisFin = JadeStringUtil.rightJustifyInteger(moisFin, 2);
+                jourFin = determineJourFin();
+            }
         }
         if (JadeStringUtil.isIntegerEmpty(montant)) {
             moisFinAF = moisFin;
