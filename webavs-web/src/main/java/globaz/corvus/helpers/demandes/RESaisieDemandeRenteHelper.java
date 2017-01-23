@@ -1674,7 +1674,7 @@ public class RESaisieDemandeRenteHelper extends PRAbstractHelper {
         }
 
         // MAJ de la période de la demande !!!
-        if (JadeStringUtil.isEmpty(saisieDemandeRenteVb.getIdDemandeRente())) {
+        if (!JadeStringUtil.isEmpty(saisieDemandeRenteVb.getIdDemandeRente())) {
             doMAJPeriodeDemandeRente(session, transaction, saisieDemandeRenteVb);
         }
 
@@ -1996,7 +1996,7 @@ public class RESaisieDemandeRenteHelper extends PRAbstractHelper {
         }
 
         // MAJ de la période de la demande !!!
-        if (JadeStringUtil.isEmpty(saisieDemandeRenteVb.getIdDemandeRente())) {
+        if (!JadeStringUtil.isEmpty(saisieDemandeRenteVb.getIdDemandeRente())) {
             doMAJPeriodeDemandeRente(session, transaction, saisieDemandeRenteVb);
         }
         return saisieDemandeRenteVb;
