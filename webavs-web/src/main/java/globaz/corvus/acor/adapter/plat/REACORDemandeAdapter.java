@@ -571,6 +571,7 @@ public class REACORDemandeAdapter extends PRAbstractPlatAdapter {
             fichiers.add(new REFichierCIPrinter(this, PRACORConst.NF_CI)); //
             fichiers.add(new REFichierPeriodePrinter(this, PRACORConst.NF_PERIODES)); //
             fichiers.add(new REFichierRentesEnCoursPrinter(this, PRACORConst.NF_RENTES)); //
+            fichiers.add(new REFichierEuroFormPrinter(this, PRACORConst.NF_EURO_FORM)); //
         }
 
         return fichiers;
