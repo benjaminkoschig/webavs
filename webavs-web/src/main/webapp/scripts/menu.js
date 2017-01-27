@@ -308,4 +308,39 @@ function handleMenuEvent(e){
 			break;
 	}
 }
+
+function overLoadActionMenu(actionPart, regexForValues, callBack) {
+	$("tbody").on('click', ".FWOptionSelectorButton", function(e) {
+		var $select = $('.FWOptionSelectorSelect');    	    	
+    	var attr =  $select.attr('onclick');
+
+    	
+    	$select.attr('onclick','').unbind('click');
+    	$select.click(function (e) {
+    		var contextForval =this
+        	var defaulAction = function () {
+    				return function() {eval(attr)}.call(contextForval);
+    		};
+      		e.stopImmediatePropagation();
+      		e.preventDefault();
+      		if(this.value.search(actionPart)<0){
+      			defaulAction();
+      		} else {
+      			var m;
+      			var values = {};
+      			while ((m = regexForValues.exec(this.value)) !== null) {
+      			    // This is necessary to avoid infinite loops with zero-width matches
+      			    if (m.index === regexForValues.lastIndex) {
+      			    	regexForValue.lastIndex++;
+      			    }
+      			    for(var i= 1; m.length>i; i=i+2){
+      			      	values[m[i]] = m[i+1];
+      			    }
+      			}
+      			callBack(values, this, defaulAction);
+      			$(this).closest("table").remove();  			
+      		}
+    	});
+	});
+}
 // stop hiding -->

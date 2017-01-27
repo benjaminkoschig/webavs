@@ -12,6 +12,7 @@ import java.util.Vector;
 import ch.globaz.pegasus.business.constantes.IPCDemandes;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.models.demande.ListDemandes;
+import ch.globaz.pegasus.business.models.droit.Droit;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 
 public class PCDemandeViewBean extends BJadePersistentObjectViewBean {
@@ -20,15 +21,22 @@ public class PCDemandeViewBean extends BJadePersistentObjectViewBean {
             IPCDemandes.CS_EN_ATTENTE_JUSTIFICATIFS, IPCDemandes.CS_TRANSFERE };
 
     private ListDemandes listDemandes = null;
+    private final Droit droit;
 
     public PCDemandeViewBean() {
         super();
         listDemandes = new ListDemandes();
+        droit = new Droit();
     }
 
-    public PCDemandeViewBean(ListDemandes listDemandes) {
+    public PCDemandeViewBean(ListDemandes listDemandes, Droit droit) {
         super();
         this.listDemandes = listDemandes;
+        if (droit != null) {
+            this.droit = droit;
+        } else {
+            this.droit = new Droit();
+        }
     }
 
     @Override
@@ -223,4 +231,16 @@ public class PCDemandeViewBean extends BJadePersistentObjectViewBean {
     public void update() throws Exception {
         // this.demande = PegasusServiceLocator.getDemandeService().update(this.demande);
     }
+
+    public String getNumeroVersionDroit() {
+        if (droit.isNew()) {
+            return "1";
+        }
+        return droit.getSimpleVersionDroit().getNoVersion();
+    }
+
+    public Droit getDroit() {
+        return droit;
+    }
+
 }

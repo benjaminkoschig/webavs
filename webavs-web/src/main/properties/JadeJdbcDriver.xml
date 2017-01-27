@@ -226,6 +226,16 @@
 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
 			<urlParameter name="prompt" value="false"/>
 		</datasource>
+		     
+        <datasource name="CCVS_QUALITE_2" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
+               <driver>com.ibm.db2.jcc.DB2Driver</driver>
+               <url>jdbc:db2://sccvsqa1.ju.globaz.ch:50005/ccvsqa2</url>
+               <user>db2inst1</user>
+               <password>db2inst1</password>
+               <maxConnections>100</maxConnections>
+               <transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
+               <urlParameter name="prompt" value="false"/>
+        </datasource>
 		
 		<!-- BASE DE REPRISE -->
 

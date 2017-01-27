@@ -13,9 +13,11 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.persistence.util.JadePersistenceUtil;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.pegasus.utils.PCUserHelper;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -179,9 +181,13 @@ import ch.globaz.pegasus.business.models.revenusdepenses.TypeFraisObtentionReven
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.business.services.models.droit.AbstractDonneeFinanciereService;
 import ch.globaz.pegasus.business.services.models.droit.DroitService;
+import ch.globaz.pegasus.business.services.synchronisation.MembreFamilleToSync;
+import ch.globaz.pegasus.business.services.synchronisation.MembresFamillesToSynchronise;
+import ch.globaz.pegasus.business.services.synchronisation.SynchronisationMembreFamille;
 import ch.globaz.pegasus.businessimpl.checkers.droit.DroitChecker;
 import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
+import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
 
 public class DroitServiceImpl extends PegasusAbstractServiceImpl implements DroitService {
 
@@ -195,7 +201,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
      * @return code systeme du role en famille, ou null si le membre n'est pas dans la famille proche (conjoint ou
      *         enfant)
      */
-    private final static String convertCsRoleFamillePC(String csLienFamille, boolean isRequerant) {
+    public final static String convertCsRoleFamillePC(String csLienFamille, boolean isRequerant) {
 
         Map<String, String> mapping = new HashMap<String, String>();
         // requerant ou conjoint
@@ -1926,7 +1932,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
             String csRoleFamillePC = DroitServiceImpl.convertCsRoleFamillePC(membreFamille.getRelationAuRequerant(),
                     membreFamille.getIdTiers().equals(idTiersRequerant));
-            // si requerant enfant, on set le cs
+            // si requérant enfant, on set le cs
             if (requerantIsEnfant) {
                 csRoleFamillePC = IPCDroits.CS_ROLE_FAMILLE_REQUERANT;
             }
@@ -3138,7 +3144,6 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
         DroitSearch droitSearch = new DroitSearch();
         droitSearch.setForIdDroit(idDroit);
         droitSearch.setWhereKey(DroitSearch.CURRENT_VERSION);
-        // droitSearch.setDefinedSearchSize(1);
         droitSearch = searchDroit(droitSearch);
 
         if (droitSearch.getSize() != 1) {
@@ -3146,6 +3151,19 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
         }
 
         return (Droit) droitSearch.getSearchResults()[0];
+    }
+
+    @Override
+    public List<Droit> findCurrentVersionDroitByIdsDemande(List<String> idsDemande) throws DroitException,
+            JadePersistenceException {
+
+        DroitSearch droitSearch = new DroitSearch();
+        droitSearch.setForIdsDemandeIn(idsDemande);
+        droitSearch.setWhereKey(DroitSearch.CURRENT_VERSION);
+        droitSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+        droitSearch = searchDroit(droitSearch);
+
+        return PersistenceUtil.typeSearch(droitSearch);
     }
 
     /**
@@ -4141,6 +4159,32 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
             DonneesPersonnellesException {
         return this.synchroniseMembresFamille(droit, true);
 
+    }
+
+    @Override
+    public MembresFamillesToSynchronise resolveEnfantToSynchroniseByIdDemande(String idDemande)
+            throws DonneesPersonnellesException, MembreFamilleException, JadeApplicationServiceNotAvailableException,
+            JadePersistenceException, DroitException {
+
+        MembresFamillesToSynchronise membreFamille = new SynchronisationMembreFamille()
+                .resolveEnfantToSynchronise(idDemande);
+
+        BSession session = BSessionUtil.getSessionFromThreadContext();
+
+        for (MembreFamilleVO mb : membreFamille.getToAdd()) {
+            mb.setCsSexe(PCUserHelper.getLibelleCourtSexe(mb.getCsSexe()));
+            mb.setCsNationalite(session.getCodeLibelle(session.getSystemCode("CIPAYORI", mb.getCsNationalite())));
+        }
+
+        return membreFamille;
+    }
+
+    @Override
+    public List<SimpleDroitMembreFamille> addMembreFamilleByIdMembreFamille(MembreFamilleToSync membreFamilleToSync)
+            throws DonneesPersonnellesException, MembreFamilleException, JadeApplicationServiceNotAvailableException,
+            JadePersistenceException, DroitException {
+        return new SynchronisationMembreFamille().addMembreFamilleByIdMembreFamille(
+                membreFamilleToSync.getIdsMembreFamille(), membreFamilleToSync.getIdDemande());
     }
 
     public Droit synchroniseMembresFamille(Droit droit, boolean withProecessOnUpdate) throws DroitException,

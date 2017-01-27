@@ -77,6 +77,7 @@ import ch.globaz.pegasus.business.models.droit.DroitSearch;
 import ch.globaz.pegasus.business.models.droit.MembreFamilleEtenduSearch;
 import ch.globaz.pegasus.business.models.droit.ModificateurDroitDonneeFinanciere;
 import ch.globaz.pegasus.business.models.droit.ModificateurDroitDonneeFinanciereSearch;
+import ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille;
 import ch.globaz.pegasus.business.models.droit.VersionDroit;
 import ch.globaz.pegasus.business.models.droit.VersionDroitSearch;
 import ch.globaz.pegasus.business.models.fortuneparticuliere.AssuranceRenteViagere;
@@ -152,6 +153,8 @@ import ch.globaz.pegasus.business.models.revenusdepenses.SimpleLibelleContratEnt
 import ch.globaz.pegasus.business.models.revenusdepenses.SimpleTypeFraisObtentionRevenu;
 import ch.globaz.pegasus.business.models.revenusdepenses.SimpleTypeFraisObtentionRevenuSearch;
 import ch.globaz.pegasus.business.models.revenusdepenses.TypeFraisObtentionRevenu;
+import ch.globaz.pegasus.business.services.synchronisation.MembreFamilleToSync;
+import ch.globaz.pegasus.business.services.synchronisation.MembresFamillesToSynchronise;
 
 /**
  * @author BSC
@@ -3454,5 +3457,16 @@ public interface DroitService extends JadeApplicationService {
     Vehicule updateVehicule(ModificateurDroitDonneeFinanciere droit, DroitMembreFamille droitMembreFamille,
             Vehicule vehicule) throws DroitException, JadePersistenceException, VehiculeException,
             DonneeFinanciereException;
+
+    List<SimpleDroitMembreFamille> addMembreFamilleByIdMembreFamille(MembreFamilleToSync membreFamilleToSync)
+            throws DonneesPersonnellesException, MembreFamilleException, JadeApplicationServiceNotAvailableException,
+            JadePersistenceException, DroitException;
+
+    MembresFamillesToSynchronise resolveEnfantToSynchroniseByIdDemande(String idDemande)
+            throws DonneesPersonnellesException, MembreFamilleException, JadeApplicationServiceNotAvailableException,
+            JadePersistenceException, DroitException;
+
+    List<Droit> findCurrentVersionDroitByIdsDemande(List<String> idsDemande) throws DroitException,
+            JadePersistenceException;
 
 }

@@ -193,7 +193,7 @@ public class ListDemandesSearch extends JadeSearchComplexModel {
     }
 
     @Override
-    public Class whichModelClass() {
+    public Class<ListDemandes> whichModelClass() {
         return ListDemandes.class;
     }
 

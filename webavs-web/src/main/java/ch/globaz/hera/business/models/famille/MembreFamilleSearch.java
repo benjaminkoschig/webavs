@@ -10,7 +10,7 @@ public class MembreFamilleSearch extends JadeSearchComplexModel {
      */
     private static final long serialVersionUID = 1L;
     private String forIdMembreFamille = null;
-    private List forIdMembreFamilleIn = null;
+    private List<String> forIdMembreFamilleIn = null;
     private String forNss = null;
     private String forIdTiers = null;
 
@@ -40,7 +40,7 @@ public class MembreFamilleSearch extends JadeSearchComplexModel {
     /**
      * @return the forIdMembreFamilleIn
      */
-    public List getForIdMembreFamilleIn() {
+    public List<String> getForIdMembreFamilleIn() {
         return forIdMembreFamilleIn;
     }
 
@@ -56,12 +56,12 @@ public class MembreFamilleSearch extends JadeSearchComplexModel {
      * @param forIdMembreFamilleIn
      *            the forIdMembreFamilleIn to set
      */
-    public void setForIdMembreFamilleIn(List forIdMembreFamilleIn) {
+    public void setForIdMembreFamilleIn(List<String> forIdMembreFamilleIn) {
         this.forIdMembreFamilleIn = forIdMembreFamilleIn;
     }
 
     @Override
-    public Class whichModelClass() {
+    public Class<MembreFamille> whichModelClass() {
         return MembreFamille.class;
     }
 

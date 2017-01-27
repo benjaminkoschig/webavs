@@ -335,6 +335,7 @@ public class PCDroitViewBean extends BJadePersistentObjectViewBean {
         search.setForIdDemandePc(idDemande);
         search.setDefinedSearchSize(1);
         search = PegasusServiceLocator.getDroitService().searchDroit(search);
+
         if (search.getSize() > 0) {
             droit = (Droit) search.getSearchResults()[0];
             droit = PegasusServiceLocator.getDroitService().synchroniseMembresFamille(droit);

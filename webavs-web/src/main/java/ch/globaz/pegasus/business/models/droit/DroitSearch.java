@@ -5,6 +5,7 @@ package ch.globaz.pegasus.business.models.droit;
 
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.model.JadeSearchComplexModel;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,6 +25,7 @@ public class DroitSearch extends JadeSearchComplexModel {
     private String forCsEtatDemande = null;
     private String forCsEtatDroit = null;
     private List<String> forCsEtatDroitIn = null;
+    private List<String> forIdsDemandeIn = new ArrayList<String>();
     private String forCsSexe = null;
     private String forDateDebutDemande = null;
     private String forDateFinDemande = null;
@@ -244,6 +246,14 @@ public class DroitSearch extends JadeSearchComplexModel {
      */
     public void setOrderBy(String orderBy) {
         setOrderKey(orderBy);
+    }
+
+    public List<String> getForIdsDemandeIn() {
+        return forIdsDemandeIn;
+    }
+
+    public void setForIdsDemandeIn(List<String> forIdsDemandeIn) {
+        this.forIdsDemandeIn = forIdsDemandeIn;
     }
 
     /*

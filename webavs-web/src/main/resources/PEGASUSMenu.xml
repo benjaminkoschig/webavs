@@ -374,6 +374,7 @@
 					<parameter name="userAction" value="pegasus.droit.droit.synchroniser"/>
 					<parameter name="idDemandePc"/>
 					<parameter name="idDossier"/>
+					<parameter name="noVersionDroit"/>
 				</action>
 			</node>	
 			<node id="TRANSFERT_RENTE">
