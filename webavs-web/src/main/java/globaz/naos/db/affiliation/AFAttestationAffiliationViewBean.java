@@ -22,6 +22,7 @@ public class AFAttestationAffiliationViewBean extends AFAbstractViewBean {
     private AFAffiliation affiliation;
     private String affiliationId;
     private String brancheEconomique;
+    private String activite;
     private String email;
 
     // ~ Constructors
@@ -57,6 +58,10 @@ public class AFAttestationAffiliationViewBean extends AFAbstractViewBean {
 
     public String getBrancheEconomique() {
         return brancheEconomique;
+    }
+
+    public String getActivite() {
+        return activite;
     }
 
     /**
@@ -118,6 +123,10 @@ public class AFAttestationAffiliationViewBean extends AFAbstractViewBean {
         this.brancheEconomique = brancheEconomique;
     }
 
+    public void setActivite(String activite) {
+        this.activite = activite;
+    }
+
     /**
      * setter pour l'attribut email
      * 
@@ -143,6 +152,8 @@ public class AFAttestationAffiliationViewBean extends AFAbstractViewBean {
      *            une nouvelle valeur pour cet attribut
      */
     public void setSelectedId(String string) {
-        setAffiliationId(string);
+        if (!string.isEmpty()) {
+            setAffiliationId(string);
+        }
     }
 }

@@ -44,6 +44,7 @@ public class AFAttestationAffiliation_Doc extends FWIDocumentManager {
     private AFAffiliation affiliation;
     private String affiliationId;
     private String brancheEconomique;
+    private String activite;
     private String dateDebutParitaire = "";
 
     private String dateDebutPersonelle = "";
@@ -160,11 +161,11 @@ public class AFAttestationAffiliation_Doc extends FWIDocumentManager {
                         AFAttestationAffiliation_Doc.P_TEXTE,
                         formatMessage(
                                 buffer,
-                                new Object[] {
-                                        getTitrePrenomNom(),
+                                new Object[] { getTitrePrenomNom(),
                                         aff.getTiers().getNumAvsActuel(),
                                         periodeParitaire,
-                                        getBrancheEconomique(),
+                                        getActivite(),
+                                        // getBrancheEconomique(),
                                         getProp(ACaisseReportHelper.JASP_PROP_NOM_CAISSE),
                                         CodeSystem.getLibelleIso(getSession(), aff.getTypeAffiliation(), aff.getTiers()
                                                 .getLangueIso().toUpperCase()), periodePersonelle }));
@@ -173,11 +174,11 @@ public class AFAttestationAffiliation_Doc extends FWIDocumentManager {
                         AFAttestationAffiliation_Doc.P_TEXTE,
                         formatMessage(
                                 buffer,
-                                new Object[] {
-                                        getTitrePrenomNom(),
+                                new Object[] { getTitrePrenomNom(),
                                         aff.getTiers().getNumAvsActuel(),
                                         aff.getDateDebut(),
-                                        getBrancheEconomique(),
+                                        getActivite(),
+                                        // getBrancheEconomique(),
                                         getProp(ACaisseReportHelper.JASP_PROP_NOM_CAISSE),
                                         CodeSystem.getLibelleIso(getSession(), aff.getTypeAffiliation(), aff.getTiers()
                                                 .getLangueIso().toUpperCase()) }));
@@ -245,6 +246,10 @@ public class AFAttestationAffiliation_Doc extends FWIDocumentManager {
      */
     public String getAffiliationId() {
         return affiliationId;
+    }
+
+    public String getActivite() {
+        return activite;
     }
 
     public String getBrancheEconomique() {
@@ -392,6 +397,10 @@ public class AFAttestationAffiliation_Doc extends FWIDocumentManager {
      */
     public void setAffiliationId(String string) {
         affiliationId = string;
+    }
+
+    public void setActivite(String activite) {
+        this.activite = activite;
     }
 
     public void setBrancheEconomique(String brancheEconomique) {

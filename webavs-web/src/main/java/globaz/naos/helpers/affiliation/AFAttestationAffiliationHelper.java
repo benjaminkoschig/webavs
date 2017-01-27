@@ -49,6 +49,7 @@ public class AFAttestationAffiliationHelper extends FWHelper {
         affiliation.retrieve();
 
         afViewBean.setAffiliation(affiliation);
+        afViewBean.setActivite(affiliation.getActivite());
         afViewBean.setEmail(session.getUserEMail());
     }
 
@@ -64,7 +65,8 @@ public class AFAttestationAffiliationHelper extends FWHelper {
         doc.setISession(session);
         doc.setAffiliationId(afViewBean.getAffiliationId());
         doc.setEMailAddress(afViewBean.getEmail());
-        doc.setBrancheEconomique(afViewBean.getBrancheEconomique());
+        doc.setActivite(afViewBean.getActivite());
+        // doc.setBrancheEconomique(afViewBean.getBrancheEconomique());
 
         try {
             BProcessLauncher.start(doc);
