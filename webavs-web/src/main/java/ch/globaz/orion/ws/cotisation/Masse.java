@@ -16,4 +16,5 @@ public class Masse {
     public int idCotisation = 0;
     public int typeCotisation = 0;
     public int codeCanton = 0;
+    public int genreCoti = 0;
 }
