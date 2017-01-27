@@ -21,6 +21,9 @@ public class BeneficiairePCCommunePolitiquePojo implements Comparable<Beneficiai
     private String prenom = "";
     private String codePrestation = "";
     private String typePrestation = "";
+    private String idTiersNss1;
+    private String idTiersNss2;
+
     private Montant montant = Montant.ZERO;
 
     @Column(name = "commune", order = 1)
@@ -100,6 +103,22 @@ public class BeneficiairePCCommunePolitiquePojo implements Comparable<Beneficiai
 
     public void setMontant(Montant montant) {
         this.montant = montant;
+    }
+
+    public String getIdTiersNss1() {
+        return idTiersNss1;
+    }
+
+    public void setIdTiersNss1(String idTiersNss1) {
+        this.idTiersNss1 = idTiersNss1;
+    }
+
+    public String getIdTiersNss2() {
+        return idTiersNss2;
+    }
+
+    public void setIdTiersNss2(String idTiersNss2) {
+        this.idTiersNss2 = idTiersNss2;
     }
 
     @Override

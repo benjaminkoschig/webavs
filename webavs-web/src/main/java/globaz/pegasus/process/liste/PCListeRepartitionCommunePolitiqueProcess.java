@@ -222,24 +222,50 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
     private void completeInformation(List<BeneficiairePCCommunePolitiquePojo> listBeneficiairePCCP) {
 
         Set<String> setIdTiers = new HashSet<String>();
+        Set<String> setIdTiersComplementaires = new HashSet<String>();
+
         Map<String, String> mapLibelleTypePrestation = new HashMap<String, String>();
         Map<String, CommunePolitiqueBean> mapIdTiersCommunePolitique = new HashMap<String, CommunePolitiqueBean>();
+        Map<String, CommunePolitiqueBean> mapIdTiersComplCommunePolitique = new HashMap<String, CommunePolitiqueBean>();
 
         for (BeneficiairePCCommunePolitiquePojo aBeneficiairePCCP : listBeneficiairePCCP) {
             setIdTiers.add(aBeneficiairePCCP.getIdTiers());
+            if (!JadeStringUtil.isEmpty(aBeneficiairePCCP.getIdTiersNss1())) {
+                setIdTiersComplementaires.add(aBeneficiairePCCP.getIdTiersNss1());
+            }
+            if (!JadeStringUtil.isEmpty(aBeneficiairePCCP.getIdTiersNss2())) {
+                setIdTiersComplementaires.add(aBeneficiairePCCP.getIdTiersNss2());
+            }
         }
 
         mapIdTiersCommunePolitique = PRTiersHelper.findCommunePolitique(setIdTiers, new Date().getDate(), getSession());
 
+        if (!setIdTiersComplementaires.isEmpty()) {
+            mapIdTiersComplCommunePolitique = PRTiersHelper.findCommunePolitique(setIdTiersComplementaires,
+                    new Date().getDate(), getSession());
+        }
+
         for (BeneficiairePCCommunePolitiquePojo beneficiairePCCP : listBeneficiairePCCP) {
             CommunePolitiqueBean communePolitique = mapIdTiersCommunePolitique.get(beneficiairePCCP.getIdTiers());
+            CodePrestation code = CodePrestation
+                    .getCodePrestation(Integer.valueOf(beneficiairePCCP.getCodePrestation()));
+
+            if ((communePolitique == null && mapIdTiersComplCommunePolitique != null)
+                    || (communePolitique.isNotFound() && mapIdTiersComplCommunePolitique != null)) {
+                if (code.isSurvivant() && !JadeStringUtil.isEmpty(beneficiairePCCP.getIdTiersNss2())) {
+                    communePolitique = mapIdTiersComplCommunePolitique.get(beneficiairePCCP.getIdTiersNss2());
+                } else if (code.isRenteComplementairePourEnfant()
+                        && !JadeStringUtil.isEmpty(beneficiairePCCP.getIdTiersNss1())) {
+                    communePolitique = mapIdTiersComplCommunePolitique.get(beneficiairePCCP.getIdTiersNss1());
+                }
+            }
+
             if (communePolitique != null) {
                 beneficiairePCCP.setCommunePolitique(communePolitique);
 
                 // *************
                 // Ajout du type de prestation
-                CodePrestation code = CodePrestation.getCodePrestation(Integer.valueOf(beneficiairePCCP
-                        .getCodePrestation()));
+
                 DomaineCodePrestation domainePrestation = code.getDomaineCodePrestation();
 
                 String codeSystemForLibelle = String.valueOf(domainePrestation.getCodeSystem());
@@ -264,7 +290,6 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
                 }
                 beneficiairePCCP.setTypePrestation(libelleTypePrestation);
                 // *************
-
             }
         }
 
@@ -302,12 +327,13 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
 
         StringBuilder sql = new StringBuilder("");
 
-        sql.append(" SELECT tier.HTITIE as idTiers, pavs.HXNAVS as nss, tier.HTLDE1 as nom, tier.HTLDE2 as prenom, prac.ZTLCPR as codePrestation,  prac.ZTMPRE as montant ");
+        sql.append(" SELECT tier.HTITIE as id_tiers, racc.YLIPTC as id_tiers_nss1, racc.YLIDTC as id_tiers_nss2, pavs.HXNAVS as nss, tier.HTLDE1 as nom, tier.HTLDE2 as prenom, prac.ZTLCPR as codePrestation,  prac.ZTMPRE as montant ");
         sql.append(" FROM SCHEMA.REPRACC prac ");
-        sql.append(" inner join SCHEMA.REREACC reac on (prac.ZTIPRA = reac.YLIRAC) ");
-        sql.append(" inner join SCHEMA.REBACAL baca on (reac.YLIBAC = baca.YIIBCA) ");
-        sql.append(" inner join SCHEMA.TITIERP tier on (baca.YIITBC = tier.HTITIE) ");
+        // sql.append(" inner join SCHEMA.REREACC reac on (prac.ZTIPRA = reac.YLIRAC) ");
+        // sql.append(" inner join SCHEMA.REBACAL baca on (reac.YLIBAC = baca.YIIBCA) ");
+        sql.append(" inner join SCHEMA.TITIERP tier on (prac.ZTITBE = tier.HTITIE) ");
         sql.append(" inner join SCHEMA.TIPAVSP pavs on (pavs.htitie = tier.HTITIE) ");
+        sql.append(" inner join SCHEMA.REREACC racc on (racc.YLIRAC = prac.ZTIPRA) ");
         sql.append(" WHERE ");
         sql.append(" prac.ZTTGEN = " + IREPrestationAccordee.CS_GENRE_RENTES);
         sql.append(" and ((prac.ZTTETA in (" + IREPrestationAccordee.CS_ETAT_VALIDE + ","

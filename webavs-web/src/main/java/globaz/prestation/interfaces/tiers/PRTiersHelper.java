@@ -1989,10 +1989,10 @@ public class PRTiersHelper {
 
         CommunePolitiqueBean communeNonTrouvee = new CommunePolitiqueBean(
                 session.getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_NOT_FOUND.getKey()),
-                session.getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_NOT_FOUND_NOM_LONG.getKey()));
+                session.getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_NOT_FOUND_NOM_LONG.getKey()), 1);
         CommunePolitiqueBean plusieursCommuneTrouvees = new CommunePolitiqueBean(
                 session.getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_PLUSIEURS_RESULTAT.getKey()),
-                session.getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_PLUSIEURS_RESULTAT_NOM_LONG.getKey()));
+                session.getLabel(CommunePolitique.LABEL_COMMUNE_POLITIQUE_PLUSIEURS_RESULTAT_NOM_LONG.getKey()), 2);
 
         List<String> listIdTiers = new ArrayList<String>(setIdTiers);
         StringBuilder startQuery = new StringBuilder();
@@ -2043,7 +2043,7 @@ public class PRTiersHelper {
                     String nomCommune = resultSet.getString(3).trim().replace('¬', '\'').replace('¢', '"');
                     nomCommune += " " + resultSet.getString(4).trim().replace('¬', '\'').replace('¢', '"');
 
-                    CommunePolitiqueBean commune = new CommunePolitiqueBean(codeCommune, nomCommune);
+                    CommunePolitiqueBean commune = new CommunePolitiqueBean(codeCommune, nomCommune, 0);
 
                     /*
                      * Si une commune est déjà renseignée pour cette id tiers
