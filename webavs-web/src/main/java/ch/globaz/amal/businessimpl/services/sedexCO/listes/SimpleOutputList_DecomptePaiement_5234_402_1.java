@@ -1,7 +1,14 @@
 package ch.globaz.amal.businessimpl.services.sedexCO.listes;
 
 import ch.globaz.common.domaine.Montant;
+import ch.globaz.common.listoutput.converterImplemented.CodeSystemeConverter;
+import ch.globaz.common.listoutput.converterImplemented.MontantConverterToDouble;
+import ch.globaz.simpleoutputlist.annotation.Column;
+import ch.globaz.simpleoutputlist.annotation.ColumnValueConverter;
+import ch.globaz.simpleoutputlist.annotation.style.Align;
+import ch.globaz.simpleoutputlist.annotation.style.ColumnStyle;
 
+@ColumnValueConverter({ MontantConverterToDouble.class })
 public class SimpleOutputList_DecomptePaiement_5234_402_1 {
     private String nssDebiteur = null;
     private String nomPrenomDebiteur = null;
@@ -11,6 +18,7 @@ public class SimpleOutputList_DecomptePaiement_5234_402_1 {
     private String typeActe = null;
     private String message = null;
 
+    @Column(name = "NSS débiteur", order = 0)
     public String getNssDebiteur() {
         return nssDebiteur;
     }
@@ -19,6 +27,7 @@ public class SimpleOutputList_DecomptePaiement_5234_402_1 {
         this.nssDebiteur = nssDebiteur;
     }
 
+    @Column(name = "Débiteur", order = 1)
     public String getNomPrenomDebiteur() {
         return nomPrenomDebiteur;
     }
@@ -27,6 +36,8 @@ public class SimpleOutputList_DecomptePaiement_5234_402_1 {
         this.nomPrenomDebiteur = nomPrenomDebiteur;
     }
 
+    @Column(name = "Paiement débiteur", order = 3)
+    @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
     public Montant getPaiementDebiteur() {
         return paiementDebiteur;
     }
@@ -35,6 +46,7 @@ public class SimpleOutputList_DecomptePaiement_5234_402_1 {
         this.paiementDebiteur = paiementDebiteur;
     }
 
+    @Column(name = "RP rétroactive", order = 4)
     public Montant getRpRetro() {
         return rpRetro;
     }
@@ -43,6 +55,7 @@ public class SimpleOutputList_DecomptePaiement_5234_402_1 {
         this.rpRetro = rpRetro;
     }
 
+    @Column(name = "Annulation", order = 5)
     public Montant getAnnulation() {
         return annulation;
     }
@@ -51,6 +64,8 @@ public class SimpleOutputList_DecomptePaiement_5234_402_1 {
         this.annulation = annulation;
     }
 
+    @Column(name = "Type", order = 6)
+    @ColumnValueConverter(CodeSystemeConverter.class)
     public String getTypeActe() {
         return typeActe;
     }
@@ -59,6 +74,7 @@ public class SimpleOutputList_DecomptePaiement_5234_402_1 {
         this.typeActe = typeActe;
     }
 
+    @Column(name = "Message", order = 7)
     public String getMessage() {
         return message;
     }

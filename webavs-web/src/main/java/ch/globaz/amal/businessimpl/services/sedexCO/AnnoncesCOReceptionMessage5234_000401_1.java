@@ -28,11 +28,13 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -41,20 +43,16 @@ import ch.gdk_cds.xmlns.da_64a_5234_000401._1.ContentType;
 import ch.gdk_cds.xmlns.da_64a_5234_000401._1.HeaderType;
 import ch.gdk_cds.xmlns.da_64a_5234_000401._1.Message;
 import ch.gdk_cds.xmlns.da_64a_common._1.CertificateOfLossArrivalType;
-import ch.gdk_cds.xmlns.da_64a_common._1.ClaimDebtorType;
 import ch.gdk_cds.xmlns.da_64a_common._1.ClaimInsuredPersonType;
 import ch.gdk_cds.xmlns.da_64a_common._1.DebtorNPType;
-import ch.gdk_cds.xmlns.da_64a_common._1.DebtorWithClaimType;
 import ch.gdk_cds.xmlns.da_64a_common._1.InsuredPersonType;
 import ch.gdk_cds.xmlns.da_64a_common._1.InsuredPersonWithClaimType;
 import ch.globaz.amal.business.constantes.IAMCodeSysteme;
 import ch.globaz.amal.business.exceptions.models.annoncesedex.AnnonceSedexException;
-import ch.globaz.amal.business.exceptions.models.annoncesedexco.AnnonceSedexCOReceptionException;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOXML;
 import ch.globaz.amal.business.models.famille.FamilleContribuable;
 import ch.globaz.amal.business.models.famille.FamilleContribuableSearch;
-import ch.globaz.amal.business.models.famille.SimpleFamille;
 import ch.globaz.amal.business.services.AmalServiceLocator;
 import ch.globaz.amal.businessimpl.services.sedexCO.listes.SimpleOutputList_Decompte_5234_401_1;
 import ch.globaz.amal.businessimpl.services.sedexCO.listes.SimpleOutputList_Decompte_5234_402_1;
@@ -76,23 +74,30 @@ import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 
 public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
     private static final String PACKAGE_CLASS_FOR_READ_SEDEX_DECOMPTE_TRIMESTRIEL = "ch.gdk_cds.xmlns.da_64a_5234_000401._1";
+    Set<String> listPersonnesInexistantes = new HashSet<String>();
     Map<String, String> errors = new HashMap<String, String>();
     protected String senderId = null;
     private String idTiersSender;
 
     public enum TypesOfLossEnum {
-        ACTE_DE_DEFAUT_BIEN("1"),
-        ACTE_DE_DEFAUT_BIEN_FAILLITE("2"),
-        TITRE_EQUIVALENT("3");
+        ACTE_DE_DEFAUT_BIEN("1", "42003821"),
+        ACTE_DE_DEFAUT_BIEN_FAILLITE("2", "42003822"),
+        TITRE_EQUIVALENT("3", "42003823");
 
         private String value;
+        private String cs;
 
         public String getValue() {
             return value;
         }
 
-        private TypesOfLossEnum(String value) {
+        public String getCs() {
+            return cs;
+        }
+
+        private TypesOfLossEnum(String value, String cs) {
             this.value = value;
+            this.cs = cs;
         }
     }
 
@@ -163,15 +168,45 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
             Class<?>[] addClasses = new Class[] { ch.gdk_cds.xmlns.da_64a_5234_000401._1.Message.class };
             jaxbs = JAXBServices.getInstance();
             Message message = (Message) jaxbs.unmarshal(currentSimpleMessage.fileLocation, false, true, addClasses);
-            // Sauvegarde du code XML de l'annonce dans la table
-            saveXml(addClasses, message);
 
             senderId = message.getHeader().getSenderId();
             idTiersSender = AMSedexRPUtil.getIdTiersFromSedexId(senderId);
             run(message);
 
+            // Sauvegarde du code XML de l'annonce dans la table
+            saveAnnonce(addClasses, message);
         } catch (Exception e) {
             throw new JadeSedexMessageNotHandledException("Erreur lors du traitement du message", e);
+        }
+    }
+
+    private void saveAnnonce(Class<?>[] addClasses, Message message) {
+
+        // Sauvegarde de l'annonce dans la table
+        HeaderType header = message.getHeader();
+        ContentType content = message.getContent();
+        try {
+            SimpleAnnonceSedexCO annonceSedexCO = new SimpleAnnonceSedexCO();
+            annonceSedexCO.setMessageId(header.getMessageId());
+            annonceSedexCO.setBusinessProcessId(header.getBusinessProcessId());
+            annonceSedexCO.setMessageType(header.getMessageType());
+            annonceSedexCO.setMessageSubType(header.getSubMessageType());
+            annonceSedexCO.setMessageEmetteur(header.getSenderId());
+            annonceSedexCO.setMessageRecepteur(header.getRecipientId());
+            annonceSedexCO.setIdTiersCM(idTiersSender);
+            annonceSedexCO.setPeriodeDebut(AMSedexRPUtil.getDateXMLToString(message.getContent()
+                    .getCertificateOfLossQuarterlyStatement().getStatementStartDate()));
+            annonceSedexCO.setPeriodeFin(AMSedexRPUtil.getDateXMLToString(message.getContent()
+                    .getCertificateOfLossQuarterlyStatement().getStatementEndDate()));
+            JadePersistenceManager.add(annonceSedexCO);
+            checkJadeThreadErrors();
+
+            saveXml(addClasses, message);
+        } catch (Exception ex) {
+            JadeThread.logError(
+                    "AnnoncesCOReceptionMessage5234_000401_1.saveAnnonce()",
+                    "Erreur pendant la sauvegarde de l'annonce ! (Msg id : " + header.getMessageId() + ") => "
+                            + ex.getMessage());
         }
     }
 
@@ -183,30 +218,6 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
         annonceSedexCOXML.setMessageId(message.getHeader().getMessageId());
         annonceSedexCOXML.setXml(sw.toString());
         JadePersistenceManager.add(annonceSedexCOXML);
-        checkJadeThreadErrors();
-    }
-
-    private void creerAnnonce(SimpleFamille membreFamille, DebtorWithClaimType debiteur, Message message)
-            throws JAXBValidationError, JAXBValidationWarning, JAXBException, SAXException, IOException,
-            JadePersistenceException, AnnonceSedexCOReceptionException {
-        // Sauvegarde de l'annonce dans la table
-        HeaderType header = message.getHeader();
-        ContentType content = message.getContent();
-
-        SimpleAnnonceSedexCO annonceSedexCO = new SimpleAnnonceSedexCO();
-        annonceSedexCO.setMessageId(header.getMessageId());
-        annonceSedexCO.setBusinessProcessId(header.getBusinessProcessId());
-        annonceSedexCO.setMessageType(header.getMessageType());
-        annonceSedexCO.setMessageSubType(header.getSubMessageType());
-        annonceSedexCO.setMessageEmetteur(header.getSenderId());
-        annonceSedexCO.setMessageRecepteur(header.getRecipientId());
-        annonceSedexCO.setIdTiersCM(idTiersSender);
-        annonceSedexCO.setIdContribuable(membreFamille.getIdContribuable());
-        annonceSedexCO.setIdFamille(membreFamille.getIdFamille());
-        annonceSedexCO.setInterets(debiteur.getClaimDebtor().getInterests().toString());
-        annonceSedexCO.setFrais(debiteur.getClaimDebtor().getExpenses().toString());
-        annonceSedexCO.setTotalCreance(debiteur.getClaimDebtor().getTotalClaim().toString());
-        JadePersistenceManager.add(annonceSedexCO);
         checkJadeThreadErrors();
     }
 
@@ -235,28 +246,41 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
             files[0] = listePrinted.getPath();
         }
 
-        sendMail(files);
+        prepareEmail(files);
     }
 
-    private void sendMail(String[] files) throws Exception {
-        String subject = "Contentieux Amal : réception des annonces de décompte trimestriel effectuée avec succès !";
+    protected void prepareEmail(String[] files) throws Exception {
+        sendMail(files, "Décompte trimestriel");
+    }
+
+    protected void sendMail(String[] files, String typeDecompte) throws Exception {
+        String subject = "Contentieux Amal : réception des annonces '" + typeDecompte + "' effectuée avec succès !";
         StringBuilder body = new StringBuilder();
-        if (!errors.isEmpty()) {
-            if (errors.size() > 1) {
-                subject = errors.size()
-                        + " personnes non connues détectées lors de la réception des annonces de décompte trimestriel !";
+        if (!listPersonnesInexistantes.isEmpty()) {
+            if (listPersonnesInexistantes.size() > 1) {
+                subject = listPersonnesInexistantes.size()
+                        + " personnes non connues détectées lors de la réception des annonces de type '" + typeDecompte
+                        + "' !";
             } else {
-                subject = "1 personne non connue détectée lors de la réception des annonces de décompte trimestriel !";
+                subject = "1 personne non connue détectée lors de la réception des annonces de type '" + typeDecompte
+                        + "' !";
             }
             body.append("Liste des personnes non trouvées :\n");
 
+            for (String personneInexistante : listPersonnesInexistantes) {
+                body.append("   -" + personneInexistante + "\n");
+            }
+
+        }
+
+        if (!errors.isEmpty()) {
+            body.append("Autre(s) erreur(s) :\n");
             for (Entry<String, String> error : errors.entrySet()) {
                 String type = error.getKey();
                 String msg = error.getValue();
-                body.append("   -" + type + " - " + msg + "\n");
+                body.append("   - " + type + " - " + msg + "\n");
             }
         }
-
         JadeSmtpClient.getInstance().sendMail(BSessionUtil.getSessionFromThreadContext().getUserEMail(), subject,
                 body.toString(), files);
     }
@@ -286,79 +310,89 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
                     nssDebiteurFormate = "N/A";
                 }
 
-                FamilleContribuable familleContribuable = searchPersonne(nssDebiteurFormate, periodeAObserver);
-                if (familleContribuable != null) {
+                List<InsuredPersonWithClaimType> listAssures = decompteTrim.getInsuredPersonWithClaim();
+                int cptPersonne = 0;
+                for (InsuredPersonWithClaimType insuredPersonWithClaimType : listAssures) {
+                    ligneDecompte = new SimpleOutputList_Decompte_5234_401_1();
 
-                    List<InsuredPersonWithClaimType> listAssures = decompteTrim.getInsuredPersonWithClaim();
-                    int cptPersonne = 0;
-                    for (InsuredPersonWithClaimType insuredPersonWithClaimType : listAssures) {
-                        ligneDecompte = new SimpleOutputList_Decompte_5234_401_1();
-                        if (cptPersonne == 0) {
-                            ligneDecompte.setNssDebiteur(nssDebiteurFormate);
-
-                            ligneDecompte.setNomPrenomDebiteur(debiteur.getOfficialName() + " "
-                                    + debiteur.getFirstName());
-
-                            TypesOfLossEnum typeActe = getTypeActe(decompteTrim.getCertificateOfLoss().getTypeOfLoss());
-                            ligneDecompte.setTypeActe(typeActe.getValue());
-
-                            Montant interets = new Montant(decompteTrim.getDebtorWithClaim().getClaimDebtor()
-                                    .getInterests());
-                            ligneDecompte.setInterets(interets);
-                            totalInterets = totalInterets.add(interets);
-
-                            Montant frais = new Montant(decompteTrim.getDebtorWithClaim().getClaimDebtor()
-                                    .getExpenses());
-                            ligneDecompte.setFrais(frais);
-                            totalFrais = totalFrais.add(frais);
-
-                            Montant total = new Montant(decompteTrim.getDebtorWithClaim().getClaimDebtor()
-                                    .getTotalClaim());
-                            ligneDecompte.setTotal(total);
-                            totalTotal = totalTotal.add(total);
-                        }
-
-                        InsuredPersonType insuredPersonne = insuredPersonWithClaimType.getInsuredPerson();
-                        String nssAssureFormate = "";
-                        try {
-                            nssAssureFormate = nssFormateur.format(String.valueOf(insuredPersonne.getVn()));
-                        } catch (Exception e) {
-                            nssAssureFormate = "N/A";
-                        }
-                        ligneDecompte.setNssAssure(nssAssureFormate);
-
-                        ligneDecompte.setNomPrenomAssure(insuredPersonne.getOfficialName() + " "
-                                + insuredPersonne.getFirstName());
-
-                        ClaimInsuredPersonType premium = insuredPersonWithClaimType.getPremium();
-                        ClaimInsuredPersonType costSharing = insuredPersonWithClaimType.getCostSharing();
-                        Periode periodePremiumOrSharing = null;
-                        if (costSharing != null) {
-                            periodePremiumOrSharing = new Periode(
-                                    getDateFromXmlToString(costSharing.getClaimStartDate()),
-                                    getDateFromXmlToString(costSharing.getClaimEndDate()));
-                            ligneDecompte.setSharingPeriode(periodePremiumOrSharing);
-                            Montant sharingMontant = new Montant(costSharing.getClaimAmount());
-                            ligneDecompte.setSharingMontant(sharingMontant);
-                            totalMontantParticipation = totalMontantParticipation.add(sharingMontant);
-                        }
-
-                        if (premium != null) {
-                            periodePremiumOrSharing = new Periode(getDateFromXmlToString(premium.getClaimStartDate()),
-                                    getDateFromXmlToString(premium.getClaimEndDate()));
-                            ligneDecompte.setPrimePeriode(periodePremiumOrSharing);
-                            Montant primeMontant = new Montant(premium.getClaimAmount());
-                            ligneDecompte.setPrimeMontant(primeMontant);
-                            totalMontantPrime = totalMontantPrime.add(primeMontant);
-                        }
-
-                        StringBuilder colonneMessage = getColumnMessage(familleContribuable, periodePremiumOrSharing,
-                                decompteTrim.getDebtorWithClaim().getClaimDebtor());
-
-                        ligneDecompte.setMessage(colonneMessage.toString());
-                        cptPersonne++;
-                        listLigneDecompteTrimestriel.add(ligneDecompte);
+                    InsuredPersonType insuredPersonne = insuredPersonWithClaimType.getInsuredPerson();
+                    String nssAssureFormate = "";
+                    try {
+                        nssAssureFormate = nssFormateur.format(String.valueOf(insuredPersonne.getVn()));
+                    } catch (Exception e) {
+                        nssAssureFormate = "N/A";
                     }
+                    ligneDecompte.setNssAssure(nssAssureFormate);
+
+                    ligneDecompte.setNomPrenomAssure(insuredPersonne.getOfficialName() + " "
+                            + insuredPersonne.getFirstName());
+
+                    ClaimInsuredPersonType premium = insuredPersonWithClaimType.getPremium();
+                    ClaimInsuredPersonType costSharing = insuredPersonWithClaimType.getCostSharing();
+                    Periode periodePremiumOrSharing = null;
+                    if (costSharing != null) {
+                        periodePremiumOrSharing = new Periode(getDateFromXmlToString(costSharing.getClaimStartDate()),
+                                getDateFromXmlToString(costSharing.getClaimEndDate()));
+                        ligneDecompte.setSharingPeriode(periodePremiumOrSharing);
+                        Montant sharingMontant = new Montant(costSharing.getClaimAmount());
+                        ligneDecompte.setSharingMontant(sharingMontant);
+                        totalMontantParticipation = totalMontantParticipation.add(sharingMontant);
+                    }
+
+                    if (premium != null) {
+                        periodePremiumOrSharing = new Periode(getDateFromXmlToString(premium.getClaimStartDate()),
+                                getDateFromXmlToString(premium.getClaimEndDate()));
+                        ligneDecompte.setPrimePeriode(periodePremiumOrSharing);
+                        Montant primeMontant = new Montant(premium.getClaimAmount());
+                        ligneDecompte.setPrimeMontant(primeMontant);
+                        totalMontantPrime = totalMontantPrime.add(primeMontant);
+                    }
+
+                    // On n'affiche les informations suivantes (NSS, nom, prénom,...) que si c'est la 1ère fois qu'on
+                    // affiche la ligne
+                    if (cptPersonne == 0) {
+                        ligneDecompte.setNssDebiteur(nssDebiteurFormate);
+
+                        ligneDecompte.setNomPrenomDebiteur(debiteur.getOfficialName() + " " + debiteur.getFirstName());
+
+                        TypesOfLossEnum typeActe = getTypeActe(decompteTrim.getCertificateOfLoss().getTypeOfLoss());
+                        ligneDecompte.setTypeActe(typeActe.getCs());
+
+                        Montant interets = new Montant(decompteTrim.getDebtorWithClaim().getClaimDebtor()
+                                .getInterests());
+                        ligneDecompte.setInterets(interets);
+                        totalInterets = totalInterets.add(interets);
+
+                        Montant frais = new Montant(decompteTrim.getDebtorWithClaim().getClaimDebtor().getExpenses());
+                        ligneDecompte.setFrais(frais);
+                        totalFrais = totalFrais.add(frais);
+
+                        Montant total = new Montant(decompteTrim.getDebtorWithClaim().getClaimDebtor().getTotalClaim());
+                        ligneDecompte.setTotal(total);
+                        totalTotal = totalTotal.add(total);
+
+                        StringBuilder message = new StringBuilder();
+                        FamilleContribuable familleContribuable = searchPersonne(nssDebiteurFormate, periodeAObserver);
+                        if (familleContribuable != null) {
+                            if (!interets.isZero() || !frais.isZero()) {
+                                message.append(getMessageBeneficiaireASouPC(familleContribuable,
+                                        periodePremiumOrSharing));
+                            }
+                            message.append(getMessageAssureurDifferent(familleContribuable, periodePremiumOrSharing));
+                        }
+                        ligneDecompte.setMessage(message.toString());
+                    }
+
+                    FamilleContribuable personneAssuree = searchPersonne(nssAssureFormate, null);
+                    // StringBuilder messagePersonneAssuree = ligneDecompte.getMessage() == null ? new StringBuilder()
+                    // : new StringBuilder(ligneDecompte.getMessage());
+                    // if (personneAssuree == null) {
+                    // messagePersonneAssuree.append("Personne assurée " + nssAssureFormate + " non trouvée, ");
+                    // ligneDecompte.setMessage(messagePersonneAssuree.toString());
+                    // }
+
+                    cptPersonne++;
+                    listLigneDecompteTrimestriel.add(ligneDecompte);
                 }
                 // creerAnnonce(familleContribuable.getSimpleFamille(), decompteTrim.getDebtorWithClaim(), message);
             } else if (decompteTrim.getDebtorWithClaim().getDebtor().getDebtorJP() != null) {
@@ -406,18 +440,6 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
         return listLigneDecompteTrimestriel;
     }
 
-    protected StringBuilder getColumnMessage(FamilleContribuable familleContribuable, Periode periodePremiumOrSharing,
-            ClaimDebtorType claimDebtor) {
-
-        StringBuilder colonneMessage = new StringBuilder();
-        colonneMessage.append(getMessageBeneficiaireASouPC(familleContribuable, periodePremiumOrSharing, new Montant(
-                claimDebtor.getInterests()), new Montant(claimDebtor.getExpenses())));
-
-        colonneMessage.append(getMessageAssureurDifferent(familleContribuable));
-
-        return colonneMessage;
-    }
-
     protected String getNomCaisseMaladie(String noCaisseMaladie) {
         try {
             AdministrationComplexModel admin = TIBusinessServiceLocator.getAdministrationService()
@@ -432,18 +454,18 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
         }
     }
 
-    private StringBuilder getMessageAssureurDifferent(FamilleContribuable familleContribuable) {
+    private StringBuilder getMessageAssureurDifferent(FamilleContribuable familleContribuable,
+            Periode periodePremiumOrSharing) {
         StringBuilder colonneMessage = new StringBuilder();
+        Periode periodeSubside = getPeriodeSubside(familleContribuable);
         try {
-            String noCaisseMaladieCO = AMSedexRPUtil.getIdTiersFromSedexId(senderId);
-            String noCaisseMaladieSubside = familleContribuable.getSimpleDetailFamille().getNoCaisseMaladie();
-            if (!noCaisseMaladieCO.equals(noCaisseMaladieSubside)) {
-
-                String nomAssureurCO = getNomCaisseMaladie(noCaisseMaladieCO);
-                String nomAssureurSubside = getNomCaisseMaladie(noCaisseMaladieSubside);
-
-                colonneMessage.append("Assureur différent ! Web@Amal : " + nomAssureurSubside + " / CO : "
-                        + nomAssureurCO);
+            if (periodePremiumOrSharing.isDateDansLaPeriode(periodeSubside.getDateDebut())
+                    && periodePremiumOrSharing.isDateDansLaPeriode(periodeSubside.getDateFin())) {
+                String noCaisseMaladieCO = AMSedexRPUtil.getIdTiersFromSedexId(senderId);
+                String noCaisseMaladieSubside = familleContribuable.getSimpleDetailFamille().getNoCaisseMaladie();
+                if (!noCaisseMaladieCO.equals(noCaisseMaladieSubside)) {
+                    colonneMessage.append("Assureur différent,");
+                }
             }
         } catch (AnnonceSedexException e) {
             e.printStackTrace();
@@ -453,9 +475,25 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
         return colonneMessage;
     }
 
-    private StringBuffer getMessageBeneficiaireASouPC(FamilleContribuable familleContribuable,
-            Periode periodePremiumOrSharing, Montant interets, Montant frais) {
-        StringBuffer colonneMessage = new StringBuffer();
+    private StringBuilder getMessageBeneficiaireASouPC(FamilleContribuable familleContribuable,
+            Periode periodePremiumOrSharing) {
+        StringBuilder colonneMessage = new StringBuilder();
+        Periode periodeSubside = getPeriodeSubside(familleContribuable);
+
+        if (periodePremiumOrSharing.isDateDansLaPeriode(periodeSubside.getDateDebut())
+                && periodePremiumOrSharing.isDateDansLaPeriode(periodeSubside.getDateFin())) {
+            if (IAMCodeSysteme.AMTypeDemandeSubside.ASSISTE.equals(familleContribuable.getSimpleDetailFamille()
+                    .getTypeDemande())
+                    || IAMCodeSysteme.AMTypeDemandeSubside.PC.equals(familleContribuable.getSimpleDetailFamille()
+                            .getTypeDemande())) {
+                colonneMessage.append("Bénéficiaire aide social ou PC, ");
+            }
+        }
+
+        return colonneMessage;
+    }
+
+    private Periode getPeriodeSubside(FamilleContribuable familleContribuable) {
         String finDroit = "";
         if (JadeStringUtil.isBlankOrZero(familleContribuable.getSimpleDetailFamille().getFinDroit())) {
             Date dateDebut = new Date(familleContribuable.getSimpleDetailFamille().getDebutDroit());
@@ -464,18 +502,7 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
             finDroit = familleContribuable.getSimpleDetailFamille().getFinDroit();
         }
         Periode periodeSubside = new Periode(familleContribuable.getSimpleDetailFamille().getDebutDroit(), finDroit);
-
-        if (periodePremiumOrSharing.isDateDansLaPeriode(periodeSubside.getDateDebut())
-                && periodePremiumOrSharing.isDateDansLaPeriode(periodeSubside.getDateFin())) {
-            if ((!interets.isZero() || !frais.isZero())
-                    && (IAMCodeSysteme.AMTypeDemandeSubside.ASSISTE.equals(familleContribuable.getSimpleDetailFamille()
-                            .getTypeDemande()) || IAMCodeSysteme.AMTypeDemandeSubside.PC.equals(familleContribuable
-                            .getSimpleDetailFamille().getTypeDemande()))) {
-                colonneMessage.append("Bénéficiaire aide social ou PC");
-            }
-        }
-
-        return colonneMessage;
+        return periodeSubside;
     }
 
     protected FamilleContribuable searchPersonne(String nss, Periode periodeAObserver) throws JadePersistenceException {
@@ -485,17 +512,17 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
             familleContribuableSearch.setForNNSS(nss);
             // Pas de date de fin au membre famille
             familleContribuableSearch.setForFinDefinitive("0");
-            familleContribuableSearch.setForAnneeHistorique(new Date(periodeAObserver.getDateDebut()).getAnnee());
-            familleContribuableSearch.setForDebutDroitGOE(periodeAObserver.getDateDebut());
-            familleContribuableSearch.setForFinDroitLOE(periodeAObserver.getDateFin());
+
+            if (periodeAObserver != null) {
+                familleContribuableSearch.setForAnneeHistorique(new Date(periodeAObserver.getDateDebut()).getAnnee());
+                familleContribuableSearch.setForDebutDroitGOE(periodeAObserver.getDateDebut());
+                familleContribuableSearch.setForFinDroitLOE(periodeAObserver.getDateFin());
+            }
             familleContribuableSearch = AmalServiceLocator.getFamilleContribuableService().search(
                     familleContribuableSearch);
 
             if (familleContribuableSearch.getNbOfResultMatchingQuery() == 0) {
-                errors.put("NOT_EXIST", "Aucune personne trouvée pour le nss : " + nss);
-                return null;
-            } else if (familleContribuableSearch.getNbOfResultMatchingQuery() > 1) {
-                errors.put("MULTIPLE_EXIST", "Plusieurs personnes trouvées pour le nss : " + nss);
+                listPersonnesInexistantes.add("Personne non trouvée avec le nss : " + nss);
                 return null;
             } else {
                 return (FamilleContribuable) familleContribuableSearch.getSearchResults()[0];
@@ -535,7 +562,7 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
         String nomCaisseMaladieEmetteur = getNomCaisseMaladie(idTiersSender);
 
         SimpleOutputListBuilder builder = SimpleOutputListBuilderJade.newInstance()
-                .outputNameAndAddPath("list5234_00401").addList(listLigneDecompteTrimestriel)
+                .outputNameAndAddPath("décompteTrimestriel").addList(listLigneDecompteTrimestriel)
                 .classElementList(SimpleOutputList_Decompte_5234_401_1.class);
         File file = builder.addTitle(nomCaisseMaladieEmetteur, Align.LEFT).addSubTitle("Décompte trimestriel")
                 .configure(config).addHeaderDetails(details).asXls().build();

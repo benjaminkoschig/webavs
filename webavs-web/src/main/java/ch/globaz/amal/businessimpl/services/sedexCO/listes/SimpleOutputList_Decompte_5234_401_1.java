@@ -2,6 +2,7 @@ package ch.globaz.amal.businessimpl.services.sedexCO.listes;
 
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.domaine.Periode;
+import ch.globaz.common.listoutput.converterImplemented.CodeSystemeConverter;
 import ch.globaz.common.listoutput.converterImplemented.MontantConverterToDouble;
 import ch.globaz.common.listoutput.converterImplemented.PeriodeConverter;
 import ch.globaz.simpleoutputlist.annotation.Column;
@@ -36,6 +37,7 @@ public class SimpleOutputList_Decompte_5234_401_1 {
     }
 
     @Column(name = "Acte", order = 2)
+    @ColumnValueConverter(CodeSystemeConverter.class)
     public String getTypeActe() {
         return typeActe;
     }
