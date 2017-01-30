@@ -13,6 +13,7 @@
 				> Assureurs
 					- Gestion
 					- SEDEX RP
+					- SEDEX CO
 				> Envois-Annonces
 					- Modifiables
 					- Rappel
@@ -65,6 +66,12 @@
 						<label refId="MENU_ASSUREURS_SEDEX_RP"/>
 						<action command="/amal" responseTarget="fr_main">
 							<parameter name="userAction" value="amal.sedexrp.sedexrp.chercher"/>							
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_ASSUREURS_SEDEX_CO"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.sedexco.sedexco.chercher"/>							
 						</action>
 					</node>
 <!-- 					

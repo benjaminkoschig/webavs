@@ -132,7 +132,7 @@ public class AMSedexRPUtil {
             TIAvoirContactManager avoirContactManager = new TIAvoirContactManager();
             avoirContactManager.setSession(SessionProvider.findSession());
             avoirContactManager.setForIdTiers(idAdministration);
-            avoirContactManager.find();
+            avoirContactManager.find(2);
 
             if (avoirContactManager.getContainer().size() == 0) {
                 throw new AnnonceSedexException("Error searching idSedex : no SedexId defined for id tiers : "
@@ -147,7 +147,7 @@ public class AMSedexRPUtil {
                 communicationManager.setForIdContact(avoirContact.getIdContact());
                 communicationManager.setForTypeCommunication(IAMCodeSysteme.CS_MOYEN_COMMUNICATION_SEDEX);
                 communicationManager.setForIdApplication(AMGestionTiers.CS_DOMAINE_AMAL);
-                communicationManager.find();
+                communicationManager.find(2);
 
                 if (communicationManager.getContainer().size() == 1) {
                     TIMoyenCommunication moyenCommunication = (TIMoyenCommunication) communicationManager

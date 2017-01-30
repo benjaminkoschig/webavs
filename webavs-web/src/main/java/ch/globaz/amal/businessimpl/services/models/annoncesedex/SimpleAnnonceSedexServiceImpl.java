@@ -15,7 +15,7 @@ import ch.globaz.amal.business.services.models.annoncesedex.SimpleAnnonceSedexSe
 import ch.globaz.amal.businessimpl.checkers.annoncesedex.SimpleAnnonceSedexChecker;
 
 /**
- * @author dhi
+ * @author cbu
  * 
  */
 public class SimpleAnnonceSedexServiceImpl implements SimpleAnnonceSedexService {

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO">
+
+		<root-model name="simpleAnnonceSedexCO" model-ref="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO"/>
+		
+		<linked-model name="caisseMaladie" model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS" field-ref="simpleAnnonceSedexCO.idTiersCM"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="compositionTiersSimpleModel" model-ref="ch.globaz.pyxis.business.model.CompositionTiersSimpleModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idTiersEnfant" operation="EQUALS" field-ref="caisseMaladie.admin.idTiersAdministration"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="administrationComplexModelGroupes" model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS" field-ref="compositionTiersSimpleModel.idTiersParent"/>
+			</join-group>
+		</linked-model>			
+
+		<linked-model name="simpleFamille" model-ref="ch.globaz.amal.business.models.famille.SimpleFamille" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idFamille" operation="EQUALS" field-ref="simpleAnnonceSedexCO.idFamille"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleContribuable" model-ref="ch.globaz.amal.business.models.contribuable.SimpleContribuable" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idContribuable" operation="EQUALS" field-ref="simpleFamille.idContribuable"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition name="rcListe">
+			<search-group operator="AND">
+				<!-- CAISSE MALADIE -->
+				<search-field name="forCMIdTiersGroupe" field-ref="administrationComplexModelGroupes.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forCMIdTiersCaisse" field-ref="caisseMaladie.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forCMNumCaisse" field-ref="caisseMaladie.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="forCMNumGroupe" field-ref="administrationComplexModelGroupes.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="inCMIdTiersCaisse" field-ref="caisseMaladie.tiers.idTiers" operation="IN" />
+				<search-field name="likeCMNomCaisse" field-ref="caisseMaladie.tiers.designationUpper1" operation="LIKE" />
+				<!-- MESSAGE -->
+				<search-field name="forSDXIdAnnonceSedexCO" field-ref="simpleAnnonceSedexCO.idAnnonceSedexCO" operation="EQUALS"/>
+				<search-field name="forSDXIdAnnonceSedexCOLT" field-ref="simpleAnnonceSedexCO.idAnnonceSedexCO" operation="LESS"/>
+				<search-field name="forSDXIdTiersCM" field-ref="simpleAnnonceSedexCO.idTiersCM" operation="EQUALS"/>
+				<search-field name="forSDXDateAnnonce" field-ref="simpleAnnonceSedexCO.dateAnnonce" operation="EQUALS"/>
+				<search-field name="forSDXDateAnnonceGOE" field-ref="simpleAnnonceSedexCO.dateAnnonce" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forSDXDateAnnonceLOE" field-ref="simpleAnnonceSedexCO.dateAnnonce" operation="LESS_OR_EQUALS"/>
+				<search-field name="forSDXMessageType" field-ref="simpleAnnonceSedexCO.messageType" operation="EQUALS"/>
+				<search-field name="forSDXMessageSubType" field-ref="simpleAnnonceSedexCO.messageSubType" operation="EQUALS"/>
+				<search-field name="forSDXMessageEmetteur" field-ref="simpleAnnonceSedexCO.messageEmetteur" operation="EQUALS"/>
+				<search-field name="forSDXMessageRecepteur" field-ref="simpleAnnonceSedexCO.messageRecepteur" operation="EQUALS"/>
+				<search-field name="inSDXMessageSubType" field-ref="simpleAnnonceSedexCO.messageSubType" operation="IN"/>
+				<search-field name="inSDXMessageEmetteur" field-ref="simpleAnnonceSedexCO.messageEmetteur" operation="IN"/>
+				<search-field name="inSDXMessageRecepteur" field-ref="simpleAnnonceSedexCO.messageRecepteur" operation="IN"/>
+				<search-field name="inSDXStatus" field-ref="simpleAnnonceSedexCO.status" operation="IN"/>
+			</search-group>
+		</search-definition>
+
+		<order-by>
+			<order-field field-ref="simpleAnnonceSedexCO.dateAnnonce" order="DESC"/>
+			<order-field field-ref="caisseMaladie.admin.codeAdministration" order="ASC"/> 
+			<order-field field-ref="simpleAnnonceSedexCO.idAnnonceSedexCO" order="DESC" />
+		</order-by>
+		
+		<order-by name="rcListDateMsgAsc">
+			<order-field field-ref="simpleAnnonceSedexCO.dateAnnonce" order="ASC"/>
+			<order-field field-ref="caisseMaladie.admin.codeAdministration" order="ASC"/> 
+			<order-field field-ref="simpleAnnonceSedexCO.idAnnonceSedexCO" order="ASC" />
+		</order-by>
+
+	</complexe-model>
+</model-mapping>

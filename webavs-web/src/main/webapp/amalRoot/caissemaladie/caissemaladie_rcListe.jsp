@@ -443,7 +443,6 @@ function processSEDEXRP(currentIdButton) {
 }
 
 function processSEDEXCO(currentIdButton) {
-	alert('process CO');
 	var s_actionSEDEXCO = '<%=SEDEXCOAction%>';
 	var s_idButtonSEDEXCOPrincipale = 'buttonSEDEXCOGroupe_';
 	var s_idButtonSEDEXCOEnfant = 'buttonSEDEXCOEnfant_';
@@ -980,7 +979,7 @@ size = mapGroupesAssureurs.keySet().size();
 <!-- 				</button>	 -->
 <!-- 			</TD> -->
 			<%}else{%>
-			<TD align="center" colspan="3" style="border-bottom:solid 1px #226194;border-right:none">
+			<TD align="center" colspan="4" style="border-bottom:solid 1px #226194;border-right:none">
 				<img src="<%=request.getContextPath()%>/images/amal/loading.gif" 
 					title="Traitement en cours" 
 					border="0"
@@ -1045,7 +1044,7 @@ size = mapGroupesAssureurs.keySet().size();
 <!-- 								</button> -->
 <!-- 							</TD> -->
 							<%}else{%>
-							<TD align="center" colspan="3">
+							<TD align="center" colspan="4">
 								<img src="<%=request.getContextPath()%>/images/amal/loading.gif" 
 									title="Traitement en cours" 
 									border="0"
@@ -1137,7 +1136,7 @@ size = mapGroupesAssureurs.keySet().size();
 <!-- 							</button>			 -->
 <!-- 					</TD> -->
 					<%}else{%>
-					<TD align="center" colspan="3" style="border-bottom:solid 1px #226194;border-right:none">
+					<TD align="center" colspan="4" style="border-bottom:solid 1px #226194;border-right:none">
 						<img src="<%=request.getContextPath()%>/images/amal/loading.gif" 
 							title="Traitement en cours" 
 							border="0"
@@ -1208,7 +1207,7 @@ size = mapGroupesAssureurs.keySet().size();
 <!-- 						</button>					 -->
 <!-- 					</TD> -->
 					<%}else{%>
-					<TD align="center" colspan="3">
+					<TD align="center" colspan="4">
 						<img src="<%=request.getContextPath()%>/images/amal/loading.gif" 
 							title="Traitement en cours" 
 							border="0"
@@ -1292,7 +1291,7 @@ size = mapGroupesAssureurs.keySet().size();
 <!-- 					</button>			 -->
 <!-- 			</TD> -->
 			<%}else{%>
-			<TD align="center" colspan="3" style="border-bottom:solid 1px #226194;border-right:none">
+			<TD align="center" colspan="4" style="border-bottom:solid 1px #226194;border-right:none">
 				<img src="<%=request.getContextPath()%>/images/amal/loading.gif" 
 					title="Traitement en cours" 
 					border="0"
@@ -1370,7 +1369,7 @@ size = mapGroupesAssureurs.keySet().size();
 <!-- 						</button>					 -->
 <!-- 					</TD> -->
 					<%}else{%>
-					<TD align="center" colspan="3">
+					<TD align="center" colspan="4">
 						<img src="<%=request.getContextPath()%>/images/amal/loading.gif" 
 							title="Traitement en cours" 
 							border="0"

@@ -23,7 +23,7 @@ import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 
 /**
- * @author dhi
+ * @author cbu
  * 
  */
 public class ComplexAnnonceSedexServiceImpl implements ComplexAnnonceSedexService {

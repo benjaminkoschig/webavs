@@ -37,13 +37,17 @@ import ch.gdk_cds.xmlns.da_64a_5232_000202._1.Message;
 import ch.gdk_cds.xmlns.da_64a_common._1.ClaimDebtorGuaranteedAssumptionType;
 import ch.gdk_cds.xmlns.da_64a_common._1.DebtorWithClaimType;
 import ch.gdk_cds.xmlns.da_64a_common._1.ListOfClaimsGuaranteedAssumptionsType;
+import ch.globaz.amal.business.exceptions.models.annoncesedex.AnnonceSedexException;
 import ch.globaz.amal.business.exceptions.models.annoncesedexco.AnnonceSedexCOReceptionException;
 import ch.globaz.amal.business.exceptions.models.famille.FamilleException;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOXML;
 import ch.globaz.amal.business.models.famille.SimpleFamille;
 import ch.globaz.amal.business.models.famille.SimpleFamilleSearch;
+import ch.globaz.amal.business.models.simplepersonneanepaspoursuivre.SimplePersonneANePasPoursuivre;
+import ch.globaz.amal.business.models.simplepersonneanepaspoursuivre.SimplePersonneANePasPoursuivreSearch;
 import ch.globaz.amal.business.services.AmalServiceLocator;
+import ch.globaz.amal.businessimpl.services.AmalImplServiceLocator;
 import ch.globaz.amal.businessimpl.services.sedexRP.utils.AMSedexRPUtil;
 
 public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
@@ -168,7 +172,7 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
             SAXException, IOException, AnnonceSedexCOReceptionException {
         List<String> personnesNotFound = new ArrayList<String>();
         List<String> personnesMultipleFound = new ArrayList<String>();
-
+        List<String> receptionsErrors = new ArrayList<String>();
         // Itération sur les créances trouvées dans le message
         for (ClaimDebtorGuaranteedAssumptionType claimDebtorGuaranteedAssumption : message.getContent()
                 .getListOfClaimsGuaranteedAssumptions().getClaimDebtorGuaranteedAssumption()) {
@@ -192,21 +196,23 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
                         } else if (simpleFamilleSearch.getSize() > 1) {
                             personnesMultipleFound.add(vn.toString());
                         } else {
+                            // Insert "Non demandé" ?
                             personnesNotFound.add(vn.toString());
                         }
                     }
                 } else if (debiteur.getDebtor().getDebtorJP() != null) {
                     JadeThread.logWarn(this.getClass().getName(),
                             "Les personnes morales ne sont pas prises en charge par l'application");
-                    // throw new AnnonceSedexCOReceptionException(
-                    // "Les personnes morales ne sont pas prises en charge par l'application");
                 }
             } catch (JadePersistenceException jpe) {
-                throw new AnnonceSedexCOReceptionException("Erreur de persistence de l'annonce", jpe);
+                throw new AnnonceSedexCOReceptionException("Erreur lors de la persistence de l'annonce", jpe);
             } catch (FamilleException fe) {
-                throw new AnnonceSedexCOReceptionException("Erreur lors de la recherche du membre famille", fe);
+                throw new AnnonceSedexCOReceptionException("Erreur lors de la réception de l'annonce", fe);
             } catch (JadeApplicationServiceNotAvailableException e) {
                 throw new AnnonceSedexCOReceptionException("Erreur technique ", e);
+            } catch (AnnonceSedexException e) {
+                receptionsErrors.add(e.getMessage());
+                e.printStackTrace();
             }
         }
 
@@ -216,7 +222,7 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
 
     private void saveDebiteur(SimpleFamille membreFamille, DebtorWithClaimType debiteur, Message message)
             throws AnnonceSedexCOReceptionException, JAXBValidationError, JAXBValidationWarning, JAXBException,
-            SAXException, IOException {
+            SAXException, IOException, AnnonceSedexException {
         if (membreFamille == null || membreFamille.isNew()) {
             throw new IllegalArgumentException("membreFamille can't be null !");
         }
@@ -227,12 +233,39 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
 
         try {
             creerAnnonce(membreFamille, debiteur, message);
+            flagPersonne(membreFamille, debiteur, message);
             checkJadeThreadErrors();
         } catch (JadePersistenceException e) {
             throw new AnnonceSedexCOReceptionException("Erreur lors de la sauvegarde du débiteur "
                     + debiteur.getDebtor().getDebtorNP().getVn(), e);
         }
 
+    }
+
+    private void flagPersonne(SimpleFamille membreFamille, DebtorWithClaimType debiteur, Message message)
+            throws AnnonceSedexCOReceptionException {
+
+        try {
+            // String annee =
+            // String.valueOf(message.getContent().getListOfClaimsGuaranteedAssumptions().getStatementDate().getYear());
+            String annee = "2016";
+
+            SimplePersonneANePasPoursuivreSearch personneANePasPoursuivreSearch = new SimplePersonneANePasPoursuivreSearch();
+            personneANePasPoursuivreSearch.setForNSS(debiteur.getDebtor().getDebtorNP().getVn().toString());
+            personneANePasPoursuivreSearch.setForAnnee(annee);
+            personneANePasPoursuivreSearch = AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService().search(
+                    personneANePasPoursuivreSearch);
+
+            if (personneANePasPoursuivreSearch.getNbOfResultMatchingQuery() > 0) {
+                SimplePersonneANePasPoursuivre personneANePasPoursuivre = (SimplePersonneANePasPoursuivre) personneANePasPoursuivreSearch
+                        .getSearchResults()[0];
+                personneANePasPoursuivre.setFlagReponse(Boolean.TRUE);
+                AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService().update(personneANePasPoursuivre);
+                checkJadeThreadErrors();
+            }
+        } catch (Exception ex) {
+            throw new AnnonceSedexCOReceptionException("Erreur pendant l'update de la personne a ne pas poursuivre", ex);
+        }
     }
 
     private void checkJadeThreadErrors() throws JadePersistenceException {
@@ -250,7 +283,7 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
 
     private void creerAnnonce(SimpleFamille membreFamille, DebtorWithClaimType debiteur, Message message)
             throws JAXBValidationError, JAXBValidationWarning, JAXBException, SAXException, IOException,
-            JadePersistenceException {
+            JadePersistenceException, AnnonceSedexException {
         // Sauvegarde de l'annonce dans la table
         HeaderType header = message.getHeader();
         ContentType content = message.getContent();
@@ -263,14 +296,14 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
         annonceSedexCO.setMessageSubType(header.getSubMessageType());
         annonceSedexCO.setMessageEmetteur(header.getSenderId());
         annonceSedexCO.setMessageRecepteur(header.getRecipientId());
+        annonceSedexCO.setIdTiersCM(AMSedexRPUtil.getIdTiersFromSedexId(header.getSenderId()));
         annonceSedexCO.setIdContribuable(membreFamille.getIdContribuable());
         annonceSedexCO.setIdFamille(membreFamille.getIdFamille());
         annonceSedexCO.setDateAnnonce(AMSedexRPUtil.getDateXMLToString(claims.getStatementDate()));
-        annonceSedexCO.setPeriodeDebut(AMSedexRPUtil.getDateXMLToString(claims.getStatementStartDate()));
-        annonceSedexCO.setPeriodeFin(AMSedexRPUtil.getDateXMLToString(claims.getStatementEndDate()));
         annonceSedexCO.setInterets(debiteur.getClaimDebtor().getInterests().toString());
         annonceSedexCO.setFrais(debiteur.getClaimDebtor().getExpenses().toString());
         annonceSedexCO.setTotalCreance(debiteur.getClaimDebtor().getTotalClaim().toString());
         JadePersistenceManager.add(annonceSedexCO);
+        checkJadeThreadErrors();
     }
 }

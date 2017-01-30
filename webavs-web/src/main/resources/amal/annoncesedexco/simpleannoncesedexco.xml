@@ -11,6 +11,8 @@
 			<field name="messageSubType" column="MESSAGE_SUBTYPE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="SUBTYPE_MESSAGE_SEDEX"/>
 			<field name="messageEmetteur" column="EMETTEUR" type="STRING" dataType="VARCHAR(20)" mandatory="false" comment="ID_SEDEX_EMETTEUR"/>
 			<field name="messageRecepteur" column="RECEPTEUR" type="STRING" dataType="VARCHAR(20)" mandatory="false" comment="ID_SEDEX_RECEPTEUR"/>
+			<field name="status" column="CSSTAT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="STATUS_MESSAGE"/>
+			<field name="idTiersCM" column="IDTIERSCM" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_TIERS_CAISSE_MALADIE"/>
 			<field name="idContribuable" column="IDCONT" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_CONTRIBUABLE_DOSSIER"/>
 			<field name="idFamille" column="IDFAMI" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_MEMBRE_FAMILLE"/>
 			<field name="dateAnnonce" column="DATE_ANNONCE" type="DATE" mandatory="false" comment="DATE_ANNONCE"/>

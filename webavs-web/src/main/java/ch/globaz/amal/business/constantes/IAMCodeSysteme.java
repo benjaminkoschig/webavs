@@ -425,6 +425,23 @@ public interface IAMCodeSysteme {
         }
     }
 
+    public enum AMSousTypeMessageSedexCOLibellesSubside {
+        LISTE_PERSONNE_NE_DEVANT_PAS_ETRE_POURSUIVIES("42003801"),
+        CREANCE_AVEC_GARANTIE_DE_PRISE_EN_CHARGE("42003802"),
+        DECOMPTE_TRIMESTRIEL("42003803"),
+        DECOMPTE_FINAL("42003804");
+
+        private final String value;
+
+        private AMSousTypeMessageSedexCOLibellesSubside(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
     /**
      * Enum for annonces sedex statuts
      * 
@@ -440,7 +457,6 @@ public interface IAMCodeSysteme {
         INITIAL("42003400"),
         RECU("42003405"),
         RECU_SIMULE("42003407");
-        ;
 
         // Value storage
         private final String value;

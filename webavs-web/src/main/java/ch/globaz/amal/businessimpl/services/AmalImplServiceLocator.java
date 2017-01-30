@@ -18,6 +18,7 @@ import ch.globaz.amal.business.services.models.revenu.SimpleRevenuDeterminantSer
 import ch.globaz.amal.business.services.models.revenu.SimpleRevenuHistoriqueService;
 import ch.globaz.amal.business.services.models.revenu.SimpleRevenuService;
 import ch.globaz.amal.business.services.models.revenu.SimpleRevenuSourcierService;
+import ch.globaz.amal.business.services.models.simplepersonneanepaspoursuivre.SimplePersonneANePasPoursuivreService;
 import ch.globaz.amal.business.services.sedexRP.AnnoncesRPService;
 
 public class AmalImplServiceLocator extends AmalServiceLocator {
@@ -140,6 +141,18 @@ public class AmalImplServiceLocator extends AmalServiceLocator {
     public static SimpleFamilleService getSimpleFamilleService() throws JadeApplicationServiceNotAvailableException {
         return (SimpleFamilleService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
                 SimpleFamilleService.class);
+    }
+
+    /**
+     * Récupération d'une instance du service des simple personne a ne pas poursuivre - db
+     * 
+     * @return le service des SimplePersonneANePasPoursuivre utilisable
+     * @throws JadeApplicationServiceNotAvailableException
+     */
+    public static SimplePersonneANePasPoursuivreService getSimplePersonneANePasPoursuivreService()
+            throws JadeApplicationServiceNotAvailableException {
+        return (SimplePersonneANePasPoursuivreService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                SimplePersonneANePasPoursuivreService.class);
     }
 
     /**

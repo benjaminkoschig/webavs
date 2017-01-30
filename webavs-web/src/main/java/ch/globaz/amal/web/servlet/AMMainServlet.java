@@ -95,6 +95,7 @@ public class AMMainServlet extends FWJadeServlet {
         registerActionMapping("amal.annoncesassurance", AMPrimesAssuranceServletAction.class);
         registerActionMapping("amal.statistiques", AMStatistiquesServletAction.class);
         registerActionMapping("amal.sedexrp", AMSedexRPServletAction.class);
+        registerActionMapping("amal.sedexco", AMSedexCOServletAction.class);
     }
 
 }

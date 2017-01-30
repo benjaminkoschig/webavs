@@ -9,12 +9,14 @@ public class SimpleAnnonceSedexCO extends JadeSimpleModel {
     private static final long serialVersionUID = 1L;
     private String idAnnonceSedexCO = null;
     private String idContribuable = null;
+    private String idTiersCM = null;
     private String idFamille = null;
     private String dateAnnonce = null;
     private String messageType = null;
     private String messageSubType = null;
     private String messageEmetteur = null;
     private String messageRecepteur = null;
+    private String status = null;
     private String periodeDebut = null;
     private String periodeFin = null;
     private String messageId = null;
@@ -70,6 +72,14 @@ public class SimpleAnnonceSedexCO extends JadeSimpleModel {
         this.idContribuable = idContribuable;
     }
 
+    public String getIdTiersCM() {
+        return idTiersCM;
+    }
+
+    public void setIdTiersCM(String idTiersCM) {
+        this.idTiersCM = idTiersCM;
+    }
+
     public String getIdFamille() {
         return idFamille;
     }
@@ -92,6 +102,14 @@ public class SimpleAnnonceSedexCO extends JadeSimpleModel {
 
     public void setMessageRecepteur(String messageRecepteur) {
         this.messageRecepteur = messageRecepteur;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getMessageSubType() {
@@ -189,5 +207,4 @@ public class SimpleAnnonceSedexCO extends JadeSimpleModel {
     public void setInterets(String interets) {
         this.interets = interets;
     }
-
 }

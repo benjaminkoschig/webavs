@@ -6,6 +6,8 @@ import ch.globaz.amal.business.services.annonce.AnnonceService;
 import ch.globaz.amal.business.services.models.annonce.SimpleAnnonceService;
 import ch.globaz.amal.business.services.models.annoncesedex.ComplexAnnonceSedexService;
 import ch.globaz.amal.business.services.models.annoncesedex.SimpleAnnonceSedexService;
+import ch.globaz.amal.business.services.models.annoncesedexco.ComplexAnnonceSedexCOService;
+import ch.globaz.amal.business.services.models.annoncesedexco.SimpleAnnonceSedexCOService;
 import ch.globaz.amal.business.services.models.caissemaladie.CaisseMaladieService;
 import ch.globaz.amal.business.services.models.caissemaladie.SimpleDetailCaisseMaladieService;
 import ch.globaz.amal.business.services.models.contribuable.ContribuableService;
@@ -52,6 +54,18 @@ public class AmalServiceLocator {
             throws JadeApplicationServiceNotAvailableException {
         return (ComplexAnnonceSedexService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
                 ComplexAnnonceSedexService.class);
+    }
+
+    /**
+     * Implémentation du service d'annonce sedex co complex modèle
+     * 
+     * @return
+     * @throws JadeApplicationServiceNotAvailableException
+     */
+    public static ComplexAnnonceSedexCOService getComplexAnnonceSedexCOService()
+            throws JadeApplicationServiceNotAvailableException {
+        return (ComplexAnnonceSedexCOService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                ComplexAnnonceSedexCOService.class);
     }
 
     /**
@@ -224,6 +238,17 @@ public class AmalServiceLocator {
             throws JadeApplicationServiceNotAvailableException {
         return (SimpleAnnonceSedexService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
                 SimpleAnnonceSedexService.class);
+    }
+
+    /**
+     * @return Implémentation du service de gestion des annonces SEDEX CO
+     * @throws JadeApplicationServiceNotAvailableException
+     *             Levée lorsque le service n'est pas disponible - n'arrive qu'en remote
+     */
+    public static SimpleAnnonceSedexCOService getSimpleAnnonceSedexCOService()
+            throws JadeApplicationServiceNotAvailableException {
+        return (SimpleAnnonceSedexCOService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                SimpleAnnonceSedexCOService.class);
     }
 
     /**

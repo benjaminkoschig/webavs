@@ -8,7 +8,7 @@ import globaz.jade.persistence.model.JadeSearchComplexModel;
 import java.util.ArrayList;
 
 /**
- * @author dhi
+ * @author cbu
  * 
  */
 public class ComplexAnnonceSedexSearch extends JadeSearchComplexModel {

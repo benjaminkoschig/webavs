@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model-mapping>
-	<simple-model className="ch.globaz.amal.business.models.annoncesedexco.SimplePersonneANePasPoursuivre">
+	<simple-model className="ch.globaz.amal.business.models.simplepersonneanepaspoursuivre.SimplePersonneANePasPoursuivre">
 		<description>Personnes à ne pas poursuivre</description>
 		<table name="MAPERNPP" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
 		<fields>
 			<primary-key name="idPersonneNPP" column="ID" comment="clé primaire"/>
-			<field name="idFamille" column="IDFAMI" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="id famille"/>
+			<field name="nss" column="NSS" type="NUMERIC" dataType="NUMERIC(13,0)" mandatory="true" comment="id famille"/>
+			<field name="idTiersCM" column="IDTIERSCM" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_TIERS_CAISSE_MALADIE"/>
+			<field name="idFamille" column="IDFAMI" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_MEMBRE_FAMILLE"/>
+			<field name="annee" column="ANNEE" type="NUMERIC" dataType="NUMERIC(4,0)" mandatory="true" comment="Année" />
 			<field name="flagEnvoi" column="FLAG_ENVOI" type="BOOLEAN" comment="Flag envoi"/>			
 			<field name="flagReponse" column="FLAG_REPONSE" type="BOOLEAN" comment="Flag réponse"/>			
 		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forNSS" field-ref="nss" operation="EQUALS"/>
+				<search-field name="forAnnee" field-ref="annee" operation="EQUALS"/>
+				<search-field name="forIdTiersCM" field-ref="idTiersCM" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
 		
 	</simple-model>
 </model-mapping>

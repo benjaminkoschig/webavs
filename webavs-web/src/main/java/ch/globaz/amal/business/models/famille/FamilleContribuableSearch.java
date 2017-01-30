@@ -21,6 +21,11 @@ public class FamilleContribuableSearch extends JadeSearchComplexModel {
     private Boolean forContribuableActif = null;
     private String forFinDefinitive = null;
     private String forFinDroit = null;
+    private String forDroitActifFromToday = null;
+    private String forDebutDroitGOE = null;
+    private String forDebutDroitLOE = null;
+    private String forFinDroitGOE = null;
+    private String forFinDroitLOE = null;
     private String forIdContribuable = null;
     private String forIdFamille = null;
     private String forIdTier = null;
@@ -30,6 +35,7 @@ public class FamilleContribuableSearch extends JadeSearchComplexModel {
     private List inNumerosContribuables = null;
     private List inTypeDemande = null;
     private Boolean isOnListePersonneNePasPoursuivre = false;
+    private List<String> inNoCaisseMaladie = null;
 
     public FamilleContribuableSearch() {
         forIdContribuable = new String();
@@ -110,6 +116,51 @@ public class FamilleContribuableSearch extends JadeSearchComplexModel {
         this.forFinDroit = forFinDroit;
     }
 
+    public String getForDroitActifFromToday() {
+        return forDroitActifFromToday;
+    }
+
+    /**
+     * Date de fin du subside = 0 ou plus grand que date du jour
+     * 
+     * @param forDroitActifFromToday
+     */
+    public void setForDroitActifFromToday(String forDroitActifFromToday) {
+        this.forDroitActifFromToday = forDroitActifFromToday;
+    }
+
+    public String getForDebutDroitGOE() {
+        return forDebutDroitGOE;
+    }
+
+    public void setForDebutDroitGOE(String forDebutDroitGOE) {
+        this.forDebutDroitGOE = forDebutDroitGOE;
+    }
+
+    public String getForDebutDroitLOE() {
+        return forDebutDroitLOE;
+    }
+
+    public void setForDebutDroitLOE(String forDebutDroitLOE) {
+        this.forDebutDroitLOE = forDebutDroitLOE;
+    }
+
+    public String getForFinDroitGOE() {
+        return forFinDroitGOE;
+    }
+
+    public void setForFinDroitGOE(String forFinDroitGOE) {
+        this.forFinDroitGOE = forFinDroitGOE;
+    }
+
+    public String getForFinDroitLOE() {
+        return forFinDroitLOE;
+    }
+
+    public void setForFinDroitLOE(String forFinDroitLOE) {
+        this.forFinDroitLOE = forFinDroitLOE;
+    }
+
     public void setForIdContribuable(String forIdContribuable) {
         this.forIdContribuable = forIdContribuable;
     }
@@ -152,6 +203,14 @@ public class FamilleContribuableSearch extends JadeSearchComplexModel {
 
     public void setIsOnListePersonneNePasPoursuivre(Boolean isOnListePersonneNePasPoursuivre) {
         this.isOnListePersonneNePasPoursuivre = isOnListePersonneNePasPoursuivre;
+    }
+
+    public List<String> getInNoCaisseMaladie() {
+        return inNoCaisseMaladie;
+    }
+
+    public void setInNoCaisseMaladie(List<String> inNoCaisseMaladie) {
+        this.inNoCaisseMaladie = inNoCaisseMaladie;
     }
 
     /*

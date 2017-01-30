@@ -28,6 +28,14 @@
 				<search-field name="forAnneeHistorique" field-ref="simpleDetailFamille.anneeHistorique" operation="EQUALS"/>
 				<search-field name="forIdFamille" field-ref="simpleFamille.idFamille" operation="EQUALS"/>
 				<search-field name="forFinDroit" field-ref="simpleDetailFamille.finDroit" operation="EQUALS"/>
+				<search-group operator="OR">
+					<search-field name="forDroitActifFromToday" field-ref="simpleDetailFamille.finDroit" operation="GREATER"/>
+					<search-field name="forDroitActifFromToday" field-ref="simpleDetailFamille.finDroit" operation="EQUALS" value="0"/>
+				</search-group>
+				<search-field name="forDebutDroitGOE" field-ref="simpleDetailFamille.debutDroit" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forDebutDroitLOE" field-ref="simpleDetailFamille.debutDroit" operation="LESS_OR_EQUALS"/>	
+				<search-field name="forFinDroitGOE" field-ref="simpleDetailFamille.finDroit" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forFinDroitLOE" field-ref="simpleDetailFamille.finDroit" operation="LESS_OR_EQUALS"/>
 				<search-field name="forFinDefinitive" field-ref="simpleFamille.finDefinitive" operation="EQUALS"/>
 				<search-field name="forCodeActif" field-ref="simpleDetailFamille.codeActif" operation="EQUALS"/>
 				<search-field name="inTypeDemande" field-ref="simpleDetailFamille.typeDemande" operation="IN"/>
@@ -36,6 +44,7 @@
 				<search-field name="forContribuableActif" field-ref="simpleContribuable.isContribuableActif" operation="EQUALS"/>
 				<search-field name="forNNSS" field-ref="personneEtendue.personneEtendue.numAvsActuel" operation="EQUALS"/>
 				<search-field name="isOnListePersonneNePasPoursuivre" field-ref="simpleFamille.flagEnvoiNPP" operation="EQUALS" />
+				<search-field name="inNoCaisseMaladie" field-ref="simpleDetailFamille.noCaisseMaladie" operation="IN"/>
 			</search-group>
 		</search-definition>
 
@@ -65,6 +74,11 @@
 			<order-field field-ref="simpleFamille.pereMereEnfant" />
 			<order-field field-ref="personneEtendue.tiers.designationUpper1" />
 			<order-field field-ref="personneEtendue.tiers.designationUpper2" />
+		</order-by>
+		
+		<order-by name="sedexco">
+			<order-field field-ref="simpleDetailFamille.noCaisseMaladie" order="DESC"/>			
+			<order-field field-ref="simpleDetailFamille.debutDroit" order="DESC"/>
 		</order-by>
 	</complexe-model>
 </model-mapping>
