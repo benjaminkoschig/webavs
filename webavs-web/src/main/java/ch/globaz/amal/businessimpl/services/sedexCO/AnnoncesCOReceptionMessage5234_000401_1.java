@@ -56,6 +56,8 @@ import ch.globaz.amal.business.models.famille.FamilleContribuable;
 import ch.globaz.amal.business.models.famille.FamilleContribuableSearch;
 import ch.globaz.amal.business.models.famille.SimpleFamille;
 import ch.globaz.amal.business.services.AmalServiceLocator;
+import ch.globaz.amal.businessimpl.services.sedexCO.listes.SimpleOutputList_Decompte_5234_401_1;
+import ch.globaz.amal.businessimpl.services.sedexCO.listes.SimpleOutputList_Decompte_5234_402_1;
 import ch.globaz.amal.businessimpl.services.sedexRP.utils.AMSedexRPUtil;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
