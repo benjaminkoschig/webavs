@@ -32,6 +32,7 @@
 			<application id="PEGASUS"/>
 			<application id="PERSEUS"/>
 			<application id="AL"/>
+			<application id="AMAL"/>
 	</remoteApplications>
 	</system>
 	<system id="GLOBAZ_REMOTE" remoteId="GLOBAZ">
@@ -67,6 +68,7 @@
 			<application id="ORION_REMOTE" remoteId="ORION"/>
 			<application id="PEGASUS_REMOTE" remoteId="PEGASUS"/>
 			<application id="PERSEUS_REMOTE" remoteId="PERSEUS"/>
+			<application id="AMAL_REMOTE" remoteId="AMAL"/>
 		</remoteApplications>
 	</system>
 </GlobazSystem>
