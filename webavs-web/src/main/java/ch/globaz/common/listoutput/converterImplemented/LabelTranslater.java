@@ -32,12 +32,11 @@ public class LabelTranslater implements Translater {
             identifier = overridedIdentifier;
         }
 
-        String separator = "";
+        String ident = "";
         if (identifier != null) {
-            separator = "_";
+            ident = identifier.toLowerCase() + "_";
         }
-        String key = identifier.toLowerCase() + separator
-                + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, textToTranslate);
+        String key = ident + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, textToTranslate);
 
         String traduction;
         try {

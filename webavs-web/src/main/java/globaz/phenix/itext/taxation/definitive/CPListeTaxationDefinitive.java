@@ -69,6 +69,19 @@ public class CPListeTaxationDefinitive extends FWIAbstractManagerDocumentList {
      */
     @Override
     public void _beforeExecuteReport() {
+
+        CPListeTaxationDefinitiveXlsPdf cpListeTaxationDefinitiveXlsPdf = new CPListeTaxationDefinitiveXlsPdf();
+        cpListeTaxationDefinitiveXlsPdf.setNoPassage("1142");
+        cpListeTaxationDefinitiveXlsPdf.setParent(this);
+        // cpListeTaxationDefinitiveXlsPdf.setSession(getSession());
+
+        try {
+            cpListeTaxationDefinitiveXlsPdf.executeProcess();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         getDocumentInfo().setDocumentTypeNumber(CPListeTaxationDefinitive.NUM_REF_INFOROM_LISTE_TAXA_DEF);
         CPTaxationDefinitiveManager manager = (CPTaxationDefinitiveManager) _getManager();
         manager.setSession(getSession());
@@ -140,8 +153,6 @@ public class CPListeTaxationDefinitive extends FWIAbstractManagerDocumentList {
             ecart = new BigDecimal(0);
         }
 
-        _addCell(elem.getNss());
-
         String designation = " ";
         try {
             AFAffiliationManager affMgr = new AFAffiliationManager();
@@ -177,6 +188,8 @@ public class CPListeTaxationDefinitive extends FWIAbstractManagerDocumentList {
             designation = "";
         }
 
+        // taxationDefinitiveForList.setAnneeTaxation(anneeTaxation);
+        _addCell(elem.getNss());
         _addCell(elem.getNoAffilie() + designation);
         _addCell(elem.getDateDebut());
         _addCell(elem.getDateFin());
