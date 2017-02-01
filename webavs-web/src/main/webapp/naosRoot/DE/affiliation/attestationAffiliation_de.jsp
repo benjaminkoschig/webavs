@@ -63,7 +63,7 @@ $(function() {
 						<% } %>
 						<TR>
 							<TD>E-Mail</TD>
-							<TD><INPUT id="email" type="text" name="email" value="<%=viewBean.getEmail()%> data-g-string="mandatory:true"></TD>
+							<TD><INPUT id="email" type="text" name="email" value="<%=viewBean.getEmail()%>"></TD>
 						</TR>
 						<TR>
 							<TD width="150">Tätigkeit(en) :</TD>
