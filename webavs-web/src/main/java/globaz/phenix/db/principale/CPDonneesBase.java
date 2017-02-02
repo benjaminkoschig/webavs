@@ -39,6 +39,7 @@ public class CPDonneesBase extends globaz.globall.db.BEntity implements java.io.
     private java.lang.String revenuAutre1 = "";
     private java.lang.String revenuAutre2 = "";
     private java.lang.String revenuCiForce = "";
+    private String rachatLPP = "";
     private Boolean revenuCiForce0 = new Boolean(false);
     private java.lang.String sourceInformation = "";
     private String montantTotalRenteAVS = "";
@@ -98,6 +99,8 @@ public class CPDonneesBase extends globaz.globall.db.BEntity implements java.io.
         revenuAutre2 = statement.dbReadNumeric("IDRAU2", 2);
         nbMoisRevenuAutre2 = statement.dbReadNumeric("IDMAU2");
         sourceInformation = statement.dbReadNumeric("IDTSRC");
+
+        rachatLPP = statement.dbReadNumeric("IDRLPP");
     }
 
     /**
@@ -162,6 +165,8 @@ public class CPDonneesBase extends globaz.globall.db.BEntity implements java.io.
                 this._dbWriteNumeric(statement.getTransaction(), getNbMoisRevenuAutre2(), "nbMoisRevenuAutre2"));
         statement.writeField("IDTSRC",
                 this._dbWriteNumeric(statement.getTransaction(), getSourceInformation(), "sourceInformation"));
+
+        statement.writeField("IDRLPP", this._dbWriteNumeric(statement.getTransaction(), getRachatLPP(), "rachatLPP"));
     }
 
     /**
@@ -293,6 +298,10 @@ public class CPDonneesBase extends globaz.globall.db.BEntity implements java.io.
         return JANumberFormatter.fmt(revenuCiForce, true, false, true, 0);
     }
 
+    public String getRachatLPP() {
+        return JANumberFormatter.fmt(rachatLPP, true, false, true, 2);
+    }
+
     /**
      * @return
      */
@@ -417,6 +426,10 @@ public class CPDonneesBase extends globaz.globall.db.BEntity implements java.io.
      */
     public void setRevenuAutre2(java.lang.String newRevenuAutre2) {
         revenuAutre2 = JANumberFormatter.deQuote(newRevenuAutre2);
+    }
+
+    public void setRachatLPP(String _rachatLPP) {
+        rachatLPP = JANumberFormatter.deQuote(_rachatLPP);
     }
 
     public void setRevenuCiForce(java.lang.String newRevenuCiForce) {

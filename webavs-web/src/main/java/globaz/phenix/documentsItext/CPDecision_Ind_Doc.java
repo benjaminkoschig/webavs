@@ -349,6 +349,10 @@ public class CPDecision_Ind_Doc extends CPIDecision_Doc implements Constante {
                 // Revenu autre
                 ajoutDetailLigneReveuAutreouAgricole2();
             }
+
+            // Rachat LPP
+            ajoutDetailRachatLPP();
+
             // Franchise
             ajoutDetailLigneFranchise();
             // intéret
@@ -365,6 +369,22 @@ public class CPDecision_Ind_Doc extends CPIDecision_Doc implements Constante {
         CPDecision_Ind_Doc.fr.clear();
         CPDecision_Ind_Doc.mRevenu.clear();
         CPDecision_Ind_Doc.rRevenu.clear();
+    }
+
+    public void ajoutDetailRachatLPP() {
+        if (!JadeStringUtil.isEmpty(getDonneeBase().getRachatLPP())) {
+            String varTemp;
+
+            CPDecision_Ind_Doc.operation.add("./.");
+
+            CPDecision_Ind_Doc.lRevenu.add(this.getTexteDocument(decisionsInd, decisionInd, 1, 12, " ").toString());
+            CPDecision_Ind_Doc.fr.add(this.getTexteDocument(decisionsInd, decisionInd, 2, 12, libFranc).toString());
+
+            varTemp = getDonneeBase().getRachatLPP();
+
+            CPDecision_Ind_Doc.mRevenu.add(this.getTexteDocument(decisionsInd, decisionInd, 3, 12, varTemp).toString());
+            CPDecision_Ind_Doc.rRevenu.add(this.getTexteDocument(decisionsInd, decisionInd, 4, 14, " ").toString());
+        }
     }
 
     public void ajoutDetailLigneCotisation2() {

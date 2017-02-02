@@ -1692,6 +1692,9 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                 mRevenuInd = mRevenuInd.subtract(mRevenuTSE);
                 newDecision.setRevenu1(mRevenuInd.toString());
             }
+
+            calculLPP(newDecision, donnee);
+
         } else if (IConstantes.CS_LOCALITE_CANTON_VALAIS.equalsIgnoreCase(getJournal().getCanton())) {
             CPCommunicationFiscaleRetourVSViewBean retourVS = new CPCommunicationFiscaleRetourVSViewBean();
             retourVS.setSession(getSession());
@@ -1766,6 +1769,32 @@ public class CPProcessReceptionGenererDecision extends BProcess {
         } else {
             return false;
         }
+    }
+
+    public void calculLPP(CPDecisionViewBean decisionViewBean, CPSedexDonneesBase donnee) {
+        int rachatLPPDonneBase = 0;
+        int revenu = 0;
+        int revenuAgricole = 0;
+
+        if (donnee.getPurchasingLPP() != "") {
+            rachatLPPDonneBase = Integer.parseInt(JANumberFormatter.deQuote(donnee.getPurchasingLPP()));
+        }
+        if (donnee.getEmploymentIncome() != "") {
+            revenu = Integer.parseInt(JANumberFormatter.deQuote(donnee.getIncomeFromSelfEmployment()));
+        }
+        if (donnee.getMainIncomeInAgriculture() != "") {
+            revenuAgricole = Integer.parseInt(JANumberFormatter.deQuote(donnee.getMainIncomeInAgriculture()));
+        }
+
+        double revenus = ((double) revenu + revenuAgricole);
+        double rachatLPPCalcule = rachatLPPDonneBase / 2.0;
+
+        if (rachatLPPCalcule > revenus / 2.0) {
+            rachatLPPCalcule = revenus / 2.0;
+        }
+
+        decisionViewBean.setRachatLPP(String.valueOf(JANumberFormatter.format(rachatLPPCalcule, 1.0, 0,
+                JANumberFormatter.SUP)));
     }
 
     /**

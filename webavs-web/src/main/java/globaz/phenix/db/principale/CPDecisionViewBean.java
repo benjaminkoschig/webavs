@@ -123,6 +123,9 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
     private String wantWarning = "";
     private String warningMessage = "";
 
+    // D0205
+    private String rachatLPP = "";
+
     /*
      * Liste les plans de passage
      */
@@ -141,6 +144,9 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
             donnees.setMontantTotalRenteAVS(getMontantTotalRenteAVS());
             donnees.setRevenuAutre1(getRevenuAutre1());
             donnees.setSourceInformation(getSourceInformation());
+
+            donnees.setRachatLPP(getRachatLPP());
+
             String coti = JANumberFormatter.deQuote(getCotisation1());
             if (!JadeStringUtil.isEmpty(coti)) {
                 if (!CPDecision.CS_IMPUTATION.equalsIgnoreCase(getTypeDecision())
@@ -270,6 +276,9 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
                 setNbMoisRevenuAutre1(donBase.getNbMoisRevenuAutre1());
                 setNbMoisRevenuAutre2(donBase.getNbMoisRevenuAutre2());
                 setSourceInformation(donBase.getSourceInformation());
+
+                setRachatLPP(donBase.getRachatLPP());
+
                 setCotisation1(donBase.getCotisation1());
                 if (isNonActif()) {
                     setCotisationSalarie(donBase.getCotisationSalarie());
@@ -388,6 +397,9 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
             donnees.setMontantTotalRenteAVS(getMontantTotalRenteAVS());
             donnees.setRevenuAutre1(getRevenuAutre1());
             donnees.setSourceInformation(getSourceInformation());
+
+            donnees.setRachatLPP(getRachatLPP());
+
             String coti = JANumberFormatter.deQuote(getCotisation1());
             if (!JadeStringUtil.isEmpty(coti)) {
                 if (!CPDecision.CS_IMPUTATION.equalsIgnoreCase(getTypeDecision())
@@ -1956,6 +1968,11 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
         }
     }
 
+    public String getRachatLPP() {
+
+        return rachatLPP;
+    }
+
     /**
      * Insérez la description de la méthode ici. Date de création : (31.05.2002 15:18:53) retourne le n° avs + le nom du
      * conjoint
@@ -2681,6 +2698,16 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
      */
     public void setConjoint(java.lang.String newConjoint) {
         conjoint = newConjoint;
+    }
+
+    /**
+     * 
+     * Set de la valeur du rachat LPP
+     * 
+     * @param _rachatLPP
+     */
+    public void setRachatLPP(String _rachatLPP) {
+        rachatLPP = _rachatLPP;
     }
 
     /**

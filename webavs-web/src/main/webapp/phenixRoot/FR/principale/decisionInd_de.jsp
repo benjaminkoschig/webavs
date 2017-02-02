@@ -314,6 +314,13 @@ function hide(inputToHide) {
 				            <TD nowrap width="96"></TD>
 			            <% }%>
           			</TR>
+          			
+          			<TR>
+          				<!-- D0205 - Prise en charge du rachat LPP lors du traitement des communications fiscales  -->
+          				<TD nowrap width="157">Rachat LPP</TD>
+          				<TD nowrap width="96"><INPUT name="rachatLPP" type="text" value="<%=viewBean.getRachatLPP()%>" class="montant"  style="width : 2.85cm;"></TD> 
+          			</TR>
+          			
 					<TR id="ligneExercice">
             			<TD nowrap width="157" height="14">Exercice du</TD>
             			<TD nowrap height="31" colspan="2">

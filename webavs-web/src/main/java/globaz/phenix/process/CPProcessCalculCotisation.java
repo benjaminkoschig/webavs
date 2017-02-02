@@ -1944,6 +1944,7 @@ public final class CPProcessCalculCotisation extends BProcess {
         float franchise = 0;
         float tauxCalcul = 0;
         float montantProrataCiMin = 0;
+        float rachatLPP = 0;
         CPDonneesCalcul donCalcul = new CPDonneesCalcul();
         CPTableIndependant tInd = new CPTableIndependant();
         CPTableRentier tRentier = new CPTableRentier();
@@ -2022,6 +2023,16 @@ public final class CPProcessCalculCotisation extends BProcess {
                 }
             }
             revenuBrut = revenuBrut - franchise;
+
+            // Récupérer valeur rachat LPP
+            String rLPP = JANumberFormatter.deQuote(donneeBase.getRachatLPP());
+            if (rLPP.isEmpty()) {
+                rLPP = "0";
+            }
+            rachatLPP = Float.parseFloat(rLPP);
+
+            revenuBrut = revenuBrut - rachatLPP;
+
             if (codeRevenuAf != 2) {
                 donCalcul._sauvegardeCalcul(this, decision.getIdDecision(), CPDonneesCalcul.CS_REV_SANS_COTISATION,
                         revenuBrut);
