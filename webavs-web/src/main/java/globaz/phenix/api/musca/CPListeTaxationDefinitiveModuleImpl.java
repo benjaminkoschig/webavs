@@ -6,7 +6,7 @@ package globaz.phenix.api.musca;
 import globaz.globall.db.BProcess;
 import globaz.musca.api.IFAPassage;
 import globaz.musca.external.IntModuleFacturation;
-import globaz.phenix.itext.taxation.definitive.CPListeTaxationDefinitive;
+import globaz.phenix.itext.taxation.definitive.CPListeTaxationDefinitiveXlsPdf;
 
 /**
  * <H1>Description</H1>
@@ -62,7 +62,7 @@ public class CPListeTaxationDefinitiveModuleImpl implements IntModuleFacturation
 
     @Override
     public boolean comptabiliser(IFAPassage passage, BProcess context) throws Exception {
-        CPListeTaxationDefinitive lst = new CPListeTaxationDefinitive();
+        CPListeTaxationDefinitiveXlsPdf lst = new CPListeTaxationDefinitiveXlsPdf();
         lst.setParent(context);
         lst.setNoPassage(passage.getIdPassage());
         lst.setEMailAddress(context.getEMailAddress());

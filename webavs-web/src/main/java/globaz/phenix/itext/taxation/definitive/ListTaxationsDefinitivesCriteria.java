@@ -1,7 +1,13 @@
 package globaz.phenix.itext.taxation.definitive;
 
-public class ListTaxationsDefinitivesCriteria {
+import java.io.Serializable;
 
+public class ListTaxationsDefinitivesCriteria implements Serializable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private String noPassage;
 
     public String getNoPassage() {

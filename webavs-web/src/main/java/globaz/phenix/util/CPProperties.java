@@ -12,7 +12,8 @@ import ch.globaz.common.properties.PropertiesException;
  */
 public enum CPProperties implements IProperties {
 
-    LISTE_DECISIONS_COMPTABILISEES_TYPE_SUIVI_AF("liste.decisions.comptabilisees.type.suivi.af");
+    LISTE_DECISIONS_COMPTABILISEES_TYPE_SUIVI_AF("liste.decisions.comptabilisees.type.suivi.af"),
+    LISTE_TAXATION_DEFINITIVE_GROUP_MAIL("liste.taxation.definitive.group.mail");
 
     private String property;
 

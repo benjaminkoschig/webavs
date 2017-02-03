@@ -1,7 +1,6 @@
 package globaz.phenix.itext.taxation.definitive;
 
 import ch.globaz.common.domaine.Montant;
-import ch.globaz.common.domaine.Pourcentage;
 import ch.globaz.common.listoutput.converterImplemented.MontantConverter;
 import ch.globaz.common.listoutput.converterImplemented.PourcentConverter;
 import ch.globaz.simpleoutputlist.annotation.Column;
@@ -22,7 +21,7 @@ public class TaxationDefinitiveForList {
     private Montant revenuDefinitif;
     private Montant apgSurLeRevenu;
     private String type;
-    private Pourcentage ecart;
+    private Integer ecart;
 
     @ColumnStyle(width = "10%", align = Align.LEFT)
     @Column(name = "listeTaxDefNss", order = 0)
@@ -90,7 +89,7 @@ public class TaxationDefinitiveForList {
 
     @ColumnStyle(width = "7%", align = Align.RIGHT)
     @Column(name = "listeTaxDefEcart", order = 11)
-    public Pourcentage getEcart() {
+    public Integer getEcart() {
         return ecart;
     }
 
@@ -138,7 +137,7 @@ public class TaxationDefinitiveForList {
         this.type = type;
     }
 
-    public void setEcart(Pourcentage ecart) {
+    public void setEcart(Integer ecart) {
         this.ecart = ecart;
     }
 

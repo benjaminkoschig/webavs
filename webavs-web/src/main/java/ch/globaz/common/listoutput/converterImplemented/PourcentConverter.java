@@ -9,7 +9,7 @@ public class PourcentConverter implements Converter<Pourcentage, String> {
     @Override
     public String getValue(Pourcentage value, Locale locale) {
         if (value != null) {
-            return value.toString();
+            return String.valueOf(value.doubleValue());
         }
         return null;
     }

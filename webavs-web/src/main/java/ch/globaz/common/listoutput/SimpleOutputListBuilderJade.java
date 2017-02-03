@@ -70,15 +70,15 @@ public class SimpleOutputListBuilderJade extends SimpleOutputListBuilder {
         return this;
     }
 
-    public SimpleOutputListBuilderJade g() {
+    public SimpleOutputListBuilderJade globazTheme() {
         String font = "Helvetica";
         Configuration configuration = Configurations.buildeDefault();
         configuration.setDocumentMargin(20, 20, 20, 30);
-        configuration.setHeaderFont(10, font, FontStyle.BOLD, 0, 0, 0);
+        configuration.setHeaderFont(9, "Times New Roman", FontStyle.BOLD, 0, 0, 0);
         configuration.setHeaderBackGroundColor(222, 222, 222);
         configuration.setRowFont(9, font, FontStyle.NORMAL, 0, 0, 0);
         // configuration.setRow
-        configuration.setRowBorderColor(171, 187, 213);
+        configuration.setRowBorderColor(255, 255, 255);
         configuration.setTitreFont(13, font, FontStyle.BOLD, 0, 0, 0);
         configuration.setRowDecorator(new RowDecorator<Object>() {
             @Override
@@ -95,5 +95,4 @@ public class SimpleOutputListBuilderJade extends SimpleOutputListBuilder {
         configure(configuration);
         return this;
     }
-
 }

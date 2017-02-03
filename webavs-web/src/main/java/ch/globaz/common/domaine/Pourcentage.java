@@ -1,6 +1,8 @@
 package ch.globaz.common.domaine;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 
 public class Pourcentage {
 
@@ -14,6 +16,10 @@ public class Pourcentage {
         this.pourcentage = pourcentage;
     }
 
+    public Pourcentage(int pourcentage) {
+        this.pourcentage = pourcentage;
+    }
+
     public double doubleValue() {
         return pourcentage;
     }
@@ -23,11 +29,21 @@ public class Pourcentage {
     }
 
     public double multiplier(double valeurDouble) {
-        return ((valeurDouble * pourcentage) / 100.0);
+        return (valeurDouble * pourcentage) / 100.0;
     }
 
     public int multiplier(int valeurEntiere) {
-        return ((valeurEntiere * (int) pourcentage) / 100);
+        return (valeurEntiere * (int) pourcentage) / 100;
+    }
+
+    public Pourcentage roundHalfEvenInt() {
+        MathContext mc = new MathContext(0, RoundingMode.HALF_EVEN);
+        return new Pourcentage(BigDecimal.valueOf(pourcentage).round(mc).intValue());
+    }
+
+    public Pourcentage roundFloorInt() {
+        MathContext mc = new MathContext(0, RoundingMode.FLOOR);
+        return new Pourcentage(BigDecimal.valueOf(pourcentage).round(mc).intValue());
     }
 
     @Override

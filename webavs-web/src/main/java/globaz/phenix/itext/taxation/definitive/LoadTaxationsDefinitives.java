@@ -16,7 +16,13 @@ import ch.globaz.common.domaine.Pourcentage;
 
 class LoadTaxationsDefinitives {
 
-    public List<TaxationDefinitiveForList> load(BSession session, ListTaxationsDefinitivesCriteria criteria) {
+    private final BSession session;
+
+    public LoadTaxationsDefinitives(BSession session) {
+        this.session = session;
+    }
+
+    public List<TaxationDefinitiveForList> load(ListTaxationsDefinitivesCriteria criteria) {
 
         List<TaxationDefinitiveForList> listOutput = new ArrayList<TaxationDefinitiveForList>();
         CPTaxationDefinitiveManager manager = new CPTaxationDefinitiveManager();
@@ -80,7 +86,7 @@ class LoadTaxationsDefinitives {
             taxationDefinitiveForList.setDateFin(elem.getDateFin());
             taxationDefinitiveForList.setRevenuDefinitif(new Montant(elem.getRevenuDeterminant()));
             taxationDefinitiveForList.setApgSurLeRevenu(new Montant(elem.getRevenuIndependant()));
-            taxationDefinitiveForList.setEcart(computEcart(elem));
+            taxationDefinitiveForList.setEcart((int) computEcart(elem).roundFloorInt().doubleValue());
             // taxationDefinitiveForList.setAnneeTaxation(anneeTaxation);
             listOutput.add(taxationDefinitiveForList);
         }

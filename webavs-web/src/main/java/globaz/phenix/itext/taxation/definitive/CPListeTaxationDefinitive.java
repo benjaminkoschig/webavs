@@ -71,9 +71,11 @@ public class CPListeTaxationDefinitive extends FWIAbstractManagerDocumentList {
     public void _beforeExecuteReport() {
 
         CPListeTaxationDefinitiveXlsPdf cpListeTaxationDefinitiveXlsPdf = new CPListeTaxationDefinitiveXlsPdf();
-        cpListeTaxationDefinitiveXlsPdf.setNoPassage("1142");
+
+        ListTaxationsDefinitivesCriteria criteria = new ListTaxationsDefinitivesCriteria();
+        criteria.setNoPassage(noPassage);
+        cpListeTaxationDefinitiveXlsPdf.setCriteria(criteria);
         cpListeTaxationDefinitiveXlsPdf.setParent(this);
-        // cpListeTaxationDefinitiveXlsPdf.setSession(getSession());
 
         try {
             cpListeTaxationDefinitiveXlsPdf.executeProcess();
