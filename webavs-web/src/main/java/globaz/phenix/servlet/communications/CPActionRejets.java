@@ -19,6 +19,8 @@ import globaz.phenix.db.communications.CPRejetsListViewBean;
 import globaz.phenix.db.communications.CPRejetsViewBean;
 import globaz.phenix.listes.excel.CPListeRejetsProcess;
 import globaz.phenix.process.communications.CPProcessEnvoyerRejets;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -39,11 +41,22 @@ public class CPActionRejets extends FWDefaultServletAction {
         // --- Get value from request
         String _destination = "";
         CPRejetsViewBean viewBean = new CPRejetsViewBean();
+
+        String[] listIdRetour = request.getParameterValues("listIdRetour");
+
         try {
             globaz.globall.api.BISession bSession = globaz.phenix.translation.CodeSystem.getSession(session);
             viewBean.setSession((globaz.globall.db.BSession) bSession);
-            viewBean.setIdRejets(request.getParameter("selectedId"));
-            dispatcher.dispatch(viewBean, getAction());
+            if (listIdRetour == null) {
+                viewBean.setIdRejets(request.getParameter("selectedId"));
+                dispatcher.dispatch(viewBean, getAction());
+            } else // On boucle sur la liste des ids
+            {
+                for (String id : listIdRetour) {
+                    viewBean.setIdRejets(id);
+                    dispatcher.dispatch(viewBean, getAction());
+                }
+            }
 
         } catch (Exception e) {
             viewBean.setMessage(e.toString());
@@ -96,13 +109,29 @@ public class CPActionRejets extends FWDefaultServletAction {
 
         String _destination = "";
 
+        String[] listIdRetour = request.getParameterValues("listIdRetour");
+
         try {
             CPRejetsViewBean viewBean = new CPRejetsViewBean();
             // Retour de parametres
             String selectedId = request.getParameter("selectedId");
+
+            String subAction = request.getParameter("subAction");
             globaz.globall.api.BISession bSession = globaz.phenix.translation.CodeSystem.getSession(session);
             CPRejets rejet = new CPRejets();
-            rejet.changerStatus(bSession, selectedId);
+
+            if (listIdRetour == null) {
+                rejet.changerStatus(bSession, selectedId);
+            } else {
+                String etat = "";
+
+                if ("TRAITER".equals(subAction)) {
+                    etat += CPRejets.CS_ETAT_TRAITE;
+                } else {
+                    etat += CPRejets.CS_ETAT_NON_TRAITE;
+                }
+                rejet.changerStatusMultiple(bSession, listIdRetour, etat);
+            }
 
             mainDispatcher.dispatch(viewBean, getAction());
 
@@ -119,8 +148,7 @@ public class CPActionRejets extends FWDefaultServletAction {
         /*
          * affiche la prochaine page
          */
-        // servlet.getServletContext().getRequestDispatcher(_destination).forward(request,
-        // response);
+        // servlet.getServletContext().getRequestDispatcher(_destination).forward(request, response);
         goSendRedirect(_destination, request, response);
     }
 
@@ -136,9 +164,13 @@ public class CPActionRejets extends FWDefaultServletAction {
 
             String[] listIdRetour = request.getParameterValues("listIdRetour");
             if (listIdRetour == null) {
-                listIdRetour = creationListeIdRetourDapresCriteresSelection((BSession) mainDispatcher.getSession(),
-                        session, request);
+                listIdRetour = creationListeIdRetourDapresCriteresSelectionSansNonTraiterAbandonner(
+                        (BSession) mainDispatcher.getSession(), session, request);
+            } else {
+                listIdRetour = supprimerIdsNonTraiterAbandonnerListeIdRetour((BSession) mainDispatcher.getSession(),
+                        listIdRetour);
             }
+
             viewBean.setListIdRetour(listIdRetour);
             viewBean.setSession((BSession) mainDispatcher.getSession());
             process.setSession((BSession) mainDispatcher.getSession());
@@ -167,8 +199,11 @@ public class CPActionRejets extends FWDefaultServletAction {
 
             String[] listIdRetour = request.getParameterValues("listIdRetour");
             if (listIdRetour == null) {
-                listIdRetour = creationListeIdRetourDapresCriteresSelection((BSession) dispatcher.getSession(),
-                        session, request);
+                listIdRetour = creationListeIdRetourDapresCriteresSelectionSansNonTraiterAbandonner(
+                        (BSession) dispatcher.getSession(), session, request);
+            } else {
+                listIdRetour = supprimerIdsNonTraiterAbandonnerListeIdRetour((BSession) dispatcher.getSession(),
+                        listIdRetour);
             }
             viewBean.setListIdRetour(listIdRetour);
             viewBean.setSession((BSession) dispatcher.getSession());
@@ -189,7 +224,6 @@ public class CPActionRejets extends FWDefaultServletAction {
         }
 
         goSendRedirect(destination, request, response);
-
     }
 
     private void _actionImprimer(HttpSession session, HttpServletRequest request, HttpServletResponse response,
@@ -252,9 +286,12 @@ public class CPActionRejets extends FWDefaultServletAction {
         }
     }
 
-    private String[] creationListeIdRetourDapresCriteresSelection(BSession session, HttpSession httpSession,
-            HttpServletRequest request) {
+    private String[] creationListeIdRetourDapresCriteresSelectionSansNonTraiterAbandonner(BSession session,
+            HttpSession httpSession, HttpServletRequest request) {
         String[] listIdRetour = null;
+
+        List<String> newList = new ArrayList<String>();
+
         String idRejet = request.getParameter("idRejet");
         if (httpSession.getAttribute("listViewBean") != null) {
             if (CPRejetsListViewBean.class.equals(httpSession.getAttribute("listViewBean").getClass())) {
@@ -270,14 +307,39 @@ public class CPActionRejets extends FWDefaultServletAction {
                 }
                 for (int i = 0; i < manager.size(); i++) {
                     CPRejetsViewBean rejet = (CPRejetsViewBean) manager.getEntity(i);
-                    listIdRetour[i] = rejet.getIdRejets();
+                    if (!CPRejets.CS_ETAT_NON_TRAITE.equals(rejet.getEtat())
+                            && !CPRejets.CS_ETAT_ABANDONNE.equals(rejet.getEtat())) {
+                        newList.add(rejet.getIdRejets());
+                    }
                 }
             }
+            listIdRetour = newList.toArray(new String[0]);
+
             return listIdRetour;
         } else {
             return null;
         }
-
     }
 
+    private String[] supprimerIdsNonTraiterAbandonnerListeIdRetour(BSession session, String[] listIdRetour)
+            throws Exception {
+        List<String> newList = new ArrayList<String>();
+
+        for (int i = 0; i < listIdRetour.length; i++) {
+            CPRejetsViewBean rejet = new CPRejetsViewBean();
+            rejet.setSession(session);
+            rejet.setIdRejets(listIdRetour[i]);
+
+            rejet.retrieve();
+
+            if (!rejet.isNew()) {
+                if (!CPRejets.CS_ETAT_NON_TRAITE.equals(rejet.getEtat())
+                        && !CPRejets.CS_ETAT_ABANDONNE.equals(rejet.getEtat())) {
+                    newList.add(rejet.getIdRejets());
+                }
+            }
+        }
+
+        return newList.toArray(new String[0]);
+    }
 }

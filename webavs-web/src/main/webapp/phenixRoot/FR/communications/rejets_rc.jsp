@@ -38,6 +38,10 @@ function postInit() {
 }
 
 function onClickCheckBox(monAction){
+	onClickCheckBox(monAction, '');
+}
+
+function onClickCheckBox(monAction, subAction){
 	var checkboxes = top.fr_main.fr_list.document.getElementsByName("listIdRetour");
 
 	for(var i=0; i<checkboxes.length;i++){
@@ -49,6 +53,12 @@ function onClickCheckBox(monAction){
 			document.forms[0].appendChild(inputTag);
 		}		
 	}	
+	
+	var inputTag = document.createElement('input');
+	inputTag.type='hidden';
+	inputTag.name='subAction';
+	inputTag.value=subAction;
+	document.forms[0].appendChild(inputTag);
 
 	var oldUserAction = document.forms[0].elements.userAction.value;
 	var oldTarget = document.forms[0].target;
@@ -158,9 +168,9 @@ $(function(){
 				        </TR>
 				       <TR>
 							<TD height="2">Afficher envoyés</TD>
-							<TD nowrap height="31" width="259"><input type="checkbox" name="wantEnvoye" id="wantEnvoye"></TD>
+							<TD nowrap height="31" width="259"><input type="checkbox" name="wantEnvoye" id="wantEnvoye" <%=request.getParameter("wantEnvoye") != null?"CHECKED='CHECKED'":""%>></TD>
 							<TD width height="2">Afficher abandonnés</TD>
-							<TD nowrap height="31" width="259"><input type="checkbox" name="wantAbandonne" id="wantAbandonne"></TD>
+							<TD nowrap height="31" width="259"><input type="checkbox" name="wantAbandonne" id="wantAbandonne" <%=request.getParameter("wantAbandonne") != null?"CHECKED='CHECKED'":""%>></TD>
 					   </TR>
 
 	 					<%-- /tpl:put --%>
@@ -187,7 +197,12 @@ $(function(){
 								<ct:ifhasright element="phenix.communications.rejets.envoiSedex" crud="u">
 								<INPUT type="button" name="Envoi" value="Envoi Sedex" onClick="onClickCheckBox('phenix.communications.rejets.envoiSedex');" >
 								</ct:ifhasright>	
+							
+								<INPUT type="button" class="btnChangementEtat" name="Traiter" value="Traiter" onClick="onClickCheckBox('phenix.communications.rejets.changerStatus', 'TRAITER');" disabled >
+								<INPUT type="button" class="btnChangementEtat" name="NonTraiter" value="Non traiter" onClick="onClickCheckBox('phenix.communications.rejets.changerStatus', 'NONTRAITER');" disabled >
+								<INPUT type="button" class="btnChangementEtat" name="Abandonner" value="Abandonner" onClick="onClickCheckBox('phenix.communications.rejets.abandonner');" disabled >
 							</TD>
+							
 							<TD align="right">
 								<%if (bShowExportButton) {%>
 									<INPUT type="button" name="btnExport" value="<%=btnExportLabel%>" onClick="onExport();">

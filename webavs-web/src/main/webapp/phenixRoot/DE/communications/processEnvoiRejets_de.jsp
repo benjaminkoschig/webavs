@@ -29,7 +29,22 @@
 <%@ include file="/theme/process/bodyStart.jspf" %>
 <%-- tpl:put name="zoneTitle" --%>Ré-envoi des rejets (SEDEX)<%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart2.jspf" %>
-<%-- tpl:put name="zoneMain" --%> 
+<%-- tpl:put name="zoneMain" --%>
+
+<script type="text/javascript">
+$(function() {
+	var $nbRejets = <%= viewBean.getListIdRetour().length %>;
+	
+	if($nbRejets <= 0)
+	{
+		$(top.fr_main.document).contents().find('#btnOk').prop('disabled',true);
+	}
+	else
+	{
+		$(top.fr_main.document).contents().find('#btnOk').prop('disabled',false);
+	}
+});
+</script>
 
 <TR>
  <%if (!processLaunched) {%>

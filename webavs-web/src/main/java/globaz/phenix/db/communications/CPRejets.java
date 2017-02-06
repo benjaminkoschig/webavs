@@ -273,6 +273,23 @@ public class CPRejets extends BEntity {
         }
     }
 
+    public void changerStatusMultiple(BISession bSession, String[] listIdRetour, String etat) {
+        for (String id : listIdRetour) {
+            setSession((BSession) bSession);
+            setIdRejets(id);
+            try {
+                this.retrieve();
+
+                if (!etat.equals(getEtat())) {
+                    setEtat(etat);
+                    this.update();
+                }
+            } catch (Exception e) {
+                // On ne fait rien
+            }
+        }
+    }
+
     public String getAction() {
         return action;
     }

@@ -1,5 +1,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<%-- tpl:insert page="/theme/list.jtpl" --%><%@page import="globaz.phenix.db.communications.CPRejets"%>
+<%-- tpl:insert page="/theme/list.jtpl" --%>
+<%@page import="globaz.framework.servlets.FWServlet"%>
+<%@page import="globaz.framework.menu.FWMenuBlackBox"%>
+<%@page import="java.util.Map.Entry"%>
+<%@page import="java.util.Map.Entry"%>
+<%@page import="java.util.Map"%>
+<%@page import="globaz.phenix.db.communications.CPRejets"%>
 <%@page import="ch.globaz.utils.VueGlobaleTiersUtils"%>
 <%@ page language="java" errorPage="/errorPage.jsp" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -21,8 +27,29 @@ function checkBoxChange(){
 		if (checkboxes(i).checked && checkboxes(i).value != '') {
 			nombreCoches = nombreCoches + 1;
 		}		
-	}	
+	}
+	
+	if(nombreCoches > 0)
+	{
+		$(top.fr_main.document).contents().find('.btnChangementEtat').prop("disabled",false);
+	}
+	else
+	{
+		$(top.fr_main.document).contents().find('.btnChangementEtat').prop("disabled",true);
+	}
+	
 	$(top.fr_main.document).contents().find('#listCount').html(nombreCoches);
+}
+
+function checkAll(){
+	var nombreCoches = 0;
+	var checkboxes = top.fr_main.fr_list.document.getElementsByName("listIdRetour");
+	var elementCheckBoxAll = $('#select_all').is(':checked');
+	
+	for(var i=0; i<checkboxes.length;i++){	
+		checkboxes(i).checked = elementCheckBoxAll;
+	}	
+	checkBoxChange();
 }
 </script>
 <%-- /tpl:put --%>
@@ -38,7 +65,7 @@ function checkBoxChange(){
            <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <th width="4%">&nbsp;</th>
 	<%}%>
-	  <TH  width="3%"></TH>
+	  <TH  width="3%" align="right"><input onclick="checkAll()" id="select_all" type="checkbox" value=""/></TH>
       <TH  width="10%">N°Affilié(référence Caisse)</TH>
       <TH  width="10%">N°Contribuable</TH>
       <TH  width="10%">Nom</TH>
@@ -55,6 +82,7 @@ function checkBoxChange(){
 		<%-- tpl:put name="zoneList" --%>
 		<%
 		globaz.phenix.db.communications.CPRejetsViewBean line = (globaz.phenix.db.communications.CPRejetsViewBean) viewBean.getEntity(i);
+		
 		actionDetail ="parent.location.href='phenix?userAction=phenix.communications.rejets.afficher&selectedId="+line.getIdRejets();
 		if(!JadeStringUtil.isBlankOrZero(viewBean.getIdTiers(i))){
 			actionDetail = actionDetail + "&"+VueGlobaleTiersUtils.PARAMETRE_REQUETE_ID_TIERS_VUE_GLOBALE+"="+viewBean.getIdTiers(i);
@@ -68,18 +96,15 @@ function checkBoxChange(){
 		if (CPRejets.CS_ETAT_ABANDONNE.equalsIgnoreCase(line.getEtat())) { 
 			nomMenu = "CP-OnlyDetail";
 		} %>
-		<TD class="mtd">
-		<ct:menuPopup menu="<%=nomMenu%>" label="<%=optionsPopupLabel%>" detailLabel="<%=menuDetailLabel%>" detailLink="<%=tmp%>" target="top.fr_main">
+		<TD class="mtd">			
+		<ct:menuPopup addSearchCriterias="true" menu="<%=nomMenu%>" label="<%=optionsPopupLabel%>" detailLabel="<%=menuDetailLabel%>" detailLink="<%=tmp%>" target="top.fr_main">
 			<ct:menuParam key="selectedId" value="<%=line.getIdRejets()%>"/>  
-			<ct:menuParam key="<%=ch.globaz.utils.VueGlobaleTiersUtils.PARAMETRE_REQUETE_ID_TIERS_VUE_GLOBALE%>" value="<%=viewBean.getIdTiers(i)%>"/>
-		</ct:menuPopup>
-		</TD>
-	
-	    <%if(line.isReenvoyable()){ %>
+			<ct:menuParam key="<%=ch.globaz.utils.VueGlobaleTiersUtils.PARAMETRE_REQUETE_ID_TIERS_VUE_GLOBALE%>" value="<%=viewBean.getIdTiers(i)%>"/>			
+		</ct:menuPopup>		
+		</TD>	
+	    
 	    <TD class="mtd" <%=style%> onClick="" align="right"><input onClick="checkBoxChange()" name="listIdRetour" type="checkbox" value="<%=line.getIdRejets()%>"/></TD>
-	    <% } else { %>
-	    <TD class="mtd" <%=style%> onclick="<%=actionDetail%>" align="center">&nbsp;</TD>
-	    <%} %>
+
 	    <TD class="mtd" <%=style%> onclick="<%=actionDetail%>" align="center"><%="".equals(line.getYourBusinessReferenceId())?"&nbsp;":line.getYourBusinessReferenceId()%></TD>
 	    <TD class="mtd" <%=style%> onclick="<%=actionDetail%>" align="center"><%="".equals(line.getNumContribuable())?"&nbsp;":line.getNumContribuable()%></TD>
 	    <TD class="mtd" <%=style%> onclick="<%=actionDetail%>" align="center"><%="".equals(line.getNom())?"&nbsp;":line.getNom()%></TD>

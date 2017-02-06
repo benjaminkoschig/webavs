@@ -31,6 +31,21 @@
 <%@ include file="/theme/process/bodyStart2.jspf" %>
 <%-- tpl:put name="zoneMain" --%> 
 
+<script type="text/javascript">
+$(function() {
+	var $nbRejets = <%= viewBean.getListIdRetour().length %>;
+	
+	if($nbRejets <= 0)
+	{
+		$(top.fr_main.document).contents().find('#btnOk').prop('disabled',true);
+	}
+	else
+	{
+		$(top.fr_main.document).contents().find('#btnOk').prop('disabled',false);
+	}
+});
+</script>
+
 <TR>
  <%if (!processLaunched) {%>
 	<TD colspan="2"><b><u><%=viewBean.getListIdRetour() == null ? "0" : ""+viewBean.getListIdRetour().length%></u> rejets vont être ré-envoyés via Sedex </b></TD>
