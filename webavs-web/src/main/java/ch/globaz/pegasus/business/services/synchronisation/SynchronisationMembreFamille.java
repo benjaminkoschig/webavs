@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import ch.globaz.common.domaine.Checkers;
+import ch.globaz.common.domaine.Date;
 import ch.globaz.hera.business.exceptions.models.MembreFamilleException;
 import ch.globaz.hera.business.services.HeraServiceLocator;
 import ch.globaz.hera.business.vo.famille.MembreFamilleVO;
@@ -199,12 +200,19 @@ public class SynchronisationMembreFamille {
                 .getIdTiers();
         // Conversion dernier jour du mois de la date de dépot de la demande, afin d'aller rechercher tous les
         // membres de familles inclus DANS le mois
-        String dateRechecheMembre = JadeDateUtil.getLastDateOfMonth(droit.getDemande().getSimpleDemande()
-                .getDateDepot());
+        String dateRechecheMembre = JadeDateUtil.getLastDateOfMonth(droit.getDemande().getSimpleDemande().getDateFin());
+
+        if (dateRechecheMembre == null) {
+            new Date();
+            dateRechecheMembre = Date.now().getSwissValue();
+        }
 
         try {
             MembreFamilleVO[] searchMembresFamilleDisponibles = HeraServiceLocator.getMembreFamilleService()
                     .searchMembresFamilleRequerantDomaineRentes(idTiersRequerant, dateRechecheMembre);
+            //
+            // MembreFamilleVO[] searchMembresFamilleDisponiblesStandard = HeraServiceLocator.getMembreFamilleService()
+            // .searchMembresFamilleRequerantDomaineStandard(idTiersRequerant, dateRechecheMembre);
 
             return HeraServiceLocator.getMembreFamilleService().filtreMembreFamilleWithDate(
                     searchMembresFamilleDisponibles, dateRechecheMembre);
@@ -217,5 +225,4 @@ public class SynchronisationMembreFamille {
             throw new RuntimeException(e);
         }
     }
-
 }

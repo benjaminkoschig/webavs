@@ -397,4 +397,17 @@ public class MembreFamilleServiceImpl extends HeraAbstractServiceImpl implements
 
         return searchMembresFamilleRequerant(ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiersRequerant, date);
     }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ch.globaz.hera.business.services.models.famille.MembreFamilleService#
+     * searchMembresFamilleRequerantDomaineRentes(java.lang.String,java.lang.String)
+     */
+    @Override
+    public MembreFamilleVO[] searchMembresFamilleRequerantDomaineStandard(String idTiersRequerant, String date)
+            throws MembreFamilleException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
+
+        return searchMembresFamilleRequerant(ISFSituationFamiliale.CS_DOMAINE_STANDARD, idTiersRequerant, date);
+    }
 }

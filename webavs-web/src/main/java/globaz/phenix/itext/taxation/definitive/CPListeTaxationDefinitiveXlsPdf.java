@@ -6,12 +6,16 @@ import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.phenix.util.CPProperties;
 import java.io.File;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
+import ch.globaz.common.mail.UsersMail;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
 import ch.globaz.simpleoutputlist.core.Details;
+import com.google.common.base.Joiner;
 
 public class CPListeTaxationDefinitiveXlsPdf extends BProcess {
     /**
@@ -19,9 +23,8 @@ public class CPListeTaxationDefinitiveXlsPdf extends BProcess {
      */
     private static final long serialVersionUID = 1L;
 
-    public final static String NUM_REF_INFOROM_LISTE_TAXA_DEF = "0157CFA";
+    public static final String NUM_REF_INFOROM_LISTE_TAXA_DEF = "0157CFA";
 
-    private final transient SimpleOutputListBuilderJade builder = SimpleOutputListBuilderJade.newInstance();
     private ListTaxationsDefinitivesCriteria criteria = new ListTaxationsDefinitivesCriteria();
 
     public void setCriteria(ListTaxationsDefinitivesCriteria criteria) {
@@ -59,53 +62,54 @@ public class CPListeTaxationDefinitiveXlsPdf extends BProcess {
         setSendMailOnError(true);
     }
 
-    @Override
-    protected boolean _executeProcess() throws Exception {
-        // setEMailAddress("integration@globaz.ch");
-        LoadTaxationsDefinitives loader = new LoadTaxationsDefinitives(getSession());
-        List<TaxationDefinitiveForList> listOutput = loader.load(criteria);
-
+    private JadePublishDocumentInfo createDocInfo() {
         JadePublishDocumentInfo documentInfo = createDocumentInfo();
         documentInfo.setPublishDocument(true);
         documentInfo.setDocumentTypeNumber(NUM_REF_INFOROM_LISTE_TAXA_DEF);
+        return documentInfo;
+    }
 
-        String nomCaise = FWIImportProperties.getInstance().getProperty(documentInfo,
+    @Override
+    protected boolean _executeProcess() throws Exception {
+        LoadTaxationsDefinitives loader = new LoadTaxationsDefinitives(getSession());
+        List<TaxationDefinitiveForList> listOutput = loader.load(criteria);
+
+        JadePublishDocumentInfo documentInfoPdf = createDocInfo();
+        JadePublishDocumentInfo documentInfoXls = createDocInfo();
+
+        String nomCaise = FWIImportProperties.getInstance().getProperty(documentInfoPdf,
                 ACaisseReportHelper.JASP_PROP_NOM_CAISSE + getSession().getIdLangueISO().toUpperCase());
 
         Details details = new Details();
         details.add(nomCaise, "");
+        details.add("N°", NUM_REF_INFOROM_LISTE_TAXA_DEF);
         details.newLigne();
 
+        SimpleOutputListBuilderJade builder = SimpleOutputListBuilderJade.newInstance();
         builder.session(getSession()).globazTheme().addTranslater(getSession())
                 .outputNameAndAddPath(NUM_REF_INFOROM_LISTE_TAXA_DEF + "_PRESTATIONS").addList(listOutput)
                 .classElementList(TaxationDefinitiveForList.class).addHeaderDetails(details)
                 .addTitle("Liste des taxations définitives APG/Maternité", Align.CENTER);
-
         File filePdf = builder.asPdf().build();
         File fileXls = builder.asXls().build();
-
-        documentInfo.setOwnerCompany("integration@globaz.ch");
-        // documentInfo.setPublishDocument(true);
-        this.registerAttachedDocument(documentInfo, filePdf.getAbsolutePath());
-        this.registerAttachedDocument(documentInfo, fileXls.getAbsolutePath());
-
-        List<String> list = new ArrayList<String>();
-
-        // setEMailAddress("dma@globaz.ch");
-        // list.add(fileXls.getAbsolutePath());
-        // list.add(fileXls.getAbsolutePath());
-
-        // Joiner.on(",").join(parts)
-
-        // /List<String> listAttachedDocumentLocation
-
-        // List<String> mails = AFIDEUtil
-        // .giveMeUserGroupMail(CPProperties.LISTE_TAXATION_DEFINITIVE_GROUP_MAIL.getValue());
-
-        // JadeSmtpClient.getInstance().sendMail(mails.toArray(), getEMailObject(), getSubjectDetail(),
-        // listAttachedDocumentLocation.toArray());
-
         builder.close();
+
+        String groupMail = CPProperties.LISTE_TAXATION_DEFINITIVE_GROUP_MAIL.getValue();
+        if (groupMail != null) {
+            groupMail = groupMail.trim();
+            if (!groupMail.isEmpty()) {
+                List<String> mailList = UsersMail
+                        .resolveMailsByGroupId(CPProperties.LISTE_TAXATION_DEFINITIVE_GROUP_MAIL.getValue());
+                Set<String> mails = new HashSet<String>();
+                mails.addAll(mailList);
+                mails.add(getEMailAddress());
+                documentInfoPdf.setPublishProperty(JadePublishDocumentInfo.MAILS_TO, Joiner.on(";").join(mails));
+                documentInfoXls.setPublishProperty(JadePublishDocumentInfo.MAILS_TO, Joiner.on(";").join(mails));
+            }
+        }
+
+        this.registerAttachedDocument(documentInfoPdf, filePdf.getAbsolutePath());
+        this.registerAttachedDocument(documentInfoXls, fileXls.getAbsolutePath());
         return true;
     }
 
@@ -116,7 +120,7 @@ public class CPListeTaxationDefinitiveXlsPdf extends BProcess {
 
     @Override
     protected void _executeCleanUp() {
-        builder.close();
+
     }
 
     @Override

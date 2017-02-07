@@ -176,4 +176,7 @@ public interface MembreFamilleService extends JadeApplicationService {
      */
     public MembreFamilleVO[] searchMembresFamilleRequerantDomaineRentes(String idTiersRequerant, String date)
             throws MembreFamilleException, JadeApplicationServiceNotAvailableException, JadePersistenceException;
+
+    MembreFamilleVO[] searchMembresFamilleRequerantDomaineStandard(String idTiersRequerant, String date)
+            throws MembreFamilleException, JadeApplicationServiceNotAvailableException, JadePersistenceException;
 }
