@@ -62,6 +62,28 @@ import java.util.logging.Logger;
  */
 public class REGroupOperationCAUtil {
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("REGroupOperationCAUtil [idCompteAnnexe=" + idCompteAnnexe + ", idCompteCourant=" + idCompteCourant
+                + ", idTiersAdrPmt=" + idTiersAdrPmt + ", idTiersBeneficiaire=" + idTiersBeneficiaire);
+        if (ecritures == null || ecritures.isEmpty()) {
+            sb.append(", aucune écriture trouvée]");
+        } else {
+            sb.append(", écritures [");
+            for (REEcritureUtil e : ecritures) {
+                sb.append("idRA=" + e.idRA + ", ");
+            }
+            sb.append("]]");
+        }
+        return sb.toString();
+    }
+
     /**
      * @author SCR
      */
@@ -101,9 +123,7 @@ public class REGroupOperationCAUtil {
      */
     private APISection sectionBlocage = null;
 
-    public Map<Integer, RECumulPrstParRubrique> cumulParRubrique(Map<Integer, RECumulPrstParRubrique> result,
-
-    RECumulPrstParRubrique cppr) {
+    public void cumulParRubrique(final Map<Integer, RECumulPrstParRubrique> result, final RECumulPrstParRubrique cppr) {
         if (result.containsKey(cppr.getKey())) {
             RECumulPrstParRubrique elm = result.get(cppr.getKey());
             elm.addMontant(cppr.getMontant());
@@ -111,17 +131,26 @@ public class REGroupOperationCAUtil {
         } else {
             result.put(cppr.getKey(), cppr);
         }
-        return result;
     }
 
-    private Map<Integer, RECumulPrstParRubrique> cumulParRubrique(Map<Integer, RECumulPrstParRubrique> result,
-            String type, String idRubrique, FWCurrency montant) {
+    public List<String> getIdRAEcritures() {
+        List<String> ids = new ArrayList<String>();
+        if (ecritures != null) {
+            for (REEcritureUtil e : ecritures) {
+                ids.add(e.idRA);
+            }
+        }
+        return ids;
+    }
+
+    private void cumulParRubrique(Map<Integer, RECumulPrstParRubrique> result, String type, String idRubrique,
+            FWCurrency montant) {
         RECumulPrstParRubrique cppr = new RECumulPrstParRubrique();
         cppr.setIdRubrique(idRubrique);
         cppr.setMontant(new FWCurrency(montant.toString()));
         cppr.setType(type);
 
-        return this.cumulParRubrique(result, cppr);
+        this.cumulParRubrique(result, cppr);
     }
 
     // TODO : Supprimer le message log sauf en cas d'erreur, car risque de outOfMemoryException
@@ -765,7 +794,7 @@ public class REGroupOperationCAUtil {
                             PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ("01." + process.getMoisPaiement()),
                             ecriture.libelle);
 
-                    result = this.cumulParRubrique(result, RECumulPrstParRubrique.TYPE_STANDARD, ecriture.idRubrique,
+                    this.cumulParRubrique(result, RECumulPrstParRubrique.TYPE_STANDARD, ecriture.idRubrique,
                             new FWCurrency("-" + ecriture.montant));
                 }
                 if ((ov.montant != null) && ov.montant.isPositive()) {
@@ -781,8 +810,7 @@ public class REGroupOperationCAUtil {
                             PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(process.getDateEcheancePaiement()), "",
                             String.valueOf(idOperationOV), ov.idAdrPmt, process.getIdOrganeExecution(), motif, nomCache);
 
-                    result = this.cumulParRubrique(result, RECumulPrstParRubrique.TYPE_STANDARD, ov.idRubrique,
-                            ov.montant);
+                    this.cumulParRubrique(result, RECumulPrstParRubrique.TYPE_STANDARD, ov.idRubrique, ov.montant);
                 }
             }
         } catch (Exception e) {
@@ -852,8 +880,7 @@ public class REGroupOperationCAUtil {
                     }
 
                     if (ecriture instanceof REEcriturePrstBloqueeUtil) {
-
-                        result = this.cumulParRubrique(
+                        this.cumulParRubrique(
                                 result,
                                 doOperationsBlocage(session, transaction, process, compta,
                                         tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), compteAnnexe,
@@ -864,11 +891,11 @@ public class REGroupOperationCAUtil {
                                 compteAnnexe, (REEcritureRetenueUtil) ecriture, datePmtEnCours, tw, sectionStandard,
                                 dateEcheance);
                         for (RECumulPrstParRubrique element : array) {
-                            result = this.cumulParRubrique(result, element);
+                            this.cumulParRubrique(result, element);
                         }
 
                     } else {
-                        result = this.cumulParRubrique(
+                        this.cumulParRubrique(
                                 result,
                                 doOperationsStandards(session, transaction, process, compteAnnexe, ecriture,
                                         datePmtEnCours, sectionStandard));
@@ -897,7 +924,7 @@ public class REGroupOperationCAUtil {
                                     tw.getProperty(PRTiersWrapper.PROPERTY_PRENOM), ra.getReferencePmt(),
                                     ra.getCodePrestation(), isoLangFromIdTiers), process.getDateEcheancePaiement());
 
-                    result = this.cumulParRubrique(result, RECumulPrstParRubrique.TYPE_STANDARD,
+                    this.cumulParRubrique(result, RECumulPrstParRubrique.TYPE_STANDARD,
                             RECumulPrstParRubrique.RUBRIQUE_FICTIVE_OV_PMT_BLOCAGE_RETENUE, ov.montant);
                 }
             }

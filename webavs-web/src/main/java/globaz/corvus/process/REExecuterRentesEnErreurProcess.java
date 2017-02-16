@@ -10,6 +10,7 @@ import globaz.corvus.db.lots.RELotManager;
 import globaz.corvus.db.rentesaccordees.REPaiementRentes;
 import globaz.corvus.db.rentesaccordees.REPaiementRentesManager;
 import globaz.corvus.module.compta.AREModuleComptable;
+import globaz.corvus.process.paiement.mensuel.Key;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.pmt.mensuel.RECumulPrstParRubrique;
 import globaz.corvus.utils.pmt.mensuel.REGroupOperationCAUtil;
@@ -210,7 +211,8 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
             nombreDeRentesVersees = nombreDeRentes;
             getMemoryLog().logMessage("2b) after getSqlCount : " + (new JATime(JACalendar.now())).toStr(":"),
                     FWMessage.INFORMATION, "");
-            PlageIncrement plageIncrementsOperations = reserverPlageIncrementsOperationsCA(getSession(), nombreDeRentes);
+            PlageIncrement plageIncrementsOperations = reserverPlageIncrementsOperationsCA(getSession(),
+                    innerTransaction, nombreDeRentes);
 
             PlageIncrement plageIncrementsSections = reserverPlageIncrementsSectionsCA(getSession(), nombreDeRentes);
 
@@ -379,8 +381,7 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
                                     noSectionIncrement, getDateEcheancePaiement());
 
                             for (RECumulPrstParRubrique element : array) {
-                                mapCumulPrstParGenreRentes = grpOP
-                                        .cumulParRubrique(mapCumulPrstParGenreRentes, element);
+                                grpOP.cumulParRubrique(mapCumulPrstParGenreRentes, element);
                             }
 
                             isOperationAdded = true;
@@ -442,7 +443,7 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
                             datePmtEnCours, nomCache, 0, getDateEcheancePaiement());
 
                     for (RECumulPrstParRubrique element : array) {
-                        mapCumulPrstParGenreRentes = grpOP.cumulParRubrique(mapCumulPrstParGenreRentes, element);
+                        grpOP.cumulParRubrique(mapCumulPrstParGenreRentes, element);
                     }
 
                     isOperationAdded = true;
@@ -503,7 +504,7 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
                                     + montantTotalAVerser.toStringFormat(), FWMessage.INFORMATION, "");
 
             // final check !!!!!!
-            validationPmt(getSession(), compta, comptaExt, mapCumulPrstParGenreRentes);
+            validationPmt(getSession(), compta, mapCumulPrstParGenreRentes);
             innerTransaction = commitResetTransaction(innerTransaction);
 
             String libelleOG = getDescription() + " (suite)";
@@ -562,12 +563,13 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
             }
             return false;
         } finally {
-
+            String emailObject = null;
             if (succes && !isErreursDetectee) {
                 emailObject = getSession().getLabel("EMAIL_OBJECT_PMT_MENS_RENTES_SUCCES");
             } else {
                 emailObject = getSession().getLabel("EMAIL_OBJECT_PMT_MENS_RENTES_ERREUR");
             }
+            setEmailObject(emailObject);
             try {
                 // Workaround
                 // Vidage du cache, sans quoi, l'execution de l'OG plante. Raison : inconnue !!!!
@@ -594,7 +596,7 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
                     rente.getCodePrestation(), rente.getSousTypeCodePrestation(),
                     AREModuleComptable.TYPE_RUBRIQUE_NORMAL);
 
-            checkAPIRubrique(rubriqueComptable, rente);
+            checkRubriqueNotNull(rubriqueComptable, rente);
 
             grpOP.traiterEcriture(getSession(), rente,
                     rente.getNomTBE() + " " + rente.getPrenomTBE() + " " + rente.getCodePrestation(), increment,

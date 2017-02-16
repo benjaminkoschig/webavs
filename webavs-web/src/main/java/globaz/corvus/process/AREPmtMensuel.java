@@ -4,7 +4,9 @@ import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.db.rentesaccordees.RECountRentesManager;
 import globaz.corvus.db.rentesaccordees.REPaiementRentes;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
+import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.module.compta.AREModuleComptable;
+import globaz.corvus.process.paiement.mensuel.Key;
 import globaz.corvus.utils.pmt.mensuel.RECumulPrstParRubrique;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -20,6 +22,7 @@ import globaz.globall.parameters.FWParameters;
 import globaz.globall.parameters.FWParametersManager;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
 import globaz.osiris.api.APIGestionComptabiliteExterne;
 import globaz.osiris.api.APIGestionRentesExterne;
 import globaz.osiris.api.APIRubrique;
@@ -36,6 +39,8 @@ import globaz.prestation.tools.PRSession;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ch.globaz.common.util.prestations.MotifVersementUtil;
 
 /**
@@ -43,53 +48,9 @@ import ch.globaz.common.util.prestations.MotifVersementUtil;
  */
 public abstract class AREPmtMensuel extends PRAbstractProcess {
 
-    /**
-     * 
-     */
+    private static Logger logger = LoggerFactory.getLogger(AREPmtMensuel.class);
+
     private static final long serialVersionUID = 1L;
-
-    public final class Key implements Comparable<Key> {
-
-        public String idCompteAnnexe = "";
-        public String refPmt = "";
-
-        public Key(Key k) {
-            idCompteAnnexe = k.idCompteAnnexe;
-            refPmt = k.refPmt;
-        }
-
-        public Key(String idCompteAnnexe, String refPmt) {
-            this.idCompteAnnexe = idCompteAnnexe;
-            this.refPmt = refPmt;
-        }
-
-        @Override
-        public int compareTo(Key key) {
-            if (idCompteAnnexe.compareTo(key.idCompteAnnexe) != 0) {
-                return idCompteAnnexe.compareTo(key.idCompteAnnexe);
-            } else if (refPmt.compareTo(key.refPmt) != 0) {
-                return refPmt.compareTo(key.refPmt);
-            } else {
-                return 0;
-            }
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof Key)) {
-                return false;
-            }
-
-            Key key = (Key) obj;
-
-            return ((key.idCompteAnnexe.equals(idCompteAnnexe)) && (key.refPmt.equals(refPmt)));
-        }
-
-        @Override
-        public int hashCode() {
-            return (idCompteAnnexe + refPmt).hashCode();
-        }
-    }
 
     /**
      * @author SCR
@@ -108,7 +69,7 @@ public abstract class AREPmtMensuel extends PRAbstractProcess {
     protected APIGestionComptabiliteExterne comptaExt = null;
     private String dateEcheancePaiement = "";
     private String description = "";
-    protected String emailObject = "";
+    private String emailObject = "";
     private String idOrganeExecution = "";
     private String moisPaiement = "";
     private String numeroOG = "";
@@ -150,7 +111,7 @@ public abstract class AREPmtMensuel extends PRAbstractProcess {
      * @throws Exception
      *             Dans le cas ou la rubrique comptable est null
      */
-    protected void checkAPIRubrique(APIRubrique rubriqueComptable, REPaiementRentes prestationsAccordee)
+    protected void checkRubriqueNotNull(APIRubrique rubriqueComptable, REPaiementRentes prestationsAccordee)
             throws Exception {
         if (rubriqueComptable == null) {
             throw new Exception("Aucune rubrique comptable trouvée pour la rente accordée avec l'id : ["
@@ -163,10 +124,11 @@ public abstract class AREPmtMensuel extends PRAbstractProcess {
     protected BTransaction commitResetTransaction(BTransaction transaction) throws Exception {
 
         if (transaction == null) {
-            throw new Exception("Cannot reset transaction. Transaction is null");
+            throw new Exception("commitResetTransaction(BTransaction transaction) La transaction est null");
         }
         if (transaction.hasErrors()) {
-            throw new Exception(transaction.getErrors().toString());
+            throw new Exception("commitResetTransaction(BTransaction transaction) La transaction est en erreur : "
+                    + transaction.getErrors().toString());
         } else {
             transaction.commit();
             transaction.closeTransaction();
@@ -175,15 +137,24 @@ public abstract class AREPmtMensuel extends PRAbstractProcess {
         return transaction;
     }
 
-    protected void doMiseEnErreurRA(BSession session, String idRA, String errorMsg) throws Exception {
-        // On flag la RenteAccordee en erreur...
-        BITransaction transaction = session.newTransaction();
+    /**
+     * On flag la RenteAccordee en erreur...
+     * 
+     * @param session
+     * @param idRA
+     * @param errorMsg
+     * @throws Exception
+     */
+    protected void doMiseEnErreurRA(BSession session, String idRA, String errorMsg) {
+        String message = "Mise en erreur de la rente avec l'id [" + idRA + "] pour la raison suivante : " + errorMsg;
+        logger.warn(message);
+        JadeThread.logClear();
+        BITransaction transaction = null;
         try {
-
+            transaction = session.newTransaction();
             transaction.openTransaction();
 
-            getMemoryLog().logMessage("Mise en erreur de la PA no " + idRA, FWMessage.AVERTISSEMENT,
-                    this.getClass().toString());
+            getMemoryLog().logMessage(message, FWMessage.AVERTISSEMENT, this.getClass().toString());
             getMemoryLog().logMessage("\t" + errorMsg, FWMessage.AVERTISSEMENT, this.getClass().toString());
 
             // bz-6124
@@ -191,25 +162,44 @@ public abstract class AREPmtMensuel extends PRAbstractProcess {
             pa.setSession(session);
             pa.setIdPrestationAccordee(idRA);
             pa.retrieve(transaction);
-            PRAssert.notIsNew(pa, "Traitement des erreurs, PA " + idRA + " non trouvée !!!");
+            PRAssert.notIsNew(pa, "Impossible de récupérer la rente avec l'id [" + idRA + "] pour la flagger en erreur");
             pa.setIsErreur(Boolean.TRUE);
             pa.update(transaction);
 
             if (transaction.hasErrors()) {
-                getMemoryLog().logMessage(FWViewBeanInterface.ERROR, transaction.getErrors().toString(),
-                        this.getClass().toString());
-                throw new Exception();
+                String message2 = "Impossible de mettre la rente avec l'id [" + idRA
+                        + "] en erreur car la transaction contiens des erreurs : " + transaction.getErrors().toString();
+
+                logger.error(message2);
+                getMemoryLog().logMessage(FWViewBeanInterface.ERROR, message2, this.getClass().toString());
             }
             transaction.commit();
 
         } catch (Exception e) {
-            getMemoryLog().logMessage(FWViewBeanInterface.ERROR, e.toString(), this.getClass().toString());
+            String message3 = "Une exception grave est survenue lors de la mise en erreur de la rente avec l'id ["
+                    + idRA + "] : " + e.toString()
+                    + ". La rente ne sera PAS mise en erreur car la transaction sera rollbackée";
+
+            logger.error(message3, e);
+            getMemoryLog().logMessage(FWViewBeanInterface.ERROR, message3, this.getClass().toString());
+
             if (transaction != null) {
-                transaction.rollback();
+                try {
+                    transaction.rollback();
+                } catch (Exception e2) {
+                    logger.error(
+                            "Une exception critique est appararue lors du rollback de la transaction : "
+                                    + e2.toString(), e2);
+                }
             }
         } finally {
             if (transaction != null) {
-                transaction.closeTransaction();
+                try {
+                    transaction.closeTransaction();
+                } catch (Exception e3) {
+                    logger.error("Une exception critique est appararue lors du closeTransaction()  : " + e3.toString(),
+                            e3);
+                }
             }
         }
     }
@@ -273,7 +263,6 @@ public abstract class AREPmtMensuel extends PRAbstractProcess {
         elm.retrieve(transaction);
         PRAssert.notIsNew(elm, null);
         return elm.getIdCompteCourant();
-
     }
 
     public String getIdOrganeExecution() {
@@ -297,14 +286,8 @@ public abstract class AREPmtMensuel extends PRAbstractProcess {
         return oe.getIdRubrique();
     }
 
-    protected Key getKey(REPaiementRentes rente) throws Exception {
-        Key key = null;
-        if (JadeStringUtil.isBlankOrZero(rente.getIdCompteAnnexe())) {
-            throw new Exception("Incohérance dans les données. Pas de compte annexe référence pour la RA # "
-                    + rente.getIdRenteAccordee());
-        }
-        key = new Key(rente.getIdCompteAnnexe(), rente.getIdTiersAdressePmt() + "-" + rente.getReferencePmt());
-        return key;
+    protected Key getKey(REPaiementRentes rente) {
+        return new Key(rente.getIdCompteAnnexe(), rente.getIdTiersAdressePmt(), rente.getReferencePmt());
     }
 
     public String getMoisPaiement() {
@@ -360,13 +343,15 @@ public abstract class AREPmtMensuel extends PRAbstractProcess {
             mgr.setForIdCle(AREPmtMensuel.PARAM_SECTEUR_RENTE_USER_KEY);
             mgr.find(1);
 
-            if ((mgr != null) && !mgr.isEmpty()) {
+            if (!mgr.isEmpty()) {
                 FWParameters p = (FWParameters) mgr.getFirstEntity();
                 return p.getValeurAlpha();
             } else {
                 return AREPmtMensuel.NO_SECTEUR_RENTE;
             }
         } catch (Exception e) {
+            logger.error("Exception thrown when triing to get numéro de secteur rente : " + e.toString()
+                    + " Default number will be returned [" + AREPmtMensuel.NO_SECTEUR_RENTE + "] ", e);
             return AREPmtMensuel.NO_SECTEUR_RENTE;
         }
     }
@@ -438,155 +423,115 @@ public abstract class AREPmtMensuel extends PRAbstractProcess {
      * @return null si l'incrémentation n'a pas pu se faire, la plage d'incrément autrement
      * @throws Exception
      */
-    synchronized protected PlageIncrement reserverPlageIncrementsOperationsCA(BSession session, long nombreRentes)
-            throws Exception {
-        boolean hasError = false;
-        int retryNumber = 0;
+    synchronized protected PlageIncrement reserverPlageIncrementsOperationsCA(BSession session,
+            BTransaction transaction, long nombreRentes) {
 
         PlageIncrement plageIncr = new PlageIncrement();
-
-        BTransaction transaction2 = (BTransaction) getSession().newTransaction();
         try {
-            transaction2.openTransaction();
-            do {
-                hasError = false;
+            // MAJ de l'increment de la CA
+            FWIncrementation increment = new FWIncrementation();
+            increment.setSession(session);
+            increment.setIdIncrement(CAOperation.TABLE_CAOPERP);
+            increment.setIdCodeSysteme("");
+            increment.setAnneeIncrement("");
+            increment.retrieve(transaction);
+            PRAssert.notIsNew(increment, null);
 
-                // MAJ de l'increment de la CA
-                FWIncrementation increment = new FWIncrementation();
-                increment.setSession(session);
-                increment.setIdIncrement(CAOperation.TABLE_CAOPERP);
-                increment.setIdCodeSysteme("");
-                increment.setAnneeIncrement("");
-                increment.retrieve(transaction2);
-                PRAssert.notIsNew(increment, null);
+            // calcul de la nouvelle valeur de l'increment CA
+            plageIncr.min = Long.parseLong(increment.getValeurIncrement()) + 1;
+            plageIncr.max = plageIncr.min + (nombreRentes * 3);
 
-                // calcul de la nouvelle valeur de l'increment CA
-                plageIncr.min = Long.parseLong(increment.getValeurIncrement()) + 1;
-                plageIncr.max = plageIncr.min + (nombreRentes * 3);
+            long diff = plageIncr.max;
+            diff -= plageIncr.min;
 
-                long diff = plageIncr.max;
-                diff -= plageIncr.min;
-
-                diff = diff / 100;
-                // Bah, on est jamais trop prudent, réserve de plage de 1% (min
-                // : 10, max : 1000)!!!
-                // Réserve de sécurité
-                if (diff > 1000) {
-                    diff = 1000;
-                } else if (diff < 10) {
-                    diff = 10;
-                }
-                plageIncr.max += diff;
-
-                // mise a jours de l'increment
-                increment.setValeurIncrement(new Long(plageIncr.max).toString());
-
-                try {
-                    // la reservation de l'increment de fait pas partie de la
-                    // transaction
-                    increment.update(transaction2);
-                    transaction2.commit();
-                    if (transaction2.hasErrors()) {
-                        transaction2.rollback();
-                        transaction2.clearErrorBuffer();
-                        throw new Exception("Error while updating increment for table : " + CAOperation.TABLE_CAOPERP);
-                    }
-                } catch (Exception e) {
-                    hasError = true;
-                    retryNumber++;
-
-                    Thread.sleep(2000);
-                } finally {
-                    transaction2.closeTransaction();
-                }
-            } while (hasError && (retryNumber <= 3));
-        } finally {
-            if (transaction2 != null) {
-                transaction2.closeTransaction();
+            diff = diff / 100;
+            // Bah, on est jamais trop prudent, réserve de plage de 1% (min
+            // : 10, max : 1000)!!!
+            // Réserve de sécurité
+            if (diff > 1000) {
+                diff = 1000;
+            } else if (diff < 10) {
+                diff = 10;
             }
+            plageIncr.max += diff;
+
+            // mise a jours de l'increment
+            increment.setValeurIncrement(Long.toString(plageIncr.max));
+            increment.update(transaction);
+        } catch (Exception e) {
+            String message = "Une exception fatale s'est produite lors de la reserveation de la plage d'increment pour les opérations CA";
+            logger.error(message, e);
+            throw new RETechnicalException(message, e);
         }
-        if (hasError) {
-            return null;
-        } else {
-            return plageIncr;
-        }
+        return plageIncr;
     }
 
-    synchronized protected PlageIncrement reserverPlageIncrementsSectionsCA(BSession session, long nombreRentes)
-            throws Exception {
-        boolean hasError = false;
-        int retryNumber = 0;
-
+    synchronized protected PlageIncrement reserverPlageIncrementsSectionsCA(BSession session, long nombreRentes) {
         PlageIncrement plageIncr = new PlageIncrement();
-
-        BTransaction transaction2 = (BTransaction) getSession().newTransaction();
+        BTransaction transaction2 = null;
         try {
+            transaction2 = (BTransaction) getSession().newTransaction();
+
             transaction2.openTransaction();
-            do {
-                hasError = false;
 
-                // MAJ de l'increment de la CA
-                FWIncrementation increment = new FWIncrementation();
-                increment.setSession(session);
-                increment.setIdIncrement(CASection.TABLE_CASECTP);
-                increment.setIdCodeSysteme("");
-                increment.setAnneeIncrement("");
-                increment.retrieve(transaction2);
-                PRAssert.notIsNew(increment, null);
+            // MAJ de l'increment de la CA
+            FWIncrementation increment = new FWIncrementation();
+            increment.setSession(session);
+            increment.setIdIncrement(CASection.TABLE_CASECTP);
+            increment.setIdCodeSysteme("");
+            increment.setAnneeIncrement("");
+            increment.retrieve(transaction2);
+            PRAssert.notIsNew(increment, null);
 
-                // calcul de la nouvelle valeur de l'increment CA
-                plageIncr.min = Long.parseLong(increment.getValeurIncrement()) + 1;
-                plageIncr.max = plageIncr.min + nombreRentes;
+            // calcul de la nouvelle valeur de l'increment CA
+            plageIncr.min = Long.parseLong(increment.getValeurIncrement()) + 1;
+            plageIncr.max = plageIncr.min + nombreRentes;
 
-                // Bah, on est jamais trop prudent !!!
-                // Réserve de sécurité de 1%
+            // Bah, on est jamais trop prudent !!!
+            // Réserve de sécurité de 1%
 
-                long diff = plageIncr.max;
-                diff -= plageIncr.min;
+            long diff = plageIncr.max;
+            diff -= plageIncr.min;
 
-                diff = diff / 100;
-                // Bah, on est jamais trop prudent, réserve de plage de 1% (min
-                // : 10, max : 1000)!!!
-                // Réserve de sécurité
-                if (diff > 1000) {
-                    diff = 1000;
-                } else if (diff < 10) {
-                    diff = 10;
-                }
-                plageIncr.max += diff;
+            diff = diff / 100;
+            // Bah, on est jamais trop prudent, réserve de plage de 1% (min
+            // : 10, max : 1000)!!!
+            // Réserve de sécurité
+            if (diff > 1000) {
+                diff = 1000;
+            } else if (diff < 10) {
+                diff = 10;
+            }
+            plageIncr.max += diff;
 
-                // mise a jours de l'increment
-                increment.setValeurIncrement(new Long(plageIncr.max).toString());
+            increment.setValeurIncrement(new Long(plageIncr.max).toString());
+            increment.update(transaction2);
 
-                try {
-                    // la reservation de l'increment de fait pas partie de la
-                    // transaction
-                    increment.update(transaction2);
-                    transaction2.commit();
-                    if (transaction2.hasErrors()) {
-                        transaction2.rollback();
-                        transaction2.clearErrorBuffer();
-                        throw new Exception("Error while updating increment for table : " + CAOperation.TABLE_CAOPERP);
-                    }
-                } catch (Exception e) {
-                    hasError = true;
-                    retryNumber++;
+            if (!transaction2.hasErrors()) {
+                transaction2.commit();
+            } else {
+                transaction2.rollback();
+                transaction2.clearErrorBuffer();
+                throw new RETechnicalException("Error while updating increment for table : "
+                        + CAOperation.TABLE_CAOPERP);
+            }
 
-                    Thread.sleep(2000);
-                } finally {
-                    transaction2.closeTransaction();
-                }
-            } while (hasError && (retryNumber <= 3));
+        } catch (Exception e) {
+            String message = "Une exception s'est produite lors de la réservation de la plage d'incrément des sections CA ["
+                    + CAOperation.TABLE_CAOPERP + "] : " + e.toString();
+            logger.error(message, e);
         } finally {
             if (transaction2 != null) {
-                transaction2.closeTransaction();
+                try {
+                    transaction2.closeTransaction();
+                } catch (Exception e) {
+                    logger.error("A fatal exception has throen when closing transaction !");
+                }
             }
         }
-        if (hasError) {
-            return null;
-        } else {
-            return plageIncr;
-        }
+
+        // TODO ajouter des tests sur la valeurs des incréments
+        return plageIncr;
     }
 
     public void setDateEcheancePaiement(String dateEcheancePaiement) {
@@ -658,8 +603,7 @@ public abstract class AREPmtMensuel extends PRAbstractProcess {
     }
 
     protected void validationPmt(BSession session, APIGestionRentesExterne comptaFast,
-            APIGestionComptabiliteExterne comptaExt, Map<Integer, RECumulPrstParRubrique> cumulParGenreRente)
-            throws Exception {
+            Map<Integer, RECumulPrstParRubrique> cumulParGenreRente) throws Exception {
         BTransaction transaction = null;
         try {
             transaction = new BTransaction(session);
@@ -681,30 +625,25 @@ public abstract class AREPmtMensuel extends PRAbstractProcess {
             }
             comptaFast.checkIntegrity(session, transaction, mapRentesStd);
             transaction.commit();
-
         } catch (Exception e) {
-            getMemoryLog().logMessage(e.toString(), FWMessage.ERREUR, "");
+            String message = "Une exception s'est produite lors de la validation du paiement : " + e.toString();
+            logger.error(message, e);
             try {
                 if ((transaction != null) && transaction.isOpened()) {
+                    transaction.setRollbackOnly();
                     transaction.rollback();
                 }
             } catch (Exception e2) {
-                getMemoryLog().logMessage(e2.toString(), FWMessage.ERREUR, "");
+                logger.error("Validation du paiement : le rollback de la transaction à échoué : " + e2.toString(), e2);
             }
-
-            // Une erreur est survenue, annulation de toutes les écritures des
-            // journaux !!!
-            // TODO
-            // comptaFast.rollback();
-            // comptaExt.getJournal().annuler();
-            throw new Exception("Contrôle d'intégrité en erreur. " + e.toString());
+            throw new Exception(message, e);
         } finally {
             try {
                 if ((transaction != null) && transaction.isOpened()) {
                     transaction.closeTransaction();
                 }
             } catch (Exception e1) {
-                e1.printStackTrace();
+                logger.error("Validation du paiement : la cloture de la transaction à échoué : " + e1.toString(), e1);
             }
         }
     }
