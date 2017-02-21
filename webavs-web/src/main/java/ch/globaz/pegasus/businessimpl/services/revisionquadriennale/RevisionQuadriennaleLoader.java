@@ -169,8 +169,12 @@ public class RevisionQuadriennaleLoader {
         listRevisionsSearch.setForMoisAnneeLessOrEquals(periode.getDateFin());
         listRevisionsSearch.setForMoisDateFin(periode.getDateFin());
 
+        int yearMin = new Date(periode.getDateFin()).getYear() - 6;
+        listRevisionsSearch.setForMoinAnneeMinLess("12." + yearMin);
+
         listRevisionsSearch.setForDateFin(new Date(periode.getDateFin()).getLastDayOfMonth().getValue());
         listRevisionsSearch.setForDateDebut(new Date(periode.getDateDebut()).getFirstDayOfMonth().getValue());
+
         listRevisionsSearch.setForCsEtatDroit(IPCDroits.CS_VALIDE);
 
         return PersistenceUtil.search(listRevisionsSearch);

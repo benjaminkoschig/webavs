@@ -118,9 +118,13 @@
 				<search-field name="forDateFin" operation="NULL" field-ref="pcaRequerant.dateFin" />  
 				<search-field name="forDateFin" operation="NULL" field-ref="pcaConjoint.dateFin" />  
 				<search-field name="foInIdDroit" operation="IN" field-ref="simpleVersionDroit.idDroit"/>   
-				
-				<search-field name="forMoisAnneeGreaterOrEquals" operation="GREATER_OR_EQUALS" field-ref="simpleDemande.dateProchaineRevision"/>
-				<search-field name="forMoisAnneeLessOrEquals" operation="LESS_OR_EQUALS" field-ref="simpleDemande.dateProchaineRevision"/>
+				<search-group operator="OR"> 
+					<search-group operator="AND">
+						<search-field name="forMoisAnneeGreaterOrEquals" operation="GREATER_OR_EQUALS" field-ref="simpleDemande.dateProchaineRevision"/>
+						<search-field name="forMoisAnneeLessOrEquals" operation="LESS_OR_EQUALS" field-ref="simpleDemande.dateProchaineRevision"/>
+					</search-group>
+					<search-field name="forMoinAnneeMinLess" operation="LESS_OR_EQUALS" field-ref="simpleDemande.dateProchaineRevision"/>
+				</search-group>
 				<search-group operator="OR"> 
 					<search-field name="forMoisDateFin" operation="NULL" field-ref="simpleDemande.dateFin" />
 					<search-field name="forMoisDateFin" operation="GREATER" field-ref="simpleDemande.dateFin" />

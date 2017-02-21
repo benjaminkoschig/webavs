@@ -14,6 +14,7 @@ public class ListrevisionWithPcaRequerantConjointSearch extends JadeSearchComple
     private String forMoisDateFin;
     private String forMoisAnneeGreaterOrEquals;
     private String forMoisAnneeLessOrEquals;
+    private String forMoinAnneeMinLess;
 
     public String getForDateDebut() {
         return forDateDebut;
@@ -78,6 +79,14 @@ public class ListrevisionWithPcaRequerantConjointSearch extends JadeSearchComple
 
     public void setFoInIdDroit(List<String> foInIdDroit) {
         this.foInIdDroit = foInIdDroit;
+    }
+
+    public String getForMoinAnneeMinLess() {
+        return forMoinAnneeMinLess;
+    }
+
+    public void setForMoinAnneeMinLess(String forMoinAnneeMinLess) {
+        this.forMoinAnneeMinLess = forMoinAnneeMinLess;
     }
 
 }
