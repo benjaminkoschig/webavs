@@ -1,0 +1,18 @@
+Pourquoi garder les XSD originaux et , donc on ne travaille pas avec les XSD originaux ?!!
+
+Et ouais ... réponse à ces 2 questions ci-dessous !
+
+
+Pourquoi ne pas travailler avec les XSD originaus ?
+
+On ne travail pas avec les XSD originaux car des erreurs sont présentes dans ces fichiers 
+Un exemple  d'erreur qui à du être corrigée :
+	<xs:complexType name="personIdentificationType ">
+	
+l'espace après le nom "personIdentificationType" empêche JAXB de générer les classes
+
+
+Pourquoi les avoir conservé ?
+
+La (les) personne(s) qui devront intervenir sur le projet ou le mettre à jour lorsque la confédération aura une nouvelle version de XSD ou autre
+auront la possibilités de voir les différences entre les originaux et les fichiers XSD réellement exploités par l'application.
