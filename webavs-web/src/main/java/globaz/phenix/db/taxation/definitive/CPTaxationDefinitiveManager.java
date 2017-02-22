@@ -20,27 +20,28 @@ public class CPTaxationDefinitiveManager extends BManager {
      * 
      */
     private static final long serialVersionUID = 1L;
-    public final static String CS_DECISION_ACOMPTE = "605007";
-    public final static String CS_DECISION_CORRECTION = "605003";
+    public static final String CS_DECISION_ACOMPTE = "605007";
+    public static final String CS_DECISION_CORRECTION = "605003";
 
-    public final static String CS_DECISION_DEFINITIVE = "605002";
-    public final static String CS_DECISION_PROVISOIRE = "605001";
-    public final static String CS_DECISION_RECTIFICATIVE = "605004";
-    public final static String CS_DECISION_REDUCTION = "605009";
-    public final static String CS_DECISION_REMISE = "605008";
-    public final static String CS_ETAT_PRESTATION_CONTROLE = "52006003";
+    public static final String CS_DECISION_DEFINITIVE = "605002";
+    public static final String CS_DECISION_PROVISOIRE = "605001";
+    public static final String CS_DECISION_RECTIFICATIVE = "605004";
+    public static final String CS_DECISION_REDUCTION = "605009";
+    public static final String CS_DECISION_REMISE = "605008";
+    public static final String CS_ETAT_PRESTATION_CONTROLE = "52006003";
 
-    public final static String CS_ETAT_PRESTATION_DEFINITIF = "52006005";
-    public final static String CS_ETAT_PRESTATION_MIS_LOT = "52006004";
+    public static final String CS_ETAT_PRESTATION_DEFINITIF = "52006005";
+    public static final String CS_ETAT_PRESTATION_MIS_LOT = "52006004";
     // Redéfinition des constantes pour éviter de rajouter des liens
     // inter-projet.
-    public final static String CS_ETAT_PRESTATION_OUVERT = "52006001";
-    public final static String CS_ETAT_PRESTATION_VALIDE = "52006002";
-    public final static String CS_TYPE_AFF_NON_ACTIF = "804004";
+    public static final String CS_ETAT_PRESTATION_OUVERT = "52006001";
+    public static final String CS_ETAT_PRESTATION_VALIDE = "52006002";
+    public static final String CS_TYPE_AFF_NON_ACTIF = "804004";
 
-    public final static String CS_TYPE_AFF_NON_ACTIF_PROVISOIRE = "804007";
-    public final static String CS_TYPE_CALC_FORTUNE_TOTALE = "600007";
-    public final static String CS_TYPE_CALC_REVENU_NET = "600019";
+    public static final String CS_TYPE_AFF_NON_ACTIF_PROVISOIRE = "804007";
+    public static final String CS_TYPE_CALC_FORTUNE_TOTALE = "600007";
+    public static final String CS_TYPE_CALC_REVENU_NET = "600019";
+
     private String dateDebutPeriode = "";
     private String dateFinPeriode = "";
     private transient String fields = null;
@@ -114,7 +115,7 @@ public class CPTaxationDefinitiveManager extends BManager {
 
     @Override
     protected String _getWhere(BStatement statement) {
-        StringBuffer sqlWhere = new StringBuffer("");
+        StringBuilder sqlWhere = new StringBuilder("");
 
         if (!JadeStringUtil.isIntegerEmpty(forNoPassage)) {
             if (sqlWhere.length() != 0) {
@@ -127,33 +128,6 @@ public class CPTaxationDefinitiveManager extends BManager {
             sqlWhere.append(CPTaxationDefinitive.FIELDNAME_ID_PASSAGE_DECISION);
             sqlWhere.append("=");
             sqlWhere.append(_dbWriteNumeric(statement.getTransaction(), forNoPassage));
-        }
-
-        if (!JadeStringUtil.isIntegerEmpty(forIdTiers)) {
-            if (sqlWhere.length() != 0) {
-                sqlWhere.append(" AND ");
-            }
-
-            sqlWhere.append(_getCollection());
-            sqlWhere.append(CPTaxationDefinitive.TABLE_TIERS);
-            sqlWhere.append(".");
-            sqlWhere.append(CPTaxationDefinitive.FIELDNAME_ID_TIERS);
-            sqlWhere.append("=");
-            sqlWhere.append(_dbWriteNumeric(statement.getTransaction(), forIdTiers));
-        }
-
-        if (!JadeStringUtil.isEmpty(forIdTiersIn)) {
-            if (sqlWhere.length() != 0) {
-                sqlWhere.append(" AND ");
-            }
-
-            sqlWhere.append(_getCollection());
-            sqlWhere.append(CPTaxationDefinitive.TABLE_TIERS);
-            sqlWhere.append(".");
-            sqlWhere.append(CPTaxationDefinitive.FIELDNAME_ID_TIERS);
-            sqlWhere.append(" IN (");
-            sqlWhere.append(forIdTiersIn);
-            sqlWhere.append(") ");
         }
 
         if (!JadeStringUtil.isIntegerEmpty(dateDebutPeriode)) {
@@ -209,22 +183,12 @@ public class CPTaxationDefinitiveManager extends BManager {
 
         }
 
-        // Dans tous les cas....
         if (sqlWhere.length() != 0) {
             sqlWhere.append(" AND ");
         }
-        // //Que les indépendants
-        // sqlWhere.append(_getCollection());
-        // sqlWhere.append(CPTaxationDefinitive.TABLE_SIT_PROF);
-        // sqlWhere.append(".");
-        // sqlWhere.append(CPTaxationDefinitive.FIELDNAME_IS_INDEPENDANT);
-        // sqlWhere.append("=");
-        // sqlWhere.append(_dbWriteString(statement.getTransaction(), "1"));
-        // sqlWhere.append(" AND ");
 
         // Que les prestations durant la période de la décision cot pers.
         // définitive
-
         sqlWhere.append(_getCollection());
         sqlWhere.append(CPTaxationDefinitive.TABLE_PREST_APG);
         sqlWhere.append(".");
@@ -246,7 +210,6 @@ public class CPTaxationDefinitiveManager extends BManager {
         sqlWhere.append(".");
         sqlWhere.append(CPTaxationDefinitive.FIELDNAME_DATE_FIN_DECISION);
 
-        // AND WEBAVS.CPDECIP.IAACTI='1'
         // Que les décisions actives
         sqlWhere.append(" AND ");
         sqlWhere.append(_getCollection());
@@ -335,14 +298,6 @@ public class CPTaxationDefinitiveManager extends BManager {
 
     public void setForEtatPrestation(String forEtatPrestation) {
         this.forEtatPrestation = forEtatPrestation;
-    }
-
-    public void setForIdTiers(String forIdTiers) {
-        this.forIdTiers = forIdTiers;
-    }
-
-    public void setForIdTiersIn(String forIdTiersIn) {
-        this.forIdTiersIn = forIdTiersIn;
     }
 
     public void setForNoPassage(String forNoPassage) {

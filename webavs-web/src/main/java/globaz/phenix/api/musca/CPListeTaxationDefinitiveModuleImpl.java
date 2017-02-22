@@ -15,24 +15,8 @@ import globaz.phenix.itext.taxation.definitive.CPListeTaxationDefinitiveXlsPdf;
  */
 public class CPListeTaxationDefinitiveModuleImpl implements IntModuleFacturation {
 
-    // ~ Instance fields
-    // ------------------------------------------------------------------------------------------------
-
-    /**
-	 * 
-	 */
     private static final long serialVersionUID = -5192240794451174398L;
 
-    // ~ Methods
-    // --------------------------------------------------------------------------------------------------------
-
-    /*
-     * AUCUNE ACTION N'EST ACTION N'EST FAITE CONCERNANT LA COMPTABILISATION, L'IMPRESSION, LA SUPPRESSION
-     */
-    /**
-     * @see globaz.musca.external.IntModuleFacturation#avantRecomptabiliser(globaz.musca.api.IFAPassage,
-     *      globaz.globall.db.BProcess)
-     */
     @Override
     public boolean avantRecomptabiliser(IFAPassage passage, BProcess context) throws Exception {
         return false;
@@ -44,10 +28,6 @@ public class CPListeTaxationDefinitiveModuleImpl implements IntModuleFacturation
         return true;
     }
 
-    /**
-     * @see globaz.musca.external.IntModuleFacturation#avantRepriseErrCom(globaz.musca.api.IFAPassage,
-     *      globaz.globall.db.BProcess)
-     */
     @Override
     public boolean avantRepriseErrCom(IFAPassage passage, BProcess context) throws Exception {
         return false;
@@ -66,7 +46,7 @@ public class CPListeTaxationDefinitiveModuleImpl implements IntModuleFacturation
         lst.setParent(context);
         lst.setNoPassage(passage.getIdPassage());
         lst.setEMailAddress(context.getEMailAddress());
-
+        lst.setFromFacturation(true);
         lst.executeProcess();
 
         // contrôler si le process a fonctionné

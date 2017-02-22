@@ -89,6 +89,17 @@ public class SQLWriterTest {
     }
 
     @Test
+    public void testAndWithConditionAndParam() throws Exception {
+        String param = null;
+        assertThat(SQLWriter.write().and(false, "toto = ?", param).toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().and(true, "toto = ?", param).toSql()).isEqualTo("");
+
+        assertThat(SQLWriter.write().and(false, "toto = ?", "kk").toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().and(true, "toto = ?", "kk").toSql()).isEqualTo(" toto = kk");
+
+    }
+
+    @Test
     public void testAndWithParams() throws Exception {
         List<String> l = null;
         assertThat(SQLWriter.write().and("in (?)", l).toSql()).isEqualTo("");
@@ -106,6 +117,16 @@ public class SQLWriterTest {
         Integer i = null;
         assertThat(SQLWriter.write().and("in (?,?,?)", 3, 2, 1).toSql()).isEqualTo(" in (3,2,1)");
         assertThat(SQLWriter.write().and("in (?)", i).toSql()).isEqualTo("");
+    }
+
+    @Test
+    public void testAndWithConditionAndParamsInteger() throws Exception {
+        Integer i = null;
+        assertThat(SQLWriter.write().and(false, "in (?,?,?)", 3, 2, 1).toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().and(true, "in (?,?,?)", 3, 2, 1).toSql()).isEqualTo(" in (3,2,1)");
+
+        assertThat(SQLWriter.write().and(false, "in (?)", i).toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().and(true, "in (?)", i).toSql()).isEqualTo("");
     }
 
     @Test

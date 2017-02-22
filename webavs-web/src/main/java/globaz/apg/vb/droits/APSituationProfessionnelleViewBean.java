@@ -18,6 +18,7 @@ import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JANumberFormatter;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.api.IAFAffiliation;
 import globaz.naos.api.IAFAssurance;
@@ -40,6 +41,8 @@ import globaz.prestation.tools.PRImagesConstants;
 import globaz.prestation.tools.PRSession;
 import globaz.prestation.tools.nnss.PRNSSUtil;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -211,6 +214,19 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     public String getDateDebutDroit() {
         if (droitDTO != null) {
             return droitDTO.getDateDebutDroit();
+        } else {
+            return "";
+        }
+    }
+
+    public String getAnneeFromDateDebutDroit() {
+        if (droitDTO != null) {
+            Date globazDate = JadeDateUtil.getGlobazDate(droitDTO.getDateDebutDroit());
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(globazDate);
+
+            return String.valueOf(cal.get(Calendar.YEAR));
         } else {
             return "";
         }

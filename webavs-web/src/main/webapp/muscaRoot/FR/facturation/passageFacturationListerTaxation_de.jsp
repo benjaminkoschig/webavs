@@ -51,7 +51,10 @@ else
 						<%-- tpl:put name="zoneMain" --%>
           <TR>
             <TD>Numéro</TD>
-            <TD><INPUT name="noPassage" type="text" value="<%=viewBean.getNoPassage()%>" class="numeroCourtDisabled" readonly></TD>
+            <TD>
+            	<INPUT name="noPassage" type="text" value="<%=viewBean.getNoPassage()%>" class="numeroCourtDisabled" readonly>
+            	<INPUT name="fromFacturation" type="hidden" value="true"/>
+            </TD>
           </TR>
           <tr> 
             <td width="23%" height="2">Adresse E-Mail</td>

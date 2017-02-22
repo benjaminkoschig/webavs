@@ -9,7 +9,7 @@ import ch.globaz.simpleoutputlist.annotation.style.Align;
 import ch.globaz.simpleoutputlist.annotation.style.ColumnStyle;
 
 @ColumnValueConverter({ MontantConverter.class, PourcentConverter.class })
-public class TaxationDefinitiveForList {
+public abstract class TaxationDefinitiveForList {
     private String nss;
     private String numAffillie;
     private String designation;
@@ -21,7 +21,7 @@ public class TaxationDefinitiveForList {
     private Montant revenuDefinitif;
     private Montant apgSurLeRevenu;
     private String type;
-    private Integer ecart;
+    private double ecart;
 
     @ColumnStyle(width = "10%", align = Align.LEFT)
     @Column(name = "listeTaxDefNss", order = 0)
@@ -89,7 +89,7 @@ public class TaxationDefinitiveForList {
 
     @ColumnStyle(width = "7%", align = Align.RIGHT)
     @Column(name = "listeTaxDefEcart", order = 11)
-    public Integer getEcart() {
+    public double getEcart() {
         return ecart;
     }
 
@@ -137,8 +137,7 @@ public class TaxationDefinitiveForList {
         this.type = type;
     }
 
-    public void setEcart(Integer ecart) {
+    public void setEcart(double ecart) {
         this.ecart = ecart;
     }
-
 }

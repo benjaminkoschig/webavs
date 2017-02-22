@@ -18,31 +18,16 @@ import ch.globaz.simpleoutputlist.core.Details;
 import com.google.common.base.Joiner;
 
 public class CPListeTaxationDefinitiveXlsPdf extends BProcess {
-    /**
-     * 
-     */
+
     private static final long serialVersionUID = 1L;
 
     public static final String NUM_REF_INFOROM_LISTE_TAXA_DEF = "0157CFA";
 
     private ListTaxationsDefinitivesCriteria criteria = new ListTaxationsDefinitivesCriteria();
 
-    public void setCriteria(ListTaxationsDefinitivesCriteria criteria) {
-        this.criteria = criteria;
-    }
+    private String noPassage;
+    private boolean fromFacturation = false;
 
-    public void setNoPassage(String noPassage) {
-        criteria.setNoPassage(noPassage);
-    }
-
-    public String getNoPassage() {
-        return criteria.getNoPassage();
-    }
-
-    /**
-     * @throws Exception
-     *             DOCUMENT ME!
-     */
     @Override
     protected void _validate() throws Exception {
         if (JadeStringUtil.isEmpty(getEMailAddress())) {
@@ -53,7 +38,18 @@ public class CPListeTaxationDefinitiveXlsPdf extends BProcess {
             }
         }
 
-        if (JadeStringUtil.isEmpty(criteria.getNoPassage())) {
+        boolean isAllEmpty = JadeStringUtil.isEmpty(criteria.getAnneeTaxationCP());
+        isAllEmpty &= JadeStringUtil.isEmpty(criteria.getDateDebutDecisionsCP());
+        isAllEmpty &= JadeStringUtil.isEmpty(criteria.getDateFinDecisionsCP());
+        isAllEmpty &= JadeStringUtil.isEmpty(criteria.getAnneeDroit());
+        isAllEmpty &= JadeStringUtil.isEmpty(criteria.getDateDebutDecompte());
+        isAllEmpty &= JadeStringUtil.isEmpty(criteria.getDateFinDecompte());
+
+        if (isAllEmpty) {
+            this._addError(getSession().getLabel("JSP_LISTE_TAXATIONS_DEFINITIVES_ERREUR_CHAMPS_VIDE"));
+        }
+
+        if (JadeStringUtil.isEmpty(criteria.getNoPassage()) && fromFacturation) {
             this._addError(getSession().getLabel("LISTE_TAX_DEF_NO_PASSAGE_EMPTY"));
         }
 
@@ -71,6 +67,11 @@ public class CPListeTaxationDefinitiveXlsPdf extends BProcess {
 
     @Override
     protected boolean _executeProcess() throws Exception {
+
+        if (criteria == null) {
+            return false;
+        }
+
         LoadTaxationsDefinitives loader = new LoadTaxationsDefinitives(getSession());
         List<TaxationDefinitiveForList> listOutput = loader.load(criteria);
 
@@ -97,15 +98,18 @@ public class CPListeTaxationDefinitiveXlsPdf extends BProcess {
         String groupMail = CPProperties.LISTE_TAXATION_DEFINITIVE_GROUP_MAIL.getValue();
         if (groupMail != null) {
             groupMail = groupMail.trim();
-            if (!groupMail.isEmpty()) {
+            Set<String> mails = new HashSet<String>();
+
+            if (!groupMail.isEmpty() && fromFacturation) {
                 List<String> mailList = UsersMail
                         .resolveMailsByGroupId(CPProperties.LISTE_TAXATION_DEFINITIVE_GROUP_MAIL.getValue());
-                Set<String> mails = new HashSet<String>();
                 mails.addAll(mailList);
-                mails.add(getEMailAddress());
-                documentInfoPdf.setPublishProperty(JadePublishDocumentInfo.MAILS_TO, Joiner.on(";").join(mails));
-                documentInfoXls.setPublishProperty(JadePublishDocumentInfo.MAILS_TO, Joiner.on(";").join(mails));
             }
+
+            mails.add(getEMailAddress());
+
+            documentInfoPdf.setPublishProperty(JadePublishDocumentInfo.MAILS_TO, Joiner.on(";").join(mails));
+            documentInfoXls.setPublishProperty(JadePublishDocumentInfo.MAILS_TO, Joiner.on(";").join(mails));
         }
 
         this.registerAttachedDocument(documentInfoPdf, filePdf.getAbsolutePath());
@@ -126,5 +130,30 @@ public class CPListeTaxationDefinitiveXlsPdf extends BProcess {
     @Override
     public GlobazJobQueue jobQueue() {
         return GlobazJobQueue.READ_SHORT;
+    }
+
+    public void setCriteria(ListTaxationsDefinitivesCriteria criteria) {
+        this.criteria = criteria;
+    }
+
+    public ListTaxationsDefinitivesCriteria getCriteria() {
+        return criteria;
+    }
+
+    public void setNoPassage(String noPassage) {
+        this.noPassage = noPassage;
+        criteria.setNoPassage(noPassage);
+    }
+
+    public void setFromFacturation(boolean fromFacturation) {
+        this.fromFacturation = fromFacturation;
+    }
+
+    public boolean isFromFacturation() {
+        return fromFacturation;
+    }
+
+    public String getNoPassage() {
+        return noPassage;
     }
 }

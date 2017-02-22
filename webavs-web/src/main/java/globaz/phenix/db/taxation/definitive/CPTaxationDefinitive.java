@@ -18,8 +18,10 @@ import globaz.globall.db.BStatement;
  */
 public class CPTaxationDefinitive extends BEntity {
 
-    public static final String FIELDNAME_DATE_DEBUT_DECISION = "IADDEB";
+    private static final long serialVersionUID = -3048532792237202090L;
 
+    public static final String FIELDNAME_ANNEE_TAXATION = "vfmaat";
+    public static final String FIELDNAME_DATE_DEBUT_DECISION = "IADDEB";
     public static final String FIELDNAME_DATE_DEBUT_PRST = "VHDDEB";
     public static final String FIELDNAME_DATE_FIN_DECISION = "IADFIN";
     public static final String FIELDNAME_DATE_FIN_PRST = "VHDFIN";
@@ -38,18 +40,14 @@ public class CPTaxationDefinitive extends BEntity {
     public static final String FIELDNAME_IS_INDEPENDANT = "VFBIND";
     public static final String FIELDNAME_NO_AFFILIE = "MALNAF";
     public static final String FIELDNAME_NSS = "HXNAVS";
+    public static final String FIELDNAME_CODE_SERVICE = "VATGSE";
     public static final String FIELDNAME_REVENU_DETERMINANT_DOCAP = "IHMDCA";
-    // ~ Static fields/initializers
-    // -------------------------------------------------------------------------------------
     public static final String FIELDNAME_REVENU_INDEPENDANT_SITPROF = "VFMRIN";
     public static final String FIELDNAME_TYPE_AFFILIATION = "MATTAF";
     public static final String FIELDNAME_TYPE_CALCUL_DOCAP = "IHIDCA";
     public static final String FIELDNAME_TYPE_DECISION_DECISON = "IATTDE";
-    /**
-	 * 
-	 */
-    private static final long serialVersionUID = -3048532792237202090L;
-
+    public static final String FIELDNAME_TYPE_PRESTATION_DEMANDE = "WATTDE";
+    public static final String FIELDNAME_DATEFIN_AFFILIATION = "MADFIN";
     public static final String TABLE_AFFILIATIONS = "AFAFFIP";
     public static final String TABLE_DECISIONS = "CPDECIP";
     public static final String TABLE_DEMANDES = "PRDEMAP";
@@ -60,16 +58,35 @@ public class CPTaxationDefinitive extends BEntity {
     public static final String TABLE_SIT_PROF = "APSIPRP";
     public static final String TABLE_TIERS = "TITIERP";
 
+    private String nss = "";
+    private String noAffilie = "";
+    private String dateFinAffiliation = "";
+    private String anneeTaxation = "";
+    private String dateDebut = "";
+    private String dateFin = "";
+    private String revenuDeterminant = "";
+    private String codeService = "";
+    private String revenuIndependant = "";
+    private String typePrestation = "";
+
     public static final String createFields(String schema) {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(schema).append(TABLE_PERSAVS).append(".").append(FIELDNAME_NSS).append(", ");
         sb.append(schema).append(TABLE_AFFILIATIONS).append(".").append(FIELDNAME_NO_AFFILIE).append(", ");
         sb.append(schema).append(TABLE_PREST_APG).append(".").append(FIELDNAME_DATE_DEBUT_PRST).append(", ");
         sb.append(schema).append(TABLE_PREST_APG).append(".").append(FIELDNAME_DATE_FIN_PRST).append(", ");
         sb.append(schema).append(TABLE_DOCAP).append(".").append(FIELDNAME_REVENU_DETERMINANT_DOCAP).append(", ");
-        sb.append(schema).append(TABLE_SIT_PROF).append(".").append(FIELDNAME_REVENU_INDEPENDANT_SITPROF).append(" ");
+
+        sb.append(schema).append(TABLE_SIT_PROF).append(".").append(FIELDNAME_ANNEE_TAXATION).append(", ");
+        sb.append(schema).append(TABLE_DROITS).append(".").append(FIELDNAME_CODE_SERVICE).append(", ");
+        sb.append(schema).append(TABLE_AFFILIATIONS).append(".").append(FIELDNAME_DATEFIN_AFFILIATION).append(", ");
+
+        sb.append(schema).append(TABLE_SIT_PROF).append(".").append(FIELDNAME_REVENU_INDEPENDANT_SITPROF).append(", ");
+
+        sb.append(schema).append(TABLE_DEMANDES).append(".").append(FIELDNAME_TYPE_PRESTATION_DEMANDE).append(" ");
+
         return sb.toString();
     }
 
@@ -223,22 +240,8 @@ public class CPTaxationDefinitive extends BEntity {
         return fromClauseBuffer.toString();
     }
 
-    private String dateDebut = "";
-    private String dateFin = "";
     private transient String fields = null;
-    // ~ Instance fields
-    // ------------------------------------------------------------------------------------------------
-    //
     private transient String fromClause = null;
-    private String noAffilie = "";
-    private String nss = "";
-
-    // ~ Methods
-    // --------------------------------------------------------------------------------------------------------
-
-    private String revenuDeterminant = "";
-
-    private String revenuIndependant = "";
 
     /**
      * @see globaz.globall.db.BEntity#_allowAdd()
@@ -292,12 +295,16 @@ public class CPTaxationDefinitive extends BEntity {
 
     @Override
     protected void _readProperties(BStatement statement) throws Exception {
+        dateFinAffiliation = statement.dbReadDateAMJ(FIELDNAME_DATEFIN_AFFILIATION);
+        anneeTaxation = statement.dbReadNumeric(FIELDNAME_ANNEE_TAXATION);
+        codeService = statement.dbReadNumeric(FIELDNAME_CODE_SERVICE);
         revenuIndependant = statement.dbReadNumeric(FIELDNAME_REVENU_INDEPENDANT_SITPROF);
         revenuDeterminant = statement.dbReadNumeric(FIELDNAME_REVENU_DETERMINANT_DOCAP);
         dateDebut = statement.dbReadDateAMJ(FIELDNAME_DATE_DEBUT_PRST);
         dateFin = statement.dbReadDateAMJ(FIELDNAME_DATE_FIN_PRST);
         nss = statement.dbReadString(FIELDNAME_NSS);
         noAffilie = statement.dbReadString(FIELDNAME_NO_AFFILIE);
+        typePrestation = statement.dbReadNumeric(FIELDNAME_TYPE_PRESTATION_DEMANDE);
     }
 
     @Override
@@ -374,5 +381,37 @@ public class CPTaxationDefinitive extends BEntity {
 
     public void setRevenuIndependant(String revenuIndependant) {
         this.revenuIndependant = revenuIndependant;
+    }
+
+    public void setAnneeTaxation(String anneeTaxation) {
+        this.anneeTaxation = anneeTaxation;
+    }
+
+    public void setCodeService(String codeService) {
+        this.codeService = codeService;
+    }
+
+    public String getAnneeTaxation() {
+        return anneeTaxation;
+    }
+
+    public String getCodeService() {
+        return codeService;
+    }
+
+    public String getDateFinAffiliation() {
+        return dateFinAffiliation;
+    }
+
+    public void setDateFinAffiliation(String dateFinAffiliation) {
+        this.dateFinAffiliation = dateFinAffiliation;
+    }
+
+    public String getTypePrestation() {
+        return typePrestation;
+    }
+
+    public void setTypePrestation(String typePrestation) {
+        this.typePrestation = typePrestation;
     }
 }

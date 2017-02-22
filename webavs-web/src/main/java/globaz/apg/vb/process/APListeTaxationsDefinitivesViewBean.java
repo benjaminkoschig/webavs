@@ -1,40 +1,41 @@
-package globaz.phenix.itext.taxation.definitive;
+/*
+ * Créé le 15.09.2006
+ */
+package globaz.apg.vb.process;
 
-import java.io.Serializable;
+import globaz.prestation.vb.PRAbstractViewBeanSupport;
 
-public class ListTaxationsDefinitivesCriteria implements Serializable {
-
-    private static final long serialVersionUID = 4132497865692850822L;
-
-    private String noPassage;
+/**
+ * 
+ * @author mmo
+ */
+public class APListeTaxationsDefinitivesViewBean extends PRAbstractViewBeanSupport {
 
     /**
      * Partie année de taxation
      */
-    private String anneeTaxationCP = null;
-    private String dateDebutDecisionsCP = null;
-    private String dateFinDecisionsCP = null;
+    private String anneeTaxationCP = "";
+    private String dateDebutDecisionsCP = "";
+    private String dateFinDecisionsCP = "";
 
     /**
      * Partie année de droit APG/Amat
      */
-    private String anneeDroit = null;
-    private String dateDebutDecompte = null;
-    private String dateFinDecompte = null;
+    private String anneeDroit = "";
+    private String dateDebutDecompte = "";
+    private String dateFinDecompte = "";
     private Boolean inclureAffilieRadie = false;
 
     /**
      * Partie commune
      */
-    private String startWithNoAffilie = null;
-    private String endWithNoAffilie = null;
+    private String startWithNoAffilie = "";
+    private String endWithNoAffilie = "";
+    private String eMailAddress = "";
 
-    public String getNoPassage() {
-        return noPassage;
-    }
-
-    public void setNoPassage(String noPassage) {
-        this.noPassage = noPassage;
+    @Override
+    public boolean validate() {
+        return true;
     }
 
     public String getAnneeTaxationCP() {
@@ -85,6 +86,14 @@ public class ListTaxationsDefinitivesCriteria implements Serializable {
         this.dateFinDecompte = dateFinDecompte;
     }
 
+    public String geteMailAddress() {
+        return eMailAddress;
+    }
+
+    public void seteMailAddress(String eMailAddress) {
+        this.eMailAddress = eMailAddress;
+    }
+
     public Boolean getInclureAffilieRadie() {
         return inclureAffilieRadie;
     }
@@ -107,10 +116,5 @@ public class ListTaxationsDefinitivesCriteria implements Serializable {
 
     public void setEndWithNoAffilie(String endWithNoAffilie) {
         this.endWithNoAffilie = endWithNoAffilie;
-    }
-
-    @Override
-    public String toString() {
-        return "ListTaxationsDefinitivesCriteria [noPassage=" + noPassage + "]";
     }
 }

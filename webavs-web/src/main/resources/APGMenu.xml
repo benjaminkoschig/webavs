@@ -79,6 +79,12 @@
 						</action>
 					</node>
 					
+					<node>
+						<label refId="MENU_OPTION_LISTE_TAXATIONS_DEFINITIVES" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.listeTaxationsDefinitives.afficher" />
+						</action>
+					</node>
 				</nodes>
 			</node>
 			<!-- Menu Traitements -->
@@ -551,6 +557,12 @@
 						<label refId="MENU_OPTION_LISTE_PRESTATION_VERSEE" />
 						<action command="/apg" responseTarget="fr_main">
 							<parameter name="userAction" value="apg.process.listePrestationVersee.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_LISTE_TAXATIONS_DEFINITIVES" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.listeTaxationsDefinitives.afficher" />
 						</action>
 					</node>
 				</nodes>

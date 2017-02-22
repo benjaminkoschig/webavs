@@ -759,6 +759,30 @@ public class Date implements Comparable<Date> {
         return cal.get(Calendar.DAY_OF_WEEK) == day;
     }
 
+    /**
+     * 
+     * @param dateDeDebut
+     * @param dateDeFin
+     * @return
+     */
+    public int getNbDaysBetween(Date dateDeComparaison) {
+        if (dateDeComparaison == null) {
+            return -1;
+        }
+
+        long greaterDate = dateDeComparaison.getTime();
+        long smallerDate = date.getTime();
+
+        // Si la date actuel est plus grande la date de comparaison, on inverse les roles
+        if (after(dateDeComparaison)) {
+            greaterDate = date.getTime();
+            smallerDate = dateDeComparaison.getTime();
+        }
+
+        double msDiff = greaterDate - smallerDate;
+        return (int) Math.round(msDiff / (1000 * 60 * 60 * 24));
+    }
+
     /***
      * @see Date#compareTo(Date)
      */

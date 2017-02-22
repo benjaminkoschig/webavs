@@ -16,57 +16,26 @@ import globaz.phenix.db.taxation.definitive.CPTaxationDefinitiveManager;
 import globaz.pyxis.db.tiers.TITiers;
 import java.math.BigDecimal;
 
-/**
- * <H1>Description</H1>
- * 
- * @author scr
- */
 public class CPListeTaxationDefinitive extends FWIAbstractManagerDocumentList {
-
-    // ~ Instance fields
-    // ------------------------------------------------------------------------------------------------
-
     public final static String NUM_REF_INFOROM_LISTE_TAXA_DEF = "0157CFA";
-    /**
-	 * 
-	 */
+
     private static final long serialVersionUID = -5192240794451174398L;
 
     private String noPassage = "";
+    private boolean fromFacturation = false;
 
-    // ~ Constructors
-    // ---------------------------------------------------------------------------------------------------
-
-    /**
-     * Crée une nouvelle instance de la classe CPListeTaxationDefinitiveModuleImpl.
-     */
     public CPListeTaxationDefinitive() {
         // session, prefix, Compagnie, Titre, manager, application
         super(null, "PRESTATIONS", "GLOBAZ", "Liste des taxations définitives APG/Maternité",
                 new CPTaxationDefinitiveManager(), "APG");
     }
 
-    /**
-     * Crée une nouvelle instance de la classe CPListeTaxationDefinitiveModuleImpl.
-     * 
-     * @param session
-     *            DOCUMENT ME!
-     */
     public CPListeTaxationDefinitive(BSession session) {
         // session, prefix, Compagnie, Titre, manager, application
         super(session, "PRESTATIONS", "GLOBAZ", "Liste des taxations définitives APG/Maternité",
                 new CPTaxationDefinitiveManager(), "APG");
     }
 
-    // ~ Methods
-    // --------------------------------------------------------------------------------------------------------
-
-    /*
-     * transfère des paramètres au manager;
-     */
-
-    /**
-     */
     @Override
     public void _beforeExecuteReport() {
 
@@ -75,12 +44,12 @@ public class CPListeTaxationDefinitive extends FWIAbstractManagerDocumentList {
         ListTaxationsDefinitivesCriteria criteria = new ListTaxationsDefinitivesCriteria();
         criteria.setNoPassage(noPassage);
         cpListeTaxationDefinitiveXlsPdf.setCriteria(criteria);
+        cpListeTaxationDefinitiveXlsPdf.setFromFacturation(fromFacturation);
         cpListeTaxationDefinitiveXlsPdf.setParent(this);
 
         try {
             cpListeTaxationDefinitiveXlsPdf.executeProcess();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -98,13 +67,6 @@ public class CPListeTaxationDefinitive extends FWIAbstractManagerDocumentList {
                 ACaisseReportHelper.JASP_PROP_NOM_CAISSE + getSession().getIdLangueISO().toUpperCase()));
     }
 
-    /*
-     * Valide le contenu de l'entité (notamment les champs obligatoires)
-     */
-    /**
-     * @throws Exception
-     *             DOCUMENT ME!
-     */
     @Override
     protected void _validate() throws Exception {
         if (JadeStringUtil.isEmpty(getEMailAddress())) {
@@ -190,7 +152,6 @@ public class CPListeTaxationDefinitive extends FWIAbstractManagerDocumentList {
             designation = "";
         }
 
-        // taxationDefinitiveForList.setAnneeTaxation(anneeTaxation);
         _addCell(elem.getNss());
         _addCell(elem.getNoAffilie() + designation);
         _addCell(elem.getDateDebut());
@@ -201,14 +162,6 @@ public class CPListeTaxationDefinitive extends FWIAbstractManagerDocumentList {
         _addCell(JANumberFormatter.round(ecart, 1, 0, JANumberFormatter.INF).toString());
     }
 
-    /*
-     * Titre de l'email
-     */
-    /**
-     * getter pour l'attribut EMail object
-     * 
-     * @return la valeur courante de l'attribut EMail object
-     */
     @Override
     protected String getEMailObject() {
         return getSession().getLabel("LISTE_TAXATION_DEFINITIVE");
@@ -218,11 +171,6 @@ public class CPListeTaxationDefinitive extends FWIAbstractManagerDocumentList {
         return noPassage;
     }
 
-    /*
-     * Initialisation des colonnes et des groupes
-     */
-    /**
-     */
     @Override
     protected void initializeTable() {
         // colonnes
@@ -237,11 +185,6 @@ public class CPListeTaxationDefinitive extends FWIAbstractManagerDocumentList {
 
     }
 
-    /**
-     * Set la jobQueue
-     * 
-     * @return DOCUMENT ME!
-     */
     @Override
     public GlobazJobQueue jobQueue() {
         return GlobazJobQueue.READ_SHORT;
@@ -249,5 +192,13 @@ public class CPListeTaxationDefinitive extends FWIAbstractManagerDocumentList {
 
     public void setNoPassage(String noPassage) {
         this.noPassage = noPassage;
+    }
+
+    public void setFromFacturation(boolean fromFacturation) {
+        this.fromFacturation = fromFacturation;
+    }
+
+    public boolean isFromFacturation() {
+        return fromFacturation;
     }
 }

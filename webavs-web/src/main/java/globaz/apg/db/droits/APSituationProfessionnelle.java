@@ -48,6 +48,8 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
     private static final String ERREUR_ALLOC_MAX_INCOCHABLE = "ALLOC_MAX_INCOCHABLE";
 
+    public static final String FIELDNAME_ANNEE_TAXATION = "VFMAAT";
+
     /** DOCUMENT ME! */
     public static final String FIELDNAME_AUTRE_REMUNERATION = "VFMARE";
 
@@ -159,6 +161,8 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
+
+    protected String anneeTaxation = "";
 
     /** DOCUMENT ME! */
     protected String autreOuPourcentRemuneration = "";
@@ -436,6 +440,8 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
             isPourcentAutreRemun = Boolean.TRUE;
         }
 
+        anneeTaxation = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_ANNEE_TAXATION);
+
         periodiciteAutreRemun = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_PERIODAUTREREMUN);
         dateFin = statement.dbReadDateAMJ(APSituationProfessionnelle.FIELDNAME_DATEFIN);
         dateFinContrat = statement.dbReadDateAMJ(APSituationProfessionnelle.FIELDNAME_DATEFINCONTRAT);
@@ -668,6 +674,10 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
                 "isTravailleurSansEmploi"));
         statement.writeField(APSituationProfessionnelle.FIELDNAME_ISNOACTIF, this._dbWriteBoolean(
                 statement.getTransaction(), isNonActif, BConstants.DB_TYPE_BOOLEAN_CHAR, "isNonActif"));
+
+        statement.writeField(APSituationProfessionnelle.FIELDNAME_ANNEE_TAXATION,
+                this._dbWriteNumeric(statement.getTransaction(), anneeTaxation, "anneeTaxation"));
+
         statement.writeField(APSituationProfessionnelle.FIELDNAME_ISINDEPENDANT, this._dbWriteBoolean(
                 statement.getTransaction(), isIndependant, BConstants.DB_TYPE_BOOLEAN_CHAR, "isIndependant"));
         statement.writeField(APSituationProfessionnelle.FIELDNAME_REVENUINDEPENDANT,
@@ -798,6 +808,7 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         clone.setIsSituationProf(getIsSituationProf());
         clone.setIsNonSoumisCotisation(getIsNonSoumisCotisation());
         clone.setIsTravailleurSansEmploi(getIsTravailleurSansEmploi());
+        clone.setAnneeTaxation(getAnneeTaxation());
         clone.setIsVersementEmployeur(getIsVersementEmployeur());
         clone.setMontantVerse(getMontantVerse());
         clone.setPeriodiciteAutreRemun(getPeriodiciteAutreRemun());
@@ -1705,6 +1716,14 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
     @Override
     public void setUniquePrimaryKey(String pk) {
         setIdSituationProf(pk);
+    }
+
+    public String getAnneeTaxation() {
+        return anneeTaxation;
+    }
+
+    public void setAnneeTaxation(String anneeTaxation) {
+        this.anneeTaxation = anneeTaxation;
     }
 
 }

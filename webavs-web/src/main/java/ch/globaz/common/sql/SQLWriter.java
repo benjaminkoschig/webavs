@@ -194,6 +194,19 @@ public class SQLWriter {
      * @param sqlFramgment
      * @return SQLWriter utilisé
      */
+    public SQLWriter and(boolean condition, String sqlFramgment) {
+        if (condition) {
+            and(sqlFramgment);
+        }
+        return this;
+    }
+
+    /**
+     * Ajoute le mot 'and' à la requête si besoin et le sqlFramgment.
+     * 
+     * @param sqlFramgment
+     * @return SQLWriter utilisé
+     */
     public SQLWriter and(String sqlFramgment) {
         this.and();
         query.append(" ").append(addSchemaToSql(sqlFramgment));
@@ -379,6 +392,22 @@ public class SQLWriter {
     /**
      * Ajoute le mot 'and' à la requête(si besoin) et le fragment SQL si les paramètres ne sont pas vide(null).
      * 
+     * @param condition Condition pour ajouter le fragment.
+     * @param params Paramétrées à utilisé dans le fragment SQL
+     * @param sqlFragement SQl à ajouté à la requête. Les caractères [?] sont remplacés par les params donnés en
+     *            paramètre(Ex: nom = '?' , => nom = 'Test').
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter and(boolean condition, String sqlFragement, Integer... params) {
+        if (condition) {
+            and(sqlFragement, params);
+        }
+        return this;
+    }
+
+    /**
+     * Ajoute le mot 'and' à la requête(si besoin) et le fragment SQL si les paramètres ne sont pas vide(null).
+     * 
      * @param params Paramétrées à utilisé dans le fragment SQL
      * @param sqlFragement SQl à ajouté à la requête. Les caractères [?] sont remplacés par les params donnés en
      *            paramètre(Ex: nom = '?' , => nom = 'Test').
@@ -390,6 +419,25 @@ public class SQLWriter {
                 paramsToUse.add(String.valueOf(p));
             }
             this.and(sqlFragement);
+        }
+        return this;
+    }
+
+    /**
+     * TODO que faire si certaine paramétrer sont vide ???
+     * 
+     * Ajoute le mot 'and' à la requête(si besoin) et le fragment SQL si les paramètres ne sont pas vide(null ou chain
+     * vide).
+     * 
+     * @param condition Condition pour ajouter le fragment.
+     * @param params Paramétrées à utilisé dans le fragment SQL
+     * @param sqlFragement SQl à ajouté à la requête. Les caractères [?] sont remplacés par les params donnés en
+     *            paramètre(Ex: and('Test', '12') nom = '?' and age = ? , => nom = 'Test' and age = 12).
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter and(boolean condition, String sql, String... params) {
+        if (condition) {
+            and(sql, params);
         }
         return this;
     }

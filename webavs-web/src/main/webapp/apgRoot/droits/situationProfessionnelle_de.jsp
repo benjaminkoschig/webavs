@@ -128,9 +128,14 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
   function postInit(){
   	if (document.all('isIndependant').checked) {
 	  	// revenu indépendant
+	  	document.all('blockWithoutAnneeTaxation').style.display = 'none';
+	  	document.all('blockAnneeTaxation').style.display = 'block';
   		document.all('specialEmployeur').style.display = 'none';
 		document.forms[0].elements('isVersementEmployeur')[1].disabled=true;
 		document.forms[0].elements('isVersementEmployeur')[0].disabled=true;
+   	} else {
+   		document.all('blockWithoutAnneeTaxation').style.display = 'block';
+	  	document.all('blockAnneeTaxation').style.display = 'none';
    	}
   }
   	
@@ -168,6 +173,10 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 		  	document.forms[0].elements('autreSalaire').value = '';
 		  	document.forms[0].elements('montantVerse').value = '';
 		  	
+		  	document.all('blockWithoutAnneeTaxation').style.display = 'none';
+		  	document.all('blockAnneeTaxation').style.display = 'block';
+		  	document.forms[0].elements('anneeTaxation').value = '<%=viewBean.getAnneeFromDateDebutDroit()%>';
+		  	
 		  	//si independant cocher auto. alloc. expl. sauf si non-actif
 		  	if(isEmployeurActif()){
 		  		// pour la maternite, on ne donne pas les allocations d'exploitation se independant et actif
@@ -175,12 +184,15 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 		  			document.forms[0].elements('isAllocationExploitation').checked = true;
 		  		<%}%>
 		  	}
-		  	
 		} else {
 	  		document.all('specialEmployeur').style.display = 'block';
 	  	  	document.forms[0].elements('isVersementEmployeur')[0].disabled = false;
 		  	document.forms[0].elements('isVersementEmployeur')[1].disabled = false;
 		  	document.forms[0].elements('isAllocationExploitation').checked = false;
+		  	
+		  	document.all('blockWithoutAnneeTaxation').style.display = 'block';
+		  	document.all('blockAnneeTaxation').style.display = 'none';
+		  	document.forms[0].elements('anneeTaxation').value = '';
 		}
   }
   
@@ -463,8 +475,15 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 							</TD>
 						</TR>
 						<TR>
-							<TD><LABEL for="isIndependant"><ct:FWLabel key="JSP_INDEPENDANT_NON_ACTIF"/></LABEL></TD>
-							<TD><INPUT type="checkbox" name="isIndependant" value="on" onclick="boutonIndependantChange();" <%=viewBean.getIsIndependant().booleanValue()?"CHECKED":""%>></TD>
+							<TD>
+								<LABEL for="isIndependant"><ct:FWLabel key="JSP_INDEPENDANT_NON_ACTIF"/></LABEL>
+								<INPUT type="checkbox" name="isIndependant" value="on" onclick="boutonIndependantChange();" <%=viewBean.getIsIndependant().booleanValue()?"CHECKED":""%>>
+							</TD>
+							<TD id="blockAnneeTaxation">
+								<LABEL><ct:FWLabel key="JSP_ANNEE_TAXATION"/>&nbsp;<IMG TITLE="<%=viewBean.getSession().getLabel("JSP_ANNEE_TAXATION_INFO")%>" SRC="<%=request.getContextPath()%>/images/prepare.gif" border="0"/></LABEL>
+								<INPUT type="text" name="anneeTaxation" class="numeroCourt" value="<%=viewBean.getAnneeTaxation()%>"/>
+							</TD>
+							<TD id="blockWithoutAnneeTaxation">&nbsp;</TD>
 							<TD><LABEL for="revenuIndependant"><ct:FWLabel key="JSP_REVENU_INDEPENDANT"/></LABEL></TD>
 							<TD><INPUT type="text" name="revenuIndependant" value="<%=viewBean.getRevenuIndependant()%>" class="montant" onchange="validateFloatNumber(this);" onkeypress="montantIndependantChange(); return filterCharForFloat(window.event);"></TD>
 							<%if (!viewBean.isPrestationAcmAlfaEnable().booleanValue()) {%>
