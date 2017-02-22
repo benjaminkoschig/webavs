@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -154,6 +155,31 @@
 									</includes>
 								</resource>
 							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Used to dynamically generate .class file from XSD with XJB binding --> 
+			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<version>0.13.1</version>
+				<executions>
+					<execution>
+						<id>generate</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaDirectory>src/main/resources/xsd/ree</schemaDirectory>
+							<schemaIncludes>
+								<include>*.xsd</include>
+							</schemaIncludes>
+							<bindingDirectory>src/main/resources/xjb</bindingDirectory>
+							<bindingIncludes>
+								<include>ree-bindings.xjb</include>
+							</bindingIncludes>
 						</configuration>
 					</execution>
 				</executions>
@@ -506,12 +532,12 @@
 			<groupId>ch.globaz</groupId>
 			<artifactId>journalisation</artifactId>
 		</dependency>
- 		<dependency>
- 			<groupId>ch.admin.ofit.anakin</groupId>
- 			<artifactId>Anakin</artifactId>
- 			<version>1.12.2</version>
- 			<classifier>globaz</classifier>
- 		</dependency>
+		<dependency>
+			<groupId>ch.admin.ofit.anakin</groupId>
+			<artifactId>Anakin</artifactId>
+			<version>1.12.2</version>
+			<classifier>globaz</classifier>
+		</dependency>
 		<dependency>
 			<groupId>ch.admin.ofit.anakin</groupId>
 			<artifactId>Arena</artifactId>

@@ -1,0 +1,111 @@
+<jaxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" version="2.1">
+
+    <!-- Configure our custom xsd -->
+    <jaxb:bindings schemaLocation="../xsd/ree/bfs-5053-000101-1-1.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ree.ch.admin.bfs.xmlns.bfs_5053_000101._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/ree/bfs-5053-000102-1-2.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ree.ch.admin.bfs.xmlns.bfs_5053_000102._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/ree/bfs-5054-000101-2-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ree.ch.admin.bfs.xmlns.bfs_5054_000101._2" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/ree/bfs-5054-000102-2-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ree.ch.admin.bfs.xmlns.bfs_5054_000102._2" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/ree/eCH-0007-3-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ree.ch.ech.xmlns.ech_0007._3" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/ree/eCH-0008-2-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ree.ch.ech.xmlns.ech_0008._2" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/ree/eCH-0010-3-1.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ree.ch.ech.xmlns.ech_0010._3" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/ree/eCH-0010-4-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ree.ch.ech.xmlns.ech_0010._4" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/ree/eCH-0044-1-1.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ree.ch.ech.xmlns.ech_0044._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/ree/eCH-0044-2-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ree.ch.ech.xmlns.ech_0044._2" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/ree/eCH-0046-1-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ree.ch.ech.xmlns.ech_0046._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/ree/eCH-0046-2-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ree.ch.ech.xmlns.ech_0046._2" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/ree/eCH-0058-3-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ree.ch.ech.xmlns.ech_0058._3" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/ree/eCH-0097-1-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ree.ch.ech.xmlns.ech_0097._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/ree/eCH-0098-1-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ree.ch.ech.xmlns.ech_0098._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+ 
+    
+</jaxb:bindings>
