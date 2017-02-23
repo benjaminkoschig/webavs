@@ -1,23 +1,19 @@
 package ch.globaz.pegasus.businessimpl.services.doc;
 
-import globaz.globall.db.BSessionUtil;
-import globaz.jade.client.util.JadeUUIDGenerator;
-import globaz.jade.common.Jade;
 import globaz.jade.exception.JadeApplicationException;
-import java.util.Locale;
+import java.io.File;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.listoutput.LoaderOuter;
+import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
 import ch.globaz.pegasus.business.domaine.revisionquadriennale.RevisionCsv;
 import ch.globaz.pegasus.business.domaine.revisionquadriennale.RevisionQuadriennale;
 import ch.globaz.pegasus.businessimpl.services.revisionquadriennale.RevisionQuadriennaleLoader;
-import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 
 public class FullListeExcelRevision {
 
     private String annee;
 
     private final static String OUTPUTNAME = "full_liste_revisions";
-    private final static String CSV = ".csv";
 
     public FullListeExcelRevision(String annee) {
         this.annee = annee;
@@ -28,35 +24,29 @@ public class FullListeExcelRevision {
         LoaderOuter<String, RevisionQuadriennale, String> loaderOuter = new LoaderOuter<String, RevisionQuadriennale, String>() {
             @Override
             public String out(RevisionQuadriennale revisionQuadriennale) {
-                String nomDoc = Jade.getInstance().getPersistenceDir() + OUTPUTNAME + "_"
+                String nomDoc = OUTPUTNAME + "_"
                         + new Date(revisionQuadriennale.getPeriode().getDateDebut()).getValue() + "_"
-                        + new Date(revisionQuadriennale.getPeriode().getDateFin()).getValue()
-                        + JadeUUIDGenerator.createStringUUID() + CSV;
+                        + new Date(revisionQuadriennale.getPeriode().getDateFin()).getValue() + "_";
                 createDoc(nomDoc, revisionQuadriennale);
                 return nomDoc;
             }
 
             @Override
             public RevisionQuadriennale load(String annee) throws JadeApplicationException {
-                RevisionQuadriennaleLoader loader = new RevisionQuadriennaleLoader();
-                RevisionQuadriennale revisionQuadriennale = loader.load(annee);
-                return revisionQuadriennale;
+                return new RevisionQuadriennaleLoader().load(annee);
             }
         };
 
         String path = loaderOuter.run(annee);
-        System.out.println("Path: " + path);
-
         loaderOuter.getTime().setNombre(loaderOuter.getDataLoaded().getDemandesARevisers().size());
         return path;
     }
 
-    public String createDoc(String nomDoc, RevisionQuadriennale revisionQuadriennale) {
-        Locale locale = new Locale(BSessionUtil.getSessionFromThreadContext().getIdLangueISO());
-
-        SimpleOutputListBuilder.newInstance().local(locale).addList(revisionQuadriennale.getDemandesARevisers())
-                .classElementList(RevisionCsv.class).asCsv().outputName(nomDoc).build();
-
-        return nomDoc;
+    public String createDoc(String name, RevisionQuadriennale revisionQuadriennale) {
+        SimpleOutputListBuilderJade builder = SimpleOutputListBuilderJade.newInstance();
+        File file = builder.outputNameAndAddPath(name).addList(revisionQuadriennale.getDemandesARevisers())
+                .classElementList(RevisionCsv.class).asXls().build();
+        builder.close();
+        return file.getAbsolutePath();
     }
 }
