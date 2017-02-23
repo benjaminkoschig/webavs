@@ -152,7 +152,7 @@ public class AFRadiation_Doc extends AFAbstractTiersDocument implements ILEGener
         getDocumentInfo().setDocumentProperty("annee", String.valueOf(JACalendar.today().getYear()));
         getDocumentInfo().setArchiveDocument(true);
         getDocumentInfo().setPublishDocument(isPublishDocument());
-
+        getDocumentInfo().setDocumentDate(getDateImpression());
     }
 
     public StringBuffer format(StringBuffer paragraphe, String varTemp) {

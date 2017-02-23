@@ -53,7 +53,6 @@ public abstract class DSAbstractPrincipaleGenererEtape extends DSAbstractDocumen
      */
     public DSAbstractPrincipaleGenererEtape() throws Exception {
         super();
-        // TODO Raccord de constructeur auto-généré
     }
 
     /**
@@ -72,7 +71,6 @@ public abstract class DSAbstractPrincipaleGenererEtape extends DSAbstractDocumen
      */
     public DSAbstractPrincipaleGenererEtape(BSession session, String nomDocument) throws Exception {
         super(session, nomDocument);
-        // TODO Raccord de constructeur auto-généré
     }
 
     public void _setHeader(CaisseHeaderReportBean bean) throws Exception {
@@ -97,11 +95,6 @@ public abstract class DSAbstractPrincipaleGenererEtape extends DSAbstractDocumen
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.framework.printing.itext.api.FWIDocumentInterface#createDataSource()
-     */
     @Override
     public void createDataSource() throws Exception {
         super.createDataSource();
@@ -124,7 +117,7 @@ public abstract class DSAbstractPrincipaleGenererEtape extends DSAbstractDocumen
         getDocumentInfo().setDocumentProperty("annee", getPeriode());
         getDocumentInfo().setDocumentProperty("document.date",
                 JadeStringUtil.isEmpty(getDateImpression()) ? JACalendar.todayJJsMMsAAAA() : getDateImpression());
-
+        getDocumentInfo().setDocumentDate(JadeStringUtil.isEmpty(getDateImpression()) ? JACalendar.todayJJsMMsAAAA() : getDateImpression());
         ICaisseReportHelper caisseReportHelper = CaisseHelperFactory.getInstance().getCaisseReportHelper(
                 getDocumentInfo(), getSession().getApplication(), getTiers(getIdDestinataire()).getLangueIso());
         CaisseHeaderReportBean headerBean = new CaisseHeaderReportBean();
@@ -160,17 +153,11 @@ public abstract class DSAbstractPrincipaleGenererEtape extends DSAbstractDocumen
                 tiers.setSession(getSession());
                 tiers.setIdTiers(getIdTiers());
                 tiers.retrieve();
-                // String titre=TIAdresseDataSource.getTitre(getSession(), tiers.getTitreTiers(), tiers.getLangue());
                 String titre = tiers.getFormulePolitesse(tiers.getLangue());
 
                 if (JadeStringUtil.isEmpty(titre)) {
                     titre = getSession().getLabel("MADAME_MONSIEUR");
-                }/*
-                  * else { titre = titre.substring(0,3); if (titre.startsWith("Mon") || titre.startsWith("Mad") ||
-                  * titre.startsWith("Mes") || titre.startsWith("Maî") || titre.startsWith("Doc")){ titre =
-                  * TIAdresseDataSource.getTitre(getSession(), tiers.getTitreTiers(), tiers.getLangue()); } else { titre
-                  * = getSession().getLabel("MADAME_MONSIEUR"); } }
-                  */
+                }
                 res += titre;
                 i = i + 2;
             } else if (paragraphe.charAt(i + 1) == '4') {
@@ -217,11 +204,6 @@ public abstract class DSAbstractPrincipaleGenererEtape extends DSAbstractDocumen
 
     public abstract String getDocInforomNum();
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.globall.db.BProcess#getEMailObject()
-     */
     @Override
     protected String getEMailObject() {
         StringBuffer buffer = new StringBuffer();
@@ -233,49 +215,24 @@ public abstract class DSAbstractPrincipaleGenererEtape extends DSAbstractDocumen
         return buffer.toString();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.draco.print.itext.DSAbstractDocument#initDocument(java.lang.String)
-     */
     protected abstract ICTDocument[] getICTDocument();
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.draco.print.itext.DSAbstractDocument#getIsoLangueDestinataire()
-     */
     @Override
     public String getIsoLangueDestinataire() throws Exception {
         return getAdresse().getLangueDestinataire(getIdTiers());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.draco.print.itext.DSAbstractDocument#getNomDestinataire()
-     */
     @Override
     protected String getNomDestinataire() throws Exception {
         return getAdresse().getNomDestinataire(getIdTiers());
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.draco.print.itext.DSAbstractDocument#getNomDoc()
-     */
     @Override
     public String getNomDoc() throws Exception {
         return getSession().getLabel(DSPreImpressionContentieux_Param.L_NOMDOCCONTENTIEUX);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.draco.print.itext.DSAbstractDocument#getTemplate()
-     */
     @Override
     protected String getTemplate() {
         return DSPreImpressionContentieux_Param.TEMPLATE_CONTENTIEUX;
@@ -294,11 +251,9 @@ public abstract class DSAbstractPrincipaleGenererEtape extends DSAbstractDocumen
             try {
                 listeTextes = document[0].getTextes(niveau);
             } catch (Exception e3) {
-                // getMemoryLog().logMessage(e3.toString(),FWMessage.ERREUR,getSession().getLabel("ERROR_GETTING_LIST_TEXT"));
             }
-            if (listeTextes == null) {
-                // getMemoryLog().logMessage(getSession().getLabel("PAS_TEXTE"),FWMessage.ERREUR,"");
-            } else {
+
+            if (listeTextes != null) {
                 for (int i = 0; i < listeTextes.size(); i++) {
                     texte = listeTextes.getTexte(i + 1);
                     if (i + 1 < listeTextes.size()) {
@@ -344,11 +299,6 @@ public abstract class DSAbstractPrincipaleGenererEtape extends DSAbstractDocumen
         if (!JadeStringUtil.isBlankOrZero(getTexte(4))) {
             this.setParametres(DSPreImpressionContentieux_Param.P_AGENCE_COM, getTexte(4));
         }
-
-        /*
-         * setParametres(DSPreImpressionContentieux_Param.P_FACTURATION, getTexte(2, 2));
-         * setParametres(DSPreImpressionContentieux_Param.P_CONCLUSTION, getTexte(2, 3));
-         */
     }
 
     /**
@@ -358,35 +308,16 @@ public abstract class DSAbstractPrincipaleGenererEtape extends DSAbstractDocumen
         adresse = destination;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.draco.print.itext.DSAbstractDocument#setHeader(globaz.caisse.report.helper.CaisseHeaderReportBean)
-     */
     @Override
     public void setHeader(CaisseHeaderReportBean headerBean) throws Exception {
-        // TODO Raccord de méthode auto-généré
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.leo.process.generation.ILEGeneration#setNomDoc(java.lang.String)
-     */
     @Override
     public void setNomDoc(String nomDoc) {
-        // TODO Raccord de méthode auto-généré
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.leo.process.generation.ILEGeneration#setSessionModule(globaz.globall.db.BSession)
-     */
     @Override
     public void setSessionModule(BSession session) throws Exception {
-        // TODO Raccord de méthode auto-généré
-
     }
 
 }

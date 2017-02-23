@@ -230,6 +230,9 @@ public class CEDSLettre extends FWIDocumentManager implements ILEGeneration {
         getDocumentInfo().setDocumentProperty("numero.affilie.non.formatte",
                 CEUtils.unFormatNumeroAffilie(getSession(), getNumAffilie()));
 
+        getDocumentInfo().setDocumentDate(
+                JadeStringUtil.isEmpty(dateImpression) ? JACalendar.todayJJsMMsAAAA() : dateImpression);
+
         try {
             TIDocumentInfoHelper.fill(getDocumentInfo(), getIdTiers(), getSession(), ITIRole.CS_AFFILIE,
                     getDocumentInfo().getDocumentProperty("numero.affilie.formatte"), getDocumentInfo()

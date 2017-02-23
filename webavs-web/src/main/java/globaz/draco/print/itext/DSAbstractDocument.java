@@ -99,6 +99,8 @@ public abstract class DSAbstractDocument extends FWIDocumentManager implements I
             setCsDoc(getDocumentDataSource().getField(LEEnvoiDataSource.CS_TYPE_DOCUMENT));
             String isoLangueTiers = getIsoLangueDestinataire();
             initDocument(isoLangueTiers);
+
+            getDocumentInfo().setDocumentDate(getDateImpression());
         } catch (Exception e) {
             getMemoryLog().logMessage(e.getMessage(), FWMessage.INFORMATION, getClass().getName());
             JadeLogger.error(this, e.getMessage());

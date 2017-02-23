@@ -175,6 +175,7 @@ public class AFNouvelleAffiliation_Doc extends AFAbstractTiersDocument implement
         getDocumentInfo().setDocumentProperty("annee", String.valueOf(getPeriode()));
         getDocumentInfo().setArchiveDocument(true);
         getDocumentInfo().setPublishDocument(isPublishDocument());
+        getDocumentInfo().setDocumentDate(getDateImpression());
     }
 
     public StringBuffer format(StringBuffer paragraphe, String varTemp) {
