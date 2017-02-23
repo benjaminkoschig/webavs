@@ -40,6 +40,7 @@ import globaz.osiris.db.ordres.format.CAProcessFormatOrdreOPAE;
 import globaz.osiris.db.ordres.format.opt.CAProcessFormatOrdreOPAELite;
 import globaz.osiris.db.ordres.sepa.AbstractSepa.SepaException;
 import globaz.osiris.db.ordres.sepa.CAProcessFormatOrdreSEPA;
+import globaz.osiris.db.ordres.sepa.CAProcessFormatOrdreSEPALite;
 import globaz.osiris.db.ordres.sepa.SepaSendOrderProcessor;
 import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.osiris.db.ordres.utils.CAOrdreGroupeFtpUtils;
@@ -1104,8 +1105,13 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                 // Bug 3972
                 traitementJournalCommit(context);
                 if (getOrganeExecution().getCSTypeTraitementOG().equals(APIOrganeExecution.OG_ISO_20022)) {
-                    of = new CAProcessFormatOrdreSEPA();
                     isSepa = true;
+                    if (CAOrdreGroupe.isForceOPAEV1(getSession()) || (getJournal() == null)
+                            || !getJournal().getEtat().equals(CAJournal.COMPTABILISE)) {
+                        of = new CAProcessFormatOrdreSEPA();
+                    } else {
+                        of = new CAProcessFormatOrdreSEPALite();
+                    }
                 } else {
                     if (getOrganeExecution().getGenre().equals(APIOrganeExecution.BANQUE)) {
                         of = new CAProcessFormatOrdreDTA();
@@ -1169,19 +1175,19 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                 }
 
                 if (!isSepa) {
-                // Génération d'un nom unique
-                sLocalFilename = Jade.getInstance().getHomeDir() + CAApplication.DEFAULT_OSIRIS_ROOT + "/work/"
-                        + "ordreGroupe" + getIdOrdreGroupe() + ".out";
+                    // Génération d'un nom unique
+                    sLocalFilename = Jade.getInstance().getHomeDir() + CAApplication.DEFAULT_OSIRIS_ROOT + "/work/"
+                            + "ordreGroupe" + getIdOrdreGroupe() + ".out";
 
-                try {
-                    of.setPrintWriter(new PrintWriter(new OutputStreamWriter(new java.io.FileOutputStream(
-                            sLocalFilename), "ISO8859_1")));
-                } catch (Exception e) {
-                    _addError(context.getTransaction(), e.getMessage());
-                    _addError(context.getTransaction(), getSession().getLabel("5229") + " " + sLocalFilename);
-                    return;
+                    try {
+                        of.setPrintWriter(new PrintWriter(new OutputStreamWriter(new java.io.FileOutputStream(
+                                sLocalFilename), "ISO8859_1")));
+                    } catch (Exception e) {
+                        _addError(context.getTransaction(), e.getMessage());
+                        _addError(context.getTransaction(), getSession().getLabel("5229") + " " + sLocalFilename);
+                        return;
+                    }
                 }
-            }
             }
 
             // Formatter l'entête
@@ -1226,22 +1232,22 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                 }
 
                 if ((isSepa && pathSEPA != null) || !isSepa) {
-                // Renommer le fichier selon les paramètres fournis
-                File fSrc = new File(sLocalFilename);
-                File fDest = new File(context.getFileName());
+                    // Renommer le fichier selon les paramètres fournis
+                    File fSrc = new File(sLocalFilename);
+                    File fDest = new File(context.getFileName());
 
-                if (fDest.exists()) {
-                    fDest.delete();
-                }
+                    if (fDest.exists()) {
+                        fDest.delete();
+                    }
 
                     try {
                         FileUtils.moveFile(fSrc, fDest);
                     } catch (IOException exception) {
                         JadeLogger.error(exception, exception.getMessage());
-                    _addError(context.getTransaction(), getSession().getLabel("5229") + " " + context.getFileName());
-                    return;
+                        _addError(context.getTransaction(), getSession().getLabel("5229") + " " + context.getFileName());
+                        return;
+                    }
                 }
-            }
             }
 
             // Si l'on désire comptabiliser
@@ -2138,4 +2144,4 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
         return getIsoNumLivraison();
     }
 
-    }
+}

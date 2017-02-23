@@ -130,13 +130,11 @@ public class CASepaOGConverterUtils {
      * @return
      * @throws Exception
      */
-    public static String getDbtrAgtBIC(APIOrdreGroupe og) throws Exception {
-        CAAdressePaiementFormatter adp = new CAAdressePaiementFormatter();
-        adp.setAdressePaiement(og.getOrganeExecution().getAdressePaiement());
-        if (adp.getTypeAdresse().equals(IntAdressePaiement.CCP)) {
+    public static String getDbtrAgtBIC(CAAdressePaiementFormatter adpf) throws Exception {
+        if (adpf.getTypeAdresse().equals(IntAdressePaiement.CCP)) {
             return POST_FINANCE_BIC;
         } else {
-            return CASepaCommonUtils.getAdpBIC(og.getOrganeExecution().getAdressePaiement());
+            return CASepaCommonUtils.getAdpBIC(adpf.getAdressePaiement());
         }
     }
 

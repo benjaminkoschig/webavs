@@ -52,12 +52,10 @@ public class CASepaOVConverterUtils {
      * @return String to identify in hashing compare BVR/virement
      * @throws Exception
      */
-    public static String getTypeVersement(APICommonOdreVersement ov) throws Exception {
-        CAAdressePaiementFormatter adp = new CAAdressePaiementFormatter();
-        adp.setAdressePaiement(ov.getAdressePaiement());
+    public static String getTypeVersement(APICommonOdreVersement ov, CAAdressePaiementFormatter adpf) throws Exception {
         if (!JadeStringUtil.isBlankOrZero(ov.getReferenceBVR())) {
             return ORDRE_VERSEMENT_BVR;
-        } else if (adp.getTypeAdresse().equals(IntAdressePaiement.BVR)) {
+        } else if (adpf.getTypeAdresse().equals(IntAdressePaiement.BVR)) {
             return ORDRE_VERSEMENT_BVR;
         }
         return ORDRE_VERSEMENT_VIREMENT;
@@ -70,11 +68,8 @@ public class CASepaOVConverterUtils {
      * @return String to identify in hashing compare bankANDccp/mandat/null
      * @throws Exception
      */
-    public static String getTypeVirement(APICommonOdreVersement ov) throws Exception {
-        CAAdressePaiementFormatter adp = new CAAdressePaiementFormatter();
-        adp.setAdressePaiement(ov.getAdressePaiement());
-
-        return CASepaCommonUtils.getTypeVirement(adp);
+    public static String getTypeVirement(CAAdressePaiementFormatter adpf) throws Exception {
+        return CASepaCommonUtils.getTypeVirement(adpf);
     }
 
     /**
@@ -84,9 +79,7 @@ public class CASepaOVConverterUtils {
      * @return String to identify in hashing compare
      * @throws Exception
      */
-    public static String getPaysDestination(APICommonOdreVersement ov) throws Exception {
-        CAAdressePaiementFormatter adp = new CAAdressePaiementFormatter();
-        adp.setAdressePaiement(ov.getAdressePaiement());
+    public static String getPaysDestination(CAAdressePaiementFormatter adp) throws Exception {
         if (adp.getTypeAdresse().equals(IntAdressePaiement.CCP)) {
             return PAYS_DESTINATION_SUISSE;
         } else if (adp.getTypeAdresse().equals(IntAdressePaiement.BANQUE)) {
@@ -105,14 +98,12 @@ public class CASepaOVConverterUtils {
         return null;
     }
 
-    public static ServiceLevel8Choice getSvcLvl(APICommonOdreVersement ov) throws Exception {
-        CAAdressePaiementFormatter adp = new CAAdressePaiementFormatter();
-        adp.setAdressePaiement(ov.getAdressePaiement());
+    public static ServiceLevel8Choice getSvcLvl(CAAdressePaiementFormatter adpf) throws Exception {
         ServiceLevel8Choice svcLvl = new ServiceLevel8Choice();
         svcLvl.setCd(ExternalServiceLevel1_SEPA);
-        if (adp.getTypeAdresse().equals(IntAdressePaiement.BANQUE_INTERNATIONAL)) {
+        if (adpf.getTypeAdresse().equals(IntAdressePaiement.BANQUE_INTERNATIONAL)) {
             return svcLvl;
-        } else if (adp.getTypeAdresse().equals(IntAdressePaiement.MANDAT_INTERNATIONAL)) {
+        } else if (adpf.getTypeAdresse().equals(IntAdressePaiement.MANDAT_INTERNATIONAL)) {
             return svcLvl;
         }
         return null;
@@ -200,10 +191,8 @@ public class CASepaOVConverterUtils {
         return CASepaCommonUtils.getNotIban(ov.getAdressePaiement());
     }
 
-    public static boolean isMandat(APICommonOdreVersement ov) throws Exception {
-        CAAdressePaiementFormatter adp = new CAAdressePaiementFormatter();
-        adp.setAdressePaiement(ov.getAdressePaiement());
-        return CASepaCommonUtils.getTypeVirement(adp).equals(CASepaCommonUtils.TYPE_VIREMENT_MANDAT);
+    public static boolean isMandat(CAAdressePaiementFormatter adpf) throws Exception {
+        return CASepaCommonUtils.getTypeVirement(adpf).equals(CASepaCommonUtils.TYPE_VIREMENT_MANDAT);
     }
 
     public static String getMotif140(APICommonOdreVersement ov) {
@@ -244,10 +233,8 @@ public class CASepaOVConverterUtils {
         return null;
     }
 
-    public static boolean isCLevelCCP(APICommonOdreVersement ov) throws Exception {
-        CAAdressePaiementFormatter adp = new CAAdressePaiementFormatter();
-        adp.setAdressePaiement(ov.getAdressePaiement());
-        return adp.getTypeAdresse().equals(IntAdressePaiement.CCP);
+    public static boolean isCLevelCCP(CAAdressePaiementFormatter adpf) throws Exception {
+        return adpf.getTypeAdresse().equals(IntAdressePaiement.CCP);
     }
 
     /**
@@ -257,16 +244,14 @@ public class CASepaOVConverterUtils {
      * @return
      * @throws Exception
      */
-    public static GenericAccountIdentification1CH getNumAdherentBVR(APICommonOdreVersement ov) throws Exception {
+    public static GenericAccountIdentification1CH getNumAdherentBVR(CAAdressePaiementFormatter adpf) throws Exception {
         GenericAccountIdentification1CH other = new GenericAccountIdentification1CH();
-        CAAdressePaiementFormatter adp = new CAAdressePaiementFormatter();
-        adp.setAdressePaiement(ov.getAdressePaiement());
         // Numéro d'adhérent à 5 ou 9 positions
-        if (adp.isAdherentBvr5()) {
-            other.setId(adp.getNumCompte());
+        if (adpf.isAdherentBvr5()) {
+            other.setId(adpf.getNumCompte());
         } else {
             try {
-                other.setId(JACCP.formatNoDash(adp.getNumCompte()));
+                other.setId(JACCP.formatNoDash(adpf.getNumCompte()));
             } catch (Exception e) {
                 throw new SepaException(e);
             }

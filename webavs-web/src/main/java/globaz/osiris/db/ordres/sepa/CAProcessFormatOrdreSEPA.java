@@ -11,6 +11,7 @@ import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.osiris.db.ordres.sepa.utils.CASepaGroupeOGKey;
 import globaz.osiris.db.ordres.sepa.utils.CASepaOGConverterUtils;
 import globaz.osiris.db.ordres.sepa.utils.CASepaOVConverterUtils;
+import globaz.osiris.db.utils.CAAdressePaiementFormatter;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -18,6 +19,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -86,13 +88,16 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
 
     @Override
     public StringBuffer format(APICommonOdreVersement ov) throws Exception {
+        final CAAdressePaiementFormatter adpf = new CAAdressePaiementFormatter();
+        adpf.setAdressePaiement(ov.getAdressePaiement());
 
-        final boolean isBVR = CASepaOVConverterUtils.getTypeVersement(ov).equals(
+        final boolean isBVR = CASepaOVConverterUtils.getTypeVersement(ov, adpf).equals(
                 CASepaOVConverterUtils.ORDRE_VERSEMENT_BVR);
 
         CASepaGroupeOGKey key = new CASepaGroupeOGKey(ov.getCodeISOMonnaieBonification(),
-                CASepaOVConverterUtils.getTypeVersement(ov), CASepaOVConverterUtils.getTypeVirement(ov),
-                CASepaOVConverterUtils.getPaysDestination(ov));
+                CASepaOVConverterUtils.getTypeVersement(ov, adpf), CASepaOVConverterUtils.getTypeVirement(adpf),
+                CASepaOVConverterUtils.getPaysDestination(adpf));
+
         // ids
         CreditTransferTransactionInformation10CH cLevelData = factory.createCreditTransferTransactionInformation10CH();
         PaymentIdentification1 pmtId = factory.createPaymentIdentification1();
@@ -122,7 +127,7 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
             BranchAndFinancialInstitutionIdentification4CH cbtrAgt = factory
                     .createBranchAndFinancialInstitutionIdentification4CH();
             FinancialInstitutionIdentification7CH finInstnId = factory.createFinancialInstitutionIdentification7CH();
-            if (CASepaOVConverterUtils.isCLevelCCP(ov)) {
+            if (CASepaOVConverterUtils.isCLevelCCP(adpf)) {
                 ClearingSystemMemberIdentification2 clrSys = factory.createClearingSystemMemberIdentification2();
                 ClearingSystemIdentification2Choice clrSysId = factory.createClearingSystemIdentification2Choice();
                 clrSysId.setCd(CASepaOVConverterUtils.CLEARING_SUISSE_BCC_SYS_ID);
@@ -154,20 +159,22 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
 
             PostalAddress6CH postalAdr = factory.createPostalAddress6CH();
             // certains code pays sont vide en DB (retour de test ISO20022-32)
-            String codePays = ov.getAdressePaiement().getAdresseCourrier().getPaysISO();
+            final String codePays = ov.getAdressePaiement().getAdresseCourrier().getPaysISO();
             if (codePays.matches(CODE_PAYS_REGEX)) {
                 postalAdr.setCtry(codePays);
             }
 
             if (key.isPaysDestination(CASepaOVConverterUtils.PAYS_DESTINATION_SUISSE)) {
                 // adrLine interdit pour les type mandat
-                String rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRue().trim());
+                final String rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRue()
+                        .trim());
                 postalAdr.setStrtNm((rue.isEmpty() ? null : rue));
                 // FIXME besoin de modif des interfaces PIXYS
-                String postCode = CASepaCommonUtils
-                        .limit16(ov.getAdressePaiement().getAdresseCourrier().getNumPostal());
+                final String postCode = CASepaCommonUtils.limit16(ov.getAdressePaiement().getAdresseCourrier()
+                        .getNumPostal());
                 postalAdr.setPstCd(postCode.isEmpty() ? null : postCode);
-                String town = CASepaCommonUtils.limit35(ov.getAdressePaiement().getAdresseCourrier().getLocalite());
+                final String town = CASepaCommonUtils.limit35(ov.getAdressePaiement().getAdresseCourrier()
+                        .getLocalite());
                 postalAdr.setTwnNm(town.isEmpty() ? null : town);
 
                 // String rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRueSansNum());
@@ -195,14 +202,14 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
         cLevelData.setCdtr(creditor);
 
         // Creditor Account
-        if (!CASepaOVConverterUtils.isMandat(ov)) {
+        if (!CASepaOVConverterUtils.isMandat(adpf)) {
 
             CashAccount16CHId cdtrAcct = factory.createCashAccount16CHId();
 
             AccountIdentification4ChoiceCH id = factory.createAccountIdentification4ChoiceCH();
             if (isBVR) {
                 try {
-                    id.setOthr(CASepaOVConverterUtils.getNumAdherentBVR(ov));
+                    id.setOthr(CASepaOVConverterUtils.getNumAdherentBVR(adpf));
                 } catch (SepaException e) {
                     throw new Exception(getSession().getLabel("ISO20022_NUMERO_ADHERENT_BVR_NON_IDENTIFIE")
                             + ov.getNumTransaction(), e);
@@ -240,7 +247,7 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
             bLevelData.setBtchBookg(null); // from OG --> will be set at aggregate
             PaymentTypeInformation19CH pmtTpInfB = factory.createPaymentTypeInformation19CH();
             if (!isBVR) {
-                pmtTpInfB.setSvcLvl(CASepaOVConverterUtils.getSvcLvl(ov));
+                pmtTpInfB.setSvcLvl(CASepaOVConverterUtils.getSvcLvl(adpf));
                 pmtTpInfB.setLclInstrm(CASepaOVConverterUtils.getLclInstrm(key));
             }
             pmtTpInfB.setCtgyPurp(CASepaOVConverterUtils.getCtgyPurp(ov));
@@ -268,12 +275,15 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
      */
     @Override
     public StringBuffer formatEOF(APIOrdreGroupe og) throws Exception {
+        CAAdressePaiementFormatter adpf = new CAAdressePaiementFormatter();
+        adpf.setAdressePaiement(og.getOrganeExecution().getAdressePaiement());
+
         // vérifier qu'on ai au moins une transaction
         if (bLevels.isEmpty()) {
             throw new SepaException(getSession().getLabel("ISO20022_ERROR_EOF_NO_TRANSACTION"));
         }
 
-        String nomCaisse = CASepaOGConverterUtils.getNomCaisse70(og);
+        final String nomCaisse = CASepaOGConverterUtils.getNomCaisse70(og);
         // set validation fields
         grpHeader.setNbOfTxs(og.getNbTransactions());
         grpHeader.setCtrlSum(new BigDecimal(og.getTotal()));
@@ -304,13 +314,13 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
                 .createBranchAndFinancialInstitutionIdentification4CHBicOrClrId();
         FinancialInstitutionIdentification7CHBicOrClrId finInstnId = factory
                 .createFinancialInstitutionIdentification7CHBicOrClrId();
-        finInstnId.setBIC(CASepaOGConverterUtils.getDbtrAgtBIC(og));
+        finInstnId.setBIC(CASepaOGConverterUtils.getDbtrAgtBIC(adpf));
         dbtrAgt.setFinInstnId(finInstnId);
 
         CashAccount16CHIdAndCurrency chrgsAcct = CASepaOGConverterUtils.getChrgsAcct(og);
 
-        for (CASepaGroupeOGKey key : bLevels.keySet()) {
-            PaymentInstructionInformation3CH bLevelData = key.getbLevel();
+        for (Entry<CASepaGroupeOGKey, List<CreditTransferTransactionInformation10CH>> entry : bLevels.entrySet()) {
+            PaymentInstructionInformation3CH bLevelData = entry.getKey().getbLevel();
             // Besoin d'unicité
             bLevelData.setPmtInfId(og.getNumLivraison() + bLevelData.getPmtInfId());
             // Set Blevel info from OG
@@ -325,7 +335,7 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
             bLevelData.setDbtrAgt(dbtrAgt);
             bLevelData.setChrgsAcct(chrgsAcct);
             // aggregate Clevel
-            bLevelData.getCdtTrfTxInf().addAll(bLevels.get(key));
+            bLevelData.getCdtTrfTxInf().addAll(bLevels.get(entry.getKey()));
             // add this Blevel to Alevel
             cstrmCdt.getPmtInf().add(bLevelData);
         }

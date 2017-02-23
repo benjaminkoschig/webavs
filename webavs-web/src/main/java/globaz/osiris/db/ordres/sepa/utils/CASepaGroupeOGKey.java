@@ -1,6 +1,7 @@
 package globaz.osiris.db.ordres.sepa.utils;
 
 import globaz.osiris.api.ordre.APICommonOdreVersement;
+import globaz.osiris.db.utils.CAAdressePaiementFormatter;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.PaymentInstructionInformation3CH;
 
 /**
@@ -20,9 +21,10 @@ public class CASepaGroupeOGKey {
     // B-level info
     private com.six_interbank_clearing.de.pain_001_001_03_ch_02.PaymentInstructionInformation3CH bLevel;
 
-    public CASepaGroupeOGKey(APICommonOdreVersement ov) throws Exception {
-        this(ov.getCodeISOMonnaieBonification(), CASepaOVConverterUtils.getTypeVersement(ov), CASepaOVConverterUtils
-                .getTypeVirement(ov), CASepaOVConverterUtils.getPaysDestination(ov));
+    public CASepaGroupeOGKey(APICommonOdreVersement ov, CAAdressePaiementFormatter adpf) throws Exception {
+
+        this(ov.getCodeISOMonnaieBonification(), CASepaOVConverterUtils.getTypeVersement(ov, adpf),
+                CASepaOVConverterUtils.getTypeVirement(adpf), CASepaOVConverterUtils.getPaysDestination(adpf));
     }
 
     public CASepaGroupeOGKey(String monnaieISO, String typeOrdre, String typeVirement, String paysDest) {

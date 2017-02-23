@@ -92,6 +92,7 @@ public class CAOrdreRejete extends BEntity {
 
         setIdOrdreRejete(statement.dbReadNumeric(CAOrdreRejete.FIELD_ID));
         idOperation = statement.dbReadNumeric(CAOrdreRejete.FIELD_IDORDRE);
+        idOrdreGroupe = statement.dbReadNumeric(CAOrdreRejete.FIELD_IDORGRO);
         code = statement.dbReadString(CAOrdreRejete.FIELD_CODE);
         proprietary = statement.dbReadString(CAOrdreRejete.FIELD_PROPRIETARY);
         additionalInformations = statement.dbReadString(CAOrdreRejete.FIELD_ADDITIONNAL_INFO);
@@ -124,6 +125,8 @@ public class CAOrdreRejete extends BEntity {
                 this._dbWriteNumeric(statement.getTransaction(), getIdOrdreRejete(), "idOrdreRejete"));
         statement.writeField(CAOrdreRejete.FIELD_IDORDRE,
                 this._dbWriteNumeric(statement.getTransaction(), getIdOperation(), "idOperation"));
+        statement.writeField(CAOrdreRejete.FIELD_IDORGRO,
+                this._dbWriteNumeric(statement.getTransaction(), getIdOrdreGroupe(), "idOrdreGroupe"));
         statement.writeField(CAOrdreRejete.FIELD_CODE,
                 this._dbWriteString(statement.getTransaction(), getCode(), "Code err"));
         statement.writeField(CAOrdreRejete.FIELD_PROPRIETARY,

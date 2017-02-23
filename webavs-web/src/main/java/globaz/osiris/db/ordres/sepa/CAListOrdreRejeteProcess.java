@@ -190,18 +190,21 @@ public class CAListOrdreRejeteProcess extends BProcess {
             throws Exception {
         // ajout de la pièce jointe
         List<String> joinsFilesPathsList = new ArrayList<String>();
-        joinsFilesPathsList.add(joinFilePath);
 
         String numTransac = getOrdreGroupe().getIsoNumLivraison();
         String subject;
         String body;
 
+        // Si il n'y a pas ordreRejeté mais un motif il s'agit d'un rejet de A-Level
         if (hasNoOrdreRejetes && !reasons.isEmpty()) {
             subject = FWMessageFormat.format(getSession().getLabel("LIST_OSIRIS_ORDREREJETE_MAIL_SUBJECT_EMPTY"),
                     getOrdreGroupe().getNumLivraison());
             body = getSession().getLabel("LIST_OSIRIS_ORDREREJETE_MAIL_BODY_EMPTY");
+            body += ArrayUtils.toString(reasons);
         } else {
 
+            // joindre la pièce jointe
+            joinsFilesPathsList.add(joinFilePath);
             // sujet et corps du mail
             subject = FWMessageFormat.format(getSession().getLabel("LIST_OSIRIS_ORDREREJETE_MAIL_SUBJECT_SUCCESS"),
                     numTransac);

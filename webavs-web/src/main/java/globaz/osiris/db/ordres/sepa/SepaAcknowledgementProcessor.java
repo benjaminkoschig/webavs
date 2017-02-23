@@ -13,6 +13,7 @@ import globaz.osiris.db.ordres.CAOrdreVersement;
 import globaz.osiris.db.ordres.OrdreGroupeWrapper;
 import globaz.osiris.db.ordres.sepa.utils.CASepaGroupeOGKey;
 import globaz.osiris.db.ordres.sepa.utils.CASepaOVConverterUtils;
+import globaz.osiris.db.utils.CAAdressePaiementFormatter;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -222,7 +223,6 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                 LOG.info(
                         "Ordre Groupé {} - Entièrement Rejeté\nL'Ordre Groupé {} - {} a été refusé par l'organisme financier.",
                         messageId, messageId, ogWrapper.getOrdreGroupe().getMotif());
-                handleBLevel(paymentStatusReport, ogWrapper);
                 break;
             case PART: // "Accepté partiellement"
                 LOG.info(
@@ -272,7 +272,9 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
 
                     for (APICommonOdreVersement ordreV : getOpOVfromOG(ogWrapper.getOrdreGroupe())) {
                         try {
-                            CASepaGroupeOGKey messageIdKey = new CASepaGroupeOGKey(ordreV);
+                            final CAAdressePaiementFormatter adpf = new CAAdressePaiementFormatter();
+                            adpf.setAdressePaiement(ordreV.getAdressePaiement());
+                            CASepaGroupeOGKey messageIdKey = new CASepaGroupeOGKey(ordreV, adpf);
                             if (messageTypeId.equals(messageIdKey.getKeyString())) {
                                 selectedTransactions.add(ordreV);
                             }
@@ -296,15 +298,13 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                             rejected.setCode(rsn.getRsn().getCd());
                             rejected.setProprietary(rsn.getRsn().getPrtry());
                             rejected.setAdditionalInformations(StringUtils.join(rsn.getAddtlInf(), '\n'));
-
-                            ogWrapper.addReason(StringUtils.join(rsn.getAddtlInf(), '\n'));
-
                             try {
                                 rejected.add();
                             } catch (Exception e) {
                                 throw new SepaException("could not save CAOrdreRejete.", e);
                             }
                         }
+                        ogWrapper.addReason(StringUtils.join(reasons.get(0).getAddtlInf(), '\n'));
                     }
 
                 } else {
