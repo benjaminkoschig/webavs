@@ -53,6 +53,7 @@ import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRSession;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -499,7 +500,11 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                 logger.info(message);
                 mailLogs.add(message);
 
-                compta.finalize(this, getSession(), transaction);
+                List<String> listOg = compta.bouclerOG(this, getSession(), transaction);
+                if (listOg.size() > 1) {
+                    mailLogs.add("Le nombre de transactions est supérieur à la limite pour l'ISO20022, plusieurs ordres groupés ont été créés. ["
+                            + Arrays.toString(listOg.toArray()) + "]");
+                }
 
                 // Changer l'état des ordre de versement du journal rapide en état versé
                 changeOrdreVersementInEtatVerse(compta);
@@ -591,8 +596,8 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
             numOG = String.valueOf(n);
         }
         comptaExt.preparerOrdreGroupe(getIdOrganeExecution(), numOG, getDateEcheancePaiement(),
-                CAOrdreGroupe.VERSEMENT, CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG, getIsoCsTypeAvis(),
-                getIsoGestionnaire(), getIsoHighPriority());
+                CAOrdreGroupe.VERSEMENT, CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG, getIsoGestionnaire(),
+                getIsoHighPriority());
     }
 
     private void controleCumulParRubrique(Map<Integer, RECumulPrstParRubrique> mapCumulPrstParGenreRentes) {

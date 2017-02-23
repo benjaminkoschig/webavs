@@ -12,6 +12,8 @@ public class CAOrdreRejete extends BEntity {
     private static final long serialVersionUID = 4010204185400415976L;
     public static final String FIELD_ID = "IDORRE";
     public static final String FIELD_IDORDRE = "IDORDR";
+    public static final String FIELD_IDORGRO = "IDORGR";
+
     public static final String FIELD_CODE = "CODE";
     public static final String FIELD_PROPRIETARY = "PROPRI";
     public static final String FIELD_ADDITIONNAL_INFO = "ADDITI";
@@ -19,8 +21,12 @@ public class CAOrdreRejete extends BEntity {
     public static final String TABLE_NAME = "CAORREJ";
 
     private String idOrdreRejete;
+    /**
+     * id de l'operation en erreur (id d'OV)
+     */
+    private String idOperation;
+    private String idOrdreGroupe;
 
-    private String idOrdre;
     // balise <Cd>
     private String code;
     // balise <Prtry>
@@ -28,12 +34,20 @@ public class CAOrdreRejete extends BEntity {
     // balise <AddtlInf>
     private String additionalInformations;
 
-    public String getIdOrdre() {
-        return idOrdre;
+    public String getIdOrdreGroupe() {
+        return idOrdreGroupe;
     }
 
-    public void setIdOrdre(String idOrdre) {
-        this.idOrdre = idOrdre;
+    public void setIdOrdreGroupe(String idOrdreGroupe) {
+        this.idOrdreGroupe = idOrdreGroupe;
+    }
+
+    public String getIdOperation() {
+        return idOperation;
+    }
+
+    public void setIdOperation(String idOrdre) {
+        idOperation = idOrdre;
     }
 
     public String getCode() {
@@ -77,7 +91,7 @@ public class CAOrdreRejete extends BEntity {
     protected void _readProperties(BStatement statement) throws Exception {
 
         setIdOrdreRejete(statement.dbReadNumeric(CAOrdreRejete.FIELD_ID));
-        idOrdre = statement.dbReadNumeric(CAOrdreRejete.FIELD_IDORDRE);
+        idOperation = statement.dbReadNumeric(CAOrdreRejete.FIELD_IDORDRE);
         code = statement.dbReadString(CAOrdreRejete.FIELD_CODE);
         proprietary = statement.dbReadString(CAOrdreRejete.FIELD_PROPRIETARY);
         additionalInformations = statement.dbReadString(CAOrdreRejete.FIELD_ADDITIONNAL_INFO);
@@ -109,7 +123,7 @@ public class CAOrdreRejete extends BEntity {
         statement.writeField(CAOrdreRejete.FIELD_ID,
                 this._dbWriteNumeric(statement.getTransaction(), getIdOrdreRejete(), "idOrdreRejete"));
         statement.writeField(CAOrdreRejete.FIELD_IDORDRE,
-                this._dbWriteNumeric(statement.getTransaction(), getIdOrdre(), "idOrdreGroupe"));
+                this._dbWriteNumeric(statement.getTransaction(), getIdOperation(), "idOperation"));
         statement.writeField(CAOrdreRejete.FIELD_CODE,
                 this._dbWriteString(statement.getTransaction(), getCode(), "Code err"));
         statement.writeField(CAOrdreRejete.FIELD_PROPRIETARY,

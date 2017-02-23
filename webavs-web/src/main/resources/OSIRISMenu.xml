@@ -1277,7 +1277,7 @@
 					<parameter name="selectedId"/>
 				</action>
 			</node>
-			<node>
+			<node id="CA-OrdresRejeteImprimer">
 				<label refId="OPTIONS_ORDRE_REJETE_IMPRIMER" />
 				<action command="/osiris" responseTarget="fr_main">
 					<parameter name="userAction" value="osiris.print.imprimerOrdreRejete.afficher" />
@@ -1585,6 +1585,12 @@
 					<parameter name="userAction" value="osiris.bvrftp.bvrFtp.chercher" />
 				</action>
 			</node>
+			<node id="yellow_report_file">
+				<label refId="YELLOWREPORTFILE_MENU" />
+				<action command="/osiris" responseTarget="fr_main">
+					<parameter name="userAction" value="osiris.yellowreportfile.yellowReportFile.chercher" />
+				</action>
+			</node>
 		</nodes>
 	</menu>
 
@@ -1600,6 +1606,7 @@
 					<parameter name="userAction" value="osiris.bvrftp.bvrFtp.executer" />
 					<parameter name="selectedId"></parameter>
 					<parameter name="typeBvrFtp"></parameter>
+					<parameter name="isYellowReportFile"></parameter>
 					<parameter name="distantDirectoryName"></parameter>
 				</action>
 			</node>

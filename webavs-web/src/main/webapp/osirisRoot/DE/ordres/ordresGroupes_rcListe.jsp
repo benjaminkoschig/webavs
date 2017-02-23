@@ -5,6 +5,7 @@
 <%@ include file="/theme/list/header.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
 <%@ page import="globaz.osiris.db.ordres.CAOrdreGroupe" %>
+<%@ page import="globaz.osiris.api.ordre.APIOrdreGroupe"%>
 <%@ page import="globaz.osiris.utils.CAUtil" %>
 <%
 globaz.osiris.db.ordres.CAOrdreGroupeManagerListViewBean viewBean =
@@ -80,6 +81,9 @@ detailLink ="osiris?userAction=osiris.ordres.ordresGroupes.afficher&selectedId="
 			<ct:menuExcludeNode nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_GROUPES_EXECUTION %>" />
 			<ct:menuExcludeNode nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_GROUPES_ANNULER %>" />
 		<% } %>	
+		<% if(APIOrdreGroupe.ISO_TRANSAC_STATUS_COMPLET.equals(_ordre.getIsoCsTransmissionStatutExec()) || !_ordre.hasOrdreRejetes()){ %>
+			<ct:menuExcludeNode nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_REJETER_IMPRIMER %>"/>
+		<% } %>
     </ct:menuPopup>
 	</TD>
     <TD class="mtd" onClick="<%=actionDetail%>" width="74"><%=_ordre.getIdOrdreGroupe()%></TD>

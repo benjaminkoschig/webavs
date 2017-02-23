@@ -8,6 +8,7 @@ import globaz.framework.menu.FWMenuBlackBox;
 import globaz.framework.secure.FWSecureConstants;
 import globaz.framework.servlets.FWServlet;
 import globaz.framework.utils.urls.FWUrlsStack;
+import globaz.framework.utils.urls.rules.FWRemoveActionsEndingWith;
 import globaz.globall.api.BIApplication;
 import globaz.globall.api.BISession;
 import globaz.globall.api.GlobazSystem;
@@ -115,8 +116,13 @@ public class CAMainServlet extends FWServlet {
     protected void customize(FWUrlsStack aStack) {
         // FWDefaultRule rule = new FWDefaultRule(aStack,
         // CAApplication.DEFAULT_APPLICATION_OSIRIS);
+
+        // exe BVR
+        FWRemoveActionsEndingWith removeBVRExec = new FWRemoveActionsEndingWith("osiris.process.bvr.executer");
+
         NaviRules rule = new NaviRules(aStack);
         aStack.addRule(rule);
+        aStack.addRule(removeBVRExec);
     }
 
     /**

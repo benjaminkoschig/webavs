@@ -71,7 +71,6 @@ public class RFComptabiliserProcess extends BProcess {
     private boolean isAjoutDemandesEnComptabiliteTenantCompteDomicileHome = Boolean.FALSE; // spec. VS
 
     // SEPA iso20002
-    private String isoCsTypeAvis;
     private String isoGestionnaire;
     private String isoHighPriority;
 
@@ -276,7 +275,7 @@ public class RFComptabiliserProcess extends BProcess {
                         itLotJointPrestationJointOVPrecedante.getDateMoisAnnee(), itLotJointPrestationJointOVPrecedante
                                 .getMontantTotal(), itLotJointPrestationJointOVPrecedante.getIdLot(),
                         itLotJointPrestationJointOVPrecedante.getCsEtatPrestation(), ordresVersementSet,
-                                itLotJointPrestationJointOVPrecedante.getTypePrestation(),
+                        itLotJointPrestationJointOVPrecedante.getTypePrestation(),
                         itLotJointPrestationJointOVPrecedante.getIdDecision(), itLotJointPrestationJointOVPrecedante
                                 .getRemboursementRequerant(), itLotJointPrestationJointOVPrecedante
                                 .getRemboursementConjoint(), itLotJointPrestationJointOVPrecedante.getIsRI(),
@@ -454,7 +453,6 @@ public class RFComptabiliserProcess extends BProcess {
         comptabiliser.setDescriptionLot(getDescriptionLot());
         comptabiliser
                 .setAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome(isAjoutDemandesEnComptabiliteSansTenirCompteTypeDeHome);
-        comptabiliser.setIsoCsTypeAvis(getIsoCsTypeAvis());
         comptabiliser.setIsoGestionnaire(getIsoGestionnaire());
         comptabiliser.setIsoHighPriority(getIsoHighPriority());
         comptabiliser
@@ -570,14 +568,6 @@ public class RFComptabiliserProcess extends BProcess {
         this.prestationsSet = prestationsSet;
     }
 
-    public String getIsoCsTypeAvis() {
-        return isoCsTypeAvis;
-    }
-
-    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
-        this.isoCsTypeAvis = isoCsTypeAvis;
-    }
-
     public String getIsoGestionnaire() {
         return isoGestionnaire;
     }
@@ -590,8 +580,8 @@ public class RFComptabiliserProcess extends BProcess {
         return isoHighPriority;
     }
 
-    public void setIsoHighPriority(String isoHightPriority) {
-        isoHighPriority = isoHightPriority;
+    public void setIsoHighPriority(String isoHighPriority) {
+        this.isoHighPriority = isoHighPriority;
     }
 
     private void updateLot(String idJournalCA) throws Exception {

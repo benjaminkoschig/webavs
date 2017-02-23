@@ -44,7 +44,8 @@ public class CAOrdreRejeteManager extends BManager {
             if (sqlWhere.length() != 0) {
                 sqlWhere += " AND ";
             }
-            sqlWhere += "ORDRE.IDORDREGROUPE  = " + this._dbWriteNumeric(statement.getTransaction(), getForIdOG());
+            sqlWhere += "ORDRE.IDORDREGROUPE  = ORREJ.IDORGR AND ";
+            sqlWhere += "ORREJ.IDORGR  = " + this._dbWriteNumeric(statement.getTransaction(), getForIdOG());
         }
 
         return sqlWhere;

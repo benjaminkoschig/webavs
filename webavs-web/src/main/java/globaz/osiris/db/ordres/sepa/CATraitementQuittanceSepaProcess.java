@@ -3,7 +3,7 @@ package globaz.osiris.db.ordres.sepa;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.log.JadeLogger;
-import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.osiris.db.ordres.OrdreGroupeWrapper;
 import globaz.osiris.db.ordres.sepa.AbstractSepa.SepaException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,8 +36,7 @@ public class CATraitementQuittanceSepaProcess extends BProcess {
 
     @Override
     protected void _executeCleanUp() {
-        // TODO Auto-generated method stub
-
+        // NOTHING TO DO
     }
 
     private static final class DocAndFile {
@@ -48,62 +47,73 @@ public class CATraitementQuittanceSepaProcess extends BProcess {
     @Override
     protected boolean _executeProcess() throws Exception {
         setSendCompletionMail(false);
-        SepaAcknowledgementProcessor processor = new SepaAcknowledgementProcessor();
+
+        final SepaAcknowledgementProcessor processor = new SepaAcknowledgementProcessor();
+
         if (filePath == null && folderPath == null) {
+            // Utilisé dans le cadre du serveur FTP défini dans les propriétés SEPA.
             processor.findAndProcessAllAcknowledgements(getSession());
         } else {
-
             processor.setSession(getSession());
+
             if (StringUtils.isNotBlank(filePath)) {
+                // Utilisé dans le cadre d'un fichier pain002 à lancer. Ne traite que le A Level et màj l'OG
                 processor.processAcknowledgement(new FileInputStream(filePath));
             } else if (StringUtils.isNotBlank(folderPath)) {
-                // process the full folder;
-                File folder = new File(folderPath);
-
-                List<DocAndFile> allPains = new ArrayList<DocAndFile>();
-                Set<CAOrdreGroupe> ogProcessed = new HashSet<CAOrdreGroupe>();
-                for (File f : folder.listFiles((FilenameFilter) new SuffixFileFilter(".xml", IOCase.INSENSITIVE))) {
-                    Document pain002 = parsePain002(f);
-
-                    if (pain002 != null) {
-                        DocAndFile doc = new DocAndFile();
-                        doc.doc = pain002;
-                        doc.file = f;
-                        allPains.add(doc);
-                    }
-                }
-
-                // trier les pains par date de traitement, pour les traiter séquentiellement
-                Collections.sort(allPains, new Comparator<DocAndFile>() {
-                    @Override
-                    public int compare(DocAndFile o1, DocAndFile o2) {
-                        if (o1 == o2) {
-                            return 0;
-                        }
-
-                        return o1.doc.getCstmrPmtStsRpt().getGrpHdr().getCreDtTm()
-                                .compare(o2.doc.getCstmrPmtStsRpt().getGrpHdr().getCreDtTm());
-                    }
-                });
-
-                for (DocAndFile daf : allPains) {
-                    try {
-                        ogProcessed.add(processor.processAcknowledgement(daf.doc));
-                        FileUtils.deleteQuietly(daf.file);
-                    } catch (SepaException e) {
-                        LOG.warn("unable to process acknowledgement {}: {}", daf.file, e, e);
-                    }
-                }
-                CAListOrdreRejeteProcess listORProcess = new CAListOrdreRejeteProcess();
-                listORProcess.addMail(getEMailAddress());
-                for (CAOrdreGroupe ogTraite : ogProcessed) {
-                    listORProcess.process(getSession(), ogTraite);
-                }
-
+                // Utilisé si un CRON TAB a été défini avec un dossier afin que si le client décide d'utiliser son
+                // propre répertoire
+                processFolderAcknowledgement(processor);
             }
         }
 
         return true;
+    }
+
+    private void processFolderAcknowledgement(final SepaAcknowledgementProcessor processor) {
+        File folder = new File(folderPath);
+
+        List<DocAndFile> allPains = new ArrayList<DocAndFile>();
+        Set<OrdreGroupeWrapper> ogProcessed = new HashSet<OrdreGroupeWrapper>();
+        for (File f : folder.listFiles((FilenameFilter) new SuffixFileFilter(".xml", IOCase.INSENSITIVE))) {
+            Document pain002 = parsePain002(f);
+
+            if (pain002 != null) {
+                DocAndFile doc = new DocAndFile();
+                doc.doc = pain002;
+                doc.file = f;
+                allPains.add(doc);
+            }
+        }
+
+        // trier les pains par date de traitement, pour les traiter séquentiellement
+        Collections.sort(allPains, new Comparator<DocAndFile>() {
+            @Override
+            public int compare(DocAndFile o1, DocAndFile o2) {
+                if (o1 == o2) {
+                    return 0;
+                }
+
+                return o1.doc.getCstmrPmtStsRpt().getGrpHdr().getCreDtTm()
+                        .compare(o2.doc.getCstmrPmtStsRpt().getGrpHdr().getCreDtTm());
+            }
+        });
+
+        for (DocAndFile daf : allPains) {
+            try {
+                OrdreGroupeWrapper ogWrapper = processor.processAcknowledgement(daf.doc);
+                if (ogWrapper != null && ogWrapper.getOrdreGroupe() != null) {
+                    ogProcessed.add(ogWrapper);
+                    FileUtils.deleteQuietly(daf.file);
+                }
+            } catch (SepaException e) {
+                LOG.warn("unable to process acknowledgement {}: {}", daf.file, e, e);
+            }
+        }
+        CAListOrdreRejeteProcess listORProcess = new CAListOrdreRejeteProcess();
+        listORProcess.addMail(getEMailAddress());
+        for (OrdreGroupeWrapper ogWrapperTraiter : ogProcessed) {
+            listORProcess.process(getSession(), ogWrapperTraiter.getOrdreGroupe(), ogWrapperTraiter.getReasons());
+        }
     }
 
     private Document parsePain002(File f) {
@@ -144,7 +154,6 @@ public class CATraitementQuittanceSepaProcess extends BProcess {
 
     @Override
     protected String getEMailObject() {
-        // TODO Auto-generated method stub
         return null;
     }
 

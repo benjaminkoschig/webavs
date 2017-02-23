@@ -35,11 +35,32 @@ function changeAffichageISO20022(cs) {
 		$('.classNonIso').css('display', 'block'); $('.classIso').css('display', 'none');
 	} 
 }
+function selectChangePriority(s) {
+	showPriorWarning(s[s.selectedIndex].value);
+}
+function showPriorWarning(val){
+	if(val==1){
+		$('.classPrioWarn').css('display', 'block');
+	}else{
+		$('.classPrioWarn').css('display', 'none');
+	}
+}
+function selectChangePriority(s) {
+	showPriorWarning(s[s.selectedIndex].value);
+}
+function showPriorWarning(val){
+	if(val==1){
+		$('.classPrioWarn').css('display', 'block');
+	}else{
+		$('.classPrioWarn').css('display', 'none');
+	}
+}
 function init(){}
 
 $(document).ready(function() {
 	//ne prend pas l'init! pourquoi? 
 	selectChangeISO20022(document.getElementById("idOrganeExecution"));
+	selectChangePriority(document.getElementById("isoHighPriority"));
 });
 </script>
 
@@ -136,17 +157,13 @@ $(document).ready(function() {
 						</tr>
 						<tr class="classIso">
 							<TD><ct:FWLabel key="JSP_VALID_LOT_ISO_PRIO"/>&nbsp;</TD>
-							<td>
-								<select id="isoHighPriority" name="isoHighPriority">
-					                <OPTION selected value="0">normale</OPTION>
-					                <OPTION value="1">haute</OPTION>
-				              	</select>
+								<td>
+								<select id="isoHighPriority" name="isoHighPriority" onchange="selectChangePriority(this)">
+					                <OPTION selected value="0"><ct:FWLabel key="JSP_COMMOM_ISO_PRIO_NORMALE"/></OPTION>
+			                <OPTION value="1"><ct:FWLabel key="JSP_COMMOM_ISO_PRIO_HAUTE"/></OPTION>
+				              	</select><span class="classPrioWarn" style="color:red"><ct:FWLabel key="JSP_COMMOM_ISO_PRIO_WARNING"/></span>
 							</td>
 						</tr>
-						<tr class="classIso">
-							<TD><ct:FWLabel key="JSP_VALID_LOT_ISO_TYPE_AVIS"/>&nbsp;</TD>
-							<TD><ct:FWCodeSelectTag name="isoCsTypeAvis" defaut="<%=viewBean.getIsoCsTypeAvis()%>" codeType="OSIOGTYA" /></TD>
-						</tr>	
 						<INPUT type="hidden" name="idLot" value="${viewBean.idLot}"/>
 						<INPUT type="hidden" name="descriptionLot" value="${param['descriptionLot']}"/>
 

@@ -89,9 +89,19 @@ function changeAffichageISO20022(cs) {
 		$('.classNonIso').css('display', 'block'); $('.classIso').css('display', 'none');
 	} 
 }
-
+function selectChangePriority(s) {
+	showPriorWarning(s[s.selectedIndex].value);
+}
+function showPriorWarning(val){
+	if(val==1){
+		$('.classPrioWarn').css('display', 'block');
+	}else{
+		$('.classPrioWarn').css('display', 'none');
+	}
+}
 function init () {
 	selectChangeISO20022(document.getElementById("idOrganeExecution"));
+	selectChangePriority(document.getElementById("isoHighPriority"));
 	processOk = <%= processOk %>;
 	fromProcess = <%= fromProcess %>;
 	lblProcessOk = "<%= objSession.getLabel("JSP_PC_PC_AVANCES_EXECUTER_D_PROCESS_FINISH") %>";
@@ -218,18 +228,10 @@ function upd () {
 						<span id="lblPrio" class="lbl"><ct:FWLabel key="JSP_PC_AVANCES_EXECUTER_D_ISO_PRIO"/></span>
 					</div>
 					<div class="span2">
-						<select id="isoHighPriority" name="isoHighPriority">
-			                <OPTION selected value="0">normale</OPTION>
-			                <OPTION value="1">haute</OPTION>
-		              	</select>
-					</div>
-				</div>
-				<div class="row-fluid">
-					<div class="span2">
-						<span id="lblTypeAvis" class="lbl"><ct:FWLabel key="JSP_PC_AVANCES_EXECUTER_D_ISO_TYPE_AVIS"/></span>
-					</div>
-					<div class="span2">
-						<ct:FWCodeSelectTag name="isoCsTypeAvis" defaut="<%=viewBean.getIsoCsTypeAvis()%>" codeType="OSIOGTYA" />
+						<select id="isoHighPriority" name="isoHighPriority" onchange="selectChangePriority(this)">
+			                <OPTION selected value="0"><ct:FWLabel key="JSP_COMMOM_ISO_PRIO_NORMALE"/></OPTION>
+			                <OPTION value="1"><ct:FWLabel key="JSP_COMMOM_ISO_PRIO_HAUTE"/></OPTION>
+		              	</select><span class="classPrioWarn" style="color:red"><ct:FWLabel key="JSP_COMMOM_ISO_PRIO_WARNING"/></span>
 					</div>
 				</div>
 			</div>

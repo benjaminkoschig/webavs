@@ -25,6 +25,7 @@ public class CAProcessLSV extends BProcess implements APIProcessUpload, APIProce
     private String idOrganeExecution = new String();
     private String libelle = new String();
     private Boolean simulation = new Boolean(false);
+    private String idYellowReportFile = new String();
 
     /**
      * Commentaire relatif au constructeur CAProcessLSV.
@@ -287,6 +288,16 @@ public class CAProcessLSV extends BProcess implements APIProcessUpload, APIProce
     @Override
     public void setSimulation(Boolean simulation) {
         this.simulation = simulation;
+    }
+
+    @Override
+    public void setIdYellowReportFile(String id) {
+        idYellowReportFile = id;
+    }
+
+    @Override
+    public String getIdYellowReportFile() {
+        return idYellowReportFile;
     }
 
 }

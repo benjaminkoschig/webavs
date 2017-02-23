@@ -64,4 +64,37 @@ public class CASepaGroupeOGKey {
         return bLevel;
     }
 
+    /**
+     * @param CASepaCommonUtils.TYPE_VIREMENT_POSTAL<br>
+     *            CASepaCommonUtils.TYPE_VIREMENT_BANCAIRE<br>
+     *            CASepaCommonUtils.TYPE_VIREMENT_MANDAT
+     * @return true/false
+     */
+    public boolean isTypeVirement(String expectedTypeVirement) {
+        return typeVirement.equals(expectedTypeVirement);
+    }
+
+    /**
+     * 
+     * @param CASepaOVConverterUtils.PAYS_DESTINATION_SUISSE<br>
+     *            CASepaOVConverterUtils.PAYS_DESTINATION_INTERNATIONNAL
+     * @return true/false
+     */
+
+    public boolean isPaysDestination(String expectedPaysDestination) {
+        return paysDest.equals(expectedPaysDestination);
+    }
+
+    /**
+     * also named typeOrdre<br>
+     * BVR ou VIREMENT
+     * 
+     * @param CASepaOVConverterUtils.ORDRE_VERSEMENT_BVR<br>
+     *            CASepaOVConverterUtils.ORDRE_VERSEMENT_VIREMENT
+     * @return true/false
+     */
+    public boolean isTypeVersement(String expectedTypeOrdre) {
+        return typeOrdre.equals(expectedTypeOrdre);
+    }
+
 }

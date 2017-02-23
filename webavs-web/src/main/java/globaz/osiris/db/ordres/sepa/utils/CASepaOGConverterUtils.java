@@ -2,6 +2,7 @@ package globaz.osiris.db.ordres.sepa.utils;
 
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.utils.CAAdressePaiementFormatter;
 import globaz.osiris.external.IntAdressePaiement;
@@ -15,11 +16,6 @@ import com.six_interbank_clearing.de.pain_001_001_03_ch_02.Priority2Code;
 
 public class CASepaOGConverterUtils {
 
-    public static final String DEBTORACCOUNT_TYPE_PRTRY_NO_ADVICE = "NOA";
-    public static final String DEBTORACCOUNT_TYPE_PRTRY_SINGLE_ADVICE = "SIA";
-    public static final String DEBTORACCOUNT_TYPE_PRTRY_COLLECTIVE_ADVICE_NO_DETAILS = "CND";
-    public static final String DEBTORACCOUNT_TYPE_PRTRY_COLLECTIVE_ADVICE_W_DETAILS = "CWD";
-
     public static final String POST_FINANCE_BIC = "POFICHBEXXX";
 
     /**
@@ -29,12 +25,8 @@ public class CASepaOGConverterUtils {
      * @return
      */
     public static Boolean getBtchBook(APIOrdreGroupe og) {
-        return Boolean.valueOf(isTypeAvisCollectif(og.getTypeAvis()));
-    }
-
-    protected static boolean isTypeAvisCollectif(String typeAvis) {
-        return (APIOrdreGroupe.ISO_TYPE_AVIS_COLLECT_AVEC.equals(typeAvis) || APIOrdreGroupe.ISO_TYPE_AVIS_COLLECT_SANS
-                .equals(typeAvis));
+        // Mauvaise interpretation des spec [jira ISO20022-42] - > toujours TRUE
+        return true;
     }
 
     /**
@@ -71,7 +63,17 @@ public class CASepaOGConverterUtils {
      * @throws Exception
      */
     public static String getNomCaisse70(APIOrdreGroupe og) throws Exception {
-        String name = og.getOrganeExecution().getAdressePaiement().getNomTiersAdrPmt();
+        String name;
+        // fallback picoré dans les OV
+        if (!JadeStringUtil.isBlank(og.getOrganeExecution().getAdressePaiement().getAdresseCourrier().getAutreNom())) {
+            name = og.getOrganeExecution().getAdressePaiement().getAdresseCourrier().getAutreNom();
+        } else {
+            name = og.getOrganeExecution().getAdressePaiement().getNomTiersAdrPmt();
+        }
+        // fallback ajouté pour la ccvs
+        if (name == null || name.isEmpty()) {
+            name = og.getOrganeExecution().getAdressePaiement().getTiers().getNom();
+        }
         return CASepaCommonUtils.limit70(name);
     }
 
@@ -119,19 +121,6 @@ public class CASepaOGConverterUtils {
 
     private static GenericAccountIdentification1CH getNotIban(IntAdressePaiement adp) throws Exception {
         return CASepaCommonUtils.getNotIban(adp);
-    }
-
-    public static String getTpProprietary(APIOrdreGroupe og) {
-        if (og.getTypeAvis().equals(APIOrdreGroupe.ISO_TYPE_AVIS_AUCUN)) {
-            return DEBTORACCOUNT_TYPE_PRTRY_NO_ADVICE;
-        } else if (og.getTypeAvis().equals(APIOrdreGroupe.ISO_TYPE_AVIS_DETAIL)) {
-            return DEBTORACCOUNT_TYPE_PRTRY_SINGLE_ADVICE;
-        } else if (og.getTypeAvis().equals(APIOrdreGroupe.ISO_TYPE_AVIS_COLLECT_SANS)) {
-            return DEBTORACCOUNT_TYPE_PRTRY_COLLECTIVE_ADVICE_NO_DETAILS;
-        } else if (og.getTypeAvis().equals(APIOrdreGroupe.ISO_TYPE_AVIS_COLLECT_AVEC)) {
-            return DEBTORACCOUNT_TYPE_PRTRY_COLLECTIVE_ADVICE_W_DETAILS;
-        }
-        return null;
     }
 
     /**

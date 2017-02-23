@@ -153,6 +153,12 @@ public class CAProcessAttacherOrdre extends BProcess {
 
     }
 
+    /**
+     * use by attacherOrdre for case where number of OV to link to OG is higter than specified propertie nbmax.ovparog
+     * 
+     * @param transaction current transaction
+     * @throws Exception exception can occure during transaction attachement to the new entity
+     */
     private void prepareForNext(BTransaction transaction) throws Exception {
 
         if ((1 + listOg.size()) >= Integer.parseInt(CAProperties.ISO_SEPA_MAX_MULTIOG.getValue())) {
@@ -167,7 +173,6 @@ public class CAProcessAttacherOrdre extends BProcess {
         newOrdreGroupe.setDateEcheance(ordreGroupe.getDateEcheance());
         newOrdreGroupe.setTypeOrdreGroupe(ordreGroupe.getTypeOrdreGroupe());
         newOrdreGroupe.setNatureOrdresLivres(ordreGroupe.getNatureOrdresLivres());
-        newOrdreGroupe.setIsoCsTypeAvis(ordreGroupe.getIsoCsTypeAvis());
         newOrdreGroupe.setIsoGestionnaire(ordreGroupe.getIsoGestionnaire());
         newOrdreGroupe.setIsoHighPriority(ordreGroupe.getIsoHighPriority());
         newOrdreGroupe.setMotif(ordreGroupe.getMotif());

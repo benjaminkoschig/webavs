@@ -21,9 +21,8 @@ public class PCExecuterAvancesHelper extends PegasusHelper {
             process.setNoNog(((PCExecuterAvancesViewBean) viewBean).getNoOg());
             process.setIdOrganeExecution(((PCExecuterAvancesViewBean) viewBean).getIdOrganeExecution());
             process.setDateEchance(((PCExecuterAvancesViewBean) viewBean).getDateEcheance());
-            process.setIsoCsTypeAvis(((PCExecuterAvancesViewBean) viewBean).getIsoCsTypeAvis());
             process.setIsoGestionnaire(((PCExecuterAvancesViewBean) viewBean).getIsoGestionnaire());
-            process.setIsoHightPriority(((PCExecuterAvancesViewBean) viewBean).getIsoHightPriority());
+            process.setIsoHighPriority(((PCExecuterAvancesViewBean) viewBean).getIsoHighPriority());
             try {
                 BProcessLauncher.startJob(process);
             } catch (Exception e) {

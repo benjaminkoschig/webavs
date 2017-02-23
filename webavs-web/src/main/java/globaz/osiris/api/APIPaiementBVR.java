@@ -20,6 +20,18 @@ public interface APIPaiementBVR extends APIPaiement {
 
     public String getReferenceInterne();
 
+    public String getBankTransactionCode();
+
+    public String getAccountServicerReference();
+
+    public String getDebtor();
+
+    public void setBankTransactionCode(java.lang.String bankTransactionCode);
+
+    public void setDebtor(java.lang.String debtor);
+
+    public void setAccountServicerReference(java.lang.String accountServicerReference);
+
     public void setDateDepot(String newDateDepot);
 
     public void setDateInscription(String newDateInscription);

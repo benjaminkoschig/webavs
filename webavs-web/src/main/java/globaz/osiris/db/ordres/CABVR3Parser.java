@@ -4,7 +4,8 @@ import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMemoryLog;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BSession;
-import globaz.osiris.parser.IntBVRParser;
+import globaz.osiris.parser.IntBVRFlatFileParser;
+import globaz.osiris.parser.IntBVRPojo;
 import java.io.BufferedReader;
 
 /**
@@ -12,7 +13,7 @@ import java.io.BufferedReader;
  * 
  * @author: Administrator
  */
-public final class CABVR3Parser implements IntBVRParser {
+public final class CABVR3Parser implements IntBVRFlatFileParser {
     private String codeRejet = new String();
     private String currentBuffer = null;
     private String dateDepot = new String();
@@ -337,7 +338,7 @@ public final class CABVR3Parser implements IntBVRParser {
         if (genreTransaction.equals("999") || genreTransaction.equals("995")) {
 
             // Type de transaction
-            typeTransaction = IntBVRParser.FOOTER;
+            typeTransaction = IntBVRFlatFileParser.FOOTER;
 
             // Récupérer le total
             montant = currentBuffer.substring(39, 49) + "." + currentBuffer.substring(49, 51);
@@ -350,9 +351,9 @@ public final class CABVR3Parser implements IntBVRParser {
 
             // Déterminer le genre d'écriture
             if (genreTransaction.equals("999")) {
-                genreEcriture = IntBVRParser.GENRE_CREDIT;
+                genreEcriture = IntBVRPojo.GENRE_CREDIT;
             } else {
-                genreEcriture = IntBVRParser.GENRE_DEBIT;
+                genreEcriture = IntBVRPojo.GENRE_DEBIT;
             }
 
             // Nombre de transactions
@@ -391,7 +392,7 @@ public final class CABVR3Parser implements IntBVRParser {
         } else {
 
             // Type de transaction
-            typeTransaction = IntBVRParser.TRANSACTION;
+            typeTransaction = IntBVRFlatFileParser.TRANSACTION;
 
             // Récupérer le montant
             montant = currentBuffer.substring(39, 47) + "." + currentBuffer.substring(47, 49);
@@ -404,15 +405,15 @@ public final class CABVR3Parser implements IntBVRParser {
 
             // Déterminer le genre d'écriture
             if (genreTransaction.endsWith("2")) {
-                genreEcriture = IntBVRParser.GENRE_CREDIT;
+                genreEcriture = IntBVRPojo.GENRE_CREDIT;
             } else if (genreTransaction.endsWith("1")) {
-                genreEcriture = IntBVRParser.GENRE_CREDIT;
+                genreEcriture = IntBVRPojo.GENRE_CREDIT;
             } else if (genreTransaction.endsWith("8")) {
-                genreEcriture = IntBVRParser.GENRE_CREDIT;
+                genreEcriture = IntBVRPojo.GENRE_CREDIT;
             } else if (genreTransaction.endsWith("5")) {
-                genreEcriture = IntBVRParser.GENRE_DEBIT;
+                genreEcriture = IntBVRPojo.GENRE_DEBIT;
             } else if (genreTransaction.endsWith("4")) {
-                genreEcriture = IntBVRParser.GENRE_DEBIT;
+                genreEcriture = IntBVRPojo.GENRE_DEBIT;
             } else {
                 getMemoryLog().logMessage("5316", null, FWMessage.ERREUR, this.getClass().getName());
             }
@@ -500,5 +501,20 @@ public final class CABVR3Parser implements IntBVRParser {
     @Override
     public void setSession(BSession newSession) {
         session = newSession;
+    }
+
+    @Override
+    public String getBankTransactionCode() {
+        return null;
+    }
+
+    @Override
+    public String getAccountServicerReference() {
+        return null;
+    }
+
+    @Override
+    public String getDebtor() {
+        return null;
     }
 }

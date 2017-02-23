@@ -814,7 +814,7 @@ public final class CAGestionComptabiliteExterne implements APIGestionComptabilit
 
     @Override
     public void preparerOrdreGroupe(String idOrganeExecution, String numeroOG, String dateEcheance, String typeOrdre,
-            String natureOrdre, String libelleOG, String isoCsTypeAvis, String isoGestionnaire, String isoHighPriority) {
+            String natureOrdre, String libelleOG, String isoGestionnaire, String isoHighPriority) {
 
         boolean continu = true;
         // type de traitement OG sepa?
@@ -896,7 +896,6 @@ public final class CAGestionComptabiliteExterne implements APIGestionComptabilit
         ordreGroupe.setTypeOrdreGroupe(typeOrdre);
         ordreGroupe.setNatureOrdresLivres(natureOrdre);
         if (isTraitementSepa) {
-            ordreGroupe.setIsoCsTypeAvis(isoCsTypeAvis);
             ordreGroupe.setIsoGestionnaire(isoGestionnaire);
             ordreGroupe.setIsoHighPriority(isoHighPriority);
         } else {

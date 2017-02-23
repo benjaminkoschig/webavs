@@ -97,9 +97,8 @@ public class RETraiterLotDecisionsProcess extends BProcess {
     private String numeroOG = "";
     private BISession sessionOsiris = null;
 
-    private String isoCsTypeAvis = "";
     private String isoGestionnaire = "";
-    private String isoHightPriority = "";
+    private String isoHighPriority = "";
     private Boolean isIso = null;
 
     public RETraiterLotDecisionsProcess() {
@@ -601,7 +600,7 @@ public class RETraiterLotDecisionsProcess extends BProcess {
                 numOG = String.valueOf(n);
             }
             compta.preparerOrdreGroupe(idOG, numOG, dateEcheancePaiement, CAOrdreGroupe.VERSEMENT,
-                    CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG, isoCsTypeAvis, isoGestionnaire, isoHightPriority);
+                    CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG, isoGestionnaire, isoHighPriority);
         }
     }
 
@@ -759,14 +758,6 @@ public class RETraiterLotDecisionsProcess extends BProcess {
         this.numeroOG = numeroOG;
     }
 
-    public String getIsoCsTypeAvis() {
-        return isoCsTypeAvis;
-    }
-
-    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
-        this.isoCsTypeAvis = isoCsTypeAvis;
-    }
-
     public String getIsoGestionnaire() {
         return isoGestionnaire;
     }
@@ -775,12 +766,12 @@ public class RETraiterLotDecisionsProcess extends BProcess {
         this.isoGestionnaire = isoGestionnaire;
     }
 
-    public String getIsoHightPriority() {
-        return isoHightPriority;
+    public String getIsoHighPriority() {
+        return isoHighPriority;
     }
 
-    public void setIsoHightPriority(String isoHightPriority) {
-        this.isoHightPriority = isoHightPriority;
+    public void setIsoHighPriority(String isoHighPriority) {
+        this.isoHighPriority = isoHighPriority;
     }
 
 }

@@ -17,6 +17,7 @@ import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.db.comptes.CASectionManager;
 import globaz.osiris.db.journal.operation.CAUpdateOperationOrdreVersementInEtatVerse;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.osiris.db.rentes.check.montantpargenre.CARentesCheckMontantParGenre;
 import globaz.osiris.db.rentes.check.montantpargenre.CARentesCheckMontantParGenreManager;
 import globaz.osiris.db.rentes.check.operation.CARentesCheckOperationManager;
@@ -31,6 +32,8 @@ import globaz.osiris.process.journal.CAUtilsJournal;
 import globaz.osiris.utils.CAUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import ch.globaz.osiris.business.constantes.CAProperties;
 
 /**
  * Class permettant l'ajout d'opération ACTIVEE et d'ordre de versement PREPARE.<br/>
@@ -56,6 +59,8 @@ public class CAGestionRentesExterne implements APIGestionRentesExterne {
 
     FWCurrency totalVersement = new FWCurrency();
     private CARentesVersement versement;
+    private long maxOVforThisOG = Long.MAX_VALUE;
+    private List<String> listOg = new ArrayList<String>();
 
     /**
      * @see {@link APIGestionRentesExterne#addEcriture(BSession, BTransaction, String, String, String, String, String, String, String, String)}
@@ -160,6 +165,68 @@ public class CAGestionRentesExterne implements APIGestionRentesExterne {
 
         versement.fillVariables();
         versement.executeQuery(transaction);
+
+        // Multi OG
+        processMaxOvLimitControl(session, transaction);
+
+    }
+
+    /**
+     * check if the current OG reached the max amount of OV recommended and create a new one in this case
+     * 
+     * @throws Exception
+     */
+    private void processMaxOvLimitControl(BSession session, BTransaction transaction) throws Exception {
+        if (countVersement == maxOVforThisOG) {
+
+            closeUpdateOG(session, transaction);
+            totalVersement = new FWCurrency();
+            countVersement = 0;
+
+            prepareForNext(session, transaction);
+
+            listOg.add(ordreGroupe.getIsoNumLivraison());
+        }
+    }
+
+    /**
+     * use by attacherOrdre for case where number of OV to link to OG is higher than specified property nbmax.ovparog
+     * 
+     * @param transaction current transaction
+     * @throws Exception exception can occur during transaction attachement to the new entity
+     */
+    private void prepareForNext(BSession session, BTransaction transaction) throws Exception {
+
+        if ((1 + listOg.size()) >= Integer.parseInt(CAProperties.ISO_SEPA_MAX_MULTIOG.getValue())) {
+            throw new Exception(session.getLabel("SEPA_PREPARATION_MAX_MULTI_OG"));
+        }
+
+        CAOrdreGroupe newOrdreGroupe = new CAOrdreGroupe();
+        newOrdreGroupe.setSession(session);
+        newOrdreGroupe.setIdOrganeExecution(ordreGroupe.getIdOrganeExecution());
+        newOrdreGroupe.setNumeroOG(ordreGroupe.getNumeroOG());
+        newOrdreGroupe.setDateEcheance(ordreGroupe.getDateEcheance());
+        newOrdreGroupe.setTypeOrdreGroupe(ordreGroupe.getTypeOrdreGroupe());
+        newOrdreGroupe.setNatureOrdresLivres(ordreGroupe.getNatureOrdresLivres());
+        newOrdreGroupe.setIsoGestionnaire(ordreGroupe.getIsoGestionnaire());
+        newOrdreGroupe.setIsoHighPriority(ordreGroupe.getIsoHighPriority());
+        newOrdreGroupe.setMotif(ordreGroupe.getMotif());
+
+        newOrdreGroupe.setDateCreation(JACalendar.todayJJsMMsAAAA());
+        newOrdreGroupe.setEtat(CAOrdreGroupe.TRAITEMENT);
+        newOrdreGroupe.setIdJournal(journalVersement.getIdJournal());
+
+        try {
+            newOrdreGroupe.add(transaction);
+
+            if (newOrdreGroupe.hasErrors()) {
+                throw new Exception(session.getLabel("POG_ADD_ORDRE_GROUPE"));
+            }
+
+        } catch (Exception e) {
+            throw new Exception(session.getLabel("5002"), e);
+        }
+        ordreGroupe = newOrdreGroupe;
 
     }
 
@@ -363,6 +430,7 @@ public class CAGestionRentesExterne implements APIGestionRentesExterne {
      */
     private CAOrdreGroupe createNewOrdreGroupe(BSession session, BTransaction transaction, String libelle,
             String dateValeur, String numeroOG, String idOrganeExecution) throws Exception {
+
         CAOrdreGroupe org = new CAOrdreGroupe();
         org.setSession(session);
 
@@ -384,6 +452,8 @@ public class CAGestionRentesExterne implements APIGestionRentesExterne {
         if (org.isNew() || org.hasErrors()) {
             throw new Exception(session.getLabel("5147"));
         }
+
+        maxOVforThisOG = CASepaCommonUtils.getOvMaxByOG(org);
 
         return org;
     }
@@ -439,13 +509,17 @@ public class CAGestionRentesExterne implements APIGestionRentesExterne {
     /**
      * Mise à jour de l'ordre groupé (montant total et nombre de transactions).
      * 
+     * (old finalize renamed to not use reserved finalize method name on object)
+     * 
+     * new : return list of "numero livraison" of multiple og created
+     * 
      * @param parent
      * @param session
      * @param transaction
      * @throws Exception
      */
     @Override
-    public void finalize(BProcess parent, BSession session, BTransaction transaction) throws Exception {
+    public List<String> bouclerOG(BProcess parent, BSession session, BTransaction transaction) throws Exception {
         if ((ordreGroupe == null) || ordreGroupe.isNew()) {
             throw new Exception(session.getLabel("5200"));
         }
@@ -458,13 +532,7 @@ public class CAGestionRentesExterne implements APIGestionRentesExterne {
             throw new Exception(session.getLabel("5157"));
         }
 
-        ordreGroupe.setTotal(totalVersement.toString());
-        ordreGroupe.setNombreTransactions("" + countVersement);
-        ordreGroupe.update(transaction);
-
-        if (ordreGroupe.hasErrors()) {
-            throw new Exception(session.getLabel("5200"));
-        }
+        closeUpdateOG(session, transaction);
 
         /*
          * journal.setEtat(CAJournal.TRAITEMENT); journal.update(transaction);
@@ -487,7 +555,24 @@ public class CAGestionRentesExterne implements APIGestionRentesExterne {
         if (!new CAComptabiliserJournal().comptabiliser(parent, journalVersement)) {
             throw new Exception(session.getLabel("5008"));
         }
+        return listOg;
+    }
 
+    /**
+     * atomic close and update an OG in case of multiple OG due to ISO20022 limit
+     * 
+     * @param session
+     * @param transaction
+     * @throws Exception
+     */
+    private void closeUpdateOG(BSession session, BTransaction transaction) throws Exception {
+        ordreGroupe.setTotal(totalVersement.toString());
+        ordreGroupe.setNombreTransactions(Integer.toString(countVersement));
+        ordreGroupe.update(transaction);
+
+        if (ordreGroupe.hasErrors()) {
+            throw new Exception(session.getLabel("5200"));
+        }
     }
 
     /**

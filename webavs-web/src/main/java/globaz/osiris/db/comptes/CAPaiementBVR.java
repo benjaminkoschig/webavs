@@ -966,4 +966,34 @@ public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
         }
     }
 
+    @Override
+    public String getDebtor() {
+        return transactionBVR.getDebtor();
+    }
+
+    @Override
+    public String getBankTransactionCode() {
+        return transactionBVR.getBankTransactionCode();
+    }
+
+    @Override
+    public String getAccountServicerReference() {
+        return transactionBVR.getAccountServicerReference();
+    }
+
+    @Override
+    public void setBankTransactionCode(String bankTransactionCode) {
+        transactionBVR.setBankTransactionCode(bankTransactionCode);
+    }
+
+    @Override
+    public void setDebtor(String debtor) {
+        transactionBVR.setDebtor(debtor);
+    }
+
+    @Override
+    public void setAccountServicerReference(String accountServicerReference) {
+        transactionBVR.setAccountServicerReference(accountServicerReference);
+    }
+
 }

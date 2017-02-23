@@ -9,6 +9,7 @@ import java.io.BufferedReader;
  * 
  * @author: Administrator
  */
+@Deprecated
 public interface IntBVRParser {
     String FOOTER = "F";
     String GENRE_CREDIT = "D";

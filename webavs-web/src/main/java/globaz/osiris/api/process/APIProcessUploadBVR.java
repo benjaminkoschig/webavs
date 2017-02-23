@@ -15,6 +15,8 @@ public interface APIProcessUploadBVR extends FWViewBeanInterface {
 
     public String getIdOrganeExecution();
 
+    public String getIdYellowReportFile();
+
     public String getLibelle();
 
     public BSession getSession();
@@ -28,6 +30,8 @@ public interface APIProcessUploadBVR extends FWViewBeanInterface {
     public void setFileName(String fileName);
 
     public void setIdOrganeExecution(String idOrgarneExecution);
+
+    public void setIdYellowReportFile(String id);
 
     public void setLibelle(String newLibelle);
 

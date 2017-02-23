@@ -23,9 +23,8 @@ public class PCComptabiliserHelper extends PegasusHelper {
             process.setNumeroOG(vb.getNumeroOG());
             process.setDateEcheancePaiement(vb.getDateEcheancePaiement());
             process.setSession((BSession) session);
-            process.setIsoCsTypeAvis(vb.getIsoCsTypeAvis());
             process.setIsoGestionnaire(vb.getIsoGestionnaire());
-            process.setIsoHightPriority(vb.getIsoHightPriority());
+            process.setIsoHighPriority(vb.getIsoHighPriority());
 
             try {
                 process.checkMandatoryParams((BSession) session);

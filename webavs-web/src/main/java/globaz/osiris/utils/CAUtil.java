@@ -45,6 +45,7 @@ public class CAUtil implements APIUtil {
 
     public static final String ID_MENU_NODE_CA_ORDRES_GROUPES_ANNULER = "CA-OrdresGroupesAnnuler";
     public static final String ID_MENU_NODE_CA_ORDRES_GROUPES_EXECUTION = "CA-OrdresGroupesExecution";
+    public static final String ID_MENU_NODE_CA_ORDRES_REJETER_IMPRIMER = "CA-OrdresRejeteImprimer";
 
     public static final String ID_MENU_NODE_CA_ORDRES_GROUPES_PREPARATION = "CA-OrdresGroupesPreparation";
     public static final int SECTION_7_LONGUEUR = 7;

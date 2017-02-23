@@ -68,7 +68,7 @@ public class CASepaCommonUtils {
      * @return CodeSwiftWithoutSpaces
      */
     public static String getAdpBIC(IntAdressePaiement adressePaiement) {
-        return adressePaiement.getBanque().getCodeSwiftWithoutSpaces();
+        return adressePaiement.getBanque().getCodeSwiftWithoutSpaces().toUpperCase();
     }
 
     /**

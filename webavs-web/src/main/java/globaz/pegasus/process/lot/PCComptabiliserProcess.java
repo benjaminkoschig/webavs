@@ -64,9 +64,8 @@ public class PCComptabiliserProcess extends PCAbstractJob {
     private String numeroOG = "";
 
     // SEPA iso20002
-    private String isoCsTypeAvis = "";
     private String isoGestionnaire = "";
-    private String isoHightPriority = "";
+    private String isoHighPriority = "";
 
     /**
      * Méthode appelé après le finnaly du process en lui même Test si le process n'est pas en erreur, et si c'est ok
@@ -265,7 +264,7 @@ public class PCComptabiliserProcess extends PCAbstractJob {
                 CABusinessServiceLocator.getOrdreGroupeService().createOrdreGroupeeAndPrepare(
                         data.getJournalConteneur().getJournalModel().getId(), idOrganeExecution, numeroOG,
                         dateEcheancePaiement, CAOrdreGroupe.VERSEMENT, CAOrdreGroupe.NATURE_RENTES_AVS_AI,
-                        isoCsTypeAvis, isoGestionnaire, isoHightPriority);
+                        isoGestionnaire, isoHighPriority);
             }
         } catch (Exception e) {
             this.addError(e);
@@ -326,14 +325,6 @@ public class PCComptabiliserProcess extends PCAbstractJob {
         this.numeroOG = numeroOG;
     }
 
-    public String getIsoCsTypeAvis() {
-        return isoCsTypeAvis;
-    }
-
-    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
-        this.isoCsTypeAvis = isoCsTypeAvis;
-    }
-
     public String getIsoGestionnaire() {
         return isoGestionnaire;
     }
@@ -342,12 +333,12 @@ public class PCComptabiliserProcess extends PCAbstractJob {
         this.isoGestionnaire = isoGestionnaire;
     }
 
-    public String getIsoHightPriority() {
-        return isoHightPriority;
+    public String getIsoHighPriority() {
+        return isoHighPriority;
     }
 
-    public void setIsoHightPriority(String isoHightPriority) {
-        this.isoHightPriority = isoHightPriority;
+    public void setIsoHighPriority(String isoHighPriority) {
+        this.isoHighPriority = isoHighPriority;
     }
 
 }

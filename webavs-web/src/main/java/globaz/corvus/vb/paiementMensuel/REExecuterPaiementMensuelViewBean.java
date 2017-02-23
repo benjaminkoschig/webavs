@@ -16,7 +16,6 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecutionManager;
@@ -45,7 +44,6 @@ public class REExecuterPaiementMensuelViewBean extends PRAbstractViewBeanSupport
     private String numeroOG = "";
 
     // SEPA iso20002
-    private String isoCsTypeAvis = APIOrdreGroupe.ISO_TYPE_AVIS_COLLECT_SANS;
     private String isoGestionnaire = "";
     private String isoHighPriority = "";
 
@@ -257,14 +255,6 @@ public class REExecuterPaiementMensuelViewBean extends PRAbstractViewBeanSupport
         this.numeroOG = numeroOG;
     }
 
-    public String getIsoCsTypeAvis() {
-        return isoCsTypeAvis;
-    }
-
-    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
-        this.isoCsTypeAvis = isoCsTypeAvis;
-    }
-
     public String getIsoGestionnaire() {
         if (isoGestionnaire.isEmpty()) {
             return ((BSession) getISession()).getUserName();
@@ -280,8 +270,8 @@ public class REExecuterPaiementMensuelViewBean extends PRAbstractViewBeanSupport
         return isoHighPriority;
     }
 
-    public void setIsoHighPriority(String isoHightPriority) {
-        isoHighPriority = isoHightPriority;
+    public void setIsoHighPriority(String isoHighPriority) {
+        this.isoHighPriority = isoHighPriority;
     }
 
     /*

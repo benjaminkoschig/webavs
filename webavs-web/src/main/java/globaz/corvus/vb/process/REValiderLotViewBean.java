@@ -10,7 +10,6 @@ import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeNumericUtil;
-import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecutionManager;
@@ -35,9 +34,8 @@ public class REValiderLotViewBean extends PRAbstractViewBeanSupport {
     private String numeroOG = "";
 
     // SEPA iso20002
-    private String isoCsTypeAvis = APIOrdreGroupe.ISO_TYPE_AVIS_COLLECT_SANS;
     private String isoGestionnaire = "";
-    private String isoHightPriority = "";
+    private String isoHighPriority = "";
 
     public String getCsEtatLot() {
         return csEtatLot;
@@ -165,14 +163,6 @@ public class REValiderLotViewBean extends PRAbstractViewBeanSupport {
         this.numeroOG = numeroOG;
     }
 
-    public String getIsoCsTypeAvis() {
-        return isoCsTypeAvis;
-    }
-
-    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
-        this.isoCsTypeAvis = isoCsTypeAvis;
-    }
-
     public String getIsoGestionnaire() {
         if (isoGestionnaire.isEmpty()) {
             return getSession().getUserName();
@@ -184,12 +174,12 @@ public class REValiderLotViewBean extends PRAbstractViewBeanSupport {
         this.isoGestionnaire = isoGestionnaire;
     }
 
-    public String getIsoHightPriority() {
-        return isoHightPriority;
+    public String getIsoHighPriority() {
+        return isoHighPriority;
     }
 
-    public void setIsoHightPriority(String isoHightPriority) {
-        this.isoHightPriority = isoHightPriority;
+    public void setIsoHighPriority(String isoHighPriority) {
+        this.isoHighPriority = isoHighPriority;
     }
 
     @Override

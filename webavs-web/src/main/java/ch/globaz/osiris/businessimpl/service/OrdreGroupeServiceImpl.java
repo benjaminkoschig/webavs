@@ -27,8 +27,8 @@ public class OrdreGroupeServiceImpl implements OrdreGroupeService {
 
     @Override
     public void createOrdreGroupeeAndPrepare(String idJournal, String idOrganeExecution, String numeroOG,
-            String dateEcheance, String typeOrdre, String natureOrdre, String isoCsTypeAvis, String isoGestionnaire,
-            String isoHighPriority) throws OsirisException {
+            String dateEcheance, String typeOrdre, String natureOrdre, String isoGestionnaire, String isoHighPriority)
+            throws OsirisException {
 
         if (!JadeThread.logHasMessagesOfLevel(JadeBusinessMessageLevels.ERROR)) {
             checkOrganeExecution(idOrganeExecution);
@@ -71,7 +71,6 @@ public class OrdreGroupeServiceImpl implements OrdreGroupeService {
             ordreGroupe.setMotif(journal.getIdJournal() + " " + journal.getLibelle());
             ordreGroupe.setIsoCsOrdreStatutExec(APIOrdreGroupe.ISO_TRANSAC_STATUS_AUCUNE);
             ordreGroupe.setIsoCsTransmissionStatutExec(APIOrdreGroupe.ISO_TRANSAC_STATUS_AUCUNE);
-            ordreGroupe.setIsoCsTypeAvis(isoCsTypeAvis);
             ordreGroupe.setIsoGestionnaire(isoGestionnaire);
             ordreGroupe.setIsoHighPriority(isoHighPriority);
 

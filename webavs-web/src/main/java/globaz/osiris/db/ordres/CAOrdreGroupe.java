@@ -18,6 +18,7 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
+import globaz.jade.log.JadeLogger;
 import globaz.osiris.api.APIOperation;
 import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.api.ordre.APIOrganeExecution;
@@ -51,12 +52,14 @@ import globaz.osiris.process.journal.CAProcessAnnulerJournal;
 import globaz.osiris.translation.CACodeSystem;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -93,7 +96,6 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
     public static final String FIELD_TOTAL = "TOTAL";
     public static final String FIELD_TYPEORDREGROUPE = "TYPEORDREGROUPE";
 
-    public static final String FIELD_ISOTYPEAVIS = "ISOTYPEAVIS";
     public static final String FIELD_ISONUMLIVR = "ISONUMLIVR";
     public static final String FIELD_ISOHAUTEPRIO = "ISOHAUTEPRIO";
     public static final String FIELD_ISOGEST = "ISOGEST";
@@ -190,7 +192,6 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     // private String isoNumLivraison = "";
     private String isoHighPriority = "";
-    private String isoCsTypeAvis = "";
     private String isoGestionnaire = "";
     private String isoCsOrdreStatutExec = "";
     private String isoCsTransmissionStatutExec = "";
@@ -311,7 +312,6 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
         // isoNumLivraison = statement.dbReadString(CAOrdreGroupe.FIELD_ISONUMLIVR);
         isoGestionnaire = statement.dbReadString(CAOrdreGroupe.FIELD_ISOGEST);
         isoHighPriority = statement.dbReadString(CAOrdreGroupe.FIELD_ISOHAUTEPRIO);
-        isoCsTypeAvis = statement.dbReadNumeric(CAOrdreGroupe.FIELD_ISOTYPEAVIS);
         isoCsOrdreStatutExec = statement.dbReadNumeric(CAOrdreGroupe.FIELD_ISOORDRESTAT);
         isoCsTransmissionStatutExec = statement.dbReadNumeric(CAOrdreGroupe.FIELD_ISOTRANSACSTAT);
     }
@@ -451,8 +451,6 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
         statement.writeField(CAOrdreGroupe.FIELD_ETAT,
                 this._dbWriteNumeric(statement.getTransaction(), getEtat(), "etat de l'ordre groupé"));
 
-        statement.writeField(CAOrdreGroupe.FIELD_ISOTYPEAVIS,
-                this._dbWriteNumeric(statement.getTransaction(), getIsoCsTypeAvis(), "type d'avis de l'ordre groupé"));
         statement.writeField(CAOrdreGroupe.FIELD_ISOORDRESTAT, this._dbWriteNumeric(statement.getTransaction(),
                 getIsoCsOrdreStatutExec(), "statut d'exe de l'ordre groupé"));
         statement.writeField(CAOrdreGroupe.FIELD_ISOTRANSACSTAT, this._dbWriteNumeric(statement.getTransaction(),
@@ -1170,6 +1168,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                             + getDefaultFilename());
                 }
 
+                if (!isSepa) {
                 // Génération d'un nom unique
                 sLocalFilename = Jade.getInstance().getHomeDir() + CAApplication.DEFAULT_OSIRIS_ROOT + "/work/"
                         + "ordreGroupe" + getIdOrdreGroupe() + ".out";
@@ -1182,6 +1181,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                     _addError(context.getTransaction(), getSession().getLabel("5229") + " " + sLocalFilename);
                     return;
                 }
+            }
             }
 
             // Formatter l'entête
@@ -1212,19 +1212,20 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
             }
 
             // Formatter la fin de fichier
-
             StringBuffer pathSEPA = null;
-            // Si sepa, le path du fichier marshallé est renvoyé ()
             if (!hasErrors() && context.getGenererFichierEchange()) {
                 pathSEPA = of.formatEOF(this);
             }
 
             // Clôture du fichier
+            IOUtils.closeQuietly(of.getPrintWriter());
+
             if (context.getGenererFichierEchange()) {
-                of.getPrintWriter().close();
-                if (isSepa) {
+                if (isSepa && pathSEPA != null) {
                     sLocalFilename = pathSEPA.toString();
                 }
+
+                if ((isSepa && pathSEPA != null) || !isSepa) {
                 // Renommer le fichier selon les paramètres fournis
                 File fSrc = new File(sLocalFilename);
                 File fDest = new File(context.getFileName());
@@ -1233,10 +1234,14 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                     fDest.delete();
                 }
 
-                if (!fSrc.renameTo(fDest)) {
+                    try {
+                        FileUtils.moveFile(fSrc, fDest);
+                    } catch (IOException exception) {
+                        JadeLogger.error(exception, exception.getMessage());
                     _addError(context.getTransaction(), getSession().getLabel("5229") + " " + context.getFileName());
                     return;
                 }
+            }
             }
 
             // Si l'on désire comptabiliser
@@ -1259,6 +1264,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                     }
                 }
             }
+
             // Si tout est ok
             if (!context.isAborted() && !hasErrors()
                     && (getMemoryLog().getErrorLevel().compareTo(FWMessage.ERREUR) < 0)) {
@@ -1306,6 +1312,10 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
             }
 
             // Récupérer les exceptions
+        } catch (javax.xml.bind.MarshalException me) {
+            _addError(context.getTransaction(), me.getCause().getMessage());
+            getMemoryLog().logMessage("pain001 xml binding Marshal Exception : " + me.getCause().getMessage(),
+                    FWMessage.ERREUR, this.getClass().getName());
         } catch (Exception e) {
             _addError(context.getTransaction(), e.getMessage());
             getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, this.getClass().getName());
@@ -1747,10 +1757,6 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
         return isoHighPriority;
     }
 
-    public String getIsoCsTypeAvis() {
-        return (JadeStringUtil.isEmpty(isoCsTypeAvis) ? APIOrdreGroupe.ISO_TYPE_AVIS_COLLECT_SANS : isoCsTypeAvis);
-    }
-
     public String getIsoGestionnaire() {
         return (JadeStringUtil.isEmpty(isoGestionnaire) ? getSession().getUserName() : isoGestionnaire);
     }
@@ -1763,6 +1769,19 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
     public String getIsoCsTransmissionStatutExec() {
         return (JadeStringUtil.isEmpty(isoCsTransmissionStatutExec) ? APIOrdreGroupe.ISO_TRANSAC_STATUS_AUCUNE
                 : isoCsTransmissionStatutExec);
+    }
+
+    public boolean hasOrdreRejetes() {
+        CAOrdreRejeteManager mgr = new CAOrdreRejeteManager();
+        mgr.setSession(getSession());
+        mgr.setForIdOG(getIdOrdreGroupe());
+
+        try {
+            mgr.find(BManager.SIZE_NOLIMIT);
+        } catch (Exception e) {
+            throw new SepaException("could not search for OrdreRejeté: " + getIdOrdreGroupe() + ": " + e, e);
+        }
+        return !mgr.toList().isEmpty();
     }
 
     /**
@@ -2047,10 +2066,6 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
         this.isoHighPriority = isoHighPriority;
     }
 
-    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
-        this.isoCsTypeAvis = isoCsTypeAvis;
-    }
-
     public void setIsoGestionnaire(String isoGestionnaire) {
         this.isoGestionnaire = isoGestionnaire;
     }
@@ -2123,9 +2138,4 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
         return getIsoNumLivraison();
     }
 
-    @Override
-    public String getTypeAvis() {
-        return getIsoCsTypeAvis();
     }
-
-}

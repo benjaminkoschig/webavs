@@ -4,7 +4,6 @@ import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
-import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.ordres.CAOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import java.rmi.RemoteException;
@@ -21,9 +20,8 @@ public class PCExecuterAvancesViewBean extends BJadePersistentObjectViewBean {
     private String typeTraitement = null;
 
     // SEPA iso20002
-    private String isoCsTypeAvis = APIOrdreGroupe.ISO_TYPE_AVIS_COLLECT_SANS;
     private String isoGestionnaire = ((BSession) getISession()).getUserName();
-    private String isoHightPriority;
+    private String isoHighPriority;
 
     @Override
     public void add() throws Exception {
@@ -147,14 +145,6 @@ public class PCExecuterAvancesViewBean extends BJadePersistentObjectViewBean {
         this.typeTraitement = typeTraitement;
     }
 
-    public String getIsoCsTypeAvis() {
-        return isoCsTypeAvis;
-    }
-
-    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
-        this.isoCsTypeAvis = isoCsTypeAvis;
-    }
-
     public String getIsoGestionnaire() {
         return isoGestionnaire;
     }
@@ -163,12 +153,12 @@ public class PCExecuterAvancesViewBean extends BJadePersistentObjectViewBean {
         this.isoGestionnaire = isoGestionnaire;
     }
 
-    public String getIsoHightPriority() {
-        return isoHightPriority;
+    public String getIsoHighPriority() {
+        return isoHighPriority;
     }
 
-    public void setIsoHightPriority(String isoHightPriority) {
-        this.isoHightPriority = isoHightPriority;
+    public void setIsoHighPriority(String isoHighPriority) {
+        this.isoHighPriority = isoHighPriority;
     }
 
     @Override

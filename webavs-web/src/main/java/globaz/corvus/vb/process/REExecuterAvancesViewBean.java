@@ -6,7 +6,6 @@ package globaz.corvus.vb.process;
 import globaz.corvus.api.avances.IREAvances;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
-import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.ordres.CAOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
@@ -28,9 +27,8 @@ public class REExecuterAvancesViewBean extends PRAbstractViewBeanSupport {
     private String noOg = null;
 
     // SEPA iso20002
-    private String isoCsTypeAvis = APIOrdreGroupe.ISO_TYPE_AVIS_COLLECT_SANS;
     private String isoGestionnaire = "";
-    private String isoHightPriority = "";
+    private String isoHighPriority = "";
 
     public String getCsTypeAvance() {
         return csTypeAvance;
@@ -129,14 +127,6 @@ public class REExecuterAvancesViewBean extends PRAbstractViewBeanSupport {
         this.noOg = noOg;
     }
 
-    public String getIsoCsTypeAvis() {
-        return isoCsTypeAvis;
-    }
-
-    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
-        this.isoCsTypeAvis = isoCsTypeAvis;
-    }
-
     public String getIsoGestionnaire() {
         if (isoGestionnaire.isEmpty()) {
             return getSession().getUserName();
@@ -148,12 +138,12 @@ public class REExecuterAvancesViewBean extends PRAbstractViewBeanSupport {
         this.isoGestionnaire = isoGestionnaire;
     }
 
-    public String getIsoHightPriority() {
-        return isoHightPriority;
+    public String getIsoHighPriority() {
+        return isoHighPriority;
     }
 
-    public void setIsoHightPriority(String isoHightPriority) {
-        this.isoHightPriority = isoHightPriority;
+    public void setIsoHighPriority(String isoHighPriority) {
+        this.isoHighPriority = isoHighPriority;
     }
 
     @Override

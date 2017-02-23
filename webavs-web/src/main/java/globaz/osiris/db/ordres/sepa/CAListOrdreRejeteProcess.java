@@ -11,6 +11,7 @@ import globaz.jade.context.JadeContextImplementation;
 import globaz.jade.context.JadeThreadActivator;
 import globaz.jade.context.JadeThreadContext;
 import globaz.osiris.api.ordre.APICommonOdreVersement;
+import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.comptes.CAOperationManager;
 import globaz.osiris.db.comptes.CAOperationOrdreVersementManager;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,16 +45,18 @@ public class CAListOrdreRejeteProcess extends BProcess {
 
     private static final String INFOROM_NUMBER = "0322GCA";
 
-    private final static Logger logger = LoggerFactory.getLogger(CAListOrdreRejeteProcess.class);
+    private static final Logger logger = LoggerFactory.getLogger(CAListOrdreRejeteProcess.class);
 
     private String idOrdreGroupe;
     List<String> mailsList = new ArrayList<String>();
+    List<String> reasons = new ArrayList<String>();
     private String email;
 
     private CAOrdreGroupe ordreGroupe;
 
-    public void process(BSession session, CAOrdreGroupe og) {
+    public void process(BSession session, CAOrdreGroupe og, List<String> reasons) {
         setOrdreGroupe(og);
+        setReasons(reasons);
         setSession(session);
         if (mailsList.isEmpty()) {
             mailsList.add(getEmail());
@@ -65,7 +69,7 @@ public class CAListOrdreRejeteProcess extends BProcess {
         List<CAOrdreRejete> listOrdreRejete = getOrdreRejeteForOG(getOrdreGroupe());
         Map<String, List<CAOrdreRejete>> mapOrdreRej = new HashMap<String, List<CAOrdreRejete>>();
         for (CAOrdreRejete ordreRej : listOrdreRejete) {
-            String key = ordreRej.getIdOrdre();
+            String key = ordreRej.getIdOperation();
             if (mapOrdreRej.containsKey(key)) {
                 mapOrdreRej.get(key).add(ordreRej);
             } else {
@@ -87,27 +91,33 @@ public class CAListOrdreRejeteProcess extends BProcess {
             }
 
         }
-        String generatedXlsFilePath;
 
-        // besoin du context pour la gestion des traduction depuis simpleOutputList
-        try {
-            JadeThreadActivator.startUsingJdbcContext(this, getNewJadeThreadContext().getContext());
+        if (!APIOrdreGroupe.ISO_TRANSAC_STATUS_COMPLET.equals(getOrdreGroupe().getIsoCsTransmissionStatutExec())
+                || !ordreRejetesContainer.isEmpty() || !reasons.isEmpty()) {
 
-            generatedXlsFilePath = generateXls(getOrdreGroupe(), ordreRejetesContainer, getSession());
+            String generatedXlsFilePath;
 
-        } catch (Exception e) {
-            throw new SepaException("could not generate XLS for OrdreRejeté: " + getOrdreGroupe().getIdOrdreGroupe()
-                    + ": " + e, e);
-        } finally {
-            JadeThreadActivator.stopUsingContext(this);
+            // besoin du context pour la gestion des traduction depuis simpleOutputList
+            try {
+                JadeThreadActivator.startUsingJdbcContext(this, getNewJadeThreadContext().getContext());
+
+                generatedXlsFilePath = generateXls(getOrdreGroupe(), ordreRejetesContainer, getSession());
+
+            } catch (Exception e) {
+                throw new SepaException("could not generate XLS for OrdreRejeté: "
+                        + getOrdreGroupe().getIdOrdreGroupe() + ": " + e, e);
+            } finally {
+                JadeThreadActivator.stopUsingContext(this);
+            }
+
+            try {
+                // envoyer l'email
+                sendMail(mailsList, generatedXlsFilePath, ordreRejetesContainer.isEmpty(), reasons);
+            } catch (Exception e) {
+                logger.error("une erreur est survenue lors du traitement", e);
+            }
         }
 
-        try {
-            // envoyer l'email
-            sendMail(mailsList, generatedXlsFilePath, ordreRejetesContainer.isEmpty());
-        } catch (Exception e) {
-            logger.error("une erreur est survenue lors du traitement", e);
-        }
         logger.info("{} Fin du traitement de génération des listes d'OrdreRejete", getName());
     }
 
@@ -176,7 +186,8 @@ public class CAListOrdreRejeteProcess extends BProcess {
         return ovsMap;
     }
 
-    private void sendMail(List<String> mailsList, String joinFilePath, boolean isEmptyList) throws Exception {
+    private void sendMail(List<String> mailsList, String joinFilePath, boolean hasNoOrdreRejetes, List<String> reasons)
+            throws Exception {
         // ajout de la pièce jointe
         List<String> joinsFilesPathsList = new ArrayList<String>();
         joinsFilesPathsList.add(joinFilePath);
@@ -184,7 +195,8 @@ public class CAListOrdreRejeteProcess extends BProcess {
         String numTransac = getOrdreGroupe().getIsoNumLivraison();
         String subject;
         String body;
-        if (isEmptyList) {
+
+        if (hasNoOrdreRejetes && !reasons.isEmpty()) {
             subject = FWMessageFormat.format(getSession().getLabel("LIST_OSIRIS_ORDREREJETE_MAIL_SUBJECT_EMPTY"),
                     getOrdreGroupe().getNumLivraison());
             body = getSession().getLabel("LIST_OSIRIS_ORDREREJETE_MAIL_BODY_EMPTY");
@@ -195,6 +207,8 @@ public class CAListOrdreRejeteProcess extends BProcess {
                     numTransac);
             body = FWMessageFormat.format(getSession().getLabel("LIST_OSIRIS_ORDREREJETE_MAIL_BODY_SUCCESS"),
                     numTransac);
+
+            body += ArrayUtils.toString(reasons);
         }
         // envoi
         ProcessMailUtils.sendMail(mailsList, subject, body, joinsFilesPathsList);
@@ -260,7 +274,7 @@ public class CAListOrdreRejeteProcess extends BProcess {
             og.retrieve();
             setOrdreGroupe(og);
         }
-        process(getSession(), getOrdreGroupe());
+        process(getSession(), getOrdreGroupe(), new ArrayList<String>());
         return true;
     }
 
@@ -314,6 +328,10 @@ public class CAListOrdreRejeteProcess extends BProcess {
     @Deprecated
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setReasons(List<String> reasons) {
+        this.reasons = reasons;
     }
 
 }

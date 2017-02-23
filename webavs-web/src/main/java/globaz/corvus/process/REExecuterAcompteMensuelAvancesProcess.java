@@ -86,9 +86,8 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
     /** Date de fin fictive pour les test sur les dates */
     private static final String DATE_FIN = "31.12.2999";
     // SEPA iso20002
-    private String isoCsTypeAvis;
     private String isoGestionnaire;
-    private String isoHightPriority;
+    private String isoHighPriority;
     private Boolean isIso = null;
 
     /**
@@ -509,7 +508,7 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
                     FWMessage.INFORMATION, "");
 
             compta.preparerOrdreGroupe(idOrganeExecution, numOG, dateEcheancePaiement, CAOrdreGroupe.VERSEMENT,
-                    CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG, isoCsTypeAvis, isoGestionnaire, isoHightPriority);
+                    CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG, isoGestionnaire, isoHighPriority);
         }
     }
 
@@ -620,14 +619,6 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
         dateEcheancePaiement = dateEcheance;
     }
 
-    public String getIsoCsTypeAvis() {
-        return isoCsTypeAvis;
-    }
-
-    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
-        this.isoCsTypeAvis = isoCsTypeAvis;
-    }
-
     public String getIsoGestionnaire() {
         return isoGestionnaire;
     }
@@ -636,12 +627,12 @@ public class REExecuterAcompteMensuelAvancesProcess extends BProcess {
         this.isoGestionnaire = isoGestionnaire;
     }
 
-    public String getIsoHightPriority() {
-        return isoHightPriority;
+    public String getIsoHighPriority() {
+        return isoHighPriority;
     }
 
-    public void setIsoHightPriority(String isoHightPriority) {
-        this.isoHightPriority = isoHightPriority;
+    public void setIsoHighPriority(String isoHighPriority) {
+        this.isoHighPriority = isoHighPriority;
     }
 
 }

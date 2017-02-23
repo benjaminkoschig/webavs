@@ -43,7 +43,7 @@ public class CABvrFtpAction extends CADefaultServletAction {
         try {
             String selectedId = request.getParameter("selectedId");
 
-            // Gestion des droits délèguée à méthode Lister.
+            // Gestion des droits délégués à méthode Lister.
             // Aucune possibilité d'action new dans cet écran.
 
             CABvrFtpListViewBean viewBeanList = (CABvrFtpListViewBean) session.getAttribute(VBL_ELEMENT);
@@ -94,11 +94,19 @@ public class CABvrFtpAction extends CADefaultServletAction {
         viewBean.setISession(mainDispatcher.getSession());
 
         try {
-            String selectedFile = request.getParameter("selectedId");
-            viewBean.setUserSelectedFileName(selectedFile);
+            final Boolean isYellowReportFile = Boolean.valueOf(request.getParameter("isYellowReportFile"));
 
-            String distantDirectoryName = request.getParameter("distantDirectoryName");
-            viewBean.setDistantDirectoryName(distantDirectoryName);
+            if (isYellowReportFile) {
+                final String idIsoFile = request.getParameter("selectedId");
+                request.setAttribute("idYellowReportFile", request.getParameter("selectedId"));
+                viewBean.setIdYellowReportFile(idIsoFile);
+            } else {
+                String selectedFile = request.getParameter("selectedId");
+                viewBean.setUserSelectedFileName(selectedFile);
+
+                String distantDirectoryName = request.getParameter("distantDirectoryName");
+                viewBean.setDistantDirectoryName(distantDirectoryName);
+            }
 
             viewBean = (CABvrViewBean) mainDispatcher.dispatch(viewBean, action);
 

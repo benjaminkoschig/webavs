@@ -13,6 +13,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.log.JadeLogger;
 import globaz.osiris.api.process.APIProcessUpload;
+import globaz.osiris.api.process.APIProcessUploadBVR;
 import globaz.osiris.db.comptes.CAExtournerOperationViewBean;
 import globaz.osiris.db.comptes.CAExtournerSectionViewBean;
 import globaz.osiris.db.process.CAAnnulerJournalViewBean;
@@ -98,7 +99,8 @@ public class CAProcessAction extends CADefaultServletAction {
             String actionSuite = getActionSuite(request);
             setProperties(request, actionSuite, viewBean);
 
-            if (viewBean instanceof APIProcessUpload) {
+            if (viewBean instanceof APIProcessUpload
+                    && JadeStringUtil.isEmpty(((APIProcessUploadBVR) viewBean).getIdYellowReportFile())) {
                 FWFileUpload uploadBean = new FWFileUpload();
                 uploadBean.setSavePath(Jade.getInstance().getHomeDir() + "work/");
                 uploadBean.doUpload(request);

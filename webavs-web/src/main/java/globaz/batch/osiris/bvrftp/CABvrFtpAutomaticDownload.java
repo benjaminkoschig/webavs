@@ -16,6 +16,7 @@ import globaz.osiris.process.journal.CAProcessComptabiliserJournal;
 import globaz.osiris.utils.CADateUtil;
 import java.io.File;
 import java.math.BigDecimal;
+import java.util.List;
 
 public class CABvrFtpAutomaticDownload extends BProcess {
 
@@ -56,7 +57,7 @@ public class CABvrFtpAutomaticDownload extends BProcess {
      * @return
      * @throws Exception
      */
-    private static String executeBvr(BSession session, BTransaction transaction, File bvrFile, JADate dateValeur,
+    private static List<String> executeBvr(BSession session, BTransaction transaction, File bvrFile, JADate dateValeur,
             String idOrganeExecution) throws Exception {
         CAProcessBVR processBvr = new CAProcessBVR();
         processBvr.setSession(session);
@@ -81,7 +82,7 @@ public class CABvrFtpAutomaticDownload extends BProcess {
             transaction.commit();
         }
 
-        return processBvr.getIdJournalBvr();
+        return processBvr.getIdJournauxBvr();
     }
 
     /**
@@ -138,24 +139,26 @@ public class CABvrFtpAutomaticDownload extends BProcess {
                         JACalendar cal = getSession().getApplication().getCalendar();
                         dateValeur = CADateUtil.getDateOuvrable(cal.addDays(dateValeur, 1));
 
-                        String idJournal = executeBvr(getSession(), getTransaction(), bvrFile, dateValeur,
+                        List<String> idJournaux = executeBvr(getSession(), getTransaction(), bvrFile, dateValeur,
                                 idOrganeExecution);
 
                         emailContent = emailContent + getSession().getLabel("BVRFTP_AUTO_DOWNLOAD_LIBELLE") + " "
                                 + dateValeur.toStr(".") + " "
                                 + getSession().getLabel("BVRFTP_AUTO_DOWNLOAD_LIBELLE_TRAITES") + ".\n";
+                        for (String idJournal : idJournaux) {
+                            CAJournal journal = getJournal(getSession(), getTransaction(), idJournal);
 
-                        CAJournal journal = getJournal(getSession(), getTransaction(), idJournal);
+                            if ((!journal.isNew()) && (journal.isOuvert())) {
+                                comptabiliser(getSession(), idJournal);
 
-                        if ((!journal.isNew()) && (journal.isOuvert())) {
-                            comptabiliser(getSession(), idJournal);
-
-                            emailContent = emailContent + getSession().getLabel("BVRFTP_AUTO_DOWNLOAD_JOURNAL") + " "
-                                    + idJournal + " " + getSession().getLabel("BVRFTP_AUTO_DOWNLOAD_COMPTABILISE")
-                                    + ".\n";
-                        } else {
-                            emailContent = emailContent + getSession().getLabel("BVRFTP_AUTO_DOWNLOAD_JOURNAL") + " "
-                                    + idJournal + " " + getSession().getLabel("BVRFTP_AUTO_DOWNLOAD_MANUEL") + ".\n";
+                                emailContent = emailContent + getSession().getLabel("BVRFTP_AUTO_DOWNLOAD_JOURNAL")
+                                        + " " + idJournal + " "
+                                        + getSession().getLabel("BVRFTP_AUTO_DOWNLOAD_COMPTABILISE") + ".\n";
+                            } else {
+                                emailContent = emailContent + getSession().getLabel("BVRFTP_AUTO_DOWNLOAD_JOURNAL")
+                                        + " " + idJournal + " " + getSession().getLabel("BVRFTP_AUTO_DOWNLOAD_MANUEL")
+                                        + ".\n";
+                            }
                         }
                     } else {
                         throw new Exception("Filename date is not valid" + bvrFile.getName().substring(0, 8));

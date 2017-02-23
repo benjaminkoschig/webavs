@@ -87,8 +87,10 @@ public abstract class CAOrdreFormateur {
 
                 // S'il y a des erreurs, on le signale
                 if (ov.getMemoryLog().getErrorLevel().compareTo(FWMessage.ERREUR) >= 0) {
+
                     og.getMemoryLog().logMessage("5204", ov.getNumTransaction(), FWMessage.ERREUR,
                             og.getClass().getName());
+                    og.getMemoryLog().logMessage(ov.getMemoryLog());
                 } else {
 
                     // Déclencher le versement

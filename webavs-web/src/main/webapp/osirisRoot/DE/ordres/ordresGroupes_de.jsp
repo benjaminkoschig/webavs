@@ -1,10 +1,12 @@
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%-- tpl:insert page="/theme/detail.jtpl" --%>
+<%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
 <%idEcran = "GCA0043"; %>
+<%@ page import="globaz.osiris.api.ordre.APIOrdreGroupe"%>
 <%@ page import="globaz.osiris.db.ordres.*" %>
 <%@ page import="globaz.globall.parameters.*" %>
 <%@ page import="globaz.osiris.utils.CAUtil" %>
@@ -78,6 +80,7 @@ function del() {
 }
 function init(){
 	selectChangeISO20022(document.getElementById("idOrganeExecution"));
+	selectChangePriority(document.getElementById("isoHighPriority"));
 }
 function changeAffichage(){
 	if (document.getElementById("typeOrdreGroupe").value==207002){
@@ -98,7 +101,16 @@ function changeAffichageISO20022(cs) {
 		$('.classNonIso').css('display', 'block'); $('.classIso').css('display', 'none');
 	} 
 }
-
+function selectChangePriority(s) {
+	showPriorWarning(s[s.selectedIndex].value);
+}
+function showPriorWarning(val){
+	if(val==1){
+		$('.classPrioWarn').css('display', 'block');
+	}else{
+		$('.classPrioWarn').css('display', 'none');
+	}
+}
 // stop hiding -->
 </SCRIPT>
 <%-- /tpl:put --%>
@@ -253,22 +265,20 @@ function changeAffichageISO20022(cs) {
             <TD width="153">Ausführungspriorität</TD>
             <TD width="10"></TD>
             <TD nowrap width="289">
-              <select id="isoHighPriority" name="isoHighPriority">
+              <select id="isoHighPriority" name="isoHighPriority" onchange="selectChangePriority(this)">
                <%			
 				if ("1".equalsIgnoreCase(viewBean.getIsoHighPriority())){
 				%>
 				<OPTION value="0">normale</OPTION>
-                <OPTION selected value="1">haute</OPTION>
+                <OPTION selected value="1">hohe</OPTION>
                 <%	} else { %>
                 <OPTION selected value="0">normale</OPTION>
-                <OPTION value="1">haute</OPTION>
+                <OPTION value="1">hohe</OPTION>
                 <%}%>
-              </select>
+              </select><span class="classPrioWarn" style="color:red">Achtung : Gebühren werden Ihnen von Ihren Finanzinstitut für jede Transaktion verrechnet (hohe Zusatzkosten) !</span>
             </TD>
-            <TD width="123">Meldungstyp</TD>
-            <TD width="139">
-				<ct:FWCodeSelectTag name="isoCsTypeAvis" defaut="<%=viewBean.getIsoCsTypeAvis()%>" codeType="OSIOGTYA" />
-            </TD>
+            <TD width="123"></TD>
+            <TD width="139"></TD>
           </TR>
           <TR class="classIso">
             <TD width="153">Ausführungsstatus des Auftrags</TD>
@@ -363,6 +373,8 @@ changeAffichage();
 	<ct:menuActivateNode active="yes" nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_GROUPES_PREPARATION %>"/>
 	<ct:menuActivateNode active="yes" nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_GROUPES_EXECUTION %>"/>
 	<ct:menuActivateNode active="yes" nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_GROUPES_ANNULER %>"/>
+	<ct:menuActivateNode active="yes" nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_REJETER_IMPRIMER %>"/>
+	
 	<% if (!"0".equals(viewBean.getEtat())) { %>
 		<ct:menuActivateNode active="no" nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_GROUPES_PREPARATION %>"/>
 	<% } %>	
@@ -370,7 +382,11 @@ changeAffichage();
 	<% if (CAOrdreGroupe.ANNULE.equals(viewBean.getEtat())) { %>
 		<ct:menuActivateNode active="no" nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_GROUPES_EXECUTION %>"/>
 		<ct:menuActivateNode active="no" nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_GROUPES_ANNULER %>"/>
-	<% } %>		
+	<% } %>
+	
+	<% if(APIOrdreGroupe.ISO_TRANSAC_STATUS_COMPLET.equals(viewBean.getIsoCsTransmissionStatutExec()) || !viewBean.hasOrdreRejetes()){ %>
+		<ct:menuActivateNode active="no" nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_REJETER_IMPRIMER %>"/>
+	<% } %>
 </ct:menuChange>
  
 <% } %>

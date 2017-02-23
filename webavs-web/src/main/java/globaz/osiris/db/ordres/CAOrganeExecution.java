@@ -4,14 +4,17 @@ import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMemoryLog;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BEntity;
+import globaz.globall.db.BManager;
 import globaz.globall.db.GlobazServer;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.parameters.FWParametersSystemCodeManager;
 import globaz.globall.parameters.FWParametersUserCode;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.common.JadeClassCastException;
 import globaz.jade.fs.JadeFsFacade;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
 import globaz.osiris.api.APIEcriture;
@@ -21,24 +24,48 @@ import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
 import globaz.osiris.db.comptes.CAJournal;
+import globaz.osiris.db.comptes.CAJournalISODetail;
 import globaz.osiris.db.comptes.CAOperation;
 import globaz.osiris.db.comptes.CAPaiementBVR;
 import globaz.osiris.db.comptes.CARecouvrement;
 import globaz.osiris.db.comptes.CARubrique;
 import globaz.osiris.db.comptes.CARubriqueManager;
 import globaz.osiris.db.comptes.CASection;
+import globaz.osiris.db.ordres.sepa.AbstractSepa;
+import globaz.osiris.db.ordres.sepa.CACamt054BVRVersionResolver;
+import globaz.osiris.db.ordres.sepa.CACamt054DefinitionType;
+import globaz.osiris.db.ordres.sepa.CACamt054GroupTransaction;
+import globaz.osiris.db.ordres.sepa.CACamt054Notification;
+import globaz.osiris.db.ordres.sepa.CACamt054Processor;
+import globaz.osiris.db.ordres.sepa.exceptions.CACamt054UnsupportedVersionException;
+import globaz.osiris.db.yellowreportfile.CAYellowReportFile;
+import globaz.osiris.db.yellowreportfile.CAYellowReportFileService;
+import globaz.osiris.db.yellowreportfile.CAYellowReportFileState;
 import globaz.osiris.external.IntAdressePaiement;
 import globaz.osiris.parser.IntBVRDDType2Parser;
-import globaz.osiris.parser.IntBVRParser;
+import globaz.osiris.parser.IntBVRFlatFileParser;
+import globaz.osiris.parser.IntBVRPojo;
 import globaz.osiris.parser.IntReferenceBVRParser;
 import globaz.osiris.process.CAProcessBVR;
 import globaz.osiris.process.journal.CAComptabiliserJournal;
+import globaz.pyxis.util.TIIbanFormater;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import org.w3c.dom.Document;
 
 /**
  * CA organe d'exécution Date de création : (13.12.2001 12:15:03)
@@ -107,8 +134,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
     private FWParametersUserCode ucTypeTraitementLS;
     private FWParametersUserCode ucTypeTraitementOG;
 
-    // TODO : Modification en cours pour la gestion des paiements sur une
-    // opération auxiliaire.
+    private CACamt054GroupsMessage groupesMessage = new CACamt054GroupsMessage();
 
     /**
      * Commentaire relatif au constructeur CAOrganeExecution
@@ -236,15 +262,13 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * @throws Exception
      */
     private void checkCompteAnnexe(IntReferenceBVRParser refBVR, CAPlanRecouvrement planRecouvrement,
-            CAPaiementBVR oper, IntBVRParser parser) throws Exception {
+            CAPaiementBVR oper, FWMemoryLog memoryLog) throws Exception {
         // Contrôle que le compte annexe du plan corresponde à l'idExterneRole
         // de la référence BVR
         if ((planRecouvrement != null) && !planRecouvrement.getIdCompteAnnexe().equals(refBVR.getIdCompteAnnexe())) {
-            parser.getMemoryLog().logMessage(
-                    "7397",
-                    "plan idCA=" + planRecouvrement.getIdCompteAnnexe() + "<> refBVR idCA="
-                            + refBVR.getIdCompteAnnexe(), FWMessage.ERREUR, this.getClass().getName());
-            oper.setMemoryLog(parser.getMemoryLog());
+            memoryLog.logMessage("7397", "plan idCA=" + planRecouvrement.getIdCompteAnnexe() + "<> refBVR idCA="
+                    + refBVR.getIdCompteAnnexe(), FWMessage.ERREUR, this.getClass().getName());
+            oper.setMemoryLog(memoryLog);
             oper.setEtat(APIOperation.ETAT_ERREUR);
         }
     }
@@ -276,62 +300,48 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * @throws Exception
      */
     private CAPaiementBVR createNewPaiementBvr(globaz.osiris.process.CAProcessBVR context, FWCurrency fTotal,
-            IntBVRParser parser, IntReferenceBVRParser refBVR, CAJournal jrn) throws Exception {
-        // Instancier un nouveau paiement BVR
-        CAPaiementBVR oper = new CAPaiementBVR();
-        oper.setSession(context.getSession());
+            IntBVRPojo parser, IntReferenceBVRParser refBVR, CAJournal jrn) throws Exception {
+
+        CAPaiementBVR paiement = new CAPaiementBVR();
+        paiement.setSession(context.getSession());
 
         // Partager le log
-        oper.setMemoryLog(parser.getMemoryLog());
-
-        // Décomposer le numéro de référence
-        oper.setIdCompteAnnexe(refBVR.getIdCompteAnnexe());
+        paiement.setMemoryLog(context.getMemoryLog());
+        paiement.setIdCompteAnnexe(refBVR.getIdCompteAnnexe());
 
         if (!JadeStringUtil.isBlankOrZero(refBVR.getIdSection())) {
-            oper.setIdSection(refBVR.getIdSection());
-        } else if (!JadeStringUtil.isBlankOrZero(refBVR.getIdExterneSection())) {
-            if (APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(refBVR.getIdTypeSection())
-                    && refBVR.isModeCreditBulletinNeutre()) {
-                // Pour paiement avant comptabilisation de la facture (WebMetier)
-                oper.setSection(createSection(refBVR, jrn));
-                oper.setIdExterneSectionEcran(refBVR.getIdExterneSection());
-                oper.setNewSection(true);
-            }
+            paiement.setIdSection(refBVR.getIdSection());
+        } else if (!JadeStringUtil.isBlankOrZero(refBVR.getIdExterneSection())
+                && APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(refBVR.getIdTypeSection())
+                && refBVR.isModeCreditBulletinNeutre()) {
+
+            paiement.setSection(createSection(refBVR, jrn));
+            paiement.setIdExterneSectionEcran(refBVR.getIdExterneSection());
+            paiement.setNewSection(true);
         }
+
         // Charger les attributs ATTENTION !!! pour les comptes annexes auxiliaires l'idCompteAnnexe et l'idSection sont
         // modifiés par la méthode initPaiementBvr
-        oper = initPaiementBvr(oper, parser, jrn);
-        oper.setMontant(parser.getMontant());
+        paiement = initPaiementBvr(paiement, parser, jrn);
+        paiement.setMontant(parser.getMontant());
 
         // Demander une validation sur la base des informations du BVR
-        oper.validerFromBVR(context.getTransaction(), false);
+        paiement.validerFromBVR(context.getTransaction(), false);
 
-        // Cas du BMS pour un rectificatif. Un paiement arrive sur un bulletin neutre en partie payée
-        // Incident I160913_010 pour CCVS K160913_001
-        // A gérer avec une property lors du prochain rabat BMS
-        // if (oper.getMemoryLog().getMessagesToVector().size() == 1) {
-        // FWMessage msg = (FWMessage) oper.getMemoryLog().getMessagesToVector().firstElement();
-        // if ("7401".equals(msg.getMessageId())) {
-        // oper.getMemoryLog().clear();
-        // oper.setEtat(APIOperation.ETAT_OUVERT);
-        // }
-        // }
         // Incrémenter le montant total
-        fTotal.sub(oper.getMontant());
-
-        // Test pour un paiement provenant d'opérations auxiliaires
-        // checkOperationAuxiliaire(oper); //Déplacé dans CAPaiement._valider()
+        fTotal.sub(paiement.getMontant());
 
         // Création du paiement BVR
         if (!context.getSimulation().booleanValue()) {
-            oper.add(context.getTransaction());
-            if (oper.hasErrors()) {
+            paiement.add(context.getTransaction());
+
+            if (paiement.hasErrors()) {
                 _addError(context.getTransaction(), getSession().getLabel("5331"));
                 throw new Exception(getSession().getLabel("5331"));
             }
         }
 
-        return oper;
+        return paiement;
     }
 
     /**
@@ -346,11 +356,11 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * @return
      * @throws Exception
      */
-    private CAPaiementBVR[] createPaiementBvrPlan(CAProcessBVR context, FWCurrency fTotal, IntBVRParser parser,
+    private CAPaiementBVR[] createPaiementBvrPlan(CAProcessBVR context, FWCurrency fTotal, IntBVRPojo parser,
             CAJournal jrn, CAPlanRecouvrement planRecouvrement, IntReferenceBVRParser refBVR) throws Exception {
         // Création du paiement BVR et Incrémenter le montant total
         CAPaiementBVR[] paiements = CAPlanRecouvrement.serviceComputePaiements(context.getSession(),
-                planRecouvrement.getIdPlanRecouvrement(), new BigDecimal(parser.getMontant()), parser.getMemoryLog());
+                planRecouvrement.getIdPlanRecouvrement(), new BigDecimal(parser.getMontant()), context.getMemoryLog());
 
         for (int i = 0; i < paiements.length; i++) {
             initPaiementBvr(paiements[i], parser, jrn);
@@ -362,7 +372,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
             // Contrôle que le compte annexe du plan corresponde à
             // l'idExterneRole de la référence BVR
-            checkCompteAnnexe(refBVR, planRecouvrement, paiements[i], parser);
+            checkCompteAnnexe(refBVR, planRecouvrement, paiements[i], context.getMemoryLog());
 
             // Création du paiement BVR
             if (!context.getSimulation().booleanValue()) {
@@ -401,8 +411,444 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * @param context
      *            globaz.osiris.process.CAProcessBVR
      */
-    public String executeBVR(globaz.osiris.process.CAProcessBVR context) {
+    public List<String> executeBVR(globaz.osiris.process.CAProcessBVR context) {
+
+        if (getIdTypeTraitementBV().equals(APIOrganeExecution.BVR_TYPE3)) {
+            String idJournal = executeFlatFileBVR(context);
+
+            if (idJournal != null) {
+                List<String> idJouraux = new ArrayList<String>();
+                idJouraux.add(idJournal);
+                return idJouraux;
+            }
+
+            return null;
+        } else if (getIdTypeTraitementBV().equals(APIOrganeExecution.BVR_CAMT054)) {
+            return executeCAMT054BVR(context);
+        } else {
+            try {
+                getMemoryLog().logMessage("5325", getIdTypeTraitementBV(), FWMessage.FATAL, this.getClass().getName());
+
+            } catch (Exception e) {
+                _addError(context.getTransaction(), e.toString());
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Mise à jour du yellow report file (si on en fait et qu'on est pas en mode simulation)
+     * 
+     * @param state L'état souhaité.
+     * @param idYellowReport L'id report file.
+     * @param isSimulation True si mode simulation.
+     * @param message Le message à donner si l'état souhaité est en erreur.
+     * @throws Exception Une exception de la persistence.
+     */
+    private void majYellowReportFile(CAYellowReportFileState state, String idYellowReport, boolean isSimulation,
+            String message) throws Exception {
+
+        // Si on ne fait pas de yellow report ou qu'on est en mode simulation, on ne met pas à jour l'entité
+        if (JadeStringUtil.isEmpty(idYellowReport) || isSimulation) {
+            return;
+        }
+
+        if (CAYellowReportFileState.FAILED.equals(state)) {
+            JadeLogger.error(this, groupesMessage.getMessage());
+        }
+
+        new CAYellowReportFileService(getSession()).updateState(state, idYellowReport, message);
+    }
+
+    private List<String> executeCAMT054BVR(globaz.osiris.process.CAProcessBVR context) {
+        final List<String> idJournaux = new ArrayList<String>();
+
+        try {
+            final IntReferenceBVRParser refBVR = initRefBvr(context);
+            final InputStream source = resolveFileFromProcessContext(context);
+            final Document doc = AbstractSepa.parseDocument(source);
+
+            // Mettre le yellow report file en traitement (si on en fait)
+            majYellowReportFile(CAYellowReportFileState.IN_TREATMENT, context.getIdYellowReportFile(),
+                    context.getSimulation(), null);
+
+            // Savoir si le fichier est un CAMT054 (ISO) supporté dans l'application
+            if (!CACamt054BVRVersionResolver.isSupportedVersion(doc.getDocumentElement().getNamespaceURI())) {
+                getMemoryLog().logMessage("5350", context.getFileName(), FWMessage.ERREUR, this.getClass().getName());
+                // Lancer une exception pour que dans le catch du bas, cela met le yellow report file en erreur
+                throw new CACamt054UnsupportedVersionException(getSession().getLabel("5350"));
+            }
+
+            // Création du journal CA
+            CAJournal journal = initJournal(context);
+
+            final Map<String, CAOrganeExecution> organesExecutions = getOrganesExecutions();
+            final List<CACamt054Notification> notifications = getNotifications(context, doc);
+
+            // Boucle sur chaque notification (B LEVEL)
+            for (CACamt054Notification notification : notifications) {
+                CACamt054GroupTxMessage groupMessage = manageNotification(context, idJournaux, refBVR, notification,
+                        journal, organesExecutions);
+                groupesMessage.addGroup(groupMessage);
+            }
+
+            // Lors d'erreurs métiers, nous mettons le yellow report file en partiel sinon en exécuté
+            businessErrorStateForStateYellowReportFile(context);
+
+            return idJournaux;
+        } catch (Exception e) {
+            JadeLogger.error(e, e.getMessage());
+
+            try {
+                getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, this.getClass().getName());
+
+                // Nous mettons le yellow report file en erreur, car c'est un erreur de niveau technique
+                majYellowReportFile(CAYellowReportFileState.FAILED, context.getIdYellowReportFile(),
+                        context.getSimulation(), getMessageForYellowReportFile(context.getEMailAddress()));
+            } catch (Exception ex) {
+                JadeLogger.error(ex, ex.getMessage());
+            }
+
+            return new ArrayList<String>();
+        }
+    }
+
+    private Map<String, CAOrganeExecution> getOrganesExecutions() throws Exception {
+        final Map<String, CAOrganeExecution> organesExecutions = new HashMap<String, CAOrganeExecution>();
+
+        final CAOrganeExecutionManager manager = new CAOrganeExecutionManager();
+        manager.setSession(getSession());
+        manager.find(BManager.SIZE_NOLIMIT);
+
+        for (int i = 0; i < manager.getSize(); i++) {
+            final CAOrganeExecution organe = (CAOrganeExecution) manager.getContainer().get(i);
+            organesExecutions.put(organe.getNoAdherentBVR(), organe);
+        }
+
+        return organesExecutions;
+    }
+
+    private void businessErrorStateForStateYellowReportFile(globaz.osiris.process.CAProcessBVR context)
+            throws Exception {
+        if (groupesMessage.hasErrors() || getMemoryLog().hasErrors()) {
+            majYellowReportFile(CAYellowReportFileState.PARTIAL, context.getIdYellowReportFile(),
+                    context.getSimulation(), getMessageForYellowReportFile(context.getEMailAddress()));
+        } else {
+
+            majYellowReportFile(CAYellowReportFileState.EXECUTED, context.getIdYellowReportFile(),
+                    context.getSimulation(), null);
+        }
+    }
+
+    private String getMessageForYellowReportFile(final String emailAdresse) {
+        String message = getSession().getLabel("5355");
+        message = message.replace("{0}", emailAdresse);
+        message = message.replace("{1}", JadeDateUtil.getGlobazFormattedDateTime(new Date()));
+        return message;
+    }
+
+    private List<CACamt054Notification> getNotifications(globaz.osiris.process.CAProcessBVR context, final Document doc) {
+
+        List<CACamt054Notification> notifications = new ArrayList<CACamt054Notification>();
+
+        try {
+            // Permet de récupérer la liste des notifications sans savoir la version du document que l'on a.
+            notifications = CACamt054BVRVersionResolver.resolveDocument(doc, context.getFileName());
+
+            if (notifications.isEmpty()) {
+                getMemoryLog().logMessage("CAMT054EmptyBlevelException", context.getFileName(), FWMessage.ERREUR,
+                        this.getClass().getName());
+            }
+
+            // Mettre le nombre maximum d'entité à performer
+            context.setProgressScaleValue(countAll(notifications));
+
+        } catch (CACamt054UnsupportedVersionException exception) {
+            JadeLogger.error(exception, exception.getMessage());
+            getMemoryLog().logMessage("5353", exception.getMessage(), FWMessage.ERREUR, this.getClass().getName());
+        }
+
+        return notifications;
+    }
+
+    private CACamt054GroupTxMessage manageNotification(globaz.osiris.process.CAProcessBVR context,
+            final List<String> idJournaux, final IntReferenceBVRParser refBVR,
+            final CACamt054Notification notification, final CAJournal journal,
+            final Map<String, CAOrganeExecution> organesExecutions) throws Exception {
+
+        // Log de ce qu'il se passe pour un B Level avec ces transactions C/D Level
+        final CACamt054GroupTxMessage groupTxMessage = new CACamt054GroupTxMessage(notification);
+
+        // Vérification du IBAN de l'OE avec le B-Level courant
+        checkIBANBLevel(notification, groupTxMessage);
+
+        if (!context.getSimulation().booleanValue()) {
+            addCamt054InfoToJrn(notification, journal);
+        }
+
+        // Boucle sur chaque statement (C LEVEL)
+        for (CACamt054GroupTransaction groupTx : notification.getListGroupTxs()) {
+            final FWCurrency montantTotal = new FWCurrency();
+            int nbTransactionTotal = 0;
+
+            if (!validationCLevel(groupTx, groupTxMessage, organesExecutions)) {
+                context.setProgressCounter(context.getProgressCounter() + groupTx.getListTransactions().size());
+                continue;
+            }
+
+            // Boucle sur chaque transaction (D LEVEL)
+            for (IntBVRPojo txDetail : groupTx.getListTransactions()) {
+                groupTxMessage.addDetail(manageTx(context, refBVR, txDetail, montantTotal, journal));
+                nbTransactionTotal++;
+                context.incProgressCounter();
+            }
+
+            // Vérification des champs de contrôle
+            verifyControlFields(groupTxMessage, groupTx, montantTotal, nbTransactionTotal);
+        }
+        // Exécuter le mise en compte
+        miseEnCompte(context, totTransactionErreur, journal, groupTxMessage);
+
+        idJournaux.add(journal.getIdJournal());
+
+        return groupTxMessage;
+    }
+
+    private void checkIBANBLevel(final CACamt054Notification notification, final CACamt054GroupTxMessage groupTxMessage)
+            throws Exception {
+
+        if (!JadeStringUtil.isEmpty(notification.getIdentification()) && getAdressePaiement() != null
+                && !JadeStringUtil.isEmpty(getAdressePaiement().getNumCompte())) {
+
+            final String ibanOrganeExecution = new TIIbanFormater().unformat(getAdressePaiement().getNumCompte());
+            final String ibanNotification = new TIIbanFormater().unformat(notification.getIdentification());
+
+            checkIBAN(ibanOrganeExecution, ibanNotification, groupTxMessage, getSession().getLabel("5357"));
+        }
+    }
+
+    protected void checkIBAN(final String ibanOrganeExecution, final String ibanNotification,
+            final CACamt054GroupTxMessage groupTxMessage, final String labelForInfo) {
+        // L'IBAN de l'organe d'exécution diffère avec celui du B-Level (notification), ce n'est pas une erreur ou
+        // avertissement, mais juste une information a indiqué à la caisse afin de changer son IBAN de réception ou
+        // savoir si ils ont bien sélectionner le bon OE. On traite tout de même la notification B-Level.
+        if (!ibanOrganeExecution.equals(ibanNotification)) {
+            groupTxMessage.addMessage(Level.INFO, labelForInfo + " (" + ibanOrganeExecution + ")");
+        }
+    }
+
+    protected boolean validationCLevel(final CACamt054GroupTransaction groupTx,
+            final CACamt054GroupTxMessage groupTxMessage, final Map<String, CAOrganeExecution> organesExecutions) {
+        boolean isOk = true;
+        // Si le même numéro d'adhérent n'est pas le même que l'organe d'exécution
+        if (!getNoAdherentBVR().equals(groupTx.getNoAdherent())) {
+
+            final StringBuilder messageAdherent = new StringBuilder();
+            messageAdherent.append(getSession().getLabel("5339"));
+            messageAdherent.append(" (");
+            messageAdherent.append(groupTx.getNoAdherent());
+            messageAdherent.append(" ");
+
+            if (organesExecutions.containsKey(groupTx.getNoAdherent())) {
+                messageAdherent.append(organesExecutions.get(groupTx.getNoAdherent()).getNom());
+            } else {
+                messageAdherent.append(getSession().getLabel("5358"));
+            }
+
+            messageAdherent.append(" )");
+
+            groupTxMessage.addMessage(Level.WARNING, messageAdherent.toString());
+
+            isOk = false;
+        }
+
+        // Nous acceptons que les groupes ayant le status BOOK
+        if (!"BOOK".equalsIgnoreCase(groupTx.getStatus())) {
+            groupTxMessage.addMessage(Level.WARNING, getSession().getLabel("5356") + " (" + groupTx.getStatus() + ")");
+            isOk = false;
+        }
+
+        // Ne pas faire l'entry quand il n'est pas de type BVR
+        if (!(new CACamt054Processor().checkEntryForGoodType(CACamt054DefinitionType.CAMT054_BVR, groupTx))) {
+            isOk = false;
+        }
+
+        return isOk;
+    }
+
+    private void verifyControlFields(final CACamt054GroupTxMessage groupTxMessage, CACamt054GroupTransaction groupTx,
+            final FWCurrency montantTotal, int nbTransactionTotal) {
+
+        // Vérifier le nombre de transactions
+        if (nbTransactionTotal != groupTx.getNbTransactions()) {
+            groupTxMessage.addMessage(Level.SEVERE, getSession().getLabel("5354") + " " + nbTransactionTotal + " / "
+                    + groupTx.getNbTransactions());
+        }
+
+        FWCurrency montantControle = groupTx.getCtrlAmount();
+        if (IntBVRPojo.GENRE_DEBIT.equals(groupTx.getCrdtDbtIndicator())) {
+            montantControle.negate();
+        }
+
+        // Vérifier le montant total avec la soustraction de toutes les transaction du même adhérent
+        if (!montantControle.equals(montantTotal)) {
+            groupTxMessage.addMessage(Level.SEVERE, getSession().getLabel("5336") + " " + montantTotal.toStringFormat()
+                    + " / " + montantControle.toStringFormat());
+        }
+    }
+
+    private CACamt054DetailMessage manageTx(globaz.osiris.process.CAProcessBVR context,
+            final IntReferenceBVRParser refBVR, IntBVRPojo txDetail, final FWCurrency fTotal, CAJournal jrn)
+            throws Exception {
+
+        final CACamt054DetailMessage txDetailMessage = new CACamt054DetailMessage(txDetail);
+
+        try {
+            setReference(refBVR, txDetail, txDetailMessage);
+
+            managePaiement(context, refBVR, txDetail, fTotal, jrn);
+        } catch (Exception e) {
+            throw e; // Pas top, mais obliger
+        } finally {
+            // Pour éviter trop de lourdeur dans le code, je reprend les memorylog générés dans les processus
+            // d'avant et je les réinjecte dans notre txDetailMessage
+            transformMemoryLogToDetailMessage(context, txDetailMessage);
+        }
+
+        return txDetailMessage;
+    }
+
+    private void managePaiement(globaz.osiris.process.CAProcessBVR context, final IntReferenceBVRParser refBVR,
+            IntBVRPojo txDetail, final FWCurrency fTotal, CAJournal jrn) throws Exception {
+
+        if (refBVR.isPlanPaiement()) {
+            traitementPlanPaiement(context, fTotal, txDetail, refBVR, jrn);
+        } else { // Pas plan de paiement
+            CAPaiementBVR operation = createNewPaiementBvr(context, fTotal, txDetail, refBVR, jrn);
+            incTransactionErrorOrOk(operation);
+        }
+    }
+
+    private void incTransactionErrorOrOk(CAPaiementBVR operation) {
+        if (operation.getMemoryLog().hasErrors()) {
+            totTransactionErreur++;
+        } else {
+            totTransactionOk++;
+        }
+    }
+
+    private void setReference(final IntReferenceBVRParser refBVR, IntBVRPojo txDetail,
+            final CACamt054DetailMessage txDetailMessage) {
+        try {
+            refBVR.setReference(txDetail.getNumeroReference(), getSession(), getNumInterneLsv());
+        } catch (Exception e) {
+            JadeLogger.warn(e, e.getMessage());
+            txDetailMessage.addMessage(Level.WARNING, getSession().getLabel("5334") + " " + e.getMessage());
+        }
+    }
+
+    private void transformMemoryLogToDetailMessage(globaz.osiris.process.CAProcessBVR context,
+            final CACamt054DetailMessage txDetailMessage) {
+
+        final List<Object> messagesToVector = Arrays.asList(context.getMemoryLog().getMessagesToVector().toArray());
+
+        for (Object object : messagesToVector) {
+            if (object instanceof FWMessage) {
+                FWMessage message = (FWMessage) object;
+
+                String messageToRegister;
+                try {
+                    messageToRegister = getSession().getLabel(message.getMessageId());
+                } catch (Exception e) {
+                    messageToRegister = message.getMessageText();
+                }
+
+                Level level;
+                if (FWMessage.ERREUR.equals(message.getTypeMessage())
+                        || FWMessage.AVERTISSEMENT.equals(message.getTypeMessage())
+                        || FWMessage.FATAL.equals(message.getTypeMessage())) {
+                    level = Level.SEVERE;
+                } else if (FWMessage.INFORMATION.equals(message.getTypeMessage())) {
+                    level = Level.INFO;
+                } else {
+                    level = Level.WARNING;
+                }
+
+                txDetailMessage.addMessage(level, messageToRegister);
+            }
+        }
+        context.getMemoryLog().clear();
+    }
+
+    private InputStream resolveFileFromProcessContext(CAProcessBVR context) throws Exception {
+        FileInputStream fileInput;
+
+        if (!context.getIdYellowReportFile().isEmpty()) {
+            CAYellowReportFileService service = new CAYellowReportFileService(getSession());
+            CAYellowReportFile read = service.read(context.getIdYellowReportFile());
+
+            // Inscription du nom du fichier dans le context
+            context.setFileName(read.getFileName());
+
+            return new ByteArrayInputStream(service.readContentFromIdBlob(read.getIdBlobContent()));
+        } else {
+            try {
+                if (retrieveBvrFromDataBase) {
+                    JadeFsFacade.copyFile(
+                            "jdbc://" + Jade.getInstance().getDefaultJdbcSchema() + "/" + context.getFileName(), Jade
+                                    .getInstance().getHomeDir() + "work/" + context.getFileName());
+                }
+
+                fileInput = new FileInputStream(Jade.getInstance().getHomeDir() + "work/" + context.getFileName());
+            } catch (FileNotFoundException ex) {
+                throw new Exception(getSession().getLabel("5326") + " " + Jade.getInstance().getDefaultJdbcSchema()
+                        + "/" + context.getFileName());
+            }
+        }
+
+        return fileInput;
+    }
+
+    /**
+     * count the total number of transaction into all groups
+     * 
+     * @param listGroupeBvr
+     * @return
+     */
+    private long countAll(List<CACamt054Notification> listGroupeBvr) {
+        int count = 0;
+        for (CACamt054Notification groupe : listGroupeBvr) {
+            for (CACamt054GroupTransaction groupTx : groupe.getListGroupTxs()) {
+                count += groupTx.getListTransactions().size();
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Ajouter les nouvelles informations remontées du header du bloc xml du camt054
+     * 
+     * @param groupe
+     * @param jrn
+     * @throws Exception
+     */
+    private void addCamt054InfoToJrn(CACamt054Notification notification, CAJournal jrn) throws Exception {
+        CAJournalISODetail isoDetail = new CAJournalISODetail();
+        isoDetail.setSession(getSession());
+        isoDetail.setIdJournal(jrn.getId());
+        isoDetail.setMessageId(notification.getMsgId());
+        isoDetail.setNotificationId(notification.getNtfctnId());
+        isoDetail.setCreatedDateTime(notification.getCreDtTm());
+        isoDetail.setFileName(notification.getFile());
+        isoDetail.add(getSession().getCurrentThreadTransaction());
+    }
+
+    private String executeFlatFileBVR(globaz.osiris.process.CAProcessBVR context) {
+
         // TODO modifier le traitement si Opération auxiliaire
+
+        // TODO si OE flat mais file iso -> KO
 
         long totTransactionTraitee = 0;
         totTransactionOk = 0;
@@ -415,7 +861,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             FWCurrency fTotal = new FWCurrency();
 
             // Instancier un parser en fonction du type
-            IntBVRParser parser = initParser(context);
+            IntBVRFlatFileParser parser = initParser(context);
             // Instancier la classe qui permet de décomposer le numéro de
             // référence
             IntReferenceBVRParser refBVR = initRefBvr(context);
@@ -461,7 +907,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
                         || (Integer.parseInt(parser.getNumeroAdherent()) == CAApplication.getApplicationOsiris()
                                 .getCAParametres().getAncienNoAdherentBVR())) {
                     // Vérifier s'il s'agit d'une ligne
-                    if (parser.getTypeTransaction().equals(IntBVRParser.TRANSACTION)) {
+                    if (parser.getTypeTransaction().equals(IntBVRFlatFileParser.TRANSACTION)) {
                         try {
                             refBVR.setReference(parser.getNumeroReference(), getSession(), getNumInterneLsv());
                         } catch (Exception e) {
@@ -474,20 +920,14 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
                             traitementPlanPaiement(context, fTotal, parser, refBVR, jrn);
                         } else { // Pas plan de paiement
                             CAPaiementBVR oper = createNewPaiementBvr(context, fTotal, parser, refBVR, jrn);
-
-                            // Statistiques
-                            if (oper.getMemoryLog().hasErrors()) {
-                                totTransactionErreur++;
-                            } else {
-                                totTransactionOk++;
-                            }
+                            incTransactionErrorOrOk(oper);
                         }
                         // Incrémenter le nombre de transactions
                         totTransactionTraitee++;
                     }
 
                     // S'il s'agit du footer
-                    if (parser.getTypeTransaction().equals(IntBVRParser.FOOTER)) {
+                    if (parser.getTypeTransaction().equals(IntBVRFlatFileParser.FOOTER)) {
                         totalForFooter(totTransactionTraitee, fTotal, parser);
                     }
                 } else { // Numéro d'adhérent n'existe pas ou correspond pas
@@ -519,7 +959,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             }
 
             // Exécuter le mise en compte
-            miseEnCompte(context, totTransactionErreur, jrn);
+            miseEnCompte(context, totTransactionErreur, jrn, null);
 
             // Indiquer les statistiques
             getMemoryLog().logMessage("5340", String.valueOf(totTransactionTraitee), FWMessage.INFORMATION,
@@ -1258,6 +1698,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             jrn.setDateValeurCG(context.getDateValeur());
             jrn.setTypeJournal(CAJournal.TYPE_AUTOMATIQUE);
             jrn.add(context.getTransaction());
+
             if (jrn.hasErrors()) {
                 throw new Exception(getSession().getLabel("5225"));
             }
@@ -1273,7 +1714,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * @return
      * @throws Exception
      */
-    private CAPaiementBVR initPaiementBvr(CAPaiementBVR paiement, IntBVRParser parser, CAJournal jrn) throws Exception {
+    private CAPaiementBVR initPaiementBvr(CAPaiementBVR paiement, IntBVRPojo parser, CAJournal jrn) throws Exception {
         // Charger les attributs
         paiement.setIdJournal(jrn.getIdJournal());
         paiement.setIdOrganeExecution(getIdOrganeExecution());
@@ -1284,13 +1725,17 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         paiement.setDateTraitement(parser.getDateTraitement());
         paiement.setReferenceInterne(parser.getReferenceInterne());
 
-        if (parser.getGenreEcriture().equals(IntBVRParser.GENRE_CREDIT)) {
+        paiement.setAccountServicerReference(parser.getAccountServicerReference());
+        paiement.setDebtor(parser.getDebtor());
+        paiement.setBankTransactionCode(parser.getBankTransactionCode());
+
+        if (parser.getGenreEcriture().equals(IntBVRPojo.GENRE_CREDIT)) {
             paiement.setCodeDebitCredit(APIEcriture.CREDIT);
         } else {
             paiement.setCodeDebitCredit(APIEcriture.DEBIT);
         }
 
-        if (!(paiement.getCompteAnnexe() == null) && paiement.getCompteAnnexe().isCompteAuxiliaire()) {
+        if (paiement.getCompteAnnexe() != null && paiement.getCompteAnnexe().isCompteAuxiliaire()) {
             CASection secAux = new CASection();
             secAux.setSession(getSession());
             secAux.setIdSection(paiement.getIdSection());
@@ -1322,9 +1767,9 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * @throws JadeServiceActivatorException
      * @throws JadeClassCastException
      */
-    private IntBVRParser initParser(CAProcessBVR context) throws JadeServiceLocatorException,
+    private IntBVRFlatFileParser initParser(CAProcessBVR context) throws JadeServiceLocatorException,
             JadeServiceActivatorException, JadeClassCastException, Exception {
-        IntBVRParser parser = null;
+        IntBVRFlatFileParser parser = null;
 
         // Vérifier si fin de processus désirée
         if (context.isAborted()) {
@@ -1334,28 +1779,28 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         // Instancier un parser en fonction du type
         if (getIdTypeTraitementBV().equals(APIOrganeExecution.BVR_TYPE3)) {
             parser = new CABVR3Parser();
+
+            // Passer les paramètres
+            parser.setMemoryLog(getMemoryLog());
+            parser.setEchoToConsole(context.getEchoToConsole());
+
+            // Instancier un stream de lecture
+            try {
+                if (retrieveBvrFromDataBase) {
+                    JadeFsFacade.copyFile(
+                            "jdbc://" + Jade.getInstance().getDefaultJdbcSchema() + "/" + context.getFileName(), Jade
+                                    .getInstance().getHomeDir() + "work/" + context.getFileName());
+                }
+
+                parser.setInputReader(new BufferedReader(new FileReader(new File(Jade.getInstance().getHomeDir()
+                        + "work/" + context.getFileName()))));
+            } catch (FileNotFoundException ex) {
+                throw new Exception(getSession().getLabel("5326") + " " + Jade.getInstance().getDefaultJdbcSchema()
+                        + "/" + context.getFileName());
+            }
         } else {
             getMemoryLog().logMessage("5325", getIdTypeTraitementBV(), FWMessage.FATAL, this.getClass().getName());
             throw new Exception();
-        }
-
-        // Passer les paramètres
-        parser.setMemoryLog(getMemoryLog());
-        parser.setEchoToConsole(context.getEchoToConsole());
-
-        // Instancier un stream de lecture
-        try {
-            if (retrieveBvrFromDataBase) {
-                JadeFsFacade.copyFile(
-                        "jdbc://" + Jade.getInstance().getDefaultJdbcSchema() + "/" + context.getFileName(), Jade
-                                .getInstance().getHomeDir() + "work/" + context.getFileName());
-            }
-
-            parser.setInputReader(new BufferedReader(new FileReader(new File(Jade.getInstance().getHomeDir() + "work/"
-                    + context.getFileName()))));
-        } catch (FileNotFoundException ex) {
-            throw new Exception(getSession().getLabel("5326") + " " + Jade.getInstance().getDefaultJdbcSchema() + "/"
-                    + context.getFileName());
         }
         return parser;
     }
@@ -1370,7 +1815,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * @throws CAOrganeExecutionException
      */
     private IntReferenceBVRParser initRefBvr(globaz.osiris.process.CAProcessBVR context) throws Exception {
-        IntReferenceBVRParser refBVR = null;
+        IntReferenceBVRParser refBVR;
 
         // Vérifier la condition de sortie
         if (context.isAborted()) {
@@ -1405,13 +1850,11 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * @param jrn
      * @throws Exception
      */
-    private void miseEnCompte(globaz.osiris.process.CAProcessBVR context, long lStatKO, CAJournal jrn) throws Exception {
+    private void miseEnCompte(globaz.osiris.process.CAProcessBVR context, long lStatKO, CAJournal jrn,
+            CACamt054GroupTxMessage groupTxMessage) throws Exception {
         if (!context.getSimulation().booleanValue() && !getMemoryLog().isOnFatalLevel()) {
             // Comptabiliser s'il n'y a aucune erreur
             if (lStatKO == 0) {
-                // seb--> ne pas comptabiliser le journal automatiquement
-                // laisser le choix à l'utilisateur
-                // jrn.comptabiliser(context);
                 jrn.setEtat(CAJournal.OUVERT);
             } else {
                 jrn.setEtat(CAJournal.ERREUR);
@@ -1424,7 +1867,11 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             }
             // Vérifier les erreurs de comptabilisation
             if (jrn.getEtat().equals(CAJournal.ERREUR)) {
-                getMemoryLog().logMessage("5337", null, FWMessage.ERREUR, this.getClass().getName());
+                if (groupTxMessage != null) {
+                    groupTxMessage.addMessage(Level.SEVERE, getSession().getLabel("5337"));
+                } else {
+                    getMemoryLog().logMessage("5337", null, FWMessage.ERREUR, this.getClass().getName());
+                }
             }
         }
     }
@@ -1554,32 +2001,6 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
     }
 
     /**
-     * Vérifie si c'est un paiement sur une section qui a des sections auxiliares. <br>
-     * Si c'est une opération auxiliaire, met le paiement en erreur.
-     * 
-     * @author: sel Créé le : 12 févr. 07
-     * @param oper
-     * @return
-     * @throws Exception
-     */
-    // private CASectionManager checkOperationAuxiliaire(CAPaiement oper) throws
-    // Exception {
-    // // Test pour un paiement provenant d'opérations auxiliaires
-    // CASectionManager manager = new CASectionManager();
-    // manager.setSession(getSession());
-    // manager.setForIdSectionPrinc(oper.getIdSection());
-    // manager.setLikeIdExterne(oper.getSection().getIdExterne());
-    // manager.find();
-    //
-    // if (0 < manager.size()) {
-    // getMemoryLog().logMessage("7395", null, FWMessage.ERREUR,
-    // getClass().getName());
-    // oper.setMemoryLog(getMemoryLog());
-    // oper.setEtat(CAOperation.ETAT_ERREUR);
-    // }
-    // return manager;
-    // }
-    /**
      * Convertir total et nombre de transactions
      * 
      * @author: sel Créé le : 9 févr. 07
@@ -1587,7 +2008,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * @param fTotal
      * @param parser
      */
-    private void totalForFooter(long lNombreTr, FWCurrency fTotal, IntBVRParser parser) {
+    private void totalForFooter(long lNombreTr, FWCurrency fTotal, IntBVRFlatFileParser parser) {
         // Convertir total et nombre de transactions
         FWCurrency fTotalControle = new FWCurrency(parser.getMontant());
         long lNombreTrControle = 0;
@@ -1616,28 +2037,27 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * @throws Exception
      */
     private void traitementPlanPaiement(globaz.osiris.process.CAProcessBVR context, FWCurrency fTotal,
-            IntBVRParser parser, IntReferenceBVRParser refBVR, CAJournal jrn) throws Exception {
+            IntBVRPojo parser, IntReferenceBVRParser refBVR, CAJournal jrn) throws Exception {
+
         CAPlanRecouvrement planRecouvrement = new CAPlanRecouvrement();
         planRecouvrement.setSession(context.getSession());
         planRecouvrement.setIdPlanRecouvrement(refBVR.getIdPlanPaiement());
         planRecouvrement.retrieve();
 
         if (planRecouvrement.isNew() || !planRecouvrement.getIdEtat().equals(CAPlanRecouvrement.CS_ACTIF)) {
-
-            if ((planRecouvrement != null) && !planRecouvrement.getIdCompteAnnexe().equals(refBVR.getIdCompteAnnexe())) {
-                parser.getMemoryLog().logMessage(
+            if (!planRecouvrement.getIdCompteAnnexe().equals(refBVR.getIdCompteAnnexe())) {
+                context.getMemoryLog().logMessage(
                         "7397",
                         "plan idCA=" + planRecouvrement.getIdCompteAnnexe() + "<> refBVR idCA="
                                 + refBVR.getIdCompteAnnexe(), FWMessage.ERREUR, this.getClass().getName());
             }
 
-            // Plan en erreur
             // Message d'erreur : Le plan n'existe pas ou est inactif
-            parser.getMemoryLog().logMessage("7129", getMessage() + " Plan N°" + refBVR.getIdPlanPaiement(),
+            context.getMemoryLog().logMessage("7129", getMessage() + " Plan N°" + refBVR.getIdPlanPaiement(),
                     FWMessage.ERREUR, this.getClass().getName());
-            CAPaiementBVR oper = createNewPaiementBvr(context, fTotal, parser, refBVR, jrn);
 
-            updateStatistique(oper);
+            CAPaiementBVR paiement = createNewPaiementBvr(context, fTotal, parser, refBVR, jrn);
+            updateStatistique(paiement);
         } else {
             createPaiementBvrPlan(context, fTotal, parser, jrn, planRecouvrement, refBVR);
         }
@@ -1675,5 +2095,9 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
     @Override
     public String getCSTypeTraitementOG() {
         return getIdTypeTraitementOG();
+    }
+
+    public CACamt054GroupsMessage getGroupesMessage() {
+        return groupesMessage;
     }
 }

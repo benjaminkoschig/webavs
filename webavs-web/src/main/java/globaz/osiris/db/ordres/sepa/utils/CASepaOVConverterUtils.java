@@ -1,12 +1,15 @@
 package globaz.osiris.db.ordres.sepa.utils;
 
+import globaz.globall.util.JACCP;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.ordre.APICommonOdreVersement;
+import globaz.osiris.db.ordres.sepa.AbstractSepa.SepaException;
 import globaz.osiris.db.utils.CAAdressePaiementFormatter;
 import globaz.osiris.external.IntAdressePaiement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.CategoryPurpose1CHCode;
+import com.six_interbank_clearing.de.pain_001_001_03_ch_02.ClearingSystemMemberIdentification2;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.GenericAccountIdentification1CH;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.LocalInstrument2Choice;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.PaymentMethod3Code;
@@ -25,6 +28,10 @@ public class CASepaOVConverterUtils {
 
     public static final String PAYS_DESTINATION_SUISSE = "CH";
     public static final String PAYS_DESTINATION_INTERNATIONNAL = "INT";
+
+    public static final String CLEARING_POSTFINANCE = "9000";
+
+    public static final String CLEARING_SUISSE_BCC_SYS_ID = "CHBCC";
 
     public static final String ExternalServiceLevel1_SEPA = "SEPA";
 
@@ -111,12 +118,10 @@ public class CASepaOVConverterUtils {
         return null;
     }
 
-    public static LocalInstrument2Choice getLclInstrm(APICommonOdreVersement ov) throws Exception {
-        CAAdressePaiementFormatter adp = new CAAdressePaiementFormatter();
-        adp.setAdressePaiement(ov.getAdressePaiement());
+    public static LocalInstrument2Choice getLclInstrm(CASepaGroupeOGKey key) throws Exception {
         LocalInstrument2Choice lclInstrm = new LocalInstrument2Choice();
         lclInstrm.setCd(ExternalLocalInstrument1_CPP);
-        if (adp.getTypeAdresse().equals(IntAdressePaiement.MANDAT)) {
+        if (key.isTypeVirement(IntAdressePaiement.MANDAT)) {
             return lclInstrm;
         }
         return null;
@@ -179,8 +184,8 @@ public class CASepaOVConverterUtils {
         return name;
     }
 
-    public static PaymentMethod3Code getPmtMtd(APICommonOdreVersement ov) throws Exception {
-        if (getTypeVirement(ov).equals(CASepaCommonUtils.TYPE_VIREMENT_MANDAT)) {
+    public static PaymentMethod3Code getPmtMtd(CASepaGroupeOGKey key) throws Exception {
+        if (key.isTypeVirement(CASepaCommonUtils.TYPE_VIREMENT_MANDAT)) {
             return PaymentMethod3Code.CHK;
         }
         return PaymentMethod3Code.TRF;
@@ -191,6 +196,7 @@ public class CASepaOVConverterUtils {
     }
 
     public static GenericAccountIdentification1CH getCbtrNotIBAN(APICommonOdreVersement ov) throws Exception {
+
         return CASepaCommonUtils.getNotIban(ov.getAdressePaiement());
     }
 
@@ -205,11 +211,14 @@ public class CASepaOVConverterUtils {
         if (motif.length() > 140) {
             motif = motif.substring(0, 139);
         }
+        if (motif.isEmpty()) {
+            return null;
+        }
         return CASepaCommonUtils.escapeInvalidBasicTextCH(motif);
     }
 
-    public static boolean isBVR(APICommonOdreVersement ov) throws Exception {
-        return CASepaOVConverterUtils.getTypeVersement(ov).equals(CASepaOVConverterUtils.ORDRE_VERSEMENT_BVR);
+    public static boolean isBVR(CASepaGroupeOGKey key) throws Exception {
+        return key.isTypeVersement(CASepaOVConverterUtils.ORDRE_VERSEMENT_BVR);
     }
 
     public static String getCbtrAgtBIC(APICommonOdreVersement ov) throws Exception {
@@ -220,8 +229,61 @@ public class CASepaOVConverterUtils {
         return null;
     }
 
-    public static boolean isCLevelBicRequired(APICommonOdreVersement ov) throws Exception {
-        String blevelId = new CASepaGroupeOGKey(ov).getKeyString();
-        return (blevelId.contains(CASepaCommonUtils.TYPE_VIREMENT_BANCAIRE));
+    public static boolean isCLevelBicRequired(CASepaGroupeOGKey ovKey) {
+        return ovKey.isTypeVirement(CASepaCommonUtils.TYPE_VIREMENT_BANCAIRE);
+    }
+
+    public static ClearingSystemMemberIdentification2 getCbtrAgtClrSys(APICommonOdreVersement ov) throws Exception {
+
+        String clr = ov.getAdressePaiement().getBanque().getClearing();
+        if (clr != null && !clr.isEmpty()) {
+            ClearingSystemMemberIdentification2 clrSys = new ClearingSystemMemberIdentification2();
+            clrSys.setMmbId(clr);
+            return clrSys;
+        }
+        return null;
+    }
+
+    public static boolean isCLevelCCP(APICommonOdreVersement ov) throws Exception {
+        CAAdressePaiementFormatter adp = new CAAdressePaiementFormatter();
+        adp.setAdressePaiement(ov.getAdressePaiement());
+        return adp.getTypeAdresse().equals(IntAdressePaiement.CCP);
+    }
+
+    /**
+     * Récupération selon l'ancien formateur du numéro d'ahdérent BVR dans le cas de paiement type 1 (BVR)
+     * 
+     * @param ov
+     * @return
+     * @throws Exception
+     */
+    public static GenericAccountIdentification1CH getNumAdherentBVR(APICommonOdreVersement ov) throws Exception {
+        GenericAccountIdentification1CH other = new GenericAccountIdentification1CH();
+        CAAdressePaiementFormatter adp = new CAAdressePaiementFormatter();
+        adp.setAdressePaiement(ov.getAdressePaiement());
+        // Numéro d'adhérent à 5 ou 9 positions
+        if (adp.isAdherentBvr5()) {
+            other.setId(adp.getNumCompte());
+        } else {
+            try {
+                other.setId(JACCP.formatNoDash(adp.getNumCompte()));
+            } catch (Exception e) {
+                throw new SepaException(e);
+            }
+        }
+        return other;
+    }
+
+    private static boolean isAdherentBvr5(IntAdressePaiement adp) {
+
+        // Si no adhérent BVR à 5 positions
+        if (adp.getTypeAdresse().equals(IntAdressePaiement.BVR)) {
+            if (adp.getNumCompte().length() == 5) {
+                return true;
+            }
+        }
+
+        // Faux dans les autres cas
+        return false;
     }
 }

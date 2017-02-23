@@ -7,7 +7,9 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.OsirisDef;
 import globaz.osiris.api.process.APIProcessUpload;
 import globaz.osiris.api.process.APIProcessUploadBVR;
+import globaz.osiris.db.ordres.CACamt054GroupsMessage;
 import globaz.osiris.db.ordres.CAOrganeExecution;
+import java.util.List;
 
 /**
  * Traitement d'un fichier BVR
@@ -22,12 +24,15 @@ public class CAProcessBVR extends BProcess implements APIProcessUpload, APIProce
     private String dateValeur = new String();
     private boolean echoToConsole = false;
     private String fileName = new String();
-    private String idJournalBvr;
+    private List<String> idJournauxBvr;
     private String idOrganeExecution = new String();
     private String libelle = new String();
+    private String idYellowReportFile = new String();
 
     private boolean retrieveBvrFromDataBase = true;
     private Boolean simulation = new Boolean(false);
+
+    private CACamt054GroupsMessage groupesMessage = new CACamt054GroupsMessage();
 
     /**
      * Commentaire relatif au constructeur CAProcessBVR.
@@ -51,6 +56,15 @@ public class CAProcessBVR extends BProcess implements APIProcessUpload, APIProce
      */
     @Override
     protected void _executeCleanUp() {
+    }
+
+    @Override
+    public String getSubjectDetail() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(groupesMessage.getMessage());
+        builder.append("\r\n\r\n");
+        builder.append(super.getSubjectDetail());
+        return builder.toString();
     }
 
     /**
@@ -87,7 +101,9 @@ public class CAProcessBVR extends BProcess implements APIProcessUpload, APIProce
             // Demander le traitement du BVR
             organeExecution.setRetrieveBvrFromDataBase(isRetrieveBvrFromDataBase());
             organeExecution.setMemoryLog(getMemoryLog());
-            idJournalBvr = organeExecution.executeBVR(this);
+            idJournauxBvr = organeExecution.executeBVR(this);
+
+            groupesMessage = organeExecution.getGroupesMessage();
 
             if (isAborted()) {
                 return false;
@@ -127,7 +143,7 @@ public class CAProcessBVR extends BProcess implements APIProcessUpload, APIProce
         }
 
         // Vérifier le nom du fichier
-        if (JadeStringUtil.isBlank(getFileName())) {
+        if (JadeStringUtil.isBlank(getFileName()) && JadeStringUtil.isBlank(getIdYellowReportFile())) {
             getMemoryLog().logMessage("5324", null, FWMessage.FATAL, this.getClass().getName());
             return false;
         }
@@ -179,11 +195,18 @@ public class CAProcessBVR extends BProcess implements APIProcessUpload, APIProce
      */
     @Override
     protected String getEMailObject() {
+        String title;
         if (getMemoryLog().hasErrors() || getSession().hasErrors() || isOnError()) {
-            return getSession().getLabel("5301");
+            title = getSession().getLabel("5301");
         } else {
-            return getSession().getLabel("5300");
+            title = getSession().getLabel("5300");
         }
+
+        if (simulation) {
+            title += " - " + getSession().getLabel("SIMULATION");
+        }
+
+        return title;
     }
 
     /**
@@ -194,10 +217,6 @@ public class CAProcessBVR extends BProcess implements APIProcessUpload, APIProce
     @Override
     public String getFileName() {
         return fileName;
-    }
-
-    public String getIdJournalBvr() {
-        return idJournalBvr;
     }
 
     /**
@@ -278,10 +297,6 @@ public class CAProcessBVR extends BProcess implements APIProcessUpload, APIProce
         fileName = newFileName;
     }
 
-    public void setIdJournalBvr(String idJournalBvr) {
-        this.idJournalBvr = idJournalBvr;
-    }
-
     /**
      * Insérez la description de la méthode ici. Date de création : (14.02.2002 16:10:31)
      * 
@@ -317,5 +332,23 @@ public class CAProcessBVR extends BProcess implements APIProcessUpload, APIProce
     @Override
     public void setSimulation(Boolean newSimulation) {
         simulation = newSimulation;
+    }
+
+    @Override
+    public String getIdYellowReportFile() {
+        return idYellowReportFile;
+    }
+
+    @Override
+    public void setIdYellowReportFile(String id) {
+        idYellowReportFile = id;
+    }
+
+    public List<String> getIdJournauxBvr() {
+        return idJournauxBvr;
+    }
+
+    public void setIdJournauxBvr(List<String> idJournauxBvr) {
+        this.idJournauxBvr = idJournauxBvr;
     }
 }

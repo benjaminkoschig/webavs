@@ -35,7 +35,5 @@ public interface APIOrdreGroupe {
     // new iso20022/sepa
     public String getNumLivraison();
 
-    public String getTypeAvis();
-
     public String getIsoHighPriority();
 }

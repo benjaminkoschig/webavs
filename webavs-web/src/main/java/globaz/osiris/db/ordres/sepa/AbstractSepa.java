@@ -35,6 +35,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import ch.globaz.osiris.business.constantes.CAProperties;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
@@ -70,6 +71,7 @@ public abstract class AbstractSepa {
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractSepa.class);
+    ChannelSftp client = null;
 
     // XML ---------------------------------------------------------
 
@@ -150,28 +152,37 @@ public abstract class AbstractSepa {
      * @param user Utilisateur
      * @param password (optional)
      *            Mot de passe, si authentification par mot de passe.
-     * @param keyFile (optional)
+     * @param keyFiles (optional)
      *            Clé privée, si authentification par clé privée.
      * 
      * @throws SepaException en cas d'erreur de connexion au FTP.
      */
-    protected ChannelSftp connect(String server, Integer port, String user, String password, String keyFile) {
+    protected ChannelSftp connect(String server, Integer port, String user, String password, List<String> keyFiles) {
         Validate.notEmpty(server, "server was not specified");
         Validate.notEmpty(user, "you must specify a user, even when using a private key file");
-        Validate.isTrue(
-                (StringUtils.isBlank(password) || StringUtils.isBlank(keyFile))
-                        && (StringUtils.isNotBlank(password) || StringUtils.isNotBlank(keyFile)),
+        Validate.isTrue((StringUtils.isBlank(password) || keyFiles.isEmpty())
+                && (StringUtils.isNotBlank(password) || !keyFiles.isEmpty()),
                 "you must specify a password or a key file, but not both");
-        if (StringUtils.isNotBlank(keyFile)) {
-            Validate.isTrue(new File(keyFile).isFile(), "keyFile does not exist");
+        for (String keyFile : keyFiles) {
+            if (StringUtils.isNotBlank(keyFile)) {
+                Validate.isTrue(new File(keyFile).isFile(), "keyFile does not exist");
+            }
         }
         JSch jsch = new JSch();
 
         Session session;
         try {
             // if specified, set an identity (yet a private ssh key file)
-            if (StringUtils.isNotBlank(keyFile)) {
-                jsch.addIdentity(keyFile);
+            for (String keyFile : keyFiles) {
+                if (StringUtils.isNotBlank(keyFile)) {
+                    try {
+                        jsch.addIdentity(keyFile);
+                        LOG.info("Private key file added: {}", keyFile);
+                    } catch (JSchException e) {
+                        LOG.warn("Private key file not added ({}): {}", e.toString(), keyFile);
+                        LOG.error("getJsch() catch an unrethrowed exception from JSch API", e);
+                    }
+                }
             }
 
             session = port == null ? jsch.getSession(user, server) : jsch.getSession(user, server, port);
@@ -259,7 +270,7 @@ public abstract class AbstractSepa {
         }
     }
 
-    protected String loadPrivateKeyPathFromJadeConfigFile() {
+    protected List<String> loadPrivateKeyPathFromJadeConfigFile() {
         // try fetching a private ssh key from legacy config files, mimic Jade behavior
         InputStream jadeFsServerConfig = getClass().getResourceAsStream(LEGACY_JADE_CONFIG_FILE);
 
@@ -268,8 +279,7 @@ public abstract class AbstractSepa {
                     LEGACY_JADE_CONFIG_FILE);
             return null;
         }
-
-        String privateKey = null;
+        List<String> privateKeyList = new ArrayList<String>();
 
         Document doc = parseDocument(jadeFsServerConfig);
         NodeList allProtocols = doc.getDocumentElement().getElementsByTagName("protocols");
@@ -288,23 +298,56 @@ public abstract class AbstractSepa {
                         Node n = protocolChildren.item(k);
 
                         if (n instanceof Element && n.getNodeName().startsWith(PRIVATEKEY_NODENAME_PREFIX)) {
-                            privateKey = StringUtils.trimToNull(n.getTextContent());
+                            String privateKey = StringUtils.trimToNull(n.getTextContent());
                             LOG.info("resolved private ssh key to be {}", privateKey);
-                            break;
+                            privateKeyList.add(privateKey);
                         }
                     }
                 }
 
-                if (privateKey != null) {
+                if (!privateKeyList.isEmpty()) {
                     break;
                 }
             }
 
-            if (privateKey != null) {
+            if (!privateKeyList.isEmpty()) {
                 break;
             }
         }
 
-        return privateKey;
+        return privateKeyList;
+    }
+
+    /** Connecte sur le ftp cible, dans le folder adapté à l'envoi de messages SEPA. */
+    protected ChannelSftp getClient() {
+        if (client == null) {
+            List<String> privateKeyList = loadPrivateKeyPathFromJadeConfigFile();
+
+            // try fetching configuration from database
+            String login = null;
+            String password = null;
+            Integer port = null;
+            String host = null;
+            try {
+                host = CAProperties.ISO_SEPA_FTP_HOST.getValue();
+                String sport = CAProperties.ISO_SEPA_FTP_PORT.getValue();
+
+                if (StringUtils.isNotBlank(sport)) {
+                    port = Integer.parseInt(sport);
+                }
+
+                login = CAProperties.ISO_SEPA_FTP_USER.getValue();
+                password = CAProperties.ISO_SEPA_FTP_PASS.getValue();
+
+            } catch (Exception e) {
+                throw new SepaException("unable to retrieve ftp config: " + e, e);
+            }
+
+            // go connect
+            client = connect(host, port, login, password, privateKeyList);
+
+        }
+        // go connect
+        return client;
     }
 }

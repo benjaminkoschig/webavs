@@ -8,20 +8,20 @@ import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWHelper;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BIPersistentObjectList;
+import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.osiris.db.bvrftp.CABvrFtpListViewBean;
 import globaz.osiris.db.process.CABvrViewBean;
+import globaz.osiris.db.yellowreportfile.CAYellowReportFile;
+import globaz.osiris.db.yellowreportfile.CAYellowReportFileService;
 
 /**
  * @author SCO
  * 
  */
 public class CABvrFtpHelper extends FWHelper {
-    /*
-     * (non-Javadoc)
-     * 
-     * @seeglobaz.framework.controller.FWHelper#_find(globaz.globall.db. BIPersistentObjectList,
-     * globaz.framework.controller.FWAction, globaz.globall.api.BISession)
-     */
+
     @Override
     protected void _find(BIPersistentObjectList persistentList, FWAction action, BISession session) throws Exception {
         ((CABvrFtpListViewBean) persistentList).listDirectoryFiles();
@@ -29,21 +29,30 @@ public class CABvrFtpHelper extends FWHelper {
 
     @Override
     protected void _start(FWViewBeanInterface viewBean, FWAction action, BISession session) {
-        CABvrFtpListViewBean listViewBean = new CABvrFtpListViewBean();
-        listViewBean.setDistantDirectoryName(((CABvrViewBean) viewBean).getDistantDirectoryName());
-        listViewBean.setISession(session);
+        CABvrViewBean vb = (CABvrViewBean) viewBean;
+        String fileAbsPath = null;
 
         try {
-            // TODO sch 25 févr. 2010 Selon les best practice de R&T la méthode
-            // getFileFromFtp devrait être dans le Helper
-            String fileAbsPath = listViewBean.getFileFromFtp(((CABvrViewBean) viewBean).getUserSelectedFileName());
+            if (!JadeStringUtil.isEmpty(vb.getIdYellowReportFile())) {
+                CAYellowReportFile reportFile = new CAYellowReportFileService((BSession) session).read(vb
+                        .getIdYellowReportFile());
 
-            ((CABvrViewBean) viewBean).setFileName(fileAbsPath);
+                fileAbsPath = reportFile.getFileName();
+
+            } else {
+                CABvrFtpListViewBean listViewBean = new CABvrFtpListViewBean();
+                listViewBean.setDistantDirectoryName(vb.getDistantDirectoryName());
+                listViewBean.setISession(session);
+
+                fileAbsPath = listViewBean.getFileFromFtp(vb.getUserSelectedFileName());
+
+            }
         } catch (Exception e) {
+            JadeLogger.error(e, e.getMessage());
             viewBean.setMsgType(FWViewBeanInterface.ERROR);
             viewBean.setMessage(e.toString());
         }
 
-        // return viewBean;
+        vb.setFileName(fileAbsPath);
     }
 }

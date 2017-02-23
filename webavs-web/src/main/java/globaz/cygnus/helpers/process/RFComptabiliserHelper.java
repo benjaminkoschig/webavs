@@ -152,9 +152,8 @@ public class RFComptabiliserHelper extends PRAbstractHelper {
         process.setDateComptable(vb.getDateComptable());
         process.setEMailAddress(vb.getEMailAddress());
         process.setIdLot(vb.getIdLot());
-        process.setIsoCsTypeAvis(vb.getIsoCsTypeAvis());
         process.setIsoGestionnaire(vb.getIsoGestionnaire());
-        process.setIsoHighPriority(vb.getIsoHightPriority());
+        process.setIsoHighPriority(vb.getIsoHighPriority());
     }
 
     /**

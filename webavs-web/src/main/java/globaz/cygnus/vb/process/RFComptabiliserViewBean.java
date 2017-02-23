@@ -4,7 +4,6 @@
 package globaz.cygnus.vb.process;
 
 import globaz.corvus.properties.REProperties;
-import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.ordres.CAOrganeExecution;
 import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
@@ -39,9 +38,8 @@ public class RFComptabiliserViewBean extends PRAbstractViewBeanSupport {
     private String typeValidation = "";
 
     // SEPA iso20002
-    private String isoCsTypeAvis = APIOrdreGroupe.ISO_TYPE_AVIS_COLLECT_SANS;
     private String isoGestionnaire = "";
-    private String isoHightPriority = "";
+    private String isoHighPriority = "";
 
     public RFComptabiliserViewBean() throws PropertiesException {
         setIdOrganeExecution(getOrganeExecProperty());
@@ -195,14 +193,6 @@ public class RFComptabiliserViewBean extends PRAbstractViewBeanSupport {
         this.typeValidation = typeValidation;
     }
 
-    public String getIsoCsTypeAvis() {
-        return isoCsTypeAvis;
-    }
-
-    public void setIsoCsTypeAvis(String isoCsTypeAvis) {
-        this.isoCsTypeAvis = isoCsTypeAvis;
-    }
-
     public String getIsoGestionnaire() {
         if (isoGestionnaire.isEmpty()) {
             return getSession().getUserName();
@@ -214,12 +204,12 @@ public class RFComptabiliserViewBean extends PRAbstractViewBeanSupport {
         this.isoGestionnaire = isoGestionnaire;
     }
 
-    public String getIsoHightPriority() {
-        return isoHightPriority;
+    public String getIsoHighPriority() {
+        return isoHighPriority;
     }
 
-    public void setIsoHightPriority(String isoHightPriority) {
-        this.isoHightPriority = isoHightPriority;
+    public void setIsoHighPriority(String isoHighPriority) {
+        this.isoHighPriority = isoHighPriority;
     }
 
     /*

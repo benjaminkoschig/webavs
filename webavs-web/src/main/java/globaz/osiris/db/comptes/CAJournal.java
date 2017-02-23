@@ -7,6 +7,7 @@ import globaz.framework.util.FWMessage;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BConstants;
 import globaz.globall.db.BEntity;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
@@ -36,10 +37,10 @@ public class CAJournal extends BEntity implements Serializable, APIJournal {
      */
     private static final long serialVersionUID = 1L;
 
-    public final static String ANNULE = "202005";
+    public static final String ANNULE = "202005";
 
-    public final static String COMPTABILISE = "202002";
-    public final static String ERREUR = "202004";
+    public static final String COMPTABILISE = "202002";
+    public static final String ERREUR = "202004";
     public static final String FIELD_ACCEPTERERREURS = "ACCEPTERERREURS";
     public static final String FIELD_DATE = "DATE";
     public static final String FIELD_DATEVALEURCG = "DATEVALEURCG";
@@ -55,20 +56,20 @@ public class CAJournal extends BEntity implements Serializable, APIJournal {
 
     public static final String FIELD_PROPRIETAIRE = "PROPRIETAIRE";
     public static final String FIELD_TYPEJOURNAL = "TYPEJOURNAL";
-    public final static String OUVERT = "202001";
-    public final static String PARTIEL = "202003";
+    public static final String OUVERT = "202001";
+    public static final String PARTIEL = "202003";
     public static final String TABLE_CAJOURP = "CAJOURP";
-    public final static String TRAITEMENT = "202006";
+    public static final String TRAITEMENT = "202006";
 
-    public final static String TYPE_FACTURATION = "203009";
-    public final static String TYPE_AUTOMATIQUE = "203001";
-    public final static String TYPE_BULLETIN_NEUTRE = "203008";
-    public final static String TYPE_CONTENTIEUX = "203004";
-    public final static String TYPE_JOURNALIER = "203006";
-    public final static String TYPE_JOURNALIER_CONTENTIEUX = "203007";
-    public final static String TYPE_MANUEL = "203002";
-    public final static String TYPE_SYSTEM = "203005";
-    public final static String TYPE_TEMPORAIRE = "203003";
+    public static final String TYPE_FACTURATION = "203009";
+    public static final String TYPE_AUTOMATIQUE = "203001";
+    public static final String TYPE_BULLETIN_NEUTRE = "203008";
+    public static final String TYPE_CONTENTIEUX = "203004";
+    public static final String TYPE_JOURNALIER = "203006";
+    public static final String TYPE_JOURNALIER_CONTENTIEUX = "203007";
+    public static final String TYPE_MANUEL = "203002";
+    public static final String TYPE_SYSTEM = "203005";
+    public static final String TYPE_TEMPORAIRE = "203003";
 
     /**
      * Cette méthode retourne un journal journalier par user de type journalier
@@ -151,6 +152,8 @@ public class CAJournal extends BEntity implements Serializable, APIJournal {
     private String proprietaire = new String();
     private String typeJournal = new String();
     private CAUtilsJournal utils = new CAUtilsJournal();
+
+    private CAJournalISODetail journalISODetail = null;
     // code systeme
 
     private FWParametersUserCode ucEtat = null;
@@ -195,6 +198,22 @@ public class CAJournal extends BEntity implements Serializable, APIJournal {
                 setEtat(CAJournal.OUVERT);
                 this.update();
             }
+        }
+
+        CAJournalISODetailManager isoManager = new CAJournalISODetailManager();
+        isoManager.setSession(getSession());
+        isoManager.setForIdJournal(getIdJournal());
+        isoManager.find(BManager.SIZE_NOLIMIT);
+
+        if (isoManager.getSize() > 0) {
+            CAJournalISODetail detail = (CAJournalISODetail) isoManager.get(0);
+
+            journalISODetail = new CAJournalISODetail();
+            journalISODetail.setIdJournalISO(detail.getIdJournalISO());
+            journalISODetail.setMessageId(detail.getMessageId());
+            journalISODetail.setCreatedDateTime(detail.getCreatedDateTime());
+            journalISODetail.setNotificationId(detail.getNotificationId());
+            journalISODetail.setFileName(detail.getFileName());
         }
     }
 
@@ -1009,6 +1028,14 @@ public class CAJournal extends BEntity implements Serializable, APIJournal {
             _addError(null, getSession().getLabel("7008"));
         }
 
+    }
+
+    public void setJournalISODetail(CAJournalISODetail journalISODetail) {
+        this.journalISODetail = journalISODetail;
+    }
+
+    public CAJournalISODetail getJournalISODetail() {
+        return journalISODetail;
     }
 
     public void setDateValeurCG(String newDateValeurCG) {

@@ -37,8 +37,10 @@ import globaz.osiris.db.ordres.CAOrdreGroupe;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRSession;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -479,7 +481,13 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
             innerTransaction = commitResetTransaction(innerTransaction);
             transaction = commitResetTransaction(transaction);
 
-            compta.finalize(this, getSession(), innerTransaction);
+            compta.bouclerOG(this, getSession(), innerTransaction);
+            List<String> listOg = compta.bouclerOG(this, getSession(), innerTransaction);
+            if (listOg.size() > 1) {
+                getMemoryLog().logMessage(
+                        "Le nombre de transactions est supérieur à la limite pour l'ISO20022, plusieurs ordres groupés ont été créés. ["
+                                + Arrays.toString(listOg.toArray()) + "]", FWMessage.INFORMATION, "");
+            }
 
             getMemoryLog().logMessage("3b) Process ending at : " + (new JATime(JACalendar.now())).toStr(":"),
                     FWMessage.INFORMATION, "");
@@ -526,8 +534,8 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
                     numOG = String.valueOf(n);
                 }
                 comptaExt.preparerOrdreGroupe(getIdOrganeExecution(), numOG, getDateEcheancePaiement(),
-                        CAOrdreGroupe.VERSEMENT, CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG, getIsoCsTypeAvis(),
-                        getIsoGestionnaire(), getIsoHighPriority());
+                        CAOrdreGroupe.VERSEMENT, CAOrdreGroupe.NATURE_RENTES_AVS_AI, libelleOG, getIsoGestionnaire(),
+                        getIsoHighPriority());
 
             }
 

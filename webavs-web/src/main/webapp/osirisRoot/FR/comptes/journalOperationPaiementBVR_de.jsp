@@ -649,7 +649,7 @@ String jspLocation1 = request.getContextPath()+ mainServletPath + "Root/compteCo
           <tr>
             <td nowrap width="129">Organe d'ex&eacute;cution</td>
 
-            <td colspan="4">
+            <td>
               <select name="idOrganeExecution" class="list" >
                 <%CAOrganeExecutionManager mgr = new CAOrganeExecutionManager();
 			    CAOrganeExecution org;
@@ -666,9 +666,34 @@ String jspLocation1 = request.getContextPath()+ mainServletPath + "Root/compteCo
 			  %>
               </select>
             </td>
-
+			<td colspan="3">&nbsp;</td>
           </tr>
-
+          <tr>
+            <td width="129">BkTxCd</td>
+            <td width="285"><input type="text" class="inputDisabled" name="bankTransactionCode" size="35" value="<%=viewBean.getBankTransactionCode()%>" readonly/></td>
+			
+			<td width="4">&nbsp;</td>
+            
+            <td colspan="2" rowspan="4">
+	            <table>
+		            <tr>
+			            <td width="130" valign="top">Dbtr</td>
+			            <td width="400"><textArea class="inputDisabled" type="text" name="debtor" cols="38" rows="5" readonly><%=viewBean.getDebtor()%></textArea></td>
+		            </tr>
+	            </table>
+            </td>
+          </tr>
+          <tr>
+          	<td width="129">AcctSvcrRef</td>
+			<td width="285"><input type="text" class="inputDisabled" name="accountServicerReference" size="35" value="<%=viewBean.getAccountServicerReference()%>" readonly/></td>
+         	<td colspan="3">&nbsp;</td>
+          </tr>
+		  <tr>
+         	<td colspan="5">&nbsp;</td>
+          </tr>
+          <tr>
+         	<td colspan="5">&nbsp;</td>
+          </tr>
 		  <TR><TD nowrap colspan="5"><HR/></TD></TR>
 
           <tr>

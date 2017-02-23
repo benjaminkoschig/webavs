@@ -4,6 +4,7 @@ import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import java.util.HashMap;
+import java.util.List;
 
 public interface APIGestionRentesExterne {
 
@@ -126,7 +127,7 @@ public interface APIGestionRentesExterne {
      * @param transaction
      * @throws Exception
      */
-    public void finalize(BProcess parent, BSession session, BTransaction transaction) throws Exception;
+    public List<String> bouclerOG(BProcess parent, BSession session, BTransaction transaction) throws Exception;
 
     /**
      * Retrouve ou créer (avec incrémentation +10) une section pour les blocages de prestations.
