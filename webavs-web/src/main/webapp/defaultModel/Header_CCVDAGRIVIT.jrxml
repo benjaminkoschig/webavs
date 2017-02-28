@@ -42,7 +42,6 @@
 	<parameter name="P_HEADER_DONNEES" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="P_HEADER_LIBELLES" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="P_SIGNATURE_SERVICE" isForPrompting="false" class="java.lang.String"/>
-
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
@@ -52,12 +51,11 @@
 			</band>
 		</title>
 		<pageHeader>
-			<band height="75"  isSplitAllowed="true" >
-				<image  scaleImage="RetainShape" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">
-					<reportElement
+			<band height="65"  isSplitAllowed="true" >
+				<image  scaleImage="RetainShape" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
 						mode="Transparent"
 						x="6"
-						y="9"
+						y="4"
 						width="580"
 						height="61"
 						forecolor="#000000"
@@ -70,8 +68,7 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<graphicElement stretchType="NoStretch" pen="None" fill="Solid" />
-					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/agrivit_logo.gif"]]></imageExpression>
-				</image>
+					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/agrivit_logo.gif"]]></imageExpression>				</image>
 			</band>
 		</pageHeader>
 		<columnHeader>
