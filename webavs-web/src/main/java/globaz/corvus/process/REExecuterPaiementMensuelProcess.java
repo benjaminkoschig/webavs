@@ -35,6 +35,7 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
+import globaz.globall.util.JAVector;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
@@ -62,7 +63,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.common.properties.CommonProperties;
@@ -759,7 +759,7 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
      * 
      * @param rentes
      */
-    private void controleDesRentes(List<Vector> rentes) {
+    private void controleDesRentes(JAVector rentes) {
         REPaiementRentes rente = null;
         List<String> errors = new ArrayList<String>();
         Set<String> idRentesAccordees = new HashSet<String>();
