@@ -66,6 +66,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.osiris.business.constantes.CAProperties;
 import ch.globaz.prestation.business.constantes.CodeRecapitulationPcRfm;
 import ch.globaz.prestation.business.models.recap.RecapitulationPcRfm;
 import ch.globaz.prestation.business.models.recap.SimpleRecapitulationPcRfm;
@@ -253,6 +255,12 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                 message = nombreDeRentesAVersees + " rentes à verser";
                 mailLogs.add(message);
                 logger.info(message);
+
+                // Contrôle qu'il n'y ai plus de RA en erreur.
+                message = "Contrôle de la taille et du nombre des OG";
+                mailLogs.add(message);
+                logger.info(message);
+                controleMaxOG(nombreDeRentesAVersees);
 
                 // Contrôle des rentes avant de boucler pour le paiement
                 message = "Contrôle des rentes avant l'initialisation de la compta ";
@@ -565,6 +573,25 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
         this.mergePDF(docInfo, "listeRetenues", true, 0, false, null);
 
         return result;
+    }
+
+    private void controleMaxOG(int nombreDeRentesAVersees) {
+        try {
+            int maxOVforThisOG = Integer.parseInt(CAProperties.ISO_SEPA_MAX_OVPAROG.getValue());
+            int numberOG = Integer.parseInt(CAProperties.ISO_SEPA_MAX_MULTIOG.getValue());
+            Long totMax = (long) (numberOG * maxOVforThisOG);
+            if (nombreDeRentesAVersees > totMax) {
+                throw new RETechnicalException(
+                        "Impossible de traiter les rentes. Le nombre de rente dépasse le nombre d'OG max [" + numberOG
+                                + "] de chacun " + maxOVforThisOG + " OV défini dans les propriétés");
+            }
+        } catch (NumberFormatException e) {
+            throw new RETechnicalException(
+                    "Impossible de déterminer le nombre maximum d'OV selon les propriétés de l'ISO");
+        } catch (PropertiesException e) {
+            throw new RETechnicalException("Impossible de trouver les propriétés de l'ISO");
+        }
+
     }
 
     private void comptabiliserJournalRetenuesBlocages() {
