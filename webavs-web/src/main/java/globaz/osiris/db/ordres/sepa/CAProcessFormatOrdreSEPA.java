@@ -87,7 +87,7 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
     private HashMap<CASepaGroupeOGKey, List<CreditTransferTransactionInformation10CH>> bLevels = new HashMap<CASepaGroupeOGKey, List<CreditTransferTransactionInformation10CH>>();
 
     @Override
-    public StringBuffer format(APICommonOdreVersement ov) throws Exception {
+    public StringBuffer format(final APICommonOdreVersement ov) throws Exception {
         final CAAdressePaiementFormatter adpf = new CAAdressePaiementFormatter();
         adpf.setAdressePaiement(ov.getAdressePaiement());
 

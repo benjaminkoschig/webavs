@@ -53,8 +53,11 @@ public class CAProcessFormatOrdreSEPALite extends CAProcessFormatOrdreSEPA {
                     logger.error("Les OV sans numéro de transaction ne devraient pas passer par le preocess Express");
                 }
                 this.format(ov);
+                ov = null;
                 context.incProgressCounter();
+
             }
+            mgr.clear();
         } catch (Exception e) {
             og.erreur(context.getTransaction(), e.getMessage());
         }

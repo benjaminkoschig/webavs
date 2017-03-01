@@ -10,9 +10,9 @@ import globaz.jade.client.util.JadeConversionUtil;
 import globaz.jade.context.JadeContextImplementation;
 import globaz.jade.context.JadeThreadActivator;
 import globaz.jade.context.JadeThreadContext;
-import globaz.osiris.api.ordre.APICommonOdreVersement;
 import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.comptes.CAOperationManager;
+import globaz.osiris.db.comptes.CAOperationOrdreVersement;
 import globaz.osiris.db.comptes.CAOperationOrdreVersementManager;
 import globaz.osiris.db.ordres.CAOVforOR;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
@@ -67,18 +67,7 @@ public class CAListOrdreRejeteProcess extends BProcess {
 
         List<ContainerOrdreRejete> ordreRejetesContainer = new ArrayList<ContainerOrdreRejete>();
 
-        List<CAOrdreRejete> listOrdreRejete = getOrdreRejeteForOG(getOrdreGroupe());
-        Map<String, List<CAOrdreRejete>> mapOrdreRej = new HashMap<String, List<CAOrdreRejete>>();
-        for (CAOrdreRejete ordreRej : listOrdreRejete) {
-            String key = ordreRej.getIdOperation();
-            if (mapOrdreRej.containsKey(key)) {
-                mapOrdreRej.get(key).add(ordreRej);
-            } else {
-                List<CAOrdreRejete> value = new ArrayList<CAOrdreRejete>();
-                value.add(ordreRej);
-                mapOrdreRej.put(key, value);
-            }
-        }
+        Map<String, List<CAOrdreRejete>> mapOrdreRej = getOrdreRejeteForOG(getOrdreGroupe());
 
         Map<String, CAOVforOR> opMap = getOpMapOVfromOG(getOrdreGroupe(), mapOrdreRej.keySet());
 
@@ -136,7 +125,8 @@ public class CAListOrdreRejeteProcess extends BProcess {
         return new JadeThreadContext(ctxtImpl);
     }
 
-    private List<CAOrdreRejete> getOrdreRejeteForOG(CAOrdreGroupe og) {
+    private Map<String, List<CAOrdreRejete>> getOrdreRejeteForOG(CAOrdreGroupe og) {
+        Map<String, List<CAOrdreRejete>> mapOrdreRej = new HashMap<String, List<CAOrdreRejete>>();
         CAOrdreRejeteManager mgr = new CAOrdreRejeteManager();
         mgr.setSession(getSession());
         mgr.setForIdOG(og.getIdOrdreGroupe());
@@ -146,8 +136,20 @@ public class CAListOrdreRejeteProcess extends BProcess {
         } catch (Exception e) {
             throw new SepaException("could not search for OrdreRejeté: " + og.getIdOrdreGroupe() + ": " + e, e);
         }
-        List<CAOrdreRejete> ovs = mgr.toList();
-        return ovs;
+
+        for (int i = 0; i < mgr.size(); i++) {
+            CAOrdreRejete ordreRej = (CAOrdreRejete) mgr.getEntity(i);
+            String key = ordreRej.getIdOperation();
+            if (mapOrdreRej.containsKey(key)) {
+                mapOrdreRej.get(key).add(ordreRej);
+            } else {
+                List<CAOrdreRejete> value = new ArrayList<CAOrdreRejete>();
+                value.add(ordreRej);
+                mapOrdreRej.put(key, value);
+            }
+        }
+
+        return mapOrdreRej;
     }
 
     private Map<String, CAOVforOR> getOpMapOVfromOG(CAOrdreGroupe og, Set<String> idSet) {
@@ -176,8 +178,8 @@ public class CAListOrdreRejeteProcess extends BProcess {
                 throw new SepaException("could not search for transactions: " + og.getIdOrdreGroupe() + ": " + e, e);
             }
 
-            List<APICommonOdreVersement> ovs = mgr.toList();
-            for (APICommonOdreVersement ov : ovs) {
+            for (int j = 0; j < mgr.size(); j++) {
+                CAOperationOrdreVersement ov = (CAOperationOrdreVersement) mgr.getEntity(j);
                 try {
                     CAOVforOR pojo = new CAOVforOR(ov);
                     ovsMap.put(ov.getIdOperation(), pojo);
@@ -254,10 +256,12 @@ public class CAListOrdreRejeteProcess extends BProcess {
         detail.add(session.getLabel("LIST_OSIRIS_ORDREREJETE_DETAIL_OE"), og.getOrganeExecution().getNom());
         detail.newLigne();
         detail.add(session.getLabel("LIST_OSIRIS_ORDREREJETE_DETAIL_NUM_LIVRAISON"), og.getIsoNumLivraison());
-        File file = SimpleOutputListBuilderJade.newInstance()
+        SimpleOutputListBuilderJade simpleOutputList = SimpleOutputListBuilderJade.newInstance();
+        File file = simpleOutputList
                 .outputNameAndAddPath(INFOROM_NUMBER + "_ISO20022_ListOrdreRejete_" + og.getIsoNumLivraison())
                 .configure(configuration).addList(list).classElementList(ContainerOrdreRejete.class)
                 .addTitle(title, Align.LEFT).addHeaderDetails(detail).asXls().build();
+        simpleOutputList.close();
         return file.getAbsolutePath();
     }
 
