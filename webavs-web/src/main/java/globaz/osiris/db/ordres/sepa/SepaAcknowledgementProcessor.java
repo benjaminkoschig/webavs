@@ -19,16 +19,15 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.osiris.business.constantes.CAProperties;
 import com.jcraft.jsch.ChannelSftp;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.CustomerPaymentStatusReportV03CH;
@@ -53,12 +52,12 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document document;
     }
 
-    public void findAndProcessAllAcknowledgements(BSession session) throws PropertiesException {
+    public void findAndProcessAllAcknowledgements(BSession session) throws Exception {
         setSession(session);
         ChannelSftp client = getClient();
         String[] listFiles;
 
-        Set<OrdreGroupeWrapper> ogProcessed = new HashSet<OrdreGroupeWrapper>();
+        Map<String, OrdreGroupeWrapper> ogProcessed = new HashMap<String, OrdreGroupeWrapper>();
         String folder = CAProperties.ISO_SEPA_FTP_002_FOLDER.getValue();
         String foldername = null;
         if (folder.isEmpty()) {
@@ -133,16 +132,25 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                 LOG.info("processing file with name {}", remoteAck.remotePath);
                 final OrdreGroupeWrapper ogWrapper = processAck(remoteAck.document);
                 if (ogWrapper != null && ogWrapper.getOrdreGroupe() != null) {
-                    ogProcessed.add(ogWrapper);
+                    final String key = ogWrapper.getOrdreGroupe().getNumLivraison();
+                    if (ogProcessed.containsKey(key)) {
+                        ogProcessed.get(key).addAllReason(ogWrapper.getReasons());
+                    } else {
+                        ogProcessed.put(key, ogWrapper);
+                    }
+                    session.getCurrentThreadTransaction().commit();
                     deleteFile(client, remoteAck.remotePath);
                 }
             } catch (SepaException e) {
                 LOG.error("could not process ack {}", remoteAck.remotePath, e);
+            } catch (Exception e) {
+                LOG.error("Impossible to save state after process Pain002 file" + e);
+                throw e;
             }
         }
         CAListOrdreRejeteProcess listORProcess = new CAListOrdreRejeteProcess();
         listORProcess.addMail(CAProperties.ISO_SEPA_RESPONSABLE_OG_EMAIL.getValue());
-        for (OrdreGroupeWrapper ogWrapperTraite : ogProcessed) {
+        for (OrdreGroupeWrapper ogWrapperTraite : ogProcessed.values()) {
             listORProcess.process(getSession(), ogWrapperTraite.getOrdreGroupe(), ogWrapperTraite.getReasons());
         }
     }
@@ -268,44 +276,31 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                     final String messageTypeId = blevel.getOrgnlPmtInfId().replaceAll(
                             ogWrapper.getOrdreGroupe().getNumLivraison(), "");
 
-                    List<APICommonOdreVersement> selectedTransactions = new ArrayList<APICommonOdreVersement>();
-
                     for (APICommonOdreVersement ordreV : getOpOVfromOG(ogWrapper.getOrdreGroupe())) {
                         try {
                             final CAAdressePaiementFormatter adpf = new CAAdressePaiementFormatter();
                             adpf.setAdressePaiement(ordreV.getAdressePaiement());
                             CASepaGroupeOGKey messageIdKey = new CASepaGroupeOGKey(ordreV, adpf);
                             if (messageTypeId.equals(messageIdKey.getKeyString())) {
-                                selectedTransactions.add(ordreV);
+                                CAOrdreRejete rejected = new CAOrdreRejete();
+                                rejected.setSession(getSession());
+                                rejected.setIdOperation(ordreV.getIdOperation());
+                                rejected.setIdOrdreGroupe(ogWrapper.getOrdreGroupe().getIdOrdreGroupe());
+                                StatusReasonInformation8CH rsn = reasons.get(0);
+                                rejected.setCode(rsn.getRsn().getCd());
+                                rejected.setProprietary(rsn.getRsn().getPrtry());
+                                rejected.setAdditionalInformations(StringUtils.join(rsn.getAddtlInf(), '\n'));
+                                try {
+                                    rejected.add();
+                                } catch (Exception e) {
+                                    throw new SepaException("could not save CAOrdreRejete.", e);
+                                }
                             }
                         } catch (Exception e) {
                             throw new SepaException("could not verify Blevel GroupKey of OV.", e);
                         }
                     }
-
-                    if (selectedTransactions.isEmpty()) {
-                        LOG.debug(
-                                "Ordre Groupé {} - Genre de transaction inconnu\nL'Ordre Groupé {} - {} ne contient pas d'ordre du type de retour: {}. Impossible de traiter l'annulation des transactions correspondantes.",
-                                ogWrapper.getOrdreGroupe().getIdOrdreGroupe(), ogWrapper.getOrdreGroupe()
-                                        .getIdOrdreGroupe(), ogWrapper.getOrdreGroupe().getMotif(), messageTypeId);
-                    } else {
-                        for (APICommonOdreVersement o : selectedTransactions) {
-                            CAOrdreRejete rejected = new CAOrdreRejete();
-                            rejected.setSession(getSession());
-                            rejected.setIdOperation(o.getIdOperation());
-                            rejected.setIdOrdreGroupe(ogWrapper.getOrdreGroupe().getIdOrdreGroupe());
-                            StatusReasonInformation8CH rsn = reasons.get(0);
-                            rejected.setCode(rsn.getRsn().getCd());
-                            rejected.setProprietary(rsn.getRsn().getPrtry());
-                            rejected.setAdditionalInformations(StringUtils.join(rsn.getAddtlInf(), '\n'));
-                            try {
-                                rejected.add();
-                            } catch (Exception e) {
-                                throw new SepaException("could not save CAOrdreRejete.", e);
-                            }
-                        }
-                        ogWrapper.addReason(StringUtils.join(reasons.get(0).getAddtlInf(), '\n'));
-                    }
+                    ogWrapper.addReason(StringUtils.join(reasons.get(0).getAddtlInf(), '\n'));
 
                 } else {
                     /*
@@ -366,7 +361,7 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                             CAOrdreRejete rejected = new CAOrdreRejete();
                             rejected.setSession(getSession());
                             rejected.setIdOperation(ov.getIdOrdre());
-
+                            rejected.setIdOrdreGroupe(ogWrapper.getOrdreGroupe().getIdOrdreGroupe());
                             StatusReason6Choice rsn = xxx.getRsn();
                             rejected.setCode(rsn.getCd());
                             rejected.setProprietary(rsn.getPrtry());

@@ -14,6 +14,7 @@ import globaz.osiris.api.ordre.APICommonOdreVersement;
 import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.comptes.CAOperationManager;
 import globaz.osiris.db.comptes.CAOperationOrdreVersementManager;
+import globaz.osiris.db.ordres.CAOVforOR;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
 import globaz.osiris.db.ordres.CAOrdreRejete;
 import globaz.osiris.db.ordres.CAOrdreRejeteManager;
@@ -78,17 +79,14 @@ public class CAListOrdreRejeteProcess extends BProcess {
                 mapOrdreRej.put(key, value);
             }
         }
-        Map<String, APICommonOdreVersement> opMap = getOpMapOVfromOG(getOrdreGroupe(), mapOrdreRej.keySet());
+
+        Map<String, CAOVforOR> opMap = getOpMapOVfromOG(getOrdreGroupe(), mapOrdreRej.keySet());
+
         for (Map.Entry<String, List<CAOrdreRejete>> entryOR : mapOrdreRej.entrySet()) {
 
             ContainerOrdreRejete cor;
-            try {
-                cor = new ContainerOrdreRejete(entryOR.getValue(), opMap.get(entryOR.getKey()));
-                ordreRejetesContainer.add(cor);
-            } catch (Exception e) {
-                logger.error("impossible de construire les info pour la ligne de détail sur l'OV " + entryOR.getKey(),
-                        e);
-            }
+            cor = new ContainerOrdreRejete(entryOR.getValue(), opMap.get(entryOR.getKey()));
+            ordreRejetesContainer.add(cor);
 
         }
 
@@ -152,8 +150,8 @@ public class CAListOrdreRejeteProcess extends BProcess {
         return ovs;
     }
 
-    private Map<String, APICommonOdreVersement> getOpMapOVfromOG(CAOrdreGroupe og, Set<String> idSet) {
-        Map<String, APICommonOdreVersement> ovsMap = new HashMap<String, APICommonOdreVersement>();
+    private Map<String, CAOVforOR> getOpMapOVfromOG(CAOrdreGroupe og, Set<String> idSet) {
+        Map<String, CAOVforOR> ovsMap = new HashMap<String, CAOVforOR>();
         List<String> idList = new ArrayList<String>();
         idList.addAll(idSet);
 
@@ -180,7 +178,14 @@ public class CAListOrdreRejeteProcess extends BProcess {
 
             List<APICommonOdreVersement> ovs = mgr.toList();
             for (APICommonOdreVersement ov : ovs) {
-                ovsMap.put(ov.getIdOperation(), ov);
+                try {
+                    CAOVforOR pojo = new CAOVforOR(ov);
+                    ovsMap.put(ov.getIdOperation(), pojo);
+                } catch (Exception e) {
+                    logger.error(
+                            "impossible de construire les info pour la ligne de détail sur l'OV" + ov.getIdOperation(),
+                            e);
+                }
             }
         }
         return ovsMap;

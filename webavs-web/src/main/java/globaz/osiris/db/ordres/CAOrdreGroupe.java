@@ -1781,13 +1781,13 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
         CAOrdreRejeteManager mgr = new CAOrdreRejeteManager();
         mgr.setSession(getSession());
         mgr.setForIdOG(getIdOrdreGroupe());
-
+        int count = 0;
         try {
-            mgr.find(BManager.SIZE_NOLIMIT);
+            count = mgr.getCount();
         } catch (Exception e) {
             throw new SepaException("could not search for OrdreRejeté: " + getIdOrdreGroupe() + ": " + e, e);
         }
-        return !mgr.toList().isEmpty();
+        return count > 0;
     }
 
     /**

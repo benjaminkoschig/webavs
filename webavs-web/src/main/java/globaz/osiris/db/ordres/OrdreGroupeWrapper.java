@@ -23,4 +23,8 @@ public class OrdreGroupeWrapper {
     public void addReason(final String reason) {
         reasons.add(reason);
     }
+
+    public void addAllReason(List<String> reasons) {
+        this.reasons.addAll(reasons);
+    }
 }
