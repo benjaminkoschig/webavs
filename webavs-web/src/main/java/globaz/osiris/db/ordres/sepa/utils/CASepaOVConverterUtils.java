@@ -4,6 +4,7 @@ import globaz.globall.util.JACCP;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.ordre.APICommonOdreVersement;
 import globaz.osiris.db.ordres.sepa.AbstractSepa.SepaException;
+import globaz.osiris.db.ordres.sepa.exceptions.ISODataMissingXMLException;
 import globaz.osiris.db.utils.CAAdressePaiementFormatter;
 import globaz.osiris.external.IntAdressePaiement;
 import org.slf4j.Logger;
@@ -167,10 +168,14 @@ public class CASepaOVConverterUtils {
      */
     public static String getBeneficiaire(APICommonOdreVersement ov) throws Exception {
         String name;
-        if (!JadeStringUtil.isBlank(ov.getAdressePaiement().getAdresseCourrier().getAutreNom())) {
-            name = ov.getAdressePaiement().getAdresseCourrier().getAutreNom();
-        } else {
-            name = ov.getAdressePaiement().getNomTiersAdrPmt();
+        try {
+            if (!JadeStringUtil.isBlank(ov.getAdressePaiement().getAdresseCourrier().getAutreNom())) {
+                name = ov.getAdressePaiement().getAdresseCourrier().getAutreNom();
+            } else {
+                name = ov.getAdressePaiement().getNomTiersAdrPmt();
+            }
+        } catch (Exception e) {
+            throw new ISODataMissingXMLException("exception during getBeneficiaire() " + e.getClass().getName(), e);
         }
         return name;
     }

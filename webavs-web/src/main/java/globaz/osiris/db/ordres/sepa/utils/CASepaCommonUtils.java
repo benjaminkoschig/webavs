@@ -28,6 +28,9 @@ public class CASepaCommonUtils {
 
     private static TIIbanFormater formater = new TIIbanFormater();
 
+    private CASepaCommonUtils() {
+    }
+
     /**
      * Retourne la version de WebAvs, la longueur sera 10 caractères max (contrainte XSD) -> la version peut donc être
      * tronquée
@@ -146,7 +149,7 @@ public class CASepaCommonUtils {
             try {
                 other.setId(JACCP.formatNoDash(adp.getNumCompte()));
             } catch (Exception e) {
-                logger.warn("cannot unformat this as a CCP:" + adp.getNumCompte(), e);
+                logger.debug("cannot unformat this as a CCP:" + adp.getNumCompte(), e);
                 other.setId(adp.getNumCompte());
             }
             return other;
@@ -175,7 +178,7 @@ public class CASepaCommonUtils {
                         "(?!([a-zA-Z0-9\\.,;:'\\+\\-/\\(\\)?\\*\\[\\]\\{\\}\\\\`´~ ]|[!&quot;#%&amp;&lt;&gt;÷=@_$£]|[àáâäçèéêëìíîïñòóôöùúûüıßÀÁÂÄÇÈÉÊËÌÍÎÏÒÓÔÖÙÚÛÜÑ])).",
                         " ");
         if (!escStr.equals(txt)) {
-            logger.warn("escaped char from this string {} - {}", txt, escStr);
+            logger.debug("escaped char from this string {} - {}", txt, escStr);
         }
         return escStr;
 

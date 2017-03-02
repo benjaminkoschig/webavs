@@ -1,10 +1,12 @@
 package globaz.osiris.db.ordres.sepa;
 
-import globaz.globall.db.BManager;
+import globaz.framework.util.FWMessage;
+import globaz.globall.db.BStatement;
 import globaz.osiris.db.comptes.CAOperationOrdreManager;
 import globaz.osiris.db.comptes.CAOperationOrdreVersement;
 import globaz.osiris.db.comptes.CAOperationOrdreVersementManager;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.osiris.db.ordres.sepa.exceptions.ISODataMissingXMLException;
 import globaz.osiris.process.CAProcessOrdre;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +25,7 @@ public class CAProcessFormatOrdreSEPALite extends CAProcessFormatOrdreSEPA {
     public void executeOrdreVersement(CAOrdreGroupe og, CAProcessOrdre context) throws Exception {
 
         // Sous contrôle d'exceptions
+        CAOperationOrdreVersement ov = null;
         try {
 
             // Instancier un manager
@@ -37,10 +40,10 @@ public class CAProcessFormatOrdreSEPALite extends CAProcessFormatOrdreSEPA {
             context.setState(og.getSession().getLabel("6113"));
             context.setProgressScaleValue(aTraiter);
             logger.info("préparation au traitement express de {} OV", aTraiter);
-            mgr.find(context.getTransaction(), BManager.SIZE_NOLIMIT);
-
+            BStatement cursorOpen = mgr.cursorOpen(context.getTransaction());
             // Boucler sur les entités
-            for (int i = 0; i < mgr.size(); i++) {
+
+            while ((ov = (CAOperationOrdreVersement) mgr.cursorReadNext(cursorOpen)) != null) {
 
                 // Vérifier le contexte d'exécution
                 if (context.isAborted()) {
@@ -48,18 +51,22 @@ public class CAProcessFormatOrdreSEPALite extends CAProcessFormatOrdreSEPA {
                 }
 
                 // Récupérer l'ordre de versement
-                CAOperationOrdreVersement ov = (CAOperationOrdreVersement) mgr.getEntity(i);
                 if (ov.getNumTransaction().isEmpty()) {
                     logger.error("Les OV sans numéro de transaction ne devraient pas passer par le preocess Express");
                 }
                 this.format(ov);
-                ov = null;
                 context.incProgressCounter();
 
             }
             mgr.clear();
+        } catch (ISODataMissingXMLException isoe) {
+            og.getMemoryLog().logMessage("5204", ov.getNumTransaction(), FWMessage.ERREUR, og.getClass().getName());
+            throw isoe;
         } catch (Exception e) {
-            og.erreur(context.getTransaction(), e.getMessage());
+            og.getMemoryLog().logMessage("5204", ov.getNumTransaction(), FWMessage.ERREUR, og.getClass().getName());
+            logger.error("OG execution failed on ", e);
+            throw new ISODataMissingXMLException("Exception in ISO lite Process for pain001 [" + e.getClass().getName()
+                    + "]", e);
         }
 
     }
