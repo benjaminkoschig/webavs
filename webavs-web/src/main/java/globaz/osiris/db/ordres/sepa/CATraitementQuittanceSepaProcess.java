@@ -11,9 +11,9 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.IOUtils;
@@ -73,7 +73,7 @@ public class CATraitementQuittanceSepaProcess extends BProcess {
         File folder = new File(folderPath);
 
         List<DocAndFile> allPains = new ArrayList<DocAndFile>();
-        Set<OrdreGroupeWrapper> ogProcessed = new HashSet<OrdreGroupeWrapper>();
+        Map<String, OrdreGroupeWrapper> ogProcessed = new HashMap<String, OrdreGroupeWrapper>();
         for (File f : folder.listFiles((FilenameFilter) new SuffixFileFilter(".xml", IOCase.INSENSITIVE))) {
             Document pain002 = parsePain002(f);
 
@@ -102,7 +102,12 @@ public class CATraitementQuittanceSepaProcess extends BProcess {
             try {
                 OrdreGroupeWrapper ogWrapper = processor.processAcknowledgement(daf.doc);
                 if (ogWrapper != null && ogWrapper.getOrdreGroupe() != null) {
-                    ogProcessed.add(ogWrapper);
+                    final String key = ogWrapper.getOrdreGroupe().getNumLivraison();
+                    if (ogProcessed.containsKey(key)) {
+                        ogProcessed.get(key).addAllReason(ogWrapper.getReasons());
+                    } else {
+                        ogProcessed.put(key, ogWrapper);
+                    }
                     FileUtils.deleteQuietly(daf.file);
                 }
             } catch (SepaException e) {
@@ -111,7 +116,7 @@ public class CATraitementQuittanceSepaProcess extends BProcess {
         }
         CAListOrdreRejeteProcess listORProcess = new CAListOrdreRejeteProcess();
         listORProcess.addMail(getEMailAddress());
-        for (OrdreGroupeWrapper ogWrapperTraiter : ogProcessed) {
+        for (OrdreGroupeWrapper ogWrapperTraiter : ogProcessed.values()) {
             listORProcess.process(getSession(), ogWrapperTraiter.getOrdreGroupe(), ogWrapperTraiter.getReasons());
         }
     }
