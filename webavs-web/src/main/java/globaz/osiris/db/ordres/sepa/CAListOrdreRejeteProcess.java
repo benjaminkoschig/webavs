@@ -4,6 +4,7 @@ import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
+import globaz.globall.db.BStatement;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.client.util.JadeConversionUtil;
@@ -167,27 +168,37 @@ public class CAListOrdreRejeteProcess extends BProcess {
             if (!(idList == null)) {
                 inIds = StringUtils.join(idList.subList(i * 1000, max), ",");
             }
+            CAOperationOrdreVersement ordreV = null;
             CAOperationOrdreVersementManager mgr = new CAOperationOrdreVersementManager();
             mgr.setSession(getSession());
             mgr.setForIdOrdreGroupe(og.getIdOrdreGroupe());
             mgr.setInIdOperation(inIds);
             mgr.setOrderBy(CAOperationManager.ORDER_IDOPERATION);
-            try {
-                mgr.find(BManager.SIZE_NOLIMIT);
-            } catch (Exception e) {
-                throw new SepaException("could not search for transactions: " + og.getIdOrdreGroupe() + ": " + e, e);
-            }
+            // try {
+            // mgr.find(BManager.SIZE_NOLIMIT);
+            // } catch (Exception e) {
+            // throw new SepaException("could not search for transactions: " + og.getIdOrdreGroupe() + ": " + e, e);
+            // }
 
-            for (int j = 0; j < mgr.size(); j++) {
-                CAOperationOrdreVersement ov = (CAOperationOrdreVersement) mgr.getEntity(j);
-                try {
-                    CAOVforOR pojo = new CAOVforOR(ov);
-                    ovsMap.put(ov.getIdOperation(), pojo);
-                } catch (Exception e) {
-                    logger.error(
-                            "impossible de construire les info pour la ligne de détail sur l'OV" + ov.getIdOperation(),
-                            e);
+            // for (int j = 0; j < mgr.size(); j++) {
+            BStatement cursorOpen;
+            try {
+                cursorOpen = mgr.cursorOpen(getSession().getCurrentThreadTransaction());
+
+                while ((ordreV = (CAOperationOrdreVersement) mgr.cursorReadNext(cursorOpen)) != null) {
+                    // CAOperationOrdreVersement ov = (CAOperationOrdreVersement) mgr.getEntity(j);
+                    try {
+                        CAOVforOR pojo = new CAOVforOR(ordreV);
+                        ovsMap.put(ordreV.getIdOperation(), pojo);
+                    } catch (Exception e) {
+                        logger.error(
+                                "impossible de construire les info pour la ligne de détail sur l'OV"
+                                        + ordreV.getIdOperation(), e);
+                    }
                 }
+            } catch (Exception e) {
+                throw new SepaException("Impossible de récuperer les detail d'OrdreVersement pour constituer la lsite",
+                        e);
             }
         }
         return ovsMap;

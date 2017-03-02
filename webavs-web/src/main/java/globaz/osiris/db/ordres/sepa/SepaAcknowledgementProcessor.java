@@ -1,7 +1,7 @@
 package globaz.osiris.db.ordres.sepa;
 
-import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
+import globaz.globall.db.BStatement;
 import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.comptes.CAOperationManager;
 import globaz.osiris.db.comptes.CAOperationOrdreVersement;
@@ -158,6 +158,8 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
     /**
      * Traite une "quittance" SEPA (aka Acknowledgement) qui informe de la bonne acceptation d'un ordre envoyé
      * précédemment.
+     * 
+     * @throws Exception
      * 
      * @throws SepaException en cas de souci lors du traitement.
      * 
@@ -360,39 +362,51 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
     }
 
     private void generateORfotKey(CAOrdreGroupe og, String key, StatusReasonInformation8CH rsn) {
+        CAOperationOrdreVersement ordreV = null;
         CAOperationOrdreVersementManager mgr = new CAOperationOrdreVersementManager();
         mgr.setSession(getSession());
         mgr.setForIdOrdreGroupe(og.getIdOrdreGroupe());
         mgr.setOrderBy(CAOperationManager.ORDER_IDOPERATION);
+        // try {
+        // mgr.find(BManager.SIZE_NOLIMIT);
+        // } catch (Exception e) {
+        // throw new SepaException("could not search for transactions: " + og.getIdOrdreGroupe() + ": " + e, e);
+        // }
+        BStatement cursorOpen;
         try {
-            mgr.find(BManager.SIZE_NOLIMIT);
-        } catch (Exception e) {
-            throw new SepaException("could not search for transactions: " + og.getIdOrdreGroupe() + ": " + e, e);
-        }
-        for (int i = 0; i < mgr.size(); i++) {
-            try {
-                CAOperationOrdreVersement ordreV = (CAOperationOrdreVersement) mgr.getEntity(i);
-                final CAAdressePaiementFormatter adpf = new CAAdressePaiementFormatter();
-                adpf.setAdressePaiement(ordreV.getAdressePaiement());
-                CASepaGroupeOGKey messageIdKey = new CASepaGroupeOGKey(ordreV, adpf);
-                if (key.equals(messageIdKey.getKeyString())) {
-                    CAOrdreRejete rejected = new CAOrdreRejete();
-                    rejected.setSession(getSession());
-                    rejected.setIdOperation(ordreV.getIdOperation());
-                    rejected.setIdOrdreGroupe(og.getIdOrdreGroupe());
-                    rejected.setCode(rsn.getRsn().getCd());
-                    rejected.setProprietary(rsn.getRsn().getPrtry());
-                    rejected.setAdditionalInformations(StringUtils.join(rsn.getAddtlInf(), '\n'));
-                    try {
-                        rejected.add();
-                    } catch (Exception e) {
-                        throw new SepaException("could not save CAOrdreRejete.", e);
+            cursorOpen = mgr.cursorOpen(getSession().getCurrentThreadTransaction());
+
+            while ((ordreV = (CAOperationOrdreVersement) mgr.cursorReadNext(cursorOpen)) != null) {
+                // for (int i = 0; i < mgr.size(); i++) {
+                try {
+                    // CAOperationOrdreVersement ordreV = (CAOperationOrdreVersement) mgr.getEntity(i);
+                    final CAAdressePaiementFormatter adpf = new CAAdressePaiementFormatter();
+                    adpf.setAdressePaiement(ordreV.getAdressePaiement());
+                    CASepaGroupeOGKey messageIdKey = new CASepaGroupeOGKey(ordreV, adpf);
+                    if (key.equals(messageIdKey.getKeyString())) {
+                        CAOrdreRejete rejected = new CAOrdreRejete();
+                        rejected.setSession(getSession());
+                        rejected.setIdOperation(ordreV.getIdOperation());
+                        rejected.setIdOrdreGroupe(og.getIdOrdreGroupe());
+                        rejected.setCode(rsn.getRsn().getCd());
+                        rejected.setProprietary(rsn.getRsn().getPrtry());
+                        rejected.setAdditionalInformations(StringUtils.join(rsn.getAddtlInf(), '\n'));
+                        try {
+                            rejected.add();
+                        } catch (Exception e) {
+                            throw new SepaException("could not save CAOrdreRejete.", e);
+                        }
                     }
+                } catch (Exception e) {
+                    throw new SepaException("could not verify Blevel GroupKey of OV.", e);
                 }
-            } catch (Exception e) {
-                throw new SepaException("could not verify Blevel GroupKey of OV.", e);
             }
+        } catch (Exception e) {
+            LOG.error("error in accessing DB on OperationOrdreVersement ", e);
+            throw new SepaException("error in accessing DB on OperationOrdreVersement", e);
         }
+        mgr.clear();
+
     }
 
     private CAOrdreVersement getOrdreVersement(String transactionIdNoPrefix) {
