@@ -20,7 +20,7 @@ import com.six_interbank_clearing.de.pain_001_001_03_ch_02.GenericAccountIdentif
 
 public class CASepaCommonUtils {
 
-    private final static Logger logger = LoggerFactory.getLogger(CASepaCommonUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(CASepaCommonUtils.class);
     // since the have to be regroup
     public static final String TYPE_VIREMENT_BANCAIRE = "bankANDccp";
     public static final String TYPE_VIREMENT_POSTAL = "bankANDccp";

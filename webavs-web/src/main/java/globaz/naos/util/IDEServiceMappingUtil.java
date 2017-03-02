@@ -24,8 +24,12 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import org.apache.axis.types.NonNegativeInteger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IDEServiceMappingUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(IDEServiceMappingUtil.class);
 
     public static final String CATEGORIE_NUMERO_AFFILIE = "CH.AK";
     public static final String COUNTRY_CH = "CH";
@@ -303,11 +307,9 @@ public class IDEServiceMappingUtil {
                 dateNaissance.setYearMonthDay(IDEServiceCallUtil.convertDateAMJtoXMLDateGregorian(ideDataBean
                         .getNaissance()));
             } catch (ParseException e) {
-                System.err.println("Unable to parse ideDataBean.getNaissance() into XMLGregorianCalendar");
-                e.printStackTrace();
+                logger.error("Unable to parse ideDataBean.getNaissance() into XMLGregorianCalendar", e);
             } catch (DatatypeConfigurationException e) {
-                System.err.println("Unable to parse ideDataBean.getNaissance() into XMLGregorianCalendar");
-                e.printStackTrace();
+                logger.error("Unable to parse ideDataBean.getNaissance() into XMLGregorianCalendar", e);
             }
             foundation.setFoundationDate(dateNaissance);
             organisation.setFoundation(foundation);
@@ -404,11 +406,9 @@ public class IDEServiceMappingUtil {
             try {
                 dateNaissance.setYearMonthDay(IDEServiceCallUtil.convertDateAMJtoXMLDateGregorian(forNaissance));
             } catch (ParseException e) {
-                System.err.println("Unable to parse ideDataBean.getNaissance() into XMLGregorianCalendar");
-                e.printStackTrace();
+                logger.error("Unable to parse ideDataBean.getNaissance() into XMLGregorianCalendar", e);
             } catch (DatatypeConfigurationException e) {
-                System.err.println("Unable to parse ideDataBean.getNaissance() into XMLGregorianCalendar");
-                e.printStackTrace();
+                logger.error("Unable to parse ideDataBean.getNaissance() into XMLGregorianCalendar", e);
             }
             foundation.setFoundationDate(dateNaissance);
             org.setFoundation(foundation);
