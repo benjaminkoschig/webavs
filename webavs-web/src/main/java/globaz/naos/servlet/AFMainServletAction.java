@@ -148,6 +148,10 @@ public class AFMainServletAction extends FWActionHandlerFactoryMapSupport {
         // Controle LPP annuel
         AFMainServletAction.hActionsTable.put("naos.controleLpp.controleLppAnnuel", FWDefaultServletAction.class);
         AFMainServletAction.hActionsTable.put("naos.process.controleLppAnnuel", FWDefaultServletAction.class);
+
+        // Transmettre annonces REE
+        AFMainServletAction.hActionsTable.put("naos.annoncesRee.annoncesRee", FWDefaultServletAction.class);
+
         // Inforom 432
         AFMainServletAction.hActionsTable.put("naos.acompte.comparaisonAcompteMasse", FWDefaultServletAction.class);
 

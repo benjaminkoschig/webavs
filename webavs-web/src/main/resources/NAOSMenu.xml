@@ -364,6 +364,12 @@
 							<parameter name="userAction" value="naos.controleLpp.controleLppAnnuel.afficher" />
 						</action>
 					</node>
+					<node>
+						<label refId="MENU_OPERATION_ANNONCES_REE" />
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.annoncesRee.annoncesRee.afficher" />
+						</action>
+					</node>
 				</nodes>
 			</node>
 			<node open="no">

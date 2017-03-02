@@ -24,7 +24,16 @@ public enum AFProperties implements IProperties {
             "codeSysteme des motifs de fin d'affiliation étant de l'ordre d'une cessation d'activité (radiation)"),
     CATEGORIE_DECISION_CAP_TO_PRINT_DURING_RENOUVELLEMENT(
             "renouvellement.cap.impression.decisions.pour.type.assurance",
-            "Catégories de décisions CAP à imprimer durant le renouvellement");
+            "Catégories de décisions CAP à imprimer durant le renouvellement"),
+    REE_NOM_REFERENCE("ree.header.name", "Nom de référence de la personne pour les annonces REE"),
+    REE_EMAIL_REFERENCE("ree.header.email", "Mail de référence de la personne pour les annonces REE"),
+    REE_TELEPHONE_REFERENCE("ree.header.phone", "Numéro de téléphone de référence de la personne pour les annonces REE"),
+    REE_DEPARTEMENT_REFERENCE("ree.header.departement", "Département de référence de la personne pour les annonces REE"),
+    REE_INFO_COMPLEMENTAIRE_REFERENCE("ree.header.other",
+            "Informations complémentaire de la personne pour les annonces REE"),
+    REE_NB_PACKAGE("ree.process.paquet", "Nombre d'annonces par message"),
+    REE_VALIDATION_UNITAIRE("ree.process.validation", "Validation unitaire à réaliser"),
+    REE_DESTINATAIRE("ree.message.header.recipient.id", "Destinataire");
 
     private String description;
     private String propertyName;

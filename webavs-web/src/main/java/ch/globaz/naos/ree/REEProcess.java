@@ -14,13 +14,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.naos.ree.domain.PropertiesLoader;
 import ch.globaz.naos.ree.domain.pojo.ProcessProperties;
 import ch.globaz.naos.ree.process.REEProcess5053_101;
 import ch.globaz.naos.ree.process.REEProcess5053_102;
@@ -54,6 +55,8 @@ public class REEProcess extends AbstractJadeJob {
     private static final String PROTOCOL_FILE_NAME = "ProtocoleLivraisonRegistreAffilies_";
     private static final String PROTOCOL_FILE_EXTENSION = "protocole";
     private static final String PROTOCOL_FILE_DATE_FORMAT = "yyyy-MM-dd-hh-mm";
+    private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+            + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
     private ProcessProperties properties;
 
@@ -295,8 +298,7 @@ public class REEProcess extends AbstractJadeJob {
     public void validate() throws IllegalArgumentException {
         LOG.info("validate()");
         try {
-            PropertiesLoader propertiesLoader = new PropertiesLoader();
-            properties = propertiesLoader.load();
+            validateProperties();
             getExecutionMode();
 
         } catch (RuntimeException e) {
@@ -359,6 +361,14 @@ public class REEProcess extends AbstractJadeJob {
         return ExecutionMode.parseUserArg(getModeExecution());
     }
 
+    public void setProperties(ProcessProperties properties) {
+        this.properties = properties;
+    }
+
+    public ProcessProperties getProperties() {
+        return properties;
+    }
+
     /**
      * Réalise l'envoi des fichier XML marshallés
      * 
@@ -373,6 +383,35 @@ public class REEProcess extends AbstractJadeJob {
             sms = new SimpleSedexMessage();
             sms.fileLocation = file.getAbsolutePath();
             service.sendSimpleMessage(sms);
+        }
+    }
+
+    protected void validateProperties() throws IllegalArgumentException {
+        // name, phone, mail et paquet obligatoire
+        if (properties.getName() == null || properties.getName().isEmpty()) {
+            throw new IllegalArgumentException("Properties [Name] value cannot be empty");
+        }
+        if (properties.getPhone() == null || properties.getPhone().isEmpty()) {
+            throw new IllegalArgumentException("Properties [Phone] value cannot be empty");
+        }
+        if (properties.getEmail() == null || properties.getEmail().isEmpty()) {
+            throw new IllegalArgumentException("Properties [Email] value cannot be empty");
+        }
+        if (properties.getTailleLot() < 1) {
+            throw new IllegalArgumentException("Properties [TailleLot] value cannot be zero or negative");
+        }
+        // mail is a valid mail
+        Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+        Matcher matcher = pattern.matcher(properties.getEmail());
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Properties [Email] value not valid");
+        }
+        if (!properties.getPhone().matches("[0-9]{10,20}")) {
+            throw new IllegalArgumentException("Properties [Phone] value must be numeric between 10 and 20 digits");
+        }
+
+        if (properties.getRecipientId() == null || properties.getRecipientId().isEmpty()) {
+            throw new IllegalArgumentException("Properties [getRecipientId] value cannot be empty");
         }
     }
 }

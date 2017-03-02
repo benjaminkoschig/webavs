@@ -1,7 +1,13 @@
 package ch.globaz.naos.ree.domain.pojo;
 
-public class ProcessProperties {
+import java.io.Serializable;
 
+public class ProcessProperties implements Serializable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private String name;
     private String department;
     private String phone;

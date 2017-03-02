@@ -258,6 +258,9 @@ public class AFApplication extends BApplication {
 
         FWAction.registerActionCustom("naos.controleLpp.controleLppAnnuel.afficher", FWSecureConstants.UPDATE);
 
+        // Ree
+        FWAction.registerActionCustom("naos.annoncesRee.annoncesRee.afficher", FWSecureConstants.UPDATE);
+
         FWAction.registerActionCustom("naos.beneficiairepc.journalQuittances.afficherNom", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("naos.beneficiairepc.journalQuittances.executerGenerer", FWSecureConstants.UPDATE);
         // PO 7327
