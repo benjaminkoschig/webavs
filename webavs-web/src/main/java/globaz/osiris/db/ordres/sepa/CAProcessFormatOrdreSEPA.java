@@ -378,7 +378,9 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
                 + JadeFilenameUtil.addFilenameSuffixUID(MARSHALLED_XML);
 
         File f = new File(filename);
-        f.createNewFile();
+        if (!f.createNewFile()) {
+            throw new SepaException(getSession().getLabel("ISO20022_ERROR_EOF_CREATE_FILE"));
+        }
 
         try {
             marshaller.setEventHandler(new ValidationEventHandler() {
