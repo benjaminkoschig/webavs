@@ -52,16 +52,18 @@ public class AFAnnoncesReeHelper extends FWHelper {
 
             process.setProperties(properties);
 
-            try {
-                BProcessLauncher.startJob(process);
-            } catch (Exception e) {
-                e.printStackTrace();
-                viewBean.setMessage(e.toString());
-                viewBean.setMsgType(FWViewBeanInterface.ERROR);
-            }
+            launchReeProcess(viewBean, process);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            viewBean.setMessage(e.toString());
+            viewBean.setMsgType(FWViewBeanInterface.ERROR);
+        }
+    }
+
+    private void launchReeProcess(FWViewBeanInterface viewBean, REEProcess process) {
+        try {
+            BProcessLauncher.startJob(process);
+        } catch (Exception e) {
             viewBean.setMessage(e.toString());
             viewBean.setMsgType(FWViewBeanInterface.ERROR);
         }
