@@ -742,7 +742,8 @@ public class DSInscriptionsIndividuelles extends BEntity {
         if ("66".equals(jourDebut) || "77".equals(jourDebut) || "99".equals(jourDebut)) {
             isPeriodeSpeciale = true;
 
-            periodeSpeciale = jourDebut; // Prend soit 66,77 ou 99
+            // Prend soit 66,77 ou 99
+            periodeSpeciale = jourDebut;
 
             jourDebut = "01";
             moisDebut = "01";
@@ -858,7 +859,6 @@ public class DSInscriptionsIndividuelles extends BEntity {
                 // Récupérer le nb de jour pour la période
                 if (JadeStringUtil.isIntegerEmpty(periodeDebut)) {
                     periodeDebut = jourDebut + "." + moisDebut;
-                    String totot = "";
                 }
                 if (JadeStringUtil.isIntegerEmpty(periodeFin)) {
                     periodeFin = jourFin + "." + moisFin;
@@ -904,8 +904,8 @@ public class DSInscriptionsIndividuelles extends BEntity {
             // On a le montant pour la période
         }
 
-        if (isPeriodeSpeciale) // On remet les nombre à 66,77 ou 99 pour l'inscription dans la BDD
-        {
+        // On remet les nombre à 66,77 ou 99 pour l'inscription dans la BDD
+        if (isPeriodeSpeciale) {
             jourDebut = periodeSpeciale;
             moisDebut = periodeSpeciale;
 
@@ -917,7 +917,6 @@ public class DSInscriptionsIndividuelles extends BEntity {
 
             isPeriodeSpeciale = false;
         }
-
     }
 
     private boolean checkChevauchement(DSInscriptionsIndividuelles inscToCheck) {
