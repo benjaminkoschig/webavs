@@ -33,7 +33,9 @@ public enum AFProperties implements IProperties {
             "Informations complémentaire de la personne pour les annonces REE"),
     REE_NB_PACKAGE("ree.process.paquet", "Nombre d'annonces par message"),
     REE_VALIDATION_UNITAIRE("ree.process.validation", "Validation unitaire à réaliser"),
-    REE_DESTINATAIRE("ree.message.header.recipient.id", "Destinataire");
+    REE_DESTINATAIRE("ree.message.header.recipient.id", "Destinataire"),
+    IDE_PLAN_AFFILIATION_VERIFICATION_INACTIF("ide.planAffiliation.verificationInactif",
+            "Prise en compte ou non des plan d'affiliation inactif lors d'annonce IDE");
 
     private String description;
     private String propertyName;

@@ -21,6 +21,8 @@ import globaz.naos.db.cotisation.AFCotisation;
 import globaz.naos.db.cotisation.AFCotisationManager;
 import globaz.naos.db.ide.AFIdeAnnonce;
 import globaz.naos.db.ide.AFIdeAnnonceManager;
+import globaz.naos.db.planAffiliation.AFPlanAffiliation;
+import globaz.naos.db.planAffiliation.AFPlanAffiliationManager;
 import globaz.naos.exceptions.AFIdeNumberNoMatchException;
 import globaz.naos.properties.AFProperties;
 import globaz.naos.translation.CodeSystem;
@@ -1444,6 +1446,46 @@ public class AFIDEUtil {
     }
 
     /**
+     * Méthode qui initialise le cotisation manager pour les contrôle d'affiliations
+     * 
+     * @author est
+     * 
+     * @param session
+     * @param idAffiliation
+     * @return
+     * @throws PropertiesException
+     * @throws Exception
+     */
+    private static AFCotisationManager initCotiManager(BSession session, String idAffiliation)
+            throws PropertiesException, Exception {
+        AFCotisationManager cotisMgr = new AFCotisationManager();
+        cotisMgr.setSession(session);
+        cotisMgr.setForAffiliationId(idAffiliation);
+        cotisMgr.setForTypeAssurance(CodeSystem.TYPE_ASS_COTISATION_AVS_AI);
+        cotisMgr.setForDateDifferente(Boolean.TRUE);
+
+        // Contrôle de la propriété
+        if ("true".equalsIgnoreCase(AFProperties.IDE_PLAN_AFFILIATION_VERIFICATION_INACTIF.getValue())) {
+            boolean hasAtLeastOnePlanInactif = false;
+
+            AFPlanAffiliationManager planAffiMgr = new AFPlanAffiliationManager();
+            planAffiMgr.setSession(session);
+            planAffiMgr.setForAffiliationId(idAffiliation);
+            planAffiMgr.find(BManager.SIZE_NOLIMIT);
+
+            for (int i = 0; i < planAffiMgr.size(); i++) {
+                AFPlanAffiliation planAffiliation = (AFPlanAffiliation) planAffiMgr.getEntity(i);
+                if (planAffiliation.getInactif()) {
+                    hasAtLeastOnePlanInactif = true;
+                }
+            }
+
+            cotisMgr.setShowInactif(Boolean.toString(hasAtLeastOnePlanInactif));
+        }
+        return cotisMgr;
+    }
+
+    /**
      * Determine si ou moins une coti est ouverte pour l'affilié. </br>
      * Lance une requête pour obtenir les Coti ouverte au moment de la requête. Si au moins une, return true
      * 
@@ -1455,15 +1497,11 @@ public class AFIDEUtil {
             return false;
         }
 
-        AFCotisationManager cotisMgr = new AFCotisationManager();
-        cotisMgr.setSession(session);
-        cotisMgr.setForTypeAssurance(CodeSystem.TYPE_ASS_COTISATION_AVS_AI);
+        AFCotisationManager cotisMgr = initCotiManager(session, idAffiliation);
+
         cotisMgr.setDateFinGreater(JACalendar.todayJJsMMsAAAA());
-        cotisMgr.setForAffiliationId(idAffiliation);
-        cotisMgr.setForDateDifferente(Boolean.TRUE);
 
         return cotisMgr.getCount() >= 1;
-
     }
 
     public static boolean hasAffiliationCotisationAVSSansDateFin(BSession session, String idAffiliation)
@@ -1473,12 +1511,9 @@ public class AFIDEUtil {
             return false;
         }
 
-        AFCotisationManager cotisMgr = new AFCotisationManager();
-        cotisMgr.setSession(session);
-        cotisMgr.setForTypeAssurance(CodeSystem.TYPE_ASS_COTISATION_AVS_AI);
+        AFCotisationManager cotisMgr = initCotiManager(session, idAffiliation);
+
         cotisMgr.setForDateFin("0");
-        cotisMgr.setForAffiliationId(idAffiliation);
-        cotisMgr.setForDateDifferente(Boolean.TRUE);
 
         return cotisMgr.getCount() >= 1;
 
@@ -1490,12 +1525,11 @@ public class AFIDEUtil {
         if (idAffiliation == null || idAffiliation.isEmpty() || JadeStringUtil.isBlankOrZero(idAffiliation)) {
             return false;
         }
-        AFCotisationManager cotisMgr = new AFCotisationManager();
-        cotisMgr.setSession(session);
-        cotisMgr.setForTypeAssurance(CodeSystem.TYPE_ASS_COTISATION_AVS_AI);
+
+        AFCotisationManager cotisMgr = initCotiManager(session, idAffiliation);
+
         cotisMgr.setForDateFin("0");
-        cotisMgr.setForAffiliationId(idAffiliation);
-        cotisMgr.setForDateDifferente(Boolean.TRUE);
+
         if (!(idCotiNotMe == null || idCotiNotMe.isEmpty() || JadeStringUtil.isBlankOrZero(idCotiNotMe))) {
             cotisMgr.setNotForCotisationId(idCotiNotMe);
         }
@@ -1508,11 +1542,7 @@ public class AFIDEUtil {
             return false;
         }
 
-        AFCotisationManager cotisMgr = new AFCotisationManager();
-        cotisMgr.setSession(session);
-        cotisMgr.setForTypeAssurance(CodeSystem.TYPE_ASS_COTISATION_AVS_AI);
-        cotisMgr.setForAffiliationId(idAffiliation);
-        cotisMgr.setForDateDifferente(Boolean.TRUE);
+        AFCotisationManager cotisMgr = initCotiManager(session, idAffiliation);
 
         return cotisMgr.getCount() >= 1;
 
