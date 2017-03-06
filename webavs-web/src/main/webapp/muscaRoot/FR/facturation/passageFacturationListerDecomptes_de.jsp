@@ -85,6 +85,15 @@ else
             		defaut="<%=viewBean.getIdTri()%>"
             		codeSystemManager="<%=globaz.musca.translation.CodeSystem.getLcsTriDecomptePassageWithoutBlank(session)%>"/></td>
           </tr>
+          <tr>
+          	<td>
+          		Type d'impression 
+          	</td>
+          	<td>
+          		PDF<input type="radio" name="outPutType" <%if(!viewBean.isXls){%>checked="checked"<%}%> value="PDF" />
+          		Excel<input type="radio" name="outPutType"  <%if(viewBean.isXls){%>checked="checked"<%}%>  value="XLS" /> 
+          	</td>
+          </tr>
           <%-- /tpl:put --%>
 <%@ include file="/theme/process/footer.jspf" %>
 <%-- tpl:put name="zoneEndPage" --%> 

@@ -24,71 +24,71 @@ public abstract class TaxationDefinitiveForList {
     private double ecart;
 
     @ColumnStyle(width = "10%", align = Align.LEFT)
-    @Column(name = "listeTaxDefNss", order = 0)
+    @Column(name = "LISTE_TAX_DEF_NSS", order = 0)
     public String getNss() {
         return nss;
     }
 
     @ColumnStyle(width = "8%", align = Align.LEFT)
-    @Column(name = "listeTaxDefNaff", order = 1)
+    @Column(name = "LISTE_TAX_DEF_NAFF", order = 1)
     public String getNumAffillie() {
         return numAffillie;
     }
 
-    @Column(name = "listeTaxDefDesignation", order = 2)
+    @Column(name = "LISTE_TAX_DEF_DESIGNATION", order = 2)
     public String getDesignation() {
         return designation;
     }
 
     @ColumnStyle(width = "7%", align = Align.CENTER)
-    @Column(name = "listeTaxDefAnneeTaxation", order = 3)
+    @Column(name = "LISTE_TAX_DEF_ANNEE_TAXATION", order = 3)
     public Integer getAnneeTaxation() {
         return anneeTaxation;
     }
 
     @ColumnStyle(width = "6.5%", align = Align.CENTER)
-    @Column(name = "listeTaxDefDateDebut", order = 4)
+    @Column(name = "LISTE_TAX_DEF_DATE_DEBUT", order = 4)
     public String getDateDebut() {
         return dateDebut;
     }
 
     @ColumnStyle(width = "6.5%", align = Align.CENTER)
-    @Column(name = "listeTaxDefDateFin", order = 5)
+    @Column(name = "LISTE_TAX_DEF_DATE_FIN", order = 5)
     public String getDateFin() {
         return dateFin;
     }
 
     @ColumnStyle(width = "5.5%", align = Align.RIGHT)
-    @Column(name = "listeTaxDefCodeService", order = 6)
+    @Column(name = "LISTE_TAX_DEF_CODE_SERVICE", order = 6)
     public String getCodeService() {
         return codeService;
     }
 
-    @Column(name = "listeTaxDefNbJourIndemnisation", order = 7)
+    @Column(name = "LISTE_TAX_DEF_NB_JOUR_INDEMNISATION", order = 7)
     public Integer getNbJoursIndamnisation() {
         return nbJoursIndamnisation;
     }
 
     @ColumnStyle(align = Align.RIGHT)
-    @Column(name = "listeTaxDefRevenuDeterminant", order = 8)
+    @Column(name = "LISTE_TAX_DEF_REVENU_DETERMINANT", order = 8)
     public Montant getRevenuDefinitif() {
         return revenuDefinitif;
     }
 
     @ColumnStyle(align = Align.RIGHT)
-    @Column(name = "listeTaxDefRevenuIndependant", order = 9)
+    @Column(name = "LISTE_TAX_DEF_REVENU_INDEPENDANT", order = 9)
     public Montant getApgSurLeRevenu() {
         return apgSurLeRevenu;
     }
 
     @ColumnStyle(width = "5%")
-    @Column(name = "listeTaxDefType", order = 10)
+    @Column(name = "LISTE_TAX_DEF_TYPE", order = 10)
     public String getType() {
         return type;
     }
 
     @ColumnStyle(width = "7%", align = Align.RIGHT)
-    @Column(name = "listeTaxDefEcart", order = 11)
+    @Column(name = "LISTE_TAX_DEF_ECART", order = 11)
     public double getEcart() {
         return ecart;
     }

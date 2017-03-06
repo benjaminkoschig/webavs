@@ -9,6 +9,7 @@ import globaz.musca.itext.list.FAListDecompteNew_Doc;
  * @author: btc
  */
 public class FAPassageListerDecomptesViewBean extends FAListDecompteNew_Doc implements FWViewBeanInterface {
+
     /**
      * 
      */
@@ -18,5 +19,19 @@ public class FAPassageListerDecomptesViewBean extends FAListDecompteNew_Doc impl
      * Insérez la description de la méthode ici. Date de création : (10.03.2003 10:55:33)
      */
     public FAPassageListerDecomptesViewBean() throws java.lang.Exception {
+    }
+
+    public boolean isXls() {
+        return "XLS".equalsIgnoreCase(getOutPutType());
+    }
+
+    @Override
+    protected boolean _executeProcess() {
+        if (isXls()) {
+            generateXsl();
+        } else {
+            super._executeProcess();
+        }
+        return false;
     }
 }

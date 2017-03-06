@@ -99,7 +99,7 @@ public class CPListeTaxationDefinitiveXlsPdf extends BProcess {
         details.newLigne();
 
         SimpleOutputListBuilderJade builder = SimpleOutputListBuilderJade.newInstance();
-        builder.session(getSession()).globazTheme().addTranslater(getSession())
+        builder.session(getSession()).globazTheme().addTranslater()
                 .outputNameAndAddPath(NUM_REF_INFOROM_LISTE_TAXA_DEF + "_PRESTATIONS").addList(listOutput)
                 .classElementList(TaxationDefinitiveForList.class).addHeaderDetails(details)
                 .addTitle("Liste des taxations définitives APG/Maternité", Align.CENTER);

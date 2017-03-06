@@ -3,25 +3,30 @@ package globaz.musca.itext.list;
 // ITEXT
 import globaz.caisse.report.helper.ACaisseReportHelper;
 import globaz.framework.printing.itext.FWIDocumentManager;
-import globaz.framework.printing.itext.api.FWIBeanInterface;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.printing.itext.fill.FWIImportManager;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
+import globaz.framework.printing.itext.fill.FWIImportProperties;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JACalendar;
-import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.musca.db.facturation.FAPassage;
 import globaz.musca.itext.FAiTextParameterList;
 import globaz.musca.util.FAUtil;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import net.sf.jasperreports.engine.JREmptyDataSource;
+import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
+import ch.globaz.simpleoutputlist.annotation.style.Align;
+import ch.globaz.simpleoutputlist.core.Details;
 
 /**
  * Insérez la description du type ici. Date de création : (10.03.2003 10:37:34)
@@ -42,11 +47,9 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
     private Iterator<String> itPassage;
     private java.lang.String libelle = new String();
     private List<String> listPassage = new ArrayList<String>();
-    private double montantNegatif = 0.0;
-    private double montantPositif = 0.0;
-    private double montantTotal = 0.0;
-
+    private DecompteRecap decompteRecap = new DecompteRecap();
     private globaz.musca.db.facturation.FAPassage passage;
+    private String outPutType;
 
     // Nombre total de documents que le manager devrait contenir
     private long shouldNbImprimer = 0;
@@ -57,43 +60,19 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
         this(new BSession(globaz.musca.application.FAApplication.DEFAULT_APPLICATION_MUSCA));
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (04.03.2003 11:28:36)
-     * 
-     * @param session
-     *            globaz.globall.db.BSession
-     */
     public FAListDecompteNew_Doc(BProcess parent) throws FWIException {
         this(parent, globaz.musca.application.FAApplication.APPLICATION_MUSCA_REP, "listCompensation");
     }
 
-    /**
-     * @param arg0
-     * @param arg1
-     * @param arg2
-     * @throws globaz.framework.printing.itext.exception.FWIException
-     */
     public FAListDecompteNew_Doc(BProcess arg0, String arg1, String arg2) throws FWIException {
         super(arg0, arg1, arg2);
         super.setFileTitle("Impression des listes de décomptes");
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (04.03.2003 11:28:36)
-     * 
-     * @param session
-     *            globaz.globall.db.BSession
-     */
     public FAListDecompteNew_Doc(BSession session) throws FWIException {
         this(session, globaz.musca.application.FAApplication.APPLICATION_MUSCA_REP, "listCompensation");
     }
 
-    /**
-     * @param arg0
-     * @param arg1
-     * @param arg2
-     * @throws globaz.framework.printing.itext.exception.FWIException
-     */
     public FAListDecompteNew_Doc(BSession arg0, String arg1, String arg2) throws FWIException {
         super(arg0, arg1, arg2);
         super.setFileTitle("Impression des listes de décomptes");
@@ -124,7 +103,7 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
         super.setParametres(FAiTextParameterList.LABEL_TOTAUX, getSession().getLabel("TOTAUX"));
         super.setParametres(FAiTextParameterList.PARAM_REFERENCE,
                 getSession().getUserId() + " (" + JACalendar.todayJJsMMsAAAA() + ")");
-        super.setParametres(FAiTextParameterList.PARAM_MONTANT_TOTAL, new Double(montantTotal));
+        super.setParametres(FAiTextParameterList.PARAM_MONTANT_TOTAL, decompteRecap.getMontantTotal().getValueDouble());
     }
 
     /**
@@ -139,12 +118,6 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
         super.setColumnHeader(6, getSession().getLabel("IMPRESSION"));
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (10.03.2003 10:44:29)
-     * 
-     * @exception java.lang.Exception
-     *                La description de l'exception.
-     */
     @Override
     protected void _validate() throws java.lang.Exception {
         if ((getEMailAddress() == null) || getEMailAddress().equals("")) {
@@ -155,19 +128,8 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
         setSendCompletionMail(true);
     }
 
-    /**
-     * Insérez la description de la méthode ici. Date de création : (25.02.2003 10:18:15)
-     */
     @Override
     public void beforeBuildReport() throws FWIException {
-        // Générer le nom du document
-        // List beanList = super.getBeanContainer();
-        // String first = (String) ((Map)
-        // super.getBeanContainer().get(0)).get("COL_1");
-        // String last = (String) ((Map)
-        // super.getBeanContainer().get(super.getBeanContainer().size() -
-        // 1)).get("COL_1");
-        // super.setDocumentTitle(first + "..." + last);
         getDocumentInfo().setDocumentTypeNumber(FAListDecompteNew_Doc.NUM_REF_INFOROM_LISTE_DECOMPTE);
     }
 
@@ -201,10 +163,15 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
                     .setParametre(FAiTextParameterList.LABEL_RECAP_TITRE, getSession().getLabel("LISDEC_RECAPTITLE"));
             recapImport.setParametre(FAiTextParameterList.LABEL_NUM_DECOMPTE,
                     getSession().getLabel("LISDEC_RECAPNDECOMPTE"));
-            recapImport.setParametre(FAiTextParameterList.PARAM_CREDIT, new Double(montantNegatif));
-            recapImport.setParametre(FAiTextParameterList.PARAM_POSITIF, new Double(montantPositif));
-            recapImport.setParametre(FAiTextParameterList.PARAM_NUM_DECOMPTE, new Double(shouldNbImprimer));
-            recapImport.setParametre(FAiTextParameterList.PARAM_MONTANT_TOTAL, new Double(montantTotal));
+
+            recapImport.setParametre(FAiTextParameterList.PARAM_CREDIT, decompteRecap.getMontantNegatif()
+                    .getValueDouble());
+            recapImport.setParametre(FAiTextParameterList.PARAM_POSITIF, decompteRecap.getMontantPositif()
+                    .getValueDouble());
+            recapImport.setParametre(FAiTextParameterList.PARAM_NUM_DECOMPTE, decompteRecap.getCompteur()
+                    .getValueDouble());
+            recapImport.setParametre(FAiTextParameterList.PARAM_MONTANT_TOTAL, decompteRecap.getMontantTotal()
+                    .getValueDouble());
             try {
                 recapImport.createDocument();
             } catch (FWIException e) {
@@ -228,6 +195,33 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
         super.executeProcess();
     }
 
+    private FAPassage retrivePassage() throws Exception {
+        FAPassage passage = new FAPassage();
+        passage.setSession(getSession());
+        passage.setIdPassage(idPassage);
+        passage.retrieve(getTransaction());
+        return passage;
+    }
+
+    private List<Map<?, ?>> generateSource(List<FaDecompteBeanXls> list) {
+        List<Map<?, ?>> source = new ArrayList<Map<?, ?>>();
+
+        for (FaDecompteBeanXls bean : list) {
+            Map<String, Object> row = new HashMap<String, Object>();
+            row.put(FWIImportParametre.getCol(1), bean.getDebiteur());
+            row.put(FWIImportParametre.getCol(2), bean.getDecompte());
+            // Description du décompte
+            row.put(FWIImportParametre.getCol(3), bean.getMontant().getValueDouble());
+            row.put(FWIImportParametre.getCol(4), bean.getAddressPaiement());
+            // Montant
+            row.put(FWIImportParametre.getCol(5), bean.getRecRem());
+            // Débiteur compensé
+            row.put(FWIImportParametre.getCol(6), bean.getImprimable());
+            source.add(row);
+        }
+        return source;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -235,24 +229,16 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
      */
     @Override
     public void createDataSource() throws Exception {
-        FAListDecompteNew_DS manager = null;
-        List<Map<?, ?>> source = new ArrayList<Map<?, ?>>();
+
         // Sous contrôle d'exceptions
         try {
-            manager = new FAListDecompteNew_DS();
-            manager.setSession(getSession());
-
             // Vérifier l'id du passage
             if (JadeStringUtil.isIntegerEmpty(getIdPassage())) {
                 getMemoryLog().logMessage("à remplir", FWMessage.FATAL, this.getClass().getName());
                 return;
             }
+            List<FaDecompteBeanXls> list = load();
 
-            // instancier le passage en cours
-            passage = new FAPassage();
-            passage.setSession(getSession());
-            passage.setIdPassage(getIdPassage());
-            passage.retrieve(getTransaction());
             if (passage.hasErrors()) {
                 getMemoryLog().logStringBuffer(getTransaction().getErrors(), passage.getClass().getName());
                 getMemoryLog().logMessage("a remplir", FWMessage.FATAL, this.getClass().getName());
@@ -261,44 +247,10 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
 
             FAUtil.fillDocInfoWithPassageInfo(getDocumentInfo(), getPassage());
 
-            // S'il n'y a pas d'erreur lors du rapatriement des données, passer
-            // aux traitements
-            if (!isAborted()) {
-
-                // Where clause
-                manager.setForIdPassage(passage.getIdPassage());
-                manager.setForTriDecompte(getIdTriDecompte());
-                manager.setForIdSousType(getIdSousType());
-                // Order by
-                manager.setOrderBy(getIdTri());
-                shouldNbImprimer = manager.getCount(getTransaction());
-                int compt = 0;
-                while (manager.next()) {
-                    compt++;
-                    setProgressDescription(compt + "/" + manager.size() + "<br>");
-                    if (isAborted()) {
-                        setProgressDescription("Traitement interrompu<br> sur la ligne : " + compt + "/"
-                                + manager.size() + "<br>");
-                        if ((getParent() != null) && getParent().isAborted()) {
-                            getParent()
-                                    .setProcessDescription(
-                                            "Traitement interrompu<br> sur la ligne : " + compt + "/" + manager.size()
-                                                    + "<br>");
-                        }
-                        break;
-                    } else {
-                        double montant = Double.parseDouble(JANumberFormatter.deQuote(manager.getEntity()
-                                .getTotalFacture()));
-                        montantTotal += montant;
-                        if (montant > 0.0) {
-                            montantPositif += montant;
-                        } else {
-                            montantNegatif += montant;
-                        }
-                        source.add(manager.getFieldValues());
-                    }
-                }
+            if (!list.isEmpty()) {
+                super.setDataSource(generateSource(list));
             }
+
         } catch (Exception e) {
             getMemoryLog().logMessage(e.getMessage(), FWMessage.FATAL, this.getClass().getName());
             throw new FWIException(e);
@@ -308,28 +260,102 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
         _summaryText();
         _tableHeader();
 
-        if (!source.isEmpty()) {
-            super.setDataSource(source);
+    }
+
+    private List<FaDecompteBeanXls> load() throws Exception {
+        passage = retrivePassage();
+
+        List<FaDecompteBeanXls> list = new ArrayList<FaDecompteBeanXls>();
+        DecomptesLoader loader = new DecomptesLoader(getSession(), idPassage, idTriDecompte, idSousType, idTri);
+        loader.load();
+        int compt = 0;
+        while (loader.next()) {
+            compt++;
+            FaDecompteBeanXls decompte = loader.getBean();
+            list.add(decompte);
+            setProgressDescription(compt + "/" + loader.size() + "<br>");
+            if (isAborted()) {
+                setProgressDescription("Traitement interrompu<br> sur la ligne : " + compt + "/" + loader.size()
+                        + "<br>");
+                if (getParent() != null && getParent().isAborted()) {
+                    getParent().setProcessDescription(
+                            "Traitement interrompu<br> sur la ligne : " + compt + "/" + loader.size() + "<br>");
+                }
+                break;
+            } else {
+                decompteRecap.addMontant(decompte.getMontant());
+            }
+        }
+
+        shouldNbImprimer = loader.size();
+        return list;
+    }
+
+    public void generateXsl() {
+        // FilenameUtils
+        _createDocumentInfo();
+
+        File file;
+        try {
+            file = this.generateXsl(load(), decompteRecap);
+        } catch (Exception e1) {
+            throw new RuntimeException(e1);
+        }
+        try {
+            this.registerAttachedDocument(getDocumentInfo(), file.getAbsolutePath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.framework.printing.itext.FWIDocumentListManager#doReadBean(globaz
-     * .framework.printing.itext.api.FWIBeanInterface)
-     */
-    protected void doReadBean(FWIBeanInterface myBean) {
-        double montant = 0.0;
-        if ((montant = myBean.getMontant()) > 0.0) {
-            montantPositif += montant;
-        } else {
-            montantNegatif += montant;
+    private File generateXsl(List<FaDecompteBeanXls> list, DecompteRecap decompteRecap) {
+        String nomCaise = FWIImportProperties.getInstance().getProperty(getDocumentInfo(),
+                ACaisseReportHelper.JASP_PROP_NOM_CAISSE + getSession().getIdLangueISO().toUpperCase());
+
+        Details details = new Details();
+        details.add(nomCaise, "");
+        details.add("N°", NUM_REF_INFOROM_LISTE_DECOMPTE);
+        details.newLigne();
+
+        details.add(getSession().getLabel("NUMERO"), idPassage);
+        details.add(getSession().getLabel("LIBELLE"), getPassage().getLibelle());
+        details.newLigne();
+
+        details.add(getSession().getLabel("DATEFACT"), getPassage().getDateFacturation());
+        details.add(getSession().getLabel("DATEECHEANCE"), getPassage().getDateEcheance());
+        details.newLigne();
+
+        List<DecompteInfos> decomtpeInfos = new ArrayList<DecompteInfos>();
+
+        decomtpeInfos.add(new DecompteInfos(toLabel("LISDEC_RECAPNDECOMPTE"), decompteRecap.getCompteur()));
+        decomtpeInfos.add(new DecompteInfos(toLabel("LISDEC_RECAPPOSITIF"), decompteRecap.getMontantPositif()));
+        decomtpeInfos.add(new DecompteInfos(toLabel("LISDEC_RECAPCREDIT"), decompteRecap.getMontantNegatif()));
+        decomtpeInfos.add(new DecompteInfos(toLabel("TOTAUX"), decompteRecap.getMontantTotal()));
+
+        SimpleOutputListBuilderJade builder = null;
+        File file = null;
+        try {
+            builder = SimpleOutputListBuilderJade.newInstance().session(getSession()).globazTheme().addTranslater()
+                    .outputNameAndAddPath(NUM_REF_INFOROM_LISTE_DECOMPTE + "_" + toLabel("DECOMPTE"));
+
+            file = builder.addList(list).classElementList(FaDecompteBeanXls.class).addHeaderDetails(details)
+                    .addTitle(toLabel("LISDECTITLE"), Align.CENTER).addSubTitle(toLabel("DECOMPTE")).jump()
+                    .addList(decomtpeInfos).addSubTitle(toLabel("RECAPITULATIF"))
+                    .addTitle(toLabel("LISDECTITLE"), Align.CENTER).addHeaderDetails(details).asXls().build();
+        } finally {
+            if (builder != null) {
+                builder.close();
+            }
         }
+        return file;
     }
 
     public globaz.musca.db.facturation.FAEnteteFacture getEnteteFacture() {
         return enteteFacture;
+    }
+
+    private String toLabel(String label) {
+        return getSession().getLabel(label);
     }
 
     /**
@@ -365,14 +391,6 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
         return listPassage;
     }
 
-    public double getMontantNegatif() {
-        return montantNegatif;
-    }
-
-    public double getMontantPositif() {
-        return montantPositif;
-    }
-
     public globaz.musca.db.facturation.FAPassage getPassage() {
         return passage;
     }
@@ -389,11 +407,6 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
         return GlobazJobQueue.READ_LONG;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.framework.printing.itext.api.FWIDocumentInterface#next()
-     */
     @Override
     public boolean next() throws FWIException {
         if (itPassage.hasNext()) {
@@ -444,20 +457,12 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
         this.listPassage = listPassage;
     }
 
-    public void setMontantNegatif(double montantNegatif) {
-        this.montantNegatif = montantNegatif;
+    public String getOutPutType() {
+        return outPutType;
     }
 
-    public void setMontantPositif(double montantPositif) {
-        this.montantPositif = montantPositif;
-    }
-
-    public void setPassage(globaz.musca.db.facturation.FAPassage passage) {
-        this.passage = passage;
-    }
-
-    public void setShouldNbImprimer(long shouldNbImprimer) {
-        this.shouldNbImprimer = shouldNbImprimer;
+    public void setOutPutType(String outPutType) {
+        this.outPutType = outPutType;
     }
 
 }

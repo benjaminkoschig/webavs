@@ -5,7 +5,7 @@ import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.jade.common.Jade;
 import java.util.Locale;
-import ch.globaz.common.listoutput.converterImplemented.LabelTranslater;
+import ch.globaz.common.listoutput.converterImplemented.LabelTranslaterNormal;
 import ch.globaz.simpleoutputlist.configuration.Configuration;
 import ch.globaz.simpleoutputlist.configuration.FontStyle;
 import ch.globaz.simpleoutputlist.configuration.RowDecorator;
@@ -16,18 +16,23 @@ import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 public class SimpleOutputListBuilderJade extends SimpleOutputListBuilder {
 
     private boolean isContextInizialised = false;
+    private BSession session;
 
     public SimpleOutputListBuilderJade() {
         super();
-        BSession session = BSessionUtil.getSessionFromThreadContext();
+        session = BSessionUtil.getSessionFromThreadContext();
         if (session != null) {
             local(new Locale(session.getIdLangueISO()));
         }
     }
 
     public SimpleOutputListBuilderJade session(BSession session) {
-
+        this.session = session;
         local(new Locale(session.getIdLangueISO()));
+        return this;
+    }
+
+    public SimpleOutputListBuilderJade initializeContext(BSession session) {
         try {
             BSessionUtil.initContext(session, this);
             isContextInizialised = true;
@@ -60,13 +65,13 @@ public class SimpleOutputListBuilderJade extends SimpleOutputListBuilder {
         return this;
     }
 
-    public SimpleOutputListBuilderJade addTranslater(BSession session) {
-        translater(new LabelTranslater(session, null));
+    public SimpleOutputListBuilderJade addTranslater() {
+        translater(new LabelTranslaterNormal(session, null));
         return this;
     }
 
-    public SimpleOutputListBuilderJade addTranslater() {
-        translater(new LabelTranslater());
+    public SimpleOutputListBuilderJade addTranslater(String identifier) {
+        translater(new LabelTranslaterNormal(session, identifier));
         return this;
     }
 
