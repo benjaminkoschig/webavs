@@ -90,8 +90,8 @@ else
           		Type d'impression 
           	</td>
           	<td>
-          		PDF<input type="radio" name="outPutType" <%if(!viewBean.isXls){%>checked="checked"<%}%> value="PDF" />
-          		Excel<input type="radio" name="outPutType"  <%if(viewBean.isXls){%>checked="checked"<%}%>  value="XLS" /> 
+          		PDF<input type="radio" name="outPutType" <%if(!viewBean.isXls()){%>checked="checked"<%}%> value="PDF" />
+          		Excel<input type="radio" name="outPutType"  <%if(viewBean.isXls()){%>checked="checked"<%}%>  value="XLS" /> 
           	</td>
           </tr>
           <%-- /tpl:put --%>
