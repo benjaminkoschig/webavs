@@ -190,6 +190,14 @@ public class PucsServiceImpl implements PucsService {
         return JadeFilenameUtil.normalizePathComponents(file.getAbsolutePath());
     }
 
+    public static String pucFileLisiblePdfByXml(File fileXml, DeclarationSalaireProvenance provenance, BSession session) {
+        Locale locale = buildLocale(session);
+        SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance().asPdf().local(locale);
+        ElementsDomParser parser = new ElementsDomParser(fileXml);
+        File file = out(provenance, builder, parser, session);
+        return JadeFilenameUtil.normalizePathComponents(file.getAbsolutePath());
+    }
+
     public static String pucFileLisiblePdf(String id, DeclarationSalaireProvenance provenance, BSession session) {
         Locale locale = buildLocale(session);
         SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance().asPdf().local(locale);
