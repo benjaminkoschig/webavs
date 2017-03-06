@@ -309,12 +309,18 @@ class LoadTaxationsDefinitives {
     }
 
     private Pourcentage computEcart(CPTaxationDefinitive elem) {
-        BigDecimal revenuDeterminant = null;
-        BigDecimal revenuIndependant = null;
+        BigDecimal revenuDeterminant = BigDecimal.valueOf(0.00);
+        BigDecimal revenuIndependant = BigDecimal.valueOf(0.00);
         BigDecimal ecart = null;
+
         try {
-            revenuDeterminant = new BigDecimal(elem.getRevenuDeterminant());
-            revenuIndependant = new BigDecimal(elem.getRevenuIndependant());
+
+            if (!JadeStringUtil.isEmpty(elem.getRevenuDeterminant())) {
+                revenuDeterminant = new BigDecimal(elem.getRevenuDeterminant());
+            }
+            if (!JadeStringUtil.isEmpty(elem.getRevenuIndependant())) {
+                revenuIndependant = new BigDecimal(elem.getRevenuIndependant());
+            }
 
             ecart = new BigDecimal(revenuIndependant.toString());
 

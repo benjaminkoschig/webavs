@@ -2,9 +2,11 @@ package globaz.phenix.itext.taxation.definitive;
 
 import globaz.caisse.report.helper.ACaisseReportHelper;
 import globaz.framework.printing.itext.fill.FWIImportProperties;
+import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.phenix.util.CPProperties;
 import java.io.File;
@@ -13,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
 import ch.globaz.common.mail.UsersMail;
+import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
 import ch.globaz.simpleoutputlist.core.Details;
 import com.google.common.base.Joiner;
@@ -36,6 +39,15 @@ public class CPListeTaxationDefinitiveXlsPdf extends BProcess {
             if (getEMailAddress().indexOf('@') == -1) {
                 this._addError(getSession().getLabel("EMAIL_INVALIDE"));
             }
+        }
+
+        try {
+            CPProperties.LISTE_TAXATION_DEFINITIVE_GROUP_MAIL.getValue();
+        } catch (PropertiesException exception) {
+            JadeLogger.error(this, exception);
+            final String message = FWMessageFormat.format(getSession().getLabel("ERREUR_PROPRIETE_INEXISTANTE"),
+                    CPProperties.LISTE_TAXATION_DEFINITIVE_GROUP_MAIL.getPropertyName());
+            this._addError(message);
         }
 
         boolean isAllEmpty = JadeStringUtil.isEmpty(criteria.getAnneeTaxationCP());
