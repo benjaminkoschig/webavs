@@ -1,6 +1,7 @@
 package globaz.phenix.process.communications.envoiWritterImpl;
 
 import globaz.commons.nss.NSUtil;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -812,6 +813,10 @@ public class CPSedexWriter {
                 rejet.setEtat(CPRejets.CS_ETAT_TRAITE);
                 rejet.update(transaction);
             }
+            if ((rejet.isNew() == false) && (CPRejets.CS_ETAT_TRAITE.equalsIgnoreCase(rejet.getEtat()) == true)) {
+                rejet.setEtat(CPRejets.CS_ETAT_ENVOYE);
+                rejet.update(transaction);
+            }
         }
     }
 
@@ -996,6 +1001,7 @@ public class CPSedexWriter {
                 }
                 process.incProgressCounter();
                 entity = (CPCommunicationFiscaleAffichage) manager.getEntity(j);
+
                 // Sauvegarde du cas traité pour éventuellement le mettre en erreur
                 // si la validation du fichier xml a échoué
                 if (entity.isNew() != false) {
@@ -1142,6 +1148,25 @@ public class CPSedexWriter {
              * Validation en envoi du fichier XML généré
              */
             // ---------------------------------------
+
+            // Controle de l'état du SEDEX
+            CPCommunicationFiscale commi = new CPCommunicationFiscale();
+            commi.setSession(process.getSession());
+            commi.setIdCommunication(entity.getIdCommunication());
+            commi.retrieve(transaction);
+
+            if (!commi.getIdMessageSedex().isEmpty()) {
+                CPRejets rejet = new CPRejets();
+                rejet.setSession(process.getSession());
+                rejet.setIdDemande(commi.getId());
+                rejet.setMessageId(commi.getIdMessageSedex());
+                rejet.retrieve(transaction);
+
+                if (CPRejets.CS_ETAT_TRAITE.equals(rejet.getEtat())) {
+                    rejet.setEtat(CPRejets.CS_ETAT_ENVOYE);
+                }
+            }
+
             ArrayList<String> errorBuffer = new ArrayList<String>();
             CPSedexWriter myFile = new CPSedexWriter(comFis.getSession());
             myFile.validateAndSendFileXML(transaction, errorBuffer, message102, message101, comFis,
@@ -1262,24 +1287,29 @@ public class CPSedexWriter {
                 }
             }
 
-            // Création du message 101 - Format requis par Sedex pour envoi unitaire
-            Message message101 = createMessage101(transaction, communicationAffichage, errorBuffer, objFac101,
-                    conjoint, tiers, affiliationConjoint, affiliation, isMaried, messageId);
-            // Mise à jour de la date d'envoi et création du lien entre le message Sedex et la communication
-            CPSedexWriter
-                    .updateDateCommunicationEtLienSedex(transaction, message101, communicationAffichage, messageId);
-            if (transaction.hasErrors()) {
-                transaction.rollback();
-                if (!JadeStringUtil.isEmpty(errorBuffer.toString())) {
-                    errorBuffer.append("\n");
+            // Si l'état du rejet n'est PAS 'non traité' ou 'abandonné' on continue le processus
+            if (!isEtatRejetSedexNonTraiteAbandonne(communicationAffichage.getSession(),
+                    communicationAffichage.getIdCommunication())) {
+                // Création du message 101 - Format requis par Sedex pour envoi unitaire
+                Message message101 = createMessage101(transaction, communicationAffichage, errorBuffer, objFac101,
+                        conjoint, tiers, affiliationConjoint, affiliation, isMaried, messageId);
+                // Mise à jour de la date d'envoi et création du lien entre le message Sedex et la communication
+                CPSedexWriter.updateDateCommunicationEtLienSedex(transaction, message101, communicationAffichage,
+                        messageId);
+
+                if (transaction.hasErrors()) {
+                    transaction.rollback();
+                    if (!JadeStringUtil.isEmpty(errorBuffer.toString())) {
+                        errorBuffer.append("\n");
+                    }
+                    errorBuffer.append(communicationAffichage.getSession().getLabel("CP_ERROR") + ": "
+                            + transaction.getErrors());
+                } else {
+                    // On a une seule communication, on envoi un message101
+                    // On extrait le message
+                    managementMessage101(transaction, communicationAffichage, errorBuffer, affiliationConjoint,
+                            affiliation, message101);
                 }
-                errorBuffer.append(communicationAffichage.getSession().getLabel("CP_ERROR") + ": "
-                        + transaction.getErrors());
-            } else {
-                // On a une seule communication, on envoi un message101
-                // On extrait le message
-                managementMessage101(transaction, communicationAffichage, errorBuffer, affiliationConjoint,
-                        affiliation, message101);
             }
         } catch (Exception e) {
             if (!JadeStringUtil.isEmpty(errorBuffer.toString())) {
@@ -1288,6 +1318,45 @@ public class CPSedexWriter {
             errorBuffer.append(communicationAffichage.getSession().getLabel("CP_ERROR") + ": " + e.toString());
         }
         return errorBuffer;
+    }
+
+    /***
+     * Retourne un boolean indiquant si l'état d'un rejet est à l'état 'non traité' ou 'abandonné'
+     * 
+     * @author est
+     * @param session
+     * @param idCommunication
+     * @return
+     * @throws Exception
+     */
+    private boolean isEtatRejetSedexNonTraiteAbandonne(BSession session, String idCommunication) throws Exception {
+        boolean isEtatRejetSedexNonTraiteAbandonne = false;
+
+        CPRejetsManager rejetMng = new CPRejetsManager();
+        rejetMng.setSession(session);
+        rejetMng.setForIdCommunication(idCommunication);
+        rejetMng.find(BManager.SIZE_NOLIMIT);
+
+        try {
+            for (int j = 0; j < rejetMng.getSize(); j++) {
+                CPRejets rejet = new CPRejets();
+                rejet.setSession(session);
+                rejet.setIdRejets(((CPRejets) rejetMng.getEntity(j)).getIdRejets());
+                rejet.retrieve();
+
+                if (CPRejets.CS_ETAT_NON_TRAITE.equals(rejet.getEtat())
+                        || CPRejets.CS_ETAT_ABANDONNE.equals(rejet.getEtat())) {
+                    isEtatRejetSedexNonTraiteAbandonne = true;
+                }
+
+                else {
+                    isEtatRejetSedexNonTraiteAbandonne = false;
+                }
+            }
+        } catch (Exception e) {
+            JadeLogger.error(this, e);
+        }
+        return isEtatRejetSedexNonTraiteAbandonne;
     }
 
     /*
