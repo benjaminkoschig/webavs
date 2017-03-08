@@ -980,10 +980,10 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
 
             // SI dateEcriture > dateLimite ALORS erreur
             if (cal.compare(dateEcriture, dateLimite) == JACalendar.COMPARE_FIRSTUPPER) {
-                _addError(transaction, getSession().getLabel("ERR_DELAI_DATE_VALEUR"));
+                _addError(transaction, getSession().getLabel("ECR_ERR_DELAI_DATE_VALEUR"));
             }
         } catch (JAException e) {
-            _addError(transaction, getSession().getLabel("ERR_DELAI_DATE_VALEUR"));
+            _addError(transaction, getSession().getLabel("ECR_ERR_DELAI_DATE_VALEUR"));
         }
 
         // S'il n'y a pas d'erreur, on effectue certaines transformations

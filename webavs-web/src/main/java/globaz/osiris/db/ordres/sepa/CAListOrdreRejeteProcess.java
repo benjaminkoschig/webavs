@@ -218,7 +218,7 @@ public class CAListOrdreRejeteProcess extends BProcess {
             subject = FWMessageFormat.format(getSession().getLabel("LIST_OSIRIS_ORDREREJETE_MAIL_SUBJECT_EMPTY"),
                     getOrdreGroupe().getNumLivraison());
             body = getSession().getLabel("LIST_OSIRIS_ORDREREJETE_MAIL_BODY_EMPTY");
-            body += ArrayUtils.toString(reasons);
+            body += StringUtils.join(reasons, '\n');
         } else {
 
             // joindre la pièce jointe

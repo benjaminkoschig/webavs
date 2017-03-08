@@ -278,9 +278,9 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                     final String messageTypeId = blevel.getOrgnlPmtInfId().replaceAll(
                             ogWrapper.getOrdreGroupe().getNumLivraison(), "");
 
-                    generateORfotKey(ogWrapper.getOrdreGroupe(), messageTypeId, reasons.get(0));
+                    final String reason = generateORfotKey(ogWrapper.getOrdreGroupe(), messageTypeId, reasons);
 
-                    ogWrapper.addReason(StringUtils.join(reasons.get(0).getAddtlInf(), '\n'));
+                    ogWrapper.addReason(reason);
 
                 } else {
                     /*
@@ -361,52 +361,78 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         }
     }
 
-    private void generateORfotKey(CAOrdreGroupe og, String key, StatusReasonInformation8CH rsn) {
+    private String generateORfotKey(CAOrdreGroupe og, String key, List<StatusReasonInformation8CH> reasons) {
+        // extract error code and message once
+        List<String> rsnCodes = new ArrayList<String>();
+        List<String> rsnProprietarys = new ArrayList<String>();
+        List<String> rsnAddInfos = new ArrayList<String>();
+        for (StatusReasonInformation8CH rsn : reasons) {
+            rsnCodes.add(rsn.getRsn().getCd());
+            rsnProprietarys.add(rsn.getRsn().getPrtry());
+            rsnAddInfos.add(StringUtils.join(rsn.getAddtlInf(), '/'));
+        }
+        final String rsnCode = StringUtils.join(rsnCodes, '|');
+        final String rsnProprietary = StringUtils.join(rsnProprietarys, '|');
+        final String rsnAddInfo = StringUtils.join(rsnAddInfos, '|');
+
+        // iterate on Operation to create each Error if match the key
         CAOperationOrdreVersement ordreV = null;
         CAOperationOrdreVersementManager mgr = new CAOperationOrdreVersementManager();
         mgr.setSession(getSession());
         mgr.setForIdOrdreGroupe(og.getIdOrdreGroupe());
         mgr.setOrderBy(CAOperationManager.ORDER_IDOPERATION);
-        // try {
-        // mgr.find(BManager.SIZE_NOLIMIT);
-        // } catch (Exception e) {
-        // throw new SepaException("could not search for transactions: " + og.getIdOrdreGroupe() + ": " + e, e);
-        // }
         BStatement cursorOpen;
         try {
             cursorOpen = mgr.cursorOpen(getSession().getCurrentThreadTransaction());
 
             while ((ordreV = (CAOperationOrdreVersement) mgr.cursorReadNext(cursorOpen)) != null) {
-                // for (int i = 0; i < mgr.size(); i++) {
-                try {
-                    // CAOperationOrdreVersement ordreV = (CAOperationOrdreVersement) mgr.getEntity(i);
-                    final CAAdressePaiementFormatter adpf = new CAAdressePaiementFormatter();
-                    adpf.setAdressePaiement(ordreV.getAdressePaiement());
-                    CASepaGroupeOGKey messageIdKey = new CASepaGroupeOGKey(ordreV, adpf);
-                    if (key.equals(messageIdKey.getKeyString())) {
-                        CAOrdreRejete rejected = new CAOrdreRejete();
-                        rejected.setSession(getSession());
-                        rejected.setIdOperation(ordreV.getIdOperation());
-                        rejected.setIdOrdreGroupe(og.getIdOrdreGroupe());
-                        rejected.setCode(rsn.getRsn().getCd());
-                        rejected.setProprietary(rsn.getRsn().getPrtry());
-                        rejected.setAdditionalInformations(StringUtils.join(rsn.getAddtlInf(), '\n'));
-                        try {
-                            rejected.add();
-                        } catch (Exception e) {
-                            throw new SepaException("could not save CAOrdreRejete.", e);
-                        }
-                    }
-                } catch (Exception e) {
-                    throw new SepaException("could not verify Blevel GroupKey of OV.", e);
-                }
+
+                rejectOnMatchGroupKey(og, key, rsnCode, rsnProprietary, rsnAddInfo, ordreV);
+
             }
         } catch (Exception e) {
             LOG.error("error in accessing DB on OperationOrdreVersement ", e);
             throw new SepaException("error in accessing DB on OperationOrdreVersement", e);
         }
         mgr.clear();
+        return rsnAddInfo;
+    }
 
+    /**
+     * create an CAOrdreRejete object if the calculated key from record match the watched key given into the pain002
+     * description
+     * 
+     * @param og
+     * @param key
+     * @param rsnCode
+     * @param rsnProprietary
+     * @param rsnAddInfo
+     * @param ordreV
+     * @throws Exception
+     */
+    private void rejectOnMatchGroupKey(CAOrdreGroupe og, String key, final String rsnCode, final String rsnProprietary,
+            final String rsnAddInfo, CAOperationOrdreVersement ordreV) {
+        try {
+            final CAAdressePaiementFormatter adpf = new CAAdressePaiementFormatter();
+            adpf.setAdressePaiement(ordreV.getAdressePaiement());
+            CASepaGroupeOGKey messageIdKey = new CASepaGroupeOGKey(ordreV, adpf);
+            if (key.equals(messageIdKey.getKeyString())) {
+                CAOrdreRejete rejected = new CAOrdreRejete();
+                rejected.setSession(getSession());
+                rejected.setIdOperation(ordreV.getIdOperation());
+                rejected.setIdOrdreGroupe(og.getIdOrdreGroupe());
+                rejected.setCode(rsnCode);
+                rejected.setProprietary(rsnProprietary);
+                rejected.setAdditionalInformations(rsnAddInfo);
+                try {
+                    rejected.add();
+                } catch (Exception e) {
+                    throw new SepaException("could not save CAOrdreRejete.", e);
+                }
+            }
+        } catch (Exception e) {
+            throw new SepaException("could not verify Blevel GroupKey of OV.", e);
+        }
     }
 
     private CAOrdreVersement getOrdreVersement(String transactionIdNoPrefix) {
