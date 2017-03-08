@@ -36,7 +36,7 @@
 <%@ include file="/theme/list/javascripts.jspf" %>
 			<th>&nbsp;</th>
 			<th><ct:FWLabel key="JSP_NO_DROIT_COURT" /></th>
-			<th><ct:FWLabel key="JSP_DETAIL_REQUERANT" /></th>
+			<th colspan="2"><ct:FWLabel key="JSP_DETAIL_REQUERANT" /></th>
 			<th><ct:FWLabel key="JSP_DATE_DEBUT" /></th>
 			<th><ct:FWLabel key="JSP_GESTIONNAIRE" /></th>
 			<th><ct:FWLabel key="JSP_TYPE_DROIT" /></th>
@@ -148,7 +148,11 @@
 			</td>
 <%
 	}
-%>			<td class="mtd" nowrap onClick="<%=actionDetail%>">
+%>			
+			<td class="mtd" nowrap >
+				<A  href="#" onclick="window.open('<%=servletContext%><%=("/apg")%>?userAction=<%=globaz.apg.servlet.IAPActions.ACTION_DROIT_LAPG%>.actionAfficherDossierGed&amp;noAVSId=<%=courant.getNoAVS()%>&amp;serviceNameId=<%=viewBean.getSession().getApplication().getProperty(globaz.externe.IPRConstantesExternes.PROPERTY_AFFICHAGE_DOSSIER_GED)%>')" >GED</A>
+			</td>
+			<td class="mtd" nowrap onClick="<%=actionDetail%>">
 				<%=courant.getDateDebutDroit()%>&nbsp;
 			</td>
 			<td class="mtd" nowrap onClick="<%=actionDetail%>">

@@ -101,6 +101,21 @@ public class APEnfantMatViewBean extends APEnfantMat implements FWViewBeanInterf
     }
 
     /**
+     * Méthode qui retourne l'attribut idTiers du Tiers
+     * 
+     * @return la valeur courante de l'attribut idTiers du Tiers
+     * @throws Exception
+     */
+    public String getIdTiers() throws Exception {
+        PRTiersWrapper tiers = PRTiersHelper.getTiers(getSession(), getNoAVSDroitMat());
+        if (tiers != null) {
+            return tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+        } else {
+            return "";
+        }
+    }
+
+    /**
      * (non javadoc)
      * 
      * @return DOCUMENT ME!

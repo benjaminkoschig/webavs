@@ -111,6 +111,15 @@ public class APRecapitulatifDroitMatViewBean extends APRecapitulatifDroitMat imp
         return getNom() + " " + getPrenom();
     }
 
+    /**
+     * Méthode qui retourne l'attribut idTiers du Tiers
+     * 
+     * @return la valeur courante de l'attribut idTiers du Tiers
+     */
+    public String getTiers() {
+        return getIdTiers();
+    }
+
     public final String getPidAnnonce() {
         return pidAnnonce;
     }

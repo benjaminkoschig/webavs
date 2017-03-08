@@ -165,3 +165,6 @@ update SCHEMA.fwcoup set pcolut = 'Rückforderungen Muterschaftent. GE Versichert
 update SCHEMA.fwcosp set pcosli = 'MATERNITE_IMPOT_SOURCE_LAMATGE_ASSURE' where pcosid = 237111;
 update SCHEMA.fwcoup set pcolut = 'Maternité impôt à la source LAMAT cantonale Assuré' where pcosid = 237111 and plaide = 'F';
 update SCHEMA.fwcoup set pcolut = 'Mutterschaft Quellensteuer LAMAT Kantonal Versicherte' where pcosid = 237111 and plaide = 'D';
+
+ALTER TABLE SCHEMA.APDROIP ADD VACANT decimal(9,0);
+REORG TABLE SCHEMA.APDROIP;

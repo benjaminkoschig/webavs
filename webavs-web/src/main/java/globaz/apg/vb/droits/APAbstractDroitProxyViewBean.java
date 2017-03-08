@@ -5,10 +5,12 @@ import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APDroitMaternite;
 import globaz.apg.enums.APModeEditionDroit;
 import globaz.apg.util.TypePrestation;
+import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BSpy;
 import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.fx.PRGestionnaireHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -40,6 +42,7 @@ public abstract class APAbstractDroitProxyViewBean extends PRAbstractViewBeanSup
     private boolean trouveDansCI = false;
     private boolean trouveDansTiers = false;
     private String csSexe = "";
+    private String csCantonDomicile = "";
 
     protected APAbstractDroitProxyViewBean(APDroitLAPG droit) {
         this.droit = droit;
@@ -105,7 +108,23 @@ public abstract class APAbstractDroitProxyViewBean extends PRAbstractViewBeanSup
 
     @Override
     public String getCsCantonDomicile() {
-        return null;
+        if (JadeStringUtil.isBlankOrZero(droit.getCsCantonDomicile())) {
+            csCantonDomicile = getDefaultCanton();
+        } else {
+            csCantonDomicile = droit.getCsCantonDomicile();
+        }
+        return csCantonDomicile;
+    }
+
+    private String getDefaultCanton() {
+        try {
+            csCantonDomicile = CaisseHelperFactory.getInstance()
+                    .getCsDefaultCantonCaisse(getSession().getApplication());
+        } catch (Exception e) {
+            JadeLogger.warn(this, e);
+        }
+
+        return csCantonDomicile;
     }
 
     @Override
@@ -177,6 +196,9 @@ public abstract class APAbstractDroitProxyViewBean extends PRAbstractViewBeanSup
 
     @Override
     public String getIdAssure() {
+        if (JadeStringUtil.isEmpty(idAssure)) {
+            idAssure = getProprieteTiers(PRTiersWrapper.PROPERTY_ID_TIERS);
+        }
         return idAssure;
     }
 
@@ -402,6 +424,8 @@ public abstract class APAbstractDroitProxyViewBean extends PRAbstractViewBeanSup
 
     @Override
     public void setCsCantonDomicile(String csCantonDomicile) {
+        droit.setCsCantonDomicile(csCantonDomicile);
+        this.csCantonDomicile = csCantonDomicile;
     }
 
     @Override

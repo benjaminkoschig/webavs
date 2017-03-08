@@ -349,6 +349,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         droitAPG.setCsProvenanceDroitAcquis(viewBean.getCsProvenanceDroitAcquis());
         droitAPG.setIdCaisse(idCaisse);
         droitAPG.setReference(viewBean.getReference());
+        droitAPG.setCsCantonDomicile(viewBean.getCsCantonDomicile());
 
         if (modeEdition.equals(APModeEditionDroit.CREATION)) {
             droitAPG.add(transaction);

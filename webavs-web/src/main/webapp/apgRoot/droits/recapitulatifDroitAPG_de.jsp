@@ -139,6 +139,7 @@
 							<td colspan="3">
 								<%=viewBean.getDetailRequerantListe()%>&nbsp;/&nbsp;
 							    <A  href="#" onclick="window.open('<%=servletContext%><%=("/apg")%>?userAction=<%=globaz.apg.servlet.IAPActions.ACTION_DROIT_LAPG%>.actionAfficherDossierGed&amp;noAVSId=<%=viewBean.getNoAVS()%>&amp;serviceNameId=<%=viewBean.getSession().getApplication().getProperty(globaz.externe.IPRConstantesExternes.PROPERTY_AFFICHAGE_DOSSIER_GED)%>')" >GED</A>
+							    &nbsp;/&nbsp;<A href="<%=request.getContextPath()%>\pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=<%=viewBean.getIdTiers()%>" >Tiers</A>
 							</td>
 						</tr>
 						<tr><td colspan="4">&nbsp;</td></tr>
@@ -215,7 +216,8 @@
 														<td style="text-align: center">
 															<img SRC="<%=request.getContextPath()+(!employeur.getIsVersementEmployeur().booleanValue()?"/images/ok.gif":"/images/erreur.gif")%>" ALT="">
 														</td>
-														<td><a href="#" onclick="window.open('<%=servletContext%><%=("/apg")%>?userAction=<%=globaz.apg.servlet.IAPActions.ACTION_DROIT_LAPG%>.actionAfficherDossierGed&amp;noAffiliationId=<%=employeur.getNoAffilie()%>&amp;noAVSId=<%=employeur.retrieveNoAVS()%>&amp;serviceNameId=<%=viewBean.getSession().getApplication().getProperty(globaz.externe.IPRConstantesExternes.PROPERTY_AFFICHAGE_DOSSIER_GED_COTI)%>')" >GED</a></td>
+														<td><a href="#" onclick="window.open('<%=servletContext%><%=("/apg")%>?userAction=<%=globaz.apg.servlet.IAPActions.ACTION_DROIT_LAPG%>.actionAfficherDossierGed&amp;noAffiliationId=<%=employeur.getNoAffilie()%>&amp;noAVSId=<%=employeur.retrieveNoAVS()%>&amp;serviceNameId=<%=viewBean.getSession().getApplication().getProperty(globaz.externe.IPRConstantesExternes.PROPERTY_AFFICHAGE_DOSSIER_GED_COTI)%>')" >GED</a>&nbsp;/&nbsp;
+															<A href="<%=request.getContextPath()%>\pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=<%=employeur.getIdTiers()%>" >Tiers</A></td>
 													</tr>
 												<% 		
 											}

@@ -345,6 +345,15 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         }
     }
 
+    public String getIdTier() throws Exception {
+        PRTiersWrapper tiers = PRTiersHelper.getTiers(getSession(), getNoAVSDroit());
+        if (tiers != null) {
+            return tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+        } else {
+            return "";
+        }
+    }
+
     /**
      * getter pour l'attribut droit DTO
      * 

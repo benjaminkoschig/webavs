@@ -259,6 +259,11 @@
 			document.getElementById("csEtatCivilAffiche").disabled = true;
 			document.getElementById("csSexeAffiche").disabled = true;
 		}
+		if(<%=viewBean.getIdDroit()!=""%>){
+			document.getElementById("linkTiers").style.visibility = "visible";
+		}else{
+			document.getElementById("linkTiers").style.visibility = "hidden";
+		}
 	}
 
 	function arret () {
@@ -308,6 +313,10 @@
 
 	function init(){
 		// sert à rien mais doit être déclarée...
+		if(<%=viewBean.getIsSoumisCotisation()%>){
+			document.getElementById("isSoumisCotisation").checked = true;
+		}
+		showCantonImpotSource();
 	}
 	
 	
@@ -333,6 +342,11 @@
 		document.getElementById("csEtatCivil").value = document.getElementById("csEtatCivilAffiche").value;
 		document.getElementById("nss").value = document.getElementById("likeNSS").value;
 		document.getElementById("csSexe").value = document.getElementById("csSexeAffiche").value;
+		if(!document.getElementById("isSoumisCotisation").checked){
+			document.getElementById("csCantonDomicile").value = '';
+		}else{
+			document.getElementById("csCantonDomicile").value = document.getElementById("csCantonDomicileAffiche").value;
+		}
 	}
 
 	function nssChange (tag) {
@@ -416,7 +430,16 @@
 		$('#dateNaissanceAffiche').change();
 		checkNss(param_nss);
 	}
-	
+
+	function showCantonImpotSource(){
+		var trCantonImposition = document.getElementById("availableIfSoumisCotisation");
+		var cbxImpositionSouce = document.getElementById("isSoumisCotisation");
+		if(cbxImpositionSouce.checked){
+			trCantonImposition.style.visibility = "visible";
+		}else{
+			trCantonImposition.style.visibility = "hidden";
+		}
+	}
 
 	$(document).ready(function(){
 		
@@ -492,6 +515,7 @@
 									name="nomPrenom" 
 									value="<%=viewBean.getNom()%> <%=viewBean.getPrenom()%>" 
 									class="libelleLongDisabled" />
+							<span id="linkTiers">/&nbsp;<A href="<%=request.getContextPath()%>\pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=<%=viewBean.getIdAssure()%>" >Tiers</A></span>
 							<input	type="hidden" 
 									name="nss" 
 									id="nss" 
@@ -850,8 +874,11 @@
 						</td>
 						<td>
 							<input	type="checkbox" 
+									id="isSoumisCotisation" 
 									name="isSoumisCotisation" 
-									<%=viewBean.getIsSoumisCotisation().booleanValue() ? "checked" : ""%> />
+									<%=viewBean.getIsSoumisCotisation().booleanValue() ? "checked" : ""%>
+										onclick="showCantonImpotSource()" 
+										onload="showCantonImpotSource()" />
 						</td>
 						<td>
 							<label for=tauxImpotSource">
@@ -868,6 +895,22 @@
 									style="text-align: right" />
 							<ct:FWLabel key="JSP_TAUX_CANTON" />
 						</td>
+					</tr>
+						<tr id="availableIfSoumisCotisation">
+							<TD colspan="2">
+								&nbsp;
+							</TD>
+							<TD><LABEL for="csCantonImpoAffiche"><ct:FWLabel key="JSP_CANTON_IMPOT_SOURCE"/></LABEL></TD>
+							<TD>
+								<ct:FWCodeSelectTag name="csCantonDomicileAffiche"
+									wantBlank="<%=false%>"
+							      	codeType="PYCANTON"
+							      	defaut="<%=viewBean.getCsCantonDomicile()%>"/>
+							      	<INPUT type="hidden" name="csCantonDomicile" value="<%=viewBean.getCsCantonDomicile()%>"/>
+							</TD>
+							<TD colspan="2">
+								&nbsp;
+							</TD>
 					</tr>
 					<tr>
 						<td colspan="4">

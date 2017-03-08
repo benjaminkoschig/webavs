@@ -42,6 +42,7 @@ public class APDroitLAPG extends BEntity {
     public static final String FIELDNAME_NODROIT = "VANDRO";
     public static final String FIELDNAME_NPA = "VANPOS";
     public static final String FIELDNAME_PAYS = "VATPAY";
+    public static final String FIELDNAME_CANTON = "VACANT";
     public static final String FIELDNAME_REFERENCE = "VALREF";
     public static final String FIELDNAME_REMARQUE = "VALREM";
     public static final String FIELDNAME_SOUMIS_IMPOT_SOURCE = "VABSIM";
@@ -77,6 +78,7 @@ public class APDroitLAPG extends BEntity {
     private String reference = "";
     private String remarque = "";
     private String tauxImpotSource = "";
+    private String csCantonDomicile = "";
 
     public APDroitLAPG() {
     }
@@ -153,6 +155,7 @@ public class APDroitLAPG extends BEntity {
         reference = statement.dbReadString(APDroitLAPG.FIELDNAME_REFERENCE);
         remarque = statement.dbReadString(APDroitLAPG.FIELDNAME_REMARQUE);
         tauxImpotSource = statement.dbReadNumeric(APDroitLAPG.FIELDNAME_TAUX_IMPOT_SOURCE);
+        csCantonDomicile = statement.dbReadNumeric(APDroitLAPG.FIELDNAME_CANTON);
     }
 
     @Override
@@ -208,6 +211,8 @@ public class APDroitLAPG extends BEntity {
                 this._dbWriteBoolean(statement.getTransaction(), isSoumisImpotSource, BConstants.DB_TYPE_BOOLEAN_CHAR));
         statement.writeField(APDroitLAPG.FIELDNAME_TAUX_IMPOT_SOURCE,
                 this._dbWriteNumeric(statement.getTransaction(), tauxImpotSource));
+        statement.writeField(APDroitLAPG.FIELDNAME_CANTON,
+                this._dbWriteNumeric(statement.getTransaction(), csCantonDomicile, "csCantonDomicile"));
     }
 
     public String getCsProvenanceDroitAcquis() {
@@ -461,5 +466,19 @@ public class APDroitLAPG extends BEntity {
      */
     public boolean validateBeforeCalcul(BTransaction transaction) throws Exception {
         return true;
+    }
+
+    /**
+     * @return the csCantonDomicile
+     */
+    public String getCsCantonDomicile() {
+        return csCantonDomicile;
+    }
+
+    /**
+     * @param csCantonDomicile the csCantonDomicile to set
+     */
+    public void setCsCantonDomicile(String csCantonDomicile) {
+        this.csCantonDomicile = csCantonDomicile;
     }
 }

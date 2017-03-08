@@ -128,6 +128,9 @@ public abstract class APAbstractRecapitulatifDroit extends BEntity {
     /** DOCUMENT ME! */
     protected String nom = "";
 
+    /** DOCUMENT ME! */
+    protected String idTiers = "";
+
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
@@ -194,6 +197,7 @@ public abstract class APAbstractRecapitulatifDroit extends BEntity {
         noAVS = NSUtil.formatAVSUnknown(statement.dbReadString(APDroitLAPGJointDemande.FIELDNAME_NUM_AVS));
         nom = statement.dbReadString(APDroitLAPGJointDemande.FIELDNAME_NOM);
         prenom = statement.dbReadString(APDroitLAPGJointDemande.FIELDNAME_PRENOM);
+        idTiers = statement.dbReadString(APDroitLAPGJointDemande.FIELDNAME_ID_TIERS_TI);
     }
 
     /**
@@ -387,5 +391,19 @@ public abstract class APAbstractRecapitulatifDroit extends BEntity {
      */
     public void setPrenom(String string) {
         prenom = string;
+    }
+
+    /**
+     * @return the idTiers
+     */
+    public String getIdTiers() {
+        return idTiers;
+    }
+
+    /**
+     * @param idTiers the idTiers to set
+     */
+    public void setIdTiers(String idTiers) {
+        this.idTiers = idTiers;
     }
 }

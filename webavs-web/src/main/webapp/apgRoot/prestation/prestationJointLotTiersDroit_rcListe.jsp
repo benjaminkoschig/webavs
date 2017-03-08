@@ -56,7 +56,7 @@
 			<th>
 				&nbsp;
 			</th>
-			<th>
+			<th colspan="2">
 				<ct:FWLabel key="JSP_DETAIL_ASSURE" />
 			</th>
 			<th>
@@ -157,7 +157,12 @@
 			</td>
 <%
 		}
-%>			<td class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>">
+
+%>			
+			<td class="mtd" nowrap >
+				<A  href="#" onclick="window.open('<%=servletContext%><%=("/apg")%>?userAction=<%=globaz.apg.servlet.IAPActions.ACTION_DROIT_LAPG%>.actionAfficherDossierGed&amp;noAVSId=<%=line.getNoAVS()%>&amp;serviceNameId=<%=viewBean.getSession().getApplication().getProperty(globaz.externe.IPRConstantesExternes.PROPERTY_AFFICHAGE_DOSSIER_GED)%>')" >GED</A>
+			</td>
+			<td class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>">
 				<%=line.getDateDebut() + " - " + line.getDateFin()%>&nbsp;
 			</td>
 			
