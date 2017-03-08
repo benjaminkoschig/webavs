@@ -335,11 +335,15 @@ public class AFUtil {
         StringBuffer options = new StringBuffer();
         HashSet<String> affSet = new HashSet<String>();
         try {
+            // K170119_001, ne pas faire la recherche si le no d'affilié est vide, évite de lancer une recherche sur
+            // tout
+
             AFAffiliationManager manager = new AFAffiliationManager();
             manager.setSession(bsession);
             manager.setLikeAffilieNumero(like);
-            manager.find(BManager.SIZE_NOLIMIT);
-
+            if (!JadeStringUtil.isBlank(like)) {
+                manager.find(BManager.SIZE_NOLIMIT);
+            }
             for (int i = 0; i < manager.size(); i++) {
                 AFAffiliation affilie = (AFAffiliation) manager.getEntity(i);
                 String nom = "";
@@ -378,6 +382,7 @@ public class AFUtil {
                     affSet.add(affilie.getIdTiers() + "-" + affilie.getAffilieNumero());
                 }
             }
+
             if (manager.size() == 0) {
                 options.append("<option value='");
                 options.append(like);
