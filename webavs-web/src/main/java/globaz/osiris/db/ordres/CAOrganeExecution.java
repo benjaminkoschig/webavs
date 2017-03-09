@@ -3,6 +3,7 @@ package globaz.osiris.db.ordres;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMemoryLog;
 import globaz.framework.util.FWMessage;
+import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.GlobazServer;
@@ -483,7 +484,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             // Création du journal CA
             CAJournal journal = initJournal(context);
 
-            final Map<String, CAOrganeExecution> organesExecutions = getOrganesExecutions();
+            final Map<String, CAOrganeExecution> organesExecutions = getOrganesExecutionsBVRCamt054();
             final List<CACamt054Notification> notifications = getNotifications(context, doc);
 
             // Boucle sur chaque notification (B LEVEL)
@@ -514,11 +515,12 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         }
     }
 
-    private Map<String, CAOrganeExecution> getOrganesExecutions() throws Exception {
+    private Map<String, CAOrganeExecution> getOrganesExecutionsBVRCamt054() throws Exception {
         final Map<String, CAOrganeExecution> organesExecutions = new HashMap<String, CAOrganeExecution>();
 
         final CAOrganeExecutionManager manager = new CAOrganeExecutionManager();
         manager.setSession(getSession());
+        manager.setTypeBVRCAMT054Only(true);
         manager.find(BManager.SIZE_NOLIMIT);
 
         for (int i = 0; i < manager.getSize(); i++) {
@@ -542,10 +544,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
     }
 
     private String getMessageForYellowReportFile(final String emailAdresse) {
-        String message = getSession().getLabel("5355");
-        message = message.replace("{0}", emailAdresse);
-        message = message.replace("{1}", JadeDateUtil.getGlobazFormattedDateTime(new Date()));
-        return message;
+        return FWMessageFormat.format(getSession().getLabel("5355"), emailAdresse,
+                JadeDateUtil.getGlobazFormattedDateTime(new Date()));
     }
 
     private List<CACamt054Notification> getNotifications(globaz.osiris.process.CAProcessBVR context, final Document doc) {
@@ -645,12 +645,14 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         if (!getNoAdherentBVR().equals(groupTx.getNoAdherent())) {
 
             final StringBuilder messageAdherent = new StringBuilder();
-            messageAdherent.append(getSession().getLabel("5339"));
-            messageAdherent.append(" (");
-            messageAdherent.append(groupTx.getNoAdherent());
-            messageAdherent.append(" ");
+
+            messageAdherent.append(FWMessageFormat.format(getSession().getLabel("5339"), groupTx.getNoAdherent(),
+                    getNoAdherentBVR()));
+            messageAdherent.append(" ( ");
 
             if (organesExecutions.containsKey(groupTx.getNoAdherent())) {
+                messageAdherent.append(getSession().getLabel("5359"));
+                messageAdherent.append(" ");
                 messageAdherent.append(organesExecutions.get(groupTx.getNoAdherent()).getNom());
             } else {
                 messageAdherent.append(getSession().getLabel("5358"));

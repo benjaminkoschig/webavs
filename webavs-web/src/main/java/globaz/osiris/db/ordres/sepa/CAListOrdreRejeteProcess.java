@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -228,8 +227,7 @@ public class CAListOrdreRejeteProcess extends BProcess {
                     numTransac);
             body = FWMessageFormat.format(getSession().getLabel("LIST_OSIRIS_ORDREREJETE_MAIL_BODY_SUCCESS"),
                     numTransac);
-
-            body += ArrayUtils.toString(reasons);
+            body += StringUtils.join(reasons, '\n');
         }
         // envoi
         ProcessMailUtils.sendMail(mailsList, subject, body, joinsFilesPathsList);

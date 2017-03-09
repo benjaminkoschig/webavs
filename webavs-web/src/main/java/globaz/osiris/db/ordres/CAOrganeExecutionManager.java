@@ -15,6 +15,7 @@ public class CAOrganeExecutionManager extends BManager implements Serializable {
     private String fromIdOrganeExecution = "";
     private String fromNom = new String();
     private boolean forIdTypeTraitementOG = false;
+    private boolean typeBVRCAMT054Only = false;
 
     /**
      * retourne la clause FROM de la requete SQL (la table)
@@ -74,6 +75,14 @@ public class CAOrganeExecutionManager extends BManager implements Serializable {
             sqlWhere += "IDTYPETRAITEMENTOG IN (" + APIOrganeExecution.OG_OPAE_DTA + ","
                     + APIOrganeExecution.OG_ISO_20022 + ")";
         }
+
+        if (isTypeBVRCAMT054Only()) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += "IDTYPETRAITEMENTBV IN (" + APIOrganeExecution.BVR_CAMT054 + ")";
+        }
+
         return sqlWhere;
 
     }
@@ -155,5 +164,21 @@ public class CAOrganeExecutionManager extends BManager implements Serializable {
      */
     public void setForIdTypeTraitementOG(boolean forIdTypeTraitementOG) {
         this.forIdTypeTraitementOG = forIdTypeTraitementOG;
+    }
+
+    /**
+     * Keep only OE where TypeTraitementBV is CAMT054 (ISO20022)
+     * 
+     * @return
+     */
+    public boolean isTypeBVRCAMT054Only() {
+        return typeBVRCAMT054Only;
+    }
+
+    /**
+     * Keep only OE where TypeTraitementBV is CAMT054 (ISO20022)
+     */
+    public void setTypeBVRCAMT054Only(boolean typeBVRCAMT054Only) {
+        this.typeBVRCAMT054Only = typeBVRCAMT054Only;
     }
 }
