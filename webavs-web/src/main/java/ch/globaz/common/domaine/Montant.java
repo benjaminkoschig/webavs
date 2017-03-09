@@ -1,5 +1,6 @@
 package ch.globaz.common.domaine;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -16,7 +17,7 @@ import java.util.Locale;
  * @author dma
  * 
  */
-public class Montant {
+public class Montant implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private BigDecimal currency = BigDecimal.ZERO;
