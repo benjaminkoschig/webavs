@@ -1,3 +1,6 @@
+/*
+ * Globaz SA.
+ */
 package ch.globaz.common.jadedb;
 
 import globaz.globall.db.BEntity;
@@ -9,10 +12,16 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+import ch.globaz.common.jadedb.converter.ConverterDB;
+import ch.globaz.common.jadedb.converter.MontantConverterDB;
+import ch.globaz.common.jadedb.exception.JadeDataBaseException;
 
 public abstract class JadeEntity extends BEntity {
 
     private static final long serialVersionUID = 1L;
+    public static final MontantConverterDB CONVERTER_MONTANT = new MontantConverterDB();
+
     private transient BStatement statement;
 
     protected abstract void writeProperties();
@@ -29,7 +38,7 @@ public abstract class JadeEntity extends BEntity {
         try {
             this.save(transaction.getTransaction());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new JadeDataBaseException(e);
         }
     }
 
@@ -73,6 +82,11 @@ public abstract class JadeEntity extends BEntity {
         return this.readDateTime(tableDefinition.getColumn());
     }
 
+    // @SuppressWarnings("unchecked")
+    public <D, B> D read(TableDefinition tableDefinition, ConverterDB<D, B> converter) {
+        return converter.fromDB((B) read(tableDefinition));
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T read(TableDefinition tableDefinition) {
         if (Integer.class.equals(tableDefinition.getType())) {
@@ -90,7 +104,7 @@ public abstract class JadeEntity extends BEntity {
         } else if (BigDecimal.class.equals(tableDefinition.getType())) {
             return (T) readBigDecimal(tableDefinition.getColumn());
         } else {
-            throw new RuntimeException("Type no pris en charge pour la colonne suivante: " + tableDefinition);
+            throw new JadeDataBaseException("Type non pris en charge pour la colonne suivante : " + tableDefinition);
         }
     }
 
@@ -98,7 +112,7 @@ public abstract class JadeEntity extends BEntity {
         try {
             return statement.dbReadBigDecimal(column);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new JadeDataBaseException(e);
         }
     }
 
@@ -111,10 +125,10 @@ public abstract class JadeEntity extends BEntity {
             }
             return Long.valueOf(v);
         } catch (NumberFormatException e) {
-            throw new RuntimeException("Impossible de convertir en Long une valeur de la colonne " + column
+            throw new JadeDataBaseException("Impossible de convertir en Long une valeur de la colonne " + column
                     + " pour la valeur: " + v);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new JadeDataBaseException(e);
         }
     }
 
@@ -127,10 +141,10 @@ public abstract class JadeEntity extends BEntity {
             }
             return Double.valueOf(v);
         } catch (NumberFormatException e) {
-            throw new RuntimeException("Impossible de convertir en Double une valeur de la colonne " + column
+            throw new JadeDataBaseException("Impossible de convertir en Double une valeur de la colonne " + column
                     + " pour la valeur: " + v);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new JadeDataBaseException(e);
         }
 
     }
@@ -144,10 +158,10 @@ public abstract class JadeEntity extends BEntity {
             }
             return Integer.valueOf(v);
         } catch (NumberFormatException e) {
-            throw new RuntimeException("Impossible de convertir en integer une valeur de la colonne " + column
+            throw new JadeDataBaseException("Impossible de convertir en integer une valeur de la colonne " + column
                     + " pour la valeur: " + v);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new JadeDataBaseException(e);
         }
     }
 
@@ -155,7 +169,7 @@ public abstract class JadeEntity extends BEntity {
         try {
             return statement.dbReadBoolean(column);
         } catch (Exception e) {
-            throw new RuntimeException("Impossible de convertir en boolean une valeur de la colonne " + column);
+            throw new JadeDataBaseException("Impossible de convertir en boolean une valeur de la colonne " + column, e);
         }
     }
 
@@ -167,7 +181,8 @@ public abstract class JadeEntity extends BEntity {
             }
             return newFormatter("yyyyMMddHHmmssSS").parse(value);
         } catch (ParseException e) {
-            throw new RuntimeException("Problem to parse date from column'" + column + "' (value=" + value + ")", e);
+            throw new JadeDataBaseException("Problem to parse date from column'" + column + "' (value=" + value + ")",
+                    e);
         }
     }
 
@@ -179,7 +194,8 @@ public abstract class JadeEntity extends BEntity {
             }
             return newFormatter("yyyyMMdd").parse(value);
         } catch (ParseException e) {
-            throw new RuntimeException("Problem to parse date from column'" + column + "' (value=" + value + ")", e);
+            throw new JadeDataBaseException("Problem to parse date from column'" + column + "' (value=" + value + ")",
+                    e);
         }
     }
 
@@ -191,7 +207,7 @@ public abstract class JadeEntity extends BEntity {
         try {
             return statement.dbReadString(column);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new JadeDataBaseException(e);
         }
     }
 
@@ -215,7 +231,7 @@ public abstract class JadeEntity extends BEntity {
         statement.writeField(column, _dbWriteDateAMJ(statement.getTransaction(), date, desc));
     }
 
-    void writeDate(String column, Date date, String desc) {
+    void writeDate(String column, Date date) {
         if (column == null) {
             statement.writeField(column, null);
         } else {
@@ -223,7 +239,7 @@ public abstract class JadeEntity extends BEntity {
         }
     }
 
-    void writeDateTime(String column, Date date, String desc) {
+    void writeDateTime(String column, Date date) {
         if (date == null) {
             statement.writeField(column, null);
         } else {
@@ -239,11 +255,15 @@ public abstract class JadeEntity extends BEntity {
         statement.writeField(column, _dbWriteBoolean(statement.getTransaction(), value, desc));
     }
 
-    private String numberToString(Number value) {
+    private static String numberToString(Number value) {
         if (value == null) {
             return null;
         }
         return value.toString();
+    }
+
+    public <D> void write(TableDefinition def, D value, ConverterDB<D, ?> converter) {
+        this.write(def.getColumn(), converter.toDB(value), def.toString());
     }
 
     public void write(TableDefinition def, Object value) {
@@ -251,7 +271,7 @@ public abstract class JadeEntity extends BEntity {
     }
 
     public void writeDateTime(TableDefinition def, Date date) {
-        this.writeDateTime(def.getColumn(), date, def.toString());
+        this.writeDateTime(def.getColumn(), date);
     }
 
     public void writeNumber(TableDefinition def, Object value) {
@@ -268,12 +288,12 @@ public abstract class JadeEntity extends BEntity {
         } else if (value instanceof Boolean) {
             writeBoolean(column, (Boolean) value, desc);
         } else if (value instanceof Date) {
-            writeDate(column, (Date) value, desc);
+            writeDate(column, (Date) value);
         } else if (value instanceof BigDecimal) {
             writeBigDecimal(column, (BigDecimal) value, desc);
         } else {
-            throw new RuntimeException("Type d'objet (" + value.getClass() + ") non pris en charge pour la valeur:"
-                    + value + " de la colonne: " + column);
+            throw new JadeDataBaseException("Type d'objet (" + value.getClass()
+                    + ") non pris en charge pour la valeur:" + value + " de la colonne: " + column);
         }
     }
 
@@ -288,7 +308,7 @@ public abstract class JadeEntity extends BEntity {
     @Override
     public final String _getTableName() {
         if (getTableDef().isEnum()) {
-            TableDefinition tableDefinition = (getTableDef().getEnumConstants()[0]);
+            TableDefinition tableDefinition = getTableDef().getEnumConstants()[0];
             return tableDefinition.getTableName();
         }
         return null;
@@ -307,9 +327,9 @@ public abstract class JadeEntity extends BEntity {
             this.writeKey(defPrimaryKey, field.get(this));
             writeNumber(defPrimaryKey, field.get(this));
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
+            throw new JadeDataBaseException(e);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new JadeDataBaseException(e);
         }
     }
 
@@ -318,9 +338,9 @@ public abstract class JadeEntity extends BEntity {
     // try {
     // field.set(this, id);
     // } catch (IllegalArgumentException e) {
-    // throw new RuntimeException(e);
+    // throw new JadeDataBaseException(e);
     // } catch (IllegalAccessException e) {
-    // throw new RuntimeException(e);
+    // throw new JadeDataBaseException(e);
     // }
     // }
 
@@ -329,22 +349,22 @@ public abstract class JadeEntity extends BEntity {
     // try {
     // return (Integer) field.get(this);
     // } catch (IllegalArgumentException e) {
-    // throw new RuntimeException(e);
+    // throw new JadeDataBaseException(e);
     // } catch (IllegalAccessException e) {
-    // throw new RuntimeException(e);
+    // throw new JadeDataBaseException(e);
     // }
     // }
 
     Field resolveFieldPrimaryKey() {
         TableDefinition defPrimaryKey = resolveDefPK();
         try {
-            Field field = this.getClass().getDeclaredField(defPrimaryKey.getColumn().toLowerCase());
+            Field field = this.getClass().getDeclaredField(defPrimaryKey.getColumn().toLowerCase(Locale.getDefault()));
             field.setAccessible(true);
             return field;
         } catch (SecurityException e) {
-            throw new RuntimeException(e);
+            throw new JadeDataBaseException(e);
         } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
+            throw new JadeDataBaseException(e);
         }
     }
 
