@@ -1,11 +1,9 @@
 package globaz.corvus.helpers.process;
 
-import globaz.corvus.process.REDebloquerMontantRenteAccordeeProcess;
 import globaz.corvus.vb.process.REDebloquerMontantRAViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.globall.api.BISession;
-import globaz.globall.db.BSession;
 import globaz.prestation.helpers.PRAbstractHelper;
 
 public class REDebloquerRenteAccordeeHelper extends PRAbstractHelper {
@@ -21,17 +19,17 @@ public class REDebloquerRenteAccordeeHelper extends PRAbstractHelper {
 
         REDebloquerMontantRAViewBean vb = (REDebloquerMontantRAViewBean) viewBean;
 
-        try {
-            REDebloquerMontantRenteAccordeeProcess process = new REDebloquerMontantRenteAccordeeProcess();
-            process.setSession((BSession) session);
-            process.setEMailAddress(vb.getEMailAdress());
-            process.setIdRenteAccordee(vb.getIdRenteAccordee());
-
-            process.start();
-
-        } catch (Exception e) {
-            vb.setMsgType(FWViewBeanInterface.ERROR);
-            vb.setMessage(e.toString());
-        }
+        // try {
+        // REDebloquerMontantRenteAccordeeProcess process = new REDebloquerMontantRenteAccordeeProcess();
+        // process.setSession((BSession) session);
+        // process.setEMailAddress(vb.getEMailAdress());
+        // process.setIdRenteAccordee(vb.getIdRenteAccordee());
+        //
+        // process.start();
+        //
+        // } catch (Exception e) {
+        // vb.setMsgType(FWViewBeanInterface.ERROR);
+        // vb.setMessage(e.toString());
+        // }
     }
 }

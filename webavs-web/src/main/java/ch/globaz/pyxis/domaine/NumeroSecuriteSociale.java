@@ -30,7 +30,8 @@ public class NumeroSecuriteSociale implements Serializable {
 
     private static void checkFormat(final String nss) {
         if (!nss.matches(NumeroSecuriteSociale.REGEX_NSS)) {
-            throw new IllegalArgumentException("NSS must be formated like 756.xxxx.xxxx.xx where x are digits");
+            throw new IllegalArgumentException("NSS must be formated like 756.xxxx.xxxx.xx where x are digits, nss: ("
+                    + nss + ")");
         }
     }
 

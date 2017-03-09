@@ -1,8 +1,9 @@
+<%@ include file="/theme/detail_ajax/header.jspf" %>
+
 <%-- tpl:insert page="/theme/detail.jtpl" --%>
 <%@ page language="java" import="globaz.globall.http.*"  contentType="text/html;charset=ISO-8859-1" %>
 <%@page import="globaz.pegasus.vb.blocage.PCDeblocageViewBean"%>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
-<%@ include file="/theme/detail_ajax/header.jspf" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page isELIgnored ="false" %>
 <%-- tpl:put name="zoneInit" --%>

@@ -1,24 +1,21 @@
 package globaz.corvus.vb.process;
 
+import globaz.corvus.db.deblocage.ReRetour;
+import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BSpy;
 import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiersManager;
 import globaz.prestation.interfaces.af.IPRAffilie;
 import globaz.prestation.interfaces.af.PRAffiliationHelper;
-import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
-import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
-import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
-import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
-import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
-import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import ch.globaz.common.domaine.Montant;
 
-/**
- * @author SCR
- */
 public class REDebloquerMontantRAViewBean extends PRAbstractViewBeanSupport {
 
     private static final Object[] METHODES_SEL_ADRESSE = new Object[] {
@@ -26,88 +23,86 @@ public class REDebloquerMontantRAViewBean extends PRAbstractViewBeanSupport {
             new String[] { "idDomaineAdrPmt", "idApplication" },
             new String[] { "numAffilieEmployeur", "idExterneAvoirPaiement" } };
 
-    private String adresseFormattee;
-    private String ccpOuBanqueFormatte;
-    private String eMailAdress;
-    private String idAffilieAdrPmt;
-    private String idCompteAnnexe;
-    private String idDomaineAdrPmt;
-    private String idRenteAccordee;
-    private String idSection;
-    private String idTiersAdrPmt;
     private String idTiersBeneficiaire;
-    private Set<String> idTiersFamille;
+    private String adresseFormattee;
+    private String idAffilieAdrPmt;
+    private String idRenteAccordee;
+    private Set<String> idTiersFamille = new HashSet<String>();
     private String montantADebloquer;
     private String montantBloque;
     private String montantDebloque;
-    private String refPmt;
-    private boolean retourDepuisPyxis;
+    private String montantRente;
+    private boolean retourDepuisPyxis = false;
     private String tiersBeneficiaireInfo;
+    private String idTiersAdrPmt;
+    private String idDomaineAdrPmt;
+    private String idCompteAnnexe;
+    private String periode;
+    private String genre;
+    private List<ReRetour> retours;
 
-    public REDebloquerMontantRAViewBean() {
-        super();
-
-        adresseFormattee = "";
-        ccpOuBanqueFormatte = "";
-        eMailAdress = "";
-        idAffilieAdrPmt = "";
-        idCompteAnnexe = "";
-        idDomaineAdrPmt = "";
-        idRenteAccordee = "";
-        idSection = "";
-        idTiersAdrPmt = "";
-        idTiersBeneficiaire = "";
-        montantADebloquer = "";
-        montantBloque = "";
-        montantDebloque = "";
-        refPmt = "";
-        retourDepuisPyxis = false;
-        tiersBeneficiaireInfo = "";
-        idTiersFamille = new HashSet<String>();
+    public String getGenre() {
+        return genre;
     }
 
-    public String getAdresseFormattee() {
-        return adresseFormattee;
+    public void setGenre(String genre) {
+        this.genre = genre;
     }
 
-    public String getCcpOuBanqueFormatte() {
-        return ccpOuBanqueFormatte;
+    public String getPeriode() {
+        return periode;
     }
 
-    public String getEMailAdress() {
-        return eMailAdress;
-    }
-
-    public String getIdAffilieAdrPmt() {
-        return idAffilieAdrPmt;
-    }
-
-    public String getIdCompteAnnexe() {
-        return idCompteAnnexe;
-    }
-
-    public String getIdDomaineAdrPmt() {
-        return idDomaineAdrPmt;
-    }
-
-    public String getIdRenteAccordee() {
-        return idRenteAccordee;
-    }
-
-    public String getIdSection() {
-        return idSection;
+    public void setPeriode(String periode) {
+        this.periode = periode;
     }
 
     public String getIdTiersAdrPmt() {
         return idTiersAdrPmt;
     }
 
-    public String getIdTiersBeneficiaire() {
-        return idTiersBeneficiaire;
+    public void setIdTiersAdrPmt(String idTiersAdrPmt) {
+        this.idTiersAdrPmt = idTiersAdrPmt;
+    }
+
+    public String getIdDomaineAdrPmt() {
+        return idDomaineAdrPmt;
+    }
+
+    public void setIdDomaineAdrPmt(String idDomaineAdrPmt) {
+        this.idDomaineAdrPmt = idDomaineAdrPmt;
+    }
+
+    public String getIdCompteAnnexe() {
+        return idCompteAnnexe;
+    }
+
+    public void setIdCompteAnnexe(String idCompteAnnexe) {
+        this.idCompteAnnexe = idCompteAnnexe;
     }
 
     public Set<String> getIdTiersFamille() {
         return idTiersFamille;
+    }
+
+    public String getAdresseFormattee() {
+        return adresseFormattee;
+    }
+
+    public String getIdAffilieAdrPmt() {
+        return idAffilieAdrPmt;
+    }
+
+    public String getIdRenteAccordee() {
+        return idRenteAccordee;
+    }
+
+    public String getIdTiersBeneficiaire() {
+        return idTiersBeneficiaire;
+    }
+
+    public void setIdTiersBeneficiaire(String idTiersBeneficiaire) {
+        this.idTiersBeneficiaire = idTiersBeneficiaire;
     }
 
     /**
@@ -155,10 +150,6 @@ public class REDebloquerMontantRAViewBean extends PRAbstractViewBeanSupport {
         return montantDebloque;
     }
 
-    public String getRefPmt() {
-        return refPmt;
-    }
-
     @Override
     public BSpy getSpy() {
         return null;
@@ -172,81 +163,16 @@ public class REDebloquerMontantRAViewBean extends PRAbstractViewBeanSupport {
         return retourDepuisPyxis;
     }
 
-    /**
-     * charge l'adresse de paiement.
-     * 
-     * @return une adresse de paiement ou null.
-     */
-    public void loadAdressePaiement(String dateValeurCompta) throws Exception {
-
-        TIAdressePaiementData adresse = PRTiersHelper.getAdressePaiementData(getSession(), getSession()
-                .getCurrentThreadTransaction(), getIdTiersAdrPmt(), getIdDomaineAdrPmt(), getIdAffilieAdrPmt(),
-                dateValeurCompta);
-
-        // formatter les infos de l'adresse pour l'affichage correct dans
-        // l'ecran
-        if ((adresse != null) && !adresse.isNew()) {
-            TIAdressePaiementDataSource source = new TIAdressePaiementDataSource();
-            source.load(adresse);
-
-            // formatter le no de ccp ou le no bancaire
-            if (JadeStringUtil.isEmpty(adresse.getCcp())) {
-                setCcpOuBanqueFormatte(new TIAdressePaiementBanqueFormater().format(source));
-            } else {
-                setCcpOuBanqueFormatte(new TIAdressePaiementCppFormater().format(source));
-            }
-
-            // formatter l'adresse
-            setAdresseFormattee(new TIAdressePaiementBeneficiaireFormater().format(source));
-        } else {
-            setCcpOuBanqueFormatte("");
-            setAdresseFormattee("");
-        }
-    }
-
     public void setAdresseFormattee(String adresseFormattee) {
         this.adresseFormattee = adresseFormattee;
-    }
-
-    public void setCcpOuBanqueFormatte(String ccpOuBanqueFormatte) {
-        this.ccpOuBanqueFormatte = ccpOuBanqueFormatte;
-    }
-
-    public void setEMailAdress(String mailAdress) {
-        eMailAdress = mailAdress;
     }
 
     public void setIdAffilieAdrPmt(String idAffilieAdrPmt) {
         this.idAffilieAdrPmt = idAffilieAdrPmt;
     }
 
-    public void setIdCompteAnnexe(String idCompteAnnexe) {
-        this.idCompteAnnexe = idCompteAnnexe;
-    }
-
-    public void setIdDomaineAdrPmt(String idDomaineAdrPmt) {
-        this.idDomaineAdrPmt = idDomaineAdrPmt;
-    }
-
     public void setIdRenteAccordee(String newIdRenteAccordee) {
         idRenteAccordee = newIdRenteAccordee;
-    }
-
-    public void setIdSection(String idSection) {
-        this.idSection = idSection;
-    }
-
-    public void setIdTiersAdressePaiementDepuisPyxis(String idAdressePaiement) {
-        setIdTiersAdrPmt(idAdressePaiement);
-        retourDepuisPyxis = true;
-    }
-
-    public void setIdTiersAdrPmt(String idTiersAdrPmt) {
-        this.idTiersAdrPmt = idTiersAdrPmt;
-    }
-
-    public void setIdTiersBeneficiaire(String newIdTiersBeneficiaire) {
-        idTiersBeneficiaire = newIdTiersBeneficiaire;
     }
 
     public void setIdTiersFamille(Set<String> idTiersFamille) {
@@ -280,10 +206,6 @@ public class REDebloquerMontantRAViewBean extends PRAbstractViewBeanSupport {
         }
     }
 
-    public void setRefPmt(String refPmt) {
-        this.refPmt = refPmt;
-    }
-
     public void setRetourDepuisPyxis(boolean retourDepuisPyxis) {
         this.retourDepuisPyxis = retourDepuisPyxis;
     }
@@ -292,8 +214,98 @@ public class REDebloquerMontantRAViewBean extends PRAbstractViewBeanSupport {
         tiersBeneficiaireInfo = newTiersBeneficiaireInfo;
     }
 
+    public String getIdTiersRequerant() {
+        return null;
+    }
+
     @Override
     public boolean validate() {
         return true;
     }
+
+    public boolean getIsDevalidable() {
+        return true;
+    }
+
+    public boolean getIsUpdatable() {
+        return true;
+    }
+
+    @Override
+    public String getAction() {
+        return null;
+    }
+
+    public Montant getMontantToUsedForDeblocage() {
+        return null;
+    }
+
+    public String getDescriptionRequerant() {
+        return null;
+    }
+
+    public String getCsDomaineApplicationRente() {
+        return IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE;
+    }
+
+    public String getCsTypeBlocageDette() {
+        return null;
+    }
+
+    public String getCsTypeBlocageCreancier() {
+        return null;
+    }
+
+    public String getCsTypeBlocageBeneficiare() {
+        return null;
+    }
+
+    public String getClassAdministrationService() {
+        return ch.globaz.pyxis.business.service.AdministrationService.class.getName();
+    }
+
+    public String getClassPersonneService() {
+        return ch.globaz.pyxis.business.service.PersonneEtendueService.class.getName();
+    }
+
+    public List<?> getDettesUpdateable() {
+        return new ArrayList();
+    }
+
+    public Map<?, ?> getDettes() {
+        return new HashMap();
+    }
+
+    public List<ReRetour> getRetours() {
+        return retours;
+    }
+
+    public void setRetours(List<ReRetour> retours) {
+        this.retours = retours;
+    }
+
+    public Map<?, ?> getCreanciers() {
+        return new HashMap();
+    }
+
+    public List<?> getVersementBeneficiaires() {
+        return new ArrayList();
+    }
+
+    public List<?> getVersementBeneficiairesUpdateable() {
+        return new ArrayList();
+    }
+
+    public String getMontantLiberer() {
+        return null;
+    }
+
+    public String getMontantRente() {
+        return montantRente;
+    }
+
+    public void setMontantRente(String montantRente) {
+        this.montantRente = montantRente;
+    }
+
 }

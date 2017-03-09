@@ -1,0 +1,117 @@
+.row-fluid {
+
+}
+
+.refPaiement{
+	margin-bottom:10px !important;
+}
+table,tr,td {
+	margin: 0;
+	padding: 0;
+}
+
+.input-mini {
+  width: 60px !important;
+}
+
+
+.value, .montant {
+ /*color: gray;*/
+}
+
+
+.notUpdatable {
+ color: gray;
+ padding-top: 5px;
+}
+
+.value,.lbl{
+ padding:0 5px 0 10px;
+}
+
+.lbl{
+ font-weight:bold;
+
+}
+
+.mainContainerAjax, .likeMainContainerAjax {
+    background-color: none /*#F8F9F9*/;
+    background-image: none;
+    border: none;
+    border-radius: none;
+    box-shadow: none;
+    margin-bottom: 0px;
+    padding: 0 ;
+}
+
+.mnt {
+	text-align: right;
+}
+label{
+
+	display: inline;
+}
+.globazMultiWidgets .radiosZone  {
+	float:none;
+	vertical-align: top;
+}
+
+
+.imgDesynchronise {
+	margin-left: 5px;
+}
+
+.titre {
+	margin: 0px 0px 10px 0px; 
+ 	background-color: #FEFCFF;
+    border: 1px solid #9E9EC9;
+
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+  	border-radius: 5px;
+  	box-shadow 
+  	-webkit-box-shadow: rgba(49, 85, 244, 0.2) 0px 1px 3px;
+    -moz-box-shadow:rgba(49, 85, 244, 0.2) 0px 1px 3px;
+    box-shadow:rgba(49, 85, 244, 0.2) 0px 1px 3px;
+}
+
+input.jadeAutocompleteAjax, .widget{
+	border-left: 6px solid #356AA0; 
+	border-bottom : solid 1px #356AA0;
+	border-right : solid 1px #356AA0;
+	border-top : solid 1px #356AA0;
+	width : 210px;
+}
+
+h1 {
+	margin:0px;
+	padding:0px;
+	
+	font-size: 1.2em;
+}
+
+
+.right{
+	text-align: right;
+}
+
+hr {
+
+    border-width: 3px 0;
+    margin: 9px 0;
+ }
+
+
+.hasDetteConjoint{
+	color: #C23152;
+}
+
+
+.errorSum{
+	color: #EE5B5B;
+	font-size: 1.3em;
+}
+
+.jadeAutocompleteAjax {
+	    width: 180px !important;
+}

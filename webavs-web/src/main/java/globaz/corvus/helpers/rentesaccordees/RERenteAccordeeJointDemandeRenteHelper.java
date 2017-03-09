@@ -16,9 +16,7 @@ import globaz.corvus.db.annonces.REAnnoncesAugmentationModification10Eme;
 import globaz.corvus.db.annonces.REAnnoncesAugmentationModification9Eme;
 import globaz.corvus.db.basescalcul.REBasesCalcul;
 import globaz.corvus.db.demandes.REDemandeRente;
-import globaz.corvus.db.rentesaccordees.REEnteteBlocage;
 import globaz.corvus.db.rentesaccordees.REInformationsComptabilite;
-import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManager;
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
@@ -35,7 +33,6 @@ import globaz.corvus.vb.rentesaccordees.RERenteAccordeeJointDemandeRenteViewBean
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
-import globaz.framework.util.FWCurrency;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BIPersistentObjectList;
 import globaz.globall.db.BManager;
@@ -46,14 +43,12 @@ import globaz.globall.util.JACalendar;
 import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.external.SFSituationFamilialeFactory;
-import globaz.hera.utils.SFFamilleUtils;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import globaz.prestation.helpers.PRHybridHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRAssert;
-import globaz.prestation.tools.nnss.PRNSSUtil;
 import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
@@ -574,74 +569,8 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
      */
     public FWViewBeanInterface actionDebloquerMontantRA(final FWViewBeanInterface viewBean, final FWAction action,
             final BSession session) throws Exception {
-
-        REDebloquerMontantRAViewBean draViewBean = null;
-
-        REPrestationsAccordees pracc = new REPrestationsAccordees();
-        pracc.setSession(session);
-
-        // Ce cas arrive lors du retour depuis pyxis !!!
-        if ((viewBean instanceof REDebloquerMontantRAViewBean)
-                && ((REDebloquerMontantRAViewBean) viewBean).isRetourDepuisPyxis()) {
-
-            draViewBean = (REDebloquerMontantRAViewBean) viewBean;
-        } else {
-
-            RERenteAccordeeJointDemandeRenteViewBean raViewBean = (RERenteAccordeeJointDemandeRenteViewBean) viewBean;
-            draViewBean = new REDebloquerMontantRAViewBean();
-            draViewBean.setISession(session);
-            draViewBean.setIdRenteAccordee(raViewBean.getIdPrestationAccordee());
-            draViewBean.setIdTiersBeneficiaire(raViewBean.getIdTiersBeneficiaire());
-
-            // recherche de la description du tiers beneficiaire
-            PRTiersWrapper beneficiaire = PRTiersHelper.getTiersParId(session, draViewBean.getIdTiersBeneficiaire());
-            if (beneficiaire != null) {
-                draViewBean.setTiersBeneficiaireInfo(PRNSSUtil.formatDetailRequerantDetail(
-                        beneficiaire.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL),
-                        beneficiaire.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
-                                + beneficiaire.getProperty(PRTiersWrapper.PROPERTY_PRENOM),
-                        beneficiaire.getProperty(PRTiersWrapper.PROPERTY_DATE_NAISSANCE),
-                        session.getCodeLibelle(beneficiaire.getProperty(PRTiersWrapper.PROPERTY_SEXE)),
-                        getLibellePays(beneficiaire.getProperty(PRTiersWrapper.PROPERTY_ID_PAYS_DOMICILE), session)));
-            }
-            pracc.setIdPrestationAccordee(raViewBean.getIdPrestationAccordee());
-            pracc.retrieve();
-
-            // recherche du total bloque
-            if (!JadeStringUtil.isBlankOrZero(pracc.getIdEnteteBlocage())) {
-                REEnteteBlocage entete = new REEnteteBlocage();
-                entete.setSession(session);
-                entete.setIdEnteteBlocage(pracc.getIdEnteteBlocage());
-
-                FWCurrency montantBlk = new FWCurrency(0);
-                try {
-                    entete.retrieve();
-                    if (!entete.isNew()) {
-                        montantBlk.add(entete.getMontantBloque());
-                        montantBlk.sub(entete.getMontantDebloque());
-                        draViewBean.setMontantADebloquer(montantBlk.toString());
-                        draViewBean.setMontantDebloque(entete.getMontantDebloque());
-                        draViewBean.setMontantBloque(entete.getMontantBloque());
-                    }
-                } catch (Exception e) {
-                    ;
-                }
-            }
-
-            // On charge l'adresse de pmt...
-            REInformationsComptabilite ic = pracc.loadInformationsComptabilite();
-
-            draViewBean.setIdTiersAdrPmt(ic.getIdTiersAdressePmt());
-            draViewBean.setIdDomaineAdrPmt(IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE);
-            draViewBean.setIdCompteAnnexe(ic.getIdCompteAnnexe());
-        }
-
-        chercherIdTiersFamille(draViewBean, action, session);
-
-        draViewBean.loadAdressePaiement(JACalendar.todayJJsMMsAAAA());
-        draViewBean.setRetourDepuisPyxis(false);
-        return draViewBean;
-
+        DeblocageHelper deblocageHelper = new DeblocageHelper();
+        return deblocageHelper.actionDebloquerMontantRA(viewBean, action, session);
     }
 
     public FWViewBeanInterface actionDesactiverBlocage(final FWViewBeanInterface viewBean, final FWAction action,
@@ -665,34 +594,13 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
         REDebloquerMontantRenteAccordeeProcess process = new REDebloquerMontantRenteAccordeeProcess(session);
         process.setIdDomaine(((REDebloquerMontantRAViewBean) viewBean).getIdDomaineAdrPmt());
         process.setIdRenteAccordee(((REDebloquerMontantRAViewBean) viewBean).getIdRenteAccordee());
-        process.setIdSection(((REDebloquerMontantRAViewBean) viewBean).getIdSection());
         process.setIdTiersAdrPmt(((REDebloquerMontantRAViewBean) viewBean).getIdTiersAdrPmt());
         process.setMontantADebloque(((REDebloquerMontantRAViewBean) viewBean).getMontantADebloquer());
-        process.setRefPaiement(((REDebloquerMontantRAViewBean) viewBean).getRefPmt());
         process.setControleTransaction(true);
-        process.setEMailAddress(((REDebloquerMontantRAViewBean) viewBean).getEMailAdress());
         process.setSendCompletionMail(true);
         process.start();
 
         return viewBean;
-    }
-
-    private void chercherIdTiersFamille(final REDebloquerMontantRAViewBean viewBean, final FWAction action,
-            final BISession session) throws Exception {
-
-        // récupération des ID Tiers des membres de la famille (étendue)
-        Set<String> idMembreFamille = new HashSet<String>();
-
-        Set<PRTiersWrapper> famille = SFFamilleUtils.getTiersFamilleProche(viewBean.getSession(),
-                viewBean.getIdTiersBeneficiaire());
-
-        for (PRTiersWrapper unMembre : famille) {
-            if (!JadeStringUtil.isBlank(unMembre.getIdTiers())) {
-                idMembreFamille.add(unMembre.getIdTiers());
-            }
-        }
-
-        viewBean.setIdTiersFamille(idMembreFamille);
     }
 
     /**
@@ -1273,20 +1181,6 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
             result.add(Long.parseLong(elm.getIdPrestationAccordee()));
         }
         return result;
-    }
-
-    /**
-     * Méthode qui retourne le libellé de la nationalité par rapport au csNationalité qui est dans le vb
-     * 
-     * @return le libellé du pays (retourne une chaîne vide si pays inconnu)
-     */
-    private String getLibellePays(final String idPays, final BSession session) {
-
-        if ("999".equals(session.getCode(session.getSystemCode("CIPAYORI", idPays)))) {
-            return "";
-        } else {
-            return session.getCodeLibelle(session.getSystemCode("CIPAYORI", idPays));
-        }
     }
 
     /**
