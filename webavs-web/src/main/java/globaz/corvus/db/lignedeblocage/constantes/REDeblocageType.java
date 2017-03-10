@@ -1,9 +1,12 @@
+/*
+ * Globaz SA.
+ */
 package globaz.corvus.db.lignedeblocage.constantes;
 
 import ch.globaz.common.domaine.CodeSystemEnum;
 import ch.globaz.common.domaine.CodeSystemEnumUtils;
 
-public enum RETypeDeblocage implements CodeSystemEnum<RETypeDeblocage> {
+public enum REDeblocageType implements CodeSystemEnum<REDeblocageType> {
     CREANCIER(""),
     DETTE_EN_COMPTA(""),
     VERSEMENT_BENEFICIAIRE(""),
@@ -11,12 +14,12 @@ public enum RETypeDeblocage implements CodeSystemEnum<RETypeDeblocage> {
 
     private String csCode;
 
-    RETypeDeblocage(String csCode) {
+    REDeblocageType(String csCode) {
         this.csCode = csCode;
     }
 
-    public static RETypeDeblocage fromValue(String value) {
-        return CodeSystemEnumUtils.valueOfById(value, RETypeDeblocage.class);
+    public static REDeblocageType fromValue(String value) {
+        return CodeSystemEnumUtils.valueOfById(value, REDeblocageType.class);
     }
 
     @Override
