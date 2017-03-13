@@ -60,6 +60,10 @@ public class ReLigneDeclocageServices {
             throw new IllegalArgumentException("To delete ligneDeblocage, ligneDeblocage must be not null");
         }
 
+        if (ligneDeblocage.isNew()) {
+            throw new IllegalArgumentException("To delete ligneDeblocage, ligneDeblocage must be not new");
+        }
+
         ligneDeblocage.setSession(session);
 
         try {
@@ -79,6 +83,10 @@ public class ReLigneDeclocageServices {
 
         if (ligneDeblocage == null) {
             throw new IllegalArgumentException("To update ligneDeblocage, ligneDeblocage must be not null");
+        }
+
+        if (ligneDeblocage.isNew()) {
+            throw new IllegalArgumentException("To update ligneDeblocage, ligneDeblocage must be not new");
         }
 
         ligneDeblocage.setSession(session);
