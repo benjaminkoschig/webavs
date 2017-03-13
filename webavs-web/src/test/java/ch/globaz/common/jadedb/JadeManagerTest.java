@@ -11,10 +11,10 @@ public class JadeManagerTest {
         JadeManager manager = Mockito.spy(JadeManager.class);
         assertThat(manager._getOrder(null)).isNull();
 
-        manager.createOrderBy("COL1", "COL2");
+        manager.defineOrderBy("COL1", "COL2");
         assertThat(manager._getOrder(null)).isEqualTo("COL1,COL2");
 
-        manager.createOrderBy(TableDefTest.COL1, TableDefTest.COL2);
+        manager.defineOrderBy(TableDefTest.COL1, TableDefTest.COL2);
         assertThat(manager._getOrder(null)).isEqualTo("COL1,COL2");
 
     }
