@@ -18,7 +18,7 @@ public class RELigneDeblocage extends JadeEntity {
     private Integer idTiersAdressePaiement;
     private Integer idApplicationAdressePaiement;
     private Integer idSectionDetteEnCompta;
-    private Integer idPrestation;
+    private Integer idRentePrestation;
     private REDeblocageType typeDeblocage;
     private REDeblocageEtat etatDeblocage;
     private Montant montant;
@@ -32,7 +32,7 @@ public class RELigneDeblocage extends JadeEntity {
         this.write(RELigneDeblocageTableDef.ID_TIERS_ADRESSE_PAIEMENT, idTiersAdressePaiement);
         this.write(RELigneDeblocageTableDef.ID_APPLICATION_ADRESSE_PAIEMENT, idApplicationAdressePaiement);
         this.write(RELigneDeblocageTableDef.ID_SECTION_DETTE_EN_COMPTA, idSectionDetteEnCompta);
-        this.write(RELigneDeblocageTableDef.ID_PRESTATION, idPrestation);
+        this.write(RELigneDeblocageTableDef.ID_RENTE_PRESTATION, idRentePrestation);
         write(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, typeDeblocage);
         write(RELigneDeblocageTableDef.CS_ETAT, etatDeblocage);
         write(RELigneDeblocageTableDef.MONTANT, montant, CONVERTER_MONTANT);
@@ -47,7 +47,7 @@ public class RELigneDeblocage extends JadeEntity {
         idTiersAdressePaiement = this.read(RELigneDeblocageTableDef.ID_TIERS_ADRESSE_PAIEMENT);
         idApplicationAdressePaiement = this.read(RELigneDeblocageTableDef.ID_APPLICATION_ADRESSE_PAIEMENT);
         idSectionDetteEnCompta = this.read(RELigneDeblocageTableDef.ID_SECTION_DETTE_EN_COMPTA);
-        idPrestation = this.read(RELigneDeblocageTableDef.ID_PRESTATION);
+        idRentePrestation = this.read(RELigneDeblocageTableDef.ID_RENTE_PRESTATION);
         typeDeblocage = this.read(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE);
         etatDeblocage = this.read(RELigneDeblocageTableDef.CS_ETAT);
         montant = this.read(RELigneDeblocageTableDef.MONTANT, CONVERTER_MONTANT);
@@ -117,14 +117,6 @@ public class RELigneDeblocage extends JadeEntity {
         this.idSectionDetteEnCompta = idSectionDetteEnCompta;
     }
 
-    public Integer getIdPrestation() {
-        return idPrestation;
-    }
-
-    public void setIdPrestation(Integer idPrestation) {
-        this.idPrestation = idPrestation;
-    }
-
     public Montant getMontant() {
         return montant;
     }
@@ -155,6 +147,14 @@ public class RELigneDeblocage extends JadeEntity {
 
     public void setEtatDeblocage(REDeblocageEtat etatDeblocage) {
         this.etatDeblocage = etatDeblocage;
+    }
+
+    public Integer getIdRentePrestation() {
+        return idRentePrestation;
+    }
+
+    public void setIdRentePrestation(Integer idRentePrestation) {
+        this.idRentePrestation = idRentePrestation;
     }
 
 }
