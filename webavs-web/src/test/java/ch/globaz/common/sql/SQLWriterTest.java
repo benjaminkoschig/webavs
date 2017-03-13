@@ -357,6 +357,14 @@ public class SQLWriterTest {
     }
 
     @Test
+    public void testEqualCodeSystem() throws Exception {
+        CodeSystemTest test = null;
+        assertThat(SQLWriter.write().and("col").equal(CodeSystemTest.TEST_1).toSql()).isEqualTo(" col=1");
+        assertThat(SQLWriter.write().and("col").equal(CodeSystemTest.TEST_2).toSql()).isEqualTo(" col=2");
+        assertThat(SQLWriter.write().and("col").equal(test).toSql()).isEqualTo("");
+    }
+
+    @Test
     public void testEqualForDate() throws Exception {
         String date = null;
         assertThat(SQLWriter.write().and("col").equalForDate(date).toSql()).isEqualTo("");
