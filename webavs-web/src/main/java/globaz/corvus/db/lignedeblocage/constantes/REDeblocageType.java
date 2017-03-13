@@ -7,10 +7,10 @@ import ch.globaz.common.domaine.CodeSystemEnum;
 import ch.globaz.common.domaine.CodeSystemEnumUtils;
 
 public enum REDeblocageType implements CodeSystemEnum<REDeblocageType> {
-    CREANCIER(""),
-    DETTE_EN_COMPTA(""),
-    VERSEMENT_BENEFICIAIRE(""),
-    IMPOTS_SOURCE("");
+    CREANCIER("52863001"),
+    DETTE_EN_COMPTA("52863002"),
+    VERSEMENT_BENEFICIAIRE("52863003"),
+    IMPOTS_SOURCE("52863004");
 
     private String csCode;
 
