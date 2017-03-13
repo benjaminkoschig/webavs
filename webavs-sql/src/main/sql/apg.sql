@@ -168,3 +168,6 @@ update SCHEMA.fwcoup set pcolut = 'Mutterschaft Quellensteuer LAMAT Kantonal Ver
 
 ALTER TABLE SCHEMA.APDROIP ADD VACANT decimal(9,0);
 REORG TABLE SCHEMA.APDROIP;
+
+--Ajout propriété S161012_001 pour ajouté le traité par dans les décisions
+INSERT INTO DB2COTT.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.amat.isAfficherDossierTraitePar.decision','false');
