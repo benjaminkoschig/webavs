@@ -6,6 +6,7 @@ package globaz.corvus.db.lignedeblocage;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageEtat;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
 import globaz.globall.db.BSession;
+import java.util.List;
 import ch.globaz.common.jadedb.exception.JadeDataBaseException;
 
 /**
@@ -20,7 +21,7 @@ public class ReLigneDeclocageServices {
     public ReLigneDeclocageServices(BSession session) {
 
         if (session == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Session must be not null");
         }
 
         this.session = session;
@@ -33,6 +34,10 @@ public class ReLigneDeclocageServices {
      * @return La ligne de déblocage modifiée
      */
     public RELigneDeblocage add(RELigneDeblocage ligneDeblocage) {
+
+        if (ligneDeblocage == null) {
+            throw new IllegalArgumentException("To update ligneDeblocage, ligneDeblocage must be not null");
+        }
 
         ligneDeblocage.setSession(session);
         try {
@@ -50,6 +55,11 @@ public class ReLigneDeclocageServices {
      * @param ligneDeblocage Une ligne de déblocage
      */
     public void delete(RELigneDeblocage ligneDeblocage) {
+
+        if (ligneDeblocage == null) {
+            throw new IllegalArgumentException("To delete ligneDeblocage, ligneDeblocage must be not null");
+        }
+
         ligneDeblocage.setSession(session);
 
         try {
@@ -67,6 +77,10 @@ public class ReLigneDeclocageServices {
      */
     public RELigneDeblocage update(RELigneDeblocage ligneDeblocage) {
 
+        if (ligneDeblocage == null) {
+            throw new IllegalArgumentException("To update ligneDeblocage, ligneDeblocage must be not null");
+        }
+
         ligneDeblocage.setSession(session);
         try {
             ligneDeblocage.update();
@@ -77,25 +91,76 @@ public class ReLigneDeclocageServices {
         return ligneDeblocage;
     }
 
-    public RELigneDeblocages searchByIdRente(String idRente) {
+    /**
+     * Recherche de toutes les lignes de déblocage de l'id de la prestation rente.
+     * 
+     * @param idRentePrestation Un id rente prestation
+     * @return
+     */
+    public RELigneDeblocages searchByIdRente(Integer forIdRentePrestation) {
+
+        if (forIdRentePrestation == null) {
+            throw new IllegalArgumentException("To perform a search by id rente, idRentePrestation must be not null");
+        }
+
+        RELigneDeblocageManager manager = new RELigneDeblocageManager();
+        manager.setSession(session);
+        manager.setForIdRentePrestation(forIdRentePrestation);
+
+        List<RELigneDeblocage> entities = manager.search();
+
         RELigneDeblocages lignesDeblocages = new RELigneDeblocages();
+        lignesDeblocages.addAll(entities);
 
         return lignesDeblocages;
-
     }
 
-    public RELigneDeblocages searchByEtat() {
+    /**
+     * Recherche de toutes les lignes de déblocage par l'état.
+     * 
+     * @param forEtat Un état de déblocage
+     * @return
+     */
+    public RELigneDeblocages searchByEtat(RELigneDeblocageEtat forEtat) {
+
+        if (forEtat == null) {
+            throw new IllegalArgumentException("To perform a search by etat, etat must be not null");
+        }
+
+        RELigneDeblocageManager manager = new RELigneDeblocageManager();
+        manager.setSession(session);
+        manager.setForEtat(forEtat);
+
+        List<RELigneDeblocage> entities = manager.search();
 
         RELigneDeblocages lignesDeblocages = new RELigneDeblocages();
+        lignesDeblocages.addAll(entities);
 
-        return null;
+        return lignesDeblocages;
     }
 
-    public RELigneDeblocages searchByEtatGroupByType(RELigneDeblocageEtat etat, RELigneDeblocageType type) {
+    /**
+     * Recherche de toutes les lignes de déblocage par le type
+     * 
+     * @param fortype Un type de déblocage
+     * @return
+     */
+    public RELigneDeblocages searchByType(RELigneDeblocageType fortype) {
+
+        if (fortype == null) {
+            throw new IllegalArgumentException("To perform a search by type, type must be not null");
+        }
+
+        RELigneDeblocageManager manager = new RELigneDeblocageManager();
+        manager.setSession(session);
+        manager.setForType(fortype);
+
+        List<RELigneDeblocage> entities = manager.search();
 
         RELigneDeblocages lignesDeblocages = new RELigneDeblocages();
+        lignesDeblocages.addAll(entities);
 
-        return null;
+        return lignesDeblocages;
     }
 
 }

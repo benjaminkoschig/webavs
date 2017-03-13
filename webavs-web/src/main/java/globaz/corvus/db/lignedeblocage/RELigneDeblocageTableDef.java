@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import ch.globaz.common.jadedb.TableDefinition;
 
 public enum RELigneDeblocageTableDef implements TableDefinition {
-    ID_DEBLOCAGE("ID_DEBLOCAGE", String.class, true),
+    ID("ID", String.class, true),
     ID_TIERS_CREANCIER("ID_TIERS_CREANCIER", Integer.class),
     ID_ROLE_DETTE_EN_COMPTA("ID_ROLE_DETTE_EN_COMPTA", Integer.class),
     ID_TIERS_ADRESSE_PAIEMENT("ID_TIERS_ADRESSE_PAIEMENT", Integer.class),

@@ -25,4 +25,17 @@ public enum RELigneDeblocageEtat implements CodeSystemEnum<RELigneDeblocageEtat>
     public String getValue() {
         return csCode;
     }
+
+    public boolean isComptabilise() {
+        return COMPTABILISE.equals(this);
+    }
+
+    public boolean isEnregistre() {
+        return ENREGISTRE.equals(this);
+    }
+
+    public boolean isValide() {
+        return VALIDE.equals(this);
+    }
+
 }

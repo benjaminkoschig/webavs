@@ -12,44 +12,44 @@ import ch.globaz.common.jadedb.TableDefinition;
 public class RELigneDeblocage extends JadeEntity {
     private static final long serialVersionUID = 1L;
 
-    private String idDeblocage;
+    private String id;
     private Integer idTiersCreancier;
     private Integer idRoleDetteEnCompta;
     private Integer idTiersAdressePaiement;
     private Integer idApplicationAdressePaiement;
     private Integer idSectionDetteEnCompta;
     private Integer idRentePrestation;
-    private RELigneDeblocageType typeDeblocage;
-    private RELigneDeblocageEtat etatDeblocage;
+    private RELigneDeblocageType type;
+    private RELigneDeblocageEtat etat;
     private Montant montant;
     private String refPaiement;
 
     @Override
     protected void writeProperties() {
-        this.write(RELigneDeblocageTableDef.ID_DEBLOCAGE, idDeblocage);
+        this.write(RELigneDeblocageTableDef.ID, id);
         this.write(RELigneDeblocageTableDef.ID_TIERS_CREANCIER, idTiersCreancier);
         this.write(RELigneDeblocageTableDef.ID_ROLE_DETTE_EN_COMPTA, idRoleDetteEnCompta);
         this.write(RELigneDeblocageTableDef.ID_TIERS_ADRESSE_PAIEMENT, idTiersAdressePaiement);
         this.write(RELigneDeblocageTableDef.ID_APPLICATION_ADRESSE_PAIEMENT, idApplicationAdressePaiement);
         this.write(RELigneDeblocageTableDef.ID_SECTION_DETTE_EN_COMPTA, idSectionDetteEnCompta);
         this.write(RELigneDeblocageTableDef.ID_RENTE_PRESTATION, idRentePrestation);
-        write(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, typeDeblocage);
-        write(RELigneDeblocageTableDef.CS_ETAT, etatDeblocage);
+        write(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, type);
+        write(RELigneDeblocageTableDef.CS_ETAT, etat);
         write(RELigneDeblocageTableDef.MONTANT, montant, CONVERTER_MONTANT);
         this.write(RELigneDeblocageTableDef.REFERENCE_PAIEMENT, refPaiement);
     }
 
     @Override
     protected void readProperties() {
-        idDeblocage = this.read(RELigneDeblocageTableDef.ID_DEBLOCAGE);
+        id = this.read(RELigneDeblocageTableDef.ID);
         idTiersCreancier = this.read(RELigneDeblocageTableDef.ID_TIERS_CREANCIER);
         idRoleDetteEnCompta = this.read(RELigneDeblocageTableDef.ID_ROLE_DETTE_EN_COMPTA);
         idTiersAdressePaiement = this.read(RELigneDeblocageTableDef.ID_TIERS_ADRESSE_PAIEMENT);
         idApplicationAdressePaiement = this.read(RELigneDeblocageTableDef.ID_APPLICATION_ADRESSE_PAIEMENT);
         idSectionDetteEnCompta = this.read(RELigneDeblocageTableDef.ID_SECTION_DETTE_EN_COMPTA);
         idRentePrestation = this.read(RELigneDeblocageTableDef.ID_RENTE_PRESTATION);
-        typeDeblocage = this.read(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE);
-        etatDeblocage = this.read(RELigneDeblocageTableDef.CS_ETAT);
+        type = this.read(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE);
+        etat = this.read(RELigneDeblocageTableDef.CS_ETAT);
         montant = this.read(RELigneDeblocageTableDef.MONTANT, CONVERTER_MONTANT);
         refPaiement = this.read(RELigneDeblocageTableDef.REFERENCE_PAIEMENT);
     }
@@ -61,20 +61,12 @@ public class RELigneDeblocage extends JadeEntity {
 
     @Override
     public String getIdEntity() {
-        return idDeblocage;
+        return id;
     }
 
     @Override
     public void setIdEntity(String id) {
-        idDeblocage = id;
-    }
-
-    public String getIdDeblocage() {
-        return idDeblocage;
-    }
-
-    public void setIdDeblocage(String idDeblocage) {
-        this.idDeblocage = idDeblocage;
+        this.id = id;
     }
 
     public Integer getIdTiersCreancier() {
@@ -133,22 +125,6 @@ public class RELigneDeblocage extends JadeEntity {
         this.refPaiement = refPaiement;
     }
 
-    public RELigneDeblocageType getTypeDeblocage() {
-        return typeDeblocage;
-    }
-
-    public void setTypeDeblocage(RELigneDeblocageType typeDeblocage) {
-        this.typeDeblocage = typeDeblocage;
-    }
-
-    public RELigneDeblocageEtat getEtatDeblocage() {
-        return etatDeblocage;
-    }
-
-    public void setEtatDeblocage(RELigneDeblocageEtat etatDeblocage) {
-        this.etatDeblocage = etatDeblocage;
-    }
-
     public Integer getIdRentePrestation() {
         return idRentePrestation;
     }
@@ -157,4 +133,47 @@ public class RELigneDeblocage extends JadeEntity {
         this.idRentePrestation = idRentePrestation;
     }
 
+    public RELigneDeblocageType getType() {
+        return type;
+    }
+
+    public void setType(RELigneDeblocageType type) {
+        this.type = type;
+    }
+
+    public RELigneDeblocageEtat getEtat() {
+        return etat;
+    }
+
+    public void setEtat(RELigneDeblocageEtat etat) {
+        this.etat = etat;
+    }
+
+    public boolean isComptabilise() {
+        return etat.isComptabilise();
+    }
+
+    public boolean isEnregistre() {
+        return etat.isEnregistre();
+    }
+
+    public boolean isValide() {
+        return etat.isValide();
+    }
+
+    public boolean isCreancier() {
+        return type.isCreancier();
+    }
+
+    public boolean isDetteEnCompta() {
+        return type.isDetteEnCompta();
+    }
+
+    public boolean isImpotsSource() {
+        return type.isImpotsSource();
+    }
+
+    public boolean isVersementBeneficaire() {
+        return type.isVersementBeneficaire();
+    }
 }

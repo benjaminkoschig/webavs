@@ -26,4 +26,20 @@ public enum RELigneDeblocageType implements CodeSystemEnum<RELigneDeblocageType>
     public String getValue() {
         return csCode;
     }
+
+    public boolean isCreancier() {
+        return CREANCIER.equals(this);
+    }
+
+    public boolean isDetteEnCompta() {
+        return DETTE_EN_COMPTA.equals(this);
+    }
+
+    public boolean isVersementBeneficaire() {
+        return VERSEMENT_BENEFICIAIRE.equals(this);
+    }
+
+    public boolean isImpotsSource() {
+        return IMPOTS_SOURCE.equals(this);
+    }
 }
