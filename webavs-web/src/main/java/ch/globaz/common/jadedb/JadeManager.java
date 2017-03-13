@@ -1,14 +1,18 @@
+/*
+ * Globaz SA.
+ */
 package ch.globaz.common.jadedb;
 
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import java.util.List;
+import ch.globaz.common.jadedb.exception.JadeDataBaseException;
 import ch.globaz.common.sql.SQLWriter;
 
-@SuppressWarnings("serial")
 public abstract class JadeManager<T extends JadeEntity> extends BManager {
 
+    private static final long serialVersionUID = 1L;
     private transient BStatement statement;
 
     protected abstract void createWhere(SQLWriter sqlWhere);
@@ -29,7 +33,7 @@ public abstract class JadeManager<T extends JadeEntity> extends BManager {
         try {
             this.find(BManager.SIZE_NOLIMIT);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new JadeDataBaseException(e);
         }
         return toList();
     }
@@ -38,7 +42,7 @@ public abstract class JadeManager<T extends JadeEntity> extends BManager {
         try {
             this.find(transaction, BManager.SIZE_NOLIMIT);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new JadeDataBaseException(e);
         }
         return toList();
     }
@@ -47,7 +51,7 @@ public abstract class JadeManager<T extends JadeEntity> extends BManager {
         try {
             this.find(BManager.SIZE_NOLIMIT);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new JadeDataBaseException(e);
         }
         if (size() > 0) {
             return (T) getFirstEntity();
@@ -55,7 +59,7 @@ public abstract class JadeManager<T extends JadeEntity> extends BManager {
         try {
             return (T) _newEntity();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new JadeDataBaseException(e);
         }
     }
 }

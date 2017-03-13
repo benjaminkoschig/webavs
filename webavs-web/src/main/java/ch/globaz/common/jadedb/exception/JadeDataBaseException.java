@@ -1,3 +1,6 @@
+/*
+ * Globaz SA.
+ */
 package ch.globaz.common.jadedb.exception;
 
 public class JadeDataBaseException extends RuntimeException {

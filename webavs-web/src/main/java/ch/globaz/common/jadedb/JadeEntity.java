@@ -13,6 +13,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import ch.globaz.common.domaine.CodeSystemEnum;
+import ch.globaz.common.domaine.CodeSystemEnumUtils;
 import ch.globaz.common.jadedb.converter.ConverterDB;
 import ch.globaz.common.jadedb.converter.MontantConverterDB;
 import ch.globaz.common.jadedb.exception.JadeDataBaseException;
@@ -82,12 +84,14 @@ public abstract class JadeEntity extends BEntity {
         return this.readDateTime(tableDefinition.getColumn());
     }
 
-    // @SuppressWarnings("unchecked")
+    public <T extends Enum<T> & CodeSystemEnum<T>> T read(TableDefinition tableDefinition, Class<T> clazz) {
+        return CodeSystemEnumUtils.valueOfById(((Integer) read(tableDefinition)).toString(), clazz);
+    }
+
     public <D, B> D read(TableDefinition tableDefinition, ConverterDB<D, B> converter) {
         return converter.fromDB((B) read(tableDefinition));
     }
 
-    @SuppressWarnings("unchecked")
     public <T> T read(TableDefinition tableDefinition) {
         if (Integer.class.equals(tableDefinition.getType())) {
             return (T) readInteger(tableDefinition.getColumn());
@@ -262,6 +266,10 @@ public abstract class JadeEntity extends BEntity {
         return value.toString();
     }
 
+    public <T extends Enum<T>> void write(TableDefinition def, CodeSystemEnum<T> value) {
+        this.write(def.getColumn(), value.getValue(), def.toString());
+    }
+
     public <D> void write(TableDefinition def, D value, ConverterDB<D, ?> converter) {
         this.write(def.getColumn(), converter.toDB(value), def.toString());
     }
@@ -332,28 +340,6 @@ public abstract class JadeEntity extends BEntity {
             throw new JadeDataBaseException(e);
         }
     }
-
-    // public void setIdEntity(Integer id) {
-    // Field field = resolveFieldPrimaryKey();
-    // try {
-    // field.set(this, id);
-    // } catch (IllegalArgumentException e) {
-    // throw new JadeDataBaseException(e);
-    // } catch (IllegalAccessException e) {
-    // throw new JadeDataBaseException(e);
-    // }
-    // }
-
-    // public Integer getIdEntity() {
-    // Field field = resolveFieldPrimaryKey();
-    // try {
-    // return (Integer) field.get(this);
-    // } catch (IllegalArgumentException e) {
-    // throw new JadeDataBaseException(e);
-    // } catch (IllegalAccessException e) {
-    // throw new JadeDataBaseException(e);
-    // }
-    // }
 
     Field resolveFieldPrimaryKey() {
         TableDefinition defPrimaryKey = resolveDefPK();

@@ -1,21 +1,26 @@
+/*
+ * Globaz SA.
+ */
 package ch.globaz.common.jadedb;
 
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BTransaction;
 import globaz.jade.context.JadeThread;
+import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
 import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import java.io.Closeable;
 import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ch.globaz.common.jadedb.exception.JadeDataBaseException;
 
 public class TransactionWrapper implements Closeable {
 
     private static final Logger LOG = LoggerFactory.getLogger(TransactionWrapper.class);
     private BTransaction btransaction;
-    private boolean autonome = false;
+    private boolean autonome;
     private JadeBusinessMessage[] logMessages;
     private String errorsInSession;
     private String warningsInSession;
@@ -52,12 +57,12 @@ public class TransactionWrapper implements Closeable {
 
     private BTransaction resolveTransaction(BSession session) {
         if (session == null) {
-            throw new NullPointerException("Unable to create a transaction with a null session");
+            throw new IllegalArgumentException("Unable to create a transaction with a null session");
         }
         try {
             btransaction = (BTransaction) session.newTransaction();
         } catch (Exception e) {
-            throw new RuntimeException("An error happened while trying to get the transaction", e);
+            throw new JadeDataBaseException("An error happened while trying to get the transaction", e);
         }
 
         if (btransaction.getConnection() == null) {
@@ -66,7 +71,7 @@ public class TransactionWrapper implements Closeable {
                 btransaction.isOpened();
             } catch (Exception e) {
                 close();
-                throw new RuntimeException("An error happened while trying to open a new JDBC connection", e);
+                throw new JadeDataBaseException("An error happened while trying to open a new JDBC connection", e);
             }
         }
         return btransaction;
@@ -76,7 +81,7 @@ public class TransactionWrapper implements Closeable {
         try {
             btransaction.commit();
         } catch (Exception e) {
-            throw new RuntimeException("Unable to commit the transaction", e);
+            throw new JadeDataBaseException("Unable to commit the transaction", e);
         }
     }
 
@@ -84,7 +89,7 @@ public class TransactionWrapper implements Closeable {
         try {
             btransaction.getConnection().commit();
         } catch (SQLException e) {
-            throw new RuntimeException("Unable to force the commit transaction", e);
+            throw new JadeDataBaseException("Unable to force the commit transaction", e);
 
         }
     }
@@ -93,7 +98,7 @@ public class TransactionWrapper implements Closeable {
         try {
             btransaction.rollback();
         } catch (Exception e) {
-            throw new RuntimeException("Unable to rollback the transaction", e);
+            throw new JadeDataBaseException("Unable to rollback the transaction", e);
         }
     }
 
@@ -112,26 +117,36 @@ public class TransactionWrapper implements Closeable {
                 LOG.error("Unable to close the bTransaction", e);
             }
             if (autonome) {
-                if (logMessages != null) {
-                    for (JadeBusinessMessage message : logMessages) {
-                        if (JadeBusinessMessageLevels.ERROR == (message.getLevel())) {
-                            JadeThread.logError(message.getSource(), message.getMessageId(), message.getParameters());
-                        } else if (JadeBusinessMessageLevels.WARN == (message.getLevel())) {
-                            JadeThread.logWarn(message.getSource(), message.getMessageId(), message.getParameters());
-                        } else if (JadeBusinessMessageLevels.INFO == (message.getLevel())) {
-                            JadeThread.logInfo(message.getSource(), message.getMessageId(), message.getParameters());
-                        }
-                    }
-                }
-                if (session != null) {
-                    // Pas top car on risque d'avoir des erreur ou warining à double dans le JadeThreadlog. Voir la
-                    // fonciton addError ou addWarning
-                    if (errorsInSession != null && !errorsInSession.isEmpty()) {
-                        session.addError(errorsInSession);
-                    }
-                    if (warningsInSession != null && !warningsInSession.isEmpty()) {
-                        session.addWarning(warningsInSession);
-                    }
+
+                addThreatLog();
+
+                addSessionLog();
+            }
+        }
+    }
+
+    private void addSessionLog() {
+        if (session != null) {
+            // Pas top car on risque d'avoir des erreur ou warining à double dans le JadeThreadlog. Voir la
+            // fonction addError ou addWarning
+            if (errorsInSession != null && !errorsInSession.isEmpty()) {
+                session.addError(errorsInSession);
+            }
+            if (warningsInSession != null && !warningsInSession.isEmpty()) {
+                session.addWarning(warningsInSession);
+            }
+        }
+    }
+
+    private void addThreatLog() throws JadeNoBusinessLogSessionError {
+        if (logMessages != null) {
+            for (JadeBusinessMessage message : logMessages) {
+                if (JadeBusinessMessageLevels.ERROR == (message.getLevel())) {
+                    JadeThread.logError(message.getSource(), message.getMessageId(), message.getParameters());
+                } else if (JadeBusinessMessageLevels.WARN == (message.getLevel())) {
+                    JadeThread.logWarn(message.getSource(), message.getMessageId(), message.getParameters());
+                } else if (JadeBusinessMessageLevels.INFO == (message.getLevel())) {
+                    JadeThread.logInfo(message.getSource(), message.getMessageId(), message.getParameters());
                 }
             }
         }

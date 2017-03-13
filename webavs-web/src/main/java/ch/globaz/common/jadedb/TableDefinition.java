@@ -1,11 +1,14 @@
+/*
+ * Globaz SA.
+ */
 package ch.globaz.common.jadedb;
 
 public interface TableDefinition {
-    public String getTableName();
+    String getTableName();
 
-    public String getColumn();
+    String getColumn();
 
-    public Class<?> getType();
+    Class<?> getType();
 
-    public boolean isPrimaryKey();
+    boolean isPrimaryKey();
 }
