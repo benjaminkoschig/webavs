@@ -19,11 +19,11 @@ public abstract class JadeManager<T extends JadeEntity> extends BManager {
 
     protected abstract void createWhere(SQLWriter sqlWhere);
 
-    protected void createOrderBy(String... orders) {
+    public void defineOrderBy(String... orders) {
         sqlOrder = Joiner.on(",").join(orders);
     }
 
-    protected void createOrderBy(TableDefinition... orders) {
+    public void defineOrderBy(TableDefinition... orders) {
 
         StringBuilder sqlOrderBuild = new StringBuilder();
 
