@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
+import ch.globaz.common.domaine.CodeSystemEnum;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.jadedb.TableDefinition;
 
@@ -224,6 +225,22 @@ public class SQLWriter {
             String sanitized = replaceQuotes(param);
             paramsToUse.add(sanitized);
             query.append("='?'");
+        } else {
+            rollback();
+        }
+        return this;
+    }
+
+    /**
+     * Ajoute le = avec le paramètre définit à la requête SQL
+     * 
+     * @param param Le code system
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter equal(CodeSystemEnum<?> param) {
+        if (param != null) {
+            paramsToUse.add(param.getValue());
+            query.append("=?");
         } else {
             rollback();
         }
