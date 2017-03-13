@@ -105,7 +105,8 @@ public class SQLWriter {
      * @return SQLWriter utilisé
      */
     public SQLWriter max(TableDefinition tableDefinition) {
-        query.append("max(" + CONST_SCHEMA + tableDefinition.getTableName() + "." + tableDefinition.getColumn() + ") ");
+        query.append("max(" + CONST_SCHEMA + tableDefinition.getTableName() + "." + tableDefinition.getColumnName()
+                + ") ");
         return this;
     }
 
@@ -342,7 +343,7 @@ public class SQLWriter {
      * @return SQLWriter utilisé
      */
     public SQLWriter and(TableDefinition tableDefinition) {
-        String column = tableDefinition.getTableName() + "." + tableDefinition.getColumn();
+        String column = tableDefinition.getTableName() + "." + tableDefinition.getColumnName();
 
         this.and();
         query.append(" ").append(addSchemaToSql(CONST_SCHEMA + column));
@@ -351,7 +352,7 @@ public class SQLWriter {
     }
 
     public SQLWriter isNullOrZero(TableDefinition tableDefinition) {
-        String column = tableDefinition.getTableName() + "." + tableDefinition.getColumn();
+        String column = tableDefinition.getTableName() + "." + tableDefinition.getColumnName();
         return isNullOrZero(column);
     }
 
@@ -362,7 +363,7 @@ public class SQLWriter {
     }
 
     public SQLWriter isNotNullOrZero(TableDefinition tableDefinition) {
-        String column = tableDefinition.getTableName() + "." + tableDefinition.getColumn();
+        String column = tableDefinition.getTableName() + "." + tableDefinition.getColumnName();
         return isNotNullOrZero(column);
     }
 

@@ -1,7 +1,6 @@
 package ch.globaz.orion.db;
 
 import globaz.globall.db.BEntity;
-import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
 import java.util.Collection;
 import ch.globaz.common.jadedb.JadeManager;
@@ -11,7 +10,6 @@ import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
 
     private static final long serialVersionUID = 1L;
-    private String orderBy;
     private String forDateSoumission;
     private String likeAffilie;
     private String forStatut;
@@ -44,11 +42,6 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
         return new EBPucsFileEntity();
     }
 
-    @Override
-    protected String _getOrder(BStatement statement) {
-        return orderBy;
-    }
-
     public DeclarationSalaireProvenance getForProvenance() {
         return forProvenance;
     }
@@ -58,7 +51,7 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
     }
 
     public void setOrderBy(String orderBy) {
-        this.orderBy = orderBy;
+        createOrderBy(orderBy);
     }
 
     public String getForDateSoumission() {

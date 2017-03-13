@@ -73,7 +73,7 @@ public abstract class JadeEntity extends BEntity {
     }
 
     protected void writeKey(TableDefinition tableDefinition, Object value) {
-        statement.writeKey(tableDefinition.getColumn(), String.valueOf(value));
+        statement.writeKey(tableDefinition.getColumnName(), String.valueOf(value));
     }
 
     protected void writeKey(String column, Integer value) {
@@ -81,7 +81,7 @@ public abstract class JadeEntity extends BEntity {
     }
 
     public Date readDateTime(TableDefinition tableDefinition) {
-        return this.readDateTime(tableDefinition.getColumn());
+        return this.readDateTime(tableDefinition.getColumnName());
     }
 
     public <T extends Enum<T> & CodeSystemEnum<T>> T read(TableDefinition tableDefinition, Class<T> clazz) {
@@ -94,19 +94,19 @@ public abstract class JadeEntity extends BEntity {
 
     public <T> T read(TableDefinition tableDefinition) {
         if (Integer.class.equals(tableDefinition.getType())) {
-            return (T) readInteger(tableDefinition.getColumn());
+            return (T) readInteger(tableDefinition.getColumnName());
         } else if (Double.class.equals(tableDefinition.getType())) {
-            return (T) readDouble(tableDefinition.getColumn());
+            return (T) readDouble(tableDefinition.getColumnName());
         } else if (Long.class.equals(tableDefinition.getType())) {
-            return (T) readLong(tableDefinition.getColumn());
+            return (T) readLong(tableDefinition.getColumnName());
         } else if (String.class.equals(tableDefinition.getType())) {
-            return (T) readString(tableDefinition.getColumn());
+            return (T) readString(tableDefinition.getColumnName());
         } else if (Date.class.equals(tableDefinition.getType())) {
-            return (T) readDate(tableDefinition.getColumn());
+            return (T) readDate(tableDefinition.getColumnName());
         } else if (Boolean.class.equals(tableDefinition.getType())) {
-            return (T) readBoolean(tableDefinition.getColumn());
+            return (T) readBoolean(tableDefinition.getColumnName());
         } else if (BigDecimal.class.equals(tableDefinition.getType())) {
-            return (T) readBigDecimal(tableDefinition.getColumn());
+            return (T) readBigDecimal(tableDefinition.getColumnName());
         } else {
             throw new JadeDataBaseException("Type non pris en charge pour la colonne suivante : " + tableDefinition);
         }
@@ -204,7 +204,7 @@ public abstract class JadeEntity extends BEntity {
     }
 
     public String readString(TableDefinition tableDefinition) {
-        return this.readString(tableDefinition.getColumn());
+        return this.readString(tableDefinition.getColumnName());
     }
 
     public String readString(String column) {
@@ -267,23 +267,23 @@ public abstract class JadeEntity extends BEntity {
     }
 
     public <T extends Enum<T>> void write(TableDefinition def, CodeSystemEnum<T> value) {
-        this.write(def.getColumn(), value.getValue(), def.toString());
+        this.write(def.getColumnName(), value.getValue(), def.toString());
     }
 
     public <D> void write(TableDefinition def, D value, ConverterDB<D, ?> converter) {
-        this.write(def.getColumn(), converter.toDB(value), def.toString());
+        this.write(def.getColumnName(), converter.toDB(value), def.toString());
     }
 
     public void write(TableDefinition def, Object value) {
-        this.write(def.getColumn(), value, def.toString());
+        this.write(def.getColumnName(), value, def.toString());
     }
 
     public void writeDateTime(TableDefinition def, Date date) {
-        this.writeDateTime(def.getColumn(), date);
+        this.writeDateTime(def.getColumnName(), date);
     }
 
     public void writeNumber(TableDefinition def, Object value) {
-        writeNumeric(def.getColumn(), String.valueOf(value), def.toString());
+        writeNumeric(def.getColumnName(), String.valueOf(value), def.toString());
     }
 
     public void write(String column, Object value, String desc) {
@@ -310,7 +310,7 @@ public abstract class JadeEntity extends BEntity {
         if (value != null) {
             v = (String) value;
         }
-        writeNumeric(tableDefinition.getColumn(), v, tableDefinition.toString());
+        writeNumeric(tableDefinition.getColumnName(), v, tableDefinition.toString());
     }
 
     @Override
@@ -344,7 +344,8 @@ public abstract class JadeEntity extends BEntity {
     Field resolveFieldPrimaryKey() {
         TableDefinition defPrimaryKey = resolveDefPK();
         try {
-            Field field = this.getClass().getDeclaredField(defPrimaryKey.getColumn().toLowerCase(Locale.getDefault()));
+            Field field = this.getClass().getDeclaredField(
+                    defPrimaryKey.getColumnName().toLowerCase(Locale.getDefault()));
             field.setAccessible(true);
             return field;
         } catch (SecurityException e) {
@@ -375,7 +376,7 @@ public abstract class JadeEntity extends BEntity {
             } else {
                 addComma = true;
             }
-            writer.append(def.getColumn()).append(" as ");
+            writer.append(def.getColumnName()).append(" as ");
             if (alias != null) {
                 writer.append(alias);
             }

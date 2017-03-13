@@ -38,7 +38,7 @@ enum ProcessEntityTableDef implements TableDefinition {
     }
 
     @Override
-    public String getColumn() {
+    public String getColumnName() {
         return column;
     }
 

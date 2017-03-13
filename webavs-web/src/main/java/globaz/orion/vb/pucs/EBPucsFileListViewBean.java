@@ -54,11 +54,11 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
     @Override
     public void find() throws Exception {
         if ("DATE_RECEPTION".equalsIgnoreCase(orderBy)) {
-            manager.setOrderBy(EBPucsFileDefTable.DATE_RECEPTION.getColumn() + " ASC");
+            manager.setOrderBy(EBPucsFileDefTable.DATE_RECEPTION.getColumnName() + " ASC");
         } else if ("NOM_AFFILIE".equalsIgnoreCase(orderBy)) {
-            manager.setOrderBy(EBPucsFileDefTable.NOM_AFFILIE.getColumn());
+            manager.setOrderBy(EBPucsFileDefTable.NOM_AFFILIE.getColumnName());
         } else if ("NUMERO_AFFILIE".equalsIgnoreCase(orderBy)) {
-            manager.setOrderBy(EBPucsFileDefTable.NUMERO_AFFILIE.getColumn());
+            manager.setOrderBy(EBPucsFileDefTable.NUMERO_AFFILIE.getColumnName());
         }
         manager.find(BManager.SIZE_USEDEFAULT);
         perpareList();

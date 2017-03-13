@@ -6,7 +6,7 @@ package ch.globaz.common.jadedb;
 public interface TableDefinition {
     String getTableName();
 
-    String getColumn();
+    String getColumnName();
 
     Class<?> getType();
 

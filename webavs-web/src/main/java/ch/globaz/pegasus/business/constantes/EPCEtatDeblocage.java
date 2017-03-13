@@ -1,3 +1,6 @@
+/*
+ * Globaz SA.
+ */
 package ch.globaz.pegasus.business.constantes;
 
 import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCDeblocage;
@@ -6,6 +9,12 @@ public enum EPCEtatDeblocage {
     COMPTABILISE(IPCDeblocage.CS_ETAT_COMPTABILISE),
     ENREGISTRE(IPCDeblocage.CS_ETAT_ENREGISTRE),
     VALIDE(IPCDeblocage.CS_ETAT_VALIDE);
+
+    private String csCode;
+
+    EPCEtatDeblocage(String csCode) {
+        this.csCode = csCode;
+    }
 
     public static EPCEtatDeblocage getEnumByCsCode(String csCode) {
         if (COMPTABILISE.csCode.equals(csCode)) {
@@ -16,12 +25,6 @@ public enum EPCEtatDeblocage {
             return VALIDE;
         }
         throw new IllegalArgumentException("No Enum specified for this string " + csCode);
-    }
-
-    private String csCode;
-
-    EPCEtatDeblocage(String csCode) {
-        this.csCode = csCode;
     }
 
     public String getCsCode() {

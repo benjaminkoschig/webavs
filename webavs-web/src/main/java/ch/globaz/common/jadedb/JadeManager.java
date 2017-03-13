@@ -9,13 +9,33 @@ import globaz.globall.db.BStatement;
 import java.util.List;
 import ch.globaz.common.jadedb.exception.JadeDataBaseException;
 import ch.globaz.common.sql.SQLWriter;
+import com.google.common.base.Joiner;
 
 public abstract class JadeManager<T extends JadeEntity> extends BManager {
 
     private static final long serialVersionUID = 1L;
     private transient BStatement statement;
+    private String sqlOrder;
 
     protected abstract void createWhere(SQLWriter sqlWhere);
+
+    protected void createOrderBy(String... orders) {
+        sqlOrder = Joiner.on(",").join(orders);
+    }
+
+    protected void createOrderBy(TableDefinition... orders) {
+
+        StringBuilder sqlOrderBuild = new StringBuilder();
+
+        for (TableDefinition tableDefinition : orders) {
+            if (sqlOrderBuild.length() != 0) {
+                sqlOrderBuild.append(",");
+            }
+
+            sqlOrderBuild.append(tableDefinition.getColumnName());
+        }
+        sqlOrder = sqlOrderBuild.toString();
+    }
 
     @Override
     protected final String _getWhere(BStatement statement) {
@@ -23,6 +43,12 @@ public abstract class JadeManager<T extends JadeEntity> extends BManager {
         SQLWriter sqlWhere = SQLWriter.write(_getCollection());
         createWhere(sqlWhere);
         return sqlWhere.toSql();
+    }
+
+    @Override
+    protected final String _getOrder(BStatement statement) {
+        this.statement = statement;
+        return sqlOrder;
     }
 
     protected final String dbWriteDateAMJ(String column) {

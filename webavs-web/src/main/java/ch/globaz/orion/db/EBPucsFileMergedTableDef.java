@@ -29,7 +29,7 @@ public enum EBPucsFileMergedTableDef implements TableDefinition {
     }
 
     @Override
-    public String getColumn() {
+    public String getColumnName() {
         return column;
     }
 

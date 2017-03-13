@@ -41,7 +41,7 @@ public enum RELigneDeblocageTableDef implements TableDefinition {
     }
 
     @Override
-    public String getColumn() {
+    public String getColumnName() {
         return columnName;
     }
 

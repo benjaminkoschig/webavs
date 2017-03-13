@@ -1,6 +1,5 @@
-package ch.globaz.common.sql;
+package ch.globaz.common.jadedb;
 
-import ch.globaz.common.jadedb.TableDefinition;
 
 enum TableDefTest implements TableDefinition {
 
