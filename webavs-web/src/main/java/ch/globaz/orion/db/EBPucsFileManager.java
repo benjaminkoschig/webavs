@@ -51,7 +51,7 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
     }
 
     public void setOrderBy(String orderBy) {
-        createOrderBy(orderBy);
+        defineOrderBy(orderBy);
     }
 
     public String getForDateSoumission() {
