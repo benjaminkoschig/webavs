@@ -3,8 +3,8 @@
  */
 package globaz.corvus.db.lignedeblocage;
 
-import globaz.corvus.db.lignedeblocage.constantes.REDeblocageEtat;
-import globaz.corvus.db.lignedeblocage.constantes.REDeblocageType;
+import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageEtat;
+import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.jadedb.JadeEntity;
 import ch.globaz.common.jadedb.TableDefinition;
@@ -19,8 +19,8 @@ public class RELigneDeblocage extends JadeEntity {
     private Integer idApplicationAdressePaiement;
     private Integer idSectionDetteEnCompta;
     private Integer idRentePrestation;
-    private REDeblocageType typeDeblocage;
-    private REDeblocageEtat etatDeblocage;
+    private RELigneDeblocageType typeDeblocage;
+    private RELigneDeblocageEtat etatDeblocage;
     private Montant montant;
     private String refPaiement;
 
@@ -133,19 +133,19 @@ public class RELigneDeblocage extends JadeEntity {
         this.refPaiement = refPaiement;
     }
 
-    public REDeblocageType getTypeDeblocage() {
+    public RELigneDeblocageType getTypeDeblocage() {
         return typeDeblocage;
     }
 
-    public void setTypeDeblocage(REDeblocageType typeDeblocage) {
+    public void setTypeDeblocage(RELigneDeblocageType typeDeblocage) {
         this.typeDeblocage = typeDeblocage;
     }
 
-    public REDeblocageEtat getEtatDeblocage() {
+    public RELigneDeblocageEtat getEtatDeblocage() {
         return etatDeblocage;
     }
 
-    public void setEtatDeblocage(REDeblocageEtat etatDeblocage) {
+    public void setEtatDeblocage(RELigneDeblocageEtat etatDeblocage) {
         this.etatDeblocage = etatDeblocage;
     }
 

@@ -3,8 +3,8 @@
  */
 package globaz.corvus.db.lignedeblocage;
 
-import globaz.corvus.db.lignedeblocage.constantes.REDeblocageEtat;
-import globaz.corvus.db.lignedeblocage.constantes.REDeblocageType;
+import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageEtat;
+import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
 import globaz.globall.db.BSession;
 import ch.globaz.common.jadedb.exception.JadeDataBaseException;
 
@@ -91,7 +91,7 @@ public class ReLigneDeclocageServices {
         return null;
     }
 
-    public RELigneDeblocages searchByEtatGroupByType(REDeblocageEtat etat, REDeblocageType type) {
+    public RELigneDeblocages searchByEtatGroupByType(RELigneDeblocageEtat etat, RELigneDeblocageType type) {
 
         RELigneDeblocages lignesDeblocages = new RELigneDeblocages();
 

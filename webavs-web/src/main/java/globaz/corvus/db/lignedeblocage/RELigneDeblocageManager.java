@@ -1,7 +1,7 @@
 package globaz.corvus.db.lignedeblocage;
 
-import globaz.corvus.db.lignedeblocage.constantes.REDeblocageEtat;
-import globaz.corvus.db.lignedeblocage.constantes.REDeblocageType;
+import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageEtat;
+import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
 import ch.globaz.common.jadedb.JadeManager;
 import ch.globaz.common.sql.SQLWriter;
 
@@ -9,8 +9,8 @@ public class RELigneDeblocageManager extends JadeManager<RELigneDeblocage> {
 
     private static final long serialVersionUID = 1L;
     private Integer forIdRentePrestation;
-    private REDeblocageEtat forEtat;
-    private REDeblocageType orderByType;
+    private RELigneDeblocageEtat forEtat;
+    private RELigneDeblocageType orderByType;
 
     @Override
     protected void createWhere(SQLWriter sqlWhere) {
