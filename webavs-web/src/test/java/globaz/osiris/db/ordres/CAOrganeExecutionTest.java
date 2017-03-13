@@ -1,6 +1,7 @@
 package globaz.osiris.db.ordres;
 
 import static org.junit.Assert.*;
+import globaz.framework.util.FWMessageFormat;
 import globaz.osiris.db.ordres.sepa.AbstractSepa;
 import globaz.osiris.db.ordres.sepa.CACamt054BVRVersionResolver;
 import globaz.osiris.db.ordres.sepa.CACamt054Notification;
@@ -23,11 +24,11 @@ public class CAOrganeExecutionTest {
 
         CACamt054GroupTxMessage groupTxMessage = new CACamt054GroupTxMessage(notification);
 
-        organeExecution.checkIBAN(notification.getIdentification(), "FAUX_IBAN", groupTxMessage, messageAAfficher);
+        organeExecution.checkIBAN(notification.getIdentification(), "FAUX_IBAN", groupTxMessage,
+                FWMessageFormat.prepareQuotes(messageAAfficher, false));
 
         assertTrue(!groupTxMessage.getMessageFromLevel(Level.INFO).isEmpty());
-        assertEquals(messageAAfficher + " (" + notification.getIdentification() + ")", groupTxMessage
-                .getMessageFromLevel(Level.INFO).get(0));
+        assertEquals(messageAAfficher, groupTxMessage.getMessageFromLevel(Level.INFO).get(0));
     }
 
     @Test

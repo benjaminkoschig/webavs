@@ -3,7 +3,6 @@ package globaz.osiris.db.ordres;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMemoryLog;
 import globaz.framework.util.FWMessage;
-import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.GlobazServer;
@@ -59,6 +58,7 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -544,7 +544,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
     }
 
     private String getMessageForYellowReportFile(final String emailAdresse) {
-        return FWMessageFormat.format(getSession().getLabel("5355"), emailAdresse,
+        return MessageFormat.format(getSession().getLabel("5355"), emailAdresse,
                 JadeDateUtil.getGlobazFormattedDateTime(new Date()));
     }
 
@@ -634,7 +634,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         // avertissement, mais juste une information a indiqué à la caisse afin de changer son IBAN de réception ou
         // savoir si ils ont bien sélectionner le bon OE. On traite tout de même la notification B-Level.
         if (!ibanOrganeExecution.equals(ibanNotification)) {
-            groupTxMessage.addMessage(Level.INFO, labelForInfo + " (" + ibanOrganeExecution + ")");
+            groupTxMessage.addMessage(Level.INFO,
+                    MessageFormat.format(labelForInfo, ibanOrganeExecution, ibanNotification));
         }
     }
 
@@ -646,19 +647,13 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
             final StringBuilder messageAdherent = new StringBuilder();
 
-            messageAdherent.append(FWMessageFormat.format(getSession().getLabel("5339"), groupTx.getNoAdherent(),
-                    getNoAdherentBVR()));
-            messageAdherent.append(" ( ");
-
+            String nomAdherent = getSession().getLabel("5358");
             if (organesExecutions.containsKey(groupTx.getNoAdherent())) {
-                messageAdherent.append(getSession().getLabel("5359"));
-                messageAdherent.append(" ");
-                messageAdherent.append(organesExecutions.get(groupTx.getNoAdherent()).getNom());
-            } else {
-                messageAdherent.append(getSession().getLabel("5358"));
+                nomAdherent = organesExecutions.get(groupTx.getNoAdherent()).getNom();
             }
 
-            messageAdherent.append(" )");
+            messageAdherent.append(MessageFormat.format(getSession().getLabel("5339"), groupTx.getNoAdherent(),
+                    getNoAdherentBVR(), nomAdherent));
 
             groupTxMessage.addMessage(Level.WARNING, messageAdherent.toString());
 
