@@ -181,7 +181,15 @@
 		<TR><TD colspan="6">&nbsp;</TD></TR>
 		<TR><TD colspan="6">&nbsp;</TD></TR>
 		<TR>
-			<TD><input type="button" onclick="clearFields()" accesskey="C" value="Effacer">[ALT+C]</TD>
+			<TD>
+				<input 	type="button" 
+					onclick="clearFields()" 
+					accesskey="<ct:FWLabel key="AK_EFFACER"/>" 
+					value="<ct:FWLabel key="JSP_EFFACER"/>">
+				<label>
+					[ALT+<ct:FWLabel key="AK_EFFACER"/>]
+				</label>
+			</TD>
 			<TD colspan="5">&nbsp;</TD>
 		</TR>
 		</TABLE>

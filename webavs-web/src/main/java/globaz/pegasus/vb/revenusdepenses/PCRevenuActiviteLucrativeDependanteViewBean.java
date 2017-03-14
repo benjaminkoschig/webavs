@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import ch.globaz.common.domaine.Echeance.EcheanceType;
+import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRevenuActiviteDependante;
 import ch.globaz.pegasus.business.models.droit.DroitMembreFamille;
 import ch.globaz.pegasus.business.models.revenusdepenses.RevenuActiviteLucrativeDependante;
 import ch.globaz.pegasus.business.models.revenusdepenses.RevenusDepenses;
@@ -34,11 +35,16 @@ public class PCRevenuActiviteLucrativeDependanteViewBean extends PCAbstractReque
     public Vector getCsFraisObtentionRevenu() throws Exception {
 
         Vector v = new Vector();
-        v.add(new String[] { "64035001", "Transport" });
-        v.add(new String[] { "64035002", "Repas" });
-        v.add(new String[] { "64035003", "Vêtements" });
-        v.add(new String[] { "64035004", "Logement" });
-        v.add(new String[] { "64035005", "Autres" });
+        v.add(new String[] { IPCRevenuActiviteDependante.CS_LIBELLE_TRANSPORT,
+                getISession().getCodeLibelle(IPCRevenuActiviteDependante.CS_LIBELLE_TRANSPORT) });
+        v.add(new String[] { IPCRevenuActiviteDependante.CS_LIBELLE_REPAS,
+                getISession().getCodeLibelle(IPCRevenuActiviteDependante.CS_LIBELLE_REPAS) });
+        v.add(new String[] { IPCRevenuActiviteDependante.CS_LIBELLE_VETEMENTS,
+                getISession().getCodeLibelle(IPCRevenuActiviteDependante.CS_LIBELLE_VETEMENTS) });
+        v.add(new String[] { IPCRevenuActiviteDependante.CS_LIBELLE_LOGEMENT,
+                getISession().getCodeLibelle(IPCRevenuActiviteDependante.CS_LIBELLE_LOGEMENT) });
+        v.add(new String[] { IPCRevenuActiviteDependante.CS_LIBELLE_AUTRES,
+                getISession().getCodeLibelle(IPCRevenuActiviteDependante.CS_LIBELLE_AUTRES) });
         return v;
     }
 

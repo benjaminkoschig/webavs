@@ -136,7 +136,7 @@ $(function(){
 				</tr>
 				
 				<TR>
-					<TD><ct:FWLabel key="JSP_PC_SDP_D_DERNIER_DIMICILE_LEGAL"/></TD>
+					<TD><ct:FWLabel key="JSP_PC_SDP_D_DERNIER_DOMICILE_LEGAL"/></TD>
 					<TD>
 						<ct:widget name='<%="tiersWidget"+String.valueOf(counter)%>' id='<%="tiersWidget"+String.valueOf(counter) %>' notation='data-g-string="mandatory:true"' styleClass="libelleLong nomDernierDomicile" defaultValue='<%=donnee.getLocalite().getNumPostal()+", "+donnee.getLocalite().getLocalite() %>'>
 							<ct:widgetService methodName="findLocalite" className="<%=AdresseService.class.getName()%>">
@@ -161,7 +161,7 @@ $(function(){
 					<%} %>
 				</TR>
 				<tr>
-					<td>Représentant légal</td>
+					<td><ct:FWLabel key="JSP_PC_SDP_D_REPRESENTANT_LEGAL"/></td>
 					<td><input type="checkbox" class="representant" <% if (simpleDonnee.getIsRepresentantLegal()) { %> checked<% } %> /></td>
 				</tr>
 				<%if (EPCProperties.GESTION_ANNONCES_LAPRAMS.getBooleanValue()) { %>
