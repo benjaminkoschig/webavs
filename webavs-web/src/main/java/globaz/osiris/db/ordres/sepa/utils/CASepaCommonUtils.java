@@ -8,6 +8,8 @@ import globaz.osiris.external.IntAdressePaiement;
 import globaz.pyxis.util.TIIbanFormater;
 import globaz.webavs.common.WebavsDocumentionLocator;
 import java.util.GregorianCalendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -20,6 +22,7 @@ import com.six_interbank_clearing.de.pain_001_001_03_ch_02.GenericAccountIdentif
 
 public class CASepaCommonUtils {
 
+    private static final String IBAN_REGEX_PAIN = "[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}";
     private static final Logger logger = LoggerFactory.getLogger(CASepaCommonUtils.class);
     // since the have to be regroup
     public static final String TYPE_VIREMENT_BANCAIRE = "bankANDccp";
@@ -137,20 +140,28 @@ public class CASepaCommonUtils {
     }
 
     protected static String getIntAdressePaiementIBAN(IntAdressePaiement adp) {
-        if (isValidIban(adp.getNumCompte())) {
-            return formater.unformat(adp.getNumCompte());
+        final String numCmp = adp.getNumCompte();
+        if (isValidIban(numCmp) && isXsdRegexIbanValid(numCmp)) {
+            return formater.unformat(numCmp);
         }
         return null;
     }
 
+    private static boolean isXsdRegexIbanValid(String ibanStr) {
+        Pattern pat = Pattern.compile(IBAN_REGEX_PAIN);
+        Matcher mat = pat.matcher(ibanStr);
+        return mat.matches();
+    }
+
     protected static GenericAccountIdentification1CH getNotIban(IntAdressePaiement adp) {
-        if (!isValidIban(adp.getNumCompte())) {
+        final String numCmp = adp.getNumCompte();
+        if (!isXsdRegexIbanValid(numCmp) || !isValidIban(numCmp)) {
             GenericAccountIdentification1CH other = new GenericAccountIdentification1CH();
             try {
-                other.setId(JACCP.formatNoDash(adp.getNumCompte()));
+                other.setId(JACCP.formatNoDash(numCmp));
             } catch (Exception e) {
-                logger.debug("cannot unformat this as a CCP:" + adp.getNumCompte(), e);
-                other.setId(adp.getNumCompte());
+                logger.debug("cannot unformat this as a CCP:" + numCmp, e);
+                other.setId(numCmp);
             }
             return other;
         }
