@@ -44,6 +44,7 @@ bButtonNew = false;
 									<OPTION value="<%=RELotManager.FOR_CS_TYPE_LOT_IN_DECISION_MENSUEL%>" selected></OPTION>
 									<OPTION value="<%=IRELot.CS_TYP_LOT_MENSUEL%>"><%=objSession.getCodeLibelle(IRELot.CS_TYP_LOT_MENSUEL)%></OPTION>
 									<OPTION value="<%=IRELot.CS_TYP_LOT_DECISION%>"><%=objSession.getCodeLibelle(IRELot.CS_TYP_LOT_DECISION)%></OPTION>
+									<OPTION value="<%=IRELot.CS_TYP_LOT_DEBLOCAGE_RA%>"><%=objSession.getCodeLibelle(IRELot.CS_TYP_LOT_DEBLOCAGE_RA)%></OPTION>
 								</ct:select>								
 							</TD>
 							<TD><ct:FWLabel key="JSP_LOT_R_ETAT"/>&nbsp;
