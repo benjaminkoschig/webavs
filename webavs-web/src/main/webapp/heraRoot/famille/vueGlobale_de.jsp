@@ -665,7 +665,9 @@
 										    	if (!JadeStringUtil.isBlankOrZero(liant.getMembreFamille()
 										    				.getIdTiers())) {
 										    %>
-												<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=liant.getMembreFamille().getIdTiers()%>" class="external_link">Tiers</A>
+												<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=liant.getMembreFamille().getIdTiers()%>" class="external_link">
+													<ct:FWCodeLibelle csCode="<%=ISFSituationFamiliale.CS_PIXIS_TYPE_TIERS %>"/>
+												</A>
 												&nbsp;
 												<A href="#" onclick="window.open('<%=servletContext%><%=("/hera")%>?userAction=<%=globaz.hera.servlet.ISFActions.ACTION_VUE_GLOBALE%>.actionAfficherDossierGed&amp;noAVSId=<%=liant.getMembreFamille().getNssFormatte()%>&amp;idTiersExtraFolder=<%=liant.getMembreFamille().getIdTiers()%><%=gedNssFamilleParam%>','GED_CONSULT')" >GED</A>    
 											<%
@@ -820,7 +822,9 @@
 													if (!JadeStringUtil.isBlankOrZero(viewBean
 																	.getParent1Liant().getIdTiers())) {
 												%>
-													<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=viewBean.getParent1Liant().getIdTiers()%>" class="external_link">Tiers</A>
+													<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=viewBean.getParent1Liant().getIdTiers()%>" class="external_link">
+													<ct:FWCodeLibelle csCode="<%=ISFSituationFamiliale.CS_PIXIS_TYPE_TIERS %>"/>
+													</A>
 													&nbsp;
 													<A href="#" onclick="window.open('<%=servletContext%><%=("/hera")%>?userAction=<%=globaz.hera.servlet.ISFActions.ACTION_VUE_GLOBALE%>.actionAfficherDossierGed&amp;noAVSId=<%=viewBean.getParent1Liant().getNssFormatte()%>&amp;idTiersExtraFolder=<%=viewBean.getParent1Liant().getIdTiers()%><%=gedNssFamilleParam%>','GED_CONSULT')" >GED</A>
 													
@@ -894,7 +898,9 @@
 													if (!JadeStringUtil.isBlankOrZero(viewBean
 																	.getParent2Liant().getIdTiers())) {
 												%>
-													<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=viewBean.getParent2Liant().getIdTiers()%>" class="external_link">Tiers</A>
+													<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=viewBean.getParent2Liant().getIdTiers()%>" class="external_link">
+														<ct:FWCodeLibelle csCode="<%=ISFSituationFamiliale.CS_PIXIS_TYPE_TIERS %>"/>
+													</A>
 													&nbsp;
 													<A href="#" onclick="window.open('<%=servletContext%><%=("/hera")%>?userAction=<%=globaz.hera.servlet.ISFActions.ACTION_VUE_GLOBALE%>.actionAfficherDossierGed&amp;noAVSId=<%=viewBean.getParent2Liant().getNssFormatte()%>&amp;idTiersExtraFolder=<%=viewBean.getParent2Liant().getIdTiers()%><%=gedNssFamilleParam%>','GED_CONSULT')" >GED</A>
 												<%
@@ -1058,7 +1064,9 @@
 											<%
 												if (!JadeStringUtil.isBlankOrZero(idTiers)) {
 											%>
-												<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=idTiers%>" class="external_link">Tiers</A>
+												<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=idTiers%>" class="external_link">
+													<ct:FWCodeLibelle csCode="<%=ISFSituationFamiliale.CS_PIXIS_TYPE_TIERS %>"/>
+												</A>
 												&nbsp;
 												<A href="#" onclick="window.open('<%=servletContext%><%=("/hera")%>?userAction=<%=globaz.hera.servlet.ISFActions.ACTION_VUE_GLOBALE%>.actionAfficherDossierGed&amp;noAVSId=<%=nssIdTiers%>&amp;idTiersExtraFolder=<%=idTiers%><%=gedNssFamilleParam%>','GED_CONSULT')" >GED</A>
 											<%
@@ -1221,7 +1229,9 @@
 																												if (!JadeStringUtil.isBlankOrZero(enfant
 																																		.getIdTiers())) {
 																											%>
-															<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=enfant.getIdTiers()%>" class="external_link">Tiers</A>
+															<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=enfant.getIdTiers()%>" class="external_link">
+																<ct:FWCodeLibelle csCode="<%=ISFSituationFamiliale.CS_PIXIS_TYPE_TIERS %>"/>
+															</A>
 															&nbsp;
 															<A href="#" onclick="window.open('<%=servletContext%><%=("/hera")%>?userAction=<%=globaz.hera.servlet.ISFActions.ACTION_VUE_GLOBALE%>.actionAfficherDossierGed&amp;noAVSId=<%=enfant.getNssFormatte()%>&amp;idTiersExtraFolder=<%=enfant.getIdTiers()%><%=gedNssFamilleParam%>','GED_CONSULT')" >GED</A>
 														<%
@@ -1371,7 +1381,9 @@
 														<%
 															if (!JadeStringUtil.isBlankOrZero(idTiers1)) {
 														%>
-															<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=idTiers1%>" class="external_link">Tiers</A>
+															<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=idTiers1%>" class="external_link">
+																<ct:FWCodeLibelle csCode="<%=ISFSituationFamiliale.CS_PIXIS_TYPE_TIERS %>"/>
+															</A>
 															&nbsp;
 															<A href="#" onclick="window.open('<%=servletContext%><%=("/hera")%>?userAction=<%=globaz.hera.servlet.ISFActions.ACTION_VUE_GLOBALE%>.actionAfficherDossierGed&amp;noAVSId=<%=nssIdTiers1%>&amp;idTiersExtraFolder=<%=idTiers1%><%=gedNssFamilleParam%>" >GED</A>
 														<%
@@ -1448,7 +1460,9 @@
 														<%
 															if (!JadeStringUtil.isBlankOrZero(idTiers2)) {
 														%>
-															<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=idTiers2%>" class="external_link">Tiers</A>
+															<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=idTiers2%>" class="external_link">
+																<ct:FWCodeLibelle csCode="<%=ISFSituationFamiliale.CS_PIXIS_TYPE_TIERS %>"/>
+															</A>
 															&nbsp;
 															<A href="#" onclick="window.open('<%=servletContext%><%=("/hera")%>?userAction=<%=globaz.hera.servlet.ISFActions.ACTION_VUE_GLOBALE%>.actionAfficherDossierGed&amp;noAVSId=<%=nssIdTiers2%>&amp;idTiersExtraFolder=<%=idTiers2%><%=gedNssFamilleParam%>','GED_CONSULT')" >GED</A>
 															
@@ -1536,7 +1550,9 @@
 														<%
 															if (!JadeStringUtil.isBlankOrZero(idTiers1)) {
 														%>
-															<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=idTiers1%>" class="external_link">Tiers</A>
+															<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=idTiers1%>" class="external_link">
+																<ct:FWCodeLibelle csCode="<%=ISFSituationFamiliale.CS_PIXIS_TYPE_TIERS %>"/>
+															</A>
 															&nbsp;
 															<A href="#" onclick="window.open('<%=servletContext%><%=("/hera")%>?userAction=<%=globaz.hera.servlet.ISFActions.ACTION_VUE_GLOBALE%>.actionAfficherDossierGed&amp;noAVSId=<%=nssIdTiers1%>&amp;idTiersExtraFolder=<%=idTiers1%><%=gedNssFamilleParam%>" >GED</A>
 														<%
@@ -1574,7 +1590,9 @@
 														<%
 															if (!JadeStringUtil.isBlankOrZero(idTiers2)) {
 														%>
-															<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=idTiers2%>" class="external_link">Tiers</A>
+															<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=idTiers2%>" class="external_link">
+																<ct:FWCodeLibelle csCode="<%=ISFSituationFamiliale.CS_PIXIS_TYPE_TIERS %>"/>
+															</A>
 															&nbsp;
 															<A href="#" onclick="window.open('<%=servletContext%><%=("/hera")%>?userAction=<%=globaz.hera.servlet.ISFActions.ACTION_VUE_GLOBALE%>.actionAfficherDossierGed&amp;noAVSId=<%=nssIdTiers2%>&amp;idTiersExtraFolder=<%=idTiers2%><%=gedNssFamilleParam%>','GED_CONSULT')" >GED</A>
 															
@@ -1712,7 +1730,9 @@
 															if (!JadeStringUtil.isBlankOrZero(enfant
 																						.getIdTiers())) {
 														%>
-															<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=enfant.getIdTiers()%>" class="external_link">Tiers</A>
+															<A href="<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=<%=enfant.getIdTiers()%>" class="external_link">
+																<ct:FWCodeLibelle csCode="<%=ISFSituationFamiliale.CS_PIXIS_TYPE_TIERS %>"/>
+															</A>
 															&nbsp;
 															<A href="#" onclick="window.open('<%=servletContext%><%=("/hera")%>?userAction=<%=globaz.hera.servlet.ISFActions.ACTION_VUE_GLOBALE%>.actionAfficherDossierGed&amp;noAVSId=<%=enfant.getNssFormatte()%>&amp;idTiersExtraFolder=<%=enfant.getIdTiers()%><%=gedNssFamilleParam%>','GED_CONSULT')" >GED</A>
 														<%

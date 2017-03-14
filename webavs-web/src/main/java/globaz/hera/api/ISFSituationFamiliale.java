@@ -57,6 +57,8 @@ public interface ISFSituationFamiliale {
     public final static String CS_REL_CONJ_SEPARE_DE_FAIT = "36001003";
     public final static String CS_REL_CONJ_SEPARE_JUDICIAIREMENT = "36001004";
 
+    public static final String CS_PIXIS_TYPE_TIERS = "500006";
+
     public final static String CS_TYPE_LIEN_DIVORCE = "36005003";
     public final static String CS_TYPE_LIEN_LPART_DECES = "36005007";
     public final static String CS_TYPE_LIEN_LPART_DISSOUT = "36005006";
