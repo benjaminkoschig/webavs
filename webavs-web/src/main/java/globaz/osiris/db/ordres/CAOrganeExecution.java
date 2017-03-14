@@ -37,6 +37,7 @@ import globaz.osiris.db.ordres.sepa.CACamt054DefinitionType;
 import globaz.osiris.db.ordres.sepa.CACamt054GroupTransaction;
 import globaz.osiris.db.ordres.sepa.CACamt054Notification;
 import globaz.osiris.db.ordres.sepa.CACamt054Processor;
+import globaz.osiris.db.ordres.sepa.CaCamtDefinitionType;
 import globaz.osiris.db.ordres.sepa.exceptions.CACamt054UnsupportedVersionException;
 import globaz.osiris.db.yellowreportfile.CAYellowReportFile;
 import globaz.osiris.db.yellowreportfile.CAYellowReportFileService;
@@ -599,6 +600,9 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
             // Boucle sur chaque transaction (D LEVEL)
             for (IntBVRPojo txDetail : groupTx.getListTransactions()) {
+
+                verifyDLevel(context, groupTx);
+
                 groupTxMessage.addDetail(manageTx(context, refBVR, txDetail, montantTotal, journal));
                 nbTransactionTotal++;
                 context.incProgressCounter();
@@ -613,6 +617,18 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         idJournaux.add(journal.getIdJournal());
 
         return groupTxMessage;
+    }
+
+    private void verifyDLevel(globaz.osiris.process.CAProcessBVR context, CACamt054GroupTransaction groupTx) {
+
+        // On met en erreur les transactions quand le C Level est de type CAJT (contre passation) et que le reversal
+        // indication est à true
+        if (groupTx.getSubFamilyCode().equals(CaCamtDefinitionType.SUBFAMILY_CAJT.getCode())
+                && groupTx.isReversalIndication()) {
+
+            context.getMemoryLog().logMessage(getSession().getLabel("5601"), FWMessage.ERREUR,
+                    this.getClass().getName());
+        }
     }
 
     private void checkIBANBLevel(final CACamt054Notification notification, final CACamt054GroupTxMessage groupTxMessage)
@@ -708,9 +724,12 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         } catch (Exception e) {
             throw e; // Pas top, mais obliger
         } finally {
-            // Pour éviter trop de lourdeur dans le code, je reprend les memorylog générés dans les processus
-            // d'avant et je les réinjecte dans notre txDetailMessage
-            transformMemoryLogToDetailMessage(context, txDetailMessage);
+            if (context.getSimulation()) {
+                // Pour éviter trop de lourdeur dans le code, je reprend les memorylog générés dans les processus
+                // d'avant et je les réinjecte dans notre txDetailMessage pour le mail (uniquement en mode simulation)
+                transformMemoryLogToDetailMessage(context, txDetailMessage);
+            }
+            context.getMemoryLog().clear();
         }
 
         return txDetailMessage;
@@ -775,7 +794,6 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
                 txDetailMessage.addMessage(level, messageToRegister);
             }
         }
-        context.getMemoryLog().clear();
     }
 
     private InputStream resolveFileFromProcessContext(CAProcessBVR context) throws Exception {

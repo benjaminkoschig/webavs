@@ -72,8 +72,8 @@ public class CACamt054Processor extends AbstractSepa {
     public boolean checkEntryForGoodType(final CACamt054DefinitionType type, final CACamt054GroupTransaction group) {
         boolean isCamt054Bvr = false;
 
-        // si nous avons trouvé le bon type dans le document pour n'importe quel entry, nous sortons
-        if (group != null && type.isGoodType(group.getDomainCode(), group.getFamilyCode(), group.getSubFamilyCode())) {
+        if (group != null
+                && type.isDefinitionMatching(group.getDomainCode(), group.getFamilyCode(), group.getSubFamilyCode())) {
             isCamt054Bvr = true;
         }
 

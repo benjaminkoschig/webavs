@@ -43,7 +43,7 @@ public class CACamt054DetailMessage extends AbstractCACamt054Message<IntBVRPojo>
 
             for (String message : getMessageFromLevel(Level.SEVERE)) {
                 builder.append(RETURN_LINE);
-                builder.append("[ERRROR] " + message);
+                builder.append("[ERROR] " + message);
             }
 
             for (String message : getMessageFromLevel(Level.WARNING)) {

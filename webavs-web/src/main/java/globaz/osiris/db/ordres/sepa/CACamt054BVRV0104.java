@@ -59,6 +59,7 @@ public class CACamt054BVRV0104 extends AbstractCamt054Version<iso.std.iso._20022
                 groupTx.setDomainCode(getDomainCodeEntry(entry));
                 groupTx.setFamilyCode(getFamilyCodeEntry(entry));
                 groupTx.setSubFamilyCode(getSubFamilyCode(entry));
+                groupTx.setReversalIndication(entry.isRvslInd());
 
                 final String bxTxCd = getBxTxCdEntry(groupTx);
 

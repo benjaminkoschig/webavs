@@ -20,6 +20,7 @@ public class CACamt054GroupTransaction {
     private String domainCode;
     private String familyCode;
     private String subFamilyCode;
+    private Boolean isReversalIndication;
 
     private List<CACamt054Transaction> listTransactions;
 
@@ -99,4 +100,14 @@ public class CACamt054GroupTransaction {
         return domainCode;
     }
 
+    public void setReversalIndication(Boolean isReversalIndication) {
+        this.isReversalIndication = isReversalIndication;
+    }
+
+    public Boolean isReversalIndication() {
+        if (isReversalIndication == null) {
+            return false;
+        }
+        return isReversalIndication;
+    }
 }
