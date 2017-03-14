@@ -773,12 +773,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             if (object instanceof FWMessage) {
                 FWMessage message = (FWMessage) object;
 
-                String messageToRegister;
-                try {
-                    messageToRegister = getSession().getLabel(message.getMessageId());
-                } catch (Exception e) {
-                    messageToRegister = message.getMessageText();
-                }
+                final String messageToRegister = message.getMessageText();
 
                 Level level;
                 if (FWMessage.ERREUR.equals(message.getTypeMessage())
