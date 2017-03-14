@@ -600,24 +600,16 @@
 							<td>
 								<ct:select name="csTypeDemandeRente" onchange="changeTypeDemandeRente(this)">
 									<option value="<%=IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE%>"<%=IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE.equals(viewBean.getCsTypeDemandeRente())?"selected":""%>>
-										<label>
-											Vieillesse
-										</label>
+										<ct:FWCodeLibelle csCode="<%=IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE%>" />
 									</option>
 									<option value="<%=IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE%>"<%=IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE.equals(viewBean.getCsTypeDemandeRente())?"selected":""%>>
-										<label>
-											Invalidité
-										</label>
+										<ct:FWCodeLibelle csCode="<%=IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE%>" />									
 									</option>
 									<option value="<%=IREDemandeRente.CS_TYPE_DEMANDE_RENTE_SURVIVANT%>"<%=IREDemandeRente.CS_TYPE_DEMANDE_RENTE_SURVIVANT.equals(viewBean.getCsTypeDemandeRente())?"selected":""%>>
-										<label>
-											Survivant
-										</label>
+										<ct:FWCodeLibelle csCode="<%=IREDemandeRente.CS_TYPE_DEMANDE_RENTE_SURVIVANT%>" />
 									</option>
 									<option value="<%=IREDemandeRente.CS_TYPE_DEMANDE_RENTE_API%>"<%=IREDemandeRente.CS_TYPE_DEMANDE_RENTE_API.equals(viewBean.getCsTypeDemandeRente())?"selected":""%>>
-										<label>
-											API
-										</label>
+										<ct:FWCodeLibelle csCode="<%=IREDemandeRente.CS_TYPE_DEMANDE_RENTE_API%>" />
 									</option>
 								</ct:select>
 							</td>
