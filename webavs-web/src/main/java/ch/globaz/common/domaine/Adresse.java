@@ -1,3 +1,6 @@
+/*
+ * Globaz SA
+ */
 package ch.globaz.common.domaine;
 
 import java.util.ArrayList;
@@ -159,7 +162,7 @@ public class Adresse {
     }
 
     public String getAdresseFormatte() {
-        StringBuffer adressAsString = new StringBuffer();
+        StringBuilder adressAsString = new StringBuilder();
         for (String ligne : getAdresseAsStringLines()) {
             adressAsString.append(ligne);
             adressAsString.append("\n");
