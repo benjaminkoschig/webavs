@@ -1793,6 +1793,8 @@ public class CPProcessReceptionGenererDecision extends BProcess {
             rachatLPPCalcule = revenus / 2.0;
         }
 
+        rachatLPPCalcule = Math.abs(rachatLPPCalcule);
+
         decisionViewBean.setRachatLPP(String.valueOf(JANumberFormatter.format(rachatLPPCalcule, 1.0, 0,
                 JANumberFormatter.SUP)));
     }
