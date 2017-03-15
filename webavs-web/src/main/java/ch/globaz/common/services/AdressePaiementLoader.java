@@ -22,18 +22,18 @@ public class AdressePaiementLoader {
         this.session = session;
     }
 
-    public Map<String, AdressePaiement> searchAdressePaiement(Map<String, String> mapIdTiersAndDomain) {
+    public Map<Integer, AdressePaiement> searchAdressePaiement(Map<Integer, Integer> mapIdTiersAndDomain) {
 
         if (mapIdTiersAndDomain == null) {
             throw new IllegalArgumentException("Unabled to find adresses, mapIdTiersAndDomain is null");
         }
 
-        Map<String, AdressePaiement> adresses = new HashMap<String, AdressePaiement>();
+        Map<Integer, AdressePaiement> adresses = new HashMap<Integer, AdressePaiement>();
 
-        for (Entry<String, String> entry : mapIdTiersAndDomain.entrySet()) {
+        for (Entry<Integer, Integer> entry : mapIdTiersAndDomain.entrySet()) {
             try {
-                TIAdressePaiementData adresseData = PRTiersHelper.getAdressePaiementData(session, null, entry.getKey(),
-                        entry.getValue(), null, null);
+                TIAdressePaiementData adresseData = PRTiersHelper.getAdressePaiementData(session, null, entry.getKey()
+                        .toString(), entry.getValue().toString(), null, null);
                 adresses.put(entry.getKey(), convertAdressePaiement(adresseData));
             } catch (Exception e) {
                 throw new RuntimeException("Unabled to find adresse paiement for " + entry.getKey(), e);
