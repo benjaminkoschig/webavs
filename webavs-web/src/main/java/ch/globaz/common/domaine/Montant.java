@@ -65,6 +65,10 @@ public class Montant implements Serializable {
         currency = new BigDecimal(value, mathContext);
     }
 
+    public Montant(final Integer value) {
+        currency = new BigDecimal(value, mathContext);
+    }
+
     public Montant(final BigDecimal value) {
         currency = value;
     }
