@@ -1,5 +1,7 @@
 package ch.globaz.common.process;
 
+import globaz.globall.db.BProcess;
+import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.jade.context.JadeThread;
 import globaz.jade.i18n.JadeI18n;
@@ -44,15 +46,29 @@ public class ProcessMailUtils {
      * 
      * @param mailsList
      * @param e
-     * @param process
+     * @param process doit être de type AbstractJadeJob ou BProcess
      * @param messageInfo
      * @param transaction
      * @param objectsToJson
+     * @throws IllegalArgumentException
      * @throws Exception
      */
-    public static void sendMailError(List<String> mailsList, Throwable e, AbstractJadeJob process, String messageInfo,
+    public static void sendMailError(List<String> mailsList, Throwable e, Object processObject, String messageInfo,
             BTransaction transaction, Object... objectsToJson) {
-        String isoLangue = process.getSession().getIdLangueISO();
+        BSession session;
+        String processName;
+
+        if (processObject instanceof AbstractJadeJob) {
+            session = ((AbstractJadeJob) processObject).getSession();
+            processName = ((AbstractJadeJob) processObject).getName();
+        } else if (processObject instanceof BProcess) {
+            session = ((BProcess) processObject).getSession();
+            processName = ((BProcess) processObject).getName();
+        } else {
+            throw new java.lang.IllegalArgumentException("The processObject is not an inherited process object.");
+        }
+
+        String isoLangue = session.getIdLangueISO();
         String numAffile = "";
 
         String body = messageInfo + "\n";
@@ -61,13 +77,13 @@ public class ProcessMailUtils {
             String message = "";
             for (JadeBusinessMessage jadeBusinessMessage : messages) {
                 message = message
-                        + JadeI18n.getInstance().getMessage(process.getSession().getIdLangueISO(),
+                        + JadeI18n.getInstance().getMessage(session.getIdLangueISO(),
                                 jadeBusinessMessage.getMessageId()) + "\n";
             }
             body = body + LabelCommonProvider.getLabel("PROCESS_ERROR", isoLangue) + ": " + message;
         } else {
-            if (process.getSession() != null) {
-                body = body + process.getSession().getErrors();
+            if (session != null) {
+                body = body + session.getErrors();
             }
             if (transaction != null) {
                 body = body + transaction.getSession().getErrors();
@@ -98,7 +114,7 @@ public class ProcessMailUtils {
         }
 
         try {
-            bodyGlobaz = bodyGlobaz + "Params:\t " + new Gson().toJson(process) + "\n\n";
+            bodyGlobaz = bodyGlobaz + "Params:\t " + new Gson().toJson(processObject) + "\n\n";
         } catch (Exception e1) {
             e1.printStackTrace();
         }
@@ -115,10 +131,11 @@ public class ProcessMailUtils {
 
         String[] mailsTab = mailsList.toArray(new String[mailsList.size()]);
         try {
-            JadeSmtpClient.getInstance().sendMail(
-                    mailsTab,
-                    process.getName() + " - " + LabelCommonProvider.getLabel("PROCESS_IN_ERROR", isoLangue) + " "
-                            + numAffile, body, null);
+            JadeSmtpClient.getInstance()
+                    .sendMail(
+                            mailsTab,
+                            processName + " - " + LabelCommonProvider.getLabel("PROCESS_IN_ERROR", isoLangue) + " "
+                                    + numAffile, body, null);
         } catch (Exception e1) {
             e1.printStackTrace();
         }
