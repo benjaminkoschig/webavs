@@ -34,7 +34,7 @@ public class GenerateurAnneeRevenuMinimalTest {
         assertThat(generateur.genererStringAnneeRevenuMinimal(null)).isEqualTo("");
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testWrongFormat() throws Exception {
         assertThat(generateur.genererStringAnneeRevenuMinimal("2017,1120")).isEqualTo("");
     }
