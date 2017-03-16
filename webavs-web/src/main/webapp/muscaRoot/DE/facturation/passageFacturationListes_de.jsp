@@ -78,6 +78,7 @@ top.document.title = "Musca - Ausdruck der Abrechnungen"
 	           		
 	           		<option value="musca.facturation.passageFacturation.listerTaxation">Definitive Veranlagungen</option>
 	           		<option value="musca.facturation.passageFacturation.listerDecisionControle">Arbeitgeberkontrolleverfügungen</option>
+	           		<option value="musca.facturation.passageFacturation.listerIndeRevenuMinimal">Liste der Selbstständigerwerbenden mit Familienzulagen - Nicht erreichtes Mindesteinkommen</option>
             	</select>
             </td>
           </tr>

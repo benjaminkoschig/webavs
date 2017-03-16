@@ -79,6 +79,7 @@ top.document.title = "Musca - Impression des décomptes"
 	           		
 	           		<option value="musca.facturation.passageFacturation.listerTaxation">Taxations définitives</option>
 	           		<option value="musca.facturation.passageFacturation.listerDecisionControle">Décisions de contrôle</option>
+	           		<option value="musca.facturation.passageFacturation.listerIndeRevenuMinimal">Liste des indépendants avec allocations familiales - Revenu minimal non atteint</option>
             	</select>
             </td>
           </tr>

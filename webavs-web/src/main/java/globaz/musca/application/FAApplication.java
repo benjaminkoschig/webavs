@@ -37,7 +37,9 @@ import java.util.Hashtable;
  * @author Emmanuel Fleury
  */
 public class FAApplication extends globaz.globall.db.BApplication {
-	private static final long serialVersionUID = 1L;	private static final int LENGTH_NSS = 14;    public final static String APPLICATION_MUSCA_REP = "muscaRoot";
+    private static final long serialVersionUID = 1L;
+    private static final int LENGTH_NSS = 14;
+    public final static String APPLICATION_MUSCA_REP = "muscaRoot";
     public final static String DEFAULT_APPLICATION_MUSCA = "MUSCA";
     public final static String ELEMENTSPARJOURNAL = "elementsParJournal";
     public final static String FLAG_EXECUTECLEANUP = "executeCleanUp";
@@ -174,6 +176,9 @@ public class FAApplication extends globaz.globall.db.BApplication {
         FWAction.registerActionCustom("musca.process.processServices.browseDirectory", FWSecureConstants.READ);
         // PO 6686
         FWAction.registerActionCustom("musca.facturation.passageFacturation.imprimerLettreRentier",
+                FWSecureConstants.READ);
+        // D0136
+        FWAction.registerActionCustom("musca.facturation.passageFacturation.listerIndeRevenuMinimal",
                 FWSecureConstants.READ);
     }
 

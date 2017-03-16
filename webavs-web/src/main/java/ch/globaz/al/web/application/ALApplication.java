@@ -8,6 +8,7 @@ import globaz.globall.db.BApplication;
 import globaz.jade.client.xml.JadeXmlReader;
 import globaz.jade.context.JadeThread;
 import globaz.jade.editing.JadeEditing;
+import globaz.webavs.common.CommonProperties;
 import ch.globaz.al.businessimpl.ctrlexport.PrestationExportableController;
 
 /**
@@ -82,5 +83,9 @@ public class ALApplication extends BApplication {
         FWAction.registerActionCustom("al.adi.decompteAdi.generer", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("al.rafam.annonceRafam.creer68c", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("al.dossier.dossier.lierDossierLibra", FWSecureConstants.UPDATE);
+    }
+
+    public String getNoCaisse() {
+        return this.getProperty(CommonProperties.KEY_NO_CAISSE_FORMATE);
     }
 }

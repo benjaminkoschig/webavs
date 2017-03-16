@@ -22,6 +22,7 @@ import globaz.musca.db.facturation.FAPassageListerAfactsAQuittancerViewBean;
 import globaz.musca.db.facturation.FAPassageListerAfactsViewBean;
 import globaz.musca.db.facturation.FAPassageListerCompensationViewBean;
 import globaz.musca.db.facturation.FAPassageListerDecomptesViewBean;
+import globaz.musca.db.facturation.FAPassageListerIndeRevenuMinViewBean;
 import globaz.musca.db.facturation.FAPassageListerTaxationViewBean;
 import globaz.musca.db.facturation.FAPassageModuleFacturationViewBean;
 import globaz.musca.db.facturation.FAPassageViewBean;
@@ -1216,6 +1217,51 @@ public class FAActionPassageFacturation extends FWDefaultServletAction {
         servlet.getServletContext().getRequestDispatcher(_destination).forward(request, response);
     }
 
+    private void _actionListerIndeRevenuMin(javax.servlet.http.HttpSession session,
+            javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response,
+            globaz.framework.controller.FWDispatcher mainDispatcher) throws javax.servlet.ServletException,
+            java.io.IOException {
+        String _destination = "";
+        try {
+
+            /*
+             * Creation dynamique de notre viewBean
+             */
+            FAPassageListerIndeRevenuMinViewBean viewBean = new FAPassageListerIndeRevenuMinViewBean();
+            globaz.globall.http.JSPUtils.setBeanProperties(request, viewBean);
+
+            // Récupération du passage pour set les infos utiles à la liste
+            String selectedId = request.getParameter("selectedId");
+            viewBean.setNoPassage(selectedId);
+            viewBean.setSession((BSession) globaz.musca.translation.CodeSystem.getSession(session));
+
+            // GESTION DES DROITS
+            viewBean = (FAPassageListerIndeRevenuMinViewBean) mainDispatcher.dispatch(viewBean, getAction());
+
+            // mettre en session le viewbean
+            session.removeAttribute("viewBean");
+            session.setAttribute("viewBean", viewBean);
+
+            /*
+             * choix destination
+             */
+            if (viewBean.getMsgType().equals(FWViewBeanInterface.ERROR)) {
+                _destination = FWDefaultServletAction.ERROR_PAGE;
+            } else {
+                _destination = getRelativeURL(request, session) + "ListerIndeRevenuMin_de.jsp";
+            }
+
+        } catch (Exception e) {
+            JadeLogger.error(this, e);
+            _destination = FWDefaultServletAction.ERROR_PAGE;
+        }
+
+        /*
+         * redirection vers la destination
+         */
+        servlet.getServletContext().getRequestDispatcher(_destination).forward(request, response);
+    }
+
     @Override
     protected void actionCustom(HttpSession session, HttpServletRequest request, HttpServletResponse response,
             FWDispatcher dispatcher) throws javax.servlet.ServletException, java.io.IOException {
@@ -1275,8 +1321,9 @@ public class FAActionPassageFacturation extends FWDefaultServletAction {
             _actionListerAfactAQuittancer(session, request, response, dispatcher);
         } else if (getAction().getActionPart().equals("executerSucces")) {
             _actionExecuterSucces(session, request, response);
+        } else if (getAction().getActionPart().equals("listerIndeRevenuMinimal")) {
+            _actionListerIndeRevenuMin(session, request, response, dispatcher);
         }
-
     }
 
 }

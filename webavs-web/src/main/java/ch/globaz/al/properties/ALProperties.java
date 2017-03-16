@@ -16,6 +16,13 @@ public enum ALProperties implements IProperties {
             return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
         }
 
+    },
+
+    REVENUS_MINIMAUX("revenus.minimaux", "Liste représentant les couples années:revenu minimal") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
     };
 
     private String description;
@@ -28,7 +35,7 @@ public enum ALProperties implements IProperties {
 
     /**
      * Déterminer si la valeur renseignée dans la property est correcte
-     *
+     * 
      * @param propertyValue
      *            La valeur à évaluer
      * @return <code>true</code> si la valeur de la propriété est correcte
