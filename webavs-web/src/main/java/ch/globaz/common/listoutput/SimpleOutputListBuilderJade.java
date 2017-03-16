@@ -16,6 +16,7 @@ import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 public class SimpleOutputListBuilderJade extends SimpleOutputListBuilder {
 
     private boolean isContextInizialised = false;
+    private Configuration configurationGlobaz = Configurations.buildeDefault();
     private BSession session;
 
     public SimpleOutputListBuilderJade() {
@@ -75,6 +76,26 @@ public class SimpleOutputListBuilderJade extends SimpleOutputListBuilder {
         return this;
     }
 
+    public SimpleOutputListBuilderJade headerRightTop(String info) {
+        configurationGlobaz.getHeaderFooter().setRightTop(info);
+        return this;
+    }
+
+    public SimpleOutputListBuilderJade headerLeftTop(String info) {
+        configurationGlobaz.getHeaderFooter().setLeftTop(info);
+        return this;
+    }
+
+    public SimpleOutputListBuilderJade headerLeftBottom(String info) {
+        configurationGlobaz.getHeaderFooter().setLeftBottom(info);
+        return this;
+    }
+
+    public SimpleOutputListBuilderJade headerCenterTop(String info) {
+        configurationGlobaz.getHeaderFooter().setCenterTop(info);
+        return this;
+    }
+
     public SimpleOutputListBuilderJade globazTheme() {
         String font = "Helvetica";
         Configuration configuration = Configurations.buildeDefault();
@@ -98,6 +119,7 @@ public class SimpleOutputListBuilderJade extends SimpleOutputListBuilder {
             }
         });
         configure(configuration);
+        configurationGlobaz = configuration;
         return this;
     }
 }
