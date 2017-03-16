@@ -1456,7 +1456,7 @@ public class DSInscriptionsIndividuelles extends BEntity {
             moisDebut = periodeDebut.substring(indexPointDebut + 1);
             moisDebut = JadeStringUtil.rightJustifyInteger(moisDebut, 2);
         } else {
-            if (periodeDebut == "") {
+            if (periodeDebut == "" || periodeDebut.isEmpty()) {
                 periodeDebut = "0";
             }
             // Si 66,77 ou 99 met les jours et mois à la même valeur + test si empty pour aller plus loin
@@ -1481,7 +1481,7 @@ public class DSInscriptionsIndividuelles extends BEntity {
             moisFin = periodeFin.substring(indexPointFin + 1);
             moisFin = JadeStringUtil.rightJustifyInteger(moisFin, 2);
         } else {
-            if (periodeFin == "") {
+            if (periodeFin == "" || periodeFin.isEmpty()) {
                 periodeFin = "0";
             }
             // Si 66,77 ou 99 met les jours et mois à la même valeur + test si empty pour aller plus loin
