@@ -57,7 +57,7 @@ public class CPListeTaxationDefinitiveXlsPdf extends BProcess {
         isAllEmpty &= JadeStringUtil.isEmpty(criteria.getDateDebutDecompte());
         isAllEmpty &= JadeStringUtil.isEmpty(criteria.getDateFinDecompte());
 
-        if (isAllEmpty) {
+        if (isAllEmpty && !fromFacturation) {
             this._addError(getSession().getLabel("JSP_LISTE_TAXATIONS_DEFINITIVES_ERREUR_CHAMPS_VIDE"));
         }
 
