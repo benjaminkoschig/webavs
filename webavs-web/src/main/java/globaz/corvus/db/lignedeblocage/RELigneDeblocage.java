@@ -19,6 +19,7 @@ public class RELigneDeblocage extends JadeEntity {
     private Integer idApplicationAdressePaiement;
     private Integer idSectionDetteEnCompta;
     private Integer idRentePrestation;
+    private Integer idLot;
     private RELigneDeblocageType type;
     private RELigneDeblocageEtat etat;
     private Montant montant;
@@ -48,6 +49,7 @@ public class RELigneDeblocage extends JadeEntity {
         idApplicationAdressePaiement = this.read(RELigneDeblocageTableDef.ID_APPLICATION_ADRESSE_PAIEMENT);
         idSectionDetteEnCompta = this.read(RELigneDeblocageTableDef.ID_SECTION_DETTE_EN_COMPTA);
         idRentePrestation = this.read(RELigneDeblocageTableDef.ID_RENTE_PRESTATION);
+        idLot = this.read(RELigneDeblocageTableDef.ID_LOT);
         type = this.read(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE);
         etat = this.read(RELigneDeblocageTableDef.CS_ETAT);
         montant = this.read(RELigneDeblocageTableDef.MONTANT, CONVERTER_MONTANT);
@@ -180,6 +182,14 @@ public class RELigneDeblocage extends JadeEntity {
     @Override
     public boolean hasCreationSpy() {
         return true;
+    }
+
+    public Integer getIdLot() {
+        return idLot;
+    }
+
+    public void setIdLot(Integer idLot) {
+        this.idLot = idLot;
     }
 
 }
