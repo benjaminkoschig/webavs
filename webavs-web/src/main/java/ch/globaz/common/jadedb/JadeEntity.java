@@ -4,6 +4,7 @@
 package ch.globaz.common.jadedb;
 
 import globaz.globall.db.BEntity;
+import globaz.globall.db.BSpy;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import java.io.StringWriter;
@@ -13,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import org.apache.commons.lang.StringUtils;
 import ch.globaz.common.domaine.CodeSystemEnum;
 import ch.globaz.common.domaine.CodeSystemEnumUtils;
 import ch.globaz.common.jadedb.converter.ConverterDB;
@@ -35,6 +37,14 @@ public abstract class JadeEntity extends BEntity {
     public abstract String getIdEntity();
 
     public abstract void setIdEntity(String id);
+
+    public void setSpy(String spy) {
+        _setSpy(new BSpy(spy));
+    }
+
+    public void setSpy(BSpy spy) {
+        _setSpy(spy);
+    }
 
     public void persist(TransactionWrapper transaction) {
         try {
@@ -267,7 +277,7 @@ public abstract class JadeEntity extends BEntity {
     }
 
     public <T extends Enum<T>> void write(TableDefinition def, CodeSystemEnum<T> value) {
-        this.write(def.getColumnName(), value.getValue(), def.toString());
+        this.write(def.getColumnName(), Integer.valueOf(value.getValue()), def.toString());
     }
 
     public <D> void write(TableDefinition def, D value, ConverterDB<D, ?> converter) {
@@ -332,8 +342,13 @@ public abstract class JadeEntity extends BEntity {
         Field field = resolveFieldPrimaryKey();
         TableDefinition defPrimaryKey = resolveDefPK();
         try {
-            this.writeKey(defPrimaryKey, field.get(this));
-            writeNumber(defPrimaryKey, field.get(this));
+            Object id = field.get(this);
+            // Il faut tester le null car lorsque l'on utiliser le setId() on a une erreur
+            // Il ne faut pas utiliser le setId pour setter un id mais setIdEntity
+            if (id != null && !StringUtils.isEmpty(String.valueOf(id))) {
+                this.writeKey(defPrimaryKey, id);
+                writeNumber(defPrimaryKey, id);
+            }
         } catch (IllegalArgumentException e) {
             throw new JadeDataBaseException(e);
         } catch (IllegalAccessException e) {
