@@ -64,34 +64,39 @@ public class RELigneDeblocagesTest {
     }
 
     @Test
-    public void testGetLigneDeblocageComptabilise() throws Exception {
+    public void testFiltreComptabilises() throws Exception {
         RELigneDeblocages ld = new RELigneDeblocages();
         ld.addAll(createListLigneDeblocage());
 
-        assertThat(ld.getLigneDeblocageComptabilise().size()).isEqualTo(4);
+        assertThat(ld.filtreComptabilises().size()).isEqualTo(4);
     }
 
     @Test
-    public void testGetLigneDeblocageEnregistre() throws Exception {
+    public void testFiltreEnregistres() throws Exception {
         RELigneDeblocages ld = new RELigneDeblocages();
         ld.addAll(createListLigneDeblocage());
 
-        assertThat(ld.getLigneDeblocageEnregistre().size()).isEqualTo(3);
+        assertThat(ld.filtreEnregistres().size()).isEqualTo(3);
     }
 
     @Test
-    public void testGetLigneDeblocageValide() throws Exception {
+    public void testFiltreValides() throws Exception {
         RELigneDeblocages ld = new RELigneDeblocages();
         ld.addAll(createListLigneDeblocage());
+        assertThat(ld.filtreValides().size()).isEqualTo(1);
+    }
 
-        assertThat(ld.getLigneDeblocageValide().size()).isEqualTo(1);
+    @Test
+    public void testFiltreValidesComptabilises() throws Exception {
+        RELigneDeblocages ld = new RELigneDeblocages();
+        ld.addAll(createListLigneDeblocage());
+        assertThat(ld.filtreValidesAndComptabilises().size()).isEqualTo(5);
     }
 
     @Test
     public void testGetLigneDeblocageCreancier() throws Exception {
         RELigneDeblocages ld = new RELigneDeblocages();
         ld.addAll(createListLigneDeblocage());
-
         assertThat(ld.getLigneDeblocageCreancier().size()).isEqualTo(3);
     }
 

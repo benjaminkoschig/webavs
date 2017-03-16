@@ -86,7 +86,7 @@ public class AdressePaiementLoader {
             tiers.setDesignation1(adresseData.getDesignation1_tiers());
             tiers.setDesignation2(adresseData.getDesignation2_tiers());
 
-            return new AdressePaiement(banque, tiers);
+            return new AdressePaiement(banque, tiers, adresseData.getIdAvoirPaiementUnique());
         }
 
         return null;

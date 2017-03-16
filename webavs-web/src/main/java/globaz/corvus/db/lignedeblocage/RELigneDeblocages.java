@@ -6,6 +6,7 @@ package globaz.corvus.db.lignedeblocage;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageEtat;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Structure représentant une liste de ligne de déblocage
@@ -28,16 +29,25 @@ public class RELigneDeblocages extends ArrayList<RELigneDeblocage> {
         return ld;
     }
 
-    public RELigneDeblocages getLigneDeblocageComptabilise() {
+    public RELigneDeblocages filtreComptabilises() {
         return getLigneDeblocageByEtat(RELigneDeblocageEtat.COMPTABILISE);
     }
 
-    public RELigneDeblocages getLigneDeblocageEnregistre() {
+    public RELigneDeblocages filtreEnregistres() {
         return getLigneDeblocageByEtat(RELigneDeblocageEtat.ENREGISTRE);
     }
 
-    public RELigneDeblocages getLigneDeblocageValide() {
+    public RELigneDeblocages filtreValides() {
         return getLigneDeblocageByEtat(RELigneDeblocageEtat.VALIDE);
+    }
+
+    public RELigneDeblocages filtreValidesAndComptabilises() {
+        RELigneDeblocages valides = filtreValides();
+        RELigneDeblocages comptabilise = filtreComptabilises();
+        RELigneDeblocages lignes = new RELigneDeblocages();
+        lignes.addAll(valides.toList());
+        lignes.addAll(comptabilise.toList());
+        return lignes;
     }
 
     RELigneDeblocages getLigneDeblocageByType(RELigneDeblocageType byType) {
@@ -50,6 +60,34 @@ public class RELigneDeblocages extends ArrayList<RELigneDeblocage> {
         }
 
         return ld;
+    }
+
+    public List<RELigneDeblocage> toList() {
+        List<RELigneDeblocage> list = new ArrayList<RELigneDeblocage>();
+        for (RELigneDeblocage ligne : this) {
+            list.add(ligne);
+        }
+        return list;
+    }
+
+    public List<RELigneDeblocageCreancier> toListCreancier() {
+        return toListType();
+    }
+
+    public List<RELigneDeblocageVersement> toListVersement() {
+        return toListType();
+    }
+
+    public List<RELigneDeblocageDette> toListDette() {
+        return toListType();
+    }
+
+    private <T extends RELigneDeblocage> List<T> toListType() {
+        List<T> list = new ArrayList<T>();
+        for (RELigneDeblocage ligne : this) {
+            list.add((T) ligne);
+        }
+        return list;
     }
 
     public RELigneDeblocages getLigneDeblocageCreancier() {

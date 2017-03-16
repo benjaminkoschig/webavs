@@ -20,26 +20,14 @@
 <script type="text/javascript" src="<%=servletContext%>/scripts/ajax/AbstractScalableAJAXTableZone.js"/></script>
 <script type="text/javascript" src="<%=servletContext%>/scripts/ajax/AbstractSimpleAJAXDetailZone.js"/></script>
 
-<!--
-<SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/params.js"></SCRIPT>
-<SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/actionsForButtons.js"></SCRIPT>
-<SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/utils.js"></SCRIPT>
-
-<SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/formUtil.js"></SCRIPT>
-
-<SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/shortKeys.js"></SCRIPT>
-
-<SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/autocomplete.js"></SCRIPT>
-<SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/selectionPopup.js"></SCRIPT>
- -->
- <%@ include file="/jade/notation/notationLibJs.jspf" %> 
+<%@ include file="/jade/notation/notationLibJs.jspf" %> 
 <script type="text/javascript" src="<%=servletContext%>/scripts/jsnotation/core/specificationMoteur/specific_ajax.js"/></script>
 
 <script type="text/javascript">
-	jsManager.addAfter(function () {
+/* 	jsManager.addAfter(function () {
 		setTimeout(function () {globazNotation.growl.init(); }, 500);
 		//setTimeout(function () {$(':input').filter(':visible:enabled').not('.noFocus').first().focus();}, 10);
-	},"Init-growl, add focus on ");
+	},"Init-growl, add focus on "); */
 </script>
 <style type="text/css">
 body {

@@ -8,13 +8,14 @@ import java.io.Serializable;
 public class AdressePaiement implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private Banque banque;
-    private Tiers tiers;
+    private final Banque banque;
+    private final Tiers tiers;
+    private final String idAvoirPaiementUnique;
 
-    public AdressePaiement(Banque banque, Tiers tiers) {
-        super();
+    public AdressePaiement(Banque banque, Tiers tiers, String idAvoirPaiementUnique) {
         this.banque = banque;
         this.tiers = tiers;
+        this.idAvoirPaiementUnique = idAvoirPaiementUnique;
     }
 
     public Banque getBanque() {
@@ -24,4 +25,9 @@ public class AdressePaiement implements Serializable {
     public Tiers getTiers() {
         return tiers;
     }
+
+    public String getIdAvoirPaiementUnique() {
+        return idAvoirPaiementUnique;
+    }
+
 }

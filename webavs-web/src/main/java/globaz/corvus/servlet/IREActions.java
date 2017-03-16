@@ -103,6 +103,9 @@ public interface IREActions {
     public static final String ACTION_TERMINER_DEMANDERENTEPREVBIL = "corvus.process.terminerDemandeRentePrevBil";
     public static final String ACTION_VALIDER_GROUPE_DECISIONS = "corvus.decisions.validerGroupeDecisions";
     public static final String ACTION_VALIDER_LOT = "corvus.process.validerLot";
+    public static final String ACTION_DEBLOCAGE = "corvus.deblocage.deblocage";
+    public static final String ACTION_DEBLOCAGE_AJAX = "corvus.deblocage.deblocageAjax";
+
     public static final String ACTION_BASES_DE_CALCUL_EDITER_NUMERO_DECISION = ACTION_BASES_DE_CALCUL
             + ".editerNumeroDecisionAJAX";
 }

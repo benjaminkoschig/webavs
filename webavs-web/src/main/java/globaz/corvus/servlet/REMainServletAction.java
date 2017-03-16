@@ -124,8 +124,9 @@ public class REMainServletAction {
         REMainServletAction.ACTIONS.put(IREActions.ACTION_VALIDER_LOT, REValiderLotAction.class);
         REMainServletAction.ACTIONS.put(IREActions.ACTION_MODIFICATION_NSS_EX_CONJOINT,
                 REModificationNSSExConjointAction.class);
-        REMainServletAction.ACTIONS.put(IREActions.ACTION_SAISIE_COMMUNICATION_MUTATION_OAI,
-                RECommunicationMutationOaiAction.class);
+        // REMainServletAction.ACTIONS.put(IREActions.ACTION_DEBLOCAGE, REDeblocageAction.class);
+        REMainServletAction.ACTIONS.put(IREActions.ACTION_DEBLOCAGE_AJAX, REDeblocageAction.class);
+        REMainServletAction.ACTIONS.put(IREActions.ACTION_BASES_DE_CALCUL, REBasesCalculAction.class);
     }
 
     /**
@@ -137,7 +138,6 @@ public class REMainServletAction {
      */
     public static Class<? extends FWDefaultServletAction> getActionClass(final FWAction action) {
         String key = action.getApplicationPart() + "." + action.getPackagePart() + "." + action.getClassPart();
-
         return REMainServletAction.ACTIONS.get(key);
     }
 }

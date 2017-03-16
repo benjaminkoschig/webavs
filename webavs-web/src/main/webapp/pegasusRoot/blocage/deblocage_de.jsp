@@ -207,7 +207,6 @@ globazGlobal.isUpdatable = ${viewBean.isUpdatable};
 					<div class="notUpdatable" idEntity = "${entry.idDeBlocage}" >
 						<div class="row-fluid " id="id_${viewBean.csTypeBlocageCreancier}">
 							<div class="span5">
-	
 								<span class="lbl">${entry.description} (${entry.descriptionCompteAnnexe})</span>
 							</div>
 							<div class="span5"></div>

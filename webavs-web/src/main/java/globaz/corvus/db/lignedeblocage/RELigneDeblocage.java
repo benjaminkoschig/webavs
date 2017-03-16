@@ -34,10 +34,14 @@ public class RELigneDeblocage extends JadeEntity {
         this.write(RELigneDeblocageTableDef.ID_APPLICATION_ADRESSE_PAIEMENT, idApplicationAdressePaiement);
         this.write(RELigneDeblocageTableDef.ID_SECTION_DETTE_EN_COMPTA, idSectionDetteEnCompta);
         this.write(RELigneDeblocageTableDef.ID_RENTE_PRESTATION, idRentePrestation);
-        write(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, type);
-        write(RELigneDeblocageTableDef.CS_ETAT, etat);
-        write(RELigneDeblocageTableDef.MONTANT, montant, CONVERTER_MONTANT);
+        this.write(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, type);
+        this.write(RELigneDeblocageTableDef.CS_ETAT, etat);
+        this.write(RELigneDeblocageTableDef.MONTANT, montant, CONVERTER_MONTANT);
+        this.write(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, type);
+        this.write(RELigneDeblocageTableDef.CS_ETAT, etat);
+        this.write(RELigneDeblocageTableDef.MONTANT, montant, CONVERTER_MONTANT);
         this.write(RELigneDeblocageTableDef.REFERENCE_PAIEMENT, refPaiement);
+        this.write(RELigneDeblocageTableDef.ID_LOT, idLot);
     }
 
     @Override
@@ -52,6 +56,8 @@ public class RELigneDeblocage extends JadeEntity {
         idLot = this.read(RELigneDeblocageTableDef.ID_LOT);
         type = this.read(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE);
         etat = this.read(RELigneDeblocageTableDef.CS_ETAT);
+        type = this.read(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, RELigneDeblocageType.class);
+        etat = this.read(RELigneDeblocageTableDef.CS_ETAT, RELigneDeblocageEtat.class);
         montant = this.read(RELigneDeblocageTableDef.MONTANT, CONVERTER_MONTANT);
         refPaiement = this.read(RELigneDeblocageTableDef.REFERENCE_PAIEMENT);
     }
@@ -182,14 +188,6 @@ public class RELigneDeblocage extends JadeEntity {
     @Override
     public boolean hasCreationSpy() {
         return true;
-    }
-
-    public Integer getIdLot() {
-        return idLot;
-    }
-
-    public void setIdLot(Integer idLot) {
-        this.idLot = idLot;
     }
 
 }

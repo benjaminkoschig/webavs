@@ -7,7 +7,6 @@ function DeblocageAjax(m_options) {
 	this.tempateCreancier = '';
 	
 	this.onRetrieve = function (data) {
-		var that = this;
 		this.defaultLoadData(data, m_options.s_selector); 
 	};
 	
@@ -20,9 +19,8 @@ function DeblocageAjax(m_options) {
 		var param = ajaxUtils.createMapForSendData(this.mainContainer,'.');
 		var map = {};
 		for(var key in param){
-			map["simpleDeblocage."+key] = param[key];
+			map["currentEntity."+key] = param[key];
 		}
-		
 		
 		if(param.idAvoirPaiementUnique === ''){
 			map["idAvoirPaiementUnique"] = param['avoirPaiement.idAdrPmtIntUnique'];
@@ -30,17 +28,15 @@ function DeblocageAjax(m_options) {
 			map["idAvoirPaiementUnique"] = param.idAvoirPaiementUnique;
 		}
 			
-		
-		map["simpleDeblocage.csTypeDeblocage"] = this.mainContainer.closest(".titre").attr("id").split("_")[1];
-		map["simpleDeblocage.idPca"] = globazGlobal.idPca ;
-		map["simpleDeblocage.idApplicationAdressePaiement"] = this.mainContainer.find("avoirPaiement\\.idApplication").val();
+		map["currentEntity.typeDeblocage"] = this.mainContainer.closest(".titre").attr("id").split("_")[1];
+		map["currentEntity.idRentePrestation"] = globazGlobal.idRentePrestation ;
+		map["currentEntity.idApplicationAdressePaiement"] = this.mainContainer.find("avoirPaiement\\.idApplication").val();
 		map[m_options.s_entityIdPath] = this.selectedEntityId;
 		return map;
 	};
 	
 	this.stopEdition = function () {
-		//this.disabeldEnableForm(true);
-		//this.mainContainer.find('input:button').hide().filter('.btnAjaxUpdate, .btnAjaxDelete').show();
+
 		var $adresse = 	this.mainContainer.find(".adresse");
 		
 		if ($adresse.length) { 
@@ -52,17 +48,16 @@ function DeblocageAjax(m_options) {
 		$adresse.empty();
 		this.mainContainer.removeClass(this.modifiedZoneClass);
 		this.isModifyingEntity = false;
-		//this.mainContainer.triggerHandler(eventConstant.AJAX_STOP_EDITION);
 		this.triggerEvent();
 	};
 	
 	this.onUpdateCrancier = function (data) {
 		 var obj = {}; 
-		 var $html =null;
-		 obj.montant = data.simpleDeblocage.montant;
-		 obj.refPaiement =  data.simpleDeblocage.refPaiement;
+		 obj.montant = data.lingeDeblocage.montant;
+		 obj.refPaiement =  data.lingeDeblocage.refPaiement;
+		 obj.idDeBlocage = data.lingeDeblocage.idLigneDeblocage;
+		 
 		 obj.compte =  data.adressePaiement.banque.compte;
-		 obj.idDeBlocage = data.simpleDeblocage.idDeblocage;
 		 obj.banqueDesignation1 =  data.adressePaiement.banque.designation1;
 		 obj.banqueDesignation2 =  data.adressePaiement.banque.designation2;
 		 obj.rue = data.adressePaiement.banque.rue;
@@ -71,12 +66,11 @@ function DeblocageAjax(m_options) {
 		 obj.npa = data.adressePaiement.banque.npa;
 		 obj.designationTiers1 =  data.adressePaiement.tiers.designation1;
 		 obj.designationTiers2 =  data.adressePaiement.tiers.designation2;
-
 		 obj.tiersCreancierDesignation1 =  data.designationTiers1;
 		 obj.tiersCreancierDesignation2 =  data.designationTiers2;		 
 		 
-		 $html =  globazNotation.template.compile$(obj, this.tempateCreancier);
-		 newAjaxDeblocage($html);
+		 var $html = globazNotation.template.compile$(obj, this.tempateCreancier);
+		 var part = newAjaxDeblocage($html)
 		 $("#creanciers").append($html);
 	};
 	
@@ -103,14 +97,12 @@ function DeblocageAjax(m_options) {
 	
 		this.startEditionWithoutHiddingButton();
 		
-		
-		
-		if(data && data.simpleDeblocage && "64070001" === data.simpleDeblocage.csTypeDeblocage && action == 'add'){
+		if(data && data.lingeDeblocage && globazGlobal.CS_TYPE_CREANCIER == data.lingeDeblocage.typeDeblocage && action == 'add'){
 			this.onUpdateCrancier(data);
 		}
 
 		//gestion du bouton enregistré lors de la sauvgarde créancier
-		if("64070001" === data.simpleDeblocage.csTypeDeblocage && action == 'add'){
+		if(globazGlobal.CS_TYPE_CREANCIER === data.lingeDeblocage.typeDeblocage && action == 'add'){
 			this.mainContainer.find(".save").find(".ui-icon").css("background-image", "");
 		}else{
 			this.mainContainer.find(".save").find(".ui-icon").css("background-image", "url(theme/jquery/images/ui-icons_green_256x240.png)");
@@ -134,7 +126,6 @@ function DeblocageAjax(m_options) {
 	// Hack temporaire, voir probleme AbstractSimpleAJAXDetailZone (wiki)
 	this.startEditionWithoutHiddingButton = function () {
 		this.disabeldEnableForm(false);
-		//this.mainContainer.find('input:button').hide().filter('.btnAjaxValidate,.btnAjaxCancel').show();
 		this.isModifyingEntity = true;
 		ajaxUtils.addFocusOnFirstElement(this.mainContainer);
 		this.mainContainer.addClass(this.modifiedZoneClass);
@@ -171,7 +162,6 @@ function DeblocageAjax(m_options) {
 				disabled: false
 		}).click(function (){
 			that.ajaxDeleteEntity();
-			//mainContainer.html('');
 		});
 	});
 }
@@ -181,11 +171,6 @@ var readAdressePaiement = {
 	b_temporise: true,
 	init: function () {
 		this.addEvent();
-//			$('html').bind(eventConstant.NOTATION_MANAGER_DONE, function () {
-//				if ($.trim($('#idTiers').val()) == '') {
-//					$('.adresse').html('');
-//				}
-//			});
 	},
 	
 	addEvent: function () {
@@ -199,8 +184,6 @@ var readAdressePaiement = {
 				}, 200);
 			}
 		});
-		
-		
 	},
 
 	displayAdresse: function (data,element) {
@@ -219,6 +202,7 @@ var readAdressePaiement = {
 		var options = {
 			serviceClassName: 'ch.globaz.pyxis.business.service.AdresseService',
 			serviceMethodName: 'getAdressePaiementTiers',
+			wantInitThreadContext: true,
 			parametres: idTiers + ",true," + globazGlobal.CS_DOMAINE_APPLICATION_RENTE + "," + globazNotation.utilsDate.toDayFromated() + ",0",
 			callBack: function (data){
 				that.displayAdresse(data,element); 
@@ -233,15 +217,15 @@ var readAdressePaiement = {
 DeblocageAjax.prototype = AbstractSimpleAJAXDetailZone;
 
 
-var t_zone = [];
+//var t_zone = [];
 function newAjaxDeblocage($element) {
 	var options = {};
 	options.$mainContainer = $element;
-	options.s_entityIdPath = "simpleDeblocage.idDeblocage";
+	options.s_entityIdPath = "lingeDeblocage.idLigneDeblocage";
 	options.n_idEntity = $element.attr("idEntity") ;
 	var zone = new DeblocageAjax(options);
-	//zone.stopEdition();
-	t_zone.push(zone);
+	//t_zone.push(zone);
+	return zone;
 }
 
 var LANGUAGES = 'T,A';
@@ -380,7 +364,7 @@ validationDevalidation = {
 			this.disableButton();
 			this.addWait();
 			params = {
-					idPca: globazGlobal.idPca,
+					idRentePrestation: globazGlobal.idRentePrestation,
 					action: s_action
 				};
 			
@@ -427,7 +411,6 @@ $(function () {
 		liveSum.init(validationDevalidation.$validerButton);
 		
 	} else {
-		//validationDevalidation.disableButton();
 		setTimeout(function () {
 			$('html').triggerHandler(eventConstant.AJAX_INIT_DONE);
 		},300);
