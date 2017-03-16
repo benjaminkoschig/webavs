@@ -54,8 +54,6 @@ public class RELigneDeblocage extends JadeEntity {
         idSectionDetteEnCompta = this.read(RELigneDeblocageTableDef.ID_SECTION_DETTE_EN_COMPTA);
         idRentePrestation = this.read(RELigneDeblocageTableDef.ID_RENTE_PRESTATION);
         idLot = this.read(RELigneDeblocageTableDef.ID_LOT);
-        type = this.read(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE);
-        etat = this.read(RELigneDeblocageTableDef.CS_ETAT);
         type = this.read(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, RELigneDeblocageType.class);
         etat = this.read(RELigneDeblocageTableDef.CS_ETAT, RELigneDeblocageEtat.class);
         montant = this.read(RELigneDeblocageTableDef.MONTANT, CONVERTER_MONTANT);
