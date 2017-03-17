@@ -13,13 +13,13 @@ public class RELigneDeblocage extends JadeEntity {
     private static final long serialVersionUID = 1L;
 
     private String id;
-    private Integer idTiersCreancier;
-    private Integer idRoleDetteEnCompta;
-    private Integer idTiersAdressePaiement;
-    private Integer idApplicationAdressePaiement;
-    private Integer idSectionDetteEnCompta;
-    private Integer idRentePrestation;
-    private Integer idLot;
+    private Long idTiersCreancier;
+    private Long idRoleSection;
+    private Long idTiersAdressePaiement;
+    private Long idApplicationAdressePaiement;
+    private Long idSectionCompensee;
+    private Long idRenteAccordee;
+    private Long idLot;
     private RELigneDeblocageType type;
     private RELigneDeblocageEtat etat;
     private Montant montant;
@@ -29,16 +29,16 @@ public class RELigneDeblocage extends JadeEntity {
     protected void writeProperties() {
         this.write(RELigneDeblocageTableDef.ID, id);
         this.write(RELigneDeblocageTableDef.ID_TIERS_CREANCIER, idTiersCreancier);
-        this.write(RELigneDeblocageTableDef.ID_ROLE_DETTE_EN_COMPTA, idRoleDetteEnCompta);
+        this.write(RELigneDeblocageTableDef.ID_ROLE_SECTION, idRoleSection);
         this.write(RELigneDeblocageTableDef.ID_TIERS_ADRESSE_PAIEMENT, idTiersAdressePaiement);
         this.write(RELigneDeblocageTableDef.ID_APPLICATION_ADRESSE_PAIEMENT, idApplicationAdressePaiement);
-        this.write(RELigneDeblocageTableDef.ID_SECTION_DETTE_EN_COMPTA, idSectionDetteEnCompta);
-        this.write(RELigneDeblocageTableDef.ID_RENTE_PRESTATION, idRentePrestation);
+        this.write(RELigneDeblocageTableDef.ID_SECTION_COMPENSEE, idSectionCompensee);
+        this.write(RELigneDeblocageTableDef.ID_RENTE_ACCORDEE, idRenteAccordee);
+        this.write(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, type);
+        this.write(RELigneDeblocageTableDef.CS_ETAT, etat);
         this.write(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, type);
         this.write(RELigneDeblocageTableDef.CS_ETAT, etat);
         this.write(RELigneDeblocageTableDef.MONTANT, montant, CONVERTER_MONTANT);
-        this.write(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, type);
-        this.write(RELigneDeblocageTableDef.CS_ETAT, etat);
         this.write(RELigneDeblocageTableDef.REFERENCE_PAIEMENT, refPaiement);
         this.write(RELigneDeblocageTableDef.ID_LOT, idLot);
     }
@@ -47,12 +47,14 @@ public class RELigneDeblocage extends JadeEntity {
     protected void readProperties() {
         id = this.read(RELigneDeblocageTableDef.ID);
         idTiersCreancier = this.read(RELigneDeblocageTableDef.ID_TIERS_CREANCIER);
-        idRoleDetteEnCompta = this.read(RELigneDeblocageTableDef.ID_ROLE_DETTE_EN_COMPTA);
+        idRoleSection = this.read(RELigneDeblocageTableDef.ID_ROLE_SECTION);
         idTiersAdressePaiement = this.read(RELigneDeblocageTableDef.ID_TIERS_ADRESSE_PAIEMENT);
         idApplicationAdressePaiement = this.read(RELigneDeblocageTableDef.ID_APPLICATION_ADRESSE_PAIEMENT);
-        idSectionDetteEnCompta = this.read(RELigneDeblocageTableDef.ID_SECTION_DETTE_EN_COMPTA);
-        idRentePrestation = this.read(RELigneDeblocageTableDef.ID_RENTE_PRESTATION);
+        idSectionCompensee = this.read(RELigneDeblocageTableDef.ID_SECTION_COMPENSEE);
+        idRenteAccordee = this.read(RELigneDeblocageTableDef.ID_RENTE_ACCORDEE);
         idLot = this.read(RELigneDeblocageTableDef.ID_LOT);
+        type = this.read(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE);
+        etat = this.read(RELigneDeblocageTableDef.CS_ETAT);
         type = this.read(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, RELigneDeblocageType.class);
         etat = this.read(RELigneDeblocageTableDef.CS_ETAT, RELigneDeblocageEtat.class);
         montant = this.read(RELigneDeblocageTableDef.MONTANT, CONVERTER_MONTANT);
@@ -74,44 +76,44 @@ public class RELigneDeblocage extends JadeEntity {
         this.id = id;
     }
 
-    public Integer getIdTiersCreancier() {
+    public Long getIdTiersCreancier() {
         return idTiersCreancier;
     }
 
-    public void setIdTiersCreancier(Integer idTiersCreancier) {
+    public void setIdTiersCreancier(Long idTiersCreancier) {
         this.idTiersCreancier = idTiersCreancier;
     }
 
-    public Integer getIdRoleDetteEnCompta() {
-        return idRoleDetteEnCompta;
+    public Long getIdRoleDetteEnCompta() {
+        return idRoleSection;
     }
 
-    public void setIdRoleDetteEnCompta(Integer idRoleDetteEnCompta) {
-        this.idRoleDetteEnCompta = idRoleDetteEnCompta;
+    public void setIdRoleDetteEnCompta(Long idRoleDetteEnCompta) {
+        idRoleSection = idRoleDetteEnCompta;
     }
 
-    public Integer getIdTiersAdressePaiement() {
+    public Long getIdTiersAdressePaiement() {
         return idTiersAdressePaiement;
     }
 
-    public void setIdTiersAdressePaiement(Integer idTiersAdressePaiement) {
+    public void setIdTiersAdressePaiement(Long idTiersAdressePaiement) {
         this.idTiersAdressePaiement = idTiersAdressePaiement;
     }
 
-    public Integer getIdApplicationAdressePaiement() {
+    public Long getIdApplicationAdressePaiement() {
         return idApplicationAdressePaiement;
     }
 
-    public void setIdApplicationAdressePaiement(Integer idApplicationAdressePaiement) {
+    public void setIdApplicationAdressePaiement(Long idApplicationAdressePaiement) {
         this.idApplicationAdressePaiement = idApplicationAdressePaiement;
     }
 
-    public Integer getIdSectionDetteEnCompta() {
-        return idSectionDetteEnCompta;
+    public Long getIdSectionDetteEnCompta() {
+        return idSectionCompensee;
     }
 
-    public void setIdSectionDetteEnCompta(Integer idSectionDetteEnCompta) {
-        this.idSectionDetteEnCompta = idSectionDetteEnCompta;
+    public void setIdSectionDetteEnCompta(Long idSectionDetteEnCompta) {
+        idSectionCompensee = idSectionDetteEnCompta;
     }
 
     public Montant getMontant() {
@@ -130,12 +132,12 @@ public class RELigneDeblocage extends JadeEntity {
         this.refPaiement = refPaiement;
     }
 
-    public Integer getIdRentePrestation() {
-        return idRentePrestation;
+    public Long getIdRentePrestation() {
+        return idRenteAccordee;
     }
 
-    public void setIdRentePrestation(Integer idRentePrestation) {
-        this.idRentePrestation = idRentePrestation;
+    public void setIdRentePrestation(Long idRentePrestation) {
+        idRenteAccordee = idRentePrestation;
     }
 
     public RELigneDeblocageType getType() {
