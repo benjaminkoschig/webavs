@@ -10,20 +10,30 @@ INSERT INTO schema.fwcosp (PCOSID,PPTYGR,PCONCS,PPTYCN,PPTYCL,PPTYSA,PCOSLI,PCOS
 	
 --IR395
 --Création de la table des lignes de déblocage
-CREATE TABLE ccjuweb.RE_LIGNE_DEBLOCAGE
+CREATE TABLE schema.RE_LIGNE_DEBLOCAGE
 (
    ID decimal(15,0) PRIMARY KEY NOT NULL,
    ID_TIERS_CREANCIER decimal(15,0),
-   ID_ROLE_DETTE_EN_COMPTA decimal(15,0),
+   ID_ROLE_SECTION decimal(15,0),
    ID_TIERS_ADRESSE_PAIEMENT decimal(15,0),
    ID_APPLICATION_ADRESSE_PAIEMENT decimal(15,0),
-   ID_SECTION_DETTE_EN_COMPTA decimal(15,0),
-   ID_RENTE_PRESTATION decimal(15,0),
+   ID_SECTION_COMPENSEE decimal(15,0),
+   ID_RENTE_ACCORDEE decimal(15,0),
    ID_LOT decimal(15,0),
    CS_TYPE_DEBLOCAGE decimal(15,0),
    CS_ETAT decimal(15,0),
    MONTANT decimal(15,2) NOT NULL,
    REFERENCE_PAIEMENT varchar(255),
+   PSPY varchar(24) NOT NULL,
+   CSPY varchar(24) NOT NULL
+);
+
+CREATE TABLE schema.RE_LIGNE_DEBLOCAGE_VENTILATION
+(
+   ID decimal(15,0) PRIMARY KEY NOT NULL,
+   ID_LIGNE_DEBLOCAGE decimal(15,0),
+   ID_SECTION_SOURCE decimal(15,0),
+   MONTANT decimal(15,2) NOT NULL,
    PSPY varchar(24) NOT NULL,
    CSPY varchar(24) NOT NULL
 );

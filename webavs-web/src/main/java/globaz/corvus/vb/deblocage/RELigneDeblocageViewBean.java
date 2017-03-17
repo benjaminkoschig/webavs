@@ -1,16 +1,20 @@
+/*
+ * Globaz SA.
+ */
 package globaz.corvus.vb.deblocage;
 
 import java.io.Serializable;
 
 public class RELigneDeblocageViewBean implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private String idLigneDeblocage;
-    private int idApplicationAdressePaiement;
-    private int idRentePrestation;
-    private int idRoleDetteEnCompta;
-    private int idSectionDetteEnCompta;
-    private int idTiersAdressePaiement;
-    private int idTiersCreancier;
+    private long idApplicationAdressePaiement;
+    private long idRentePrestation;
+    private long idRoleDetteEnCompta;
+    private long idSectionDetteEnCompta;
+    private long idTiersAdressePaiement;
+    private long idTiersCreancier;
     private String etatDeblocage;
     private String typeDeblocage;
     private String montant;
@@ -25,51 +29,51 @@ public class RELigneDeblocageViewBean implements Serializable {
         this.spy = spy;
     }
 
-    public int getIdApplicationAdressePaiement() {
+    public long getIdApplicationAdressePaiement() {
         return idApplicationAdressePaiement;
     }
 
-    public void setIdApplicationAdressePaiement(int idApplicationAdressePaiement) {
+    public void setIdApplicationAdressePaiement(long idApplicationAdressePaiement) {
         this.idApplicationAdressePaiement = idApplicationAdressePaiement;
     }
 
-    public int getIdRentePrestation() {
+    public long getIdRentePrestation() {
         return idRentePrestation;
     }
 
-    public void setIdRentePrestation(int idRentePrestation) {
+    public void setIdRentePrestation(long idRentePrestation) {
         this.idRentePrestation = idRentePrestation;
     }
 
-    public int getIdRoleDetteEnCompta() {
+    public long getIdRoleDetteEnCompta() {
         return idRoleDetteEnCompta;
     }
 
-    public void setIdRoleDetteEnCompta(int idRoleDetteEnCompta) {
+    public void setIdRoleDetteEnCompta(long idRoleDetteEnCompta) {
         this.idRoleDetteEnCompta = idRoleDetteEnCompta;
     }
 
-    public int getIdSectionDetteEnCompta() {
+    public long getIdSectionDetteEnCompta() {
         return idSectionDetteEnCompta;
     }
 
-    public void setIdSectionDetteEnCompta(int idSectionDetteEnCompta) {
+    public void setIdSectionDetteEnCompta(long idSectionDetteEnCompta) {
         this.idSectionDetteEnCompta = idSectionDetteEnCompta;
     }
 
-    public int getIdTiersAdressePaiement() {
+    public long getIdTiersAdressePaiement() {
         return idTiersAdressePaiement;
     }
 
-    public void setIdTiersAdressePaiement(int idTiersAdressePaiement) {
+    public void setIdTiersAdressePaiement(long idTiersAdressePaiement) {
         this.idTiersAdressePaiement = idTiersAdressePaiement;
     }
 
-    public int getIdTiersCreancier() {
+    public long getIdTiersCreancier() {
         return idTiersCreancier;
     }
 
-    public void setIdTiersCreancier(int idTiersCreancier) {
+    public void setIdTiersCreancier(long idTiersCreancier) {
         this.idTiersCreancier = idTiersCreancier;
     }
 

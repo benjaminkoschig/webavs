@@ -43,6 +43,7 @@
 			<ct:menuParam key="csTypeLot" value="<%=line.getCsTypeLot()%>"/>
 			<ct:menuParam key="provenance" value="<%=globaz.corvus.vb.prestations.REPrestationsJointDemandeRenteViewBean.FROM_ECRAN_LOTS%>"/>
 			<ct:menuParam key="descriptionLot" value="<%=line.getDescription()%>"/>
+			<ct:menuExcludeNode nodeId="prestationDeblocage"/>
 			<%if (IRELot.CS_TYP_LOT_MENSUEL.equals(line.getCsTypeLot())) {%>
 				<ct:menuExcludeNode nodeId="comptabiliser"/>
 				<ct:menuExcludeNode nodeId="imprimerOrdresVersement"/>
@@ -59,31 +60,57 @@
 			<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getCsEtatLotLibelle()%>&nbsp;</TD>
 			<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getCsTypeLotLibelle()%>&nbsp;</TD>
 			<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getIdLot()%>&nbsp;</TD>
-		<%}%>		
+		<%}%>	
+	<%}else if (IRELot.CS_TYP_LOT_DEBLOCAGE_RA.equals(line.getCsTypeLot())) {%>				
+	    <TD class="mtd" width="">		
+		   	<ct:menuPopup menu="corvus-optionslot" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailLink + line.getIdLot()%>">
+				<ct:menuParam key="selectedId" value="<%=line.getIdLot()%>"/>
+				<ct:menuParam key="idLot" value="<%=line.getIdLot()%>"/>
+				<ct:menuParam key="csEtatLot" value="<%=line.getCsEtatLot()%>"/>
+				<ct:menuParam key="csTypeLot" value="<%=line.getCsTypeLot()%>"/>
+				<ct:menuParam key="provenance" value="<%=globaz.corvus.vb.prestations.REPrestationsJointDemandeRenteViewBean.FROM_ECRAN_LOTS%>"/>
+				<ct:menuParam key="descriptionLot" value="<%=line.getDescription()%>"/>
+				<ct:menuExcludeNode nodeId="prestation"/>
+				<%if (IRELot.CS_TYP_LOT_MENSUEL.equals(line.getCsTypeLot())) {%>
+					<ct:menuExcludeNode nodeId="comptabiliser"/>
+					<ct:menuExcludeNode nodeId="imprimerOrdresVersement"/>
+				<%} %>					
+				<% if (IRELot.CS_ETAT_LOT_VALIDE.equals(line.getCsEtatLot())) {%>
+					<ct:menuExcludeNode nodeId="comptabiliser"/>
+				<%}%>			
+			</ct:menuPopup>
+	    </TD>
+		<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getDescription()%>&nbsp;</TD>
+		<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getDateCreationLot()%>&nbsp;</TD>
+		<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getDateEnvoiLot()%>&nbsp;</TD>
+		<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getCsEtatLotLibelle()%>&nbsp;</TD>
+		<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getCsTypeLotLibelle()%>&nbsp;</TD>
+		<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getIdLot()%>&nbsp;</TD>		
 	<%}else {%>				
-    <TD class="mtd" width="">		
-	   	<ct:menuPopup menu="corvus-optionslot" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailLink + line.getIdLot()%>">
-			<ct:menuParam key="selectedId" value="<%=line.getIdLot()%>"/>
-			<ct:menuParam key="idLot" value="<%=line.getIdLot()%>"/>
-			<ct:menuParam key="csEtatLot" value="<%=line.getCsEtatLot()%>"/>
-			<ct:menuParam key="csTypeLot" value="<%=line.getCsTypeLot()%>"/>
-			<ct:menuParam key="provenance" value="<%=globaz.corvus.vb.prestations.REPrestationsJointDemandeRenteViewBean.FROM_ECRAN_LOTS%>"/>
-			<ct:menuParam key="descriptionLot" value="<%=line.getDescription()%>"/>
-			<%if (IRELot.CS_TYP_LOT_MENSUEL.equals(line.getCsTypeLot())) {%>
-				<ct:menuExcludeNode nodeId="comptabiliser"/>
-				<ct:menuExcludeNode nodeId="imprimerOrdresVersement"/>
-			<%} %>					
-			<% if (IRELot.CS_ETAT_LOT_VALIDE.equals(line.getCsEtatLot())) {%>
-				<ct:menuExcludeNode nodeId="comptabiliser"/>
-			<%}%>			
-		</ct:menuPopup>
-    </TD>
-	<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getDescription()%>&nbsp;</TD>
-	<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getDateCreationLot()%>&nbsp;</TD>
-	<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getDateEnvoiLot()%>&nbsp;</TD>
-	<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getCsEtatLotLibelle()%>&nbsp;</TD>
-	<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getCsTypeLotLibelle()%>&nbsp;</TD>
-	<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getIdLot()%>&nbsp;</TD>
+	    <TD class="mtd" width="">		
+		   	<ct:menuPopup menu="corvus-optionslot" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailLink + line.getIdLot()%>">
+				<ct:menuParam key="selectedId" value="<%=line.getIdLot()%>"/>
+				<ct:menuParam key="idLot" value="<%=line.getIdLot()%>"/>
+				<ct:menuParam key="csEtatLot" value="<%=line.getCsEtatLot()%>"/>
+				<ct:menuParam key="csTypeLot" value="<%=line.getCsTypeLot()%>"/>
+				<ct:menuParam key="provenance" value="<%=globaz.corvus.vb.prestations.REPrestationsJointDemandeRenteViewBean.FROM_ECRAN_LOTS%>"/>
+				<ct:menuParam key="descriptionLot" value="<%=line.getDescription()%>"/>
+				<ct:menuExcludeNode nodeId="prestationDeblocage"/>
+				<%if (IRELot.CS_TYP_LOT_MENSUEL.equals(line.getCsTypeLot())) {%>
+					<ct:menuExcludeNode nodeId="comptabiliser"/>
+					<ct:menuExcludeNode nodeId="imprimerOrdresVersement"/>
+				<%} %>					
+				<% if (IRELot.CS_ETAT_LOT_VALIDE.equals(line.getCsEtatLot())) {%>
+					<ct:menuExcludeNode nodeId="comptabiliser"/>
+				<%}%>			
+			</ct:menuPopup>
+	    </TD>
+		<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getDescription()%>&nbsp;</TD>
+		<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getDateCreationLot()%>&nbsp;</TD>
+		<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getDateEnvoiLot()%>&nbsp;</TD>
+		<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getCsEtatLotLibelle()%>&nbsp;</TD>
+		<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getCsTypeLotLibelle()%>&nbsp;</TD>
+		<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getIdLot()%>&nbsp;</TD>
 	<%}%>		
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>

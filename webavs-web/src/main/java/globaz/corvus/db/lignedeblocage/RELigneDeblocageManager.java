@@ -17,7 +17,7 @@ public class RELigneDeblocageManager extends JadeManager<RELigneDeblocage> {
 
     @Override
     protected void createWhere(SQLWriter sqlWhere) {
-        sqlWhere.and(RELigneDeblocageTableDef.ID_RENTE_PRESTATION).equal(forIdRentePrestation);
+        sqlWhere.and(RELigneDeblocageTableDef.ID_RENTE_ACCORDEE).equal(forIdRentePrestation);
         sqlWhere.and(RELigneDeblocageTableDef.CS_ETAT).equal(forEtat);
         sqlWhere.and(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE).equal(forType);
     }

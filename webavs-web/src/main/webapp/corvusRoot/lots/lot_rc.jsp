@@ -15,7 +15,9 @@ bButtonNew = false;
 
 
 <%@page import="globaz.corvus.api.lots.IRELot"%>
-<%@page import="globaz.corvus.db.lots.RELotManager"%><ct:menuChange displayId="menu" menuId="corvus-menuprincipal" showTab="menu"/>
+<%@page import="globaz.corvus.db.lots.RELotManager"%>
+
+<ct:menuChange displayId="menu" menuId="corvus-menuprincipal" showTab="menu"/>
 <ct:menuChange displayId="options" menuId="corvus-optionslot"/>
 
 <SCRIPT language="javascript">

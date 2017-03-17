@@ -1,15 +1,18 @@
+/*
+ * Glabaz SA
+ */
 package ch.globaz.pegasus.businessimpl.utils.adresse;
 
-import ch.globaz.pegasus.business.vo.adresse.AdressePaiement;
-import ch.globaz.pegasus.business.vo.adresse.Banque;
-import ch.globaz.pegasus.business.vo.adresse.Tiers;
+import ch.globaz.common.domaine.AdressePaiement;
+import ch.globaz.common.domaine.Banque;
+import ch.globaz.common.domaine.Tiers;
 import ch.globaz.pyxis.business.model.AdresseTiersDetail;
 
 public class AdresseHandler {
     public static AdressePaiement convertAdressePaiement(AdresseTiersDetail adressePaiement) {
         Banque banque = new Banque();
         Tiers tiers = new Tiers();
-        AdressePaiement adresse = new AdressePaiement();
+        String idAvoirPaiementUnique = null;
 
         if (adressePaiement.getFields() != null) {
             banque.setAdresse1(adressePaiement.getFields().get(AdresseTiersDetail.ADRESSEP_BANQUE_ADRESSE1));
@@ -34,10 +37,11 @@ public class AdresseHandler {
             tiers.setDesignation1(adressePaiement.getFields().get(AdresseTiersDetail.ADRESSE_VAR_T1));
             tiers.setDesignation2(adressePaiement.getFields().get(AdresseTiersDetail.ADRESSE_VAR_T2));
 
-            adresse.setBanque(banque);
-            adresse.setTiers(tiers);
+            idAvoirPaiementUnique = adressePaiement.getFields().get(
+                    AdresseTiersDetail.ADRESSEP_ID_AVOIR_PAIEMENT_UNIQUE);
         }
-        return adresse;
+
+        return new AdressePaiement(banque, tiers, idAvoirPaiementUnique);
 
     }
 }

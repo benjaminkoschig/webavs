@@ -172,13 +172,13 @@ public class ReLigneDeclocageServices {
     private List<RELigneDeblocageCreancier> toCreancier(RELigneDeblocages lignesDeblocages) {
         List<RELigneDeblocageCreancier> list = new ArrayList<RELigneDeblocageCreancier>();
 
-        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+        Map<Long, Long> map = new HashMap<Long, Long>();
         for (RELigneDeblocage l : lignesDeblocages) {
             map.put(l.getIdTiersAdressePaiement(), l.getIdApplicationAdressePaiement());
         }
         AdressePaiementLoader loader = new AdressePaiementLoader(session);
 
-        Map<Integer, AdressePaiement> mapAdresses = loader.searchAdressePaiement(map);
+        Map<Long, AdressePaiement> mapAdresses = loader.searchAdressePaiement(map);
 
         for (RELigneDeblocage reLigneDeblocage : lignesDeblocages) {
             RELigneDeblocageCreancier ligne = new RELigneDeblocageCreancier();
@@ -207,7 +207,7 @@ public class ReLigneDeclocageServices {
         newLigne.setSpy(dbLigne.getSpy());
     }
 
-    private TITiers loadTiers(Integer idTiers) {
+    private TITiers loadTiers(Long idTiers) {
         TITiersManager manager = new TITiersManager();
         manager.setForIdTiers(String.valueOf(idTiers));
         manager.setSession(session);

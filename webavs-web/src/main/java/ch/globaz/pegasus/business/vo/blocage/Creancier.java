@@ -1,6 +1,6 @@
 package ch.globaz.pegasus.business.vo.blocage;
 
-import ch.globaz.pegasus.business.vo.adresse.AdressePaiement;
+import ch.globaz.common.domaine.AdressePaiement;
 
 public class Creancier extends LigneDeblocage {
     private AdressePaiement adressePaiement;

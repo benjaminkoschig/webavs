@@ -89,11 +89,11 @@ class RELingeDeblocageDetteHandler {
                 List<CASectionJoinCompteAnnexeJoinTiers> sections = mgr.toList();
                 for (CASectionJoinCompteAnnexeJoinTiers section : sections) {
                     RELigneDeblocageDette dette = new RELigneDeblocageDette();
-                    dette.setIdRoleDetteEnCompta(Integer.valueOf(section.getIdRole()));
-                    dette.setIdSectionDetteEnCompta(Integer.valueOf(section.getIdSection()));
+                    dette.setIdRoleDetteEnCompta(Long.valueOf(section.getIdRole()));
+                    dette.setIdSectionDetteEnCompta(Long.valueOf(section.getIdSection()));
                     dette.setDescriptionCompteAnnexe(section.getDescriptionCompteAnnexe());
                     dette.setEtat(RELigneDeblocageEtat.ENREGISTRE);
-                    dette.setIdSectionDetteEnCompta(Integer.valueOf(section.getIdSection()));
+                    dette.setIdSectionDetteEnCompta(Long.valueOf(section.getIdSection()));
                     dette.setMontant(new Montant(section.getSolde()));
                     dette.setType(RELigneDeblocageType.DETTE_EN_COMPTA);
                     idsSection.add(section.getIdSection());

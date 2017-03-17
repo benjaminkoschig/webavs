@@ -18,9 +18,9 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.Iterator;
+import ch.globaz.common.domaine.AdressePaiement;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.business.exceptions.models.blocage.BlocageException;
-import ch.globaz.pegasus.business.vo.adresse.AdressePaiement;
 import ch.globaz.pegasus.businessimpl.utils.adresse.AdresseHandler;
 import ch.globaz.pyxis.business.model.AvoirPaiementSimpleModel;
 import ch.globaz.pyxis.business.model.TiersSimpleModel;
@@ -97,8 +97,8 @@ public class REDeblocageAjaxViewBean extends BJadePersistentObjectViewBean imple
         AvoirPaiementSimpleModel avoirPaiementSimpleModel = new AvoirPaiementSimpleModel();
         avoirPaiementSimpleModel.setId(idAvoirPaiementUnique);
         avoirPaiementSimpleModel = (AvoirPaiementSimpleModel) JadePersistenceManager.read(avoirPaiementSimpleModel);
-        ligneDeblocage.setIdApplicationAdressePaiement(Integer.valueOf(avoirPaiementSimpleModel.getIdApplication()));
-        ligneDeblocage.setIdTiersAdressePaiement(Integer.valueOf(avoirPaiementSimpleModel.getIdTiers()));
+        ligneDeblocage.setIdApplicationAdressePaiement(Long.valueOf(avoirPaiementSimpleModel.getIdApplication()));
+        ligneDeblocage.setIdTiersAdressePaiement(Long.valueOf(avoirPaiementSimpleModel.getIdTiers()));
 
         adressePaiement = AdresseHandler.convertAdressePaiement(TIBusinessServiceLocator.getAdresseService()
                 .getAdressePaiementTiers(ligneDeblocage.getIdTiersAdressePaiement().toString(), false,
