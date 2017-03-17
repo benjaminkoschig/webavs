@@ -146,11 +146,10 @@ $(function(){
 	
 	
 	//gestion de la liste déroulante de checkbox
-	
 		$('.fraisObtentionId').multiSelect({  
 	        selectAll: false, 
-	        noneSelected: "Pas de sélection",  
-	        oneOrMoreSelected: "Sélection"
+	        noneSelected: "<%= objSession.getLabel("JSP_PAS_SELECTION")%>",  
+	        oneOrMoreSelected: "<%= objSession.getLabel("JSP_SELECTION")%>"
 	 	},
 		 function() {
 			 	//Fonction appelée à chaque case cochée ou décochée

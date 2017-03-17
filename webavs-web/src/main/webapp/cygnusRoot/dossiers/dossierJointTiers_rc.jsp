@@ -292,11 +292,13 @@
 										</tr>
 										<tr>
 											<td>
-												<input	type="button" 
+												<input 	type="button" 
 														onclick="clearFields()" 
-														accesskey="C" 
-														value="Effacer" />
-												[ALT+C]
+														accesskey="<ct:FWLabel key="AK_EFFACER"/>" 
+														value="<ct:FWLabel key="JSP_EFFACER"/>">
+												<label>
+													[ALT+<ct:FWLabel key="AK_EFFACER"/>]
+												</label>
 											</td>
 											<td>
 												&nbsp;

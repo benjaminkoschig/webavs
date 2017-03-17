@@ -481,7 +481,7 @@
 									+ mainServletPath
 									+ "?userAction="
 									+ globaz.hera.servlet.ISFActions.ACTION_RELATION_FAMILIALE_REQUERANT
-									+ ".quitterApplication"%>')><ct:FWLabel key="JSP_URL_FROM"/></a> (alt+R) puis Enter</td>
+									+ ".quitterApplication"%>')><ct:FWLabel key="JSP_URL_FROM"/></a> (alt+R) <ct:FWLabel key="JSP_SF_PUIS_ENTER"/></td>
 							</tr>
 							<tr>
 								<td colspan="7"><br/></td>
@@ -506,7 +506,9 @@
 	
 	<%if ("1".equals(liant.getProvenance())) {%>
 		<td colspan="3">&nbsp;</td>
-		<td colspan="3"> <strong>&nbsp;&nbsp;&nbsp;<span style="color:red;">!!! Famille issue de la reprise de données !!!</span></strong><a href="#" style="text-decoration:none;" onclick="javascript:resetProvevance();">&nbsp;&nbsp;&nbsp;Valider >>></a>
+		<td colspan="3"> <strong>&nbsp;&nbsp;&nbsp;<span style="color:red;">
+			<ct:FWLabel key="JSP_SF_ISSUE_REPRISE"/>
+		</span></strong><a href="#" style="text-decoration:none;" onclick="javascript:resetProvevance();">&nbsp;&nbsp;&nbsp;<ct:FWLabel key="JSP_SF_VALIDER"/> >>></a>
 		</td>
 	<%} else { %>
 		<td colspan="6"> </td>

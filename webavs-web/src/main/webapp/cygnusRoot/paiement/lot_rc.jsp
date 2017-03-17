@@ -48,7 +48,15 @@ function clearFields () {
 	<TD><ct:FWCodeSelectTag name="forCsType" codeType="RETYPLOT" defaut="" wantBlank="true"/></TD>--%>  
 	<TD><LABEL for="forCsEtat"><ct:FWLabel key="JSP_RF_LOT_ETAT_PRESTATION"/></LABEL></TD>			
 	<TD><ct:FWCodeSelectTag name="forCsEtat" codeType="REETALOT" defaut="" wantBlank="true"/></TD>
-	<TD><input type="button" onclick="clearFields()" accesskey="C" value="Effacer">[ALT+C]</TD>
+	<TD>
+		<input 	type="button" 
+			onclick="clearFields()" 
+			accesskey="<ct:FWLabel key="AK_EFFACER"/>" 
+			value="<ct:FWLabel key="JSP_EFFACER"/>">
+		<label>
+			[ALT+<ct:FWLabel key="AK_EFFACER"/>]
+		</label>
+	</TD>
 	<TD><input type="hidden" name="forOrderBy" value="<%=RELot.FIELDNAME_ID_LOT + " DESC"%>" /></TD>
 	<TD><input type="hidden" name="forCsType" value="<%=IRELot.CS_TYP_LOT_DECISION+","+IRFLot.CS_TYP_LOT_AVASAD%>" /></TD>
 	

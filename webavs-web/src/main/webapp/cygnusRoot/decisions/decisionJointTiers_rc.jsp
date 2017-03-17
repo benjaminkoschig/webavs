@@ -160,7 +160,15 @@
 					</TR>	
 					<TR><TD colspan="6">&nbsp;</TD></TR>
 					<TR>
-						<TD colspan="2"><input type="button" onclick="clearFields()" accesskey="C" value="Effacer">[ALT+C]</TD>
+						<TD colspan="2">
+							<input 	type="button" 
+									onclick="clearFields()" 
+									accesskey="<ct:FWLabel key="AK_EFFACER"/>" 
+									value="<ct:FWLabel key="JSP_EFFACER"/>">
+							<label>
+								[ALT+<ct:FWLabel key="AK_EFFACER"/>]
+							</label>
+						</TD>
 						<TD><ct:FWLabel key="JSP_TRIER_PAR"/>&nbsp;</TD>
 						<TD colspan="2"><ct:FWListSelectTag data="<%=viewBean.getOrderByData()%>" defaut="" name="forOrderBy" /></TD>
 					</TR>
