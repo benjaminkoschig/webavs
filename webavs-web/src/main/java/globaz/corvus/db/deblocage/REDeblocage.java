@@ -2,31 +2,30 @@ package globaz.corvus.db.deblocage;
 
 import globaz.corvus.db.lignedeblocage.RELigneDeblocages;
 import globaz.corvus.db.rentesaccordees.REEnteteBlocage;
-import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
+import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDues;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import java.util.List;
 import ch.globaz.common.domaine.Montant;
-import ch.globaz.osiris.business.model.SoldeCompteCourant;
 
 public class REDeblocage {
     private final RELigneDeblocages lignesDeblocages;
     private final PRTiersWrapper beneficiaire;
     private final REEnteteBlocage enteteBlocage;
-    private final REPrestationsAccordees pracc;
+    private final RERenteAccordeeJoinInfoComptaJoinPrstDues pracc;
     private final String descriptonTier;
     private final List<ReRetour> retours;
-    private final List<SoldeCompteCourant> soldeCompteCourants;
+    private final Montant montantEnComptat;
 
     public REDeblocage(RELigneDeblocages lignesDeblocages, PRTiersWrapper beneficiaire, REEnteteBlocage enteteBlocage,
-            REPrestationsAccordees pracc, String descriptonTier, List<ReRetour> retours,
-            List<SoldeCompteCourant> soldeCompteCourants) {
+            RERenteAccordeeJoinInfoComptaJoinPrstDues pracc, String descriptonTier, List<ReRetour> retours,
+            Montant montantEnComptat) {
         this.lignesDeblocages = lignesDeblocages;
         this.beneficiaire = beneficiaire;
         this.enteteBlocage = enteteBlocage;
         this.pracc = pracc;
         this.descriptonTier = descriptonTier;
         this.retours = retours;
-        this.soldeCompteCourants = soldeCompteCourants;
+        this.montantEnComptat = montantEnComptat;
     }
 
     public Montant computeMontantAdebloquer() {
@@ -45,7 +44,7 @@ public class REDeblocage {
         return enteteBlocage;
     }
 
-    public REPrestationsAccordees getPracc() {
+    public RERenteAccordeeJoinInfoComptaJoinPrstDues getPracc() {
         return pracc;
     }
 
@@ -57,8 +56,8 @@ public class REDeblocage {
         return retours;
     }
 
-    public List<SoldeCompteCourant> getSoldeCompteCourants() {
-        return soldeCompteCourants;
+    public Montant getMontantEnComptat() {
+        return montantEnComptat;
     }
 
 }

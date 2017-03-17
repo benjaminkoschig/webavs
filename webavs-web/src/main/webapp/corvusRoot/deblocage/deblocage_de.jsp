@@ -75,41 +75,6 @@ globazGlobal.isUpdatable = ${viewBean.isUpdatable};
 <TR>
 		<TD colspan="3" >
 		
-			<c:if test="${viewBean.isSoldeDesynchroniseDeLaCompta}">
-			
-			<div class="ui-widget globazBoxMessage">
-				<div class="ui-state-highlight ui-corner-all contentMessage">
-					<h1 class=" ">
-						<span style="margin-top:10px" class="ui-icon ui-icon-info globazBoxMessageIcon"></span>
-						<span><ct:FWLabel key="JSP_PC_DEBLOCAGE_ATTENTION_DESYNCHRONISATION"/><span>
-					</h1>
-					<div style="margin-left:15px">
-						<span><ct:FWLabel key="JSP_PC_DEBLOCAGE_ATTENTION_DESYNCHRONISATION_MONTANT_SOLDE_COMPTABILITE"/> ${viewBean.soldeCompteBlocage}</span>
-						<br />
-						<span>
-							<ct:FWLabel key="JSP_PC_DEBLOCAGE_ATTENTION_DESYNCHRONISATION_MONTANT"/> <span data-g-amountformatter=" ">${viewBean.montantToUsedForDeblocage}</span>
-							<ct:FWLabel key="JSP_PC_DEBLOCAGE_ATTENTION_DESYNCHRONISATION_MONTANT_UTILISE"/>
-						</span>
-						<hr />
-						<div><ct:FWLabel key="JSP_PC_DEBLOCAGE_ATTENTION_DESYNCHRONISATION_LISTE_COMPTES"/> </div>
-						<ul>
-						<c:forEach var="entry" items="${viewBean.comptesBlocage}">
-							<li>
-								<a data-g-externallink="reLoad:false" href="osiris?userAction=osiris.comptes.apercuSectionDetaille.chercher&id=${entry.idSection}"> 
-									<b> ${entry.idExterneRole} / ${entry.description}</b>  
-									${entry.idExterneCompteCourant}  | 
-									<ct:FWLabel key="JSP_PC_DEBLOCAGE_ATTENTION_DESYNCHRONISATION_SECTION"/>: ${entry.idExterneSection} - ${entry.descriptionSection} | 
-									<ct:FWLabel key="JSP_PC_DEBLOCAGE_ATTENTION_DESYNCHRONISATION_SOLDE"/>:
-									<span data-g-amountformatter=" "> ${entry.montant} </span>
-								</a>
-							</li>
-						</c:forEach>
-						</ul>
-					</div>
-				</div>
-			</div>
-			<br />
-			</c:if>
 
 			<div id="detailDeblocage" class="form-horizontal"> 
 				<!--  ************************* Zone infos requerant/ PCA *************************  -->

@@ -80,10 +80,10 @@ class RELingeDeblocageDetteHandler {
         if (!idTiers.isEmpty()) {
             try {
                 CASectionJoinCompteAnnexeJoinTiersManager mgr = new CASectionJoinCompteAnnexeJoinTiersManager();
-                // mgr.setForIdTiersIn(idTiers);
+                mgr.setForIdTiersIn(idTiers);
                 mgr.setSession(session);
                 mgr.setForSoldePositif(true);
-                mgr.find(2);// BManager.SIZE_NOLIMIT);
+                mgr.find(BManager.SIZE_NOLIMIT);
 
                 Set<String> idsSection = new HashSet<String>();
                 List<CASectionJoinCompteAnnexeJoinTiers> sections = mgr.toList();
@@ -111,30 +111,30 @@ class RELingeDeblocageDetteHandler {
     }
 
     private Map<Integer, String> findDescription(Set<String> forIdsSectionIn) throws OsirisException {
-
-        if (forIdsSectionIn == null || forIdsSectionIn.isEmpty()) {
-            throw new OsirisException("Unable to read the section, the idSection passed is empty");
-        }
-
-        CASectionManager mgr = new CASectionManager();
-        mgr.setSession(session);
-        mgr.setForIdSectionIn(forIdsSectionIn);
-
-        try {
-            mgr.find(BManager.SIZE_NOLIMIT);
-            if (mgr.hasErrors()) {
-                new OsirisException("Technical exception, Error in research of the section");
-            }
-        } catch (Exception e) {
-            new OsirisException("Technical exception, Error in research of the section", e);
-        }
         Map<Integer, String> descriptions = new HashMap<Integer, String>();
-        if (mgr.size() > 0) {
-            List<CASection> sections = mgr.toList();
-            for (CASection caSection : sections) {
-                descriptions.put(Integer.valueOf(caSection.getId()), caSection.getDescription());
+
+        if (forIdsSectionIn != null && !forIdsSectionIn.isEmpty()) {
+
+            CASectionManager mgr = new CASectionManager();
+            mgr.setSession(session);
+            mgr.setForIdSectionIn(forIdsSectionIn);
+
+            try {
+                mgr.find(BManager.SIZE_NOLIMIT);
+                if (mgr.hasErrors()) {
+                    new OsirisException("Technical exception, Error in research of the section");
+                }
+            } catch (Exception e) {
+                new OsirisException("Technical exception, Error in research of the section", e);
+            }
+            if (mgr.size() > 0) {
+                List<CASection> sections = mgr.toList();
+                for (CASection caSection : sections) {
+                    descriptions.put(Integer.valueOf(caSection.getId()), caSection.getDescription());
+                }
             }
         }
+
         return descriptions;
     }
 }

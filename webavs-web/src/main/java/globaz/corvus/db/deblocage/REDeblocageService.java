@@ -3,28 +3,22 @@ package globaz.corvus.db.deblocage;
 import globaz.corvus.db.lignedeblocage.RELigneDeblocages;
 import globaz.corvus.db.lignedeblocage.ReLigneDeclocageServices;
 import globaz.corvus.db.rentesaccordees.REEnteteBlocage;
-import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
+import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDues;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.hera.utils.SFFamilleUtils;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import globaz.osiris.api.APIReferenceRubrique;
-import globaz.osiris.api.APIRubrique;
-import globaz.osiris.external.IntRole;
+import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiers;
+import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiersManager;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
-import globaz.prestation.tools.PRSession;
 import globaz.prestation.tools.nnss.PRNSSUtil;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.sql.SQLWriter;
-import ch.globaz.osiris.business.model.CompteAnnexeSimpleModel;
-import ch.globaz.osiris.business.model.SoldeCompteCourant;
-import ch.globaz.osiris.business.service.CABusinessServiceLocator;
 import ch.globaz.queryexec.bridge.jade.SCM;
 
 public class REDeblocageService {
@@ -35,7 +29,7 @@ public class REDeblocageService {
     }
 
     public REDeblocage read(String idPrestationAccordee) throws Exception {
-        REPrestationsAccordees pracc = loadPrestation(idPrestationAccordee);
+        RERenteAccordeeJoinInfoComptaJoinPrstDues pracc = loadPrestation(idPrestationAccordee);
 
         REEnteteBlocage enteteBlocage = readEnteteBlocage(pracc.getIdEnteteBlocage());
 
@@ -46,13 +40,34 @@ public class REDeblocageService {
         ReLigneDeclocageServices service = new ReLigneDeclocageServices(session);
         RELigneDeblocages lignesDeblocages = service.searchByIdRenteAndCompleteInfo(
                 Integer.valueOf(idPrestationAccordee), idTiers, tiersDescription);
+
+        Montant disponibleEnCompta = computeMontantDisponibleEnComptat(beneficiaires.getIdTiers());
+
         List<ReRetour> retours = findRetours(idTiers);
-
-        List<SoldeCompteCourant> compteCourants = findSoldeCompteCourant(pracc.getIdTiersBeneficiaire(),
-                beneficiaires.getNSS(), pracc.getDateDebutDroit());
-
         return new REDeblocage(lignesDeblocages, beneficiaires, enteteBlocage, pracc, tiersDescription, retours,
-                compteCourants);
+                disponibleEnCompta);
+    }
+
+    private Montant computeMontantDisponibleEnComptat(String idTiers) {
+        Montant montant = Montant.ZERO;
+        if (!idTiers.isEmpty()) {
+            try {
+                CASectionJoinCompteAnnexeJoinTiersManager mgr = new CASectionJoinCompteAnnexeJoinTiersManager();
+                mgr.setForIdTiersIn(idTiers);
+                mgr.setSession(session);
+                mgr.setForSoldeNegatif(true);
+                mgr.find(BManager.SIZE_NOLIMIT);
+                List<CASectionJoinCompteAnnexeJoinTiers> sections = mgr.toList();
+                for (CASectionJoinCompteAnnexeJoinTiers section : sections) {
+                    montant = montant.add(section.getSolde());
+                }
+                return montant;
+
+            } catch (Exception e1) {
+                throw new RuntimeException("Unable to search the dette en compta ", e1);
+            }
+        }
+        return montant;
     }
 
     private REEnteteBlocage readEnteteBlocage(String idEnteteBlocage) {
@@ -109,8 +124,9 @@ public class REDeblocageService {
         return new ArrayList<ReRetour>();
     }
 
-    private REPrestationsAccordees loadPrestation(String idRenteAccordee) throws Exception {
-        REPrestationsAccordees pracc = new REPrestationsAccordees();
+    private RERenteAccordeeJoinInfoComptaJoinPrstDues loadPrestation(String idRenteAccordee) throws Exception {
+        RERenteAccordeeJoinInfoComptaJoinPrstDues pracc = new RERenteAccordeeJoinInfoComptaJoinPrstDues();
+        // REPrestationsAccordees pracc = new REPrestationsAccordees();
         pracc.setSession(session);
         pracc.setIdPrestationAccordee(idRenteAccordee);
         pracc.retrieve();
@@ -146,39 +162,4 @@ public class REDeblocageService {
         }
     }
 
-    private List<SoldeCompteCourant> findSoldeCompteCourant(String idTier, String nss, String dateDebut) {
-
-        CompteAnnexeSimpleModel compteAnnexe;
-        try {
-            compteAnnexe = CABusinessServiceLocator.getCompteAnnexeService().getCompteAnnexe(null, idTier,
-                    IntRole.ROLE_RENTIER, nss, false);
-            APIRubrique rubrique = findRubrique();
-
-            String dateValeurSection = dateDebut.substring(3);
-
-            List<SoldeCompteCourant> list = CABusinessServiceLocator.getCompteCourantService()
-                    .searchSoldeCompteCourant(dateValeurSection, compteAnnexe.getIdCompteAnnexe(),
-                            rubrique.getIdRubrique());
-            return list;
-        } catch (JadeApplicationServiceNotAvailableException e) {
-            throw new RuntimeException(e);
-        } catch (JadePersistenceException e) {
-            throw new RuntimeException(e);
-        } catch (JadeApplicationException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    private APIRubrique findRubrique() {
-        APIReferenceRubrique referenceRubrique;
-        try {
-            referenceRubrique = (APIReferenceRubrique) PRSession.connectSession(session, "OSIRIS").getAPIFor(
-                    APIReferenceRubrique.class);
-            return referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_COMPTE_COURANT_BLOCAGE);
-
-        } catch (Exception e) {
-            throw new RuntimeException("Technical exception, error to retrieve the reference rubrique", e);
-        }
-    }
 }

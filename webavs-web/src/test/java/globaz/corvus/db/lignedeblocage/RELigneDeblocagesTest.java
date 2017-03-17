@@ -6,6 +6,7 @@ import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
+import ch.globaz.common.domaine.Montant;
 
 public class RELigneDeblocagesTest {
 
@@ -37,6 +38,7 @@ public class RELigneDeblocagesTest {
 
         ligne.setEtat(etat);
         ligne.setType(type);
+        ligne.setMontant(new Montant(1));
 
         return ligne;
     }
@@ -122,5 +124,13 @@ public class RELigneDeblocagesTest {
         ld.addAll(createListLigneDeblocage());
 
         assertThat(ld.getLigneDeblocageVersementBeneficaire().size()).isEqualTo(1);
+    }
+
+    @Test
+    public void testSumMontantsDebloquer() throws Exception {
+        RELigneDeblocages ld = new RELigneDeblocages();
+        ld.addAll(createListLigneDeblocage());
+
+        assertThat(ld.sumMontantsDebloquer()).isEqualTo(new Montant(8));
     }
 }

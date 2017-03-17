@@ -7,6 +7,7 @@ import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageEtat;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
 import java.util.ArrayList;
 import java.util.List;
+import ch.globaz.common.domaine.Montant;
 
 /**
  * Structure représentant une liste de ligne de déblocage
@@ -105,4 +106,13 @@ public class RELigneDeblocages extends ArrayList<RELigneDeblocage> {
     public RELigneDeblocages getLigneDeblocageVersementBeneficaire() {
         return getLigneDeblocageByType(RELigneDeblocageType.VERSEMENT_BENEFICIAIRE);
     }
+
+    public Montant sumMontantsDebloquer() {
+        Montant sum = Montant.ZERO;
+        for (RELigneDeblocage ligne : this) {
+            sum = sum.add(ligne.getMontant());
+        }
+        return sum;
+    }
+
 }

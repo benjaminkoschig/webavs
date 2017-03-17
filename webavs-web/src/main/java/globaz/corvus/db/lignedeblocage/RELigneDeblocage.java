@@ -39,7 +39,6 @@ public class RELigneDeblocage extends JadeEntity {
         this.write(RELigneDeblocageTableDef.MONTANT, montant, CONVERTER_MONTANT);
         this.write(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, type);
         this.write(RELigneDeblocageTableDef.CS_ETAT, etat);
-        this.write(RELigneDeblocageTableDef.MONTANT, montant, CONVERTER_MONTANT);
         this.write(RELigneDeblocageTableDef.REFERENCE_PAIEMENT, refPaiement);
         this.write(RELigneDeblocageTableDef.ID_LOT, idLot);
     }

@@ -190,6 +190,10 @@ public class Montant implements Serializable {
         return new Montant(currency.add(new BigDecimal(montant)));
     }
 
+    public Montant add(final String montant) {
+        return this.add(new Montant(montant));
+    }
+
     public Montant max(BigDecimal montant) {
         return new Montant(currency.max(montant), typePeriode);
     }
